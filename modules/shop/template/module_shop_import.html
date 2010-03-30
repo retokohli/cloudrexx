@@ -122,14 +122,14 @@ function MakeImportCategories()
 function DeleteImg(ImgID)
 {
   if (confirm("{TXT_SHOP_IMPORT_TEMPLATE_REALLY_DELETE}")) {
-    document.location.href = 'index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&deleteImg=1&img='+ImgID;
+    document.location.href = 'index.php?cmd=shop{MODULE_INDEX}&act=import&deleteImg=1&img='+ImgID;
   }
 }
 
 function MakeExport(groupCode)
 {
   if (confirm("{TXT_SHOP_EXPORT_WARNING}")) {
-    document.location = "?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=import&group="+groupCode;
+    document.location = "?cmd=shop{MODULE_INDEX}&act=import&group="+groupCode;
   }
 }
 

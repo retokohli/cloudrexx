@@ -10,9 +10,11 @@
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @package     contrexx
  * @subpackage  module_shop
+ * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
 
+require_once ASCMS_CORE_PATH.'/Mailtemplate.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 
@@ -25,6 +27,7 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @package     contrexx
  * @subpackage  module_shop
+ * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
 class Settings
@@ -79,7 +82,7 @@ class Settings
         $result = Zones::store();
         if ($result !== '') $success &= $result;
 
-        $result = Mail::store();
+        $result = Mailtemplate::storeTemplateFromPost();
         if ($result !== '') $success &= $result;
 
         // new methods - these set $flagChanged accordingly.
@@ -166,10 +169,21 @@ class Settings
             Settings::storeSetting('telephone', $_POST['telephone']);
             Settings::storeSetting('fax', $_POST['fax']);
             Settings::storeSetting('yellowpay_shop_id', $_POST['yellowpay_shop_id'], (!empty($_POST['yellowpay_status']) ? 1 : 0));
-            Settings::storeSetting('yellowpay_hash_seed', $_POST['yellowpay_hash_seed']);
+//            Settings::storeSetting('yellowpay_hash_seed', $_POST['yellowpay_hash_seed']);
+// Replaced by
+            Settings::storeSetting('yellowpay_hash_signature_in', $_POST['yellowpay_hash_signature_in']);
+            Settings::storeSetting('yellowpay_hash_signature_out', $_POST['yellowpay_hash_signature_out']);
+
             Settings::storeSetting('yellowpay_authorization_type', $_POST['yellowpay_authorization_type']);
             Settings::storeSetting('yellowpay_accepted_payment_methods', $strYellowpayAcceptedPM);
             Settings::storeSetting('yellowpay_use_testserver', $_POST['yellowpay_use_testserver']);
+
+            // Added 20100222 -- Reto Kohli
+            Settings::storeSetting('postfinance_mobile_webuser', $_POST['postfinance_mobile_webuser']);
+            Settings::storeSetting('postfinance_mobile_sign', $_POST['postfinance_mobile_sign']);
+            Settings::storeSetting('postfinance_mobile_ijustwanttotest', isset($_POST['postfinance_mobile_ijustwanttotest']));
+            Settings::storeSetting('postfinance_mobile_status', isset($_POST['postfinance_mobile_status']));
+
             Settings::storeSetting('saferpay_id', $_POST['saferpay_id'], (!empty($_POST['saferpay_status']) ? 1 : 0));
             Settings::storeSetting('saferpay_finalize_payment', (!empty($_POST['saferpay_finalize_payment']) ? 1 : 0));
             Settings::storeSetting('saferpay_use_test_account', 0, (!empty($_POST['saferpay_use_test_account']) ? 1 : 0));
@@ -199,6 +213,12 @@ class Settings
                 'product_sorting',
                     (!empty($_POST['product_sorting']) ? $_POST['product_sorting'] : 1)
             );
+            // Order amount upper limit
+            Settings::storeSetting(
+                'orderitems_amount_max',
+                    (!empty($_POST['orderitems_amount_max']) ? $_POST['orderitems_amount_max'] : 0)
+            );
+
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_config");
             return true;
         }
@@ -528,21 +548,16 @@ class Settings
             $this->_initCountries();
             // "list1" contains active countries
             $strCountryIdActive = join(',', $_POST['list1']);
-            $strCountryIdInactive = join(',', $_POST['list2']);
             if ($strCountryIdActive) {
                 $query = "
-                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-                       SET activation_status=1
-                     WHERE countries_id IN ($strCountryIdActive)
-                ";
+                    UPDATE ".DBPREFIX."core_country
+                       SET is_active=1
+                     WHERE id IN ($strCountryIdActive)";
                 $objDatabase->Execute($query);
-            }
-            if ($strCountryIdInactive) {
                 $query = "
-                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-                       SET activation_status=0
-                     WHERE countries_id IN ($strCountryIdInactive)
-                ";
+                    UPDATE ".DBPREFIX."core_country
+                       SET is_active=0
+                     WHERE id NOT IN ($strCountryIdActive)";
                 $objDatabase->Execute($query);
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
@@ -568,8 +583,7 @@ class Settings
         $objResult = $objDatabase->Execute("
             SELECT 1
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE name='".addslashes($name)."'
-        ");
+             WHERE name='".addslashes($name)."'");
         if (!$objResult) return false;
         if ($objResult->RecordCount() > 0) {
             // Exists, update it
@@ -577,8 +591,7 @@ class Settings
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                    SET value='".addslashes($value)."',
                        status='".addslashes($status)."'
-                 WHERE name='".addslashes($name)."'
-            ");
+                 WHERE name='".addslashes($name)."'");
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
         } else {
             // Not present, insert it
@@ -589,8 +602,7 @@ class Settings
                     '".addslashes($name)."',
                     '".addslashes($value)."',
                     '".addslashes($status)."'
-                )
-            ");
+                )");
             if (!$objResult) return false;
         }
         return true;

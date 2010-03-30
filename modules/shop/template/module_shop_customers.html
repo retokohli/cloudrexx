@@ -4,7 +4,7 @@
 function deleteCustomer(customerId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delcustomer&customerId="+customerId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcustomer&customerId="+customerId);
 }
 
 function sendForm(letter)
@@ -143,7 +143,7 @@ function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
 <!-- END shopCustomersOverview -->
 <br />
 <br />
-<form name="formNewCustomer" method="post" action="?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer">
+<form name="formNewCustomer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer">
   <input type="submit" name="shopAddNewCustomer" value="{TXT_ADD_NEW_CUSTOMER}" />
 </form>
 <p>{SHOP_CUSTOMER_PAGING}&nbsp;</p>

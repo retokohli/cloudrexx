@@ -4,7 +4,7 @@
 function deletePayment(pId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_PAYMENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=payment&paymentId="+pId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=payment&paymentId="+pId);
 }
 
 Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];

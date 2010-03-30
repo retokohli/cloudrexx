@@ -48,6 +48,12 @@ class ShopCategory
      */
     private $parentId;
     /**
+     * @var     string      $description    ShopCategory description
+     * @access  private
+     */
+    private $description;
+
+    /**
      * @var     boolean     $status     Status of the ShopCategory
      * @access  private
      */
@@ -75,23 +81,25 @@ class ShopCategory
      * If the optional argument $catId is greater than zero, the corresponding
      * category is updated.  Otherwise, a new category is created.
      * @access  public
-     * @param   string  $catName        The new category name
-     * @param   integer $catParentId    The new parent ID of the category
-     * @param   integer $catStatus      The new status of the category (0 or 1)
-     * @param   integer $catSorting     The sorting order
-     * @param   integer $catId          The optional category ID to be updated
+     * @param   string  $name           The new category name
+     * @param   string  $description    The new category description
+     * @param   integer $parent_id      The new parent ID of the category
+     * @param   integer $status         The new status of the category (0 or 1)
+     * @param   integer $ord            The sorting order
+     * @param   integer $id             The optional category ID to be updated
      * @return  ShopCategory            The ShopCategory
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $catName, $catParentId, $catStatus, $catSorting, $catId=0
+        $name, $description='', $parent_id, $status=false, $ord=0, $id=0
     ) {
-        $this->id = intval($catId);
+        $this->id = intval($id);
         // Use access methods here, various checks included.
-        $this->setName($catName);
-        $this->setParentId($catParentId);
-        $this->setStatus($catStatus);
-        $this->setSorting($catSorting);
+        $this->setName($name);
+        $this->setDescription($description);
+        $this->setParentId($parent_id);
+        $this->setStatus($status);
+        $this->setSorting($ord);
     }
 
 
@@ -131,6 +139,28 @@ class ShopCategory
             return false;
         }
         $this->name = trim($catName);
+        return true;
+    }
+
+    /**
+     * Get the description
+     * @return  string              The description
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function getDescription() {
+        return $this->description;
+    }
+    /**
+     * Set the description
+     *
+     * Returns false iff the given description is empty.
+     * @param   string              The description
+     * @return  boolean             True on success, false otherwise
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setDescription($description)
+    {
+        $this->description = trim($description);
         return true;
     }
 
@@ -420,13 +450,13 @@ class ShopCategory
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_categories
             SET catname='".addslashes($this->name)."',
+                catdesc='".addslashes($this->description)."',
                 parentid=$this->parentId,
                 catstatus=".($this->status ? 1 : 0).",
                 catsorting=$this->sorting,
                 picture='".addslashes($this->picture)."',
                 flags='".addslashes($this->flags)."'
-            WHERE catid=$this->id
-        ";
+            WHERE catid=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -448,11 +478,12 @@ class ShopCategory
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_categories (
-                catname, parentid, catstatus, catsorting,
+                catname, catdesc, parentid, catstatus, catsorting,
                 picture, flags
                 ".($this->id > 0 ? ', catid' : '')."
             ) VALUES (
                 '".addslashes($this->name)."',
+                '".addslashes($this->description)."',
                 $this->parentId,
                 ".($this->status ? 1 : 0).",
                 $this->sorting,
@@ -545,22 +576,27 @@ class ShopCategory
             SELECT catid
               FROM '.DBPREFIX.'module_shop_categories
              WHERE 1 '.
-        (!empty($this->id)       ? " AND catid=$this->id"                 : '').
-        (!empty($this->name)     ? " AND catname LIKE '%$this->name%'"    : '').
-        (!empty($this->parentId) ? " AND parentid=$this->parentId"        : '').
+        (!empty($this->id)
+            ? " AND catid=$this->id" : '').
+        (!empty($this->name)
+            ? " AND catname LIKE '%".addslashes($this->name)."%'" : '').
+        (!empty($this->description)
+            ? " AND catdesc LIKE '%".addslashes($this->description)."%'" : '').
+        (!empty($this->parentId)
+            ? " AND parentid=$this->parentId" : '').
 // TODO: This implementation does not allow any value other than boolean values
 // true or false.  As false is considered to be empty, this won't work in that
 // case.  We better ignore the status for the time being.
-//        (!empty($this->status)   ? " AND catstatus=$this->status"         : '').
-        (!empty($this->sorting)  ? " AND catsorting=$this->sorting"       : '').
-        (!empty($this->picture)  ? " AND picture LIKE '%$this->picture%'" : '');
+//        (!empty($this->status)   ? " AND catstatus=$this->status" : '').
+        (!empty($this->sorting)
+            ? " AND catsorting=$this->sorting" : '').
+        (!empty($this->picture)
+            ? " AND picture LIKE '%".addslashes($this->picture)."%'" : '');
         foreach (split(' ', $this->flags) as $flag) {
             $query .= " AND flags LIKE '%$flag%'";
         }
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
+        if (!$objResult) return false;
         $arrShopCategories = array();
         while (!$objResult->EOF) {
             $objShopCategory =
@@ -584,20 +620,21 @@ class ShopCategory
     static function getById($catId)
     {
         global $objDatabase;
+
         $objResult = $objDatabase->Execute("
-            SELECT *
+            SELECT `catname`, `catdesc`,
+                   `parentid`, `catsorting`, `catstatus`,
+                   `picture`, `flags`
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-             WHERE catid=$catId
-        ");
-        if (!$objResult || $objResult->RecordCount() == 0) {
-            return false;
-        }
+             WHERE catid=$catId");
+        if (!$objResult || $objResult->RecordCount() == 0) return false;
         $objShopCategory = new ShopCategory(
             $objResult->fields['catname'],
+            $objResult->fields['catdesc'],
             $objResult->fields['parentid'],
             $objResult->fields['catstatus'],
             $objResult->fields['catsorting'],
-            $objResult->fields['catid']
+            $catId
         );
         $objShopCategory->setPicture($objResult->fields['picture']);
         $objShopCategory->setFlags($objResult->fields['flags']);
@@ -616,9 +653,7 @@ class ShopCategory
      */
     function getChildCategories($flagActiveOnly=false)
     {
-        if ($this->id <= 0) {
-            return false;
-        }
+        if ($this->id <= 0) return false;
         return ShopCategories::getChildCategoriesById(
             $this->id, $flagActiveOnly
         );
@@ -640,12 +675,9 @@ class ShopCategory
             SELECT catid
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE parentid=$this->id
-          ORDER BY catsorting ASC
-        ";
+          ORDER BY catsorting ASC";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return false;
-        }
+        if (!$objResult) return false;
         $arrShopCategoryID = array();
         while (!$objResult->EOF) {
             $arrShopCategoryID[] = $objResult->fields['catid'];
@@ -684,7 +716,6 @@ class ShopCategory
                   parentid=$this->parentId AND
                   catname='".addslashes($strName)."'
             ORDER BY catsorting ASC";
-
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 //        if ($objResult->RecordCount() > 1) echo("ShopCategory::getChildNamed($strName, $flagActiveOnly): ".$_ARRAYLANG['TXT_SHOP_WARNING_MULTIPLE_CATEGORIES_WITH_SAME_NAME'].'<br />');
@@ -848,16 +879,13 @@ class ShopCategory
     {
         global $objDatabase;
 
-        $query = '
+        $query = "
             SELECT parentid
-              FROM '.DBPREFIX."module_shop_categories
+              FROM ".DBPREFIX."module_shop_categories
              WHERE catid=$intCategoryId
-          ORDER BY catsorting ASC
-        ";
+          ORDER BY catsorting ASC";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->RecordCount == 0) {
-            return 0;
-        }
+        if (!$objResult || $objResult->RecordCount == 0) return 0;
         return $objResult->fields['parentid'];
     }
 
@@ -893,6 +921,7 @@ class ShopCategory
 
 
     /**
+     * OBSOLETE?
      * Get the ShopCategory ID trail array.
      *
      * Returns an array of ShopCategory IDs of the current $shopCategoryId,

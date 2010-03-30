@@ -53,20 +53,22 @@ class Manufacturer
             // Replace Text in a missing language by another, if available
             if ($text_name_id && $strName === null) {
                 $objText = Text::getById($text_name_id, 0);
-                if ($objText)
+                if ($objText) {
 // Mark missing language entries
 //                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
                     $strName = $objText->getText();
+                }
             }
             $text_url_id = $objResult->fields[$arrSqlUrl['name']];
             $strUrl = $objResult->fields[$arrSqlUrl['text']];
             // Replace Text in a missing language by another, if available
             if ($text_url_id && $strUrl === null) {
                 $objText = Text::getById($text_url_id, 0);
-                if ($objText)
+                if ($objText) {
 // Mark missing language entries
 //                  $objText->markDifferentLanguage(FRONTEND_LANG_ID);
                     $strUrl = $objText->getText();
+                }
             }
             self::$arrManufacturer[$id] = array(
                 'id' => $id,

@@ -27,9 +27,10 @@ class Distribution
      * @var     array
      */
     private static $arrDistributionTypes = array(
-        'delivery',
-        'download',
-        'none',
+        'delivery',  // Needs shipping, default
+        'download',  // Creates a User account
+        'none',      // Why would you buy this, anyway?
+        'coupon',    // Creates a new Coupon
     );
 
     /**

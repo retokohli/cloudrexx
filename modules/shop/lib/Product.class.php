@@ -232,11 +232,10 @@ class Product
      */
     private $text_keywords_id = 0;
     /**
-     * @var     array   $arrAttributeValueId
-     *                                      Attribute value IDs array
+     * @var     array   $arrRelations   The relation array
      * @access  private
      */
-    private $arrAttributeValue = false;
+    private $arrRelations = false;
 
 
     /**
@@ -279,7 +278,7 @@ class Product
 
         // Enable cloning of Products with Attributes
         if ($this->id > 0) {
-            $this->arrAttributeValue =
+            $this->arrRelations =
                 Attributes::getRelationArray($this->id);
         }
     }
@@ -1131,15 +1130,15 @@ class Product
         if (empty($this->text_keywords_id)) return false;
         if ($this->recordExists()) {
             if (!$this->update()) return false;
-            if (!Attributes::deleteByProductId($this->id))
+            if (!Attributes::removeFromProduct($this->id))
                 return false;
         } else {
             if (!$this->insert()) return false;
         }
         // Store Attributes, if any
-        if (is_array($this->arrAttributeValue)) {
-            foreach ($this->arrAttributeValue as $value_id => $order) {
-                if (!Attributes::addValueToProduct(
+        if (is_array($this->arrRelations)) {
+            foreach ($this->arrRelations as $value_id => $order) {
+                if (!Attributes::addOptionToProduct(
                     $value_id, $this->id, $order
                 )) return false;
             }
@@ -1338,7 +1337,7 @@ class Product
         $objProduct->keywords          = $objResult->fields[$arrSqlKeyword['text']];
         $objProduct->text_keywords_id  = $objResult->fields[$arrSqlKeyword['name']];
         // Fetch the Product Attribute relations
-        $objProduct->arrAttributeValue =
+        $objProduct->arrRelations =
             Attributes::getRelationArray($objProduct->id);
         return $objProduct;
     }
@@ -1356,7 +1355,7 @@ class Product
      */
     function addAttribute($value_id, $order)
     {
-        $this->arrAttributeValue[$value_id] = $order;
+        $this->arrRelations[$value_id] = $order;
         return true;
     }
 
@@ -1373,7 +1372,7 @@ class Product
      */
     function deleteAttribute($value_id)
     {
-        unset($this->arrAttributeValue[$value_id]);
+        unset($this->arrRelations[$value_id]);
         return true;
     }
 
@@ -1388,8 +1387,30 @@ class Product
      */
     function clearAttributes()
     {
-        $this->arrAttributeValue = array();
+        $this->arrRelations = array();
         return true;
+    }
+
+
+    /**
+     * Decrease the Product stock count
+     *
+     * This applies to "real", shipped goods only.  These have "delivery"
+     * set as their "handler" field value.
+     * @param   integer   $quantity       The quantity to subtract
+     *                                    from the stock
+     * @return  boolean                   True on success, false otherwise
+     */
+    function decreaseStock($quantity)
+    {
+        global $objDatabase;
+
+        $query = "
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
+               SET stock=stock-$quantity
+             WHERE id=$this->id
+               AND handler='delivery'";
+        return (boolean)$objDatabase->Execute($query);
     }
 
 }

@@ -1,6 +1,9 @@
 <?php
 
 /**
+ * OBSOLETE
+ *
+ * Use core/Country.class.php instead.
  * Shop Country class
  * @version     2.1.0
  * @since       2.1.0
@@ -25,6 +28,11 @@
  */
 class Country
 {
+    /**
+     * Text key
+     */
+    const TEXT_NAME = 'shop_country_name';
+
     /**
      * Array of all countries
      * @var     array
@@ -52,20 +60,20 @@ class Country
      */
     function initCountries()
     {
+die("Obsolete class modules/shop/lib/Country.class.php in use!");
+
         global $objDatabase;
 
         $arrSqlName = Text::getSqlSnippets(
             '`country`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
-        );
+            MODULE_ID, self::TEXT_NAME);
         $query = "
             SELECT `country`.`id`, `country`.`status`,
                    `country`.`iso_code_2`, `country`.`iso_code_3`".
                    $arrSqlName['field']."
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries AS `country`".
                    $arrSqlName['join']."
-             ORDER BY `country`.`id` ASC
-        ";
+             ORDER BY `country`.`id` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
@@ -77,12 +85,12 @@ class Country
                 if ($objText) $strName = $objText->getText();
             }
             self::$arrCountries[$id] = array(
-                'id' => $id,
-                'name' => $objResult->fields['countries_name'], //$strName,
+                'id'           => $id,
+                'name'         => $objResult->fields['countries_name'], //$strName,
                 'text_name_id' => $text_name_id,
-                'iso_code_2' => $objResult->fields['countries_iso_code_2'],
-                'iso_code_3' => $objResult->fields['countries_iso_code_3'],
-                'status' => $objResult->fields['activation_status']
+                'iso_code_2'   => $objResult->fields['countries_iso_code_2'],
+                'iso_code_3'   => $objResult->fields['countries_iso_code_3'],
+                'status'       => $objResult->fields['activation_status'],
             );
             $objResult->MoveNext();
         }
@@ -102,14 +110,14 @@ class Country
         $query = "
             SELECT zone_id, country_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-             ORDER BY id ASC
-        ";
+             ORDER BY id ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             self::$arrCountryRelations[] = array(
                 'zone_id'    => $objResult->fields['zone_id'],
-                'country_id' => $objResult->fields['country_id']);
+                'country_id' => $objResult->fields['country_id']
+            );
             $objResult->MoveNext();
         }
         return true;
@@ -231,7 +239,7 @@ class Country
         // associated with that zone ID
         $arrSqlName = Text::getSqlSnippets(
             '`country`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
+            MODULE_ID, self::TEXT_NAME
         );
         $query = "
             SELECT `country`.`id`, `relation`.`country_id`".
@@ -242,8 +250,7 @@ class Country
                 ON `country`.`id`=`relation`.`country_id`
              WHERE `country`.`status`=1
                AND `relation`.`zone_id`=$zone_id
-             ORDER BY ".$arrSqlName['text']." ASC
-        ";
+             ORDER BY ".$arrSqlName['text']." ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         // Initialize the array to avoid notices when one or the other is empty
@@ -262,13 +269,12 @@ class Country
         }
         foreach (self::$arrCountries as $id => $arrCountry) {
             // Country may only be available for the Zone if it is active
-            if (empty($arrZoneCountries['in'][$id])
+            if (   empty($arrZoneCountries['in'][$id])
                 && $arrCountry['status'])
                 $arrZoneCountries['out'][$id] = array(
                     'id' => $id,
                     'name' => $arrCountry['name'],
                 );
-
         }
         return $arrZoneCountries;
     }
