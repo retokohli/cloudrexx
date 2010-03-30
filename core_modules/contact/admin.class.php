@@ -1444,7 +1444,7 @@ class ContactManager extends ContactLib
                 case 'radio':
                 case 'select':
                 case 'textarea':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br(htmlspecialchars_decode(htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET))) : '&nbsp;';
                     break;
             }
 
