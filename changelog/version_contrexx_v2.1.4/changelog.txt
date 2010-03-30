@@ -26,3 +26,7 @@ News Manager
 
 Veranstaltungskalender
 - Das Bearbeiten der Veranstaltungen funktioniert.
+
+Kontaktformular
+- Es werden neu Zeichenfolgen mit HTML Special Chars (z.B. '<' und '>') so gespeichert
+  und auch ausgeben.
