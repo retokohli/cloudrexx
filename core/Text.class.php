@@ -452,22 +452,17 @@ class Text
                     $objResult->fields['key'],
                     $objResult->fields['id']
                 );
-// Optionally mark replacement Texts
+                // Optionally mark replacement Texts
 //                if (!$lang_id) {
 //                    $objText->markDifferentLanguage();
-//echo("Text::getById($text_id, $lang_id): Replacement language ID ".$objText->lang_id.", found ".$objText->getText()."<br />");
 //                }
-//echo("Text::getById($text_id, $lang_id): Got ".$objText->getText()."<br />");
             } else {
                 if ($lang_id) {
-//echo("Text::getById($text_id, $lang_id): Missing language ID $lang_id, looking for replacement...<br />");
                     $objText = self::getById($text_id, 0);
                     if ($objText) {
                         $objText->lang_id = $lang_id;
-//echo("Text::getById($text_id, $lang_id): Replacement language ID ".$objText->lang_id.", found ".$objText->getText()."<br />");
 //                        return $objText;
                     }
-//else {echo("Text::getById($text_id, $lang_id): Missing language ID $lang_id, no replacement found!<br />");}
                 }
             }
         }
