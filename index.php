@@ -390,7 +390,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         }
     }
 
-
     if ($history) {
         $objPageProtection = $objDatabase->SelectLimit('
             SELECT backend_access_id
@@ -446,15 +445,10 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
 }
 
 if (   ($frontEditing || $frontPreview)
-    && (!$objFWUser->objUser->login() || !Permission::hasAllAccess()))
+    && !$objFWUser->objUser->login())
     $page_content = '';
 
 if (!empty($page_redirect)) {
-    if (strpos($page_redirect, 'langId') === false) {
-        $page_redirect .=
-            (strpos($page_redirect, '?') ? '&' : '?').
-            'langId='.LANG_ID;
-    }
     header('Location: '.$page_redirect);
     exit;
 }
