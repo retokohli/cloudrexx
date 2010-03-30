@@ -130,8 +130,13 @@ function selectMultiAction()
 (function(){ //wrap in anonyomous function to avoid polluting the global namespace
 
     var rootUlId = 'sortableNavigation';
+    var $tabs;
+    var $containers;
 
     $J(function(){
+        //set top border for first page entry
+    	$J('#sortableNavigation > li > div:first').css({borderTop:'1px solid #DCE4FF'});
+    	
         $J('#tabmenu li a').click(function(){ //change language via upper right form with dropdown if tabmenu item gets clicked
                 $J('form[name=userFrontendLangIdForm] :selected').val($J(this).attr('id').replace(/.*?(\d+)$/, '$1'));
                 $J('form[name=userFrontendLangIdForm]').submit();
@@ -140,19 +145,10 @@ function selectMultiAction()
         $J('#'+rootUlId+' li div.sort-handle').mousedown(function(){
             collapseNode.apply($J('a.hasChildren,a.hasNoChildren', $J(this).closest('li')));
         });
-
-        var $tabs = $J('#tab_system,#tab_sitesettings,#tab_frontend,#tab_backend');
-        var $containers = $J('#container_system,#container_sitesettings,#container_frontend,#container_backend')
-        $tabs.click(function(){
-            $tabs.removeClass('active').addClass('inactive');
-            $J(this).addClass('active');
-            if($J(this).hasClass('inactive')){
-                var that = this;
-	            $containers.filter(function(){return $J(this).is(':visible')}).slideUp('fast', function(){
-	            	$J('#container_'+$J(that).attr('id').replace(/tab_/, '')).slideDown('fast');
-		        });
-            }            
-        });
+        
+        $tabs = $J('#tab_system,#tab_sitesettings,#tab_frontend,#tab_backend');
+        $containers = $J('#container_system,#container_sitesettings,#container_frontend,#container_backend');
+        $tabs.one('click', toggleGlobalSiteConfigTab);
         
         $J('#setGlobalPageTitle').one('click', updateGlobalPageTitle);
         $J('#setThemesId').one('click', updateThemesId);
@@ -180,15 +176,28 @@ function selectMultiAction()
 
         expandCats();
         resetRowClasses();
-        var $globPropContainer = $J('#globalProperties')
-        $J('#rootLink').toggle(function(){
-        	$globPropContainer.slideDown('fast');
+        var $globPropContainer = $J('#globalProperties');
+        $J('#rootLink').toggle(function(){        	
+        	$globPropContainer.stop().slideDown('fast');
         },
         function(){
-        	$globPropContainer.slideUp('fast');
+        	$globPropContainer.stop().slideUp('fast');
         });        
     });
 
+    var toggleGlobalSiteConfigTab = function(){
+        if($J(this).hasClass('inactive')){
+            var that = this;
+            $containers.filter(function(){return $J(this).is(':visible')}).slideUp('fast', function(){
+                $J('#container_'+$J(that).attr('id').replace(/tab_/, '')).slideDown('fast', function(){
+                    $tabs.one('click', toggleGlobalSiteConfigTab);                                
+                });
+            });
+        }       
+        $tabs.removeClass().addClass('inactive');
+        $J(this).removeClass().addClass('active');
+    }
+    
     var updateFrontendPermissions = function(){
         $J(this).attr('disabled', 'disabled');
 	    var that = this;
@@ -620,19 +629,19 @@ function selectMultiAction()
 </div>
 <!-- BEGIN header -->
 <div>
-    <div class="siteMapFunctions siteMapColumn row2">
+    <div class="siteMapFunctions siteMapColumn row2" style="border: 0px;">
         <a href="index.php?cmd=content&amp;act=copyAll"><img src="images/icons/copy.gif" alt="{TXT_COPY_CONTENT}" title="{TXT_COPY_CONTENT}" border="0" /></a>
         <img class="icon" src='images/icons/pixel.gif' alt="" title="" />&nbsp;
         <img class="icon" src='images/icons/pixel.gif' alt="" title="" />
     </div>
-    <div class="siteMapPage row2">
+    <div class="siteMapPage row2" style="border: 0px;">
        <img class="icon" src="images/icons/root_active.gif" alt="" border="0" align="middle" />&nbsp;&nbsp;&nbsp;
            <a href="#" id="rootLink"> Frontend [<b>{CONTENT_NAME}</b>] </a>
     </div>    
 </div>
 <!-- END header -->
-<div style="border-bottom: 1px solid #DCE4FF; display: none;" id="globalProperties">
-	<ul class="tabmenu">
+<div style="display: none;" id="globalProperties">
+	<ul class="tabmenu" style="border-bottom: 1px solid #DCE4FF; margin-top: 2px;">
 	    <li><a class="active" title="{TXT_SYSTEM_SETTINGS}" id="tab_system">{TXT_SYSTEM_SETTINGS}</a></li>
 	    <li><a class="inactive" title="{TXT_UPDATE_ALL_SITES}" id="tab_sitesettings">{TXT_UPDATE_ALL_SITES}</a></li>
 	    <li><a class="inactive" title="{TXT_FRONTEND_PERMISSION}" id="tab_frontend">{TXT_FRONTEND_PERMISSION}</a></li>
@@ -640,11 +649,8 @@ function selectMultiAction()
 	</ul>
 	<div id="container_system">
 	    <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
-	        <tbody><!--
-	            <tr class="row3">
-	                <td colspan="2"><b>{TXT_SYSTEM_SETTINGS}</b></td>
-	            </tr>
-	            --><tr class="row1">
+	        <tbody>
+	           <tr class="row1">
 	                <td width="200">{TXT_SETTINGS_GLOBAL_TITLE}</td>
 	                <td>
 	                    <input size="40" type="text" name="globalPageTitle" value="{SETTINGS_GLOBAL_TITLE}" />
@@ -658,10 +664,7 @@ function selectMultiAction()
     <div id="container_sitesettings" style="display:none;">       
 	    <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
 	        <tbody>
-	            <!--<tr class="row3">
-	                <td colspan="2"><b>{TXT_UPDATE_ALL_SITES}</b></td>
-	            </tr>
-	            --><tr class="row1">
+	           <tr class="row1">
 		          <td width="15%">{TXT_THEMES}</td>
 		          <td width="85%">
 		            <select style="width: 302px;" name="themesId">
@@ -736,7 +739,7 @@ function selectMultiAction()
 			          <td width="1%">&nbsp;</td>
 			          <td>{TXT_GROUPS_DEST}</td>
 			        </tr>
-			        <tr class="row2">
+			        <tr class="row1">
 			          <td>
 			            <select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
 			            {CONTENT_EXISTING_GROUPS}
@@ -787,7 +790,7 @@ function selectMultiAction()
 			          <td width="1%">&nbsp;</td>
 			          <td>{TXT_GROUPS_DEST}</td>
 			        </tr>
-			        <tr class="row2">
+			        <tr class="row1">
 			          <td>
 			            <select name="existingBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
 			            {CONTENT_EXISTING_BACKEND_GROUPS}
