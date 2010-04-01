@@ -28,6 +28,22 @@ class User_Profile
     var $arrAttributeHistories;
     var $arrUpdatedAttributeHistories;
 
+    /**
+     * @access private
+     * @var array
+     */
+    public static $arrNoAvatar = array(
+        'src'        => '0_noavatar.gif',
+        'width'        => 121,
+        'height'    => 160
+    );
+
+    public static $arrNoPicture = array(
+        'src'        => '0_no_picture.gif',
+        'width'        => 80,
+        'height'    => 84
+    );
+
     public function __construct()
     {
         $this->initAttributes();
