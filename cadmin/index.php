@@ -63,7 +63,7 @@ if ($incSettingsStatus === false || $incVersionStatus === false) {
 }
 
 require_once('../core/API.php');
-//include_once('../lib/CSRF.php');
+include_once('../lib/CSRF.php');
 
 
 //-------------------------------------------------------
@@ -99,7 +99,7 @@ $sessionObj->cmsSessionStatusUpdate('backend');
 // CSRF code needs to be even in the login form. otherwise, we
 // could not do a super-generic check later.. NOTE: do NOT move
 // this above the "new cmsSession" line!
-//CSRF::add_code();
+CSRF::add_code();
 
 $objInit->_initBackendLanguage();
 $objInit->getUserFrontendLangId();
@@ -365,9 +365,9 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // Note that we only do the check as long as there's no
 // cmd given; this is so we can reload the main screen if
 // the check has failed somehow.
-//if (!empty($plainCmd)) {
-//    CSRF::check_code();
-//}
+if (!empty($plainCmd)) {
+    CSRF::check_code();
+}
 
 
 switch ($plainCmd) {
