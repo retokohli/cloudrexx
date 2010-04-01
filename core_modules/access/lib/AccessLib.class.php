@@ -37,22 +37,6 @@ class AccessLib
     var $arrAttachedJSFunctions = array();
 
     /**
-     * @access private
-     * @var array
-     */
-    var $_arrNoAvatar = array(
-        'src'        => '0_noavatar.gif',
-        'width'        => 121,
-        'height'    => 160
-    );
-
-    var $_arrNoPicture = array(
-        'src'        => '0_no_picture.gif',
-        'width'        => 80,
-        'height'    => 84
-    );
-
-    /**
      * User FRAMEWORK Object
      *
      * @access private
@@ -186,8 +170,8 @@ class AccessLib
                                             .(!empty($arrPlaceholders['_VALUE']) ?
                                                   $arrPlaceholders['_VALUE']
                                                 : ($attributeId == 'picture' ?
-                                                          $this->_arrNoAvatar['src']
-                                                        : $this->_arrNoPicture['src']));
+                                                          User_Profile::$arrNoAvatar['src']
+                                                        : User_Profile::$arrNoPicture['src']));
                 if (empty($arrPlaceholders['_VALUE'])) {
                     $arrPlaceholders['_VALUE'] = $_CORELANG['TXT_ACCESS_NO_PICTURE'];
                 }
@@ -705,14 +689,14 @@ class AccessLib
         if ($attributeId == 'picture') {
             $imageRepo = ASCMS_ACCESS_PROFILE_IMG_PATH.'/';
             $imageRepoWeb = ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/';
-            $arrNoImage = $this->_arrNoAvatar;
+            $arrNoImage = User_Profile::$arrNoAvatar;
         } else {
             if ($edit) {
                 $thumbnail = true;
             }
             $imageRepo = ASCMS_ACCESS_PHOTO_IMG_PATH.'/';
             $imageRepoWeb = ASCMS_ACCESS_PHOTO_IMG_WEB_PATH.'/';
-            $arrNoImage = $this->_arrNoPicture;
+            $arrNoImage = User_Profile::$arrNoPicture;
         }
 
         if ($value !== false && $value !== '' && (!$edit || file_exists($imageRepo.$value))) {
@@ -1673,10 +1657,10 @@ JSaccessValidatePrimaryGroupAssociation
 
             unset($arrImages[array_search('.', $arrImages)]);
             unset($arrImages[array_search('..', $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoAvatar['src'], $arrImages)]);
-            unset($arrImages[array_search(ImageManager::getThumbnailFilename($this->_arrNoAvatar['src']), $arrImages)]);
-            unset($arrImages[array_search($this->_arrNoPicture['src'], $arrImages)]);
-            unset($arrImages[array_search(ImageManager::getThumbnailFilename($this->_arrNoPicture['src']), $arrImages)]);
+            unset($arrImages[array_search(User_Profile::$arrNoAvatar['src'], $arrImages)]);
+            unset($arrImages[array_search(ImageManager::getThumbnailFilename(User_Profile::$arrNoAvatar['src']), $arrImages)]);
+            unset($arrImages[array_search(User_Profile::$arrNoPicture['src'], $arrImages)]);
+            unset($arrImages[array_search(ImageManager::getThumbnailFilename(User_Profile::$arrNoPicture['src']), $arrImages)]);
 
             if ($profilePics) {
                 $query = "
