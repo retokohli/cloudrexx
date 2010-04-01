@@ -2482,6 +2482,21 @@ CREATE TABLE `contrexx_module_news_categories` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_comments` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `title` varchar(250) NOT NULL default '',
+  `text` mediumtext NOT NULL,
+  `newsid` int(6) unsigned NOT NULL default '0',
+  `date` int(14) default NULL,
+  `poster_name` varchar(255) NOT NULL default '',
+  `userid` int(5) unsigned NOT NULL default '0',
+  `ip_address` varchar(15) NOT NULL default '0.0.0.0',
+  `is_active` enum('0','1') NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL default '',
   `value` varchar(250) NOT NULL default '',
