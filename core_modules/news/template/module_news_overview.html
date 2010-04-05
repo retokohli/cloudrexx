@@ -50,7 +50,7 @@ function deletePages(form)
 <form name="formNews" id="formNews" method="post" action="index.php?cmd=news&amp;act=changeStatus">
 	<table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
 		<tr>
-			<th valign="top" colspan="9" nowrap="nowrap">{TXT_ARCHIVE}</th>
+			<th valign="top" colspan="10" nowrap="nowrap">{TXT_ARCHIVE}</th>
 		</tr>
 		<tr class="row2">
 			<td valign="top" nowrap="nowrap" width="1%"><b>#</b></td>
@@ -60,6 +60,7 @@ function deletePages(form)
 			<td valign="top" nowrap="nowrap"><b>{TXT_TITLE}</b></td>
 			<td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_CATEGORY}</b></td>
 			<td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_USER}</b></td>
+			<td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_NEWS_COMMENTS}</b></td>
 			<td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_LAST_EDIT}</b></td>
 			<td valign="top" nowrap="nowrap" width="2%"><div align="right"><b>{TXT_ACTION}</b></div></td>
 		</tr>
@@ -78,6 +79,7 @@ function deletePages(form)
 				<td><a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}">{NEWS_TITLE}</a>&nbsp;</td>
 				<td nowrap="nowrap">{NEWS_CATEGORY}&nbsp;</td>
 				<td nowrap="nowrap">{NEWS_USER}&nbsp;</td>
+				<td nowrap="nowrap"><a href="index.php?cmd=news&amp;act=comments&amp;newsId={NEWS_ID}" title="{TXT_COMMENTS}">{NEWS_COMMENTS_COUNT}&nbsp;{TXT_NEWS_COMMENTS}</a></td>
 				<td nowrap="nowrap">{NEWS_CHANGELOG}&nbsp;</td>
 				<td nowrap="nowrap">
 					<div align="right">

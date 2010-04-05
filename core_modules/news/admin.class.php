@@ -211,6 +211,37 @@ class newsManager extends newsLibrary {
                 $this->edit();
                 break;
 
+            case 'comments':
+                $this->comments_list();
+                break;
+                
+            case 'comments_delete':
+            	$this->comments_delete();
+                $this->comments_list();
+                break;
+                
+            case 'comment_edit':
+            	if (isset($_POST['saveComment'])) {
+            		if ($this->_comment_validate() && $this->comment_save()) {
+            			$this->comments_list();
+            		} else {
+            			$this->comment_edit();
+            		}
+            	} else {
+            		$this->comment_edit();
+            	}
+                break;
+            
+            case 'comment_status':
+                $this->invertCommentStatus($_GET['commentsId']);               
+                $this->comments_list();
+                break;
+                
+            case 'change_comment_status':
+                $this->changeCommentStatus();
+                $this->comments_list();
+                break;
+
             case 'copy':
                 $this->edit(true);
                 break;
@@ -342,6 +373,7 @@ class newsManager extends newsLibrary {
             'TXT_ARCHIVE'                   => $_ARRAYLANG['TXT_ARCHIVE'],
             'TXT_EDIT'                      => $_ARRAYLANG['TXT_EDIT'],
             'TXT_DELETE'                    => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_NEWS_COMMENTS' 		  	=> $_ARRAYLANG['TXT_NEWS_COMMENTS'],
             'TXT_NEWS_MESSAGE_PROTECTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC']
         ));
@@ -399,6 +431,11 @@ class newsManager extends newsLibrary {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
 
+                    // get comments count 
+                    $ccResult = $objDatabase->Execute('SELECT COUNT(1) AS com_num
+                    								FROM '.DBPREFIX.'module_news_comments
+                    								WHERE newsid = ' . intval($objResult->fields['id']));
+
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
                         'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
@@ -410,6 +447,7 @@ class newsManager extends newsLibrary {
                         'NEWS_CATEGORY'         => stripslashes($objResult->fields['catname']),
                         'NEWS_STATUS'           => $objResult->fields['status'],
                         'NEWS_STATUS_PICTURE'   => $statusPicture,
+                        'NEWS_COMMENTS_COUNT'	=> $ccResult->fields['com_num']
                     ));
 
                     $this->_objTpl->setVariable(array(
@@ -811,7 +849,8 @@ class newsManager extends newsLibrary {
         $newsId = "";
         if(isset($_GET['newsId'])){
             $newsId = intval($_GET['newsId']);
-            if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".$newsId) !== false) {
+            if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".$newsId) !== false 
+            && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_comments WHERE newsid = ".$newsId) !== false) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 $this->createRSS();
             } else {
@@ -822,7 +861,8 @@ class newsManager extends newsLibrary {
         if(isset($_POST['selectedNewsId']) && is_array($_POST['selectedNewsId'])){
             foreach ($_POST['selectedNewsId'] AS $value){
                 if (!empty($value)){
-                    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".intval($value)) !== false) {
+                    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".intval($value)) !== false
+                    && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_comments WHERE newsid = ".$newsId) !== false) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
                     } else {
@@ -833,7 +873,8 @@ class newsManager extends newsLibrary {
         } elseif (isset($_POST['selectedUnvalidatedNewsId']) && is_array($_POST['selectedUnvalidatedNewsId'])) {
             foreach ($_POST['selectedUnvalidatedNewsId'] AS $value){
                 if (!empty($value)){
-                    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".intval($value)) !== false) {
+                    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news WHERE id = ".intval($value)) !== false
+                    && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_comments WHERE newsid = ".$newsId) !== false) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                         $this->createRSS();
                     } else {
@@ -1102,8 +1143,318 @@ class newsManager extends newsLibrary {
         $this->_objTpl->setVariable("NEWS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
     }
 
+	/**
+	 * List up news comments for edit or delete
+	 *
+	 * @global    ADONewConnection
+     * @global    array	langData
+     * @global    array config
+     * @param     integer   $newsid
+     * 
+	 */
+    function comments_list()
+	{
+		global $objDatabase,$_ARRAYLANG, $_CONFIG;
+		
+		$paging     = '';
+        $pos        = 0;
+        $i 			= 0;
 
+        if (isset($_GET['pos'])) {
+            $pos = intval($_GET['pos']);
+        }
+        
+		$this->_objTpl->loadTemplateFile('module_news_comments_list.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_NEWS_COMMENT_LIST'];
+        $newsid = intval($_REQUEST['newsId']);
+        // get news title 
+        // do we need to remove it?
+        $titleRes = $objDatabase->Execute('  SELECT title
+                    FROM        '.DBPREFIX.'module_news
+                    WHERE       id = '.$newsid);
+        
+        $this->_objTpl->setVariable(array(
+        	'TXT_NEWS_COMMENTS'				=> $_ARRAYLANG['TXT_NEWS_COMMENTS'],
+            'TXT_NEWS_COMMENT_DATE'        	=> $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'],
+            'TXT_NEWS_COMMENT_TITLE'       	=> $_ARRAYLANG['TXT_TITLE'],
+            'TXT_NEWS_COMMENT_ACTION'      	=> $_ARRAYLANG['TXT_ACTION'],
+            'TXT_NEWS_COMMENT_MESSAGE'		=> $_ARRAYLANG['TXT_NEWS_COMMENT'],
+            'TXT_NEWS_COMMENT_CONFIRM_DELETE'  	=> $_ARRAYLANG['TXT_NEWS_COMMENT_CONFIRM_DELETE'],
+            'TXT_ACTION_IS_IRREVERSIBLE' 	=> $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_NEWS_COMMENT_AUTHOR'		=> $_ARRAYLANG['TXT_USER'],
+            'TXT_NEWS_COMMENT_SELECT_ALL'  	=> $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_NEWS_COMMENT_REMOVE_SELECTION' => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
+            'TXT_NEWS_COMMENT_DELETE_MARKED'=> $_ARRAYLANG['TXT_DELETE_MARKED'],
+            'TXT_NEWS_COMMENT_ACTIVATE'		=> $_ARRAYLANG['TXT_NEWS_COMMENT_ACTIVATE'],
+            'TXT_NEWS_COMMENT_DEACTIVATE'	=> $_ARRAYLANG['TXT_NEWS_COMMENT_DEACTIVATE'],
+            'TXT_NEWS_COMMENT_MARKED'		=> $_ARRAYLANG['TXT_MARKED'],
+            'TXT_NEWS_COMMENT_BUTTON_BACK'	=> $_ARRAYLANG['TXT_NEWS_COMMENT_BACK'],
+            
+            'TXT_NEWS_COMMENTS_LIST_FOR'	=> $_ARRAYLANG['TXT_NEWS_COMMENTS_LIST_FOR'],
+            'CUR_NEWS_ID'					=> $newsid,
+            'NEWS_TITLE'					=> htmlentities($titleRes->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)
+        ));
+        
+        $this->_objTpl->setGlobalVariable(array(
+        	'TXT_NEWS_COMMENT_IMGALT_STATUS'=> $_ARRAYLANG['TXT_NEWS_COMMENTS_STATUS'],
+        	'TXT_NEWS_COMMENT_DELETE'		=> $_ARRAYLANG['TXT_DELETE'],
+            'TXT_NEWS_COMMENT_EDIT'			=> $_ARRAYLANG['TXT_EDIT'],
+        ));
+        
+        // get comments list
+        $query = '  SELECT      id               AS commentid,
+                                title            AS commenttitle,
+                                date             AS commentdate,
+                                poster_name      AS commentauthor,
+                                text             AS commentmessage,
+                                userid           AS userid,
+                                is_active
+                    FROM        '.DBPREFIX.'module_news_comments
+                    WHERE       newsid = '.$newsid.'
+                    ORDER BY    date DESC';
 
+        /***start paging ****/
+        $comResult = $objDatabase->Execute($query);
+        $count = $comResult->RecordCount();
+        
+        if($count <= $pos)
+        {
+        	$dif = floor(($pos - $count) / intval($_CONFIG['corePagingLimit']));
+        	$pos -= ($dif + 1) * intval($_CONFIG['corePagingLimit']);
+        }
+        $this->_objTpl->setGlobalVariable(array(
+        	'POSITION'	=> $pos
+        ));
+        if ($count > intval($_CONFIG['corePagingLimit'])) {
+            $paging = getPaging($count, $pos, "cmd=news&amp;act=comments&amp;newsId=".$newsid, "Comments", true);
+        }
+        $this->_objTpl->setVariable("COMMENTS_PAGING", $paging);
+        $comResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+        /*** end paging ***/
+
+        if ($count >= 1) {
+            while (!$comResult->EOF) {
+                ($i % 2) ? $class  = 'row2' : $class  = 'row1';
+                $commentsautor = "";
+                if ($comResult->fields['userid'] == 0) {
+                	$commentsautor = htmlentities($comResult->fields['commentauthor'], ENT_QUOTES, CONTREXX_CHARSET);
+                } else {
+		    		$objFWUser = FWUser::getFWUserObject();
+		    		if ($objUser = $objFWUser->objUser->getUser($comResult->fields['userid'])) {
+		    			$commentsautor = '<a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id='.$comResult->fields['userid'].'" title="'.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+		    		} else {
+		    			$commentsautor = $_ARRAYLANG['TXT_NEWS_COMMENT_ANONYMOUS'];
+		    		}
+		    		$strUserName .= '<input type="hidden" name="cAuthorID" value="' . $comResult->fields['userid'] . '"/>';
+		    	}
+                $commentstitle = htmlentities($comResult->fields['commenttitle'], ENT_QUOTES, CONTREXX_CHARSET);
+                $commentmessage = htmlentities($comResult->fields['commentmessage'], ENT_QUOTES, CONTREXX_CHARSET);
+                $commentmessage = (strlen($commentmessage) > 60) ? substr($commentmessage,0,60).' ...' : $commentmessage;
+                
+                $this->_objTpl->setVariable(array(
+                           'COMMENT_CSS'    => $class,
+                           'COMMENT_ID'		=> intval($comResult->fields['commentid']),
+                           'COMMENT_STATUS_ICON'   =>  ($comResult->fields['is_active'] == 1) ? 'led_green' : 'led_red',
+                           'COMMENT_TITLE'  => $commentstitle,
+                           'COMMENT_DATE'   => date(ASCMS_DATE_FORMAT, $comResult->fields['commentdate']),
+                           'COMMENT_AUTHOR' => $commentsautor,
+                           'COMMENT_MESSAGE'=> $commentmessage,
+                           'NEWS_ID'		=> $newsid
+                ));
+                $this->_objTpl->parse('commentsrow');
+                $i++;
+                $comResult->MoveNext();
+            }
+            $this->_objTpl->hideBlock('nocomments');
+        } else {
+        	$this->_objTpl->hideBlock('yescomments');
+            $this->_objTpl->setVariable(array(
+            	'TXT_COMMENTS_NONE'    => $_ARRAYLANG['TXT_NEWS_NO_COMMENTS_FOUND']
+            ));
+        }
+	}
+
+	/**
+	 * Remove single comment or several comments from database.
+	 * @global    ADONewConnection
+     * @global    array langData
+     * @global    array config
+     * @param     integer commentsId -- to remove single comment
+     * @param     array selectedCommentsId -- to remove several comments
+     * 
+	 */
+	function comments_delete()
+	{
+		global $objDatabase, $_ARRAYLANG;
+
+        $commentsId = "";
+        // remove single comment
+        if(isset($_GET['commentsId'])){
+            $commentsId = intval($_GET['commentsId']);
+            if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_comments WHERE id = ".$commentsId) !== false) {
+                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+            } else {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+            }
+        }
+
+        // remove several comments
+        if(isset($_POST['selectedCommentsId']) && is_array($_POST['selectedCommentsId'])){
+            foreach ($_POST['selectedCommentsId'] as $value){
+                if (!empty($value)){
+                    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_comments WHERE id = ".intval($value)) !== false) {
+                        $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+                    } else {
+                        $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                    }
+                }
+            }
+        }
+	}
+	
+	/**
+	 * Validate edit comment form
+	 * (check all fields to be not empty)
+	 * @global    array langData
+	 *
+	 * @return    bool (true -- if all OK, false -- if errors)
+	 */
+	function _comment_validate()
+	{
+		global $_ARRAYLANG;
+		
+		if (!isset($_REQUEST['cAuthorID']) && (!isset($_REQUEST['cAuthor']) || $_REQUEST['cAuthor'] == "")) {
+    		$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_COMMENT_NOT_VALID_AUTHOR'];
+    	} elseif (!isset($_REQUEST['cTitle']) || $_REQUEST['cTitle'] == "") {
+    		$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_COMMENT_NOT_VALID_TITLE'];
+    	} elseif (!isset($_REQUEST['cMessage']) || $_REQUEST['cMessage'] == "") {
+    		$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_COMMENT_NOT_VALID_MESSAGE'];
+    	}
+    	
+    	if (empty($this->strErrMessage)) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+	}
+	
+	/**
+	 * Save comment
+	 * @global    ADONewConnection
+     * @global    array langData
+     * 
+	 * @return    bool (true -- is comment saved successfuly, false -- otherwise)
+	 */
+	function comment_save()
+	{
+		global $objDatabase, $_ARRAYLANG;
+
+        $comment_title = contrexx_addslashes(contrexx_strip_tags($_POST['cTitle']));
+        $comment_message = contrexx_addslashes(contrexx_strip_tags($_POST['cMessage']));
+        $set_author = "";
+        if (!isset($_POST['cAuthorID'])) {
+        	$set_author = ", poster_name = '" . contrexx_addslashes(contrexx_strip_tags($_POST['cAuthor'])) ."'";
+        }       
+        $commentId = intval($_REQUEST['commentsId']);
+        
+        $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_comments SET 
+            title = '$comment_title',
+            text = '$comment_message'
+            $set_author
+            WHERE id = $commentId"
+        );
+
+        if ($objResult === false) {
+            $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_COMMENT_SAVING_ERROR'];
+            return false;
+        } else {
+        	$this->strOkMessage = $_ARRAYLANG['TXT_NEWS_COMMENT_SAVED'];
+            return true;
+        }
+	}
+	
+    /**
+     * Prepare edit comment form
+     * @global    ADONewConnection
+     * @global    array langData
+     * @param     integer commentsId
+     * @param     integer newsId
+     */
+	function comment_edit()
+    {
+    	global $objDatabase, $_ARRAYLANG;
+    	
+    	$commentID = intval($_REQUEST['commentsId']);
+    	$newsid = intval($_REQUEST['newsId']);
+    	$this->_objTpl->loadTemplateFile('module_news_comment_edit.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_NEWS_COMMENT_EDIT_TITLE'];
+        
+        // get news title 
+        $titleRes = $objDatabase->Execute('  SELECT title
+                    FROM        '.DBPREFIX.'module_news
+                    WHERE       id = '.$newsid);
+        
+    	$query = "SELECT title, text, poster_name, date, ip_address, userid FROM ".DBPREFIX."module_news_comments WHERE id = ".$commentID;
+    	$comResult = $objDatabase->Execute($query);
+    	
+    	$strUserName = "";
+    	if ($comResult->fields['userid'] == 0) {
+    		$strUserName = '<input type="text" name="cAuthor" value="'.((isset($_REQUEST['cAuthor'])) ? htmlentities(contrexx_stripslashes($_REQUEST['cAuthor']), ENT_QUOTES, CONTREXX_CHARSET) : htmlentities($comResult->fields['poster_name'],ENT_QUOTES, CONTREXX_CHARSET)).'" maxlength="50" style="width:30%;" />';    		
+    	} else {
+    		$objFWUser = FWUser::getFWUserObject();
+    		if ($objUser = $objFWUser->objUser->getUser($comResult->fields['userid'])) {
+    			$strUserName = '<a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id='.$comResult->fields['userid'].'" title="'.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+    		} else {
+    			$strUserName = $_ARRAYLANG['TXT_NEWS_COMMENT_ANONYMOUS'];
+    		}
+    		$strUserName .= '<input type="hidden" name="cAuthorID" value="' . $comResult->fields['userid'] . '"/>';
+    	}
+    	
+    	$commenttitle = htmlentities($comResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);       
+        $commentmessage = htmlentities($comResult->fields['text'], ENT_QUOTES, CONTREXX_CHARSET);
+        
+    	$this->_objTpl->setVariable(array(
+                   'COMMENT_TITLE'		=> (isset($_REQUEST['cTitle'])) ? $_REQUEST['cTitle'] : $commenttitle,
+                   'COMMENT_MESSAGE'	=> (isset($_REQUEST['cMessage'])) ? $_REQUEST['cMessage'] : $commentmessage,
+                   'COMMENT_AUTHOR'		=> $strUserName,
+                   'COMMENT_DATE'		=> date(ASCMS_DATE_FORMAT, $comResult->fields['date']),
+                   'COMMENT_IP'			=> $comResult->fields['ip_address'],
+                   
+                   'NEWS_ID'			=> $newsid,
+                   'NEWS_TITLE'			=> htmlentities($titleRes->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                   'TXT_NEWS_COMMENT_EDIT_TITLE'    => $_ARRAYLANG['TXT_NEWS_COMMENT_EDIT_TITLE'],
+                   'TXT_NEWS_COMMENT_EDIT_DATE'    => $_ARRAYLANG['TXT_NEWS_COMMENT_DATE'],
+                   'TXT_NEWS_COMMENT_EDIT_IP'		=> $_ARRAYLANG['TXT_NEWS_COMMENT_IP'],
+                   'TXT_NEWS_COMMENT_EDIT_AUTHOR'	=> $_ARRAYLANG['TXT_NEWS_COMMENT_AUTHOR'],
+                   'TXT_NEWS_COMMENT_TITLE' 	=> $_ARRAYLANG['TXT_TITLE'],
+				   'TXT_NEWS_COMMENT_MESSAGE'   => $_ARRAYLANG['TXT_NEWS_COMMENT'],				   
+				   'TXT_NEWS_COMMENT_SAVE' 			=> $_ARRAYLANG['TXT_STORE']
+                ));
+    }
+
+    /**
+     * Inverts the status of the news comment with the id $intCommentId.
+     *
+     * @global  ADONewConnection
+     * @param   integer     $intCommentId: the status of this comment will be inverted.
+     */
+    function invertCommentStatus($intCommentId) {
+        global $objDatabase;
+
+        $intCommentId = intval($intCommentId);
+        $objCommentResult = $objDatabase->Execute(' SELECT  is_active
+                                                    FROM    '.DBPREFIX.'module_news_comments
+                                                    WHERE   id='.$intCommentId.'
+                                                    LIMIT   1');
+
+        $intNewStatus = ($objCommentResult->fields['is_active'] == 0) ? 1 : 0;
+
+        $objCommentResult = $objDatabase->Execute(' UPDATE  '.DBPREFIX.'module_news_comments
+                                                    SET     is_active="'.$intNewStatus.'"
+                                                    WHERE   id='.$intCommentId.'
+                                                    LIMIT   1');
+    }
+    
     /**
     * Update news
     *
@@ -1378,6 +1729,39 @@ class newsManager extends newsLibrary {
         }
 
         $this->createRSS();
+    }
+    
+    /**
+    * Change status of multiple news comments
+    *
+    * @global    ADONewConnection
+    * @global    array
+    * @global    array
+    * @param     integer   $commensids
+    */
+    function changeCommentStatus(){
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+
+        if(isset($_POST['deactivate']) AND !empty($_POST['deactivate'])){
+            $status = 0;
+        }
+        if(isset($_POST['activate']) AND !empty($_POST['activate'])){
+            $status = 1;
+        }
+        if(isset($status)){
+            if(isset($_POST['selectedCommentsId']) && is_array($_POST['selectedCommentsId'])){
+                foreach ($_POST['selectedCommentsId'] as $value){
+                    if (!empty($value)){
+                        $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_comments SET is_active = '".$status."' WHERE id = '".intval($value)."'");
+                    }
+                    if($objResult === false){
+                        $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                    } else{
+                        $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -1703,12 +2087,24 @@ class newsManager extends newsLibrary {
             $submitNews = isset($_POST['newsSubmitNews']) ? intval($_POST['newsSubmitNews']) : 0;
             $submitNewsCommunity = isset($_POST['newsSubmitOnlyCommunity']) ? intval($_POST['newsSubmitOnlyCommunity']) : 0;
             $activateSubmittedNews = isset($_POST['newsActivateSubmittedNews']) ? intval($_POST['newsActivateSubmittedNews']) : 0;
+            
+            $newsCommentsAllow = isset($_POST['newsCommentsAllow']) ? intval($_POST['newsCommentsAllow']) : 0;
+            $newsCommentsAllowAnonymous = isset($_POST['newsCommentsAllowAnonymous']) ? intval($_POST['newsCommentsAllowAnonymous']) : 0;
+            $newsCommentsAutoActivate = isset($_POST['newsCommentsAutoActivate']) ? intval($_POST['newsCommentsAutoActivate']) : 0;
+            $newsCommentsNotification = isset($_POST['newsCommentsNotification']) ? intval($_POST['newsCommentsNotification']) : 0;
 
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$submitNews."' WHERE name='news_submit_news'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$submitNewsCommunity."' WHERE name='news_submit_only_community'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$activateSubmittedNews."' WHERE name='news_activate_submitted_news'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsMessageProtection'])."' WHERE name='news_message_protection'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsMessageProtectionRestricted'])."' WHERE name='news_message_protection_restricted'");
+            
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsAllow."' WHERE name='news_comments_activated'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsAllowAnonymous."' WHERE name='news_comments_anonymous'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsAutoActivate."' WHERE name='news_comments_autoactivate'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsNotification."' WHERE name='news_comments_notification'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".abs(intval($_POST['newsCommentsTimeout']))."' WHERE name='news_comments_timeout'");
+            
 
             $_CONFIG['newsTeasersStatus'] = isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0;
             $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$_CONFIG['newsTeasersStatus']."' WHERE setname='newsTeasersStatus'");
@@ -1743,7 +2139,7 @@ class newsManager extends newsLibrary {
     }
 
     function settings(){
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_CORELANG, $_ARRAYLANG, $_CONFIG;
 
         $this->pageTitle = $_ARRAYLANG['TXT_NEWS_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_news_settings.html',true,true);
@@ -1800,7 +2196,30 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED'],
             'NEWS_MESSAGE_PROTECTION_CHECKED'       => $this->arrSettings['news_message_protection'] == '1' ? 'checked="checked"' : '',
             'NEWS_MESSAGE_PROTECTION_RESTRICTED_DISPLAY'    => $this->arrSettings['news_message_protection'] == '1' ? '' : 'none',
-            'NEWS_MESSAGE_PROTECTION_RESTRICTED_CHECKED'    => $this->arrSettings['news_message_protection_restricted'] == '1' ? 'checked="checked"' : ''
+            'NEWS_MESSAGE_PROTECTION_RESTRICTED_CHECKED'    => $this->arrSettings['news_message_protection_restricted'] == '1' ? 'checked="checked"' : '',
+            
+            'NEWS_SETTINGS_COMMENTS_ALLOW_ON'       =>  ($this->arrSettings['news_comments_activated'] == '1') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_ALLOW_OFF'      =>  ($this->arrSettings['news_comments_activated'] == '0') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_ON'     =>  ($this->arrSettings['news_comments_anonymous'] == '1') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_OFF'    =>  ($this->arrSettings['news_comments_anonymous'] == '0') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_ON'       =>  ($this->arrSettings['news_comments_autoactivate'] == '1') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_OFF'      =>  ($this->arrSettings['news_comments_autoactivate'] == '0') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_NOTIFICATION_ON'        =>  ($this->arrSettings['news_comments_notification'] == '1') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_NOTIFICATION_OFF'       =>  ($this->arrSettings['news_comments_notification'] == '0') ? 'checked="checked"' : '',
+            'NEWS_SETTINGS_COMMENTS_TIMEOUT'                =>  intval($this->arrSettings['news_comments_timeout']),
+            'TXT_NEWS_COMMENTS_TITLE'               =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TITLE'],
+            'TXT_NEWS_COMMENTS_ALLOW'               =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW'],
+            'TXT_NEWS_COMMENTS_ALLOW_HELP'          =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW_HELP'],
+            'TXT_NEWS_COMMENTS_ALLOW_ANONYMOUS'     =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS'],
+            'TXT_NEWS_COMMENTS_ALLOW_ANONYMOUS_HELP'=>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_HELP'],
+            'TXT_NEWS_COMMENTS_AUTO_ACTIVATE'       =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE'],
+            'TXT_NEWS_COMMENTS_AUTO_ACTIVATE_HELP'  =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_HELP'],
+            'TXT_NEWS_COMMENTS_NOTIFICATION'        =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION'],
+            'TXT_NEWS_COMMENTS_NOTIFICATION_HELP'   =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION_HELP'],
+            'TXT_NEWS_COMMENTS_TIMEOUT'             =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'],
+            'TXT_NEWS_COMMENTS_TIMEOUT_HELP'        =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'],
+            'TXT_ACTIVATED'                         =>  $_CORELANG['TXT_ACTIVATED'],
+            'TXT_DEACTIVATED'                       =>  $_CORELANG['TXT_DEACTIVATED']
         ));
     }
     function _generate_notify_group_list() {

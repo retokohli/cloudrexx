@@ -76,6 +76,7 @@ Korrespondierende Mehrsprachigkeit
 News Manager
 - Bei den Teasern kann der neue Platzhalter [[TEASER_FULL_TEXT]] verwendet
   werden, um den kompletten Inhalt der News Meldungen auszugeben.
+- Kommentarfunktion für Meldungen hinzugefügt.
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
