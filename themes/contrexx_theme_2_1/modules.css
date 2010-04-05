@@ -1290,6 +1290,35 @@ table.news_meta td {
     border: 0px;
 }
 
+#news div.comments {
+	padding: 7px 7px 7px 7px;
+	margin: 0px 0px 15px 0px;
+	background-color: #f9f9f9;
+	border: 1px dotted #E6E6E6;
+	clear:both;
+}
+
+#news div.errorMessage {
+	color:#FF0000;
+}
+
+#news div.comment_posted {
+	font-size: 0.9em;
+	color: #888888;
+	font-style: italic;
+}
+
+#news div.comment_avatar {
+	float:right;
+	padding: 0px 0px 5px 5px;
+	margin: 0px 0px 0px 0px;
+}
+
+#news div.comment_text {
+	padding: 10px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
 
 /***************************************************/
 /* CSS DEFINITIONS FOR NEWSLETTER MODULE           */

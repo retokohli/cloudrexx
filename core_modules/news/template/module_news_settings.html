@@ -1,6 +1,13 @@
 <!-- START module_news_settings.html -->
 <script type="text/javascript">
 // <[![CDATA
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_NEWS_COMMENTS_ALLOW_HELP}"];
+Text[1]=["","{TXT_NEWS_COMMENTS_ALLOW_ANONYMOUS_HELP}"];
+Text[2]=["","{TXT_NEWS_COMMENTS_AUTO_ACTIVATE_HELP}"];
+Text[3]=["","{TXT_NEWS_COMMENTS_NOTIFICATION_HELP}"];
+Text[4]=["","{TXT_NEWS_COMMENTS_TIMEOUT_HELP}"];
+
 function SetUrl(url, width, height, alt) {
 	document.getElementById('newsFeedImage').value = url;
 }
@@ -63,6 +70,37 @@ function SetUrl(url, width, height, alt) {
                 <div id="newsMessageProtectionRestrictedConfig" style="display:{NEWS_MESSAGE_PROTECTION_RESTRICTED_DISPLAY};"><input type="checkbox" name="newsMessageProtectionRestricted" id="newsMessageProtectionRestricted" {NEWS_MESSAGE_PROTECTION_RESTRICTED_CHECKED} value="1" /><label for="newsMessageProtectionRestricted">{TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED}</label></div>
             </td>
         </tr>
+	</table>
+	<br />	
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_NEWS_COMMENTS_TITLE}</th>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_NEWS_COMMENTS_ALLOW}</td>
+			<td width="85%"><input type="radio" name="newsCommentsAllow" value="1" {NEWS_SETTINGS_COMMENTS_ALLOW_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsAllow" value="0" {NEWS_SETTINGS_COMMENTS_ALLOW_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_NEWS_COMMENTS_ALLOW_ANONYMOUS}</td>
+			<td><input type="radio" name="newsCommentsAllowAnonymous" value="1" {NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsAllowAnonymous" value="0" {NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+		</tr>
+		<tr class="row2">
+			<td>{TXT_NEWS_COMMENTS_AUTO_ACTIVATE}</td>
+			<td><input type="radio" name="newsCommentsAutoActivate" value="1" {NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsAutoActivate" value="0" {NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_NEWS_COMMENTS_NOTIFICATION}</td>
+			<td><input type="radio" name="newsCommentsNotification" value="1" {NEWS_SETTINGS_COMMENTS_NOTIFICATION_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsNotification" value="0" {NEWS_SETTINGS_COMMENTS_NOTIFICATION_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
+		</tr>
+		<tr class="row2">
+			<td>{TXT_NEWS_COMMENTS_TIMEOUT}</td>
+			<td><input type="text" name="newsCommentsTimeout" value="{NEWS_SETTINGS_COMMENTS_TIMEOUT}"  maxlength="50" style="width:30%;"  />&nbsp;
+				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" /></td>
+		</tr>
 	</table>
 	<br />
 	<input type="submit" name="store" value="{TXT_STORE}" />
