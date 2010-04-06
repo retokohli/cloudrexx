@@ -899,7 +899,8 @@ class calendarManager extends calendarLibrary
         $catid          = intval($_POST['inputCategory']);
         $priority       = intval($_POST['inputPriority']);
         $access         = intval($_POST['inputAccess']);
-        $id             = intval($_POST['inputEventId']);
+        //$id             = intval($_POST['inputEventId']);
+        $id             = $_POST['inputEventId'];
         $active         = intval($_POST['inputActive']);
 
         //event
