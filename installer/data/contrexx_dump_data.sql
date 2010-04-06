@@ -2326,6 +2326,7 @@ INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_comm
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_comments_autoactivate','1');
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_comments_notification','1');
 INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_comments_timeout','30');
+INSERT INTO `contrexx_module_news_settings` (`name`, `value`) VALUES ('news_default_teasers','');
 INSERT INTO `contrexx_module_news_teaser_frame` (`id`, `lang_id`, `frame_template_id`, `name`) VALUES (1,1,1,'Beispiel1');
 INSERT INTO `contrexx_module_news_teaser_frame` (`id`, `lang_id`, `frame_template_id`, `name`) VALUES (2,1,2,'Beispiel2');
 INSERT INTO `contrexx_module_news_teaser_frame` (`id`, `lang_id`, `frame_template_id`, `name`) VALUES (4,1,3,'Beispiel3');
