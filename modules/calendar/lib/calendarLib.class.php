@@ -1626,21 +1626,17 @@ class calendarLibrary
                     FROM     ".DBPREFIX."module_calendar".$this->mandateLink."
                    WHERE     id = '".$noteId."'";
 
-
-
         $objResultNote     = $objDatabase->SelectLimit($queryNote, 1);
 
         $GoupsNote        = substr($objResultNote->fields['groups'],0,-1);
 
         $arrGoupsNote     = explode(";",$GoupsNote);
 
-        $queryUser = "SELECT     id,
-                                email,
-                                firstname,
-                                lastname,
-                                groups
-                        FROM     ".DBPREFIX."access_users
-                       WHERE     active = '1'";
+        $queryUser = "SELECT tblUser.id, tblGroup.group_id, tblUser.email, tblProfil.firstname, tblProfil.lastname
+        				FROM ".DBPREFIX."access_users as tblUser, ".DBPREFIX."access_user_profile as tblProfil, ".DBPREFIX."access_rel_user_group as tblGroup
+        			   WHERE active='1'
+        			     AND tblUser.id = tblProfil.user_id
+        			     AND tblGroup.user_id = tblUser.id";
 
         $objResultUser     = $objDatabase->Execute($queryUser);
 
@@ -1654,7 +1650,7 @@ class calendarLibrary
                     }
                 } else {
                     if (!empty($objResultUser->fields['email'])) {
-                        $arrGoupsUser = explode(",",$objResultUser->fields['groups']);
+                        $arrGoupsUser = explode(",",$objResultUser->fields['group_id']);
                         foreach ($arrGoupsNote as $groupId) {
                             if (in_array($groupId, $arrGoupsUser)) {
                                 $arrUsers[$objResultUser->fields['id']]['email']         = $objResultUser->fields['email'];
