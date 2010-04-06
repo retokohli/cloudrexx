@@ -243,7 +243,7 @@ class marketLibrary
                 $mailTitle            = $objResult->fields['title'];
                 $mailContent        = $objResult->fields['content'];
                 $mailCC                = $objResult->fields['mailcc'];
-                $mailTo                = $objResult->fields['mailcc'];
+                $mailTo                = $objResult->fields['mailto'];
                 $mailOn                = $objResult->fields['active'];
                 $objResult->MoveNext();
             };
