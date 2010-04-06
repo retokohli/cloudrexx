@@ -621,6 +621,12 @@ class newsManager extends newsLibrary {
                 $arrNewsTeaserFrames[] = intval($frameId);
                 intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
             }
+        } else {
+            $arrNewsDefaultTeasers = explode(";", $this->arrSettings['news_default_teasers']);
+            foreach ($arrNewsDefaultTeasers as $frameId) {
+                $arrNewsTeaserFrames[] = intval($frameId);
+                intval($frameId) > 0 ? $newsTeaserFrames .= ";".intval($frameId) : false;
+            }
         }
 
         if(empty($status)) {
@@ -1784,13 +1790,17 @@ class newsManager extends newsLibrary {
                                             ');
             if ($objResult->RecordCount() == 1) {
                 $intNewStatus = ($objResult->fields['status'] == 0) ? 1 : 0;
-
+                $setDate = "";
+                if($intNewStatus == 1) {
+                    $setDate = ", date = '" . time() . "', changelog = '" . time() . "' ";
+                }
                 $objDatabase->Execute(' UPDATE  '.DBPREFIX.'module_news
                                         SET     status="'.$intNewStatus.'"
+                                        ' . $setDate . '
                                         WHERE   id='.$intNewsId.'
                                         LIMIT   1
                                     ');
-
+                
                 $this->createRSS();
 
                  $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
@@ -2105,6 +2115,14 @@ class newsManager extends newsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsNotification."' WHERE name='news_comments_notification'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".abs(intval($_POST['newsCommentsTimeout']))."' WHERE name='news_comments_timeout'");
             
+            // save default teasers
+            $defaultTeasers = array();
+            foreach ($_POST['newsDefaultTeaserSelected'] as $key => $value) {
+                if($value) {
+                    $defaultTeasers[] = $key;
+                }
+            }
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='" . implode(";", $defaultTeasers) . "' WHERE name='news_default_teasers'");
 
             $_CONFIG['newsTeasersStatus'] = isset($_POST['newsUseTeasers']) ? intval($_POST['newsUseTeasers']) : 0;
             $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".$_CONFIG['newsTeasersStatus']."' WHERE setname='newsTeasersStatus'");
@@ -2218,9 +2236,33 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_COMMENTS_NOTIFICATION_HELP'   =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION_HELP'],
             'TXT_NEWS_COMMENTS_TIMEOUT'             =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'],
             'TXT_NEWS_COMMENTS_TIMEOUT_HELP'        =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'],
-            'TXT_ACTIVATED'                         =>  $_CORELANG['TXT_ACTIVATED'],
-            'TXT_DEACTIVATED'                       =>  $_CORELANG['TXT_DEACTIVATED']
+            'TXT_NEWS_TEASERS_SETTINGS_TITLE'       =>  $_ARRAYLANG['TXT_NEWS_TEASERS_SETTINGS_TITLE'],
         ));
+        
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_ACTIVATED'                         =>  $_CORELANG['TXT_ACTIVATED'],
+            'TXT_DEACTIVATED'                       =>  $_CORELANG['TXT_DEACTIVATED'],
+        ));
+        
+        // get list of all teasers
+        require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
+        $objTeaser = &new Teasers(true);
+        $arrNewsDefaultTeasers = explode(";", $this->arrSettings['news_default_teasers']);
+        $frameIds = "";
+        $tCount = 0;
+        foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
+            
+            $this->_objTpl->setVariable(array(
+                'NEWS_TEASER_COUNT'     => (2 - ($tCount % 2)),
+                'NEWS_TEASER_NAME'      => $frameName,
+                'NEWS_TEASER_ID'        => $frameId,
+                'NEWS_TEASER_ON'        => (in_array($frameId, $arrNewsDefaultTeasers)) ? "checked='checked'" : "",
+                'NEWS_TEASER_OFF'       => (!in_array($frameId, $arrNewsDefaultTeasers)) ? "checked='checked'" : ""
+            ));
+            $this->_objTpl->parse('defaultTeasers');
+            $tCount++;
+        }
+        
     }
     function _generate_notify_group_list() {
         $active_grp = $this->arrSettings['news_notify_group'];

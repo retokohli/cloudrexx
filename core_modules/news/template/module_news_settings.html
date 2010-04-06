@@ -102,6 +102,20 @@ function SetUrl(url, width, height, alt) {
 				<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" /></td>
 		</tr>
 	</table>
+	<br />	
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_NEWS_TEASERS_SETTINGS_TITLE}</th>
+		</tr>
+		<!-- BEGIN defaultTeasers -->
+		<tr class="row{NEWS_TEASER_COUNT}">
+			<td width="15%">{NEWS_TEASER_NAME}</td>
+			<td width="85%">
+			<input type="radio" name="newsDefaultTeaserSelected[{NEWS_TEASER_ID}]" value="1" {NEWS_TEASER_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;
+			<input type="radio" name="newsDefaultTeaserSelected[{NEWS_TEASER_ID}]" value="0" {NEWS_TEASER_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;</td>
+		</tr>
+		<!-- END defaultTeasers -->
+	</table>
 	<br />
 	<input type="submit" name="store" value="{TXT_STORE}" />
 </form>
