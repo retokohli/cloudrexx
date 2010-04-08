@@ -180,6 +180,8 @@ News Manager
 - Die Angabe des Publikationsdatums funktioniert korrekt.
 - Bei der Bearbeitung einer News Meldung wird der Teaser Text mit dem richtigen
   Zeichensatz angezeigt.
+- Ist eine News als Weiterleitung eingerichtet und soll die Weiterleitung nun
+  wieder entfernt werden, so ist keine Leerung des Input-Fields (Link) mehr notwendig.
 
 Volltextsuche
 - Die News Meldungen werden mit einer entsprechenden Relevanz bewertet.
