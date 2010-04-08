@@ -1,4 +1,4 @@
-////////////////////////////////////////
+﻿////////////////////////////////////////
 // CHANGELOG 2.1.0-2.2.0 ///////////////
 ////////////////////////////////////////
 
@@ -243,6 +243,7 @@ Modul: Kalender
 
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
+- Die Benachrichtigung wird nun auch an den Administrator verschickt.
 
 Modul: Newsletter
 - Die Anmeldung und Bearbeitung des Profils funktioniert korrekt.
@@ -279,8 +280,6 @@ Modul: Wissensdatenbank
 - Verbesserung der WYSIWYG-Editor Einbindung bei der Bearbeitungsmaske
   eines Artikels.
 
-Modul: Inserate
-- Die Benachrichtigung wird nun auch an den Administrator verschickt.
 
 Statistik
 - Die Zählung der Besucher erfolgt korrekt.
