@@ -382,7 +382,23 @@ class ContactManager extends ContactLib
 
                         if (isset($arrEntry['data'][$col])) {
                             if (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'file') {
-                                $value = '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                $file = $arrEntry['data'][$col];
+                                if (isset($file)) {
+                                    if (preg_match('/^a:2:{/', $file)) {
+                                        $file = unserialize($file);
+                                    } else {
+                                        $file = array(
+                                            'path' => $file,
+                                            'name' => basename($file)
+                                        );
+                                    }
+                                    $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
+                                    $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
+                                    $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                                    $value = '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
+                                } else {
+                                    $value = '&nbsp;';
+                                }
                             } else {
                                 $value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
                             }
@@ -1451,7 +1467,23 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'file':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'</a>' : '&nbsp;';
+                    $file = $arrEntry['data'][$arrField['name']];
+                    if (isset($file)) {
+                        if (preg_match('/^a:2:{/', $file)) {
+                            $file = unserialize($file);
+                        } else {
+                            $file = array(
+                                'path' => $file,
+                                'name' => basename($file)
+                            );
+                        }
+                        $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
+                        $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
+                        $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                        $sourcecode .= '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
+                    } else {
+                        $sourcecode .= '&nbsp;';
+                    }
                     break;
 
                 case 'text':

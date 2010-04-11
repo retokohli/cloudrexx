@@ -326,24 +326,28 @@ class Contact extends ContactLib
 
                     default:
                         if (!empty($fileTmpName)) {
-                            $prefix = '';
-                            while (file_exists(ASCMS_DOCUMENT_ROOT.$arrSettings['fileUploadDepositionPath'].'/'.$prefix.$fileName)) {
-                                if (empty($prefix)) {
-                                    $prefix = 0;
-                                }
-                                $prefix++;
+                            $arrFile = pathinfo($fileName);
+                            $i = '';
+                            $suffix = '';
+                            $filePath = $arrSettings['fileUploadDepositionPath'].'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
+                            while (file_exists(ASCMS_DOCUMENT_ROOT.$filePath)) {
+                                $suffix = '-'.++$i;
+                                $filePath = $arrSettings['fileUploadDepositionPath'].'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
                             }
 
                             $arrMatch = array();
                             if (FWValidator::is_file_ending_harmless($fileName)) {
-                                if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$arrSettings['fileUploadDepositionPath'].'/'.$prefix.$fileName)) {
+                                if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$filePath)) {
                                     $id = intval(substr($file, 17));
                                     if (isset($arrFields[$id])) {
                                         $key = $arrFields[$id]['name'];
                                     } else {
                                         $key = contrexx_strip_tags($file);
                                     }
-                                    $arrFiles[$key] = $arrSettings['fileUploadDepositionPath'].'/'.$prefix.$fileName;
+                                    $arrFiles[$key] = array(
+                                        'path' => $filePath,
+                                        'name' => $fileName
+                                    );
                                 } else {
                                     $this->errorMsg .= sprintf($_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
                                 }
@@ -410,9 +414,17 @@ class Contact extends ContactLib
                     $error = true;
                 } elseif (empty($arrFields[$source][$field['name']])) {
                     continue;
-                } elseif(!preg_match($regex, $arrFields[$source][$field['name']])) {
+                }
+
+                $fieldValue = $arrFields[$source][$field['name']];
+                if ($field['type'] == 'file') {
+                    // $fieldValue is an array of the form array('path' => file_path, 'name' => 'file_name')
+                    $fieldValue = $fieldValue['path'];
+                }
+
+                if(!preg_match($regex, $fieldValue)) {
                     $error = true;
-                } elseif ($this->_isSpam($arrFields[$source][$field['name']], $arrSpamKeywords)) {
+                } elseif ($this->_isSpam($fieldValue, $arrSpamKeywords)) {
                     $error = true;
                 }
             }
@@ -482,7 +494,7 @@ class Contact extends ContactLib
         }
 
         foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-            array_push($arrDbEntry, base64_encode($key).",".base64_encode(contrexx_strip_tags($file)));
+            array_push($arrDbEntry, base64_encode($key).",".base64_encode(contrexx_strip_tags(serialize($file))));
         }
 
         $message = implode(';', $arrDbEntry);
@@ -516,7 +528,7 @@ class Contact extends ContactLib
         if (count($arrFormData['uploadedFiles']) > 0) {
             $body .= $_ARRAYLANG['TXT_CONTACT_UPLOADS'].":\n";
             foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-                $body .= $key.": ".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_strip_tags($file)."\n";
+                $body .= $key.": ".(contrexx_strip_tags($file['name']))."\n";
             }
             $body .= "\n";
         }
@@ -587,6 +599,13 @@ class Contact extends ContactLib
             $objMail->Subject = $arrFormData['subject'];
             $objMail->IsHTML(false);
             $objMail->Body = $message;
+
+            if (count($arrFormData['uploadedFiles']) > 0) {
+                foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                    $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file['path'], $file['name']);
+                }
+            }
+
             $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
             if(!empty($arrFormData['data']['contactFormField_recipient'])){
                 foreach (explode(',', $arrRecipients[intval($arrFormData['data']['contactFormField_recipient'])]['email']) as $sendTo) {

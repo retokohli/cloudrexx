@@ -69,6 +69,8 @@ Kontakte Manager
     E-Mail: [[ACCESS_USER_EMAIL]]
     Benutzername: [[ACCESS_USER_USERNAME]]
     ID des Benutzers: [[ACCESS_USER_ID]]
+- Hochgeladene Dateien werden bei einer Kontaktanfrage im Benachrichtigungs-
+  E-Mail als Dateianhänge angefügt.
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID

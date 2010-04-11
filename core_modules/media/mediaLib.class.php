@@ -760,18 +760,15 @@ class MediaLibrary {
 
 
     // gets the filesize
-    function _getSize($file){
-        if(is_file($file)){
-            if(@filesize($file)){
-                $size = filesize($file);
-            }
-        }
-
-        if(is_dir($file)){
+    function _getSize($file)
+    {
+        if (is_file($file)) {
+            $size = intval(filesize($file));
+        } elseif(is_dir($file)) {
             $size = '[folder]';
+        } else {
+            $size = 0;
         }
-
-        (!isset($size) or empty($size)) ? $size = '0' : '';
 
         return $size;
     }
