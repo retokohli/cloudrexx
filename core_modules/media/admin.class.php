@@ -60,7 +60,7 @@ class MediaManager extends MediaLibrary {
     var $archive;
 
     var $_shopEnabled;
-    
+
     var $_strOkMessage  = '';
 
     /**
@@ -103,9 +103,10 @@ class MediaManager extends MediaLibrary {
                                     'archive2'    => ASCMS_MEDIA2_WEB_PATH . '/',
                                     'archive3'    => ASCMS_MEDIA3_WEB_PATH . '/',
                                     'archive4'    => ASCMS_MEDIA4_WEB_PATH . '/',
-                                    'content'    => ASCMS_CONTENT_IMAGE_WEB_PATH . '/',
+                                    'content'     => ASCMS_CONTENT_IMAGE_WEB_PATH . '/',
+                                    'attach'      => ASCMS_NEWSLETTER_ATTACH_WEB_PATH. '/',
                                     'shop'        => ASCMS_SHOP_IMAGES_WEB_PATH . '/',
-                                    'themes'       => ASCMS_THEMES_WEB_PATH . '/');
+                                    'themes'      => ASCMS_THEMES_WEB_PATH . '/');
 
         $_shopEnabled = $this->_checkForShop();
 
@@ -689,12 +690,12 @@ class MediaManager extends MediaLibrary {
     function _settings()
     {
         global $_CORELANG, $_ARRAYLANG;
-        
+
         $objFWUser = FWUser::getFWUserObject();
-       
+
         $this->_objTpl->loadTemplateFile('module_media_settings.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_SETTINGS'];
-        
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_MEDIA_ARCHIVE'                     => $_ARRAYLANG['TXT_MEDIA_ARCHIVE'],
             'TXT_MEDIA_SETTINGS'                    => $_ARRAYLANG['TXT_MEDIA_SETTINGS'],
@@ -708,7 +709,7 @@ class MediaManager extends MediaLibrary {
             'TXT_MEDIA_UNCHECK_ALL'                 => $_ARRAYLANG['TXT_MEDIA_UNCHECK_ALL'],
             'TXT_BUTTON_SAVE'                       => $_CORELANG['TXT_SAVE'],
         ));
-        
+
         for($k = 1; $k <= 4; $k++)
         {
             $arrAssociatedGroupOptions = array();
@@ -718,27 +719,27 @@ class MediaManager extends MediaLibrary {
             {
                 // Get all groups
                 $objGroup = $objFWUser->objGroup->getGroups();
-            } else {           
+            } else {
                 // Get access groups
                 $objGroup = $objFWUser->objGroup->getGroups(
                     array('dynamic' => $mediaAccessSetting)
                 );
             }
             $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
-    
+
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
                 $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
-    
+
                 if (in_array($objGroup->getId(), $arrAssociatedGroups)) {
                     $arrAssociatedGroupOptions[] = $option;
                 } else {
                     $arrNotAssociatedGroupOptions[] = $option;
                 }
-    
+
                 $objGroup->next();
             }
-            
+
             $this->_objTpl->setVariable(array(
                     'MEDIA_ARCHIVE_NUMBER'                  => $k,
                     'MEDIA_TAB_STYLE'                       => ($k == 1) ? 'block' : 'none',
@@ -752,7 +753,7 @@ class MediaManager extends MediaLibrary {
             $this->_objTpl->parse("mediaAccessSection");
         }
     }
-    
+
     /**
      * Validate and save settings from $_POST into the database.
      *
@@ -763,12 +764,12 @@ class MediaManager extends MediaLibrary {
         global $objDatabase, $_ARRAYLANG;
 
         $this->_arrSettings = $this->createSettingsArray();
-        
+
         for($i = 0; $i <=4; $i++)
         {
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
             $newMediaSetting = $_POST['mediaSettings_Media' . $i . 'FrontendChangable'];
-            
+
             if(!is_numeric($newMediaSetting))
             {
                 if(is_numeric($oldMediaSetting))
