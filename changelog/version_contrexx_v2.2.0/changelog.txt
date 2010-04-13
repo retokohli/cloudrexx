@@ -1,76 +1,76 @@
-////////////////////////////////////////
+ï»¿////////////////////////////////////////
 // CHANGELOG 2.1.0-2.2.0 ///////////////
 ////////////////////////////////////////
 
 ****************************************
-* Neue Funktionen / Änderungen *********
+* Neue Funktionen / Ã„nderungen *********
 ****************************************
 Grundeinstellungen / WYSIWYG Editor
 - In den Grundeinstellungen gibt es neu die Option "Eigenen Style im WYSIWYG Editor verwenden".
 Ist diese aktiviert, wird die Datei "style.css" des aktuellen Standard-Template in den WYSIWYG Editor
-eingebunden. Somit kann der Style bereits schon während dem editieren geladen und angeschaut werden.
+eingebunden. Somit kann der Style bereits schon wÃ¤hrend dem editieren geladen und angeschaut werden.
 Wird diese Option deaktivert, wird der normale WYSIWYG Editor Style geladen.
-- Aus sicherheits- und benutzerfreundlichen Gründen wird nun standardmässig jeder Text der in den
-WYSIWYG Editor kopiert wird, als Plaintext eingefügt. (FCKConfig.ForcePasteAsPlainText = true;)
+- Aus sicherheits- und benutzerfreundlichen GrÃ¼nden wird nun standardmÃ¤ssig jeder Text der in den
+WYSIWYG Editor kopiert wird, als Plaintext eingefÃ¼gt. (FCKConfig.ForcePasteAsPlainText = true;)
 
 Allgemein
-- Neue Platzhalter für Datumsfragmente:
+- Neue Platzhalter fÃ¼r Datumsfragmente:
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
-- Neu, über den Modul Manager installierte Module, erscheinen nicht in der
+- Neu, Ã¼ber den Modul Manager installierte Module, erscheinen nicht in der
   Inhalts Navigation.
 
 File Browser
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
-  File Uploader Moduls (sofern vorhanden) ausgewählt werden.
+  File Uploader Moduls (sofern vorhanden) ausgewÃ¤hlt werden.
 
 Content Manager
-- Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden
+- Der CSS-Name und das "target" fÃ¼r Navigationslinks kÃ¶nnen nun auch an Unterseiten vererbt werden
 - Editeren einer Seite in mehreren Sprachen auf einmal
 - Vorschau-Funktion
-- Die Seiten Struktur wird nun für alle Sprachen synchronisiert
-- Seiten können per drag&drop strukturiert werden
+- Die Seiten Struktur wird nun fÃ¼r alle Sprachen synchronisiert
+- Seiten kÃ¶nnen per drag&drop strukturiert werden
 - Neuer WYSIWYG Editor (siehe CKEDITOR unten)
 - Eine Contentseite kann nun auf eine andere Sprache verweisen und deren
   Content verwenden, damit nicht Seiten mit gleichem Inhalt in mehreren
-  Sprachen erfasst werden müssen.
+  Sprachen erfasst werden mÃ¼ssen.
 
 Benutzerverwaltung
-- Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
+- Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persÃ¶nliche
   Kategorie beim Digital Asset Management Modul erstellt werden.
 - Das Aktualisierungsintervall der Benutzersitzungen in der Datenbank
   kann definiert werden.
-- Bei der Auflistung der Benutzer wird der Link 'zum Adressbuch hinzufügen'
+- Bei der Auflistung der Benutzer wird der Link 'zum Adressbuch hinzufÃ¼gen'
   nur dann angezeigt, sofern der jeweilige Benutzer nicht bereits im Adressbuch
   enthalten ist.
-- Für jede Benutzergruppe kann eine Homepage definiert werden, auf welche sich
-  die dazugehörigen Benutzer nach erfolgreicher Authentifizierung laden
+- FÃ¼r jede Benutzergruppe kann eine Homepage definiert werden, auf welche sich
+  die dazugehÃ¶rigen Benutzer nach erfolgreicher Authentifizierung laden
   sollen.
-- Für jeden Benutzer kann eine primäre Benutzergruppe definiert werden.
-- Der Platzhalter [[ACCESS_USER_PRIMARY_GROUP]] gibt den Namen der primären
+- FÃ¼r jeden Benutzer kann eine primÃ¤re Benutzergruppe definiert werden.
+- Der Platzhalter [[ACCESS_USER_PRIMARY_GROUP]] gibt den Namen der primÃ¤ren
   Benutzergruppe aus.
 - Die Registrierungsmaske kann optional um ein CAPTCHA erweitert werden.
 - Die Registrierungsmaske kann optional um die Aufforderung der AGB's zu
   Akzeptieren erweitert werden.
 - Mit dem neuen Platzhalter [[USER_COUNT]] kann die Anzahl Mitglieder
   in der index.html des Layouts ausgegeben werden.
-- Profil Eigenschaften vom Typ Auswahlmenü können als Pflichtfeld definiert
+- Profil Eigenschaften vom Typ AuswahlmenÃ¼ kÃ¶nnen als Pflichtfeld definiert
   werden.
 - Die Profil Eigenschaften Geschlecht, Anrede, Land und Webseite werden nur
-  aufgelistet, sofern eine Option ausgewählt wurde.
-- Für das Profilbild-Thumbnail kann ausgewählt werden, ob das Bild auf die
-  Thumbnail-Grösse zugeschnitten oder skaliert werden soll.
+  aufgelistet, sofern eine Option ausgewÃ¤hlt wurde.
+- FÃ¼r das Profilbild-Thumbnail kann ausgewÃ¤hlt werden, ob das Bild auf die
+  Thumbnail-GrÃ¶sse zugeschnitten oder skaliert werden soll.
 
 Kontakte Manager
 - Alle Benutzerprofil Eigenschaften des Besuchers (sofern dieser Authentifiziert
-  ist) können anhand des Platzhalter Schemas
+  ist) kÃ¶nnen anhand des Platzhalter Schemas
   [[ACCESS_PROFILE_ATTRIBUTE_ATTRIBUTE-ID]] als vordefinierte Werte bei den
-  Formular Feldern verwendet werden. Zusätzlich stehen die folgenden
-  Benutzerkonto Eigenschaften zur Verfügung:
+  Formular Feldern verwendet werden. ZusÃ¤tzlich stehen die folgenden
+  Benutzerkonto Eigenschaften zur VerfÃ¼gung:
     E-Mail: [[ACCESS_USER_EMAIL]]
     Benutzername: [[ACCESS_USER_USERNAME]]
     ID des Benutzers: [[ACCESS_USER_ID]]
 - Hochgeladene Dateien werden bei einer Kontaktanfrage im Benachrichtigungs-
-  E-Mail als Dateianhänge angefügt.
+  E-Mail als DateianhÃ¤nge angefÃ¼gt.
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
@@ -78,53 +78,53 @@ Korrespondierende Mehrsprachigkeit
 News Manager
 - Bei den Teasern kann der neue Platzhalter [[TEASER_FULL_TEXT]] verwendet
   werden, um den kompletten Inhalt der News Meldungen auszugeben.
-- Kommentarfunktion für Meldungen hinzugefügt.
+- Kommentarfunktion fÃ¼r Meldungen hinzugefÃ¼gt.
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
   werden.
-- Die Gültigkeit (Zeitdauer) eines Downloads kann definiert werden.
-- Kategorien können in einer Gruppe zusammengefasst werden.
-- Über die Benutzerverwaltung kann beim Erstellen eines neuen Benutzerkontos
-  direkt eine neue persönliche Kategorie im Digital Asset Management Modul
-  für diesen Benutzer erstellt werden.
-- Kopierfunktion für Downloads.
+- Die GÃ¼ltigkeit (Zeitdauer) eines Downloads kann definiert werden.
+- Kategorien kÃ¶nnen in einer Gruppe zusammengefasst werden.
+- Ãœber die Benutzerverwaltung kann beim Erstellen eines neuen Benutzerkontos
+  direkt eine neue persÃ¶nliche Kategorie im Digital Asset Management Modul
+  fÃ¼r diesen Benutzer erstellt werden.
+- Kopierfunktion fÃ¼r Downloads.
 - Die effektiven Zugriffsberechtigungen einer Benutzergruppe oder Benutzers
-  können angezeigt werden.
-- Neuer Platzhalter DOWNLOADS_FILE_MD5 für die Ausgabe der MD5 Summe eines
+  kÃ¶nnen angezeigt werden.
+- Neuer Platzhalter DOWNLOADS_FILE_MD5 fÃ¼r die Ausgabe der MD5 Summe eines
   Downloads.
-- Der Block "Verwandte Downloads" (downloads_related_file_list) unterstützt
+- Der Block "Verwandte Downloads" (downloads_related_file_list) unterstÃ¼tzt
   die gleichen Platzhalter wie bei der Detailseite eines Downloads.
-- Für die Erfassung der Beschreibung eines Downloads oder Kategorie steht ein
-  WYSIWYG-Editor zur Verfügung.
-- Beim Hinzufügen eines Downloads kann ein Benachrichtigungs-E-Mail an
-  ausgewählte Benutzergruppen versendet werden.
+- FÃ¼r die Erfassung der Beschreibung eines Downloads oder Kategorie steht ein
+  WYSIWYG-Editor zur VerfÃ¼gung.
+- Beim HinzufÃ¼gen eines Downloads kann ein Benachrichtigungs-E-Mail an
+  ausgewÃ¤hlte Benutzergruppen versendet werden.
 
 Modul: Dokumenten System
-- Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
+- Uhrzeit- (nicht nur Datums-) gesteuerte VerÃ¶ffentlichung von Dokumenten.
 
 Modul: Mediathek
 - Das Modul Podcast wurde in Mediathek umbenannt.
 - Der Begriff "Kategorie" wurde umbenannt in "Rubrik".
 - Mit dem Layout Template [[PODCAST_VIDEO]] (podcast_video.html) kann ein
-  ausgewähltes Medium an beliebiger Stelle im Layout dargestellt werden.
-- Das Frontend, sowie das Backend verfügt über eine Volltextsuche.
-- Der Block podcast_latest ermöglicht die Auflistung der neusten Zugänge in
+  ausgewÃ¤hltes Medium an beliebiger Stelle im Layout dargestellt werden.
+- Das Frontend, sowie das Backend verfÃ¼gt Ã¼ber eine Volltextsuche.
+- Der Block podcast_latest ermÃ¶glicht die Auflistung der neusten ZugÃ¤nge in
   der Mediathek.
 - Versand von Empfehlungen per E-Mail.
 - WYSIWYG-Editor bei der Beschreibung eines Mediums.
-- Shortcut zum (De)Aktivieren eines Mediums bei der Übersichtsseite im Backend.
+- Shortcut zum (De)Aktivieren eines Mediums bei der Ãœbersichtsseite im Backend.
 
 Modul: Shop
-- Bilder können von einem Produkt wieder entfernt werden.
+- Bilder kÃ¶nnen von einem Produkt wieder entfernt werden.
 
 Modul: Block
-- Kategorien im Backend ermöglichen eine bessere Übersicht der Blöcke
-- Zeitgesteuertes Anzeigen von Blöcken
+- Kategorien im Backend ermÃ¶glichen eine bessere Ãœbersicht der BlÃ¶cke
+- Zeitgesteuertes Anzeigen von BlÃ¶cken
 
 FCKEditor => CKEDITOR
 - Der FCKEditor heisst neu CKEDITOR und wurde komplett neu geschrieben und
-  enthält viele Verbesserungen.
+  enthÃ¤lt viele Verbesserungen.
 
 ****************************************
 * Behobene Fehler **********************
@@ -132,7 +132,7 @@ FCKEditor => CKEDITOR
 Allgemein
 - Die im Benutzerprofil definierte bevorzugte Frontend-Sprache wird nach der
   Authentifizierung im Frontend nur dann geladen, sofern der Benutzer im
-  Vorfeld nicht bereits die Frontend Sprache manuell ausgewählt hat.
+  Vorfeld nicht bereits die Frontend Sprache manuell ausgewÃ¤hlt hat.
 - Geschwindigkeitsoptimierung der Benutzerverwaltung.
 - Die Verwendung des Apache Moduls mod_rewrite wird nur aktiviert, sofern die
   Option 'Virtuelle Sprachverzeichnisse verwenden' aktiviert wurde.
@@ -156,17 +156,17 @@ Block System
 - Inhaltsplatzhalter werden beim Bearbeiten eines Blocks angezeigt.
 
 Benutzerverwaltung
-- Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 können
+- Geburtstage zwischen dem 10. Februar 1653 und dem 16. November 5138 kÃ¶nnen
   erfasst werden.
 - Beim Export werden Benutzer, welche als Frontend Sprache die Standard
-  Sprache ausgewählt haben beim entsprechenden Export auch mit exportiert.
+  Sprache ausgewÃ¤hlt haben beim entsprechenden Export auch mit exportiert.
 - Der Gruppenfilter bei der Auflistung der Benutzer im Frontend funktioniert.
 - Ein Benutzer kann nur authentifiziert werden, sofern er bei mindestens einer
   aktiven Gruppe Mitglied ist.
 - Beim Speichern einer Benutzergruppe gehen die Modul-Spezifischen Berechtigungen
   nicht verloren.
-- Die Funktion "Kennwort Zurücksetzen" funktioniert mit Benutzern, welche
-  automatisch über den Online Shop erstellt wurden.
+- Die Funktion "Kennwort ZurÃ¼cksetzen" funktioniert mit Benutzern, welche
+  automatisch Ã¼ber den Online Shop erstellt wurden.
 
 FileBrowser
 - Die Bild-Vorschau funktioniert bei Bildern mit Sonderzeichen im Dateinamen.
@@ -174,7 +174,7 @@ FileBrowser
 News Manager
 - Das Bearbeiten einer Nachricht ohne Administrator Rechte funktioniert.
 - Der Besitzer einer Newsmeldung kann immer auf diese Zugreifen, auch wenn
-  diese geschützt ist und er sich kein expliziter Zugriff erteilt hat.
+  diese geschÃ¼tzt ist und er sich kein expliziter Zugriff erteilt hat.
 - Die Meldungen werden in der Administrationskonsole korrekt aufgelistet,
   wenn die Erweiterung 'Zugriffsschutz' aktiviert ist.
 - Der JavaScript RSS Feed news_de.js funktioniert korrekt.
@@ -199,28 +199,28 @@ Modul: Bildergalerie
   verwendet, auf welche der Besucher Zugriffs berechtigt ist.
 
 Modul: Blog
-- Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
-- Anführungszeichen werden bei Kommentaren akzeptiert.
+- Umlaute bei den Ãœberschriften des RSS-Feeds werden korrekt angezeigt.
+- AnfÃ¼hrungszeichen werden bei Kommentaren akzeptiert.
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
 
 Modul: E-Card
-- Die Bilder werden gemäss den Einstellungen verkleinert.
-- Sicherheitslücke geschlossen.
+- Die Bilder werden gemÃ¤ss den Einstellungen verkleinert.
+- SicherheitslÃ¼cke geschlossen.
 
 Modul: Datenlisten
-- Das Kopieren von Einträgen funktioniert.
+- Das Kopieren von EintrÃ¤gen funktioniert.
 
 Modul: Digital Asset Management
 - Die Benutzerdefinierte Sortierung funktioniert.
-- Kategorien können keinen Unterkategorien zugeordnet werden.
-- Die Einstellungen können nur mit Verwaltungsrechten modifiziert werden.
+- Kategorien kÃ¶nnen keinen Unterkategorien zugeordnet werden.
+- Die Einstellungen kÃ¶nnen nur mit Verwaltungsrechten modifiziert werden.
 - XHTML validierte Ausgabe.
 - Die Auflistung der Kategorien erfolgt in einem ersten Schritt anhand der
   benutzerdefinierten Sortierung und danach nach alphabetischer Reihenfolge.
-- Zeilenumbrüche beim Beschreibungstext eines Downloads werden angezeigt.
+- ZeilenumbrÃ¼che beim Beschreibungstext eines Downloads werden angezeigt.
 - Der Download von Dateien, welche Leerzeichen im Dateinamen enthalten,
   funktioniert.
-- Nach der Authentifizierung erfolgt die Weiterleitung auf einen geschützten
+- Nach der Authentifizierung erfolgt die Weiterleitung auf einen geschÃ¼tzten
   Download korrekt.
 
 Modul: Dokumenten System
@@ -234,15 +234,15 @@ Modul: Forum
 
 Modul: Bildergallerie
 - Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
-  ImageRotate() Funktion nicht verfügbar ist.
+  ImageRotate() Funktion nicht verfÃ¼gbar ist.
 
-Modul: Gästebuch
+Modul: GÃ¤stebuch
 - Der Inhalt des Benachrichtigung-E-Mails wird korrekt dargestellt.
 
 Modul: Kalender
-- Die Kategorienauswahl wird bei der Suche berücksichtigt.
-- Vergangene Termine/Veranstaltungen können angezeigt werden.
-- Mail für An und Abmeldung wird verschickt.
+- Die Kategorienauswahl wird bei der Suche berÃ¼cksichtigt.
+- Vergangene Termine/Veranstaltungen kÃ¶nnen angezeigt werden.
+- Mail fÃ¼r An und Abmeldung wird verschickt.
 
 Modul: Kleinanzeigemarkt
 - Die Suche nach Anzeigen im Backend funktioniert.
@@ -252,30 +252,30 @@ Modul: Newsletter
 - Die Anmeldung und Bearbeitung des Profils funktioniert korrekt.
 - Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
   Sprachverzeichnissen.
-- Die Anzahl totaler Empfänger eines Newsletter wird nun zwischengespeichert,
-  damit die Auflistung der Newsletter Übersicht schneller erfolgt.
+- Die Anzahl totaler EmpfÃ¤nger eines Newsletter wird nun zwischengespeichert,
+  damit die Auflistung der Newsletter Ãœbersicht schneller erfolgt.
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
-- Es werden keine leeren Einträge aufgelistet.
+- Es werden keine leeren EintrÃ¤ge aufgelistet.
 
 Modul: Seitenempfehlung
 - Die Vorschaufunktion funktioniert.
 
 Modul: Shop
-- E-Mail Vorlagen vom Typ Systemvorlage sind nicht Löschbar.
+- E-Mail Vorlagen vom Typ Systemvorlage sind nicht LÃ¶schbar.
 - Bei der Bestellung eines Produktes vom Typ "Mitgliedschaft" wird das
-  Benutzerkonto mit der entsprechend definierten Gültigkeitsdauer erstellt.
-- Beim Versand der Bestellbestätigung per E-Mail wird, falls die benötigte
-  E-Mail Vorlage in der ausgewählten Sprache nicht vorhanden ist, die, in der
+  Benutzerkonto mit der entsprechend definierten GÃ¼ltigkeitsdauer erstellt.
+- Beim Versand der BestellbestÃ¤tigung per E-Mail wird, falls die benÃ¶tigte
+  E-Mail Vorlage in der ausgewÃ¤hlten Sprache nicht vorhanden ist, die, in der
   Standardsprache erfassten E-Mail Vorlage verwendet. Falls auch letztere nicht
-  vorhanden ist, wird die nächste vorhandene Sprache verwendet.
+  vorhanden ist, wird die nÃ¤chste vorhandene Sprache verwendet.
 - Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
-- Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
-- Bilder mit Sonderzeichen im Dateinamen werden unterstützt.
+- Beim Bestellungsprozess stehen nur aktive Versandarten zur VerfÃ¼gung.
+- Bilder mit Sonderzeichen im Dateinamen werden unterstÃ¼tzt.
 
 Modul: User to User Nachrichten
-- Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.
+- Die E-Mail Benachrichtigungen Ã¼ber neue Nachrichten werden versendet.
 - Der Platzhalter [senderName] in der E-Mail-Benachrichtigung wird ersetzt
 
 Modul: Wissensdatenbank
@@ -285,14 +285,14 @@ Modul: Wissensdatenbank
 
 
 Statistik
-- Die Zählung der Besucher erfolgt korrekt.
+- Die ZÃ¤hlung der Besucher erfolgt korrekt.
 - Beim Bereich 'Beliebteste Seiten' werden Seitenaufrufe, welche unter
-  Verwendung eines Alias getätigt wurden, korrekt aufgelistet.
-- Um die Ladegeschwindigkeit zu erhöhen, wird der Counter neu mittels
-  AJAX aktualisiert, falls möglich
+  Verwendung eines Alias getÃ¤tigt wurden, korrekt aufgelistet.
+- Um die Ladegeschwindigkeit zu erhÃ¶hen, wird der Counter neu mittels
+  AJAX aktualisiert, falls mÃ¶glich
 
 Webinstaller
-- Kontrollkästchen werden beim Browser Opera angezeigt.
+- KontrollkÃ¤stchen werden beim Browser Opera angezeigt.
 
 ****************************************
 * Neue Module **************************
