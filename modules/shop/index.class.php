@@ -82,40 +82,6 @@ require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
 
 /**
- * Check whether a session will be required and has to get inizialized
- * @return  boolean     True if a session is required, false otherwise.
- */
-function shopUseSession()
-{
-    if (!empty($_COOKIE['PHPSESSID'])) {
-        return true;
-    } elseif (!empty($_REQUEST['currency'])) {
-        return true;
-    } else {
-        $command = '';
-        if (!empty($_GET['cmd'])) {
-            $command = $_GET['cmd'];
-        } elseif (!empty($_GET['act'])) {
-            $command = $_GET['act'];
-        }
-        if (in_array($command, array('', 'discounts', 'details', 'terms', 'cart'))) {
-            if (   $command == 'details'
-                && isset($_REQUEST['referer'])
-                && $_REQUEST['referer'] == 'cart'
-            ) {
-                return true;
-            } elseif ($command == 'cart' && (isset($_REQUEST['productId']) || (isset($_GET['remoteJs']) && $_GET['remoteJs'] == 'addProduct' && !empty($_GET['product'])))) {
-                return true;
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-}
-
-
-/**
  * Shop
  * @internal    Extract code from this class and move it to other classes:
  *              Customer, Product, Order, ...
@@ -208,10 +174,7 @@ class Shop extends ShopLibrary
         $this->_initConfiguration();
 
         // Check session and user data, log in if present
-        if (shopUseSession())
-            $this->_authenticate();
-//        if (empty($_COOKIE['PHPSESSID'])) $this->_authenticate();
-
+        $this->_authenticate();
         Vat::isReseller($this->objCustomer && $this->objCustomer->isReseller());
         // May be omitted, those structures are initialized on first use
         Vat::init();
@@ -2414,6 +2377,10 @@ sendReq('', 1);
                 if (isset($oldCartProdId)) {
                     $cartProdId = $oldCartProdId;
                 } else {
+                    // Ignore empty or negative quantities
+                    if (   empty($arrNewProduct['quantity'])
+                        || $arrNewProduct['quantity'] <= 0)
+                        return;
                     // $arrNewProduct['id'] may be undefined!
                     $arrProduct = array(
                         'id' => $arrNewProduct['id'],
@@ -2633,14 +2600,18 @@ sendReq('', 1);
                 }
             }
         }
-        $_SESSION['shop']['cart']['total_price']      = Currency::formatPrice($total_price);//$this->_calculatePrice($_SESSION['shop']['cart']);
-        $_SESSION['shop']['cart']['total_vat_amount'] = Currency::formatPrice($total_vat_amount);
-        // Round prices to 5 cents if the currency is CHF (*MUST* for Saferpay)
+// TODO: Localized rounding should be part of the Currency class
         if (Currency::getActiveCurrencyCode() == 'CHF') {
-            $_SESSION['shop']['cart']['total_price']      = Currency::formatPrice(round(20*$total_price)/20);
-            $_SESSION['shop']['cart']['total_vat_amount'] = Currency::formatPrice(round(20*$total_vat_amount)/20);
+            $total_price = round(20*$total_price)/20;
+            $total_vat_amount = round(20*$total_vat_amount)/20;
         }
-        $_SESSION['shop']['cart']['items']            = $this->calculateItems($_SESSION['shop']['cart']);
+        $_SESSION['shop']['cart']['total_price']      =
+            Currency::formatPrice($total_price);//$this->_calculatePrice($_SESSION['shop']['cart']);
+        $_SESSION['shop']['cart']['total_vat_amount'] =
+            Currency::formatPrice($total_vat_amount);
+        // Round prices to 5 cents if the currency is CHF (*MUST* for Saferpay)
+        $_SESSION['shop']['cart']['items']            =
+            $this->calculateItems($_SESSION['shop']['cart']);
         $_SESSION['shop']['cart']['total_weight']     = $total_weight; // in grams!
         $this->_setPaymentTaxes();
         return $arrProducts;
@@ -2698,12 +2669,12 @@ sendReq('', 1);
                 if (Vat::isEnabled()) {
                     $this->objTemplate->setVariable(array(
                         // avoid a lonely '%' percent sign in case 'percent' is unset
-                        'SHOP_PRODUCT_TAX_RATE'       =>
+                        'SHOP_PRODUCT_TAX_RATE' =>
                             ($arrProduct['percent']
                                 ? Vat::format($arrProduct['percent'])
                                 : '-'
                             ),
-                        'SHOP_PRODUCT_TAX_AMOUNT'     =>
+                        'SHOP_PRODUCT_TAX_AMOUNT' =>
                             '('.$arrProduct['vat_amount'].'&nbsp;'.
                             Currency::getActiveCurrencySymbol().')',
                     ));
@@ -2733,17 +2704,16 @@ sendReq('', 1);
         ));
         if (Vat::isEnabled()) {
             $this->objTemplate->setVariable(array(
-                'TXT_TAX_PREFIX'               =>
+                'TXT_TAX_PREFIX' =>
                     (Vat::isIncluded()
                         ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
                         : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
                     ),
                 // Removed parenthesess for 2.0.2
                 // Add them to the template if desired!
-                'SHOP_TOTAL_TAX_AMOUNT'        =>
+                'SHOP_TOTAL_TAX_AMOUNT' =>
                     $_SESSION['shop']['cart']['total_vat_amount']
                     .'&nbsp;'.Currency::getActiveCurrencySymbol(),
-
             ));
         }
         if ($_SESSION['shop']['shipment']) {
@@ -2773,13 +2743,13 @@ sendReq('', 1);
         $redirect = Shop::processRedirect();
 
         $loginUsername = '';
-        if (!empty($_REQUEST['username']) && !empty($_REQUEST['password'])) {
+        if (!empty($_POST['username']) && !empty($_POST['password'])) {
             // check authentification
             $_SESSION['shop']['username'] = htmlspecialchars(
-                addslashes(strip_tags($_REQUEST['username'])),
+                addslashes(strip_tags($_POST['username'])),
                 ENT_QUOTES, CONTREXX_CHARSET);
             $_SESSION['shop']['password'] =
-                addslashes(strip_tags($_REQUEST['password']));
+                addslashes(strip_tags($_POST['password']));
             $loginUsername = $_SESSION['shop']['username'];
             if ($this->_authenticate()) {
                 // The user has just been logged in.
@@ -2840,9 +2810,9 @@ sendReq('', 1);
 
     function account()
     {
-        $this->_configAccount();
-        $status = $this->_checkAccountForm();
-        if (empty($status)) $this->_gotoPaymentPage();
+        $status = $this->_configAccount();
+        if (isset($_POST['address']) && empty($status))
+            $this->_gotoPaymentPage();
         $this->_parseAccountDetails();
         $this->_getAccountPage($status);
     }
@@ -2852,15 +2822,6 @@ sendReq('', 1);
     {
         // hide currency navbar
         $this->_hideCurrencyNavbar = true;
-
-        if (empty($_POST) || !is_array($_POST)) return;
-        foreach ($_POST as $key => $value) {
-            $value = (get_magic_quotes_gpc()
-                ? strip_tags(trim($value))
-                : addslashes(strip_tags(trim($value))));
-            $_SESSION['shop'][$key] =
-                htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-        }
 
         if (isset($_POST['equalAddress'])) {
             if (!empty($_POST['address2'])) {
@@ -2878,7 +2839,7 @@ sendReq('', 1);
         if (isset($_POST['countryId'])) {
             $_SESSION['shop']['countryId'] = intval($_POST['countryId']);
         } else {
-            if (!isset($_SESSION['shop']['countryId'])) {
+            if (empty($_SESSION['shop']['countryId'])) {
                 // countryId2 is set in _initCart() already
                 $_SESSION['shop']['countryId'] = $_SESSION['shop']['countryId2'];
             }
@@ -2894,6 +2855,18 @@ sendReq('', 1);
         if (empty($_SESSION['shop']['city2']))      $_SESSION['shop']['city2']      = '';
         if (empty($_SESSION['shop']['phone2']))     $_SESSION['shop']['phone2']     = '';
         if (empty($_SESSION['shop']['countryId2'])) $_SESSION['shop']['countryId2'] = 0;
+
+        if (empty($_POST) || !is_array($_POST)) return '';
+        foreach ($_POST as $key => $value) {
+            $value = (get_magic_quotes_gpc()
+                ? strip_tags(trim($value))
+                : addslashes(strip_tags(trim($value))));
+            $_SESSION['shop'][$key] =
+                htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
+        }
+
+        // Return the verification status
+        return $this->_checkAccountForm();
     }
 
 
@@ -2905,24 +2878,7 @@ sendReq('', 1);
         $status = '';
 
         // check the submission
-        if (empty($_POST['prefix']) ||
-            empty($_POST['lastname']) ||
-            empty($_POST['firstname']) ||
-            empty($_POST['address']) ||
-            empty($_POST['zip']) ||
-            empty($_POST['city']) ||
-            empty($_POST['phone']) ||
-            $_SESSION['shop']['shipment'] &&
-            (empty($_POST['prefix2']) ||
-            empty($_POST['lastname2']) ||
-            empty($_POST['firstname2']) ||
-            empty($_POST['address2']) ||
-            empty($_POST['zip2']) ||
-            empty($_POST['city2']) ||
-            empty($_POST['phone2'])) ||
-            (empty($_POST['email']) && !$this->objCustomer) ||
-            (empty($_POST['password']) && !$this->objCustomer)
-        ) {
+        if (!$this->verifySessionAddress()) {
             $status = $_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS'];
         }
 
@@ -2951,12 +2907,6 @@ sendReq('', 1);
     {
         global $objDatabase;
 
-/*
-        foreach ($_POST as $key => $value) {
-            $value = contrexx_addslashes(strip_tags(trim($value)));
-            $_SESSION['shop'][$key] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
-        }
-*/
         if (!isset($_SESSION['shop']['customer_note'])) {
             $_SESSION['shop']['customer_note'] = '';
         }
@@ -3009,7 +2959,6 @@ sendReq('', 1);
                 'SHOP_ACCOUNT_FAX'           => $this->objCustomer->getFax(),
                 'SHOP_ACCOUNT_ACTION'        => "index.php?section=shop".MODULE_INDEX."&amp;cmd=account",
             ));
-            $this->objTemplate->hideBlock('account_details');
         } else {
             $this->objTemplate->setVariable(array(
                 // the $_SESSION fields may be undefined!
@@ -3066,6 +3015,8 @@ sendReq('', 1);
         } else {
             $this->objTemplate->hideBlock('shopShipmentAddress');
         }
+        if ($this->objCustomer)
+            $this->objTemplate->hideBlock('account_details');
     }
 
 
@@ -3314,11 +3265,11 @@ die("YYY");
 
 
     /**
-     * Set up price and VAT related information for payment page.
+     * Set up price and VAT related information for the payment page.
      *
-     * Depending on the VAT settings, sets fields in the global $_SESSION['shop']
-     * array variable, namely  'grand_total_price', 'vat_price', 'vat_products_txt',
-     * 'vat_grand_txt', and 'vat_procentual'.
+     * Depending on the VAT settings, sets fields in the global
+     * $_SESSION['shop'] array variable, namely 'grand_total_price',
+     * 'vat_price', 'vat_products_txt', 'vat_grand_txt', and 'vat_procentual'.
      */
     function _setPaymentTaxes()
     {
@@ -3708,7 +3659,7 @@ right after the customer logs in!
         if (isset($_POST['process'])) {
             // verify that the order hasn't yet been saved
             // (and has thus not yet been confirmed)
-            if (isset($_SESSION['shop']['orderId'])) {
+            if (isset($_SESSION['shop']['orderid'])) {
                 $this->addMessage($_ARRAYLANG['TXT_ORDER_ALREADY_PLACED']);
                 return false;
             }
@@ -3816,12 +3767,12 @@ right after the customer logs in!
             ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
-                // $orderId is unset!
+                // $order_id is unset!
                 $this->addMessage($_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA']);
                 return false;
             }
-            $orderid = $objDatabase->Insert_ID();
-            $_SESSION['shop']['orderid'] = $orderid;
+            $order_id = $objDatabase->Insert_ID();
+            $_SESSION['shop']['orderid'] = $order_id;
             // The products will be tested one by one below.
             // If any single one of them requires delivery, this
             // flag will be set to true.
@@ -3873,7 +3824,7 @@ right after the customer logs in!
                         orderid, productid, product_name,
                         price, quantity, vat_percent, weight
                     ) VALUES (
-                        $orderid, $productId, '".addslashes($productName)."',
+                        $order_id, $productId, '".addslashes($productName)."',
                         '$productPrice', '$productQuantity',
                         '$productVatRate', '$productWeight'
                     )
@@ -3915,7 +3866,7 @@ right after the customer logs in!
                         $query = "
                             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
                                SET order_items_id=$orderItemsId,
-                                order_id=$orderid,
+                                order_id=$order_id,
                                 product_id=$productId,
                                 product_option_name='".addslashes($name)."',
                                 product_option_value='".addslashes($arrValue['value'])."',
@@ -3947,7 +3898,7 @@ right after the customer logs in!
                  && isset($_SESSION['shop']['account_blz'])    && $_SESSION['shop']['account_blz']   ) {
                     $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_lsv ".
                         "(order_id, holder, bank, blz) VALUES (".
-                        $orderid.", '".
+                        $order_id.", '".
                         contrexx_addslashes($_SESSION['shop']['account_holder'])."', '".
                         contrexx_addslashes($_SESSION['shop']['account_bank'])."', '".
                         contrexx_addslashes($_SESSION['shop']['account_blz'])."')";
@@ -3963,7 +3914,7 @@ right after the customer logs in!
                  }
             }
 
-            $_SESSION['shop']['orderid_checkin'] = $orderid;
+            $_SESSION['shop']['orderid_checkin'] = $order_id;
             $strProcessorType =
                 $this->objProcessing->getCurrentPaymentProcessorType();
 
@@ -4204,66 +4155,60 @@ right after the customer logs in!
     {
         global $_ARRAYLANG;
 
-        // The payment result is mandatory.
-        // If it's missing, the order is cancelled.
-        $result =
-            (isset($_GET['result'])
-                ? $_GET['result'] : SHOP_PAYMENT_RESULT_CANCEL
-            );
-
-        // The payment handler
-        $handler = (isset($_GET['handler']) ? $_GET['handler'] : '');
-        // The handler parameter is mandatory!
-        // If it's missing, the order is cancelled.
-        // Also, this method *MUST NOT* be called by the PayPal IPN handler.
-        if (   $handler == ''
-            || $handler == 'PaypalIPN') {
-            $result = SHOP_PAYMENT_RESULT_CANCEL;
-        }
-
         // Hide the currency navbar
         $this->_hideCurrencyNavbar = true;
-        $orderId = $this->objProcessing->checkIn();
-        // True is returned for internal payment types only.
-        if ($orderId === true) {
-            if (empty($_SESSION['shop']['orderid_checkin'])) {
-                $orderId = 0;
-            } else {
-                // Internal payment method: update the status in any case.
-                $orderId = $_SESSION['shop']['orderid_checkin'];
-                $result = SHOP_PAYMENT_RESULT_SUCCESS;
-            }
-        }
-        if (!$orderId
-           || (   isset($_SESSION['shop']['orderid_checkin'])
-               && $_SESSION['shop']['orderid_checkin'] != $orderId)) {
-            // Zero or false:
-            // The payment failed miserably or was faked.
-            // The order is cancelled in both cases.
-            // If both IDs are set but differ, the request might be
-            // fake.  Cancel the order with the ID from the session!
-            $result = SHOP_PAYMENT_RESULT_CANCEL;
-            if (!empty($_SESSION['shop']['orderid_checkin'])) {
-                $orderId = $_SESSION['shop']['orderid_checkin'];
-            } else {
-                $orderId = 0;
-            }
+
+        // Use the Order ID stored in the session, if possible.
+        // Otherwise, get it from the payment processor.
+        $order_id = (empty($_SESSION['shop']['orderid_checkin'])
+            ? PaymentProcessing::getOrderId()
+            : $_SESSION['shop']['orderid_checkin']);
+
+        // Default new order status: As long as it's pending (0, zero),
+        // updateOrderStatus() will choose the new value automatically.
+        $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
+
+        $checkinresult = $this->objProcessing->checkIn();
+
+        if ($checkinresult === false) {
+            // Failed payment.  Cancel the order.
+            $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
+        } elseif ($checkinresult === true) {
+            // True is returned for successful payments.
+            // Update the status in any case.
+            $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
+        } elseif ($checkinresult === null) {
+            // checkIn() returns null if no change to the order status
+            // is necessary or appropriate
+            $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
         }
 
-        // We need a valid order ID from here.
-        // The respective order state, if available, is updated
-        // in updateOrderStatus().
-        if (intval($orderId) > 0) {
-            // Default new order status: As long as it's pending (0, zero),
-            // updateOrderStatus() will choose the new value automatically.
-            $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
-            if (   $result == SHOP_PAYMENT_RESULT_FAIL
-                || $result == SHOP_PAYMENT_RESULT_CANCEL) {
-                // Cancel the order both if the payment failed or if it
-                // has been cancelled.
-                $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
+        // Also, this method *MUST NOT* be called by the PayPal IPN handler.
+        if (isset($_GET['handler']) && $_GET['handler'] == 'PaypalIPN') {
+            $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
+        }
+
+        // Verify the Order ID with the session, if available
+        if (   isset($_SESSION['shop']['orderid_checkin'])
+            && $order_id != $_SESSION['shop']['orderid_checkin']) {
+            // Cancel the Order with the ID from the session, not the
+            // possibly faked one from the request!
+            $order_id = $_SESSION['shop']['orderid_checkin'];
+            $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
+            $checkinresult = false;
+        }
+
+        if (is_numeric($order_id)) {
+            // The respective order state, if available, is updated.
+            // The only exception is when $checkinresult is null.
+            if (isset($checkinresult)) {
+                $newOrderStatus =
+                    Shop::updateOrderStatus($order_id, $newOrderStatus);
+
+            } else {
+                // The old status is the new status
+                $newOrderStatus = $this->getOrderStatus($order_id);
             }
-            $newOrderStatus = Shop::updateOrderStatus($orderId, $newOrderStatus, $handler);
             switch ($newOrderStatus) {
                 case SHOP_ORDER_STATUS_CONFIRMED:
                 case SHOP_ORDER_STATUS_PAID:
@@ -4295,12 +4240,14 @@ right after the customer logs in!
         } else {
             $this->addMessage($_ARRAYLANG['TXT_NO_PENDING_ORDER']);
         }
+        // Avoid any output if the result is negative
+        if (   isset($_REQUEST['result'])
+            && $_REQUEST['result'] < 0) die('');
         // Comment this for testing, so you can reuse the same account and cart
+// COMMENT OUT FOR TEST ONLY
         $this->destroyCart();
         // clear backup ID, avoid success() from being run again
         unset($_SESSION['shop']['orderid_checkin']);
-        // Avoid any output if the result is negative
-        if ($result < 0) die('');
     }
 
 
@@ -4316,29 +4263,26 @@ right after the customer logs in!
      * returns zero.
      * @access  private
      * @static
-     * @param   integer $orderId    The ID of the current order
+     * @param   integer $order_id    The ID of the current order
      * @param   integer $newOrderStatus The optional new order status.
      * @param   string  $handler    The Payment type name in use
      * @return  integer             The new order status (may be zero)
      *                              if the order status can be changed
      *                              accordingly, zero otherwise
      */
-    static function updateOrderStatus($orderId, $newOrderStatus=0, $handler='')
+    static function updateOrderStatus($order_id, $newOrderStatus=0)
     {
         global $objDatabase;
 
-        if ($handler == '') {
-            return SHOP_ORDER_STATUS_CANCELLED;
-        }
-        $orderId = intval($orderId);
-        if ($orderId == 0) {
+        $handler = (isset($_GET['handler']) ? $_GET['handler'] : '');
+        $order_id = intval($order_id);
+        if ($order_id == 0) {
             return SHOP_ORDER_STATUS_CANCELLED;
         }
         $query = "
             SELECT order_status, payment_id, shipping_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             WHERE orderid=$orderId
-        ";
+             WHERE orderid=$order_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) {
             return SHOP_ORDER_STATUS_CANCELLED;
@@ -4357,9 +4301,10 @@ right after the customer logs in!
             return $orderStatus;
         }
 
-        $paymentId = $objResult->fields['payment_id'];
-        $processorId = Payment::getPaymentProcessorId($paymentId);
-        $processorName = PaymentProcessing::getPaymentProcessorName($processorId);
+        // Determine and verify the payment handler
+        $payment_id = $objResult->fields['payment_id'];
+        $processor_id = Payment::getPaymentProcessorId($payment_id);
+        $processorName = PaymentProcessing::getPaymentProcessorName($processor_id);
         // The payment processor *MUST* match the handler
         // returned.  In the case of PayPal, the order status is only
         // updated if this method is called by Paypal::ipnCheck() with the
@@ -4371,7 +4316,9 @@ right after the customer logs in!
             ) {
                 return $orderStatus;
             }
-        } elseif (!preg_match("/^$handler/i", $processorName)) {
+        } elseif (
+               $handler
+            && !preg_match("/^$handler/i", $processorName)) {
             return SHOP_ORDER_STATUS_CANCELLED;
         }
 
@@ -4390,9 +4337,8 @@ right after the customer logs in!
             // 'paid', or 'delivered' respectively.
             // If neither condition is met, the status is set to 'confirmed'.
             $newOrderStatus = SHOP_ORDER_STATUS_CONFIRMED;
-            $paymentId = $objResult->fields['payment_id'];
-            $processorId = Payment::getPaymentProcessorId($paymentId);
-            $processorType = PaymentProcessing::getCurrentPaymentProcessorType($processorId);
+            $processorType =
+                PaymentProcessing::getCurrentPaymentProcessorType($processor_id);
             $shippingId = $objResult->fields['shipping_id'];
             if ($processorType == 'external') {
                 // External payment types are considered instant.
@@ -4419,15 +4365,14 @@ right after the customer logs in!
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
                SET order_status='$newOrderStatus'
-             WHERE orderid=$orderId
-        ";
+             WHERE orderid=$order_id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             if (   $newOrderStatus == SHOP_ORDER_STATUS_CONFIRMED
                 || $newOrderStatus == SHOP_ORDER_STATUS_PAID
                 || $newOrderStatus == SHOP_ORDER_STATUS_SHIPPED
                 || $newOrderStatus == SHOP_ORDER_STATUS_COMPLETED) {
-                Shop::_sendProcessedMail($orderId);
+                Shop::_sendProcessedMail($order_id);
 // Implement a way to show this when the template is available
 //                $this->addMessage('<br />'.$_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL']);
                 }
@@ -4447,11 +4392,11 @@ right after the customer logs in!
     /**
      * Send a confirmation e-mail with the order data
      * @static
-     * @param   integer   $orderId    The order ID
+     * @param   integer   $order_id    The order ID
      * @return  boolean               True on success, false otherwise
      * @access  private
      */
-    static function _sendProcessedMail($orderId)
+    static function _sendProcessedMail($order_id)
     {
         global $objDatabase;
 
@@ -4461,7 +4406,7 @@ right after the customer logs in!
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
              USING (customerid)
-             WHERE orderid=$orderId
+             WHERE orderid=$order_id
         ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() == 0) {
@@ -4481,7 +4426,7 @@ right after the customer logs in!
         $mailBody = $arrShopMailtemplate['message'];
         $today = date('d.m.Y');
         $mailSubject = str_replace('<DATE>', $today, $mailSubject);
-        $mailBody = Shop::_generateEmailBody($mailBody, $orderId, $langId);
+        $mailBody = Shop::_generateEmailBody($mailBody, $order_id, $langId);
         $return = true;
         if (!Mail::send($mailTo, $mailFrom, $mailFromText, $mailSubject, $mailBody)) {
             $return = false;
@@ -4516,11 +4461,11 @@ right after the customer logs in!
      * @access  private
      * @static
      * @param   string  $body         The e-mail template
-     * @param   integer $orderId      The order ID
+     * @param   integer $order_id      The order ID
      * @param   integer $langId       The language ID
      * @return  string                The e-mail body
      */
-    static function _generateEmailBody($body, $orderId, $langId)
+    static function _generateEmailBody($body, $order_id, $langId)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -4534,7 +4479,7 @@ right after the customer logs in!
             'http://'.$_SERVER['SERVER_NAME'].
             "/index.php?section=download\n";
 */
-        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId);
+        $order_idCustom = ShopLibrary::getCustomOrderId($order_id);
 
         // Pick the order from the database
         $query = "
@@ -4553,7 +4498,7 @@ right after the customer logs in!
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c
              USING (customerid)
-             WHERE orderid=$orderId
+             WHERE orderid=$order_id
         ";
         $objResultOrder = $objDatabase->Execute($query);
         if (!$objResultOrder || $objResultOrder->RecordCount() == 0) {
@@ -4594,7 +4539,7 @@ right after the customer logs in!
         $query = "
             SELECT order_items_id, productid, product_name, price, quantity
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
-             WHERE orderid=$orderId
+             WHERE orderid=$order_id
         ";
         $objResultItem = $objDatabase->Execute($query);
         if (!$objResultItem || $objResultItem->RecordCount() == 0) {
@@ -4717,10 +4662,10 @@ right after the customer logs in!
                     $body = $arrTemplate['message'];
                     // The login names are created separately for
                     // each product instance
-                    $username = self::usernamePrefix."-$orderId-$productId-$instance";
+                    $username = self::usernamePrefix."-$order_id-$productId-$instance";
                     $userpass = uniqid();
                     $userEmail =
-                        "shop_customer_${orderId}_${productId}_${instance}-".
+                        "shop_customer_${order_id}_${productId}_${instance}-".
                         $objResultOrder->fields['email'];
 
                     $objUser = new User();
@@ -4837,7 +4782,7 @@ right after the customer logs in!
             '<LOGIN_DATA>',
         );
         $replace = array (
-            $orderId, $orderIdCustom, $today,
+            $order_id, $order_idCustom, $today,
             $objResultOrder->fields['username'],
             (isset($_SESSION['shop']['password'])
                 ? $_SESSION['shop']['password'] : '******'),
@@ -5148,6 +5093,35 @@ right after the customer logs in!
         ) return false;
         return true;
     }
+
+
+    function getOrderStatus($order_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT order_status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             WHERE orderid=$order_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->EOF) return false;
+        return $objResult->fields['order_status'];
+    }
+
+
+    function getOrderPaymentId($order_id)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT payment_id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             WHERE orderid=$order_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->EOF) return false;
+        return $objResult->fields['payment_id'];
+    }
+
 }
 
 ?>

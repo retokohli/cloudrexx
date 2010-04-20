@@ -148,6 +148,24 @@ class PaymentProcessing
 
 
     /**
+     * Returns an array with all the payment processor names indexed
+     * by their ID.
+     * @return  array             The payment processor name array
+     *                            on success, the empty array on failure.
+     * @static
+     */
+    static function getPaymentProcessorNameArray()
+    {
+        if (empty(self::$arrPaymentProcessor)) self::init();
+        $arrName = array();
+        foreach (self::$arrPaymentProcessor as $id => $arrProcessor) {
+            $arrName[$id] = $arrProcessor['name'];
+        }
+        return $arrName;
+    }
+
+
+    /**
      * Returns the name associated with a payment processor ID.
      *
      * If the optional argument is not set and greater than zero, the value
@@ -373,7 +391,7 @@ class PaymentProcessing
             $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
             "<form method='post' action='$payInitUrl'>\n<input type='Submit' value='".
             $_ARRAYLANG['TXT_ORDER_NOW'].
-            "'>\n</form>\n";
+            "' />\n</form>\n";
     }
 
 
@@ -452,26 +470,30 @@ class PaymentProcessing
      */
     function checkIn()
     {
+        if (   isset($_GET['result'])
+            && $_GET['result'] == 0 || $_GET['result'] == 2
+        ) return false;
         if (empty($_GET['handler'])) return false;
         switch ($_GET['handler']) {
             case 'saferpay':
                 $objSaferpay = new Saferpay();
-                if (Settings::getStatusByName('saferpay_use_test_account')) {
-                    $objSaferpay->isTest = true;
-                } else {
+                $arrShopOrder = array();
+// Not used
+//                if (Settings::getStatusByName('saferpay_use_test_account')) {
+//                    $objSaferpay->isTest = true;
+//                } else {
                     $arrShopOrder['ACCOUNTID'] = Settings::getValueByName('saferpay_id');
-                }
+//                }
                 $transaction = $objSaferpay->payConfirm();
                 if (Settings::getValueByName('saferpay_finalize_payment')) {
-                    if ($objSaferpay->isTest == true) {
-                        $transaction = true;
-                    } else {
+// payComplete() has been fixed to work
+//                    if ($objSaferpay->isTest == true) {
+//                        $transaction = true;
+//                    } else {
                         $transaction = $objSaferpay->payComplete($arrShopOrder);
-                    }
+//                    }
                 }
-                if ($transaction)
-                    return $objSaferpay->getOrderId();
-                break;
+                return $transaction;
             case 'paypal':
                 // The order ID must be returned when the payment is done.
                 // is this guaranteed to be a GET request?
@@ -479,8 +501,8 @@ class PaymentProcessing
                     return intval($_REQUEST['orderid']);
                 break;
             case 'yellowpay':
-                $order_id = Yellowpay::checkin();
-//                if (!$order_id) {
+                return Yellowpay::checkin();
+
 //                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
 //                        global $_ARRAYLANG;
 //                        echo('<font color="red"><b>'.
@@ -492,15 +514,11 @@ class PaymentProcessing
 //                        join('<br />', Yellowpay::$arrWarning).
 //                        '</font>');
 //                    }
-//                }
-                return $order_id;
             // Added 20081117 -- Reto Kohli
             case 'datatrans':
                 require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
-                if (   Datatrans::validateReturn()
-                    && Datatrans::getPaymentResult() == 1)
-                    return Datatrans::getOrderId();
-                break;
+                return Datatrans::validateReturn()
+                    && Datatrans::getPaymentResult() == 1;
 
             // For the remaining types, there's no need to check in, so we
             // return true and jump over the validation of the order ID
@@ -522,6 +540,52 @@ class PaymentProcessing
                 return Dummy::commit($result);
             default:
                 break;
+        }
+        // Anything else is wrong.
+        return false;
+    }
+
+
+    static function getOrderId()
+    {
+        if (empty($_GET['handler'])) return false;
+        switch ($_GET['handler']) {
+            case 'saferpay':
+                return Saferpay::getOrderId();
+
+            case 'paypal':
+                return (isset($_REQUEST['orderid'])
+                    ? intval($_REQUEST['orderid'])
+                    : false);
+
+            case 'yellowpay':
+                return Yellowpay::getOrderId();
+
+            // Added 20100222 -- Reto Kohli
+            case 'mobilesolutions':
+                require_once(ASCMS_MODULE_PATH.'/shop/payments/yellowpay/PostfinanceMobile.class.php');
+                $order_id = PostfinanceMobile::getOrderId();
+                return $order_id;
+
+            // Added 20081117 -- Reto Kohli
+            case 'datatrans':
+                require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
+                return Datatrans::getOrderId();
+
+            // For the remaining types, there's no need to check in, so we
+            // return true and jump over the validation of the order ID
+            // directly to success!
+            // Note: A backup of the order ID is kept in the session
+            // for payment methods that do not return it. This is used
+            // to cancel orders in all cases where false is returned.
+            case 'Internal':
+            case 'Internal_CreditCard':
+            case 'Internal_Debit':
+            case 'Internal_LSV':
+            case 'dummy':
+                return (isset($_SESSION['shop']['orderid_checkin'])
+                    ? $_SESSION['shop']['orderid_checkin']
+                    : false);
         }
         // Anything else is wrong.
         return false;
