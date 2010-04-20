@@ -6,6 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
+ * @version     3.0.0
  */
 
 /**
@@ -19,6 +20,7 @@ require_once ASCMS_CORE_PATH.'/Socket.class.php';
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
+ * @version     3.0.0
  */
 class Saferpay
 {
@@ -449,8 +451,9 @@ class Saferpay
      * Returns the order ID of the transaction
      * @access  public
      * @return  integer The order ID
+     * @static
      */
-    function getOrderId()
+    static function getOrderId()
     {
         $arrMatches = array();
         $strParams = urldecode(stripslashes($_GET['DATA']));

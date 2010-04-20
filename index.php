@@ -345,11 +345,14 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     }
 }
 
+
+$sessionObj = null;
+$shopObj    = null;
 //-------------------------------------------------------
 // authentification for protected pages
 //-------------------------------------------------------
 if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_REQUEST['section']) || $_REQUEST['section'] != 'login')) {
-    $sessionObj=new cmsSession();
+    $sessionObj = new cmsSession();
     $sessionObj->cmsSessionStatusUpdate('frontend');
 
     $objFWUser = FWUser::getFWUserObject();
@@ -1052,7 +1055,7 @@ switch ($plainSection) {
         /** @ignore */
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (shopUseSession() && (!isset($sessionObj) || !is_object($sessionObj))) $sessionObj = new cmsSession();
+        if (empty($sessionObj)) $sessionObj = new cmsSession();
         $shopObj = new Shop($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getShopPage());
         $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
@@ -1600,18 +1603,21 @@ switch ($plainSection) {
 //-------------------------------------------------------
 // show shop navbar on each page
 //-------------------------------------------------------
-if (MODULE_INDEX < 2 && isset($_CONFIGURATION['custom']['shopnavbar']) AND $_CONFIGURATION['custom']['shopnavbar'] == TRUE) {
-    if (!is_object($shopObj)){
+if (   MODULE_INDEX < 2
+    && isset($_CONFIGURATION['custom']['shopnavbar'])
+    && $_CONFIGURATION['custom']['shopnavbar'] == true) {
+    if (empty($shopObj)) {
         $modulespath = 'modules/shop/index.class.php';
         if (file_exists($modulespath)){
             /** @ignore */
             require_once($modulespath);
-            if (!is_object($sessionObj)) $sessionObj=new cmsSession();
+            $sessionObj = new cmsSession();
             $_ARRAYSHOPLANG = $objInit->loadLanguageData('shop');
             $_ARRAYLANG = array_merge($_ARRAYLANG, $_ARRAYSHOPLANG);
             $boolShop = true;
             $shopObj = new Shop();
-            $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
+            $objTemplate->setVariable('SHOPNAVBAR_FILE',
+                $shopObj->getShopNavbar($themesPages['shopnavbar']));
         }
     }
 }

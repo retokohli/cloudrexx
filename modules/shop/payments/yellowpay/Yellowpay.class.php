@@ -7,7 +7,7 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
@@ -24,7 +24,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
  * Yellowpay plugin for online payment
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @internal    Yellowpay must be configured to return with the follwing requests:
@@ -253,6 +253,8 @@ class Yellowpay
     static function getForm(
         $arrShopOrder, $submitValue='send', $autopost=false
     ) {
+        global $_ARRAYLANG;
+
         $strAcceptedPaymentMethods =
             Settings::getValueByName('yellowpay_accepted_payment_methods');
         self::$strAuthorization =
@@ -293,6 +295,7 @@ class Yellowpay
             self::$arrShopOrder['cancelurl'] = $base_uri.'0';
         }
         self::$form =
+            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
             // The real yellowpay server or the test server
             '<form name="yellowpay" method="post" '.
 // OLD yellowpay URI
@@ -532,16 +535,27 @@ class Yellowpay
 
 
     /**
-     * Verifies the parameters posted back by e-commerce and
-     * returns the order ID, if the payment is valid and successful
-     * @return  integer           The order ID if the result is valid,
-     *                            zero otherwise
+     * Verifies the parameters posted back by e-commerce
+     * @return  boolean           True on success, false otherwise
      */
     static function checkIn()
     {
         // If the hash is correct, so is the order ID
-        if (self::checkHash()) return $_GET['orderID'];
-        return 0;
+        return self::checkHash();
+    }
+
+
+    /**
+     * Returns the Order ID from the GET request, if present
+     * @return  integer           The order ID, or false
+     */
+    static function getOrderId()
+    {
+        if (isset($_POST['txtOrderIDShop']))
+            return $_POST['txtOrderIDShop'];
+        if (isset($_GET['orderID']))
+            return $_GET['orderID'];
+        return false;
     }
 
 
