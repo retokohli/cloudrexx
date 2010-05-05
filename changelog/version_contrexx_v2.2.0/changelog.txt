@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////
+////////////////////////////////////////
 // CHANGELOG 2.1.0-2.2.0 ///////////////
 ////////////////////////////////////////
 
@@ -254,6 +254,7 @@ Modul: Newsletter
   Sprachverzeichnissen.
 - Die Anzahl totaler Empfänger eines Newsletter wird nun zwischengespeichert,
   damit die Auflistung der Newsletter Übersicht schneller erfolgt.
+- Newsletter abbestellen via Platzhalter im Mail funktioniert.
 
 Modul: Linkverzeichnis
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
