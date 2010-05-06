@@ -718,8 +718,8 @@ class Contact extends ContactLib
                         if(in_array($objFields->fields['type'], array('select', 'radio'))){
                             $index = array_search($_POST['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
                             $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
-                        }
-                        $arrFields[$objFields->fields['id'].'_VALUE'] = $_POST['contactFormField_'.$objFields->fields['id']];
+                        }                        
+                        $arrFields[$objFields->fields['id'].'_VALUE'] = stripslashes($_POST['contactFormField_'.$objFields->fields['id']]);
                     }
                     $objFields->MoveNext();
                 }
