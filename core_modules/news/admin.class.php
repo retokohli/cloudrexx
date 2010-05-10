@@ -2385,7 +2385,7 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl->setVariable(array(
             'NEWS_TEASER_FRAME_TPL_ID'              => $templateId,
-            'NEWS_TEASER_FRAME_TPL_DESCRIPTION'     => htmlentities($templateDescription),
+            'NEWS_TEASER_FRAME_TPL_DESCRIPTION'     => htmlentities($templateDescription, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG'    => $sourceCode ? get_wysiwyg_editor('teaserFrameTplHtml', $templateHtml, 'html') : get_wysiwyg_editor('teaserFrameTplHtml', $templateHtml),
             'NEWS_TEASER_FRAME_TPL_SOURCE_CHECKED'  => $sourceCode ? "checked=\"checked\"" : "",
             'NEWS_TEASER_TITLE_TXT'                 => $templateId != 0 ? $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'] : $_ARRAYLANG['TXT_ADD_BOX_TEMPLATE']
