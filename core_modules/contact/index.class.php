@@ -719,7 +719,7 @@ class Contact extends ContactLib
                             $index = array_search($_POST['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
                             $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
                         }                        
-                        $arrFields[$objFields->fields['id'].'_VALUE'] = stripslashes($_POST['contactFormField_'.$objFields->fields['id']]);
+                        $arrFields[$objFields->fields['id'].'_VALUE'] = contrexx_stripslashes($_POST['contactFormField_'.$objFields->fields['id']]);
                     }
                     $objFields->MoveNext();
                 }
