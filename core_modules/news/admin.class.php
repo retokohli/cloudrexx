@@ -554,7 +554,7 @@ class newsManager extends newsLibrary {
         } else {
             $date = time();
         }
-        $newstitle              = contrexx_strip_tags($_POST['newsTitle']);
+        $newstitle              = contrexx_addslashes(htmlentities($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
         $newstext               = contrexx_addslashes($_POST['newsText']);
         $newstext               = $this->filterBodyTag($newstext);
         $newsredirect           = contrexx_strip_tags($_POST['newsRedirect']);
@@ -997,7 +997,7 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable(array(
                 'NEWS_ID'                       => (($copy) ? '' : $id),
                 'NEWS_STORED_ID'                => (($copy) ? '' : $id),
-                'NEWS_TITLE'                    => htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWS_TITLE'                    => contrexx_stripslashes($objResult->fields['title']),
                 'NEWS_TEXT'                     => get_wysiwyg_editor('newsText', $newsText),
                 'NEWS_REDIRECT'                 => htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_SOURCE'                   => htmlentities($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1132,8 +1132,8 @@ class newsManager extends newsLibrary {
                 $date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
             } else {
                 $date = time();
-            }
-            $title      = contrexx_strip_tags($_POST['newsTitle']);
+            }            
+            $title      = contrexx_addslashes(htmlentities($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
             $text       = contrexx_addslashes($_POST['newsText']);
             $text       = $this->filterBodyTag($text);
             $redirect   = contrexx_strip_tags($_POST['newsRedirect']);
