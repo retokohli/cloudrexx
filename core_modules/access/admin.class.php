@@ -1104,6 +1104,12 @@ class AccessManager extends AccessLib
         if (($objUser = $objFWUser->objUser->getUser(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) === false) {
             $objUser = new User();
         }
+        
+        if ($objFWUser->objUser->getAdminStatus()) {   
+            $cssDisplayStatus = 'none';           
+        } else {      
+            $cssDisplayStatus = '';    
+        }
 
         if (isset($_POST['access_save_user'])) {
             // only administrators are allowed to change a users account. or users may be allowed to change their own account
@@ -1268,7 +1274,8 @@ class AccessManager extends AccessLib
             'ACCESS_USER_PRIMARY_GROUP_MENU'        => $this->getGroupMenu($objUser->getPrimaryGroupId(), 'name="access_user_primary_group" id="access_user_primary_group" onchange="accessAssignGroupToUser(this,document.getElementById(\'access_user_not_associated_groups\'),document.getElementById(\'access_user_associated_groups\'))"', false),
             'ACCESS_USER_VALIDITY_EXPIRATION_MENU'  => $this->getUserValidityMenu($objUser->getValidityTimePeriod(), $objUser->getExpirationDate()),
             'ACCESS_USER_VALIDITY_OPTION_DISPLAY'   => $objUser->getAdminStatus() ? 'none' : '',
-            'ACCESS_JAVASCRIPT_FUNCTIONS'           => $this->getJavaScriptCode()
+            'ACCESS_JAVASCRIPT_FUNCTIONS'           => $this->getJavaScriptCode(),
+            'CSS_DISPLAY_STATUS'                    => $cssDisplayStatus
         ));
 
         $rowNr = 0;
