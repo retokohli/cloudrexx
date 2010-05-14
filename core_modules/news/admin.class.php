@@ -587,8 +587,6 @@ class newsManager extends newsLibrary {
 
         if(empty($status)) {
             $status = 0;
-            $startDate = "0000-00-00 00:00:00";
-            $endDate = "0000-00-00 00:00:00";
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
