@@ -590,7 +590,8 @@ class news extends newsLibrary {
                 $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
 
-            if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
+            if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && 
+               (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
                     $insertStatus = $this->_insert();
                     if (!$insertStatus) {
                         $newsTitle = $_POST['newsTitle'];
@@ -605,18 +606,22 @@ class news extends newsLibrary {
                     else {
                         $this->_notify_by_email($insertStatus);
                     }
-                } else {
-                    $newsTitle = $_POST['newsTitle'];
-                    $newsTeaserText = $_POST['newsTeaserText'];
-                    $newsRedirect = $_POST['newsRedirect'];
-                    $newsSource = $_POST['newsSource'];
-                    $newsUrl1 = $_POST['newsUrl1'];
-                    $newsUrl2 = $_POST['newsUrl2'];
-                    $newsCat = $_POST['newsCat'];
-                    $newsText = $_POST['newsText'];
+            } else {
+                $newsTitle = $_POST['newsTitle'];
+                $newsTeaserText = $_POST['newsTeaserText'];
+                $newsRedirect = $_POST['newsRedirect'];
+                $newsSource = $_POST['newsSource'];
+                $newsUrl1 = $_POST['newsUrl1'];
+                $newsUrl2 = $_POST['newsUrl2'];
+                $newsCat = $_POST['newsCat'];
+                $newsText = $_POST['newsText'];
 
+                if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) && 
+                     (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {                            
+                             
                     $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
                 }
+            }
         }
 
         if ($insertStatus) {
