@@ -860,20 +860,20 @@ class ContactManager extends ContactLib
                         	if($arrField['type'] == 'recipient'){
                         	    $boolUsesRecipientField = true;
                             }
-                        }
-
-                        $arrRecipients = $this->_getRecipientsFromPost($boolUsesRecipientField);
-                        if($this->_invalidRecipients && $boolUsesRecipientField){
-                            return $this->_modifyForm();
-                        }else{
-                            $this->setRecipients($arrRecipients);
-                        }
+                        }                       
 
                         if ($formId > 0) {
                             // This updates the database
                             $this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
                         } else {
                             $this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
+                        }
+                        
+                        $arrRecipients = $this->_getRecipientsFromPost($boolUsesRecipientField);
+                        if($this->_invalidRecipients && $boolUsesRecipientField){
+                            return $this->_modifyForm();
+                        }else{
+                            $this->setRecipients($arrRecipients);
                         }
 
                         $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
