@@ -131,6 +131,7 @@ define('LANG_ID',          BACKEND_LANG_ID);
  * Obsolete
  *
  * @todo   Replace globally with language constants
+ */
 $_LANGID = $objInit->getBackendLangId();
 $_FRONTEND_LANGID = $objInit->userFrontendLangId;
 
