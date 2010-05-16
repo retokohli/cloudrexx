@@ -736,7 +736,11 @@ class news extends newsLibrary {
                     $newsCat = $_POST['newsCat'];
                     $newsText = $_POST['newsText'];
 
-                    $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
+                    if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) && 
+                         (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {                        
+                             
+                        $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
+                    }
                 }
         }
 
