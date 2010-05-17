@@ -2734,12 +2734,23 @@ class newsManager extends newsLibrary {
     */
     function _deleteTeaserFrameTeamplate()
     {
+    	global $_ARRAYLANG;
+    	
         $templateId = intval($_GET['id']);
 
         $result = $this->_objTeaser->deleteTeaserFrameTeamplte($templateId);
         if ($result !== false && $result !== true) {
             $this->strOkMessage .= $result;
         }
+        
+        $this->_objTeaser = &new Teasers(true);
+
+        $this->_objTpl->loadTemplateFile('module_news_teasers.html');
+
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_TEASER_TEASER_BOXES'       => $_ARRAYLANG['TXT_TEASER_TEASER_BOXES'],
+            'TXT_TEASER_BOX_TEMPLATES'      => $_ARRAYLANG['TXT_TEASER_BOX_TEMPLATES']
+        ));
     }
 
     function _showTeaserFrameTemplates()
