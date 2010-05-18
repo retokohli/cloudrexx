@@ -1299,7 +1299,7 @@ class ContactManager extends ContactLib
 
         $arrFields = $this->getFormFields($id);
         $sourcecode = array();
-
+		$this->initContactForms(true);
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
         $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText --><br /><br />";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
