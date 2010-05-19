@@ -234,6 +234,8 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
 
 <ul id="tabmenu">
   <li><a id="calendarTab_event" class="active" href="javascript:{}" onclick="selectTab('event')" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
+  <li><a id="calendarTab_place" href="javascript:{}" onclick="selectTab('place')" title="TXT_CALENDAR_PLACE">{TXT_CALENDAR_PLACE}</a></li>
+  <li><a id="calendarTab_organizer" href="javascript:{}" onclick="selectTab('organizer')" title="TXT_CALENDAR_ORGANIZER">{TXT_CALENDAR_ORGANIZER}</a></li>
   <li><a id="calendarTab_registrations" href="javascript:{}" onclick="selectTab('registrations'); showOrHide('selectGroups');" title="{TXT_CALENDAR_REGISTRATIONS}">{TXT_CALENDAR_REGISTRATIONS}</a></li>
   <li><a id="calendarTab_series" href="javascript:{}" onclick="selectTab('series'); showOrHide('seriesType')" title="{TXT_CALENDAR_SERIES}">{TXT_CALENDAR_SERIES}</a></li>
   <li><a id="calendarTab_options" href="javascript:{}" onclick="selectTab('options')" title="{TXT_CALENDAR_OPTIONS}">{TXT_CALENDAR_OPTIONS}</a></li>
@@ -320,98 +322,6 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     </tr>
   </table>
   <br />
-  <div id="place" style="display:block">
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-      <tr>
-        <th colspan="2" nowrap="nowrap">
-          <div align="left">{TXT_CALENDAR_PLACE}</div>
-        </th>
-      </tr>
-      <tr class="row1">
-        <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
-        <td valign="middle">
-          <input type="text" name='inputPlace' style="width: 300px;" value="{CALENDAR_PLACE}"/>
-        </td>
-      </tr>
-      <tr class="row2">
-        <td valign="middle">{TXT_CALENDAR_STREET_NR}</td>
-        <td valign="middle">
-          <input type="text" name='inputPlaceStreetNr' style="width: 300px;" value="{CALENDAR_PLACE_STREET_NR}" />
-        </td>
-      </tr>
-      <tr class="row1">
-        <td valign="middle">{TXT_CALENDAR_ZIP}</td>
-        <td valign="middle">
-          <input type="text" name='inputPlaceZip' style="width: 300px;" value="{CALENDAR_PLACE_ZIP}" />
-        </td>
-      </tr>
-      <tr class="row2">
-        <td valign="middle">{TXT_CALENDAR_PLACE}</td>
-        <td valign="middle">
-          <input type="text" name='inputPlaceCity' style="width: 300px;" value="{CALENDAR_PLACE_CITY}"/>
-        </td>
-      </tr>
-      <tr class="row1">
-        <td valign="middle">{TXT_CALENDAR_LINK}</td>
-        <td valign="middle">
-          <input type="text" name='inputPlaceLink' style="width: 300px;" value="{CALENDAR_PLACE_LINK_SOURCE}" />
-        </td>
-      </tr>
-      <tr class="row2">
-        <td valign="middle">{TXT_CALENDAR_MAP}</td>
-        <td valign="middle">
-            <input type="text" name="inputPlaceMap" id="inputPlaceMap" style="width: 300px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
-        </td>
-      </tr>
-    </table>
-  </div>
-  <br />
-  <div id="organizer" style="display:block">
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-      <tr>
-        <th colspan="2" nowrap="nowrap">
-          <div align="left">{TXT_CALENDAR_ORGANIZER}</div>
-        </th>
-      </tr>
-      <tr class="row1">
-        <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
-        <td valign="middle">
-          <input type="text" name='inputOrganizer' style="width: 300px;" value="{CALENDAR_ORGANIZER}" />
-        </td>
-      </tr>
-      <tr class="row2">
-        <td valign="middle" >{TXT_CALENDAR_STREET_NR}</td>
-        <td valign="middle">
-          <input type="text" name='inputOrganizerStreetNr' style="width: 300px;" value="{CALENDAR_ORGANIZER_STREET_NR}" />
-        </td>
-      </tr>
-      <tr class="row1">
-        <td valign="middle" >{TXT_CALENDAR_ZIP}</td>
-        <td valign="middle">
-          <input type="text" name='inputOrganizerZip' style="width: 300px;" value="{CALENDAR_ORGANIZER_ZIP}" />
-        </td>
-      </tr>
-          <tr class="row2">
-        <td valign="middle" >{TXT_CALENDAR_PLACE}</td>
-        <td valign="middle">
-          <input type="text" name='inputOrganizerPlace' style="width: 300px;" value="{CALENDAR_ORGANIZER_PLACE}" />
-        </td>
-      </tr>
-      <tr class="row1">
-        <td valign="middle">{TXT_CALENDAR_LINK}</td>
-        <td valign="middle">
-          <input type="text" name='inputOrganizerLink' style="width: 300px;" value="{CALENDAR_ORGANIZER_LINK_SOURCE}" />
-        </td>
-      </tr>
-      <tr class="row2">
-        <td valign="middle" >{TXT_CALENDAR_MAIL}</td>
-        <td valign="middle">
-          <input type="text" name='inputOrganizerMail' style="width: 300px;" value="{CALENDAR_ORGANIZER_MAIL_SOURCE}" />
-        </td>
-      </tr>
-    </table>
-  </div>
-  <br />
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
       <th colspan="2" nowrap="nowrap">
@@ -421,6 +331,98 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     <tr>
       <td valign="top" colspan="2">
         {CALENDAR_DESCRIPTION}</td>
+    </tr>
+  </table>
+</div>
+
+<div id="place" class="calendarTab" style="display:none">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_PLACE}</div>
+      </th>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+      <td valign="middle">
+        <input type="text" name='inputPlace' style="width: 300px;" value="{CALENDAR_PLACE}"/>
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle">{TXT_CALENDAR_STREET_NR}</td>
+      <td valign="middle">
+        <input type="text" name='inputPlaceStreetNr' style="width: 300px;" value="{CALENDAR_PLACE_STREET_NR}" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td valign="middle">{TXT_CALENDAR_ZIP}</td>
+      <td valign="middle">
+        <input type="text" name='inputPlaceZip' style="width: 300px;" value="{CALENDAR_PLACE_ZIP}" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle">{TXT_CALENDAR_PLACE}</td>
+      <td valign="middle">
+        <input type="text" name='inputPlaceCity' style="width: 300px;" value="{CALENDAR_PLACE_CITY}"/>
+      </td>
+    </tr>
+    <tr class="row1">
+      <td valign="middle">{TXT_CALENDAR_LINK}</td>
+      <td valign="middle">
+        <input type="text" name='inputPlaceLink' style="width: 300px;" value="{CALENDAR_PLACE_LINK_SOURCE}" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle">{TXT_CALENDAR_MAP}</td>
+      <td valign="middle">
+          <input type="text" name="inputPlaceMap" id="inputPlaceMap" style="width: 300px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
+      </td>
+    </tr>
+  </table>
+</div>
+  
+<div id="organizer" class="calendarTab" style="display:none">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th colspan="2" nowrap="nowrap">
+        <div align="left">{TXT_CALENDAR_ORGANIZER}</div>
+      </th>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" width="140">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+      <td valign="middle">
+        <input type="text" name='inputOrganizer' style="width: 300px;" value="{CALENDAR_ORGANIZER}" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle" >{TXT_CALENDAR_STREET_NR}</td>
+      <td valign="middle">
+        <input type="text" name='inputOrganizerStreetNr' style="width: 300px;" value="{CALENDAR_ORGANIZER_STREET_NR}" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td valign="middle" >{TXT_CALENDAR_ZIP}</td>
+      <td valign="middle">
+        <input type="text" name='inputOrganizerZip' style="width: 300px;" value="{CALENDAR_ORGANIZER_ZIP}" />
+      </td>
+    </tr>
+        <tr class="row2">
+      <td valign="middle" >{TXT_CALENDAR_PLACE}</td>
+      <td valign="middle">
+        <input type="text" name='inputOrganizerPlace' style="width: 300px;" value="{CALENDAR_ORGANIZER_PLACE}" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td valign="middle">{TXT_CALENDAR_LINK}</td>
+      <td valign="middle">
+        <input type="text" name='inputOrganizerLink' style="width: 300px;" value="{CALENDAR_ORGANIZER_LINK_SOURCE}" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td valign="middle" >{TXT_CALENDAR_MAIL}</td>
+      <td valign="middle">
+        <input type="text" name='inputOrganizerMail' style="width: 300px;" value="{CALENDAR_ORGANIZER_MAIL_SOURCE}" />
+      </td>
     </tr>
   </table>
 </div>

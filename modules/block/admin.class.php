@@ -262,7 +262,7 @@ class blockManager extends blockLibrary
         if (count($arrBlocks)>0) {
             $rowNr = 0;
             foreach ($arrBlocks as $blockId => $arrBlock) {
-                if ($arrBlock['status'] ==  '1') {
+                if ($arrBlock['active'] ==  '1') {
                     $status = "<a href='index.php?cmd=block&amp;act=deactivate&amp;blockId=".$blockId."' title='".$_ARRAYLANG['TXT_BLOCK_ACTIVE']."'><img src='images/icons/led_green.gif' width='13' height='13' border='0' alt='".$_ARRAYLANG['TXT_BLOCK_ACTIVE']."' /></a>";
                 }else{
                     $status = "<a href='index.php?cmd=block&amp;act=activate&amp;blockId=".$blockId."' title='".$_ARRAYLANG['TXT_BLOCK_INACTIVE']."'><img src='images/icons/led_red.gif' width='13' height='13' border='0' alt='".$_ARRAYLANG['TXT_BLOCK_INACTIVE']."' /></a>";
@@ -564,7 +564,7 @@ class blockManager extends blockLibrary
     */
     function _showModifyBlock($copy = false)
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase, $_LANGID;
 
         $today                  = strtotime(date('Y-m-d'));
         $blockId                = isset($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
@@ -578,17 +578,37 @@ class blockManager extends blockLibrary
         $blockRandom4           = 0;
         $blockGlobal            = 0;
         $blockContent           = '';
-        $blockAssociatedLangIds = array();
-        $langAllPages           = 1;
+        $blockAssociatedPageIds = array();
 
         $this->_objTpl->loadTemplateFile('module_block_modify.html');
 
-
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_BLOCK_CONTENT'                 => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
+            'TXT_BLOCK_NAME'                    => $_ARRAYLANG['TXT_BLOCK_NAME'],
+            'TXT_BLOCK_RANDOM'                  => $_ARRAYLANG['TXT_BLOCK_RANDOM'],
+            'TXT_BLOCK_GLOBAL'                  => $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'],
+            'TXT_BLOCK_FRONTEND_LANGUAGES'      => $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
+            'TXT_BLOCK_SAVE'                    => $_ARRAYLANG['TXT_BLOCK_SAVE'],
+            'TXT_BLOCK_DEACTIVATE'              => $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
+            'TXT_BLOCK_ACTIVATE'                => $_ARRAYLANG['TXT_BLOCK_ACTIVATE'],
+            'TXT_SHOW_ON_ALL_PAGES'             => $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'],
+            'TXT_SHOW_ON_SELECTED_PAGES'        => $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
+            'TXT_BLOCK_CATEGORY'                => $_ARRAYLANG['TXT_BLOCK_CATEGORY'],
+            'TXT_BLOCK_NONE'                    => $_ARRAYLANG['TXT_BLOCK_NONE'],
+            'TXT_BLOCK_SHOW_FROM'               => $_ARRAYLANG['TXT_BLOCK_SHOW_FROM'],
+            'TXT_BLOCK_SHOW_UNTIL'              => $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'],
+            'TXT_BLOCK_SHOW_TIMED'              => $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'],
+            'TXT_BLOCK_SHOW_ALWAYS'             => $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'],
+            'BLOCK_FORM_ONSUBMIT'               => $formOnSubmit,
+            'TXT_BLOCK_FRONTEND_PAGES'          => $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'],
+            'TXT_BLOCK_LANG_SHOW'               => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'],
+        ));
 
         if (isset($_POST['block_save_block'])) {
             $blockCat               = isset($_POST['blockCat']) ? $_POST['blockCat'] : 0;
+            $blockContent           = array();
             $blockContent           = isset($_POST['blockBlockContent']) ? $_POST['blockBlockContent'] : '';
-            $blockContent           = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $blockContent);
+            //$blockName              = array();
             $blockName              = isset($_POST['blockName']) ? $_POST['blockName'] : '';
             $blockStart             = $this->_parseTimestamp('inputStart');
             $blockEnd               = $this->_parseTimestamp('inputEnd');
@@ -597,32 +617,24 @@ class blockManager extends blockLibrary
             $blockRandom3           = isset($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
             $blockRandom4           = isset($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
             $blockGlobal            = isset($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
-            $blockPages             = array();
-            $blockPages             = isset($_POST['selectedPages']) ? $_POST['selectedPages'] : '';;
-            $blockAssociatedLangIds = $_POST['block_associated_language'];
-
-
-            /*if (isset($_POST['block_associated_language'])) {
-                foreach ($_POST['block_associated_language'] as $langId => $status) {
-                    if (intval($status) == 1) {
-                        array_push($blockAssociatedLangIds, intval($langId));
-                    }
-                }
-            }*/
+            $blockAssociatedPageIds = array();
+            $blockAssociatedPageIds = $_POST['selectedPages'];
+            $blockLangActive        = array();
+            $blockLangActive        = $_POST['block_activate_language'];
 
             if (empty($blockName)) {
                 $blockName = $_ARRAYLANG['TXT_BLOCK_NO_NAME'];
             }
 
             if ($blockId != 0) {
-                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
+                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
                     return $this->_showOverview();
                 } else {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
                 }
             } else {
-                if ($this->_addBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedLangIds)) {
+                if ($this->_addBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
                     $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], $blockName);
                     return $this->_showOverview();
                 } else {
@@ -630,22 +642,22 @@ class blockManager extends blockLibrary
                 }
             }
         } elseif (($arrBlock = &$this->_getBlock($blockId)) !== false) {
-            $blockName      = $arrBlock['name'];
-            $blockStart     = $arrBlock['start'];
-            $blockEnd       = $arrBlock['end'];
-            $blockCat       = $arrBlock['cat'];
-            $blockRandom    = $arrBlock['random'];
-            $blockRandom2   = $arrBlock['random2'];
-            $blockRandom3   = $arrBlock['random3'];
-            $blockRandom4   = $arrBlock['random4'];
-            $blockGlobal    = $arrBlock['global'];
-            $blockContent   = $arrBlock['content'];
-            $blockAssociatedLangIds = $this->_getAssociatedLangIds($blockId);
+            $blockStart         = $arrBlock['start'];
+            $blockEnd           = $arrBlock['end'];
+            $blockCat           = $arrBlock['cat'];
+            $blockRandom        = $arrBlock['random'];
+            $blockRandom2       = $arrBlock['random2'];
+            $blockRandom3       = $arrBlock['random3'];
+            $blockRandom4       = $arrBlock['random4'];
+            $blockGlobal        = $arrBlock['global'];
+            $blockActive        = $arrBlock['active'];
+            $blockContent       = $arrBlock['content'];
+            $blockLangActive    = $arrBlock['lang_active'];
+            $blockName          = $arrBlock['name'];
+            $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId);
         } else {
-            $blockAssociatedLangIds = array_keys(FWLanguage::getLanguageArray());
+            $blockAssociatedPageIds = array();
         }
-
-        $blockContent = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$blockContent);
 
         $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
         $this->_pageTitle = $pageTitle;
@@ -654,11 +666,11 @@ class blockManager extends blockLibrary
             $blockId = 0;
         }
 
-
         $this->_objTpl->setVariable(array(
             'BLOCK_ID'                          => $blockId,
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
-            'BLOCK_NAME'                        => htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET),
+            'BLOCK_NAME'                        => htmlentities($blockName[$_LANGID], ENT_QUOTES, CONTREXX_CHARSET),
+            'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
             'BLOCK_START'                       => strftime('%Y-%m-%d', $blockStart),
             'BLOCK_END'                         => strftime('%Y-%m-%d', $blockEnd),
             'BLOCK_START_HOURS'                 => $this->_parseHours($blockStart),
@@ -669,138 +681,67 @@ class blockManager extends blockLibrary
             'BLOCK_RANDOM_2'                    => $blockRandom2 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_3'                    => $blockRandom3 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_4'                    => $blockRandom4 == '1' ? 'checked="checked"' : '',
-            'BLOCK_GLOBAL'                      => $blockGlobal == '1' ? 'checked="checked"' : '',
-            'BLOCK_CONTENT'                     => get_wysiwyg_editor('blockBlockContent', $blockContent)
+            'BLOCK_GLOBAL_0'                    => $blockGlobal == '0' ? 'checked="checked"' : '',
+            'BLOCK_GLOBAL_1'                    => $blockGlobal == '1' ? 'checked="checked"' : '',
+            'BLOCK_GLOBAL_2'                    => $blockGlobal == '2' ? 'checked="checked"' : '',
+            'BLOCK_SHOW_PAGE_SELECTOR'          => $blockGlobal == '2' ? 'block' : 'none',
         ));
 
-        $arrLanguages = &FWLanguage::getLanguageArray();
-        $langNr = 0;
-        $formOnSubmit = '';
-        foreach ($arrLanguages as $langId => $arrLanguage) {
-            $column = $langNr % 3;
-            $langStatus = "";
+        // create new ContentTree instance
+        $objContentTree = new ContentTree($langId);
+        $strSelectedPages   = '';
+        $strUnselectedPages = '';
 
-            //show on all pages
-            if ($blockId != 0) {
-                $objResult = $objDatabase->Execute('SELECT  all_pages
-                                                    FROM    '.DBPREFIX.'module_block_rel_lang
-                                                    WHERE   block_id='.$blockId.' AND lang_id='.$langId.'
-                                                ');
+        foreach ($objContentTree->getTree() as $arrData) {
+            $strSpacer  = '';
+            $intLevel   = intval($arrData['level']);
 
-                if ($objResult->RecordCount() > 0) {
-                    while (!$objResult->EOF) {
-                        $langAllPages = $objResult->fields['all_pages'];
-                        $objResult->MoveNext();
-                    }
-                }
+            for ($i = 0; $i < $intLevel; $i++) {
+                $strSpacer .= '&nbsp;&nbsp;';
+            }
+
+            if (in_array($arrData['catid'],$blockAssociatedPageIds)) {
+                $langStatus .= $arrData['catname'].", ";
+                $strSelectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['catid'].') </option>'."\n";
             } else {
-                $langAllPages = 1;
+                $strUnselectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['catid'].') </option>'."\n";
             }
-
-
-            //page relation
-            $objResult = $objDatabase->Execute('SELECT  page_id
-                                                FROM    '.DBPREFIX.'module_block_rel_pages
-                                                WHERE   block_id='.$blockId.'
-                                            ');
-            $arrRelationContent = array();
-
-            if ($objResult->RecordCount() > 0) {
-                while (!$objResult->EOF) {
-                    $arrRelationContent[$objResult->fields['page_id']] = '';
-                    $objResult->MoveNext();
-                }
-            }
-
-            // create new ContentTree instance
-            $objContentTree = new ContentTree($langId);
-            $strSelectedPages   = '';
-            $strUnselectedPages = '';
-
-            foreach ($objContentTree->getTree() as $arrData) {
-                $strSpacer  = '';
-                $intLevel   = intval($arrData['level']);
-                for ($i = 0; $i < $intLevel; $i++) {
-                    $strSpacer .= '&nbsp;&nbsp;';
-                }
-
-                if (array_key_exists($arrData['catid'],$arrRelationContent)) {
-                    $langStatus .= $arrData['catname'].", ";
-                    $strSelectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['catid'].') </option>'."\n";
-                } else {
-                    $strUnselectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['catid'].') </option>'."\n";
-                }
-            }
-
-            if (empty($strSelectedPages)) {
-                $objResult = $objDatabase->Execute('SELECT  lang_id
-                                                    FROM    '.DBPREFIX.'module_block_rel_lang
-                                                    WHERE   block_id='.$blockId.' AND lang_id='.$langId.'
-                                                ');
-
-                if ($objResult->RecordCount() > 0) {
-                    if ($langAllPages == '1') {
-                        $langStatus = "alle";
-                    } else {
-                        $langStatus = "-";
-                    }
-                } else {
-                    $langStatus = "-";
-                }
-            } else {
-                 $langStatus = substr($langStatus, 0,-2);
-            }
-
-
-            $this->_objTpl->setVariable(array(
-                'BLOCK_LANG_ID'                     => $langId,
-                'BLOCK_LANG_ID2'                    => $langId,
-                'BLOCK_LANG_ASSOCIATED'             => in_array($langId, $blockAssociatedLangIds) ? 'checked="checked"' : '',
-                'BLOCK_LANG_NOT_ASSOCIATED'         => in_array($langId, $blockAssociatedLangIds) ? '' : 'checked="checked"',
-                'BLOCK_SHOW_ON_ALL_PAGES'           => $langAllPages == 1 ? 'checked="checked"' : '',
-                'BLOCK_SHOW_ON_SELECTED_PAGES'      => $langAllPages != 1 ? 'checked="checked"' : '',
-                'BLOCK_LANG_NAME'                   => $arrLanguage['name'],
-                'BLOCK_LANG_STATUS'                 => '('.$langStatus.')',
-                'BLOCK_SELECTED_LANG_SHORTCUT'      => $arrLanguage['lang'],
-                'BLOCK_SELECTED_LANG_SHORTCUT2'     => $arrLanguage['lang'],
-                'BLOCK_SELECTED_LANG_NAME'          => $arrLanguage['name'],
-                'TXT_BLOCK_ACTIVATE'                => $_ARRAYLANG['TXT_BLOCK_ACTIVATE'],
-                'TXT_BLOCK_SHOW_ON_ALL_PAGES'       => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_ON_ALL_'],
-//                'TXT_BLOCK_SHOW_ON_SELECTED_PAGES'  => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_SELECTED_ALL_'],
-                'TXT_BLOCK_FRONTEND_PAGES'          => $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'],
-                'TXT_BLOCK_LANG_SHOW'               => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'],
-                'BLOCK_PAGES_DISPLAY'               => $langAllPages == 1 ? 'none' : 'block',
-                'BLOCK_RELATION_PAGES_UNSELECTED'   => $strUnselectedPages,
-                'BLOCK_RELATION_PAGES_SELECTED'     => $strSelectedPages,
-            ));
-
-            $this->_objTpl->parse('block_associated_language_'.$column);
-            $this->_objTpl->parse('block_associated_language_details');
-
-            $formOnSubmit .= "selectAll(document.getElementById('".$langId."SelectedPages')); selectAll(document.getElementById('".$langId."notSelectedPages')); ";
-
-            $langNr++;
         }
 
         $this->_objTpl->setVariable(array(
-            'TXT_BLOCK_CONTENT'                 => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
-            'TXT_BLOCK_NAME'                    => $_ARRAYLANG['TXT_BLOCK_NAME'],
-            'TXT_BLOCK_RANDOM'                  => $_ARRAYLANG['TXT_BLOCK_RANDOM'],
-            'TXT_BLOCK_GLOBAL'                  => $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'],
-            'TXT_BLOCK_FRONTEND_LANGUAGES'      => $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
-            'TXT_BLOCK_SAVE'                    => $_ARRAYLANG['TXT_BLOCK_SAVE'],
-            'TXT_BLOCK_DEACTIVATE'              => $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
-            'TXT_SHOW_ON_ALL_PAGES'             => $_ARRAYLANG['TXT_SHOW_ON_ALL_PAGES'],
-            'TXT_SHOW_ON_SELECTED_PAGES'        => $_ARRAYLANG['TXT_SHOW_ON_SELECTED_PAGES'],
-            'TXT_BLOCK_CATEGORY'                => $_ARRAYLANG['TXT_BLOCK_CATEGORY'],
-            'TXT_BLOCK_NONE'                    => $_ARRAYLANG['TXT_BLOCK_NONE'],
-            'TXT_BLOCK_SHOW_FROM'               => $_ARRAYLANG['TXT_BLOCK_SHOW_FROM'],
-            'TXT_BLOCK_SHOW_UNTIL'              => $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'],
-            'TXT_BLOCK_SHOW_TIMED'              => $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'],
-            'TXT_BLOCK_SHOW_ALWAYS'             => $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'],
-            'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
-            'BLOCK_FORM_ONSUBMIT'               => $formOnSubmit,
+            'BLOCK_RELATION_PAGES_UNSELECTED'   => $strUnselectedPages,
+            'BLOCK_RELATION_PAGES_SELECTED'     => $strSelectedPages,
         ));
+
+        $arrLanguages = &FWLanguage::getLanguageArray();
+        $i=0;
+        foreach ($arrLanguages as $langId => $arrLanguage) {
+            if($arrLanguage['frontend'] == 1) {
+                $tmpBlockContent       = $blockContent[$langId];
+                $tmpBlockLangActive    = $blockLangActive[$langId];
+                $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
+
+                $this->_objTpl->setVariable(array(
+                    'BLOCK_LANG_TAB_LANG_ID'        => intval($langId),
+                    'BLOCK_LANG_TAB_CLASS'          => $i == 0 ? 'active' : '',
+                    'TXT_BLOCK_LANG_TAB_LANG_NAME'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                ));
+                $this->_objTpl->parse('block_language_tabs');
+
+                $this->_objTpl->setVariable(array(
+                    'BLOCK_LANG_ID'                 => intval($langId),
+                    'BLOCK_SHOW_CONTENT_EDITOR'     => $tmpBlockLangActive == 1 ? 'block' : $blockId == 0 && $i == 0 ? 'block' : 'none',
+                    'BLOCK_LANG_ASSOCIATED'         => $blockId == 0 && $i == 0 ? 'checked="checked"' : $tmpBlockLangActive == 1 ? 'checked="checked"' : '',
+                    'BLOCK_LANG_NOT_ASSOCIATED'     => $blockId == 0 && $i == 0 ? '' : $tmpBlockLangActive == 0 ? 'checked="checked"' : '',
+                    'BLOCK_SHOW_CONTENT'            => $i == 0 ? 'block' : 'none',
+                    'TXT_BLOCK_CONTENT_LANG_NAME'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'BLOCK_CONTENT'                 => get_wysiwyg_editor('blockBlockContent['.$langId.']', $tmpBlockContent),
+                ));
+                $this->_objTpl->parse('block_language_content');
+
+                $i++;
+            }
+        }
     }
 
     /**
@@ -839,7 +780,7 @@ class blockManager extends blockLibrary
         if (count($arrDelBlocks) > 0) {
             foreach ($arrDelBlocks as $blockId) {
                 foreach ($arrDelBlocks as $blockId) {
-                    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang WHERE block_id=".$blockId) === false || $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_blocks WHERE id=".$blockId) === false || $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId) === false) {
+                    if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId) === false || $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_blocks WHERE id=".$blockId) === false || $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId) === false) {
                         array_push($arrFailedBlock, $blockId);
                     }
                 }
