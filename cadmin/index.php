@@ -26,7 +26,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-DBG::deactivate();
+DBG::deactivate(DBG_PHP);
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -1084,6 +1084,22 @@ switch ($plainCmd) {
             $subMenuTitle = $_CORELANG['TXT_HOTELCARD'];
             Hotelcard::getPage();
         }
+        break;
+        
+    /**
+     * Mediadir Module
+     * @author  Janik Tschanz <jt@comvation.com>
+     * @since   3.0.0
+     * @version 1.0
+     */
+    case 'mediadir':
+        Permission::checkAccess(155, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/mediadir/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_MEDIADIR_MODULE'];
+        $objMediaDirectory = new mediaDirectoryManager();
+        $objMediaDirectory->getPage();
         break;
 
     //-------------------------------------------------------
