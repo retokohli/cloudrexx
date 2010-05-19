@@ -264,12 +264,39 @@ function setFormFieldAttributeBox(el, type)
     }
 }
 
+function checkFieldValue()
+{
+	var elField, i, n, isSetAllValue;
+	
+	isSetAllValue = true;
+	for (n=1; n<formFieldLastId; n++ ){		
+		if (document.getElementById('contactFormFieldAttributeBox_'+n)){			
+			elField = document.getElementById('contactFormFieldAttributeBox_'+n);	
+		    for (i=0; i<elField.childNodes.length; i++) {
+	            if (elField.childNodes[i].nodeType == 1) {	                            
+	                if (elField.childNodes[i].value == '') {	                	
+	                	isSetAllValue = false;
+	                }		                
+	            }             
+		    }
+		}
+	}
+	
+	return isSetAllValue;
+
+}
+
 function createContentSite()
 {
-    if (confirm('{TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE}')) {
-        document.getElementById('contentSiteAction').value = "create";
-    }
-    return true;
+	if (checkFieldValue()) {	
+        if (confirm('{TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE}')) {
+            document.getElementById('contentSiteAction').value = "create";
+        }
+        return true;    
+	} else {
+		alert ("{TXT_CONTACT_SET_MANDATORY_FIELD}");
+		return false;
+	}
 }
 
 function updateContentSite()
@@ -308,10 +335,10 @@ function updateContentSite()
         <div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormFieldId_{CONTACT_FORM_FIELD_NEXT_ID}" >
             {CONTACT_FORM_FIELD_NEXT_ID}
         </div>
-        <div style="width:120px; display:inline; float:left;">
+        <div style="width:135px; display:inline; float:left;">
             <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_NEXT_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_NEXT_ID}" value="" />
         </div>
-        <div style="width:135px; display:inline; float:left;">
+        <div style="width:120px; display:inline; float:left;">
             {CONTACT_FORM_FIELD_TYPE_MENU_TPL}
         </div>
         <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_NEXT_ID}">
