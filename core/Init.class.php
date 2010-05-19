@@ -483,7 +483,7 @@ class InitCMS
             }
         }
 
-        if (preg_match("#media.?#", $module)) {
+        if (preg_match("#media.?#", $module) && $module != 'mediadir') {
             $module = 'media';
         }
 
