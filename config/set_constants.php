@@ -119,4 +119,6 @@ define('ASCMS_HOTELCARD_IMAGES_FOLDER',    ASCMS_PATH_OFFSET.'/images/hotelcard'
 define('ASCMS_DATE_FORMAT_DOW_D_M_Y',            'w, d.m.Y');
 // TODO: The date constants *SHOULD* be localized!
 
+define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/mediadir');
+define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/mediadir');
 ?>
