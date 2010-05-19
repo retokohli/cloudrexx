@@ -3236,7 +3236,7 @@ class ContentManager
     {
         global $objDatabase;
 
-        if ($langId == 0) $langId = $this->firstActiveLang;
+        /*if ($langId == 0) $langId = $this->firstActiveLang;
 
         $blocks = array('', ''); // initialize to empty strings to avoid notice
         $arrBlocks = array();
@@ -3271,7 +3271,7 @@ class ContentManager
             } else {
                 $blocks[1] .= '<option value="'.$arrData['id'].'">'.$arrData['name'].' ('.$arrData['id'].') </option>'."\n";
             }
-        }
+        }*/
         return $blocks;
     }
 
@@ -3416,7 +3416,7 @@ class ContentManager
     {
         global $objDatabase;
 
-        if ($langId == 0) $langId = FRONTEND_LANG_ID;
+        /*if ($langId == 0) $langId = FRONTEND_LANG_ID;
 
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_block_rel_pages
@@ -3457,7 +3457,7 @@ class ContentManager
                 ";
                 $objDatabase->Execute($query);
             }
-        }
+        }*/
     }
 
 

@@ -124,6 +124,117 @@ div.row2 {
 
 
 /***************************************************/
+/* CSS DEFINITIONS FOR MEDIADIR MODULE             */
+/***************************************************/
+
+#mediadir .mediadirSelector,
+#mediadir .mediadirGoogleMap{
+    clear: both;
+    padding-left: 155px;
+    margin-top: -15px;
+    margin-bottom: 15px;
+}
+
+#mediadir .map{
+    margin-top: 10px;
+    border: 1px solid #CFCFCF;
+    width: 489px; 
+    height: 250px; 
+}
+
+#mediadir table.list{
+    padding: 0px 20px 10px 20px;
+    width: 710px !important;
+    margin-bottom: 20px;
+    margin-left: -20px;
+	background-image:url(images/list_radius_bg.gif);
+	background-repeat:repeat-x;
+	background-position:bottom left;
+}
+
+#mediadir table.list h3{
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+}
+
+#mediadir table.list tr td{
+    padding: 4px 0px 4px 0px;
+}
+
+#mediadir .mapLarge{
+    margin-top: 10px;
+    border: 0px solid #CFCFCF;
+    width: 698px; 
+    height: 600px; 
+}
+
+#mediadir input[type="button"].active {
+	font-weight:bold;
+	text-transform:uppercase;
+	color: #74CC00;
+}
+
+#mediadir input.mediadirInputfieldGoogleMapLarge {
+	width: 185px;
+}
+
+#mediadir input.mediadirInputfieldGoogleMapSmall {
+	width: 35px;
+}
+
+#mediadir input.mediadirVoteButton {
+       font-weight:normal;  
+       min-width:1px; 
+       width: 30px !important;
+}
+
+#mediadir p {
+    clear: left;
+    margin: 0;
+    padding: 2px 0 3px 0;
+    padding-left: 155px;
+    height: 1%;
+    width: 500px;
+}
+
+#mediadir p label {
+    font-weight: bold;
+    float: left;
+    margin-left: -155px;
+    width: 150px;
+}
+
+#mediadir .mediadirCommentForm p{
+    width: 330px;
+}
+
+#mediadir p span{
+    padding-bottom: 15px;
+    margin-left: 0px;
+    width: 300px;
+    font-weight: normal;
+}
+
+
+#mediadir .mediadirCommentOk,
+#mediadir .mediadirVotingOk{
+    border: 1px solid #9DCF5A;
+    background-color:#F8FFEF;
+    padding: 10px;
+    color: #9DCF5A;
+}
+
+#mediadir .mediadirCommentErr,
+#mediadir .mediadirVotingErr{
+    border: 1px solid #FF8F8F;
+    background-color:#FFEFEF;
+    padding: 10px;
+    color: #FF8F8F;
+}
+
+
+
+/***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */
 /***************************************************/
 
@@ -321,6 +432,7 @@ div#livecam #CALBUTTONDPC_datum {
 	padding: 0px 0px 15px 0px;
 	height: auto !important;
 	text-align:left;
+        clear: both;
 }
 
 #calendar div.registration  {
@@ -363,7 +475,7 @@ div#livecam #CALBUTTONDPC_datum {
 	margin: 0px 0px 5px 15px;
 }
 
-#calendar div.adress,
+#calendar div.place,
 #calendar div.organizer {
 	float: left;
 	width: 50%;
@@ -372,7 +484,7 @@ div#livecam #CALBUTTONDPC_datum {
 	height: auto !important;
 }
 
-#calendar div.adress address,
+#calendar div.place address,
 #calendar div.organizer address {
 	font-style: normal;
 }

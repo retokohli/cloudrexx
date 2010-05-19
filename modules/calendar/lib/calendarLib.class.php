@@ -1185,6 +1185,28 @@ class calendarLibrary
                 $this->_objTpl->hideBlock('calendarRegistration');
             }
         }
+        
+        if ($objResultNote->fields['placeName'] = "" &&
+            empty($objResultNote->fields['placeStreet']) &&
+            empty($objResultNote->fields['placeZip']) &&
+            empty($objResultNote->fields['placeCity']) &&
+            empty($objResultNote->fields['placeLink']) &&
+            empty($objResultNote->fields['placeMap'])) {
+            if ($this->_objTpl->blockExists('calendarPlace')) {
+                $this->_objTpl->hideBlock('calendarPlace');
+            }
+        }
+        
+        if (empty($objResultNote->fields['organizerName']) &&
+            empty($objResultNote->fields['organizerStreet']) &&
+            empty($objResultNote->fields['organizerPlace']) &&
+            empty($objResultNote->fields['organizerZip']) &&
+            empty($objResultNote->fields['organizerLink']) &&
+            empty($objResultNote->fields['organizerMail'])) {
+            if ($this->_objTpl->blockExists('calendarOrganizer')) {
+                $this->_objTpl->hideBlock('calendarOrganizer');
+            }
+        }
 
         return $return;
     }

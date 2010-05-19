@@ -73,7 +73,7 @@
  * will either activate or deactivate all levels.
  */
 include_once(dirname(__FILE__).'/lib/DBG.php');
-DBG::deactivate();
+DBG::deactivate(DBG_PHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');

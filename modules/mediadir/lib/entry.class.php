@@ -338,7 +338,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	
 	                        if(intval($arrEntry['entryAddedBy']) != 0) {
 	                            $objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']));
-	                            $strAddedBy = $objUser->getUsername();
+	                            //$strAddedBy = $objUser->getUsername();
 	                        } else {
 	                            $strAddedBy = "unknown";
 	                        }
