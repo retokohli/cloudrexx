@@ -55,6 +55,7 @@
  * @uses        /modules/immo/index.class.php
  * @uses        /modules/blog/homeContent.class.php
  * @uses        /modules/blog/index.class.php
+ * @uses        /modules/mediadir/index.class.php
  */
 
 /**
@@ -1722,6 +1723,31 @@ switch ($plainSection) {
         $objTemplate->setVariable(
             'CONTENT_TEXT', Hotelcard::getPage($page_content));
         break;
+        
+    
+        
+    //-------------------------------------------------------
+    // Media Directory Module
+    //-------------------------------------------------------
+    case "mediadir": 
+        $modulespath = "modules/mediadir/index.class.php";
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objMediaDirectory = new mediaDirectory($page_content);
+
+        $objMediaDirectory->pageTitle = $page_title;
+        $objMediaDirectory->metaTitle = $page_metatitle;
+
+        $objTemplate->setVariable('CONTENT_TEXT', $objMediaDirectory->getPage());
+
+        if($objMediaDirectory->getPageTitle() != '') {
+            $page_title->pageTitle = $objMediaDirectory->getPageTitle();
+        }
+
+        if($objMediaDirectory->getMetaTitle() != '') {
+            $page_metatitle = $objMediaDirectory->getMetaTitle();
+        }
+    break;
 
     //-------------------------------------------------------
     // default case
@@ -1814,6 +1840,32 @@ if(!empty($marketCheck)) {
         if(!empty($marketCheck)) {
             $objTemplate->setVariable('TXT_MARKET_LATEST', $_CORELANG['TXT_MARKET_LATEST']);
                $objMarket->getBlockLatest();
+        }
+    }
+}
+
+//-------------------------------------------------------
+// Mediadir Show Latest
+//-------------------------------------------------------
+$mediadirCheck = array();
+
+for($i = 1; $i <= 10; $i++){
+    if($objTemplate->blockExists('mediadirLatest_row_'.$i)){
+        array_push($mediadirCheck, $i);
+    }
+}
+
+if(!empty($mediadirCheck)) {
+    $modulespath = "modules/mediadir/index.class.php";
+    if (file_exists($modulespath)){
+        /**
+         * @ignore
+         */
+        require_once($modulespath);
+        $objMediadir = new mediaDirectory('');
+        if(!empty($mediadirCheck)) {
+            $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+            $objMediadir->getHeadlines($mediadirCheck);
         }
     }
 }
