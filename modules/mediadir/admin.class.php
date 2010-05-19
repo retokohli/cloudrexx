@@ -1,0 +1,1411 @@
+<?php
+
+/**
+ * Media  Directory
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
+ * @subpackage  module_mediadir
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
+ * Includes
+ */
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/entry.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/category.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/level.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';
+require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/settings.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
+
+
+class mediaDirectoryManager extends mediaDirectoryLibrary
+{
+    private $strOkMessage;
+    public $strErrMessage;
+    private $pageTitle;
+
+    /**
+     * Constructor
+     */
+    function __construct()
+    {
+        global  $_ARRAYLANG, $_CORELANG, $objTemplate;
+
+        //globals
+        $_ARRAYLANG['TXT_MEDIADIR_SPEZ_FIELDS'] = "Spezialangaben";
+		$_ARRAYLANG['TXT_MEDIADIR_CHOOSE_USER'] = "Besitzer wählen";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DEFAULT_DISPLAYDURATION'] = "Standard Anzeigedauer";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DEFAULT_DISPLAYDURATION_INFO'] = "Mit dieser Option definieren sie, wielange ein Eintrag standardmässig angezeigt wird. Diese Angaben können zusätzlich bei jedem Eintrag einzeln definiert werden. ";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION'] = "Benachrichtigung bei Ablauf";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION_INFO'] = "Benachrichtigung bei Ablauf fsf sdf sdf sdf ";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION_DAYSBEFOR'] = "Tag(e) vor Ablauf";
+        $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION'] = "Anzeigedauer";
+        $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'] = "Unbegrenzt";
+        $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_PERIOD'] = "Zeitspanne";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY'] = "Tag(e)";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH'] = "Monat(e)";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR'] = "Jahr(e)";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR'] = "Jahr(e)";
+        $_ARRAYLANG['TXT_MEDIADIR_MAIL_ACTION_NOTIFICATIONDISPLAYDURATION'] = "Benachrichtigung fÃ¼r ablaufende Anzeigedauer";
+        $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'] = "Benachrichtigungsstatus zurÃ¼cksetzen?";
+        $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';
+ 
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/mediadir/template');
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+
+        //get active frontent languages
+        parent::getFrontendLanguages();
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION','<a href="index.php?cmd=mediadir">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>
+                                                        <a href="index.php?cmd=mediadir&amp;act=modify_entry">'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>
+                                                        <a href="index.php?cmd=mediadir&amp;act=entries">'.$_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'].'</a>
+                                                        <!-- <a href="index.php?cmd=mediadir&amp;act=interfaces">'.$_ARRAYLANG['TXT_MEDIADIR_INTERFACES'].'</a> -->
+                                                        <a href="index.php?cmd=mediadir&amp;act=settings">'.$_CORELANG['TXT_SETTINGS'].'</a>');
+    }
+
+    /**
+    * get page
+    *
+    * Reads the act and selects the right action
+    *
+    * @access   public
+    * @return   string  parsed content
+    */
+    function getPage()
+    {
+        global  $_ARRAYLANG, $objTemplate;
+
+        switch ($_GET['act']) {
+            case 'modify_entry':
+                $this->modifyEntry();
+                break;
+            case 'modify_category':
+                $this->modifyCategory();
+                break;
+            case 'modify_level':
+                $this->modifyLevel();
+                break;
+            case 'entries':
+            case 'move_entry':
+            case 'delete_entry':
+            case 'restore_voting':
+            case 'restore_comments':
+            case 'confirm_entry':
+                $this->manageEntries();
+                break;
+            case 'interfaces':
+                $this->interfaces();
+                break;
+            case 'settings':
+                $this->settings();
+                break;
+            case 'switchState':
+    		    $this->switchState();
+    		    break;
+            case 'delete_comment':
+            case 'comments':
+    		    $this->manageComments();
+    		    break;
+    		case 'delete_level':
+    		case 'delete_category':
+            default:
+                $this->overview();
+                break;
+        }
+
+        $objTemplate->setVariable(array(
+            'CONTENT_OK_MESSAGE'     => $this->strOkMessage,
+            'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
+            'CONTENT_TITLE'          => $this->pageTitle,
+            'ADMIN_CONTENT'          => $this->_objTpl->get(),
+        ));
+
+        return $this->_objTpl->get();
+    }
+
+    function overview()
+    {
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_overview.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'];
+
+        switch ($_GET['act']) {
+            case 'delete_level':
+                $objLevel = new mediaDirectoryLevel();
+                $strStatus = $objLevel->deleteLevel(intval($_GET['id']));
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'];
+                }
+                break;
+            case 'order_level':
+                $objLevel = new mediaDirectoryLevel();
+                $strStatus = $objLevel->saveOrder($_POST);
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVELS']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVELS']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                }
+                break;
+            case 'delete_category':
+                $objCategory = new mediaDirectoryCategory();
+                $strStatus = $objCategory->deleteCategory(intval($_GET['id']));
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'];
+                }
+                break;
+            case 'order_category':
+                $objCategory = new mediaDirectoryCategory();
+                $strStatus = $objCategory->saveOrder($_POST);
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                }
+                break;
+        }
+
+        //get seting values
+        parent::getSettings();
+
+        //get search dropdowns
+        $objCategories = new mediaDirectoryCategory();
+        $catDropdown = $objCategories->listCategories(null, 3, $intCategoryId);
+
+        $objLevels = new mediaDirectoryLevel();
+        $levelDropdown = $objLevels->listLevels(null, 3, $intLevelId);
+
+        //parse global variables
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_CONFIRM' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM'],
+            'TXT_VIEW' => $_ARRAYLANG['TXT_MEDIADIR_VIEW'],
+            'TXT_EDIT' => $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
+            'TXT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
+            'TXT_ENTRY_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_ENTRY_SEARCH'],
+            'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
+            'TXT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_SELECT_ACTION' => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_CONFIRM_ALL' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_ALL'],
+            'TXT_DELETE_ALL' => $_CORELANG['TXT_MULTISELECT_DELETE'],
+            'TXT_ALERT_DELETE_ALL' => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
+            'TXT_ALERT_ACTION_IS_IRREVERSIBLE' => $_CORELANG['TXT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_ALERT_MAKE_SELECTION' => $_ARRAYLANG['TXT_MEDIADIR_ALERT_MAKE_SELECTION'],
+            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_MEDIADIR_FUNCTIONS'],
+            'TXT_CONFIRM_LIST' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_LIST'],
+            'TXT_LATEST_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_LATEST_ENTRIES'],
+            'TXT_EXPAND_LINK' => $_CORELANG['TXT_EXPAND_LINK'],
+            'TXT_COLLAPS_LINK' => $_CORELANG['TXT_COLLAPS_LINK'],
+            'TXT_MEDIADIR_NAME' => $_CORELANG['TXT_NAME'],
+            'TXT_MEDIADIR_DATE' => $_CORELANG['TXT_DATE'],
+            'TXT_MEDIADIR_AUTHOR' => $_ARRAYLANG['TXT_MEDIADIR_AUTHOR'],
+            'TXT_MEDIADIR_HITS' => $_ARRAYLANG['TXT_MEDIADIR_HITS'],
+            'TXT_MEDIADIR_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
+            'TXT_MEDIADIR_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
+            'TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
+            'TXT_MEDIADIR_MAKE_SELECTION' => $_ARRAYLANG['TXT_MEDIADIR_MAKE_SELECTION'],
+            'TXT_MEDIADIR_STATUS' => $_CORELANG['TXT_STATUS'],
+            'TXT_MEDIADIR_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
+            'TXT_MEDIADIR_ID_OR_SEARCH_TERM' =>  $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
+            'TXT_MEDIADIR_ALL_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_ALL_LEVELS'],
+            'TXT_MEDIADIR_ALL_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_ALL_CATEGORIES'],
+            'MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS' => $catDropdown,
+            'MEDIADIR_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
+        ));
+
+        if($this->arrSettings['settingsShowLevels'] == 1) {
+            $this->_objTpl->touchBlock('mediadirLevelDoropdown');
+        } else {
+            $this->_objTpl->hideBlock('mediadirLevelDoropdown');
+        }
+
+        //show unconfirmed entries (if activated)
+        if($this->arrSettings['settingsConfirmNewEntries'] == 1) {
+            $objUnconfirmedEntries = new mediaDirectoryEntry();
+            $objUnconfirmedEntries->getEntries(null,null,null,null, null, 1,null,0,'n');
+            $objUnconfirmedEntries->listEntries($this->_objTpl, 1);
+
+            if(empty($objUnconfirmedEntries->arrEntries)) {
+                $this->_objTpl->hideBlock('confirmBlock');
+            }
+        } else {
+            $this->_objTpl->hideBlock('confirmBlock');
+        }
+
+        //show latest entries
+        $objLatestEntries = new mediaDirectoryEntry();
+        $objLatestEntries->getEntries(null,null,null,null, 1, null, null, 0, $this->arrSettings['settingsLatestNumBackend']);
+        $objLatestEntries->listEntries($this->_objTpl, 1);
+
+        if(empty($objLatestEntries->arrEntries)) {
+            $this->_objTpl->hideBlock('mediadirLatestSelectAction');
+        } else {
+            $this->_objTpl->touchBlock('mediadirLatestSelectAction');
+        }
+
+        //show levels (if activated)
+        if($this->arrSettings['settingsShowLevels'] == 1) {
+            $objLevels = new mediaDirectoryLevel();
+            $objLevels->listLevels($this->_objTpl, 1, null);
+
+
+            if(isset($_GET['exp_cat']) || $_GET['act'] == 'order_category' || $_GET['act'] == 'delete_category') {
+                $strTabLevelsDisplay = 'none';
+                $strTabLevelsActive = '';
+                $strTabCategoriesDisplay = 'block';
+                $strTabCategoriesActive = 'class="active"';
+            } else {
+                $strTabLevelsDisplay = 'block';
+                $strTabLevelsActive = 'class="active"';
+                $strTabCategoriesDisplay = 'none';
+                $strTabCategoriesActive = '';
+            }
+
+            $this->_objTpl->setVariable(array(
+                'TXT_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
+                'TAB_CATEGORIES_ACTIVE' => $strTabCategoriesActive,
+                'TAB_LEVELS_ACTIVE' => $strTabLevelsActive,
+            ));
+
+            $this->_objTpl->parse('tabMenu');
+
+            $this->_objTpl->setVariable(array(
+                'TXT_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
+                'TXT_ADD_LEVEL' => $_ARRAYLANG['TXT_MEDIADIR_LEVEL']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'],
+                'TAB_LEVELS_DISPLAY' => $strTabLevelsDisplay,
+                'TAB_CATEGORIES_DISPLAY' => $strTabCategoriesDisplay,
+            ));
+
+           $this->_objTpl->parse('levelsTab');
+        } else {
+            $this->_objTpl->setVariable(array(
+                'TAB_CATEGORIES_DISPLAY' => "block",
+            ));
+
+            $this->_objTpl->hideBlock('tabMenu');
+            $this->_objTpl->hideBlock('levelsTab');
+            $this->_objTpl->hideBlock('mediadirLevelsList');
+        }
+
+
+        //show categories
+        $objCategories = new mediaDirectoryCategory();
+        $objCategories->listCategories($this->_objTpl, 1, null);
+
+        $this->_objTpl->setVariable(array(
+            'TXT_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
+            'TXT_ADD_CATEGORY' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'],
+        ));
+    }
+
+
+
+    function modifyEntry()
+    {
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_modify_entry.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'];
+        
+         //get seting values
+        parent::getSettings();
+
+        if(intval($_GET['id']) != 0) {
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
+            $intEntryId = intval($_GET['id']);
+        } else {
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
+            $intEntryId = null;
+        }
+
+        //count forms
+        $objForms = new mediaDirectoryForm();
+        $arrActiveForms = array();
+
+        foreach ($objForms->arrForms as $intFormId => $arrForm) {
+            if($arrForm['formActive'] == 1) {
+                $arrActiveForms[] = $intFormId;
+            }
+        }
+
+        $intCountForms = count($arrActiveForms);
+
+        if($intCountForms > 0) {
+            if(intval($intEntryId) == 0 && (intval($_POST['selectedFormId']) == 0 && intval($_POST['formId']) == 0) && $intCountForms > 1) {
+                $intFormId = null;
+
+                //get form selector
+                $objForms->listForms($this->_objTpl, 2, $intFormId);
+
+                //parse blocks
+                $this->_objTpl->hideBlock('mediadirInputfieldList');
+            } else {
+                //save entry data
+                if(isset($_POST['submitEntryModfyForm']) && intval($_POST['formId']) != 0) {
+                    $objEntry = new mediaDirectoryEntry();
+                    $status = $objEntry->saveEntry($_POST, intval($_POST['entryId']));
+
+                    if(!empty($_POST['entryId'])) {
+                        if($status == true) {
+                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+                        } else {
+                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                        }
+                    } else {
+                        if($status == true) {
+                            $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
+                        } else {
+                            $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
+                        }
+                    }
+                }
+                
+                //get form id
+                if(intval($intEntryId) != 0) {
+                    //get entry data
+                    $objEntry = new mediaDirectoryEntry();
+                    $objEntry->getEntries($intEntryId, null, null, null, null, false,false);
+                    
+                    if(empty($objEntry->arrEntries)) {
+                        $objEntry->getEntries($intEntryId, null, null, null, null, true,false);
+                    }
+                    
+                    $intFormId = $objEntry->arrEntries[$intEntryId]['entryFormId'];
+                } else {
+                    //set form id
+                    if($intCountForms == 1) {
+                        $intFormId = intval($arrActiveForms[0]);
+                    } else {
+                        $intFormId = intval($_POST['selectedFormId']);
+                    }
+
+                    if(intval($_POST['formId']) != 0) {
+                        $intFormId = intval($_POST['formId']);
+                    }
+                }
+
+                //get inputfield object
+                $objInputfields = new mediaDirectoryInputfield($intFormId);
+
+                //list inputfields
+                $objInputfields->listInputfields($this->_objTpl, 2, $intEntryId);
+                
+                //get user data
+                if($intEntryId != 0) {
+                    $intEntryDourationStart = 1;
+                    $intEntryDourationEnd = 2;
+                    
+                	$this->_objTpl->setVariable(array(
+		                'TXT_MEDIADIR_CHOOSE_USER' => $_ARRAYLANG['TXT_MEDIADIR_CHOOSE_USER'],
+		                'MEDIADIR_USER_LIST' => $objEntry->getUsers($intEntryId),
+		            ));
+		            
+		            $this->_objTpl->parse('mediadirUserList');
+                } else { 
+                	
+                	$intEntryDourationStart = 1;
+                    $intEntryDourationEnd = 2;
+                	$this->_objTpl->hideBlock('mediadirUserList');
+                }
+                
+                //get display duration  data
+                switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
+                    case 1:
+                        $intDiffDay = $this->arrSettings['settingsEntryDisplaydurationValue'];
+                        $intDiffMonth = 0;
+                        $intDiffYear = 0;
+                        break;
+                    case 2:
+                        $intDiffDay = 0;
+                        $intDiffMonth = $this->arrSettings['settingsEntryDisplaydurationValue'];
+                        $intDiffYear = 0;
+                        break;
+                    case 3:
+                        $intDiffDay = 0;
+                        $intDiffMonth = 0;
+                        $intDiffYear = $this->arrSettings['settingsEntryDisplaydurationValue'];
+                        break;
+                }
+                
+                if($intEntryId != 0) {
+                	if(intval($objEntry->arrEntries[$intEntryId]['entryDurationType']) == 1) {
+                		$intEntryDourationAlways = 'selected="selected"';
+                		$intEntryDourationPeriod = '';
+                        $intEntryDourationShowPeriod = 'none';
+	                    $intEntryDourationStart = date("Y-m-d", mktime());
+                        $intEntryDourationEnd = date("Y-m-d", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
+                	} else {
+                        $intEntryDourationAlways = '';
+                        $intEntryDourationPeriod = 'selected="selected"';
+                        $intEntryDourationShowPeriod = 'inline';
+	                    $intEntryDourationStart = date("Y-m-d", $objEntry->arrEntries[$intEntryId]['entryDurationStart']);
+	                    $intEntryDourationEnd = date("Y-m-d", $objEntry->arrEntries[$intEntryId]['entryDurationEnd']);
+                	}
+                	
+                	if(intval($objEntry->arrEntries[$intEntryId]['entryDurationNotification']) == 1) {
+                		$this->_objTpl->setVariable(array(
+	                        'MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS' => '<br /><input type="checkbox" name="durationResetNotification" value="1" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'],
+	                    ));
+                	}
+                } else { 
+                    if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
+                        $intEntryDourationAlways = 'selected="selected"';
+                        $intEntryDourationPeriod = '';
+                        $intEntryDourationShowPeriod = 'none';
+                    } else {
+                        $intEntryDourationAlways = '';
+                        $intEntryDourationPeriod = 'selected="selected"';
+                        $intEntryDourationShowPeriod = 'inline';
+                    }
+        
+                    $intEntryDourationStart = date("Y-m-d", mktime());
+                    $intEntryDourationEnd = date("Y-m-d", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
+                }
+
+                //generate javascript
+                parent::setJavascript($this->getSelectorJavascript());
+                parent::setJavascript($objInputfields->getInputfieldJavascript());
+
+                //get form onsubmit
+                $strOnSubmit = $this->getFormOnSubmit();
+
+                //parse blocks
+                $this->_objTpl->hideBlock('mediadirFormList');
+            }
+
+            //parse global variables
+            $this->_objTpl->setGlobalVariable(array(
+                'TXT_MEDIADIR_PAGE_TITLE' => $pageTitle,
+                'MEDIADIR_ENTRY_ID' => $intEntryId,
+                'MEDIADIR_FORM_ID' => $intFormId,
+                'TXT_MEDIADIR_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
+                'MEDIADIR_JAVASCRIPT' =>  $this->getJavascript(),
+                'MEDIADIR_FORM_ONSUBMIT' =>  $strOnSubmit,
+                'TXT_MEDIADIR_PLEASE_CHECK_INPUT' =>  $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'],
+                'MEDIADIR_DEFAULT_LANG_ID' =>  $_LANGID,
+                'TXT_MEDIADIR_SPEZ_FIELDS' => $_ARRAYLANG['TXT_MEDIADIR_SPEZ_FIELDS'],
+                'TXT_MEDIADIR_DISPLAYDURATION' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION'],
+                'TXT_MEDIADIR_DISPLAYDURATION_ALWAYS' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'],
+                'TXT_MEDIADIR_DISPLAYDURATION_PERIOD' =>  $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_PERIOD'],
+                'TXT_MEDIADIR_DISPLAYDURATION_FROM' =>  $_CORELANG['TXT_FROM'],
+                'TXT_MEDIADIR_DISPLAYDURATION_TO' =>  $_CORELANG['TXT_TO'],
+                'MEDIADIR_DISPLAYDURATION_START' =>  $intEntryDourationStart,
+                'MEDIADIR_DISPLAYDURATION_END' =>  $intEntryDourationEnd,
+                'MEDIADIR_DISPLAYDURATION_SELECT_ALWAYS' =>  $intEntryDourationAlways,
+                'MEDIADIR_DISPLAYDURATION_SELECT_PERIOD' =>  $intEntryDourationPeriod,
+                'MEDIADIR_DISPLAYDURATION_SHOW_PERIOD' =>  $intEntryDourationShowPeriod,
+            ));
+        } else {
+			header("Location: index.php?cmd=mediadir&act=settings&tpl=forms");
+			exit;
+        }
+    }
+
+
+
+    function modifyCategory()
+    {
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_modify_category.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'];
+
+        //get category object
+        $objCategories = new mediaDirectoryCategory();
+
+        //save category data
+        if(isset($_POST['submitCategoryModfyForm'])) {
+            $status = $objCategories->saveCategory($_POST, intval($_POST['categoryId']));
+
+            if(!empty($_POST['categoryId'])) {
+                if($status == true) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                }
+            } else {
+                if($status == true) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
+                }
+            }
+        }
+
+        //load category data
+        if(isset($_GET['id']) && $_GET['id'] != 0) {
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
+            $intCategoryId = intval($_GET['id']);
+
+            $objCategory = new mediaDirectoryCategory($intCategoryId, null, 0);
+
+            if($objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1) {
+                $showEntriesOn = 'checked="checked"';
+                $showEntriesOff = '';
+            } else {
+                $showEntriesOn = '';
+                $showEntriesOff = 'checked="checked"';
+            }
+
+            if($objCategory->arrCategories[$intCategoryId]['catShowSubcategories'] == 1) {
+                $showCategoriesOn = 'checked="checked"';
+                $showCategoriesOff = '';
+            } else {
+                $showCategoriesOn = '';
+                $showCategoriesOff = 'checked="checked"';
+            }
+
+            if($objCategory->arrCategories[$intCategoryId]['catActive'] == 1) {
+                $activeOn = 'checked="checked"';
+                $activeOff = '';
+            } else {
+                $activeOn = '';
+                $activeOff = 'checked="checked"';
+            }
+
+            if(empty($objCategory->arrCategories[$intCategoryId]['catPicture']) || !file_exists(ASCMS_PATH.$objLevel->arrCategories[$intCategoryId]['catPicture'])) {
+                $catImage = '<img src="images/content_manager/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            } else {
+                $catImage = '<img src="'.$objCategory->arrCategories[$intCategoryId]['catPicture'].'.thumb" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            }
+
+            //parse data variables
+            $this->_objTpl->setGlobalVariable(array(
+                'MEDIADIR_CATEGORY_ID' => $intCategoryId,
+                'MEDIADIR_CATEGORY_NAME_MASTER' => $objCategory->arrCategories[$intCategoryId]['catName'][0],
+                'MEDIADIR_CATEGORY_DESCRIPTION_MASTER' => $objCategory->arrCategories[$intCategoryId]['catDescription'][0],
+                'MEDIADIR_CATEGORY_PICTURE' => $objCategory->arrCategories[$intCategoryId]['catPicture'],
+                'MEDIADIR_CATEGORY_SHOW_ENTRIES_ON' => $showEntriesOn,
+                'MEDIADIR_CATEGORY_SHOW_ENTRIES_OFF' => $showEntriesOff,
+                'MEDIADIR_CATEGORY_ACTIVE_ON' => $activeOn,
+                'MEDIADIR_CATEGORY_ACTIVE_OFF' => $activeOff,
+                'MEDIADIR_CATEGORY_PICTURE_THUMB' => $catImage,
+                'MEDIADIR_CATEGORY_SHOW_SUBCATEGORIES_ON' => $showCategoriesOn,
+                'MEDIADIR_CATEGORY_SHOW_SUBCATEGORIES_OFF' => $showCategoriesOff,
+            ));
+        } else {
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
+            $intCategoryId = null;
+            
+            //parse global variables
+	        $this->_objTpl->setGlobalVariable(array(
+	            'MEDIADIR_CATEGORY_SHOW_ENTRIES_ON' => 'checked="checked"',
+	            'MEDIADIR_CATEGORY_SHOW_SUBCATEGORIES_ON' => 'checked="checked"',
+	            'MEDIADIR_CATEGORY_ACTIVE_ON' => 'checked="checked"',
+	        ));
+        }
+
+        //get category dropdown
+        $catDropdown = $objCategories->listCategories($this->_objTpl, 3, $intCategoryId);
+
+        //parse global variables
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_MEDIADIR_ACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
+            'TXT_MEDIADIR_DEACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_DEAVTIVATE'],
+            'TXT_MEDIADIR_NAME' =>  $_CORELANG['TXT_NAME'],
+            'TXT_MEDIADIR_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
+            'TXT_MEDIADIR_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
+            'TXT_MEDIADIR_SHOW_SUBCATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBCATEGORIES'],
+            'TXT_MEDIADIR_SHOW_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_ENTRIES'],
+            'TXT_MEDIADIR_VISIBLE' =>  $_CORELANG['TXT_VISIBLE'],
+            'TXT_MEDIADIR_CATEGORY' =>  $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'],
+            'TXT_MEDIADIR_PAGE_TITLE' =>  $pageTitle,
+            'TXT_MEDIADIR_BROWSE' =>  $_CORELANG['TXT_BROWSE'],
+            'TXT_MEDIADIR_MORE' =>  $_ARRAYLANG['TXT_MEDIADIR_MORE'],
+            'TXT_MEDIADIR_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
+            'TXT_MEDIADIR_NEW_CATEGORY' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_CATEGORY']." ---",
+            'TXT_MEDIADIR_VISIBLE_CATEGORY_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_CATEGORY_INFO'],
+            'MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS' => $catDropdown,
+            'MEDIADIR_CATEGORY_DEFAULT_LANG_ID' => $_LANGID,
+        ));
+
+        //category name language block
+        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+            if(isset($intCategoryId)){
+                $strCategoryName = empty($objCategory->arrCategories[$intCategoryId]['catName'][$arrLang['id']]) ? $objCategory->arrCategories[$intCategoryId]['catName'][0] : $objCategory->arrCategories[$intCategoryId]['catName'][$arrLang['id']];
+            } else {
+                $strCategoryName = '';
+            }
+
+            $this->_objTpl->setVariable(array(
+                'MEDIADIR_CATEGORY_NAME_LANG_ID' => $arrLang['id'],
+                'TXT_MEDIADIR_CATEGORY_NAME_LANG_NAME' => $arrLang['name'],
+                'TXT_MEDIADIR_CATEGORY_NAME_LANG_SHORTCUT' => $arrLang['lang'],
+                'MEDIADIR_CATEGORY_NAME' => $strCategoryName,
+            ));
+
+            if(($key+1) == count($this->arrFrontendLanguages)) {
+                $this->_objTpl->setVariable(array(
+                    'MEDIADIR_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'categoryName\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
+                ));
+            }
+
+            $this->_objTpl->parse('mediadirCategoryNameList');
+        }
+
+        //category description language block
+        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+            if(isset($intCategoryId)){
+                $strCategoryDescription = empty($objCategory->arrCategories[$intCategoryId]['catDescription'][$arrLang['id']]) ? $objCategory->arrCategories[$intCategoryId]['catDescription'][0] : $objCategory->arrCategories[$intCategoryId]['catDescription'][$arrLang['id']];
+            } else {
+                $strCategoryDescription = '';
+            }
+
+            $this->_objTpl->setVariable(array(
+                'MEDIADIR_CATEGORY_DESCRIPTION_LANG_ID' => $arrLang['id'],
+                'TXT_MEDIADIR_CATEGORY_DESCRIPTION_LANG_NAME' => $arrLang['name'],
+                'TXT_MEDIADIR_CATEGORY_DESCRIPTION_LANG_SHORTCUT' => $arrLang['lang'],
+                'MEDIADIR_CATEGORY_DESCRIPTION' => $strCategoryDescription,
+            ));
+
+            if(($key+1) == count($this->arrFrontendLanguages)) {
+                $this->_objTpl->setVariable(array(
+                    'MEDIADIR_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'categoryDescription\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
+                ));
+            }
+
+            $this->_objTpl->parse('mediadirCategoryDescriptionList');
+        }
+    }
+
+
+
+    /**
+     * Switch the state of an entry (active or inactive)
+     * This function is called through ajax, hence the 'die' at the end.
+     */
+    function switchState()
+    {
+        global $objDatabase;
+
+        if (!isset($_GET['id']) && !isset($_GET['state']) && !isset($_GET['type'])) {
+            die();
+        }
+
+        $intId = intval($_GET['id']);
+        $intState = intval($_GET['state']);
+
+        switch ($_GET['type']){
+            case 'category':
+                $query = "UPDATE ".DBPREFIX."module_mediadir_categories SET active = '".$intState."' WHERE id = ".$intId;
+                break;
+            case 'level':
+                $query = "UPDATE ".DBPREFIX."module_mediadir_levels SET active = '".$intState."' WHERE id = ".$intId;
+                break;
+            case 'mail_template':
+                $query = "UPDATE ".DBPREFIX."module_mediadir_mails SET active = '".$intState."' WHERE id = ".$intId;
+                break;
+            case 'form_template':
+                $query = "UPDATE ".DBPREFIX."module_mediadir_forms SET active = '".$intState."' WHERE id = ".$intId;
+                break;
+            case 'entry':
+                $query = "UPDATE ".DBPREFIX."module_mediadir_entries SET active = '".$intState."' WHERE id = ".$intId;
+                break;
+        }
+
+        $objDatabase->Execute($query);
+
+        die();
+    }
+
+
+
+    function modifyLevel()
+    {
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_modify_level.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVELS'];
+
+        //get level object
+        $objLevels = new mediaDirectoryLevel;
+
+        //save level data
+        if(isset($_POST['submitLevelModfyForm'])) {
+            $status = $objLevels->saveLevel($_POST, intval($_POST['levelId']));
+
+            if(!empty($_POST['levelId'])) {
+                if($status == true) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'];
+                }
+            } else {
+                if($status == true) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'];
+                }
+            }
+        }
+
+        //load level dat
+        if(isset($_GET['id']) && $_GET['id'] != 0) {
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']. " ".$_ARRAYLANG['TXT_MEDIADIR_EDIT'];
+            $intLevelId = intval($_GET['id']);
+
+            $objLevel = new mediaDirectoryLevel($intLevelId, null, 0);
+
+            if($objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1) {
+                $showEntriesOn = 'checked="checked"';
+                $showEntriesOff = '';
+            } else {
+                $showEntriesOn = '';
+                $showEntriesOff = 'checked="checked"';
+            }
+
+            if($objLevel->arrLevels[$intLevelId]['levelShowSublevels'] == 1) {
+                $showSublevelsOn = 'checked="checked"';
+                $showSublevelsOff = '';
+            } else {
+                $showSublevelsOn = '';
+                $showSublevelsOff = 'checked="checked"';
+            }
+
+            if($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1) {
+                $showCategoriesOn = 'checked="checked"';
+                $showCategoriesOff = '';
+            } else {
+                $showCategoriesOn = '';
+                $showCategoriesOff = 'checked="checked"';
+            }
+
+            if($objLevel->arrLevels[$intLevelId]['levelActive'] == 1) {
+                $activeOn = 'checked="checked"';
+                $activeOff = '';
+            } else {
+                $activeOn = '';
+                $activeOff = 'checked="checked"';
+            }
+
+            if(empty($objLevel->arrLevels[$intLevelId]['levelPicture']) || !file_exists(ASCMS_PATH.$objLevel->arrLevels[$intLevelId]['levelPicture'])) {
+                $levelImage = '<img src="images/content_manager/no_picture.gif" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            } else {
+                $levelImage = '<img src="'.$objLevel->arrLevels[$intLevelId]['levelPicture'].'.thumb" style="border: 1px solid #0A50A1; margin: 0px 0px 3px 0px;" /><br />';
+            }
+
+            //parse data variables
+            $this->_objTpl->setGlobalVariable(array(
+                'MEDIADIR_LEVEL_ID' => $intLevelId,
+                'MEDIADIR_LEVEL_NAME_MASTER' => $objLevel->arrLevels[$intLevelId]['levelName'][0],
+                'MEDIADIR_LEVEL_DESCRIPTION_MASTER' => $objLevel->arrLevels[$intLevelId]['levelDescription'][0],
+                'MEDIADIR_LEVEL_PICTURE' => $objLevel->arrLevels[$intLevelId]['levelPicture'],
+                'MEDIADIR_LEVEL_SHOW_ENTRIES_ON' => $showEntriesOn,
+                'MEDIADIR_LEVEL_SHOW_ENTRIES_OFF' => $showEntriesOff,
+                'MEDIADIR_LEVEL_ACTIVE_ON' => $activeOn,
+                'MEDIADIR_LEVEL_ACTIVE_OFF' => $activeOff,
+                'MEDIADIR_LEVEL_PICTURE_THUMB' => $levelImage,
+                'MEDIADIR_LEVEL_SHOW_SUBLEVELS_ON' => $showSublevelsOn,
+                'MEDIADIR_LEVEL_SHOW_SUBLEVELS_OFF' => $showSublevelsOff,
+                'MEDIADIR_LEVEL_SHOW_CATEGORIES_ON' => $showCategoriesOn,
+                'MEDIADIR_LEVEL_SHOW_CATEGORIES_OFF' => $showCategoriesOff,
+            ));
+        } else {
+            $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
+            $intLevelId = null;
+            
+            //parse data variables
+            $this->_objTpl->setGlobalVariable(array(
+	            'MEDIADIR_LEVEL_SHOW_ENTRIES_OFF' => 'checked="checked"',
+	            'MEDIADIR_LEVEL_SHOW_SUBLEVELS_ON' => 'checked="checked"',
+	            'MEDIADIR_LEVEL_SHOW_CATEGORIES_ON' => 'checked="checked"',
+	            'MEDIADIR_LEVEL_ACTIVE_ON' => 'checked="checked"',
+            ));
+        }
+        
+        //parse global variables
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_MEDIADIR_ACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
+            'TXT_MEDIADIR_DEACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_DEAVTIVATE'],
+            'TXT_MEDIADIR_NAME' =>  $_CORELANG['TXT_NAME'],
+            'TXT_MEDIADIR_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
+            'TXT_MEDIADIR_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
+            'TXT_MEDIADIR_SHOW_SUBLEVELS' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_SUBLEVELS'],
+            'TXT_MEDIADIR_SHOW_CATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_CATEGORIES'],
+            'TXT_MEDIADIR_SHOW_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SHOW_ENTRIES'],
+            'TXT_MEDIADIR_VISIBLE' =>  $_CORELANG['TXT_VISIBLE'],
+            'TXT_MEDIADIR_LEVEL' =>  $_ARRAYLANG['TXT_MEDIADIR_LEVEL'],
+            'TXT_MEDIADIR_PAGE_TITLE' =>  $pageTitle,
+            'TXT_MEDIADIR_BROWSE' =>  $_CORELANG['TXT_BROWSE'],
+            'TXT_MEDIADIR_MORE' =>  $_ARRAYLANG['TXT_MEDIADIR_MORE'],
+            'TXT_MEDIADIR_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
+            'TXT_MEDIADIR_NEW_LEVEL' =>  "--- ".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']." ---",
+            'TXT_MEDIADIR_VISIBLE_LEVEL_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_VISIBLE_LEVEL_INFO'],
+            'MEDIADIR_LEVEL_DEFAULT_LANG_ID' => $_LANGID,
+        ));
+
+        //get level dropdown
+        $levelDropdown = $objLevels->listLevels($this->_objTpl, 3, $intLevelId);
+
+        //level name language block
+        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+            if(isset($intLevelId)){
+                $strLevelName = empty($objLevel->arrLevels[$intLevelId]['levelName'][$arrLang['id']]) ? $objLevel->arrLevels[$intLevelId]['levelName'][0] : $objLevel->arrLevels[$intLevelId]['levelName'][$arrLang['id']];
+            } else {
+                $strLevelName = '';
+            }
+
+            $this->_objTpl->setVariable(array(
+                'MEDIADIR_LEVEL_NAME_LANG_ID' => $arrLang['id'],
+                'TXT_MEDIADIR_LEVEL_NAME_LANG_NAME' => $arrLang['name'],
+                'TXT_MEDIADIR_LEVEL_NAME_LANG_SHORTCUT' => $arrLang['lang'],
+                'MEDIADIR_LEVEL_NAME' => $strLevelName,
+                'MEDIADIR_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
+            ));
+
+            if(($key+1) == count($this->arrFrontendLanguages)) {
+                $this->_objTpl->setVariable(array(
+                    'MEDIADIR_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'levelName\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
+                ));
+            }
+
+            $this->_objTpl->parse('mediadirLevelNameList');
+        }
+
+        //levvel description language block
+        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+            if(isset($intLevelId)){
+                $strLevelDescription = empty($objLevel->arrLevels[$intLevelId]['levelDescription'][$arrLang['id']]) ? $objLevel->arrLevels[$intLevelId]['levelDescription'][0] : $objLevel->arrLevels[$intLevelId]['levelDescription'][$arrLang['id']];
+            } else {
+                $strLevelDescription = '';
+            }
+
+            $this->_objTpl->setVariable(array(
+                'MEDIADIR_LEVEL_DESCRIPTION_LANG_ID' => $arrLang['id'],
+                'TXT_MEDIADIR_LEVEL_DESCRIPTION_LANG_NAME' => $arrLang['name'],
+                'TXT_MEDIADIR_LEVEL_DESCRIPTION_LANG_SHORTCUT' => $arrLang['lang'],
+                'MEDIADIR_LEVEL_DESCRIPTION' => $strLevelDescription,
+            ));
+
+            if(($key+1) == count($this->arrFrontendLanguages)) {
+                $this->_objTpl->setVariable(array(
+                    'MEDIADIR_MINIMIZE' =>  '<a href="javascript:ExpandMinimize(\'levelDescription\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
+                ));
+            }
+
+            $this->_objTpl->parse('mediadirLevelDescriptionList');
+        }
+    }
+
+
+
+    /**
+     * Switch the state of an entry (active or inactive)
+     * This function is called through ajax, hence the 'die' at the end.
+     */
+    function switchLevelState()
+    {
+        global $objDatabase;
+
+        if (!isset($_GET['levelid']) && !isset($_GET['state'])) {
+            die();
+        }
+
+        $intId = intval($_GET['levelid']);
+        $intState = intval($_GET['state']);
+
+        $query = "  UPDATE ".DBPREFIX."module_mediadir_levels
+                    SET active = '".$intState."'
+                    WHERE id = ".$intId;
+        $objDatabase->Execute($query);
+
+        die();
+    }
+
+
+
+    function manageEntries()
+    {
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_manage_entries.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'];
+
+        if($_REQUEST['cat_id'] != '' && $_REQUEST['cat_id'] != 0) {
+            $intCategoryId = intval($_REQUEST['cat_id']);
+        } else {
+            $intCategoryId = null;
+        }
+
+        if($_REQUEST['level_id'] != '' && $_REQUEST['level_id'] != 0) {
+            $intLevelId = intval($_REQUEST['level_id']);
+        } else {
+            $intLevelId = null;
+        }
+
+        if($_REQUEST['term'] != '') {
+            $strTerm = $_REQUEST['term'];
+        } else {
+            $strTerm = null;
+        }
+
+
+        $objCategories = new mediaDirectoryCategory();
+        $catDropdown = $objCategories->listCategories(null, 3, $intCategoryId);
+
+        $objLevels = new mediaDirectoryLevel();
+        $levelDropdown = $objLevels->listLevels(null, 3, $intLevelId);
+
+        //parse global variables
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_MEDIADIR_PAGE_TITLE' => $this->pageTitle,
+            'TXT_MEDIADIR_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
+            'MEDIADIR_FORM_ONSUBMIT' =>  $strOnSubmit,
+            'TXT_EDIT' => $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
+            'TXT_ENTRY_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_ENTRY_SEARCH'],
+            'TXT_SEARCH' => $_CORELANG['TXT_SEARCH'],
+            'TXT_MEDIADIR_STATUS' => $_CORELANG['TXT_STATUS'],
+            'TXT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_SELECT_ACTION' => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_FUNCTIONS' => $_ARRAYLANG['TXT_MEDIADIR_FUNCTIONS'],
+            'TXT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
+            'TXT_DELETE_ALL' => $_CORELANG['TXT_MULTISELECT_DELETE'],
+            'TXT_MEDIADIR_VOTING' => $_ARRAYLANG['TXT_MEDIADIR_VOTING'],
+            'TXT_MEDIADIR_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
+            'TXT_MEDIADIR_NAME' => $_CORELANG['TXT_NAME'],
+            'TXT_MEDIADIR_DATE' => $_CORELANG['TXT_DATE'],
+            'TXT_MEDIADIR_AUTHOR' => $_ARRAYLANG['TXT_MEDIADIR_AUTHOR'],
+            'TXT_MEDIADIR_HITS' => $_ARRAYLANG['TXT_MEDIADIR_HITS'],
+            'TXT_MEDIADIR_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
+            'MEDIADIR_SEARCH_TERM' => $strTerm != null ? $strTerm : $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'],
+            'MEDIADIR_SEARCH_CATEGORY_ID' => $intCategoryId,
+            'MEDIADIR_SEARCH_LEVEL_ID' => $intLevelId,
+            'TXT_MEDIADIR_MOVE_ALL' => $_ARRAYLANG['TXT_MEDIADIR_MOVE_ALL'],
+            'TXT_MEDIADIR_RESTORE_VOTING_ALL' => $_ARRAYLANG['TXT_MEDIADIR_RESTORE_VOTING_ALL'],
+            'TXT_MEDIADIR_RESTORE_COMMENTS_ALL' => $_ARRAYLANG['TXT_MEDIADIR_RESTORE_COMMENTS_ALL'],
+            'TXT_MEDIADIR_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
+            'TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
+            'TXT_MEDIADIR_MAKE_SELECTION' => $_ARRAYLANG['TXT_MEDIADIR_MAKE_SELECTION'],
+            'TXT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_SELECT_ACTION' => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_DELETE_ALL' => $_CORELANG['TXT_MULTISELECT_DELETE'],
+            'TXT_MEDIADIR_MOVE_ALL' => $_ARRAYLANG['TXT_MEDIADIR_MOVE_ALL'],
+            'TXT_MEDIADIR_ALL_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_ALL_LEVELS'],
+            'TXT_MEDIADIR_ALL_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_ALL_CATEGORIES'],
+            'MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS' => $catDropdown,
+            'MEDIADIR_LEVELS_DROPDOWN_OPTIONS' => $levelDropdown,
+        ));
+
+        //get seting values
+        parent::getSettings();
+
+        if($this->arrSettings['settingsShowLevels'] == 1) {
+            $this->_objTpl->touchBlock('mediadirLevelDoropdown');
+        } else {
+            $this->_objTpl->hideBlock('mediadirLevelDoropdown');
+        }
+
+        $objEntries = new mediaDirectoryEntry();
+
+        switch ($_GET['act']) {
+            case 'move_entry':
+                $this->strErrMessage = "Diese Funktion ist zurzeit noch nicht implementiert.";
+                break;
+            case 'delete_entry':
+                if (!isset($_GET['id'])) {
+                    foreach ($_POST["entriesFormSelected"] as $intEntryId) {
+                        $strStatus = $objEntries->deleteEntry(intval($intEntryId));
+                    }
+                } else {
+                    $strStatus = $objEntries->deleteEntry(intval($_GET['id']));
+                }
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'];
+                }
+                break;
+            case 'restore_voting':
+                $objVotes = new mediaDirectoryVoting();
+
+
+                if (!isset($_GET['id'])) {
+                    foreach ($_POST["entriesFormSelected"] as $intEntryId) {
+                        $strStatus = $objVotes->restoreVoting(intval($intEntryId));
+                    }
+                } else {
+                    $strStatus = $objVotes->restoreVoting(intval($_GET['id']));
+                }
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_VOTING']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_VOTING']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'];
+                }
+                break;
+            case 'restore_comments':
+                $objComments = new mediaDirectoryComment();
+
+
+                if (!isset($_GET['id'])) {
+                    foreach ($_POST["entriesFormSelected"] as $intEntryId) {
+                        $strStatus = $objComments->restoreComments(intval($intEntryId));
+                    }
+                } else {
+                    $strStatus = $objComments->restoreComments(intval($_GET['id']));
+                }
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_COMMENTS']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_COMMENTS']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'];
+                }
+                break;
+                break;
+            case 'confirm_entry':
+                if (!isset($_GET['id'])) {
+                    foreach ($_POST["entriesFormSelected"] as $intEntryId) {
+                        $strStatus = $objEntries->confirmEntry(intval($intEntryId));
+                    }
+                } else {
+                    $strStatus = $objEntries->confirmEntry(intval($_GET['id']));
+                }
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_CONFIRM'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_ENTRY']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_CONFIRM'];
+                }
+                break;
+        }
+
+        $objEntries->getEntries(null,$intLevelId,$intCategoryId,$strTerm,null,null,null,null,'n');
+        $objEntries->listEntries($this->_objTpl, 1);
+
+        if(empty($objEntries->arrEntries)) {
+             $this->_objTpl->hideBlock('mediadirEntriesSelectAction');
+        } else {
+             $this->_objTpl->touchBlock('mediadirEntriesSelectAction');
+        }
+    }
+
+
+
+    function interfaces()
+    {
+        global $_ARRAYLANG, $_CORELANG;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_interfaces.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'];
+
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_MEDIADIR_IMPORT' => $_ARRAYLANG['TXT_MEDIADIR_IMPORT'],
+            'TXT_MEDIADIR_EXPORT' => $_ARRAYLANG['TXT_MEDIADIR_EXPORT'],
+        ));
+
+        switch ($_GET['tpl']) {
+            case 'exoprt':
+                //$this->interfaces_export();
+                //$this->_objTpl->parse('interfaces_content');
+                break;
+            case 'import':
+            default:
+                $this->interfaces_import();
+        }
+
+        $this->_objTpl->parse('interfaces_content');
+    }
+
+
+
+    function interfaces_import()
+    {
+        global $_ARRAYLANG, $_CORELANG;
+
+        $this->_objTpl->addBlockfile('MEDIADIR_INTERFACES_CONTENT', 'interfaces_content', 'module_mediadir_interfaces_import.html');
+
+        $objImport = new Import();
+
+		$countOk = 0;
+		$arrErrorEntries = array();
+		$insert = true;
+
+		$arrFields = array();
+		/*$objFields = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_directory_inputfields ORDER BY active_backend DESC,sort");
+		if ($objFields) {
+			while (!$objFields->EOF) {
+				$arrFields[$objFields->fields['name']] = $_ARRAYLANG[$objFields->fields['title']];
+				$objFields->MoveNext();
+			}
+		}*/
+
+		if (isset($_POST['import_cancel'])) {
+			// Abbrechen. Siehe Abbrechen
+			$objImport->cancel();
+			header("Location: index.php?cmd=directory&act=import");
+			exit;
+		} elseif ($_POST['fieldsSelected']) {
+			$categoryId = isset($_POST['directory_category']) ? intval($_POST['directory_category']) : 0;
+			$levelId = isset($_POST['directory_level']) ? intval($_POST['directory_level']) : 0;
+
+			if ($categoryId > 0 && $levelId > 0) {
+				$arrEntries = $objImport->getFinalData($arrFields);
+
+				foreach ($arrEntries as $arrEntry) {
+					$arrQuery = array();
+					foreach (array_keys($arrFields) as $field) {
+						if (isset($arrEntry[$field])) {
+							array_push($arrQuery, '`'.$field."`='".addslashes($arrEntry[$field])."'");
+						}
+					}
+
+					if (!isset($arrEntry['title'])) {
+						array_push($arrQuery, "`title`='".(isset($arrFields['company_name']) ? addslashes($arrEntry['company_name']) : '')."'");
+					}
+
+					if (count($arrQuery) > 0) {
+						if ($objDatabase->Execute(
+							"INSERT INTO ".DBPREFIX."module_directory_dir
+							SET `date`='".time()."',
+								`typ`='link',
+								`status`=1,
+								`addedby`='".$_SESSION['auth']['userid']."',
+								`validatedate`='".time()."',
+								".implode(', ', $arrQuery).",
+								`provider` = '".gethostbyaddr($_SERVER['REMOTE_ADDR'])."',
+								`ip` = '".$_SERVER['REMOTE_ADDR']."'"
+						) !== false) {
+							$entryId = $objDatabase->Insert_ID();
+							if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_directory_rel_dir_cat SET `dir_id`=".$entryId.", `cat_id`=".$categoryId) === false
+							|| $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_directory_rel_dir_level SET `dir_id`=".$entryId.", `level_id`=".$levelId) === false) {
+								$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_cat WHERE `dir_id`=".$entryId);
+								$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_rel_dir_level WHERE `dir_id`=".$entryId);
+								$objDatabase->Execute("DELETE FROM ".DBPREFIX."module_directory_dir WHERE `id`=".$entryId);
+								array_push($arrErrorEntries, serialize($arrEntry));
+							} else {
+								$countOk++;
+							}
+						} else {
+							array_push($arrErrorEntries, serialize($arrEntry));
+						}
+					}
+				}
+
+				if ($countOk > 0) {
+					$this->strOkMessage .= "Es wurden ".$countOk." Einträge erfolgreich importiert.";
+				}
+				if (count($arrErrorEntries) > 0) {
+					$this->strErrMessage .= "Folgende Einträge konnten nicht importiert werden:<br />".implode("<br />\n- ", $arrErrorEntries);
+				}
+			} elseif ($categoryId == 0) {
+				$this->strErrMessage .= "Es wurde keine gültige Kategorie ausgewählt!";
+			} else {
+				$this->strErrMessage .= "Es wurde keine gültige Ebene ausgewählt!";
+			}
+
+			$objImport->initFileSelectTemplate($this->_objTpl);
+			$this->_importSelectFile();
+		} elseif ($_FILES['importfile']['size'] == 0) {
+			// Dateiauswahldialog. Siehe Fileselect
+			$objImport->initFileSelectTemplate($this->_objTpl);
+			$this->_importSelectFile();
+		} else {
+			// Felderzuweisungsdialog. Siehe Fieldselect
+			$objImport->initFieldSelectTemplate($this->_objTpl, $arrFields);
+			$this->_objTpl->setVariable(array(
+				'TXT_REMOVE_PAIR'		=> 'Paar entfernen',
+				"IMPORT_HIDDEN_NAME"	=> "directory_category",
+				"IMPORT_HIDDEN_VALUE"	=> intval($_POST['directory_category'])
+			));
+			$this->_objTpl->parse('hidden_fields');
+			$this->_objTpl->setVariable(array(
+				"IMPORT_HIDDEN_NAME"	=> "directory_level",
+				"IMPORT_HIDDEN_VALUE"	=> intval($_POST['directory_level'])
+			));
+			$this->_objTpl->parse('hidden_fields');
+		}
+
+		$this->_objTpl->parse('interfaces_content');
+    }
+
+
+
+    function _importSelectFile()
+    {
+		/*$this->_objTpl->setVariable(array(
+			"IMPORT_ACTION"		=> "?cmd=directory&amp;act=import",
+			'TXT_FILETYPE'		=> 'Dateityp',
+			"IMPORT_ADD_NAME"	=> 'Kategorie',
+			"IMPORT_ADD_VALUE"	=>  "<select name=\"directory_category\" style=\"width:200px;\">\n".$this->getSearchCategories(0)."</select>",
+			"IMPORT_ROWCLASS"	=> "row1",
+			'TXT_HELP'			=> 'Wählen Sie hier eine Datei aus, deren Inhalt importiert werden soll:'
+		));
+		$this->_objTpl->parse("additional");
+		$this->_objTpl->setVariable(array(
+			"IMPORT_ADD_NAME"    => 'Ebene',
+			"IMPORT_ADD_VALUE"   =>  "<select name=\"directory_level\" style=\"width:200px;\">".$this->getSearchLevels(0)."</select>",
+			"IMPORT_ROWCLASS"    => "row2",
+		));
+		$this->_objTpl->parse("additional");*/
+    }
+
+
+
+    function manageComments()
+    {
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_manage_comments.html',true,true);
+        $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_MANAGE_COMMENTS'];
+
+        //parse global variables
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
+            'TXT_SELECT_ALL' => $_CORELANG['TXT_SELECT_ALL'],
+            'TXT_DESELECT_ALL' => $_CORELANG['TXT_DESELECT_ALL'],
+            'TXT_SELECT_ACTION' => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_CONFIRM_ALL' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_ALL'],
+            'TXT_DELETE_ALL' => $_CORELANG['TXT_MULTISELECT_DELETE'],
+            'TXT_MEDIADIR_NAME' => $_CORELANG['TXT_NAME'],
+            'TXT_MEDIADIR_DATE' => $_CORELANG['TXT_DATE'],
+            'TXT_MEDIADIR_ADDED_BY' => $_ARRAYLANG['TXT_MEDIADIR_ADDED_BY'],
+            'TXT_MEDIADIR_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
+            'TXT_MEDIADIR_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
+            'TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
+            'TXT_MEDIADIR_MAKE_SELECTION' => $_ARRAYLANG['TXT_MEDIADIR_MAKE_SELECTION'],
+            'TXT_MEDIADIR_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
+            'TXT_MEDIADIR_IP' =>  $_ARRAYLANG['TXT_MEDIADIR_IP'],
+            'TXT_MEDIADIR_COMMENT' =>  $_ARRAYLANG['TXT_MEDIADIR_COMMENT'],
+            'TXT_MEDIADIR_PAGE_TITLE' =>  $_ARRAYLANG['TXT_MEDIADIR_MANAGE_COMMENTS'],
+            'MEDIADIR_ENTRY_ID' =>  intval($_GET['id']),
+        ));
+
+        $objComment = new mediaDirectoryComment();
+
+        switch ($_GET['act']) {
+            case 'delete_comment':
+                if (!isset($_GET['cid'])) {
+                    foreach ($_POST["commentsFormSelected"] as $intCommentId) {
+                        $strStatus = $objComment->deleteComment(intval($intCommentId));
+                    }
+                } else {
+                    $strStatus = $objComment->deleteComment(intval($_GET['cid']));
+                }
+
+                if($strStatus) {
+                    $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_COMMENTS']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'];
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_COMMENTS']." ".$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'];
+                }
+                break;
+        }
+
+        //get comments
+        $objComment->getComments($this->_objTpl, $_GET['id']);
+    }
+
+
+
+    function settings()
+    {
+        global $_ARRAYLANG, $_CORELANG;
+
+        $this->_objTpl->loadTemplateFile('module_mediadir_settings.html',true,true);
+        $this->pageTitle = $_CORELANG['TXT_SETTINGS'];
+
+        $objSettings = new mediaDirectorySettings();
+
+        //save settings global
+        if(isset($_POST['submitSettingsForm'])) {
+            switch ($_GET['tpl']) {
+                case 'modify_form':
+                    if(intval($_POST['formId']) != 0) {
+                        $objInputfields = new mediaDirectoryInputfield(intval($_POST['formId']));
+                        $strStatus = $objInputfields->saveInputfields($_POST);
+                    }
+
+                    $objForms = new mediaDirectoryForm();
+                    $strStatus = $objForms->saveForm($_POST, intval($_POST['formId']));
+                    break;
+                case 'forms':
+                    $objForms = new mediaDirectoryForm();
+                    $strStatus = $objForms->saveOrder($_POST);
+                    break;
+                case 'mails':
+                    $strStatus = $objSettings->settings_save_mail($_POST);
+                    break;
+                case 'map':
+                    $strStatus = $objSettings->settings_save_map($_POST);
+                    break;
+                default:
+                    $strStatus = $objSettings->saveSettings($_POST);
+            }
+
+            if($strStatus == true){
+                $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
+            } else {
+                $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+            }
+        }
+
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_MEDIADIR_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'],
+            'TXT_MEDIADIR_LEVELS_AND_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_LEVELS_AND_CATEGORIES'],
+            'TXT_MEDIADIR_SUBMIT' => $_CORELANG['TXT_SAVE'],
+            'TXT_MEDIADIR_DELETE' => $_CORELANG['TXT_DELETE'],
+            'TXT_MEDIADIR_ACTIVATE' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
+            'TXT_MEDIADIR_DEACTIVATE' => $_ARRAYLANG['TXT_MEDIADIR_DEAVTIVATE'],
+            'TXT_MEDIADIR_FORMS' => $_ARRAYLANG['TXT_MEDIADIR_FORMS'],
+            'TXT_MEDIADIR_MAIL_TEMPLATES' => $_ARRAYLANG['TXT_MEDIADIR_MAIL_TEMPLATES'],
+            'TXT_MEDIADIR_PICS_AND_FILES' => $_ARRAYLANG['TXT_MEDIADIR_PICS_AND_FILES'],
+            'TXT_MEDIADIR_GOOGLE' => $_ARRAYLANG['TXT_MEDIADIR_GOOGLE'],
+            'TXT_MEDIADIR_HITS_AND_LATEST' => $_ARRAYLANG['TXT_MEDIADIR_HITS_AND_LATEST'],
+            'TXT_MEDIADIR_COMMENTS_AND_VOTING' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS_AND_VOTING'],
+            'TXT_MEDIADIR_CLASSIFICATION' => $_ARRAYLANG['TXT_MEDIADIR_CLASSIFICATION'],
+        ));
+
+        switch ($_GET['tpl']) {
+            case 'delete_form':
+            case 'forms':
+                $objSettings->settings_forms($this->_objTpl);
+                break;
+            case 'modify_form':
+                $objSettings->settings_modify_form($this->_objTpl);
+                break;
+            case 'delete_template':
+            case 'mails':
+                $objSettings->settings_mails($this->_objTpl);
+                break;
+            case 'modify_mail':
+                $objSettings->settings_modify_mail($this->_objTpl);
+                break;
+            case 'files':
+                $objSettings->settings_files($this->_objTpl);
+                break;
+            case 'map':
+                $objSettings->settings_map($this->_objTpl);
+                break;
+            case 'votes':
+                $objSettings->settings_votes($this->_objTpl);
+                break;
+            case 'levels_categories':
+                $objSettings->settings_levels_categories($this->_objTpl);
+                break;
+            case 'classification':
+                $objSettings->settings_classification($this->_objTpl);
+                break;
+            case 'entries':
+            default:
+                $objSettings->settings_entries($this->_objTpl);
+        }
+
+        $this->_objTpl->parse('settings_content');
+    }
+}
+?>
