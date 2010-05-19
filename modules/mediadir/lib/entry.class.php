@@ -248,8 +248,6 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         $objFWUser = FWUser::getFWUserObject();
         $intToday = mktime();
-        
-        $objFWUser  = FWUser::getFWUserObject();
 
         switch ($intView) {
             case 1:
@@ -257,8 +255,11 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 if(!empty($this->arrEntries)){
                     foreach ($this->arrEntries as $key => $arrEntry) {
                         if(intval($arrEntry['entryAddedBy']) != 0) {
-                            $objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']));
-                            //$strAddedBy = $objUser->getUsername();
+                            if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
+                                $strAddedBy = $objUser->getUsername();
+                            } else {
+                                $strAddedBy = "unknown";
+                            }
                         } else {
                             $strAddedBy = "unknown";
                         }
@@ -337,8 +338,11 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                        $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
 	
 	                        if(intval($arrEntry['entryAddedBy']) != 0) {
-	                            $objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']));
-	                            //$strAddedBy = $objUser->getUsername();
+		                        if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
+								    $strAddedBy = $objUser->getUsername();
+								} else {
+	                                $strAddedBy = "unknown";
+								}
 	                        } else {
 	                            $strAddedBy = "unknown";
 	                        }
