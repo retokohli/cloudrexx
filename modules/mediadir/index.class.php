@@ -582,8 +582,6 @@ class mediaDirectory extends mediaDirectoryLibrary
                     
 	                //get translation status date
 	                if($this->arrSettings['settingsTranslationStatus'] == 1) {
-	                    echo "transl";
-	                    
 	                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
 	                        if($intEntryId != 0) {
 	                            if(in_array($arrLang['id'], $objEntry->arrEntries[$intEntryId]['entryTranslationStatus'])) {
