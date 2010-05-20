@@ -392,10 +392,6 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                            }
 	                        }
 	
-	                        /*print_r("<pre>");
-	                        print_r($this->arrSettings);
-	                        print_r("</pre>");*/
-	
 	                        if($this->arrSettings['settingsAllowComments']) {
 	                            $objComment = new mediaDirectoryComment();
 	
@@ -564,6 +560,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $strUpdateDate = mktime();
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
+        $strTransStatus = contrexx_addslashes(join(",", $arrData['translationStatus']));
         
         switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
         	case 1:
@@ -621,7 +618,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     `duration_type`='".$intDurationType."',
                     `duration_start`='".$intDurationStart."',
                     `duration_end`='".$intDurationEnd."',
-                    `duration_notification`='0'
+                    `duration_notification`='0',
+                    `translation_status`='".$strTransStatus."'
             ");
 
             if($objInsertEntry !== false) {
@@ -665,6 +663,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 SET
                     `update_date`='".$strUpdateDate."',
                     `validate_date`='".$strValidateDate."',
+                    `translation_status`='".$strTransStatus."',
                     ".$strAdditionalQuery."
                 WHERE
                     `id`='".$intId."'

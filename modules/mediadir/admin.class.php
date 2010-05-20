@@ -55,6 +55,9 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'] = "Benachrichtigungsstatus zurÃ¼cksetzen?";
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';
         $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'] = 'keine Einträge gefunden';
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS'] = 'Ãœbersetzungsstatus';
+        $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'] = 'Ãœbersetzungsstatus';
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO'] = 'Wird der Übersetzungsstatus aktiviert, kann bei den einzelnen Einträgen angegeben werden, ob eine Sprache fertig übersetzt ist. Sollte eine Sprache noch nicht übersetzt sein, wird jene Sprache angezeigt in welcher der Eintrag erfasst wurde.';
 
         //globals
         parent::__construct(ASCMS_MODULE_PATH.'/mediadir/template');
@@ -412,6 +415,34 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 //list inputfields
                 $objInputfields->listInputfields($this->_objTpl, 2, $intEntryId);
                 
+                //get translation status date
+                if($this->arrSettings['settingsTranslationStatus'] == 1) {
+                	$strUserRowClass = "row1";
+                	
+                	foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        if($intEntryId != 0) {
+	                		if(in_array($arrLang['id'], $objEntry->arrEntries[$intEntryId]['entryTranslationStatus'])) {
+	                			$strLangStatus = 'checked="checked"';
+	                		} else {
+	                            $strLangStatus = '';
+	                		}
+                        }
+                		
+	                    $this->_objTpl->setVariable(array(
+	                        'TXT_'.$this->moduleLangVar.'_TRANSLATION_LANG_NAME' => htmlspecialchars($arrLang['name'], ENT_QUOTES, CONTREXX_CHARSET),
+	                        $this->moduleLangVar.'_TRANSLATION_LANG_ID' => intval($arrLang['id']),
+	                        $this->moduleLangVar.'_TRANSLATION_LANG_STATUS' => $strLangStatus,
+	                    ));
+	                    
+                        $this->_objTpl->parse($this->moduleName.'TranslationLangList');
+                	}
+                    
+                    $this->_objTpl->parse($this->moduleName.'TranslationStatus');
+                } else {
+                    $strUserRowClass = "row2";
+                    $this->_objTpl->hideBlock($this->moduleName.'TranslationStatus');
+                }
+                
                 //get user data
                 if($intEntryId != 0) {
                     $intEntryDourationStart = 1;
@@ -419,6 +450,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     
                 	$this->_objTpl->setVariable(array(
 		                'TXT_'.$this->moduleLangVar.'_CHOOSE_USER' => $_ARRAYLANG['TXT_MEDIADIR_CHOOSE_USER'],
+                        $this->moduleLangVar.'_USER_ROW' => $strUserRowClass,
 		                $this->moduleLangVar.'_USER_LIST' => $objEntry->getUsers($intEntryId),
 		            ));
 		            
@@ -516,6 +548,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 $this->moduleLangVar.'_DISPLAYDURATION_SELECT_ALWAYS' =>  $intEntryDourationAlways,
                 $this->moduleLangVar.'_DISPLAYDURATION_SELECT_PERIOD' =>  $intEntryDourationPeriod,
                 $this->moduleLangVar.'_DISPLAYDURATION_SHOW_PERIOD' =>  $intEntryDourationShowPeriod,
+                'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
             ));
         } else {
 			header("Location: index.php?cmd='.$this->moduleName.'&act=settings&tpl=forms");

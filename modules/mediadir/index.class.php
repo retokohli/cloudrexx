@@ -45,6 +45,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         //globals
         parent::__construct('.');
         parent::getSettings();
+        parent::getFrontendLanguages();
         parent::checkDisplayduration();
         
         /*echo $this->moduleName."<br />";
@@ -53,6 +54,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         
         $_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = 'Link zu Googe Maps';
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';
+        $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'] = 'Übersetzungsstatus';
 
         $this->pageContent = $pageContent;
     }
@@ -577,6 +579,31 @@ class mediaDirectory extends mediaDirectoryLibrary
 
                     //list inputfields
                     $objInputfields->listInputfields($this->_objTpl, 2, $intEntryId);
+                    
+	                //get translation status date
+	                if($this->arrSettings['settingsTranslationStatus'] == 1) {
+	                    echo "transl";
+	                    
+	                    foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+	                        if($intEntryId != 0) {
+	                            if(in_array($arrLang['id'], $objEntry->arrEntries[$intEntryId]['entryTranslationStatus'])) {
+	                                $strLangStatus = 'checked="checked"';
+	                            } else {
+	                                $strLangStatus = '';
+	                            }
+	                        }
+	                        
+	                        $this->_objTpl->setVariable(array(
+	                            'TXT_'.$this->moduleLangVar.'_TRANSLATION_LANG_NAME' => htmlspecialchars($arrLang['name'], ENT_QUOTES, CONTREXX_CHARSET),
+	                            $this->moduleLangVar.'_TRANSLATION_LANG_ID' => intval($arrLang['id']),
+	                            $this->moduleLangVar.'_TRANSLATION_LANG_STATUS' => $strLangStatus,
+	                        ));
+	                        
+	                        $this->_objTpl->parse($this->moduleName.'TranslationLangList');
+	                    }
+	                } else {
+	                    $this->_objTpl->hideBlock($this->moduleName.'TranslationStatus');
+	                }
 
                     //generate javascript
                     parent::setJavascript($this->getSelectorJavascript());
@@ -601,6 +628,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 'TXT_'.$this->moduleLangVar.'_ERROR_MESSAGE' =>  $strErrMessage,
                 $this->moduleLangVar.'_MAX_LEVEL_SELECT' =>  $this->arrSettings[''],
                 $this->moduleLangVar.'_MAX_CATEGORY_SELECT' =>  $strErrMessage,
+                'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
             ));
 
             if(!empty($strOkMessage)) {

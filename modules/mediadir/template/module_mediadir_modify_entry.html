@@ -85,8 +85,18 @@ function toggleDisplayDouration(){
             </span>
         </td>
     </tr>
-    <!-- BEGIN mediadirUserList -->
+    <!-- BEGIN mediadirTranslationStatus -->
     <tr class="row2">
+        <td width="200" >{TXT_MEDIADIR_TRANSLATION_STATUS}</td>
+        <td>
+            <!-- BEGIN mediadirTranslationLangList -->
+            <input type="checkbox" value="{MEDIADIR_TRANSLATION_LANG_ID}" name="translationStatus[]" {MEDIADIR_TRANSLATION_LANG_STATUS}/>&nbsp;{TXT_MEDIADIR_TRANSLATION_LANG_NAME}&nbsp;&nbsp;&nbsp;
+            <!-- END mediadirTranslationLangList -->
+        </td>
+    </tr>
+    <!-- END mediadirTranslationStatus -->
+    <!-- BEGIN mediadirUserList -->
+    <tr class="{MEDIADIR_USER_ROW}">
         <td width="200" >{TXT_MEDIADIR_CHOOSE_USER}</td>
         <td>
             {MEDIADIR_USER_LIST}
