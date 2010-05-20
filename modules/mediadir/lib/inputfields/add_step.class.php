@@ -71,7 +71,7 @@ class mediaDirectoryInputfieldAdd_step extends mediaDirectoryLibrary
     }
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         return null;
     }

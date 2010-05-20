@@ -144,7 +144,7 @@ class mediaDirectoryInputfieldDropdown extends mediaDirectoryLibrary implements 
 
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         global $objDatabase;
 

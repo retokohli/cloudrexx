@@ -99,7 +99,7 @@ class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary imple
 
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         global $objDatabase, $_LANGID;
 
