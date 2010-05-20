@@ -115,7 +115,7 @@ var addInputfield = function(formId)
 {
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "mediadir", act : "settings", tpl : "modify_form", id : formId, ajax : "add"},
+            parameters: {cmd : "{MODULE_NAME}", act : "settings", tpl : "modify_form", id : formId, ajax : "add"},
             onSuccess: function (transport){
                 var response = transport.responseText;
                 refreshInputfields(formId);
@@ -131,7 +131,7 @@ var moveInputfield = function(formId, fieldId, directionId)
 
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "mediadir", act : "settings", tpl : "modify_form", id : formId, ajax : "move", field : fieldId, direction : directionId},
+            parameters: {cmd : "{MODULE_NAME}", act : "settings", tpl : "modify_form", id : formId, ajax : "move", field : fieldId, direction : directionId},
             onSuccess: function (transport){
                 var response = transport.responseText;
                 refreshInputfields(formId);
@@ -145,7 +145,7 @@ var deleteInputfield = function(formId, fieldId)
 {
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "mediadir", act : "settings", tpl : "modify_form", id : formId, ajax : "delete", field : fieldId},
+            parameters: {cmd : "{MODULE_NAME}", act : "settings", tpl : "modify_form", id : formId, ajax : "delete", field : fieldId},
             onSuccess: function (transport){
                 var response = transport.responseText;
                 refreshInputfields(formId);
@@ -158,7 +158,7 @@ var deleteInputfield = function(formId, fieldId)
 
 var saveInputfield = function(success_function)
 {
-    if(new Ajax.Request('index.php?cmd=mediadir&act=settings&tpl=modify_form&ajax=save', {
+    if(new Ajax.Request('index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&ajax=save', {
             method: 'post',
             parameters: $('settingsInputfieldsForm').serialize(true),
             onSuccess: success_function,
@@ -171,7 +171,7 @@ var refreshInputfields = function(formId)
 {
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "mediadir", act : "settings", tpl : "modify_form", id : formId, ajax : "refresh"},
+            parameters: {cmd : "{MODULE_NAME}", act : "settings", tpl : "modify_form", id : formId, ajax : "refresh"},
             onSuccess: function (transport){
                 var response = transport.responseText;
                 $('inputfields_list').update(response);
@@ -186,7 +186,7 @@ Text[0]=['','{TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC_INFO}'];
 
 </script>
 
-<form name="settingsInputfieldsForm" id="settingsInputfieldsForm" action="index.php?cmd=mediadir&act=settings&tpl=modify_form&id={MEDIADIR_FORM_ID}" method="post" >
+<form name="settingsInputfieldsForm" id="settingsInputfieldsForm" action="index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&id={MEDIADIR_FORM_ID}" method="post" >
     <input name="formId" type="hidden" value="{MEDIADIR_FORM_ID}" />
 
     <!-- BEGIN mediadirFormForm -->
@@ -232,19 +232,19 @@ Text[0]=['','{TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC_INFO}'];
 
     <!-- BEGIN mediadirInputfieldsForm -->
     <ul id="tabmenu">
-          <li><a class="active" id="mediadirTab_inputfields" href="javascript:{}" onclick="selectTab('inputfields')" title="">{TXT_MEDIADIR_SETTINGS_INPUTFIELDS}</a></li>
-          <li><a id="mediadirTab_placeholders" href="javascript:{}" onclick="selectTab('placeholders')" title="">{TXT_MEDIADIR_SETTINGS_PLACEHOLDER}</a></li>
-          <li><a id="mediadirTab_permissions" href="javascript:{}" onclick="selectTab('permissions')" title="">{TXT_MEDIADIR_SETTINGS_PERMISSIONS}</a></li>
+          <li><a class="active" id="formTab_inputfields" href="javascript:{}" onclick="selectTab('inputfields')" title="">{TXT_MEDIADIR_SETTINGS_INPUTFIELDS}</a></li>
+          <li><a id="formTab_placeholders" href="javascript:{}" onclick="selectTab('placeholders')" title="">{TXT_MEDIADIR_SETTINGS_PLACEHOLDER}</a></li>
+          <li><a id="formTab_permissions" href="javascript:{}" onclick="selectTab('permissions')" title="">{TXT_MEDIADIR_SETTINGS_PERMISSIONS}</a></li>
     </ul>
 
-    <div id="inputfields" class="mediadirTab" style="display: block;">
+    <div id="inputfields" class="formTab" style="display: block;">
         <div id="inputfields_list">
             {MEDIADIR_SETTINGS_INPUTFIELDS_CONTENT}
         </div>
         <input style="margin-left: 99px; margin-top: 5px;" type="button" onclick="saveInputfield(function() { addInputfield('{MEDIADIR_FORM_ID}') });" name="addField" value="{TXT_MEDIADIR_SETTINGS_INPUTFIELDS_ADD_NEW}" /><br />
     </div>
 
-    <div id="permissions" class="mediadirTab" style="display: none;">
+    <div id="permissions" class="formTab" style="display: none;">
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
             <tr>
                 <th colspan="2">{TXT_MEDIADIR_SETTINGS_PERMISSIONS}</th>
@@ -274,7 +274,7 @@ Text[0]=['','{TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC_INFO}'];
         </table>
     </div>
 
-    <div id="placeholders" class="mediadirTab" style="display: none;">
+    <div id="placeholders" class="formTab" style="display: none;">
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
             <tr>
                 <th colspan="8">{TXT_MEDIADIR_SETTINGS_PLACEHOLDER}</th>

@@ -7,7 +7,7 @@
 function deleteEntry(entryId)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd=mediadir&act=delete_entry&id="+entryId);
+        window.location.replace("index.php?cmd={MODULE_NAME}&act=delete_entry&id="+entryId);
     }
 }
 
@@ -29,20 +29,20 @@ function entriesDoAction(formId, objSelect)
         switch(objSelect.value) {
             case "delete_entry":
                 if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-                    actionValue = "index.php?cmd=mediadir&act=delete_entry";
+                    actionValue = "index.php?cmd={MODULE_NAME}&act=delete_entry";
             	}
                 break
             case "move_entry":
-                actionValue = "index.php?cmd=mediadir&act=move_entry";
+                actionValue = "index.php?cmd={MODULE_NAME}&act=move_entry";
                 break
             case "restore_voting":
                 if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-                    actionValue = "index.php?cmd=mediadir&act=restore_voting";
+                    actionValue = "index.php?cmd={MODULE_NAME}&act=restore_voting";
             	}
                 break
             case "restore_comments":
                 if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-                    actionValue = "index.php?cmd=mediadir&act=restore_comments";
+                    actionValue = "index.php?cmd={MODULE_NAME}&act=restore_comments";
             	}
                 break
         }
@@ -71,7 +71,7 @@ var switchState = function(id, obj, action, type)
 
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "mediadir", act : "switchState", id : id, state : action, type : type},
+            parameters: {cmd : "{MODULE_NAME}", act : "switchState", id : id, state : action, type : type},
             onSuccess: function() {}
         })) {
     }
@@ -92,7 +92,7 @@ var switchState = function(id, obj, action, type)
     </tr>
 </table>
 <br />
-<form id="manageEntriesForm" action="index.php?cmd=mediadir&act=entries" method="post">
+<form id="manageEntriesForm" action="index.php?cmd={MODULE_NAME}&act=entries" method="post">
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>
         <th colspan="9">{TXT_MEDIADIR_PAGE_TITLE}</th>
@@ -112,14 +112,14 @@ var switchState = function(id, obj, action, type)
         <tr class="{MEDIADIR_ROW_CLASS}">
             <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" />
             <td valign="middle" style="text-align: center;"><a href="javascript: void(0);" onclick="switchState({MEDIADIR_ENTRY_ID}, this, {MEDIADIR_ENTRY_SWITCH_STATUS}, 'entry')"><img src="{MEDIADIR_ENTRY_STATUS}" border="0" alt="" title="" /></td>
-            <td valign="top"><b><a href="index.php?cmd=mediadir&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
+            <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
             <td valign="top">{MEDIADIR_ENTRY_VALIDATE_DATE}</td>
             <td valign="top">{MEDIADIR_ENTRY_AUTHOR}</td>
             <td valign="top">{MEDIADIR_ENTRY_VOTES}</td>
-            <td valign="top"><a href="index.php?cmd=mediadir&act=comments&id={MEDIADIR_ENTRY_ID}">{MEDIADIR_ENTRY_COMMENTS}</a></td>
+            <td valign="top"><a href="index.php?cmd={MODULE_NAME}&act=comments&id={MEDIADIR_ENTRY_ID}">{MEDIADIR_ENTRY_COMMENTS}</a></td>
             <td valign="top">{MEDIADIR_ENTRY_HITS}</td>
             <td valign="top" style="text-align: right;" nowrap="nowrap">
-                <a href="index.php?cmd=mediadir&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" title="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" /></a>
+                <a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" title="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" /></a>
                 <a href="javascript:deleteEntry('{MEDIADIR_ENTRY_ID}');" title="{MEDIADIR_ENTRY_NAME} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_DELETE}" title="{MEDIADIR_ENTRY_NAME} {TXT_DELETE}" /></a>
             </td>
         </tr>

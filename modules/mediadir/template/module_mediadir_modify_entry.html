@@ -18,8 +18,8 @@ function openWindow(theURL,winName,features){
 }
 
 function ExpandMinimize(toggle){
-    elm1 = document.getElementById('mediadirInputfield_' + toggle + '_Minimized');
-    elm2 = document.getElementById('mediadirInputfield_' + toggle + '_Expanded');
+    elm1 = document.getElementById('{MODULE_NAME}Inputfield_' + toggle + '_Minimized');
+    elm2 = document.getElementById('{MODULE_NAME}Inputfield_' + toggle + '_Expanded');
 
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
@@ -41,7 +41,7 @@ function toggleDisplayDouration(){
 
 {MEDIADIR_JAVASCRIPT}
 
-<form name="entryModfyForm" action="index.php?cmd=mediadir&act=modify_entry" onsubmit="{MEDIADIR_FORM_ONSUBMIT}" method="post" enctype="multipart/form-data">
+<form name="entryModfyForm" action="index.php?cmd={MODULE_NAME}&act=modify_entry" onsubmit="{MEDIADIR_FORM_ONSUBMIT}" method="post" enctype="multipart/form-data">
 <input name="entryId" type="hidden" value="{MEDIADIR_ENTRY_ID}" />
 <input name="formId" type="hidden" value="{MEDIADIR_FORM_ID}" />
 <input name="langId" type="hidden" value="{MEDIADIR_DEFAULT_LANG_ID}" />
@@ -96,6 +96,6 @@ function toggleDisplayDouration(){
 </table>
 <br />
 <input type="submit" name="submitEntryModfyForm" value="{TXT_MEDIADIR_SUBMIT}" />
-<div id="mediadirErrorMessage" style="display:none; color: #ff0000;"><br />{TXT_MEDIADIR_PLEASE_CHECK_INPUT}</div>
+<div id="{MODULE_NAME}ErrorMessage" style="display:none; color: #ff0000;"><br />{TXT_MEDIADIR_PLEASE_CHECK_INPUT}</div>
 </form>
 <!-- END module_mediadir_modify_category.html -->

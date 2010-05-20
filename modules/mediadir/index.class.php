@@ -30,6 +30,8 @@ class mediaDirectory extends mediaDirectoryLibrary
 
     var $pageTitle;
     var $metaTitle;
+    
+    var $pageContent;
 
     var $arrNavtree = array();
 
@@ -41,16 +43,18 @@ class mediaDirectory extends mediaDirectoryLibrary
         global $_ARRAYLANG;
 
         //globals
+        parent::__construct('.');
         parent::getSettings();
         parent::checkDisplayduration();
+        
+        /*echo $this->moduleName."<br />";
+        echo $this->moduleTablePrefix."<br />";
+        echo $this->moduleLangVar."<br />";*/
         
         $_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = 'Link zu Googe Maps';
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';
 
         $this->pageContent = $pageContent;
-
-        $this->_objTpl = new HTML_Template_Sigma('.');
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
     /**
@@ -99,7 +103,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                     parent::checkAccess('edit_entry');
                     $this->modifyEntry();
                 } else {
-                    header("Location: index.php?section=mediadir");
+                    header("Location: index.php?section=".$this->moduleName);
                     exit;
                 }
                 break;
@@ -108,7 +112,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                     parent::checkAccess('delete_entry');
                     $this->deleteEntry();
                 } else {
-                    header("Location: index.php?section=mediadir");
+                    header("Location: index.php?section=".$this->moduleName);
                     exit;
                 }
                 break;
@@ -122,7 +126,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 if(!empty($_CONFIG['googleMapsAPIKey'])) {
                     $this->showMap();
                 } else {
-                    header("Location: index.php?section=mediadir");
+                    header("Location: index.php?section=".$this->moduleName );
                     exit;
                 }
                 break;
@@ -143,7 +147,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         }
 
         $this->_objTpl->setVariable(array(
-            'MEDIADIR_JAVASCRIPT' =>  $this->getJavascript(),
+            $this->moduleLangVar.'_JAVASCRIPT' =>  $this->getJavascript(),
         ));
 
         return $this->_objTpl->get();
@@ -159,7 +163,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         $arrExistingBlocks = array();
 
         for($i = 1; $i <= 10; $i++){
-            if($this->_objTpl->blockExists('mediadirCategoriesLevels_row_'.$i)){
+            if($this->_objTpl->blockExists($this->moduleName.'CategoriesLevels_row_'.$i)){
                 array_push($arrExistingBlocks, $i);
             }
         }
@@ -202,18 +206,18 @@ class mediaDirectory extends mediaDirectoryLibrary
         $intCategoryId = isset($_GET['cid']) ? intval($_GET['cid']) : $intCategoryId;
 
         //get navtree
-        if($this->_objTpl->blockExists('mediadirNavtree') && ($intCategoryId != 0 || $intLevelId != 0)){
+        if($this->_objTpl->blockExists($this->moduleName.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
             $this->getNavtree($intCategoryId, $intLevelId);
         }
 
         //get searchform
-        if($this->_objTpl->blockExists('mediadirSearchform')){
+        if($this->_objTpl->blockExists($this->moduleName.'Searchform')){
             $objSearch = new mediaDirectorySearch();
             $objSearch->getSearchform($this->_objTpl, 1);
         }
 
         //get level / category details
-        if($this->_objTpl->blockExists('mediadirCategoryLevelDetail')){
+        if($this->_objTpl->blockExists($this->moduleName.'CategoryLevelDetail')){
             if ($intCategoryId == 0 && $intLevelId != 0 && $this->arrSettings['settingsShowLevels'] == 1) {
                 $objLevel = new mediaDirectoryLevel($intLevelId, null, 0);
                 $objLevel->listLevels($this->_objTpl, 5, $intLevelId);
@@ -227,30 +231,30 @@ class mediaDirectory extends mediaDirectoryLibrary
         }
 
         //list levels / categories
-        if($this->_objTpl->blockExists('mediadirCategoriesLevelsList')){
+        if($this->_objTpl->blockExists($this->moduleName.'CategoriesLevelsList')){
             if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 ) {
                 $objLevels = new mediaDirectoryLevel(null, $intLevelId, 1);
                 $objCategories = new mediaDirectoryCategory(null, $intCategoryId, 1);
                 $objLevels->listLevels($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
-                $this->_objTpl->parse('mediadirCategoriesLevelsList');
+                $this->_objTpl->parse($this->moduleName.'CategoriesLevelsList');
             }
 
             if($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) {
                 $objCategories = new mediaDirectoryCategory(null, $intCategoryId, 1);
                 $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
-                $this->_objTpl->parse('mediadirCategoriesLevelsList');
+                $this->_objTpl->parse($this->moduleName.'CategoriesLevelsList');
             }
 
             if(empty($objLevel->arrLevels) && empty($objCategories->arrCategories)) {
-                $this->_objTpl->hideBlock('mediadirCategoriesLevelsList');
+                $this->_objTpl->hideBlock($this->moduleName.'CategoriesLevelsList');
                 $this->_objTpl->clearVariables();
             }
         }
 
         //list entries
-        if($this->_objTpl->blockExists('mediadirEntryList')){
+        if($this->_objTpl->blockExists($this->moduleName.'EntryList')){
             $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
             if($intCategoryId == 0 && $intLevelId == 0) {
@@ -270,9 +274,9 @@ class mediaDirectory extends mediaDirectoryLibrary
                 if(!$bolLatest) {
                     $intNumEntries = intval($objEntries->countEntries($intCategoryId, $intLevelId));
                     if($intNumEntries > $intLimitEnd) {
-                        $strPaging = getPaging($intNumEntries, $intLimitStart, "&amp;section=mediadir".$strPagingCmdParam.$strPagingLevelParam.$strPagingCatParam, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
+                        $strPaging = getPaging($intNumEntries, $intLimitStart, "&amp;section=".$this->moduleName.$strPagingCmdParam.$strPagingLevelParam.$strPagingCatParam, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                         $this->_objTpl->setGlobalVariable(array(
-                            'MEDIADIR_PAGING' =>  $strPaging
+                            $this->moduleLangVar.'_PAGING' =>  $strPaging
                         ));
                     }
                 }
@@ -282,7 +286,7 @@ class mediaDirectory extends mediaDirectoryLibrary
             }
 
             if(empty($objEntries->arrEntries)) {
-                $this->_objTpl->hideBlock('mediadirEntryList');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryList');
                 $this->_objTpl->clearVariables();
             }
         }
@@ -297,7 +301,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get searchform
-        if($this->_objTpl->blockExists('mediadirSearchform')){
+        if($this->_objTpl->blockExists($this->moduleName.'Searchform')){
             $objSearch = new mediaDirectorySearch();
             $objSearch->getSearchform($this->_objTpl);
         }
@@ -335,17 +339,17 @@ class mediaDirectory extends mediaDirectoryLibrary
                 if($intNumEntries > $intLimitEnd) {
                     $strPaging = getPaging($intNumEntries, $intLimitStart, "&amp;".$strPaigingParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                     $this->_objTpl->setGlobalVariable(array(
-                        'MEDIADIR_PAGING' =>  $strPaging
+                        $this->moduleLangVar.'_PAGING' =>  $strPaging
                     ));
                 }
             } else {
                 $this->_objTpl->setVariable(array(
-                    'TXT_MEDIADIR_SEARCH_MESSAGE' =>  $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
+                    'TXT_'.$this->moduleLangVar.'_SEARCH_MESSAGE' =>  $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
                 ));
             }
         } else {
             $this->_objTpl->setVariable(array(
-                'TXT_MEDIADIR_SEARCH_MESSAGE' =>  $_ARRAYLANG['TXT_MEDIADIR_NO_SEARCH_TERM'],
+                'TXT_'.$this->moduleLangVar.'_SEARCH_MESSAGE' =>  $_ARRAYLANG['TXT_MEDIADIR_NO_SEARCH_TERM'],
             ));
         }
 
@@ -366,11 +370,11 @@ class mediaDirectory extends mediaDirectoryLibrary
         $intEntryId = isset($_GET['eid']) ? intval($_GET['eid']) : 0;
 
         //get navtree
-        if($this->_objTpl->blockExists('mediadirNavtree') && ($intCategoryId != 0 || $intLevelId != 0)){
+        if($this->_objTpl->blockExists($this->moduleName.'Navtree') && ($intCategoryId != 0 || $intLevelId != 0)){
             $this->getNavtree($intCategoryId, $intLevelId);
         }
 
-        if($intEntryId != 0 && $this->_objTpl->blockExists('mediadirEntryList')) {
+        if($intEntryId != 0 && $this->_objTpl->blockExists($this->moduleName.'EntryList')) {
             $objEntry = new mediaDirectoryEntry();
             $objEntry->getEntries($intEntryId,$intLevelId,$intCategoryId,null,null,null,1,null,1);
             $objEntry->listEntries($this->_objTpl, 2);
@@ -381,14 +385,14 @@ class mediaDirectory extends mediaDirectoryLibrary
             $this->pageTitle = $objEntry->arrEntries[$intEntryId]['entryFields'][0];
 
             if(empty($objEntry->arrEntries)) {
-                $this->_objTpl->hideBlock('mediadirEntryList');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryList');
                 $this->_objTpl->clearVariables();
 
-                header("Location: index.php?section=mediadir");
+                header("Location: index.php?section=".$this->moduleName);
 			    exit;
             }
         } else {
-            header("Location: index.php?section=mediadir");
+            header("Location: index.php?section=".$this->moduleName);
 			exit;
         }
     }
@@ -415,7 +419,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get searchform
-        if($this->_objTpl->blockExists('mediadirSearchform')){
+        if($this->_objTpl->blockExists($this->moduleName.'Searchform')){
             $objSearch = new mediaDirectorySearch();
             $objSearch->getSearchform($this->_objTpl, 1);
         }
@@ -448,25 +452,25 @@ class mediaDirectory extends mediaDirectoryLibrary
                 }
 
                 $objTemplate->setVariable(array(
-                    'MEDIADIR_LATEST_ROW_CLASS' =>  $r%2==0 ? 'row1' : 'row2',
-                    'MEDIADIR_LATEST_ENTRY_ID' =>  $arrEntry['entryId'],
-                    'MEDIADIR_LATEST_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
-                    'MEDIADIR_LATEST_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
-                    'MEDIADIR_LATEST_ENTRY_HITS' =>  $arrEntry['entryHits'],
-                    'MEDIADIR_ENTRY_DETAIL_URL' =>  'index.php?section=mediadir&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'],
-                    'TXT_MEDIADIR_ENTRY_DETAIL' =>  $_CORELANG['TXT_DETAIL'],
+                    $this->moduleLangVar.'_LATEST_ROW_CLASS' =>  $r%2==0 ? 'row1' : 'row2',
+                    $this->moduleLangVar.'_LATEST_ENTRY_ID' =>  $arrEntry['entryId'],
+                    $this->moduleLangVar.'_LATEST_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
+                    $this->moduleLangVar.'_LATEST_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
+                    $this->moduleLangVar.'_LATEST_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                    $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'],
+                    'TXT_'.$this->moduleLangVar.'_ENTRY_DETAIL' =>  $_CORELANG['TXT_DETAIL'],
                 ));
 
                 foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
                     $intPos = $key+1;
 
                     $objTemplate->setVariable(array(
-                        'MEDIADIR_LATEST_ENTRY_FIELD_'.$intPos.'_POS' => $strFieldValue
+                        $this->moduleLangVar.'_LATEST_ENTRY_FIELD_'.$intPos.'_POS' => $strFieldValue
                     ));
                 }
 
                 $blockId = $arrExistingBlocks[$i];
-                $objTemplate->parse('mediadirLatest_row_'.$blockId);
+                $objTemplate->parse($this->moduleName.'Latest_row_'.$blockId);
                 if ($i < $numBlocks-1) {
                     ++$i;
                 } else {
@@ -485,7 +489,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         //get searchform
-        if($this->_objTpl->blockExists('mediadirSearchform')){
+        if($this->_objTpl->blockExists($this->moduleName.'Searchform')){
             $objSearch = new mediaDirectorySearch();
             $objSearch->getSearchform($this->_objTpl, 1);
         }
@@ -532,7 +536,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $objForms->listForms($this->_objTpl, 3, $intFormId);
 
                 //parse blocks
-                $this->_objTpl->hideBlock('mediadirInputfields');
+                $this->_objTpl->hideBlock($this->moduleName.'Inputfields');
             } else {
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm'])) {
@@ -582,35 +586,35 @@ class mediaDirectory extends mediaDirectoryLibrary
                     $strOnSubmit = $this->getFormOnSubmit();
 
                     //parse blocks
-                    $this->_objTpl->hideBlock('mediadirForms');
+                    $this->_objTpl->hideBlock($this->moduleName.'Forms');
                 }
             }
 
             //parse global variables
             $this->_objTpl->setVariable(array(
-                'MEDIADIR_ENTRY_ID' => $intEntryId,
-                'MEDIADIR_FORM_ID' => $intFormId,
-                'TXT_MEDIADIR_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
-                'MEDIADIR_FORM_ONSUBMIT' =>  $strOnSubmit,
-                'TXT_MEDIADIR_PLEASE_CHECK_INPUT' =>  $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'],
-                'TXT_MEDIADIR_OK_MESSAGE' =>  $strOkMessage,
-                'TXT_MEDIADIR_ERROR_MESSAGE' =>  $strErrMessage,
-                'MEDIADIR_MAX_LEVEL_SELECT' =>  $this->arrSettings[''],
-                'MEDIADIR_MAX_CATEGORY_SELECT' =>  $strErrMessage,
+                $this->moduleLangVar.'_ENTRY_ID' => $intEntryId,
+                $this->moduleLangVar.'_FORM_ID' => $intFormId,
+                'TXT_'.$this->moduleLangVar.'_SUBMIT' =>  $_CORELANG['TXT_SAVE'],
+                $this->moduleLangVar.'_FORM_ONSUBMIT' =>  $strOnSubmit,
+                'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT' =>  $_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'],
+                'TXT_'.$this->moduleLangVar.'_OK_MESSAGE' =>  $strOkMessage,
+                'TXT_'.$this->moduleLangVar.'_ERROR_MESSAGE' =>  $strErrMessage,
+                $this->moduleLangVar.'_MAX_LEVEL_SELECT' =>  $this->arrSettings[''],
+                $this->moduleLangVar.'_MAX_CATEGORY_SELECT' =>  $strErrMessage,
             ));
 
             if(!empty($strOkMessage)) {
-                $this->_objTpl->parse('mediadirEntryOkMessage');
-                $this->_objTpl->hideBlock('mediadirEntryErrMessage');
-                $this->_objTpl->hideBlock('mediadirEntryModifyForm');
+                $this->_objTpl->parse($this->moduleName.'EntryOkMessage');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryErrMessage');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryModifyForm');
             } else if(!empty($strErrMessage)) {
-                $this->_objTpl->hideBlock('mediadirEntryOkMessage');
-                $this->_objTpl->parse('mediadirEntryErrMessage');
-                $this->_objTpl->hideBlock('mediadirEntryModifyForm');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryOkMessage');
+                $this->_objTpl->parse($this->moduleName.'EntryErrMessage');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryModifyForm');
             } else {
-                $this->_objTpl->hideBlock('mediadirEntryOkMessage');
-                $this->_objTpl->hideBlock('mediadirEntryErrMessage');
-                $this->_objTpl->parse('mediadirEntryModifyForm');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryOkMessage');
+                $this->_objTpl->hideBlock($this->moduleName.'EntryErrMessage');
+                $this->_objTpl->parse($this->moduleName.'EntryModifyForm');
             }
         } else {
 			header("Location: index.php?section=".$_GET['section']);
@@ -652,25 +656,25 @@ class mediaDirectory extends mediaDirectoryLibrary
 
         //parse global variables
         $this->_objTpl->setVariable(array(
-            'MEDIADIR_ENTRY_ID' => $intEntryId,
-            'TXT_MEDIADIR_DELETE' =>  $_CORELANG['TXT_ACCESS_DELETE_ENTRY'],
-            'TXT_MEDIADIR_ABORT' =>  $_CORELANG['TXT_CANCEL'],
-            'TXT_MEDIADIR_OK_MESSAGE' =>  $strOkMessage,
-            'TXT_MEDIADIR_ERROR_MESSAGE' =>  $strErrMessage,
+            $this->moduleLangVar.'_ENTRY_ID' => $intEntryId,
+            'TXT_'.$this->moduleLangVar.'_DELETE' =>  $_CORELANG['TXT_ACCESS_DELETE_ENTRY'],
+            'TXT_'.$this->moduleLangVar.'_ABORT' =>  $_CORELANG['TXT_CANCEL'],
+            'TXT_'.$this->moduleLangVar.'_OK_MESSAGE' =>  $strOkMessage,
+            'TXT_'.$this->moduleLangVar.'_ERROR_MESSAGE' =>  $strErrMessage,
         ));
 
         if(!empty($strOkMessage)) {
-            $this->_objTpl->parse('mediadirEntryOkMessage');
-            $this->_objTpl->hideBlock('mediadirEntryErrMessage');
-            $this->_objTpl->hideBlock('mediadirEntryModifyForm');
+            $this->_objTpl->parse($this->moduleName.'EntryOkMessage');
+            $this->_objTpl->hideBlock($this->moduleName.'EntryErrMessage');
+            $this->_objTpl->hideBlock($this->moduleName.'EntryModifyForm');
         } else if(!empty($strErrMessage)) {
-            $this->_objTpl->hideBlock('mediadirEntryOkMessage');
-            $this->_objTpl->parse('mediadirEntryErrMessage');
-            $this->_objTpl->parse('mediadirEntryModifyForm');
+            $this->_objTpl->hideBlock($this->moduleName.'EntryOkMessage');
+            $this->_objTpl->parse($this->moduleName.'EntryErrMessage');
+            $this->_objTpl->parse($this->moduleName.'EntryModifyForm');
         } else {
-            $this->_objTpl->hideBlock('mediadirEntryOkMessage');
-            $this->_objTpl->hideBlock('mediadirEntryErrMessage');
-            $this->_objTpl->parse('mediadirEntryModifyForm');
+            $this->_objTpl->hideBlock($this->moduleName.'EntryOkMessage');
+            $this->_objTpl->hideBlock($this->moduleName.'EntryErrMessage');
+            $this->_objTpl->parse($this->moduleName.'EntryModifyForm');
         }
     }
 
@@ -698,7 +702,7 @@ class mediaDirectory extends mediaDirectoryLibrary
             $strOverviewCmd = null;
         }
 
-        $this->arrNavtree[] = '<a href="?section=mediadir'.$strOverviewCmd.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
+        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strOverviewCmd.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
         krsort($this->arrNavtree);
 
         if(!empty($this->arrNavtree)) {
@@ -707,16 +711,16 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $strClass = $i == 0 ? 'class="first_navtree_element"' : '';
 
                 $this->_objTpl->setVariable(array(
-                    'MEDIADIR_NAVTREE_LINK'    =>  $strName,
-                    'MEDIADIR_NAVTREE_LINK_CLASS'    =>  $strClass
+                    $this->moduleLangVar.'_NAVTREE_LINK'    =>  $strName,
+                    $this->moduleLangVar.'_NAVTREE_LINK_CLASS'    =>  $strClass
                 ));
 
                 $i++;
-                $this->_objTpl->parse('mediadirNavtreeElement');
+                $this->_objTpl->parse($this->moduleName.'NavtreeElement');
             }
-            $this->_objTpl->parse('mediadirNavtree');
+            $this->_objTpl->parse($this->moduleName.'Navtree');
         } else {
-            $this->_objTpl->hideBlock('mediadirNavtree');
+            $this->_objTpl->hideBlock($this->moduleName.'Navtree');
         }
     }
 
@@ -733,7 +737,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         } else {
             $strCategoryCmd = null;
         }
-        $this->arrNavtree[] = '<a href="?section=mediadir'.$strCategoryCmd.$strLevelId.'&amp;cid='.$objCategory->arrCategories[$intCategoryId]['catId'].'">'.$objCategory->arrCategories[$intCategoryId]['catName'][0].'</a>';
+        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$objCategory->arrCategories[$intCategoryId]['catId'].'">'.$objCategory->arrCategories[$intCategoryId]['catName'][0].'</a>';
 
         if($objCategory->arrCategories[$intCategoryId]['catParentId'] != 0) {
             $this->getNavtreeCategories($objCategory->arrCategories[$intCategoryId]['catParentId']);
@@ -752,7 +756,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         } else {
             $strLevelCmd = null;
         }
-        $this->arrNavtree[] = '<a href="?section=mediadir'.$strLevelCmd.'&amp;lid='.$objLevel->arrLevels[$intLevelId]['levelId'].'">'.$objLevel->arrLevels[$intLevelId]['levelName'][0].'</a>';
+        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$objLevel->arrLevels[$intLevelId]['levelId'].'">'.$objLevel->arrLevels[$intLevelId]['levelName'][0].'</a>';
 
         if($objLevel->arrLevels[$intLevelId]['levelParentId'] != 0) {
             $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);
