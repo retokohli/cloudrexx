@@ -36,16 +36,26 @@ class mediaDirectoryComment extends mediaDirectoryLibrary
 
         $strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_SUCCESSFULL'];
         $strErrMessage = $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_CORRUPT'];
+        
+        $strFunctionComment = $this->moduleName.'Comment';
+        $strFunctionRefreshComment = $this->moduleName.'RefreshComments';
+        $strFunctionCheckCommentForm = $this->moduleName.'CheckCommentForm';
+        $strSection = $this->moduleName;
+        $strNewComment = $this->moduleName.'NewComment_';
+        $strNewAddedComment = $this->moduleName.'NewAddedComment_';
+        $strCommentOk = $this->moduleName.'CommentOk';
+        $strCommentErr = $this->moduleName.'CommentErr';
+        $strCommentErrMessage = $this->moduleName.'ErrorMessage';
 
         $strCommentsJavascript  =  <<<EOF
-
-var '.$this->moduleName.'Comment = function(entry)
+        
+var $strFunctionComment = function(entry)
 {
     var postParameters = $('commentFormInputs_'+entry).serialize(true);
 
-    $('commentForm_'+entry).update('<img src="images/modules/".$this->moduleName."/loading.gif" border="0" alt="loading..." />');
+    $('commentForm_'+entry).update('<img src="images/modules/$strSection/loading.gif" border="0" alt="loading..." />');
 
-    if(new Ajax.Request('index.php?section='.$this->moduleName.'&comment=add&eid='+entry, {
+    if(new Ajax.Request('index.php?section=$strSection&comment=add&eid='+entry, {
             method: 'post',
             parameters: postParameters,
             onSuccess: function (transport){
@@ -56,34 +66,34 @@ var '.$this->moduleName.'Comment = function(entry)
                 var cmd = arrResponse[2];
 
                 if(status == 1) {
-                    '.$this->moduleName.'RefreshComments(entry,section,cmd);
+                    $strFunctionRefreshComment(entry,section,cmd);
                 } else {
-                    $('commentForm_'+entry).className = '".$this->moduleName."CommentErr';
+                    $('commentForm_'+entry).className = '$strCommentErr';
                     $('commentForm_'+entry).update('$strErrMessage');
                 }
 
             },
             onFailure: function(){
-                $('commentForm_'+entry).className = '".$this->moduleName."CommentErr';
+                $('commentForm_'+entry).className = '$strCommentErr';
                 $('commentForm_'+entry).update('$strErrMessage');
             }
         })) {
     }
 }
 
-var '.$this->moduleName.'RefreshComments = function(entry,section,cmd)
+var $strFunctionRefreshComment = function(entry,section,cmd)
 {
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {section : "'.$this->moduleName.'", comment : "refresh", eid : entry, pageSection : section, pageCmd : cmd},
+            parameters: {section : "$strSection", comment : "refresh", eid : entry, pageSection : section, pageCmd : cmd},
             onSuccess: function (transport){
                 var response = transport.responseText;
 
-                $('".$this->moduleName."NewAddedComment_'+entry).className = '".$this->moduleName."NewComment';
-                $('".$this->moduleName."NewAddedComment_'+entry).update(response);
-                $('".$this->moduleName."NewAddedComment_'+entry).setStyle({display: 'block'});
+                $('$strNewAddedComment'+entry).className = '$strNewComment';
+                $('$strNewAddedComment'+entry).update(response);
+                $('$strNewAddedComment'+entry).setStyle({display: 'block'});
 
-                $('commentForm_'+entry).className = '".$this->moduleName."CommentOk';
+                $('commentForm_'+entry).className = '$strCommentOk';
                 $('commentForm_'+entry).update('$strOkMessage');
             },
             onFailure: function(){
@@ -92,7 +102,7 @@ var '.$this->moduleName.'RefreshComments = function(entry,section,cmd)
     }
 }
 
-var ".$this->moduleName."CheckCommentForm = function(entry)
+var $strFunctionCheckCommentForm = function(entry)
 {
     var isOk = true;
     var commentName = $('commentName').value;
@@ -113,9 +123,9 @@ var ".$this->moduleName."CheckCommentForm = function(entry)
     }
 
     if (!isOk) {
-		$('".$this->moduleName."ErrorMessage').style.display = "block";
+		$('$strCommentErrMessage').style.display = "block";
 	} else {
-	   ".$this->moduleName."Comment(entry);
+	   $strFunctionComment(entry);
 	}
 }
 
