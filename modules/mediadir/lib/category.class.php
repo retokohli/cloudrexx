@@ -379,15 +379,15 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
             case 5:
                 //Frontend View Detail
                 $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
-
+                
                 $objTpl->setVariable(array(
-                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
-                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_NAME' => $arrCategories[$intCategoryId]['catName'][0],
-                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.$arrCategories[$intCategoryId]['catName'][0].'</a>',
-                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
-                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'.thumb" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
-                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
-                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => $arrCategories[$intCategoryId]['catName'][0],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.$arrCategories[$intCategoryId]['catName'][0].'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'.thumb" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
                 ));
 
                 if(!empty($arrCategories[$intCategoryId]['catPicture']) && $this->arrSettings['settingsShowCategoryImage'] == 1) {

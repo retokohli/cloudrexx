@@ -26,6 +26,7 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
     function __construct()
     {
         parent::getFrontendLanguages();
+        parent::getSettings();
     }
 
 
@@ -134,10 +135,14 @@ class mediaDirectoryInputfieldText extends mediaDirectoryLibrary implements inpu
         $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
         $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
         
-        if(in_array($_LANGID, $arrTranslationStatus)) {
-        	$intLangId = $_LANGID;
+        if($this->arrSettings['settingsTranslationStatus'] == 1) {
+	        if(in_array($_LANGID, $arrTranslationStatus)) {
+	        	$intLangId = $_LANGID;
+	        } else {
+	        	$intLangId = $intEntryDefaultLang;
+	        }
         } else {
-        	$intLangId = $intEntryDefaultLang;
+        	$intLangId = $_LANGID;
         }
         
         $objInputfieldValue = $objDatabase->Execute("

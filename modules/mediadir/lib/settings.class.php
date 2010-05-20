@@ -472,6 +472,8 @@ EOF;
             'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY'],
             'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH'],
             'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR'],
+            'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS'],
+            'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO'],
         ));
 
         if($this->arrSettings['settingsConfirmNewEntries'] == 1) {
@@ -536,6 +538,14 @@ EOF;
         } else {
             $strDelEntriesOn = '';
             $strDelEntriesOff = 'checked="checked"';
+        }
+        
+        if($this->arrSettings['settingsTranslationStatus'] == 1) {
+            $strTransStatusOn = 'checked="checked"';
+            $strTransStatusOff = '';
+        } else {
+            $strTransStatusOn = '';
+            $strTransStatusOff = 'checked="checked"';
         }
         
         if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
@@ -616,6 +626,8 @@ EOF;
             'MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFICATION_ON' => $strDisplaydurationNotificationOn,
             'MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFIVATION_SHOW_DAYBEFORE' => $strDisplaydurationNotificationShowDaybefore,
             'MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFICATION_VALUE' => $strDisplaydurationNotificationValue,
+            'MEDIADIR_SETTINGS_TRANSLATION_STATUS_OFF' => $strTransStatusOff,
+            'MEDIADIR_SETTINGS_TRANSLATION_STATUS_ON' => $strTransStatusOn,
         ));
 
         if(empty($this->arrCommunityGroups)) {
