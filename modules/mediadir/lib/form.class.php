@@ -52,8 +52,8 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
             FROM
-                ".DBPREFIX."module_mediadir_forms AS form,
-                ".DBPREFIX."module_mediadir_form_names AS form_names
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_forms AS form,
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names AS form_names
             WHERE
                 ($whereFormId form_names.form_id=form.id)
             AND
@@ -79,7 +79,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                         `form_name` AS `name`,
                         `form_description` AS `description`
                     FROM
-                        ".DBPREFIX."module_mediadir_form_names
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
                     WHERE
                         form_id=".$objFormsRS->fields['id']."
                 ");
@@ -132,26 +132,26 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
         			    //parse data variables
                         $objTpl->setVariable(array(
-                            'MEDIADIR_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
-                            'MEDIADIR_FORM_ID' => $arrForm['formId'],
-                            'MEDIADIR_FORM_TITLE' => $arrForm['formName'][0],
-                            'MEDIADIR_FORM_DESCRIPTION' => $arrForm['formDescription'][0],
-                            'MEDIADIR_FORM_ORDER' => $arrForm['formOrder'],
-                            'MEDIADIR_FORM_STATUS' => $strStatus,
-                            'MEDIADIR_FORM_SWITCH_STATUS' => $intStatus,
+                            $this->moduleLangVar.'_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
+                            $this->moduleLangVar.'_FORM_ID' => $arrForm['formId'],
+                            $this->moduleLangVar.'_FORM_TITLE' => $arrForm['formName'][0],
+                            $this->moduleLangVar.'_FORM_DESCRIPTION' => $arrForm['formDescription'][0],
+                            $this->moduleLangVar.'_FORM_ORDER' => $arrForm['formOrder'],
+                            $this->moduleLangVar.'_FORM_STATUS' => $strStatus,
+                            $this->moduleLangVar.'_FORM_SWITCH_STATUS' => $intStatus,
                         ));
 
                         $i++;
-                        $objTpl->parse('mediadirFormTemplateList');
-                        $objTpl->hideBlock('mediadirFormTemplateNoEntries');
+                        $objTpl->parse($this->moduleName.'FormTemplateList');
+                        $objTpl->hideBlock($this->moduleName.'FormTemplateNoEntries');
                         $objTpl->clearVariables();
                     }
                 } else {
                     $objTpl->setGlobalVariable(array(
-                        'TXT_MEDIADIR_NO_ENTRIES_FOUND' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND']
+                        'TXT_'.$this->moduleLangVar.'_NO_ENTRIES_FOUND' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND']
                     ));
 
-                    $objTpl->touchBlock('mediadirFormTemplateNoEntries');
+                    $objTpl->touchBlock($this->moduleName.'FormTemplateNoEntries');
                     $objTpl->clearVariables();
                 }
                 break;
@@ -169,11 +169,11 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
                 //parse data variables
                 $objTpl->setVariable(array(
-                    'TXT_MEDIADIR_CHOOSE_FORM' => $_ARRAYLANG['TXT_MEDIADIR_CHOOSE_FORM'],
-                    'MEDIADIR_FORM_LIST' => '<select onchange="document.entryModfyForm.submit();" name="selectedFormId" style="width: 302px">'.$strDropdown."</select>",
+                    'TXT_'.$this->moduleLangVar.'_CHOOSE_FORM' => $_ARRAYLANG['TXT_MEDIADIR_CHOOSE_FORM'],
+                    $this->moduleLangVar.'_FORM_LIST' => '<select onchange="document.entryModfyForm.submit();" name="selectedFormId" style="width: 302px">'.$strDropdown."</select>",
                 ));
 
-                $objTpl->parse('mediadirFormList');
+                $objTpl->parse($this->moduleName.'FormList');
                 $objTpl->clearVariables();
 
                 break;
@@ -184,24 +184,24 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                     if($arrForm['formActive'] == 1) {
                         //parse data variables
                         $objTpl->setVariable(array(
-                            'MEDIADIR_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
-                            'TXT_MEDIADIR_FORM_ID' => $arrForm['formId'],
-                            'TXT_MEDIADIR_FORM_TITLE' => $arrForm['formName'][0],
-                            'TXT_MEDIADIR_FORM_DESCRIPTION' => $arrForm['formDescription'][0],
-                            'TXT_MEDIADIR_FORM_IMAGE' => '<img src="'.$arrForm['formPicture'].'" alt="'.$arrForm['formName'][0].'" />',
-                            'TXT_MEDIADIR_FORM_IMAGE_SRC' => $arrForm['formPicture'],
-                            'TXT_MEDIADIR_FORM_IMAGE_SRC_THUMB' => $arrForm['formPicture']."thumb",
-                            'TXT_MEDIADIR_FORM_IMAGE_THUMB' => '<img src="'.$arrForm['formPicture'].'.thumb" alt="'.$arrForm['formName'][0].'" />',
+                            $this->moduleLangVar.'_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
+                            'TXT_'.$this->moduleLangVar.'_FORM_ID' => $arrForm['formId'],
+                            'TXT_'.$this->moduleLangVar.'_FORM_TITLE' => $arrForm['formName'][0],
+                            'TXT_'.$this->moduleLangVar.'_FORM_DESCRIPTION' => $arrForm['formDescription'][0],
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE' => '<img src="'.$arrForm['formPicture'].'" alt="'.$arrForm['formName'][0].'" />',
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_SRC' => $arrForm['formPicture'],
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_SRC_THUMB' => $arrForm['formPicture']."thumb",
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_THUMB' => '<img src="'.$arrForm['formPicture'].'.thumb" alt="'.$arrForm['formName'][0].'" />',
                         ));
 
                         $i++;
-                        $objTpl->parse('mediadirFormList');
+                        $objTpl->parse($this->moduleName.'FormList');
                         $objTpl->clearVariables();
                     }
                 }
 
 
-                $objTpl->parse('mediadirForms');
+                $objTpl->parse($this->moduleName.'Forms');
                 break;
         }
     }
@@ -223,7 +223,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
             //insert new form
             $objInsertAttributes = $objDatabase->Execute("
                 INSERT INTO
-                    ".DBPREFIX."module_mediadir_forms
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_forms
                 SET
                     `order`='99',
                     `picture`='".$strPicture."',
@@ -244,7 +244,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
-                            ".DBPREFIX."module_mediadir_form_names
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
                         SET
                             `lang_id`='".intval($arrLang['id'])."',
                             `form_id`='".intval($intId)."',
@@ -257,7 +257,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
                 $objCreateCatSelectors = $objDatabase->Execute("
                     INSERT INTO
-                        ".DBPREFIX."module_mediadir_order_rel_forms_selectors
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors
                     SET
                         `selector_id`='9',
                         `form_id`='".intval($intId)."',
@@ -267,7 +267,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
                 $objCreateLevelSelectors = $objDatabase->Execute("
                     INSERT INTO
-                        ".DBPREFIX."module_mediadir_order_rel_forms_selectors
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors
                     SET
                         `selector_id`='10',
                         `form_id`='".intval($intId)."',
@@ -280,7 +280,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                 foreach ($this->arrCommunityGroups as $intGroupId => $arrGroup) {
                     $objInsertPerm = $objDatabase->Execute("
                         INSERT INTO
-                            ".DBPREFIX."module_mediadir_settings_perm_group_forms
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms
                         SET
                             `group_id`='".intval($intGroupId)."',
                             `form_id`='".intval($intId)."',
@@ -301,7 +301,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
             //update form
             $objUpdateAttributes = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_forms
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_forms
                 SET
                     `picture`='".$strPicture."'
                 WHERE
@@ -313,7 +313,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                     `form_name` AS `name`,
                     `form_description` AS `description`
                 FROM
-                    ".DBPREFIX."module_mediadir_form_names
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
                 WHERE
                     lang_id=".$_LANGID."
                     AND `form_id` = '".$intId."'
@@ -327,12 +327,12 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
             }
 
             //permissions
-            $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_settings_perm_group_forms WHERE form_id='".$intId."'");
+            $objDeletePerm = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms WHERE form_id='".$intId."'");
 
             foreach ($arrData['settingsPermGroupForm'][$intId] as $intGroupId => $intGroupStatus) {
                 $objInsertPerm = $objDatabase->Execute("
                     INSERT INTO
-                        ".DBPREFIX."module_mediadir_settings_perm_group_forms
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms
                     SET
                         `group_id`='".intval($intGroupId)."',
                         `form_id`='".intval($intId)."',
@@ -340,7 +340,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                 ");
             }
 
-            $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_form_names WHERE form_id='".$intId."'");
+            $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names WHERE form_id='".$intId."'");
 
             if($objInsertNames !== false) {
                 foreach ($this->arrFrontendLanguages as $key => $arrLang) {
@@ -360,7 +360,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
-                            ".DBPREFIX."module_mediadir_form_names
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names
                         SET
                             `lang_id`='".intval($arrLang['id'])."',
                             `form_id`='".intval($intId)."',
@@ -392,7 +392,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
         $objRSEntriesDelete = $objDatabase->Execute("SELECT
                                                         id
                                                      FROM
-                                                        ".DBPREFIX."module_mediadir_entries
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
                                                      WHERE
                                                         `form_id`='".intval($intFormId)."'
                                                     ");
@@ -405,21 +405,21 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 			foreach ($arrEntryIds as $key => $intEntryId) {
 			    //delete rel levels
 			    $objRSEntryDeleteRelLevels = $objDatabase->Execute("DELETE FROM
-			                                                             ".DBPREFIX."module_mediadir_rel_entry_levels
+			                                                             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
 			                                                        WHERE
 			                                                             `entry_id`='".intval($intEntryId)."'
 			                                                        ");
 
 			    //delete rel categories
 			    $objRSEntryDeleteRelCategories = $objDatabase->Execute("DELETE FROM
-			                                                             ".DBPREFIX."module_mediadir_rel_entry_categories
+			                                                             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
 			                                                        WHERE
 			                                                             `entry_id`='".intval($intEntryId)."'
 			                                                        ");
 
 			    //delete rel inputfields
 			    $objRSEntryDeleteRelInputfields = $objDatabase->Execute("DELETE FROM
-			                                                             ".DBPREFIX."module_mediadir_rel_entry_inputfields
+			                                                             ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
 			                                                        WHERE
 			                                                             `entry_id`='".intval($intEntryId)."'
 			                                                        ");
@@ -427,7 +427,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 			    if ($objRSEntryDeleteRelLevels !== false && $objRSEntryDeleteRelCategories !== false && $objRSEntryDeleteRelInputfields !== false) {
 			        //delete entries
 			        $objRSEntryDeleteRelInputfields = $objDatabase->Execute("DELETE FROM
-			                                                                     ".DBPREFIX."module_mediadir_entries
+			                                                                     ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
         			                                                         WHERE
         			                                                             `form_id`='".intval($intFormId)."'
         			                                                         ");
@@ -444,35 +444,35 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
         //delete selector order
         $objRSEntriesDelete = $objDatabase->Execute("DELETE FROM
-                                                        ".DBPREFIX."module_mediadir_order_rel_forms_selectors
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_order_rel_forms_selectors
                                                      WHERE
                                                         `form_id`='".intval($intFormId)."'
                                                     ");
 
         //delete inputfields
         $objRSEntriesDelete = $objDatabase->Execute("DELETE FROM
-                                                        ".DBPREFIX."module_mediadir_inputfields
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields
                                                      WHERE
                                                         `form`='".intval($intFormId)."'
                                                     ");
 
         //delete inputfields names
         $objRSEntriesDelete = $objDatabase->Execute("DELETE FROM
-                                                        ".DBPREFIX."module_mediadir_inputfield_names
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_names
                                                      WHERE
                                                         `form_id`='".intval($intFormId)."'
                                                     ");
 
         //delete permissions
         $objRSEntriesDelete = $objDatabase->Execute("DELETE FROM
-                                                        ".DBPREFIX."module_mediadir_settings_perm_group_forms
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_perm_group_forms
                                                      WHERE
                                                         `form_id`='".intval($intFormId)."'
                                                     ");
 
         //delete forms
         $objRSEntriesDelete = $objDatabase->Execute("DELETE FROM
-                                                        ".DBPREFIX."module_mediadir_forms
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_forms
                                                      WHERE
                                                         `id`='".intval($intFormId)."'
                                                     ");
@@ -486,7 +486,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
         global $objDatabase;
 
         foreach($arrData['formsOrder'] as $intFormId => $intFormOrder) {
-            $objRSFormOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_forms SET `order`='".intval($intFormOrder)."' WHERE `id`='".intval($intFormId)."'");
+            $objRSFormOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_forms SET `order`='".intval($intFormOrder)."' WHERE `id`='".intval($intFormId)."'");
 
             if ($objRSFormOrder === false) {
                 return false;

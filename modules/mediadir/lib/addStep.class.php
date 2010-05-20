@@ -12,7 +12,7 @@
  * Includes
  */
 
-class mediaDirectoryAddStep
+class mediaDirectoryAddStep extends mediaDirectoryLibrary
 {
     var $arrSteps = array();
 
@@ -30,13 +30,13 @@ class mediaDirectoryAddStep
     function getStepNavigation($objTpl) {
         foreach ($this->arrSteps as $intStepId => $strStepName){
             $objTpl->setVariable(array(
-                'MEDIADIR_ENTRY_ADDSTEP_NAME' => $strStepName,
-                'MEDIADIR_ENTRY_ADDSTEP_HREF' => "javascript:selectAddStep('Step_".$intStepId."');",
-                'MEDIADIR_ENTRY_ADDSTEP_ID' => "mediadirAddStep_Step_".$intStepId,
-                'MEDIADIR_ENTRY_ADDSTEP_CLASS' => $intStepId == 0 ? "active" : "",
+                $this->moduleLangVar.'_ENTRY_ADDSTEP_NAME' => $strStepName,
+                $this->moduleLangVar.'_ENTRY_ADDSTEP_HREF' => "javascript:selectAddStep('Step_".$intStepId."');",
+                $this->moduleLangVar.'_ENTRY_ADDSTEP_ID' => $moduleName."AddStep_Step_".$intStepId,
+                $this->moduleLangVar.'_ENTRY_ADDSTEP_CLASS' => $intStepId == 0 ? "active" : "",
             ));
 
-            $objTpl->parse('mediadirEntryAddStepNavigationElement');
+            $objTpl->parse($moduleName.'EntryAddStepNavigationElement');
         }
     }
 
