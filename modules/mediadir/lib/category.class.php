@@ -89,8 +89,8 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                 cat_names.`category_name` AS `name`,
                 cat_names.`category_description` AS `description`
             FROM
-                ".DBPREFIX."module_mediadir_categories AS cat,
-                ".DBPREFIX."module_mediadir_categories_names AS cat_names
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_categories AS cat,
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names AS cat_names
             WHERE
                 ($whereCategoryId cat_names.category_id=cat.id)
                 $whereParentId
@@ -117,7 +117,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                         `category_name` AS `name`,
                         `category_description` AS `description`
                     FROM
-                        ".DBPREFIX."module_mediadir_categories_names
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
                     WHERE
                         category_id=".$objCategories->fields['id']."
                 ");
@@ -193,29 +193,29 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
                     if(!empty($arrCategory['catChildren'])) {
                         if((in_array($arrCategory['catId'], $this->arrExpandedCategoryIds) && $bolExpandCategory) || $_GET['exp_cat'] == 'all'){
-                            $strCategoryIcon = '<a href="index.php?cmd=mediadir&amp;exp_cat='.$arrCategory['catParentId'].'"><img src="images/icons/minuslink.gif" border="0" alt="{MEDIADIR_CATEGORY_NAME}" title="{MEDIADIR_CATEGORY_NAME}" /></a>';
+                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catParentId'].'"><img src="images/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
                         } else {
-                            $strCategoryIcon = '<a href="index.php?cmd=mediadir&amp;exp_cat='.$arrCategory['catId'].'"><img src="images/icons/pluslink.gif" border="0" alt="{MEDIADIR_CATEGORY_NAME}" title="{MEDIADIR_CATEGORY_NAME}" /></a>';
+                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catId'].'"><img src="images/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
                         }
                     } else {
-                        $strCategoryIcon = '<img src="images/icons/pixel.gif" border="0" width="11" height="11" alt="{MEDIADIR_CATEGORY_NAME}" title="{MEDIADIR_CATEGORY_NAME}" />';
+                        $strCategoryIcon = '<img src="images/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" />';
                     }
 
                     //parse variables
                     $objTpl->setVariable(array(
-                        'MEDIADIR_CATEGORY_ROW_CLASS' =>  $this->intRowCount%2==0 ? 'row1' : 'row2',
-                        'MEDIADIR_CATEGORY_ID' => $arrCategory['catId'],
-                        'MEDIADIR_CATEGORY_ORDER' => $arrCategory['catOrder'],
-                        'MEDIADIR_CATEGORY_NAME' => $arrCategory['catName'][0],
-                        'MEDIADIR_CATEGORY_DESCRIPTION' => $arrCategory['catDescription'][0],
-                        'MEDIADIR_CATEGORY_PICTURE' => $arrCategory['catPicture'],
-                        'MEDIADIR_CATEGORY_NUM_ENTRIES' => $arrCategory['catNumEntries'],
-                        'MEDIADIR_CATEGORY_ICON' => $spacer.$strCategoryIcon,
-                        'MEDIADIR_CATEGORY_VISIBLE_STATE_ACTION' => $arrCategory['catActive'] == 0 ? 1 : 0,
-                        'MEDIADIR_CATEGORY_VISIBLE_STATE_IMG' => $arrCategory['catActive'] == 0 ? 'off' : 'on',
+                        $this->moduleLangVar.'_CATEGORY_ROW_CLASS' =>  $this->intRowCount%2==0 ? 'row1' : 'row2',
+                        $this->moduleLangVar.'_CATEGORY_ID' => $arrCategory['catId'],
+                        $this->moduleLangVar.'_CATEGORY_ORDER' => $arrCategory['catOrder'],
+                        $this->moduleLangVar.'_CATEGORY_NAME' => $arrCategory['catName'][0],
+                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => $arrCategory['catDescription'][0],
+                        $this->moduleLangVar.'_CATEGORY_PICTURE' => $arrCategory['catPicture'],
+                        $this->moduleLangVar.'_CATEGORY_NUM_ENTRIES' => $arrCategory['catNumEntries'],
+                        $this->moduleLangVar.'_CATEGORY_ICON' => $spacer.$strCategoryIcon,
+                        $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_ACTION' => $arrCategory['catActive'] == 0 ? 1 : 0,
+                        $this->moduleLangVar.'_CATEGORY_VISIBLE_STATE_IMG' => $arrCategory['catActive'] == 0 ? 'off' : 'on',
                     ));
 
-                    $objTpl->parse('mediadirCategoriesList');
+                    $objTpl->parse($this->moduleName.'CategoriesList');
                     $arrParentIds[] = $arrCategory['catId'];
                     $this->intRowCount++;
 
@@ -250,7 +250,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                             } else {
                                 $i = 0;
                             }
-                            $strIndexHeaderTag = '<span class="mediadirLevelCategoryIndexHeader">'.$strIndexHeader.'</span><br />';
+                            $strIndexHeaderTag = '<span class="'.$this->moduleName.'LevelCategoryIndexHeader">'.$strIndexHeader.'</span><br />';
                         } else {
                             $strIndexHeaderTag = null;
                         }
@@ -272,18 +272,18 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
                     //parse variables
                     $objTpl->setVariable(array(
-                        'MEDIADIR_CATEGORY_LEVEL_ID' => $arrCategory['catId'],
-                        'MEDIADIR_CATEGORY_LEVEL_NAME' => $arrCategory['catName'][0],
-                        'MEDIADIR_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section=mediadir'.$strCategoryCmd.$strLevelId.'&amp;cid='.$arrCategory['catId'].'">'.$arrCategory['catName'][0].'</a>',
-                        'MEDIADIR_CATEGORY_LEVEL_DESCRIPTION' => $arrCategory['catDescription'][0],
-                        'MEDIADIR_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
-                        'MEDIADIR_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
-                        'MEDIADIR_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategory['catId'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => $arrCategory['catName'][0],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$arrCategory['catId'].'">'.$arrCategory['catName'][0].'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategory['catDescription'][0],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];
 
-                    $objTpl->parse('mediadirCategoriesLevels_row_'.$intBlockId);
+                    $objTpl->parse($this->moduleName.'CategoriesLevels_row_'.$intBlockId);
                     $objTpl->clearVariables();
 
                     $strFirstIndexHeader = $strIndexHeader;
@@ -331,7 +331,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                         SELECT
                             `category_id`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_categories
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
                         WHERE
                             `entry_id` = '".$intEntryId."'
                     ");
@@ -381,31 +381,31 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                 $strLevelId = isset($_GET['lid']) ? "&amp;lid=".intval($_GET['lid']) : '';
 
                 $objTpl->setVariable(array(
-                    'MEDIADIR_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
-                    'MEDIADIR_CATEGORY_LEVEL_NAME' => $arrCategories[$intCategoryId]['catName'][0],
-                    'MEDIADIR_CATEGORY_LEVEL_LINK' => '<a href="index.php?section=mediadir'.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.$arrCategories[$intCategoryId]['catName'][0].'</a>',
-                    'MEDIADIR_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
-                    'MEDIADIR_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'.thumb" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
-                    'MEDIADIR_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
-                    'MEDIADIR_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
+                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
+                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_NAME' => $arrCategories[$intCategoryId]['catName'][0],
+                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.$arrCategories[$intCategoryId]['catName'][0].'</a>',
+                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
+                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'.thumb" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
+                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
+                    $this->moduleTablePrefix.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
                 ));
 
                 if(!empty($arrCategories[$intCategoryId]['catPicture']) && $this->arrSettings['settingsShowCategoryImage'] == 1) {
-                    $objTpl->parse('mediadirCategoryLevelPicture');
+                    $objTpl->parse($this->moduleName.'CategoryLevelPicture');
                 } else {
-                    $objTpl->hideBlock('mediadirCategoryLevelPicture');
+                    $objTpl->hideBlock($this->moduleName.'CategoryLevelPicture');
                 }
 
                 if(!empty($arrCategories[$intCategoryId]['catDescription'][0]) && $this->arrSettings['settingsShowCategoryDescription'] == 1) {
-                    $objTpl->parse('mediadirCategoryLevelDescription');
+                    $objTpl->parse($this->moduleName.'CategoryLevelDescription');
                 } else {
-                    $objTpl->hideBlock('mediadirCategoryLevelDescription');
+                    $objTpl->hideBlock($this->moduleName.'CategoryLevelDescription');
                 }
 
                 if(!empty($arrCategories)) {
-                    $objTpl->parse('mediadirCategoryLevelDetail');
+                    $objTpl->parse($this->moduleName.'CategoryLevelDetail');
                 } else {
-                    $objTpl->hideBlock('mediadirCategoryLevelDetail');
+                    $objTpl->hideBlock($this->moduleName.'CategoryLevelDetail');
                 }
 
                 break;
@@ -459,7 +459,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
             //insert new category
             $objInsertAttributes = $objDatabase->Execute("
                 INSERT INTO
-                    ".DBPREFIX."module_mediadir_categories
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_categories
                 SET
                     `parent_id`='".$intParentId."',
                     `order`='".$intOrder."',
@@ -483,7 +483,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
-                            ".DBPREFIX."module_mediadir_categories_names
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
                         SET
                             `lang_id`='".intval($arrLang['id'])."',
                             `category_id`='".intval($intId)."',
@@ -510,7 +510,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
             $objUpdateAttributes = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_categories
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_categories
                 SET
                     ".$parentSql."
                     `order`='".$intOrder."',
@@ -528,7 +528,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                         `category_name` AS `name`,
                         `category_description` AS `description`
                     FROM
-                        ".DBPREFIX."module_mediadir_categories_names
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
                     WHERE
                         lang_id=".$_LANGID."
                         AND `category_id` = '".$intId."'
@@ -541,7 +541,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     $strOldDefaultDescription = $objDefaultLang->fields['description'];
                 }
 
-                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_categories_names WHERE category_id='".$intId."'");
+                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names WHERE category_id='".$intId."'");
 
                 if($objInsertNames !== false) {
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
@@ -561,7 +561,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
                         $objInsertNames = $objDatabase->Execute("
                             INSERT INTO
-                                ".DBPREFIX."module_mediadir_categories_names
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names
                             SET
                                 `lang_id`='".intval($arrLang['id'])."',
                                 `category_id`='".intval($intId)."',
@@ -593,7 +593,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
         $intCategoryId = intval($intCategoryId);
 
-        $objSubCategoriesRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_mediadir_categories WHERE parent_id='".$intCategoryId."'");
+        $objSubCategoriesRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories WHERE parent_id='".$intCategoryId."'");
         if ($objSubCategoriesRS !== false) {
             while (!$objSubCategoriesRS->EOF) {
                 $intSubCategoryId = $objSubCategoriesRS->fields['id'];
@@ -602,9 +602,9 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
             };
         }
 
-        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_categories WHERE id='$intCategoryId'");
-        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_categories_names WHERE category_id='$intCategoryId'");
-        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_categories WHERE category_id='$intCategoryId'");
+        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories WHERE id='$intCategoryId'");
+        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names WHERE category_id='$intCategoryId'");
+        $objDeleteCategoryRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories WHERE category_id='$intCategoryId'");
 
         if ($objDeleteCategoryRS !== false) {
             return true;
@@ -622,12 +622,12 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
         $intCategoryId = intval($intCategoryId);
         $intLevelId = intval($intLevelId);
 
-        $objSubCategoriesRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_mediadir_categories WHERE parent_id='".$intCategoryId."'");
+        $objSubCategoriesRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories WHERE parent_id='".$intCategoryId."'");
         if ($objSubCategoriesRS !== false) {
             while (!$objSubCategoriesRS->EOF) {
                 $intSubCategoryId = $objSubCategoriesRS->fields['id'];
                 $this->countEntries($intSubCategoryId, $intLevelId);
-                $objSubCategoriesRS->MoveNext(); 
+                $objSubCategoriesRS->MoveNext();
             };
         }
 
@@ -640,7 +640,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
         $objCountEntriesRS = $objDatabase->Execute("SELECT
                                                         cat.entry_id
                                                     FROM
-                                                        ".DBPREFIX."module_mediadir_rel_entry_categories AS cat
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS cat
                                                     WHERE
                                                         cat.category_id ='$intCategoryId'
                                                         $whereLevel
@@ -657,7 +657,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
         global $objDatabase;
 
         foreach($arrData['catOrder'] as $intCatId => $intCatOrder) {
-            $objRSCatOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_categories SET `order`='".intval($intCatOrder)."' WHERE `id`='".intval($intCatId)."'");
+            $objRSCatOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_categories SET `order`='".intval($intCatOrder)."' WHERE `id`='".intval($intCatId)."'");
 
             if ($objRSCatOrder === false) {
                 return false;
