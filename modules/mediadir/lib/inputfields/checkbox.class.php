@@ -13,7 +13,7 @@
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
-class mediaDirectoryInputfieldCheckbox implements inputfield
+class mediaDirectoryInputfieldCheckbox extends mediaDirectoryLibrary implements inputfield
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
 
@@ -43,7 +43,7 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -63,7 +63,7 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
                 $arrOptions = explode(",", $strOptions);
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<span id="mediadirInputfield_'.$intId.'_list" style="display: block;">';
+                    $strInputfield = '<span id="'.$this->moduleName.'Inputfield_'.$intId.'_list" style="display: block;">';
                     foreach($arrOptions as $intKey => $strDefaultValue) {
                         $intKey++;
                         if(in_array($intKey, $arrValue)) {
@@ -72,12 +72,12 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
                             $strChecked = '';
                         }
 
-                        $strInputfield .= '<input type="checkbox" name="mediadirInputfield['.$intId.'][]" id="mediadirInputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
+                        $strInputfield .= '<input type="checkbox" name="'.$this->moduleName.'Inputfield['.$intId.'][]" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
                     }
 
                     $strInputfield .= '</span>';
                 } else {
-                    $strInputfield = '<span id="mediadirInputfield_'.$intId.'_list" style="display: block;">';
+                    $strInputfield = '<span id="'.$this->moduleName.'Inputfield_'.$intId.'_list" style="display: block;">';
 
                     foreach($arrOptions as $intKey => $strDefaultValue) {
                         $intKey++;
@@ -87,7 +87,7 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
                             $strChecked = '';
                         }
 
-                        $strInputfield .= '<input class="mediadirInputfieldRadio" type="checkbox" name="mediadirInputfield['.$intId.'][]" id="mediadirInputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
+                        $strInputfield .= '<input class="'.$this->moduleName.'InputfieldRadio" type="checkbox" name="'.$this->moduleName.'Inputfield['.$intId.'][]" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
                     }
 
 
@@ -124,7 +124,7 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -144,7 +144,7 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -160,7 +160,7 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
         $arrElements = explode(",", $strValue);
 
         //open <ul> list
-        $strValue = '<ul class="mediadirInputfieldCheckbox">';
+        $strValue = '<ul class="'.$this->moduleName.'InputfieldCheckbox">';
 
         //make element list
         foreach ($arrElements as $intKey => $strElement) {
@@ -172,8 +172,8 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
         $strValue .= '</ul>';
 
         if($arrElements[0] != null) {
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $strValue;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {
             $arrContent = null;
         }
@@ -184,11 +184,13 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
 
     function getJavascriptCheck()
     {
+        $fieldName = $this->moduleName."Inputfield_";
+        $fieldName2 = $this->moduleName."Inputfield[";
         $strJavascriptCheck = <<<EOF
 
             case 'checkbox':
                 if (isRequiredGlobal(inputFields[field][1], value)) {
-                    var boxes = document.getElementsByName('mediadirInputfield[' + field + '][]');
+                    var boxes = document.getElementsByName('$fieldName2' + field + '][]');
                     var checked = false;
 
                     for (var i = 0; i < boxes.length; i++) {
@@ -198,10 +200,10 @@ class mediaDirectoryInputfieldCheckbox implements inputfield
                     }
 
                     if (!checked) {
-                        document.getElementById('mediadirInputfield_' + field + '_list').style.border = "#ff0000 1px solid";
+                        document.getElementById('$fieldName' + field + '_list').style.border = "#ff0000 1px solid";
                         isOk = false;
                     } else {
-                        document.getElementById('mediadirInputfield_' + field + '_list').style.border = "#ff0000 0px solid";
+                        document.getElementById('$fieldName' + field + '_list').style.border = "#ff0000 0px solid";
                     }
                 }
                 break;

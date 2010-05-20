@@ -44,7 +44,7 @@ class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary imple
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -61,9 +61,9 @@ class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary imple
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<input type="text" name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" value="'.$strValue.'" style="width: 300px" onfocus="this.select();" />';
+                    $strInputfield = '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" value="'.$strValue.'" style="width: 300px" onfocus="this.select();" />';
                 } else {
-                    $strInputfield = '<input type="text" name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldLink" value="'.$strValue.'" onfocus="this.select();" />';
+                    $strInputfield = '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldLink" value="'.$strValue.'" onfocus="this.select();" />';
                 }
 
                 return $strInputfield;
@@ -88,7 +88,7 @@ class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary imple
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -108,7 +108,7 @@ class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary imple
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -124,8 +124,8 @@ class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary imple
             $objGoogleWeather->setWeatherForecastDays(4);
             $objGoogleWeather->setWeatherShowTitle(false);
 
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $objGoogleWeather->getWeather();
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $objGoogleWeather->getWeather();
         } else {
             $arrContent = null;
         }
@@ -136,18 +136,19 @@ class mediaDirectoryInputfieldGoogle_weather extends mediaDirectoryLibrary imple
 
     function getJavascriptCheck()
     {
+        $fieldName = $this->moduleName."Inputfield_";
         $strJavascriptCheck = <<<EOF
 
             case 'google_weather':
-                /*value = document.getElementById('mediadirInputfield_' + field + '_0').value;
+                /*value = document.getElementById('$fieldName' + field + '_0').value;
                 if (value == "" && isRequiredGlobal(inputFields[field][1], value)) {
                 	isOk = false;
-                	document.getElementById('mediadirInputfield_' + field + '_0').style.border = "#ff0000 1px solid";
+                	document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
                 } else if (value != "" && !matchType(inputFields[field][2], value)) {
                 	isOk = false;
-                	document.getElementById('mediadirInputfield_' + field + '_0').style.border = "#ff0000 1px solid";
+                	document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
                 } else {
-                	document.getElementById('mediadirInputfield_' + field + '_0').style.borderColor = '';
+                	document.getElementById('$fieldName' + field + '_0').style.borderColor = '';
                 }*/
                 break;
 

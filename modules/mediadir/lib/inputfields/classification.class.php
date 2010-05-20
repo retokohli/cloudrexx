@@ -44,7 +44,7 @@ class mediaDirectoryInputfieldClassification extends mediaDirectoryLibrary imple
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -61,7 +61,7 @@ class mediaDirectoryInputfieldClassification extends mediaDirectoryLibrary imple
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<select name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldDropdown" style="width: 302px">';
+                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown" style="width: 302px">';
 
                     for ($i=1;$i<=$this->arrSettings['settingsClassificationPoints'];$i++){
                         if($strValue == $i) {
@@ -75,7 +75,7 @@ class mediaDirectoryInputfieldClassification extends mediaDirectoryLibrary imple
 
                     $strInputfield .= '</select>';
                 } else {
-                    $strInputfield = '<select name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldDropdown">';
+                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown">';
 
                     for ($i=1;$i<=$this->arrSettings['settingsClassificationPoints'];$i++){
                         if($strValue == $i) {
@@ -96,8 +96,10 @@ class mediaDirectoryInputfieldClassification extends mediaDirectoryLibrary imple
             case 2:
                 //search View
                 $strValue = $_GET[$intId];
-                $strImagePath = ASCMS_MODULE_IMAGE_WEB_PATH.'/mediadir/';
+                $strImagePath = ASCMS_MODULE_IMAGE_WEB_PATH.'/'.$this->moduleName.'/';
                 $intNumPoints = $this->arrSettings['settingsClassificationPoints'];
+                $strFieldName = $this->moduleName."Classification_";
+                $strImageName = $this->moduleName."rClassificationImage_";
 
                 $strInputfield = <<<EOF
 <script language="JavaScript" type="text/javascript">
@@ -106,7 +108,7 @@ function classification_$intId(num) {
     var intFieldId = $intId;
     var strImagePath = '$strImagePath';
     var intNumPoints = $intNumPoints;
-    var elmInput = document.getElementById('mediadirClassification_' + intFieldId);
+    var elmInput = document.getElementById('$strFieldName' + intFieldId);
     var intActualVaule = elmInput.value;
 
     for (i=1;i<=intNumPoints;i++) {
@@ -116,7 +118,7 @@ function classification_$intId(num) {
             var strImage = strImagePath + 'classification_off.png';
         }
 
-        var elmImage = document.getElementById('mediadirClassificationImage_' + intFieldId + '_' + i);
+        var elmImage = document.getElementById('$strImageName' + intFieldId + '_' + i);
         elmImage.src = strImage;
     }
 
@@ -137,11 +139,11 @@ EOF;
                         $strImage = 'classification_off.png';
                     }
 
-                    $strInputfield .= '<img id="mediadirClassificationImage_'.$intId.'_'.$i.'" src="'.$strImagePath.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" style="cursor: pointer;" onclick="classification_'.$intId.'('.$i.');" />';
+                    $strInputfield .= '<img id="'.$this->moduleName.'ClassificationImage_'.$intId.'_'.$i.'" src="'.$strImagePath.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" style="cursor: pointer;" onclick="classification_'.$intId.'('.$i.');" />';
                 }
 
 
-                $strInputfield .= '<input id="mediadirClassification_'.$intId.'" type="hidden" name="'.$intId.'" " class="mediadirInputfieldSearch" value="'.$strValue.'" />';
+                $strInputfield .= '<input id="'.$this->moduleName.'Classification_'.$intId.'" type="hidden" name="'.$intId.'" " class="'.$this->moduleName.'InputfieldSearch" value="'.$strValue.'" />';
 
                 return $strInputfield;
                 break;
@@ -161,7 +163,7 @@ EOF;
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -181,7 +183,7 @@ EOF;
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -199,12 +201,12 @@ EOF;
                 $strImage = 'classification_off.png';
             }
 
-            $strValue .= '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/mediadir/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
+            $strValue .= '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/'.$this->moduleName.'/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
         }
 
         if(!empty($strValue)) {
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $strValue;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {
             $arrContent = null;
         }

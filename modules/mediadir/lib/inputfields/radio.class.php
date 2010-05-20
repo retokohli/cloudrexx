@@ -43,7 +43,7 @@ class mediaDirectoryInputfieldRadio implements inputfield
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -67,7 +67,7 @@ class mediaDirectoryInputfieldRadio implements inputfield
                             $strChecked = '';
                         }
 
-                        $strInputfield .= '<input type="radio" name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
+                        $strInputfield .= '<input type="radio" name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
                     }
                 } else {
                     foreach($arrOptions as $intKey => $strDefaultValue) {
@@ -78,7 +78,7 @@ class mediaDirectoryInputfieldRadio implements inputfield
                             $strChecked = '';
                         }
 
-                        $strInputfield .= '<input class="mediadirInputfieldRadio" type="radio" name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
+                        $strInputfield .= '<input class="'.$this->moduleName.'InputfieldRadio" type="radio" name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
                     }
                 }
 
@@ -92,7 +92,7 @@ class mediaDirectoryInputfieldRadio implements inputfield
 
                 $strValue = $_GET[$intId];
 
-                $strInputfield = '<select name="'.$intId.'" class="mediadirInputfieldSearch">';
+                $strInputfield = '<select name="'.$intId.'" class="'.$this->moduleName.'InputfieldSearch">';
                 $strInputfield .= '<option  value="">'.$_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'].'</option>';
 
                 foreach($arrOptions as $intKey => $strDefaultValue) {
@@ -127,7 +127,7 @@ class mediaDirectoryInputfieldRadio implements inputfield
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -147,7 +147,7 @@ class mediaDirectoryInputfieldRadio implements inputfield
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -160,8 +160,8 @@ class mediaDirectoryInputfieldRadio implements inputfield
         $strValue = strip_tags(htmlspecialchars($arrValues[$intValueKey], ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $strValue;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {
             $arrContent = null;
         }
