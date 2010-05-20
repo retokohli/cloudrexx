@@ -47,25 +47,22 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
     public $bolExpSearch;
 
     private $strJavascriptInputfieldArray;
-    private $strJavascriptInputfieldCheck = array();
+    private $strJavascriptInputfieldCheck = array(); 
+    private $arrTranslationStatus = array();
 
 
     /**
      * Constructor
      */
-    function __construct($intFormId=null, $bolExpSearch=false)
+    function __construct($intFormId=null, $bolExpSearch=false, $arrTranslationStatus=null)
     {
         //get active frontent languages
         parent::getFrontendLanguages();
         parent::getSettings();
         $this->intFormId = intval($intFormId);
         $this->bolExpSearch = $bolExpSearch;
+        $this->arrTranslationStatus = $arrTranslationStatus;
         $this->arrInputfields = self::getInputfields();
-
-        /*print_r("<pre>");
-        print_r("Test:");
-        print_r($this->arrInputfields);
-        print_r("<pre>");*/
     }
 
 
@@ -436,7 +433,12 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                             $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
                             try {
                                 $objInputfield = safeNew($strInputfieldClass);
-                                $arrInputfieldContent = $objInputfield->getContent($intEntryId, $arrInputfield);
+                                
+                                if(intval($arrInputfield['type_multi_lang']) == 1) {
+                                    $arrInputfieldContent = $objInputfield->getContent($intEntryId, $arrInputfield, $this->arrTranslationStatus);
+                                } else {
+                                    $arrInputfieldContent = $objInputfield->getContent($intEntryId, $arrInputfield, null);
+                                }
 
                                 if(!empty($arrInputfieldContent)) {
                                     foreach ($arrInputfieldContent as $strPlaceHolder => $strContent) {

@@ -52,7 +52,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
     function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
 
         $this->intEntryId = intval($intEntryId);
         $this->intLevelId = intval($intLevelId);
@@ -148,10 +148,12 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             $this->strBlockName = "mediadirEntryList";
         }
         
-        if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
-        	$strWhereLangId = "AND (entry.`lang_id` = ".$_LANGID.") ";
-        } else {
-            $strWhereLangId = "";
+        if($objInit->mode == 'frontend') {
+	        if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
+	        	$strWhereLangId = "AND (entry.`lang_id` = ".$_LANGID.") ";
+	        } else {
+	            $strWhereLangId = "";
+	        }
         }
 
         $query = "
@@ -174,6 +176,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 entry.`duration_start` AS `duration_start`,
                 entry.`duration_end` AS `duration_end`,
                 entry.`duration_notification` AS `duration_notification`,
+                entry.`translation_status` AS `translation_status`,
                 rel_inputfield.`value` AS `value`
             FROM
                 ".DBPREFIX."module_mediadir_entries AS entry,
@@ -200,7 +203,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         ";
 
         $objEntries = $objDatabase->Execute($query);
-
+        
         $arrEntries = array();
 
         if ($objEntries !== false) {
@@ -229,6 +232,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     $arrEntry['entryDurationStart'] = intval($objEntries->fields['duration_start']);
                     $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
                     $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
+                    $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
                     
                     $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
                 }
@@ -334,7 +338,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 if(!empty($this->arrEntries)) {
                     foreach ($this->arrEntries as $key => $arrEntry) {
 	                    if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
-	                        $objInputfields = new mediaDirectoryInputfield(intval($arrEntry['entryFormId']));
+	                        $objInputfields = new mediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus']);
 	                        $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
 	
 	                        if(intval($arrEntry['entryAddedBy']) != 0) {
@@ -661,7 +665,6 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 SET
                     `update_date`='".$strUpdateDate."',
                     `validate_date`='".$strValidateDate."',
-                    `lang_id`='".$_LANGID."',
                     ".$strAdditionalQuery."
                 WHERE
                     `id`='".$intId."'
