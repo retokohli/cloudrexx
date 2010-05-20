@@ -48,7 +48,7 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -88,12 +88,12 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = $strFilePreview.'<input type="text" name="mediadirInputfield['.$intId.'][file]" value="'.$strValue.'" id="mediadirInputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\'mediadirInputfield_'.$intId.'\', \'mediadir\', \'/uploads\')" />';
-                    $strInputfield .= '<br /><input type="text" name="mediadirInputfield['.$intId.'][name]" value="'.$strName.'" id="mediadirInputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
+                    $strInputfield = $strFilePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][file]" value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\'mediadirInputfield_'.$intId.'\', \'mediadir\', \'/uploads\')" />';
+                    $strInputfield .= '<br /><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][name]" value="'.$strName.'" id="'.$this->moduleName.'Inputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
                 
                 } else {
-                    $strInputfield = $strFilePreview.'<input type="file" name="fileUpload_'.$intId.'" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldFile" value="'.$strValue.'" onfocus="this.select();" /><input name="mediadirInputfield['.$intId.'][file]" value="'.$strValueHidden.'" type="hidden">';
-                    $strInputfield .= '<br /><input type="text" name="mediadirInputfield['.$intId.'][name]" value="'.$strName.'" id="mediadirInputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
+                    $strInputfield = $strFilePreview.'<input type="file" name="fileUpload_'.$intId.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldFile" value="'.$strValue.'" onfocus="this.select();" /><input name="'.$this->moduleName.'Inputfield['.$intId.'][file]" value="'.$strValueHidden.'" type="hidden">';
+                    $strInputfield .= '<br /><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][name]" value="'.$strName.'" id="'.$this->moduleName.'Inputfield_'.$intId.'_name" style="width: 300px;" onfocus="this.select();" />&nbsp;<i>'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'].'</i>';
                 }
 
                 return $strInputfield;
@@ -112,10 +112,10 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
         global $objInit;
         
         
-        $strValue = contrexx_addslashes($_POST['mediadirInputfield'][$intInputfieldId]['file']);
+        $strValue = contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['file']);
         
-        if(!empty($_POST['mediadirInputfield'][$intInputfieldId]['name'])) {
-        	$strName = ",".contrexx_addslashes($_POST['mediadirInputfield'][$intInputfieldId]['name']);
+        if(!empty($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['name'])) {
+        	$strName = ",".contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['name']);
         }
 
         if($objInit->mode == 'backend') {
@@ -210,11 +210,11 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
         global $objDatabase;
 
         //get file path
-        $objFilePathRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objFilePathRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
         $strFilePath   = $objFilePathRS->fields['value'];
 
         //delete relation
-        $objDeleteInputfieldRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfieldRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteInputfieldRS !== false) {
             //delete image
@@ -237,7 +237,7 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -257,11 +257,11 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
                 $strName = strip_tags(htmlspecialchars($arrValue[1], ENT_QUOTES, CONTREXX_CHARSET));
             }
 
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = '<a href="'.urldecode($strValue).'" alt="'.$strName.'" title="'.$strName.'" target="_blank">'.$strName.'</a>';
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_SRC'] = urldecode($strValue);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_NAME'] = $strName;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_FILENAME'] = $strFileName;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = '<a href="'.urldecode($strValue).'" alt="'.$strName.'" title="'.$strName.'" target="_blank">'.$strName.'</a>';
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_SRC'] = urldecode($strValue);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_NAME'] = $strName;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_FILENAME'] = $strFileName;
         } else {
             $arrContent = null;
         }

@@ -48,7 +48,7 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -73,7 +73,7 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                         $strKmlPreview = '';
                     }
                 } else {
-                    $objSettingsRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_mediadir_settings WHERE name='settingsGoogleMapStartposition'");
+                    $objSettingsRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings WHERE name='settingsGoogleMapStartposition'");
                     if ($objSettingsRS !== false) {
                         $strValue = htmlspecialchars($objSettingsRS->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
                     }
@@ -85,58 +85,58 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     $strKmlPreview = '';
                 }
 
-                $strMapId       = 'mediadirInputfield_'.$intId.'_map';
-                $strLonId       = 'mediadirInputfield_'.$intId.'_lon';
-                $strLatId       = 'mediadirInputfield_'.$intId.'_lat';
-                $strZoomId      = 'mediadirInputfield_'.$intId.'_zoom';
-                $strStreetId    = 'mediadirInputfield_'.$intId.'_street';
-                $strZipId       = 'mediadirInputfield_'.$intId.'_zip';
-                $strCityId      = 'mediadirInputfield_'.$intId.'_city';
-                $strKmlId       = 'mediadirInputfield_'.$intId.'_kml';
+                $strMapId       = $this->moduleName.'Inputfield_'.$intId.'_map';
+                $strLonId       = $this->moduleName.'Inputfield_'.$intId.'_lon';
+                $strLatId       = $this->moduleName.'Inputfield_'.$intId.'_lat';
+                $strZoomId      = $this->moduleName.'Inputfield_'.$intId.'_zoom';
+                $strStreetId    = $this->moduleName.'Inputfield_'.$intId.'_street';
+                $strZipId       = $this->moduleName.'Inputfield_'.$intId.'_zip';
+                $strCityId      = $this->moduleName.'Inputfield_'.$intId.'_city';
+                $strKmlId       = $this->moduleName.'Inputfield_'.$intId.'_kml';
                 $strKey         = $_CONFIG['googleMapsAPIKey'];
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="mediadirTableGoogleMap">';
-                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="mediadirInputfield['.$intId.'][street]" id="'.$strStreetId.'" value="" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="mediadirInputfield['.$intId.'][place]" id="'.$strZipId.'"  value="" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="mediadirInputfield['.$intId.'][zip]" id="'.$strCityId.'" value="" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td style="border: 0px;"><br /></td><td style="border: 0px;"><input type="button" onclick="searchAddress();" name="mediadirInputfield['.$intId.'][search]" id="mediadirInputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
+                    $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
+                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][street]" id="'.$strStreetId.'" value="" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][place]" id="'.$strZipId.'"  value="" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][zip]" id="'.$strCityId.'" value="" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td style="border: 0px;"><br /></td><td style="border: 0px;"><input type="button" onclick="searchAddress();" name="mediadirInputfield['.$intId.'][search]" id="'.$this->moduleName.'Inputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
                     $strInputfield .= '<tr><td style="border: 0px;" coldpan="2"><br /></td></tr>';
-                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="mediadirInputfield['.$intId.'][lon]" id="'.$strLonId.'"  value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="mediadirInputfield['.$intId.'][lat]" id="'.$strLatId.'" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="mediadirInputfield['.$intId.'][zoom]" id="'.$strZoomId.'" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][lon]" id="'.$strLonId.'"  value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][lat]" id="'.$strLatId.'" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][zoom]" id="'.$strZoomId.'" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
                     $strInputfield .= '</table><br />';
                     $strInputfield .= '<div id="'.$strMapId.'" style="border: solid 1px #0A50A1; width: 418px; height: 300px;"></div>';
                     if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
-                        $strInputfield .= '<br /><table cellpadding="0" cellspacing="0" border="0" class="mediadirTableGoogleMap">';
-                        $strInputfield .= '<tr><td style="border: 0px;">Routedatei (*.kml):&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;">'.$strKmlPreview.'<input type="text" name="mediadirInputfield['.$intId.'][kml]" value="'.$strValueKml.'" id="'.$strKmlId.'"  style="width: 238px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$strKmlId.'\', \'mediadir\', \'/uploads\')" /></td></tr>';
+                        $strInputfield .= '<br /><table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
+                        $strInputfield .= '<tr><td style="border: 0px;">Routedatei (*.kml):&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;">'.$strKmlPreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][kml]" value="'.$strValueKml.'" id="'.$strKmlId.'"  style="width: 238px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$strKmlId.'\', \'mediadir\', \'/uploads\')" /></td></tr>';
                         $strInputfield .= '</table>';
                     }
 
                 } else {
-                    $strInputfield  = '<div class="mediadirGoogleMap" style="float: left; height: auto ! important;">';
-                    $strInputfield .= '<fieldset class="mediadirFieldsetGoogleMap">';
+                    $strInputfield  = '<div class="'.$this->moduleName.'GoogleMap" style="float: left; height: auto ! important;">';
+                    $strInputfield .= '<fieldset class="'.$this->moduleName.'FieldsetGoogleMap">';
                     $strInputfield .= '<legend>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_SEARCH_ADDRESS'].'</legend>';
-                    $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="mediadirTableGoogleMap">';
-                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td><input type="text" name="mediadirInputfield['.$intId.'][street]" id="'.$strStreetId.'" class="mediadirInputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td><input type="text" name="mediadirInputfield['.$intId.'][place]" id="'.$strZipId.'" class="mediadirInputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td><input type="text" name="mediadirInputfield['.$intId.'][zip]" id="'.$strCityId.'" class="mediadirInputfieldGoogleMapSmall" value="" onfocus="this.select();" /><input type="button" onclick="searchAddress();" name="mediadirInputfield['.$intId.'][search]" id="mediadirInputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
+                    $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
+                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][street]" id="'.$strStreetId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][place]" id="'.$strZipId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][zip]" id="'.$strCityId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="" onfocus="this.select();" /><input type="button" onclick="searchAddress();" name="'.$this->moduleName.'Inputfield['.$intId.'][search]" id="'.$this->moduleName.'Inputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
                     $strInputfield .= '<tr><td coldpan="2"><br /></td></tr>';
-                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td><input type="text" name="mediadirInputfield['.$intId.'][lon]" id="'.$strLonId.'" class="mediadirInputfieldGoogleMapLarge" value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td><input type="text" name="mediadirInputfield['.$intId.'][lat]" id="'.$strLatId.'" class="mediadirInputfieldGoogleMapLarge" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
-                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td><input type="text" name="mediadirInputfield['.$intId.'][zoom]" id="'.$strZoomId.'" class="mediadirInputfieldGoogleMapSmall" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][lon]" id="'.$strLonId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][lat]" id="'.$strLatId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
+                    $strInputfield .= '<tr><td>'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][zoom]" id="'.$strZoomId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
                     $strInputfield .= '</table>';
                     $strInputfield .= '</fieldset>';
                     $strInputfield .= '</div>';
-                    $strInputfield .= '<div class="mediadirGoogleMap" style="float: left; height: auto ! important;">';
+                    $strInputfield .= '<div class="'.$this->moduleName.'GoogleMap" style="float: left; height: auto ! important;">';
                     $strInputfield .= '<div id="'.$strMapId.'" class="map"></div>';
                     $strInputfield .= '</div>';
                     if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
-                        $strInputfield .= '<div class="mediadirGoogleMap" style="float: left; height: auto ! important;">';
-                        $strInputfield .= '<br /><fieldset class="mediadirFieldsetGoogleMap">';
+                        $strInputfield .= '<div class="'.$this->moduleName.'GoogleMap" style="float: left; height: auto ! important;">';
+                        $strInputfield .= '<br /><fieldset class="'.$this->moduleName.'FieldsetGoogleMap">';
                         $strInputfield .= '<legend>Routedatei beifügen</legend>';
-                        $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="mediadirTableGoogleMap">';
-                        $strInputfield .= '<tr><td>Datei (*.kml):&nbsp;&nbsp;</td><td>'.$strKmlPreview.'<input type="file" name="kmlUpload_'.$intId.'" value="'.$strValueKml.'" id="'.$strKmlId.'" class="mediadirInputfieldGoogleMapFile" /><input name="mediadirInputfield['.$intId.'][kml]" value="'.$strValueKml.'" type="hidden"></td></tr>';
+                        $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
+                        $strInputfield .= '<tr><td>Datei (*.kml):&nbsp;&nbsp;</td><td>'.$strKmlPreview.'<input type="file" name="kmlUpload_'.$intId.'" value="'.$strValueKml.'" id="'.$strKmlId.'" class="'.$this->moduleName.'InputfieldGoogleMapFile" /><input name="'.$this->moduleName.'Inputfield['.$intId.'][kml]" value="'.$strValueKml.'" type="hidden"></td></tr>';
                         $strInputfield .= '</table>';
                         $strInputfield .= '</fieldset>';
                         $strInputfield .= '</div>';
@@ -260,20 +260,20 @@ EOF;
     {
         global $objInit;
 
-        $strLat  = $_POST['mediadirInputfield'][$intInputfieldId]['lat'];
-        $strLon  = $_POST['mediadirInputfield'][$intInputfieldId]['lon'];
-        $strZoom = $_POST['mediadirInputfield'][$intInputfieldId]['zoom'];
+        $strLat  = $_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['lat'];
+        $strLon  = $_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['lon'];
+        $strZoom = $_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['zoom'];
 
 
         if($objInit->mode == 'backend') {
             if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
-                $strGeoXml = contrexx_addslashes($_POST['mediadirInputfield'][$intInputfieldId]['kml']);
+                $strGeoXml = contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
             } else {
                 $strGeoXml = null;
             }
         } else {
             if (!empty($_FILES['kmlUpload_'.$intInputfieldId]['name']) || $_POST["deleteMedia"][$intInputfieldId] == 1) {
-                $this->deleteKml($_POST['mediadirInputfield'][$intInputfieldId]['kml']);
+                $this->deleteKml($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
 
                 if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
                     $strGeoXml = $this->uploadMedia($intInputfieldId);
@@ -281,7 +281,7 @@ EOF;
                     $strGeoXml = null;
                 }
             } else {
-                $strGeoXml = contrexx_addslashes($_POST['mediadirInputfield'][$intInputfieldId]['kml']);
+                $strGeoXml = contrexx_addslashes($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
             }
         }
 
@@ -350,7 +350,7 @@ EOF;
     {
         global $objDatabase;
 
-        $objDeleteKmlFile = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteKmlFile = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
         if($objDeleteKmlFile !== false) {
             $strValue  = $objDeleteKmlFile->fields['value'];
             $arrValues = explode(',', $strValue);
@@ -360,7 +360,7 @@ EOF;
             }
         }
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -381,7 +381,7 @@ EOF;
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -419,7 +419,7 @@ EOF;
 
         if(!empty($strValue)) {
             $objGoogleMap = new googleMap();
-            $objGoogleMap->setMapId('mediadirInputfield_'.$intId.'_map');
+            $objGoogleMap->setMapId($this->moduleName.'Inputfield_'.$intId.'_map');
             $objGoogleMap->setMapStyleClass('map');
             $objGoogleMap->setMapType(0);
             $objGoogleMap->setMapZoom($arrValues[2]);
@@ -427,10 +427,10 @@ EOF;
 
             $objGoogleMap->addMapMarker($intId, $strValueLon, $strValueLat, null, true, $strGeoXmlPath, $strHideGeoXml);
 
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $objGoogleMap->getMap();
-            $arrContent['MEDIADIR_INPUTFIELD_LINK'] = $strValueLink;
-            $arrContent['MEDIADIR_INPUTFIELD_LINK_HREF'] = $strValueLinkHref;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $objGoogleMap->getMap();
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK'] = $strValueLink;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_LINK_HREF'] = $strValueLinkHref;
         } else {
             $arrContent = null;
         }
@@ -444,20 +444,22 @@ EOF;
     {
         parent::getSettings();
 
+        $fieldName = $this->moduleName."Inputfield_";
+        
         if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
             $strKmlCheck  = <<<EOF
-                value_kml = document.getElementById('mediadirInputfield_' + field + '_kml').value;
+                value_kml = document.getElementById('$fieldName' + field + '_kml').value;
 
                 if (value_kml != "") {
                 	ending = value_kml.substr(-4);
                     if(ending != '.kml') {
                         isOk = false;
-                    	document.getElementById('mediadirInputfield_' + field + '_kml').style.border = "#ff0000 1px solid";
+                    	document.getElementById('$fieldName' + field + '_kml').style.border = "#ff0000 1px solid";
                     } else {
-                	   document.getElementById('mediadirInputfield_' + field + '_kml').style.borderColor = '';
+                	   document.getElementById('$fieldName' + field + '_kml').style.borderColor = '';
                     }
                 }  else {
-                    document.getElementById('mediadirInputfield_' + field + '_kml').style.borderColor = '';
+                    document.getElementById('$fieldName' + field + '_kml').style.borderColor = '';
                 }
 EOF;
         } else {
@@ -467,27 +469,27 @@ EOF;
         $strJavascriptCheck = <<<EOF
 
             case 'google_map':
-                value_lon = document.getElementById('mediadirInputfield_' + field + '_lon').value;
-                value_lat = document.getElementById('mediadirInputfield_' + field + '_lat').value;
-                value_zoom = document.getElementById('mediadirInputfield_' + field + '_zoom').value;
+                value_lon = document.getElementById('$fieldName' + field + '_lon').value;
+                value_lat = document.getElementById('$fieldName' + field + '_lat').value;
+                value_zoom = document.getElementById('$fieldName' + field + '_zoom').value;
 
                 if ((value_lon == "" || value_lat == "" || value_zoom == "") && isRequiredGlobal(inputFields[field][1], value)) {
                     isOk = false;
                 	if (value_lon == "" && isRequiredGlobal(inputFields[field][1], value)) {
-                    	document.getElementById('mediadirInputfield_' + field + '_lon').style.border = "#ff0000 1px solid";
+                    	document.getElementById('$fieldName' + field + '_lon').style.border = "#ff0000 1px solid";
                     }
 
                     if (value_lat == "" && isRequiredGlobal(inputFields[field][1], value)) {
-                    	document.getElementById('mediadirInputfield_' + field + '_lat').style.border = "#ff0000 1px solid";
+                    	document.getElementById('$fieldName' + field + '_lat').style.border = "#ff0000 1px solid";
                     }
 
                     if (value_zoom == "" && isRequiredGlobal(inputFields[field][1], value)) {
-                    	document.getElementById('mediadirInputfield_' + field + '_zoom').style.border = "#ff0000 1px solid";
+                    	document.getElementById('$fieldName' + field + '_zoom').style.border = "#ff0000 1px solid";
                     }
                 }  else {
-                	document.getElementById('mediadirInputfield_' + field + '_lon').style.borderColor = '';
-                	document.getElementById('mediadirInputfield_' + field + '_lat').style.borderColor = '';
-                	document.getElementById('mediadirInputfield_' + field + '_zoom').style.borderColor = '';
+                	document.getElementById('$fieldName' + field + '_lon').style.borderColor = '';
+                	document.getElementById('$fieldName' + field + '_lat').style.borderColor = '';
+                	document.getElementById('$fieldName' + field + '_zoom').style.borderColor = '';
                 }
 
                 $strKmlCheck

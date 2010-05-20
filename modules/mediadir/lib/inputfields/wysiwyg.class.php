@@ -48,7 +48,7 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -70,9 +70,9 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<div id="mediadirInputfield_'.$intId.'_Minimized" style="display: block;">'.get_wysiwyg_editor('mediadirInputfield['.$intId.'][0]', $arrValue[0], 'mediadir_admin').'&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></div>';
+                    $strInputfield = '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block;">'.get_wysiwyg_editor($this->moduleName.'Inputfield['.$intId.'][0]', $arrValue[0], 'mediadir_admin').'&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></div>';
 
-                    $strInputfield .= '<div id="mediadirInputfield_'.$intId.'_Expanded" style="display: none;">';
+                    $strInputfield .= '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Expanded" style="display: none;">';
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                         $intLangId = $arrLang['id'];
 
@@ -82,12 +82,12 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
                             $minimize = "";
                         }
 
-                        $strInputfield .= get_wysiwyg_editor('mediadirInputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId], 'mediadir_admin').'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
+                        $strInputfield .= get_wysiwyg_editor($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId], 'mediadir_admin').'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
                     }
                     $strInputfield .= '</div>';
                 } else {
-                    //$strInputfield =  get_wysiwyg_editor('mediadirInputfield['.$intId.']', $strValue, 'news');
-                    $strInputfield =  get_wysiwyg_editor('mediadirInputfield['.$intId.'][0]', $arrValue[0], 'mediadir');
+                    //$strInputfield =  get_wysiwyg_editor($this->moduleName.'Inputfield['.$intId.']', $strValue, 'news');
+                    $strInputfield =  get_wysiwyg_editor($this->moduleName.'Inputfield['.$intId.'][0]', $arrValue[0], 'mediadir');
                 }
 
 
@@ -120,7 +120,7 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -140,7 +140,7 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -151,8 +151,8 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
         $strValue = $objInputfieldValue->fields['value'];
 
         if(!empty($strValue)) {
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $strValue;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {
             $arrContent = null;
         }

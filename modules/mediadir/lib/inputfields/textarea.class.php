@@ -45,7 +45,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                             `value`,
                             `lang_id`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -68,9 +68,9 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<div id="mediadirInputfield_'.$intId.'_Minimized" style="display: block;"><textarea name="mediadirInputfield['.$intId.'][0]" id="mediadirInputfield_'.$intId.'_0" style="width: 300px; height: 60px;" onfocus="this.select();" />'.$arrValue[0].'</textarea>&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></div>';
+                    $strInputfield = '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block;"><textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" style="width: 300px; height: 60px;" onfocus="this.select();" />'.$arrValue[0].'</textarea>&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></div>';
 
-                    $strInputfield .= '<div id="mediadirInputfield_'.$intId.'_Expanded" style="display: none;">';
+                    $strInputfield .= '<div id="'.$this->moduleName.'Inputfield_'.$intId.'_Expanded" style="display: none;">';
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                         $intLangId = $arrLang['id'];
 
@@ -80,12 +80,12 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                             $minimize = "";
                         }
 
-                        $strInputfield .= '<textarea name="mediadirInputfield['.$intId.']['.$intLangId.']" id="mediadirInputfield_'.$intId.'_'.$intLangId.'" style="height: 60px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'images/flags/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
+                        $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intLangId.'" style="height: 60px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'images/flags/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
                     }
-                    $strInputfield .= '<textarea name="mediadirInputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
+                    $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                     $strInputfield .= '</div>';
                 } else {
-                     $strInputfield = '<textarea name="mediadirInputfield['.$intId.'][0]" id="mediadirInputfield_'.$intId.'_0" class="mediadirInputfieldTextarea" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
+                     $strInputfield = '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" class="'.$this->moduleName.'InputfieldTextarea" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                 }
 
 
@@ -94,7 +94,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
             case 2:
                 //search View
                 $strValue = $_GET[$intId];
-                $strInputfield = '<input type="text" name="'.$intId.'" " class="mediadirInputfieldSearch" value="'.$strValue.'" />';
+                $strInputfield = '<input type="text" name="'.$intId.'" " class="'.$this->moduleName.'InputfieldSearch" value="'.$strValue.'" />';
 
                 return $strInputfield;
 
@@ -115,7 +115,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -135,7 +135,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -150,7 +150,7 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                 SELECT
                     `value`
                 FROM
-                    ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                 WHERE
                     field_id=".$intId."
                 AND
@@ -163,9 +163,9 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
         $strValue = nl2br(htmlspecialchars(strip_tags($objInputfieldValue->fields['value']), ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $strValue;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_ALLOW_TAGS'] = $strValueAllowTags;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_ALLOW_TAGS'] = $strValueAllowTags;
         } else {
             $arrContent = null;
         }
@@ -177,18 +177,19 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
 
     function getJavascriptCheck()
     {
+        $fieldName = $this->moduleName."Inputfield_";
         $strJavascriptCheck = <<<EOF
 
             case 'textarea':
-                value = document.getElementById('mediadirInputfield_' + field + '_0').value;
+                value = document.getElementById('$fieldName' + field + '_0').value;
                 if (value == "" && isRequiredGlobal(inputFields[field][1], value)) {
                 	isOk = false;
-                	document.getElementById('mediadirInputfield_' + field + '_0').style.border = "#ff0000 1px solid";
+                	document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
                 } else if (value != "" && !matchType(inputFields[field][2], value)) {
                 	isOk = false;
-                	document.getElementById('mediadirInputfield_' + field + '_0').style.border = "#ff0000 1px solid";
+                	document.getElementById('$fieldName' + field + '_0').style.border = "#ff0000 1px solid";
                 } else {
-                	document.getElementById('mediadirInputfield_' + field + '_0').style.borderColor = '';
+                	document.getElementById('$fieldName' + field + '_0').style.borderColor = '';
                 }
                 break;
 EOF;

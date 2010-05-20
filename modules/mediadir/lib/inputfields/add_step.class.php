@@ -12,7 +12,7 @@
  * Includes
  */
 
-class mediaDirectoryInputfieldAdd_step
+class mediaDirectoryInputfieldAdd_step extends mediaDirectoryLibrary
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME');
 
@@ -49,7 +49,7 @@ class mediaDirectoryInputfieldAdd_step
                         $strDisplay = 'none';
                     }
 
-                    return $strNotFirst.'<div id="Step_'.$arrStepInfos['id'].'" class="mediadirAddStep" style="display: '.$strDisplay.'; float: left; width: 100%; height: auto !important;"><p class="mediadirAddStepText">'.$strValue.'</p>';
+                    return $strNotFirst.'<div id="Step_'.$arrStepInfos['id'].'" class="'.$this->moduleName.'AddStep" style="display: '.$strDisplay.'; float: left; width: 100%; height: auto !important;"><p class="'.$this->moduleName.'AddStepText">'.$strValue.'</p>';
                 }
 
                 break;

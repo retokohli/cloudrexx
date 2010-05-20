@@ -13,7 +13,7 @@
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/inputfield.interface.php';
 
-class mediaDirectoryInputfieldDropdown implements inputfield
+class mediaDirectoryInputfieldDropdown extends mediaDirectoryLibrary implements inputfield
 {
     public $arrPlaceholders = array('TXT_MEDIADIR_INPUTFIELD_NAME','MEDIADIR_INPUTFIELD_VALUE');
 
@@ -41,7 +41,7 @@ class mediaDirectoryInputfieldDropdown implements inputfield
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -57,7 +57,7 @@ class mediaDirectoryInputfieldDropdown implements inputfield
                 $arrOptions = explode(",", $strOptions);
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<select name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldDropdown" style="width: 302px">';
+                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown" style="width: 302px">';
 
                     foreach($arrOptions as $intKey => $strDefaultValue) {
                         $intKey = $intKey+1;
@@ -72,7 +72,7 @@ class mediaDirectoryInputfieldDropdown implements inputfield
 
                     $strInputfield .= '</select>';
                 } else {
-                    $strInputfield = '<select name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldDropdown">';
+                    $strInputfield = '<select name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldDropdown">';
 
                     foreach($arrOptions as $intKey => $strDefaultValue) {
                         $intKey = $intKey+1;
@@ -98,7 +98,7 @@ class mediaDirectoryInputfieldDropdown implements inputfield
 
                 $strValue = $_GET[$intId];
 
-                $strInputfield = '<select name="'.$intId.'" class="mediadirInputfieldSearch">';
+                $strInputfield = '<select name="'.$intId.'" class="'.$this->moduleName.'InputfieldSearch">';
                 $strInputfield .= '<option  value="">'.$_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHOOSE'].'</option>';
 
                 foreach($arrOptions as $intKey => $strDefaultValue) {
@@ -133,7 +133,7 @@ class mediaDirectoryInputfieldDropdown implements inputfield
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -153,7 +153,7 @@ class mediaDirectoryInputfieldDropdown implements inputfield
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -166,8 +166,8 @@ class mediaDirectoryInputfieldDropdown implements inputfield
         $strValue = strip_tags(htmlspecialchars($arrValues[$intValueKey], ENT_QUOTES, CONTREXX_CHARSET));
 
         if(!empty($strValue)) {
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $strValue;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValue;
         } else {
             $arrContent = null;
         }

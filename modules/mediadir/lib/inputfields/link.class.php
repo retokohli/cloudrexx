@@ -43,7 +43,7 @@ class mediaDirectoryInputfieldLink implements inputfield
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -60,9 +60,9 @@ class mediaDirectoryInputfieldLink implements inputfield
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = '<input type="text" name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" value="'.$strValue.'" style="width: 300px" onfocus="this.select();" />';
+                    $strInputfield = '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" value="'.$strValue.'" style="width: 300px" onfocus="this.select();" />';
                 } else {
-                    $strInputfield = '<input type="text" name="mediadirInputfield['.$intId.']" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldLink" value="'.$strValue.'" onfocus="this.select();" />';
+                    $strInputfield = '<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldLink" value="'.$strValue.'" onfocus="this.select();" />';
                 }
 
                 return $strInputfield;
@@ -87,7 +87,7 @@ class mediaDirectoryInputfieldLink implements inputfield
     {
         global $objDatabase;
 
-        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteEntry !== false) {
             return true;
@@ -107,7 +107,7 @@ class mediaDirectoryInputfieldLink implements inputfield
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -138,13 +138,13 @@ class mediaDirectoryInputfieldLink implements inputfield
         }
 
         //make hyperlink with <a> tag
-        $strValueLink = '<a href="'.$strValueHref.'" class="mediadirInputfieldLink" target="_blank">'.$strValueName.'</a>';
+        $strValueLink = '<a href="'.$strValueHref.'" class="'.$this->moduleName.'InputfieldLink" target="_blank">'.$strValueName.'</a>';
 
         if(!empty($strValue)) {
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = $strValueLink;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_HREF'] = $strValueHref;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_NAME'] = $strValueName;
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $strValueLink;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_HREF'] = $strValueHref;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_NAME'] = $strValueName;
         } else {
             $arrContent = null;
         }
@@ -155,18 +155,19 @@ class mediaDirectoryInputfieldLink implements inputfield
 
     function getJavascriptCheck()
     {
+        $fieldName = $this->moduleName."Inputfield_";
         $strJavascriptCheck = <<<EOF
 
             case 'link':
-                value = document.getElementById('mediadirInputfield_' + field).value;
+                value = document.getElementById('$fieldName' + field).value;
                 if (value == "" && isRequiredGlobal(inputFields[field][1], value)) {
                 	isOk = false;
-                	document.getElementById('mediadirInputfield_' + field).style.border = "#ff0000 1px solid";
+                	document.getElementById('$fieldName' + field).style.border = "#ff0000 1px solid";
                 } else if (value != "" && !matchType(inputFields[field][2], value)) {
                 	isOk = false;
-                	document.getElementById('mediadirInputfield_' + field).style.border = "#ff0000 1px solid";
+                	document.getElementById('$fieldName' + field).style.border = "#ff0000 1px solid";
                 } else {
-                	document.getElementById('mediadirInputfield_' + field).style.borderColor = '';
+                	document.getElementById('$fieldName' + field).style.borderColor = '';
                 }
                 break;
 

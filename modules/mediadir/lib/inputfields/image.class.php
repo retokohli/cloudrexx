@@ -50,7 +50,7 @@ class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inp
                         SELECT
                             `value`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                         WHERE
                             field_id=".$intId."
                         AND
@@ -77,9 +77,9 @@ class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inp
                 }
 
                 if($objInit->mode == 'backend') {
-                    $strInputfield = $strImagePreview.'<input type="text" name="mediadirInputfield['.$intId.']" value="'.$strValue.'" id="mediadirInputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\'mediadirInputfield_'.$intId.'\', \'mediadir\', \'/images\')" />';
+                    $strInputfield = $strImagePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/images\')" />';
                 } else {
-                    $strInputfield = $strImagePreview.'<input type="file" name="imageUpload_'.$intId.'" id="mediadirInputfield_'.$intId.'" class="mediadirInputfieldImage" value="'.$strValue.'" onfocus="this.select();" /><input name="mediadirInputfield['.$intId.']" value="'.$strValueHidden.'" type="hidden">';
+                    $strInputfield = $strImagePreview.'<input type="file" name="imageUpload_'.$intId.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldImage" value="'.$strValue.'" onfocus="this.select();" /><input name="'.$this->moduleName.'Inputfield['.$intId.']" value="'.$strValueHidden.'" type="hidden">';
                 }
 
                 return $strInputfield;
@@ -225,11 +225,11 @@ class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inp
         global $objDatabase;
 
         //get image path
-        $objImagePathRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objImagePathRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
         $strImagePath   = $objImagePathRS->fields['value'];
 
         //delete relation
-        $objDeleteInputfieldRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
+        $objDeleteInputfieldRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
         if($objDeleteInputfieldRS !== false) {
             //delete image
@@ -252,7 +252,7 @@ class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inp
             SELECT
                 `value`
             FROM
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
             WHERE
                 field_id=".$intId."
             AND
@@ -269,14 +269,14 @@ class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inp
             $arrImageInfo   = pathinfo($strValue);
             $strImageName    = $arrImageInfo['basename'];
 
-            $arrContent['TXT_MEDIADIR_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE'] = '<a rel="shadowbox[1];options={slideshowDelay:5}"  href="'.$strValue.'" width="'.intval($this->arrSettings['settingsThumbSize']).'"><img src="'.$strValue.'.thumb" alt="" border="0" title="" /></a>';
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_SRC'] = $strValue;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_FILENAME'] = $strImageName;
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_SRC_THUMB'] = $strValue.".thumb";
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_POPUP'] = '<a href="'.$strValue.'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$imageWidth.',height='.$imageHeight.',status\'); return false"><img src="'.$strValue.'.thumb" title="'.$arrInputfield['name'][0].'" width="'.intval($this->arrSettings['settingsThumbSize']).'" alt="'.$arrInputfield['name'][0].'" border="0" /></a>';
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_IMAGE'] = '<img src="'.$strValue.'" title="'.$arrInputfield['name'][0].'" alt="'.$arrInputfield['name'][0].'" />';
-            $arrContent['MEDIADIR_INPUTFIELD_VALUE_THUMB'] = '<img src="'.$strValue.'.thumb" width="'.intval($this->arrSettings['settingsThumbSize']).'" title="'.$arrInputfield['name'][0].'" alt="'.$arrInputfield['name'][0].'" />';
+            $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = '<a rel="shadowbox[1];options={slideshowDelay:5}"  href="'.$strValue.'" width="'.intval($this->arrSettings['settingsThumbSize']).'"><img src="'.$strValue.'.thumb" alt="" border="0" title="" /></a>';
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_SRC'] = $strValue;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_FILENAME'] = $strImageName;
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_SRC_THUMB'] = $strValue.".thumb";
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_POPUP'] = '<a href="'.$strValue.'" onclick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$imageWidth.',height='.$imageHeight.',status\'); return false"><img src="'.$strValue.'.thumb" title="'.$arrInputfield['name'][0].'" width="'.intval($this->arrSettings['settingsThumbSize']).'" alt="'.$arrInputfield['name'][0].'" border="0" /></a>';
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_IMAGE'] = '<img src="'.$strValue.'" title="'.$arrInputfield['name'][0].'" alt="'.$arrInputfield['name'][0].'" />';
+            $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE_THUMB'] = '<img src="'.$strValue.'.thumb" width="'.intval($this->arrSettings['settingsThumbSize']).'" title="'.$arrInputfield['name'][0].'" alt="'.$arrInputfield['name'][0].'" />';
         } else {
             $arrContent = null;
         }
