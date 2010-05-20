@@ -131,7 +131,7 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
 
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         global $objDatabase;
 

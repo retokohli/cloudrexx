@@ -227,7 +227,7 @@ class mediaDirectoryInputfieldFile extends mediaDirectoryLibrary implements inpu
 
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         global $objDatabase;
 

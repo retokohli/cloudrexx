@@ -62,7 +62,7 @@ class mediaDirectoryInputfieldLabel implements inputfield
 
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         return null;
     }
