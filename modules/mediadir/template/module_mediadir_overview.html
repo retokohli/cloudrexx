@@ -125,6 +125,11 @@ var switchState = function(id, obj, action, type)
                         </td>
                     </tr>
                     <!-- END mediadirLevelsList -->
+                    <!-- BEGIN noLevelsFound -->
+                    <tr class="row1">
+                        <td colspan="2"><em>{TXT_MEDIADIR_NO_LEVELS_FOUND}</em></td>
+                    </tr>
+                    <!-- END noLevelsFound -->
                 </table>
                 <br />
                 <input style="margin-left:18px;" type="button" onclick="location.href='?cmd=mediadir&amp;act=modify_level'" value="{TXT_ADD_LEVEL}" name="add_level">
@@ -156,6 +161,11 @@ var switchState = function(id, obj, action, type)
                         </td>
                     </tr>
                     <!-- END mediadirCategoriesList -->
+                    <!-- BEGIN noCategoriesFound -->
+                    <tr class="row1">
+                        <td colspan="2"><em>{TXT_MEDIADIR_NO_CATEGORIES_FOUND}</em></td>
+                    </tr>
+                    <!-- END noCategoriesFound -->
                 </table>
                 <br />
                 <input style="margin-left:18px;"  type="button" onclick="location.href='?cmd={MODULE_NAME}&amp;act=modify_category'" value="{TXT_ADD_CATEGORY}" name="add_category">
@@ -246,7 +256,7 @@ var switchState = function(id, obj, action, type)
                         <td valign="top">{MEDIADIR_ENTRY_AUTHOR}</td>
                         <td valign="top">{MEDIADIR_ENTRY_HITS}</td>
                         <td valign="top" style="text-align: right;" nowrap="nowrap">
-                            <a href="index.php?cmd{MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}" /></a>
+                            <a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}" /></a>
                             <a href="javascript:deleteEntry('{MEDIADIR_ENTRY_ID}');" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_DELETE}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_DELETE}" /></a>
                         </td>
                     </tr>

@@ -54,6 +54,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_MAIL_ACTION_NOTIFICATIONDISPLAYDURATION'] = "Benachrichtigung für ablaufende Anzeigedauer";
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'] = "Benachrichtigungsstatus zurücksetzen?";
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';
+        $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'] = 'keine Eintr�ge gefunden';
 
         //globals
         parent::__construct(ASCMS_MODULE_PATH.'/mediadir/template');

@@ -126,11 +126,20 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
 
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         global $objDatabase, $_LANGID;
 
         $intId = intval($arrInputfield['id']);
+        $objEntryDefaultLang = $objDatabase->Execute("SELECT `lang_id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id=".intval($intEntryId)." LIMIT 1");
+        $intEntryDefaultLang = intval($objEntryDefaultLang->fields['lang_id']);
+        
+        if(in_array($_LANGID, $arrTranslationStatus)) {
+            $intLangId = $_LANGID;
+        } else {
+            $intLangId = $intEntryDefaultLang;
+        }
+        
         $objInputfieldValue = $objDatabase->Execute("
             SELECT
                 `value`
@@ -139,9 +148,9 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
             WHERE
                 field_id=".$intId."
             AND
-                entry_id=".$intEntryId."
+                entry_id=".intval($intEntryId)."
             AND
-                lang_id=".$_LANGID."
+                lang_id=".$intLangId."
             LIMIT 1
         ");
         
@@ -154,7 +163,9 @@ class mediaDirectoryInputfieldTextarea extends mediaDirectoryLibrary implements 
                 WHERE
                     field_id=".$intId."
                 AND
-                    entry_id=".$intEntryId."
+                    entry_id=".intval($intEntryId)."
+                AND
+                    lang_id=".intval($intEntryDefaultLang)."
                 LIMIT 1
             ");
         }
