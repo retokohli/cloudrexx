@@ -87,7 +87,7 @@ class mediaDirectoryInputfieldCheckbox extends mediaDirectoryLibrary implements 
                             $strChecked = '';
                         }
 
-                        $strInputfield .= '<input class="'.$this->moduleName.'InputfieldRadio" type="checkbox" name="'.$this->moduleName.'Inputfield['.$intId.'][]" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
+                        $strInputfield .= '<input class="'.$this->moduleName.'InputfieldCheckbox" type="checkbox" name="'.$this->moduleName.'Inputfield['.$intId.'][]" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intKey.'" value="'.$intKey.'" '.$strChecked.' />&nbsp;'.$strDefaultValue.'<br />';
                     }
 
 
