@@ -5,7 +5,7 @@
 function deleteComment(commentId, entryId)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd=mediadir&act=delete_comment&id="+entryId+"&cid="+commentId);
+        window.location.replace("index.php?cmd={MODULE_NAME}&act=delete_comment&id="+entryId+"&cid="+commentId);
     }
 }
 
@@ -28,7 +28,7 @@ function commentsDoAction(formId, objSelect, entryId)
         switch(objSelect.value) {
             case "delete_comment":
                 if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-                    actionValue = "index.php?cmd=mediadir&act=delete_comment&id="+entryId;
+                    actionValue = "index.php?cmd={MODULE_NAME}&act=delete_comment&id="+entryId;
             	}
                 break
         }
@@ -46,7 +46,7 @@ function commentsDoAction(formId, objSelect, entryId)
 
 // ]]>
 </script>
-<form id="manageCommentsForm" action="index.php?cmd=mediadir&act=comments" method="post">
+<form id="manageCommentsForm" action="index.php?cmd={MODULE_NAME}&act=comments" method="post">
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>
         <th colspan="9">{TXT_MEDIADIR_PAGE_TITLE}</th>

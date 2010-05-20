@@ -6,7 +6,7 @@
 function deleteForm(formId)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_FORM_DEL_INFO}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd=mediadir&act=settings&tpl=delete_form&id="+formId);
+        window.location.replace("index.php?cmd={MODULE_NAME}&act=settings&tpl=delete_form&id="+formId);
     }
 }
 
@@ -23,7 +23,7 @@ var switchState = function(id, obj, action, type)
 
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "mediadir", act : "switchState", id : id, state : action, type : type},
+            parameters: {cmd : "{MODULE_NAME}", act : "switchState", id : id, state : action, type : type},
             onSuccess: function() {}
         })) {
     }
@@ -31,7 +31,7 @@ var switchState = function(id, obj, action, type)
 
 //]]>
 </script>
-<form id="settingsFormsForm" action="index.php?cmd=mediadir&act=settings&tpl=forms" method="post" >
+<form id="settingsFormsForm" action="index.php?cmd={MODULE_NAME}&act=settings&tpl=forms" method="post" >
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>
         <th colspan="5">{TXT_MEDIADIR_FORMS}</th>
@@ -47,9 +47,9 @@ var switchState = function(id, obj, action, type)
     <tr class="{MEDIADIR_FORM_ROW_CLASS}">
         <td valign="middle" style="text-align: center;"><a href="javascript: void(0);" onclick="switchState({MEDIADIR_FORM_ID}, this, {MEDIADIR_FORM_SWITCH_STATUS}, 'form_template')"><img src="{MEDIADIR_FORM_STATUS}" border="0" alt="" title="" /></a></td>
         <td valign="top"><input name="formsOrder[{MEDIADIR_FORM_ID}]" style="width: 20px;" type="text" value="{MEDIADIR_FORM_ORDER}" onfocus="this.select();" /></td>
-        <td valign="top"><b><a href="index.php?cmd=mediadir&act=settings&tpl=modify_form&amp;id={MEDIADIR_FORM_ID}" target="_self" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}">{MEDIADIR_FORM_TITLE}</a></b></td>
+        <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&amp;id={MEDIADIR_FORM_ID}" target="_self" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}">{MEDIADIR_FORM_TITLE}</a></b></td>
         <td valign="top" >{MEDIADIR_FORM_DESCRIPTION}</td>
-        <td valign="top"  style="text-align: right;" nowrap="nowrap"><a href="index.php?cmd=mediadir&act=settings&tpl=modify_form&amp;id={MEDIADIR_FORM_ID}" target="_self" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" /></a><a href="javascript:deleteForm('{MEDIADIR_FORM_ID}');" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {MEDIADIR_FORM_ID}" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}" /></a></td>
+        <td valign="top"  style="text-align: right;" nowrap="nowrap"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&amp;id={MEDIADIR_FORM_ID}" target="_self" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" /></a><a href="javascript:deleteForm('{MEDIADIR_FORM_ID}');" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {MEDIADIR_FORM_ID}" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}" /></a></td>
     </tr>
     <!-- END mediadirFormTemplateList -->
 
@@ -63,5 +63,5 @@ var switchState = function(id, obj, action, type)
 </form>
 <br />
 <br />
-<input type="button" name="newForm" onclick="location.href='index.php?cmd=mediadir&act=settings&tpl=modify_form'" value="{TXT_MEDIADIR_NEW_FORM_TEMPLATE}" />
+<input type="button" name="newForm" onclick="location.href='index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form'" value="{TXT_MEDIADIR_NEW_FORM_TEMPLATE}" />
 <!-- END module_mediadir_settings_forms.html -->

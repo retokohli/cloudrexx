@@ -14,18 +14,30 @@
 
 class mediaDirectoryLibrary
 {
+	public $_objTpl;
+	
     public $arrFrontendLanguages = array();
     public $arrSettings = array();
     public $arrCommunityGroups = array();
 
     public $strJavascript;
+    
+    public $moduleName = "mediadir";
+    public $moduleTablePrefix = "mediadir";
+    public $moduleLangVar = "MEDIADIR";
 
     /**
      * Constructor
      */
-    function __construct()
+    function __construct($tplPath)
     {
+    	$this->_objTpl = new HTML_Template_Sigma($tplPath);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     	
+    	$this->_objTpl->setGlobalVariable(array(
+            'MODULE_NAME' =>  $this->moduleName,
+            'CSRF' =>  'csrf='.CSRF::code(),
+        ));
     }
 
 

@@ -6,21 +6,21 @@
 function deleteEntry(entryId)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd=mediadir&act=delete_entry&id="+entryId);
+        window.location.replace("index.php?cmd={MODULE_NAME}&act=delete_entry&id="+entryId);
     }
 }
 
 function deleteCategory(catId)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd=mediadir&act=delete_category&id="+catId);
+        window.location.replace("index.php?cmd={MODULE_NAME}&act=delete_category&id="+catId);
     }
 }
 
 function deleteLevel(levelId)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd=mediadir&act=delete_level&id="+levelId);
+        window.location.replace("index.php?cmd={MODULE_NAME}&act=delete_level&id="+levelId);
     }
 }
 
@@ -42,11 +42,11 @@ function entriesDoAction(formId, objSelect)
         switch(objSelect.value) {
             case "delete_entry":
                 if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-                    actionValue = "index.php?cmd=mediadir&act=delete_entry";
+                    actionValue = "index.php?cmd={MODULE_NAME}&act=delete_entry";
             	}
                 break
             case "confirm_entry":
-                actionValue = "index.php?cmd=mediadir&act=confirm_entry";
+                actionValue = "index.php?cmd={MODULE_NAME}&act=confirm_entry";
                 break
         }
 
@@ -83,7 +83,7 @@ var switchState = function(id, obj, action, type)
 
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {cmd : "mediadir", act : "switchState", id : id, state : action, type : type},
+            parameters: {cmd : "{MODULE_NAME}", act : "switchState", id : id, state : action, type : type},
             onSuccess: function() {}
         })) {
     }
@@ -92,8 +92,8 @@ var switchState = function(id, obj, action, type)
 </script>
 <!-- BEGIN tabMenu -->
 <ul id="tabmenu">
-      <li><a {TAB_LEVELS_ACTIVE} id="mediadirTab_levels" href="javascript:{}" onclick="selectTab('levels')" title="">{TXT_LEVELS}</a></li>
-      <li><a id="mediadirTab_categories" {TAB_CATEGORIES_ACTIVE} href="javascript:{}" onclick="selectTab('categories')" title="">{TXT_CATEGORIES}</a></li>
+      <li><a {TAB_LEVELS_ACTIVE} id="{MODULE_NAME}Tab_levels" href="javascript:{}" onclick="selectTab('levels')" title="">{TXT_LEVELS}</a></li>
+      <li><a id="{MODULE_NAME}Tab_categories" {TAB_CATEGORIES_ACTIVE} href="javascript:{}" onclick="selectTab('categories')" title="">{TXT_CATEGORIES}</a></li>
 </ul>
 <!-- END tabMenu -->
 <!-- END categoriesList -->
@@ -101,11 +101,11 @@ var switchState = function(id, obj, action, type)
     <tr>
         <td width="30%" valign="top">
             <!-- BEGIN levelsTab -->
-            <div id="levels" class="mediadirTab" style="display:{TAB_LEVELS_DISPLAY};">
-                <form id="levelForm" method="post" action="index.php?cmd=mediadir&amp;act=order_level" >
+            <div id="levels" class="{MODULE_NAME}Tab" style="display:{TAB_LEVELS_DISPLAY};">
+                <form id="levelForm" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=order_level" >
                 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
                     <tr>
-                        <th colspan="2">{TXT_LEVELS}&nbsp;&nbsp;&nbsp;[<a href="index.php?cmd=mediadir&amp;exp_level=all" title="{TXT_EXPAND_LINK}">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="index.php?cmd=mediadir&amp;exp_level=0" title="{TXT_EXPAND_LINK}">{TXT_COLLAPS_LINK}</a>]</th>
+                        <th colspan="2">{TXT_LEVELS}&nbsp;&nbsp;&nbsp;[<a href="index.php?cmd={MODULE_NAME}&amp;exp_level=all" title="{TXT_EXPAND_LINK}">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="index.php?cmd=mediadir&amp;exp_level=0" title="{TXT_EXPAND_LINK}">{TXT_COLLAPS_LINK}</a>]</th>
                     </tr>
                     <tr class="row3">
                         <td width="99%"><strong>Name</strong></td>
@@ -117,10 +117,10 @@ var switchState = function(id, obj, action, type)
                             {MEDIADIR_LEVEL_ICON}&nbsp;
                             <a href="javascript: void(0);" onclick="switchState({MEDIADIR_LEVEL_ID}, this, {MEDIADIR_LEVEL_VISIBLE_STATE_ACTION}, 'level')"><img src="images/icons/folder_{MEDIADIR_LEVEL_VISIBLE_STATE_IMG}.gif" border="0" alt="{MEDIADIR_LEVEL_NAME}" title="{MEDIADIR_LEVEL_NAME}" /></a>&nbsp;&nbsp;
                             <input name="levelOrder[{MEDIADIR_LEVEL_ID}]" style="width: 20px;" type="text" value="{MEDIADIR_LEVEL_ORDER}" onfocus="this.select();" />&nbsp;
-                            <a href="index.php?cmd=mediadir&amp;act=entries&amp;level_id={MEDIADIR_LEVEL_ID}" title="{MEDIADIR_LEVEL_NAME} - {MEDIADIR_LEVEL_DESCRIPTION}">{MEDIADIR_LEVEL_NAME}</a> ({MEDIADIR_LEVEL_NUM_ENTRIES})
+                            <a href="index.php?cmd={MODULE_NAME}&amp;act=entries&amp;level_id={MEDIADIR_LEVEL_ID}" title="{MEDIADIR_LEVEL_NAME} - {MEDIADIR_LEVEL_DESCRIPTION}">{MEDIADIR_LEVEL_NAME}</a> ({MEDIADIR_LEVEL_NUM_ENTRIES})
                         </td>
                         <td nowrap="nowrap">
-                            <a href="index.php?cmd=mediadir&amp;act=modify_level&amp;id={MEDIADIR_LEVEL_ID}" target="_self" title="{MEDIADIR_LEVEL_NAME} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_LEVEL_NAME} {TXT_EDIT}" title="{MEDIADIR_LEVEL_NAME} {TXT_EDIT}" /></a>
+                            <a href="index.php?cmd={MODULE_NAME}&amp;act=modify_level&amp;id={MEDIADIR_LEVEL_ID}" target="_self" title="{MEDIADIR_LEVEL_NAME} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_LEVEL_NAME} {TXT_EDIT}" title="{MEDIADIR_LEVEL_NAME} {TXT_EDIT}" /></a>
                             <a href="javascript:deleteLevel('{MEDIADIR_LEVEL_ID}');" title="{MEDIADIR_LEVEL_NAME} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_LEVEL_NAME} {TXT_DELETE}" title="{MEDIADIR_LEVEL_NAME} {TXT_DELETE}" /></a>
                         </td>
                     </tr>
@@ -132,11 +132,11 @@ var switchState = function(id, obj, action, type)
                 </form>
             </div>
             <!-- END levelsTab -->
-            <div id="categories" class="mediadirTab" style="display:{TAB_CATEGORIES_DISPLAY};">
+            <div id="categories" class="{MODULE_NAME}Tab" style="display:{TAB_CATEGORIES_DISPLAY};">
                 <form id="categoryForm" method="post" action="index.php?cmd=mediadir&amp;act=order_category">
                 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
                     <tr>
-                        <th colspan="2">{TXT_CATEGORIES}&nbsp;&nbsp;&nbsp;[<a href="index.php?cmd=mediadir&amp;exp_cat=all" title="{TXT_EXPAND_LINK}">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="index.php?cmd=mediadir&amp;exp_cat=0" title="{TXT_EXPAND_LINK}">{TXT_COLLAPS_LINK}</a>]</th>
+                        <th colspan="2">{TXT_CATEGORIES}&nbsp;&nbsp;&nbsp;[<a href="index.php?cmd={MODULE_NAME}&amp;exp_cat=all" title="{TXT_EXPAND_LINK}">{TXT_EXPAND_LINK}</a>&nbsp;|&nbsp;<a href="index.php?cmd={MODULE_NAME}&amp;exp_cat=0" title="{TXT_EXPAND_LINK}">{TXT_COLLAPS_LINK}</a>]</th>
                     </tr>
                     <tr class="row3">
                         <td width="99%"><strong>Name</strong></td>
@@ -148,17 +148,17 @@ var switchState = function(id, obj, action, type)
                             {MEDIADIR_CATEGORY_ICON}&nbsp;
                             <a href="javascript: void(0);" onclick="switchState({MEDIADIR_CATEGORY_ID}, this, {MEDIADIR_CATEGORY_VISIBLE_STATE_ACTION}, 'category')"><img src="images/icons/folder_{MEDIADIR_CATEGORY_VISIBLE_STATE_IMG}.gif" border="0" alt="{MEDIADIR_CATEGORY_NAME}" title="{MEDIADIR_CATEGORY_NAME}" /></a>&nbsp;&nbsp;
                             <input name="catOrder[{MEDIADIR_CATEGORY_ID}]" style="width: 20px;" type="text" value="{MEDIADIR_CATEGORY_ORDER}" onfocus="this.select();" />&nbsp;
-                            <a href="index.php?cmd=mediadir&amp;act=entries&amp;cat_id={MEDIADIR_CATEGORY_ID}" title="{MEDIADIR_CATEGORY_NAME} - {MEDIADIR_CATEGORY_DESCRIPTION}">{MEDIADIR_CATEGORY_NAME}</a> ({MEDIADIR_CATEGORY_NUM_ENTRIES})
+                            <a href="index.php?cmd={MODULE_NAME}&amp;act=entries&amp;cat_id={MEDIADIR_CATEGORY_ID}" title="{MEDIADIR_CATEGORY_NAME} - {MEDIADIR_CATEGORY_DESCRIPTION}">{MEDIADIR_CATEGORY_NAME}</a> ({MEDIADIR_CATEGORY_NUM_ENTRIES})
                         </td>
                         <td nowrap="nowrap">
-                            <a href="index.php?cmd=mediadir&amp;act=modify_category&amp;id={MEDIADIR_CATEGORY_ID}" target="_self" title="{MEDIADIR_CATEGORY_NAME} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_CATEGORY_NAME} {TXT_EDIT}" title="{MEDIADIR_CATEGORY_NAME} {TXT_EDIT}" /></a>
+                            <a href="index.php?cmd={MODULE_NAME}&amp;act=modify_category&amp;id={MEDIADIR_CATEGORY_ID}" target="_self" title="{MEDIADIR_CATEGORY_NAME} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_CATEGORY_NAME} {TXT_EDIT}" title="{MEDIADIR_CATEGORY_NAME} {TXT_EDIT}" /></a>
                             <a href="javascript:deleteCategory('{MEDIADIR_CATEGORY_ID}');" title="{MEDIADIR_CATEGORY_NAME} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_CATEGORY_NAME} {TXT_DELETE}" title="{MEDIADIR_CATEGORY_NAME} {TXT_DELETE}" /></a>
                         </td>
                     </tr>
                     <!-- END mediadirCategoriesList -->
                 </table>
                 <br />
-                <input style="margin-left:18px;"  type="button" onclick="location.href='?cmd=mediadir&amp;act=modify_category'" value="{TXT_ADD_CATEGORY}" name="add_category">
+                <input style="margin-left:18px;"  type="button" onclick="location.href='?cmd={MODULE_NAME}&amp;act=modify_category'" value="{TXT_ADD_CATEGORY}" name="add_category">
                 <input type="submit" value="{TXT_MEDIADIR_SUBMIT}" name="submit_order_category">
                 </form>
             </div>
@@ -172,7 +172,7 @@ var switchState = function(id, obj, action, type)
                 <tr class="row1">
                     <td width="100">{TXT_ENTRY_SEARCH}</td>
                     <td>
-                       <form id="search" method="post" action="index.php?cmd=mediadir&amp;act=entries">
+                       <form id="search" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=entries">
                        <input type="text" name="term" value="{TXT_MEDIADIR_ID_OR_SEARCH_TERM}" onclick="this.value=''" style="width: 200px; margin-bottom: 2px;" />&nbsp;<!-- BEGIN mediadirLevelDoropdown --><select name="level_id" style="width: 172px; margin-bottom: 2px;"><option value="0">{TXT_MEDIADIR_ALL_LEVELS}</option>{MEDIADIR_LEVELS_DROPDOWN_OPTIONS}</select>&nbsp;<!-- END mediadirLevelDoropdown --><select name="cat_id" style="width: 172px; margin-bottom: 2px;"><option value="0">{TXT_MEDIADIR_ALL_CATEGORIES}</option>{MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS}</select>&nbsp;<input type="submit" name="Submit" value="{TXT_SEARCH}" />
                        </form>
                     </td>
@@ -180,7 +180,7 @@ var switchState = function(id, obj, action, type)
             </table>
             <br />
             <!-- BEGIN confirmBlock -->
-            <form id="confirmForm" method="post" action="index.php?cmd=mediadir&amp;act=confirm_entry">
+            <form id="confirmForm" method="post" action="index.php?cmd={MODULE_NAME}&amp;act=confirm_entry">
             <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
                 <tr>
                     <th colspan="5">{TXT_CONFIRM_LIST}</th>
@@ -195,12 +195,12 @@ var switchState = function(id, obj, action, type)
                 <!-- BEGIN mediadirConfirmList -->
                     <tr class="{MEDIADIR_ROW_CLASS}">
                         <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" />
-                        <td valign="top"><b><a href="index.php?cmd=mediadir&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
+                        <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
                         <td valign="top" nowrap="nowrap">{MEDIADIR_ENTRY_CREATE_DATE}</td>
                         <td valign="top">{MEDIADIR_ENTRY_AUTHOR}</td>
                         <td valign="top" style="text-align: right;" nowrap="nowrap">
-                            <a href="index.php?cmd=mediadir&amp;act=confirm_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_CONFIRM}"><img src="images/icons/check.gif" border="0" alt="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_CONFIRM}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_CONFIRM}" /></a>
-                            <a href="index.php?cmd=mediadir&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}"><img src="images/icons/details.gif" border="0" alt="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}" /></a>
+                            <a href="index.php?cmd={MODULE_NAME}&amp;act=confirm_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_CONFIRM}"><img src="images/icons/check.gif" border="0" alt="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_CONFIRM}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_CONFIRM}" /></a>
+                            <a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}"><img src="images/icons/details.gif" border="0" alt="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_VIEW}" /></a>
                             <a href="javascript:deleteEntry('{MEDIADIR_ENTRY_ID}');" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_DELETE}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_DELETE}" /></a>
                         </td>
                     </tr>
@@ -241,12 +241,12 @@ var switchState = function(id, obj, action, type)
                     <tr class="{MEDIADIR_ROW_CLASS}">
                         <td valign="top"><input type="checkbox" name="entriesFormSelected[]" value="{MEDIADIR_ENTRY_ID}" />
                         <td valign="middle" style="text-align: center;"><a href="javascript: void(0);" onclick="switchState({MEDIADIR_ENTRY_ID}, this, {MEDIADIR_ENTRY_SWITCH_STATUS}, 'entry')"><img src="{MEDIADIR_ENTRY_STATUS}" border="0" alt="" title="" /></td>
-                        <td valign="top"><b><a href="index.php?cmd=mediadir&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
+                        <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}">{MEDIADIR_ENTRY_FIELD_1_POS}</a></b></td>
                         <td valign="top" nowrap="nowrap">{MEDIADIR_ENTRY_VALIDATE_DATE}</td>
                         <td valign="top">{MEDIADIR_ENTRY_AUTHOR}</td>
                         <td valign="top">{MEDIADIR_ENTRY_HITS}</td>
                         <td valign="top" style="text-align: right;" nowrap="nowrap">
-                            <a href="index.php?cmd=mediadir&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}" /></a>
+                            <a href="index.php?cmd{MODULE_NAME}&amp;act=modify_entry&amp;id={MEDIADIR_ENTRY_ID}" target="_self" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_EDIT}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_EDIT}" /></a>
                             <a href="javascript:deleteEntry('{MEDIADIR_ENTRY_ID}');" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_ENTRY_NAME} {TXT_DELETE}" title="{MEDIADIR_ENTRY_FIELD_1_POS} {TXT_DELETE}" /></a>
                         </td>
                     </tr>

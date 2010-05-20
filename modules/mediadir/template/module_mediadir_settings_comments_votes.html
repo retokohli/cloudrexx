@@ -5,12 +5,12 @@
 function restoreData(type)
 {
     if (confirm('{TXT_MEDIADIR_CONFIRM_DELETE_DATA}\n{TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd=mediadir&act=settings&tpl=votes&restore="+type);
+        window.location.replace("index.php?cmd={MODULE_NAME}&act=settings&tpl=votes&restore="+type);
     }
 }
 // ]]>
 </script>
-<form id="settingsVotesForm" action="index.php?cmd=mediadir&act=settings&tpl=votes" method="post" >
+<form id="settingsVotesForm" action="index.php?cmd={MODULE_NAME}&act=settings&tpl=votes" method="post" >
 <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
     <tr>
         <th colspan="2">{TXT_MEDIADIR_VOTES}</th>
