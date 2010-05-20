@@ -39,13 +39,13 @@ class mediaDirectoryComment extends mediaDirectoryLibrary
 
         $strCommentsJavascript  =  <<<EOF
 
-var mediadirComment = function(entry)
+var '.$this->moduleName.'Comment = function(entry)
 {
     var postParameters = $('commentFormInputs_'+entry).serialize(true);
 
-    $('commentForm_'+entry).update('<img src="images/modules/mediadir/loading.gif" border="0" alt="loading..." />');
+    $('commentForm_'+entry).update('<img src="images/modules/".$this->moduleName."/loading.gif" border="0" alt="loading..." />');
 
-    if(new Ajax.Request('index.php?section=mediadir&comment=add&eid='+entry, {
+    if(new Ajax.Request('index.php?section='.$this->moduleName.'&comment=add&eid='+entry, {
             method: 'post',
             parameters: postParameters,
             onSuccess: function (transport){
@@ -56,34 +56,34 @@ var mediadirComment = function(entry)
                 var cmd = arrResponse[2];
 
                 if(status == 1) {
-                    mediadirRefreshComments(entry,section,cmd);
+                    '.$this->moduleName.'RefreshComments(entry,section,cmd);
                 } else {
-                    $('commentForm_'+entry).className = 'mediadirCommentErr';
+                    $('commentForm_'+entry).className = '".$this->moduleName."CommentErr';
                     $('commentForm_'+entry).update('$strErrMessage');
                 }
 
             },
             onFailure: function(){
-                $('commentForm_'+entry).className = 'mediadirCommentErr';
+                $('commentForm_'+entry).className = '".$this->moduleName."CommentErr';
                 $('commentForm_'+entry).update('$strErrMessage');
             }
         })) {
     }
 }
 
-var mediadirRefreshComments = function(entry,section,cmd)
+var '.$this->moduleName.'RefreshComments = function(entry,section,cmd)
 {
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {section : "mediadir", comment : "refresh", eid : entry, pageSection : section, pageCmd : cmd},
+            parameters: {section : "'.$this->moduleName.'", comment : "refresh", eid : entry, pageSection : section, pageCmd : cmd},
             onSuccess: function (transport){
                 var response = transport.responseText;
 
-                $('mediadirNewAddedComment_'+entry).className = 'mediadirNewComment';
-                $('mediadirNewAddedComment_'+entry).update(response);
-                $('mediadirNewAddedComment_'+entry).setStyle({display: 'block'});
+                $('".$this->moduleName."NewAddedComment_'+entry).className = '".$this->moduleName."NewComment';
+                $('".$this->moduleName."NewAddedComment_'+entry).update(response);
+                $('".$this->moduleName."NewAddedComment_'+entry).setStyle({display: 'block'});
 
-                $('commentForm_'+entry).className = 'mediadirCommentOk';
+                $('commentForm_'+entry).className = '".$this->moduleName."CommentOk';
                 $('commentForm_'+entry).update('$strOkMessage');
             },
             onFailure: function(){
@@ -92,7 +92,7 @@ var mediadirRefreshComments = function(entry,section,cmd)
     }
 }
 
-var mediadirCheckCommentForm = function(entry)
+var ".$this->moduleName."CheckCommentForm = function(entry)
 {
     var isOk = true;
     var commentName = $('commentName').value;
@@ -113,9 +113,9 @@ var mediadirCheckCommentForm = function(entry)
     }
 
     if (!isOk) {
-		$('mediadirErrorMessage').style.display = "block";
+		$('".$this->moduleName."ErrorMessage').style.display = "block";
 	} else {
-	   mediadirComment(entry);
+	   ".$this->moduleName."Comment(entry);
 	}
 }
 
@@ -151,39 +151,39 @@ EOF;
                     $strCaptchaCode = $this->getCaptcha();
                 }
 
-                $strCommentForm  = '<div class="mediadirCommentForm" id="commentForm_'.$intEnrtyId.'">';
+                $strCommentForm  = '<div class="'.$this->moduleName.'CommentForm" id="commentForm_'.$intEnrtyId.'">';
                 $strCommentForm .= '<form action="'.$_SERVER['REQUEST_URI'].'" name="commentFormInputs_'.$intEnrtyId.'" id="commentFormInputs_'.$intEnrtyId.'" method="post" >';
                 $strCommentForm .= '<input name="commentPageSection" value="'.$_GET['section'].'" type="hidden" />';
                 $strCommentForm .= '<input name="commentPageCmd" value="'.$_GET['cmd'].'" type="hidden" />';
-                $strCommentForm .= '<p><label>'.$_CORELANG['TXT_NAME'].'<font color="#ff0000"> *</font></label><input name="commentName" id="commentName" class="mediadirInputfieldComment" value="'.$strCommentFormName.'" type="text" /></p>';
-                $strCommentForm .= '<p><label>'.$_CORELANG['TXT_ACCESS_EMAIL'].'</label><input name="commentMail" class="mediadirInputfieldComment" id="commentMail" value="'.$strCommentFormMail.'" type="text" /></p>';
-                $strCommentForm .= '<p><label>'.$_CORELANG['TXT_ACCESS_WEBSITE'].'</label><input name="commentUrl" class="mediadirInputfieldComment" id="commentUrl" value="'.$strCommentFormUrl.'" type="text" /></p>';
-                $strCommentForm .= '<p><label>'.$_ARRAYLANG['TXT_MEDIADIR_COMMENT'].'<font color="#ff0000"> *</font></label><textarea name="commentComment" id="commentComment" class="mediadirTextareaComment"></textarea></p>';
+                $strCommentForm .= '<p><label>'.$_CORELANG['TXT_NAME'].'<font color="#ff0000"> *</font></label><input name="commentName" id="commentName" class="'.$this->moduleName.'InputfieldComment" value="'.$strCommentFormName.'" type="text" /></p>';
+                $strCommentForm .= '<p><label>'.$_CORELANG['TXT_ACCESS_EMAIL'].'</label><input name="commentMail" class="'.$this->moduleName.'InputfieldComment" id="commentMail" value="'.$strCommentFormMail.'" type="text" /></p>';
+                $strCommentForm .= '<p><label>'.$_CORELANG['TXT_ACCESS_WEBSITE'].'</label><input name="commentUrl" class="'.$this->moduleName.'InputfieldComment" id="commentUrl" value="'.$strCommentFormUrl.'" type="text" /></p>';
+                $strCommentForm .= '<p><label>'.$_ARRAYLANG['TXT_MEDIADIR_COMMENT'].'<font color="#ff0000"> *</font></label><textarea name="commentComment" id="commentComment" class="'.$this->moduleName.'TextareaComment"></textarea></p>';
                 $strCommentForm .= $strCaptchaCode;
-                $strCommentForm .= '<p><input class="mediadirButtonComment" value="'.$_ARRAYLANG['TXT_MEDIADIR_ADD'].'" onclick="mediadirCheckCommentForm('.$intEnrtyId.');" name="add" type="button"></p>';
+                $strCommentForm .= '<p><input class="'.$this->moduleName.'ButtonComment" value="'.$_ARRAYLANG['TXT_MEDIADIR_ADD'].'" onclick="'.$this->moduleName.'CheckCommentForm('.$intEnrtyId.');" name="add" type="button"></p>';
                 $strCommentForm .= '</form>';
-                $strCommentForm .= '<div style="display: none; color: rgb(255, 0, 0);" id="mediadirErrorMessage"><p>'.$_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'].'</p></div>';
+                $strCommentForm .= '<div style="display: none; color: rgb(255, 0, 0);" id="'.$this->moduleName.'ErrorMessage"><p>'.$_ARRAYLANG['TXT_MEDIADIR_PLEASE_CHECK_INPUT'].'</p></div>';
                 $strCommentForm .= '</div>';
 
                 $objTpl->setVariable(array(
-                    'MEDIADIR_ENTRY_COMMENT_FORM' => $strCommentForm,
-                    'TXT_MEDIADIR_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS']
+                    $this->moduleLangVar.'_ENTRY_COMMENT_FORM' => $strCommentForm,
+                    'TXT_'.$this->moduleLangVar.'_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS']
                 ));
             }
         }
     }
-    
-    
-    
+
+
+
     function getCaptcha() {
         global $_ARRAYLANG;
 
-        
+
         include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
         $captcha = new Captcha();
-        
+
         $strCode = '<p><label>CAPTCHA</label><img alt="'.$captcha->getAlt().'" src="'.$captcha->getUrl().' class="captcha" /> <input type="text" name="commentCaptcha" id="commentCaptcha" /><br /><input type="hidden" value="'.$captcha->getOffset().'" name="commentCaptchaOffset" /></p>';
-        
+
         return $strCode;
     }
 
@@ -197,7 +197,7 @@ EOF;
                 SELECT
                     `id`, `added_by`, `date`, `ip`, `name`, `mail`, `url`, `notification`, `comment`
                 FROM
-                    ".DBPREFIX."module_mediadir_comments
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_comments
                 WHERE
                     `entry_id` = '".intval($intEnrtyId)."'
                 ORDER BY
@@ -206,7 +206,7 @@ EOF;
 
             $intCountComments = $objRSGetComments->RecordCount();
 
-            if(intval($objTpl->blockExists('mediadirEntryComments')) != 0) {
+            if(intval($objTpl->blockExists($this->moduleName.'EntryComments')) != 0) {
                 if ($objRSGetComments !== false) {
                     $i=0;
                     while (!$objRSGetComments->EOF) {
@@ -221,33 +221,33 @@ EOF;
 
                         if(!empty($objRSGetComments->fields['url'])) {
                             if(substr($objRSGetComments->fields['url'], 0,7) != 'http://') {
-                                $strUrl = '<a href="http://'.strip_tags($objRSGetComments->fields['url']).'" class="mediadirCommentUrl">'.strip_tags($objRSGetComments->fields['url']).'</a>';
+                                $strUrl = '<a href="http://'.strip_tags($objRSGetComments->fields['url']).'" class="'.$this->moduleName.'CommentUrl">'.strip_tags($objRSGetComments->fields['url']).'</a>';
                             } else {
-                                $strUrl = '<a href="'.strip_tags($objRSGetComments->fields['url']).'" class="mediadirCommentUrl">'.strip_tags($objRSGetComments->fields['url']).'</a>';
+                                $strUrl = '<a href="'.strip_tags($objRSGetComments->fields['url']).'" class="'.$this->moduleName.'CommentUrl">'.strip_tags($objRSGetComments->fields['url']).'</a>';
                             }
                         }
 
                         if(!empty($objRSGetComments->fields['mail'])) {
-                            $strMail = '<a href="mailto:'.$objRSGetComments->fields['mail'].'" class="mediadirCommentMail">'.$objRSGetComments->fields['mail'].'</a>';
+                            $strMail = '<a href="mailto:'.$objRSGetComments->fields['mail'].'" class="'.$this->moduleName.'CommentMail">'.$objRSGetComments->fields['mail'].'</a>';
                         }
 
                         $objTpl->setVariable(array(
-                            'MEDIADIR_ENTRY_COMMENT_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
-                            'MEDIADIR_ENTRY_COMMENT_ENTRY_ID' => intval($intEnrtyId),
-                            'MEDIADIR_ENTRY_COMMENT_ID' => intval($objRSGetComments->fields['id']),
-                            'MEDIADIR_ENTRY_COMMENT_ADDED_BY' => $strAddedBy,
-                            'MEDIADIR_ENTRY_COMMENT_NAME' => strip_tags(htmlspecialchars($objRSGetComments->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)),
-                            'MEDIADIR_ENTRY_COMMENT_MAIL' => $strMail,
-                            'MEDIADIR_ENTRY_COMMENT_MAIL_SRC' => strip_tags(htmlspecialchars($objRSGetComments->fields['mail'], ENT_QUOTES, CONTREXX_CHARSET)),
-                            'MEDIADIR_ENTRY_COMMENT_URL' => $strUrl,
-                            'MEDIADIR_ENTRY_COMMENT_URL_SRC' => strip_tags(htmlspecialchars($objRSGetComments->fields['url'], ENT_QUOTES, CONTREXX_CHARSET)),
-                            'MEDIADIR_ENTRY_COMMENT_COMMENT' => strip_tags(htmlspecialchars($objRSGetComments->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET)),
-                            'MEDIADIR_ENTRY_COMMENT_IP' => strip_tags(htmlspecialchars($objRSGetComments->fields['ip'], ENT_QUOTES, CONTREXX_CHARSET)),
-                            'MEDIADIR_ENTRY_COMMENT_DATE' => date("d. M Y",$objRSGetComments->fields['date'])."  ".$_ARRAYLANG['TXT_MEDIADIR_AT']." ".date("H:i:s",$objRSGetComments->fields['date']),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
+                            $this->moduleLangVar.'_ENTRY_COMMENT_ENTRY_ID' => intval($intEnrtyId),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_ID' => intval($objRSGetComments->fields['id']),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_ADDED_BY' => $strAddedBy,
+                            $this->moduleLangVar.'_ENTRY_COMMENT_NAME' => strip_tags(htmlspecialchars($objRSGetComments->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_MAIL' => $strMail,
+                            $this->moduleLangVar.'_ENTRY_COMMENT_MAIL_SRC' => strip_tags(htmlspecialchars($objRSGetComments->fields['mail'], ENT_QUOTES, CONTREXX_CHARSET)),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_URL' => $strUrl,
+                            $this->moduleLangVar.'_ENTRY_COMMENT_URL_SRC' => strip_tags(htmlspecialchars($objRSGetComments->fields['url'], ENT_QUOTES, CONTREXX_CHARSET)),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_COMMENT' => strip_tags(htmlspecialchars($objRSGetComments->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET)),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_IP' => strip_tags(htmlspecialchars($objRSGetComments->fields['ip'], ENT_QUOTES, CONTREXX_CHARSET)),
+                            $this->moduleLangVar.'_ENTRY_COMMENT_DATE' => date("d. M Y",$objRSGetComments->fields['date'])."  ".$_ARRAYLANG['TXT_MEDIADIR_AT']." ".date("H:i:s",$objRSGetComments->fields['date']),
                         ));
 
                         $i++;
-                        $objTpl->parse('mediadirEntryComments');
+                        $objTpl->parse($this->moduleName.'EntryComments');
 
                         $objRSGetComments->MoveNext();
                     }
@@ -255,9 +255,9 @@ EOF;
             }
 
             $objTpl->setVariable(array(
-                'MEDIADIR_ENTRY_COMMENTS' => intval($intCountComments).' '.$_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
-                'TXT_MEDIADIR_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
-                'MEDIADIR_ENTRY_NEW_ADDED_COMMENT' => '<div id="mediadirNewAddedComment_'.$intEnrtyId.'" style="display: none;">hier erscheint der gerade eben hinzugefügte Kommentar.</div>',
+                $this->moduleLangVar.'_ENTRY_COMMENTS' => intval($intCountComments).' '.$_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
+                'TXT_'.$this->moduleLangVar.'_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
+                $this->moduleLangVar.'_ENTRY_NEW_ADDED_COMMENT' => '<div id="'.$this->moduleName.'NewAddedComment_'.$intEnrtyId.'" style="display: none;">hier erscheint der gerade eben hinzugefügte Kommentar.</div>',
             ));
         }
     }
@@ -280,7 +280,7 @@ EOF;
 
         $objInsertComment = $objDatabase->Execute("
             INSERT INTO
-                ".DBPREFIX."module_mediadir_comments
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_comments
             SET
                 `entry_id`='".intval($intEntryId)."',
                 `added_by`='".intval($intAddedBy)."',
@@ -331,7 +331,7 @@ EOF;
 
         if ($objRSGetContentPage !== false) {
             $strPageContent = $objRSGetContentPage->fields['content'];
-            $regexBlock = '<!-- BEGIN mediadirEntryComments -->(.*?)<!-- END mediadirEntryComments -->';
+            $regexBlock = '<!-- BEGIN '.$this->moduleName.'EntryComments -->(.*?)<!-- END '.$this->moduleName.'EntryComments -->';
 
             if(preg_match("/".$regexBlock."/is", $strPageContent, $matchBlock)){
                 $strComment = $matchBlock[1];
@@ -361,7 +361,7 @@ EOF;
             SELECT
                 `id`, `added_by`, `date`, `ip`, `name`, `mail`, `url`, `notification`, `comment`
             FROM
-                ".DBPREFIX."module_mediadir_comments
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_comments
             WHERE
                 `entry_id` = '".intval($intEnrtyId)."'
             ORDER BY
@@ -380,27 +380,27 @@ EOF;
 
             if(!empty($objRSGetComment->fields['url'])) {
                 if(substr($objRSGetComments->fields['url'], 0,7) != 'http://') {
-                    $strUrl = '<a href="http://'.strip_tags($objRSGetComments->fields['url']).'" class="mediadirCommentUrl">'.strip_tags($objRSGetComment->fields['url']).'</a>';
+                    $strUrl = '<a href="http://'.strip_tags($objRSGetComments->fields['url']).'" class="'.$this->moduleName.'CommentUrl">'.strip_tags($objRSGetComment->fields['url']).'</a>';
                 } else {
-                    $strUrl = '<a href="'.strip_tags($objRSGetComment->fields['url']).'" class="mediadirCommentUrl">'.strip_tags($objRSGetComment->fields['url']).'</a>';
+                    $strUrl = '<a href="'.strip_tags($objRSGetComment->fields['url']).'" class="'.$this->moduleName.'CommentUrl">'.strip_tags($objRSGetComment->fields['url']).'</a>';
                 }
             }
 
             if(!empty($objRSGetComment->fields['mail'])) {
-                $strMail = '<a href="mailto:'.$objRSGetComment->fields['mail'].'" class="mediadirCommentMail">'.$objRSGetComment->fields['mail'].'</a>';
+                $strMail = '<a href="mailto:'.$objRSGetComment->fields['mail'].'" class="'.$this->moduleName.'CommentMail">'.$objRSGetComment->fields['mail'].'</a>';
             }
 
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_ENTRY_ID}'] = intval($intEnrtyId);
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_ID}'] = intval($objRSGetComment->fields['id']);
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_ADDED_BY}'] = $strAddedBy;
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_NAME}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['name'], ENT_QUOTES, CONTREXX_CHARSET));
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_MAIL}'] = $strMail;
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_MAIL_SRC}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['mail'], ENT_QUOTES, CONTREXX_CHARSET));
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_URL}'] = $strUrl;
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_URL_SRC}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['url'], ENT_QUOTES, CONTREXX_CHARSET));
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_COMMENT}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET));
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_IP}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['ip'], ENT_QUOTES, CONTREXX_CHARSET));
-            $arrComment['{MEDIADIR_ENTRY_COMMENT_DATE}'] = date("d. M Y",$objRSGetComment->fields['date'])."  ".$_ARRAYLANG['TXT_MEDIADIR_AT']." ".date("H:i:s",$objRSGetComment->fields['date']);
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_ENTRY_ID}'] = intval($intEnrtyId);
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_ID}'] = intval($objRSGetComment->fields['id']);
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_ADDED_BY}'] = $strAddedBy;
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_NAME}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['name'], ENT_QUOTES, CONTREXX_CHARSET));
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_MAIL}'] = $strMail;
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_MAIL_SRC}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['mail'], ENT_QUOTES, CONTREXX_CHARSET));
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_URL}'] = $strUrl;
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_URL_SRC}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['url'], ENT_QUOTES, CONTREXX_CHARSET));
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_COMMENT}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['comment'], ENT_QUOTES, CONTREXX_CHARSET));
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_IP}'] = strip_tags(htmlspecialchars($objRSGetComment->fields['ip'], ENT_QUOTES, CONTREXX_CHARSET));
+            $arrComment['{'.$this->moduleLangVar.'_ENTRY_COMMENT_DATE}'] = date("d. M Y",$objRSGetComment->fields['date'])."  ".$_ARRAYLANG['TXT_MEDIADIR_AT']." ".date("H:i:s",$objRSGetComment->fields['date']);
 
             return $arrComment;
         }
@@ -413,7 +413,7 @@ EOF;
 
         $objRestoreComments = $objDatabase->Execute("
             DELETE FROM
-                ".DBPREFIX."module_mediadir_comments
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_comments
             WHERE
                 `entry_id`='".intval($intEnrtyId)."'
         ");
@@ -432,7 +432,7 @@ EOF;
 
         $objDeleteComments = $objDatabase->Execute("
             DELETE FROM
-                ".DBPREFIX."module_mediadir_comments
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_comments
             WHERE
                 `id`='".intval($intCommentId)."'
         ");
