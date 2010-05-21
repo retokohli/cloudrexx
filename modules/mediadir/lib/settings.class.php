@@ -14,7 +14,7 @@
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
-
+//
 
 class mediaDirectorySettings extends mediaDirectoryLibrary
 {
@@ -35,17 +35,17 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_classification.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_classification.html');
 
         $objTpl->setVariable(array(
-            'TXT_MEDIADIR_CLASSIFICATION' => $_ARRAYLANG['TXT_MEDIADIR_CLASSIFICATION'],
-            'TXT_MEDIADIR_SETTINGS_CLASSIFICATION_POINTS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_POINTS'],
-            'TXT_MEDIADIR_SETTINGS_CLASSIFICATION_POINTS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_POINTS_INFO'],
-            'TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH'],
-            'TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_INFO'],
-            'TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_FROM' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_FROM'],
-            'TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_TO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_TO'],
-            'TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_EXACT' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_EXACT'],
+            'TXT_'.$this->moduleLangVar.'_CLASSIFICATION' => $_ARRAYLANG['TXT_MEDIADIR_CLASSIFICATION'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CLASSIFICATION_POINTS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_POINTS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CLASSIFICATION_POINTS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_POINTS_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH_FROM' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_FROM'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH_TO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_TO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH_EXACT' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_EXACT'],
         ));
 
         if($this->arrSettings['settingsClassificationSearch'] == 1) {
@@ -64,10 +64,10 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
 
 
         $objTpl->setVariable(array(
-            'MEDIADIR_SETTINGS_CLASSIFICATION_POINTS' => intval($this->arrSettings['settingsClassificationPoints']),
-            'MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_FROM' => $strClassificationSearchFrom,
-            'MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_TO' => $strClassificationSearchTo,
-            'MEDIADIR_SETTINGS_CLASSIFICATION_SEARCH_EXACT' => $strClassificationSearchExact,
+            $this->moduleLangVar.'_SETTINGS_CLASSIFICATION_POINTS' => intval($this->arrSettings['settingsClassificationPoints']),
+            $this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH_FROM' => $strClassificationSearchFrom,
+            $this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH_TO' => $strClassificationSearchTo,
+            $this->moduleLangVar.'_SETTINGS_CLASSIFICATION_SEARCH_EXACT' => $strClassificationSearchExact,
         ));
     }
 
@@ -77,29 +77,29 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_comments_votes.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_comments_votes.html');
 
         if(isset($_GET['restore'])){
             if($_GET['restore'] == 'voting') {
-                $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_mediadir_votes");
+                $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_".$this->moduleTablePrefix."_votes");
             }
 
             if($_GET['restore'] == 'comments') {
-                $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_mediadir_comments");
+                $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_".$this->moduleTablePrefix."_comments");
             }
         }
 
         $objTpl->setVariable(array(
-            'TXT_MEDIADIR_VOTES' => $_ARRAYLANG['TXT_MEDIADIR_VOTES'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_VOTES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_VOTES'],
-            'TXT_MEDIADIR_SETTINGS_VOTE_ONLY_COMMUNITY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_VOTE_ONLY_COMMUNITY'],
-            'TXT_MEDIADIR_SETTINGS_DELETE_ALL_VOTES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DELETE_ALL_VOTES'],
-            'TXT_MEDIADIR_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
-            'TXT_MEDIADIR_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
-            'TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_COMMENTS'],
-            'TXT_MEDIADIR_SETTINGS_COMMENT_ONLY_COMMUNITY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_COMMENT_ONLY_COMMUNITY'],
-            'TXT_MEDIADIR_SETTINGS_DELETE_ALL_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DELETE_ALL_COMMENTS'],
+            'TXT_'.$this->moduleLangVar.'_VOTES' => $_ARRAYLANG['TXT_MEDIADIR_VOTES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_VOTES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_VOTES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_VOTE_ONLY_COMMUNITY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_VOTE_ONLY_COMMUNITY'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_DELETE_ALL_VOTES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DELETE_ALL_VOTES'],
+            'TXT_'.$this->moduleLangVar.'_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_COMMENTS'],
+            'TXT_'.$this->moduleLangVar.'_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
+            'TXT_'.$this->moduleLangVar.'_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_COMMENTS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_COMMENT_ONLY_COMMUNITY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_COMMENT_ONLY_COMMUNITY'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_DELETE_ALL_COMMENTS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DELETE_ALL_COMMENTS'],
         ));
 
         if($this->arrSettings['settingsAllowVotes'] == 1) {
@@ -135,14 +135,14 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
         }
 
         $objTpl->setVariable(array(
-            'MEDIADIR_SETTINGS_ALLOW_VOTES_ON' => $strAllowVotesOn,
-            'MEDIADIR_SETTINGS_ALLOW_VOTES_OFF' => $strAllowVotesOff,
-            'MEDIADIR_SETTINGS_VOTE_ONLY_COMMUNITY_ON' => $strVoteOnlyCommunityOn,
-            'MEDIADIR_SETTINGS_VOTE_ONLY_COMMUNITY_OFF' => $strVoteOnlyCommunityOff,
-            'MEDIADIR_SETTINGS_ALLOW_COMMENTS_ON' => $strAllowCommentsOn,
-            'MEDIADIR_SETTINGS_ALLOW_COMMENTS_OFF' => $strAllowCommentsOff,
-            'MEDIADIR_SETTINGS_COMMENT_ONLY_COMMUNITY_ON' => $strCommentOnlyCommunityOn,
-            'MEDIADIR_SETTINGS_COMMENT_ONLY_COMMUNITY_OFF' => $strCommentOnlyCommunityOff,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_VOTES_ON' => $strAllowVotesOn,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_VOTES_OFF' => $strAllowVotesOff,
+            $this->moduleLangVar.'_SETTINGS_VOTE_ONLY_COMMUNITY_ON' => $strVoteOnlyCommunityOn,
+            $this->moduleLangVar.'_SETTINGS_VOTE_ONLY_COMMUNITY_OFF' => $strVoteOnlyCommunityOff,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_COMMENTS_ON' => $strAllowCommentsOn,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_COMMENTS_OFF' => $strAllowCommentsOff,
+            $this->moduleLangVar.'_SETTINGS_COMMENT_ONLY_COMMUNITY_ON' => $strCommentOnlyCommunityOn,
+            $this->moduleLangVar.'_SETTINGS_COMMENT_ONLY_COMMUNITY_OFF' => $strCommentOnlyCommunityOff,
         ));
     }
 
@@ -153,25 +153,25 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
 
         parent::getSettings();
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_map.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_map.html');
 
         if(empty($_CONFIG['googleMapsAPIKey'])) {
-            $objTpl->hideBlock('mediadirGoogleMap');
+            $objTpl->hideBlock($this->moduleName.'GoogleMap');
 
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_inputfield_types SET `active`='0' WHERE `name`='google_map'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_types SET `active`='0' WHERE `name`='google_map'");
 
             $objTpl->setVariable(array(
-                'TXT_MEDIADIR_SETTINGS_GOOGLE_NO_KEY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_NO_KEY'],
-                'TXT_MEDIADIR_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS'],
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_NO_KEY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_NO_KEY'],
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS'],
             ));
         } else {
-            $objTpl->hideBlock('mediadirGoogleMapNoKey');
+            $objTpl->hideBlock($this->moduleName.'GoogleMapNoKey');
 
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_inputfield_types SET `active`='1' WHERE `name`='google_map'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfield_types SET `active`='1' WHERE `name`='google_map'");
 
             $objTpl->setVariable(array(
-                'TXT_MEDIADIR_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_GOOGLE'],
-                'TXT_MEDIADIR_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_START_POSITION'],
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_GOOGLE'],
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_START_POSITION'],
             ));
 
             $strMapId       = 'settingsGoogleMap_map';
@@ -189,15 +189,15 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
             $strValueLat = $arrValues[1];
             $strValueZoom = $arrValues[2];
 
-            $strGoogleMap .= '<table cellpadding="0" cellspacing="0" border="0" class="mediadirTableGoogleMap">';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[street]" id="'.$strStreetId.'" class="mediadirInputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[place]" id="'.$strZipId.'" class="mediadirInputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zip]" id="'.$strCityId.'" class="mediadirInputfieldGoogleMapSmall" value="" onfocus="this.select();" /></td></tr>';
+            $strGoogleMap .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
+            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[street]" id="'.$strStreetId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
+            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[place]" id="'.$strZipId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
+            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zip]" id="'.$strCityId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="" onfocus="this.select();" /></td></tr>';
             $strGoogleMap .= '<tr><td style="border: 0px;"><br /></td><td style="border: 0px;"><input type="button" onclick="searchAddress();" name="settingsGoogleMap[search]" id="mediadirInputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
             $strGoogleMap .= '<tr><td style="border: 0px;" coldpan="2"><br /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lon]" id="'.$strLonId.'" class="mediadirInputfieldGoogleMapLarge" value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lat]" id="'.$strLatId.'" class="mediadirInputfieldGoogleMapLarge" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zoom]" id="'.$strZoomId.'" class="mediadirInputfieldGoogleMapSmall" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
+            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lon]" id="'.$strLonId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
+            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lat]" id="'.$strLatId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
+            $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zoom]" id="'.$strZoomId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
             $strGoogleMap .= '</table><br />';
             $strGoogleMap .= '<div id="'.$strMapId.'" style="border: solid 1px #0A50A1; width: 418px; height: 300px;"></div>';
             $strGoogleMap .= <<<EOF
@@ -327,12 +327,12 @@ EOF;
             $strSelectMapyType .= '<option value="2" '.$strMapyType2.'>'.$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE_HYBRID'].'</option>';
 
             $objTpl->setVariable(array(
-                'MEDIADIR_SETTINGS_GOOGLE_START_POSITION' => $strGoogleMap,
-                'TXT_MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML'],
-                'TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE'],
-                'MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML_ON' => $strAllowKmlOn,
-                'MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML_OFF' => $strAllowKmlOff,
-                'MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE' => $strSelectMapyType,
+                $this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $strGoogleMap,
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML'],
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE'],
+                $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_ON' => $strAllowKmlOn,
+                $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_OFF' => $strAllowKmlOff,
+                $this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $strSelectMapyType,
             ));
         }
     }
@@ -348,7 +348,7 @@ EOF;
 
         $objRSSaveGoogle = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_settings
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
                 SET
                     value='".$strValueLon.",".$strValueLat.",".$strValueZoom."'
                 WHERE
@@ -360,7 +360,7 @@ EOF;
 
         $objRSSaveGoogle = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_settings
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
                 SET
                     value='".intval($arrData['settingsGoogleMapType'])."'
                 WHERE
@@ -372,7 +372,7 @@ EOF;
 
         $objRSSaveGoogle = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_settings
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
                 SET
                     value='".intval($arrData['settingsGoogleMapAllowKml'])."'
                 WHERE
@@ -391,16 +391,16 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_files.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_files.html');
 
         $objTpl->setVariable(array(
-            'TXT_MEDIADIR_SETTINGS_PICS_AND_FILES' => $_ARRAYLANG['TXT_MEDIADIR_PICS_AND_FILES'],
-            'TXT_MEDIADIR_SETTINGS_THUMB_SIZE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_THUMB_SIZE'],
-            'TXT_MEDIADIR_SETTINGS_NUM_PICS_PER_GALLERY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_PICS_PER_GALLERY'],
-            'TXT_MEDIADIR_SETTINGS_ENCRYPT_FILENAME' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ENCRYPT_FILENAME'],
-            'TXT_MEDIADIR_SETTINGS_THUMB_SIZE_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_THUMB_SIZE_INFO'],
-            'TXT_MEDIADIR_SETTINGS_NUM_PICS_PER_GALLERY_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_PICS_PER_GALLERY_INFO'],
-            'TXT_MEDIADIR_SETTINGS_ENCRYPT_FILENAME_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ENCRYPT_FILENAME_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_PICS_AND_FILES' => $_ARRAYLANG['TXT_MEDIADIR_PICS_AND_FILES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_THUMB_SIZE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_THUMB_SIZE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_PICS_PER_GALLERY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_PICS_PER_GALLERY'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ENCRYPT_FILENAME' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ENCRYPT_FILENAME'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_THUMB_SIZE_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_THUMB_SIZE_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_PICS_PER_GALLERY_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_PICS_PER_GALLERY_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ENCRYPT_FILENAME_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ENCRYPT_FILENAME_INFO'],
         ));
 
         if($this->arrSettings['settingsEncryptFilenames'] == 1) {
@@ -413,10 +413,10 @@ EOF;
 
 
         $objTpl->setVariable(array(
-            'MEDIADIR_SETTINGS_THUMB_SIZE' => intval($this->arrSettings['settingsThumbSize']),
-            'MEDIADIR_SETTINGS_NUM_PICS_PER_GALLERY' => $this->arrSettings['settingsNumGalleryPics'],
-            'MEDIADIR_SETTINGS_ENCRYPT_FILENAMES_ON' => $strEncryptFilenamesOn,
-            'MEDIADIR_SETTINGS_ENCRYPT_FILENAMES_OFF' => $strEncryptFilenamesOff,
+            $this->moduleLangVar.'_SETTINGS_THUMB_SIZE' => intval($this->arrSettings['settingsThumbSize']),
+            $this->moduleLangVar.'_SETTINGS_NUM_PICS_PER_GALLERY' => $this->arrSettings['settingsNumGalleryPics'],
+            $this->moduleLangVar.'_SETTINGS_ENCRYPT_FILENAMES_ON' => $strEncryptFilenamesOn,
+            $this->moduleLangVar.'_SETTINGS_ENCRYPT_FILENAMES_OFF' => $strEncryptFilenamesOff,
         ));
     }
 
@@ -426,52 +426,52 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_entries.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_entries.html');
 
         $objTpl->setGlobalVariable(array(
-            'TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_INFO'],
-            'TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP'],
-            'TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP_INFO'],
-            'TXT_MEDIADIR_SETTINGS_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_NUM' => $_ARRAYLANG['TXT_MEDIADIR_NUM'],
-            'TXT_MEDIADIR_SETTINGS_COMMUNITY_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_COMMUNITY_GROUP'],
-            'TXT_MEDIADIR_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
-            'TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_INFO'],
-            'TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES_INFO'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_INFO'],
-            'TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY'],
-            'TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_INFO'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_INFO'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_INFO'],
-            'TXT_MEDIADIR_LATEST_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_LATEST_ENTRIES'],
-            'TXT_MEDIADIR_POPULAR_HITS' => $_ARRAYLANG['TXT_MEDIADIR_POPULAR_HITS'],
-            'TXT_MEDIADIR_SETTINGS_LATEST_NUM_XML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_XML'],
-            'TXT_MEDIADIR_SETTINGS_LATEST_NUM_OVERVIEW' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_OVERVIEW'],
-            'TXT_MEDIADIR_SETTINGS_LATEST_NUM_BACKEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_BACKEND'],
-            'TXT_MEDIADIR_SETTINGS_LATEST_NUM_FRONTEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_FRONTEND'],
-            'TXT_MEDIADIR_SETTINGS_POPULAR_NUM_FRONTEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_POPULAR_NUM_FRONTEND'],
-            'TXT_MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE'],
-            'TXT_MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO'],
-            'TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES'],
-            'TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES_INFO'],
-            'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DEFAULT_DISPLAYDURATION'],
-            'TXT_MEDIADIR_DISPLAY_DURATION_ALWAYS' => $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'],
-            'TXT_MEDIADIR_DISPLAY_DURATION_PERIOD' => $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_PERIOD'],
-            'TXT_MEDIADIR_DISPLAY_DURATION_FROM' => $_CORELANG['TXT_FROM'],
-            'TXT_MEDIADIR_DISPLAY_DURATION_TO' => $_CORELANG['TXT_TO'],
-            'TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION'],
-            'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFICATION_DAYSBEFOR' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION_DAYSBEFOR'],
-            'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY'],
-            'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH'],
-            'TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_ENTRIES_PER_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_ENTRIES_PER_GROUP_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM' => $_ARRAYLANG['TXT_MEDIADIR_NUM'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_COMMUNITY_GROUP'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CONFIRM_UPDATED_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CONFIRM_UPDATED_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_COUNT_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_COUNT_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_ADD_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_ADD_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ADD_ONLY_COMMUNITY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ADD_ONLY_COMMUNITY_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_EDIT_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_EDIT_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_DEL_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_DEL_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_INFO'],
+            'TXT_'.$this->moduleLangVar.'_LATEST_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_LATEST_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_POPULAR_HITS' => $_ARRAYLANG['TXT_MEDIADIR_POPULAR_HITS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_XML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_XML'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_OVERVIEW' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_OVERVIEW'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_BACKEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_BACKEND'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_FRONTEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_FRONTEND'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_POPULAR_NUM_FRONTEND' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_POPULAR_NUM_FRONTEND'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_POPULAR_NUM_RESTORE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LATEST_NUM_HEADLINES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_PAGING_NUM_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_PAGING_NUM_ENTRIES_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DEFAULT_DISPLAYDURATION'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAY_DURATION_ALWAYS' => $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAY_DURATION_PERIOD' => $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_PERIOD'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAY_DURATION_FROM' => $_CORELANG['TXT_FROM'],
+            'TXT_'.$this->moduleLangVar.'_DISPLAY_DURATION_TO' => $_CORELANG['TXT_TO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NOTIFICATION_DISPLAYDURATION' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_DAYSBEFOR' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION_DAYSBEFOR'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR'],
             'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS'],
             'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO'],
         ));
@@ -539,7 +539,7 @@ EOF;
             $strDelEntriesOn = '';
             $strDelEntriesOff = 'checked="checked"';
         }
-        
+
         if($this->arrSettings['settingsTranslationStatus'] == 1) {
             $strTransStatusOn = 'checked="checked"';
             $strTransStatusOff = '';
@@ -547,7 +547,7 @@ EOF;
             $strTransStatusOn = '';
             $strTransStatusOff = 'checked="checked"';
         }
-        
+
         if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
             $strDisplaydurationAlways = 'selected="selected"';
             $strDisplaydurationPeriod = '';
@@ -558,7 +558,7 @@ EOF;
             $strDisplaydurationPeriod = 'selected="selected"';
             $strDisplaydurationShowPeriod = 'inline';
             $intDisplaydurationValue = intval($this->arrSettings['settingsEntryDisplaydurationValue']);
-            
+
             switch (intval($this->arrSettings['settingsEntryDisplaydurationValueType'])) {
             	case 1:
 	                $strDisplaydurationValueTypeDay = 'selected="selected"';
@@ -577,7 +577,7 @@ EOF;
                     break;
             }
         }
-        
+
         if(intval($this->arrSettings['settingsEntryDisplaydurationNotification']) == 0) {
             $strDisplaydurationNotificationOff = 'selected="selected"';
             $strDisplaydurationNotificationOn = '';
@@ -591,57 +591,57 @@ EOF;
         }
 
         $objTpl->setVariable(array(
-            'MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_ON' => $strConfirmEntriesOn,
-            'MEDIADIR_SETTINGS_CONFIRM_NEW_ENTRIES_OFF' => $strConfirmEntriesOff,
-            'MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_ON' => $strConfirmUpdatedEntriesOn,
-            'MEDIADIR_SETTINGS_CONFIRM_UPDATED_ENTRIES_OFF' => $strConfirmUpdatedEntriesOff,
-            'MEDIADIR_SETTINGS_COUNT_ENTRIES_ON' => $strCountEntriesOn,
-            'MEDIADIR_SETTINGS_COUNT_ENTRIES_OFF' => $strCountEntriesOff,
-            'MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_OFF' => $strAddEntriesOff,
-            'MEDIADIR_SETTINGS_ALLOW_ADD_ENTRIES_ON' => $strAddEntriesOn,
-            'MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_OFF' => $strAddCommunityOff,
-            'MEDIADIR_SETTINGS_ADD_ONLY_COMMUNITY_ON' => $strAddCommunityOn,
-            'MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_OFF' => $strEditEntriesOff,
-            'MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_ON' => $strEditEntriesOn,
-            'MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_OFF' => $strDelEntriesOff,
-            'MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_ON' => $strDelEntriesOn,
-            'MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_OFF' => $strShowEntriesInAllLangOff,
-            'MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_ON' => $strShowEntriesInAllLangOn,
-            'MEDIADIR_SETTINGS_LATEST_NUM_XML' => intval($this->arrSettings['settingsLatestNumXML']),
-            'MEDIADIR_SETTINGS_LATEST_NUM_OVERVIEW' => intval($this->arrSettings['settingsLatestNumOverview']),
-            'MEDIADIR_SETTINGS_LATEST_NUM_BACKEND' => intval($this->arrSettings['settingsLatestNumBackend']),
-            'MEDIADIR_SETTINGS_LATEST_NUM_FRONTEND' => intval($this->arrSettings['settingsLatestNumFrontend']),
-            'MEDIADIR_SETTINGS_POPULAR_NUM_FRONTEND' => intval($this->arrSettings['settingsPopularNumFrontend']),
-            'MEDIADIR_SETTINGS_POPULAR_NUM_RESTORE' => intval($this->arrSettings['settingsPopularNumRestore']),
-            'MEDIADIR_SETTINGS_LATEST_NUM_HEADLINES' => intval($this->arrSettings['settingsLatestNumHeadlines']),
-            'MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES' => intval($this->arrSettings['settingsPagingNumEntries']),
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_SELECT_ALWAYS' => $strDisplaydurationAlways,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_SELECT_PERIOD' => $strDisplaydurationPeriod,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_SHOW_PERIOD' => $strDisplaydurationShowPeriod,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE' => $intDisplaydurationValue,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $strDisplaydurationValueTypeDay,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $strDisplaydurationValueTypeMonth,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $strDisplaydurationValueTypeYear,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFICATION_OFF' => $strDisplaydurationNotificationOff,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFICATION_ON' => $strDisplaydurationNotificationOn,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFIVATION_SHOW_DAYBEFORE' => $strDisplaydurationNotificationShowDaybefore,
-            'MEDIADIR_SETTINGS_DISPLAYDURATION_NOTIFICATION_VALUE' => $strDisplaydurationNotificationValue,
+            $this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES_ON' => $strConfirmEntriesOn,
+            $this->moduleLangVar.'_SETTINGS_CONFIRM_NEW_ENTRIES_OFF' => $strConfirmEntriesOff,
+            $this->moduleLangVar.'_SETTINGS_CONFIRM_UPDATED_ENTRIES_ON' => $strConfirmUpdatedEntriesOn,
+            $this->moduleLangVar.'_SETTINGS_CONFIRM_UPDATED_ENTRIES_OFF' => $strConfirmUpdatedEntriesOff,
+            $this->moduleLangVar.'_SETTINGS_COUNT_ENTRIES_ON' => $strCountEntriesOn,
+            $this->moduleLangVar.'_SETTINGS_COUNT_ENTRIES_OFF' => $strCountEntriesOff,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_ADD_ENTRIES_OFF' => $strAddEntriesOff,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_ADD_ENTRIES_ON' => $strAddEntriesOn,
+            $this->moduleLangVar.'_SETTINGS_ADD_ONLY_COMMUNITY_OFF' => $strAddCommunityOff,
+            $this->moduleLangVar.'_SETTINGS_ADD_ONLY_COMMUNITY_ON' => $strAddCommunityOn,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_EDIT_ENTRIES_OFF' => $strEditEntriesOff,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_EDIT_ENTRIES_ON' => $strEditEntriesOn,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_DEL_ENTRIES_OFF' => $strDelEntriesOff,
+            $this->moduleLangVar.'_SETTINGS_ALLOW_DEL_ENTRIES_ON' => $strDelEntriesOn,
+            $this->moduleLangVar.'_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_OFF' => $strShowEntriesInAllLangOff,
+            $this->moduleLangVar.'_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_ON' => $strShowEntriesInAllLangOn,
+            $this->moduleLangVar.'_SETTINGS_LATEST_NUM_XML' => intval($this->arrSettings['settingsLatestNumXML']),
+            $this->moduleLangVar.'_SETTINGS_LATEST_NUM_OVERVIEW' => intval($this->arrSettings['settingsLatestNumOverview']),
+            $this->moduleLangVar.'_SETTINGS_LATEST_NUM_BACKEND' => intval($this->arrSettings['settingsLatestNumBackend']),
+            $this->moduleLangVar.'_SETTINGS_LATEST_NUM_FRONTEND' => intval($this->arrSettings['settingsLatestNumFrontend']),
+            $this->moduleLangVar.'_SETTINGS_POPULAR_NUM_FRONTEND' => intval($this->arrSettings['settingsPopularNumFrontend']),
+            $this->moduleLangVar.'_SETTINGS_POPULAR_NUM_RESTORE' => intval($this->arrSettings['settingsPopularNumRestore']),
+            $this->moduleLangVar.'_SETTINGS_LATEST_NUM_HEADLINES' => intval($this->arrSettings['settingsLatestNumHeadlines']),
+            $this->moduleLangVar.'_SETTINGS_PAGING_NUM_ENTRIES' => intval($this->arrSettings['settingsPagingNumEntries']),
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_SELECT_ALWAYS' => $strDisplaydurationAlways,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_SELECT_PERIOD' => $strDisplaydurationPeriod,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_SHOW_PERIOD' => $strDisplaydurationShowPeriod,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE' => $intDisplaydurationValue,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $strDisplaydurationValueTypeDay,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $strDisplaydurationValueTypeMonth,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $strDisplaydurationValueTypeYear,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_OFF' => $strDisplaydurationNotificationOff,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_ON' => $strDisplaydurationNotificationOn,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFIVATION_SHOW_DAYBEFORE' => $strDisplaydurationNotificationShowDaybefore,
+            $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_VALUE' => $strDisplaydurationNotificationValue,
             'MEDIADIR_SETTINGS_TRANSLATION_STATUS_OFF' => $strTransStatusOff,
             'MEDIADIR_SETTINGS_TRANSLATION_STATUS_ON' => $strTransStatusOn,
         ));
 
         if(empty($this->arrCommunityGroups)) {
             $objTpl->setVariable(array(
-                'TXT_MEDIADIR_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
             ));
             $objTpl->parse('noCommunityGroupList');
         } else {
             foreach ($this->arrCommunityGroups as $intGroupId => $arrGroup) {
                 if($arrGroup['type'] == 'frontend' && $arrGroup['active'] == 1) {
                     $objTpl->setVariable(array(
-                        'MEDIADIR_SETTINGS_NUM_ENTRIES_GROUP_NAME' =>$arrGroup['name'],
-                        'MEDIADIR_SETTINGS_NUM_ENTRIES' => $arrGroup['num_entries'],
-                        'MEDIADIR_SETTINGS_NUM_ENTRIES_GROUP_ID' => $intGroupId,
+                        $this->moduleLangVar.'_SETTINGS_NUM_ENTRIES_GROUP_NAME' =>$arrGroup['name'],
+                        $this->moduleLangVar.'_SETTINGS_NUM_ENTRIES' => $arrGroup['num_entries'],
+                        $this->moduleLangVar.'_SETTINGS_NUM_ENTRIES_GROUP_ID' => $intGroupId,
                     ));
                     $objTpl->parse('communityGroupList');
                 }
@@ -657,30 +657,30 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_levels_categories.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_levels_categories.html');
 
         $objTpl->setGlobalVariable(array(
-            'TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_IMG' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_IMG'],
-            'TXT_MEDIADIR_SETTINGS_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC_INFO'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_IMG_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_IMG_INFO'],
-            'TXT_MEDIADIR_SETTINGS_CATEGORY_ORDER' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CATEGORY_ORDER'],
-            'TXT_MEDIADIR_SETTINGS_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_LEVELS']." ".$_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_DESC' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_DESC'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_IMG' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_IMG'],
-            'TXT_MEDIADIR_SETTINGS_LEVEL_ORDER' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LEVEL_ORDER'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_LEVELS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVELS_INFO'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_IMG_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_IMG_INFO'],
-            'TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_DESC_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_DESC_INFO'],
-            'TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP'],
-            'TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP_INFO'],
-            'TXT_MEDIADIR_SETTINGS_NUM_LEVELS_PER_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_LEVELS_PER_GROUP'],
-            'TXT_MEDIADIR_SETTINGS_NUM_LEVELS_PER_GROUP_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_LEVELS_PER_GROUP_INFO'],
-            'TXT_MEDIADIR_SETTINGS_NUM' => $_ARRAYLANG['TXT_MEDIADIR_NUM'],
-            'TXT_MEDIADIR_SETTINGS_COMMUNITY_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_COMMUNITY_GROUP'],
-            'TXT_MEDIADIR_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_CATEGORY_DESC' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_CATEGORY_IMG' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_IMG'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CATEGORIES' => $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_CATEGORY_DESC_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_DESC_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_CATEGORY_IMG_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_CATEGORY_IMG_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_CATEGORY_ORDER' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_CATEGORY_ORDER'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_LEVELS' => $_ARRAYLANG['TXT_MEDIADIR_LEVELS']." ".$_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_LEVEL_DESC' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_DESC'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_LEVEL_IMG' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_IMG'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_LEVEL_ORDER' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_LEVEL_ORDER'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_LEVELS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVELS_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_LEVEL_IMG_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_IMG_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_SHOW_LEVEL_DESC_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_SHOW_LEVEL_DESC_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_CATEGORIES_PER_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_CATEGORIES_PER_GROUP_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_LEVELS_PER_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_LEVELS_PER_GROUP'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM_LEVELS_PER_GROUP_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_LEVELS_PER_GROUP_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NUM' => $_ARRAYLANG['TXT_MEDIADIR_NUM'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP' => $_ARRAYLANG['TXT_MEDIADIR_COMMUNITY_GROUP'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
         ));
 
         $arrOrder = array(
@@ -730,40 +730,40 @@ EOF;
         }
 
         $objTpl->setVariable(array(
-            'MEDIADIR_SETTINGS_CATEGORY_IMG_ON' => $strCategoryImgOn,
-            'MEDIADIR_SETTINGS_CATEGORY_IMG_OFF' => $strCategoryImgOff,
-            'MEDIADIR_SETTINGS_CATEGORY_DESC_ON' => $strCategoryDescOn,
-            'MEDIADIR_SETTINGS_CATEGORY_DESC_OFF' => $strCategoryDescOff,
-            'MEDIADIR_SETTINGS_CATEGORY_ORDER' => $this->buildDropdownmenu($arrOrder, $this->arrSettings['settingsCategoryOrder']),
-            'MEDIADIR_SETTINGS_LEVEL_IMG_ON' => $strLevelImgOn,
-            'MEDIADIR_SETTINGS_LEVEL_IMG_OFF' => $strLevelImgOff,
-            'MEDIADIR_SETTINGS_LEVEL_DESC_ON' => $strLevelDescOn,
-            'MEDIADIR_SETTINGS_LEVEL_DESC_OFF' => $strLevelDescOff,
-            'MEDIADIR_SETTINGS_LEVELS_ON' => $strLevelsOn,
-            'MEDIADIR_SETTINGS_LEVELS_OFF' => $strLevelsOff,
-            'MEDIADIR_SETTINGS_LEVEL_ORDER' => $this->buildDropdownmenu($arrOrder, $this->arrSettings['settingsLevelOrder']),
+            $this->moduleLangVar.'_SETTINGS_CATEGORY_IMG_ON' => $strCategoryImgOn,
+            $this->moduleLangVar.'_SETTINGS_CATEGORY_IMG_OFF' => $strCategoryImgOff,
+            $this->moduleLangVar.'_SETTINGS_CATEGORY_DESC_ON' => $strCategoryDescOn,
+            $this->moduleLangVar.'_SETTINGS_CATEGORY_DESC_OFF' => $strCategoryDescOff,
+            $this->moduleLangVar.'_SETTINGS_CATEGORY_ORDER' => $this->buildDropdownmenu($arrOrder, $this->arrSettings['settingsCategoryOrder']),
+            $this->moduleLangVar.'_SETTINGS_LEVEL_IMG_ON' => $strLevelImgOn,
+            $this->moduleLangVar.'_SETTINGS_LEVEL_IMG_OFF' => $strLevelImgOff,
+            $this->moduleLangVar.'_SETTINGS_LEVEL_DESC_ON' => $strLevelDescOn,
+            $this->moduleLangVar.'_SETTINGS_LEVEL_DESC_OFF' => $strLevelDescOff,
+            $this->moduleLangVar.'_SETTINGS_LEVELS_ON' => $strLevelsOn,
+            $this->moduleLangVar.'_SETTINGS_LEVELS_OFF' => $strLevelsOff,
+            $this->moduleLangVar.'_SETTINGS_LEVEL_ORDER' => $this->buildDropdownmenu($arrOrder, $this->arrSettings['settingsLevelOrder']),
         ));
 
         if(empty($this->arrCommunityGroups)) {
             $objTpl->setVariable(array(
-                'TXT_MEDIADIR_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
+                'TXT_'.$this->moduleLangVar.'_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
             ));
             $objTpl->parse('noCommunityGroupCategoryList');
         } else {
             foreach ($this->arrCommunityGroups as $intGroupId => $arrGroup) {
                 if($arrGroup['type'] == 'frontend' && $arrGroup['active'] == 1) {
                     $objTpl->setVariable(array(
-                        'MEDIADIR_SETTINGS_NUM_CATEGORIES_GROUP_NAME' =>$arrGroup['name'],
-                        'MEDIADIR_SETTINGS_NUM_CATEGORIES' => $arrGroup['num_categories'],
-                        'MEDIADIR_SETTINGS_NUM_CATEGORIES_GROUP_ID' => $intGroupId,
+                        $this->moduleLangVar.'_SETTINGS_NUM_CATEGORIES_GROUP_NAME' =>$arrGroup['name'],
+                        $this->moduleLangVar.'_SETTINGS_NUM_CATEGORIES' => $arrGroup['num_categories'],
+                        $this->moduleLangVar.'_SETTINGS_NUM_CATEGORIES_GROUP_ID' => $intGroupId,
                     ));
                     $objTpl->parse('communityGroupCategoryList');
 
 
                     $objTpl->setVariable(array(
-                        'MEDIADIR_SETTINGS_NUM_LEVELS_GROUP_NAME' =>$arrGroup['name'],
-                        'MEDIADIR_SETTINGS_NUM_LEVELS' => $arrGroup['num_levels'],
-                        'MEDIADIR_SETTINGS_NUM_LEVELS_GROUP_ID' => $intGroupId,
+                        $this->moduleLangVar.'_SETTINGS_NUM_LEVELS_GROUP_NAME' =>$arrGroup['name'],
+                        $this->moduleLangVar.'_SETTINGS_NUM_LEVELS' => $arrGroup['num_levels'],
+                        $this->moduleLangVar.'_SETTINGS_NUM_LEVELS_GROUP_ID' => $intGroupId,
                     ));
                     $objTpl->parse('communityGroupLevelList');
                 }
@@ -779,12 +779,12 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_mails.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_mails.html');
 
         switch ($_GET['tpl']) {
             case 'delete_template':
                 if(!empty($_GET['id'])) {
-                    $objDelete = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_mails WHERE `id`='".intval($_GET['id'])."'");
+                    $objDelete = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mails WHERE `id`='".intval($_GET['id'])."'");
                     if($objDelete !== false){
                         $this->strOkMessage = $_ARRAYLANG['TXT_MEDIADIR_MAIL_TEMPLATE']." ".$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'];
                     } else {
@@ -795,21 +795,21 @@ EOF;
         }
 
         if(!empty($_POST) && !isset($_POST['submitSettingsForm'])) {
-            $objSetAsDefault = $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_mails SET `is_default`='0'");
+            $objSetAsDefault = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mails SET `is_default`='0'");
             foreach ($_POST as $key => $intTemplateDefaultId) {
-                $objSetAsDefault = $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_mails SET `is_default`='1', `active`='1' WHERE `id`='".intval($intTemplateDefaultId)."'");
+                $objSetAsDefault = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_mails SET `is_default`='1', `active`='1' WHERE `id`='".intval($intTemplateDefaultId)."'");
             }
         }
 
         $objTpl->setGlobalVariable(array(
-            'TXT_MEDIADIR_NEW_MAIL_TEMPLATE' => $_ARRAYLANG['TXT_MEDIADIR_NEW_MAIL_TEMPLATE'],
-            'TXT_MEDIADIR_STATUS' => $_CORELANG['TXT_STATUS'],
-            'TXT_MEDIADIR_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
-            'TXT_MEDIADIR_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
-            'TXT_MEDIADIR_LANG' => $_CORELANG['TXT_ACCESS_LANGUAGE'],
-            'TXT_MEDIADIR_DEFAULT' => $_CORELANG['TXT_STANDARD'],
-            'TXT_MEDIADIR_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
-            'TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
+            'TXT_'.$this->moduleLangVar.'_NEW_MAIL_TEMPLATE' => $_ARRAYLANG['TXT_MEDIADIR_NEW_MAIL_TEMPLATE'],
+            'TXT_'.$this->moduleLangVar.'_STATUS' => $_CORELANG['TXT_STATUS'],
+            'TXT_'.$this->moduleLangVar.'_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
+            'TXT_'.$this->moduleLangVar.'_LANG' => $_CORELANG['TXT_ACCESS_LANGUAGE'],
+            'TXT_'.$this->moduleLangVar.'_DEFAULT' => $_CORELANG['TXT_STANDARD'],
+            'TXT_'.$this->moduleLangVar.'_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
+            'TXT_'.$this->moduleLangVar.'_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
             'TXT_EDIT' => $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
         ));
@@ -818,7 +818,7 @@ EOF;
             SELECT
                 id,title,lang_id,action_id,is_default,active
             FROM
-                ".DBPREFIX."module_mediadir_mails
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_mails
             ORDER BY
                 action_id ASC, title ASC
             ");
@@ -840,7 +840,7 @@ EOF;
         		}
 
         		//get action
-        		$objAction = $objDatabase->Execute("SELECT name FROM ".DBPREFIX."module_mediadir_mail_actions WHERE id='".$intTemplateActionId."' LIMIT 1 ");
+        		$objAction = $objDatabase->Execute("SELECT name FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail_actions WHERE id='".$intTemplateActionId."' LIMIT 1 ");
         		if ($objAction !== false) {
         			$strTemplateAction = $_ARRAYLANG['TXT_MEDIADIR_MAIL_ACTION_'.strtoupper($objAction->fields['name'])];
         		}
@@ -861,30 +861,30 @@ EOF;
 
 				//parse data variables
                 $objTpl->setVariable(array(
-                    'MEDIADIR_TEMPLATE_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
-                    'MEDIADIR_TEMPLATE_ID' => $intTemplateId,
-                    'MEDIADIR_TEMPLATE_STATUS' => $strStatus,
-                    'MEDIADIR_TEMPLATE_SWITCH_STATUS' => $intStatus,
-                    'MEDIADIR_TEMPLATE_LANG' => $strTemplateLang,
-                    'MEDIADIR_TEMPLATE_TITLE' => $strTemplateTitle,
-                    'MEDIADIR_TEMPLATE_ACTION' => $strTemplateAction,
-                    'MEDIADIR_TEMPLATE_DEFAULT' => $strIsDefault,
-                    'MEDIADIR_TEMPLATE_DEFAULT_NAME' => "templateDefault_".$intTemplateActionId,
+                    $this->moduleLangVar.'_TEMPLATE_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
+                    $this->moduleLangVar.'_TEMPLATE_ID' => $intTemplateId,
+                    $this->moduleLangVar.'_TEMPLATE_STATUS' => $strStatus,
+                    $this->moduleLangVar.'_TEMPLATE_SWITCH_STATUS' => $intStatus,
+                    $this->moduleLangVar.'_TEMPLATE_LANG' => $strTemplateLang,
+                    $this->moduleLangVar.'_TEMPLATE_TITLE' => $strTemplateTitle,
+                    $this->moduleLangVar.'_TEMPLATE_ACTION' => $strTemplateAction,
+                    $this->moduleLangVar.'_TEMPLATE_DEFAULT' => $strIsDefault,
+                    $this->moduleLangVar.'_TEMPLATE_DEFAULT_NAME' => "templateDefault_".$intTemplateActionId,
                 ));
 
                 $i++;
 
-                $objTpl->parse('mediadirMailTemplateList');
+                $objTpl->parse($this->moduleName.'MailTemplateList');
                 $objTemplates->MoveNext();
 			}
 		}
 
 		if($objTemplates->RecordCount() == 0) {
     		 $objTpl->setVariable(array(
-                'TXT_MEDIADIR_NO_ENTRIES_FOUND' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND']
+                'TXT_'.$this->moduleLangVar.'_NO_ENTRIES_FOUND' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND']
             ));
 
-            $objTpl->parse('mediadirMailTemplateNoEntries');
+            $objTpl->parse($this->moduleName.'MailTemplateNoEntries');
 		}
 
         $objTpl->parse('settings_content');
@@ -896,7 +896,7 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_modify_mail.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_modify_mail.html');
 
         //load teplate data
         if(isset($_GET['id']) && $_GET['id'] != 0) {
@@ -907,7 +907,7 @@ EOF;
                 SELECT
                     title,content,recipients,lang_id,action_id
                 FROM
-                    ".DBPREFIX."module_mediadir_mails
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_mails
                 WHERE
                     id='".$intTemplateId."'
                 LIMIT 1
@@ -926,11 +926,11 @@ EOF;
 
             //parse data variables
             $objTpl->setGlobalVariable(array(
-                'MEDIADIR_TEMPLATE_ID' => $intTemplateId,
-                'MEDIADIR_TEMPLATE_STATUS' => $intStatus,
-                'MEDIADIR_TEMPLATE_TITLE' => $strTemplateTitle,
-                'MEDIADIR_TEMPLATE_CONTENT' => $strTemplateContent,
-                'MEDIADIR_TEMPLATE_RECIPIENTS' => $strTemplateRecipients,
+                $this->moduleLangVar.'_TEMPLATE_ID' => $intTemplateId,
+                $this->moduleLangVar.'_TEMPLATE_STATUS' => $intStatus,
+                $this->moduleLangVar.'_TEMPLATE_TITLE' => $strTemplateTitle,
+                $this->moduleLangVar.'_TEMPLATE_CONTENT' => $strTemplateContent,
+                $this->moduleLangVar.'_TEMPLATE_RECIPIENTS' => $strTemplateRecipients,
             ));
         } else {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_NEW_MAIL_TEMPLATE'];
@@ -938,14 +938,14 @@ EOF;
 
         //get actions
         $arrActions = array();
-        $objActions = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_mediadir_mail_actions");
+        $objActions = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail_actions");
 		if ($objActions !== false) {
 			while (!$objActions->EOF) {
 				$arrActions[$objActions->fields['id']] = $_ARRAYLANG['TXT_MEDIADIR_MAIL_ACTION_'.strtoupper($objActions->fields['name'])];
 				$objActions->MoveNext();
 			}
 		}
-		
+
 		//get languages
 		$arrLanguages = array();
 		foreach ($this->arrFrontendLanguages as $key => $arrLang) {
@@ -953,22 +953,22 @@ EOF;
 		}
 
         $objTpl->setVariable(array(
-            'TXT_MEDIADIR_PAGE_TITLE' => $pageTitle,
-            'TXT_MEDIADIR_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
-            'TXT_MEDIADIR_LANG' => $_CORELANG['TXT_BROWSERLANGUAGE'],
-            'TXT_MEDIADIR_RECIPIENTS' => $_ARRAYLANG['TXT_MEDIADIR_RECIPIENTS'],
-            'TXT_MEDIADIR_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
-            'TXT_MEDIADIR_CONTENT' => $_CORELANG['TXT_CONTENT'],
-            'TXT_MEDIADIR_PLACEHOLDER' => $_ARRAYLANG['TXT_MEDIADIR_PLACEHOLDER'],
-            'TXT_MEDIADIR_USERNAME' => $_CORELANG['TXT_USER_NAME'],
-            'TXT_MEDIADIR_FIRSTNAME' => $_CORELANG['TXT_USER_FIRSTNAME'],
-            'TXT_MEDIADIR_LASTNAME' => $_CORELANG['TXT_USER_LASTNAME'],
-            'TXT_MEDIADIR_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
-            'TXT_MEDIADIR_LINK' => $_ARRAYLANG['TXT_MEDIADIR_LINK'],
-            'TXT_MEDIADIR_URL' => $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
-            'TXT_MEDIADIR_DATE' => $_CORELANG['TXT_DATE'],
-            'MEDIADIR_TEMPLATE_ACTION' => $this->buildDropdownmenu($arrActions, $intTemplateActionId),
-            'MEDIADIR_TEMPLATE_LANG' => $this->buildDropdownmenu($arrLanguages, $intTemplateLangId),
+            'TXT_'.$this->moduleLangVar.'_PAGE_TITLE' => $pageTitle,
+            'TXT_'.$this->moduleLangVar.'_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
+            'TXT_'.$this->moduleLangVar.'_LANG' => $_CORELANG['TXT_BROWSERLANGUAGE'],
+            'TXT_'.$this->moduleLangVar.'_RECIPIENTS' => $_ARRAYLANG['TXT_MEDIADIR_RECIPIENTS'],
+            'TXT_'.$this->moduleLangVar.'_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_CONTENT' => $_CORELANG['TXT_CONTENT'],
+            'TXT_'.$this->moduleLangVar.'_PLACEHOLDER' => $_ARRAYLANG['TXT_MEDIADIR_PLACEHOLDER'],
+            'TXT_'.$this->moduleLangVar.'_USERNAME' => $_CORELANG['TXT_USER_NAME'],
+            'TXT_'.$this->moduleLangVar.'_FIRSTNAME' => $_CORELANG['TXT_USER_FIRSTNAME'],
+            'TXT_'.$this->moduleLangVar.'_LASTNAME' => $_CORELANG['TXT_USER_LASTNAME'],
+            'TXT_'.$this->moduleLangVar.'_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_LINK' => $_ARRAYLANG['TXT_MEDIADIR_LINK'],
+            'TXT_'.$this->moduleLangVar.'_URL' => $_CORELANG['TXT_SETTINGS_DOMAIN_URL'],
+            'TXT_'.$this->moduleLangVar.'_DATE' => $_CORELANG['TXT_DATE'],
+            $this->moduleLangVar.'_TEMPLATE_ACTION' => $this->buildDropdownmenu($arrActions, $intTemplateActionId),
+            $this->moduleLangVar.'_TEMPLATE_LANG' => $this->buildDropdownmenu($arrLanguages, $intTemplateLangId),
         ));
 
         $objTpl->parse('settings_content');
@@ -990,7 +990,7 @@ EOF;
         if(!empty($intTemplateId) && $intTemplateId != 0) {
             $objEditTemplate = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_mails
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_mails
                 SET
                     title='".$intTemplateTitle."',
                     content='".$intTemplateContent."',
@@ -1006,7 +1006,7 @@ EOF;
         } else {
             $objAddTemplate = $objDatabase->Execute("
                 INSERT INTO
-                    ".DBPREFIX."module_mediadir_mails
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_mails
                 SET
                     title='".$intTemplateTitle."',
                     content='".$intTemplateContent."',
@@ -1046,21 +1046,21 @@ EOF;
                 break;
         }
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_forms.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_forms.html');
 
         $objTpl->setGlobalVariable(array(
-            'TXT_MEDIADIR_NEW_FORM_TEMPLATE' => $_ARRAYLANG['TXT_MEDIADIR_NEW_FORM_TEMPLATE'],
-            'TXT_MEDIADIR_STATUS' => $_CORELANG['TXT_STATUS'],
-            'TXT_MEDIADIR_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
-            'TXT_MEDIADIR_DESCRIPTION' => $_CORELANG['TXT_DESCRIPTION'],
-            'TXT_MEDIADIR_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
-            'TXT_MEDIADIR_ORDER' => $_CORELANG['TXT_CORE_SORTING_ORDER'],
-            'TXT_MEDIADIR_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
-            'TXT_MEDIADIR_FORM_DEL_INFO' => $_ARRAYLANG['TXT_MEDIADIR_FORM_DEL_INFO'],
-            'TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
+            'TXT_'.$this->moduleLangVar.'_NEW_FORM_TEMPLATE' => $_ARRAYLANG['TXT_MEDIADIR_NEW_FORM_TEMPLATE'],
+            'TXT_'.$this->moduleLangVar.'_STATUS' => $_CORELANG['TXT_STATUS'],
+            'TXT_'.$this->moduleLangVar.'_TITLE' => $_ARRAYLANG['TXT_MEDIADIR_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_DESCRIPTION' => $_CORELANG['TXT_DESCRIPTION'],
+            'TXT_'.$this->moduleLangVar.'_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
+            'TXT_'.$this->moduleLangVar.'_ORDER' => $_CORELANG['TXT_CORE_SORTING_ORDER'],
+            'TXT_'.$this->moduleLangVar.'_CONFIRM_DELETE_DATA' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_DELETE_DATA'],
+            'TXT_'.$this->moduleLangVar.'_FORM_DEL_INFO' => $_ARRAYLANG['TXT_MEDIADIR_FORM_DEL_INFO'],
+            'TXT_'.$this->moduleLangVar.'_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_MEDIADIR_ACTION_IS_IRREVERSIBLE'],
             'TXT_EDIT' => $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
             'TXT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
-            'TXT_MEDIADIR_SUBMIT' => $_CORELANG['TXT_SAVE'],
+            'TXT_'.$this->moduleLangVar.'_SUBMIT' => $_CORELANG['TXT_SAVE'],
         ));
 
         $objForms = new mediaDirectoryForm();
@@ -1076,38 +1076,38 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID, $objDatabase;
 
-        $objTpl->addBlockfile('MEDIADIR_SETTINGS_CONTENT', 'settings_content', 'module_mediadir_settings_modify_form.html');
+        $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_'.$this->moduleName.'_settings_modify_form.html');
 
         $objTpl->setGlobalVariable(array(
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS' => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELDS'],
-            'TXT_MEDIADIR_SETTINGS_FORM' => $_ARRAYLANG['TXT_MEDIADIR_FORM'],
-            'TXT_MEDIADIR_SETTINGS_PLACEHOLDER' => $_ARRAYLANG['TXT_MEDIADIR_PLACEHOLDER'],
-            'TXT_MEDIADIR_SETTINGS_GLOBAL_PLACEHOLDER_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GLOBAL_PLACEHOLDER_INFO'],
-            'TXT_MEDIADIR_SETTINGS_PLACEHOLDER_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PLACEHOLDER_INFO'],
-            'TXT_MEDIADIR_SETTINGS_FIELD_SHOW_IN' => $_ARRAYLANG['TXT_MEDIADIR_FIELD_SHOW_IN'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_ADD_NEW' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_INPUTFIELDS_ADD_NEW'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_ID' => $_CORELANG['TXT_GROUP_ID'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_SORT' => $_CORELANG['TXT_CORE_SORTING_ORDER'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_NAME' => $_ARRAYLANG['TXT_MEDIADIR_FIELD_NAME'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_TYPE' => $_ARRAYLANG['TXT_MEDIADIR_FIELD_TYPE'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_DEFAULTVALUE' => $_ARRAYLANG['TXT_MEDIADIR_DEFAULTVALUE'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_CHECK' => $_ARRAYLANG['TXT_MEDIADIR_VALUE_CHECK'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_MUSTFIELD' => $_ARRAYLANG['TXT_MEDIADIR_MUSTFIELD'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE'],
-            'TXT_MEDIADIR_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
-            'TXT_MEDIADIR_SETTINGS_INPUTFIELDS_EXP_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_EXP_SEARCH'],
-            'MEDIADIR_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => $_LANGID,
-            'MEDIADIR_SETTINGS_FORM_DEFAULT_LANG_ID' => $_LANGID,
-            'TXT_MEDIADIR_NAME' =>  $_CORELANG['TXT_NAME'],
-            'TXT_MEDIADIR_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
-            'TXT_MEDIADIR_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
-            'TXT_MEDIADIR_BROWSE' =>  $_CORELANG['TXT_BROWSE'],
-            'TXT_MEDIADIR_MORE' =>  $_ARRAYLANG['TXT_MEDIADIR_MORE'],
-            'TXT_MEDIADIR_SETTINGS_PERMISSIONS' =>  $_CORELANG['TXT_PERMISSIONS'],
-            'TXT_MEDIADIR_SETTINGS_PERMISSIONS_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PERMISSIONS_INFO'],
-            'TXT_MEDIADIR_SETTINGS_COMMUNITY_GROUP' =>  $_ARRAYLANG['TXT_MEDIADIR_COMMUNITY_GROUP'],
-            'TXT_MEDIADIR_SETTINGS_ALLOW_GHROUP_ADD_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_GHROUP_ADD_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS' => $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELDS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_FORM' => $_ARRAYLANG['TXT_MEDIADIR_FORM'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_PLACEHOLDER' => $_ARRAYLANG['TXT_MEDIADIR_PLACEHOLDER'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_GLOBAL_PLACEHOLDER_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GLOBAL_PLACEHOLDER_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_PLACEHOLDER_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PLACEHOLDER_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_FIELD_SHOW_IN' => $_ARRAYLANG['TXT_MEDIADIR_FIELD_SHOW_IN'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_ADD_NEW' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_INPUTFIELDS_ADD_NEW'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_ID' => $_CORELANG['TXT_GROUP_ID'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_SORT' => $_CORELANG['TXT_CORE_SORTING_ORDER'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_NAME' => $_ARRAYLANG['TXT_MEDIADIR_FIELD_NAME'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_TYPE' => $_ARRAYLANG['TXT_MEDIADIR_FIELD_TYPE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULTVALUE' => $_ARRAYLANG['TXT_MEDIADIR_DEFAULTVALUE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_CHECK' => $_ARRAYLANG['TXT_MEDIADIR_VALUE_CHECK'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_MUSTFIELD' => $_ARRAYLANG['TXT_MEDIADIR_MUSTFIELD'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_ACTION' => $_CORELANG['TXT_HISTORY_ACTION'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_INPUTFIELD_SYSTEM_FIELD_CANT_DELETE'],
+            'TXT_'.$this->moduleLangVar.'_DELETE' => $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_INPUTFIELDS_EXP_SEARCH' => $_ARRAYLANG['TXT_MEDIADIR_EXP_SEARCH'],
+            $this->moduleLangVar.'_SETTINGS_INPUTFIELDS_DEFAULT_LANG_ID' => $_LANGID,
+            $this->moduleLangVar.'_SETTINGS_FORM_DEFAULT_LANG_ID' => $_LANGID,
+            'TXT_'.$this->moduleLangVar.'_NAME' =>  $_CORELANG['TXT_NAME'],
+            'TXT_'.$this->moduleLangVar.'_DESCRIPTION' =>  $_CORELANG['TXT_DESCRIPTION'],
+            'TXT_'.$this->moduleLangVar.'_PICTURE' =>  $_CORELANG['TXT_IMAGE'],
+            'TXT_'.$this->moduleLangVar.'_BROWSE' =>  $_CORELANG['TXT_BROWSE'],
+            'TXT_'.$this->moduleLangVar.'_MORE' =>  $_ARRAYLANG['TXT_MEDIADIR_MORE'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_PERMISSIONS' =>  $_CORELANG['TXT_PERMISSIONS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_PERMISSIONS_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PERMISSIONS_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP' =>  $_ARRAYLANG['TXT_MEDIADIR_COMMUNITY_GROUP'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_GHROUP_ADD_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_GHROUP_ADD_ENTRIES'],
         ));
 
         if(isset($_GET['ajax'])) {
@@ -1168,10 +1168,10 @@ EOF;
 
             //parse data variables
             $objTpl->setGlobalVariable(array(
-                'MEDIADIR_FORM_ID' => $intFormId,
-                'MEDIADIR_FORM_NAME_MASTER' => $objForm->arrForms[$intFormId]['formName'][0],
-                'MEDIADIR_FORM_DESCRIPTION_MASTER' => $objForm->arrForms[$intFormId]['formDescription'][0],
-                'MEDIADIR_FORM_PICTURE' => $objForm->arrForms[$intFormId]['formPicture'],
+                $this->moduleLangVar.'_FORM_ID' => $intFormId,
+                $this->moduleLangVar.'_FORM_NAME_MASTER' => $objForm->arrForms[$intFormId]['formName'][0],
+                $this->moduleLangVar.'_FORM_DESCRIPTION_MASTER' => $objForm->arrForms[$intFormId]['formDescription'][0],
+                $this->moduleLangVar.'_FORM_PICTURE' => $objForm->arrForms[$intFormId]['formPicture'],
             ));
 
             parent::getCommunityGroups();
@@ -1179,7 +1179,7 @@ EOF;
             //permissions community groups
             if(empty($this->arrCommunityGroups)) {
                 $objTpl->setVariable(array(
-                    'TXT_MEDIADIR_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
+                    'TXT_'.$this->moduleLangVar.'_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
                 ));
                 $objTpl->parse('mediadirFormNoCommunityGroup');
             } else {
@@ -1193,13 +1193,13 @@ EOF;
                         }
 
                         $objTpl->setVariable(array(
-                            'MEDIADIR_SETTINGS_COMMUNITY_GROUP_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
-                            'TXT_MEDIADIR_SETTINGS_COMMUNITY_GROUP_NAME' => $arrGroup['name'],
-                            'MEDIADIR_SETTINGS_COMMUNITY_GROUP_ACTIVE' => $strGroupStatus,
-                            'MEDIADIR_SETTINGS_COMMUNITY_GROUP_ID' => $intGroupId,
+                            $this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
+                            'TXT_'.$this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP_NAME' => $arrGroup['name'],
+                            $this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP_ACTIVE' => $strGroupStatus,
+                            $this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP_ID' => $intGroupId,
                         ));
                         $i++;
-                        $objTpl->parse('mediadirFormCommunityGroupList');
+                        $objTpl->parse($this->moduleName.'FormCommunityGroupList');
                     }
                 }
             }
@@ -1211,7 +1211,7 @@ EOF;
         } else {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_NEW_FORM_TEMPLATE'];
 
-            $objTpl->hideBlock('mediadirInputfieldsForm');
+            $objTpl->hideBlock($this->moduleName.'InputfieldsForm');
         }
 
         //form name language block
@@ -1223,19 +1223,19 @@ EOF;
             }
 
             $objTpl->setVariable(array(
-                'MEDIADIR_FORM_NAME_LANG_ID' => $arrLang['id'],
-                'TXT_MEDIADIR_FORM_NAME_LANG_NAME' => $arrLang['name'],
-                'TXT_MEDIADIR_FORM_NAME_LANG_SHORTCUT' => $arrLang['lang'],
-                'MEDIADIR_FORM_NAME' => $strFormName,
+                $this->moduleLangVar.'_FORM_NAME_LANG_ID' => $arrLang['id'],
+                'TXT_'.$this->moduleLangVar.'_FORM_NAME_LANG_NAME' => $arrLang['name'],
+                'TXT_'.$this->moduleLangVar.'_FORM_NAME_LANG_SHORTCUT' => $arrLang['lang'],
+                $this->moduleLangVar.'_FORM_NAME' => $strFormName,
             ));
 
             if(($key+1) == count($this->arrFrontendLanguages)) {
                 $objTpl->setVariable(array(
-                    'MEDIADIR_MINIMIZE' =>  '<a href="javascript:ExpandMinimizeForm(\'formName\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
+                    $this->moduleLangVar.'_MINIMIZE' =>  '<a href="javascript:ExpandMinimizeForm(\'formName\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
                 ));
             }
 
-            $objTpl->parse('mediadirFormNameList');
+            $objTpl->parse($this->moduleName.'FormNameList');
         }
 
         //form decription language block
@@ -1247,23 +1247,23 @@ EOF;
             }
 
             $objTpl->setVariable(array(
-                'MEDIADIR_FORM_DESCRIPTION_LANG_ID' => $arrLang['id'],
-                'TXT_MEDIADIR_FORM_DESCRIPTION_LANG_NAME' => $arrLang['name'],
-                'TXT_MEDIADIR_FORM_DESCRIPTION_LANG_SHORTCUT' => $arrLang['lang'],
-                'MEDIADIR_FORM_DESCRIPTION' => $strFormDescription,
+                $this->moduleLangVar.'_FORM_DESCRIPTION_LANG_ID' => $arrLang['id'],
+                'TXT_'.$this->moduleLangVar.'_FORM_DESCRIPTION_LANG_NAME' => $arrLang['name'],
+                'TXT_'.$this->moduleLangVar.'_FORM_DESCRIPTION_LANG_SHORTCUT' => $arrLang['lang'],
+                $this->moduleLangVar.'_FORM_DESCRIPTION' => $strFormDescription,
             ));
 
             if(($key+1) == count($this->arrFrontendLanguages)) {
                 $objTpl->setVariable(array(
-                    'MEDIADIR_MINIMIZE' =>  '<a href="javascript:ExpandMinimizeForm(\'formDescription\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
+                    $this->moduleLangVar.'_MINIMIZE' =>  '<a href="javascript:ExpandMinimizeForm(\'formDescription\');">&laquo;&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_MINIMIZE'].'</a>',
                 ));
             }
 
-            $objTpl->parse('mediadirFormDescriptionList');
+            $objTpl->parse($this->moduleName.'FormDescriptionList');
         }
 
         $objTpl->setVariable(array(
-            'TXT_MEDIADIR_PAGE_TITLE' => $pageTitle,
+            'TXT_'.$this->moduleLangVar.'_PAGE_TITLE' => $pageTitle,
         ));
 
         $objTpl->parse('settings_content');
@@ -1278,12 +1278,12 @@ EOF;
         foreach ($arrSettings as $strName => $varValue) {
             switch ($strName) {
                 case 'settingsNumEntries':
-                    $objSaveSettings = $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_mediadir_settings_num_entries");
+                    $objSaveSettings = $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_num_entries");
 
                     foreach ($varValue as $intGroupId => $strNum) {
                         $objSaveSettings = $objDatabase->Execute("
                             INSERT INTO
-                                ".DBPREFIX."module_mediadir_settings_num_entries
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_num_entries
                             SET
                                 `group_id` = '".intval($intGroupId)."',
                                 `num_entries` = '".contrexx_addslashes($strNum)."'
@@ -1295,12 +1295,12 @@ EOF;
                     }
                     break;
                 case 'settingsNumCategories':
-                    $objSaveSettings = $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_mediadir_settings_num_categories");
+                    $objSaveSettings = $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_num_categories");
 
                     foreach ($varValue as $intGroupId => $strNum) {
                         $objSaveSettings = $objDatabase->Execute("
                             INSERT INTO
-                                ".DBPREFIX."module_mediadir_settings_num_categories
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_num_categories
                             SET
                                 `group_id` = '".intval($intGroupId)."',
                                 `num_categories` = '".contrexx_addslashes($strNum)."'
@@ -1312,12 +1312,12 @@ EOF;
                     }
                     break;
                 case 'settingsNumLevels':
-                    $objSaveSettings = $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_mediadir_settings_num_levels");
+                    $objSaveSettings = $objDatabase->Execute("TRUNCATE TABLE ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_num_levels");
 
                     foreach ($varValue as $intGroupId => $strNum) {
                         $objSaveSettings = $objDatabase->Execute("
                             INSERT INTO
-                                ".DBPREFIX."module_mediadir_settings_num_levels
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_settings_num_levels
                             SET
                                 `group_id` = '".intval($intGroupId)."',
                                 `num_levels` = '".contrexx_addslashes($strNum)."'
@@ -1331,7 +1331,7 @@ EOF;
                 default:
                     $objSaveSettings = $objDatabase->Execute("
                         UPDATE
-                            ".DBPREFIX."module_mediadir_settings
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
                         SET
                             `value`='".contrexx_addslashes($varValue)."'
                         WHERE
