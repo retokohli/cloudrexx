@@ -82,17 +82,17 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         if(!empty($this->intLevelId)) {
             $strWhereLevel = "AND ((level.`level_id` = ".$this->intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
-            $strFromLevel = " ,".DBPREFIX."module_mediadir_rel_entry_levels AS level";
+            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
         }
 
         if(!empty($this->intCatId)) {
             $strWhereCategory = "AND ((category.`category_id` = ".$this->intCatId.") AND (category.`entry_id` = entry.`id`)) ";
-            $strFromCategory = " ,".DBPREFIX."module_mediadir_rel_entry_categories AS category";
+            $strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
         }
 
         if(!empty($this->bolLatest)) {
             $strOrderLatest = "entry.`validate_date` DESC,";
-            $this->strBlockName = "mediadirLatestList";
+            $this->strBlockName = $this->moduleName."LatestList";
         }
 
         if(!empty($this->bolPopular)) {
@@ -101,7 +101,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         if(!empty($this->bolUnconfirmed)) {
             $strWhereUnconfirmed = "AND (entry.`confirmed` = 0) ";
-            $this->strBlockName = "mediadirConfirmList";
+            $this->strBlockName = $this->moduleName."ConfirmList";
         } else {
             $strWhereUnconfirmed = "AND (entry.`confirmed` = 1) ";
         }
@@ -127,7 +127,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 SELECT
                     inputfield.`id` AS `id`
                 FROM
-                    ".DBPREFIX."module_mediadir_inputfields AS inputfield
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield
                 WHERE
                     (inputfield.`type` != 16 AND inputfield.`type` != 17)
                 AND
@@ -145,9 +145,9 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         }
 
         if(empty($this->strBlockName)) {
-            $this->strBlockName = "mediadirEntryList";
+            $this->strBlockName = $this->moduleName."EntryList";
         }
-        
+
         if($objInit->mode == 'frontend') {
 	        if(intval($this->arrSettings['settingsShowEntriesInAllLang']) == 0) {
 	        	$strWhereLangId = "AND (entry.`lang_id` = ".$_LANGID.") ";
@@ -179,8 +179,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 entry.`translation_status` AS `translation_status`,
                 rel_inputfield.`value` AS `value`
             FROM
-                ".DBPREFIX."module_mediadir_entries AS entry,
-                ".DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
                 ".$strFromCategory."
                 ".$strFromLevel."
             WHERE
@@ -203,7 +203,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         ";
 
         $objEntries = $objDatabase->Execute($query);
-        
+
         $arrEntries = array();
 
         if ($objEntries !== false) {
@@ -233,13 +233,13 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
                     $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
                     $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
-                    
+
                     $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
                 }
 
                 $objEntries->MoveNext();
             }
-            
+
             $this->recordCount = $objEntries->RecordCount();
         }
     }
@@ -271,7 +271,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                         if($arrEntry['entryActive'] == 1) {
                 		    $strStatus = 'images/icons/status_green.gif';
                 		    $intStatus = 0;
-                		    
+
                 		    if(($arrEntry['entryDurationStart'] > $intToday || $arrEntry['entryDurationEnd'] < $intToday) && $arrEntry['entryDurationType'] == 2) {
                 		    	$strStatus = 'images/icons/status_yellow.gif';
                 		    }
@@ -279,23 +279,23 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 		    $strStatus = 'images/icons/status_red.gif';
                 		    $intStatus = 1;
                 		}
-                		
+
                         $objTpl->setVariable(array(
-                            'MEDIADIR_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
-                            'MEDIADIR_ENTRY_ID' =>  $arrEntry['entryId'],
-                            'MEDIADIR_ENTRY_STATUS' => $strStatus,
-                            'MEDIADIR_ENTRY_SWITCH_STATUS' => $intStatus,
-                            'MEDIADIR_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
-                            'MEDIADIR_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
-                            'MEDIADIR_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-                            'MEDIADIR_ENTRY_HITS' =>  $arrEntry['entryHits'],
+                            $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+                            $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
+                            $this->moduleLangVar.'_ENTRY_STATUS' => $strStatus,
+                            $this->moduleLangVar.'_ENTRY_SWITCH_STATUS' => $intStatus,
+                            $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
+                            $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
+                            $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
+                            $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
                         ));
 
                         foreach ($arrEntry['entryFields'] as $key => $strFieldValue) {
                             $intPos = $key+1;
 
                             $objTpl->setVariable(array(
-                                'MEDIADIR_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
+                                $this->moduleLangVar.'_ENTRY_FIELD_'.$intPos.'_POS' => substr($strFieldValue, 0, 255),
                             ));
                         }
 
@@ -305,7 +305,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                             $objVoting->getVotes($objTpl, $arrEntry['entryId']);
                         } else {
                             $objTpl->setVariable(array(
-                                'MEDIADIR_ENTRY_VOTES' => $_CORELANG['TXT_DEACTIVATED'],
+                                $this->moduleLangVar.'_ENTRY_VOTES' => $_CORELANG['TXT_DEACTIVATED'],
                             ));
                         }
 
@@ -315,7 +315,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                             $objComment->getComments($objTpl, $arrEntry['entryId']);
                         } else {
                             $objTpl->setVariable(array(
-                                'MEDIADIR_ENTRY_COMMENTS' => $_CORELANG['TXT_DEACTIVATED'],
+                                $this->moduleLangVar.'_ENTRY_COMMENTS' => $_CORELANG['TXT_DEACTIVATED'],
                             ));
                         }
 
@@ -326,7 +326,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     }
                 } else {
                     $objTpl->setGlobalVariable(array(
-                        'TXT_MEDIADIR_NO_ENTRIES_FOUND' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
+                        'TXT_'.$this->moduleLangVar.'_NO_ENTRIES_FOUND' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
                     ));
 
                     $objTpl->touchBlock('noEntriesFound');
@@ -340,7 +340,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                    if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
 	                        $objInputfields = new mediaDirectoryInputfield(intval($arrEntry['entryFormId']),false,$arrEntry['entryTranslationStatus']);
 	                        $objInputfields->listInputfields($objTpl, 3, intval($arrEntry['entryId']));
-	
+
 	                        if(intval($arrEntry['entryAddedBy']) != 0) {
 		                        if ($objUser = $objFWUser->objUser->getUser(intval($arrEntry['entryAddedBy']))) {
 								    $strAddedBy = $objUser->getUsername();
@@ -350,86 +350,86 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                        } else {
 	                            $strAddedBy = "unknown";
 	                        }
-	
+
 	                        $strCategoryLink = $this->intCatId != 0 ? '&amp;cid='.$this->intCatId : null;
 	                        $strLevelLink = $this->intLevelId != 0 ? '&amp;lid='.$this->intLevelId : null;
-	
+
 	                        if($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
 	                            $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
 	                        } else {
 	                            $strDetailCmd = 'detail';
 	                        }
-	
+
 	                        $objTpl->setVariable(array(
-	                            'MEDIADIR_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
-	                            'MEDIADIR_ENTRY_ID' =>  $arrEntry['entryId'],
-	                            'MEDIADIR_ENTRY_STATUS' => $strStatus,
-	                            'MEDIADIR_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
-	                            'MEDIADIR_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
-	                            'MEDIADIR_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
-	                            'MEDIADIR_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId']),
-                                'MEDIADIR_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId']),
-                                'MEDIADIR_ENTRY_HITS' =>  $arrEntry['entryHits'],
-	                            'MEDIADIR_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
-	                            'MEDIADIR_ENTRY_DETAIL_URL' =>  'index.php?section=mediadir&amp;cmd='.$strDetailCmd.$strLevelLink.$strCategoryLink.'&amp;eid='.$arrEntry['entryId'],
-	                            'MEDIADIR_ENTRY_EDIT_URL' =>  'index.php?section=mediadir&amp;cmd=edit&amp;eid='.$arrEntry['entryId'],
-	                            'MEDIADIR_ENTRY_DELETE_URL' =>  'index.php?section=mediadir&amp;cmd=delete&amp;eid='.$arrEntry['entryId'],
-	                            'TXT_MEDIADIR_ENTRY_DELETE' =>  $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
-	                            'TXT_MEDIADIR_ENTRY_EDIT' =>  $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
-	                            'TXT_MEDIADIR_ENTRY_DETAIL' =>  $_ARRAYLANG['TXT_MEDIADIR_DETAIL'],
-	                            'TXT_MEDIADIR_ENTRY_CATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
-	                            'TXT_MEDIADIR_ENTRY_LEVELS' =>  $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
+	                            $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
+	                            $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
+	                            $this->moduleLangVar.'_ENTRY_STATUS' => $strStatus,
+	                            $this->moduleLangVar.'_ENTRY_VALIDATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryValdateDate']),
+	                            $this->moduleLangVar.'_ENTRY_CREATE_DATE' =>  date("H:i:s - d.m.Y",$arrEntry['entryCreateDate']),
+	                            $this->moduleLangVar.'_ENTRY_AUTHOR' =>  htmlspecialchars($strAddedBy, ENT_QUOTES, CONTREXX_CHARSET),
+	                            $this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $this->getCategoriesLevels(1, $arrEntry['entryId']),
+                                $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId']),
+                                $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
+	                            $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
+	                            $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.$strLevelLink.$strCategoryLink.'&amp;eid='.$arrEntry['entryId'],
+	                            $this->moduleLangVar.'_ENTRY_EDIT_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=edit&amp;eid='.$arrEntry['entryId'],
+	                            $this->moduleLangVar.'_ENTRY_DELETE_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=delete&amp;eid='.$arrEntry['entryId'],
+	                            'TXT_'.$this->moduleLangVar.'_ENTRY_DELETE' =>  $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
+	                            'TXT_'.$this->moduleLangVar.'_ENTRY_EDIT' =>  $_ARRAYLANG['TXT_MEDIADIR_EDIT'],
+	                            'TXT_'.$this->moduleLangVar.'_ENTRY_DETAIL' =>  $_ARRAYLANG['TXT_MEDIADIR_DETAIL'],
+	                            'TXT_'.$this->moduleLangVar.'_ENTRY_CATEGORIES' =>  $_ARRAYLANG['TXT_MEDIADIR_CATEGORIES'],
+	                            'TXT_'.$this->moduleLangVar.'_ENTRY_LEVELS' =>  $_ARRAYLANG['TXT_MEDIADIR_LEVELS'],
 	                        ));
-	
+
 	                        if($this->arrSettings['settingsAllowVotes']) {
 	                            $objVoting = new mediaDirectoryVoting();
-	
-	                            if(intval($objTpl->blockExists('mediadirEntryVoteForm')) != 0) {
+
+	                            if(intval($objTpl->blockExists($this->moduleName.'EntryVoteForm')) != 0) {
 	                                $objVoting->getVoteForm($objTpl, $arrEntry['entryId']);
 	                            }
-	                            if(intval($objTpl->blockExists('mediadirEntryVotes')) != 0) {
+	                            if(intval($objTpl->blockExists($this->moduleName.'EntryVotes')) != 0) {
 	                                $objVoting->getVotes($objTpl, $arrEntry['entryId']);
 	                            }
 	                        }
-	
+
 	                        if($this->arrSettings['settingsAllowComments']) {
 	                            $objComment = new mediaDirectoryComment();
-	
-	                            if(intval($objTpl->blockExists('mediadirEntryComments')) != 0) {
+
+	                            if(intval($objTpl->blockExists($this->moduleName.'EntryComments')) != 0) {
 	                                $objComment->getComments($objTpl, $arrEntry['entryId']);
 	                            }
-	
-	                            if(intval($objTpl->blockExists('mediadirEntryCommentForm')) != 0) {
+
+	                            if(intval($objTpl->blockExists($this->moduleName.'EntryCommentForm')) != 0) {
 	                                $objComment->getCommentForm($objTpl, $arrEntry['entryId']);
 	                            }
 	                        }
-	
-	                        if(!$this->arrSettings['settingsAllowEditEntries'] && intval($objTpl->blockExists('mediadirEntryEditLink')) != 0) {
-	                            $objTpl->hideBlock('mediadirEntryEditLink');
+
+	                        if(!$this->arrSettings['settingsAllowEditEntries'] && intval($objTpl->blockExists($this->moduleName.'EntryEditLink')) != 0) {
+	                            $objTpl->hideBlock($this->moduleName.'EntryEditLink');
 	                        }
-	
-	                        if(!$this->arrSettings['settingsAllowDelEntries'] && intval($objTpl->blockExists('mediadirEntryDeleteLink')) != 0) {
-	                            $objTpl->hideBlock('mediadirEntryDeleteLink');
+
+	                        if(!$this->arrSettings['settingsAllowDelEntries'] && intval($objTpl->blockExists($this->moduleName.'EntryDeleteLink')) != 0) {
+	                            $objTpl->hideBlock($this->moduleName.'EntryDeleteLink');
 	                        }
-	
+
 	                        $i++;
-	                        $objTpl->parse('mediadirEntryList');
+	                        $objTpl->parse($this->moduleName.'EntryList');
 	                        $objTpl->clearVariables();
 	                    }
                     }
                 } /*else {
                     $objTpl->setVariable(array(
-                        'TXT_MEDIADIR_SEARCH_MESSAGE' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
+                        'TXT_'.$this->moduleLangVar.'_SEARCH_MESSAGE' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
                     ));
 
-                    $objTpl->parse('mediadirNoEntriesFound');
+                    $objTpl->parse($this->modulName.'NoEntriesFound');
                     $objTpl->clearVariables();
                 }*/
                 break;
             case 4:
                 //Google Map
                 $objGoogleMap = new googleMap();
-                $objGoogleMap->setMapId('mediadirGoogleMap');
+                $objGoogleMap->setMapId($this->moduleName.'GoogleMap');
                 $objGoogleMap->setMapStyleClass('mapLarge');
                 $objGoogleMap->setMapType($this->arrSettings['settingsGoogleMapType']);
 
@@ -440,25 +440,25 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 foreach ($this->arrEntries as $key => $arrEntry) {
                 	if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
 	                    $arrValues = array();
-	
+
 	                    if($this->checkPageCmd('detail'.intval($arrEntry['entryFormId']))) {
 	                        $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
 	                    } else {
 	                        $strDetailCmd = 'detail';
 	                    }
-	
-	                    $strEntryLink = '<a href="index.php?section=mediadir&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'].'">'.$_ARRAYLANG['TXT_MEDIADIR_DETAIL'].'</a>';
+
+	                    $strEntryLink = '<a href="index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$arrEntry['entryId'].'">'.$_ARRAYLANG['TXT_MEDIADIR_DETAIL'].'</a>';
 	                    $strEntryTitle = '<b>'.$arrEntry['entryFields']['0'].'</b>';
 	                    $intEntryId = intval($arrEntry['entryId']);
 	                    $intEntryFormId = intval($arrEntry['entryFormId']);
-	
+
 	                    $query = "
 	                        SELECT
 	                            inputfield.`id` AS `id`,
 	                            rel_inputfield.`value` AS `value`
 	                        FROM
-	                            ".DBPREFIX."module_mediadir_inputfields AS inputfield,
-	                            ".DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield
+	                            ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield,
+	                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
 	                        WHERE
 	                            inputfield.`form` = '".$intEntryFormId."'
 	                        AND
@@ -469,23 +469,23 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                            rel_inputfield.`entry_id` = '".$intEntryId."'
 	                        LIMIT 1
 	                    ";
-	
+
 	                    $objRSMapKoordinates = $objDatabase->Execute($query);
-	
+
 	                    if($objRSMapKoordinates !== false) {
 	                        $arrValues = explode(',', $objRSMapKoordinates->fields['value']);
 	                    }
-	
+
 	                    $strValueLon = $arrValues[0];
 	                    $strValueLat = $arrValues[1];
 	                    $strValueGeoXml = $arrValues[3];
 	                    $strValueClick = 'marker'.$intEntryId.'.openInfoWindowHtml(info'.$intEntryId.');';
-	
+
 	                    if(!empty($strValueGeoXml) || $strValueGeoXml != 0){
 	                        $strServerProtocol = ASCMS_PROTOCOL."://";
 	                        $strServerName = $_SERVER['SERVER_NAME'];
 	                        $strServerKmlWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.'/uploads';
-	
+
 	                        $strValueGeoXmlPath = $strServerProtocol.$strServerName.$strServerKmlWebPath.$strValueGeoXml;
 	                        //test only
 	                        //$strValueGeoXmlPath = 'http://mapgadgets.googlepages.com/cta.kml';
@@ -496,13 +496,13 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                        $strValueMouseover = null;
 	                        $strValueMouseout = null;
 	                    }
-	
+
 	                    $objGoogleMap->addMapMarker($intEntryId, $strValueLon, $strValueLat, $strEntryTitle."<br />".$strEntryLink, true, $strValueGeoXmlPath, true, $strValueClick, $strValueMouseover, $strValueMouseout);
                     }
                 }
 
                 $objTpl->setVariable(array(
-                    'MEDIADIR_GOOGLE_MAP' => $objGoogleMap->getMap()
+                    $this->moduleLangVar.'_GOOGLE_MAP' => $objGoogleMap->getMap()
                 ));
 
                 break;
@@ -561,7 +561,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
         $strTransStatus = contrexx_addslashes(join(",", $arrData['translationStatus']));
-        
+
         switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
         	case 1:
         		$intDiffDay = $this->arrSettings['settingsEntryDisplaydurationValue'];
@@ -579,7 +579,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 $intDiffYear = $this->arrSettings['settingsEntryDisplaydurationValue'];
                 break;
         }
-        
+
         if(empty($intId)) {
             if($objInit->mode == 'backend') {
                 $intConfirmed = 1;
@@ -604,7 +604,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             //insert new entry
             $objInsertEntry = $objDatabase->Execute("
                 INSERT INTO
-                    ".DBPREFIX."module_mediadir_entries
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
                 SET
                     `form_id`='".$intFormId."',
                     `create_date`='".$strCreateDate."',
@@ -630,36 +630,36 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         } else {
             if($objInit->mode == 'backend') {
                 $intConfirmed = 1;
-                $intShowIn = 3; 
-                
+                $intShowIn = 3;
+
                 $arrDurationStart = explode("-",$arrData['durationStart']);
                 $arrDurationEnd = explode("-",$arrData['durationEnd']);
                 $intDurationStart = intval(mktime(0,0,0,$arrDurationStart[1],$arrDurationStart[2],$arrDurationStart[0]));
                 $intDurationEnd =  intval(mktime(0,0,0,$arrDurationEnd[1],$arrDurationEnd[2],$arrDurationEnd[0]));
-                
+
                 $arrAdditionalQuery[] = "`duration_type`='". intval($arrData['durationType'])."', `duration_start`='". intval($intDurationStart)."',  `duration_end`='". intval($intDurationEnd)."'";
             } else {
                 $intConfirmed = $this->arrSettings['settingsConfirmUpdatedEntries'] == 1 ? 0 : 1;
                 $intShowIn = 2;
                 $arrAdditionalQuery = null;
             }
-            
+
             $arrAdditionalQuery[] = " `updated_by`='".$intUserId."'";
-            
+
             if(intval($arrData['userId']) != 0) {
                 $arrAdditionalQuery[] = "`added_by`='".intval($arrData['userId'])."'";
-            } 
-            
+            }
+
             if(intval($arrData['durationResetNotification']) == 1) {
                 $arrAdditionalQuery[] = "`duration_notification`='0'";
-            } 
-            
+            }
+
             $strAdditionalQuery = join(",", $arrAdditionalQuery);
             $strValidateDate = $intConfirmed == 1 ? mktime() : 0;
-            
+
             $objUpdateEntry = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_entries
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
                 SET
                     `update_date`='".$strUpdateDate."',
                     `validate_date`='".$strValidateDate."',
@@ -668,21 +668,21 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 WHERE
                     `id`='".$intId."'
             ");
-            
+
             if($objUpdateEntry !== false) {
-            	$objShowIn = $objDatabase->Execute("SELECT inputfield.`id` AS `id` FROM ".DBPREFIX."module_mediadir_inputfields AS inputfield WHERE (inputfield.`type` != 16 AND inputfield.`type` != 17) AND (inputfield.`show_in` = '".$intShowIn."' OR inputfield.`show_in` = '1')");
+            	$objShowIn = $objDatabase->Execute("SELECT inputfield.`id` AS `id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield WHERE (inputfield.`type` != 16 AND inputfield.`type` != 17) AND (inputfield.`show_in` = '".$intShowIn."' OR inputfield.`show_in` = '1')");
             	if($objShowIn !== false) {
                     while (!$objShowIn->EOF) {
                     	$arrDeletableIds[] = $objShowIn->fields['id'];
                     	$objShowIn->MoveNext();
                     }
             	}
-            	
-                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id IN (".join(",",$arrDeletableIds).")");
+
+                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE entry_id='".$intId."' AND field_id IN (".join(",",$arrDeletableIds).")");
                 if($objDeleteNames !== false) {
-                    $objDeleteCategories = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_categories WHERE entry_id='".$intId."'");
+                    $objDeleteCategories = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories WHERE entry_id='".$intId."'");
                     if($objDeleteCategories !== false) {
-                        $objDeleteLevels = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_levels WHERE entry_id='".$intId."'");
+                        $objDeleteLevels = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels WHERE entry_id='".$intId."'");
                         if($objDeleteLevels === false) {
                             return false;
                         }
@@ -708,12 +708,12 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                         if($arrInputfield['type_multi_lang'] == 1) {
                             foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                                 $intLangId = $arrLang['id'];
-                                
+
                                 if((empty($arrData['mediadirInputfield'][$arrInputfield['id']][$intLangId])) || $intLangId == $_LANGID) {
 									$strMaster = $arrData['mediadirInputfield'][$arrInputfield['id']][0];
 									$strOldDefault = $arrData['mediadirInputfield'][$arrInputfield['id']]['old'];
 									$strNewDefault = $arrData['mediadirInputfield'][$arrInputfield['id']][$_LANGID];
-									
+
 									if($strNewDefault != $strMaster) {
 										if($strMaster != $strOldDefault && $strNewDefault == $strOldDefault) {
 											$strDefault = $strMaster;
@@ -723,7 +723,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 									} else {
 										$strDefault = $arrData['mediadirInputfield'][$arrInputfield['id']][$_LANGID];
 									}
-									
+
 									$strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault);
                                 } else {
                                     $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData['mediadirInputfield'][$arrInputfield['id']][$intLangId]);
@@ -731,7 +731,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
                                 $objInsertInputfieldData = $objDatabase->Execute("
                                     INSERT INTO
-                                        ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                                     SET
                                         `entry_id`='".intval($intId)."',
                                         `lang_id`='".intval($intLangId)."',
@@ -749,7 +749,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
                             $objInsertInputfieldData = $objDatabase->Execute("
                                 INSERT INTO
-                                    ".DBPREFIX."module_mediadir_rel_entry_inputfields
+                                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields
                                 SET
                                     `entry_id`='".intval($intId)."',
                                     `lang_id`='".intval($_LANGID)."',
@@ -772,7 +772,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                         foreach ($arrData['selectedLevels'] as $key => $intLevelId) {
                             $objInsertLevel = $objDatabase->Execute("
                             INSERT INTO
-                                ".DBPREFIX."module_mediadir_rel_entry_levels
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
                             SET
                                 `entry_id`='".intval($intId)."',
                                 `level_id`='".intval($intLevelId)."'
@@ -787,7 +787,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     foreach ($arrData['selectedCategories'] as $key => $intCategoryId) {
                         $objInsertCategory = $objDatabase->Execute("
                         INSERT INTO
-                            ".DBPREFIX."module_mediadir_rel_entry_categories
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories
                         SET
                             `entry_id`='".intval($intId)."',
                             `category_id`='".intval($intCategoryId)."'
@@ -800,14 +800,14 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 }
             }
         }
-        
+
         if(empty($intEntryId)) {
             $objMail = new mediaDirectoryMail(1, $intId);
             $objMail = new mediaDirectoryMail(2, $intId);
         } else {
             $objMail = new mediaDirectoryMail(6, $intId);
         }
-        
+
         return true;
     }
 
@@ -820,7 +820,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $objMail = new mediaDirectoryMail(5, $intEntryId);
 
         //delete entry
-        $objDeleteEntry = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_entries WHERE `id`='".intval($intEntryId)."'");
+        $objDeleteEntry = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE `id`='".intval($intEntryId)."'");
 
         if($objDeleteEntry !== false) {
             //delete inputfields
@@ -843,10 +843,10 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             }
 
             //delete categories
-            $objDeleteCategories = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_categories WHERE `entry_id`='".intval($intEntryId)."'");
+            $objDeleteCategories = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories WHERE `entry_id`='".intval($intEntryId)."'");
 
             //delete levels
-            $objDeleteLevels = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_levels WHERE `entry_id`='".intval($intEntryId)."'");
+            $objDeleteLevels = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels WHERE `entry_id`='".intval($intEntryId)."'");
         } else {
             return false;
         }
@@ -862,7 +862,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         $objConfirmEntry = $objDatabase->Execute("
             UPDATE
-                ".DBPREFIX."module_mediadir_entries
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
             SET
                 `confirmed`='1',
                 `active`='1',
@@ -911,7 +911,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             $intHits++;
 
             $objResult = $objDatabase->Execute("UPDATE
-                                                    ".DBPREFIX."module_mediadir_entries
+                                                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
                                                 SET
                                                     hits='".$intHits."',
                                                     popular_hits='".$intPopularHits."',
@@ -931,23 +931,23 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         if(!empty($intLevelId)) {
             $strWhereLevel = "AND ((level.`level_id` = ".$intLevelId.") AND (level.`entry_id` = entry.`id`)) ";
-            $strFromLevel = " ,".DBPREFIX."module_mediadir_rel_entry_levels AS level";
+            $strFromLevel = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level";
         }
 
         if(!empty($intCategoryId)) {
             $strWhereCategory = "AND ((category.`category_id` = ".$intCategoryId.") AND (category.`entry_id` = entry.`id`)) ";
-            $strFromCategory = " ,".DBPREFIX."module_mediadir_rel_entry_categories AS category";
+            $strFromCategory = " ,".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS category";
         }
 
         $query = "SELECT
                     entry.`id` AS `id`
                   FROM
-                    ".DBPREFIX."module_mediadir_entries AS entry
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry
                     ".$strFromCategory."
                     ".$strFromLevel."
                   WHERE
                     (entry.`id` != 0)
-                  AND 
+                  AND
                     (entry.`active` = 1)
                     ".$strWhereCategory."
                     ".$strWhereLevel."
@@ -959,16 +959,16 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         return intval($intNumEntries);
     }
-    
-    
-    
+
+
+
     function getUsers($intEntryId=null)
     {
         global $objDatabase;
-        
+
         $strDropdownUsers = '<select name="userId"style="width: 302px">';
         $objFWUser = FWUser::getFWUserObject();
-        
+
 		if ($objUser = $objFWUser->objUser->getUsers()) {
 	        while (!$objUser->EOF) {
 	        	if(intval($objUser->getID()) == intval($this->arrEntries[$intEntryId]['entryAddedBy'])) {
@@ -976,31 +976,31 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 } else {
                     $strSelected = '';
                 }
-                
+
 	        	$strDropdownUsers .= '<option value="'.intval($objUser->getID()).'" '.$strSelected.' >'.$objUser->getUsername().'</option>';
                 $objUser->next();
 	        }
 		}
-        
+
         $strDropdownUsers .= '</select>';
 
         return $strDropdownUsers;
     }
-    
-    
-    
+
+
+
     function getCategoriesLevels($intType, $intEntryId=null)
     {
         global $objDatabase, $_LANGID;
-        
+
         if($intType == 1) {
         	//categories
         	$query = "SELECT
                     cat_rel.`category_id` AS `elm_id`,
                     cat_name.`category_name` AS `elm_name`
                   FROM
-                    ".DBPREFIX."module_mediadir_rel_entry_categories AS cat_rel,
-                    ".DBPREFIX."module_mediadir_categories_names AS cat_name
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS cat_rel,
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_categories_names AS cat_name
                   WHERE
                     cat_rel.`category_id` = cat_name.`category_id`
                   AND
@@ -1016,8 +1016,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     level_rel.`level_id` AS `elm_id`,
                     level_name.`level_name` AS `elm_name`
                   FROM
-                    ".DBPREFIX."module_mediadir_rel_entry_levels AS level_rel,
-                    ".DBPREFIX."module_mediadir_level_names AS level_name
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS level_rel,
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_name
                   WHERE
                     level_rel.`level_id` = level_name.`level_id`
                   AND
@@ -1028,9 +1028,9 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     level_name.`level_name` ASC
                   ";
         }
-        
+
         $objEntryCategoriesLevels = $objDatabase->Execute($query);
-        
+
         if ($objEntryCategoriesLevels !== false) {
         	$strList = '<ul>';
             while (!$objEntryCategoriesLevels->EOF) {
@@ -1039,16 +1039,16 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             }
             $strList .= '</ul>';
         }
-        
+
         return $strList;
     }
-    
-    
+
+
     function setDisplaydurationNotificationStatus($intEntryId, $bolStatus)
     {
         global $objDatabase;
 
-        $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_entries SET duration_notification='".intval($bolStatus)."' WHERE id='".intval($intEntryId)."'");
+        $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_entries SET duration_notification='".intval($bolStatus)."' WHERE id='".intval($intEntryId)."'");
     }
 }
 ?>
