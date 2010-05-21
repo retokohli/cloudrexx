@@ -91,8 +91,8 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                 level_names.`level_name` AS `name`,
                 level_names.`level_description` AS `description`
             FROM
-                ".DBPREFIX."module_mediadir_levels AS level,
-                ".DBPREFIX."module_mediadir_level_names AS level_names
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_levels AS level,
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names AS level_names
             WHERE
                 ($whereLevelId level_names.level_id=level.id)
                 $whereParentId
@@ -119,7 +119,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                         `level_name` AS `name`,
                         `level_description` AS `description`
                     FROM
-                        ".DBPREFIX."module_mediadir_level_names
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
                     WHERE
                         level_id=".$objLevels->fields['id']."
                 ");
@@ -196,29 +196,29 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
 
                     if(!empty($arrLevel['levelChildren'])) {
                         if((in_array($arrLevel['levelId'], $this->arrExpandedLevelIds) && $bolExpandLevel) || $_GET['exp_level'] == 'all'){
-                            $strLevelIcon = '<a href="index.php?cmd=mediadir&amp;exp_level='.$arrLevel['levelParentId'].'"><img src="images/icons/minuslink.gif" border="0" alt="{MEDIADIR_LEVEL_NAME}" title="{MEDIADIR_LEVEL_NAME}" /></a>';
+                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelParentId'].'"><img src="images/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
                         } else {
-                            $strLevelIcon = '<a href="index.php?cmd=mediadir&amp;exp_level='.$arrLevel['levelId'].'"><img src="images/icons/pluslink.gif" border="0" alt="{MEDIADIR_LEVEL_NAME}" title="{MEDIADIR_LEVEL_NAME}" /></a>';
+                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelId'].'"><img src="images/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
                         }
                     } else {
-                        $strLevelIcon = '<img src="images/icons/pixel.gif" border="0" width="11" height="11" alt="{MEDIADIR_LEVEL_NAME}" title="{MEDIADIR_LEVEL_NAME}" />';
+                        $strLevelIcon = '<img src="images/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" />';
                     }
 
                     //parse variables
                     $objTpl->setVariable(array(
-                        'MEDIADIR_LEVEL_ROW_CLASS' =>  $this->intRowCount%2==0 ? 'row1' : 'row2',
-                        'MEDIADIR_LEVEL_ID' => $arrLevel['levelId'],
-                        'MEDIADIR_LEVEL_ORDER' => $arrLevel['levelOrder'],
-                        'MEDIADIR_LEVEL_NAME' => $arrLevel['levelName'][0],
-                        'MEDIADIR_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
-                        'MEDIADIR_LEVEL_PICTURE' => $arrLevel['levelPicture'],
-                        'MEDIADIR_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
-                        'MEDIADIR_LEVEL_ICON' => $spacer.$strLevelIcon,
-                        'MEDIADIR_LEVEL_VISIBLE_STATE_ACTION' => $arrLevel['levelActive'] == 0 ? 1 : 0,
-                        'MEDIADIR_LEVEL_VISIBLE_STATE_IMG' => $arrLevel['levelActive'] == 0 ? 'off' : 'on',
+                        $this->moduleLangVar.'_LEVEL_ROW_CLASS' =>  $this->intRowCount%2==0 ? 'row1' : 'row2',
+                        $this->moduleLangVar.'_LEVEL_ID' => $arrLevel['levelId'],
+                        $this->moduleLangVar.'_LEVEL_ORDER' => $arrLevel['levelOrder'],
+                        $this->moduleLangVar.'_LEVEL_NAME' => $arrLevel['levelName'][0],
+                        $this->moduleLangVar.'_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
+                        $this->moduleLangVar.'_LEVEL_PICTURE' => $arrLevel['levelPicture'],
+                        $this->moduleLangVar.'_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
+                        $this->moduleLangVar.'_LEVEL_ICON' => $spacer.$strLevelIcon,
+                        $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_ACTION' => $arrLevel['levelActive'] == 0 ? 1 : 0,
+                        $this->moduleLangVar.'_LEVEL_VISIBLE_STATE_IMG' => $arrLevel['levelActive'] == 0 ? 'off' : 'on',
                     ));
 
-                    $objTpl->parse('mediadirLevelsList');
+                    $objTpl->parse($this->moduleName.'LevelsList');
                     $arrParentIds[] = $arrLevel['levelId'];
                     $this->intRowCount++;
 
@@ -252,7 +252,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                             } else {
                                 $i = 0;
                             }
-                            $strIndexHeaderTag = '<span class="mediadirLevelCategoryIndexHeader">'.$strIndexHeader.'</span><br />';
+                            $strIndexHeaderTag = '<span class="'.$this->moduleName.'LevelCategoryIndexHeader">'.$strIndexHeader.'</span><br />';
                         } else {
                             $strIndexHeaderTag = null;
                         }
@@ -274,18 +274,18 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
 
                     //parse variables
                     $objTpl->setVariable(array(
-                        'MEDIADIR_CATEGORY_LEVEL_ID' => $arrLevel['levelId'],
-                        'MEDIADIR_CATEGORY_LEVEL_NAME' => $arrLevel['levelName'][0],
-                        'MEDIADIR_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section=mediadir'.$strLevelCmd.'&amp;lid='.$arrLevel['levelId'].'">'.$arrLevel['levelName'][0].'</a>',
-                        'MEDIADIR_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['catDescription'][0],
-                        'MEDIADIR_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel[$intLevelId]['levelPicture'].'" border="0" alt="'.$arrLevel[$intLevelId]['levelName'][0].'" />',
-                        'MEDIADIR_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel[$intLevelId]['levelPicture'],
-                        'MEDIADIR_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevel['levelId'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => $arrLevel['levelName'][0],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$arrLevel['levelId'].'">'.$arrLevel['levelName'][0].'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['catDescription'][0],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel[$intLevelId]['levelPicture'].'" border="0" alt="'.$arrLevel[$intLevelId]['levelName'][0].'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel[$intLevelId]['levelPicture'],
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
                     ));
 
                     $intBlockId = $arrExistingBlocks[$i];
 
-                    $objTpl->parse('mediadirCategoriesLevels_row_'.$intBlockId);
+                    $objTpl->parse($this->moduleName.'CategoriesLevels_row_'.$intBlockId);
                     $objTpl->clearVariables();
 
                     $strFirstIndexHeader = $strIndexHeader;
@@ -333,7 +333,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                         SELECT
                             `level_id`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_levels
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
                         WHERE
                             `entry_id` = '".$intEntryId."'
                     ");
@@ -381,31 +381,31 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
             case 5:
                 //Frontend View Detail
                 $objTpl->setVariable(array(
-                    'MEDIADIR_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
-                    'MEDIADIR_CATEGORY_LEVEL_NAME' => $arrLevels[$intLevelId]['levelName'][0],
-                    'MEDIADIR_CATEGORY_LEVEL_LINK' => '<a href="index.php?section=mediadir&amp;cid='.$arrLevels[$intCategoryId]['levelId'].'">'.$arrLevels[$intLevelId]['levelName'][0].'</a>',
-                    'MEDIADIR_CATEGORY_LEVEL_DESCRIPTION' => $arrLevels[$intLevelId]['levelDescription'][0],
-                    'MEDIADIR_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevels[$intLevelId]['levelPicture'].'.thumb" border="0" alt="'.$arrLevels[$intLevelId]['levelName'][0].'" />',
-                    'MEDIADIR_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevels[$intLevelId]['levelPicture'],
-                    'MEDIADIR_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevels[$intLevelId]['levelNumEntries'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => $arrLevels[$intLevelId]['levelName'][0],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.'&amp;cid='.$arrLevels[$intCategoryId]['levelId'].'">'.$arrLevels[$intLevelId]['levelName'][0].'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevels[$intLevelId]['levelDescription'][0],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevels[$intLevelId]['levelPicture'].'.thumb" border="0" alt="'.$arrLevels[$intLevelId]['levelName'][0].'" />',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevels[$intLevelId]['levelPicture'],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevels[$intLevelId]['levelNumEntries'],
                 ));
 
                 if(!empty($arrLevels[$intLevelId]['levelPicture']) && $this->arrSettings['settingsShowLevelImage'] == 1) {
-                    $objTpl->parse('mediadirCategoryLevelPicture');
+                    $objTpl->parse($this->moduleName.'CategoryLevelPicture');
                 } else {
-                    $objTpl->hideBlock('mediadirCategoryLevelPicture');
+                    $objTpl->hideBlock($this->moduleName.'CategoryLevelPicture');
                 }
 
                 if(!empty($arrLevels[$intLevelId]['levelDescription'][0]) && $this->arrSettings['settingsShowLevelDescription'] == 1) {
-                    $objTpl->parse('mediadirCategoryLevelDescription');
+                    $objTpl->parse($this->moduleName.'CategoryLevelDescription');
                 } else {
-                    $objTpl->hideBlock('mediadirCategoryLevelDescription');
+                    $objTpl->hideBlock($this->moduleName.'CategoryLevelDescription');
                 }
 
                 if(!empty($arrLevels)) {
-                    $objTpl->parse('mediadirCategoryLevelDetail');
+                    $objTpl->parse($this->moduleName.'CategoryLevelDetail');
                 } else {
-                    $objTpl->hideBlock('mediadirCategoryLevelDetail');
+                    $objTpl->hideBlock($this->moduleName.'CategoryLevelDetail');
                 }
 
                 break;
@@ -461,7 +461,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
             //insert new category
             $objInsertAttributes = $objDatabase->Execute("
                 INSERT INTO
-                    ".DBPREFIX."module_mediadir_levels
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_levels
                 SET
                     `parent_id`='".$intParentId."',
                     `order`='".$intOrder."',
@@ -486,7 +486,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
-                            ".DBPREFIX."module_mediadir_level_names
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
                         SET
                             `lang_id`='".intval($arrLang['id'])."',
                             `level_id`='".intval($intId)."',
@@ -513,7 +513,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
 
             $objUpdateAttributes = $objDatabase->Execute("
                 UPDATE
-                    ".DBPREFIX."module_mediadir_levels
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_levels
                 SET
                     ".$parentSql."
                     `order`='".$intOrder."',
@@ -532,7 +532,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                         `level_name` AS `name`,
                         `level_description` AS `description`
                     FROM
-                        ".DBPREFIX."module_mediadir_level_names
+                        ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
                     WHERE
                         lang_id=".$_LANGID."
                         AND `level_id` = '".$intId."'
@@ -545,7 +545,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                     $strOldDefaultDescription = $objDefaultLang->fields['description'];
                 }
 
-                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_level_names WHERE level_id='".$intId."'");
+                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
                 if($objInsertNames !== false) {
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
@@ -565,7 +565,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
 
                         $objInsertNames = $objDatabase->Execute("
                             INSERT INTO
-                                ".DBPREFIX."module_mediadir_level_names
+                                ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
                             SET
                                 `lang_id`='".intval($arrLang['id'])."',
                                 `level_id`='".intval($intId)."',
@@ -596,7 +596,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
 
         $intLevelId = intval($intLevelId);
 
-        $objSubLevelsRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_mediadir_levels WHERE parent_id='".$intLevelId."'");
+        $objSubLevelsRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_levels WHERE parent_id='".$intLevelId."'");
         if ($objSubLevelsRS !== false) {
             while (!$objSubLevelsRS->EOF) {
                 $intSubLevelId = $objSubLevelsRS->fields['id'];
@@ -605,9 +605,9 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
             };
         }
 
-        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_levels WHERE id='$intLevelId'");
-        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_level_names WHERE level_id='$intLevelId'");
-        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_mediadir_rel_entry_levels WHERE level_id='$intLevelId'");
+        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_levels WHERE id='$intLevelId'");
+        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='$intLevelId'");
+        $objDeleteLevelRS = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels WHERE level_id='$intLevelId'");
 
         if ($objDeleteLevelRS !== false) {
             return true;
@@ -624,7 +624,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
 
         $intLevelId = intval($intLevelId);
 
-        $objSubLevelsRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_mediadir_levels WHERE parent_id='".$intLevelId."'");
+        $objSubLevelsRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_levels WHERE parent_id='".$intLevelId."'");
         if ($objSubLevelsRS !== false) {
             while (!$objSubLevelsRS->EOF) {
                 $intSubLevelId = $objSubLevelsRS->fields['id'];
@@ -636,7 +636,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
         $objCountEntriesRS = $objDatabase->Execute("SELECT
                                                         entry_id
                                                     FROM
-                                                        ".DBPREFIX."module_mediadir_rel_entry_levels
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels
                                                     WHERE
                                                         level_id ='$intLevelId'
                                                    ");
@@ -652,7 +652,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
         global $objDatabase;
 
         foreach($arrData['levelOrder'] as $intLevelId => $intLevelOrder) {
-            $objRSLevelOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_mediadir_levels SET `order`='".intval($intLevelOrder)."' WHERE `id`='".intval($intLevelId)."'");
+            $objRSLevelOrder = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_levels SET `order`='".intval($intLevelOrder)."' WHERE `id`='".intval($intLevelId)."'");
 
             if ($objRSLevelOrder === false) {
                 return false;
