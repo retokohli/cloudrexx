@@ -35,12 +35,12 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
         $this->intAction = intval($intAction);
         $this->intEntryId = intval($intEntryId);
 
-        $objRSCheckAction = $objDatabase->Execute("SELECT default_recipient, need_auth FROM ".DBPREFIX."module_mediadir_mail_actions WHERE id='".$this->intAction."' LIMIT 1");
+        $objRSCheckAction = $objDatabase->Execute("SELECT default_recipient, need_auth FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_mail_actions WHERE id='".$this->intAction."' LIMIT 1");
         if ($objRSCheckAction !== false) {
             $this->intNeedAuth = $objRSCheckAction->fields['need_auth'];
-            
-            $objRSEntryUserId = $objDatabase->Execute("SELECT added_by FROM ".DBPREFIX."module_mediadir_entries WHERE id='".$this->intEntryId."' LIMIT 1");
-            
+
+            $objRSEntryUserId = $objDatabase->Execute("SELECT added_by FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_entries WHERE id='".$this->intEntryId."' LIMIT 1");
+
             $objFWUser  = FWUser::getFWUserObject();
             $this->objUser = $objFWUser->objUser->getUser($id = intval($objRSEntryUserId->fields['added_by']));
 
@@ -65,7 +65,7 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
         $objRSLoadTemplate = $objDatabase->Execute("SELECT
                                                         title, content, recipients
                                                     FROM
-                                                        ".DBPREFIX."module_mediadir_mails
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_mails
                                                     WHERE
                                                         action_id='".$this->intAction."'
                                                     AND
@@ -79,7 +79,7 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
                 $objRSLoadTemplate = $objDatabase->Execute("SELECT
                                                         title, content, recipients
                                                     FROM
-                                                        ".DBPREFIX."module_mediadir_mails
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_mails
                                                     WHERE
                                                         action_id='".$this->intAction."'
                                                     AND
@@ -103,29 +103,29 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
     function parsePlaceholders()
     {
         global $objDatabase, $_LANGID, $_CONFIG;
-        
+
         $strUserNick = $this->objUser->getUsername();
         $strUserFirstname = $this->objUser->getProfileAttribute('firstname');;
         $strUserLastname = $this->objUser->getProfileAttribute('lastname');
 
         $objRSEntryFormId = $objDatabase->Execute("SELECT form_id FROM
-                                                        ".DBPREFIX."module_mediadir_entries
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_entries
                                                     WHERE
                                                         id='".$this->intEntryId."'
                                                     LIMIT 1");
         if ($objRSEntryFormId !== false) {
             $intEntryFormId = intval($objRSEntryFormId->fields['form_id']);
         }
-        
-        $strRelQuery = "SELECT inputfield.`id` AS `id` FROM ".DBPREFIX."module_mediadir_inputfields AS inputfield WHERE (inputfield.`type` != 16 AND inputfield.`type` != 17) AND (inputfield.`form` = ".$intEntryFormId.") ORDER BY inputfield.`order` ASC LIMIT 1";
-        
+
+        $strRelQuery = "SELECT inputfield.`id` AS `id` FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield WHERE (inputfield.`type` != 16 AND inputfield.`type` != 17) AND (inputfield.`form` = ".$intEntryFormId.") ORDER BY inputfield.`order` ASC LIMIT 1";
+
         $objRSEntryTitle = $objDatabase->Execute("SELECT
                                                         rel_inputfield.`value` AS `value`
                                                     FROM
-                                                        ".DBPREFIX."module_mediadir_entries AS entry,
-                                                        ".DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
+                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
                                                     WHERE (rel_inputfield.`entry_id`='".$this->intEntryId."')
-                                                    AND (rel_inputfield.`field_id` = (".$strRelQuery.")) 
+                                                    AND (rel_inputfield.`field_id` = (".$strRelQuery."))
                                                     AND (rel_inputfield.`lang_id` = '".$_LANGID."')
                                                     AND (rel_inputfield.`value` != '')
                                                     GROUP BY value
@@ -133,7 +133,7 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
         if ($objRSEntryTitle !== false) {
             $strEntryTitle = $objRSEntryTitle->fields['value'];
         }
-        
+
         $objEntry = new mediaDirectoryEntry();
         if($objEntry->checkPageCmd('detail'.intval($intEntryFormId))) {
             $strDetailCmd = 'detail'.intval($arrEntry['entryFormId']);
@@ -141,7 +141,7 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
             $strDetailCmd = 'detail';
         }
 
-        $strEntryLink = 'index.php?section=mediadir&amp;cmd='.$strDetailCmd.'&amp;eid='.$this->intEntryId;
+        $strEntryLink = 'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.'&amp;eid='.$this->intEntryId;
 
         $strDomain = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
         $strDate = date(ASCMS_DATE_FORMAT);
@@ -163,7 +163,7 @@ class mediaDirectoryMail extends mediaDirectoryLibrary
     function sendMail()
     {
         global $_ARRAYLANG, $_CONFIG;
-        
+
         if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
             $objMail = new phpmailer();
 
