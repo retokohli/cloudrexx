@@ -53,44 +53,48 @@ class mediaDirectorySearch extends mediaDirectoryLibrary
         $strTextSearch = $_CORELANG['TXT_SEARCH'];
         $strTextSearchterm = $_ARRAYLANG['TXT_MEDIADIR_SEARCH_TERM'];
         $strExpandedInputfields = $this->getExpandedInputfields();
+        $strSearchFormId = $this->moduleName."SearchForm";
+        $strSectionValue = $this->moduleName;
+        $strInputfieldSearch = $this->moduleName."InputfieldSearch";
+        $strButtonSearch = $this->moduleName."ButtonSearch";
 
         $strSearchNormalForm = <<<EOF
-<div class="mediadirSearchForm">
+<div class="$strSearchFormId">
 <form method="get" action="$strSearchFormAction">
-<input name="section" value="mediadir" type="hidden" />
+<input name="section" value="$strSectionValue" type="hidden" />
 <input name="type" value="normal" type="hidden" />
 $strSearchFormCmd
-<input name="term" class="mediadirInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /><input class="mediadirButtonSearch" value="$strTextSearch" name="search" type="submit">
+<input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /><input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit">
 </form>
 </div>
 EOF;
 
         $strSearchExpandedForm = <<<EOF
 
-<div class="mediadirSearchForm">
+<div class="$strSearchFormId">
 <form method="get" action="$strSearchFormAction">
 <div class="normal">
-<input name="section" value="mediadir" type="hidden" />
+<input name="section" value="$strSectionValue" type="hidden" />
 <input name="type" value="exp" type="hidden" />
 $strSearchFormCmd
-<p><label>$strTextSearchterm</label><input name="term" class="mediadirInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /></p>
+<p><label>$strTextSearchterm</label><input name="term" class="$strInputfieldSearch" value="$strSearchFormTerm" onfocus="this.select();" type="text" /></p>
 </div>
 <div class="expanded">
 $strExpandedInputfields
 </div>
-<p><input class="mediadirButtonSearch" value="$strTextSearch" name="search" type="submit"></p>
+<p><input class="$strButtonSearch" value="$strTextSearch" name="search" type="submit"></p>
 </form>
 </div>
 EOF;
 
         $objTpl->setVariable(array(
-            'TXT_MEDIADIR_SEARCH' => $_CORELANG['TXT_SEARCH'],
-            'TXT_MEDIADIR_EXP_SEARCH' => $_CORELANG['TXT_EXP_SEARCH'],
-            'MEDIADIR_NORMAL_SEARCH_FORM' => $strSearchNormalForm,
-            'MEDIADIR_EXPANDED_SEARCH_FORM' => $strSearchExpandedForm
+            'TXT_'.$this->moduleLangVar.'_SEARCH' => $_CORELANG['TXT_SEARCH'],
+            'TXT_'.$this->moduleLangVar.'_EXP_SEARCH' => $_CORELANG['TXT_EXP_SEARCH'],
+            $this->moduleLangVar.'_NORMAL_SEARCH_FORM' => $strSearchNormalForm,
+            $this->moduleLangVar.'_EXPANDED_SEARCH_FORM' => $strSearchExpandedForm
         ));
 
-        $objTpl->parse('mediadirSearchform');
+        $objTpl->parse($this->moduleName.'Searchform');
     }
 
 
@@ -118,9 +122,10 @@ EOF;
             $objLevels = new mediaDirectoryLevel(null, null, 1);
             $strLevelDropdown = $objLevels->listLevels($this->_objTpl, 3, $intLevelId);
             $strLevelName = $_ARRAYLANG['TXT_MEDIADIR_LEVEL'];
+            $strInputfieldSearch = $this->moduleName."InputfieldSearch";
 
             $strExpandedInputfields .= <<<EOF
-<p><label>$strLevelName</label><select class="mediadirInputfieldSearch" name="lid"><option value="">$strPleaseChoose</option>$strLevelDropdown</select></p>
+<p><label>$strLevelName</label><select class="$strInputfieldSearch" name="lid"><option value="">$strPleaseChoose</option>$strLevelDropdown</select></p>
 EOF;
 
             if(intval($arrIds[1]) != 0) {
@@ -148,9 +153,10 @@ EOF;
 	        $objCategories = new mediaDirectoryCategory(null, null, 1);
 	        $strCategoryDropdown = $objCategories->listCategories($this->_objTpl, 3, $intCategoryId);
 	        $strCategoryName = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY'];
-	
+	        $strInputfieldSearch = $this->moduleName."InputfieldSearch";
+
 	        $strExpandedInputfields .= <<<EOF
-<p><label>$strCategoryName</label><select class="mediadirInputfieldSearch" name="cid"><option value="">$strPleaseChoose</option>$strCategoryDropdown</select></p>
+<p><label>$strCategoryName</label><select class="$strInputfieldSearch" name="cid"><option value="">$strPleaseChoose</option>$strCategoryDropdown</select></p>
 EOF;
         }
 
@@ -176,27 +182,27 @@ EOF;
 
         if (!empty($arrData['term'])) {
             $strTerm        = contrexx_addslashes(trim($arrData['term']));
-            
+
             $arrSelect[]    = 'rel_inputfield.`entry_id` AS `entry_id`';
             //$arrSelect[]    = "MATCH (rel_inputfield.`value`) AGAINST ('".$strTerm."*' IN BOOLEAN MODE)  AS score";;
             $arrSelect[]    = "MATCH (rel_inputfield.`value`) AGAINST ('%".$strTerm."%')  AS score";
             $arrFrom[]      = DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield";
             $arrWhere[]     = 'rel_inputfield.`entry_id` != 0';
-            
+
             /*$strReplace     = "*' IN BOOLEAN MODE) AND MATCH (rel_inputfield.`value`) AGAINST ('";
             $strReplace     = preg_replace("/\s+/", $strReplace, $strTerm);
             $arrWhere[]     = "MATCH (rel_inputfield.`value`) AGAINST ('".$strReplace."*' IN BOOLEAN MODE)";*/
-            
+
             $strReplace     = "%' AND rel_inputfield.`value` LIKE '%";
             $strReplace     = preg_replace("/\s+/", $strReplace, $strTerm);
             $arrWhere[]     = "rel_inputfield.`value` LIKE '%".$strReplace."%'";
-            
+
             $arrOrder[]     = "score DESC";
         } else {
             $arrSelect[]    = 'rel_inputfield.`entry_id` AS `entry_id`';
-            $arrFrom[]      = DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield";
+            $arrFrom[]      = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield";
             $arrWhere[]     = 'rel_inputfield.`entry_id` != 0';
-            
+
             $arrOrder[]     = "entry_id DESC";
         }
 
@@ -213,7 +219,7 @@ EOF;
                 }
 
                 $arrWhere[]     = "(rel_level.level_id IN (".join(',', $this->arrSearchLevels).") AND rel_level.entry_id=rel_inputfield.entry_id)";
-                $arrFrom[]      = DBPREFIX."module_mediadir_rel_entry_levels AS rel_level";
+                $arrFrom[]      = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_levels AS rel_level";
             }
 
             //build category search query
@@ -222,7 +228,7 @@ EOF;
                 $this->getSearchCategoryIds(intval($arrData['cid']));
 
                 $arrWhere[]     = "(rel_category.category_id IN (".join(',', $this->arrSearchCategories).") AND rel_category.entry_id=rel_inputfield.entry_id)";
-                $arrFrom[]      = DBPREFIX."module_mediadir_rel_entry_categories AS rel_category";
+                $arrFrom[]      = DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS rel_category";
             }
         }
 
@@ -247,7 +253,7 @@ EOF;
                         $intInputfieldType = $objInputfields->arrInputfields[$intInputfieldId]['type'];
                         $strExpTerm = contrexx_addslashes(trim($strExpTerm));
                         $strTableName = "rel_inputfield_".intval($intInputfieldId);
-                        $arrExpJoin[]  = "LEFT JOIN ".DBPREFIX."module_mediadir_rel_entry_inputfields AS $strTableName ON rel_inputfield.`entry_id` = $strTableName.`entry_id`";
+                        $arrExpJoin[]  = "LEFT JOIN ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS $strTableName ON rel_inputfield.`entry_id` = $strTableName.`entry_id`";
 
                         if($intInputfieldType == '11') {
                             switch ($this->arrSettings['settingsClassificationSearch']) {
@@ -274,7 +280,7 @@ EOF;
                         SELECT
                             rel_inputfield_final.`entry_id` AS `entry_id`
                         FROM
-                            ".DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield_final
+                            ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield_final
                         LEFT JOIN
                              (".$query.") AS rel_inputfield
                          ON rel_inputfield_final.`entry_id` = rel_inputfield.`entry_id`
@@ -288,8 +294,8 @@ EOF;
             }
 
             $objRsSearchEntries = $objDatabase->Execute($query);
-            
-            
+
+
 
             if ($objRsSearchEntries !== false) {
                 while (!$objRsSearchEntries->EOF) {
@@ -308,7 +314,7 @@ EOF;
     {
         global $objDatabase;
 
-        $objResultSearchLevels = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_mediadir_levels WHERE parent_id='$intLevelId' ");
+        $objResultSearchLevels = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_levels WHERE parent_id='$intLevelId' ");
 
         if ($objResultSearchLevels) {
             while (!$objResultSearchLevels->EOF) {
@@ -328,7 +334,7 @@ EOF;
     {
         global $objDatabase;
 
-        $objResultSearchCategories = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_mediadir_categories WHERE parent_id='$intCatId'");
+        $objResultSearchCategories = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_categories WHERE parent_id='$intCatId'");
 
         if ($objResultSearchCategories) {
             while (!$objResultSearchCategories->EOF) {

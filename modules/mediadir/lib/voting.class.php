@@ -91,17 +91,17 @@ EOF;
             }
 
             if($bolGenerateVoteForm) {
-                $strVoteForm = '<div class="mediadirVoteForm" id="voteForm_'.$intEnrtyId.'">';
+                $strVoteForm = '<div class="'.$this->moduleName.'VoteForm" id="voteForm_'.$intEnrtyId.'">';
 
                 for ($i=1; $i <= 10; $i++){
-                    $strVoteForm .= "<input type=\"button\" onclick=\"mediadirVote(".$i.", ".$intEnrtyId.")\" class=\"mediadirVoteButton\" value=\"".$i."\" />";
+                    $strVoteForm .= "<input type=\"button\" onclick=\"'.$this->moduleName.'Vote(".$i.", ".$intEnrtyId.")\" class=\"'.$this->moduleName.'VoteButton\" value=\"".$i."\" />";
                 }
 
                 $strVoteForm .= '</div>';
 
                 $objTpl->setVariable(array(
-                    'MEDIADIR_ENTRY_VOTE_FORM' => $strVoteForm,
-                    'TXT_MEDIADIR_VOTING' => $_ARRAYLANG['TXT_MEDIADIR_VOTING']
+                    $this->moduleLangVar.'_ENTRY_VOTE_FORM' => $strVoteForm,
+                    'TXT_'.$this->moduleLangVar.'_VOTING' => $_ARRAYLANG['TXT_MEDIADIR_VOTING']
                 ));
             }
         }
@@ -117,7 +117,7 @@ EOF;
                 SELECT
                     `vote`
                 FROM
-                    ".DBPREFIX."module_mediadir_votes
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_votes
                 WHERE
                     `entry_id` = '".intval($intEnrtyId)."'
             ");
@@ -137,12 +137,12 @@ EOF;
                 $fltAverageVote = 0;
             }
 
-            $strVotes = '<div class="mediadirVotes" id="votes_'.$intEnrtyId.'">'.intval($intCountVotes).' '.$_ARRAYLANG['TXT_MEDIADIR_VOTES'].' | '.$_ARRAYLANG['TXT_MEDIADIR_AVERAGE_SYMBOL'].' '.$fltAverageVote.'</div>';
+            $strVotes = '<div class="'.$this->moduleName.'Votes" id="votes_'.$intEnrtyId.'">'.intval($intCountVotes).' '.$_ARRAYLANG['TXT_MEDIADIR_VOTES'].' | '.$_ARRAYLANG['TXT_MEDIADIR_AVERAGE_SYMBOL'].' '.$fltAverageVote.'</div>';
 
             if($objTpl) {
                 $objTpl->setVariable(array(
-                    'MEDIADIR_ENTRY_VOTES' => $strVotes,
-                    'TXT_MEDIADIR_VOTING' => $_ARRAYLANG['TXT_MEDIADIR_VOTING']
+                    $this->moduleLangVar.'_ENTRY_VOTES' => $strVotes,
+                    'TXT_'.$this->moduleLangVar.'_VOTING' => $_ARRAYLANG['TXT_MEDIADIR_VOTING']
                 ));
             }
 
@@ -171,7 +171,7 @@ EOF;
             SELECT
                 `id`
             FROM
-                ".DBPREFIX."module_mediadir_votes
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_votes
             WHERE
                 $strWhere
             AND
@@ -183,7 +183,7 @@ EOF;
         if($intCount == 0) {
             $objInsertVote = $objDatabase->Execute("
                 INSERT INTO
-                    ".DBPREFIX."module_mediadir_votes
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_votes
                 SET
                     `entry_id`='".intval($intEnrtyId)."',
                     `added_by`='".intval($intUserId)."',
@@ -220,7 +220,7 @@ EOF;
 
         $objRestoreVoting = $objDatabase->Execute("
             DELETE FROM
-                ".DBPREFIX."module_mediadir_votes
+                ".DBPREFIX."module_".$this->moduleTablePrefix."_votes
             WHERE
                 `entry_id`='".intval($intEnrtyId)."'
         ");
