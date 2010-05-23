@@ -421,6 +421,8 @@ class Contact extends ContactLib
     function _insertIntoDatabase($arrFormData)
     {
         global $objDatabase, $_ARRAYLANG;
+        
+        if (!empty($this->errorMsg)) return false;
 
         $arrDbEntry = array();
 
