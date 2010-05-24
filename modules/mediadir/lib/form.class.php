@@ -48,6 +48,9 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                 form.`id` AS `id`,
                 form.`order` AS `order`,
                 form.`picture` AS `picture`,
+                form.`cmd` AS `cmd`,
+                form.`use_category` AS `use_category`,
+                form.`use_level` AS `use_level`,
                 form.`active` AS `active`,
                 form_names.`form_name` AS `name`,
                 form_names.`form_description` AS `description`
@@ -99,6 +102,9 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                 $arrForm['formName'] = $arrFormName;
                 $arrForm['formDescription'] = $arrFormDesc;
                 $arrForm['formActive'] = intval($objFormsRS->fields['active']);
+                $arrForm['formCmd'] = htmlspecialchars($objFormsRS->fields['cmd'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrForm['formUseCategory'] = intval($objFormsRS->fields['use_category']);
+                $arrForm['formUseLevel'] = intval($objFormsRS->fields['use_level']);
 
                 $arrForms[$objFormsRS->fields['id']] = $arrForm;
                 $objFormsRS->MoveNext();
@@ -218,6 +224,9 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 
         $arrName = $arrData['formName'];
         $arrDescription = $arrData['formDescription'];
+        $strCmd = strtolower(contrexx_addslashes(contrexx_strip_tags($arrData['formCmd'])));
+        $intUseCategory = intval($arrData['formUseCategory']);
+        $intUseLevel = intval($arrData['formUseLevel']);
 
         if(empty($intId)) {
             //insert new form
@@ -227,6 +236,9 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                 SET
                     `order`='99',
                     `picture`='".$strPicture."',
+                    `cmd`='".$strCmd."',
+                    `use_category`='".$intUseCategory."',
+                    `use_level`='".$intUseLevel."',
                     `active`='0'
             ");
 
@@ -303,7 +315,10 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                 UPDATE
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_forms
                 SET
-                    `picture`='".$strPicture."'
+                    `picture`='".$strPicture."',
+                    `cmd`='".$strCmd."',
+                    `use_category`='".$intUseCategory."',
+                    `use_level`='".$intUseLevel."'
                 WHERE
                     `id`='".$intId."'
             ");

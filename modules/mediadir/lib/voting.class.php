@@ -94,7 +94,7 @@ EOF;
                 $strVoteForm = '<div class="'.$this->moduleName.'VoteForm" id="voteForm_'.$intEnrtyId.'">';
 
                 for ($i=1; $i <= 10; $i++){
-                    $strVoteForm .= "<input type=\"button\" onclick=\"'.$this->moduleName.'Vote(".$i.", ".$intEnrtyId.")\" class=\"'.$this->moduleName.'VoteButton\" value=\"".$i."\" />";
+                    $strVoteForm .= "<input type=\"button\" onclick=\"".$this->moduleName."Vote(".$i.", ".$intEnrtyId.")\" class=\"'.$this->moduleName.'VoteButton\" value=\"".$i."\" />";
                 }
 
                 $strVoteForm .= '</div>';

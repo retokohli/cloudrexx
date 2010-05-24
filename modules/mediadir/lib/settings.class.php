@@ -1108,6 +1108,14 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_PERMISSIONS_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_PERMISSIONS_INFO'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_COMMUNITY_GROUP' =>  $_ARRAYLANG['TXT_MEDIADIR_COMMUNITY_GROUP'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_ALLOW_GHROUP_ADD_ENTRIES' =>  $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_ALLOW_GHROUP_ADD_ENTRIES'],
+            'TXT_'.$this->moduleLangVar.'_CMD' =>  $_ARRAYLANG['TXT_MEDIADIR_CMD'],
+            'TXT_'.$this->moduleLangVar.'_CMD_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_CMD_INFO'],
+            'TXT_'.$this->moduleLangVar.'_USE_CATEGORY' =>  $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY'],
+            'TXT_'.$this->moduleLangVar.'_USE_CATEGORY_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY_INFO'],
+            'TXT_'.$this->moduleLangVar.'_USE_LEVEL' =>  $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL'],
+            'TXT_'.$this->moduleLangVar.'_USE_LEVEL_INFO' =>  $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'],
+            $this->moduleLangVar.'_USE_CATEGORY_ON' => 'checked="checked"',
+            $this->moduleLangVar.'_USE_LEVEL_ON' => 'checked="checked"',
         ));
 
         if(isset($_GET['ajax'])) {
@@ -1172,6 +1180,11 @@ EOF;
                 $this->moduleLangVar.'_FORM_NAME_MASTER' => $objForm->arrForms[$intFormId]['formName'][0],
                 $this->moduleLangVar.'_FORM_DESCRIPTION_MASTER' => $objForm->arrForms[$intFormId]['formDescription'][0],
                 $this->moduleLangVar.'_FORM_PICTURE' => $objForm->arrForms[$intFormId]['formPicture'],
+                $this->moduleLangVar.'_FORM_CMD' => $objForm->arrForms[$intFormId]['formCmd'],
+                $this->moduleLangVar.'_USE_CATEGORY_ON' => $objForm->arrForms[$intFormId]['formUseCategory'] == 1 ? 'checked="checked"' : '',
+                $this->moduleLangVar.'_USE_CATEGORY_OFF' => $objForm->arrForms[$intFormId]['formUseCategory'] == 0 ? 'checked="checked"' : '',
+                $this->moduleLangVar.'_USE_LEVEL_ON' => $objForm->arrForms[$intFormId]['formUseLevel'] == 1 ? 'checked="checked"' : '',
+                $this->moduleLangVar.'_USE_LEVEL_OFF' => $objForm->arrForms[$intFormId]['formUseLevel'] == 0 ? 'checked="checked"' : '',
             ));
 
             parent::getCommunityGroups();
@@ -1260,6 +1273,13 @@ EOF;
             }
 
             $objTpl->parse($this->moduleName.'FormDescriptionList');
+        }
+        
+        //use level block
+        if($this->arrSettings['settingsShowLevels'] == 1) {
+            $objTpl->touchBlock($this->moduleName.'FormUseLevel');
+        } else {
+            $objTpl->hideBlock($this->moduleName.'FormUseLevel');
         }
 
         $objTpl->setVariable(array(

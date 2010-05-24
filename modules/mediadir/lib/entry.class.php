@@ -13,6 +13,7 @@
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/mail.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/voting.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
@@ -31,6 +32,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
     private $intLimitEnd;
     private $intUserId;
     private $bolPopular;
+    private $intCmdFormId;
 
     private $strBlockName;
 
@@ -70,6 +72,26 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
         } else {
             $this->strSearchTerm = null;
+        }
+        
+        if(!empty($_GET['cmd'])) {
+        	$arrFormCmd = array();
+        	
+        	$objForms = new mediaDirectoryForm();
+        	
+        	foreach ($objForms->arrForms as $intFormId => $arrForm) {
+        		if(!empty($arrForm['formCmd'])) {
+        		  $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
+        		}
+        	}
+            
+            if(!empty($arrFormCmd[$_GET['cmd']])) {
+            	$this->intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
+            }
+        }
+        
+        if($this->intCmdFormId != 0) {
+            $strWhereFormId = "AND (entry.`form_id` = ".$this->intCmdFormId.") ";
         }
 
         if(!empty($this->intEntryId)) {
@@ -193,6 +215,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 ".$strWhereEntryId."
                 ".$strWhereActive."
                 ".$strWhereLangId."
+                ".$strWhereFormId."
             GROUP BY
                 entry.`id`
             ORDER BY
