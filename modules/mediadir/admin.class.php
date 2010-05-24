@@ -58,6 +58,12 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS'] = 'Ãœbersetzungsstatus';
         $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'] = 'Ãœbersetzungsstatus';
         $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO'] = 'Wird der Übersetzungsstatus aktiviert, kann bei den einzelnen Einträgen angegeben werden, ob eine Sprache fertig übersetzt ist. Sollte eine Sprache noch nicht übersetzt sein, wird jene Sprache angezeigt in welcher der Eintrag erfasst wurde.';
+        $_ARRAYLANG['TXT_MEDIADIR_CMD'] = 'Parameter (cmd)';
+        $_ARRAYLANG['TXT_MEDIADIR_CMD_INFO'] = 'Mit diesem Parameter kann auf der Modulseite die Auswahl der Einträge auf diese Formular Vorlage reduziert werden.';
+        $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY'] = 'Kategorien verwenden';
+        $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY_INFO'] = 'Mit dieser Option kann die Zuordnung der Kategorien bei dieser Formular Vorlage ein- bzw. asusgeschaltet werden.';
+        $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL'] = 'Ebenen verwenden';
+        $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Mit dieser Option kann die Zuordnung der Ebenen bei dieser Formular Vorlage ein- bzw. asusgeschaltet werden.';
 
         //globals
         parent::__construct(ASCMS_MODULE_PATH.'/mediadir/template');
