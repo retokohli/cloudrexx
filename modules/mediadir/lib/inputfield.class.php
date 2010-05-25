@@ -13,6 +13,7 @@
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/addStep.class.php';
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
 
 function loadInputfieldClasses($strClassName) {
     $strClassFileName = strtolower(str_replace('mediaDirectoryInputfield', '', $strClassName));
@@ -210,6 +211,8 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                 //Settings View
                 $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_INPUTFIELDS_CONTENT', 'settings_inputfields_content', 'module_'.$this->moduleName.'_settings_inputfields.html');
 
+                $objForms = new mediaDirectoryForm($this->intFormId);
+                
                 $arrShow = array(
                     1 => $_ARRAYLANG['TXT_MEDIADIR_SHOW_BACK_N_FRONTEND'],
                     2 => $_ARRAYLANG['TXT_MEDIADIR_SHOW_FRONTEND'],
@@ -282,14 +285,17 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
 
                         $objTpl->parse($this->moduleName.'Inputfield');
                     } else {
-                        $objTpl->setVariable(array(
-                            $this->moduleLangVar.'_SETTINGS_SELECTOR_ID' => $arrInputfield['id'],
-                            $this->moduleLangVar.'_SETTINGS_SELECTOR_NAME' => $arrInputfield['name'][0],
-                            $this->moduleLangVar.'_SETTINGS_SELECTOR_ORDER' => $arrInputfield['order'],
-                            $this->moduleLangVar.'_SETTINGS_SELECTOR_EXP_SEARCH' => $strExpSearch,
-                        ));
-
-                        $objTpl->parse($this->moduleName.'Selector');
+                    	if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {
+                           
+	                        $objTpl->setVariable(array(
+	                            $this->moduleLangVar.'_SETTINGS_SELECTOR_ID' => $arrInputfield['id'],
+	                            $this->moduleLangVar.'_SETTINGS_SELECTOR_NAME' => $arrInputfield['name'][0],
+	                            $this->moduleLangVar.'_SETTINGS_SELECTOR_ORDER' => $arrInputfield['order'],
+	                            $this->moduleLangVar.'_SETTINGS_SELECTOR_EXP_SEARCH' => $strExpSearch,
+	                        ));
+	
+	                        $objTpl->parse($this->moduleName.'Selector');
+                    	}
                     }
 
                     $i++;
@@ -356,33 +362,37 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                             echo "Error: ".$error->getMessage();
                         }
                     } else {
-                        if($arrInputfield['id'] == 2) {
-                            $objLevel = new mediaDirectoryLevel();
-                            $arrSelectorOptions = $objLevel->listLevels($objTpl, 4, null, null, $intEntryId);
-                            $strSelectedOptionsName = "selectedLevels";
-                            $strNotSelectedOptionsName = "deselectedLevels";
-                        } else {
-                            $objCategory = new mediaDirectoryCategory();
-                            $arrSelectorOptions = $objCategory->listCategories($objTpl, 4, null, null, $intEntryId);
-                            $strSelectedOptionsName = "selectedCategories";
-                            $strNotSelectedOptionsName = "deselectedCategories";
+                        $objForms = new mediaDirectoryForm($this->intFormId);
+                        
+                        if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {
+	                        if($arrInputfield['id'] == 2) {
+	                            $objLevel = new mediaDirectoryLevel();
+	                            $arrSelectorOptions = $objLevel->listLevels($objTpl, 4, null, null, $intEntryId);
+	                            $strSelectedOptionsName = "selectedLevels";
+	                            $strNotSelectedOptionsName = "deselectedLevels";
+	                        } else {
+	                            $objCategory = new mediaDirectoryCategory();
+	                            $arrSelectorOptions = $objCategory->listCategories($objTpl, 4, null, null, $intEntryId);
+	                            $strSelectedOptionsName = "selectedCategories";
+	                            $strNotSelectedOptionsName = "deselectedCategories";
+	                        }
+	
+	                        $strInputfield .= '<div class="'.$this->moduleName.'Selector" style="float: left; height: auto !important;">';
+	                        $strInputfield .= '<div class="'.$this->moduleName.'SelectorLeft" style="float: left; height: auto !important;"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple" style="width: 180px;">';
+	                        $strInputfield .= $arrSelectorOptions['not_selected'];
+	                        $strInputfield .= '</select></div>';
+	                        $strInputfield .= '<div class="'.$this->moduleName.'SelectorCenter" style="float: left; height: 100px; padding: 60px 10px 0px 10px;">';
+	                        $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],addElement,removeElement);" type="button">';
+	                        $strInputfield .= '<br />';
+	                        $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],removeElement,addElement);" type="button">';
+	                        $strInputfield .= '</div>';
+	                        $strInputfield .= '<div class="'.$this->moduleName.'SelectorRight" style="float: left; height: auto !important;"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple" style="width: 180px;">';
+	                        $strInputfield .= $arrSelectorOptions['selected'];
+	                        $strInputfield .= '</select></div>';
+	                        $strInputfield .= '</div>';
+	
+	                        $this->makeJavascriptInputfieldArray($arrInputfield['id'], $strSelectedOptionsName, 1, 1, "selector");
                         }
-
-                        $strInputfield .= '<div class="'.$this->moduleName.'Selector" style="float: left; height: auto !important;">';
-                        $strInputfield .= '<div class="'.$this->moduleName.'SelectorLeft" style="float: left; height: auto !important;"><select id="'.$strNotSelectedOptionsName.'" name="'.$strNotSelectedOptionsName.'[]" size="12" multiple="multiple" style="width: 180px;">';
-                        $strInputfield .= $arrSelectorOptions['not_selected'];
-                        $strInputfield .= '</select></div>';
-                        $strInputfield .= '<div class="'.$this->moduleName.'SelectorCenter" style="float: left; height: 100px; padding: 60px 10px 0px 10px;">';
-                        $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],addElement,removeElement);" type="button">';
-                        $strInputfield .= '<br />';
-                        $strInputfield .= '<input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.entryModfyForm.elements[\''.$strSelectedOptionsName.'\'],document.entryModfyForm.elements[\''.$strNotSelectedOptionsName.'\'],removeElement,addElement);" type="button">';
-                        $strInputfield .= '</div>';
-                        $strInputfield .= '<div class="'.$this->moduleName.'SelectorRight" style="float: left; height: auto !important;"><select id="'.$strSelectedOptionsName.'" name="'.$strSelectedOptionsName.'[]" size="12" multiple="multiple" style="width: 180px;">';
-                        $strInputfield .= $arrSelectorOptions['selected'];
-                        $strInputfield .= '</select></div>';
-                        $strInputfield .= '</div>';
-
-                        $this->makeJavascriptInputfieldArray($arrInputfield['id'], $strSelectedOptionsName, 1, 1, "selector");
                     }
 
                     if($arrInputfield['type_name'] == 'add_step' && $objInit->mode != 'backend') {

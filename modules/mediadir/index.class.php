@@ -132,6 +132,10 @@ class mediaDirectory extends mediaDirectoryLibrary
                     exit;
                 }
                 break;
+            case 'myentries':
+                parent::checkAccess('my_entries');
+                $this->showMyEntries();
+                break;
             case 'detail':
                 parent::checkAccess('show_entry');
                 $this->showEntry();
@@ -231,10 +235,36 @@ class mediaDirectory extends mediaDirectoryLibrary
 
             }
         }
+        
+        //check form cmd
+        if(!empty($_GET['cmd'])) {
+            $arrFormCmd = array();
+                
+            $objForms = new mediaDirectoryForm();
+            foreach ($objForms->arrForms as $intFormId => $arrForm) {
+                if(!empty($arrForm['formCmd'])) {
+                    $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
+                }
+            }
+                
+            if(!empty($arrFormCmd[$_GET['cmd']])) {
+                $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
+            }
+        }
 
         //list levels / categories
         if($this->_objTpl->blockExists($this->moduleName.'CategoriesLevelsList')){
-            if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 ) {
+        	if($intCmdFormId != 0) {
+                $bolFormUseCategory = $objForms->arrForms[intval($intCmdFormId)]['formUseCategory'];
+        		$bolFormUseLevel = $objForms->arrForms[intval($intCmdFormId)]['formUseLevel'];
+        	} else {
+        		$bolFormUseCategory = true;
+                $bolFormUseLevel = true;
+        	}
+        	//$objForms = new mediaDirectoryForm(intval($intFormId));
+        	
+        	
+            if($this->arrSettings['settingsShowLevels'] == 1 && $intCategoryId == 0 && $bolFormUseLevel) {
                 $objLevels = new mediaDirectoryLevel(null, $intLevelId, 1);
                 $objCategories = new mediaDirectoryCategory(null, $intCategoryId, 1);
                 $objLevels->listLevels($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
@@ -242,7 +272,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $this->_objTpl->parse($this->moduleName.'CategoriesLevelsList');
             }
 
-            if($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) {
+            if(($objLevel->arrLevels[$intLevelId]['levelShowCategories'] == 1 || $this->arrSettings['settingsShowLevels'] == 0 || $intCategoryId != 0) && $bolFormUseCategory) {
                 $objCategories = new mediaDirectoryCategory(null, $intCategoryId, 1);
                 $objCategories->listCategories($this->_objTpl, 2, null, null, null, $arrExistingBlocks);
                 $this->_objTpl->clearVariables();
@@ -258,26 +288,10 @@ class mediaDirectory extends mediaDirectoryLibrary
         //list entries
         if($this->_objTpl->blockExists($this->moduleName.'EntryList')){
             $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
-            
-            //check form cmd
-	        if(!empty($_GET['cmd'])) {
-	            $arrFormCmd = array();
-	            
-	            $objForms = new mediaDirectoryForm();
-	            foreach ($objForms->arrForms as $intFormId => $arrForm) {
-	                if(!empty($arrForm['formCmd'])) {
-	                  $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
-	                }
-	            }
-	            
-	            if(!empty($arrFormCmd[$_GET['cmd']])) {
-	                $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
-	            }
-	        }
 
 	        //check category / level
-            if($intCategoryId == 0 && $intLevelId == 0) {
-                $bolLatest = true;
+            if(($intCategoryId == 0 && $bolFormUseCategory) || ($intLevelId == 0  && $bolFormUseLevel)) {
+            	$bolLatest = true;
                 $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
             } else {
                 $bolLatest = false;
@@ -289,7 +303,7 @@ class mediaDirectory extends mediaDirectoryLibrary
             }
 
             //check show entries
-            if($objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1 || $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1 || $bolLatest == true) {
+            if($objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1 || $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1 || $bolLatest == true || (!$bolFormUseCategory && !$bolFormUseLevel)) {
                 $objEntries = new mediaDirectoryEntry();
                 if(!$bolLatest) {
                     $intNumEntries = intval($objEntries->countEntries($intCategoryId, $intLevelId));
@@ -447,6 +461,29 @@ class mediaDirectory extends mediaDirectoryLibrary
 
         $objEntry = new mediaDirectoryEntry();
         $objEntry->getEntries(null, null, null, null, true, null, true, null, $this->arrSettings['settingsLatestNumFrontend']);
+        $objEntry->listEntries($this->_objTpl, 2);
+    }
+    
+    
+    function showMyEntries()
+    {
+        global $_ARRAYLANG, $_CORELANG;
+
+        $this->_objTpl->setTemplate($this->pageContent, true, true);
+        
+        //get user attributes
+        $objFWUser  = FWUser::getFWUserObject();
+        $objUser    = $objFWUser->objUser;
+        $intUserId  = intval($objUser->getId());
+
+        //get searchform 
+        if($this->_objTpl->blockExists($this->moduleName.'Searchform')){
+            $objSearch = new mediaDirectorySearch();
+            $objSearch->getSearchform($this->_objTpl, 1);
+        }
+
+        $objEntry = new mediaDirectoryEntry();
+        $objEntry->getEntries(null, null, null, null, null, null, true, null, 'n', $intUserId);
         $objEntry->listEntries($this->_objTpl, 2);
     }
 
@@ -627,7 +664,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                     parent::setJavascript($objInputfields->getInputfieldJavascript());
 
                     //get form onsubmit
-                    $strOnSubmit = $this->getFormOnSubmit();
+                    $strOnSubmit = $this->getFormOnSubmit($intFormId);
 
                     //parse blocks
                     $this->_objTpl->hideBlock($this->moduleName.'Forms');

@@ -370,6 +370,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleName.'InputfieldList');
+                $this->_objTpl->hideBlock($this->moduleName.'SpezfieldList');
             } else {
                 //save entry data
                 if(isset($_POST['submitEntryModfyForm']) && intval($_POST['formId']) != 0) {
@@ -521,13 +522,16 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     $intEntryDourationStart = date("Y-m-d", mktime());
                     $intEntryDourationEnd = date("Y-m-d", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                 }
+                
+                //parse spez fields
+                $this->_objTpl->parse($this->moduleName.'SpezfieldList');
 
                 //generate javascript
                 parent::setJavascript($this->getSelectorJavascript());
                 parent::setJavascript($objInputfields->getInputfieldJavascript());
 
                 //get form onsubmit
-                $strOnSubmit = $this->getFormOnSubmit();
+                $strOnSubmit = $this->getFormOnSubmit($intFormId);
 
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleName.'FormList');
