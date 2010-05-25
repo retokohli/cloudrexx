@@ -2,24 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=home&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=home&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=82</loc>
-		<lastmod>2009-02-19</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=1296</loc>
+		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=25</loc>
 		<lastmod>2009-03-06</lastmod>
 		<changefreq>weekly</changefreq>
 		<priority>0.5</priority>
@@ -31,26 +25,8 @@
 		<priority>0.5</priority>
 	</url>
 	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=25</loc>
-		<lastmod>2009-03-06</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=1149</loc>
-		<lastmod>2009-03-05</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=1318</loc>
 		<lastmod>2009-03-06</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=1150</loc>
-		<lastmod>2009-03-04</lastmod>
 		<changefreq>weekly</changefreq>
 		<priority>0.5</priority>
 	</url>
@@ -62,37 +38,31 @@
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=scouts&amp;langId=1</loc>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=immo&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=scouts&amp;langId=1</loc>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
@@ -104,511 +74,193 @@
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=members&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=blog&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=calendar&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=memberdir&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=guestbook&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=voting&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=knowledge&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=newsletter&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=docsys&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=feed&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_profiledata&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_avatar&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;cmd=inbox&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_profile&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_account&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_accountdata&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_password&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_delete&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=1423</loc>
-		<lastmod>2009-03-16</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=82</loc>
-		<lastmod>2009-03-06</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=83</loc>
-		<lastmod>2009-02-19</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?page=2</loc>
-		<lastmod>2009-03-02</lastmod>
-		<changefreq>weekly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=market&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=jobs&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=egov&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=podcast&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=gallery&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=ecard&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=livecam&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=media1&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=market&amp;cmd=add&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=calendar&amp;cmd=eventlist&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=calendar&amp;cmd=boxes&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=calendar&amp;cmd=addevent&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;cmd=latest&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;cmd=myfeeds&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;cmd=add&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;cmd=discounts&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;cmd=cart&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;cmd=einzug&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;cmd=1&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;cmd=feed&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;cmd=submit&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=blog&amp;cmd=search&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=blog&amp;cmd=cloud&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;cmd=1&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;cmd=newest&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;cmd=10&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=notification&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=cloud&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=toplist&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=searchTags&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=guestbook&amp;cmd=post&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;cmd=buddiesList&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;cmd=outbox&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=members&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=blog&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=calendar&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=memberdir&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=guestbook&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=voting&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=knowledge&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=newsletter&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=docsys&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=feed&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=partners&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=contact&amp;cmd=7&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_profiledata&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_avatar&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;cmd=inbox&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_profile&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_account&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_accountdata&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_password&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=access&amp;cmd=settings_delete&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
@@ -632,397 +284,343 @@
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=market&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=jobs&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=egov&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=podcast&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=gallery&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=ecard&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=livecam&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=media1&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=market&amp;cmd=add&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=calendar&amp;cmd=eventlist&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=calendar&amp;cmd=boxes&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;cmd=latest&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;cmd=myfeeds&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=directory&amp;cmd=add&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;cmd=discounts&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;cmd=cart&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=shop&amp;cmd=einzug&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;cmd=1&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;cmd=feed&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=news&amp;cmd=submit&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=auction&amp;cmd=search&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=blog&amp;cmd=search&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=blog&amp;cmd=cloud&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;cmd=1&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;cmd=newest&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=downloads&amp;cmd=10&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=notification&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=cloud&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=toplist&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=forum&amp;cmd=searchTags&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=guestbook&amp;cmd=post&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=contact&amp;cmd=6&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;cmd=buddiesList&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=u2u&amp;cmd=outbox&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=printshop&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=printshop&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=printshop&amp;cmd=order&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=printshop&amp;cmd=order&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=immo&amp;cmd=immolist&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=immo&amp;cmd=map&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=immo&amp;cmd=showObj&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=immo&amp;cmd=getPDF&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
-		<changefreq>hourly</changefreq>
-		<priority>0.5</priority>
-	</url>
-	<url>
-		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=immo&amp;cmd=interest&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=add&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=add&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=map&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=map&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=map&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=map&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=search&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=search&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=search&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=search&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=popular&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=popular&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=popular&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=popular&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=latest&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=latest&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=latest&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=latest&amp;langId=1</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=add&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>
 	<url>
 		<loc>http://pkg.contrexxlabs.com/trunk/index.php?section=mediadir&amp;cmd=add&amp;langId=2</loc>
-		<lastmod>2010-05-19</lastmod>
+		<lastmod>2010-05-25</lastmod>
 		<changefreq>hourly</changefreq>
 		<priority>0.5</priority>
 	</url>

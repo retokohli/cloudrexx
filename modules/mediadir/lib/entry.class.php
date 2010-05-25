@@ -13,7 +13,6 @@
  */
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/inputfield.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/mail.class.php';
-require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/voting.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/comment.class.php';
@@ -52,7 +51,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         parent::getFrontendLanguages();
     }
 
-    function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null)
+    function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
 
@@ -67,27 +66,12 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $this->intLimitEnd = $intLimitEnd;
         $this->intUserId = intval($intUserId);
         $this->bolPopular = intval($bolPopular);
+        $this->intCmdFormId = intval($intCmdFormId);
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && (!empty($strSearchTerm))) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
         } else {
             $this->strSearchTerm = null;
-        }
-        
-        if(!empty($_GET['cmd'])) {
-        	$arrFormCmd = array();
-        	
-        	$objForms = new mediaDirectoryForm();
-        	
-        	foreach ($objForms->arrForms as $intFormId => $arrForm) {
-        		if(!empty($arrForm['formCmd'])) {
-        		  $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
-        		}
-        	}
-            
-            if(!empty($arrFormCmd[$_GET['cmd']])) {
-            	$this->intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
-            }
         }
         
         if($this->intCmdFormId != 0) {
