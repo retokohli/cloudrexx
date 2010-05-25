@@ -11,6 +11,7 @@
 /**
  * Includes
  */
+require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
 
 class mediaDirectoryLibrary
 {
@@ -201,6 +202,11 @@ class mediaDirectoryLibrary
                         break;
                     case 'show_entry':
                         //no access rules define
+                        break;
+                    case 'my_entries':
+                        if(!$bolUserLogin) {
+                            $strStatus = 'login';
+                        }
                         break;
                 }
 
@@ -526,14 +532,19 @@ EOF;
 
 
 
-    function getFormOnSubmit(){
-        $strFormOnSubmit  = "selectAll(document.entryModfyForm.elements['selectedCategories[]']); ";
-
+    function getFormOnSubmit($intFormId){
+    	$objForms = new mediaDirectoryForm(intval($intFormId));
+        
+        if($objForms->arrForms[intval($intFormId)]['formUseCategory']) {
+        	$strFormOnSubmit  = "selectAll(document.entryModfyForm.elements['selectedCategories[]']); ";
+        }
+        
         $this->getSettings();
-        if($this->arrSettings['settingsShowLevels'] == 1) {
+        
+        if($objForms->arrForms[intval($intFormId)]['formUseLevel'] && $this->arrSettings['settingsShowLevels'] == 1) {
             $strFormOnSubmit  .= "selectAll(document.entryModfyForm.elements['selectedLevels[]']); ";
         }
-
+        
         $strFormOnSubmit   .= "return checkAllFields();";
 
         return $strFormOnSubmit;

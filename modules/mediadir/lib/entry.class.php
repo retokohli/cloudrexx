@@ -424,14 +424,14 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                        $objTpl->clearVariables();
 	                    }
                     }
-                } /*else {
+                } else {
                     $objTpl->setVariable(array(
                         'TXT_'.$this->moduleLangVar.'_SEARCH_MESSAGE' => $_ARRAYLANG['TXT_MEDIADIR_NO_ENTRIES_FOUND'],
                     ));
 
-                    $objTpl->parse($this->modulName.'NoEntriesFound');
+                    $objTpl->parse($this->moduleName.'NoEntriesFound');
                     $objTpl->clearVariables();
-                }*/
+                }
                 break;
             case 4:
                 //Google Map
