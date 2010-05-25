@@ -258,7 +258,24 @@ class mediaDirectory extends mediaDirectoryLibrary
         //list entries
         if($this->_objTpl->blockExists($this->moduleName.'EntryList')){
             $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+            
+            //check form cmd
+	        if(!empty($_GET['cmd'])) {
+	            $arrFormCmd = array();
+	            
+	            $objForms = new mediaDirectoryForm();
+	            foreach ($objForms->arrForms as $intFormId => $arrForm) {
+	                if(!empty($arrForm['formCmd'])) {
+	                  $arrFormCmd[$arrForm['formCmd']] = intval($intFormId);
+	                }
+	            }
+	            
+	            if(!empty($arrFormCmd[$_GET['cmd']])) {
+	                $intCmdFormId = intval($arrFormCmd[$_GET['cmd']]);
+	            }
+	        }
 
+	        //check category / level
             if($intCategoryId == 0 && $intLevelId == 0) {
                 $bolLatest = true;
                 $intLimitEnd = intval($this->arrSettings['settingsLatestNumOverview']);
@@ -271,6 +288,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $strPagingLevelParam = $intLevelId != 0 ? "&amp;lid=".$intLevelId : '';
             }
 
+            //check show entries
             if($objLevel->arrLevels[$intLevelId]['levelShowEntries'] == 1 || $objCategory->arrCategories[$intCategoryId]['catShowEntries'] == 1 || $bolLatest == true) {
                 $objEntries = new mediaDirectoryEntry();
                 if(!$bolLatest) {
@@ -283,10 +301,11 @@ class mediaDirectory extends mediaDirectoryLibrary
                     }
                 }
 
-                $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd);
+                $objEntries->getEntries(null,$intLevelId,$intCategoryId,null,$bolLatest,null,1,$intLimitStart, $intLimitEnd, null, null, $intCmdFormId);
                 $objEntries->listEntries($this->_objTpl, 2);
             }
 
+            //no entries found
             if(empty($objEntries->arrEntries)) {
                 $this->_objTpl->hideBlock($this->moduleName.'EntryList');
                 $this->_objTpl->clearVariables();
