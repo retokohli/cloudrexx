@@ -55,6 +55,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = 'Link zu Googe Maps';
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYNAME'] = 'Anzeigename';
         $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'] = 'Übersetzungsstatus';
+        $_ARRAYLANG['TXT_MEDIADIR_READY_TO_CONFIRM'] = 'Zur Prüfung freigeben'; 
 
         $this->pageContent = $pageContent;
     }
@@ -483,7 +484,13 @@ class mediaDirectory extends mediaDirectoryLibrary
         }
 
         $objEntry = new mediaDirectoryEntry();
-        $objEntry->getEntries(null, null, null, null, null, null, true, null, 'n', $intUserId);
+        
+        if($this->arrSettings['settingsReadyToConfirm'] == 1) {
+            $objEntry->getEntries(null, null, null, null, null, null, true, null, 'n', $intUserId, null, null, true);
+        } else {
+            $objEntry->getEntries(null, null, null, null, null, null, true, null, 'n', $intUserId);
+        }
+         
         $objEntry->listEntries($this->_objTpl, 2);
     }
 
@@ -619,7 +626,12 @@ class mediaDirectory extends mediaDirectoryLibrary
                     if(intval($intEntryId) != 0) {
                         //get entry data
                         $objEntry = new mediaDirectoryEntry();
-                        $objEntry->getEntries($intEntryId);
+                        if($this->arrSettings['settingsReadyToConfirm'] == 1) {
+                        	$objEntry->getEntries($intEntryId,null,null,null,null,null,true,null,'n',null,null,null,true);
+                        } else {
+                        	$objEntry->getEntries($intEntryId);
+                        }
+                        
                         $intFormId = $objEntry->arrEntries[$intEntryId]['entryFormId'];
                     } else {
                          //set form id
@@ -658,6 +670,17 @@ class mediaDirectory extends mediaDirectoryLibrary
 	                } else {
 	                    $this->_objTpl->hideBlock($this->moduleName.'TranslationStatus');
 	                }
+	                
+	                //get ready to confirm
+	                if($this->arrSettings['settingsReadyToConfirm'] == 1 && intval($objEntry->arrEntries[$intEntryId]['entryReadyToConfirm']) == 0 && intval($objEntry->arrEntries[$intEntryId]['entryConfirmed']) == 0) {
+		                $strReadyToConfirm = '<p><input class="mediadirInputfieldCheckbox" name="readyToConfirm" id="mediadirInputfield_ReadyToConfirm" value="1" type="checkbox">&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_READY_TO_CONFIRM'].'</p>';
+	                } else {
+	                	$strReadyToConfirm = '<input type="hidden" name="readyToConfirm" value="1" />';
+	                }
+	                
+	                $this->_objTpl->setVariable(array(
+                        $this->moduleLangVar.'_READY_TO_CONFIRM' => $strReadyToConfirm,
+                    ));
 
                     //generate javascript
                     parent::setJavascript($this->getSelectorJavascript());
@@ -716,6 +739,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         //save entry data
         if(isset($_POST['submitEntryModfyForm']) && intval($_POST['entryId'])) {
             $objEntry = new mediaDirectoryEntry();
+            
             $strStatus = $objEntry->deleteEntry(intval($_POST['entryId']));
 
             if($strStatus == true) {
@@ -733,7 +757,14 @@ class mediaDirectory extends mediaDirectoryLibrary
         }
 
         $objEntry = new mediaDirectoryEntry();
-        $objEntry->getEntries($intEntryId,null,null,null,null,null,1,null,1);
+        
+        if($this->arrSettings['settingsReadyToConfirm'] == 1) {
+            $objEntry->getEntries($intEntryId,null,null,null,null,null,true,null,1,null,null,null,true);
+        } else {
+            $objEntry->getEntries($intEntryId,null,null,null,null,null,1,null,1);
+        }
+        
+        
         $objEntry->listEntries($this->_objTpl, 2);
 
         //parse global variables

@@ -32,6 +32,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
     private $intUserId;
     private $bolPopular;
     private $intCmdFormId;
+    private $bolReadyToConfirm;
 
     private $strBlockName;
 
@@ -51,7 +52,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         parent::getFrontendLanguages();
     }
 
-    function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null)
+    function getEntries($intEntryId=null, $intLevelId=null, $intCatId=null, $strSearchTerm=null, $bolLatest=null, $bolUnconfirmed=null, $bolActive=null, $intLimitStart=null, $intLimitEnd='n', $intUserId=null, $bolPopular=null, $intCmdFormId=null, $bolReadyToConfirm=null)
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
 
@@ -67,6 +68,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $this->intUserId = intval($intUserId);
         $this->bolPopular = intval($bolPopular);
         $this->intCmdFormId = intval($intCmdFormId);
+        $this->bolReadyToConfirm = intval($bolReadyToConfirm);
 
         if(($strSearchTerm != $_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM']) && (!empty($strSearchTerm))) {
             $this->strSearchTerm = contrexx_addslashes($strSearchTerm);
@@ -81,6 +83,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if(!empty($this->intEntryId)) {
             $strWhereEntryId = "AND (entry.`id` = ".$this->intEntryId.") ";
         }
+        
 
         if(!empty($this->intUserId)) {
             $strWhereEntryId = "AND (entry.`added_by` = ".$this->intUserId.") ";
@@ -108,8 +111,18 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if(!empty($this->bolUnconfirmed)) {
             $strWhereUnconfirmed = "AND (entry.`confirmed` = 0) ";
             $this->strBlockName = $this->moduleName."ConfirmList";
+            
+            if(!empty($this->bolReadyToConfirm)) {
+                $strWhereReadyToConfirm = "AND (entry.`ready_to_confirm` = '1' AND entry.`confirmed` = 0) ";
+            }
         } else {
-            $strWhereUnconfirmed = "AND (entry.`confirmed` = 1) ";
+            if(!empty($this->bolReadyToConfirm)) {
+                $strWhereReadyToConfirm = "AND ((entry.`ready_to_confirm` = '0' AND entry.`confirmed` = 0) OR (entry.`confirmed` = 1)) ";
+                $strWhereUnconfirmed = "";
+            } else {
+                $strWhereUnconfirmed = "AND (entry.`confirmed` = 1) ";
+                $strWhereReadyToConfirm = "";
+            }
         }
 
         if(!empty($this->bolActive)) {
@@ -183,6 +196,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 entry.`duration_end` AS `duration_end`,
                 entry.`duration_notification` AS `duration_notification`,
                 entry.`translation_status` AS `translation_status`,
+                entry.`ready_to_confirm` AS `ready_to_confirm`,
                 rel_inputfield.`value` AS `value`
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
@@ -200,6 +214,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 ".$strWhereActive."
                 ".$strWhereLangId."
                 ".$strWhereFormId."
+                ".$strWhereReadyToConfirm."
             GROUP BY
                 entry.`id`
             ORDER BY
@@ -208,8 +223,9 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 entry.`id` DESC
                 ".$strSelectLimit."
         ";
-
+$objDatabase->debug=0;
         $objEntries = $objDatabase->Execute($query);
+$objDatabase->debug=0;
 
         $arrEntries = array();
 
@@ -240,6 +256,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     $arrEntry['entryDurationEnd'] = intval($objEntries->fields['duration_end']);
                     $arrEntry['entryDurationNotification'] = intval($objEntries->fields['duration_notification']);
                     $arrEntry['entryTranslationStatus'] = explode(",",$objEntries->fields['translation_status']);
+                    $arrEntry['entryReadyToConfirm'] = intval($objEntries->fields['ready_to_confirm']);
 
                     $this->arrEntries[$objEntries->fields['id']] = $arrEntry;
                 }
@@ -366,6 +383,12 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                        } else {
 	                            $strDetailCmd = 'detail';
 	                        }
+	                        
+	                        if($arrEntry['entryReadyToConfirm'] == 1 || $arrEntry['entryConfirmed'] == 1) {
+                                $strDetailUrl = 'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.$strLevelLink.$strCategoryLink.'&amp;eid='.$arrEntry['entryId'];
+                            } else {
+                                $strDetailUrl = '#';
+                            }
 
 	                        $objTpl->setVariable(array(
 	                            $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
@@ -378,7 +401,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                                 $this->moduleLangVar.'_ENTRY_LEVELS' =>  $this->getCategoriesLevels(2, $arrEntry['entryId']),
                                 $this->moduleLangVar.'_ENTRY_HITS' =>  $arrEntry['entryHits'],
 	                            $this->moduleLangVar.'_ENTRY_POPULAR_HITS' =>  $arrEntry['entryPopularHits'],
-	                            $this->moduleLangVar.'_ENTRY_DETAIL_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd='.$strDetailCmd.$strLevelLink.$strCategoryLink.'&amp;eid='.$arrEntry['entryId'],
+	                            $this->moduleLangVar.'_ENTRY_DETAIL_URL' => $strDetailUrl, 
 	                            $this->moduleLangVar.'_ENTRY_EDIT_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=edit&amp;eid='.$arrEntry['entryId'],
 	                            $this->moduleLangVar.'_ENTRY_DELETE_URL' =>  'index.php?section='.$this->moduleName.'&amp;cmd=delete&amp;eid='.$arrEntry['entryId'],
 	                            'TXT_'.$this->moduleLangVar.'_ENTRY_DELETE' =>  $_ARRAYLANG['TXT_MEDIADIR_DELETE'],
@@ -568,6 +591,17 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $intUserId = intval($objFWUser->objUser->getId());
         $strLastIp = contrexx_addslashes($_SERVER['REMOTE_ADDR']);
         $strTransStatus = contrexx_addslashes(join(",", $arrData['translationStatus']));
+        
+        
+        if($objInit->mode == 'backend') {
+            $intReadyToConfirm = 1;
+        } else {
+        	if($this->arrSettings['settingsReadyToConfirm'] == 1) {
+                $intReadyToConfirm = intval($arrData['readyToConfirm']);
+        	} else {
+                $intReadyToConfirm = 1;
+        	}
+        }
 
         switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
         	case 1:
@@ -626,7 +660,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     `duration_start`='".$intDurationStart."',
                     `duration_end`='".$intDurationEnd."',
                     `duration_notification`='0',
-                    `translation_status`='".$strTransStatus."'
+                    `translation_status`='".$strTransStatus."',
+                    `ready_to_confirm`='".$intReadyToConfirm."'
             ");
 
             if($objInsertEntry !== false) {
@@ -671,6 +706,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     `update_date`='".$strUpdateDate."',
                     `validate_date`='".$strValidateDate."',
                     `translation_status`='".$strTransStatus."',
+                    `ready_to_confirm`='".$intReadyToConfirm."',
                     ".$strAdditionalQuery."
                 WHERE
                     `id`='".$intId."'
