@@ -42,7 +42,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DEFAULT_DISPLAYDURATION'] = "Standard Anzeigedauer";
         $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DEFAULT_DISPLAYDURATION_INFO'] = "Mit dieser Option definieren sie, wielange ein Eintrag standardmässig angezeigt wird. Diese Angaben können zusätzlich bei jedem Eintrag einzeln definiert werden. ";
         $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION'] = "Benachrichtigung bei Ablauf";
-        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION_INFO'] = "Benachrichtigung bei Ablauf fsf sdf sdf sdf ";
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION_INFO'] = "Läuft die Anzeigedauer eines Eintrages aus, wird ein Benachrichtigungsmail ausgelöst.";
         $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION_DAYSBEFOR'] = "Tag(e) vor Ablauf";
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION'] = "Anzeigedauer";
         $_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_ALWAYS'] = "Unbegrenzt";
@@ -61,10 +61,12 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_CMD'] = 'Parameter (cmd)';
         $_ARRAYLANG['TXT_MEDIADIR_CMD_INFO'] = 'Mit diesem Parameter kann auf der Modulseite die Auswahl der Einträge auf diese Formular Vorlage reduziert werden.';
         $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY'] = 'Kategorien verwenden';
-        $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY_INFO'] = 'Mit dieser Option kann die Zuordnung der Kategorien bei dieser Formular Vorlage ein- bzw. asusgeschaltet werden.';
+        $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY_INFO'] = 'Mit dieser Option kann die Zuordnung der Kategorien bei dieser Formular Vorlage ein- bzw. ausgeschaltet werden.';
         $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL'] = 'Ebenen verwenden';
-        $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Mit dieser Option kann die Zuordnung der Ebenen bei dieser Formular Vorlage ein- bzw. asusgeschaltet werden.';
-
+        $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Mit dieser Option kann die Zuordnung der Ebenen bei dieser Formular Vorlage ein- bzw. ausgeschaltet werden.';
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'] = 'Besucher mÃ¼ssen Einträge fÃ¼r Bestätigung freigeben'; 
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'] = 'Wird diese Einstellung aktiviert, muss der Besucher seinen Eintrag durch auswählen einer Option explizit freigeben zur Prüfung. Ansonsten kann der Eintrag nicht geprüft werden.<br /><br />Es wird empfohlen, diese einstellung bei grösseren Formularen zu aktivieren, damit ein Eintrag nicht in einem Zug erfasst werden muss un somit zwischen gespeichert werden kann.'; 
+        
         //globals
         parent::__construct(ASCMS_MODULE_PATH.'/mediadir/template');
         parent::getFrontendLanguages();
@@ -253,7 +255,12 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         //show unconfirmed entries (if activated)
         if($this->arrSettings['settingsConfirmNewEntries'] == 1) {
             $objUnconfirmedEntries = new mediaDirectoryEntry();
-            $objUnconfirmedEntries->getEntries(null,null,null,null, null, 1,null,0,'n');
+            
+            if($this->arrSettings['settingsReadyToConfirm'] == 1) {
+                $objUnconfirmedEntries->getEntries(null,null,null,null, null, 1,null,0,'n',null,null,null,true);
+            } else {
+                $objUnconfirmedEntries->getEntries(null,null,null,null, null, 1,null,0,'n');
+            }
             $objUnconfirmedEntries->listEntries($this->_objTpl, 1);
 
             if(empty($objUnconfirmedEntries->arrEntries)) {
@@ -403,6 +410,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                     }
                     
                     $intFormId = $objEntry->arrEntries[$intEntryId]['entryFormId'];
+                    
                 } else {
                     //set form id
                     if($intCountForms == 1) {

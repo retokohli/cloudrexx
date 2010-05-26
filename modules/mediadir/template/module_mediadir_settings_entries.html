@@ -13,6 +13,7 @@ Text[12]=['','{TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_INFO}'];
 Text[13]=['','{TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_INFO}'];
 Text[14]=['','{TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES_INFO}'];
 Text[15]=['','{TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO}'];
+Text[16]=['','{TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO}'];
 
 function toggleDisplayDourationType(){
     elmSelect = document.getElementById('durationType');
@@ -71,36 +72,42 @@ function toggleDisplayDourationNotification(){
         </td>
     </tr>
     <tr class="row1">
+        <td width="280">{TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM}</td>
+        <td>
+            <input type="radio" name="settingsReadyToConfirm" value="1" {MEDIADIR_SETTINGS_READY_TO_CONFIRM_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsReadyToConfirm" value="0" {MEDIADIR_SETTINGS_READY_TO_CONFIRM_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[16],Style[0])" />
+        </td>
+    </tr>
+    <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES}</td>
         <td>
             <input type="radio" name="settingsAllowEditEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowEditEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_EDIT_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[11],Style[0])" />
         </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES}</td>
         <td>
             <input type="radio" name="settingsAllowDelEntries" value="1" {MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsAllowDelEntries" value="0" {MEDIADIR_SETTINGS_ALLOW_DEL_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[12],Style[0])" />
         </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_COUNT_ENTRIES}</td>
         <td>
             <input type="radio" name="settingsCountEntries" value="1" {MEDIADIR_SETTINGS_COUNT_ENTRIES_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsCountEntries" value="0" {MEDIADIR_SETTINGS_COUNT_ENTRIES_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[8],Style[0])" />
         </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
         <td width="280">{TXT_MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG}</td>
         <td>
             <input type="radio" name="settingsShowEntriesInAllLang" value="1" {MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsShowEntriesInAllLang" value="0" {MEDIADIR_SETTINGS_SHOW_ENTRIES_IN_ALL_LANG_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[13],Style[0])" />
         </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS}</td>
         <td>
             <input type="radio" name="settingsTranslationStatus" value="1" {MEDIADIR_SETTINGS_TRANSLATION_STATUS_ON} /> {TXT_MEDIADIR_ACTIVATE} &nbsp;<input type="radio" name="settingsTranslationStatus" value="0" {MEDIADIR_SETTINGS_TRANSLATION_STATUS_OFF} /> {TXT_MEDIADIR_DEACTIVATE}&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[15],Style[0])" />
         </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
         <td width="280" valign="top">{TXT_MEDIADIR_SETTINGS_NUM_ENTRIES_PER_GROUP}</td>
         <td>
             <table border="0" cellpadding="2" cellspacing="0">
@@ -122,13 +129,13 @@ function toggleDisplayDourationNotification(){
             </table>
         </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
         <td width="280">{TXT_MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES}</td>
         <td>
             <input name="settingsPagingNumEntries" type="text" style="width: 35px" value="{MEDIADIR_SETTINGS_PAGING_NUM_ENTRIES}" />&nbsp;&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[14],Style[0])" />
         </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
         <td>{TXT_MEDIADIR_SETTINGS_DISPLAYDURATION}</td>
         <td>
             <select id="durationType" name="settingsEntryDisplaydurationType" style="width: 302px;" onchange="toggleDisplayDourationType();">
@@ -140,7 +147,7 @@ function toggleDisplayDourationNotification(){
             </span>
         </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
         <td>{TXT_MEDIADIR_SETTINGS_NOTIFICATION_DISPLAYDURATION}</td>
         <td>
             <select id="durationNotification" name="durationNotification" style="width: 302px;" onchange="toggleDisplayDourationNotification();">

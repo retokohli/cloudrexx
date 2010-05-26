@@ -474,6 +474,8 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR'],
             'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS'],
             'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO'],
+            'TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'],
+            'TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'],
         ));
 
         if($this->arrSettings['settingsConfirmNewEntries'] == 1) {
@@ -546,6 +548,14 @@ EOF;
         } else {
             $strTransStatusOn = '';
             $strTransStatusOff = 'checked="checked"';
+        }
+        
+        if($this->arrSettings['settingsReadyToConfirm'] == 1) {
+            $strReadyToConfirmOn = 'checked="checked"';
+            $strReadyToConfirmOff = '';
+        } else {
+            $strReadyToConfirmOn = '';
+            $strReadyToConfirmOff = 'checked="checked"';
         }
 
         if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
@@ -626,8 +636,10 @@ EOF;
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_ON' => $strDisplaydurationNotificationOn,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFIVATION_SHOW_DAYBEFORE' => $strDisplaydurationNotificationShowDaybefore,
             $this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_NOTIFICATION_VALUE' => $strDisplaydurationNotificationValue,
-            'MEDIADIR_SETTINGS_TRANSLATION_STATUS_OFF' => $strTransStatusOff,
-            'MEDIADIR_SETTINGS_TRANSLATION_STATUS_ON' => $strTransStatusOn,
+            $this->moduleLangVar.'_SETTINGS_TRANSLATION_STATUS_OFF' => $strTransStatusOff,
+            $this->moduleLangVar.'_SETTINGS_TRANSLATION_STATUS_ON' => $strTransStatusOn,
+            $this->moduleLangVar.'_SETTINGS_READY_TO_CONFIRM_ON' => $strReadyToConfirmOn,
+            $this->moduleLangVar.'_SETTINGS_READY_TO_CONFIRM_OFF' => $strReadyToConfirmOff,
         ));
 
         if(empty($this->arrCommunityGroups)) {
