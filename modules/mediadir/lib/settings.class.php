@@ -193,7 +193,7 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
             $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_STREET'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[street]" id="'.$strStreetId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
             $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_CITY'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[place]" id="'.$strZipId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="" onfocus="this.select();" /></td></tr>';
             $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZIP'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zip]" id="'.$strCityId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="" onfocus="this.select();" /></td></tr>';
-            $strGoogleMap .= '<tr><td style="border: 0px;"><br /></td><td style="border: 0px;"><input type="button" onclick="searchAddress();" name="settingsGoogleMap[search]" id="mediadirInputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
+            $strGoogleMap .= '<tr><td style="border: 0px;"><br /></td><td style="border: 0px;"><input type="button" onclick="searchAddress();" name="settingsGoogleMap[search]" id="'.$this->moduleName.'Inputfield_'.$intId.'_search" value="'.$_CORELANG['TXT_SEARCH'].'" /></td></tr>';
             $strGoogleMap .= '<tr><td style="border: 0px;" coldpan="2"><br /></td></tr>';
             $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LON'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lon]" id="'.$strLonId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLon.'" onfocus="this.select();" /></td></tr>';
             $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_LAT'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[lat]" id="'.$strLatId.'" class="'.$this->moduleName.'InputfieldGoogleMapLarge" value="'.$strValueLat.'" onfocus="this.select();" /></td></tr>';
@@ -1206,7 +1206,7 @@ EOF;
                 $objTpl->setVariable(array(
                     'TXT_'.$this->moduleLangVar.'_SETTINGS_NO_COMMUNITY_GROUPS' => $_ARRAYLANG['TXT_MEDIADIR_NO_COMMUNITY_GROUPS'],
                 ));
-                $objTpl->parse('mediadirFormNoCommunityGroup');
+                $objTpl->parse($this->moduleName.'FormNoCommunityGroup');
             } else {
                 $i=0;
                 foreach ($this->arrCommunityGroups as $intGroupId => $arrGroup) {

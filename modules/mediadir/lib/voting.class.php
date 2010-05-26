@@ -36,32 +36,32 @@ class mediaDirectoryVoting extends mediaDirectoryLibrary
 
         $strVoteJavascript  =  <<<EOF
 
-var mediadirVote = function(votes, entry)
+var {$this->moduleName}Vote = function(votes, entry)
 {
-    $('voteForm_'+entry).update('<img src="images/modules/mediadir/loading.gif" border="0" alt="loading..." />');
+    $('voteForm_'+entry).update('<img src="images/modules/{$this->moduleName}/loading.gif" border="0" alt="loading..." />');
 
     if(new Ajax.Request('index.php', {
             method: 'get',
-            parameters: {section : "mediadir", vote : votes, eid : entry},
+            parameters: {section : "{$this->moduleName}", vote : votes, eid : entry},
             onSuccess: function (transport){
                 var response = transport.responseText;
                 var status = response.substr(0,1);
                 var votes = response.substr(1);
 
                 if(status == 1) {
-                    $('voteForm_'+entry).className = 'mediadirVotingOk';
-                    $('votes_'+entry).className = 'mediadirNewVote';
+                    $('voteForm_'+entry).className = '{$this->moduleName}VotingOk';
+                    $('votes_'+entry).className = '{$this->moduleName}NewVote';
                     $('votes_'+entry).update(votes);
                     $('voteForm_'+entry).update('$strOkMessage');
                 } else {
-                    $('voteForm_'+entry).className = 'mediadirVotingErr';
+                    $('voteForm_'+entry).className = '{$this->moduleName}VotingErr';
                     $('votes_'+entry).update(response);
                     $('voteForm_'+entry).update('$strErrMessage');
                 }
 
             },
             onFailure: function(){
-                $('voteForm_'+entry).className = 'mediadirVotingErr';
+                $('voteForm_'+entry).className = '{$this->moduleName}VotingErr';
                 $('voteForm_'+entry).update('$strErrMessage');
             }
         })) {

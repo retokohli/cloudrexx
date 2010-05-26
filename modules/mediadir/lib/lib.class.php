@@ -16,13 +16,13 @@ require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
 class mediaDirectoryLibrary
 {
 	public $_objTpl;
-	
+
     public $arrFrontendLanguages = array();
     public $arrSettings = array();
     public $arrCommunityGroups = array();
 
     public $strJavascript;
-    
+
     public $moduleName = "mediadir";
     public $moduleTablePrefix = "mediadir";
     public $moduleLangVar = "MEDIADIR";
@@ -34,7 +34,7 @@ class mediaDirectoryLibrary
     {
     	$this->_objTpl = new HTML_Template_Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-    	
+
     	$this->_objTpl->setGlobalVariable(array(
             'MODULE_NAME' =>  $this->moduleName,
             'CSRF' =>  'csrf='.CSRF::code(),
@@ -45,35 +45,35 @@ class mediaDirectoryLibrary
     function checkDisplayduration()
     {
         self::getSettings();
-        
+
         if($this->arrSettings['settingsEntryDisplaydurationNotification'] >= 1) {
-            include_once ASCMS_MODULE_PATH . '/mediadir/lib/entry.class.php';
-            include_once ASCMS_MODULE_PATH . '/mediadir/lib/mail.class.php';
-            
+            include_once ASCMS_MODULE_PATH . '/'.$this->moduleName.'/lib/entry.class.php';
+            include_once ASCMS_MODULE_PATH . '/'.$this->moduleName.'/lib/mail.class.php';
+
 	        $objEntries = new mediaDirectoryEntry();
 	        $objEntries->getEntries(null, null, null, null, null, null, true);
-	        
+
             $intDaysbefore = intval($this->arrSettings['settingsEntryDisplaydurationNotification']);
             $intToday = mktime();
-            
+
             foreach ($objEntries->arrEntries as $intEntryId => $arrEntry) {
                 $intWindowEnd =  $arrEntry['entryDurationEnd'];
             	$intWindowEndDay =  date("d", $intWindowEnd);
                 $intWindowEndMonth =  date("m", $intWindowEnd);
                 $intWindowEndYear =  date("Y", $intWindowEnd);
-                
+
                 $intWindowStartDay = $intWindowEndDay-$intDaysbefore;
                 $intWindowStart = mktime(0,0,0,$intWindowEndMonth,$intWindowStartDay,$intWindowEndYear);
-                
+
 	            if(($intWindowStart <= $intToday && $intToday <= $intWindowEnd) && $arrEntry['entryDurationNotification'] == 0) {
 	            	$objMail = new mediaDirectoryMail(9, $intEntryId);
 	            	$objEntries->setDisplaydurationNotificationStatus($intEntryId, 1);
 	            }
-            } 
+            }
         }
     }
-    
-    
+
+
 
     function checkAccess($strAction)
     {
@@ -120,7 +120,7 @@ class mediaDirectoryLibrary
                                         $arrUserGroups[] = $objGroup->getId();
                                     }
                                     $objGroup->next();
-                                } 
+                                }
 
                                 self::getCommunityGroups();
                                 $strMaxEntries = 0;
@@ -165,15 +165,15 @@ class mediaDirectoryLibrary
                         if($this->arrSettings['settingsAllowEditEntries']) {
                             if($bolUserLogin) {
                                 $objEntries = new mediaDirectoryEntry();
-                                
+
 	                            if(isset($_POST['submitEntryModfyForm'])) {
                                     $intEntryId = intval($_POST['entryId']);
                                 } else {
                                     $intEntryId = intval($_GET['eid']);
                                 }
-                                
+
                                 $objEntries->getEntries($intEntryId);
-                                
+
                                 if($objEntries->arrEntries[$intEntryId]['entryAddedBy'] !== $intUserId) {
                                     $strStatus = 'no_access';
                                 }
@@ -221,7 +221,7 @@ class mediaDirectoryLibrary
                         exit;
                         break;
                     case 'redirect':
-                        header('Location: '.CONTREXX_SCRIPT_PATH.'?section=mediadir');
+                        header('Location: '.CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);
                         exit;
                         break;
                 }
@@ -266,7 +266,7 @@ class mediaDirectoryLibrary
 
         $arrSettings = array();
 
-        $objSettings = $objDatabase->Execute("SELECT id,name,value FROM ".DBPREFIX."module_mediadir_settings ORDER BY name ASC");
+        $objSettings = $objDatabase->Execute("SELECT id,name,value FROM ".DBPREFIX."module_".$this->moduleName."_settings ORDER BY name ASC");
         if ($objSettings !== false) {
             while (!$objSettings->EOF) {
                 if($objSettings->fields['id'] == 9 || $objSettings->fields['id'] == 10) {
@@ -293,7 +293,7 @@ class mediaDirectoryLibrary
 
         $arrOrder = array();
 
-        $objSelectorOrder = $objDatabase->Execute("SELECT form_id,selector_order FROM ".DBPREFIX."module_mediadir_order_rel_forms_selectors WHERE selector_id='".intval($intSelectorId)."'");
+        $objSelectorOrder = $objDatabase->Execute("SELECT form_id,selector_order FROM ".DBPREFIX."module_".$this->moduleName."_order_rel_forms_selectors WHERE selector_id='".intval($intSelectorId)."'");
         if ($objSelectorOrder !== false) {
             while (!$objSelectorOrder->EOF) {
                 $arrOrder[intval($objSelectorOrder->fields['form_id'])] = intval($objSelectorOrder->fields['selector_order']);
@@ -303,16 +303,16 @@ class mediaDirectoryLibrary
 
         return $arrOrder;
     }
-    
-    
-    
+
+
+
     function getSelectorSearch($intSelectorId)
     {
         global $objDatabase;
 
         $arrExpSearch = array();
 
-        $objSelectorSearch = $objDatabase->Execute("SELECT form_id, exp_search FROM ".DBPREFIX."module_mediadir_order_rel_forms_selectors WHERE selector_id='".intval($intSelectorId)."'");
+        $objSelectorSearch = $objDatabase->Execute("SELECT form_id, exp_search FROM ".DBPREFIX."module_".$this->moduleName."_order_rel_forms_selectors WHERE selector_id='".intval($intSelectorId)."'");
         if ($objSelectorSearch !== false) {
             while (!$objSelectorSearch->EOF) {
                 $arrExpSearch[intval($objSelectorSearch->fields['form_id'])] = intval($objSelectorSearch->fields['exp_search']);
@@ -341,9 +341,9 @@ class mediaDirectoryLibrary
                                                         `num_level`.`num_levels` AS num_levels
                                                       FROM
                                                         ".DBPREFIX."access_user_groups AS `group`
-                                                      LEFT JOIN ".DBPREFIX."module_mediadir_settings_num_entries AS `num_entry` ON `num_entry`.`group_id` = `group`.`group_id`
-                                                      LEFT JOIN ".DBPREFIX."module_mediadir_settings_num_categories AS `num_category` ON `num_category`.`group_id` = `group`.`group_id`
-                                                      LEFT JOIN ".DBPREFIX."module_mediadir_settings_num_levels AS `num_level` ON `num_level`.`group_id` = `group`.`group_id`");
+                                                      LEFT JOIN ".DBPREFIX."module_".$this->moduleName."_settings_num_entries AS `num_entry` ON `num_entry`.`group_id` = `group`.`group_id`
+                                                      LEFT JOIN ".DBPREFIX."module_".$this->moduleName."_settings_num_categories AS `num_category` ON `num_category`.`group_id` = `group`.`group_id`
+                                                      LEFT JOIN ".DBPREFIX."module_".$this->moduleName."_settings_num_levels AS `num_level` ON `num_level`.`group_id` = `group`.`group_id`");
         if ($objCommunityGroups !== false) {
             while (!$objCommunityGroups->EOF) {
                 $arrCommunityGroups[intval($objCommunityGroups->fields['group_id'])]['name'] = htmlspecialchars($objCommunityGroups->fields['group_name'], ENT_QUOTES, CONTREXX_CHARSET);
@@ -358,7 +358,7 @@ class mediaDirectoryLibrary
                                                         `perm_group_form`.`form_id` AS form_id ,
                                                         `perm_group_form`.`status_group` AS status_group
                                                       FROM
-                                                        ".DBPREFIX."module_mediadir_settings_perm_group_forms AS `perm_group_form`
+                                                        ".DBPREFIX."module_".$this->moduleName."_settings_perm_group_forms AS `perm_group_form`
                                                       WHERE
                                                         `perm_group_form`.`group_id` = '".intval($objCommunityGroups->fields['group_id'])."'");
                 if ($objCommunityGroupPermForms !== false) {
@@ -534,17 +534,17 @@ EOF;
 
     function getFormOnSubmit($intFormId){
     	$objForms = new mediaDirectoryForm(intval($intFormId));
-        
+
         if($objForms->arrForms[intval($intFormId)]['formUseCategory']) {
         	$strFormOnSubmit  = "selectAll(document.entryModfyForm.elements['selectedCategories[]']); ";
         }
-        
+
         $this->getSettings();
-        
+
         if($objForms->arrForms[intval($intFormId)]['formUseLevel'] && $this->arrSettings['settingsShowLevels'] == 1) {
             $strFormOnSubmit  .= "selectAll(document.entryModfyForm.elements['selectedLevels[]']); ";
         }
-        
+
         $strFormOnSubmit   .= "return checkAllFields();";
 
         return $strFormOnSubmit;

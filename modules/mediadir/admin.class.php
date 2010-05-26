@@ -69,7 +69,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RELATION'] = 'Referenz';
 
         //globals
-        parent::__construct(ASCMS_MODULE_PATH.'/mediadir/template');
+        parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
         parent::getFrontendLanguages();
 
         $objTemplate->setVariable('CONTENT_NAVIGATION','<a href="index.php?cmd='.$this->moduleName.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>
