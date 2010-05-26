@@ -64,9 +64,10 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         $_ARRAYLANG['TXT_MEDIADIR_USE_CATEGORY_INFO'] = 'Mit dieser Option kann die Zuordnung der Kategorien bei dieser Formular Vorlage ein- bzw. ausgeschaltet werden.';
         $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL'] = 'Ebenen verwenden';
         $_ARRAYLANG['TXT_MEDIADIR_USE_LEVEL_INFO'] = 'Mit dieser Option kann die Zuordnung der Ebenen bei dieser Formular Vorlage ein- bzw. ausgeschaltet werden.';
-        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'] = 'Besucher mÃ¼ssen Einträge fÃ¼r Bestätigung freigeben'; 
-        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'] = 'Wird diese Einstellung aktiviert, muss der Besucher seinen Eintrag durch auswählen einer Option explizit freigeben zur Prüfung. Ansonsten kann der Eintrag nicht geprüft werden.<br /><br />Es wird empfohlen, diese einstellung bei grösseren Formularen zu aktivieren, damit ein Eintrag nicht in einem Zug erfasst werden muss un somit zwischen gespeichert werden kann.'; 
-        
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'] = 'Besucher mÃ¼ssen Einträge fÃ¼r Bestätigung freigeben';
+        $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'] = 'Wird diese Einstellung aktiviert, muss der Besucher seinen Eintrag durch auswählen einer Option explizit freigeben zur Prüfung. Ansonsten kann der Eintrag nicht geprüft werden.<br /><br />Es wird empfohlen, diese einstellung bei grösseren Formularen zu aktivieren, damit ein Eintrag nicht in einem Zug erfasst werden muss un somit zwischen gespeichert werden kann.';
+        $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_RELATION'] = 'Referenz';
+
         //globals
         parent::__construct(ASCMS_MODULE_PATH.'/mediadir/template');
         parent::getFrontendLanguages();
@@ -76,13 +77,13 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                                                         <a href="index.php?cmd='.$this->moduleName.'&amp;act=entries">'.$_ARRAYLANG['TXT_MEDIADIR_MANAGE_ENTRIES'].'</a>
                                                         <!-- <a href="index.php?cmd='.$this->moduleName.'&amp;act=interfaces">'.$_ARRAYLANG['TXT_MEDIADIR_INTERFACES'].'</a> -->
                                                         <a href="index.php?cmd='.$this->moduleName.'&amp;act=settings">'.$_CORELANG['TXT_SETTINGS'].'</a>');
-        
+
         /*$this->_objTpl->setGlobalVariable(array(
             'MODULE_NAME' =>  $this->moduleName,
             'CSRF' =>  'csrf='.CSRF::code(),
         ));*/
-        
-        
+
+
         /*echo $this->moduleName."<br />";
         echo $this->moduleTablePrefix."<br />";
         echo $this->moduleLangVar."<br />";*/
@@ -228,7 +229,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             'TXT_CONFIRM_LIST' => $_ARRAYLANG['TXT_MEDIADIR_CONFIRM_LIST'],
             'TXT_LATEST_ENTRIES' => $_ARRAYLANG['TXT_MEDIADIR_LATEST_ENTRIES'],
             'TXT_EXPAND_LINK' => $_CORELANG['TXT_EXPAND_LINK'],
-            'TXT_COLLAPS_LINK' => $_CORELANG['TXT_COLLAPS_LINK'], 
+            'TXT_COLLAPS_LINK' => $_CORELANG['TXT_COLLAPS_LINK'],
             'TXT_'.$this->moduleLangVar.'_NAME' => $_CORELANG['TXT_NAME'],
             'TXT_'.$this->moduleLangVar.'_DATE' => $_CORELANG['TXT_DATE'],
             'TXT_'.$this->moduleLangVar.'_AUTHOR' => $_ARRAYLANG['TXT_MEDIADIR_AUTHOR'],
@@ -255,7 +256,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         //show unconfirmed entries (if activated)
         if($this->arrSettings['settingsConfirmNewEntries'] == 1) {
             $objUnconfirmedEntries = new mediaDirectoryEntry();
-            
+
             if($this->arrSettings['settingsReadyToConfirm'] == 1) {
                 $objUnconfirmedEntries->getEntries(null,null,null,null, null, 1,null,0,'n',null,null,null,true);
             } else {
@@ -344,7 +345,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_modify_entry.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'];
-        
+
          //get seting values
         parent::getSettings();
 
@@ -398,19 +399,19 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                         }
                     }
                 }
-                
+
                 //get form id
                 if(intval($intEntryId) != 0) {
                     //get entry data
                     $objEntry = new mediaDirectoryEntry();
                     $objEntry->getEntries($intEntryId, null, null, null, null, false,false);
-                    
+
                     if(empty($objEntry->arrEntries)) {
                         $objEntry->getEntries($intEntryId, null, null, null, null, true,false);
                     }
-                    
+
                     $intFormId = $objEntry->arrEntries[$intEntryId]['entryFormId'];
-                    
+
                 } else {
                     //set form id
                     if($intCountForms == 1) {
@@ -429,11 +430,11 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
                 //list inputfields
                 $objInputfields->listInputfields($this->_objTpl, 2, $intEntryId);
-                
+
                 //get translation status date
                 if($this->arrSettings['settingsTranslationStatus'] == 1) {
                 	$strUserRowClass = "row1";
-                	
+
                 	foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                         if($intEntryId != 0) {
 	                		if(in_array($arrLang['id'], $objEntry->arrEntries[$intEntryId]['entryTranslationStatus'])) {
@@ -442,41 +443,41 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 	                            $strLangStatus = '';
 	                		}
                         }
-                		
+
 	                    $this->_objTpl->setVariable(array(
 	                        'TXT_'.$this->moduleLangVar.'_TRANSLATION_LANG_NAME' => htmlspecialchars($arrLang['name'], ENT_QUOTES, CONTREXX_CHARSET),
 	                        $this->moduleLangVar.'_TRANSLATION_LANG_ID' => intval($arrLang['id']),
 	                        $this->moduleLangVar.'_TRANSLATION_LANG_STATUS' => $strLangStatus,
 	                    ));
-	                    
+
                         $this->_objTpl->parse($this->moduleName.'TranslationLangList');
                 	}
-                    
+
                     $this->_objTpl->parse($this->moduleName.'TranslationStatus');
                 } else {
                     $strUserRowClass = "row2";
                     $this->_objTpl->hideBlock($this->moduleName.'TranslationStatus');
                 }
-                
+
                 //get user data
                 if($intEntryId != 0) {
                     $intEntryDourationStart = 1;
                     $intEntryDourationEnd = 2;
-                    
+
                 	$this->_objTpl->setVariable(array(
 		                'TXT_'.$this->moduleLangVar.'_CHOOSE_USER' => $_ARRAYLANG['TXT_MEDIADIR_CHOOSE_USER'],
                         $this->moduleLangVar.'_USER_ROW' => $strUserRowClass,
 		                $this->moduleLangVar.'_USER_LIST' => $objEntry->getUsers($intEntryId),
 		            ));
-		            
+
 		            $this->_objTpl->parse($this->moduleName.'UserList');
-                } else { 
-                	
+                } else {
+
                 	$intEntryDourationStart = 1;
                     $intEntryDourationEnd = 2;
                 	$this->_objTpl->hideBlock($this->moduleName.'UserList');
                 }
-                
+
                 //get display duration  data
                 switch($this->arrSettings['settingsEntryDisplaydurationValueType']) {
                     case 1:
@@ -495,7 +496,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                         $intDiffYear = $this->arrSettings['settingsEntryDisplaydurationValue'];
                         break;
                 }
-                
+
                 if($intEntryId != 0) {
                 	if(intval($objEntry->arrEntries[$intEntryId]['entryDurationType']) == 1) {
                 		$intEntryDourationAlways = 'selected="selected"';
@@ -510,13 +511,13 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 	                    $intEntryDourationStart = date("Y-m-d", $objEntry->arrEntries[$intEntryId]['entryDurationStart']);
 	                    $intEntryDourationEnd = date("Y-m-d", $objEntry->arrEntries[$intEntryId]['entryDurationEnd']);
                 	}
-                	
+
                 	if(intval($objEntry->arrEntries[$intEntryId]['entryDurationNotification']) == 1) {
                 		$this->_objTpl->setVariable(array(
 	                        $this->moduleLangVar.'_DISPLAYDURATION_RESET_NOTIFICATION_STATUS' => '<br /><input type="checkbox" name="durationResetNotification" value="1" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS'],
 	                    ));
                 	}
-                } else { 
+                } else {
                     if(intval($this->arrSettings['settingsEntryDisplaydurationType']) == 1) {
                         $intEntryDourationAlways = 'selected="selected"';
                         $intEntryDourationPeriod = '';
@@ -526,11 +527,11 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                         $intEntryDourationPeriod = 'selected="selected"';
                         $intEntryDourationShowPeriod = 'inline';
                     }
-        
+
                     $intEntryDourationStart = date("Y-m-d", mktime());
                     $intEntryDourationEnd = date("Y-m-d", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                 }
-                
+
                 //parse spez fields
                 $this->_objTpl->parse($this->moduleName.'SpezfieldList');
 
@@ -659,7 +660,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         } else {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_CATEGORY']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
             $intCategoryId = null;
-            
+
             //parse global variables
 	        $this->_objTpl->setGlobalVariable(array(
 	            $this->moduleLangVar.'_CATEGORY_SHOW_ENTRIES_ON' => 'checked="checked"',
@@ -876,7 +877,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
         } else {
             $pageTitle = $_ARRAYLANG['TXT_MEDIADIR_LEVEL']. " ".$_ARRAYLANG['TXT_MEDIADIR_ADD'];
             $intLevelId = null;
-            
+
             //parse data variables
             $this->_objTpl->setGlobalVariable(array(
 	            $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_OFF' => 'checked="checked"',
@@ -885,7 +886,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 	            $this->moduleLangVar.'_LEVEL_ACTIVE_ON' => 'checked="checked"',
             ));
         }
-        
+
         //parse global variables
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_ACTIVATE' =>  $_ARRAYLANG['TXT_MEDIADIR_ACTIVATE'],
