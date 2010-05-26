@@ -92,6 +92,13 @@ class mediaDirectoryInputfieldRelation extends mediaDirectoryLibrary implements 
                         $arrValue[0] = $arrValue[$_LANGID];
                     }
 
+
+                   if($arrValue[0] != "" && intval($arrValue[0])) {
+                   	  $strWhere = "AND form_id = '".$arrValue[0]."'";
+                   } else {
+                   	  $strWhere = "";
+                   }
+
                    // get forms
 				   $objInputfieldValue = $objDatabase->Execute("
                        SELECT
@@ -104,7 +111,8 @@ class mediaDirectoryInputfieldRelation extends mediaDirectoryLibrary implements 
                        ON
                           ".DBPREFIX."module_".$this->moduleTablePrefix."_forms.id = ".DBPREFIX."module_".$this->moduleTablePrefix."_form_names.form_id
                        WHERE
-                          lang_id = ".$_LANGID."");
+                          lang_id = ".$_LANGID."
+                       ".$strWhere."");
 
 				   if ($objInputfieldValue !== false) {
 				   	  $arrInputfieldOption = array();
