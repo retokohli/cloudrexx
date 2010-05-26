@@ -472,10 +472,10 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_DAY'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_MONTH'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_DISPLAYDURATION_VALUE_TYPE_YEAR'],
-            'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS'],
-            'TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO'],
-            'TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'],
-            'TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_TRANSLATION_STATUS_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_TRANSLATION_STATUS_INFO'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_READY_TO_CONFIRM' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM'],
+            'TXT_'.$this->moduleLangVar.'_SETTINGS_READY_TO_CONFIRM_INFO' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_READY_TO_CONFIRM_INFO'],
         ));
 
         if($this->arrSettings['settingsConfirmNewEntries'] == 1) {
@@ -549,7 +549,7 @@ EOF;
             $strTransStatusOn = '';
             $strTransStatusOff = 'checked="checked"';
         }
-        
+
         if($this->arrSettings['settingsReadyToConfirm'] == 1) {
             $strReadyToConfirmOn = 'checked="checked"';
             $strReadyToConfirmOff = '';
@@ -1286,7 +1286,7 @@ EOF;
 
             $objTpl->parse($this->moduleName.'FormDescriptionList');
         }
-        
+
         //use level block
         if($this->arrSettings['settingsShowLevels'] == 1) {
             $objTpl->touchBlock($this->moduleName.'FormUseLevel');
