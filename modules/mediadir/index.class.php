@@ -673,7 +673,7 @@ class mediaDirectory extends mediaDirectoryLibrary
 	                
 	                //get ready to confirm
 	                if($this->arrSettings['settingsReadyToConfirm'] == 1 && intval($objEntry->arrEntries[$intEntryId]['entryReadyToConfirm']) == 0 && intval($objEntry->arrEntries[$intEntryId]['entryConfirmed']) == 0) {
-		                $strReadyToConfirm = '<p><input class="mediadirInputfieldCheckbox" name="readyToConfirm" id="mediadirInputfield_ReadyToConfirm" value="1" type="checkbox">&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_READY_TO_CONFIRM'].'</p>';
+		                $strReadyToConfirm = '<p><input class="'.$this->moduleName.'InputfieldCheckbox" name="readyToConfirm" id="'.$this->moduleName.'Inputfield_ReadyToConfirm" value="1" type="checkbox">&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_READY_TO_CONFIRM'].'</p>';
 	                } else {
 	                	$strReadyToConfirm = '<input type="hidden" name="readyToConfirm" value="1" />';
 	                }

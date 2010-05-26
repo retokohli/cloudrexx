@@ -125,7 +125,7 @@ class mediaDirectoryInputfieldMail implements inputfield
         }
 
         //make hyperlink with <a> tag
-        $strValueLink = '<a href="'.$strValueHref.'" class="mediadirInputfieldMail">'.$strValueName.'</a>';
+        $strValueLink = '<a href="'.$strValueHref.'" class="'.$this->moduleName.'InputfieldMail">'.$strValueName.'</a>';
 
         if(!empty($strValue)) {
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);

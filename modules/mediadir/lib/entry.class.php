@@ -223,9 +223,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 entry.`id` DESC
                 ".$strSelectLimit."
         ";
-$objDatabase->debug=0;
+
         $objEntries = $objDatabase->Execute($query);
-$objDatabase->debug=0;
 
         $arrEntries = array();
 
@@ -557,7 +556,7 @@ $objDatabase->debug=0;
             AND
                 content.`lang`= '".intval($_LANGID)."'
             AND
-                module.`name` = 'mediadir'
+                module.`name` = '".$this->moduleName."'
             AND
                 content.`module` = module.`id`
         ";
@@ -742,7 +741,7 @@ $objDatabase->debug=0;
 
         foreach ($this->getInputfields() as $key => $arrInputfield) {
             if($arrInputfield['id'] != 1 && $arrInputfield['id'] != 2 && $arrInputfield['type'] != 16 && $arrInputfield['type'] != 18 && ($arrInputfield['show_in'] == $intShowIn || $arrInputfield['show_in'] == 1)) {
-                if(!empty($arrData['mediadirInputfield'][$arrInputfield['id']]) && $arrData['mediadirInputfield'][$arrInputfield['id']] != $arrInputfield['default_value'][$_LANGID]) {
+                if(!empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]) && $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']] != $arrInputfield['default_value'][$_LANGID]) {
                     $strType = $arrInputfield['type_name'];
                     $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
 
@@ -752,10 +751,10 @@ $objDatabase->debug=0;
                             foreach ($this->arrFrontendLanguages as $key => $arrLang) {
                                 $intLangId = $arrLang['id'];
 
-                                if((empty($arrData['mediadirInputfield'][$arrInputfield['id']][$intLangId])) || $intLangId == $_LANGID) {
-									$strMaster = $arrData['mediadirInputfield'][$arrInputfield['id']][0];
-									$strOldDefault = $arrData['mediadirInputfield'][$arrInputfield['id']]['old'];
-									$strNewDefault = $arrData['mediadirInputfield'][$arrInputfield['id']][$_LANGID];
+                                if((empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId])) || $intLangId == $_LANGID) {
+									$strMaster = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0];
+									$strOldDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old'];
+									$strNewDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
 
 									if($strNewDefault != $strMaster) {
 										if($strMaster != $strOldDefault && $strNewDefault == $strOldDefault) {
@@ -764,12 +763,12 @@ $objDatabase->debug=0;
 											$strDefault = $strNewDefault;
 										}
 									} else {
-										$strDefault = $arrData['mediadirInputfield'][$arrInputfield['id']][$_LANGID];
+										$strDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
 									}
 
 									$strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault);
                                 } else {
-                                    $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData['mediadirInputfield'][$arrInputfield['id']][$intLangId]);
+                                    $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId]);
                                 }
 
                                 $objInsertInputfieldData = $objDatabase->Execute("
@@ -788,7 +787,7 @@ $objDatabase->debug=0;
                                 }
                             }
                         } else {
-                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData['mediadirInputfield'][$arrInputfield['id']]);
+                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]);
 
                             $objInsertInputfieldData = $objDatabase->Execute("
                                 INSERT INTO

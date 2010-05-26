@@ -242,7 +242,7 @@ class mediaDirectoryInputfieldImage extends mediaDirectoryLibrary implements inp
 
 
 
-    function getContent($intEntryId, $arrInputfield)
+    function getContent($intEntryId, $arrInputfield, $arrTranslationStatus)
     {
         global $objDatabase;
 

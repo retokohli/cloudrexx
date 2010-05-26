@@ -186,7 +186,7 @@ EOF;
             $arrSelect[]    = 'rel_inputfield.`entry_id` AS `entry_id`';
             //$arrSelect[]    = "MATCH (rel_inputfield.`value`) AGAINST ('".$strTerm."*' IN BOOLEAN MODE)  AS score";;
             $arrSelect[]    = "MATCH (rel_inputfield.`value`) AGAINST ('%".$strTerm."%')  AS score";
-            $arrFrom[]      = DBPREFIX."module_mediadir_rel_entry_inputfields AS rel_inputfield";
+            $arrFrom[]      = DBPREFIX."module_".$this->moduleName."_rel_entry_inputfields AS rel_inputfield";
             $arrWhere[]     = 'rel_inputfield.`entry_id` != 0';
 
             /*$strReplace     = "*' IN BOOLEAN MODE) AND MATCH (rel_inputfield.`value`) AGAINST ('";
