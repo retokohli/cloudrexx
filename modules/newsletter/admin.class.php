@@ -2294,6 +2294,7 @@ class newsletter extends NewsletterLib
 
         }
 
+
         return $count;
     }
 
@@ -2324,6 +2325,13 @@ class newsletter extends NewsletterLib
         return $count;
     }
 
+    /**
+     * Return the recipient count of the emails
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $mailId
+     * @return      int 
+     */
 	private function getCurrentMailRecipientCount($mailId)
     {
         global $objDatabase;
@@ -2346,6 +2354,81 @@ class newsletter extends NewsletterLib
          *
          */
 
+    
+        $query = sprintf('
+            SELECT COUNT(*) AS `recipientCount`
+            FROM (
+                SELECT `email`
+                FROM
+                    `%smodule_newsletter_user` AS `nu`
+
+                    LEFT JOIN
+                            `%smodule_newsletter_rel_user_cat` AS `rc`
+                            ON
+                                    `rc`.`user` = `nu`.`id`
+                    
+                    LEFT JOIN
+                            `%smodule_newsletter_rel_cat_news` AS `nrn`
+                            ON
+                                    `nrn`.`category` = `rc`.`category`
+                    
+                    WHERE
+                            `nrn`.`newsletter` = %s
+
+                UNION DISTINCT SELECT
+                            `email`
+                    FROM
+                            `%saccess_users` AS `au`
+
+                    LEFT JOIN
+                            `%saccess_rel_user_group` AS `rg`
+                            ON
+                                    `rg`.`user_id` = `au`.`id`
+
+                    LEFT JOIN
+                            `%smodule_newsletter_rel_usergroup_newsletter` AS `arn`
+                            ON
+                                    `arn`.`userGroup` = `rg`.`group_id`
+
+                    WHERE
+                            `arn`.`newsletter` = %s
+
+                UNION DISTINCT SELECT
+                        `email`
+                    FROM
+                        `%saccess_users` AS `cu`
+                    
+                    LEFT JOIN
+                        `%smodule_newsletter_access_user` AS `cnu`
+                        ON
+                            `cnu`.`accessUserID` = `cu`.`id`
+
+                    LEFT JOIN
+                        `%smodule_newsletter_rel_cat_news` AS `crn`
+                        ON
+                            `cnu`.`newsletterCategoryID` = `crn`.`category`
+
+                    WHERE
+                        `crn`.`newsletter` = %s
+            ) AS `subquery`
+            ',
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            $mailId,
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            $mailId,
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            $mailId
+        );
+
+        $count = $objDatabase->Execute($query);
+
+        /*
         $objMail = $objDatabase->SelectLimit("
             SELECT
                 COUNT( DISTINCT u.`id` ) AS recipientCount
@@ -2358,13 +2441,14 @@ class newsletter extends NewsletterLib
                 AND u.`status` =1
             GROUP BY relN.`newsletter`", 1
         );
-        if ($objMail !== false && $objMail->RecordCount() == 1) {
-            return $objMail->fields['recipientCount'];
+         */
+
+        if ($count !== false && $count->RecordCount() == 1) {
+            return intval($count->fields['recipientCount']);
         } else {
             return 0;
         }
     }
-
 
     function _sendMail()
     {
