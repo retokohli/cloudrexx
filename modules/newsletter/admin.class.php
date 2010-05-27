@@ -995,21 +995,9 @@ class newsletter extends NewsletterLib
             $this->_objTpl->touchBlock('newsletter_mail_text_content');
         }
 
-        $arrLists = &$this->_getLists();
-        $listNr = 0;
-        foreach ($arrLists as $listId => $arrList) {
-            if (in_array($listId, $arrAssociatedLists)) {
-                $column = $listNr % 3;
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_LIST_ID'    => $listId,
-                    'NEWSLETTER_LIST_NAME'    => $arrList['name'],
-                    'NEWSLETTER_SHOW_RECIPIENTS_OF_LIST_TXT'    => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], $arrList['name'])
-                ));
-                $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
+        $this->emailShowParseLists($arrAssociatedLists);
+        $this->emailShowParseGroups($mailId);
 
-                $listNr++;
-            }
-        }
 
         if (count($arrAttachment) > 0) {
             foreach ($arrAttachment as $attachment) {
@@ -1035,6 +1023,7 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_REPLY_ADDRESS'    => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_ADDRESS'],
             'TXT_NEWSLETTER_PRIORITY'        => $_ARRAYLANG['TXT_NEWSLETTER_PRIORITY'],
             'TXT_NEWSLETTER_ASSOCIATED_LISTS'    => $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'],
+            'TXT_NEWSLETTER_ASSOCIATED_GROUPS'    => $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'],
             'TXT_NEWSLETTER_HTML_CONTENT'        => $_ARRAYLANG['TXT_NEWSLETTER_HTML_CONTENT'],
             'TXT_NEWSLETTER_Text_CONTENT'        => $_ARRAYLANG['TXT_NEWSLETTER_Text_CONTENT'],
             'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'    => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
@@ -1057,6 +1046,83 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_BACK'                    => $_ARRAYLANG['TXT_NEWSLETTER_BACK']
         ));
         return true;
+    }
+
+    /**
+     * Parse the lists that are associated to this email
+     *
+     * Refactored code from above into this method
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       array $arrAssociatedLists
+     */
+    private function emailShowParseLists($arrAssociatedLists) {
+        global $_ARRAYLANG;
+
+        $arrLists = &$this->_getLists();
+        $listNr = 0;
+        foreach ($arrLists as $listId => $arrList) {
+            if (in_array($listId, $arrAssociatedLists)) {
+                $column = $listNr % 3;
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_LIST_ID'    => $listId,
+                    'NEWSLETTER_LIST_NAME'    => $arrList['name'],
+                    'NEWSLETTER_SHOW_RECIPIENTS_OF_LIST_TXT'    => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], $arrList['name'])
+                ));
+                $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
+
+                $listNr++;
+            }
+        }
+    }
+
+    /**
+     * Parse the groups that are associated to this email
+     *
+     * @uthor      Stefan Heinemann <sh@adfinis.com>
+     * @param      int $mailID
+     */
+    private function emailShowParseGroups($mailID) {
+        global $objDatabase, $_ARRAYLANG;
+
+        $query = sprintf('
+            SELECT
+                `n`.`userGroup`       AS `id`,
+                `a`.`group_name`      AS `name`
+            FROM
+                `%smodule_newsletter_rel_usergroup_newsletter` AS `n`
+            LEFT JOIN
+                `%saccess_user_groups`   AS `a`
+            ON
+                `n`.`userGroup` = `a`.`group_id`
+            WHERE
+                `n`.`newsletter` = %s
+            ', 
+            DBPREFIX,
+            DBPREFIX,
+            $mailID
+        );
+
+        $data = $objDatabase->Execute($query);
+
+        if ($data !== false) {
+            $groupNr = 0;
+            while (!$data->EOF) {
+                $column = $groupNr % 3;
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_GROUP_ID'    => $data->fields['id'],
+                    'NEWSLETTER_GROUP_NAME'  => $data->fields['name'],
+                    'NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP_TXT'=>
+                        sprintf(
+                            $_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'],
+                            $data->fields['name'])
+                ));
+                $this->_objTpl->parse('newsletter_mail_associated_group_'.$column);
+
+                $groupNr++;
+                $data->MoveNext();
+            }
+        }
+
     }
 
     function _recipientOverview($limit = 10)
