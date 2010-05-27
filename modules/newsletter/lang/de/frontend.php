@@ -83,4 +83,6 @@ $_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Send Message";
 $_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Zum Addressbuch hinzufügen ";
 $_ARRAYLANG['TXT_ADD_ADDRESS'] = "Zum Addressbuch hinzufügen";
 $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "Der Empfänger %s hat sich vom Newsletter abgemeldet.";
+$_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'] = "Empfänger der Gruppe %s anzeigen";
+$_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'] = "Zugehörige Benutzergruppen";
 ?>
