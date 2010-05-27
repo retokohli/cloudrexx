@@ -644,6 +644,9 @@ class newsletter extends NewsletterLib
 
                     }
 
+                    $arrAssociatedGroups = 
+                        $this->emailEditGetAssociatedGroups($mailId);
+
                     if ($objMail->fields['attachment'] == '1') {
                         $objAttachment = $objDatabase->Execute("SELECT file_name FROM ".DBPREFIX."module_newsletter_attachment WHERE newsletter=".$mailId);
                         if ($objAttachment !== false) {
@@ -774,6 +777,7 @@ class newsletter extends NewsletterLib
         ));
         return true;
     }
+
     /**
      * Parse a the lists for to be selected as email recipients
      *
@@ -842,6 +846,39 @@ class newsletter extends NewsletterLib
             $this->_objTpl->parse('newsletter_mail_associated_group_'.$column);
             $groupNr++;
         }
+    }
+
+    /**
+     * Return the associated access groups of an email
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $mail
+     * @return      array
+     */
+    private function emailEditGetAssociatedGroups($mail) {
+        global $objDatabase;
+
+        $query = sprintf('
+            SELECT 
+                `userGroup`
+            FROM 
+                `%smodule_newsletter_rel_usergroup_newsletter`
+            WHERE 
+                `newsletter` = %s
+            ',
+            DBPREFIX,
+            $mail
+        );
+        $data = $objDatabase->Execute($query);
+        $list = array();
+        if ($data !== false) {
+            while (!$data->EOF) {
+                $list[] =  $data->fields['userGroup'];
+                $data->MoveNext();
+            }
+        }
+
+        return $list;
     }
 
 
