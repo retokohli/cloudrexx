@@ -590,6 +590,7 @@ class newsletter extends NewsletterLib
 
             if ($status) {
                 $this->_setMailLists($mailId, $arrAssociatedLists);
+                $this->setMailGroups($mailId, $arrAssociatedGroups);
 
                 foreach ($arrNewAttachments as $attachment) {
                     $this->_addMailAttachment($attachment, $mailId);
@@ -1542,6 +1543,50 @@ class newsletter extends NewsletterLib
             ");
         }
         return true;
+    }
+
+    /**
+     * Associate the user groups with the mail
+     *
+     * Associate the access user groups with the 
+     * newsletter email.
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $mailID
+     * @param       array $groups
+     */
+    private function setMailGroups($mailID, $groups) {
+        global $objDatabase;
+    
+        $query = sprintf('
+            REPLACE INTO
+                `%smodule_newsletter_rel_usergroup_newsletter`
+                (`newsletter`, `userGroup`)
+            VALUES
+                (%s, ?)
+            ', 
+            DBPREFIX,
+            $mailID);
+        $stmt = $objDatabase->prepare($query);
+
+        foreach ($groups as $group) {
+            $objDatabase->Execute($stmt, array(intval($group)));
+        }
+        $delString = implode(',', $groups);
+
+        $query = sprintf('
+            DELETE FROM
+                `%smodule_newsletter_rel_usergroup_newsletter`
+            WHERE
+                `userGroup` NOT IN (%s)
+            AND
+                `newsletter` = %s
+            ', 
+            DBPREFIX,
+            $delString,
+            $mailID
+        );
+
+        $objDatabase->Execute($query);
     }
 
     function _checkUniqueListName($listId, $listName) {
