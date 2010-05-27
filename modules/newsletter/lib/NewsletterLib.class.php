@@ -78,6 +78,42 @@ class NewsletterLib
         return $arrLists;
     }
 
+    /**
+     * Return the access user groups
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $orderBy 
+     * @return      array
+     */
+    protected function _getGroups($orderBy="`group_name`") {
+        global $objDatabase;
+
+        $query = sprintf("
+            SELECT
+                `group_id`     AS `id`,
+                `group_name`   AS `name`
+            FROM
+                `%saccess_user_groups`
+            WHERE
+                `is_active` = 1
+            ORDER BY
+                %s
+            ",
+            DBPREFIX,
+            $orderBy
+        );
+
+        $list = $objDatabase->Execute($query);
+
+        $groups = array();
+        while ($list !== false && !$list->EOF) {
+            $groups[$list->fields['id']] = $list->fields['name'];
+            $list->moveNext();
+        }
+
+        return $groups;
+    }
+
     function _addRecipient($email, $uri, $sex, $title, $lastname, $firstname, $company, $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists)
     {
         global $objDatabase;
