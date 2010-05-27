@@ -106,6 +106,7 @@
     <td>{TXT_NEWSLETTER_PRIORITY}</td>
     <td colspan="3">{NEWSLETTER_MAIL_PRIORITY_MENU}</td>
   </tr>
+
   <tr class="row1" style="vertical-align:top;">
     <td width="15%">{TXT_NEWSLETTER_ASSOCIATED_LISTS}</td>
     <td width="20%">
@@ -124,7 +125,57 @@
       <!-- END newsletter_mail_associated_list_2 -->
     </td>
   </tr>
+
   <tr class="row2" style="vertical-align:top;">
+    <td width="15%">{TXT_NEWSLETTER_ASSOCIATED_GROUPS}</td>
+    <td width="20%">
+          <!-- BEGIN newsletter_mail_associated_group_0 -->
+          <input 
+                type="checkbox" 
+                name="newsletter_mail_associated_group[{NEWSLETTER_GROUP_ID}]"
+                id="newsletter_mail_associated_group_{NEWSLETTER_GROUP_ID}" 
+                value="1" {NEWSLETTER_GROUP_ASSOCIATED} 
+          />
+          <a 
+              href="{NEWSLETTER_GROUP_LINK}{NEWSLETTER_GROUP_ID}" 
+              target="_blank" 
+              title="{NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP_TXT}"
+            >{NEWSLETTER_GROUP_NAME}</a><br />
+          <!-- END newsletter_mail_associated_group_0 -->
+    </td>
+    <td width="20%">
+      <!-- BEGIN newsletter_mail_associated_group_1 -->
+          <input 
+                  type="checkbox" 
+                  name="newsletter_mail_associated_group[{NEWSLETTER_GROUP_ID}]" 
+                  id="newsletter_mail_associated_group_{NEWSLETTER_GROUP_ID}" 
+                  value="1" 
+                  {NEWSLETTER_GROUP_ASSOCIATED} /> 
+              <a 
+                  href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId={NEWSLETTER_GROUP_ID}" 
+                  target="_blank" 
+                  title="{NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP_TXT}"
+              >{NEWSLETTER_GROUP_NAME}</a><br />
+      <!-- END newsletter_mail_associated_group_1 -->
+    </td>
+    <td width="45%">
+      <!-- BEGIN newsletter_mail_associated_group_2 -->
+        <input 
+              type="checkbox" 
+              name="newsletter_mail_associated_group[{NEWSLETTER_GROUP_ID}]" 
+              id="newsletter_mail_associated_group_{NEWSLETTER_GROUP_ID}" 
+              value="1" 
+              {NEWSLETTER_GROUP_ASSOCIATED} 
+          /> <a 
+              href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId={NEWSLETTER_GROUP_ID}" 
+              target="_blank" 
+              title="{NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP_TXT}"
+            >{NEWSLETTER_GROUP_NAME}</a><br />
+      <!-- END newsletter_mail_associated_group_2 -->
+    </td>
+  </tr>
+
+  <tr class="row1" style="vertical-align:top;">
     <td valign="top">{TXT_NEWSLETTER_ATTACH}</td>
     <td colspan="3">
       <div id="newsletter_attachment_frame" style="display:{NEWSLETTER_MAIL_ATTACHMENT_BOX}; margin-bottom:20px;">
