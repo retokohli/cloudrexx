@@ -2768,6 +2768,20 @@ CREATE TABLE `contrexx_module_news_comments` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_locale` (
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `news_id` int(11) unsigned NOT NULL default '0',
+  `title` varchar(250) NOT NULL default '',
+  `text` mediumtext NOT NULL,
+  `teaser_text` text NOT NULL,
+  PRIMARY KEY  (`lang_id`,`news_id`),
+  FULLTEXT KEY `title` (`title`),
+  FULLTEXT KEY `text` (`text`),
+  FULLTEXT KEY `teaser_text` (`teaser_text`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL default '',
   `value` varchar(250) NOT NULL default '',
