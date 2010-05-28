@@ -40,10 +40,10 @@ knowledgeCurrentAnswerLanguage = {KNOWLEDGE_ANSWER_LANG};
 
 function knowledgeSwitchAnswer(langId)
 {
-    oFCKeditor = FCKeditorAPI.GetInstance('answer_preview');
-    document.getElementById('answer_'+knowledgeCurrentAnswerLanguage).value = oFCKeditor.GetHTML();
+    oFCKeditor = CKEDITOR.instances['answer_preview'];
+    document.getElementById('answer_'+knowledgeCurrentAnswerLanguage).value = oFCKeditor.getData();
     if (typeof(langId) != 'undefined') {
-        oFCKeditor.SetHTML(document.getElementById('answer_'+langId).value);
+        oFCKeditor.setData(document.getElementById('answer_'+langId).value);
         knowledgeCurrentAnswerLanguage = langId;
     }
 

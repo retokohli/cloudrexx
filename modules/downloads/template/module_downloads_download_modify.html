@@ -6,10 +6,10 @@ downloadsCurrentDescriptionLanguage = {DOWNLOADS_DESCRIPTION_LANGUAGE};
 function downloadsSwitchDescription(langId)
 {
     document.getElementById('downloads_download_description_tab_'+downloadsCurrentDescriptionLanguage).setAttribute('class', 'inactive');
-    oFCKeditor = FCKeditorAPI.GetInstance('downloads_download_description_preview');
-    document.getElementById('downloads_download_description_'+downloadsCurrentDescriptionLanguage).value = oFCKeditor.GetHTML();
+    oFCKeditor = CKEDITOR.instances['downloads_download_description_preview'];
+    document.getElementById('downloads_download_description_'+downloadsCurrentDescriptionLanguage).value = oFCKeditor.getData();
     if (typeof(langId) != 'undefined') {
-        oFCKeditor.SetHTML(document.getElementById('downloads_download_description_'+langId).value);
+        oFCKeditor.setData(document.getElementById('downloads_download_description_'+langId).value);
         downloadsCurrentDescriptionLanguage = langId;
         document.getElementById('downloads_download_description_tab_'+langId).setAttribute('class', 'active');
     }
