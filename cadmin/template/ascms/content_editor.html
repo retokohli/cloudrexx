@@ -236,18 +236,6 @@ function modusSelection(strAction) {
   }
 }
 
-function SetUrl(url, width, height, alt) {
-  switch (newsElType) {
-  case 'image':
-  case 'webpages':
-    document.getElementById(newsElInsertBox).value = url;
-    break
-  case 'link':
-    insertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
-    break;
-  }
-}
-
 function getFileBrowser(elInsertBox, sType)
 {
   newsElInsertBox = elInsertBox;
@@ -303,7 +291,7 @@ function openWindow(theURL,winName,features){
 
 
 //if new page, set global gotPageId variable, indicating if a pageId already exists
-//in case none exists, one has to be generated upon submitting the form 
+//in case none exists, one has to be generated upon submitting the form
 if(location.href.match(/act=new/)){
     window.gotPageId = false;
 } else {
@@ -322,7 +310,7 @@ var getFrameContent = function(){
 
 var previewContent = function(){
     var content = getFrameContent();
-    
+
     if($J('input[name=TypeSelection]:checked', $form).val() == 'redirect'){
         if($J('input[name=redirectUrl]', $form).val().match(/^\w{2,6}:\/\//)){ //if is absolute uri
             previewWindow = window.open(+$J('input[name=redirectUrl]', $form).val());
@@ -407,15 +395,15 @@ var setEditor = function(){
 }
 
 var submitFormHandler = function(event){
-    if(location.href.match(/act=new/) && !window.gotPageId){        
+    if(location.href.match(/act=new/) && !window.gotPageId){
         $J.ajax({
             url: '{DIRECTORY_INDEX}?'+$J.param({cmd:"content", act:"nextPageId", {CSRF_KEY}:"{CSRF_CODE}"}),
             cache: false,
             async: false,
             success: function(data){
                 if(!data.pageId || data.pageId < 1){
-                   return false;                         
-                }                   
+                   return false;
+                }
                 window.gotPageId = true;
                 $J('input[name=pageId]', $form).val(data.pageId);
                 submitForm(event);
@@ -425,7 +413,7 @@ var submitFormHandler = function(event){
         });
     } else {
         submitForm(event);
-    }    
+    }
 }
 
 var submitForm = function(event){
@@ -612,7 +600,7 @@ var getTabData = function(a){
     }
     getNavMenu(a);
     if(location.href.match(/pageId=\d+/)){//fill contents from DB if we are editing or copying
-        getContentData(a); 
+        getContentData(a);
     }
 }
 
@@ -796,7 +784,7 @@ var getContentData = function(a){
     if(location.href.match(/act=new/) && (m = location.href.match(/pageId=(\d+)/))){
         pageId = m[1]; //set lang id to copy from if we're copying
     }
-    
+
     $J.ajax({
        url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputText',
        type: 'POST',
@@ -971,7 +959,7 @@ var resetRowClasses = function(){
 $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
     $("#ajaxbusy").css({opacity: 0.75}).show();
     $('#ajaxwait').show();
-    $form = $('form[name=formContent]');    
+    $form = $('form[name=formContent]');
     window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
     window._CONTREXX_CONTENT_READY = [];
     window._CONTREXX_FORCE_SWAP = false;
