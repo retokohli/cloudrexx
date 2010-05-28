@@ -299,6 +299,12 @@ table.subnavbar {
 	padding-left: 0px;
 }
 
+.langtabs {
+    margin-bottom:1px;
+    padding-top:6px;
+    border-top:1px solid #0A50A1;
+}
+
 .tabmenu li , #tabmenu  li  {
 	display: inline;
 	overflow: hidden;
