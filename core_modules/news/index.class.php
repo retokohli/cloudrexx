@@ -134,18 +134,19 @@ class news extends newsLibrary {
                                                             news.changelog          AS changelog,
                                                             news.url1               AS url1,
                                                             news.url2               AS url2,
-                                                            news.text               AS text,
+                                                            locale.text             AS text,
                                                             news.date               AS date,
                                                             news.changelog          AS changelog,
-                                                            news.title              AS title,
+                                                            locale.title            AS title,
                                                             news.teaser_image_path  AS newsimage,
-                                                            news.teaser_text        AS teasertext,
+                                                            locale.teaser_text      AS teasertext,
                                                             cat.name                AS catname
                                                     FROM    '.DBPREFIX.'module_news AS news
                                                       INNER JOIN '.DBPREFIX.'module_news_categories AS cat ON cat.catid = news.catid
+                                                      INNER JOIN '.DBPREFIX.'module_news_locale AS locale ON news.id = locale.news_id 
                                                     WHERE   news.status = 1 AND
                                                             news.id = '.$newsid.' AND
-                                                            news.lang ='.$this->langId.' AND
+                                                            locale.lang_id ='.$this->langId.' AND
                                                             (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
                                                             (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")'
                                                            .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
@@ -408,18 +409,18 @@ class news extends newsLibrary {
         $query = '  SELECT      n.id                AS newsid,
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
-                                n.title             AS newstitle,
-                                n.text              AS newscontent,
+                                nl.title            AS newstitle,
+                                nl.text             AS newscontent,
                                 n.teaser_image_path AS newsimage,
                                 n.teaser_image_thumbnail_path AS newsimagethumbnail,
                                 n.redirect          AS newsredirect,
-                                n.teaser_text       AS teasertext,
+                                nl.teaser_text      AS teasertext,
                                 nc.name             AS name
                     FROM        '.DBPREFIX.'module_news AS n
-                    INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
-                    ON          n.catid=nc.catid
+                        LEFT JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
+                        INNER JOIN  '.DBPREFIX.'module_news_categories AS nc ON n.catid=nc.catid
                     WHERE       status = 1
-                                AND n.lang='.$this->langId.'
+                                AND nl.lang_id='.$this->langId.'
                                 AND (n.startdate<=\''.date('Y-m-d H:i:s').'\' OR n.startdate="0000-00-00 00:00:00")
                                 AND (n.enddate>=\''.date('Y-m-d H:i:s').'\' OR n.enddate="0000-00-00 00:00:00")
                                 '.$newsfilter
@@ -840,20 +841,22 @@ class news extends newsLibrary {
         $userid         = $objFWUser->objUser->getId();
 
         $insert_fields = array(
-            'date',       'title',     'text',        'redirect',
+            'date',     /* 'title',     'text', */    'redirect',
             'source',     'url1',      'url2',        'catid',
-            'lang',     /*  'startdate', 'enddate', */'status',
-            'validated',  'userid',    'teaser_text', 'changelog'
+            /*'lang',       'startdate', 'enddate', */'status',
+            'validated',  'userid',    /*'teaser_text',*/ 'changelog'
 
         );
 
         $enable = $this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0";
         $insert_values = array(
-            $date,          $newstitle, $newstext,        $newsRedirect,
+            $date,       /*   $newstitle, $newstext, */   $newsRedirect,
             $newssource,    $newsurl1,  $newsurl2,        $newscat,
-            $this->langId,/*'',         '',      */       $enable,
-            $enable,        $userid,    $newsTeaserText,  $date
+            /*$this->langId, '',         '',      */       $enable,
+            $enable,        $userid,    /*$newsTeaserText,*/  $date
         );
+        
+        // title, text and teasertext stored in locale table
 
 
         $into   = "`" . join("`, `", $insert_fields) . "`";
@@ -867,6 +870,7 @@ class news extends newsLibrary {
         if ($objResult !== false) {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED']."<br /><br />";
             $ins_id = $objDatabase->Insert_ID();
+            $this->submitLocales($ins_id, $newstitle, $newstext, $newsTeaserText);
             return $ins_id;
         } else {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR']."<br /><br />";

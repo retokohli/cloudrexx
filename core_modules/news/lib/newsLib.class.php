@@ -133,5 +133,166 @@ class newsLibrary
 
         return $strPostedString;
     }
+    
+    /**
+     * Get language data (title, text, teaser_text) from database
+     * 
+     * @global ADONewConnection
+     * @param  Integer $newsId
+     * @return Array
+     */
+    function getLangData($newsId) {
+        global $objDatabase;
+
+    	$arrLangData = array();
+
+    	$objResult = $objDatabase->Execute("SELECT lang_id,
+			title,
+			text,
+			teaser_text
+			FROM ".DBPREFIX."module_news_locale
+			WHERE news_id = " . intval($newsId));
+
+    	if ($objResult !== false) {
+    		while (!$objResult->EOF) {
+    			$arrLangData[$objResult->fields['lang_id']] = array(
+    				'title'	        => $objResult->fields['title'],
+    				'text'	        => $objResult->fields['text'],
+    				'teaser_text'	=> $objResult->fields['teaser_text']
+    			);   			
+    			$objResult->MoveNext();
+    		}
+    	}
+
+    	return $arrLangData;
+    }
+    
+    /**
+     * Saving locales after edit news
+     *
+     * @global ADONewConnection
+     * @param Integer $newsId
+     * @param Array $newLangData
+     * @return Boolean
+     */
+    protected function storeLocales($newsId, $newLangData) {
+        global $objDatabase;
+
+    	$oldLangData = $this->getLangData($newsId);
+    	if(count($oldLangData) == 0) {
+    	    return false;
+    	}
+    	
+    	$status = true;
+    	
+    	$arrNewLocales = array_diff(array_keys($newLangData['title']), array_keys($oldLangData));
+        $arrRemovedLocales = array_diff(array_keys($oldLangData), array_keys($newLangData['title']));
+        $arrUpdatedLocales = array_intersect(array_keys($newLangData['title']), array_keys($oldLangData));
+
+        foreach ($arrNewLocales as $langId) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_locale` (`lang_id`, `news_id`, `title`, `text`, `teaser_text`) 
+                    VALUES ("   . $langId . ", " 
+                                . $newsId . ", '"
+                                . contrexx_addslashes(htmlentities($newLangData['title'][$langId], ENT_QUOTES, CONTREXX_CHARSET)) . "', '" 
+                                . $this->filterBodyTag(contrexx_addslashes($newLangData['text'][$langId])) . "', '"
+                                . contrexx_addslashes($newLangData['teaser_text'][$langId]) . "')") === false) {
+                $status = false;
+            }
+        }
+
+        foreach ($arrRemovedLocales as $langId) {
+            if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_news_locale` WHERE `news_id` = " . $newsId . " AND `lang_id` = " . $langId) === false) {
+                $status = false;
+            }
+        }
+
+        foreach ($arrUpdatedLocales as $langId) {
+            if ($newLangData['title'][$langId] != $oldLangData[$langId]['title'] 
+            || $newLangData['text'][$langId] != $oldLangData[$langId]['text'] 
+            || $newLangData['teaser_text'][$langId] != $oldLangData[$langId]['teaser_text'] ) {
+                if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_news_locale` SET 
+                        `title` = '" . contrexx_addslashes(htmlentities($newLangData['title'][$langId], ENT_QUOTES, CONTREXX_CHARSET)) . "', 
+                        `text` = '" . $this->filterBodyTag(contrexx_addslashes($newLangData['text'][$langId])) . "',
+                        `teaser_text` = '" . contrexx_addslashes($newLangData['teaser_text'][$langId]) . "'  
+                        WHERE `news_id` = " . $newsId . " AND `lang_id` = " . $langId) === false) {
+                    $status = false;
+                }
+            }
+        }
+    	
+    	return $status;
+    }
+    
+    /**
+     * Insert new locales after create news from backend
+     *
+     * @global ADONewConnection
+     * @param Integer $newsId
+     * @param Array $newLangData
+     * @return Boolean
+     */
+    function insertLocales($newsId, $newLangData) {
+        global $objDatabase;
+        
+        if(!isset($newsId)) {
+            return false;
+        }
+        
+        $status = true;
+        
+        $arrLanguages = FWLanguage::getLanguageArray();
+        foreach ($arrLanguages as $langId => $arrLanguage) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_locale` (`lang_id`, `news_id`, `title`, `text`, `teaser_text`) 
+                    VALUES ("   . $langId . ", " 
+                                . $newsId . ", '"
+                                . contrexx_addslashes(htmlentities((isset($newLangData['title'][$langId]) ? $newLangData['title'][$langId] : ""), ENT_QUOTES, CONTREXX_CHARSET)) . "', '" 
+                                . $this->filterBodyTag(contrexx_addslashes((isset($newLangData['text'][$langId]) ? $newLangData['text'][$langId] : ""))) . "', '"
+                                . contrexx_addslashes((isset($newLangData['teaser_text'][$langId]) ? $newLangData['teaser_text'][$langId] : "")) . "')") === false) {
+                $status = false;
+            }
+        }
+        
+        return $status;
+    }
+    
+    /**
+     * Insert new locales after submit news from frontend
+     * One copy for all languages
+     *
+     * @global ADONewConnection
+     * @param Integer   $newsId
+     * @param String    $title
+     * @param String    $text
+     * @param String    $teaser_text
+     * @return Boolean
+     */
+    function submitLocales($newsId, $title, $text, $teaser_text) {
+        global $objDatabase;
+        
+        if(!isset($newsId)) {
+            return false;
+        }
+        
+        $status = true;
+        
+        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."languages");
+
+    	if ($objResult !== false) {
+    		while (!$objResult->EOF) {
+    		    if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_locale (`lang_id`, `news_id`, `title`, `text`, `teaser_text`) 
+        		    VALUES ("
+            		    . intval($objResult->fields['id']) . ", "
+            		    . intval($newsId) . ", '"
+            		    . contrexx_addslashes($title) . "', '"
+            		    . contrexx_addslashes($text) . "', '"
+            		    . contrexx_addslashes($teaser_text) . "')")){
+    		        $status = false;
+    		    }
+    			$objResult->MoveNext();
+    		}
+    	}
+    	
+    	return $status;
+    }
 }
 ?>

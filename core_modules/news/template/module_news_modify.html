@@ -215,6 +215,28 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
     elLayer.style.display = elDisplay ? 'none' : 'block';
 }
 
+function newsSwitchLang(langId)
+{
+    // get current lang
+    var curLangId = jQuery("a.langtab.active").attr("id").slice(14);
+    // change tab
+    jQuery("#news_lang_tab_" + curLangId).removeClass("active").addClass("inactive");
+    jQuery("#news_lang_tab_" + langId).removeClass("inactive").addClass("active");
+    // change title
+    jQuery("#newsTitle\\[" + curLangId + "\\]").css("display", "none");
+    jQuery("#newsTitle\\[" + langId + "\\]").css("display", "block");
+    // change text
+    oFCKeditor = CKEDITOR.instances['newsText'];
+    jQuery('#news_text\\[' + curLangId + "\\]").attr("value", oFCKeditor.getData());
+    oFCKeditor.setData(jQuery('#news_text\\[' + langId + "\\]").attr("value"));
+    
+    // change teaser_text
+    jQuery("#newsTeaserText\\[" + curLangId + "\\]").parent().css("display", "none");
+    jQuery("#newsTeaserText\\[" + langId + "\\]").parent().css("display", "block");
+    
+    return true;
+}
+
 //-->
 </script>
 <ul id="tabmenu">
@@ -223,9 +245,14 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
 <li><a id="messageTab_news3" href="javascript:{}" onclick="selectTab('news3')" title="{NEWS_HEADLINES_TEASERS_TXT}">{NEWS_HEADLINES_TEASERS_TXT}</a></li>
 <!-- BEGIN news_permission_tab --><li><a id="messageTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_NEWS_PERMISSIONS}">{TXT_NEWS_PERMISSIONS}</a></li><!-- END news_permission_tab -->
 </ul>
-<form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}" onSubmit="SelectAllList(document.news.elements['newsTeaserFramesAsso[]']);SelectAllList(document.news.elements['news_read_access_associated_groups[]']);SelectAllList(document.news.elements['news_modify_access_associated_groups[]']);">
+<form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}" onSubmit="newsSwitchLang();SelectAllList(document.news.elements['newsTeaserFramesAsso[]']);SelectAllList(document.news.elements['news_read_access_associated_groups[]']);SelectAllList(document.news.elements['news_modify_access_associated_groups[]']);">
 <!-- start news1 div -->
 <div id="news1" class="messageTab" style="display:block">
+    <ul class="tabmenu langtabs">
+        <!-- BEGIN news_lang_list -->
+        <li><a href="javascript:void(0);" class="langtab {NEWS_LANG_DISPLAY_STATUS}" onclick="newsSwitchLang({NEWS_LANG_ID})" id="news_lang_tab_{NEWS_LANG_ID}">{NEWS_LANG_NAME}</a>
+        <!-- END news_lang_list -->
+    </ul>
 	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 		<tr>
 			<th valign="top" colspan="2">
@@ -238,7 +265,11 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
 		</tr>
 		<tr class="row1">
 			<td width="12%" nowrap="nowrap">{TXT_TITLE}</td>
-			<td width="88%"><input type="text" name="newsTitle" style="width: 400px;" value="{NEWS_TITLE}" maxlength="250" /></td>
+			<td width="88%">
+			<!-- BEGIN news_title_list -->
+			<input type="text" name="newsTitle[{NEWS_LANG_ID}]" id="newsTitle[{NEWS_LANG_ID}]" style="width: 400px;display:{NEWS_TITLE_DISPLAY}" value="{NEWS_TITLE}" maxlength="250" />
+			<!-- END news_title_list -->
+			</td>
 		</tr>
 		<tr class="row2">
 			<td nowrap="nowrap">{TXT_CATEGORY}</td>
@@ -267,10 +298,14 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
 		</tr>
 		<tr class="row1">
 			<td>
-				<textarea name="newsTeaserText" id="newsTeaserText" onkeyup="document.getElementById('newsTeaserTextCharCount').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
-					<div style="padding-right:50px; float:left;">&nbsp;{TXT_NUMBER_OF_CHARS}:&nbsp;<div id="newsTeaserTextCharCount" style="display:inline;">{NEWS_TEASER_TEXT_LENGTH}</div></div>
-					<div>&nbsp;<a href="javascript:{}" onclick="newsGetFileBrowser('newsTeaserText', 'link')">{TXT_NEWS_INSERT_LINK}</a></div>
+			<!-- BEGIN news_teaser_text_list -->
+			<div style="display:{NEWS_TITLE_DISPLAY}">
+				<textarea name="newsTeaserText[{NEWS_LANG_ID}]" id="newsTeaserText[{NEWS_LANG_ID}]" onkeyup="document.getElementById('newsTeaserTextCharCount_{NEWS_LANG_ID}').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
+					<div style="padding-right:50px; float:left;">&nbsp;{TXT_NUMBER_OF_CHARS}:&nbsp;<div id="newsTeaserTextCharCount_{NEWS_LANG_ID}" style="display:inline;">{NEWS_TEASER_TEXT_LENGTH}</div></div>
+					<div>&nbsp;<a href="javascript:{}" onclick="newsGetFileBrowser('newsTeaserText[{NEWS_LANG_ID}]', 'link')">{TXT_NEWS_INSERT_LINK}</a></div>
 				</div>
+			</div>
+			<!-- END news_teaser_text_list -->
 			</td>
 		</tr>
 	</table>
@@ -282,7 +317,12 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
 					<th>{TXT_NEWS_NEWS_CONTENT}</th>
 				</tr>
 				<tr class="row1">
-					<td valign="top">{NEWS_TEXT}</td>
+					<td valign="top">
+					   <!-- BEGIN news_text_list -->
+					   <textarea name="news_text[{NEWS_LANG_ID}]" id="news_text[{NEWS_LANG_ID}]" style="display:none;">{NEWS_TEXT}</textarea>
+					   <!-- END news_text_list -->
+					   {NEWS_TEXT_PREVIEW}
+					</td>
 				</tr>
 			</table>
 		</div>
