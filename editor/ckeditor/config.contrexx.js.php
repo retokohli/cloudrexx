@@ -81,7 +81,12 @@ CKEDITOR.editorConfig = function( config )
 
     //backwards compatibility wrapper to set the selected link in the contrexx filebrowser
     window.SetUrl = function(url, width, height, alt){
-        CKEDITOR.tools.callFunction(1, url);
+        var $top = $J(top.document).contents();
+        if($top.find('#typeRedirect:checked').length == 1){
+            $top.find('#typeRedirectValue').val(url);
+        } else {
+            CKEDITOR.tools.callFunction(1, url);
+        }
     };
 
 };
