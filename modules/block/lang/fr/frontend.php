@@ -6,10 +6,10 @@
  * @package     contrexx
  * @subpackage  module_block
  */
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "";
+$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Aperçu";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "plus";
+$_ARRAYLANG['TXT_BLOCK_MARKET'] = "plus d'annonces";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "toutes d'annonces";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "Annonce";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "Actuellement aucune annonce n'existe pas.";
 ?>

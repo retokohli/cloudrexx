@@ -6,10 +6,10 @@
  * @package     contrexx
  * @subpackage  module_block
  */
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "";
+$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Обзор";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "Больше";
+$_ARRAYLANG['TXT_BLOCK_MARKET'] = "Другие рекламные объявления";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "Все рекламные объявления";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "Реклама";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "Фактически нет никакой объявленной рекламы.";
 ?>

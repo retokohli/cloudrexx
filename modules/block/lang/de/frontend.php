@@ -6,10 +6,10 @@
  * @package     contrexx
  * @subpackage  module_block
  */
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "";
+$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Übersicht";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "mehr";
+$_ARRAYLANG['TXT_BLOCK_MARKET'] = "weitere Inserate";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "ganzer Inseratemarkt";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "Inserat";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "Zur Zeit ist kein Inserat eingetragen.";
 ?>

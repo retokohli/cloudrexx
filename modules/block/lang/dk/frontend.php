@@ -6,10 +6,10 @@
  * @package     contrexx
  * @subpackage  module_block
  */
-$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "";
-$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "";
+$_ARRAYLANG['TXT_BLOCK_OVERVIEW'] = "Oversigt";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL_ID'] = "mere";
+$_ARRAYLANG['TXT_BLOCK_MARKET'] = "andre annoncer";
+$_ARRAYLANG['TXT_BLOCK_MARKET_DETAIL'] = "alle annoncer";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR_TITLE'] = "Annonce";
+$_ARRAYLANG['TXT_BLOCK_MARKET_ERROR'] = "Der er for tiden ingen annoncer.";
 ?>

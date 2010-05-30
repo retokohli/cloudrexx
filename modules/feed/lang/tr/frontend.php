@@ -6,6 +6,6 @@
  * @package     contrexx
  * @subpackage  module_feed
  */
-$_ARRAYLANG['TXT_FEED_NO_NEWSFEED'] = "";
-$_ARRAYLANG['TXT_FEED_LAST_UPDATE'] = "";
+$_ARRAYLANG['TXT_FEED_NO_NEWSFEED'] = "Keine NewsFeeds vorhanden!";
+$_ARRAYLANG['TXT_FEED_LAST_UPDATE'] = "Letzte Aktualisierung";
 ?>
