@@ -6,10 +6,10 @@
  * @package     contrexx
  * @subpackage  module_memberdir
  */
-$_ARRAYLANG['TXT_OPEN_TICKET'] = "";
-$_ARRAYLANG['TXT_DIRECTORY'] = "";
-$_ARRAYLANG['TXT_SEARCH'] = "";
-$_ARRAYLANG['TXT_OVERVIEW'] = "";
-$_ARRAYLANG['TXT_SUBDIRECTORIES'] = "";
-$_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'] = "";
+$_ARRAYLANG['TXT_OPEN_TICKET'] = "Crear ticket";
+$_ARRAYLANG['TXT_DIRECTORY'] = "Directorio";
+$_ARRAYLANG['TXT_SEARCH'] = "Buscar";
+$_ARRAYLANG['TXT_OVERVIEW'] = "Descripci&oacute;n General";
+$_ARRAYLANG['TXT_SUBDIRECTORIES'] = "Subdirectorios";
+$_ARRAYLANG['TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD'] = "Exportar contacto como VCard";
 ?>

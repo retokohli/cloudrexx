@@ -6,6 +6,6 @@
  * @package     contrexx
  * @subpackage  core_module_nettools
  */
-$_ARRAYLANG['TXT_WHOIS'] = "";
-$_ARRAYLANG['TXT_WHOIS_TEXT'] = "";
+$_ARRAYLANG['TXT_WHOIS'] = "Whois";
+$_ARRAYLANG['TXT_WHOIS_TEXT'] = "Введите IP-адрес или доменное имя, чтобы получить принадлежащую ему WHOIS информацию.";
 ?>
