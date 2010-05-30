@@ -6,5 +6,5 @@
  * @package     contrexx
  * @subpackage  core_module_login
  */
-$_ARRAYLANG['TXT_DIR_F_LINK'] = "Link";
+$_ARRAYLANG['TXT_DIR_F_LINK'] = "";
 ?>
