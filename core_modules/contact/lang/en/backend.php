@@ -144,4 +144,5 @@ $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Receiver address selection";
 $_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "The e-mail address '%s' is not valid!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
+$_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'] = "All Mandatory field values must be set!";
 ?>
