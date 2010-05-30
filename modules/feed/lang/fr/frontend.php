@@ -6,6 +6,6 @@
  * @package     contrexx
  * @subpackage  module_feed
  */
-$_ARRAYLANG['TXT_FEED_NO_NEWSFEED'] = "Aucun flux RSS disponible!";
-$_ARRAYLANG['TXT_FEED_LAST_UPDATE'] = "Dernière mise à jour";
+$_ARRAYLANG['TXT_FEED_NO_NEWSFEED'] = "";
+$_ARRAYLANG['TXT_FEED_LAST_UPDATE'] = "";
 ?>

@@ -6,5 +6,5 @@
  * @package     contrexx
  * @subpackage  module_livecam
  */
-$_ARRAYLANG['TXT_LIVECAM_NO_PICTURES_OF_SELECTED_DAY'] = "Von diesem Tag sind leider keine Bilder vorhanden.";
+$_ARRAYLANG['TXT_LIVECAM_NO_PICTURES_OF_SELECTED_DAY'] = "";
 ?>
