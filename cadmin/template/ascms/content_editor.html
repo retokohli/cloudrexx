@@ -1,3 +1,8 @@
+<style type="text/css">@import url(/lib/jscalendar/skins/aqua/theme.css);</style>
+<script type="text/javascript" src="/lib/jscalendar/calendar.js"></script>
+<script type="text/javascript" src="/lib/jscalendar/lang/calendar-de.js"></script>
+<script type="text/javascript" src="/lib/jscalendar/calendar-setup.js"></script>
+
 <!-- START content_editor.html -->
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -225,14 +230,17 @@ function modusSelection(strAction) {
     document.getElementById('type_content').style.display = 'block';
     document.getElementById('type_redirect').style.display = 'none';
     document.getElementById('type_useContentFromLang').style.display = 'none';
+    document.getElementById('page_type_content').style.display = '';
   } else if(strAction == 'type_redirect') {
     document.getElementById('type_content').style.display = 'none';
     document.getElementById('type_redirect').style.display = 'block';
     document.getElementById('type_useContentFromLang').style.display = 'none';
+    document.getElementById('page_type_content').style.display = 'none';
   } else {
     document.getElementById('type_content').style.display = 'none';
     document.getElementById('type_redirect').style.display = 'none';
     document.getElementById('type_useContentFromLang').style.display = 'block';
+    document.getElementById('page_type_content').style.display = 'none';
   }
 }
 
@@ -1198,10 +1206,10 @@ if(typeof console === 'undefined'){
     <li><a id="editorTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_MORE_OPTIONS}">{TXT_MORE_OPTIONS}</a></li>
     <li><a id="editorTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_FRONTEND_PERMISSION}">{TXT_FRONTEND_PERMISSION}</a></li>
     <li><a id="editorTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_RELATEDNESS}">{TXT_RELATEDNESS}</a></li>
+    <li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>
     <!-- BEGIN changelog1 -->
     <li><a id="editorTab_content5" href="javascript:{}" onclick="selectTab('content5')" title="{TXT_CHANGELOG}">{TXT_CHANGELOG}</a></li>
-    <!-- END changelog1 -->
-    <li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>
+    <!-- END changelog1 -->    
   </ul>
 </div>
   <div id="content1" class="editorTab" style="display:block">
@@ -1264,7 +1272,7 @@ if(typeof console === 'undefined'){
           </td>
         </tr>
         <!-- BEGIN multilang_2 -->
-        <tr class="row2">
+        <tr class="row2" id="page_type_content">
             <td nowrap="nowrap">{TXT_USE_CONTENT_FROM_LANGUAGE}</td>
             <td>
                 <span>
@@ -1355,11 +1363,11 @@ if(typeof console === 'undefined'){
       <tbody>
         <tr class="row2">
           <td width="15%">{TXT_START_DATE}</td>
-          <td width="85%"><input type="text" name="startdate" size="10" maxlength="10" onclick="setDateToday(startdate);" value="{CONTENT_STARTDATE}" /></td>
+          <td width="85%"><input type="text" name="startdate" size="10" maxlength="10" onfocus="Calendar.setup({inputField:this,ifFormat:'%Y-%m-%d',range:[1900,2100]})" value="{CONTENT_STARTDATE}" /></td>
         </tr>
         <tr class="row1">
           <td>{TXT_END_DATE}</td>
-          <td><input type="text" name="enddate" size="10" maxlength="10" onfocus="setDateToday(enddate);" value="{CONTENT_ENDDATE}" /></td>
+          <td><input type="text" name="enddate" size="10" maxlength="10" onfocus="Calendar.setup({inputField:this,ifFormat:'%Y-%m-%d',range:[1900,2100]})" value="{CONTENT_ENDDATE}" /></td>
         </tr>
       </tbody>
     </table>

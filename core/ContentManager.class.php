@@ -1009,6 +1009,7 @@ class ContentManager
             'CONTENT_TYPE_STYLE_CONTENT'                        => ' style="display: block;"',
             'CONTENT_TYPE_STYLE_REDIRECT'                       => ' style="display: none;"',
             'CONTENT_TYPE_STYLE_USE_CONTENT_FROM_LANG'          => ' style="display: none;"',
+            'CONTENT_PAGE_TYPE_STYLE'                           => ' style=""',
         ));
     }
 
