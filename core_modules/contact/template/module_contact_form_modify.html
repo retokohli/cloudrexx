@@ -266,19 +266,32 @@ function setFormFieldAttributeBox(el, type)
 
 function checkFieldValue()
 {
-	var elField, i, n, isSetAllValue;
-	
+	var elField, i, n, k,j, isSetAllValue;
+	var arr;
+	arr = ["checkboxGroup", "radio", "select"];
+		
 	isSetAllValue = true;
 	for (n=1; n<formFieldLastId; n++ ){		
-		if (document.getElementById('contactFormFieldAttributeBox_'+n)){			
-			elField = document.getElementById('contactFormFieldAttributeBox_'+n);	
-		    for (i=0; i<elField.childNodes.length; i++) {
-	            if (elField.childNodes[i].nodeType == 1) {	                            
-	                if (elField.childNodes[i].value == '') {	                	
-	                	isSetAllValue = false;
-	                }		                
-	            }             
-		    }
+		if (document.getElementById('contactFormFieldAttributeBox_'+n)){
+			
+			k = -1;
+			for (var j=0; j < arr.length; j++) {
+			    if (arr[j] == document.getElementById('contactFormFieldType_'+n).value ) {
+			    	k=j; 
+			    	break
+			    } 		
+			}
+			
+			if (k != -1) {
+				elField = document.getElementById('contactFormFieldAttributeBox_'+n);	
+			    for (i=0; i<elField.childNodes.length; i++) {
+		            if (elField.childNodes[i].nodeType == 1) {	                            
+		                if (elField.childNodes[i].value == '') {	                	
+		                	isSetAllValue = false;
+		                }		                
+		            }             
+			    }
+			}		    
 		}
 	}
 	
