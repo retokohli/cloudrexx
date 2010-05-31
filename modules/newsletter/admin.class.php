@@ -4365,68 +4365,6 @@ class newsletter extends NewsletterLib
 
     }
 
-    /**
-     * Return the count of recipients of a list
-     *
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       int $id
-     * @return      int
-     */
-    private function getListRecipientCount($id) {
-        global $objDatabase;
-
-        $query = sprintf('
-             SELECT 
-                    COUNT(*)                                AS `recipientCount`
-             FROM ( 
-                SELECT 
-                        `email`
-
-                FROM
-                        `%smodule_newsletter_user`          AS `nu`
-
-                LEFT JOIN
-                        `%smodule_newsletter_rel_user_cat`  AS `rc`
-                    ON
-                        `rc`.`user` = `nu`.`id`
-
-                WHERE `rc`.`category` = %s
-
-
-                   
-                UNION DISTINCT SELECT
-                        `email`
-
-                FROM 
-                        `%saccess_users`                    AS `cu`
-                
-                LEFT JOIN
-                        `%smodule_newsletter_access_user`   AS `cnu`
-                    ON
-                        `cnu`.`accessUserID` = `cu`.`id`
-
-                LEFT JOIN
-                        `%smodule_newsletter_rel_cat_news`  AS `crn`
-                    ON
-                        `cnu`.`newsletterCategoryID` = `crn`.`category`
-
-                WHERE `cnu`.`newsletterCategoryID` = %s
-
-            ) AS `subquery`
-            ',
-            DBPREFIX,
-            DBPREFIX,
-            $id,
-            DBPREFIX,
-            DBPREFIX,
-            DBPREFIX,
-            $id
-        );
-
-        $data = $objDatabase->Execute($query);
-
-        return $data->fields['recipientCount'];
-    }
 
     function _mailOverview($limit = 10)
     {
