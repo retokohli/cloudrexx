@@ -3957,6 +3957,7 @@ class newsletter extends NewsletterLib
             }
 
             if ($user['type'] == 'newsletter_user') {
+                $this->_objTpl->touchBlock('newsletter_checkbox');
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_USER_EMAIL'               => htmlentities($user['email'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_USER_ID'                  => $user['id'],
