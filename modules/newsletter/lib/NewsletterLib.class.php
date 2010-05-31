@@ -39,8 +39,7 @@ class NewsletterLib
         $objList = $objDatabase->Execute("SELECT tblCategory.id,
             tblCategory.status,
             tblCategory.name,
-            tblCategory.notification_email,
-            COUNT(tblRel.category) as recipients
+            tblCategory.notification_email
             FROM ".DBPREFIX."module_newsletter_category AS tblCategory
             LEFT JOIN ".DBPREFIX."module_newsletter_rel_user_cat AS tblRel ON tblRel.category = tblCategory.id
             GROUP BY tblCategory.id".(!empty($orderBy) ? " ORDER BY ".$orderBy : ""));
@@ -66,7 +65,7 @@ class NewsletterLib
                 $arrLists[$objList->fields['id']] = array(
                     'status'     => $objList->fields['status'],
                     'name'       => $objList->fields['name'],
-                    'recipients' => $objList->fields['recipients'],
+                    'recipients' => $this->getListRecipientCount($objList->fields['id']),
                     'mail_sent'  => $mailSend,
                     'mail_name'  => $mailName,
                     'mail_id'    => ($mailSend > 0 ? $mailId : 0),
@@ -76,6 +75,70 @@ class NewsletterLib
             }
         }
         return $arrLists;
+    }
+
+
+    /**
+     * Return the count of recipients of a list
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $id
+     * @return      int
+     */
+    protected function getListRecipientCount($id) {
+        global $objDatabase;
+
+        $query = sprintf('
+             SELECT 
+                    COUNT(*)                                AS `recipientCount`
+             FROM ( 
+                SELECT 
+                        `email`
+
+                FROM
+                        `%smodule_newsletter_user`          AS `nu`
+
+                LEFT JOIN
+                        `%smodule_newsletter_rel_user_cat`  AS `rc`
+                    ON
+                        `rc`.`user` = `nu`.`id`
+
+                WHERE `rc`.`category` = %s
+
+
+                   
+                UNION DISTINCT SELECT
+                        `email`
+
+                FROM 
+                        `%saccess_users`                    AS `cu`
+                
+                LEFT JOIN
+                        `%smodule_newsletter_access_user`   AS `cnu`
+                    ON
+                        `cnu`.`accessUserID` = `cu`.`id`
+
+                LEFT JOIN
+                        `%smodule_newsletter_rel_cat_news`  AS `crn`
+                    ON
+                        `cnu`.`newsletterCategoryID` = `crn`.`category`
+
+                WHERE `cnu`.`newsletterCategoryID` = %s
+
+            ) AS `subquery`
+            ',
+            DBPREFIX,
+            DBPREFIX,
+            $id,
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            $id
+        );
+
+        $data = $objDatabase->Execute($query);
+
+        return $data->fields['recipientCount'];
     }
 
     /**
