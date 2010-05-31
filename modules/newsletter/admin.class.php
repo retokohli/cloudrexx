@@ -3730,6 +3730,11 @@ class newsletter extends NewsletterLib
     }
 
 
+    /**
+     *
+     * @todo instead of just not linking the access users probably link to
+     *       the access module in case the user has the appropriate rights
+     */
     function _userList()
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
@@ -4093,7 +4098,7 @@ class newsletter extends NewsletterLib
             }
         }
 
-        $data = $objDatabase->Execute('SELECT FOUND_ROWS() AS count');
+        $data = $objDatabase->Execute('SELECT FOUND_ROWS() AS `count`');
         $count = $data->fields['count'];
 
         return array($users, $count);
