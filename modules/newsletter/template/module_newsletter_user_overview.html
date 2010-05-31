@@ -296,8 +296,13 @@ var confirmDeleteInactive = function(){
     <td style="white-space:nowrap;">{NEWSLETTER_USER_COUNTRY}</td>
     <td style="white-space:nowrap;">{NEWSLETTER_USER_REGISTRATION_DATE}</td>
     <td style="text-align:right;">
-      <a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=edit&amp;id={NEWSLETTER_USER_ID}" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"><img src="images/icons/edit.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"/></a>
-      <a href="javascript:DeleteUser({NEWSLETTER_USER_ID}, '{NEWSLETTER_USER_EMAIL}');"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_NEWSLETTER_DELETE_RECIPIENT}" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}" /></a>
+    <!-- BEGIN newsletter_user_type -->
+        <a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=edit&amp;id={NEWSLETTER_USER_ID}" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"><img src="images/icons/edit.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"/></a>
+        <a href="javascript:DeleteUser({NEWSLETTER_USER_ID}, '{NEWSLETTER_USER_EMAIL}');"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_NEWSLETTER_DELETE_RECIPIENT}" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}" /></a>
+      <!-- END newsletter_user_type -->
+      <!-- BEGIN access_user_type -->
+      
+      <!-- END access_user_type -->
     </td>
   </tr>
   <!-- END newsletter_user -->
