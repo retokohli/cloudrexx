@@ -2336,25 +2336,6 @@ class newsletter extends NewsletterLib
     {
         global $objDatabase;
 
-        /**
-         * with subquery support:
-         *
-         * "SELECT sum( mailCount )
-            FROM (
-                SELECT COUNT( 1 ) AS mailCount
-                FROM ".DBPREFIX."module_newsletter_rel_cat_news AS tblRelListMail
-                RIGHT JOIN ".DBPREFIX."module_newsletter_rel_user_cat AS tblRelUserList ON tblRelListMail.category = tblRelUserList.category
-                RIGHT JOIN ".DBPREFIX."module_newsletter_user AS tblUsers ON tblRelUserList.user = tblUsers.id
-                AND tblUsers.status =1
-                WHERE newsletter =22
-                GROUP BY tblRelListMail.id
-            ) AS foo
-            LIMIT 1";
-         *
-         *
-         */
-
-    
         $query = sprintf('
             SELECT COUNT(*) AS `recipientCount`
             FROM (
@@ -2427,21 +2408,6 @@ class newsletter extends NewsletterLib
         );
 
         $count = $objDatabase->Execute($query);
-
-        /*
-        $objMail = $objDatabase->SelectLimit("
-            SELECT
-                COUNT( DISTINCT u.`id` ) AS recipientCount
-            FROM
-                `".DBPREFIX."module_newsletter_user` AS u
-                INNER JOIN `".DBPREFIX."module_newsletter_rel_user_cat` AS relU ON relU.`user` = u.`id`
-                INNER JOIN `".DBPREFIX."module_newsletter_rel_cat_news` AS relN USING ( `category` )
-            WHERE
-                relN.`newsletter` = ".$mailId."
-                AND u.`status` =1
-            GROUP BY relN.`newsletter`", 1
-        );
-         */
 
         if ($count !== false && $count->RecordCount() == 1) {
             return intval($count->fields['recipientCount']);
