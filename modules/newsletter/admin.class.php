@@ -3878,13 +3878,16 @@ class newsletter extends NewsletterLib
             $where_statement .= ' and status='.intval($_REQUEST["SearchStatus"]).' ';
         }
 
+        /*
         if ($newsletterListId > 0) {
             $where_statement .= " and tblUser.id=tblRel.user and tblRel.category=".$newsletterListId;
         }
+         */
 
         $pos = intval($_GET['pos']);
 
 
+        /*
         if ($where_statement == '') {
             $query         = "    SELECT id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
                             FROM ".DBPREFIX."module_newsletter_user
@@ -3904,7 +3907,11 @@ class newsletter extends NewsletterLib
                             GROUP BY tblUser.id
                             ORDER BY emaildate DESC";
         }
+         */
+        list ($users, $count) = $this->returnNewsletterUser($where_statement, 
+            $newsletterListId);
 
+            /*
         //show only one record set if _REQUEST['id'] is set (meaning the client comes from user details)
         if (!empty($_REQUEST['id']) && $_GET['delete'] != 'exe' && $_GET['bulkdelete'] != 'exe') {
             $objResult = $objDatabase->Execute('SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
@@ -3914,6 +3921,8 @@ class newsletter extends NewsletterLib
         } else {
             $objResult = $objDatabase->SelectLimit($query, $limit, $pos);
         }
+             */
+        /*
 
         if ($where_statement == '') {
             $query_2 = "    SELECT COUNT(1) as cnt
@@ -3930,32 +3939,31 @@ class newsletter extends NewsletterLib
         }
         $objResult_2 = $objDatabase->Execute($query_2);
         $count = $objResult_2->fields['cnt'];
+         */
         $rowNr = 0;
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                if ($objResult->fields['status']==1) {
-                    $StatusImg = '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_ACTIVE'].'" />';
-                } else {
-                    $StatusImg = '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_OPEN_ISSUE'].'" />';
-                }
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_USER_ID'                    => $objResult->fields['id'],
-                    'NEWSLETTER_USER_EMAIL'                    => htmlentities($objResult->fields['email'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_USER_LASTNAME'                => (trim($objResult->fields['lastname'])=='') ? '-' : htmlentities($objResult->fields['lastname'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_USER_FIRSTNAME'                => (trim($objResult->fields['firstname'])=='')  ? '-' : htmlentities($objResult->fields['firstname'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_USER_STREET'                => (trim($objResult->fields['street'])=='')  ? '-' : htmlentities($objResult->fields['street'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_USER_ZIP'                    => (trim($objResult->fields['zip'])=='')  ? '-' : htmlentities($objResult->fields['zip'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_USER_CITY'                    => (trim($objResult->fields['city'])=='')  ? '-' : htmlentities($objResult->fields['city'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_USER_COUNTRY'                => (trim($objResult->fields['country'])=='')  ? '-' : htmlentities($objResult->fields['country'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_USER_REGISTRATION_DATE'        => (trim($objResult->fields['emaildate'])=='')  ? '-' : date(ASCMS_DATE_FORMAT, $objResult->fields['emaildate']),
-                    'STATUS_IMG'                            => $StatusImg,
-                    'ROW_CLASS'                                => $rowNr % 2 == 1 ? 'row1' : 'row2'
-                ));
-                $rowNr++;
-                $this->_objTpl->parse("newsletter_user");
-                $objResult->MoveNext();
+        foreach ($users as $user) {
+            if ($user['status']==1) {
+                $StatusImg = '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_ACTIVE'].'" />';
+            } else {
+                $StatusImg = '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_OPEN_ISSUE'].'" />';
             }
+            $this->_objTpl->setVariable(array(
+                'NEWSLETTER_USER_ID'                    => $user['id'],
+                'NEWSLETTER_USER_EMAIL'                    => htmlentities($user['email'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_LASTNAME'                => (trim($user['lastname'])=='') ? '-' : htmlentities($user['lastname'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_FIRSTNAME'                => (trim($user['firstname'])=='')  ? '-' : htmlentities($user['firstname'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_STREET'                => (trim($user['street'])=='')  ? '-' : htmlentities($user['street'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_ZIP'                    => (trim($user['zip'])=='')  ? '-' : htmlentities($user['zip'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_CITY'                    => (trim($user['city'])=='')  ? '-' : htmlentities($user['city'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_COUNTRY'                => (trim($user['country'])=='')  ? '-' : htmlentities($user['country'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_REGISTRATION_DATE'        => (trim($user['emaildate'])=='')  ? '-' : date(ASCMS_DATE_FORMAT, $user['emaildate']),
+                'STATUS_IMG'                            => $StatusImg,
+                'ROW_CLASS'                                => $rowNr % 2 == 1 ? 'row1' : 'row2'
+            ));
+            $rowNr++;
+            $this->_objTpl->parse("newsletter_user");
         }
+
         if (!empty($limit)) {
             $_CONFIG['corePagingLimit'] = $limit;
         }
@@ -3970,6 +3978,106 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable("USER_PAGING", $paging);
         $this->_objTpl->setVariable('TXT_EDIT', $_ARRAYLANG['TXT_EDIT']);
         $this->_objTpl->parse('module_newsletter_user_overview');
+    }
+
+    /**
+     * Return all newsletter user
+     *
+     * Return all newsletter users and those access users who are assigned
+     * to the list
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $where The where String for searching
+     * @param       int $newsletterListId The id of the newsletter category
+     *              to be selected (0 for all users)
+     * @return      array(array, int)
+     */
+    private function returnNewsletterUser($where, $newsletterListId=0) {
+        global $objDatabase;
+
+        $query = sprintf('
+            SELECT SQL_CALC_FOUND_ROWS
+                    * 
+             FROM ( 
+                SELECT 
+                            `email`,
+                            `lastname`, 
+                            `firstname`,
+                            `street`,
+                            `zip`,
+                            `country`,
+                            `status`
+                FROM
+                            `%smodule_newsletter_user` AS `nu`
+
+                LEFT JOIN
+                            `%smodule_newsletter_rel_user_cat` AS `rc`
+                    ON
+                            `rc`.`user` = `nu`.`id`
+
+                %s #where
+
+                   
+                UNION DISTINCT SELECT
+                            `email`,
+                            `cup`.`lastname`,
+                            `cup`.`firstname`,
+                            `cup`.`address`,
+                            `cup`.`zip`,
+                            `cup`.`country`,
+                            1 AS `status`
+                    FROM 
+                            `%saccess_users` AS `cu`
+                    
+                    LEFT JOIN
+                            `%smodule_newsletter_access_user` AS `cnu`
+                        ON
+                            `cnu`.`accessUserID` = `cu`.`id`
+
+                    LEFT JOIN
+                            `%smodule_newsletter_rel_cat_news` AS `crn`
+                        ON
+                            `cnu`.`newsletterCategoryID` = `crn`.`category`
+
+                    LEFT JOIN
+                            `%saccess_user_profile` AS `cup`
+                        ON
+                            `cu`.`id` = `cup`.`user_id`
+                    %s #where
+
+            ) AS `subquery`
+            WHERE 1 = 1
+            %s # where
+        ', 
+            DBPREFIX,
+            DBPREFIX,
+            (
+                !empty($newsletterListId)
+                ? sprintf('WHERE `rc`.`category` = %s', intval($newsletterListId))
+                : ''
+            ),
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            (
+                !empty($newsletterListId)
+                ? sprintf('WHERE `cnu`.`newsletterCategoryID` = %s', intval($newsletterListId))
+                : ''
+            ),
+            $where
+
+        );
+
+        $data = $objDatabase->Execute($query);
+        $users = array();
+        foreach ($data as $d) {
+            $users[] = $data->fields;
+        }
+
+        $data = $objDatabase->Execute('SELECT FOUND_ROWS() AS count');
+        $count = $data->fields['count'];
+
+        return array($users, $count);
     }
 
     function SelectListStatus() {
