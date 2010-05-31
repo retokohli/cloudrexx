@@ -2298,6 +2298,9 @@ class newsletter extends NewsletterLib
         return $count;
     }
 
+    /**
+     * @todo I think this should be rewritten too
+     */
     private function getFinalMailRecipientCount($mailId = null)
     {
         global $objDatabase;
@@ -3931,7 +3934,7 @@ class newsletter extends NewsletterLib
             $query_2 = "    SELECT COUNT(1) as cnt
                             FROM ".DBPREFIX."module_newsletter_user AS tblUser
                             WHERE 1=1 ".$where_statement;
-        } else {
+        } else          {
             $query_2 = "    SELECT COUNT(1) as cnt
                             FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
                             .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
@@ -3947,21 +3950,32 @@ class newsletter extends NewsletterLib
             } else {
                 $StatusImg = '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_OPEN_ISSUE'].'" />';
             }
+
+            if ($user['type'] == 'newsletter_user') {
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_USER_EMAIL'               => htmlentities($user['email'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'NEWSLETTER_USER_ID'                  => $user['id'],
+                ));
+                $this->_objTpl->parse('newsletter_user_type');
+            } else {
+                $this->_objTpl->parse('access_user_type');
+            }
+
             $this->_objTpl->setVariable(array(
-                'NEWSLETTER_USER_ID'                    => $user['id'],
-                'NEWSLETTER_USER_EMAIL'                    => htmlentities($user['email'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_LASTNAME'                => (trim($user['lastname'])=='') ? '-' : htmlentities($user['lastname'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_FIRSTNAME'                => (trim($user['firstname'])=='')  ? '-' : htmlentities($user['firstname'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_STREET'                => (trim($user['street'])=='')  ? '-' : htmlentities($user['street'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_ZIP'                    => (trim($user['zip'])=='')  ? '-' : htmlentities($user['zip'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_CITY'                    => (trim($user['city'])=='')  ? '-' : htmlentities($user['city'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_COUNTRY'                => (trim($user['country'])=='')  ? '-' : htmlentities($user['country'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_REGISTRATION_DATE'        => (trim($user['emaildate'])=='')  ? '-' : date(ASCMS_DATE_FORMAT, $user['emaildate']),
-                'STATUS_IMG'                            => $StatusImg,
-                'ROW_CLASS'                                => $rowNr % 2 == 1 ? 'row1' : 'row2'
+                'NEWSLETTER_USER_ID'                  => $user['id'],
+                'NEWSLETTER_USER_EMAIL'               => htmlentities($user['email'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_LASTNAME'            => (trim($user['lastname'])=='') ? '-' : htmlentities($user['lastname'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_FIRSTNAME'           => (trim($user['firstname'])=='')  ? '-' : htmlentities($user['firstname'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_STREET'              => (trim($user['street'])=='')  ? '-' : htmlentities($user['street'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_ZIP'                 => (trim($user['zip'])=='')  ? '-' : htmlentities($user['zip'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_CITY'                => (trim($user['city'])=='')  ? '-' : htmlentities($user['city'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_COUNTRY'             => (trim($user['country'])=='')  ? '-' : htmlentities($user['country'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_REGISTRATION_DATE'   => (trim($user['emaildate'])=='')  ? '-' : date(ASCMS_DATE_FORMAT, $user['emaildate']),
+                'STATUS_IMG'                          => $StatusImg,
+                'ROW_CLASS'                           => $rowNr % 2 == 1 ? 'row1' : 'row2'
             ));
-            $rowNr++;
             $this->_objTpl->parse("newsletter_user");
+            $rowNr++;
         }
 
         if (!empty($limit)) {
@@ -3999,50 +4013,52 @@ class newsletter extends NewsletterLib
                     * 
              FROM ( 
                 SELECT 
-                            `email`,
-                            `lastname`, 
-                            `firstname`,
-                            `street`,
-                            `zip`,
-                            `country`,
-                            `status`
+                        `email`,
+                        `lastname`, 
+                        `firstname`,
+                        `street`,
+                        `zip`,
+                        `country`,
+                        `status`,
+                        "newsletter_user"                   AS `type`
                 FROM
-                            `%smodule_newsletter_user` AS `nu`
+                        `%smodule_newsletter_user`          AS `nu`
 
                 LEFT JOIN
-                            `%smodule_newsletter_rel_user_cat` AS `rc`
+                        `%smodule_newsletter_rel_user_cat`  AS `rc`
                     ON
-                            `rc`.`user` = `nu`.`id`
+                        `rc`.`user` = `nu`.`id`
 
                 %s #where
 
                    
                 UNION DISTINCT SELECT
-                            `email`,
-                            `cup`.`lastname`,
-                            `cup`.`firstname`,
-                            `cup`.`address`,
-                            `cup`.`zip`,
-                            `cup`.`country`,
-                            1 AS `status`
-                    FROM 
-                            `%saccess_users` AS `cu`
-                    
-                    LEFT JOIN
-                            `%smodule_newsletter_access_user` AS `cnu`
-                        ON
-                            `cnu`.`accessUserID` = `cu`.`id`
+                        `email`,
+                        `cup`.`lastname`,
+                        `cup`.`firstname`,
+                        `cup`.`address`,
+                        `cup`.`zip`,
+                        `cup`.`country`,
+                        1                                   AS `status`,
+                        "access_user"                       AS `type`
+                FROM 
+                        `%saccess_users`                    AS `cu`
+                
+                LEFT JOIN
+                        `%smodule_newsletter_access_user`   AS `cnu`
+                    ON
+                        `cnu`.`accessUserID` = `cu`.`id`
 
-                    LEFT JOIN
-                            `%smodule_newsletter_rel_cat_news` AS `crn`
-                        ON
-                            `cnu`.`newsletterCategoryID` = `crn`.`category`
+                LEFT JOIN
+                        `%smodule_newsletter_rel_cat_news`  AS `crn`
+                    ON
+                        `cnu`.`newsletterCategoryID` = `crn`.`category`
 
-                    LEFT JOIN
-                            `%saccess_user_profile` AS `cup`
-                        ON
-                            `cu`.`id` = `cup`.`user_id`
-                    %s #where
+                LEFT JOIN
+                        `%saccess_user_profile`             AS `cup`
+                    ON
+                        `cu`.`id` = `cup`.`user_id`
+                %s #where
 
             ) AS `subquery`
             WHERE 1 = 1
@@ -4070,8 +4086,11 @@ class newsletter extends NewsletterLib
 
         $data = $objDatabase->Execute($query);
         $users = array();
-        foreach ($data as $d) {
-            $users[] = $data->fields;
+        if ($data !== false ) {
+            while (!$data->EOF) {
+                $users[] = $data->fields;
+                $data->MoveNext();
+            }
         }
 
         $data = $objDatabase->Execute('SELECT FOUND_ROWS() AS count');
