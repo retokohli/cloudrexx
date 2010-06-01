@@ -4310,7 +4310,7 @@ right after the customer logs in!
         // updated if this method is called by Paypal::ipnCheck() with the
         // 'PaypalIPN' handler argument or if the new order status is
         // set to force the order to be cancelled.
-        if ($processorName == 'Paypal') {
+        if (preg_match('/paypal/i', $processorName)) {
             if (   $handler != 'PaypalIPN'
                 && $newOrderStatus != SHOP_ORDER_STATUS_CANCELLED
             ) {

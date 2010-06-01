@@ -61,13 +61,6 @@ class PayPal
         'USD', // U.S. Dollar
     );
 
-    /**
-     * PHP 5 constructor
-     */
-    function __construct()
-    {
-    }
-
 
     /**
      * Returns the form for PayPal accessing
@@ -90,15 +83,16 @@ class PayPal
         $cancel_return = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid;
         $notify_url = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;act=paypalIpnCheck';
 
-        $retval = "<script language='JavaScript' type='text/javascript'>
-            // <![CDATA[
-                function go()
-                {
-                    document.paypal.submit();
-                }
-                ".(_PAYPAL_DEBUG > 0 ? '' : "window.setTimeout('go()',3000);
-            ")."// ]]>
-            </script>";
+        $retval =
+(_PAYPAL_DEBUG == 0
+? "<script language='JavaScript' type='text/javascript'>
+// <![CDATA[
+function go() { document.paypal.submit(); }
+window.setTimeout('go()', 3000);
+// ]]>
+</script>
+"
+: '');
 
         $retval .=
             (_PAYPAL_DEBUG == 0
@@ -122,6 +116,7 @@ class PayPal
         $retval .= "</form>\n";
         return $retval;
     }
+
 
     /**
      * Generates a hidden input field
@@ -156,7 +151,7 @@ class PayPal
     {
         global $objDatabase;
 
-if (_PAYPAL_DEBUG) $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnCheckLog.txt', 'w');
+if (_PAYPAL_DEBUG) DBG::activate(DBG_PHP|DBG_ADODB|DBG_LOG_FILE);
 
         // read the post from PayPal system and add 'cmd'
         $req = 'cmd=_notify-validate';
@@ -177,7 +172,7 @@ if (_PAYPAL_DEBUG) $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnCheckLog.txt', 'w');
                     : fsockopen('localhost', 80, $errno, $errstr, 30)
         ));
         if (!$fp) {
-if (_PAYPAL_DEBUG) @fwrite($log, "no fp, errno $errno, error $errstr\r\nexiting\r\n");@fclose($log);
+if (_PAYPAL_DEBUG) DBG::log("Failed to connect Socket with PayPal Server, errno $errno, error $errstr - exiting");
             exit;
         }
 
@@ -190,7 +185,7 @@ if (_PAYPAL_DEBUG) @fwrite($log, "no fp, errno $errno, error $errstr\r\nexiting\
             "Content-Type: application/x-www-form-urlencoded\r\n".
             "Content-Length: ".strlen($req)."\r\n\r\n";
         fwrite($fp, $header.$req);
-if (_PAYPAL_DEBUG) @fwrite($log, "sent\r\n$header$req\r\n\r\n");
+if (_PAYPAL_DEBUG) DBG::log("Sent header and request: $header$req");
 
         // assign posted variables to local variables
 // The following are unused
@@ -207,18 +202,15 @@ if (_PAYPAL_DEBUG) @fwrite($log, "sent\r\n$header$req\r\n\r\n");
         $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
                   WHERE `name`='paypal_account_email'";
         $objResult = $objDatabase->Execute($query);
-if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $paypalAccountEmail = $objResult->fields['value'];
 
         $query = "SELECT currency_order_sum, selected_currency_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
         $objResult = $objDatabase->Execute($query);
-if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $currencyId = $objResult->fields['selected_currency_id'];
         $amount = $objResult->fields['currency_order_sum'];
 
         $query = "SELECT code FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=$currencyId";
         $objResult = $objDatabase->Execute($query);
-if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $currencyCode = $objResult->fields['code'];
 
         $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
@@ -233,33 +225,25 @@ if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' 
                     // Update the order status to a value determined
                     // automatically.
                     $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
-if (_PAYPAL_DEBUG) @fwrite($log, "VERIFIED\r\nquery $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n");
+if (_PAYPAL_DEBUG) DBG::log("PayPal IPN successfully VERIFIED");
                     break;
                 }
             }
             if (preg_match('/^INVALID/', $res)) {
                 // The payment failed.
                 $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
-if (_PAYPAL_DEBUG) @fwrite($log, "INVALID\r\nquery $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n");
+if (_PAYPAL_DEBUG) DBG::log("PayPal IPN is INVALID");
                 break;
             }
+//if (_PAYPAL_DEBUG) DBG::log("PayPal's response: $res");
         }
         fclose ($fp);
 
-if (_PAYPAL_DEBUG) {
-  echo "The response from IPN was: <b>".$res."</b><br><br>";
-  $query = "SELECT order_status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
-  $objResult = $objDatabase->Execute($query);
-  @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-  $orderStatus = $objResult->fields['order_status'];
-  @fwrite($log, "order status: $orderStatus\r\n");
-  @fwrite($log, "finished, leaving\r\n");
-  @fclose($log);
-}
         // This method is now called from within here.
         // The IPN may be received after the customer has left both
         // the PayPal site and the Shop!
-        Shop::updateOrderStatus($orderid, $newOrderStatus, 'PaypalIPN');
+if (_PAYPAL_DEBUG) DBG::log("Updating Order ID $orderid status, new value $newOrderStatus");
+        Shop::updateOrderStatus($orderid, $newOrderStatus);
     }
 
 

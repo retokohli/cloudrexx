@@ -187,7 +187,7 @@ class Manufacturer
         $strMenuoptions = self::getMenuoptions($selected_id);
         if (empty($strMenuoptions)) return '';
         return
-            '<select name="manufacturerId" style="width: 180px;">'.
+            '<select name="manId" style="width: 180px;">'.
             '<option value="0">'.
             $_ARRAYLANG['TXT_ALL_MANUFACTURER'].
             '</option>'.
