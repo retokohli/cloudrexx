@@ -18,6 +18,7 @@ Allgemein
   DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
 - Neu, über den Modul Manager installierte Module, erscheinen nicht in der
   Inhalts Navigation.
+- Thumbnail-Erstellung von Transparenten Bildern wird nun unterstützt.
 
 File Browser
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
