@@ -41,6 +41,10 @@ class ImageManager
 
     public $imageCheck = 1;
 
+    const IMG_TYPE_GIF = 1;
+    const IMG_TYPE_JPEG = 2;
+    const IMG_TYPE_PNG = 3;
+
 
     /**
      * Constructor
@@ -96,7 +100,16 @@ class ImageManager
      */
     function addBackgroundLayer($bgColor, $width =  null, $height = null)
     {
-        $this->newImage = imagecreatetruecolor($width, $height);
+        if (function_exists ("imagecreatetruecolor")) {
+            $this->newImage = imagecreatetruecolor($width, $height);
+            // GD > 2 check
+            if (!$this->newImage) {
+                $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+            }
+        } else {
+            $this->newImage = ImageCreate($width, $height);
+        }
+
         imagefill($this->newImage, 0, 0, imagecolorallocate($this->newImage, $bgColor[0], $bgColor[1], $bgColor[2]));
         $ratio =  max($this->orgImageWidth / $width, $this->orgImageHeight / $height);
         $scaledWidth = $this->orgImageWidth / $ratio;
@@ -225,7 +238,11 @@ class ImageManager
             if (function_exists ("imagecreatetruecolor")) {
                 $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
                 // GD > 2 check
-                if (!$this->newImage) { $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight); }
+                if ($this->newImage) {
+                    $this->setTransparency();
+                } else {
+                    $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+                }
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
@@ -233,6 +250,39 @@ class ImageManager
             return true;
         }
         return false;
+    }
+
+    /**
+     * Add transparency to new image
+     *
+     * Define a color as transparent or add alpha channel,
+     * depending on the image file type.
+     *
+     * @access private
+     * @return void
+     */
+    private function setTransparency()
+    {
+        switch ($this->orgImageType) {
+            case self::IMG_TYPE_GIF:
+                $transparentColorIdx = imagecolortransparent($this->orgImage);
+                if ($transparentColorIdx >= 0) {
+                    //its transparent
+                    $transparentColor = imagecolorsforindex($this->orgImage, $transparentColorIdx);
+                    $transparentColorIdx = imagecolorallocate($this->newImage, $transparentColor['red'], $transparentColor['green'], $transparentColor['blue']);
+                    imagefill($this->newImage, 0, 0, $transparentColorIdx);
+                    imagecolortransparent($this->newImage, $transparentColorIdx);
+                }
+                break;
+            case self::IMG_TYPE_PNG:
+                imagealphablending($this->newImage, false);
+                $colorTransparent = imagecolorallocatealpha($this->newImage, 0, 0, 0, 127);
+                imagefill($this->newImage, 0, 0, $colorTransparent);
+                imagesavealpha($this->newImage, true);
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -277,8 +327,11 @@ class ImageManager
             if (function_exists ('imagecreatetruecolor')) {
                 $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
                 // GD > 2 check
-                if (!$this->newImage)
+                if ($this->newImage) {
+                    $this->setTransparency();
+                } else {
                     $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+                }
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
@@ -321,16 +374,16 @@ class ImageManager
             && (!file_exists($file) || $forceOverwrite)) {
             $this->newImageFile = $file;
             switch($this->newImageType) {
-                case 1:  // gif
+                case self::IMG_TYPE_GIF:
                     $function = 'imagegif';
                     if (!function_exists($function)) {
                         $function = 'imagejpeg';
                     }
                     break;
-                case 2:  // jpg
+                case self::IMG_TYPE_JPEG:
                     $function = 'imagejpeg';
                     break;
-                case 3:  // png -> make a jpeg thumbnail, too
+                case self::IMG_TYPE_PNG:  // make a jpeg thumbnail, too
 //                    $function = 'imagepng';
                     $function = 'imagejpeg';
                     break;
@@ -354,18 +407,18 @@ class ImageManager
     {
         if ($this->imageCheck == 1 && !empty($this->newImage)) {
             switch($this->newImageType) {
-                case 1:  // gif
+                case self::IMG_TYPE_GIF:
                     header("Content-type: image/gif");
                     $function = 'imagegif';
                     if (!function_exists($function)) {
                         $function = 'imagejpeg';
                     }
                     break;
-                case 2:  // jpg
+                case self::IMG_TYPE_JPEG:
                     header("Content-type: image/jpeg");
                     $function = 'imagejpeg';
                     break;
-                case 3:  // png
+                case self::IMG_TYPE_PNG:
                     header("Content-type: image/png");
                     $function = 'imagepng';
                     break;
@@ -463,15 +516,15 @@ class ImageManager
         $type = $this->_isImage($file);
         $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * 1.8;
         switch($type) {
-            case 1:  // gif
+            case self::IMG_TYPE_GIF:
                 $function = 'imagecreatefromgif';
                 break;
-            case 2:  // jpg
+            case self::IMG_TYPE_JPEG:
                 $function = 'imagecreatefromjpeg';
                 $potentialRequiredMemory *=
                     ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'];
                 break;
-            case 3:  // png
+            case self::IMG_TYPE_PNG:
                 $function = 'imagecreatefrompng';
                 $potentialRequiredMemory *= 4;
                 break;
