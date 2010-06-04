@@ -5,6 +5,9 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Allgemein
+- Thumbnail-Erstellung von Transparenten Bildern wird nun unterstützt.
+
 Media Archive
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
   File Uploader Moduls (sofern vorhanden) ausgewählt werden.
@@ -30,6 +33,6 @@ Veranstaltungskalender
 Kontaktformular
 - Es werden neu Zeichenfolgen mit HTML Special Chars (z.B. '<' und '>') auch als solche
   gespeichert und auch ausgeben.
-  
+
 Newsletter
 - Newsletter abbestellen via Platzhalter im Mail funktioniert.
