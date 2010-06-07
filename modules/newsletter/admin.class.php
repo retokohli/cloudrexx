@@ -2530,29 +2530,16 @@ class newsletter extends NewsletterLib
     function _setTmpSending($mailId)
     {
         global $objDatabase;
-        $objMail = $objDatabase->Execute("
-            SELECT
-                `email`
-            FROM
-                `".DBPREFIX."module_newsletter_rel_cat_news` AS relN
-                INNER JOIN `".DBPREFIX."module_newsletter_rel_user_cat` AS relU USING (`category`)
-                INNER JOIN `".DBPREFIX."module_newsletter_user` AS u ON u.`id`=relU.`user`
-            WHERE
-                `newsletter`=".$mailId."
-                AND u.`status`=1
-            GROUP BY relU.`user`"
-        );
+        $objMail = $this->getAllRecipientEmails($mailId);
 
         if ($objMail !== false) {
             while (!$objMail->EOF) {
-                $objSend = $objDatabase->Execute("SELECT
-                    newsletter,
-                    email
-                    FROM ".DBPREFIX."module_newsletter_tmp_sending
-                    WHERE email='".$objMail->fields['email']."' AND newsletter=".$mailId);
-                if ($objSend->RecordCount() == 0) {
-                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_tmp_sending (`newsletter`, `email`) VALUES (".$mailId.", '".$objMail->fields['email']."')");
-                }
+                $query = "
+                    INSERT IGNORE INTO 
+                        ".DBPREFIX."module_newsletter_tmp_sending 
+                        (`newsletter`, `email`) 
+                    VALUES (".$mailId.", '".$objMail->fields['email']."')";
+                $objDatabase->Execute($query);
                 $objMail->MoveNext();
             }
             $date = time();
@@ -2563,6 +2550,89 @@ class newsletter extends NewsletterLib
                 $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter SET tmp_copy=1, date_sent=".$date.", recipient_count=$recipientCount WHERE id=".$mailId);
             }
         }
+    }
+
+    /**
+     * Return all email recipients
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $mailID
+     * @return      object
+     */
+    private function getAllRecipientEmails($mailID) {
+        global $objDatabase;
+
+        $mailID = intval($mailID);
+
+        $query = sprintf('
+            SELECT `email`
+            FROM
+                            `%smodule_newsletter_user` AS `nu`
+
+                            LEFT JOIN
+                                    `%smodule_newsletter_rel_user_cat` AS `rc`
+                                    ON
+                                            `rc`.`user` = `nu`.`id`
+                            
+                            LEFT JOIN
+                                    `%smodule_newsletter_rel_cat_news` AS `nrn`
+                                    ON
+                                            `nrn`.`category` = `rc`.`category`
+                            
+                            WHERE
+                                    `nrn`.`newsletter` = %s
+
+            UNION DISTINCT SELECT
+                                    `email`
+                            FROM
+                                    `%saccess_users` AS `au`
+
+                            LEFT JOIN
+                                    `%saccess_rel_user_group` AS `rg`
+                                    ON
+                                            `rg`.`user_id` = `au`.`id`
+
+                            LEFT JOIN
+                                    `%smodule_newsletter_rel_usergroup_newsletter` AS `arn`
+                                    ON
+                                            `arn`.`userGroup` = `rg`.`group_id`
+
+                            WHERE
+                                    `arn`.`newsletter` = %s
+
+            UNION DISTINCT SELECT
+                                `email`
+                            FROM
+                                `%saccess_users` AS `cu`
+                            
+                            LEFT JOIN
+                                `%smodule_newsletter_access_user` AS `cnu`
+                                ON
+                                    `cnu`.`accessUserID` = `cu`.`id`
+
+                            LEFT JOIN
+                                `%smodule_newsletter_rel_cat_news` AS `crn`
+                                ON
+                                    `cnu`.`newsletterCategoryID` = `crn`.`category`
+
+                            WHERE
+                                `crn`.`newsletter` = %s
+                                ',
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            $mailID,
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            $mailID,
+            DBPREFIX,
+            DBPREFIX,
+            DBPREFIX,
+            $mailID
+        );
+
+        return $objDatabase->Execute($query);
     }
 
     function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry) {
@@ -2906,6 +2976,8 @@ class newsletter extends NewsletterLib
     }
 
     private function getNewsletterUserData($id, $type) {
+        global $objDatabase;
+
         if ($type == 'access') {
             $query = '
                 SELECT
