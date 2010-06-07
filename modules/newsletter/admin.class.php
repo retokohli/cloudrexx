@@ -1,9 +1,6 @@
 <?php
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'] = "Benachrichtigung bei Abmeldung";
 
-// sh
-$_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'] = "Empfänger der Gruppe %s anzeigen";
-$_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'] = "Zugehörige Benutzergruppen";
 
 /**
  * Newsletter
@@ -2816,13 +2813,19 @@ class newsletter extends NewsletterLib
         }
     }
 
-    function ParseNewsletter($UserID, $subject, $content_text, $TemplateSource, $format, $TargetEmail) {
+    /**
+     * Parse the newsletter
+     *
+     * @author      Comvation AG
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $userType Which type the user has (newsletter or access)
+     */
+    function ParseNewsletter($UserID, $subject, $content_text, $TemplateSource, $format, $TargetEmail, $userType='newsletter') {
         global $objDatabase, $_ARRAYLANG;
         $NewsletterBody = '';
 
         if ($UserID!=0) {
-            $queryPN = "select id, code, sex, email, uri, title, lastname, firstname, street, zip, city, country, phone, birthday, status, emaildate from ".DBPREFIX."module_newsletter_user where id=".$UserID."";
-            $objResultPN = $objDatabase->Execute($queryPN);
+            $objResultPN = $this->getNewsletterUserData($UserID, $userType);
 
             if ($objResultPN !== false) {
                 $code   = $objResultPN->fields['code'];
@@ -2900,6 +2903,55 @@ class newsletter extends NewsletterLib
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
 
         return $NewsletterBody;
+    }
+
+    private function getNewsletterUserData($id, $type) {
+        if ($type == 'access') {
+            $query = '
+                SELECT
+                    `user_id`       AS `id`,
+                    ( 
+                        CASE 
+                                `gender`
+                        WHEN
+                                "gender_female"
+                            THEN
+                                "f"
+                        WHEN
+                                "gender_male"
+                            THEN
+                                "m"
+                        ELSE
+                            ""
+                        END
+                    )               AS `sex`
+            ';
+        } else {
+            $query = "
+                SELECT 
+                    id,
+                    code,
+                    sex,
+                    email,
+                    uri,
+                    title,
+                    lastname,
+                    firstname,
+                    street,
+                    zip,
+                    city,
+                    country,
+                    phone,
+                    birthday,
+                    status,
+                    emaildate
+                FROM 
+                    ".DBPREFIX."module_newsletter_user 
+                WHERE 
+                    id=".$UserID;
+        }
+
+        return $objDatabase->Execute($query);
     }
 
     function GetUnsubscribeSource($code, $email, $format)
