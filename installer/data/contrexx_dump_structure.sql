@@ -2922,6 +2922,7 @@ CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
   `email` varchar(255) NOT NULL default '',
   `sendt` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
+  UNIQUE KEY `unique_email` (`newsletter`,`email`),
   KEY `email` (`email`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
