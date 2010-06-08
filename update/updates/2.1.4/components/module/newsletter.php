@@ -130,7 +130,13 @@ function _newsletterUpdate()
 
     try {
         DBG::msg("Setting recipient count");
-        UpdateUtil::sql("UPDATE `".DBPREFIX."module_newsletter` AS n SET n.`recipient_count` = (SELECT COUNT(1) FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `newsletter`=n.`id` GROUP BY `newsletter`)");
+        $objResult = UpdateUtil::sql("SELECT `newsletter`, COUNT(1) AS recipient_count FROM `".DBPREFIX."module_newsletter_tmp_sending` GROUP BY `newsletter`");
+        if ($objResult->RecordCount()) {
+            while(!$objResult->EOF) {
+                UpdateUtil::sql("UPDATE `".DBPREFIX."module_newsletter` SET `recipient_count` = ".$objResult->fields['recipient_count']." WHERE `id`=".$objResult->fields['newsletter']);
+                $objResult->MoveNext();
+            }
+        }
     }
     catch (UpdateException $e) {
         return UpdateUtil::DefaultActionHandler($e);
