@@ -262,4 +262,5 @@ $_ARRAYLANG['TXT_ACCESS_CROP_THUMBNAIL_TXT'] = "Auf Thumbnail-Grösse zuschneide
 $_ARRAYLANG['TXT_ACCESS_SCALE_THUMBNAIL_TXT'] = "Auf Thumbnail-Grösse skalieren";
 $_ARRAYLANG['TXT_ACCESS_BACKGROUND_COLOR'] = "Hintergrundfarbe";
 $_ARRAYLANG['TXT_ACCESS_THUMBNAIL_GENERATION'] = "Thumbnail Generierung";
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTER_LISTS'] = "Newsletter";
 ?>
