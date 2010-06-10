@@ -1131,6 +1131,8 @@ class AccessManager extends AccessLib
             $objUser->setEmailAccess(isset($_POST['access_user_email_access']) && $objUser->isAllowedToChangeEmailAccess() ? trim(contrexx_stripslashes($_POST['access_user_email_access'])) : '');
             $objUser->setProfileAccess(isset($_POST['access_user_profile_access']) && $objUser->isAllowedToChangeProfileAccess() ? trim(contrexx_stripslashes($_POST['access_user_profile_access'])) : '');
 
+            $objUser->setNewsletterCategories($_POST['access_user_newsletters']);
+
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
 

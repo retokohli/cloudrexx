@@ -1916,6 +1916,52 @@ class User extends User_Profile
         return '';
     }
 
+    /**
+     * Save the categories
+     * 
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       array $categories
+     */
+    public function setNewsletterCategories(array $categories) {
+        global $objDatabase;
+
+        $user = intval($this->id);
+
+        if (count($categories)) {
+            foreach ($categories as $key => $category) {
+                $query = sprintf('
+                    INSERT IGNORE INTO
+                        `%smodule_newsletter_access_user`
+                    (`accessUserId`, `newsletterCategoryID`)
+                    VALUES
+                    (%s, %s)',
+                    DBPREFIX,
+                    $user,
+                    intval($category)
+                );
+
+                $objDatabase->execute($query);
+                // make sure they're int, for the next query
+                $categories[$key] = intval($category);
+            }
+
+            $delString = implode(", ", $categories);
+
+            $query = sprintf('
+                DELETE FROM
+                    `%smodule_newsletter_access_user`
+                WHERE
+                    `newsletterCategoryID` NOT IN (%s)
+                AND
+                    `accessUserId` = %s',
+                DBPREFIX,
+                $delString,
+                $user
+            );
+
+            $objDatabase->execute($query);
+        }
+    }
 }
 
 ?>
