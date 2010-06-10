@@ -103,7 +103,6 @@ class Shop extends ShopLibrary
     private $pageContent;
 
     private $arrCategoriesTable = array();
-    private $arrCategoriesName = array();
     private $arrParentCategoriesTable = array();
 
     private $statusMessage = '';
@@ -951,10 +950,11 @@ class Shop extends ShopLibrary
                 true
             );
         }
-        if (isset($this->arrCategoriesName[$catId])) {
+        $objCategory = ShopCategory::getById($catId);
+        if ($objCategory && $objCategory->getName()) {
             $this->objTemplate->setVariable(array(
                 'TXT_PRODUCTS_IN_CATEGORY' => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
-                'SHOP_CATEGORY_NAME'       => str_replace('"', '&quot;', $this->arrCategoriesName[$catId]),
+                'SHOP_CATEGORY_NAME'       => str_replace('"', '&quot;', $objCategory->getName()),
             ));
         }
         $this->objTemplate->setVariable(array(
@@ -1173,7 +1173,7 @@ class Shop extends ShopLibrary
                 }
                 if (!empty($manufacturerUrl)) {
                     $manufacturerName =
-                        '<a href="'.$manufacturerUrl.'">'.
+                        '<a href="'.$manufacturerUrl.'" target="_blank">'.
                         $manufacturerName.'</a>';
                 }
                 $this->objTemplate->setVariable(array(
@@ -1629,14 +1629,14 @@ class Shop extends ShopLibrary
             if (!empty($arrTitle[$i+1])) {
                 $this->objTemplate->setCurrentBlock('shopProductRow2');
                 $this->objTemplate->setVariable(array(
-                    'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i+1]),
-                    'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i+1],
+                    'SHOP_PRODUCT_TITLE'              => str_replace('"', '&quot;', $arrTitle[$i+1]),
+                    'SHOP_PRODUCT_THUMBNAIL'          => $arrThumbnailPath[$i+1],
                     'SHOP_PRODUCT_THUMBNAIL_SIZE'     => $arrThumbnailSize[$i+1],
-                    'SHOP_PRODUCT_PRICE'                => $arrPrice[$i+1],
-                    'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i+1],
-                    'SHOP_PRODUCT_PRICE_UNIT'           => Currency::getActiveCurrencySymbol(),
-                    'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => Currency::getActiveCurrencySymbol(),
-                    'SHOP_PRODUCT_DETAILLINK'           => $arrDetailLink[$i+1],
+                    'SHOP_PRODUCT_PRICE'              => $arrPrice[$i+1],
+                    'SHOP_PRODUCT_DISCOUNTPRICE'      => $arrDiscountPrice[$i+1],
+                    'SHOP_PRODUCT_PRICE_UNIT'         => Currency::getActiveCurrencySymbol(),
+                    'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
+                    'SHOP_PRODUCT_DETAILLINK'         => $arrDetailLink[$i+1],
                     'SHOP_PRODUCT_DISCOUNT_COUNT'     =>
                         Shop::getDiscountCountString($objResult->fields['group_id']),
                 ));
@@ -2601,6 +2601,7 @@ sendReq('', 1);
             }
         }
 // TODO: Localized rounding should be part of the Currency class
+        // Round prices to 5 cents if the currency is CHF (*MUST* for Saferpay)
         if (Currency::getActiveCurrencyCode() == 'CHF') {
             $total_price = round(20*$total_price)/20;
             $total_vat_amount = round(20*$total_vat_amount)/20;
@@ -2609,7 +2610,6 @@ sendReq('', 1);
             Currency::formatPrice($total_price);//$this->_calculatePrice($_SESSION['shop']['cart']);
         $_SESSION['shop']['cart']['total_vat_amount'] =
             Currency::formatPrice($total_vat_amount);
-        // Round prices to 5 cents if the currency is CHF (*MUST* for Saferpay)
         $_SESSION['shop']['cart']['items']            =
             $this->calculateItems($_SESSION['shop']['cart']);
         $_SESSION['shop']['cart']['total_weight']     = $total_weight; // in grams!
@@ -2866,7 +2866,8 @@ sendReq('', 1);
         }
 
         // Return the verification status
-        return $this->_checkAccountForm();
+        if (isset($_POST['address'])) return $this->_checkAccountForm();
+        return '';
     }
 
 
@@ -3401,9 +3402,10 @@ die("YYY");
             // agb status is true, if either
             // - the agb placeholder does not exist
             // - the agb checkbox has been checked
-            $agbStatus = ($this->objTemplate->placeholderExists('SHOP_AGB')
-                ? (!empty($_POST['agb']) ? true : false) : true
-            );
+            $agbStatus =
+                (   $this->objTemplate->placeholderExists('SHOP_AGB')
+                 || $this->objTemplate->placeholderExists('TXT_ACCEPT_TAC')
+                ? (empty($_POST['agb']) ? false : true) : true);
 
             if ($agbStatus && $shipmentStatus && $paymentStatus) {
                 // everything is set and valid
