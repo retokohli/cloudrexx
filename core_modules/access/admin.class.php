@@ -1353,13 +1353,15 @@ class AccessManager extends AccessLib
 
         $res = $objDatabase->Execute($query);
         if ($res !== false) {
+            $row = 0;
             while (!$res->EOF) {
                 $selected = $res->fields['selected'] ? 'checked="checked"' : '';
                 $this->_objTpl->setVariable(
                     array(
                         'ACCESS_NEWSLETTER_ID'  => $res->fields['id'],
                         'ACCESS_NEWSLETTER_SELECTED' => $selected,
-                        'ACCESS_NEWSLETTER_NAME' => $res->fields['name']
+                        'ACCESS_NEWSLETTER_NAME' => $res->fields['name'],
+                        'ACCESS_NEWSLETTER_ROW_CLASS' => ($row++ % 2) + 1
                     )
                 );
 
