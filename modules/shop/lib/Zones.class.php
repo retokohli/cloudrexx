@@ -110,32 +110,37 @@ class Zones
         $zone_id = $_GET['zonesId'];
         if (empty(self::$arrZone[$zone_id])) return '';
         // Delete zone with Text
-        $text_id = self::$arrZone[$zone_id]['text_name_id'];
-        if (!Text::deleteById($text_id)) return false;
+// 3.0
+//        $text_id = self::$arrZone[$zone_id]['text_name_id'];
+//        if (!Text::deleteById($text_id)) return false;
+//        $objResult = $objDatabase->Execute("
+//            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
+//             WHERE id=$zone_id
+//        ");
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-             WHERE id=$zone_id
-        ");
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         // Delete country relations
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-             WHERE zone_id=$zone_id
-        ");
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         // Update relations:  Apply zone "All" to those still associated
         // with the deleted one
         $objResult = $objDatabase->Execute("
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
-               SET zone_id=1
-             WHERE zone_id=$zone_id
-        ");
+               SET zones_id=1
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment
-               SET zone_id=1
-             WHERE zone_id=$zone_id
-        ");
+               SET zones_id=1
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
