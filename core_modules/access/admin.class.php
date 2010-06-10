@@ -1,5 +1,7 @@
 <?php
 
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTER_LISTS'] = "Newsletter";
+
 /**
 * User Management
 * @copyright    CONTREXX CMS - COMVATION AG
@@ -1106,7 +1108,7 @@ class AccessManager extends AccessLib
         }
         
         if ($objFWUser->objUser->getAdminStatus()) {   
-            $cssDisplayStatus = 'none';           
+            $cssDisplayStatus = 'none';
         } else {      
             $cssDisplayStatus = '';    
         }
@@ -1189,6 +1191,7 @@ class AccessManager extends AccessLib
             $objUser->setActiveStatus(true);
         }
 
+
         $this->_objTpl->addBlockfile('ACCESS_USER_TEMPLATE', 'module_access_user_modify', 'module_access_user_modify.html');
 
         if ($objUser->getId()) {
@@ -1227,6 +1230,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_USER_ACCOUNT'                   => $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'],
             'TXT_ACCESS_USER_GROUP_S'                   => $_ARRAYLANG['TXT_ACCESS_USER_GROUP_S'],
             'TXT_ACCESS_PROFILE'                        => $_ARRAYLANG['TXT_ACCESS_PROFILE'],
+            'TXT_ACCESS_NEWSLETTER_LISTS'               => $_ARRAYLANG['TXT_ACCESS_NEWSLETTER_LISTS'],
             'TXT_ACCESS_USERNAME'                       => $_ARRAYLANG['TXT_ACCESS_USERNAME'],
             'TXT_ACCESS_PASSWORD'                       => $_ARRAYLANG['TXT_ACCESS_PASSWORD'],
             'TXT_ACCESS_CONFIRM_PASSWORD'               => $_ARRAYLANG['TXT_ACCESS_CONFIRM_PASSWORD'],
@@ -1264,6 +1268,9 @@ class AccessManager extends AccessLib
         } else {
             $this->_objTpl->hideBlock('access_user_privacy');
         }
+
+        $userID = $objUser->getId();
+        $this->parseNewsletterLists($userID);
 
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                        => $objUser->getId(),
@@ -1304,6 +1311,61 @@ class AccessManager extends AccessLib
 
         $this->_objTpl->parse('module_access_user_modify');
         return true;
+    }
+
+    /**
+     * Parse the newsletter lists 
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $userID
+     */
+    private function parseNewsletterLists($userID) {
+        global $objDatabase;
+
+        $query = sprintf('
+            SELECT
+                `c`.`id`     AS `id`,
+                `c`.`name`   AS `name`,
+                (
+                    CASE WHEN
+                        `accessUserID` IS NOT NULL
+                    THEN
+                        1
+                    ELSE
+                        0
+                    END
+                )            AS `selected`
+
+            FROM
+                `contrexx_module_newsletter_category`       AS `c`
+
+            LEFT JOIN
+                `contrexx_module_newsletter_access_user`    AS `u`
+
+            ON
+                `u`.`newsletterCategoryID` = `c`.`id` 
+                AND 
+                    `u`.`accessUserID` = %s
+            ', intval($userID)
+        );
+
+        $res = $objDatabase->Execute($query);
+        if ($res !== false) {
+            while (!$res->EOF) {
+                $selected = $res->fields['selected'] ? 'checked="checked"' : '';
+                $this->_objTpl->setVariable(
+                    array(
+                        'ACCESS_NEWSLETTER_ID'  => $res->fields['id'],
+                        'ACCESS_NEWSLETTER_SELECTED' => $selected,
+                        'ACCESS_NEWSLETTER_NAME' => $res->fields['name']
+                    )
+                );
+
+                $this->_objTpl->parse('newsletter_list');
+                    
+                $res->MoveNext();
+            }
+        }
     }
 
     private function parseModuleSpecificExtensions()
