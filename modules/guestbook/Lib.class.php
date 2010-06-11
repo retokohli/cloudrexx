@@ -141,6 +141,22 @@ class GuestbookLibrary
 			</script>';
 		return $strJavascript;
 	}
+
+	/**
+	* Checks the url
+	*
+	* @param  string  $text
+	* @return string $str
+	*/
+	function createAsciiString($text) {
+		$i = 0;
+		$str = '';
+		while($i < strlen($text)) {
+			$str .= '&#'.ord(substr($text,$i,1)).';';
+			$i++;
+		}
+		return $str;
+	}
 }
 
 ?>
