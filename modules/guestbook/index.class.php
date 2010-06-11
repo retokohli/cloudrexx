@@ -137,7 +137,13 @@ class Guestbook extends GuestbookLibrary
                     $email = $objResult->fields['email'];
                 }
 
-                $this->_objTpl->setVariable('GUESTBOOK_EMAIL', '<a href="mailto:'.$email.'"><img alt="'.$email.'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/guestbook/email.gif" style="vertical-align:baseline" border="0" /></a>');
+                $strMailTo = $this->createAsciiString('mailto:'.$email);
+				$strMailAdress = $this->createAsciiString($email);
+
+				$asciiStrGuestbookEmail = '<a href="'.$strMailTo.'"><img alt="'.$strMailAdress.'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/guestbook/email.gif" style="vertical-align:baseline" border="0" /></a>';
+
+
+                $this->_objTpl->setVariable('GUESTBOOK_EMAIL', $asciiStrGuestbookEmail);
 
             }
 
