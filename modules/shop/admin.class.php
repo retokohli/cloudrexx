@@ -2808,8 +2808,11 @@ class shopmanager extends ShopLibrary
                 (isset($_POST['shopSpecialOffer']) ? 1 : 0);
             $shopDiscount             = floatval($_POST['shopDiscount']);
             $shopTaxId                = (isset($_POST['shopTaxId']) ? $_POST['shopTaxId'] : 0);
-            $shopShortDescription     = contrexx_stripslashes($_POST['shopShortDescription']);
-            $shopDescription          = contrexx_stripslashes($_POST['shopDescription']);
+            $shopShortDescription     = trim(contrexx_stripslashes($_POST['shopShortDescription']));
+            $shopDescription          = trim(contrexx_stripslashes($_POST['shopDescription']));
+            // Workaround for FCKEditor bug that inserts a single <br /> in empty fields
+            if (preg_match('/^\<br\s*\/?\>$/', $shopDescription))
+                $shopDescription = '';
             $shopStock                = intval($_POST['shopStock']);
             $shopStockVisibility      =
                 (isset($_POST['shopStockVisibility']) ? 1 : 0);
