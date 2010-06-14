@@ -1775,5 +1775,46 @@ JSaccessValidatePrimaryGroupAssociation
         }
     }*/
 
+    /**
+     * Get the newsletter categories
+     *
+     * Get the newsletter categories and the information, if 
+     * a user has signed to this newsletter
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $userID
+     * @returm      object
+     */
+    protected function getNewsletters($userID) {
+        global $objDatabase;
+
+        $query = sprintf('
+            SELECT
+                `c`.`id`     AS `id`,
+                `c`.`name`   AS `name`,
+                (
+                    CASE WHEN
+                        `accessUserID` IS NOT NULL
+                    THEN
+                        1
+                    ELSE
+                        0
+                    END
+                )            AS `selected`
+
+            FROM
+                `contrexx_module_newsletter_category`       AS `c`
+
+            LEFT JOIN
+                `contrexx_module_newsletter_access_user`    AS `u`
+
+            ON
+                `u`.`newsletterCategoryID` = `c`.`id` 
+                AND 
+                    `u`.`accessUserID` = %s
+            ', intval($userID)
+        );
+
+        return $objDatabase->Execute($query);
+    }
 }
 ?>
