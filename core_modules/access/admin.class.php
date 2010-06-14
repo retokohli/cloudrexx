@@ -1272,7 +1272,7 @@ class AccessManager extends AccessLib
         }
 
         $userID = $objUser->getId();
-        $this->parseNewsletterLists($userID);
+        //$this->parseNewsletterLists($userID);
 
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                        => $objUser->getId(),
@@ -1324,34 +1324,7 @@ class AccessManager extends AccessLib
     private function parseNewsletterLists($userID) {
         global $objDatabase;
 
-        $query = sprintf('
-            SELECT
-                `c`.`id`     AS `id`,
-                `c`.`name`   AS `name`,
-                (
-                    CASE WHEN
-                        `accessUserID` IS NOT NULL
-                    THEN
-                        1
-                    ELSE
-                        0
-                    END
-                )            AS `selected`
-
-            FROM
-                `contrexx_module_newsletter_category`       AS `c`
-
-            LEFT JOIN
-                `contrexx_module_newsletter_access_user`    AS `u`
-
-            ON
-                `u`.`newsletterCategoryID` = `c`.`id` 
-                AND 
-                    `u`.`accessUserID` = %s
-            ', intval($userID)
-        );
-
-        $res = $objDatabase->Execute($query);
+        $res = $this->getNewsletters($userID);
         if ($res !== false) {
             $row = 0;
             while (!$res->EOF) {

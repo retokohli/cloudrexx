@@ -69,6 +69,7 @@ class Access extends AccessLib
                 break;
         }
 
+
         return $this->_objTpl->get();
     }
 
@@ -223,6 +224,7 @@ class Access extends AccessLib
         }
         $settingsDone = false;
 
+
         if (isset($_POST['access_delete_account'])) {
             // delete account
             CSRF::check_code();
@@ -307,8 +309,13 @@ class Access extends AccessLib
                 $msg = implode('<br />', $result);
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
+        } elseif (isset($_POST['access_set_newsletters'])) {
+            $objFWUser->objUser->setNewsletterCategories($_POST['newsletter_categories']);
         }
         $this->parseAccountAttributes($objFWUser->objUser, true);
+        if ($_GET['cmd'] == 'settings_newsletter') {
+            $this->parseNewsletters($objFWUser->objUser->getId());
+        }
 
         while (!$objFWUser->objUser->objAttribute->EOF) {
             $objAttribute = $objFWUser->objUser->objAttribute->getById($objFWUser->objUser->objAttribute->getId());
@@ -333,6 +340,7 @@ class Access extends AccessLib
             'ACCESS_USER_PASSWORD_INPUT'    => '<input type="password" name="access_user_password" />',
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
+            'ACCESS_SET_NEWSLETTER_BUTTON'  => '<input type="submit" name="access_set_newsletters" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'] .'" />',
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode()
         ));
 
@@ -341,6 +349,29 @@ class Access extends AccessLib
         }
         if ($this->_objTpl->blockExists('access_settings_done')) {
             $this->_objTpl->{$settingsDone ? 'touchBlock' : 'hideBlock'}('access_settings_done');
+        }
+    }
+
+    /**
+     * Parse the newsletter to the frontend
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $userID
+     */
+    private function parseNewsletters($userID) {
+        $res = $this->getNewsletters($userID);
+
+        while (!$res->EOF) {
+            $selected = $res->fields['selected'] ? 'checked="checked"' : '';
+            $this->_objTpl->setVariable(
+                array(
+                    'ACCESS_NEWSLETTER_ID'  => $res->fields['id'],
+                    'ACCESS_NEWSLETTER_SELECTED' => $selected,
+                    'ACCESS_NEWSLETTER_NAME' => $res->fields['name']
+                )
+            );
+            $this->_objTpl->parse('newsletter_row');
+            $res->MoveNext();
         }
     }
 
@@ -447,7 +478,7 @@ class Access extends AccessLib
                     :    ''
                 )
                 && $objUser->checkMandatoryCompliance()
-				&& $this->checkCaptcha()
+                && $this->checkCaptcha()
                 && $this->checkToS()
                 && $objUser->signUp()
             ) {
@@ -503,14 +534,14 @@ class Access extends AccessLib
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
 
-		// set captcha
+        // set captcha
         if ($this->_objTpl->blockExists('access_captcha')) {
             if ($arrSettings['user_captcha']['status']) {
                 $objCaptcha = new Captcha();
                 $this->_objTpl->setVariable(array(
-                    'ACCESS_CAPTCHA_OFFSET'			=> $objCaptcha->getOffset(),
-                    'ACCESS_CAPTCHA_URL'			=> $objCaptcha->getUrl(),
-                    'ACCESS_CAPTCHA_ALT'			=> $objCaptcha->getAlt(),
+                    'ACCESS_CAPTCHA_OFFSET'         => $objCaptcha->getOffset(),
+                    'ACCESS_CAPTCHA_URL'            => $objCaptcha->getUrl(),
+                    'ACCESS_CAPTCHA_ALT'            => $objCaptcha->getAlt(),
                     'TXT_ACCESS_CAPTCHA'            => $_ARRAYLANG['TXT_ACCESS_CAPTCHA'],
                     'TXT_ACCESS_CAPTCHA_DESCRIPTION'=> $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION']
                 ));
@@ -537,16 +568,16 @@ class Access extends AccessLib
         $this->_objTpl->parse('access_signup_form');
     }
 
-	private function checkCaptcha()
+    private function checkCaptcha()
     {
-		global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $arrSettings = User_Setting::getSettings();
-		$objCaptcha = new Captcha();
+        $objCaptcha = new Captcha();
 
-		if(!$arrSettings['user_captcha']['status'] || $objCaptcha->compare($_POST['accessSignUpCaptcha'], $_POST['accessSignUpCaptchaOffset'])) {
+        if(!$arrSettings['user_captcha']['status'] || $objCaptcha->compare($_POST['accessSignUpCaptcha'], $_POST['accessSignUpCaptchaOffset'])) {
             return true;
-		}
+        }
 
         $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'];
         return false;
