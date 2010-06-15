@@ -680,7 +680,7 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_MAIL_ID'                  => ($copy ? 0 : $mailId),
             'NEWSLETTER_MAIL_SUBJECT'             => htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_MAIL_HTML_CONTENT'        => $mailFormat != 'text' ? get_wysiwyg_editor('newsletter_mail_html_content', $mailHtmlContent, null, null, true) : '<input type="hidden" name="newsletter_mail_html_content" value="'.htmlentities($mailHtmlContent, ENT_QUOTES, CONTREXX_CHARSET).'" />',
-            'NEWSLETTER_MAIL_TEXT_CONTENT'        => '<textarea name="newsletter_mail_text_content" style="width: 100%; height: 447px;">'.htmlentities($mailTextContent, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>',
+            'NEWSLETTER_MAIL_TEXT_CONTENT'        => '<textarea name="newsletter_mail_text_content" id="newsletter_mail_text_content" style="width: 100%; height: 447px;">'.htmlentities($mailTextContent, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>',
             'NEWSLETTER_MAIL_HTML_CONTENT_STAUTS' => $mailFormat != 'text' ? 'block' : 'none',
             'NEWSLETTER_MAIL_TEXT_CONTENT_STAUTS' => $mailFormat == 'text' ? 'block' : 'none',
             'NEWSLETTER_MAIL_HTML_CONTENT_CLASS'  => $mailFormat != 'text' ? 'active' : '',
@@ -771,7 +771,8 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_UNSUBSCRIBE'           => $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'],
             'TXT_NEWSLETTER_DATE'                  => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
             'TXT_NEWSLETTER_SAVE'                  => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
-            'TXT_NEWSLETTER_BACK'                  => $_ARRAYLANG['TXT_NEWSLETTER_BACK']
+            'TXT_NEWSLETTER_BACK'                  => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
+            'TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT']
         ));
         return true;
     }
