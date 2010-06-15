@@ -2,9 +2,11 @@
 	error_reporting(0);
 	require_once('../../config/configuration.php');
     require_once('../../core/settings.class.php');
+	require_once('../../core/validator.inc.php');
+	require_once('../../core/API.php');
     require_once('../../lib/CSRF.php');
-    require_once('../../core/API.php');
-    $strErrMessage = '';
+	require_once('../../core/Html.class.php');
+	$strErrMessage = '';
     $objDatabase = getDatabaseObject($strErrMessage);
     $objSettings = new settingsManager();
     $objInit = new InitCMS('backend');
