@@ -1272,7 +1272,7 @@ class AccessManager extends AccessLib
         }
 
         $userID = $objUser->getId();
-        //$this->parseNewsletterLists($userID);
+        $this->parseNewsletterLists($userID);
 
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                        => $objUser->getId(),
