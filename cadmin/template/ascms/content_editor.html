@@ -650,11 +650,6 @@ var swapLanguage = function(aElement, langName){
 
     $J('form[name=formContent] input').removeAttr('disabled');
 
-    $J('#aliastarget').data(lastActive, $J('#aliastarget').text());
-    typeof $J('#aliastarget').data($a.text()) == 'undefined'
-      ? $J('#aliastarget').text('')
-      : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
-
     $form.find('input[type=text]').each(function(){ //swap input text contents
         $J(this).data(lastActive, $J(this).val());
         typeof $J(this).data($a.text()) == 'undefined'
@@ -893,8 +888,8 @@ var setInputText = function(data, textStatus){
             continue;
         }
         if(name == 'alias'){
-            $J('#aliastarget', $form).data(langName, data[name]);
-            continue;
+        	data[name] = aliasText(data[name]);
+            //$J('#aliastarget', $form).data(langName, aliasText(data[name]);
         }
         if(name == 'newpage'){
             var strCopy = '';
