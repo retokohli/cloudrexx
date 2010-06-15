@@ -1229,4 +1229,5 @@ $_ARRAYLANG['TXT_CORE_COUNTRY_CONFIRM_DELETE'] = "Wollen Sie das Land wirklich l
 $_ARRAYLANG['TXT_CORE_FUNCTIONS'] = "Funktionen";
 $_ARRAYLANG['TXT_CORE_STORE'] = "Speichern";
 $_ARRAYLANG['TXT_CORE_TOTAL'] = "(total %1\$u)";
+$_ARRAYLANG['TXT_ARRAY_COULD_NOT_SET_NEWSLETTER_ASSOCIATIONS'] = "Could not save newsletter lists";
 ?>
