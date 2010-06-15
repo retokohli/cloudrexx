@@ -61,7 +61,7 @@ function preSubmitCheck(){
   }
   SelectAllList(document.formContent.elements['assignedGroups[]']);
   SelectAllList(document.formContent.elements['assignedBackendGroups[]']);
-  SelectAllList(document.formContent.elements['assignedBlocks[]']);
+  //SelectAllList(document.formContent.elements['assignedBlocks[]']);
   return true;
 }
 
@@ -454,7 +454,7 @@ var submitForm = function(event){
 
         $J('select[name="assignedGroups[]"]', $form).children().attr('selected', 'selected');
         $J('select[name="assignedBackendGroups[]"]', $form).children().attr('selected', 'selected');
-        $J('select[name="assignedBlocks[]"]', $form).children().attr('selected', 'selected');
+        //$J('select[name="assignedBlocks[]"]', $form).children().attr('selected', 'selected');
         var contentData = $J('textarea[name=html]').data(langName);
         var postData = $form.serialize();
 
@@ -1206,7 +1206,7 @@ if(typeof console === 'undefined'){
     <li><a id="editorTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_MORE_OPTIONS}">{TXT_MORE_OPTIONS}</a></li>
     <li><a id="editorTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_FRONTEND_PERMISSION}">{TXT_FRONTEND_PERMISSION}</a></li>
     <li><a id="editorTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_RELATEDNESS}">{TXT_RELATEDNESS}</a></li>
-    <li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>
+    <!--<li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>-->
     <!-- BEGIN changelog1 -->
     <li><a id="editorTab_content5" href="javascript:{}" onclick="selectTab('content5')" title="{TXT_CHANGELOG}">{TXT_CHANGELOG}</a></li>
     <!-- END changelog1 -->    
@@ -1682,6 +1682,7 @@ if(typeof console === 'undefined'){
   <!-- END changelog2 -->
   <!-- end content5 div -->
   <!-- start content6 div -->
+  <!-- 
   <div id="content6" class="editorTab" style="display: none">
     <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
       <thead>
@@ -1724,6 +1725,7 @@ if(typeof console === 'undefined'){
       </tbody>
     </table>
   </div>
+  -->
   <!-- end content6 div -->
   <br />
   <input type="submit" name="Submit" value="{TXT_STORE}" />

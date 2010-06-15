@@ -488,6 +488,36 @@ class aliasLib
         }
         return $arrUsedAliases;
     }
+
+    /**
+     * get all alias_source entries that don't have a corresponding alias_target entry
+     *
+     * @param boolean $cleanUp whether to delete the aimless source entries
+     */
+    function _getUnusedTargets($cleanUp = false){
+        global $objDatabase;
+
+        $arrUnused = array();
+        $query = "SELECT `s`.`id`
+                    FROM `".DBPREFIX."module_alias_source` AS `s`
+                    LEFT JOIN `".DBPREFIX."module_alias_target` AS `t` ON `t`.`id` = `s`.`target_id`
+                    WHERE `t`.`id` IS NULL";
+        if(($objRS = $objDatabase->Execute($query)) !== false){
+            while(!$objRS->EOF){
+                $arrUnused[] = $objRS->fields['id'];
+                $objRS->MoveNext();
+            }
+        }
+        if($cleanUp){
+            $query = "DELETE `s`
+                        FROM `".DBPREFIX."module_alias_source` AS `s`
+                        LEFT JOIN `".DBPREFIX."module_alias_target` AS `t` ON `t`.`id` = `s`.`target_id`
+                        WHERE `t`.`id` IS NULL";
+            $objDatabase->Execute($query);
+        }
+        return $arrUnused;
+    }
+
 }
 
 ?>

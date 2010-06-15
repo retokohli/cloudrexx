@@ -406,9 +406,9 @@ class ContentManager
                     $success = false;
                 }
             }
-        	if(is_array($arrPage['children'])){
-        	    $this->_updateSorting($arrPage['children'], $arrPage['id'], $success);
-        	}
+            if(is_array($arrPage['children'])){
+                $this->_updateSorting($arrPage['children'], $arrPage['id'], $success);
+            }
             $displayOrder++;
         }
         if($first){
@@ -885,8 +885,8 @@ class ContentManager
             $existingBackendGroups .= '<option value="'.$id.'">'.$name."</option>\n";
         }
         // Blocks
-        $blocks = array();
-        $blocks = $this->getBlocks();
+//        $blocks = array();
+//        $blocks = $this->getBlocks();
 
         $objTemplate->setVariable(array(
             'CONTENT_CATID'                                     => $pageId,
@@ -1002,8 +1002,8 @@ class ContentManager
             'CONTENT_CONTROL_BACKEND_DISPLAY'                   => "none",
             'CONTENT_EXISTING_BACKEND_GROUPS'                   => $existingBackendGroups,
             'CONTENT_ASSIGNED_BACKEND_GROUPS'                   => '',
-            'CONTENT_EXISTING_BLOCKS'                           => $blocks[1],
-            'CONTENT_ASSIGNED_BLOCK'                            => $blocks[0],
+//            'CONTENT_EXISTING_BLOCKS'                           => $blocks[1],
+//            'CONTENT_ASSIGNED_BLOCK'                            => $blocks[0],
             'CONTENT_TYPE_CHECKED_CONTENT'                      => ' checked="checked"',
             'CONTENT_TYPE_CHECKED_REDIRECT'                     => '',
             'CONTENT_TYPE_STYLE_CONTENT'                        => ' style="display: block;"',
@@ -1368,8 +1368,8 @@ class ContentManager
                 }
 
                 // Blocks
-                $blocks = array();
-                $blocks = $this->getBlocks($pageId, $langId);
+//                $blocks = array();
+//                $blocks = $this->getBlocks($pageId, $langId);
 
                 $objTemplate->setVariable(array(
                     'CONTENT_FORM_ACTION'     => "update",
@@ -1386,8 +1386,8 @@ class ContentManager
                         ($objResult->fields['metarobots'] == "index"
                             ? ' checked="checked"' : ''),
                     'CONTENT_SHOW_EXPERTMODE' => $expertmodeValue,
-                    'CONTENT_EXISTING_BLOCKS' => $blocks[1],
-                    'CONTENT_ASSIGNED_BLOCK'  => $blocks[0],
+//                    'CONTENT_EXISTING_BLOCKS' => $blocks[1],
+//                    'CONTENT_ASSIGNED_BLOCK'  => $blocks[0],
                 ));
                 unset($ed);
                 $redirect = $objResult->fields['redirect'];
@@ -1798,28 +1798,28 @@ class ContentManager
             $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId, $langId);
             if(!empty($useContentFromLang['error'])){
                 switch ($useContentFromLang['error']) {
-                	case 1:
-              		    $error = sprintf($_CORELANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'], $arrLang[$langId]['name'], $arrLang[$_POST['useContentFromLang']]['name']);
-                		break;
-                	case 2:
-                	    $usedByLangs = array();
-                	    foreach ($useContentFromLang['usedBy'] as $usedByLangId) {
-                	       $usedByLangs[] = $arrLang[$usedByLangId]['name'];
-                	    }
+                    case 1:
+                        $error = sprintf($_CORELANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'], $arrLang[$langId]['name'], $arrLang[$_POST['useContentFromLang']]['name']);
+                        break;
+                    case 2:
+                        $usedByLangs = array();
+                        foreach ($useContentFromLang['usedBy'] as $usedByLangId) {
+                           $usedByLangs[] = $arrLang[$usedByLangId]['name'];
+                        }
                         $error = sprintf($_CORELANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'], $arrLang[$langId]['name'], implode(',', $usedByLangs));
-                	    break;
-                	case 3:
+                        break;
+                    case 3:
                         $error = sprintf($_CORELANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'], $arrLang[$langId]['name']);
-                	    break;
-                	default:
-                	    die();
-                		break;
+                        break;
+                    default:
+                        die();
+                        break;
                 }
                 die(json_encode(array(
                     'error'         => $error,
                     'langName'      => $langName,
                     'lastUpdate'    => $lastUpdate,
-        		)));
+                )));
             }
         } else {
             $useContentFromLang = 0;
@@ -2070,7 +2070,7 @@ class ContentManager
                        is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"');
         }
         $_POST['assignedBlocks'] = !empty($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array();
-        $this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
+        //$this->modifyBlocks($_POST['assignedBlocks'], $pageId, $langId);
         if ($lastUpdate) {
             //write caching-file, delete exisiting cache-files
             $objCache = new Cache();
@@ -2148,28 +2148,28 @@ class ContentManager
             $useContentFromLang = $this->_checkUseContentFromLang(intval($_POST['useContentFromLang']), $pageId, $langId);
             if(!empty($useContentFromLang['error'])){
                 switch ($useContentFromLang['error']) {
-                	case 1:
-              		    $error = sprintf($_CORELANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'], $arrLang[$langId]['name'], $arrLang[$_POST['useContentFromLang']]['name']);
-                		break;
-                	case 2:
-                	    $usedByLangs = array();
-                	    foreach ($useContentFromLang['usedBy'] as $usedByLangId) {
-                	       $usedByLangs[] = $arrLang[$usedByLangId]['name'];
-                	    }
+                    case 1:
+                        $error = sprintf($_CORELANG['TXT_CONTENT_TARGET_MUST_BE_NORMAL_CONTENTSITE'], $arrLang[$langId]['name'], $arrLang[$_POST['useContentFromLang']]['name']);
+                        break;
+                    case 2:
+                        $usedByLangs = array();
+                        foreach ($useContentFromLang['usedBy'] as $usedByLangId) {
+                           $usedByLangs[] = $arrLang[$usedByLangId]['name'];
+                        }
                         $error = sprintf($_CORELANG['TXT_CONTENT_USED_BY_ANOTHER_LANGUAGE'], $arrLang[$langId]['name'], implode(',', $usedByLangs));
-                	    break;
-                	case 3:
+                        break;
+                    case 3:
                         $error = sprintf($_CORELANG['TXT_CONTENT_CANNOT_REFERENCE_ITSELF'], $arrLang[$langId]['name']);
-                	    break;
-                	default:
-                	    die();
-                		break;
+                        break;
+                    default:
+                        die();
+                        break;
                 }
                 die(json_encode(array(
                     'error'         => $error,
                     'langName'      => $langName,
                     'lastUpdate'    => $lastUpdate,
-        		)));
+                )));
             }
         } else {
             $useContentFromLang = 0;
@@ -2386,7 +2386,7 @@ class ContentManager
                            useContentFromLang="'.$useContentFromLang.'",
                            expertmode="'.$expertmode.'"');
             }
-            $this->modifyBlocks(!empty($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array(), $pageId, $langId);
+//            $this->modifyBlocks(!empty($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array(), $pageId, $langId);
             die(json_encode(array(
                 'pageId'        => $pageId,
                 'langName'      => $langName,
@@ -2766,11 +2766,11 @@ class ContentManager
         $list = $this->_navtable[$parcat];
         if (is_array($list)) {
             while (list($key,$val) = each($list)) {
-        		$isCurrent = false;
-            	if($selectedId == $key){
-            		$isCurrent = true;
-            	}
-            	$output = str_repeat('...', $level+1);
+                $isCurrent = false;
+                if($selectedId == $key){
+                    $isCurrent = true;
+                }
+                $output = str_repeat('...', $level+1);
                 $val['name'] = trim($val['name']);
 
                 $selected = '';
@@ -3236,44 +3236,8 @@ class ContentManager
     function getBlocks($pageId=0, $langId=0)
     {
         global $objDatabase;
-
-        /*if ($langId == 0) $langId = $this->firstActiveLang;
-
-        $blocks = array('', ''); // initialize to empty strings to avoid notice
-        $arrBlocks = array();
-        $arrRelationBlocks = array();
-
-        //get blocks
-        $objResult = $objDatabase->Execute('
-            SELECT id, name
-              FROM '.DBPREFIX.'module_block_blocks
-             WHERE active=1');
-        if ($objResult->RecordCount() > 0) {
-            while (!$objResult->EOF) {
-                $arrBlocks[$objResult->fields['id']] = array('id' => $objResult->fields['id'], 'name' => $objResult->fields['name']);
-                $objResult->MoveNext();
-            }
-        }
-        //block relation
-        $objResult = $objDatabase->Execute('
-            SELECT block_id
-              FROM '.DBPREFIX.'module_block_rel_pages
-             WHERE page_id='.$pageId.'
-               AND lang_id='.$langId);
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $arrRelationBlocks[$objResult->fields['block_id']] = '';
-                $objResult->MoveNext();
-            }
-        }
-        foreach ($arrBlocks as $arrData) {
-            if (array_key_exists($arrData['id'], $arrRelationBlocks)) {
-                $blocks[0] .= '<option value="'.$arrData['id'].'">'.$arrData['name'].' ('.$arrData['id'].') </option>'."\n";
-            } else {
-                $blocks[1] .= '<option value="'.$arrData['id'].'">'.$arrData['name'].' ('.$arrData['id'].') </option>'."\n";
-            }
-        }*/
-        return $blocks;
+        //disabled due to new block system
+        return;
     }
 
 
@@ -3416,49 +3380,8 @@ class ContentManager
     function modifyBlocks($associatedBlockIds, $pageId, $langId=0)
     {
         global $objDatabase;
-
-        /*if ($langId == 0) $langId = FRONTEND_LANG_ID;
-
-        $objResult = $objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_block_rel_pages
-             WHERE page_id=".$pageId.' AND lang_id='.$langId
-        );
-        if ($objResult) {
-            if($associatedBlockIds) foreach ($associatedBlockIds as $blockId) {
-                $objDatabase->Execute('
-                    INSERT INTO '.DBPREFIX.'module_block_rel_pages
-                       SET block_id='.$blockId.',
-                           page_id='.$pageId.',
-                           lang_id='.$langId
-                );
-            }
-        }
-
-        if (!empty($associatedBlockIds)) {
-            $objResult = $objDatabase->Execute('
-                SELECT all_pages
-                  FROM '.DBPREFIX.'module_block_rel_lang
-                 WHERE block_id='.$blockId.'
-                   AND lang_id='.$langId
-            );
-            if (!$objResult->RecordCount() > 0) {
-                $objDatabase->Execute('
-                    INSERT INTO '.DBPREFIX.'module_block_rel_lang
-                       SET block_id='.$blockId.',
-                           lang_id='.$langId.',
-                           all_pages=0
-                                    ');
-            } else {
-                $query = "
-                    UPDATE ".DBPREFIX."module_block_rel_lang
-                       SET all_pages='0'
-                     WHERE block_id='".$blockId."'
-                       AND lang_id='".$langId."'
-                       AND all_pages='1'
-                ";
-                $objDatabase->Execute($query);
-            }
-        }*/
+        //disabled due to new block system
+        return;
     }
 
 
@@ -3599,7 +3522,7 @@ class ContentManager
                 global $_CORELANG;
 
                 $assignedGroups = $existingGroups = $assignedBackendGroups = $existingBackendGroups = '';
-                $blocks = $this->getBlocks($pageId, $langId);
+                //$blocks = $this->getBlocks($pageId, $langId);
                 // Frontend Groups
                 $arrAssignedFrontendGroups = $this->_getAssignedGroups('frontend', $pageId, $langId);
                 foreach ($this->arrAllFrontendGroups as $id => $name) {
@@ -3639,16 +3562,16 @@ class ContentManager
                 }
 
                 $arrLangs = FWLanguage::getLanguageArray();
-               	$useContentFromLang = array();
+                $useContentFromLang = array();
                 $copyLangContent = array();
-               	//useContentFromLang
+                //useContentFromLang
                 foreach ($arrLangs as $arrLang) {
                     if($arrLang['frontend'] != 1 || $arrLang['id'] == $langId){
                         continue;
                     }
                     $selected = $objRS2->fields['useContentFromLang'] == $arrLang['id'] ? ' selected="selected"' : '';
-                	$useContentFromLang[] = '<option'.$selected.' value="'.$arrLang['id'].'">'.$arrLang['name'].'</option>';
-                	$copyLangContent[] = '<option>'.$arrLang['name'].'</option>';
+                    $useContentFromLang[] = '<option'.$selected.' value="'.$arrLang['id'].'">'.$arrLang['name'].'</option>';
+                    $copyLangContent[] = '<option>'.$arrLang['name'].'</option>';
                 }
 
                 //editStatus
@@ -3668,8 +3591,8 @@ class ContentManager
                 $selects['assignedGroups[]']['options']         = $assignedGroups;
                 $selects['existingBackendGroups[]']['options']  = $existingBackendGroups;
                 $selects['assignedBackendGroups[]']['options']  = $assignedBackendGroups;
-                $selects['existingBlocks[]']['options']         = $blocks[1];
-                $selects['assignedBlocks[]']['options']         = $blocks[0];
+                //$selects['existingBlocks[]']['options']         = $blocks[1];
+                //$selects['assignedBlocks[]']['options']         = $blocks[0];
                 $selects['useContentFromLang']['options']       = implode("\n", $useContentFromLang);
                 $selects['copyLangContent']['options']          = implode("\n", $copyLangContent);
                 $selects['editstatus']['options']               = implode("\n", $editStatus);
