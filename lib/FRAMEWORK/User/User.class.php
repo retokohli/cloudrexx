@@ -279,6 +279,14 @@ class User extends User_Profile
      */
     private $loggedIn;
 
+    /**
+     * The newsletter categories to be saved
+     *
+     * @var array
+     * @access protected
+     */
+    protected $newsletterCategories = array();
+
     public function __construct()
     {
         parent::__construct();
@@ -1326,6 +1334,11 @@ class User extends User_Profile
             }
         }
 
+        if (!$this->storeNewsletterCategories()) {
+            $this->error_msg[] = $_CORELANG['TXT_ARRAY_COULD_NOT_SET_NEWSLETTER_ASSOCIATIONS'];
+            return false;
+        }
+
         if (!$this->storeGroupAssociations()) {
             $this->error_msg[] = $_CORELANG['TXT_ARRAY_COULD_NOT_SET_GROUP_ASSOCIATIONS'];
             return false;
@@ -1335,7 +1348,7 @@ class User extends User_Profile
             $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_STORE_PROFILE'];
             return false;
         }
-
+    
         return true;
     }
 
@@ -1917,15 +1930,27 @@ class User extends User_Profile
     }
 
     /**
-     * Save the categories
+     * Set the newsletter categories for saving
      * 
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       array $categories
      */
     public function setNewsletterCategories(array $categories) {
+        $this->newsletterCategories = $categories;
+    }
+
+    /**
+     * Save the categories
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @return      bool
+     */
+    public function storeNewsletterCategories() {
         global $objDatabase;
 
         $user = intval($this->id);
+
+        $categories = $this->newsletterCategories;
 
         if (count($categories)) {
             foreach ($categories as $key => $category) {
@@ -1959,7 +1984,7 @@ class User extends User_Profile
                 $user
             );
 
-            $objDatabase->execute($query);
+            return (bool)$objDatabase->execute($query);
         }
     }
 }

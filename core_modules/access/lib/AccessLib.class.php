@@ -1814,6 +1814,7 @@ JSaccessValidatePrimaryGroupAssociation
             ', intval($userID)
         );
 
+
         return $objDatabase->Execute($query);
     }
 }
