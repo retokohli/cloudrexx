@@ -307,6 +307,7 @@ if(location.href.match(/act=new/)){
 }
 
 (function(){  //wrap in anonyomous function to avoid polluting the global namespace
+var availableLanguages = []; //available languages (long names)
 var $form; //the content form
 var getFrameContent = function(){
         if(_CONTREXX_EXPERT_MODE){
@@ -372,6 +373,15 @@ waitMillisecs = function(millis){
     do { curDate = new Date(); }
     while(curDate-date < millis);
     return true;
+}
+
+var setTitle = function(){	
+    if($J('#typeUseContentFromLang:checked').length == 1  
+ 		 && $J.trim($J('input[name=newpage]').val()) == ''){
+        var langName = $J('select[name=useContentFromLang] option:selected').text();
+        $J('input[name=newpage]').val($J('input[name=newpage]').data(langName));
+        setText();           
+   }
 }
 
 var setFrameContent = function(html, lastActive){
@@ -602,7 +612,7 @@ var switchTab = function(aElement, langName){
 }
 
 var getTabData = function(a){
-        var langName = $J(a).text();
+    var langName = $J(a).text();
     if(typeof $J('select[name=category]', $form).data(langName) != 'undefined' || $J(a).attr('title') == _CONTREXX_FIRST_ACTIVE_TAB){        //return if we have already have the data for this language
         return false;
     }
@@ -618,15 +628,13 @@ var swapLanguage = function(aElement, langName){
         return false;
     }
 
-//    $J('#ajaxstatus').text('Loading '+$a.text());
-
     //reset undo history
     if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances.html && CKEDITOR.instances.html.resetUndo){
         CKEDITOR.instances.html.resetUndo()
     }
 
     var lastActive = $J('#contentLanguages li a.active').text();
-        var $iFrame    = $form.find('iframe');
+    var $iFrame    = $form.find('iframe');
     var $textarea  = $form.find('textarea[name=html]');
 
     if(typeof langName == 'undefined'){
@@ -651,7 +659,21 @@ var swapLanguage = function(aElement, langName){
     $J('form[name=formContent] input').removeAttr('disabled');
 
     $form.find('input[type=text]').each(function(){ //swap input text contents
-        $J(this).data(lastActive, $J(this).val());
+        switch($J(this).attr('name')){
+            case 'command':
+            case 'selectmodule':
+                //contact module may have different commands
+            	if($J('[name=selectmodule] option:selected').text() == 'contact'){
+            		$J(this).data(lastActive, $J(this).val());
+            	} else {
+	                $J(availableLanguages).each(function(index, name){
+	              	    $J(this).data(name, $J(this).val());  
+	       		    });
+            	}
+      	    break;       	   
+      	    default:
+    	        $J(this).data(lastActive, $J(this).val());     	   
+        }
         typeof $J(this).data($a.text()) == 'undefined'
             ? $J(this).val('')
             : $J(this).val($J(this).data($a.text()));
@@ -724,6 +746,8 @@ var swapLanguage = function(aElement, langName){
         $J(this).val($J(this).data($a.text()).value);
     });
 
+    setTitle();
+    
     if($J.browser.msie && $J.browser.version.match(/^\d/)[0] == 6 ){ //redraw tabs because of buggy IE shit ("display: none;" bugs)
         var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
         var inactiveContentTab = $J('#tabmenu a:not(.active)').attr('id').replace('editorTab_', '');
@@ -963,6 +987,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     $("#ajaxbusy").css({opacity: 0.75}).show();
     $('#ajaxwait').show();
     $form = $('form[name=formContent]');
+    $('#contentLanguages li a').each(function(){
+        availableLanguages.push($J(this).text())
+    });
     window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
     window._CONTREXX_CONTENT_READY = [];
     window._CONTREXX_FORCE_SWAP = false;
@@ -986,7 +1013,11 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
     $('select[name=category]').change(function(){
         var sel = this;
         $J('#contentLanguages a.inactive').each(function(){
-            var options = $J(sel).data($J(this).text()).options;
+            if($J(sel).data($J(this).text())){
+	            var options = $J(sel).data($J(this).text()).options;
+            } else {
+            	var options = $J(sel).data('default').options;
+            }                
             $J(sel).data($J(this).text(), {options: options, value: $J('option:selected', sel).val()});
         });
     });
@@ -1056,6 +1087,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
                success: setSelect,
                error: setDataFetchError
             });
+            getNavMenu(this);
         });
     }
 
@@ -1123,7 +1155,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         var content = $J('textarea[name=html]').data($J('#copyLangContentSel option:selected').val())
         setFrameContent(content);
     });
-
+    
     $J('#toggleMetaData').toggle(function(){
         $J(this).removeClass('nodeCollapsed');
         $J(this).addClass('nodeExpanded');
@@ -1136,7 +1168,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         $J('.meta').addClass('hidden');
         resetRowClasses();
     });
-
+    
+    $J('#typeUseContentFromLang,select[name=useContentFromLang]').click(setTitle);
+    
 }); //end document ready (~onload)
 })();//execute anonymous function
 

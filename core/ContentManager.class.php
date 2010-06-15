@@ -987,7 +987,7 @@ class ContentManager
             'CONTENT_ACTIVESTATUS'                              => ' checked="checked"',
             'CONTENT_DISPLAYSTATUS'                             => ' checked="checked"',
             'CONTENT_CACHING_STATUS'                            => ' checked="checked"',
-            'CONTENT_CAT_MENU'                                  => $this->getPageMenu(),
+            'CONTENT_CAT_MENU'                                  => $this->getPageMenu(0, FRONTEND_LANG_ID),
             'CONTENT_CAT_MENU_NEW_PAGE'                         => (Permission::checkAccess(127, 'static', true)
                                                                     ? '' : ' disabled="disabled" style="color:graytext;"'),
             'CONTENT_FORM_ACTION'                               => "add",
