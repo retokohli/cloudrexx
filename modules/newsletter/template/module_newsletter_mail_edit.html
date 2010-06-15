@@ -3,6 +3,19 @@
 // <![CDATA[
   newsletterAttachmentNr = {NEWSLETTER_MAIL_ATTACHMENT_NR};
 
+
+    /**
+     * Check if the text content is empty and show a warning if so
+     */
+    var checkTextContent = function() {
+        var area = document.getElementById('newsletter_mail_text_content');
+        if (area.value == ''){
+            return confirm('{TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT}');
+        }
+
+        return true;
+    }
+
   function newsletterDelAttachment(attachmentNr) {
     document.getElementById('newsletter_attachment_frame').removeChild(document.getElementById('newsletter_attachment_box_'+attachmentNr));
 
@@ -69,7 +82,7 @@
   }
 // ]]>
 </script>
-<form action="index.php?cmd=newsletter&amp;act=editMail&amp;sendMail={NEWSLETTER_MAIL_SEND}&amp;id={NEWSLETTER_MAIL_ID}" id="newsletter_mail_form" enctype="multipart/form-data" method="post">
+<form action="index.php?cmd=newsletter&amp;act=editMail&amp;sendMail={NEWSLETTER_MAIL_SEND}&amp;id={NEWSLETTER_MAIL_ID}" id="newsletter_mail_form" enctype="multipart/form-data" method="post" onsubmit="return checkTextContent()">
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
   <tr>
     <th colspan="4">{NEWSLETTER_MAIL_EDIT_TITLE}</th>
