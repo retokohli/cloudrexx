@@ -47,7 +47,7 @@ class newsletter extends NewsletterLib
         'html/text'    => 'TXT_NEWSLETTER_MULTIPART_TXT'
     );
 
-    public $_stdMailFormat = 'text';
+    public $_stdMailFormat = 'html/text';
 
     public $_arrMailPriority = array(
         1    => 'TXT_NEWSLETTER_VERY_HIGH',
