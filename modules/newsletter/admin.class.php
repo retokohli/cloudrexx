@@ -77,9 +77,8 @@ class newsletter extends NewsletterLib
         if (!isset($_REQUEST['standalone'])) {
 
             $objTemplate->setVariable("CONTENT_NAVIGATION", "
-                                            <a href='index.php?cmd=newsletter'>".$_ARRAYLANG['TXT_NEWSLETTER_ADMINISTRATION']."</a>
-                                            <a href='index.php?cmd=newsletter&amp;act=lists'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>
                                             <a href='index.php?cmd=newsletter&amp;act=mails'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAILS']."</a>
+                                            <a href='index.php?cmd=newsletter&amp;act=lists'>".$_ARRAYLANG['TXT_NEWSLETTER_LISTS']."</a>
                                             <a href='index.php?cmd=newsletter&amp;act=templates'>".$_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES']."</a>
                                             <a href='index.php?cmd=newsletter&amp;act=users'>".$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS']."</a>
                                             <a href='index.php?cmd=newsletter&amp;act=news'>".$_ARRAYLANG['TXT_NEWSLETTER_NEWS']."</a>
@@ -217,7 +216,8 @@ class newsletter extends NewsletterLib
                 $this->_users();
                 break;
             default:
-                $this->overview();
+                $this->_mails();
+                //$this->overview();
             break;
         }
 
@@ -1119,61 +1119,6 @@ class newsletter extends NewsletterLib
                 $groupNr++;
                 $data->MoveNext();
             }
-        }
-
-    }
-
-    function _recipientOverview($limit = 10)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $rowNr = 0;
-
-        $this->_objTpl->setVariable('TXT_NEWSLETTER_NEWEST_RECIPIENTS', $_ARRAYLANG['TXT_NEWSLETTER_NEWEST_RECIPIENTS']);
-        $this->_objTpl->setGlobalVariable('TXT_NEWSLETTER_MODIFY_RECIPIENT', $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_RECIPIENT']);
-
-        $objUser = $objDatabase->SelectLimit("SELECT id, email, lastname, firstname, street, zip, city, country, status, emaildate FROM ".DBPREFIX."module_newsletter_user ORDER BY emaildate DESC", $limit);
-        if ($objUser !== false && $objUser->RecordCount() > 0) {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_STATUS'                            => $_ARRAYLANG['TXT_NEWSLETTER_STATUS'],
-                'TXT_NEWSLETTER_EMAIL_ADDRESS'                    => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-                'TXT_NEWSLETTER_LASTNAME'                        => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-                'TXT_NEWSLETTER_FIRSTNAME'                        => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-                'TXT_NEWSLETTER_STREET'                            => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
-                'TXT_NEWSLETTER_ZIP'                            => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
-                'TXT_NEWSLETTER_CITY'                            => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-                'TXT_NEWSLETTER_COUNTRY'                        => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
-                'TXT_NEWSLETTER_REGISTRATION_DATE'                => $_ARRAYLANG['TXT_NEWSLETTER_REGISTRATION_DATE'],
-                'TXT_NEWSLETTER_GO_TO_RECIPIENT_ADMINISTRATION'    => $_ARRAYLANG['TXT_NEWSLETTER_GO_TO_RECIPIENT_ADMINISTRATION']
-            ));
-
-            while (!$objUser->EOF) {
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_RECIPIENT_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
-                    'NEWSLETTER_RECIPIENT_STATUS_IMG'            => $objUser->fields['status'] == 1 ? 'led_green.gif' : 'led_red.gif',
-                    'NEWSLETTER_RECIPIENT_STATUS'                => $objUser->fields['status'] == 1 ? 'Aktiv' : 'Pendent',
-                    'NEWSLETTER_RECIPIENT_ID'                    => $objUser->fields['id'],
-                    'NEWSLETTER_RECIPIENT_EMAIL'                => htmlentities($objUser->fields['email'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_RECIPIENT_LASTNAME'                => !empty($objUser->fields['lastname']) ? htmlentities($objUser->fields['lastname'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
-                    'NEWSLETTER_RECIPIENT_FIRSTNAME'            => !empty($objUser->fields['firstname']) ? htmlentities($objUser->fields['firstname'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
-                    'NEWSLETTER_RECIPIENT_STREET'                => !empty($objUser->fields['street']) ? htmlentities($objUser->fields['street'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
-                    'NEWSLETTER_RECIPIENT_ZIP'                    => !empty($objUser->fields['zip']) ? htmlentities($objUser->fields['zip'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
-                    'NEWSLETTER_RECIPIENT_CITY'                    => !empty($objUser->fields['city']) ? htmlentities($objUser->fields['city'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
-                    'NEWSLETTER_RECIPIENT_COUNTRY'                => !empty($objUser->fields['country']) ? htmlentities($objUser->fields['country'], ENT_QUOTES, CONTREXX_CHARSET) : '-',
-                    'NEWSLETTER_RECIPIENT_REGISTRATION_DATE'    => date(ASCMS_DATE_FORMAT, $objUser->fields['emaildate'])
-                ));
-                $this->_objTpl->parse('newsletter_recipients');
-                $rowNr++;
-                $objUser->MoveNext();
-            }
-
-            $this->_objTpl->touchBlock('newsletter_recipients_list');
-            $this->_objTpl->hideBlock('newsletter_recipients_no_data');
-        } else {
-            $this->_objTpl->setVariable('TXT_NEWSLETTER_NO_RECIPIENTS_MSG', $_ARRAYLANG['TXT_NEWSLETTER_NO_RECIPIENTS_MSG']);
-
-            $this->_objTpl->touchBlock('newsletter_recipients_no_data');
-            $this->_objTpl->hideBlock('newsletter_recipients_list');
         }
 
     }
@@ -3517,41 +3462,6 @@ class newsletter extends NewsletterLib
     }
 
 
-    function overview() {
-        global $objDatabase, $_ARRAYLANG;
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_ADMINISTRATION'];
-        $this->_objTpl->loadTemplateFile('module_newsletter_administration.html');
-
-        $objSettings = $objDatabase->SelectLimit("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='overview_entries_limit'", 1);
-        if ($objSettings !== false) {
-            $limit = $objSettings->fields['setvalue'];
-        }
-
-        $this->_listOverview($limit);
-        $this->_mailOverview($limit);
-        $this->_recipientOverview($limit);
-
-        $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_ADMINISTRATION'    => $_ARRAYLANG['TXT_NEWSLETTER_ADMINISTRATION'],
-            'TXT_NEWSLETTER_CREATE_NEW_EMAIL'    => $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL'],
-            'TXT_NEWSLETTER_ADD_NEW_LIST'        => $_ARRAYLANG['TXT_NEWSLETTER_ADD_NEW_LIST'],
-            'TXT_NEWSLETTER_IMPORT_RECIPIENTS'    => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_RECIPIENTS'],
-            'TXT_NEWSLETTER_EXPORT_RECIPIENTS'    => $_ARRAYLANG['TXT_NEWSLETTER_EXPORT_RECIPIENTS'],
-
-        ));
-
-        $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_NOT_SENT_NEWSLETTERS'        => $_ARRAYLANG['TXT_NEWSLETTER_NOT_SENT_NEWSLETTERS'],
-            'TXT_NEWSLETTER_SENT_NEWSLETTERS'            => $_ARRAYLANG['TXT_NEWSLETTER_SENT_NEWSLETTERS'],
-            'TXT_NEWSLETTER_ANNOUNCED_USERS'            => $_ARRAYLANG['TXT_NEWSLETTER_ANNOUNCED_USERS'],
-            'NEWSLETTER_RECIPIENT_COUNT'                => $this->UserCount(),
-            'VALUE_SENT_NEWSLETTERS'                    => $this->NewsletterSendCount(),
-            'VALUE_NOT_SENT_NEWSLETTERS'                => $this->NewsletterNotSendCount()
-            ));
-
-    }
-
     function newsletterOverview() {
         global $objDatabase, $_ARRAYLANG;
 
@@ -4412,127 +4322,7 @@ class newsletter extends NewsletterLib
         return $ReturnVar;
     }
 
-    function _listOverview($limit = 10)
-    {
-        global $objDatabase, $_ARRAYLANG;
 
-        $rowNr = 0;
-
-        $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_LISTS'    => $_ARRAYLANG['TXT_NEWSLETTER_LISTS']
-        ));
-
-        $objList = $objDatabase->SelectLimit("SELECT tblList.id AS listId, tblList.status, tblList.name, tblMail.id AS mailId, tblMail.subject, tblMail.date_sent
-              FROM ".DBPREFIX."module_newsletter_category AS tblList
-              LEFT JOIN ".DBPREFIX."module_newsletter_rel_cat_news AS tblRel ON tblRel.category=tblList.id
-              LEFT JOIN ".DBPREFIX."module_newsletter AS tblMail ON tblMail.id=tblRel.newsletter
-            GROUP BY tblList.id
-            ORDER BY date_sent DESC", $limit);
-
-        if ($objList !== false && $objList->RecordCount() > 0) {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_ID_UC'                        => $_ARRAYLANG['TXT_NEWSLETTER_ID_UC'],
-                'TXT_NEWSLETTER_STATUS'                        => $_ARRAYLANG['TXT_NEWSLETTER_STATUS'],
-                'TXT_NEWSLETTER_NAME'                        => $_ARRAYLANG['TXT_NEWSLETTER_NAME'],
-                'TXT_NEWSLETTER_LAST_EMAIL'                    => $_ARRAYLANG['TXT_NEWSLETTER_LAST_EMAIL'],
-                'TXT_NEWSLETTER_RECIPIENTS'                    => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS'],
-                'TXT_NEWSELTTER_GO_TO_LIST_ADMINISTRATION'    => $_ARRAYLANG['TXT_NEWSELTTER_GO_TO_LIST_ADMINISTRATION'],
-                'TXT_NEWSLETTER_LIST_COUNT'                    => $_ARRAYLANG['TXT_NEWSLETTER_LIST_COUNT']
-            ));
-
-            $this->_objTpl->setGlobalVariable('TXT_NEWSLETTER_MODIFY_LIST', $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_LIST']);
-
-            while (!$objList->EOF) {
-                $listId = $objList->fields['listId'];
-                /*
-                $objRecipient = $objDatabase->SelectLimit("SELECT COUNT(1) AS recipients_count FROM ".DBPREFIX."module_newsletter_rel_user_cat AS tblRel WHERE tblRel.category=".$objList->fields['listId']." GROUP BY tblRel.category", 1);
-                if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
-                    $recipientCount = $objRecipient->fields['recipients_count'];
-                } else {
-                    $recipientCount = 0;
-                }
-                 */
-
-                $recipientCount = $this->getListRecipientCount($listId);
-
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_LIST_ROW_CLASS'            => $rowNr % 2 == 1 ? "row1" : "row2",
-                    'NEWSLETTER_LIST_ID'                => $objList->fields['listId'],
-                    'NEWSLETTER_LIST_STATUS_IMG'        => $objList->fields['status'] == 1 ? "folder_on.gif" : "folder_off.gif",
-                    'NEWSLETTER_LIST_NAME'                => htmlentities($objList->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_LIST_RECIPIENT_COUNT'    => $recipientCount > 0 ? '<a href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId='.$objList->fields['listId'].'" title="'.sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], htmlentities($objList->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)).'">'.$recipientCount.'</a>' : '-',
-                    'NEWSLETTER_LIST_LAST_SENT_MAIL'    => $objList->fields['date_sent'] > 0 ? '<a href="index.php?cmd=newsletter&amp;act=showMail&amp;id='.$objList->fields['mailId'].'" title="'.$_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_EMAIL'].'">'.htmlentities($objList->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET).' ('.date(ASCMS_DATE_FORMAT, $objList->fields['date_sent']).')</a>' : '-',
-                ));
-
-                $rowNr++;
-                $this->_objTpl->parse('newsletter_lists');
-
-                $objList->MoveNext();
-            }
-
-            $objList = $objDatabase->Execute("SELECT COUNT(1) AS list_count FROM ".DBPREFIX."module_newsletter_category");
-            if ($objList !== false) {
-                $listCount = $objList->fields['list_count'];
-            } else {
-                $listCount = '-';
-            }
-
-            $this->_objTpl->setVariable('NEWSLETTER_LIST_COUNT', $listCount);
-
-            $this->_objTpl->touchBlock('newsletter_lists_list');
-            $this->_objTpl->hideBlock('newsletter_lists_no_list');
-        } else {
-            $this->_objTpl->setVariable('TXT_NEWSLETTER_ADD_NEW_LIST_MSG', $_ARRAYLANG['TXT_NEWSLETTER_ADD_NEW_LIST_MSG']);
-
-            $this->_objTpl->hideBlock('newsletter_lists_list');
-            $this->_objTpl->touchBlock('newsletter_lists_no_list');
-        }
-
-    }
-
-
-    function _mailOverview($limit = 10)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $rowNr = 0;
-        $this->_objTpl->setVariable('TXT_NEWSLETTER_SENT_EMAILS', $_ARRAYLANG['TXT_NEWSLETTER_SENT_EMAILS']);
-
-        $objMail = $objDatabase->SelectLimit("SELECT id, subject, date_sent FROM ".DBPREFIX."module_newsletter WHERE status='1' ORDER BY date_sent DESC", $limit);
-        if ($objMail !== false && $objMail->RecordCount() > 0) {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_ID_UC'                        => $_ARRAYLANG['TXT_NEWSLETTER_ID_UC'],
-                'TXT_NEWSLETTER_SUBJECT'                    => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-                'TXT_NEWSLETTER_SENT'                        => $_ARRAYLANG['TXT_NEWSLETTER_SENT'],
-                'TXT_NEWSLETTER_GO_TO_EMAIL_ADMINISTRATION'    => $_ARRAYLANG['TXT_NEWSLETTER_GO_TO_EMAIL_ADMINISTRATION'],
-                'TXT_NEWSLETTER_TOTAL_SENT_EMAILS'            => $_ARRAYLANG['TXT_NEWSLETTER_TOTAL_SENT_EMAILS'],
-                'TXT_NEWSLETTER_UNSENDET_EMAILS'            => $_ARRAYLANG['TXT_NEWSLETTER_UNSENDET_EMAILS']
-            ));
-
-            $this->_objTpl->setGlobalVariable('TXT_NEWSLETTER_DISPLAY_EMAIL', $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_EMAIL']);
-
-            while (!$objMail->EOF) {
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_MAIL_ROW_CLASS'    => $rowNr % 2 == 1 ? "row1" : "row2",
-                    'NEWSLETTER_MAIL_ID'        => $objMail->fields['id'],
-                    'NEWSLETTER_MAIL_SUBJECT'    => htmlentities($objMail->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_MAIL_SENT_DATE'    => date(ASCMS_DATE_FORMAT, $objMail->fields['date_sent'])
-                ));
-
-                $rowNr++;
-                $this->_objTpl->parse('newsletter_mails');
-                $objMail->MoveNext();
-            }
-
-            $this->_objTpl->touchBlock('newsletter_mails_list');
-            $this->_objTpl->hideBlock('newsletter_mails_no_mail');
-        } else {
-            $this->_objTpl->setVariable('TXT_NEWSLETTER_CREATE_NEW_EMAIL_MSG', $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL_MSG']);
-
-            $this->_objTpl->touchBlock('newsletter_mails_no_mail');
-            $this->_objTpl->hideBlock('newsletter_mails_list');
-        }
-    }
 
 
     function _getListHTML() {
