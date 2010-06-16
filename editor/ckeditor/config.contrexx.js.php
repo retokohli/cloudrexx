@@ -1,33 +1,35 @@
 <?php
-	error_reporting(0);
-	require_once('../../config/configuration.php');
+
+    error_reporting(0);
+    require_once('../../config/configuration.php');
     require_once('../../core/settings.class.php');
-	require_once('../../core/validator.inc.php');
-	require_once('../../core/API.php');
+    require_once('../../core/validator.inc.php');
+    require_once('../../core/API.php');
     require_once('../../lib/CSRF.php');
-	require_once('../../core/Html.class.php');
-	$strErrMessage = '';
+    require_once('../../core/Html.class.php');
+
+    $strErrMessage = '';
     $objDatabase = getDatabaseObject($strErrMessage);
     $objSettings = new settingsManager();
     $objInit = new InitCMS('backend');
     $sessionObj = new cmsSession();
     $sessionObj->cmsSessionStatusUpdate('backend');
-    $CSRF = '&'.CSRF::key().'='.CSRF::code();
+    $CSRF = '&amp;'.CSRF::key().'='.CSRF::code();
 
 
     $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
     $absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
 
     $defaultBrowser   = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                       .'?cmd=fileBrowser&standalone=true&langId='.$langId
-                       .'&absoluteURIs='.$absoluteURIs.$CSRF;
+                       .'?cmd=fileBrowser&amp;standalone=true&amp;langId='.$langId
+                       .'&amp;absoluteURIs='.$absoluteURIs.$CSRF;
     $linkBrowser      = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                       .'?cmd=fileBrowser&standalone=true&langId='.$langId
-                       .'&absoluteURIs='.$absoluteURIs.'&type=webpages'.$CSRF;
+                       .'?cmd=fileBrowser&amp;standalone=true&amp;langId='.$langId
+                       .'&amp;absoluteURIs='.$absoluteURIs.'&amp;type=webpages'.$CSRF;
     $defaultUploader  = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                       .'&act=FCKEditorUpload&standalone=true'.$CSRF;
+                       .'&amp;act=FCKEditorUpload&amp;standalone=true'.$CSRF;
     $linkUploader     = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                       .'&act=FCKEditorUpload&standalone=true&type=webpages'.$CSRF;
+                       .'&amp;act=FCKEditorUpload&amp;standalone=true&amp;type=webpages'.$CSRF;
 
 ?>
 CKEDITOR.editorConfig = function( config )
@@ -48,7 +50,7 @@ CKEDITOR.editorConfig = function( config )
     config.filebrowserImageUploadUrl = CKEDITOR.getUrl('../..<?php echo $defaultUploader;?>');
     config.filebrowserFlashUploadUrl = CKEDITOR.getUrl('../..<?php echo $defaultUploader;?>');
 
-    <? echo $objSettings->useOwnCSS();?>
+    <?php echo $objSettings->useOwnCSS(); ?>
 
     config.toolbar_Default = [
         ['Source','-','NewPage','Preview','-','Templates'],
@@ -92,4 +94,3 @@ CKEDITOR.editorConfig = function( config )
     };
 
 };
-
