@@ -659,16 +659,18 @@ var swapLanguage = function(aElement, langName){
     $J('form[name=formContent] input').removeAttr('disabled');
 
     $form.find('input[type=text]').each(function(){ //swap input text contents
-        switch($J(this).attr('name')){
+        var that = this;
+        var inputName = $J.trim($J(this).attr('name'));
+        switch(inputName){
             case 'command':
-            case 'selectmodule':
                 //contact module may have different commands
-            	if($J('[name=selectmodule] option:selected').text() == 'contact'){
+                var moduleName = $J.trim($J('[name=selectmodule] option:selected').text());                
+                if(moduleName == 'contact'){
             		$J(this).data(lastActive, $J(this).val());
             	} else {
-	                $J(availableLanguages).each(function(index, name){
-	              	    $J(this).data(name, $J(this).val());  
-	       		    });
+                    $J(availableLanguages).each(function(index, name){
+                    	$J(that).data(name, $J(that).val());
+                    });
             	}
       	    break;       	   
       	    default:
@@ -727,8 +729,10 @@ var swapLanguage = function(aElement, langName){
     $J('input', $form).attr('disabled', 'disabled');
 
     $form.find('select').each(function(){
-        if($J(this).attr('name') == 'formContent_HistoryMultiAction'){
-            return;
+        switch($J(this).attr('name')){
+            case 'selectmodule': //module is always the same for all languages
+            case 'formContent_HistoryMultiAction': //do not touch multiaction select
+                return;
         }
         var $options = $J(this).find('option');
         var value    = $J(this).find('option:selected').val();
@@ -1466,7 +1470,7 @@ if(typeof console === 'undefined'){
         <td width="85%">
           <input type="text" name="command" value="{CONTENT_SHOW_CMD}" maxlength="100" size="40" />
           <select name="selectmodule">
-            <option value="">{TXT_NO_MODULE}</option>
+            <option value="" {CONTENT_NO_MODULE_SELECTED}>{TXT_NO_MODULE}</option>
             {CONTENT_MODULE_MENU}
           </select>
         </td>
