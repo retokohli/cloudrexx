@@ -860,6 +860,7 @@ class ContentManager
             $objTemplate->setVariable(array(
                 'CONTENT_HTML'        => get_wysiwyg_editor('html', $contenthtml),
                 'CONTENT_MODULE_MENU' => $this->_getModuleMenu(''),
+                'CONTENT_NO_MODULE_SELECTED' => 'selected="selected"',
                 'CONTENT_DATE'        => date('Y-m-d'),
                 'CONTENT_TABLE_STYLE' => $tablestatus,
             ));
