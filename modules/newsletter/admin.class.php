@@ -13,13 +13,13 @@ $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'] = "Benachrichtigung bei Abme
  * @todo        Edit PHP DocBlocks!
  * @todo        make total mailrecipient count static in newsletter list (act=mails)
  *              (new count field)
- *              check if mail already sent when a user unsubscribes -> adjust count
+ *              check if mail already sent when a user unsubscribes -> adjust count 
  */
 
 /**
  * @ignore
  */
-require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';
+require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php'; 
 
 /**
  * Class newsletter
@@ -68,6 +68,7 @@ class newsletter extends NewsletterLib
      */
     function __construct()
     {
+
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/newsletter/template');
@@ -1701,17 +1702,20 @@ class newsletter extends NewsletterLib
             'TXT_BREAK_AFTER'                => $_ARRAYLANG['TXT_NEWSLETTER_BREAK_AFTER'],
             'TXT_TEST_MAIL'                    => $_ARRAYLANG['TXT_NEWSLETTER_TEST_RECIPIENT'],
             'TXT_FAILED'                    => $_ARRAYLANG['TXT_NEWSLETTER_FAILED'],
+            'TXT_INFO_ABOUT_ADMIN_INFORM'               => $_ARRAYLANG['TXT_INFO_ABOUT_ADMIN_INFORM'],
 //            'TXT_BCC'                        => $_ARRAYLANG['TXT_NEWSLETTER_BCC'],
             'TXT_NEWSLETTER_OVERVIEW_ENTRIES'   => $_ARRAYLANG['TXT_NEWSLETTER_OVERVIEW_ENTRIES'],
             'TXT_NEWSLETTER_REPLY_EMAIL'        => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_EMAIL'],
             'TXT_SYSTEM_SETINGS'        => "System",
             'TXT_NEWSLETTER_DO_NOTING'            => $_ARRAYLANG['TXT_NEWSLETTER_DO_NOTING'],
             'TXT_NEWSLETTER_TASK_REJECTED_EMAIL'    => $_ARRAYLANG['TXT_NEWSLETTER_TASK_REJECTED_EMAIL'],
-            'TXT_NEWSLETTER_DEACTIVATE_EMAIL'    => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE_EMAIL'],
-            'TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'        => $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'],
-            'NEWSLETTER_REJECTED_MAIL_IGNORE'    => $arrSettings['rejected_mail_operation'] == 'ignore' ? 'checked="checked"' : '',
-            'NEWSLETTER_REJECTED_MAIL_DEACTIVATE'    => $arrSettings['rejected_mail_operation'] == 'deactivate' ? 'checked="checked"' : '',
-            'NEWSLETTER_REJECTED_MAIL_DELETE'        => $arrSettings['rejected_mail_operation'] == 'delete' ? 'checked="checked"' : ''
+            'TXT_NEWSLETTER_DEACTIVATE_EMAIL'           => $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE_EMAIL'],
+            'TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'       => $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL_ADDRESS'],
+            'TXT_NEWSLETTER_INFORM_ADMIN'               => $_ARRAYLANG['TXT_NEWSLETTER_INFORM_ADMIN'],
+            'NEWSLETTER_REJECTED_MAIL_IGNORE'           => $arrSettings['rejected_mail_operation'] == 'ignore'     ? 'checked="checked"' : '',
+            'NEWSLETTER_REJECTED_MAIL_DEACTIVATE'       => $arrSettings['rejected_mail_operation'] == 'deactivate' ? 'checked="checked"' : '',
+            'NEWSLETTER_REJECTED_MAIL_DELETE'           => $arrSettings['rejected_mail_operation'] == 'delete'     ? 'checked="checked"' : '',
+            'NEWSLETTER_REJECTED_MAIL_INFORM'           => $arrSettings['rejected_mail_operation'] == 'inform'     ? 'checked="checked"' : ''
         ));
 
     }
@@ -2732,6 +2736,7 @@ class newsletter extends NewsletterLib
                 }
             }
         } else {
+            die("could not send");
             if (strstr($mail->ErrorInfo, 'authenticate')) {
                 $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'from_failed')) {
@@ -2763,6 +2768,10 @@ class newsletter extends NewsletterLib
                             case 'delete':
                                 $this->_deleteRecipient($objRecipient->fields['id']);
                                 break;
+
+                            case 'inform':
+                                $this->informAdminAboutRejectedMail($TargetEmail);
+                                break;
                         }
                     }
                 }
@@ -2774,6 +2783,20 @@ class newsletter extends NewsletterLib
         $mail->ClearAttachments();
 
         return $ReturnVar;
+    }
+
+    /**
+     * Inform the admin about a reject
+     *
+     * If an email could not be sent, inform the administrator
+     * about that (only if the option to do so was set)
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $email
+     */
+    protected function informAdminAboutRejectedMail($email) {
+        // get the current user's email address
+        $mail = FWUser::getFWUserObject()->objUser->getEmail();
+
     }
 
     function GetTemplateSource($TemplateID, $format) {
@@ -3848,14 +3871,25 @@ class newsletter extends NewsletterLib
                 foreach ($_POST['userid'] as $userid) {
                     $userid=intval($userid);
                     if (!$this->_deleteRecipient($userid)) {
-                        $error=1;
+                        $error = 1;
                     }
                 }
-                if ($error) {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
-                } else {
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+            }
+
+            /*
+            if (!empty($_POST['accessUserid'])) {
+                foreach ($_POST['accessUserid'] as $userID) {
+                    if ($this->removeAccessRecipient($userID)) {
+                        $error = 1;
+                    }
                 }
+            }
+             */
+
+            if ($error) {
+                $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
+            } else {
+                $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
             }
         }
 
@@ -3938,12 +3972,6 @@ class newsletter extends NewsletterLib
             $where_statement .= ' and status='.intval($_REQUEST["SearchStatus"]).' ';
         }
 
-        /*
-        if ($newsletterListId > 0) {
-            $where_statement .= " and tblUser.id=tblRel.user and tblRel.category=".$newsletterListId;
-        }
-         */
-
         $pos = intval($_GET['pos']);
 
 
@@ -3971,35 +3999,6 @@ class newsletter extends NewsletterLib
         list ($users, $count) = $this->returnNewsletterUser($where_statement,
             $newsletterListId);
 
-            /*
-        //show only one record set if _REQUEST['id'] is set (meaning the client comes from user details)
-        if (!empty($_REQUEST['id']) && $_GET['delete'] != 'exe' && $_GET['bulkdelete'] != 'exe') {
-            $objResult = $objDatabase->Execute('SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
-                                                FROM '.DBPREFIX.'module_newsletter_user AS tblUser, '.DBPREFIX.'module_newsletter_rel_user_cat AS tblRel
-                                                WHERE tblUser.id ='.intval($_REQUEST['id'])
-                                                .' GROUP BY tblUser.id order by email LIMIT 1');
-        } else {
-            $objResult = $objDatabase->SelectLimit($query, $limit, $pos);
-        }
-             */
-        /*
-
-        if ($where_statement == '') {
-            $query_2 = "    SELECT COUNT(1) as cnt
-                            FROM ".DBPREFIX."module_newsletter_user";
-        } elseif ($newsletterListId == 0) {
-            $query_2 = "    SELECT COUNT(1) as cnt
-                            FROM ".DBPREFIX."module_newsletter_user AS tblUser
-                            WHERE 1=1 ".$where_statement;
-        } else          {
-            $query_2 = "    SELECT COUNT(1) as cnt
-                            FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
-                            .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
-                            WHERE 1=1 ".$where_statement;
-        }
-        $objResult_2 = $objDatabase->Execute($query_2);
-        $count = $objResult_2->fields['cnt'];
-         */
         $rowNr = 0;
         foreach ($users as $user) {
             if ($user['status']==1) {
@@ -4010,12 +4009,21 @@ class newsletter extends NewsletterLib
 
             if ($user['type'] == 'newsletter_user') {
                 $this->_objTpl->touchBlock('newsletter_checkbox');
+                $this->_objTpl->hideBlock('newsletter_checkbox_access');
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_USER_EMAIL'               => htmlentities($user['email'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_USER_ID'                  => $user['id'],
                 ));
                 $this->_objTpl->parse('newsletter_user_type');
             } else {
+                $this->_objTpl->hideBlock('newsletter_checkbox');
+                /*
+                $this->_objTpl->touchBlock('newsletter_checkbox_access');
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_USER_EMAIL'               => htmlentities($user['email'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'NEWSLETTER_USER_ID'                  => $user['id'],
+                ));
+                 */
                 $this->_objTpl->parse('access_user_type');
             }
 
@@ -4052,6 +4060,10 @@ class newsletter extends NewsletterLib
         $this->_objTpl->parse('module_newsletter_user_overview');
     }
 
+    private function removeAccessRecipient($userID) {
+
+    }
+
     /**
      * Return all newsletter user
      *
@@ -4071,6 +4083,7 @@ class newsletter extends NewsletterLib
                     *
              FROM (
                 SELECT
+                        `id`,
                         `email`,
                         `lastname`,
                         `firstname`,
@@ -4091,12 +4104,13 @@ class newsletter extends NewsletterLib
 
 
                 UNION DISTINCT SELECT
+                        `cu`.`id`,
                         `email`,
                         `cup`.`lastname`,
                         `cup`.`firstname`,
                         `cup`.`address`,
                         `cup`.`zip`,
-                        `cup`.`country_id`,
+                        `cy`.`name`                         AS `country`,
                         1                                   AS `status`,
                         "access_user"                       AS `type`
                 FROM
@@ -4116,6 +4130,11 @@ class newsletter extends NewsletterLib
                         `%saccess_user_profile`             AS `cup`
                     ON
                         `cu`.`id` = `cup`.`user_id`
+
+                LEFT JOIN
+                        `%slib_country`                     AS `cy`
+                    ON
+                        `cy`.`id` = `cup`.`country`
                 %s #where
 
             ) AS `subquery`
@@ -4129,6 +4148,7 @@ class newsletter extends NewsletterLib
                 ? sprintf('WHERE `rc`.`category` = %s', intval($newsletterListId))
                 : ''
             ),
+            DBPREFIX,
             DBPREFIX,
             DBPREFIX,
             DBPREFIX,

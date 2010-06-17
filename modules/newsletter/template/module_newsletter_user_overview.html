@@ -285,11 +285,14 @@ var confirmDeleteInactive = function(){
   </thead>
   <tbody>
   <!-- BEGIN newsletter_user -->
-  <tr class="{ROW_CLASS}">
+  <tr class="{ROW_CLASS}" style="height: 27px;">
       <td style="white-space:nowrap; width: 5%;">
           <!-- BEGIN newsletter_checkbox -->
           <input name="userid[]" type="checkbox" value="{NEWSLETTER_USER_ID}" />
           <!-- END newsletter_checkbox -->
+          <!-- BEGIN newsletter_checkbox_access -->
+          <!-- <input name="accessUserid[]" type="checkbox" value="{NEWSLETTER_USER_ID}" /> -->
+          <!-- END newsletter_checkbox_access -->
       </td>
       <td style="white-space:nowrap; width: 5%;">
           {STATUS_IMG}
