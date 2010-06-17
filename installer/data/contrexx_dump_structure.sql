@@ -2902,6 +2902,14 @@ CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_newsletter_rel_usergroup_newsletter` (
+  `userGroup` int(10) unsigned NOT NULL,
+  `newsletter` int(10) unsigned NOT NULL,
+  UNIQUE KEY `uniq` (`userGroup`,`newsletter`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_newsletter_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
