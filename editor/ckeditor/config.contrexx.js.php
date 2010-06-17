@@ -1,35 +1,34 @@
 <?php
-
     error_reporting(0);
     require_once('../../config/configuration.php');
     require_once('../../core/settings.class.php');
-    require_once('../../core/validator.inc.php');
     require_once('../../core/API.php');
+    require_once('../../core/validator.inc.php');
     require_once('../../lib/CSRF.php');
     require_once('../../core/Html.class.php');
-
     $strErrMessage = '';
     $objDatabase = getDatabaseObject($strErrMessage);
     $objSettings = new settingsManager();
     $objInit = new InitCMS('backend');
     $sessionObj = new cmsSession();
     $sessionObj->cmsSessionStatusUpdate('backend');
-    $CSRF = '&amp;'.CSRF::key().'='.CSRF::code();
+    $CSRF = '&'.CSRF::key().'='.CSRF::code();
 
 
     $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
     $absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
 
+    //'&' must not be htmlentities, used in javascript
     $defaultBrowser   = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                       .'?cmd=fileBrowser&amp;standalone=true&amp;langId='.$langId
-                       .'&amp;absoluteURIs='.$absoluteURIs.$CSRF;
+                       .'?cmd=fileBrowser&standalone=true&langId='.$langId
+                       .'&absoluteURIs='.$absoluteURIs.$CSRF;
     $linkBrowser      = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                       .'?cmd=fileBrowser&amp;standalone=true&amp;langId='.$langId
-                       .'&amp;absoluteURIs='.$absoluteURIs.'&amp;type=webpages'.$CSRF;
+                       .'?cmd=fileBrowser&standalone=true&langId='.$langId
+                       .'&absoluteURIs='.$absoluteURIs.'&type=webpages'.$CSRF;
     $defaultUploader  = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                       .'&amp;act=FCKEditorUpload&amp;standalone=true'.$CSRF;
+                       .'&act=FCKEditorUpload&standalone=true'.$CSRF;
     $linkUploader     = ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX.'?cmd=fileBrowser'
-                       .'&amp;act=FCKEditorUpload&amp;standalone=true&amp;type=webpages'.$CSRF;
+                       .'&act=FCKEditorUpload&standalone=true&type=webpages'.$CSRF;
 
 ?>
 CKEDITOR.editorConfig = function( config )
@@ -94,3 +93,4 @@ CKEDITOR.editorConfig = function( config )
     };
 
 };
+
