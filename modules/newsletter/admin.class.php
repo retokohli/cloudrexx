@@ -3095,16 +3095,21 @@ class newsletter extends NewsletterLib
         $arrRecipientTitles = &$this->_getRecipientTitles();
 
         if ($listId > 0) {
-            $WhereStatement = " WHERE category=".$listId;
             $list = $this->_getList($listId);
             $listname = $list['name'];
         } else {
             $listname = "all_lists";
         }
+        /*
         $query    = "    SELECT * FROM ".DBPREFIX."module_newsletter_rel_user_cat
                     RIGHT JOIN ".DBPREFIX."module_newsletter_user
                         ON ".DBPREFIX."module_newsletter_rel_user_cat.user=".DBPREFIX."module_newsletter_user.id ".
                     $WhereStatement." GROUP BY user";
+         */
+
+        list ($users, $count) = $this->returnNewsletterUser($WhereStatement,
+            $listId);
+
 
         $objResult     = $objDatabase->Execute($query);
         $StringForFile = $_ARRAYLANG['TXT_NEWSLETTER_STATUS'].$separator;
@@ -3124,26 +3129,23 @@ class newsletter extends NewsletterLib
         $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'];
         $StringForFile .= chr(13).chr(10);
 
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $StringForFile .= $objResult->fields['status'].$separator;
-                $StringForFile .= $objResult->fields['email'].$separator;
-                $StringForFile .= $objResult->fields['uri'].$separator;
-                $StringForFile .= $objResult->fields['sex'].$separator;
-                $StringForFile .= $arrRecipientTitles[$objResult->fields['title']].$separator;
-                $StringForFile .= $objResult->fields['lastname'].$separator;
-                $StringForFile .= $objResult->fields['firstname'].$separator;
-                $StringForFile .= $objResult->fields['company'].$separator;
-                $StringForFile .= $objResult->fields['street'].$separator;
-                $StringForFile .= $objResult->fields['zip'].$separator;
-                $StringForFile .= $objResult->fields['city'].$separator;
-                $StringForFile .= FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResult->fields['country_id'])->getName().$separator;
-                $StringForFile .= $objResult->fields['country_id'].$separator;
-                $StringForFile .= $objResult->fields['phone'].$separator;
-                $StringForFile .= $objResult->fields['birthday'];
-                $StringForFile .= chr(13).chr(10);
-                $objResult->MoveNext();
-            }
+        foreach ($users as $user) {
+            $StringForFile .= $user['status'].$separator;
+            $StringForFile .= $user['email'].$separator;
+            $StringForFile .= $user['uri'].$separator;
+            $StringForFile .= $user['sex'].$separator;
+            $StringForFile .= $arrRecipientTitles[$user['title']].$separator;
+            $StringForFile .= $user['lastname'].$separator;
+            $StringForFile .= $user['firstname'].$separator;
+            $StringForFile .= $user['company'].$separator;
+            $StringForFile .= $user['street'].$separator;
+            $StringForFile .= $user['zip'].$separator;
+            $StringForFile .= $user['city'].$separator;
+            $StringForFile .= FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$user['country_id'])->getName().$separator;
+            $StringForFile .= $user['country_id'].$separator;
+            $StringForFile .= $user['phone'].$separator;
+            $StringForFile .= $user['birthday'];
+            $StringForFile .= chr(13).chr(10);
         }
 
         if (strtolower(CONTREXX_CHARSET) == 'utf-8') {
@@ -4068,7 +4070,7 @@ class newsletter extends NewsletterLib
      * Return all newsletter user
      *
      * Return all newsletter users and those access users who are assigned
-     * to the list
+     * to the list and their information
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       string $where The where String for searching
      * @param       int $newsletterListId The id of the newsletter category
@@ -4084,13 +4086,20 @@ class newsletter extends NewsletterLib
              FROM (
                 SELECT
                         `id`,
+                        `status`,
                         `email`,
+                        `uri`,
+                        `sex`,
+                        `title`,
                         `lastname`,
                         `firstname`,
+                        `company`,
                         `street`,
                         `zip`,
+                        `city`,
                         `country_id`,
-                        `status`,
+                        `phone`,
+                        `birthday`,
                         "newsletter_user"                   AS `type`
                 FROM
                         `%smodule_newsletter_user`          AS `nu`
@@ -4105,13 +4114,39 @@ class newsletter extends NewsletterLib
 
                 UNION DISTINCT SELECT
                         `cu`.`id`,
+                        1                                   AS `status`,
                         `email`,
+                        `cup`.`website`,
+                        ( CASE 
+                            WHEN
+                                    `cup`.`gender` = "gender_female"
+                                THEN
+                                    "f"
+                            WHEN
+                                    `cup`.`gender` = "gender_male"
+                                THEN
+                                    "m"
+                            ELSE
+                                "-"
+
+                            END
+                        )                                   AS `sex`,
+                        `cup`.`title`,
                         `cup`.`lastname`,
                         `cup`.`firstname`,
-                        `cup`.`address`,
+                        `cup`.`company`,
+                        `cup`.`address`                     AS `street`,
                         `cup`.`zip`,
-                        `cy`.`name`                         AS `country`,
-                        1                                   AS `status`,
+                        `cup`.`city`,
+                        `cup`.`country`                     AS `country_id`,
+                        CONCAT_WS(
+                            "/",
+                            `cup`.`phone_office`,
+                            `cup`.`phone_private`,
+                            `cup`.`phone_mobile`,
+                            `cup`.`phone_fax`
+                        )                                   AS `phone`,
+                        `cup`.`birthday`,                    
                         "access_user"                       AS `type`
                 FROM
                         `%saccess_users`                    AS `cu`
@@ -4131,10 +4166,7 @@ class newsletter extends NewsletterLib
                     ON
                         `cu`.`id` = `cup`.`user_id`
 
-                LEFT JOIN
-                        `%slib_country`                     AS `cy`
-                    ON
-                        `cy`.`id` = `cup`.`country`
+
                 %s #where
 
             ) AS `subquery`
@@ -4152,7 +4184,6 @@ class newsletter extends NewsletterLib
             DBPREFIX,
             DBPREFIX,
             DBPREFIX,
-            DBPREFIX,
             (
                 !empty($newsletterListId)
                 ? sprintf('WHERE `cnu`.`newsletterCategoryID` = %s', intval($newsletterListId))
@@ -4163,6 +4194,7 @@ class newsletter extends NewsletterLib
         );
 
         $data = $objDatabase->Execute($query);
+
         $users = array();
         if ($data !== false ) {
             while (!$data->EOF) {
