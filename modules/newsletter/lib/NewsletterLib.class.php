@@ -210,7 +210,7 @@ class NewsletterLib
         '".contrexx_addslashes($street)."',
         '".contrexx_addslashes($zip)."',
         '".contrexx_addslashes($city)."',
-        '".contrexx_addslashes($country)."',
+        '".intval($country)."',
         '".contrexx_addslashes($phone)."',
         '".contrexx_addslashes($birthday)."',
         ".intval($status).",
@@ -240,7 +240,7 @@ class NewsletterLib
         `street`='".contrexx_addslashes($street)."',
         `zip`='".contrexx_addslashes($zip)."',
         `city`='".contrexx_addslashes($city)."',
-        `country`='".contrexx_addslashes($country)."',
+        `country`='".intval($country)."',
         `phone`='".contrexx_addslashes($phone)."',
         `birthday`='".contrexx_addslashes($birthday)."',
         `status`=".intval($status)."
@@ -471,6 +471,29 @@ class NewsletterLib
         } else {
             return false;
         }
+    }
+
+    protected function getCountryMenu($selectedCountry = 0)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+                SELECT
+                    `id`, `name`
+                FROM
+                    ".DBPREFIX."lib_country
+                ORDER BY
+                    `name`
+            ");
+    
+        $menu ='<select name="newsletter_country_id" size="1">';
+        while (!$objResult->EOF) {
+            $menu .= '<option value="'.$objResult->fields['id'].'"'.($objResult->fields['id'] == $selectedCountry ? ' selected="selected"' : '').'>'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
+            $objResult->MoveNext();
+        }
+        $menu .= '</select>';
+
+        return $menu;
     }
 }
 
