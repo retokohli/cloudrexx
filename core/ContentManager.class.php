@@ -3351,6 +3351,8 @@ class ContentManager
         if (($aliasId ? $util->_updateAlias($aliasId, $arrAlias) : $util->_addAlias($arrAlias))) {
             return false;
         }
+        $cleanUp = true;
+        $util->_getUnusedTargets($cleanUp);
         return $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
     }
 
