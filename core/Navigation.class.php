@@ -804,5 +804,3 @@ class Navigation
           echo "</pre>";
     }
 }
-
-?>
