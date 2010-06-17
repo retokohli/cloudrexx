@@ -2846,6 +2846,14 @@ CREATE TABLE `contrexx_module_newsletter` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_newsletter_access_user` (
+  `accessUserID` int(11) NOT NULL,
+  `newsletterCategoryID` int(11) NOT NULL,
+  UNIQUE KEY `rel` (`accessUserID`,`newsletterCategoryID`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_newsletter_attachment` (
   `id` int(11) NOT NULL auto_increment,
   `newsletter` int(11) NOT NULL default '0',
