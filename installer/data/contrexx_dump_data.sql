@@ -2584,7 +2584,7 @@ INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue
 INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (11,'notificationSubscribe','1',1);
 INSERT INTO `contrexx_module_newsletter_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (12,'notificationUnsubscribe','1',1);
 INSERT INTO `contrexx_module_newsletter_template` (`id`, `name`, `description`, `html`, `text`, `required`) VALUES (1,'Standard','Standard Template','<html>\r\n<head>\r\n<title>[[subject]]</title>\r\n</head>\r\n<body>\r\n[[content]]\r\n<br /><br />\r\n[[profile_setup]]<br/>\r\n[[unsubscribe]]\r\n</body>\r\n</html>','[[content]]\r\n\r\n[[profile_setup]]\r\n[[unsubscribe]]',1);
-INSERT INTO `contrexx_module_newsletter_user` (`id`, `code`, `email`, `uri`, `sex`, `title`, `lastname`, `firstname`, `company`, `street`, `zip`, `city`, `country`, `phone`, `birthday`, `status`, `emaildate`) VALUES (1,'btKCKTku5u','noreply@example.com','','m',2,'Mustermann','Hans','','','','','','','',1,1153137001);
+INSERT INTO `contrexx_module_newsletter_user` (`id`, `code`, `email`, `uri`, `sex`, `title`, `lastname`, `firstname`, `company`, `street`, `zip`, `city`, `country_id`, `phone`, `birthday`, `status`, `emaildate`) VALUES (1,'btKCKTku5u','noreply@example.com','','m',2,'Mustermann','Hans','','','','',0,'','',1,1153137001);
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (1,'Sehr geehrte Frau');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (2,'Sehr geehrter Herr');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (3,'Dear Ms');

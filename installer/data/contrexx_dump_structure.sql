@@ -2941,7 +2941,7 @@ CREATE TABLE `contrexx_module_newsletter_user` (
   `street` varchar(255) NOT NULL default '',
   `zip` varchar(255) NOT NULL default '',
   `city` varchar(255) NOT NULL default '',
-  `country` varchar(255) NOT NULL default '',
+  `country_id` smallint(5) unsigned NOT NULL default '0',
   `phone` varchar(255) NOT NULL default '',
   `birthday` varchar(10) NOT NULL default '00-00-0000',
   `status` int(1) NOT NULL default '0',
