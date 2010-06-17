@@ -365,8 +365,8 @@ class newsletter extends NewsletterLib
             if (isset($_POST['city'])) {
                 $recipientCity = $_POST['city'];
             }
-            if (isset($_POST['country'])) {
-                $recipientCountry = $_POST['country'];
+            if (isset($_POST['newsletter_country_id'])) {
+                $recipientCountry = $_POST['newsletter_country_id'];
             }
             if (isset($_POST['phone'])) {
                 $recipientPhone = $_POST['phone'];
@@ -420,7 +420,7 @@ class newsletter extends NewsletterLib
                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NOT_VALID_EMAIL']);
             }
         } elseif ($recipientId > 0) {
-            $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, title, lastname, firstname, company, street, zip, city, country, phone, birthday FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
+            $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, title, lastname, firstname, company, street, zip, city, country_id, phone, birthday FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
                 $recipientEmail = urldecode($_REQUEST['mail']);
                 $recipientUri = $objRecipient->fields['uri'];
@@ -432,7 +432,7 @@ class newsletter extends NewsletterLib
                 $recipientStreet = $objRecipient->fields['street'];
                 $recipientZip = $objRecipient->fields['zip'];
                 $recipientCity = $objRecipient->fields['city'];
-                $recipientCountry = $objRecipient->fields['country'];
+                $recipientCountry = $objRecipient->fields['country_id'];
                 $recipientPhone = $objRecipient->fields['phone'];
                 $recipientBirthday = $objRecipient->fields['birthday'];
 

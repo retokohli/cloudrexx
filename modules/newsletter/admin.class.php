@@ -2850,7 +2850,7 @@ class newsletter extends NewsletterLib
                 $street  = $objResultPN->fields['street'];
                 $zip   = $objResultPN->fields['zip'];
                 $city   = $objResultPN->fields['city'];
-                $country  = empty($objResultPN->fields['country']) ? '' : htmlentities(FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResultPN->fields['country'])->getName(), ENT_QUOTES, CONTREXX_CHARSET);
+                $country  = empty($objResultPN->fields['country_id']) ? '' : htmlentities(FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResultPN->fields['country_id'])->getName(), ENT_QUOTES, CONTREXX_CHARSET);
                 $birthday  = $objResultPN->fields['birthday'];
                 $email   = $objResultPN->fields['email'];
                 $uri       = $objResultPN->fields['uri'];
@@ -2958,7 +2958,7 @@ class newsletter extends NewsletterLib
                     street,
                     zip,
                     city,
-                    country,
+                    country_id,
                     phone,
                     birthday,
                     status,
@@ -3114,8 +3114,8 @@ class newsletter extends NewsletterLib
                 $StringForFile .= $objResult->fields['street'].$separator;
                 $StringForFile .= $objResult->fields['zip'].$separator;
                 $StringForFile .= $objResult->fields['city'].$separator;
-                $StringForFile .= FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResult->fields['country'])->getName().$separator;
-                $StringForFile .= $objResult->fields['country'].$separator;
+                $StringForFile .= FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResult->fields['country_id'])->getName().$separator;
+                $StringForFile .= $objResult->fields['country_id'].$separator;
                 $StringForFile .= $objResult->fields['phone'].$separator;
                 $StringForFile .= $objResult->fields['birthday'];
                 $StringForFile .= chr(13).chr(10);
@@ -3137,7 +3137,7 @@ class newsletter extends NewsletterLib
     {
         global $_CONFIG, $objDatabase;
         $output = '';
-        $fieldValues = array('status', 'email', 'uri', 'lastname', 'firstname', 'street', 'zip', 'city', 'country', 'emaildate', );
+        $fieldValues = array('status', 'email', 'uri', 'lastname', 'firstname', 'street', 'zip', 'city', 'country_id', 'emaildate', );
         $field  = (!empty($_REQUEST['field'])) ? contrexx_addslashes($_REQUEST['field']) : 'emaildate';
         $order  = (!empty($_REQUEST['order'])) ? contrexx_addslashes($_REQUEST['order']) : 'asc';
         $listId = (!empty($_REQUEST['list']))  ? intval($_REQUEST['list']) : '';
@@ -3163,12 +3163,12 @@ class newsletter extends NewsletterLib
             return false;
         }
         if($listId == ''){
-            $query = "SELECT id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
+            $query = "SELECT id, email, uri, lastname, firstname, street, zip, city, country_id, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user
             WHERE 1 = 1 $search_where
             ORDER BY $field $order";
         }else{
-            $query = "SELECT tblUser.id, email, uri, lastname, firstname, street, zip, city, country, `status`, emaildate
+            $query = "SELECT tblUser.id, email, uri, lastname, firstname, street, zip, city, country_id, `status`, emaildate
             FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
                   .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
             WHERE tblUser.id=tblRel.user and tblRel.category=".$listId."
@@ -3188,7 +3188,7 @@ class newsletter extends NewsletterLib
             $output .= '#'.$objRS->fields['street'];
             $output .= '#'.$objRS->fields['zip'];
             $output .= '#'.$objRS->fields['city'];
-            $country = empty($objRS->fields['country']) ? '' : FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objRS->fields['country'])->getName();
+            $country = empty($objRS->fields['country_id']) ? '' : FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objRS->fields['country_id'])->getName();
             $output .= '#'.date(ASCMS_DATE_FORMAT, $objRS->fields['emaildate']);
             $output .= '%';
             $objRS->MoveNext();
@@ -3218,7 +3218,7 @@ class newsletter extends NewsletterLib
             'street'    => $_ARRAYLANG['TXT_NEWSLETTER_STREET'],
             'zip'       => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
             'city'      => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-            'country'   => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
+            'country_id'=> $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
             'phone'     => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
             'brithday'  => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
         );
@@ -3271,7 +3271,7 @@ class newsletter extends NewsletterLib
                             $recipientTitleId = $this->_addRecipientTitle($arrRecipient['title']);
                         }
 
-                        if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientTitleId, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['company'], $arrRecipient['street'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country'],'', '', 1, $arrLists)) {
+                        if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientTitleId, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['company'], $arrRecipient['street'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'],'', '', 1, $arrLists)) {
                             array_push($arrBadEmails, $arrRecipient['email']);
                         }
                     }
@@ -3688,7 +3688,7 @@ class newsletter extends NewsletterLib
                 $this->_strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_INVALIDE_EMAIL_ADDRESS'];
             }
         } elseif ($recipientId > 0) {
-            $objRecipient = $objDatabase->SelectLimit("SELECT email, uri, sex, title, lastname, firstname, company, street, zip, city, country, phone, birthday, status FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
+            $objRecipient = $objDatabase->SelectLimit("SELECT email, uri, sex, title, lastname, firstname, company, street, zip, city, country_id, phone, birthday, status FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
                 $recipientEmail = $objRecipient->fields['email'];
                 $recipientUri = $objRecipient->fields['uri'];
@@ -3700,7 +3700,7 @@ class newsletter extends NewsletterLib
                 $recipientStreet = $objRecipient->fields['street'];
                 $recipientZip = $objRecipient->fields['zip'];
                 $recipientCity = $objRecipient->fields['city'];
-                $recipientCountry = $objRecipient->fields['country'];
+                $recipientCountry = $objRecipient->fields['country_id'];
                 $recipientPhone = $objRecipient->fields['phone'];
                 $recipientBirthday = $objRecipient->fields['birthday'];
                 $recipientStatus = $objRecipient->fields['status'];
@@ -3924,7 +3924,7 @@ class newsletter extends NewsletterLib
                                         or street LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                                         or zip LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                                         or city LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
-                                        or country LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
+                                        './*or country_id LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"*/'
                                         or phone LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                                         or birthday LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%")';
             }
@@ -4027,7 +4027,7 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_USER_STREET'              => (trim($user['street'])=='')  ? '-' : htmlentities($user['street'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_USER_ZIP'                 => (trim($user['zip'])=='')  ? '-' : htmlentities($user['zip'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_USER_CITY'                => (trim($user['city'])=='')  ? '-' : htmlentities($user['city'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_COUNTRY'             => empty($user['country']) ? '-' : htmlentities(FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResult->fields['country'])->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_COUNTRY'             => empty($user['country_id']) ? '-' : htmlentities(FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResult->fields['country_id'])->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_USER_REGISTRATION_DATE'   => (trim($user['emaildate'])=='')  ? '-' : date(ASCMS_DATE_FORMAT, $user['emaildate']),
                 'STATUS_IMG'                          => $StatusImg,
                 'ROW_CLASS'                           => $rowNr % 2 == 1 ? 'row1' : 'row2'
@@ -4076,7 +4076,7 @@ class newsletter extends NewsletterLib
                         `firstname`,
                         `street`,
                         `zip`,
-                        `country`,
+                        `country_id`,
                         `status`,
                         "newsletter_user"                   AS `type`
                 FROM
@@ -4096,7 +4096,7 @@ class newsletter extends NewsletterLib
                         `cup`.`firstname`,
                         `cup`.`address`,
                         `cup`.`zip`,
-                        `cup`.`country`,
+                        `cup`.`country_id`,
                         1                                   AS `status`,
                         "access_user"                       AS `type`
                 FROM
@@ -4200,7 +4200,7 @@ class newsletter extends NewsletterLib
                 <option value="street">'.$_ARRAYLANG['TXT_STREET'].'</option>
                 <option value="zip">'.$_ARRAYLANG['TXT_ZIP'].'</option>
                 <option value="city">'.$_ARRAYLANG['TXT_CITY'].'</option>
-                <option value="country">'.$_ARRAYLANG['TXT_COUNTRY'].'</option>
+                <option value="country_id">'.$_ARRAYLANG['TXT_COUNTRY'].'</option>
                 <option value="phone">'.$_ARRAYLANG['TXT_PHONE'].'</option>
                 <option value="birthday">'.$_ARRAYLANG['TXT_BIRTHDAY'].'</option>
             </select>

@@ -89,10 +89,10 @@ class NewsletterLib
         global $objDatabase;
 
         $query = sprintf('
-             SELECT 
+             SELECT
                     COUNT(*)                                AS `recipientCount`
-             FROM ( 
-                SELECT 
+             FROM (
+                SELECT
                         `email`
 
                 FROM
@@ -106,13 +106,13 @@ class NewsletterLib
                 WHERE `rc`.`category` = %s
 
 
-                   
+
                 UNION DISTINCT SELECT
                         `email`
 
-                FROM 
+                FROM
                         `%saccess_users`                    AS `cu`
-                
+
                 LEFT JOIN
                         `%smodule_newsletter_access_user`   AS `cnu`
                     ON
@@ -145,7 +145,7 @@ class NewsletterLib
      * Return the access user groups
      *
      * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       string $orderBy 
+     * @param       string $orderBy
      * @return      array
      */
     protected function _getGroups($orderBy="`group_name`") {
@@ -193,7 +193,7 @@ class NewsletterLib
         `street`,
         `zip`,
         `city`,
-        `country`,
+        `country_id`,
         `phone`,
         `birthday`,
         `status`,
@@ -240,7 +240,7 @@ class NewsletterLib
         `street`='".contrexx_addslashes($street)."',
         `zip`='".contrexx_addslashes($zip)."',
         `city`='".contrexx_addslashes($city)."',
-        `country`='".intval($country)."',
+        `country_id`='".intval($country)."',
         `phone`='".contrexx_addslashes($phone)."',
         `birthday`='".contrexx_addslashes($birthday)."',
         `status`=".intval($status)."
@@ -485,7 +485,7 @@ class NewsletterLib
                 ORDER BY
                     `name`
             ");
-    
+
         $menu ='<select name="newsletter_country_id" size="1">';
         while (!$objResult->EOF) {
             $menu .= '<option value="'.$objResult->fields['id'].'"'.($objResult->fields['id'] == $selectedCountry ? ' selected="selected"' : '').'>'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
