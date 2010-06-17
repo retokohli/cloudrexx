@@ -385,4 +385,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'] = "";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT'] = "Der Text ist leer. Wollen Sie wirklich speichern?";
 $_ARRAYLANG['TXT_NEWSLETTER_INFORM_ADMIN'] = "Administrator per E-Mail informieren";
 $_ARRAYLANG['TXT_INFO_ABOUT_ADMIN_INFORM'] = "Diese E-Mail geht an die Adresse des Users, mit dem Sie gerade eingeloggt sind";
+$_ARRAYLANG['TXT_NEWSLETTER_COUNTRY_ID'] = "Country-ID";
 ?>
