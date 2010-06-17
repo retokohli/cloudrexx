@@ -496,7 +496,7 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_STREET'        => htmlentities($recipientStreet, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_ZIP'        => htmlentities($recipientZip, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_CITY'        => htmlentities($recipientCity, ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_COUNTRY'    => htmlentities($recipientCountry, ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_COUNTRY'    => $this->getCountryMenu($recipientCountry),
                 'NEWSLETTER_PHONE'        => htmlentities($recipientPhone, ENT_QUOTES, CONTREXX_CHARSET)
             ));
 

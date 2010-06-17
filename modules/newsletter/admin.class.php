@@ -541,7 +541,7 @@ class newsletter extends NewsletterLib
 
         // get the associated groups from the post variables in case the form was already sent
         if (isset($_POST['newsletter_mail_associated_group'])) {
-            foreach ($_POST['newsletter_mail_associated_group'] 
+            foreach ($_POST['newsletter_mail_associated_group']
                         as $groupID => $status) {
                 if ($status) {
                     $arrAssociatedGroups[] = intval($groupID);
@@ -642,7 +642,7 @@ class newsletter extends NewsletterLib
 
                     }
 
-                    $arrAssociatedGroups = 
+                    $arrAssociatedGroups =
                         $this->emailEditGetAssociatedGroups($mailId);
 
                     if ($objMail->fields['attachment'] == '1') {
@@ -714,7 +714,7 @@ class newsletter extends NewsletterLib
 
         $this->emailEditParseLists($arrAssociatedLists);
         $this->emailEditParseGroups($arrAssociatedGroups);
-   
+
 
         if (count($arrAttachment) > 0) {
             foreach ($arrAttachment as $attachment) {
@@ -798,9 +798,9 @@ class newsletter extends NewsletterLib
                     $_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'],
                     $listItem['name']
                 ),
-                'NEWSLETTER_LIST_ASSOCIATED'             => 
-                    in_array($listID, $associatedLists) 
-                    ? 'checked="checked"' 
+                'NEWSLETTER_LIST_ASSOCIATED'             =>
+                    in_array($listID, $associatedLists)
+                    ? 'checked="checked"'
                     : ''
             ));
             $this->_objTpl->setVariable(
@@ -833,9 +833,9 @@ class newsletter extends NewsletterLib
                     $_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'],
                     $groupItem
                 ),
-                'NEWSLETTER_GROUP_ASSOCIATED'             => 
-                    in_array($groupID, $associatedGroups) 
-                    ? 'checked="checked"' 
+                'NEWSLETTER_GROUP_ASSOCIATED'             =>
+                    in_array($groupID, $associatedGroups)
+                    ? 'checked="checked"'
                     : ''
             ));
             $this->_objTpl->setVariable(
@@ -858,11 +858,11 @@ class newsletter extends NewsletterLib
         global $objDatabase;
 
         $query = sprintf('
-            SELECT 
+            SELECT
                 `userGroup`
-            FROM 
+            FROM
                 `%smodule_newsletter_rel_usergroup_newsletter`
-            WHERE 
+            WHERE
                 `newsletter` = %s
             ',
             DBPREFIX,
@@ -1094,7 +1094,7 @@ class newsletter extends NewsletterLib
                 `n`.`userGroup` = `a`.`group_id`
             WHERE
                 `n`.`newsletter` = %s
-            ', 
+            ',
             DBPREFIX,
             DBPREFIX,
             $mailID
@@ -1557,7 +1557,7 @@ class newsletter extends NewsletterLib
     /**
      * Associate the user groups with the mail
      *
-     * Associate the access user groups with the 
+     * Associate the access user groups with the
      * newsletter email.
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $mailID
@@ -1565,14 +1565,14 @@ class newsletter extends NewsletterLib
      */
     private function setMailGroups($mailID, $groups) {
         global $objDatabase;
-    
+
         $query = sprintf('
             REPLACE INTO
                 `%smodule_newsletter_rel_usergroup_newsletter`
                 (`newsletter`, `userGroup`)
             VALUES
                 (%s, ?)
-            ', 
+            ',
             DBPREFIX,
             $mailID);
         $stmt = $objDatabase->prepare($query);
@@ -1589,7 +1589,7 @@ class newsletter extends NewsletterLib
                 `userGroup` NOT IN (%s)
             AND
                 `newsletter` = %s
-            ', 
+            ',
             DBPREFIX,
             $delString,
             $mailID
@@ -2276,7 +2276,7 @@ class newsletter extends NewsletterLib
      *
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $mailId
-     * @return      int 
+     * @return      int
      */
 	private function getCurrentMailRecipientCount($mailId)
     {
@@ -2293,12 +2293,12 @@ class newsletter extends NewsletterLib
                             `%smodule_newsletter_rel_user_cat` AS `rc`
                             ON
                                     `rc`.`user` = `nu`.`id`
-                    
+
                     LEFT JOIN
                             `%smodule_newsletter_rel_cat_news` AS `nrn`
                             ON
                                     `nrn`.`category` = `rc`.`category`
-                    
+
                     WHERE
                             `nrn`.`newsletter` = %s
 
@@ -2324,7 +2324,7 @@ class newsletter extends NewsletterLib
                         `email`
                     FROM
                         `%saccess_users` AS `cu`
-                    
+
                     LEFT JOIN
                         `%smodule_newsletter_access_user` AS `cnu`
                         ON
@@ -2481,9 +2481,9 @@ class newsletter extends NewsletterLib
         if ($objMail !== false) {
             while (!$objMail->EOF) {
                 $query = "
-                    INSERT IGNORE INTO 
-                        ".DBPREFIX."module_newsletter_tmp_sending 
-                        (`newsletter`, `email`) 
+                    INSERT IGNORE INTO
+                        ".DBPREFIX."module_newsletter_tmp_sending
+                        (`newsletter`, `email`)
                     VALUES (".$mailId.", '".$objMail->fields['email']."')";
                 $objDatabase->Execute($query);
                 $objMail->MoveNext();
@@ -2519,12 +2519,12 @@ class newsletter extends NewsletterLib
                                     `%smodule_newsletter_rel_user_cat` AS `rc`
                                     ON
                                             `rc`.`user` = `nu`.`id`
-                            
+
                             LEFT JOIN
                                     `%smodule_newsletter_rel_cat_news` AS `nrn`
                                     ON
                                             `nrn`.`category` = `rc`.`category`
-                            
+
                             WHERE
                                     `nrn`.`newsletter` = %s
 
@@ -2550,7 +2550,7 @@ class newsletter extends NewsletterLib
                                 `email`
                             FROM
                                 `%saccess_users` AS `cu`
-                            
+
                             LEFT JOIN
                                 `%smodule_newsletter_access_user` AS `cnu`
                                 ON
@@ -2850,7 +2850,7 @@ class newsletter extends NewsletterLib
                 $street  = $objResultPN->fields['street'];
                 $zip   = $objResultPN->fields['zip'];
                 $city   = $objResultPN->fields['city'];
-                $country  = $objResultPN->fields['country'];
+                $country  = empty($objResultPN->fields['country']) ? '' : htmlentities(FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResultPN->fields['country'])->getName(), ENT_QUOTES, CONTREXX_CHARSET);
                 $birthday  = $objResultPN->fields['birthday'];
                 $email   = $objResultPN->fields['email'];
                 $uri       = $objResultPN->fields['uri'];
@@ -2928,8 +2928,8 @@ class newsletter extends NewsletterLib
             $query = '
                 SELECT
                     `user_id`       AS `id`,
-                    ( 
-                        CASE 
+                    (
+                        CASE
                                 `gender`
                         WHEN
                                 "gender_female"
@@ -2946,7 +2946,7 @@ class newsletter extends NewsletterLib
             ';
         } else {
             $query = "
-                SELECT 
+                SELECT
                     id,
                     code,
                     sex,
@@ -2963,9 +2963,9 @@ class newsletter extends NewsletterLib
                     birthday,
                     status,
                     emaildate
-                FROM 
-                    ".DBPREFIX."module_newsletter_user 
-                WHERE 
+                FROM
+                    ".DBPREFIX."module_newsletter_user
+                WHERE
                     id=".$UserID;
         }
 
@@ -3066,6 +3066,7 @@ class newsletter extends NewsletterLib
     function exportuser() {
         global $objDatabase, $_ARRAYLANG;
 
+        $separator = ';';
         $listId = isset($_REQUEST['listId']) ? intval($_REQUEST['listId']) : 0;
 
         $arrRecipientTitles = &$this->_getRecipientTitles();
@@ -3083,8 +3084,23 @@ class newsletter extends NewsletterLib
                     $WhereStatement." GROUP BY user";
 
         $objResult     = $objDatabase->Execute($query);
-        $StringForFile = '';
-        $separator = ';';
+        $StringForFile = $_ARRAYLANG['TXT_NEWSLETTER_STATUS'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_URI'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_SEX'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_TITLE'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_STREET'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_ZIP'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_CITY'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY_ID'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_PHONE'].$separator;
+        $StringForFile .= $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'];
+        $StringForFile .= chr(13).chr(10);
+
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $StringForFile .= $objResult->fields['status'].$separator;
@@ -3098,6 +3114,7 @@ class newsletter extends NewsletterLib
                 $StringForFile .= $objResult->fields['street'].$separator;
                 $StringForFile .= $objResult->fields['zip'].$separator;
                 $StringForFile .= $objResult->fields['city'].$separator;
+                $StringForFile .= FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResult->fields['country'])->getName().$separator;
                 $StringForFile .= $objResult->fields['country'].$separator;
                 $StringForFile .= $objResult->fields['phone'].$separator;
                 $StringForFile .= $objResult->fields['birthday'];
@@ -3171,7 +3188,7 @@ class newsletter extends NewsletterLib
             $output .= '#'.$objRS->fields['street'];
             $output .= '#'.$objRS->fields['zip'];
             $output .= '#'.$objRS->fields['city'];
-            $output .= '#'.$objRS->fields['country'];
+            $country = empty($objRS->fields['country']) ? '' : FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objRS->fields['country'])->getName();
             $output .= '#'.date(ASCMS_DATE_FORMAT, $objRS->fields['emaildate']);
             $output .= '%';
             $objRS->MoveNext();
@@ -3622,8 +3639,8 @@ class newsletter extends NewsletterLib
         if (isset($_POST['newsletter_recipient_city'])) {
             $recipientCity = $_POST['newsletter_recipient_city'];
         }
-        if (isset($_POST['newsletter_recipient_country'])) {
-            $recipientCountry = $_POST['newsletter_recipient_country'];
+        if (isset($_POST['newsletter_country_id'])) {
+            $recipientCountry = $_POST['newsletter_country_id'];
         }
         if (isset($_POST['newsletter_recipient_phone'])) {
             $recipientPhone = $_POST['newsletter_recipient_phone'];
@@ -3734,7 +3751,7 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_RECIPIENT_STREET'        => htmlentities($recipientStreet, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_ZIP'            => htmlentities($recipientZip, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_CITY'            => htmlentities($recipientCity, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_COUNTRY'        => htmlentities($recipientCountry, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_COUNTRY'        => $this->getCountryMenu($recipientCountry),
             'NEWSLETTER_RECIPIENT_PHONE'        => htmlentities($recipientPhone, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_BIRTHDAY'        => htmlentities($recipientBirthday, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_STATUS'        => $recipientStatus == '1' ? 'checked="checked"' : ''
@@ -3951,7 +3968,7 @@ class newsletter extends NewsletterLib
                             ORDER BY emaildate DESC";
         }
          */
-        list ($users, $count) = $this->returnNewsletterUser($where_statement, 
+        list ($users, $count) = $this->returnNewsletterUser($where_statement,
             $newsletterListId);
 
             /*
@@ -4010,7 +4027,7 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_USER_STREET'              => (trim($user['street'])=='')  ? '-' : htmlentities($user['street'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_USER_ZIP'                 => (trim($user['zip'])=='')  ? '-' : htmlentities($user['zip'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_USER_CITY'                => (trim($user['city'])=='')  ? '-' : htmlentities($user['city'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_USER_COUNTRY'             => (trim($user['country'])=='')  ? '-' : htmlentities($user['country'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWSLETTER_USER_COUNTRY'             => empty($user['country']) ? '-' : htmlentities(FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResult->fields['country'])->getName(), ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_USER_REGISTRATION_DATE'   => (trim($user['emaildate'])=='')  ? '-' : date(ASCMS_DATE_FORMAT, $user['emaildate']),
                 'STATUS_IMG'                          => $StatusImg,
                 'ROW_CLASS'                           => $rowNr % 2 == 1 ? 'row1' : 'row2'
@@ -4051,11 +4068,11 @@ class newsletter extends NewsletterLib
 
         $query = sprintf('
             SELECT SQL_CALC_FOUND_ROWS
-                    * 
-             FROM ( 
-                SELECT 
+                    *
+             FROM (
+                SELECT
                         `email`,
-                        `lastname`, 
+                        `lastname`,
                         `firstname`,
                         `street`,
                         `zip`,
@@ -4072,7 +4089,7 @@ class newsletter extends NewsletterLib
 
                 %s #where
 
-                   
+
                 UNION DISTINCT SELECT
                         `email`,
                         `cup`.`lastname`,
@@ -4082,9 +4099,9 @@ class newsletter extends NewsletterLib
                         `cup`.`country`,
                         1                                   AS `status`,
                         "access_user"                       AS `type`
-                FROM 
+                FROM
                         `%saccess_users`                    AS `cu`
-                
+
                 LEFT JOIN
                         `%smodule_newsletter_access_user`   AS `cnu`
                     ON
@@ -4104,7 +4121,7 @@ class newsletter extends NewsletterLib
             ) AS `subquery`
             WHERE 1 = 1
             %s # where
-        ', 
+        ',
             DBPREFIX,
             DBPREFIX,
             (
