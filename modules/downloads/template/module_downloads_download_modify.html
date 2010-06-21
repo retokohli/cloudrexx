@@ -445,6 +445,15 @@ function downloadsAdjustSourceConfig()
                     <td><input type="text" name="downloads_download_author" value="{DOWNLOADS_DOWNLOAD_AUTHOR}" style="width:300px;" /></td>
                 </tr>
                 <!-- END downloads_download_attr_author -->
+                <!-- BEGIN downloads_download_attr_origin -->
+                <tr class="row{DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW}">
+                    <td>{TXT_DOWNLOADS_ORIGIN}</td>
+                    <td>
+                        <input type="radio" name="downloads_download_origin" id="downloads_download_origin_internal" value="internal" {DOWNLOADS_DOWNLOAD_ORIGIN_INTERNAL} /> <label for="downloads_download_origin_internal">{TXT_DOWNLOADS_INTERNAL}</label>
+                        <input type="radio" name="downloads_download_origin" id="downloads_download_origin_external" value="external" {DOWNLOADS_DOWNLOAD_ORIGIN_EXTERNAL} /> <label for="downloads_download_origin_external">{TXT_DOWNLOADS_EXTERNAL}</label>
+                    </td>
+                </tr>
+                <!-- END downloads_download_attr_origin -->
                 <!-- BEGIN downloads_download_attr_website -->
                 <tr class="row{DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW}">
                     <td>{TXT_DOWNLOADS_WEBSITE}</td>

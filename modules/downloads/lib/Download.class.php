@@ -35,6 +35,7 @@ class Download {
     private $owner_id;
     private $access_id;
     private $protected;
+    private $origin;
     private $license;
     private $version;
     private $author;
@@ -66,6 +67,7 @@ class Download {
             'image'                             => 'string',
             'owner_id'                          => 'int',
             'access_id'                         => 'int',
+            'origin'                            => 'string',
             'license'                           => 'string',
             'version'                           => 'string',
             'author'                            => 'string',
@@ -264,6 +266,7 @@ class Download {
         $this->owner_id = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->access_id = 0;
         $this->protected = false;
+        $this->origin = 'internal';
         $this->license = '';
         $this->version = '';
         $this->author = '';
@@ -479,6 +482,7 @@ class Download {
                 $this->owner_id = isset($this->arrLoadedDownloads[$id]['owner_id']) ? $this->arrLoadedDownloads[$id]['owner_id'] : 0;
                 $this->access_id = isset($this->arrLoadedDownloads[$id]['access_id']) ? $this->arrLoadedDownloads[$id]['access_id'] : 0;
                 $this->protected = (bool) $this->access_id;
+                $this->origin = isset($this->arrLoadedDownloads[$id]['origin']) ? $this->arrLoadedDownloads[$id]['origin'] : 'internal';
                 $this->license = isset($this->arrLoadedDownloads[$id]['license']) ? $this->arrLoadedDownloads[$id]['license'] : '';
                 $this->version = isset($this->arrLoadedDownloads[$id]['version']) ? $this->arrLoadedDownloads[$id]['version'] : '';
                 $this->author = isset($this->arrLoadedDownloads[$id]['author']) ? $this->arrLoadedDownloads[$id]['author'] : '';
@@ -992,6 +996,7 @@ class Download {
                     `size` = ".intval($this->size).",
                     `image` = '".addslashes($this->image)."',
                     `owner_id` = ".intval($this->owner_id).",
+                    `origin` = '".addslashes($this->origin)."',
                     `license` = '".addslashes($this->license)."',
                     `version` = '".addslashes($this->version)."',
                     `author` = '".addslashes($this->author)."',
@@ -1019,6 +1024,7 @@ class Download {
                     `size`,
                     `image`,
                     `owner_id`,
+                    `origin`,
                     `license`,
                     `version`,
                     `author`,
@@ -1040,6 +1046,7 @@ class Download {
                     ".intval($this->size).",
                     '".addslashes($this->image)."',
                     ".intval($this->owner_id).",
+                    '".addslashes($this->origin)."',
                     '".addslashes($this->license)."',
                     '".addslashes($this->version)."',
                     '".addslashes($this->author)."',
@@ -1374,6 +1381,11 @@ class Download {
         return $this->access_id;
     }
 
+    public function getOrigin()
+    {
+        return $this->origin;
+    }
+
     public function getLicense()
     {
         return $this->license;
@@ -1556,6 +1568,11 @@ class Download {
     public function setAccessId($accessId)
     {
         $this->access_id = $accessId;
+    }
+
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
     }
 
     public function setLicense($license)

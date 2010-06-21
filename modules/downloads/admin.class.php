@@ -1338,6 +1338,7 @@ class downloads extends DownloadsLibrary
             $this->arrConfig['use_attr_license'] ? $objDownload->setLicense(isset($_POST['downloads_download_license']) ? contrexx_stripslashes($_POST['downloads_download_license']) : '') : null;
             $this->arrConfig['use_attr_version'] ? $objDownload->setVersion(isset($_POST['downloads_download_version']) ? contrexx_stripslashes($_POST['downloads_download_version']) : '') : null;
             $this->arrConfig['use_attr_author'] ? $objDownload->setAuthor(isset($_POST['downloads_download_author']) ? contrexx_stripslashes($_POST['downloads_download_author']) : '') : null;
+            $this->arrConfig['use_attr_origin'] ? $objDownload->setOrigin(isset($_POST['downloads_download_origin']) ? contrexx_stripslashes($_POST['downloads_download_origin']) : '') : null;
             $this->arrConfig['use_attr_website'] ? $objDownload->setWebsite(isset($_POST['downloads_download_website']) ? contrexx_stripslashes($_POST['downloads_download_website']) : '') : null;
             $objDownload->setImage(isset($_POST['downloads_download_image']) ? contrexx_stripslashes($_POST['downloads_download_image']) : '');
             $objDownload->setValidityTimePeriod(!empty($_POST['downloads_download_validity']) ? intval($_POST['downloads_download_validity']) : 0);
@@ -1396,6 +1397,9 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
             'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
             'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_ORIGIN'                          => $_ARRAYLANG['TXT_DOWNLOADS_ORIGIN'],
+            'TXT_DOWNLOADS_INTERNAL'                        => $_ARRAYLANG['TXT_DOWNLOADS_INTERNAL'],
+            'TXT_DOWNLOADS_EXTERNAL'                        => $_ARRAYLANG['TXT_DOWNLOADS_EXTERNAL'],
             'TXT_DOWNLOADS_WEBSITE'                         => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
             'TXT_DOWNLOADS_IMAGE'                           => $_ARRAYLANG['TXT_DOWNLOADS_IMAGE'],
             'TXT_DOWNLOADS_CATEGORIES'                      => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
@@ -1533,6 +1537,18 @@ class downloads extends DownloadsLibrary
             $this->objTemplate->parse('downloads_download_attr_author');
         } else {
             $this->objTemplate->hideBlock('downloads_download_attr_author');
+        }
+
+        // parse origin
+        if ($this->arrConfig['use_attr_origin']) {
+            $this->objTemplate->setVariable(array(
+                'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'      => $attrRow++ % 2 + 1,
+                'DOWNLOADS_DOWNLOAD_ORIGIN_INTERNAL'    => $objDownload->getOrigin() == 'internal' ? 'checked="checked"' : '',
+                'DOWNLOADS_DOWNLOAD_ORIGIN_EXTERNAL'    => $objDownload->getOrigin() == 'external' ? 'checked="checked"' : '',
+            ));
+            $this->objTemplate->parse('downloads_download_attr_origin');
+        } else {
+            $this->objTemplate->hideBlock('downloads_download_attr_origin');
         }
 
         // parse website
@@ -2558,6 +2574,7 @@ class downloads extends DownloadsLibrary
             $this->arrConfig['use_attr_license']            = !empty($_POST['downloads_settings_attribute_license']) ? intval($_POST['downloads_settings_attribute_license']) : 0;
             $this->arrConfig['use_attr_version']            = !empty($_POST['downloads_settings_attribute_version']) ? intval($_POST['downloads_settings_attribute_version']) : 0;
             $this->arrConfig['use_attr_author']             = !empty($_POST['downloads_settings_attribute_author']) ? intval($_POST['downloads_settings_attribute_author']) : 0;
+            $this->arrConfig['use_attr_origin']             = !empty($_POST['downloads_settings_attribute_origin']) ? intval($_POST['downloads_settings_attribute_origin']) : 0;
             $this->arrConfig['use_attr_website']            = !empty($_POST['downloads_settings_attribute_website']) ? intval($_POST['downloads_settings_attribute_website']) : 0;
             $this->arrConfig['most_viewed_file_count']      = !empty($_POST['downloads_settings_most_viewed_file_count']) ? intval($_POST['downloads_settings_most_viewed_file_count']) : $this->arrConfig['most_viewed_file_count'];
             $this->arrConfig['most_downloaded_file_count']  = !empty($_POST['downloads_settings_most_downloaded_file_count']) ? intval($_POST['downloads_settings_most_downloaded_file_count']) : $this->arrConfig['most_downloaded_file_count'];
@@ -2599,6 +2616,7 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
             'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
             'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
+            'TXT_DOWNLOADS_ORIGIN'                          => $_ARRAYLANG['TXT_DOWNLOADS_ORIGIN'],
             'TXT_DOWNLOADS_WEBSITE'                         => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
             'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
             'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],

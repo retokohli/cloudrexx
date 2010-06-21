@@ -92,7 +92,7 @@ Modul: Digital Asset Management
 - Kopierfunktion für Downloads.
 - Die effektiven Zugriffsberechtigungen einer Benutzergruppe oder Benutzers
   können angezeigt werden.
-- Neuer Platzhalter DOWNLOADS_FILE_MD5 für die Ausgabe der MD5 Summe eines
+- Neuer Platzhalter [[DOWNLOADS_FILE_MD5]] für die Ausgabe der MD5 Summe eines
   Downloads.
 - Der Block "Verwandte Downloads" (downloads_related_file_list) unterstützt
   die gleichen Platzhalter wie bei der Detailseite eines Downloads.
@@ -102,6 +102,10 @@ Modul: Digital Asset Management
   ausgewählte Benutzergruppen versendet werden.
 - Die Auflistung der einer Gruppe zugeordneten Kategorien erfolgt entweder
   alphabetisch oder nach einer benutzerdefinierten Reihenfolge.
+- Definitionsmöglichkeit der Herkunft (Intern/Extern) eines Downloads.
+- Neuer Platzhalter [[DOWNLOADS_NESTED_CATEGORY_LIST]] für die Ausgabe
+  der Rubriken als Baum-Struktur (Explorer Art).
+- AJAX Schnittstelle für die Abfrage des Inhalts einer Rubrik.
 
 Modul: Dokumenten System
 - Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.

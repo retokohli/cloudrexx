@@ -58,6 +58,7 @@ class DownloadsLibrary
         'use_attr_license'              => 1,
         'use_attr_version'              => 1,
         'use_attr_author'               => 1,
+        'use_attr_origin'               => 1,
         'use_attr_website'              => 1,
         'most_viewed_file_count'        => 5,
         'most_downloaded_file_count'    => 5,
