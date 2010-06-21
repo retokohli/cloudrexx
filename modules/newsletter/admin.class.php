@@ -2735,7 +2735,7 @@ class newsletter extends NewsletterLib
         }
 
         $break = $this->getSetting('txt_break_after');
-        $break = (intval()==0) ? 80 : $break;
+        $break = (intval($break)==0) ? 80 : $break;
 
         $HTML_TemplateSource = $this->GetTemplateSource($template, 'html');
         $TEXT_TemplateSource = $this->GetTemplateSource($template, 'text');
