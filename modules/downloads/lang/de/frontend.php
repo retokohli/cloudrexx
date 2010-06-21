@@ -244,4 +244,7 @@ $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADED'] = "Herunter geladen";
 $_ARRAYLANG['TXT_DOWNLOADS_VIEWED'] = "Angeschaut";
 $_ARRAYLANG['TXT_DOWNLOADS_VALIDITY_EXPIRATION'] = "Zeitbegrenzung";
 $_ARRAYLANG['TXT_DOWNLOADS_SET_SOURCE_MANDATORY'] = "Sie müssen zwingend eine Datei oder eine URL als Quelle angeben!";
+$_ARRAYLANG['TXT_DOWNLOADS_ORIGIN'] = "Herkunft";
+$_ARRAYLANG['TXT_DOWNLOADS_INTERNAL'] = "Intern";
+$_ARRAYLANG['TXT_DOWNLOADS_EXTERNAL'] = "Extern";
 ?>
