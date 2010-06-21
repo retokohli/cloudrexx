@@ -1348,7 +1348,7 @@ class ContentManager
         $contentkey = contrexx_addslashes(strip_tags($_POST['key']));
         $command = contrexx_addslashes(strip_tags($_POST['command']));
         if($this->checkParcat($pageId,$_POST['category'])) {
-            $parcat = $_POST['category'];
+            $parcat = intval($_POST['category']);
         } else {
             $parcat = $pageId;
         }
