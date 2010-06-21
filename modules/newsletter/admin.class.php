@@ -2406,9 +2406,11 @@ class newsletter extends NewsletterLib
         if ($newsletterData['status'] == 0) {
             if (isset($_GET['send']) && $_GET['send'] == '1') {
                 if ($newsletterData['tmp_copy'] == 0) {
+                    // The newsletter recipients aren't set. Copy them to the temp table
                     $this->_setTmpSending($mailId);
                     $this->_objTpl->setVariable('NEWSLETTER_MAIL_RELOAD_SEND_STATUS_FRAME', '<script type="text/javascript" language="javascript">setTimeout("newsletterSendMail()",1000);</script>');
                 } else {
+                    // send the mails
                     $arrSettings = &$this->_getSettings();
                     $mails_per_run = $arrSettings['mails_per_run']['setvalue'];
                     $timeout = time() + (ini_get('max_execution_time') ? ini_get('max_execution_time') : 300 /* Default Apache and IIS Timeout */);
@@ -2434,8 +2436,8 @@ class newsletter extends NewsletterLib
                 // update sent count
                 $statusBarWidth = round(200 / $mailRecipientCount * $newsletterData['count'], 0);
                 $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_SENDT'                => $newsletterData['count'],
-                    'NEWSLETTER_STATUSBAR_WIDTH'    => $statusBarWidth
+                    'NEWSLETTER_SENDT'                  => $newsletterData['count'],
+                    'NEWSLETTER_STATUSBAR_WIDTH'        => $statusBarWidth
                 ));
 
                 $this->_objTpl->touchBlock('newsletter_mail_stop_button');
@@ -4538,7 +4540,7 @@ class DBIterator implements Iterator {
      * @param       object (adodb result object)
      */
     public function __construct($obj) {
-        $this->empty = $obj === false;
+        $this->empty = !($obj instanceof ADORecordSet);
 
         $this->obj = $obj;
     }
