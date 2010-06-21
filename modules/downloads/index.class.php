@@ -33,6 +33,7 @@ class downloads extends DownloadsLibrary
     private $userId;
     private $categoryId;
     private $cmd = '';
+    private $XMLHttpRequest = null;
     private $pageTitle;
     /**
      * @var HTML_Template_Sigma
@@ -58,10 +59,13 @@ class downloads extends DownloadsLibrary
         $objFWUser = FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->parseURLModifiers();
-        $this->objTemplate = new HTML_Template_Sigma('.');
-        CSRF::add_placeholder($this->objTemplate);
-        $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $this->objTemplate->setTemplate($strPageContent);
+
+        if (!$this->XMLHttpRequest) {
+            $this->objTemplate = new HTML_Template_Sigma('.');
+            CSRF::add_placeholder($this->objTemplate);
+            $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+            $this->objTemplate->setTemplate($strPageContent);
+        }
     }
 
 
@@ -89,6 +93,10 @@ class downloads extends DownloadsLibrary
         } else {
             $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0;
         }
+
+        if (!empty($_GET['js'])) {
+            $this->XMLHttpRequest = $_GET['js'];
+        }
     }
 
 
@@ -98,6 +106,19 @@ class downloads extends DownloadsLibrary
     */
     public function getPage()
     {
+        if ($this->XMLHttpRequest) {
+            switch($this->XMLHttpRequest) {
+                case 'downloads':
+                    print json_encode($this->getDownloadList());
+                    exit;
+                    break;
+
+                default:
+                    exit;
+                    break;
+            }
+        }
+
         CSRF::add_code();
         switch ($this->cmd) {
             case 'download_file':
@@ -286,6 +307,9 @@ class downloads extends DownloadsLibrary
                     $this->objTemplate->hideBlock('downloads_file_list');
                 }
             }
+
+            /* PARSE NESTED CATEGORY LIST */
+            $this->parseNestedCategoryList();
 
             /* PARSE MOST VIEWED DOWNLOADS */
             $this->parseSpecialDownloads(array('downloads_most_viewed_file_list', 'downloads_most_viewed_file'), array('is_active' => true, 'expiration' => array('=' => 0, '>' => time())) /* this filters purpose is only that the method Download::getFilteredIdList() gets processed */, array('views' => 'desc'), $this->arrConfig['most_viewed_file_count']);
@@ -655,6 +679,128 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->parse('downloads_create_category');
     }
 
+    private function parseNestedCategoryList()
+    {
+        $tplBlock = 'downloads_nested_category_list';
+        if (!$this->objTemplate->blockExists($tplBlock)) {
+            return;
+        }
+
+        $objCategory = Category::getCategories(array('is_active' => true), null, array('order' => 'asc', 'name' => 'asc'), null);
+
+        if ($objCategory->EOF) {
+            $this->objTemplate->hideBlock($tplBlock);
+            return;
+        }
+
+        $arrCategories = array();
+        while (!$objCategory->EOF) {
+            // TODO: getVisibility() < should only be checked if the user isn't an admin or so
+            if ($objCategory->getVisibility() || Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)) {
+                $arrCategories[$objCategory->getParentId()][] = array(
+                    'id'        => $objCategory->getId(),
+                    'name'      => $objCategory->getName(LANG_ID),
+                    'owner_id'  => $objCategory->getOwnerId(),
+                    'is_child'  => $objCategory->check4Subcategory($categoryId)
+                );
+            }
+
+            $objCategory->next();
+        }
+
+        $nestedCategoryList = $this->parseNestedCategoryListTree($arrCategories);
+        $this->objTemplate->setVariable('DOWNLOADS_NESTED_CATEGORY_LIST', $nestedCategoryList);
+    }
+
+    private function parseNestedCategoryListTree($arrCategories, $parentId = 0, $level = 0)
+    {
+        $list = array();
+
+        if (!isset($arrCategories[$parentId])) {
+            return '';
+        }
+
+        $list[] = '<ul id="categoryList'.$parentId.'" class="level'.$level.' '.($parentId ? 'closed' : 'open').'">';
+        foreach($arrCategories[$parentId] as $arrCategory) {
+            $isParent = isset($arrCategories[$arrCategory['id']]);
+            $arrClasses = array();
+            if ($isParent) {
+                $list[] = '<li class="isParent">';
+            } else {
+                $list[] = '<li>';
+            }
+
+            if ($isParent) {
+                $list[] = '<a href="javascript:void(0);" onclick="downloadsCategoryToggleExpand(this,\'categoryList'.$arrCategory['id'].'\')"><img src="images/modules/downloads/pluslink.gif" width="11" height="11" class="expander" /></a>';
+            } else {
+                $list[] = '<img src="images/modules/downloads/pixel.gif" width="11" height="11" class="expander" />';
+            }
+
+            $list[] = '<a href="javascript:void(0);" onclick="downloadsCategoryOnClick(this,'.$arrCategory['id'].')">';
+            $list[] = '<img src="images/modules/downloads/folder_front.gif" class="folder" />'
+                      .htmlentities($arrCategory['name'], ENT_QUOTES, CONTREXX_CHARSET);
+            $list[] = '</a>';
+
+            if (isset($arrCategories[$arrCategory['id']])) {
+                $list[] = $this->parseNestedCategoryListTree($arrCategories, $arrCategory['id'], $level+1);
+            }
+            $list[] = '</li>';
+        }
+        $list[] = "</ul>";
+
+        return join("\n", $list);
+    }
+
+    private function getDownloadList()
+    {
+        $arrDownloads = array();
+
+        $objCategory = Category::getCategory($this->categoryId);
+
+        if (!$objCategory->getId()) {
+            return $arrDownloads;
+        }
+
+        // check access permissions to selected category
+        if (!Permission::checkAccess(142, 'static', true)
+            && $objCategory->getReadAccessId()
+            && !Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
+            && $objCategory->getOwnerId() != $this->userId
+        ) {
+            return $arrDownloads;
+        }
+
+        $objDownload = new Download();
+        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'expiration' => array('=' => 0, '>' => time())));
+
+        if ($objDownload->EOF) {
+            return $arrDownloads;
+        } else {
+            while (!$objDownload->EOF) {
+                $arrDownloads[] = array(
+                    'id'            => $objDownload->getId(),
+                    'md5_sum'       => $objDownload->getMD5Sum(),
+                    'icon'          => $objDownload->getIcon(true),
+                    'size'          => $objDownload->getSize(),
+                    'size_literal'  => FWSystem::getLiteralSizeFormat($objDownload->getSize()),
+                    'image'         => $objDownload->getImage(),
+                    'origin'        => $objDownload->getOrigin(),
+                    'license'       => $objDownload->getLicense(),
+                    'version'       => $objDownload->getVersion(),
+                    'author'        => $objDownload->getAuthor(),
+                    'website'       => $objDownload->getWebsite(),
+                    'views'         => $objDownload->getViewCount(),
+                    'downloads'     => $objDownload->getDownloadCount(),
+                    'name'          => $objDownload->getName(LANG_ID),
+                    'description'   => $objDownload->getDescription(LANG_ID)
+                );
+
+                $objDownload->next();
+            }
+        }
+
+        return $arrDownloads;
+    }
 
     private function parseCategory($objCategory)
     {
@@ -802,6 +948,13 @@ function downloadsDeleteCategory(id,name)
     }
 }
 
+function downloadsCategoryToggleExpand(toggler, id)
+{
+    imgClosedSrc = 'images/modules/downloads/pluslink.gif';
+    imgOpenedSrc = 'images/modules/downloads/minuslink.gif';
+    \$J(\$J(toggler).children()[0]).attr('src', \$J('#'+id).hasClass('closed') ? imgOpenedSrc : imgClosedSrc);
+    \$J('#'+id).toggleClass('closed');
+}
 // ]]>
 </script>
 JS_CODE;
@@ -1171,6 +1324,25 @@ JS_CODE;
             $this->objTemplate->setVariable(array(
                 'TXT_DOWNLOADS_AUTHOR'              => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
                 'DOWNLOADS_'.$variablePrefix.'FILE_AUTHOR'  => htmlentities($objDownload->getAuthor(), ENT_QUOTES, CONTREXX_CHARSET),
+            ));
+        }
+
+        // parse origin
+        if ($this->arrConfig['use_attr_origin']) {
+            switch ($objDownload->getOrigin()) {
+                case 'external':
+                    $origin = $_ARRAYLANG['TXT_DOWNLOADS_EXTERNAL'];
+                break;
+
+                case 'internal':
+                default:
+                    $origin = $_ARRAYLANG['TXT_DOWNLOADS_INTERNAL'];
+                break;
+            }
+
+            $this->objTemplate->setVariable(array(
+                'TXT_DOWNLOADS_ORIGIN'              => $_ARRAYLANG['TXT_DOWNLOADS_ORIGIN'],
+                'DOWNLOADS_FILE_ORIGIN'             => htmlentities($origin , ENT_QUOTES, CONTREXX_CHARSET),
             ));
         }
 
