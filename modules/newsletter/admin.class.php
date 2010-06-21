@@ -2428,8 +2428,6 @@ class newsletter extends NewsletterLib
                         if (time() >= $timeout - (time() - $beforeSend) * 2) {
                             break;
                         }
-
-                        $objSend->MoveNext();
                     }
                 }
 
@@ -2479,7 +2477,8 @@ class newsletter extends NewsletterLib
         $query = "
             SELECT 
                 tblUser.id,
-                tblUser.email 
+                tblUser.email,
+                tblUser.type
             FROM 
                 ".DBPREFIX."module_newsletter_tmp_sending AS tblSend
             RIGHT JOIN 
@@ -2515,7 +2514,7 @@ class newsletter extends NewsletterLib
             FROM 
                 ".DBPREFIX."module_newsletter 
             WHERE 
-                id=".$mailId;
+                id=".$id;
 
         $objMail = $objDatabase->SelectLimit($query, 1);
         if ($objMail === false) {
@@ -2541,7 +2540,7 @@ class newsletter extends NewsletterLib
         $mailAddresses = $this->getAllRecipientEmails($mailId);
 
         foreach ($mailAddresses as $mail) {
-            $this->insertTmpEmail($mailId, $mail['email']);
+            $this->insertTmpEmail($mailId, $mail['email'], $mail['type']);
         }
 
         $this->updateNewsletterRecipientCount($mailId);
@@ -2554,14 +2553,14 @@ class newsletter extends NewsletterLib
      * @param       int $mail
      * @param       string $email
      */
-    private function insertTmpEmail($mail, $email) {
+    private function insertTmpEmail($mail, $email, $type) {
         global $objDatabase;
 
         $query = "
             INSERT IGNORE INTO
                 ".DBPREFIX."module_newsletter_tmp_sending
-                (`newsletter`, `email`)
-            VALUES (".$mail.", '".$email."')
+                (`newsletter`, `email`, `type`)
+            VALUES (".$mail.", '".$email."', '".$type."')
         ";
         $objDatabase->Execute($query);
     }
@@ -2631,17 +2630,19 @@ class newsletter extends NewsletterLib
         $mailID = intval($mailID);
 
         $query = sprintf('
-            SELECT `email`
+            SELECT 
+                `email`,
+                "newsletter"                                            AS `type`
             FROM
-                            `%smodule_newsletter_user` AS `nu`
+                            `%smodule_newsletter_user`                  AS `nu`
 
                             LEFT JOIN
-                                    `%smodule_newsletter_rel_user_cat` AS `rc`
+                                    `%smodule_newsletter_rel_user_cat`  AS `rc`
                                     ON
                                             `rc`.`user` = `nu`.`id`
 
                             LEFT JOIN
-                                    `%smodule_newsletter_rel_cat_news` AS `nrn`
+                                    `%smodule_newsletter_rel_cat_news`  AS `nrn`
                                     ON
                                             `nrn`.`category` = `rc`.`category`
 
@@ -2649,12 +2650,13 @@ class newsletter extends NewsletterLib
                                     `nrn`.`newsletter` = %s
 
             UNION DISTINCT SELECT
-                                    `email`
+                                    `email`,
+                                    "access"                            AS `type`
                             FROM
-                                    `%saccess_users` AS `au`
+                                    `%saccess_users`                    AS `au`
 
                             LEFT JOIN
-                                    `%saccess_rel_user_group` AS `rg`
+                                    `%saccess_rel_user_group`           AS `rg`
                                     ON
                                             `rg`.`user_id` = `au`.`id`
 
@@ -2667,17 +2669,18 @@ class newsletter extends NewsletterLib
                                     `arn`.`newsletter` = %s
 
             UNION DISTINCT SELECT
-                                `email`
+                                    `email`,
+                                    "access"                            AS `type`
                             FROM
-                                `%saccess_users` AS `cu`
+                                `%saccess_users`                        AS `cu`
 
                             LEFT JOIN
-                                `%smodule_newsletter_access_user` AS `cnu`
+                                `%smodule_newsletter_access_user`       AS `cnu`
                                 ON
                                     `cnu`.`accessUserID` = `cu`.`id`
 
                             LEFT JOIN
-                                `%smodule_newsletter_rel_cat_news` AS `crn`
+                                `%smodule_newsletter_rel_cat_news`      AS `crn`
                                 ON
                                     `cnu`.`newsletterCategoryID` = `crn`.`category`
 
@@ -2703,8 +2706,13 @@ class newsletter extends NewsletterLib
 
     /**
      * Send the email
+     *
+     * @param      int $UserID
+     * @param      int $NewsletterID
+     * @param      string $TargetEmail
+     * @param      string $type
      */
-    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry) {
+    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry, $type = 'access') {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
         require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
@@ -2730,8 +2738,24 @@ class newsletter extends NewsletterLib
         $HTML_TemplateSource = $this->GetTemplateSource($template, 'html');
         $TEXT_TemplateSource = $this->GetTemplateSource($template, 'text');
 
-        $NewsletterBody_HTML = $this->ParseNewsletter($UserID, $subject, $content, $HTML_TemplateSource, "html", $TargetEmail);
-        $NewsletterBody_TEXT = $this->ParseNewsletter($UserID, $subject, $content_text, $TEXT_TemplateSource, "text", $TargetEmail);
+        $NewsletterBody_HTML = $this->ParseNewsletter(
+            $UserID,
+            $subject,
+            $content,
+            $HTML_TemplateSource,
+            "html",
+            $TargetEmail,
+            $type
+        );
+        $NewsletterBody_TEXT = $this->ParseNewsletter(
+            $UserID,
+            $subject,
+            $content_text,
+            $TEXT_TemplateSource,
+            "text",
+            $TargetEmail,
+            $type
+        );
         $NewsletterBody_TEXT = wordwrap($NewsletterBody_TEXT, $break);
 
         // Work around an oddity in phpmailer: it detects
@@ -2746,7 +2770,15 @@ class newsletter extends NewsletterLib
             $new_textcontent = preg_replace('#<p/?>#i',  "\r\n\r\n", $new_textcontent);
             $new_textcontent = strip_tags($new_textcontent);
             # TODO: if there's tables, we probably should handle them in a special way...
-            $NewsletterBody_TEXT = $this->ParseNewsletter($UserID, $subject, $new_textcontent, $TEXT_TemplateSource, "text", $TargetEmail);
+            $NewsletterBody_TEXT = $this->ParseNewsletter(
+                $UserID,
+                $subject,
+                $new_textcontent,
+                $TEXT_TemplateSource,
+                "text",
+                $TargetEmail,
+                $type
+            );
         }
 
         $mail = new phpmailer();
