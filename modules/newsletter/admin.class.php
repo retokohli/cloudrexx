@@ -1101,25 +1101,22 @@ class newsletter extends NewsletterLib
             $mailID
         );
 
-        $data = $objDatabase->Execute($query);
+        $data = new DBIterator($objDatabase->Execute($query));
 
-        if ($data !== false) {
-            $groupNr = 0;
-            while (!$data->EOF) {
-                $column = $groupNr % 3;
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_GROUP_ID'    => $data->fields['id'],
-                    'NEWSLETTER_GROUP_NAME'  => $data->fields['name'],
-                    'NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP_TXT'=>
-                        sprintf(
-                            $_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'],
-                            $data->fields['name'])
-                ));
-                $this->_objTpl->parse('newsletter_mail_associated_group_'.$column);
+        $groupNr = 0;
+        foreach ($data as $d) {
+            $column = $groupNr % 3;
+            $this->_objTpl->setVariable(array(
+                'NEWSLETTER_GROUP_ID'    => $d['id'],
+                'NEWSLETTER_GROUP_NAME'  => $d['name'],
+                'NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP_TXT'=>
+                    sprintf(
+                        $_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'],
+                        $d['name'])
+            ));
+            $this->_objTpl->parse('newsletter_mail_associated_group_'.$column);
 
-                $groupNr++;
-                $data->MoveNext();
-            }
+            $groupNr++;
         }
 
     }
@@ -2122,6 +2119,9 @@ class newsletter extends NewsletterLib
     }
 
 
+    /**
+     * Show the mail send page
+     */
     function _sendMailPage()
     {
         global $_ARRAYLANG;
@@ -2285,7 +2285,6 @@ class newsletter extends NewsletterLib
 	private function getCurrentMailRecipientCount($mailId)
     {
         global $objDatabase;
-
         $query = sprintf('
             SELECT COUNT(*) AS `recipientCount`
             FROM (
@@ -2366,6 +2365,9 @@ class newsletter extends NewsletterLib
         }
     }
 
+    /**
+     * Send the mails
+     */
     function _sendMail()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -2382,39 +2384,28 @@ class newsletter extends NewsletterLib
 
         $this->_objTpl->loadTemplateFile('module_newsletter_mail_send_status.html');
 
-        $objMail = $objDatabase->SelectLimit("SELECT
-            id,
-            subject,
-            status,
-            `count`,
-            tmp_copy
-            FROM ".DBPREFIX."module_newsletter WHERE id=".$mailId, 1);
-        if ($objMail !== false) {
-            $subject         = $objMail->fields['subject'];
-            $status         = $objMail->fields['status'];
-            $count             = $objMail->fields['count'];
-            $tmp_copy         = $objMail->fields['tmp_copy'];
-        }
-
+        //Get some newsletter data
+        $newsletterData = $this->getNewsletterData($mailId);
         $statusBarWidth = round(200 / $mailRecipientCount * $count, 0);
 
         $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_SUBJECT'            => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-            'TXT_NEWSLETTER_MAILS_SENT'            => $_ARRAYLANG['TXT_NEWSLETTER_SENT_EMAILS']
+            'TXT_NEWSLETTER_SUBJECT'          => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
+            'TXT_NEWSLETTER_MAILS_SENT'       => $_ARRAYLANG['TXT_NEWSLETTER_SENT_EMAILS']
         ));
 
         $this->_objTpl->setVariable(array(
             'CONTREXX_CHARSET'                => CONTREXX_CHARSET,
-            'NEWSLETTER_MAIL_ID'            => $mailId,
-            'NEWSLETTER_MAIL_USERES'        => $mailRecipientCount,
-            'NEWSLETTER_SENDT'                => $count,
-            'NEWSLETTER_MAIL_SUBJECT'        => htmlentities($subject, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_STATUSBAR_WIDTH'    => $statusBarWidth
+            'NEWSLETTER_MAIL_ID'              => $mailId,
+            'NEWSLETTER_MAIL_USERES'          => $mailRecipientCount,
+            'NEWSLETTER_SENDT'                => $newsletterData['count'],
+            'NEWSLETTER_MAIL_SUBJECT'         => htmlentities($newsletterData['subject'], ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_STATUSBAR_WIDTH'      => $statusBarWidth
         ));
 
-        if ($status == 0) {
+        // the newsletter was not sent
+        if ($newsletterData['status'] == 0) {
             if (isset($_GET['send']) && $_GET['send'] == '1') {
-                if ($tmp_copy==0) {
+                if ($newsletterData['tmp_copy'] == 0) {
                     $this->_setTmpSending($mailId);
                     $this->_objTpl->setVariable('NEWSLETTER_MAIL_RELOAD_SEND_STATUS_FRAME', '<script type="text/javascript" language="javascript">setTimeout("newsletterSendMail()",1000);</script>');
                 } else {
@@ -2422,31 +2413,28 @@ class newsletter extends NewsletterLib
                     $mails_per_run = $arrSettings['mails_per_run']['setvalue'];
                     $timeout = time() + (ini_get('max_execution_time') ? ini_get('max_execution_time') : 300 /* Default Apache and IIS Timeout */);
 
-                    $objSend = $objDatabase->SelectLimit("SELECT tblUser.id, tblUser.email FROM ".DBPREFIX."module_newsletter_tmp_sending AS tblSend
-                    RIGHT JOIN ".DBPREFIX."module_newsletter_user AS tblUser ON tblUser.email=tblSend.email
-                    WHERE tblSend.sendt=0 AND tblSend.newsletter=".$mailId, $mails_per_run, 0);
-                    if ($objSend !== false) {
-                        while (!$objSend->EOF) {
-                            $beforeSend = time();
+                    $tmpSending = $this->getTmpSending($mailId, $mails_per_run);
 
-                            if (($count = $this->SendEmail($objSend->fields['id'], $mailId, $objSend->fields['email'], 1)) !== false) {
-                                $this->_objTpl->setVariable('NEWSLETTER_MAIL_RELOAD_SEND_STATUS_FRAME', '<script type="text/javascript" language="javascript">setTimeout("newsletterSendMail()",1000);</script>');
-                            }
+                    foreach ($tmpSending as $send) {
+                        $beforeSend = time();
 
-                            // timeout prevention
-                            if (time() >= $timeout - (time() - $beforeSend) * 2) {
-                                break;
-                            }
-
-                            $objSend->MoveNext();
+                        if (($newsletterData['count'] = $this->SendEmail($send['id'], $mailId, $send['email'], 1)) !== false) {
+                            $this->_objTpl->setVariable('NEWSLETTER_MAIL_RELOAD_SEND_STATUS_FRAME', '<script type="text/javascript" language="javascript">setTimeout("newsletterSendMail()",1000);</script>');
                         }
+
+                        // timeout prevention
+                        if (time() >= $timeout - (time() - $beforeSend) * 2) {
+                            break;
+                        }
+
+                        $objSend->MoveNext();
                     }
                 }
 
                 // update sent count
-                $statusBarWidth = round(200 / $mailRecipientCount * $count, 0);
+                $statusBarWidth = round(200 / $mailRecipientCount * $newsletterData['count'], 0);
                 $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_SENDT'                => $count,
+                    'NEWSLETTER_SENDT'                => $newsletterData['count'],
                     'NEWSLETTER_STATUSBAR_WIDTH'    => $statusBarWidth
                 ));
 
@@ -2477,28 +2465,81 @@ class newsletter extends NewsletterLib
         }
     }
 
+    /**
+     * Get the emails from the tmp sending page
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @return      
+     */
+    protected function getTmpSending($id, $amount) {
+        global $objDatabase; 
+
+        $query = "
+            SELECT 
+                tblUser.id,
+                tblUser.email 
+            FROM 
+                ".DBPREFIX."module_newsletter_tmp_sending AS tblSend
+            RIGHT JOIN 
+                ".DBPREFIX."module_newsletter_user AS tblUser 
+            ON 
+                tblUser.email=tblSend.email
+            WHERE 
+                tblSend.sendt=0 
+            AND 
+                tblSend.newsletter=".$id;
+
+        return new DBIterator($objDatabase->SelectLimit($query, $amount, 0));
+    }
+
+    /**
+     * Return some newsletter data
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $id
+     * @return      array(subject,status,count,tmp_copy)
+     */
+    protected function getNewsletterData($id) {
+        global $objDatabase;
+
+        $objMail = $objDatabase->SelectLimit("SELECT
+            id,
+            subject,
+            status,
+            `count`,
+            tmp_copy
+            FROM ".DBPREFIX."module_newsletter WHERE id=".$mailId, 1);
+        if ($objMail === false) {
+            throw new Exception('Newsletter data could not be found');
+        }
+
+        return array(
+            'subject'   => $objMail->fields['subject'],
+            'status'    => $objMail->fields['status'],
+            'count'     => $objMail->fields['count'],
+            'tmp_copy'  => $objMail->fields['tmp_copy']
+        );
+    }
+
     function _setTmpSending($mailId)
     {
         global $objDatabase;
-        $objMail = $this->getAllRecipientEmails($mailId);
+        $mailAddresses = $this->getAllRecipientEmails($mailId);
 
-        if ($objMail !== false) {
-            while (!$objMail->EOF) {
-                $query = "
-                    INSERT IGNORE INTO
-                        ".DBPREFIX."module_newsletter_tmp_sending
-                        (`newsletter`, `email`)
-                    VALUES (".$mailId.", '".$objMail->fields['email']."')";
-                $objDatabase->Execute($query);
-                $objMail->MoveNext();
-            }
-            $date = time();
+        foreach ($mailAddresses as $mail) {
+            $query = "
+                INSERT IGNORE INTO
+                    ".DBPREFIX."module_newsletter_tmp_sending
+                    (`newsletter`, `email`)
+                VALUES (".$mailId.", '".$mail['email']."')";
+            $objDatabase->Execute($query);
+        }
+        $date = time();
 
-            $objResult = $objDatabase->Execute("SELECT COUNT(1) as recipient_count FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `newsletter` = $mailId GROUP BY `newsletter`");
-            if ($objResult !== false) {
-                $recipientCount = $objResult->fields['recipient_count'];
-                $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter SET tmp_copy=1, date_sent=".$date.", recipient_count=$recipientCount WHERE id=".$mailId);
-            }
+        $objResult = $objDatabase->Execute("SELECT COUNT(1) as recipient_count FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `newsletter` = $mailId GROUP BY `newsletter`");
+        if ($objResult !== false) {
+            $recipientCount = $objResult->fields['recipient_count'];
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter SET tmp_copy=1, date_sent=".$date.", recipient_count=$recipientCount WHERE id=".$mailId);
         }
     }
 
@@ -2582,7 +2623,7 @@ class newsletter extends NewsletterLib
             $mailID
         );
 
-        return $objDatabase->Execute($query);
+        return new DBIterator($objDatabase->Execute($query));
     }
 
     function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry) {
@@ -4465,4 +4506,87 @@ class newsletter extends NewsletterLib
     }
 }
 
-?>
+/**
+ * Iterator wrapper for adodb result objects
+ *
+ * @author      Stefan Heinemann <sh@adfinis.com>
+ */
+class DBIterator implements Iterator {
+    /**
+     * The result object of adodb
+     */
+    private $obj;
+
+    /**
+     * If the result was empty
+     */
+    private $empty;
+
+    /**
+     * The position in the rows
+     */
+    private $position = 0;
+
+    /**
+     * Assign the object
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       object (adodb result object)
+     */
+    public function __construct($obj) {
+        $this->empty = $obj === false;
+
+        $this->obj = $obj;
+    }
+
+    /**
+     * Go back to first position
+     */
+    public function rewind() {
+        if (!$this->empty) {
+            $this->obj->MoveFirst();
+        }
+
+        $this->position = 0;
+    }
+
+    /**
+     * Return the current object
+     */
+    public function current() {
+        if (!$this->empty) {
+            return $this->obj->fields;
+        } else {
+            return array();
+        }
+    }
+
+    /**
+     * Return the current key
+     */
+    public function key() {
+        return $this->position;
+    }
+
+    /**
+     * Go to the next item
+     */
+    public function next() {
+        if (!$this->empty) {
+            $this->obj->MoveNext();
+            ++$this->position;
+        }
+    }
+
+    /**
+     * Return if there are any items left
+     */
+    public function valid() {
+        if ($this->empty) {
+            return false;
+        }
+
+        return !$this->obj->EOF;
+    }
+}
+
