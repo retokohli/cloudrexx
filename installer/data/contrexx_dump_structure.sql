@@ -1256,6 +1256,7 @@ CREATE TABLE `contrexx_module_downloads_download` (
   `image` varchar(255) NOT NULL default '',
   `owner_id` int(5) unsigned NOT NULL default '0',
   `access_id` int(10) unsigned NOT NULL default '0',
+  `origin` enum('internal','external') default 'internal',
   `license` varchar(255) NOT NULL default '',
   `version` varchar(10) NOT NULL default '',
   `author` varchar(100) NOT NULL default '',
