@@ -741,12 +741,11 @@ function checkMemoryLimit()
 
     if (!isset($memoryLimit)) {
         @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
-        $objSystem = new FWSystem();
-        if ($objSystem === false) {
+        if (!class_exists('FWSystem')) {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_API_LOAD_FAILED'], ASCMS_FRAMEWORK_PATH.'/System.class.php'));
             return false;
         }
-        $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
+        $memoryLimit = FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
         if (empty($memoryLimit)) {
             // set default php memory limit of 8MBytes
             $memoryLimit = 8*pow(1024, 2);

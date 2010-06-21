@@ -42,7 +42,7 @@ class MediaManager extends MediaLibrary {
     var $webPath;                       // current web path
     var $docRoot;                       // document root
     var $archive;
-    
+
     var $highlightName     = array();   // highlight added name
     var $highlightColor    = '#d8ffca'; // highlight color for added name [#d8ffca]
     var $_strOkMessage  = '';           // success message
@@ -189,7 +189,7 @@ class MediaManager extends MediaLibrary {
                 }
             }
         }
-        
+
         if (!empty($_GET['highlightFiles'])) {
             $this->highlightName = array_merge($this->highlightName, array_map('basename', json_decode(contrexx_stripslashes(urldecode($_GET['highlightFiles'])))));
         }
@@ -298,7 +298,7 @@ class MediaManager extends MediaLibrary {
                     ));
                     $this->_objTpl->parse('media_advanced_file_upload');
                 }
-    
+
                 if ($this->_objTpl->blockExists('media_simple_file_upload')) {
                     $this->_objTpl->hideBlock('media_simple_file_upload');
                 }
@@ -306,7 +306,6 @@ class MediaManager extends MediaLibrary {
             }
             else {
                 if ($this->_objTpl->blockExists('media_simple_file_upload')) {
-                    $objFWSystem = new FWSystem();
                     // simple file upload
                     $this->_objTpl->setVariable(array(
                         'TXT_MEDIA_BROWSE'          => $_ARRAYLANG['TXT_MEDIA_BROWSE'],
@@ -314,11 +313,11 @@ class MediaManager extends MediaLibrary {
                         'TXT_MEDIA_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_MEDIA_MAX_FILE_SIZE'],
                         'TXT_MEDIA_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_MEDIA_ADD_NEW_FILE'],
                         'MEDIA_UPLOAD_URL'          => CONTREXX_SCRIPT_PATH . '?section=' . $this->archive . $this->getCmd . '&amp;act=upload&amp;path=' . $this->webPath,
-                        'MEDIA_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
+                        'MEDIA_MAX_FILE_SIZE'       => $this->getFormatedFileSize(FWSystem::getMaxUploadFileSize())
                     ));
                     $this->_objTpl->parse('media_simple_file_upload');
                 }
-                
+
                 if ($this->_objTpl->blockExists('media_advanced_file_upload')) {
                     $this->_objTpl->hideBlock('media_advanced_file_upload');
                 }
@@ -332,7 +331,7 @@ class MediaManager extends MediaLibrary {
             $this->_objTpl->parse('media_create_directory');
         }
     }
-    
+
     /**
      * Chaeck access from settings.
      * If setting value is number then check access using Permission
@@ -344,7 +343,7 @@ class MediaManager extends MediaLibrary {
     private function uploadAccessGranted()
     {
         $uploadAccessSetting = $this->_arrSettings[$this->archive . '_frontend_changable'];
-        if(is_numeric($uploadAccessSetting) 
+        if(is_numeric($uploadAccessSetting)
            && Permission::checkAccess(intval($uploadAccessSetting), 'dynamic', true)) { // access group
             return true;
         } else if($uploadAccessSetting == 'on') {
@@ -352,7 +351,7 @@ class MediaManager extends MediaLibrary {
         }
         return false;
     }
-    
+
     /**
      * Format file size
      *
@@ -380,17 +379,17 @@ class MediaManager extends MediaLibrary {
             return round($bytes/pow(1024, 3), 2).' '.$_ARRAYLANG['TXT_MEDIA_GBYTE'];
         }
     }
-    
+
     /**
      * Create directory
-     * 
+     *
      * @global     array    $_ARRAYLANG
      * @param      string   $dir_name
      */
     function _createDirectory($dir_name)
     {
         global $_ARRAYLANG;
-        
+
         if (empty($dir_name)) {
             if(!isset($_GET['highlightFiles'])) {
                 $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_EMPTY_DIR_NAME'];
@@ -399,7 +398,7 @@ class MediaManager extends MediaLibrary {
         } else {
             $dir_name = contrexx_stripslashes($dir_name);
         }
-        
+
         if(!$this->uploadAccessGranted()) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
             return;
@@ -411,11 +410,11 @@ class MediaManager extends MediaLibrary {
         if($creationStatus != "error") {
             $this->highlightName[] = $dir_name;
             $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR'];
-        }else{           
+        }else{
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR'];
         }
     }
-    
+
     /**
      * Adding success and error messages to template
      */
@@ -426,7 +425,7 @@ class MediaManager extends MediaLibrary {
             'MEDIA_MSG_ERROR'   => $this->_strErrorMessage
         ));
     }
-    
+
     /**
      * Upload files
      */
@@ -437,10 +436,10 @@ class MediaManager extends MediaLibrary {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
             return;
         }
-                
+
         $this->processFormUpload();
     }
-    
+
     /**
      * Process upload form
      *
