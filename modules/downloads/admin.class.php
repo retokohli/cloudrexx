@@ -425,6 +425,7 @@ class downloads extends DownloadsLibrary
             $objGroup->setType(isset($_POST['downloads_group_type']) ? contrexx_stripslashes($_POST['downloads_group_type']) : '');
             $objGroup->setInfoPage(isset($_POST['downloads_group_'.$objGroup->getType().'_source']) ? contrexx_stripslashes($_POST['downloads_group_'.$objGroup->getType().'_source']) : '');
             $objGroup->setCategories(isset($_POST['downloads_group_associated_categories']) ? array_map('intval', $_POST['downloads_group_associated_categories']) : array());
+            $objGroup->setSortMethod(isset($_POST['downloads_group_sort']) ? $_POST['downloads_group_sort'] : null);
 
             if ($objGroup->store()) {
                 return $this->groups();
@@ -451,7 +452,9 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_SAVE'                                        => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
             'TXT_DOWNLOADS_STATUS'                                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_UNCHECK_ALL'                                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
-            'TXT_DOWNLOADS_URL'                                         => $_ARRAYLANG['TXT_DOWNLOADS_URL']
+            'TXT_DOWNLOADS_URL'                                         => $_ARRAYLANG['TXT_DOWNLOADS_URL'],
+            'TXT_DOWNLOADS_ALPHABETICALLY_SORTED'                       => $_ARRAYLANG['TXT_DOWNLOADS_ALPHABETICALLY_SORTED'],
+            'TXT_DOWNLOADS_CUSTOM_SORT'                                 => $_ARRAYLANG['TXT_DOWNLOADS_CUSTOM_SORT']
         ));
 
         // parse sorting & paging of the groups overview section
@@ -503,15 +506,19 @@ class downloads extends DownloadsLibrary
             $option = '<option value="'.$arrCategories[$i]['id'].'">'.htmlentities($arrCategories[$i]['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
 
             if (in_array($arrCategories[$i]['id'], $arrAssociatedCategories)) {
-                $arrAssociatedCategoryOptions[] = $option;
+                $arrAssociatedCategoryOptions[array_search($arrCategories[$i]['id'], $arrAssociatedCategories)] = $option;
             } else {
                 $arrNotAssociatedCategoryOptions[] = $option;
             }
         }
+        ksort($arrAssociatedCategoryOptions);
 
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_GROUP_ASSOCIATED_CATEGORIES'      => implode("\n", $arrAssociatedCategoryOptions),
-            'DOWNLOADS_GROUP_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions)
+            'DOWNLOADS_GROUP_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions),
+            'DOWNLOADS_GROUP_SORT_CUSTOM_BOX'            => $objGroup->getSortMethod() == 'custom' ? '' : 'none',
+            'DOWNLOADS_GROUP_SORT_CUSTOM'                => $objGroup->getSortMethod() == 'custom' ? 'selected="selected"' : '',
+            'DOWNLOADS_GROUP_SORT_ALPHABETICALLY'        => $objGroup->getSortMethod() == 'custom' ? '' : 'selected="selected"'
         ));
 
         return true;

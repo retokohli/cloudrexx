@@ -605,6 +605,7 @@ class Category
             .'FROM `'.DBPREFIX.'module_downloads_category` AS tblC'
             .(/*count($arrSelectLocaleExpressions) || */$arrQuery['tables']['locale'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblL ON tblL.`category_id` = tblC.`id`' : '')
             .($arrQuery['tables']['localeSort'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblLS ON tblLS.`category_id` = tblC.`id`' : '')
+            .($arrQuery['tables']['group'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_group_category` AS tblR ON tblR.`category_id` = tblC.`id`' : '')
             .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
             .' GROUP BY tblC.`id`'
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
@@ -637,12 +638,18 @@ class Category
         $arrConditions = array();
         $arrSearchConditions = array();
         $tblLocales = false;
+        $tblGroup = false;
 
         // parse filter
         if (isset($arrFilter) && is_array($arrFilter)) {
             if (count($arrFilterConditions = $this->parseFilterConditions($arrFilter))) {
                 $arrConditions[] = implode(' AND ', $arrFilterConditions['conditions']);
                 $tblLocales = isset($arrFilterConditions['tables']['locale']);
+            }
+
+            if (in_array('group_id', array_keys($arrFilter)) && !empty($arrFilter['group_id'])) {
+                $arrConditions[] = 'tblR.`group_id` = '.intval($arrFilter['group_id']);
+                $tblGroup = true;
             }
         }
 
@@ -670,6 +677,9 @@ class Category
         $arrTables = array();
         if ($tblLocales) {
             $arrTables[] = 'locale';
+        }
+        if ($tblGroup) {
+            $arrTables[] = 'group';
         }
 
         return array(
@@ -819,6 +829,7 @@ class Category
         $arrCustomSelection = array();
         $joinLocaleTbl = false;
         $joinLocaleSortTbl = false;
+        $joinGroupTbl = false;
         $arrCategoryIds = array();
         $arrSortExpressions = array();
         $nr = 0;
@@ -827,6 +838,9 @@ class Category
             if (isset($sqlCondition['tables'])) {
                 if (in_array('locale', $sqlCondition['tables'])) {
                     $joinLocaleTbl = true;
+                }
+                if (in_array('group', $sqlCondition['tables'])) {
+                    $joinGroupTbl = true;
                 }
             }
 
@@ -839,7 +853,11 @@ class Category
             foreach ($arrSort as $attribute => $direction) {
                 if (in_array(strtolower($direction), array('asc', 'desc'))) {
                     if (isset($this->arrAttributes['core'][$attribute])) {
-                        $arrSortExpressions[] = 'tblC.`'.$attribute.'` '.$direction;
+                        if ($attribute == 'order' && $joinGroupTbl) {
+                            $arrSortExpressions[] = 'tblR.`'.$attribute.'` '.$direction;
+                        } else {
+                            $arrSortExpressions[] = 'tblC.`'.$attribute.'` '.$direction;
+                        }
                     } elseif (isset($this->arrAttributes['locale'][$attribute])) {
                         $arrSortExpressions[] = 'tblLS.`'.$attribute.'` '.$direction;
                         $arrCustomSelection[] = 'tblLS.`lang_id` = '.$_LANGID ;
@@ -855,6 +873,7 @@ class Category
             FROM `'.DBPREFIX.'module_downloads_category` AS tblC'
             .($joinLocaleTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblL ON tblL.`category_id` = tblC.`id`' : '')
             .($joinLocaleSortTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblLS ON tblLS.`category_id` = tblC.`id`' : '')
+            .($joinGroupTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_group_category` AS tblR ON tblR.`category_id` = tblC.`id`' : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
@@ -883,7 +902,8 @@ class Category
         return array(
             'tables' => array(
                 'locale'    => $joinLocaleTbl,
-                'localeSort'=> $joinLocaleSortTbl
+                'localeSort'=> $joinLocaleSortTbl,
+                'group'     => $joinGroupTbl
             ),
             'conditions'    => $arrCustomSelection,
             'sort'          => $arrSortExpressions

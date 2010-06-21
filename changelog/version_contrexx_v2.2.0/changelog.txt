@@ -100,6 +100,8 @@ Modul: Digital Asset Management
   WYSIWYG-Editor zur Verfügung.
 - Beim Hinzufügen eines Downloads kann ein Benachrichtigungs-E-Mail an
   ausgewählte Benutzergruppen versendet werden.
+- Die Auflistung der einer Gruppe zugeordneten Kategorien erfolgt entweder
+  alphabetisch oder nach einer benutzerdefinierten Reihenfolge.
 
 Modul: Dokumenten System
 - Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
