@@ -1106,11 +1106,11 @@ class AccessManager extends AccessLib
         if (($objUser = $objFWUser->objUser->getUser(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0)) === false) {
             $objUser = new User();
         }
-        
-        if ($objFWUser->objUser->getAdminStatus()) {   
+
+        if ($objFWUser->objUser->getAdminStatus()) {
             $cssDisplayStatus = 'none';
-        } else {      
-            $cssDisplayStatus = '';    
+        } else {
+            $cssDisplayStatus = '';
         }
 
         if (isset($_POST['access_save_user'])) {
@@ -1316,7 +1316,7 @@ class AccessManager extends AccessLib
     }
 
     /**
-     * Parse the newsletter lists 
+     * Parse the newsletter lists
      *
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $userID
@@ -1339,7 +1339,7 @@ class AccessManager extends AccessLib
                 );
 
                 $this->_objTpl->parse('newsletter_list');
-                    
+
                 $res->MoveNext();
             }
         }
@@ -1945,10 +1945,10 @@ class AccessManager extends AccessLib
 
             if (!empty($_POST['accessMaxProfilePicSize'])) {
 // TODO
-//                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']) != $arrSettings['max_profile_pic_size']['value']) {
+//                if (FWSystem::getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']) != $arrSettings['max_profile_pic_size']['value']) {
 //                    // resize profile pics
 //                }
-                $arrSettings['max_profile_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']);
+                $arrSettings['max_profile_pic_size']['value'] = FWSystem::getBytesOfLiteralSizeFormat($_POST['accessMaxProfilePicSize']);
             }
 
             if (isset($_POST['accessProfileThumbnailMethod']) && $_POST['accessProfileThumbnailMethod'] == 'scale') {
@@ -1975,10 +1975,10 @@ class AccessManager extends AccessLib
 
             if (!empty($_POST['accessMaxPicSize'])) {
 // TODO
-//                if ($this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']) != $arrSettings['max_pic_size']['value']) {
+//                if (FWSystem::getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']) != $arrSettings['max_pic_size']['value']) {
 //                    // resize pics
 //                }
-                $arrSettings['max_pic_size']['value'] = $this->getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']);
+                $arrSettings['max_pic_size']['value'] = FWSystem::getBytesOfLiteralSizeFormat($_POST['accessMaxPicSize']);
             }
 
             $session_on_interval =  intval($_POST['sessioninterval']);
@@ -2044,13 +2044,13 @@ class AccessManager extends AccessLib
             'ACCESS_MAX_PROFILE_PIC_HEIGHT'                         => $arrSettings['max_profile_pic_height']['value'],
             'ACCESS_PROFILE_THUMBNAIL_PIC_WIDTH'                    => $arrSettings['profile_thumbnail_pic_width']['value'],
             'ACCESS_PROFILE_THUMBNAIL_PIC_HEIGHT'                   => $arrSettings['profile_thumbnail_pic_height']['value'],
-            'ACCESS_MAX_PROFILE_PIC_SIZE'                           => $this->getLiteralSizeFormat($arrSettings['max_profile_pic_size']['value']),
+            'ACCESS_MAX_PROFILE_PIC_SIZE'                           => FWSystem::getLiteralSizeFormat($arrSettings['max_profile_pic_size']['value']),
             'ACCESS_MAX_PIC_WIDTH'                                  => $arrSettings['max_pic_width']['value'],
             'ACCESS_MAX_PIC_HEIGHT'                                 => $arrSettings['max_pic_height']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_WIDTH'                        => $arrSettings['max_thumbnail_pic_width']['value'],
             'ACCESS_MAX_THUMBNAIL_PIC_HEIGHT'                       => $arrSettings['max_thumbnail_pic_height']['value'],
             'ACCESS_SESSION_USER_INTERVAL'                => $arrSettings['session_user_interval']['value'],
-            'ACCESS_MAX_PIC_SIZE'                                   => $this->getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
+            'ACCESS_MAX_PIC_SIZE'                                   => FWSystem::getLiteralSizeFormat($arrSettings['max_pic_size']['value']),
             'ACCESS_PROFILE_THUMBNAIL_CROP'                         => $arrSettings['profile_thumbnail_method']['value'] == 'crop' ? 'selected="selected"' : '',
             'ACCESS_PROFILE_THUMBNAIL_SCALE'                        => $arrSettings['profile_thumbnail_method']['value'] == 'scale' ? 'selected="selected"' : '',
             'ACCESS_PROFILE_THUMBNAIL_SCALE_BOX'                    => $arrSettings['profile_thumbnail_method']['value'] == 'scale' ? 'inline' : 'none',

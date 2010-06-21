@@ -178,7 +178,7 @@ class AccessLib
                 $arrPlaceholders['_THUMBNAIL'] = $this->getImageAttributeCode($objUser, $attributeName, $image, $attributeId, '', $historyId, $edit, true);
                 $arrPlaceholders['_THUMBNAIL_SRC'] = ImageManager::getThumbnailFilename($arrPlaceholders['_SRC']);
                 $arrPlaceholders['_UPLOAD_NAME'] = $this->attributeNamePrefix.'_images['.$objAttribute->getId().']['.$historyId.']';
-                $arrPlaceholders['_MAX_FILE_SIZE'] = $this->getLiteralSizeFormat($arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_size']['value']);
+                $arrPlaceholders['_MAX_FILE_SIZE'] = FWSystem::getLiteralSizeFormat($arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_size']['value']);
                 $arrPlaceholders['_MAX_WIDTH'] = $arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_width']['value'];
                 $arrPlaceholders['_MAX_HEIGHT'] = $arrSettings['max_'.($attributeId == 'picture' ? 'profile_' : '').'pic_height']['value'];
 //                if ($attributeId == 'picture') {
@@ -316,53 +316,6 @@ class AccessLib
         }
 
         return true;
-    }
-
-    protected function getLiteralSizeFormat($bytes)
-    {
-        $exp = floor(log($bytes, 1024));
-
-        switch ($exp) {
-            case 0: // bytes
-                $suffix = ' bytes';
-                break;
-
-            case 1: // KB
-                $suffix = ' KB';
-                break;
-
-            case 2: // MB
-                $suffix = ' MB';
-                break;
-
-            case 3: // GB
-                $suffix = ' GB';
-                break;
-        }
-
-        return round(($bytes / pow(1024, $exp)), 1).$suffix;
-    }
-
-    protected function getBytesOfLiteralSizeFormat($literalSize)
-    {
-        $subpatterns = array();
-        if (preg_match('#^([0-9.]+)\s*(gb?|mb?|kb?|bytes?|)?$#i', $literalSize, $subpatterns)) {
-            $bytes = $subpatterns[1];
-            switch (strtolower($subpatterns[2][0])) {
-                case 'g':
-                    $bytes *= 1024;
-
-                case 'm':
-                    $bytes *= 1024;
-
-                case 'k':
-                    $bytes *= 1024;
-            }
-
-            return $bytes;
-        } else {
-            return 0;
-        }
     }
 
     private function parseAttributePlaceholders($arrPlaceholders, $defined = false, $attributeIdUC = 0, $frameIdUC = 0, $childIdUC = 0, $frame = false, $child = false)
@@ -1778,7 +1731,7 @@ JSaccessValidatePrimaryGroupAssociation
     /**
      * Get the newsletter categories
      *
-     * Get the newsletter categories and the information, if 
+     * Get the newsletter categories and the information, if
      * a user has signed to this newsletter
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $userID
@@ -1808,8 +1761,8 @@ JSaccessValidatePrimaryGroupAssociation
                 `contrexx_module_newsletter_access_user`    AS `u`
 
             ON
-                `u`.`newsletterCategoryID` = `c`.`id` 
-                AND 
+                `u`.`newsletterCategoryID` = `c`.`id`
+                AND
                     `u`.`accessUserID` = %s
             ', intval($userID)
         );
