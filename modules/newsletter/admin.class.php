@@ -4519,18 +4519,22 @@ class DBIterator implements Iterator {
 
     /**
      * If the result was empty
+     *
+     * (To prevent illegal object access)
      */
     private $empty;
 
     /**
      * The position in the rows
+     *
+     * Mainly just to have something to return in the
+     * key() method. 
      */
     private $position = 0;
 
     /**
      * Assign the object
      *
-     * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       object (adodb result object)
      */
     public function __construct($obj) {
@@ -4552,17 +4556,19 @@ class DBIterator implements Iterator {
 
     /**
      * Return the current object
+     *
+     * @return      array
      */
     public function current() {
-        if (!$this->empty) {
-            return $this->obj->fields;
-        } else {
-            return array();
-        }
+        return $this->obj->fields;
+        // if valid return false, this function should never be called, 
+        // so no problem with illegal access here i guess
     }
 
     /**
      * Return the current key
+     *
+     * @return      int
      */
     public function key() {
         return $this->position;
@@ -4574,12 +4580,15 @@ class DBIterator implements Iterator {
     public function next() {
         if (!$this->empty) {
             $this->obj->MoveNext();
-            ++$this->position;
         }
+        
+        ++$this->position;
     }
 
     /**
      * Return if there are any items left
+     *
+     * @return      bool
      */
     public function valid() {
         if ($this->empty) {
