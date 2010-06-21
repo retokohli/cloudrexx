@@ -1261,7 +1261,7 @@ class newsletter extends NewsletterLib
                     'NEWSLETTER_MAIL_TEMPLATE'        => htmlentities($arrTemplates[$objMail->fields['template']]['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_MAIL_DATE'            => date(ASCMS_DATE_FORMAT, $objMail->fields['date_create']),
                     'NEWSLETTER_MAIL_COUNT'            => $objMail->fields['count'],
-					'NEWSLETTER_MAIL_USERS'			=> isset($arrMailRecipientCount[$objMail->fields['id']]) ? $arrMailRecipientCount[$objMail->fields['id']] : 0
+                    'NEWSLETTER_MAIL_USERS'         => isset($arrMailRecipientCount[$objMail->fields['id']]) ? $arrMailRecipientCount[$objMail->fields['id']] : 0
                 ));
 
                 $this->_objTpl->setGlobalVariable('NEWSLETTER_MAIL_ID', $objMail->fields['id']);
@@ -2220,7 +2220,7 @@ class newsletter extends NewsletterLib
             SELECT `id`, `tmp_copy`
             FROM   `".DBPREFIX."module_newsletter`
             ".(!empty($mailId) ? "WHERE `id` = ".$mailId : '')."
-			ORDER BY status, id DESC
+            ORDER BY status, id DESC
             ".($limit ? "LIMIT $pos, $limit" : ''));
         if ($objResult !== false) {
             if (empty($mailId)) {
@@ -2254,14 +2254,14 @@ class newsletter extends NewsletterLib
 
         $count = empty($mailId) ? array() : 0;
 
-		$objResult = $objDatabase->Execute("
-			SELECT
+        $objResult = $objDatabase->Execute("
+            SELECT
                 `id`,
-				`recipient_count`
-			FROM
-				`".DBPREFIX."module_newsletter`
+                `recipient_count`
+            FROM
+                `".DBPREFIX."module_newsletter`
             ".(!empty($mailId) ? "WHERE `id` = ".$mailId : ''));
-		if ($objResult !== false && $objResult->RecordCount() > 0) {
+        if ($objResult !== false && $objResult->RecordCount() > 0) {
             if (empty($mailId)) {
                 while (!$objResult->EOF) {
                     $count[$objResult->fields['id']] = $objResult->fields['recipient_count'];
@@ -2270,7 +2270,7 @@ class newsletter extends NewsletterLib
             } else {
                 $count = $objResult->fields['recipient_count'];
             }
-		}
+        }
 
         return $count;
     }
@@ -2282,7 +2282,7 @@ class newsletter extends NewsletterLib
      * @param       int $mailId
      * @return      int
      */
-	private function getCurrentMailRecipientCount($mailId)
+    private function getCurrentMailRecipientCount($mailId)
     {
         global $objDatabase;
         $query = sprintf('
@@ -2499,18 +2499,25 @@ class newsletter extends NewsletterLib
      *
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $id
+     * @throws      Exception
      * @return      array(subject,status,count,tmp_copy)
      */
     protected function getNewsletterData($id) {
         global $objDatabase;
 
-        $objMail = $objDatabase->SelectLimit("SELECT
-            id,
-            subject,
-            status,
-            `count`,
-            tmp_copy
-            FROM ".DBPREFIX."module_newsletter WHERE id=".$mailId, 1);
+        $query = "
+            SELECT
+                id,
+                subject,
+                status,
+                `count`,
+                tmp_copy
+            FROM 
+                ".DBPREFIX."module_newsletter 
+            WHERE 
+                id=".$mailId;
+
+        $objMail = $objDatabase->SelectLimit($query, 1);
         if ($objMail === false) {
             throw new Exception('Newsletter data could not be found');
         }
@@ -2534,7 +2541,7 @@ class newsletter extends NewsletterLib
         $mailAddresses = $this->getAllRecipientEmails($mailId);
 
         foreach ($mailAddresses as $mail) {
-            $this->insertTmpEmail($mailId, $mail['email']]);
+            $this->insertTmpEmail($mailId, $mail['email']);
         }
 
         $this->updateNewsletterRecipientCount($mailId);
@@ -2694,39 +2701,31 @@ class newsletter extends NewsletterLib
         return new DBIterator($objDatabase->Execute($query));
     }
 
+    /**
+     * Send the email
+     */
     function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
         require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
 
-        $queryNewsletterValues = "select id, subject, template, content, content_text, attachment, format, priority, sender_email, sender_name, return_path, smtp_server, status, count, date_create, date_sent from ".DBPREFIX."module_newsletter where id=".$NewsletterID."";
-        $objResultNewsletterValues = $objDatabase->Execute($queryNewsletterValues);
-        if ($objResultNewsletterValues !== false) {
-            $subject         = $objResultNewsletterValues->fields['subject'];
-            $template         = $objResultNewsletterValues->fields['template'];
-            $content         = $objResultNewsletterValues->fields['content'];
-            $content_text     = $objResultNewsletterValues->fields['content_text'];
-            $format         = $objResultNewsletterValues->fields['format'];
-            $priority         = $objResultNewsletterValues->fields['priority'];
-            $sender_email     = $objResultNewsletterValues->fields['sender_email'];
-            $sender_name     = $objResultNewsletterValues->fields['sender_name'];
-            $return_path     = $objResultNewsletterValues->fields['return_path'];
-            $count             = $objResultNewsletterValues->fields['count'];
-            $smtpAccount    = $objResultNewsletterValues->fields['smtp_server'];
+        $newsletterValues = $this->getNewsletterValues($NewsletterID);
+        if ($newsletterValues !== false) {
+            $subject          = $newsletterValues['subject'];
+            $template         = $newsletterValues['template'];
+            $content          = $newsletterValues['content'];
+            $content_text     = $newsletterValues['content_text'];
+            $format           = $newsletterValues['format'];
+            $priority         = $newsletterValues['priority'];
+            $sender_email     = $newsletterValues['sender_email'];
+            $sender_name      = $newsletterValues['sender_name'];
+            $return_path      = $newsletterValues['return_path'];
+            $count            = $newsletterValues['count'];
+            $smtpAccount      = $newsletterValues['smtp_server'];
         }
-        /*
-        $queryBCC = "select setvalue from ".DBPREFIX."module_newsletter_settings where setvalue='bcc_mail'";
-        $objResultBCC = $objDatabase->Execute($queryBCC);
-        if ($objResultBCC !== false) {
-            $bcc         = $objResultBCC->fields['setvalue'];
-        }
-        */
-        $queryBreak = "select setvalue from ".DBPREFIX."module_newsletter_settings where setvalue='text_break_after'";
-        $objResultBreak = $objDatabase->Execute($queryBreak);
-        if ($objResultBreak !== false) {
-            $break         = $objResultBreak->fields['setvalue'];
-        }
-        $break = (intval($break)==0) ? 80 : $break;
+
+        $break = $this->getSetting('txt_break_after');
+        $break = (intval()==0) ? 80 : $break;
 
         $HTML_TemplateSource = $this->GetTemplateSource($template, 'html');
         $TEXT_TemplateSource = $this->GetTemplateSource($template, 'text');
@@ -2892,6 +2891,44 @@ class newsletter extends NewsletterLib
         $mail->ClearAttachments();
 
         return $ReturnVar;
+    }
+
+
+    /**
+     * Return the newsletter values
+     *
+     * @param      int $id
+     * @return     array | bool
+     */
+    private function getNewsletterValues($id) {
+        global $objDatabase;
+
+        $queryNewsletterValues = "
+            SELECT 
+                id,
+                subject,
+                template,
+                content,
+                content_text,
+                attachment,
+                format,
+                priority,
+                sender_email,
+                sender_name,
+                return_path,
+                smtp_server,
+                status,
+                count,
+                date_create,
+                date_sent 
+            FROM 
+                ".DBPREFIX."module_newsletter 
+            WHERE 
+                id=".$id."";
+
+        $result = $objDatabase->Execute($queryNewsletterValues);
+
+        return $result !== false ? $result->fields : false;
     }
 
     /**

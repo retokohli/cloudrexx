@@ -348,6 +348,28 @@ class NewsletterLib
         return $arrSettings;
     }
 
+    /**
+     * Return a setting from the settings table
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $name
+     * @return      string | bool
+     */
+    protected function getSetting($name) {
+        global $objDatabase;
+
+        $query = "
+            SELECT 
+                setvalue 
+            FROM 
+                ".DBPREFIX."module_newsletter_settings 
+            WHERE 
+                setvalue='".$name."'";
+        $result = $objDatabase->Execute($query);
+
+        return $result !== false ? $result->fields['setvalue'] : false;
+    }
+
     function _getHTML($onlyId = false)
     {
         global $objDatabase, $_ARRAYLANG;
