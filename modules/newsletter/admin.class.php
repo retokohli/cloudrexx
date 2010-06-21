@@ -1578,22 +1578,24 @@ class newsletter extends NewsletterLib
         foreach ($groups as $group) {
             $objDatabase->Execute($stmt, array(intval($group)));
         }
-        $delString = implode(',', $groups);
+        if (count($groups) > 0) {
+            $delString = implode(',', $groups);
 
-        $query = sprintf('
-            DELETE FROM
-                `%smodule_newsletter_rel_usergroup_newsletter`
-            WHERE
-                `userGroup` NOT IN (%s)
-            AND
-                `newsletter` = %s
-            ',
-            DBPREFIX,
-            $delString,
-            $mailID
-        );
+            $query = sprintf('
+                DELETE FROM
+                    `%smodule_newsletter_rel_usergroup_newsletter`
+                WHERE
+                    `userGroup` NOT IN (%s)
+                AND
+                    `newsletter` = %s
+                ',
+                DBPREFIX,
+                $delString,
+                $mailID
+            );
 
-        $objDatabase->Execute($query);
+            $objDatabase->Execute($query);
+        }
     }
 
     function _checkUniqueListName($listId, $listName) {
@@ -3122,6 +3124,12 @@ class newsletter extends NewsletterLib
         return $NewsletterBody;
     }
 
+    /**
+     * Return the user data
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       
+     */
     private function getNewsletterUserData($id, $type) {
         global $objDatabase;
 
