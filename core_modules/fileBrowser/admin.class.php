@@ -499,7 +499,7 @@ class FileBrowser {
                 $width = 80;
                 $quality = 90;
             }
-        	
+
         	if ($this->_createThumb($strPath, $strWebPath, $file)) {
               $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
             }
@@ -715,12 +715,11 @@ class FileBrowser {
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $objFWSystem = new FWSystem();
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
         $this->_objTpl->setVariable(array(
             'FILEBROWSER_UPLOAD_TYPE'   => $this->_mediaType,
             'FILEBROWSER_UPLOAD_PATH'   => $this->_path,
-            'FILEBROWSER_MAX_FILE_SIZE' => $objFWSystem->getMaxUploadFileSize(),
+            'FILEBROWSER_MAX_FILE_SIZE' => FWSystem::getMaxUploadFileSize(),
             'TXT_CREATE_DIRECTORY'      => $_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'],
             'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE']
         ));

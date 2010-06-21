@@ -610,15 +610,13 @@ class downloads extends DownloadsLibrary
             }
         } else {
             if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
-                $objFWSystem = new FWSystem();
-
                 $this->objTemplate->setVariable(array(
                     'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
                     'TXT_DOWNLOADS_UPLOAD_FILE'     => $_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE'],
                     'TXT_DOWNLOADS_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_DOWNLOADS_MAX_FILE_SIZE'],
                     'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE'],
                     'DOWNLOADS_UPLOAD_URL'          => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId(),
-                    'DOWNLOADS_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
+                    'DOWNLOADS_MAX_FILE_SIZE'       => $this->getFormatedFileSize(FWSystem::getMaxUploadFileSize())
                 ));
                 $this->objTemplate->parse('downloads_simple_file_upload');
             }

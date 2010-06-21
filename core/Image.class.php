@@ -923,7 +923,7 @@ class Image
                 return false;
         }
 
-        $memoryLimit = FWSystem::_getBytes(@ini_get('memory_limit'));
+        $memoryLimit = FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
         if (empty($memoryLimit)) {
             $memoryLimit = Image::MAXIMUM_UPLOAD_FILE_SIZE;
         }

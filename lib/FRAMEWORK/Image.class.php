@@ -533,10 +533,8 @@ class ImageManager
         }
 
         @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
-        $objSystem = new FWSystem();
-        if ($objSystem === false) return false;
 
-        $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
+        $memoryLimit = FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
         if (empty($memoryLimit)) {
             // set default php memory limit of 8MBytes
             $memoryLimit = 8*pow(1024, 2);
@@ -551,7 +549,7 @@ class ImageManager
 
         if ($potentialRequiredMemory > $memoryLimit) {
             // try to set a higher memory_limit
-            if (!ini_set('memory_limit', $potentialRequiredMemory) || $memoryLimit == $objSystem->_getBytes(ini_get('memory_limit'))) return '';
+            if (!ini_set('memory_limit', $potentialRequiredMemory) || $memoryLimit == FWSystem::getBytesOfLiteralSizeFormat(ini_get('memory_limit'))) return '';
         }
         return $function($file);
     }
