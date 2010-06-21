@@ -2523,26 +2523,92 @@ class newsletter extends NewsletterLib
         );
     }
 
+    /**
+     * Add the email address to the temp 
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $mailId
+     */
     function _setTmpSending($mailId)
     {
-        global $objDatabase;
         $mailAddresses = $this->getAllRecipientEmails($mailId);
 
         foreach ($mailAddresses as $mail) {
-            $query = "
-                INSERT IGNORE INTO
-                    ".DBPREFIX."module_newsletter_tmp_sending
-                    (`newsletter`, `email`)
-                VALUES (".$mailId.", '".$mail['email']."')";
-            $objDatabase->Execute($query);
+            $this->insertTmpEmail($mailId, $mail['email']]);
         }
-        $date = time();
 
-        $objResult = $objDatabase->Execute("SELECT COUNT(1) as recipient_count FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `newsletter` = $mailId GROUP BY `newsletter`");
-        if ($objResult !== false) {
-            $recipientCount = $objResult->fields['recipient_count'];
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter SET tmp_copy=1, date_sent=".$date.", recipient_count=$recipientCount WHERE id=".$mailId);
-        }
+        $this->updateNewsletterRecipientCount($mailId);
+    }
+
+    /**
+     * Insert an email address into the email table
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $mail
+     * @param       string $email
+     */
+    private function insertTmpEmail($mail, $email) {
+        global $objDatabase;
+
+        $query = "
+            INSERT IGNORE INTO
+                ".DBPREFIX."module_newsletter_tmp_sending
+                (`newsletter`, `email`)
+            VALUES (".$mail.", '".$email."')
+        ";
+        $objDatabase->Execute($query);
+    }
+
+    /**
+     * Return the recipient count of a newsletter in the temp table
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $id
+     * @return      int
+     */
+    private function getTmpRecipientCount($id) {
+        global $objDatabase;
+
+        $query = "
+            SELECT 
+                COUNT(1) AS recipient_count 
+            FROM 
+                `".DBPREFIX."module_newsletter_tmp_sending` 
+            WHERE 
+                `newsletter` = $id 
+            GROUP BY 
+                `newsletter`";
+        $objResult = $objDatabase->Execute($query);
+
+        return 
+              $objResult !== false 
+            ? intval($objResult->fields['recipient_count']) 
+            : 0;
+    }
+
+    /**
+     * Update the recipient count of a newsletter
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $newsletter
+     * @param       int $count
+     */
+    private function updateNewsletterRecipientCount($newsletter) {
+        global $objDatabase;
+
+        $count = $this->getTmpRecipientCount($newsletter);
+
+        $query = "
+            UPDATE 
+                ".DBPREFIX."module_newsletter 
+            SET 
+                tmp_copy=1, 
+                date_sent=UNIX_TIMESTAMP(),
+                recipient_count = $count 
+            WHERE 
+                id=".intval($newsletter);
+
+        $objDatabase->Execute($query);
     }
 
     /**
