@@ -3138,22 +3138,23 @@ class newsletter extends NewsletterLib
         $content_text       = str_replace($search, $replace, $content_text);
         $TemplateSource     = str_replace($search, $replace, $TemplateSource);
 
+        // Replace the links in the content
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
-            $this->GetProfileURL($code, $TargetEmail, $format),
+            $this->GetProfileURL($code, $TargetEmail, $format, $userData['type']),
             $this->GetUnsubscribeURL($code, $TargetEmail, $format, $userData['type']),
             date(ASCMS_DATE_SHORT_FORMAT)
         );
         $content_text = str_replace($search, $replace, $content_text);
 
+        // replace the links in the template
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
         $replace        = array(
-            $this->GetProfileURL($code, $TargetEmail, $format),
+            $this->GetProfileURL($code, $TargetEmail, $format, $userData['type']),
             $this->GetUnsubscribeURL($code, $TargetEmail, $format, $userData['type']),
             date(ASCMS_DATE_SHORT_FORMAT)
         );
         $TemplateSource = str_replace($search, $replace, $TemplateSource);
-        // ---------
 
         if ($format == "html") {
             // i believe this replaces image paths...
