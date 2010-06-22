@@ -1985,6 +1985,18 @@ class User extends User_Profile
             );
 
             return (bool)$objDatabase->execute($query);
+        } else {
+            $query = sprintf('
+                DELETE FROM
+                    `%smodule_newsletter_access_user`
+                WHERE
+                    `accessUserId` = %s
+                ',
+                DBPREFIX,
+                $user
+            );
+
+            return (bool)$objDatabase->execute($query);
         }
     }
 }
