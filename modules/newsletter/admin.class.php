@@ -90,7 +90,6 @@ class newsletter extends NewsletterLib
         foreach ($months as $month) {
             $this->months[++$i] = $month;
         }
-
     }
 
     /**
@@ -2422,7 +2421,7 @@ class newsletter extends NewsletterLib
                     foreach ($tmpSending as $send) {
                         $beforeSend = time();
 
-                        if (($newsletterData['count'] = $this->SendEmail($send['id'], $mailId, $send['email'], 1)) !== false) {
+                        if (($newsletterData['count'] = $this->SendEmail($send['id'], $mailId, $send['email'], 1, $send['type'])) !== false) {
                             $this->_objTpl->setVariable('NEWSLETTER_MAIL_RELOAD_SEND_STATUS_FRAME', '<script type="text/javascript" language="javascript">setTimeout("newsletterSendMail()",1000);</script>');
                         }
 
@@ -2478,21 +2477,53 @@ class newsletter extends NewsletterLib
 
         $query = "
             SELECT 
-                tblUser.id,
-                tblUser.email,
-                tblSend.type
-            FROM 
-                ".DBPREFIX."module_newsletter_tmp_sending AS tblSend
-            RIGHT JOIN 
-                ".DBPREFIX."module_newsletter_user AS tblUser 
-            ON 
-                tblUser.email=tblSend.email
-            WHERE 
-                tblSend.sendt=0 
-            AND 
-                tblSend.newsletter=".$id;
+                    (
+                        CASE WHEN
+                            `s`.`type` = 'newsletter'
+                        THEN
+                            `nu`.`id`
+                        ELSE
+                            `au`.`id`
+                        END
+                    )                                           AS `id`,
+                    `s`.email,
+                    `s`.type
 
-        return new DBIterator($objDatabase->SelectLimit($query, $amount, 0));
+            FROM 
+                    `".DBPREFIX."module_newsletter_tmp_sending` AS `s`
+
+            LEFT JOIN 
+                    `".DBPREFIX."module_newsletter_user`        AS `nu`
+                ON 
+                    `nu`.`email` = `s`.`email`
+                AND
+                    `s`.`type` = 'newsletter'
+
+
+            LEFT JOIN
+                    `".DBPREFIX."access_users`                  AS `au`
+                ON
+                    `au`.`email` = `s`.`email`
+                AND
+                    `s`.`type` = 'access'
+
+            WHERE 
+                    `s`.`newsletter` = ".intval($id)."
+
+            AND 
+                    `s`.`sendt` = 0 
+
+            AND
+                (
+                    `au`.`email` IS NOT NULL 
+                OR
+                    `nu`.`email` IS NOT NULL
+                )
+        ";
+
+
+        $res = $objDatabase->SelectLimit($query, $amount, 0);
+        return new DBIterator($res);
     }
 
     /**
@@ -2714,7 +2745,7 @@ class newsletter extends NewsletterLib
      * @param      string $TargetEmail
      * @param      string $type
      */
-    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry, $type = 'access') {
+    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry, $type = 'newsletter') {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
         require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
@@ -2740,23 +2771,23 @@ class newsletter extends NewsletterLib
         $HTML_TemplateSource = $this->GetTemplateSource($template, 'html');
         $TEXT_TemplateSource = $this->GetTemplateSource($template, 'text');
 
+        $newsletterUserData = $this->getNewsletterUserData($UserID, $type);
+
         $NewsletterBody_HTML = $this->ParseNewsletter(
-            $UserID,
             $subject,
             $content,
             $HTML_TemplateSource,
             "html",
             $TargetEmail,
-            $type
+            $newsletterUserData
         );
         $NewsletterBody_TEXT = $this->ParseNewsletter(
-            $UserID,
             $subject,
             $content_text,
             $TEXT_TemplateSource,
             "text",
             $TargetEmail,
-            $type
+            $newsletterUserData
         );
         $NewsletterBody_TEXT = wordwrap($NewsletterBody_TEXT, $break);
 
@@ -2773,13 +2804,12 @@ class newsletter extends NewsletterLib
             $new_textcontent = strip_tags($new_textcontent);
             # TODO: if there's tables, we probably should handle them in a special way...
             $NewsletterBody_TEXT = $this->ParseNewsletter(
-                $UserID,
                 $subject,
                 $new_textcontent,
                 $TEXT_TemplateSource,
                 "text",
                 $TargetEmail,
-                $type
+                $newsletterUserData
             );
         }
 
@@ -3032,6 +3062,8 @@ class newsletter extends NewsletterLib
         }
     }
 
+
+
     /**
      * Parse the newsletter
      *
@@ -3039,68 +3071,92 @@ class newsletter extends NewsletterLib
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       string $userType Which type the user has (newsletter or access)
      */
-    function ParseNewsletter($UserID, $subject, $content_text, $TemplateSource, $format, $TargetEmail, $userType='newsletter') {
+    function ParseNewsletter(
+        $subject,
+        $content_text,
+        $TemplateSource,
+        $format,
+        $TargetEmail,
+        $userData
+    ) {
         global $objDatabase, $_ARRAYLANG;
         $NewsletterBody = '';
 
-        if ($UserID!=0) {
-            $objResultPN = $this->getNewsletterUserData($UserID, $userType);
 
-            if ($objResultPN !== false) {
-                $code   = isset($objResultPN->fields['code']) ? $objResultPN->fields['code'] : '';
-                $lastname  = $objResultPN->fields['lastname'];
-                $firstname  = $objResultPN->fields['firstname'];
-                $street  = $objResultPN->fields['street'];
-                $zip   = $objResultPN->fields['zip'];
-                $city   = $objResultPN->fields['city'];
-                $country  = empty($objResultPN->fields['country_id']) 
-                    ? '' 
-                    : htmlentities(
-                        FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResultPN->fields['country_id'])->getName(),
-                        ENT_QUOTES, CONTREXX_CHARSET
-                    );
-                $birthday  = $objResultPN->fields['birthday'];
-                $email   = $objResultPN->fields['email'];
-                $uri       = $objResultPN->fields['uri'];
-                $phone   = $objResultPN->fields['phone'];
+        $country    = empty($userData['country_id']) 
+            ? '' 
+            : htmlentities(
+                FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$userData['country_id'])->getName(),
+                ENT_QUOTES, CONTREXX_CHARSET
+            );
 
-                switch($objResultPN->fields['sex']) {
-                    case 'm':
-                        $sex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
-                        break;
-                    case 'f':
-                        $sex = $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'];
-                        break;
-                    default:
-                        $sex = '';
-                        break;
-                 }
+        switch ($userData['sex']) {
+            case 'm':
+                $sex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
+                break;
+            case 'f':
+                $sex = $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'];
+                break;
+            default:
+                $sex = '';
+                break;
+         }
 
-                $arrRecipientTitles = &$this->_getRecipientTitles();
-                $title = isset($arrRecipientTitles[$objResultPN->fields['title']]) ? $arrRecipientTitles[$objResultPN->fields['title']] : '';
+        $arrRecipientTitles = &$this->_getRecipientTitles();
+        $title = isset($arrRecipientTitles[$userData['title']]) ? $arrRecipientTitles[$userData['title']] : '';
 
-                $array_1 = array(
-                    '[[email]]', '[[uri]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]',
-                    '[[street]]', '[[zip]]', '[[city]]', '[[country]]', '[[phone]]', '[[birthday]]'
-                );
-                $array_2 = array(
-                    $email, $uri, $sex, $title, $lastname, $firstname,
-                    $street, $zip, $city, $country, $phone, $birthday
-                );
-                $content_text     = str_replace($array_1, $array_2, $content_text);
-                $TemplateSource = str_replace($array_1, $array_2, $TemplateSource);
-            }
-        }
+        $search = array(
+            '[[email]]',
+            '[[uri]]',
+            '[[sex]]',
+            '[[title]]',
+            '[[lastname]]',
+            '[[firstname]]',
+            '[[street]]',
+            '[[zip]]',
+            '[[city]]',
+            '[[country]]',
+            '[[phone]]',
+            '[[birthday]]'
+        );
+        $replace = array(
+            $userData['email'],
+            $userData['uri'],
+            $sex,
+            $userData['title'],
+            $userData['lastname'],
+            $userData['firstname'],
+            $userData['street'],
+            $userData['zip'],
+            $userData['city'],
+            $country,
+            $userData['phone'],
+            $userData['birthday']
+        );
 
-        if ($format=="text") {
-            $array_1 = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
-            $array_2 = array($this->GetProfileSource($code, $TargetEmail, "text"), $this->GetUnsubscribeSource($code, $TargetEmail, "text"), date(ASCMS_DATE_SHORT_FORMAT));
-            $content_text = str_replace($array_1, $array_2, $content_text);
-        } else {
-            $array_1 = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
-            $array_2 = array($this->GetProfileSource($code, $TargetEmail, "html"), $this->GetUnsubscribeSource($code, $TargetEmail, "html"), date(ASCMS_DATE_SHORT_FORMAT));
-            $content_text = str_replace($array_1, $array_2, $content_text);
+        // do the replacement
+        $content_text       = str_replace($search, $replace, $content_text);
+        $TemplateSource     = str_replace($search, $replace, $TemplateSource);
 
+        $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
+        $replace        = array(
+            $this->GetProfileURL($code, $TargetEmail, $format),
+            $this->GetUnsubscribeURL($code, $TargetEmail, $format, $userData['type']),
+            date(ASCMS_DATE_SHORT_FORMAT)
+        );
+        $content_text = str_replace($search, $replace, $content_text);
+
+        $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
+        $replace        = array(
+            $this->GetProfileURL($code, $TargetEmail, $format),
+            $this->GetUnsubscribeURL($code, $TargetEmail, $format, $userData['type']),
+            date(ASCMS_DATE_SHORT_FORMAT)
+        );
+        $TemplateSource = str_replace($search, $replace, $TemplateSource);
+        // ---------
+
+        if ($format == "html") {
+            // i believe this replaces image paths...
             $allImg = array();
             preg_match_all("|src=\"(.*)\"|U", $content_text, $allImg, PREG_PATTERN_ORDER);
             $size = sizeof($allImg[1]);
@@ -3119,10 +3175,6 @@ class newsletter extends NewsletterLib
             }
         }
 
-        $array_1         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
-        $array_2         = array($this->GetProfileSource($code, $TargetEmail, $format), $this->GetUnsubscribeSource($code, $TargetEmail, $format), date(ASCMS_DATE_SHORT_FORMAT));
-        $TemplateSource = str_replace($array_1, $array_2, $TemplateSource);
-
         $NewsletterBody = str_replace("[[subject]]", $subject, $TemplateSource);
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
 
@@ -3133,7 +3185,9 @@ class newsletter extends NewsletterLib
      * Return the user data
      *
      * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       
+     * @param       int $id
+     * @param       string $type
+     * @return      adodb result object
      */
     private function getNewsletterUserData($id, $type) {
         global $objDatabase;
@@ -3141,7 +3195,7 @@ class newsletter extends NewsletterLib
         if ($type == 'access') {
             $query = '
                 SELECT
-                    `user_id`       AS `id`,
+                    ""              AS `code`,
                     (
                         CASE
                                 `gender`
@@ -3156,12 +3210,39 @@ class newsletter extends NewsletterLib
                         ELSE
                             ""
                         END
-                    )               AS `sex`
-            ';
+                    )               AS `sex`,
+                    `a`.`email`     AS `email`,
+                    `p`.`website`   AS `uri`,
+                    `p`.`title`     AS `title`,
+                    `p`.`lastname`  AS `lastname`,
+                    `p`.`firstname` AS `firstname`,
+                    `p`.`address`   AS `street`,
+                    `p`.`zip`       AS `zip`,
+                    `p`.`city`      AS `city`,
+                    `p`.`country`   AS `country_id`,
+                    CONCAT_WS(
+                        "/",
+                        `p`.`phone_office`,
+                        `p`.`phone_private`,
+                        `p`.`phone_mobile`,
+                        `p`.`phone_fax`
+                    )               AS `phone`,
+                    `birthday`      AS `birthday`,
+                    1               AS `status`,
+                    "access"        AS `type`
+                FROM
+                    `'.DBPREFIX.'access_users`         AS `a`
+
+                LEFT JOIN
+                    `'.DBPREFIX.'access_user_profile`  AS `p`
+                ON
+                    `a`.`id` = `p`.`user_id`
+
+                WHERE
+                    `id` = '.$id;
         } else {
             $query = "
                 SELECT
-                    id,
                     code,
                     sex,
                     email,
@@ -3176,19 +3257,47 @@ class newsletter extends NewsletterLib
                     phone,
                     birthday,
                     status,
-                    emaildate
+                    'newsletter'    AS  `type`
                 FROM
                     ".DBPREFIX."module_newsletter_user
                 WHERE
-                    id=".$UserID;
+                    id = ".$id;
         }
 
-        return $objDatabase->Execute($query);
+        $result = $objDatabase->Execute($query);
+
+        $ret = array(
+            'code'              => $result->fields['code'],
+            'sex'               => $result->fields['sex'],
+            'email'             => $result->fields['email'],
+            'uri'               => $result->fields['uri'],
+            'title'             => $result->fields['title'],
+            'lastname'          => $result->fields['lastname'],
+            'firstname'         => $result->fields['firstname'],
+            'street'            => $result->fields['street'],
+            'zip'               => $result->fields['zip'],
+            'city'              => $result->fields['city'],
+            'country_id'        => $result->fields['country_id'],
+            'phone'             => $result->fields['phone'],
+            'birthday'          => $result->fields['birthday'],
+            'status'            => $result->fields['status'],
+            'type'              => $result->fields['type']
+        );
+
+        return $ret;
     }
 
-    function GetUnsubscribeSource($code, $email, $format)
+    /**
+     * Get the URL to the page to unsubscribe
+     */
+    function GetUnsubscribeURL($code, $email, $format, $type = 'newsletter')
     {
         global $_ARRAYLANG, $_CONFIG;
+
+        $profileURI = '?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+        if ($type == 'access') {
+            $profileURI  = '?section=access&cmd=settings_newsletter';
+        }
 
         $uri = ASCMS_PROTOCOL.'://'
             .$_CONFIG['domainUrl']
@@ -3196,7 +3305,7 @@ class newsletter extends NewsletterLib
             .ASCMS_PATH_OFFSET
             .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL)
             .'/'.CONTREXX_DIRECTORY_INDEX
-            .'?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+            .$profileURI;
 
         if ($format=="html") {
             return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
@@ -3211,9 +3320,14 @@ class newsletter extends NewsletterLib
      * Return link to the profile of a user
      *
      */
-    function GetProfileSource($code, $email, $format)
+    function GetProfileURL($code, $email, $format, $type = 'newsletter')
     {
         global $_ARRAYLANG, $_CONFIG;
+
+        $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+        if ($type == 'access') {
+            $profileURI = '?section=access&cmd=settings_accountdata';
+        }
 
         $uri = ASCMS_PROTOCOL.'://'
             .$_CONFIG['domainUrl']
@@ -3221,7 +3335,7 @@ class newsletter extends NewsletterLib
             .ASCMS_PATH_OFFSET
             .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL)
             .'/'.CONTREXX_DIRECTORY_INDEX
-            .'?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+            .$profileURI;
 
         if ($format=="html") {
             return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
