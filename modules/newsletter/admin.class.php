@@ -2480,7 +2480,7 @@ class newsletter extends NewsletterLib
             SELECT 
                 tblUser.id,
                 tblUser.email,
-                tblUser.type
+                tblSend.type
             FROM 
                 ".DBPREFIX."module_newsletter_tmp_sending AS tblSend
             RIGHT JOIN 
