@@ -2388,7 +2388,7 @@ class newsletter extends NewsletterLib
 
         //Get some newsletter data
         $newsletterData = $this->getNewsletterData($mailId);
-        $statusBarWidth = round(200 / $mailRecipientCount * $count, 0);
+        $statusBarWidth = round(200 / $mailRecipientCount * $newsletterData['count'], 0);
 
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_SUBJECT'          => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
@@ -3047,13 +3047,18 @@ class newsletter extends NewsletterLib
             $objResultPN = $this->getNewsletterUserData($UserID, $userType);
 
             if ($objResultPN !== false) {
-                $code   = $objResultPN->fields['code'];
+                $code   = isset($objResultPN->fields['code']) ? $objResultPN->fields['code'] : '';
                 $lastname  = $objResultPN->fields['lastname'];
                 $firstname  = $objResultPN->fields['firstname'];
                 $street  = $objResultPN->fields['street'];
                 $zip   = $objResultPN->fields['zip'];
                 $city   = $objResultPN->fields['city'];
-                $country  = empty($objResultPN->fields['country_id']) ? '' : htmlentities(FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResultPN->fields['country_id'])->getName(), ENT_QUOTES, CONTREXX_CHARSET);
+                $country  = empty($objResultPN->fields['country_id']) 
+                    ? '' 
+                    : htmlentities(
+                        FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$objResultPN->fields['country_id'])->getName(),
+                        ENT_QUOTES, CONTREXX_CHARSET
+                    );
                 $birthday  = $objResultPN->fields['birthday'];
                 $email   = $objResultPN->fields['email'];
                 $uri       = $objResultPN->fields['uri'];
@@ -3202,6 +3207,10 @@ class newsletter extends NewsletterLib
 
 
 
+    /**
+     * Return link to the profile of a user
+     *
+     */
     function GetProfileSource($code, $email, $format)
     {
         global $_ARRAYLANG, $_CONFIG;
@@ -4163,27 +4172,6 @@ class newsletter extends NewsletterLib
         $pos = intval($_GET['pos']);
 
 
-        /*
-        if ($where_statement == '') {
-            $query         = "    SELECT id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
-                            FROM ".DBPREFIX."module_newsletter_user
-                            GROUP BY id
-                            ORDER BY emaildate DESC";
-        } elseif ($newsletterListId == 0) {
-            $query         = "    SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
-                            FROM ".DBPREFIX."module_newsletter_user AS tblUser
-                            where 1=1 ".$where_statement."
-                            GROUP BY id
-                            ORDER BY emaildate DESC";
-        } else {
-            $query         = "    SELECT tblUser.id, email, lastname, firstname, street, zip, city, country, emaildate, `status`
-                            FROM ".DBPREFIX."module_newsletter_user AS tblUser, "
-                            .DBPREFIX."module_newsletter_rel_user_cat AS tblRel
-                            where 1=1 ".$where_statement."
-                            GROUP BY tblUser.id
-                            ORDER BY emaildate DESC";
-        }
-         */
         list ($users, $count) = $this->returnNewsletterUser($where_statement,
             $newsletterListId);
 
@@ -4266,6 +4254,7 @@ class newsletter extends NewsletterLib
     private function returnNewsletterUser($where, $newsletterListId=0) {
         global $objDatabase;
 
+        // get only selected
         $query = sprintf('
             SELECT SQL_CALC_FOUND_ROWS
                     *
@@ -4373,7 +4362,7 @@ class newsletter extends NewsletterLib
             (
                 !empty($newsletterListId)
                 ? sprintf('WHERE `cnu`.`newsletterCategoryID` = %s', intval($newsletterListId))
-                : ''
+                : 'WHERE `cnu`.`accessUserID` IS NOT NULL'
             ),
             $where
 
