@@ -367,9 +367,15 @@ class DataAdmin extends DataLibrary {
 
             $children = $this->getAllChildren($key, $tree[$key]);
 
+            if (!isset($arrCategories[$key]['parent_id'])) {
+                //echo "\n\n########## HAD TO TAKE ZERO ########\n\n";
+            }
+
             $this->_objTpl->setGlobalVariable(array(
                     "CATID"         => $key,
-                    "PARENT_ID"     => $arrCategories[$key]['parent_id'],
+                    "PARENT_ID"     =>  !isset($arrCategories[$key]['parent_id']) 
+                                        ? $arrCategories[$key]['parent_id'] 
+                                        : 0,
                     "LEVEL"         => $level
                ));
                foreach ($children as $child) {
@@ -423,6 +429,7 @@ class DataAdmin extends DataLibrary {
      */
     function insertCategory() {
         global $objDatabase, $_ARRAYLANG;
+        //DBG::activate(DBG_ADODB);
 
         if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
             //Get next category-id
@@ -435,7 +442,14 @@ class DataAdmin extends DataLibrary {
             //Collect data
             $arrValues = array();
             foreach ($_POST as $strKey => $strValue) {
+                /*
+                echo "------------------------------------ BEGIN ------------------------------------\n";
+                echo "$strKey :" .print_r($strValue, true);
+                echo "\n------------------------------------ END ------------------------------------\n\n\n\n";
+                 */
+                // what the fuck is this for?
                 if (substr($strKey,0,strlen('frmAddCategory_Name_')) == 'frmAddCategory_Name_') {
+                        echo "diggin' in\n\n\n";
                     $intLanguageId = intval(substr($strKey,strlen('frmAddCategory_Name_')));
                     $arrValues[$intLanguageId] = array(    'name'            => contrexx_addslashes(strip_tags($strValue)),
                                                         'is_active'       => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
@@ -478,6 +492,7 @@ class DataAdmin extends DataLibrary {
         } else {
             $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_ERROR_ACTIVE'];
         }
+        DBG::deactivate(DBG_ADODB);
     }
 
 
