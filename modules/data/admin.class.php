@@ -449,7 +449,6 @@ class DataAdmin extends DataLibrary {
                  */
                 // what the fuck is this for?
                 if (substr($strKey,0,strlen('frmAddCategory_Name_')) == 'frmAddCategory_Name_') {
-                        echo "diggin' in\n\n\n";
                     $intLanguageId = intval(substr($strKey,strlen('frmAddCategory_Name_')));
                     $arrValues[$intLanguageId] = array(    'name'            => contrexx_addslashes(strip_tags($strValue)),
                                                         'is_active'       => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
