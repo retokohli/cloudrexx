@@ -206,7 +206,7 @@ class BlogLibrary {
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many entries will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
      * @return  array       $arrReturn
      */
-    function createEntryArray($intLanguageId=0, $intStartingIndex=0, $intLimitIndex=0) {
+    function createEntryArray($intLanguageId=0, $intStartingIndex=0, $intLimitIndex=0, $intUserId=0) {
         global $objDatabase, $_ARRAYLANG;
 
         $arrReturn = array();
@@ -228,6 +228,13 @@ class BlogLibrary {
             $intLimitIndex = $this->countEntries();
         }
 
+        $strQueryWhere = '';
+        if($intUserId != 0) {
+        	$strQueryWhere = "WHERE user_id = '".$intUserId."'";
+        }
+
+
+
         $objResultMain = $objDatabase->Execute('SELECT      blogMessages.message_id,
                                                         blogMessages.user_id,
                                                         blogMessages.time_created,
@@ -237,6 +244,7 @@ class BlogLibrary {
                                             FROM        '.DBPREFIX.'module_blog_messages        AS blogMessages
                                             '.$strLanguageJoin.'
                                             '.$strLanguageWhere.'
+                                            '.$strQueryWhere.'
                                             ORDER BY    time_created DESC
                                             LIMIT       '.$intStartingIndex.','.$intLimitIndex.'
                                         ');
