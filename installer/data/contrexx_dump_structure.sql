@@ -925,6 +925,7 @@ CREATE TABLE `contrexx_module_data_messages_lang` (
   `tags` varchar(250) NOT NULL default '',
   `image` varchar(250) NOT NULL default '',
   `thumbnail` varchar(250) NOT NULL,
+  `thumbnail_type` enum('original','thumbnail') NOT NULL default 'original',
   `thumbnail_width` tinyint(3) unsigned NOT NULL default '0',
   `thumbnail_height` tinyint(3) unsigned NOT NULL default '0',
   `attachment` varchar(255) NOT NULL default '',
