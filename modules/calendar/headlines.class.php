@@ -54,6 +54,7 @@ class calHeadlines extends calendarLibrary
         $month     = isset($_REQUEST['monthID']) ? $_REQUEST['monthID'] : date('m', mktime());
         $year     = isset($_REQUEST['yearID']) ? $_REQUEST['yearID'] : date('Y', mktime());
         $startdate = mktime(0, 0, 0, $month, $day, $year);
+        $enddate = mktime(23, 59, 59, $month, $day, $year+10);
 
         //get category
         if ($_CONFIG['calendarheadlinescat'] != 0) {
@@ -66,9 +67,12 @@ class calHeadlines extends calendarLibrary
         $auth = $this->_checkAccess();
         //get maxsize
         $count = $_CONFIG['calendarheadlinescount'];
+        
         //get events list
         $this->objSeries     = new seriesManager();
-        $this->eventList     = $this->objSeries->getEventList($startdate,0,$count, $auth, null, $category, true);
+        $this->eventList     = $this->objSeries->getEventList($startdate,$enddate,$count, $auth, null, $category, true);
+        
+        
         //generate list
         $this->_showList();
         return $this->_objTemplate->get();
