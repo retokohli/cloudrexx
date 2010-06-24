@@ -196,6 +196,7 @@ class dataBlocks extends DataLibrary
             if ($this->categoryMatches($id, $entry['categories'][$_LANGID])) {
                 if ($entry['translation'][$_LANGID]['image']) {
                     if ($entry['translation'][$_LANGID]['thumbnail']) {
+                        /*
                         $thumb_name = ImageManager::getThumbnailFilename(
                             $entry['translation'][$_LANGID]['thumbnail']);
                         if (file_exists(ASCMS_PATH.$thumb_name)) {
@@ -206,6 +207,10 @@ class dataBlocks extends DataLibrary
                                 $entry['translation'][$_LANGID]['thumbnail'].
                                 "\" alt=\"\" style=\"float: left;  width: 80px;\" />";
                         }
+                         */
+                        $image =
+                            "<img src=\"".$entry['translation'][$_LANGID]['thumbnail']."\"
+                                alt=\"\" style=\"float: left;\" />";
                     } elseif (file_exists(
                         ASCMS_DATA_IMAGES_PATH.'/'.$entryId.'_'.$_LANGID.'_'.
                         basename($entry['translation'][$_LANGID]['image']))) {
@@ -292,6 +297,9 @@ class dataBlocks extends DataLibrary
 
         if ($entry['translation'][$_LANGID]['image']) {
             if ($entry['translation'][$_LANGID]['thumbnail']) {
+                // i guess this is where there is already a thumbnail
+                // set manually
+                 /*
                 $thumb_name = ImageManager::getThumbnailFilename(
                     $entry['translation'][$_LANGID]['thumbnail']);
                 if (file_exists(ASCMS_PATH.$thumb_name)) {
@@ -303,6 +311,9 @@ class dataBlocks extends DataLibrary
                         "<img src=\"".$entry['translation'][$_LANGID]['thumbnail'].
                         "\" alt=\"\" border=\"1\" style=\"float: left;  width: 80px;\" />";
                 }
+                */
+                $image = "<img src=\"".$entry['translation'][$_LANGID]['thumbnail']."\"
+                            alt=\"\" style=\"float: left;\"/>";
             } elseif (file_exists(
                 ASCMS_DATA_IMAGES_PATH.'/'.$id.'_'.$_LANGID.'_'.
                 basename($entry['translation'][$_LANGID]['image']))) {
