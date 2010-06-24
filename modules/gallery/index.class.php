@@ -934,6 +934,7 @@ class Gallery
                 $imageFileName = $this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '';
                 $imageName = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : '';
                 $imageTitle = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : ($this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '');
+                $imageTitleTag = $objSubResult->fields['name'];
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
                 $imageSizeShow = $objResult->fields['size_show'];
@@ -970,9 +971,9 @@ class Gallery
                 if ($this->arrSettings['enable_popups'] == "on") {
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
-                        '}"  title="'.$imageTitle.'" href="'.
-                        $strImagePath.'"><img title="'.$imageTitle.'" src="'.
-                        $imageThumbPath.'" alt="'.$imageTitle.'" /></a>';
+                        '}"  title="'.$imageTitleTag.'" href="'.
+                        $strImagePath.'"><img title="'.$imageTitleTag.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageTitleTag.'" /></a>';
                     /*
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
@@ -985,8 +986,8 @@ class Gallery
                         '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
                         $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
                         $objResult->fields['id'].'">'.'<img  title="'.
-                        $imageTitle.'" src="'.$imageThumbPath.'"'.
-                        'alt="'.$imageTitle.'" /></a>';
+                        $imageTitleTag.'" src="'.$imageThumbPath.'"'.
+                        'alt="'.$imageTitleTag.'" /></a>';
                 }
 
                 if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
