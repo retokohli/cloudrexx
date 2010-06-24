@@ -133,4 +133,5 @@ $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'] = "Tama&ntilde;o m&aacute;ximo de la mini
 $_ARRAYLANG['TXT_DATA_WIDTH'] = "Ancho";
 $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Altura";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Descripci&oacute;n del adjunto";
+$_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "";
 ?>
