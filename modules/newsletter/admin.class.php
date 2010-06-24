@@ -478,7 +478,7 @@ class newsletter extends NewsletterLib
         global $objDatabase;
 
         if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_category (`name`, `status`)
-                                    VALUES ('".$listName."', ".$listStatus.", '$notificationEmail')") !== false) {
+                                    VALUES ('".$listName."', ".$listStatus.")") !== false) {
             return true;
         } else {
             return false;
@@ -3895,14 +3895,9 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_LISTS'    => $_ARRAYLANG['TXT_NEWSLETTER_LISTS']
         ));
-
-        $objList = $objDatabase->SelectLimit("SELECT tblList.id AS listId, tblList.status, tblList.name, tblMail.id AS mailId, tblMail.subject, tblMail.date_sent
-              FROM ".DBPREFIX."module_newsletter_category AS tblList
-              LEFT JOIN ".DBPREFIX."module_newsletter_rel_cat_news AS tblRel ON tblRel.category=tblList.id
-              LEFT JOIN ".DBPREFIX."module_newsletter AS tblMail ON tblMail.id=tblRel.newsletter
-            GROUP BY tblList.id
-            ORDER BY date_sent DESC", $limit);
-
+        
+        $objList = $objDatabase->SelectLimit("SELECT tblList.id AS listId, tblList.status, tblList.name FROM ".DBPREFIX."module_newsletter_category AS tblList GROUP BY tblList.id", $limit);
+        
         if ($objList !== false && $objList->RecordCount() > 0) {
             $this->_objTpl->setVariable(array(
                 'TXT_NEWSLETTER_ID_UC'                        => $_ARRAYLANG['TXT_NEWSLETTER_ID_UC'],
@@ -3923,14 +3918,17 @@ class newsletter extends NewsletterLib
                 } else {
                     $recipientCount = 0;
                 }
-
+                
+                $objMail = $objDatabase->SelectLimit("SELECT subject, id, date_sent FROM ".DBPREFIX."module_newsletter_rel_cat_news INNER JOIN  ".DBPREFIX."module_newsletter ON  ".DBPREFIX."module_newsletter_rel_cat_news.newsletter = ".DBPREFIX."module_newsletter.id WHERE category = ".$objList->fields['listId']." AND date_sent != 0 ORDER BY date_sent DESC", 1);
+                
+                
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_LIST_ROW_CLASS'            => $rowNr % 2 == 1 ? "row1" : "row2",
                     'NEWSLETTER_LIST_ID'                => $objList->fields['listId'],
                     'NEWSLETTER_LIST_STATUS_IMG'        => $objList->fields['status'] == 1 ? "folder_on.gif" : "folder_off.gif",
                     'NEWSLETTER_LIST_NAME'                => htmlentities($objList->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'NEWSLETTER_LIST_RECIPIENT_COUNT'    => $recipientCount > 0 ? '<a href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId='.$objList->fields['listId'].'" title="'.sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], htmlentities($objList->fields['name'], ENT_QUOTES, CONTREXX_CHARSET)).'">'.$recipientCount.'</a>' : '-',
-                    'NEWSLETTER_LIST_LAST_SENT_MAIL'    => $objList->fields['date_sent'] > 0 ? '<a href="index.php?cmd=newsletter&amp;act=showMail&amp;id='.$objList->fields['mailId'].'" title="'.$_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_EMAIL'].'">'.htmlentities($objList->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET).' ('.date(ASCMS_DATE_FORMAT, $objList->fields['date_sent']).')</a>' : '-',
+                    'NEWSLETTER_LIST_LAST_SENT_MAIL'    => $objMail->fields['date_sent'] > 0 ? '<a href="index.php?cmd=newsletter&amp;act=showMail&amp;id='.$objMail->fields['mailId'].'" title="'.$_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_EMAIL'].'">'.htmlentities($objMail->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET).' ('.date(ASCMS_DATE_FORMAT, $objMail->fields['date_sent']).')</a>' : '-',
                 ));
 
                 $rowNr++;
