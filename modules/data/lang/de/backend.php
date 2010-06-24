@@ -133,4 +133,5 @@ $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'] = "Maximale Grösse des Thumbnails:";
 $_ARRAYLANG['TXT_DATA_WIDTH'] = "Breite";
 $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Höhe";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Beschreibung des Anhangs";
+$_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
 ?>
