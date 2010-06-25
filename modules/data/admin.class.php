@@ -1,4 +1,5 @@
 <?php
+$_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1072,17 +1073,18 @@ class DataAdmin extends DataLibrary {
 
                 //Parse the DIVS for every language
                 $this->_objTpl->setVariable(array(
-                    'TXT_DIV_SUBJECT'        =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
-                    'TXT_DIV_IMAGE'            =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
-                    'TXT_DIV_IMAGE_BROWSE'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
-                    'TXT_DIV_THUMBNAIL'            =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
-                    'TXT_DIV_THUMBNAIL_BROWSE'    =>    $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
+                    'TXT_DIV_SUBJECT'               => $_ARRAYLANG['TXT_DATA_ENTRY_ADD_SUBJECT'],
+                    'TXT_DIV_IMAGE'                 => $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE'],
+                    'TXT_DIV_IMAGE_BROWSE'          => $_ARRAYLANG['TXT_DATA_ENTRY_ADD_IMAGE_BROWSE'],
+                    'TXT_DIV_THUMBNAIL'             => $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL'],
+                    'TXT_DIV_THUMBNAIL_BROWSE'      => $_ARRAYLANG['TXT_DATA_ENTRY_ADD_THUMBNAIL_BROWSE'],
+                    'TXT_DIV_THUMBNAIL_TYPE'        => $_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'],
                     'TXT_DATA_THUMBNAIL_ORI_DESC'   => $_ARRAYLANG['TXT_DATA_THUMBNAIL_ORI_DESC'],
                     'TXT_DATA_THUMBNAIL_DIFF_DESC'  => $_ARRAYLANG['TXT_DATA_THUMBNAIL_DIFF_DESC'],
                     'TXT_DATA_THUMBNAIL_SIZE'       => $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'],
                     'THUMBNAIL_METHOD_ORI_CHECKED'  => 'checked="checked"',
-                    'THUMBNAIL_ORI_WIDTH' => 80,
-                    'THUMBNAIL_ORI_HEIGHT' => 80,
+                    'THUMBNAIL_ORI_WIDTH'           => 80,
+                    'THUMBNAIL_ORI_HEIGHT'          => 80,
                     'DIV_THUMBNAIL_DIFF_DISPLAY'    => 'none',
                     'TXT_DATA_WIDTH'                => $_ARRAYLANG['TXT_DATA_WIDTH'],
                     'TXT_DATA_HEIGHT'               => $_ARRAYLANG['TXT_DATA_HEIGHT'],
@@ -1233,20 +1235,22 @@ class DataAdmin extends DataLibrary {
         foreach ($_POST as $strKey => $strValue) {
             if (substr($strKey,0,strlen('frmEditEntry_Subject_')) == 'frmEditEntry_Subject_') {
                 $intLanguageId = intval(substr($strKey,strlen('frmEditEntry_Subject_')));
-                $arrValues[$intLanguageId] = array(    'subject'         => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Subject_'.$intLanguageId])),
-                                                    'content'        => contrexx_addslashes($_POST['frmEditEntry_Content_'.$intLanguageId]),
-                                                    'is_active'        => intval(in_array($intLanguageId, $_POST['frmEditEntry_Languages'])),
-                                                    //'categories'    => (isset($_POST['frmEditEntry_Categories_'.$intLanguageId])) ? $_POST['frmEditEntry_Categories_'.$intLanguageId] : array(),
-                                                    'categories'    => (isset($_POST['frmcategory_'.$intLanguageId])) ? array($_POST['frmcategory_'.$intLanguageId]) : array(),
-                                                    'image'            => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Image_'.$intLanguageId])),
-                                                    'thumbnail'            => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'different' ? contrexx_addslashes(strip_tags($_POST['frmEditEntry_Thumbnail_'.$intLanguageId])) : '',
-                                                    'thumbnail_width' => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Width_'.$intLanguageId]) : 0,
-                                                    'thumbnail_height' => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Height_'.$intLanguageId]) : 0,
-                                                    'attachment'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_'.$intLanguageId]),
-                                                    'attachment_desc'    => contrexx_addslashes($_POST['frmEditEntry_Attachment_Desc_'.$intLanguageId]),
-                                                    'forward_url'   => contrexx_addslashes($_POST['frmEditEntry_ForwardUrl_'.$intLanguageId]),
-                                                    'forward_target' => contrexx_addslashes($_POST['frmEditEntry_ForwardTarget_'.$intLanguageId]),
-                                                );
+                $arrValues[$intLanguageId] = array(    
+                    'subject'           => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Subject_'.$intLanguageId])),
+                    'content'           => contrexx_addslashes($_POST['frmEditEntry_Content_'.$intLanguageId]),
+                    'is_active'         => intval(in_array($intLanguageId, $_POST['frmEditEntry_Languages'])),
+                    //'categories'      => (isset($_POST['frmEditEntry_Categories_'.$intLanguageId])) ? $_POST['frmEditEntry_Categories_'.$intLanguageId] : array(),
+                    'categories'        => (isset($_POST['frmcategory_'.$intLanguageId])) ? array($_POST['frmcategory_'.$intLanguageId]) : array(),
+                    'image'             => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Image_'.$intLanguageId])),
+                    'thumbnail'         => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'different' ? contrexx_addslashes(strip_tags($_POST['frmEditEntry_Thumbnail_'.$intLanguageId])) : '',
+                    'thumbnail_type'    => isset($_POST['frmEditEntry_Thumbnail_Type_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Type_'.$intLanguageId] == '1' ? 'thumbnail' : 'original',
+                    'thumbnail_width'   => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Width_'.$intLanguageId]) : 0,
+                    'thumbnail_height'  => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'original' ? intval($_POST['frmEditEntry_Thumbnail_Height_'.$intLanguageId]) : 0,
+                    'attachment'        => contrexx_addslashes($_POST['frmEditEntry_Attachment_'.$intLanguageId]),
+                    'attachment_desc'   => contrexx_addslashes($_POST['frmEditEntry_Attachment_Desc_'.$intLanguageId]),
+                    'forward_url'       => contrexx_addslashes($_POST['frmEditEntry_ForwardUrl_'.$intLanguageId]),
+                    'forward_target'    => contrexx_addslashes($_POST['frmEditEntry_ForwardTarget_'.$intLanguageId]),
+                );
             }
         }
 
@@ -1280,6 +1284,7 @@ class DataAdmin extends DataLibrary {
                                         `content` = "'.$arrEntryValues['content'].'",
                                         `image` = "'.$arrEntryValues['image'].'",
                                         `thumbnail` = "'.$arrEntryValues['thumbnail'].'",
+                                        `thumbnail_type` = "'.$arrEntryValues['thumbnail_type'].'",
                                         `thumbnail_width` = "'.$arrEntryValues['thumbnail_width'].'",
                                         `thumbnail_height` = "'.$arrEntryValues['thumbnail_height'].'",
                                         `attachment` = "'.$arrEntryValues['attachment'].'",
@@ -1450,6 +1455,7 @@ class DataAdmin extends DataLibrary {
                         'DIV_THUMBNAIL_ORI_DISPLAY' => empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? '' : 'none',
                         'DIV_THUMBNAIL_DIFF_DISPLAY' => !empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? '' : 'none',
                         'DIV_THUMBNAIL_'.(!empty($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail']) ? 'DIFF' : 'ORI').'_DISPLAY' => '',
+                        'DIV_THUMBNAIL_TYPE_CHECKED' => ($arrEntries[$intEntryId]['translation'][$intLanguageId]['thumbnail_type'] == 'thumbnail') ? 'checked=\"checked\"' : '',
                         'DIV_CATEGORIES_1'    =>    $arrCategoriesContent[0],
                         'DIV_CATEGORIES_2'    =>    $arrCategoriesContent[1],
                         'DIV_CATEGORIES_3'    =>    $arrCategoriesContent[2],
