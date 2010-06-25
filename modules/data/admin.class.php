@@ -785,10 +785,10 @@ class DataAdmin extends DataLibrary {
                 $err = $objDatabase->ErrorNo();
                 if ($err == 1062) {
                     $placeholder .= rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9); // not very beautiful...
-                    $objDatabase->Execute(" INSERT INTO ".DBPREFIX."module_data_placeholders
+                    $objDatabase->Execute(" INSERT IGNORE INTO ".DBPREFIX."module_data_placeholders
                                             (`type`, `ref_id`, `placeholder`)
                                             VALUES
-                                            ('entry', ".$intCategoryId.",
+                                            ('cat', ".$intCategoryId.",
                                             '".$placeholder."')");
                 }
             }
