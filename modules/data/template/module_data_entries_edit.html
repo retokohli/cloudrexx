@@ -9,24 +9,24 @@ Text[0]=["","{TXT_REDIRECT_HELP}"];
 
 function switchBoxAndTab(objElement, strTabId) {
 
-  if (countActiveLanguages() == 0) {
-    //We just "unchecked" the last language, disallow this
-    objElement.checked = true;
-  } else {
-    //There are more active languages, hide the tab
-    switchTabVisibility(strTabId);
-  }
+    if (countActiveLanguages() == 0) {
+        //We just "unchecked" the last language, disallow this
+        objElement.checked = true;
+    } else {
+        //There are more active languages, hide the tab
+        switchTabVisibility(strTabId);
+    }
 
-  //Now make sure that a possible div is shown
-  activateAnyActiveDiv();
+    //Now make sure that a possible div is shown
+    activateAnyActiveDiv();
 }
 
 function switchTabVisibility(strTabId) {
-  if (document.getElementById(strTabId).style.display == 'none') {
-    document.getElementById(strTabId).style.display = 'inline';
-  } else {
-    document.getElementById(strTabId).style.display = 'none';
-  }
+    if (document.getElementById(strTabId).style.display == 'none') {
+        document.getElementById(strTabId).style.display = 'inline';
+    } else {
+        document.getElementById(strTabId).style.display = 'none';
+    }
 }
 
 
@@ -71,36 +71,36 @@ function showSelectedThumbnailMethod(method, langId) {
     } else {
         document.getElementById('thumbnail_ori_'+langId).style.display = 'none';
         document.getElementById('thumbnail_diff_'+langId).style.display = '';
-  }
+    }
 }
 
 //Following Functions are needed for Picture-Selection -------------------------------------------------------------
 function SetUrl(url, width, height, alt) {
-  document.getElementById(newsElInsertBox).value = url;
+    document.getElementById(newsElInsertBox).value = url;
 }
 
 function newsGetFileBrowser(elInsertBox, sType)
 {
-  newsElInsertBox = elInsertBox;
-  newsElType = sType;
+    newsElInsertBox = elInsertBox;
+    newsElType = sType;
 
-  if (sType == 'link') {
-    newsElLinkText = prompt('{TXT_NEWS_DEFINE_LINK_ALT_TEXT}', '');
-    if (newsElLinkText == null) {
-      return false;
+    if (sType == 'link') {
+        newsElLinkText = prompt('{TXT_NEWS_DEFINE_LINK_ALT_TEXT}', '');
+        if (newsElLinkText == null) {
+            return false;
+        }
     }
-  }
 
-  if (sType == 'webpages') {
-    openWindow('index.php?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-  } else {
-    openWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-  }
+    if (sType == 'webpages') {
+        openWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    } else {
+        openWindow('index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+    }
 }
 
 function openWindow(theURL,winName,features){
-  dataPopup = window.open(theURL,"Data",features);
-  dataPopup.focus();
+    dataPopup = window.open(theURL,"Data",features);
+    dataPopup.focus();
 }
 
 var switchMode = function(mode)
@@ -180,56 +180,117 @@ var updateEndDate = function(obj)
 </script>
 
 <form name="frmEditEntry" method="post" action="{EDIT_POST_ACTION}">
-  <ul id="tabmenu">
-    <!-- BEGIN showLanguageTabs -->
-    <li><a id="{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" onclick="selectDataTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
-    <!-- END showLanguageTabs -->
-    <li><a id="addEntry_advSettings" class="inactive" href="javascript:{}" onclick="selectDataTab('advSettings')" title="{TXT_ADV_SETTINGS}" style="display: inline;">{TXT_ADV_SETTINGS}</a></li>
-  </ul>
-  <!-- BEGIN showLanguageDivs -->
-  <div id="{DIV_ID}" class="addEntry" style="{DIV_DISPLAY_STYLE}">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-     <thead>
-        <tr>
-          <th colspan="4">{DIV_TITLE}</th>
-        </tr>
-    </thead>
-    <tbody class="editBody">
-        <tr class="row2">
-          <td style="width: 240px;">{TXT_DIV_SUBJECT}</td>
-          <td colspan="3"><input type="text" name="frmEditEntry_Subject_{DIV_LANGUAGE_ID}" value="{DIV_SUBJECT}" maxlength="250" style="width:30%;" /></td>
-        </tr>
-        <tr class="row1">
-          <td>{TXT_DIV_IMAGE}</td>
-          <td colspan="3"><input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:30%;" value="{DIV_IMAGE}" />&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}', 'image')" /></td>
-        </tr>
-        <tr class="row2">
-          <td style="vertical-align:top;">{TXT_DIV_THUMBNAIL}</td>
-          <td colspan="3">
-                    <input type="radio" name="frmEditEntry_Thumbnail_Method_{DIV_LANGUAGE_ID}" id="frmEditEntry_Thumbnail_Method_Original_{DIV_LANGUAGE_ID}" value="original" onchange="showSelectedThumbnailMethod(this.value,{DIV_LANGUAGE_ID})" {THUMBNAIL_METHOD_ORI_CHECKED} /> <label for="frmEditEntry_Thumbnail_Method_Original_{DIV_LANGUAGE_ID}">{TXT_DATA_THUMBNAIL_ORI_DESC}</label><br />
-                    <input type="radio" name="frmEditEntry_Thumbnail_Method_{DIV_LANGUAGE_ID}" id="frmEditEntry_Thumbnail_Method_Different_{DIV_LANGUAGE_ID}" value="different" onchange="showSelectedThumbnailMethod(this.value,{DIV_LANGUAGE_ID})"  {THUMBNAIL_METHOD_DIFF_CHECKED} /> <label for="frmEditEntry_Thumbnail_Method_Different_{DIV_LANGUAGE_ID}">{TXT_DATA_THUMBNAIL_DIFF_DESC}</label><br />
+    <ul id="tabmenu">
+        <!-- BEGIN showLanguageTabs -->
+        <li>
+            <a id="{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" 
+            onclick="selectDataTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a>
+        </li>
+        <!-- END showLanguageTabs -->
+        <li>
+            <a id="addEntry_advSettings" class="inactive" href="javascript:{}" 
+                onclick="selectDataTab('advSettings')" title="{TXT_ADV_SETTINGS}" 
+                style="display: inline;">{TXT_ADV_SETTINGS}
+            </a>
+        </li>
+    </ul>
+    <!-- BEGIN showLanguageDivs -->
+    <div id="{DIV_ID}" class="addEntry" style="{DIV_DISPLAY_STYLE}">
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+       <thead>
+            <tr>
+                <th colspan="4">{DIV_TITLE}</th>
+            </tr>
+        </thead>
+        <tbody class="editBody">
+            <tr class="row2">
+                <td style="width: 240px;">
+                    {TXT_DIV_SUBJECT}
+                </td>
+                <td colspan="3">
+                    <input type="text" name="frmEditEntry_Subject_{DIV_LANGUAGE_ID}" 
+                        value="{DIV_SUBJECT}" maxlength="250" style="width:30%;" />
+                </td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_DIV_IMAGE}</td>
+                <td colspan="3">
+                    <input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:30%;" value="{DIV_IMAGE}" />
+                    &nbsp;
+                    <input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}', 'image')" />
+                </td>
+            </tr>
+
+            <!-- THUMBNAIL SECTION -->
+            <tr class="row2">
+                <td style="vertical-align:top;">
+                    {TXT_DIV_THUMBNAIL}
+                </td>
+                <td colspan="3">
+                    <input type="radio" name="frmEditEntry_Thumbnail_Method_{DIV_LANGUAGE_ID}" 
+                        id="frmEditEntry_Thumbnail_Method_Original_{DIV_LANGUAGE_ID}" 
+                        value="original" onchange="showSelectedThumbnailMethod(this.value,{DIV_LANGUAGE_ID})" 
+                        {THUMBNAIL_METHOD_ORI_CHECKED} /> 
+                    <label for="frmEditEntry_Thumbnail_Method_Original_{DIV_LANGUAGE_ID}">
+                        {TXT_DATA_THUMBNAIL_ORI_DESC}</label><br />
+
+                    <input type="radio" name="frmEditEntry_Thumbnail_Method_{DIV_LANGUAGE_ID}" 
+                        id="frmEditEntry_Thumbnail_Method_Different_{DIV_LANGUAGE_ID}" 
+                        value="different" onchange="showSelectedThumbnailMethod(this.value,{DIV_LANGUAGE_ID})" 
+                        {THUMBNAIL_METHOD_DIFF_CHECKED} />
+                    <label for="frmEditEntry_Thumbnail_Method_Different_{DIV_LANGUAGE_ID}">
+                        {TXT_DATA_THUMBNAIL_DIFF_DESC}</label> <br />
+
                     <div id="thumbnail_ori_{DIV_LANGUAGE_ID}" style="margin-top:15px; display:{DIV_THUMBNAIL_ORI_DISPLAY};">
                         {TXT_DATA_THUMBNAIL_SIZE}<br />
-                        {TXT_DATA_WIDTH} <input type="text" name="frmEditEntry_Thumbnail_Width_{DIV_LANGUAGE_ID}" value="{THUMBNAIL_ORI_WIDTH}" /> {TXT_DATA_HEIGHT} <input type="text" name="frmEditEntry_Thumbnail_Height_{DIV_LANGUAGE_ID}" value="{THUMBNAIL_ORI_HEIGHT}" />
+                        {TXT_DATA_WIDTH} 
+                        <input type="text" name="frmEditEntry_Thumbnail_Width_{DIV_LANGUAGE_ID}" 
+                            value="{THUMBNAIL_ORI_WIDTH}" /> 
+                            {TXT_DATA_HEIGHT} <input type="text" 
+                            name="frmEditEntry_Thumbnail_Height_{DIV_LANGUAGE_ID}" 
+                            value="{THUMBNAIL_ORI_HEIGHT}" />
                     </div>
-                    <div id="thumbnail_diff_{DIV_LANGUAGE_ID}" style="margin-top:15px; display:{DIV_THUMBNAIL_DIFF_DISPLAY};">
-                        <input type="text" name="frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}" id="frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}" style="width:30%;" value="{DIV_THUMBNAIL}" />&nbsp;<input type="button" value="{TXT_DIV_THUMBNAIL_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}', 'image')" /><br /><br />
+
+                    <div id="thumbnail_diff_{DIV_LANGUAGE_ID}"
+                        style="margin-top:15px; display:{DIV_THUMBNAIL_DIFF_DISPLAY};">
+
+                        <input type="text" name="frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}" 
+                            id="frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}" style="width:30%;" 
+                            value="{DIV_THUMBNAIL}" />&nbsp;
+
+                        <input type="button" value="{TXT_DIV_THUMBNAIL_BROWSE}" 
+                            onclick="newsGetFileBrowser('frmEditEntry_Thumbnail_{DIV_LANGUAGE_ID}', 'image')" />
+                            <br /><br />
+
+                        <input type="checkbox" value="1" id="frmEditEntry_thumbnailType" {DIV_THUMBNAIL_TYPE_CHECKED}
+                            name="frmEditEntry_Thumbnail_Type_{DIV_LANGUAGE_ID}" />
+                        <label for="frmEditEntry_thumbnailType" >{TXT_DIV_THUMBNAIL_TYPE}</label>
                     </div>
                 </td>
-        </tr>
-        <tr class="row1">
-          <td>{TXT_DIV_ATTACHMENT}</td>
-          <td colspan="3">
-              <input type="text" name="frmEditEntry_Attachment_{DIV_LANGUAGE_ID}" id="frmEditEntry_Attachment_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_ATTACHMENT}" />&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Attachment_{DIV_LANGUAGE_ID}', 'image')" /></td>
-          </td>
-        </tr>
-        <tr class="row2">
+            </tr>
+
+            <!-- END THUMBNAIL SECTION -->
+
+            <tr class="row1">
+              <td>{TXT_DIV_ATTACHMENT}</td>
+              <td colspan="3">
+                  <input type="text" name="frmEditEntry_Attachment_{DIV_LANGUAGE_ID}" 
+                      id="frmEditEntry_Attachment_{DIV_LANGUAGE_ID}" style="width: 30%;" 
+                      value="{DIV_ATTACHMENT}" />&nbsp;
+                  <input type="button" value="{TXT_DIV_IMAGE_BROWSE}" 
+                      onclick="newsGetFileBrowser('frmEditEntry_Attachment_{DIV_LANGUAGE_ID}', 'image')" />
+              </td>
+              </td>
+            </tr>
+
+            <tr class="row2">
                 <td>{TXT_DIV_ATTACHMENT_DESC}</td>
                 <td colspan="3">
                     <input type="text" name="frmEditEntry_Attachment_Desc_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_ATTACHMENT_DESC}" />
                 </td>
             </tr>
-        <tr class="row1">
+
+            <tr class="row1">
                 <td>{TXT_DIV_CATEGORIES}</td>
                 <td colspan="3">
                     <select name="frmcategory_{DIV_LANGUAGE_ID}" style="width: 30%;">
@@ -239,57 +300,62 @@ var updateEndDate = function(obj)
                     </select>
                 </td>
             </tr>
+
             <tr style="display: {DISPLAY_FORWARD_URL}" class="forwardUrl">
                 <td>{TXT_FORWARD_URL}</td>
                 <td colspan="3">
-                    <input type="text" name="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" id="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_FORWARD_URL}" /> <input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onClick="newsGetFileBrowser('frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+                    <input type="text" name="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" 
+                        id="frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}" style="width: 30%;" value="{DIV_FORWARD_URL}" /> <input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onClick="newsGetFileBrowser('frmEditEntry_ForwardUrl_{DIV_LANGUAGE_ID}', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
                 </td>
             </tr>
+
             <tr style="display: {DISPLAY_FORWARD_URL}" class="forwardUrl">
                 <td>{TXT_TARGET_WINDOW}</td>
                 <td colspan="3">
                     <select name="frmEditEntry_ForwardTarget_{DIV_LANGUAGE_ID}" style="margin-right:5px; width: 30%;">
-            <option value="" {TARGET_NOTHING_SELECTED}></option>
-            <option value="_blank" {TARGET_BLANK_SELECTED}>{TXT_TARGET_BLANK} (_blank)</option>
-            <option value="_parent" {TARGET_PARENT_SELECTED}>{TXT_TARGET_PARENT} (_parent)</option>
-            <option value="_self" {TARGET_SELF_SELECTED}>{TXT_TARGET_SELF} (_self)</option>
+                        <option value="" {TARGET_NOTHING_SELECTED}></option>
+                        <option value="_blank" {TARGET_BLANK_SELECTED}>{TXT_TARGET_BLANK} (_blank)</option>
+                        <option value="_parent" {TARGET_PARENT_SELECTED}>{TXT_TARGET_PARENT} (_parent)</option>
+                        <option value="_self" {TARGET_SELF_SELECTED}>{TXT_TARGET_SELF} (_self)</option>
                         <option value="_top" {TARGET_TOP_SELECTED}>{TXT_TARGET_TOP} (_top)</option>
-            </select>
+                    </select>
                 </td>
             </tr>
-        <tr class="row2">
-          <td colspan="4">{DIV_CONTENT}</td>
+
+            <tr class="row2">
+                <td colspan="4">{DIV_CONTENT}</td>
+            </tr>
+
+        </tbody>
+    </table>
+    </div>
+    <!-- END showLanguageDivs -->
+    <div id="advSettings" class="addEntry" style="display: none;">
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+       <tr>
+            <th colspan="4">{TXT_ADV_SETTINGS}</th>
         </tr>
-    </tbody>
-  </table>
-  </div>
-  <!-- END showLanguageDivs -->
-  <div id="advSettings" class="addEntry" style="display: none;">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-     <tr>
-      <th colspan="4">{TXT_ADV_SETTINGS}</th>
-    </tr>
-    <tr class="row1">
-      <td width="10%">{TXT_EDIT_LANGUAGES}</td>
-      <td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
-      <td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
-      <td width="70%" valign="top">{EDIT_LANGUAGES_3}</td>
-    </tr>
-      <tr class="row2">
+        <tr class="row1">
+            <td width="10%">{TXT_EDIT_LANGUAGES}</td>
+            <td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
+            <td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
+            <td width="70%" valign="top">{EDIT_LANGUAGES_3}</td>
+        </tr>
+        <tr class="row2">
             <td>{TXT_DIV_PLACEHOLDER}</td>
             <td colspan="3">[[DATA_<input type="text" name="frmEditEntry_Placeholder" id="frmEditEntry_Placeholder" style="width: 150px;" value="{DIV_PLACEHOLDER}"/>]]</td>
-    </tr>
-    <tr class="row1">
+        </tr>
+        <tr class="row1">
             <td>{TXT_DIV_MODE}</td>
             <td colspan="3">
                 <label><input type="radio" value="normal" name="frmEditEntry_Mode" {DIV_MODE_NORMAL_CHECKED} onclick="switchMode('normal')" />{TXT_DIV_MODE_NORMAL}</label>
                 <label><input type="radio" value="forward" name="frmEditEntry_Mode" {DIV_MODE_FORWARD_CHECKED} onclick="switchMode('forward')" />{TXT_DIV_MODE_FORWARD}</label>
             </td>
-    </tr>
-    <tr class="row2">
+        </tr>
+        <tr class="row2">
             <td colspan="4"><input type="checkbox" name="release_time_activated" id="radio_release_time" onclick="changeReleaseTime()" {RADIO_RELEASE_TIME_CHECKED}/><label for="radio_release_time">{TXT_DIV_ACTIVATE_RELEASE_TIME}</td>
-    </tr>
-    <tr id="release_time" style="display: {DISPLAY_RELEASE_TIME};" class="row1">
+        </tr>
+        <tr id="release_time" style="display: {DISPLAY_RELEASE_TIME};" class="row1">
             <td>{TXT_DIV_RELEASE_TIME}</td>
             <td colspan="3">
                 <input type="text" name="release_date" id="DPC_date_YYYY-MM-DD" value="{RELEASE_DATE}" style="width: 8em;" />
@@ -300,12 +366,12 @@ var updateEndDate = function(obj)
                 <input type="checkbox" name="endless" id="endless" {ENDLESS_CHECKED} onclick="updateEndDate(this)" /> <label for="endless">{TXT_ENDDATE_ENDLESS}</label>
 
             </td>
-    </tr>
-  </table>
-  </div>
-  <br />
-  <input type="hidden" name="frmEditCategory_MessageId" value="{EDIT_MESSAGE_ID}" />
-  <input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
+        </tr>
+    </table>
+    </div>
+    <br />
+    <input type="hidden" name="frmEditCategory_MessageId" value="{EDIT_MESSAGE_ID}" />
+    <input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
 </form>
 <script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
 <!-- END module_data_entries_add.html -->
