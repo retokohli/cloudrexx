@@ -175,31 +175,35 @@ class DataLibrary
             foreach (array_keys($arrLanguages) as $intLanguageId) {
                 $query = '  
                     SELECT 
-                        is_active,
-                        name,
-                        parent_id,
-                        ph.placeholder,
-                        categories.active,
-                        categories.cmd,
-                        categories.action,
-                        categories.sort,
-                        categories.box_width,
-                        categories.box_height,
-                        categories.template
+                            is_active,
+                            name,
+                            parent_id,
+                            ph.placeholder,
+                            categories.active,
+                            categories.cmd,
+                            categories.action,
+                            categories.sort,
+                            categories.box_width,
+                            categories.box_height,
+                            categories.template
                     FROM 
-                        '.DBPREFIX.'module_data_categories      AS categories
+                            '.DBPREFIX.'module_data_categories      AS categories
                     LEFT JOIN 
-                        '.DBPREFIX.'module_data_placeholders    AS ph
+                            '.DBPREFIX.'module_data_placeholders    AS ph
                     ON
-                        categories.category_id = ph.ref_id
+                            categories.category_id = ph.ref_id
+                        AND
+                            `ph`.`type` = "cat"
+
                     WHERE        
-                        category_id='.$intCategoryId.' 
-                    AND
-                        lang_id='.$intLanguageId.'
-                    AND         
-                        ph.type = "cat"
+                            category_id='.$intCategoryId.' 
+                        AND
+                            lang_id='.$intLanguageId.'
                     LIMIT
-                        1';
+                            1';
+                if ($intCategoryId == 3) {
+                    echo $query;
+                }
                 $objResult = $objDatabase->Execute($query);
 
                 if ($objResult->RecordCount() > 0) {
