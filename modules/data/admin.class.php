@@ -566,11 +566,11 @@ class DataAdmin extends DataLibrary {
         $this->_objTpl->loadTemplateFile('module_data_categories_edit.html',true,true);
 
         $this->_objTpl->setVariable(array(
-            'TXT_EDIT_TITLE'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_TITLE'],
-            'TXT_EDIT_NAME'            =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
-            'TXT_EDIT_EXTENDED'        =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
-            'TXT_EDIT_LANGUAGES'    =>    $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
-            'TXT_EDIT_SUBMIT'        =>    $_ARRAYLANG['TXT_SAVE'],
+            'TXT_EDIT_TITLE'        =>  $_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_TITLE'],
+            'TXT_EDIT_NAME'         =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_NAME'],
+            'TXT_EDIT_EXTENDED'     =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_EXTENDED'],
+            'TXT_EDIT_LANGUAGES'    =>  $_ARRAYLANG['TXT_DATA_CATEGORY_ADD_LANGUAGES'],
+            'TXT_EDIT_SUBMIT'       =>  $_ARRAYLANG['TXT_SAVE'],
             'TXT_PARENT_CAT'        =>  $_ARRAYLANG['TXT_DATA_PARENT_CAT'],
             'TXT_TOP_LEVEL'         =>  $_ARRAYLANG['TXT_TOP_LEVEL'],
             "TXT_FRONTEND_PAGE"     =>  $_ARRAYLANG['TXT_FRONTEND_PAGE'],
@@ -591,15 +591,18 @@ class DataAdmin extends DataLibrary {
         $arrCategories = $this->createCategoryArray();
         $ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
 
-        if (array_key_exists($intCategoryId,$arrCategories)) {
-
+        if (array_key_exists($intCategoryId, $arrCategories)) {
             $intCounter = 0;
-               $arrLanguages = array(0 => '', 1 => '', 2 => '');
+            $arrLanguages = array(0 => '', 1 => '', 2 => '');
 
-               $catTree = $this->buildCatTree($arrCategories, 0);
+            $catTree = $this->buildCatTree($arrCategories, 0);
 
             foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-                $arrLanguages[$intCounter%3] .= '<input '.(($arrCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').' type="checkbox" name="frmEditCategory_Languages[]" value="'.$intLanguageId.'" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
+                $arrLanguages[$intCounter%3] .= '
+                    <input '.(($arrCategories[$intCategoryId][$intLanguageId]['is_active'] == 1) ? 'checked="checked"' : '').'
+                        type="checkbox" name="frmEditCategory_Languages[]" 
+                        value="'.$intLanguageId.'" />'.
+                    $arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 
                 $this->_objTpl->setVariable(array(
                     'EDIT_NAME_LANGID'    =>    $intLanguageId,
@@ -612,25 +615,25 @@ class DataAdmin extends DataLibrary {
                 $this->parseCategoryDropdown($catTree, $arrCategories, $intCategoryId, 0, $intLanguageId);
 
                 ++$intCounter;
-            }
+           }
 
-               $this->_objTpl->setVariable(array(
-                   'EDIT_CATEGORY_ID'       =>    $intCategoryId,
-                   'EDIT_NAME'              =>    $arrCategories[$intCategoryId][$this->_intLanguageId]['name'],
-                   'EDIT_LANGUAGES_1'         =>    $arrLanguages[0],
-                   'EDIT_LANGUAGES_2'         =>    $arrLanguages[1],
-                   'EDIT_LANGUAGES_3'         =>    $arrLanguages[2],
-                   "PLACEHOLDER"            => $arrCategories[$intCategoryId]['placeholder'],
-                   'PAGE_SELECT_DISPLAY'    => ($arrCategories[$intCategoryId]['action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
-                   'ACTION_SELECTED_BOX'    => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? "selected=\"selected\"" : "",
-                   'ACTION_SELECTED_CONTENT' => ($arrCategories[$intCategoryId]['action'] == "content") ? "selected=\"selected\"" : "",
-                   'ACTION_SELECTED_SUBCATS' => ($arrCategories[$intCategoryId]['action'] == "subcategories") ? "selected=\"selected\"" : "",
-                   'PAGE_BOX_WIDTH_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
-                   'PAGE_BOX_HEIGHT_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
-                   'BOX_WIDTH'              => $arrCategories[$intCategoryId]['box_width'],
-                   'BOX_HEIGHT'             => $arrCategories[$intCategoryId]['box_height'],
-                   'CAT_TEMPLATE'           => $arrCategories[$intCategoryId]['template']
-               ));
+           $this->_objTpl->setVariable(array(
+               'EDIT_CATEGORY_ID'        => $intCategoryId,
+               'EDIT_NAME'               => $arrCategories[$intCategoryId][$this->_intLanguageId]['name'],
+               'EDIT_LANGUAGES_1'        => $arrLanguages[0],
+               'EDIT_LANGUAGES_2'        => $arrLanguages[1],
+               'EDIT_LANGUAGES_3'        => $arrLanguages[2],
+               "PLACEHOLDER"             => $arrCategories[$intCategoryId]['placeholder'],
+               'PAGE_SELECT_DISPLAY'     => ($arrCategories[$intCategoryId]['action'] == "content") ? (($ie) ? "block" : "table-row") : "none",
+               'ACTION_SELECTED_BOX'     => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? "selected=\"selected\"" : "",
+               'ACTION_SELECTED_CONTENT' => ($arrCategories[$intCategoryId]['action'] == "content") ? "selected=\"selected\"" : "",
+               'ACTION_SELECTED_SUBCATS' => ($arrCategories[$intCategoryId]['action'] == "subcategories") ? "selected=\"selected\"" : "",
+               'PAGE_BOX_WIDTH_DISPLAY'  => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
+               'PAGE_BOX_HEIGHT_DISPLAY' => ($arrCategories[$intCategoryId]['action'] == "overlaybox") ? (($ie) ? "block" : "table-row") : "none",
+               'BOX_WIDTH'               => $arrCategories[$intCategoryId]['box_width'],
+               'BOX_HEIGHT'              => $arrCategories[$intCategoryId]['box_height'],
+               'CAT_TEMPLATE'            => $arrCategories[$intCategoryId]['template']
+           ));
         } else {
             //Wrong category-id
             $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_CATEGORY_EDIT_ERROR_ID'];
@@ -643,7 +646,10 @@ class DataAdmin extends DataLibrary {
            $this->_objTpl->setVariable(array(
                "FRONTEND_PAGE"             => $pageName,
                "FRONTEND_PAGE_ID"          => $pageVal['cmd'],
-               "FRONTEND_PAGE_SELECTED"    => ($pageVal['cmd'] == $arrCategories[$intCategoryId]['cmd']) ? "selected=\"selected\"" : ""
+               "FRONTEND_PAGE_SELECTED"    => 
+                   ($pageVal['cmd'] == $arrCategories[$intCategoryId]['cmd']) 
+                   ? "selected=\"selected\"" 
+                   : ""
            ));
            $this->_objTpl->parse("frontendPage");
         }
