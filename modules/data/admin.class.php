@@ -1,5 +1,4 @@
 <?php
-$_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
