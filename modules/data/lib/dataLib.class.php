@@ -378,6 +378,7 @@ class DataLibrary
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['tags']                = htmlentities(stripslashes($translations->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['image']               = htmlentities(stripslashes($translations->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail']           = htmlentities(stripslashes($translations->fields['thumbnail']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_type']      = $translations->fields['thumbnail_type'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_width']     = empty($translations->fields['thumbnail_width']) ? 80 : $translations->fields['thumbnail_width'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['thumbnail_height']    = empty($translations->fields['thumbnail_height']) ? 80 : $translations->fields['thumbnail_height'];
                     $arrReturn[$intMessageId]['translation'][$intLanguageId]['attachment']          = htmlentities(stripslashes($translations->fields['attachment']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -416,6 +417,7 @@ class DataLibrary
                 tags,
                 image,
                 thumbnail,
+                thumbnail_type,
                 thumbnail_width,
                 thumbnail_height,
                 attachment,
@@ -426,6 +428,7 @@ class DataLibrary
                '.DBPREFIX.'module_data_messages_lang
             WHERE 
                message_id='.$id;
+
 
         $objResult = $objDatabase->Execute($query);
 

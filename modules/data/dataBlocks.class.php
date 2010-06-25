@@ -46,9 +46,12 @@ class dataBlocks extends DataLibrary
         global $objDatabase, $objInit;
 
         $objRs = $objDatabase->Execute("
-            SELECT `setvalue`
-              FROM `".DBPREFIX."settings`
-             WHERE `setname`='dataUseModule'");
+            SELECT 
+                `setvalue`
+            FROM 
+                `".DBPREFIX."settings`
+            WHERE 
+                `setname`='dataUseModule'");
         if ($objRs && $objRs->fields['setvalue'] == 1) {
             $this->active = true;
         } else {
@@ -153,6 +156,7 @@ class dataBlocks extends DataLibrary
     {
         global $_LANGID;
 
+
         if ($this->entryArray == 0) {
             $this->entryArray = $this->createEntryArray();
         }
@@ -194,49 +198,32 @@ class dataBlocks extends DataLibrary
             }
 
             if ($this->categoryMatches($id, $entry['categories'][$_LANGID])) {
-                if ($entry['translation'][$_LANGID]['image']) {
-                    if ($entry['translation'][$_LANGID]['thumbnail']) {
-                        /*
-                        $thumb_name = ImageManager::getThumbnailFilename(
-                            $entry['translation'][$_LANGID]['thumbnail']);
-                        if (file_exists(ASCMS_PATH.$thumb_name)) {
-                            $image = "<img src=\"$thumb_name\" alt=\"\" style=\"float: left;\"/>";
-                        } else {
-                            $image =
-                                "<img src=\"".
-                                $entry['translation'][$_LANGID]['thumbnail'].
-                                "\" alt=\"\" style=\"float: left;  width: 80px;\" />";
-                        }
-                         */
-                        $image =
-                            "<img src=\"".$entry['translation'][$_LANGID]['thumbnail']."\"
-                                alt=\"\" style=\"float: left;\" />";
-                    } elseif (file_exists(
-                        ASCMS_DATA_IMAGES_PATH.'/'.$entryId.'_'.$_LANGID.'_'.
-                        basename($entry['translation'][$_LANGID]['image']))) {
-                        $image =
-                            "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.
-                            $entryId.'_'.$_LANGID.'_'.
-                            basename($entry['translation'][$_LANGID]['image']).
-                            "\" alt=\"\" style=\"float: left; \"/>";
-                    } elseif (file_exists(
-                        ImageManager::getThumbnailFilename(
-                            ASCMS_PATH.$entry['translation'][$_LANGID]['image']))) {
-                        $image =
-                            "<img src=\"".
-                            ImageManager::getThumbnailFilename(
-                                $entry['translation'][$_LANGID]['image']).
-                            "\" alt=\"\" style=\"float: left;\"/>";
+
+                $translation = $entry['translation'][$_LANGID];
+                $image = '';
+                if (!empty($translation['thumbnail'])) {
+                    if ($translation['thumbnail_type'] == 'original') {
+                        $image = $translation['thumbnail'];
                     } else {
-                        $image =
-                            "<img src=\"".$entry['translation'][$_LANGID]['image'].
-                            "\" alt=\"\" style=\"float: left; width: 80px;\" />";
+                        $image = ImageManager::getThumbnailFilename(
+                            $translation['thumbnail']
+                        );
                     }
                 } else {
-                    $image = "";
+                    $path = ImageManager::getThumbnailFilename(
+                        $translation['image']
+                    );
+                    if (file_exists(ASCMS_PATH.$path)) {
+                        $image = $path;
+                    }
                 }
 
-
+                if (!empty($image)) {
+                    $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
+                } else {
+                    $image = '';
+                }
+                
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
                 } else {
@@ -295,47 +282,31 @@ class dataBlocks extends DataLibrary
 
         $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->_arrSettings['data_template_entry']));
 
-        if ($entry['translation'][$_LANGID]['image']) {
-            if ($entry['translation'][$_LANGID]['thumbnail']) {
-                // i guess this is where there is already a thumbnail
-                // set manually
-                 /*
-                $thumb_name = ImageManager::getThumbnailFilename(
-                    $entry['translation'][$_LANGID]['thumbnail']);
-                if (file_exists(ASCMS_PATH.$thumb_name)) {
-                    $image =
-                        "<img src=\"".$thumb_name.
-                        "\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
-                } else {
-                    $image =
-                        "<img src=\"".$entry['translation'][$_LANGID]['thumbnail'].
-                        "\" alt=\"\" border=\"1\" style=\"float: left;  width: 80px;\" />";
-                }
-                */
-                $image = "<img src=\"".$entry['translation'][$_LANGID]['thumbnail']."\"
-                            alt=\"\" style=\"float: left;\"/>";
-            } elseif (file_exists(
-                ASCMS_DATA_IMAGES_PATH.'/'.$id.'_'.$_LANGID.'_'.
-                basename($entry['translation'][$_LANGID]['image']))) {
-                $image =
-                    "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$id.'_'.$_LANGID.
-                    '_'.basename($entry['translation'][$_LANGID]['image']).
-                    "\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
-            } elseif (file_exists(
-                ASCMS_PATH.ImageManager::getThumbnailFilename(
-                    $entry['translation'][$_LANGID]['image']))) {
-                $image =
-                    "<img src=\"".ImageManager::getThumbnailFilename(
-                        $entry['translation'][$_LANGID]['image']).
-                    "\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
+        $translation = $entry['translation'][$_LANGID];
+        $image = '';
+        if (!empty($translation['thumbnail'])) {
+            if ($translation['thumbnail_type'] == 'original') {
+                $image = $translation['thumbnail'];
             } else {
-                $image =
-                    "<img src=\"".$entry['translation'][$_LANGID]['image'].
-                    "\" alt=\"\" border=\"1\" style=\"float: left;  width: 80px;\" />";
+                $image = ImageManager::getThumbnailFilename(
+                    $translation['thumbnail']
+                );
             }
         } else {
-            $image = "";
+            $path = ImageManager::getThumbnailFilename(
+                $translation['image']
+            );
+            if (file_exists(ASCMS_PATH.$path)) {
+                $image = $path;
+            }
         }
+
+        if (!empty($image)) {
+            $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
+        } else {
+            $image = '';
+        }
+
         $lang = $_LANGID;
         $width = $this->_arrSettings['data_shadowbox_width'];
         $height = $this->_arrSettings['data_shadowbox_height'];
@@ -378,4 +349,3 @@ class dataBlocks extends DataLibrary
 
 }
 
-?>
