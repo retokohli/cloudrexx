@@ -433,57 +433,65 @@ class DataAdmin extends DataLibrary {
 
         if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
             //Get next category-id
-            $objResult = $objDatabase->Execute('SELECT        MAX(category_id) AS currentId
-                                                FROM        '.DBPREFIX.'module_data_categories
-                                                ORDER BY    category_id DESC
-                                            ');
+            $query = '
+                SELECT        
+                    MAX(category_id) AS currentId
+                FROM        
+                    '.DBPREFIX.'module_data_categories
+                ORDER BY 
+                   category_id DESC
+            ';
+
+            $objResult = $objDatabase->Execute($query);
             $intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
 
             //Collect data
             $arrValues = array();
             foreach ($_POST as $strKey => $strValue) {
-                /*
-                echo "------------------------------------ BEGIN ------------------------------------\n";
-                echo "$strKey :" .print_r($strValue, true);
-                echo "\n------------------------------------ END ------------------------------------\n\n\n\n";
-                 */
                 // what the fuck is this for?
                 if (substr($strKey,0,strlen('frmAddCategory_Name_')) == 'frmAddCategory_Name_') {
                     $intLanguageId = intval(substr($strKey,strlen('frmAddCategory_Name_')));
-                    $arrValues[$intLanguageId] = array(    'name'            => contrexx_addslashes(strip_tags($strValue)),
-                                                        'is_active'       => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
-                                                        'parent_id'    => intval($_POST['frmParentcategory']),
-                                                        'cmd'          => intval($_POST['frmFrontendPage']),
-                                                        'action'       => $_POST['frmSettings_action'],
-                                                        'box_width'    => $_POST['frmBoxwidth'],
-                                                        'box_height'   => $_POST['frmBoxheight'],
-                                                        'template'     => contrexx_addslashes($_POST['frmTemplate'])
-                                                    );
+                    $arrValues[$intLanguageId] = array(    
+                        'name'         => contrexx_addslashes(strip_tags($strValue)),
+                        'is_active'    => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
+                        'parent_id'    => intval($_POST['frmParentcategory']),
+                        'cmd'          => intval($_POST['frmFrontendPage']),
+                        'action'       => $_POST['frmSettings_action'],
+                        'box_width'    => $_POST['frmBoxwidth'],
+                        'box_height'   => $_POST['frmBoxheight'],
+                        'template'     => contrexx_addslashes($_POST['frmTemplate'])
+                    );
                 }
             }
 
             foreach ($arrValues as $intLanguageId => $arrCategoryValues) {
-                $objDatabase->Execute('    INSERT INTO `'.DBPREFIX.'module_data_categories`
-                                        SET    `category_id` = '.$intNextCategoryId.',
-                                            `lang_id` = '.$intLanguageId.',
-                                            `is_active` = "'.$arrCategoryValues['is_active'].'",
-                                            `parent_id` = "'.$arrCategoryValues['parent_id'].'",
-                                            `name` = "'.$arrCategoryValues['name'].'",
-                                            `cmd` = "'.$arrCategoryValues['cmd'].'",
-                                            `action` = "'.$arrCategoryValues['action'].'",
-                                            `box_width` = "'.$arrCategoryValues['box_width'].'",
-                                            `box_height` = "'.$arrCategoryValues['box_height'].'",
-                                            `template` = "'.$arrCategoryValues['template'].'"
-                                    ');
+                $query = '    
+                    INSERT INTO 
+                        `'.DBPREFIX.'module_data_categories`
+                    SET    
+                        `category_id`   = '.$intNextCategoryId.',
+                        `lang_id`       = '.$intLanguageId.',
+                        `is_active`     = "'.$arrCategoryValues['is_active'].'",
+                        `parent_id`     = "'.$arrCategoryValues['parent_id'].'",
+                        `name`          = "'.$arrCategoryValues['name'].'",
+                        `cmd`           = "'.$arrCategoryValues['cmd'].'",
+                        `action`        = "'.$arrCategoryValues['action'].'",
+                        `box_width`     = "'.$arrCategoryValues['box_width'].'",
+                        `box_height`    = "'.$arrCategoryValues['box_height'].'",
+                        `template`      = "'.$arrCategoryValues['template'].'"
+                ';
+                $objDatabase->Execute($query);
             }
 
             // insert placeholder
             if (isset($_POST['frmPlaceholder'])) {
                 $placeholder = $this->_formatPlaceholder($_POST['frmPlaceholder']);
-                $query = "INSERT INTO ".DBPREFIX."module_data_placeholders
-                          (type, ref_id, placeholder)
-                          VALUES
-                          ('cat', ".$intNextCategoryId.", '".$placeholder."')";
+                $query = "
+                    INSERT INTO 
+                        ".DBPREFIX."module_data_placeholders
+                        (type, ref_id, placeholder)
+                    VALUES
+                      ('cat', ".$intNextCategoryId.", '".$placeholder."')";
                 $objDatabase->Execute($query);
             }
 

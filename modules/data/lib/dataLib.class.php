@@ -215,7 +215,7 @@ class DataLibrary
                     $arrReturn[$intCategoryId]['sort']          = $objResult->fields['sort'];
                     $arrReturn[$intCategoryId]['box_height']    = $objResult->fields['box_height'];
                     $arrReturn[$intCategoryId]['box_width']     = $objResult->fields['box_width'];
-                    $arrReturn[$intCategoryId]['template']      = ''; //$objResult->fields['template'];
+                    $arrReturn[$intCategoryId]['template']      = $objResult->fields['template'];
                 }
             }
         }
