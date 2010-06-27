@@ -270,6 +270,13 @@ class ContentSitemap
                 );
             }
 
+            $iconPartRedirect = $this->navIsRedirect[$pageId] ? '_redirect' : '';
+            $iconPartLocked = '';
+            if($this->navProtected[$pageId]){
+                $iconPartRedirect = '';
+                $iconPartLocked = '_locked';
+            }
+
             $pageVisible = $this->navDisplaystatus[$pageId] == 'on';
             $objTpl->setVariable(array(
        	        'SITEMAP_PAGE_ID'               => $arrPage['pageId'],
@@ -280,8 +287,8 @@ class ContentSitemap
        	        'SITEMAP_LED_COLOR'             => $this->navActiveStatus[$pageId] == 1 ? 'green' : 'red',
        	        'IS_CORE'                       => in_array($this->navModule[$pageId], $this->requiredModuleNames) ? '_core' : '',
        	        'IS_VISIBLE'                    => $pageVisible ? 'on' : 'off',
-       	        'IS_REDIRECT'                   => $this->navIsRedirect[$pageId] ? '_redirect' : '',
-       	        'IS_LOCKED'                     => $this->navProtected[$pageId] ? 'locked' : '',
+       	        'IS_REDIRECT'                   => $iconPartRedirect,
+       	        'IS_LOCKED'                     => $iconPartLocked,
        	        'SITEMAP_PAGE_TITLE'            => htmlentities($arrPage['title'], ENT_QUOTES, CONTREXX_CHARSET),
        	        'SITEMAP_PAGE_TITLE_HREF'       => $this->_getPageClickHref($moduleReference, $pageId),
        	        'SITEMAP_USERNAME'              => $this->navUsername[$pageId],
