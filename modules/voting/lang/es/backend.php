@@ -51,4 +51,5 @@ $_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "Ciudad";
 $_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Exportar los campos adicionales";
 $_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
 $_ARRAYLANG['TXT_ADDITIONAL_COMMENT'] = "Comentario adicional";
+$_ARRAYLANG['TXT_VOTING_EXTENDED'] = "";
 ?>
