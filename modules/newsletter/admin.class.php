@@ -41,6 +41,10 @@ class newsletter extends NewsletterLib
     public $_strOkMessage = '';
     public $months = array();
 
+
+    const USER_TYPE_NEWSLETTER = 'newsletter';
+    const USER_TYPE_ACCESS = 'access';
+
     public $_arrMailFormat = array(
         'text'        => 'TXT_NEWSLETTER_ONLY_TEXT',
         'html'        => 'TXT_NEWSLETTER_HTML_UC',
@@ -2745,7 +2749,7 @@ class newsletter extends NewsletterLib
      * @param      string $TargetEmail
      * @param      string $type
      */
-    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry, $type = 'newsletter') {
+    function SendEmail($UserID, $NewsletterID, $TargetEmail, $TmpEntry, $type = USER_TYPE_NEWSLETTER) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
         require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
@@ -2872,7 +2876,7 @@ class newsletter extends NewsletterLib
             }
         }
 
-        if ($mail->Send()) {
+        if ($mail->Send()) { // && $UserID == 0) {
             $ReturnVar = $count++;
             if ($TmpEntry==1) {
                 // Insert TMP-ENTRY Sended Email & Count++
@@ -2908,7 +2912,6 @@ class newsletter extends NewsletterLib
                 }
             }
         } else {
-            die("could not send");
             if (strstr($mail->ErrorInfo, 'authenticate')) {
                 $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
             } elseif (strstr($mail->ErrorInfo, 'from_failed')) {
@@ -2927,25 +2930,42 @@ class newsletter extends NewsletterLib
             if ($TmpEntry == 1) {
                 $arrSettings = $this->_getSettings();
 
-                if ($arrSettings['rejected_mail_operation'] != 'ignore') {
-                    $objRecipient = $objDatabase->SelectLimit('SELECT `id` FROM `'.DBPREFIX.'module_newsletter_user` WHERE `email` = \''.addslashes($TargetEmail).'\'', 1);
+                if ($arrSettings['rejected_mail_operation']['setvalue'] != 'ignore') {
+                    // wth? We already do have the id don't we??
+                     /*
+                    $objRecipient = $objDatabase->SelectLimit('
+                        SELECT 
+                            `id` 
+                        FROM 
+                            `'.DBPREFIX.'module_newsletter_user` 
+                        WHERE 
+                            `email` = \''.addslashes($TargetEmail).'\'', 1);
                     if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
-                        switch ($arrSettings['rejected_mail_operation']['setvalue']) {
-                            case 'deactivate':
+                      */
+                    switch ($arrSettings['rejected_mail_operation']['setvalue']) {
+                        case 'deactivate':
+                            if ($type == 'newsletter')  {
                                 if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `email` ='".addslashes($TargetEmail)."'") !== false) {
-                                    $objDatabase->Execute("UPDATE `".DBPREFIX."module_newsletter_user` SET `status` = 0 WHERE `id` = ".$objRecipient->fields['id']);
+                                    $objDatabase->Execute("UPDATE `".DBPREFIX."module_newsletter_user` SET `status` = 0 WHERE `id` = ".$UserID);
                                 }
-                                break;
+                            } else {
+                                // yeah, what else? i don't know
+                            }
+                            break;
 
-                            case 'delete':
+                        case 'delete':
+                            if ($type == 'newsletter') {
                                 $this->_deleteRecipient($objRecipient->fields['id']);
-                                break;
+                            } else {
+                                // here as well
+                            }
+                            break;
 
-                            case 'inform':
-                                $this->informAdminAboutRejectedMail($TargetEmail);
-                                break;
-                        }
+                        case 'inform':
+                            $this->informAdminAboutRejectedMail($NewsletterID, $userID, $TargetEmail, $type);
+                            break;
                     }
+                    //}
                 }
 
                 $ReturnVar = $count;
@@ -3001,12 +3021,69 @@ class newsletter extends NewsletterLib
      * If an email could not be sent, inform the administrator
      * about that (only if the option to do so was set)
      * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $newsletterID
+     * @param       int $userID
      * @param       string $email
+     * @param       const
      */
-    protected function informAdminAboutRejectedMail($email) {
+    protected function informAdminAboutRejectedMail($newsletterID, $userID, $email, $type) {
         // get the current user's email address
-        $mail = FWUser::getFWUserObject()->objUser->getEmail();
+        $addy = FWUser::getFWUserObject()->objUser->getEmail();
+        
+        require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
+        $mail = new phpmailer();
+        $content = 'Invalid e-mail addy';
 
+        $newsletterValues = $this->getNewsletterValues($newsletterID);
+
+        if ($newsletterValues['smtp_server'] > 0) {
+            require_once ASCMS_CORE_PATH.'/SmtpSettings.class.php';
+            if (($arrSmtp = SmtpSettings::getSmtpAccount($newsletterValues['smtp_server'])) !== false) {
+                $mail->IsSMTP();
+                $mail->Host     = $arrSmtp['hostname'];
+                $mail->Port     = $arrSmtp['port'];
+                $mail->SMTPAuth = $arrSmtp['username'] == '-' ? false : true;
+                $mail->Username = $arrSmtp['username'];
+                $mail->Password = $arrSmtp['password'];
+            }
+        }
+
+        $mail->CharSet      = CONTREXX_CHARSET;
+        $mail->From         = $newsletterValues['sender_email'];
+        $mail->FromName     = $newsletterValues['sender_name'];
+        $mail->AddReplyTo($newsletterValues['return_path']);
+        $mail->Subject      = $newsletterValues['subject'];
+        $mail->Priority     = $newsletterValues['priority'];
+
+        $mail->Body = $this->getInformMailBody($userID, $email, $type);
+
+        $mail->AddAddress($addy);
+        $mail->send();
+    }
+
+    /**
+     * Return the body of the inform email
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $userID
+     * @param       string $mail
+     * @param       const $type
+     */
+    protected function getInformMailBody($userID, $mail, $type) {
+        global $_ARRAYLANG, $_CONFIG;
+
+        $body = $_ARRAYLANG['TXT_INFORM_ADMIN_EMAIL'];
+
+        if ($type == self::USER_TYPE_ACCESS) {
+            $link = '/cadmin/index.php?cmd=access&act=user&tpl=modify&id='.$userID;
+        } else {
+            $link = '/cadmin/index.php?cmd=newsletter&act=users&tpl=edit&id='.$userID;
+        }
+
+        $link = 'http://'.$_CONFIG['domainUrl'].$link;
+
+        $body = str_replace(array('%EMAIL%', '%LINK%'), array($mail, $link), $body);
+        return $body;
     }
 
     function GetTemplateSource($TemplateID, $format) {
