@@ -226,8 +226,12 @@ class votingmanager
     {
         global $objDatabase, $_ARRAYLANG;
 
+        $langID = BACKEND_LANG_ID;
+
         $this->_objTpl->loadTemplateFile('voting_results.html');
 
+        // this gets the total count of polls.. but ain't we gonna get this
+        // anways by selecting all polls??
         $query = "SELECT COUNT(1) as `count` FROM ".DBPREFIX."voting_system";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
@@ -236,34 +240,69 @@ class votingmanager
 
         $votingId = ((!isset($_GET['act']) || $_GET['act'] != "delete") && isset($_GET['votingid'])) ? intval($_GET['votingid']) : 0;
 
-        $query= "SELECT id, UNIX_TIMESTAMP(date) as datesec, question, votes FROM ".DBPREFIX."voting_system where ".($votingId > 0 ? "id=".$votingId : "status=1");
+        // ok obviously we're selecting the first one here or the one given 
+        // through ghet GET vars, to be able to display the results
+        $query= "
+            SELECT 
+                    `vs`.`id`,
+                    UNIX_TIMESTAMP(`vs`.`date`) AS `datesec`,
+                    `vs`.`votes`,
+                    `vl`.`question`
+            FROM 
+                    ".DBPREFIX."voting_system  AS `vs`
+            LEFT JOIN
+                    `".DBPREFIX."voting_lang`  AS `vl`
+                ON
+                    `vl`.`pollID` = `vs`.`id`
+            WHERE 
+                    ".($votingId > 0 ? "id=".$votingId : "status=1")."
+            AND
+                    `vl`.`langID` = ".$langID;
         $objResult = $objDatabase->SelectLimit($query, 1);
+
         if ($objResult->RecordCount()==0 && $totalrows==0) {
            header("Location: ?cmd=voting&act=add");
            exit;
         } else {
-            $votingId=$objResult->fields['id'];
-            $votingTitle=stripslashes($objResult->fields['question']);
-            $votingVotes=$objResult->fields['votes'];
-            $votingDate=$objResult->fields['datesec'];
+            $votingId       = $objResult->fields['id'];
+            $votingTitle    = stripslashes($objResult->fields['question']);
+            $votingVotes    = $objResult->fields['votes'];
+            $votingDate     = $objResult->fields['datesec'];
+            $images         = 1;
 
-            $images = 1;
-            $query="SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
-            $objResult = $objDatabase->Execute($query);
+            // ok now we're getting all of them..
+            $query = "
+                SELECT 
+                        `vs`.id,
+                        `vs`.votes,
+                        `va`.`answer`
+                FROM 
+                        `".DBPREFIX."voting_results` AS `vs`
+                LEFT JOIN
+                        `".DBPREFIX."voting_answer`    AS `va`
+                    ON
+                        `va`.`resultID` = `vs`.`id`
+                WHERE 
+                        voting_system_id = '$votingId'
+                AND
+                        `va`.`langID` = ".$langID."
+                ORDER BY 
+                        `vs`.`id`
+                ";
+            $answers = new DBIterator($objDatabase->Execute($query));
 
             $votingResultText = '';
-            while (!$objResult->EOF) {
-                $votes=intval($objResult->fields['votes']);
+            foreach ($answers as $answer) {
+                $votes = intval($answer['votes']);
                 $percentage = 0;
                 $imagewidth = 1; //Mozilla Bug if image width=0
-                if($votes>0) {
+                if($votes > 0) {
                     $percentage = (round(($votes/$votingVotes)*10000))/100;
                     $imagewidth = round($percentage,0);
                 }
-                $votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
+                $votingResultText .= stripslashes($answer['question'])."<br />\n";
                 $votingResultText .= "<img src='images/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />";
                 $votingResultText .= "&nbsp;<font size='1'>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</font><br />\n";
-                $objResult->MoveNext();
             }
 
             $this->_objTpl->setVariable(array(
@@ -286,16 +325,32 @@ class votingmanager
             $this->_objTpl->setGlobalVariable('TXT_HTML_CODE', $_ARRAYLANG['TXT_HTML_CODE']);
 
             // show other Voting entries
-            $query="SELECT id,status,submit_check, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
-            $objResult = $objDatabase->Execute($query);
+            $query = "
+                SELECT 
+                        `vs`.id,
+                        `vs`.status,
+                        `vs`.submit_check,
+                        UNIX_TIMESTAMP(`vs`.`date`) AS `datesec`,
+                        `vs`.votes 
+                FROM 
+                        ".DBPREFIX."voting_system AS `vs`
+                LEFT JOIN
+                        `".DBPREFIX."voting_lang` AS `vl`
+                    ON
+                        `vl`.`pollID` = `vs`.`id`
+                ORDER BY 
+                        id 
+                DESC
+            ";
+            $votings = new DBIterator($objDatabase->Execute($query));
 
             $i = 0;
-            while(!$objResult->EOF) {
-                $votingid=$objResult->fields['id'];
-                $votingTitle=stripslashes($objResult->fields['title']);
-                $votingVotes=$objResult->fields['votes'];
-                $votingDate=$objResult->fields['datesec'];
-                $votingStatus=$objResult->fields['status'];
+            foreach ($votings as $voting) {
+                $votingid       = $voting['id'];
+                $votingTitle    = stripslashes($voting['title']);
+                $votingVotes    = $voting['votes'];
+                $votingDate     = $voting['datesec'];
+                $votingStatus   = $voting['status'];
 
                 if ($votingStatus==0) {
                      $radio=" onclick=\"Javascript: window.location.replace('?cmd=voting&amp;act=changestatus&amp;votingid=$votingid');\" />";
@@ -311,7 +366,10 @@ class votingmanager
                 $this->_objTpl->setVariable(array(
                     'VOTING_OLDER_TEXT'       => "<a href='?cmd=voting&amp;votingid=$votingid'>".$votingTitle."</a>",
                     'VOTING_OLDER_DATE'      => showFormattedDate($votingDate),
-                    'VOTING_OLDER_VOTES'     => ($votingVotes > 0 && $objResult->fields['submit_check'] == 'email') ? '<a href="?cmd=voting&amp;act=detail&amp;id='.$votingid.'" title="'.$_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'].'">'.$votingVotes.'</a>' : $votingVotes,
+                    'VOTING_OLDER_VOTES'     => ($votingVotes > 0 && $voting['submit_check'] == 'email') 
+                                                ? '<a href="?cmd=voting&amp;act=detail&amp;id='.$votingid.'" 
+                                                    title="'.$_ARRAYLANG['TXT_VOTING_SHOW_EMAIL_ADRESSES'].'">'.$votingVotes.'</a>' 
+                                                    : $votingVotes,
                     'VOTING_ID'              => $votingid,
                     'VOTING_LIST_CLASS'      => $class,
                     'VOTING_RADIO'           => "<input type='radio' name='voting_selected' value='radiobutton'".$radio,
@@ -319,7 +377,6 @@ class votingmanager
                 ));
                 $this->_objTpl->parse("votingRow");
                 $i++;
-                $objResult->MoveNext();
             }
         }
     }
