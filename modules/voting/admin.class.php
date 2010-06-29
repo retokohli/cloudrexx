@@ -39,6 +39,11 @@ class votingmanager
     var $strOkMessage = '';
 
     /**
+     * The available languages
+     */
+    private $languages;
+
+    /**
     * Constructor
     *
     * @param  string
@@ -231,7 +236,7 @@ class votingmanager
 
         $votingId = ((!isset($_GET['act']) || $_GET['act'] != "delete") && isset($_GET['votingid'])) ? intval($_GET['votingid']) : 0;
 
-           $query= "SELECT id, UNIX_TIMESTAMP(date) as datesec, question, votes FROM ".DBPREFIX."voting_system where ".($votingId > 0 ? "id=".$votingId : "status=1");
+        $query= "SELECT id, UNIX_TIMESTAMP(date) as datesec, question, votes FROM ".DBPREFIX."voting_system where ".($votingId > 0 ? "id=".$votingId : "status=1");
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult->RecordCount()==0 && $totalrows==0) {
            header("Location: ?cmd=voting&act=add");
@@ -320,68 +325,227 @@ class votingmanager
     }
 
 
-    function votingAddSubmit()
+    /**
+     * Save the poll
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @return      boolean
+     */
+    protected function votingAddSubmit()
     {
         global $objDatabase, $_ARRAYLANG;
+        
+        $objDatabase->debug = true;
 
-        if (empty($_POST['votingquestion']) || empty($_POST['votingname'])) return false;
-        $options= explode ("\n", $_POST['votingoptions']);
+        // if not set, abort
+        if (empty($_POST['votingquestions']) || empty($_POST['votingnames'])) return false;
 
-        if (count(array_filter($options,'checkEntryData'))<2) {
-            return false;
+        $langs = $this->returnLanguages();
+
+        $id = $this->insertPoll();
+
+        // insert the language specific stuff
+        $questions = $_POST['votingquestions'];
+        $titles = $_POST['votingnames'];
+
+        foreach ($langs as $lang) {
+            $lang = $lang['id'];
+            $this->insertLang($id, $lang, $titles[$lang], $questions[$lang]);
         }
 
-        $method = isset($_POST['votingRestrictionMethod']) ? contrexx_addslashes($_POST['votingRestrictionMethod']) : 'cookie';
+        // insert the answers
+        $postAnswers = $_POST['votingoptions'];
+        $answers = $this->buildAnswers($postAnswers);
 
-        $query="UPDATE ".DBPREFIX."voting_system set status=0,date=date";
-        $objDatabase->Execute($query);
-        $query="INSERT INTO ".DBPREFIX."voting_system (
-                title,question,status,submit_check,votes,
-                additional_nickname,
-                additional_forename,
-                additional_surname ,
-                additional_phone   ,
-                additional_street  ,
-                additional_zip     ,
-                additional_city    ,
-                additional_email   ,
-                additional_comment
+
+        foreach ($answers as $answer) {
+            $this->insertAnswer($id, $answer);
+        }
+
+        $objDatabase->debug = false;
+    }
+
+    /**
+     * Insert an answer in all languages
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $pollID
+     * @param       array $answer
+     */
+    private function insertAnswer($pollID, array $answer) {
+        global $objDatabase;
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'voting_results`
+            (
+                `voting_system_id`,
+                `votes`
             )
-            values (
-                '".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',
-                '".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."',
-                '1',
-                '".$method."',
-                '0',
-                '".($_POST['additional_nickname']=='on'?1:0)."',
-                '".($_POST['additional_forename']=='on'?1:0)."',
-                '".($_POST['additional_surname' ]=='on'?1:0)."',
-                '".($_POST['additional_phone'   ]=='on'?1:0)."',
-                '".($_POST['additional_street'  ]=='on'?1:0)."',
-                '".($_POST['additional_zip'     ]=='on'?1:0)."',
-                '".($_POST['additional_city'    ]=='on'?1:0)."',
-                '".($_POST['additional_email'   ]=='on'?1:0)."',
-                '".($_POST['additional_comment' ]=='on'?1:0)."'
-            )";
-        $objDatabase->Execute($query);
-        $query = "SELECT MAX(id) as max_id FROM ".DBPREFIX."voting_system";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult->EOF) {
-            $latestid=$objResult->fields["max_id"];
-        } else {
-            $this->errorHandling();
-            $this->strErrMessage = $_ARRAYLANG['TXT_SUBMIT_ERROR'];
-            return false;
+            VALUES
+            (
+                '.$pollID.',
+                0
+            )
+        ';
+
+        $objDatabase->execute($query);
+        $id = $objDatabase->insert_id();
+
+        print_r($answer);
+        foreach ($answer as $lang => $a) {
+            $this->insertSingleAnswer($id, $lang, $a);
         }
 
-        for ($i=0;$i<count($options);$i++) {
-           $query="INSERT INTO ".DBPREFIX."voting_results (voting_system_id,question,votes)  values ($latestid,'".htmlspecialchars(addslashes(trim($options[$i])), ENT_QUOTES, CONTREXX_CHARSET)."',0)";
-           if (trim($options[$i])!="") {
-                   $objDatabase->Execute($query);
-           }
+    }
+
+    /**
+     * Insert single answer
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $id
+     * @param       int $langID
+     * @param       string $answer
+     */
+    private function insertSingleAnswer($id, $langID, $answer) {
+        global $objDatabase;
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'voting_answer`
+            (
+                `resultID`,
+                `langID`,
+                `answer`
+            )
+            VALUES
+            (
+                '.$id.',
+                '.$langID.',
+                "'.contrexx_addslashes($answer).'"
+            )
+            ON DUPLICATE KEY UPDATE
+                `answer` = "'.$answer.'"
+        ';
+
+        $objDatabase->execute($query);
+    }
+
+    /**
+     * Build the answer array from the post variable
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       array $postAnswers
+     * @return      array
+     */
+    private function buildAnswers($postAnswers)  {
+        $answers = array();
+
+        $langs = $this->returnLanguages();
+
+        foreach ($postAnswers as $lang => $content) {
+            $lang = intval($lang);
+            $counter = 0;
+            foreach (explode("\n", $content) as $line) {
+                $answers[$counter++][$lang] = $line;
+            }
         }
-        $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
-        return true;
+
+        foreach ($answers as $key => $answer) {
+            foreach ($langs as $c) {
+                $lang = $c['id'];
+                if (empty($answers[$key][$lang])) {
+                    $answers[$key][$lang] = $answers[$key][0];
+                }
+            }
+        }
+
+        return $answers;
+    }
+
+    /**
+     * Insert a poll
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @return      int
+     */
+    private function insertPoll() {
+        global $objDatabase;
+
+        $method = isset($_POST['votingRestrictionMethod']) 
+            ? contrexx_addslashes($_POST['votingRestrictionMethod']) 
+            : 'cookie';
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'voting_system`
+                (
+                    `status`,
+                    `submit_check`,
+                    `votes`,
+                    `additional_nickname`,
+                    `additional_forename`,
+                    `additional_surname`,
+                    `additional_phone`,
+                    `additional_street`,
+                    `additional_zip`,
+                    `additional_city`,
+                    `additional_email`,
+                    `additional_comment`
+                )
+                VALUES
+                (
+                    1,
+                    "'.$method.'",
+                    0,
+                    '.(($_POST['additional_nickname'] == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_forename'] == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_surname']  == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_phone']    == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_street']   == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_zip']      == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_city']     == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_email']    == 'on') ? 1 : 0).',
+                    '.(($_POST['additional_comment']  == 'on') ? 1 : 0).'
+                )
+        ';
+
+        $objDatabase->execute($query);
+        $id = $objDatabase->insert_id();
+
+        return $id;
+    }
+
+    /**
+     * insert hte language values of a poll
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $pollID
+     * @param       int $langID
+     * @param       string $title
+     * @param       string $question
+     */
+    private function insertLang($pollID, $langID, $title, $question) {
+        global $objDatabase;
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'voting_lang`
+            (
+                `pollID`,
+                `langID`,
+                `title`,
+                `question`
+            )
+            VALUES
+            (
+                '.$pollID.',
+                '.$langID.',
+                "'.contrexx_addslashes($title).'",
+                "'.contrexx_addslashes($question).'"
+            )
+        ';
+
+        $objDatabase->execute($query);
     }
 
 
@@ -547,7 +711,60 @@ class votingmanager
             'TXT_ADDITIONAL_EMAIL'                 => $_ARRAYLANG['TXT_ADDITIONAL_EMAIL'   ],
             'TXT_ADDITIONAL_COMMENT'               => $_ARRAYLANG['TXT_ADDITIONAL_COMMENT' ],
             'TXT_ADDITIONAL'                       => $_ARRAYLANG['TXT_ADDITIONAL'         ],
+            'TXT_EXTENDED'                                               => $_ARRAYLANG['TXT_VOTING_EXTENDED'],
         ));
+
+        $this->parseLanguages('showNameFields');
+        $this->parseLanguages('showQuestionFields');
+        $this->parseLanguages('showVotingOptionFields');
+
+    }
+
+    /**
+     * Parse the languages in the templates
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $block
+     * @param       array $values
+     */
+    private function parseLanguages($block, $values = array()) {
+
+        if (empty($this->languages)) {
+            $this->languages = $this->returnLanguages();
+        }
+
+        foreach ($this->languages as $lang) {
+            $value = @$values[$lang['id']];
+            $this->_objTpl->setVariable(array(
+                    'LANG_ID'       => $lang['id'],
+                    'LANG_VALUE'    => $value,
+                    'LANG_NAME'     => $lang['name']
+                )
+            );
+
+            $this->_objTpl->parse($block);
+        }
+    }
+
+    /**
+     * Return the available languages
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @return      object
+     */
+    private function returnLanguages() {
+        global $objDatabase;
+
+        $query = '    
+            SELECT 
+                id,
+                name
+            FROM 
+               '.DBPREFIX.'languages
+            ORDER BY 
+                id ASC';
+        $res = $objDatabase->Execute($query);
+        return new DBIterator($res);
     }
 
 
@@ -766,4 +983,98 @@ class votingmanager
     }
 }
 
-?>
+if (!class_exists('DBIterator')) {
+
+    /**
+     * Iterator wrapper for adodb result objects
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     */
+    class DBIterator implements Iterator {
+        /**
+         * The result object of adodb
+         */
+        private $obj;
+
+        /**
+         * If the result was empty
+         *
+         * (To prevent illegal object access)
+         */
+        private $empty;
+
+        /**
+         * The position in the rows
+         *
+         * Mainly just to have something to return in the
+         * key() method. 
+         */
+        private $position = 0;
+
+        /**
+         * Assign the object
+         *
+         * @param       object (adodb result object)
+         */
+        public function __construct($obj) {
+            $this->empty = !($obj instanceof ADORecordSet);
+
+            $this->obj = $obj;
+        }
+
+        /**
+         * Go back to first position
+         */
+        public function rewind() {
+            if (!$this->empty) {
+                    $this->obj->MoveFirst();
+            }
+
+            $this->position = 0;
+        }
+
+        /**
+         * Return the current object
+         *
+         * @return      array
+         */
+        public function current() {
+            return $this->obj->fields;
+            // if valid return false, this function should never be called, 
+            // so no problem with illegal access here i guess
+        }
+
+        /**
+         * Return the current key
+         *
+         * @return      int
+         */
+        public function key() {
+            return $this->position;
+        }
+
+        /**
+         * Go to the next item
+         */
+        public function next() {
+            if (!$this->empty) {
+                    $this->obj->MoveNext();
+            }
+            
+            ++$this->position;
+        }
+
+        /**
+         * Return if there are any items left
+         *
+         * @return      bool
+         */
+        public function valid() {
+            if ($this->empty) {
+                    return false;
+            }
+
+            return !$this->obj->EOF;
+        }
+    }
+}
