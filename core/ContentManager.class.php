@@ -3468,13 +3468,14 @@ class ContentManager
                 break;
             case 'navMenu':
                 global $_CORELANG;
-                $navMenu['value']    = $pageId;
+                $objNav = new ContentSitemap(0);
+                $navMenu['value']    = !empty($objNav->navparentId[$pageId]) ? $objNav->navparentId[$pageId] : 0;
                 $navMenu['options' ] =
                     '<option value="" selected="selected"'.
                     (!Permission::checkAccess(127, 'static', true)
                         ? ' disabled="disabled" style="color:graytext;"'
                         : '').
-                    '>'.$_CORELANG['TXT_NEW_CATEGORY'].'</option>'.
+                    '>'.$_CORELANG['TXT_SITEMAP_ROOTSITE'].'</option>'.
                     $this->getPageMenu($pageId, $langId);
                 $navMenu['langName'] = $langName;
                 die(json_encode($navMenu));
