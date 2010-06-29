@@ -3032,7 +3032,6 @@ class newsletter extends NewsletterLib
         
         require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
         $mail = new phpmailer();
-        $content = 'Invalid e-mail addy';
 
         $newsletterValues = $this->getNewsletterValues($newsletterID);
 
@@ -3055,7 +3054,7 @@ class newsletter extends NewsletterLib
         $mail->Subject      = $newsletterValues['subject'];
         $mail->Priority     = $newsletterValues['priority'];
 
-        $mail->Body = $this->getInformMailBody($userID, $email, $type);
+        $mail->Body         = $this->getInformMailBody($userID, $email, $type);
 
         $mail->AddAddress($addy);
         $mail->send();
@@ -4832,96 +4831,99 @@ class newsletter extends NewsletterLib
     }
 }
 
-/**
- * Iterator wrapper for adodb result objects
- *
- * @author      Stefan Heinemann <sh@adfinis.com>
- */
-class DBIterator implements Iterator {
-    /**
-     * The result object of adodb
-     */
-    private $obj;
+
+if (!class_exists('DBIterator')) {
 
     /**
-     * If the result was empty
+     * Iterator wrapper for adodb result objects
      *
-     * (To prevent illegal object access)
+     * @author      Stefan Heinemann <sh@adfinis.com>
      */
-    private $empty;
+    class DBIterator implements Iterator {
+        /**
+         * The result object of adodb
+         */
+        private $obj;
 
-    /**
-     * The position in the rows
-     *
-     * Mainly just to have something to return in the
-     * key() method. 
-     */
-    private $position = 0;
+        /**
+         * If the result was empty
+         *
+         * (To prevent illegal object access)
+         */
+        private $empty;
 
-    /**
-     * Assign the object
-     *
-     * @param       object (adodb result object)
-     */
-    public function __construct($obj) {
-        $this->empty = !($obj instanceof ADORecordSet);
+        /**
+         * The position in the rows
+         *
+         * Mainly just to have something to return in the
+         * key() method. 
+         */
+        private $position = 0;
 
-        $this->obj = $obj;
-    }
+        /**
+         * Assign the object
+         *
+         * @param       object (adodb result object)
+         */
+        public function __construct($obj) {
+            $this->empty = !($obj instanceof ADORecordSet);
 
-    /**
-     * Go back to first position
-     */
-    public function rewind() {
-        if (!$this->empty) {
-            $this->obj->MoveFirst();
+            $this->obj = $obj;
         }
 
-        $this->position = 0;
-    }
+        /**
+         * Go back to first position
+         */
+        public function rewind() {
+            if (!$this->empty) {
+                $this->obj->MoveFirst();
+            }
 
-    /**
-     * Return the current object
-     *
-     * @return      array
-     */
-    public function current() {
-        return $this->obj->fields;
-        // if valid return false, this function should never be called, 
-        // so no problem with illegal access here i guess
-    }
-
-    /**
-     * Return the current key
-     *
-     * @return      int
-     */
-    public function key() {
-        return $this->position;
-    }
-
-    /**
-     * Go to the next item
-     */
-    public function next() {
-        if (!$this->empty) {
-            $this->obj->MoveNext();
-        }
-        
-        ++$this->position;
-    }
-
-    /**
-     * Return if there are any items left
-     *
-     * @return      bool
-     */
-    public function valid() {
-        if ($this->empty) {
-            return false;
+            $this->position = 0;
         }
 
-        return !$this->obj->EOF;
+        /**
+         * Return the current object
+         *
+         * @return      array
+         */
+        public function current() {
+            return $this->obj->fields;
+            // if valid return false, this function should never be called, 
+            // so no problem with illegal access here i guess
+        }
+
+        /**
+         * Return the current key
+         *
+         * @return      int
+         */
+        public function key() {
+            return $this->position;
+        }
+
+        /**
+         * Go to the next item
+         */
+        public function next() {
+            if (!$this->empty) {
+                $this->obj->MoveNext();
+            }
+            
+            ++$this->position;
+        }
+
+        /**
+         * Return if there are any items left
+         *
+         * @return      bool
+         */
+        public function valid() {
+            if ($this->empty) {
+                return false;
+            }
+
+            return !$this->obj->EOF;
+        }
     }
 }
-
