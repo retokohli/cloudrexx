@@ -4031,30 +4031,49 @@ CREATE TABLE `contrexx_voting_additionaldata` (
   `city` varchar(80) NOT NULL default '',
   `email` varchar(80) NOT NULL default '',
   `comment` text NOT NULL,
-  `voting_system_id` int(11) NOT NULL default '0',
+  `voting_system_id` int(11) NOT NULL,
   `date_entered` timestamp NOT NULL,
   `forename` varchar(80) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `voting_system_id` (`voting_system_id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_voting_answer` (
+  `resultID` int(10) unsigned NOT NULL,
+  `langID` int(11) NOT NULL,
+  `answer` text NOT NULL,
+  UNIQUE KEY `resultID` (`resultID`,`langID`)
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_voting_email` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `email` varchar(255) NOT NULL,
-  `valid` enum('0','1') NOT NULL default '0',
+  `valid` enum('0','1') NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `email` (`email`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_voting_lang` (
+  `pollID` int(10) unsigned NOT NULL,
+  `langID` int(10) unsigned NOT NULL,
+  `title` text NOT NULL,
+  `question` text NOT NULL,
+  PRIMARY KEY  (`pollID`,`langID`)
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_voting_rel_email_system` (
-  `email_id` int(10) unsigned NOT NULL default '0',
-  `system_id` int(10) unsigned NOT NULL default '0',
-  `voting_id` int(10) unsigned NOT NULL default '0',
-  `valid` enum('0','1') NOT NULL default '0',
+  `email_id` int(10) unsigned NOT NULL,
+  `system_id` int(10) unsigned NOT NULL,
+  `voting_id` int(10) unsigned NOT NULL,
+  `valid` enum('0','1') NOT NULL,
   UNIQUE KEY `email_id` (`email_id`,`system_id`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
@@ -4063,18 +4082,15 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_voting_results` (
   `id` int(11) NOT NULL auto_increment,
   `voting_system_id` int(11) default NULL,
-  `question` char(200) default NULL,
   `votes` int(11) default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_voting_system` (
   `id` int(11) NOT NULL auto_increment,
   `date` timestamp NOT NULL,
-  `title` varchar(60) NOT NULL default '',
-  `question` text,
   `status` tinyint(1) default '1',
   `submit_check` enum('cookie','email') NOT NULL default 'cookie',
   `votes` int(11) default '0',
@@ -4088,5 +4104,5 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_city` tinyint(1) NOT NULL default '0',
   `additional_comment` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
