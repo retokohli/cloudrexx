@@ -7,7 +7,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.net>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
- * @version       $Id: index.inc.php,v 1.00 $
+ * @version    $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_voting
  * @todo        Edit PHP DocBlocks!
@@ -84,7 +84,7 @@ function votingShowCurrent($page_content){
             additional_nickname,               additional_forename,
             additional_surname,                additional_phone,
             additional_street,                 additional_zip,
-               additional_city,                   additional_email,
+            additional_city,                   additional_email,
             additional_comment
 
             FROM ".DBPREFIX."voting_system where status=1";
@@ -95,14 +95,14 @@ function votingShowCurrent($page_content){
     if ($objResult->RecordCount() == 0) {
         // Only show old records when no voting is set available
        $objTpl->setVariable(array(
-                   'VOTING_TITLE'                    => $_ARRAYLANG['TXT_VOTING_NOT_AVAILABLE'],
-                   'VOTING_DATE'                    => '',
-                'VOTING_OLDER_TEXT'                => '',
-                'VOTING_OLDER_DATE'                => '',
-                'VOTING_PAGING'                    => '',
-                'TXT_DATE'                        => '',
-                'TXT_TITLE'                        => '',
-                'VOTING_RESULTS_TEXT'            => '',
+                'VOTING_TITLE'                  => $_ARRAYLANG['TXT_VOTING_NOT_AVAILABLE'],
+                'VOTING_DATE'                   => '',
+                'VOTING_OLDER_TEXT'             => '',
+                'VOTING_OLDER_DATE'             => '',
+                'VOTING_PAGING'                 => '',
+                'TXT_DATE'                      => '',
+                'TXT_TITLE'                     => '',
+                'VOTING_RESULTS_TEXT'           => '',
                 'VOTING_RESULTS_TOTAL_VOTES'    => '',
                 'VOTING_OLDER_TITLE'            => $_ARRAYLANG['TXT_VOTING_OLDER'],
                 'TXT_SUBMIT'                    => '',
@@ -129,25 +129,25 @@ function votingShowCurrent($page_content){
 
             if (($i % 2) == 0) {$class="row2";} else {$class="row1";}
             $objTpl->setVariable(array(
-                'VOTING_OLDER_TEXT'        => '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
-                'VOTING_OLDER_DATE'        => showFormattedDate($votingDate),
-                'VOTING_VOTING_ID'        => $votingid,
-                'VOTING_LIST_CLASS'        => $class,
-                'VOTING_PAGING'            => $paging
+                'VOTING_OLDER_TEXT'     => '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
+                'VOTING_OLDER_DATE'     => showFormattedDate($votingDate),
+                'VOTING_VOTING_ID'      => $votingid,
+                'VOTING_LIST_CLASS'     => $class,
+                'VOTING_PAGING'         => $paging
             ));
             $objTpl->parse("votingRow");
             $i++;
             $objResult->MoveNext();
         }
     }
-       else {
+    else {
         if (!$objResult->EOF) {
-            $votingId            = $objResult->fields['id'];
+            $votingId          = $objResult->fields['id'];
             $votingTitle       = stripslashes($objResult->fields['question']);
             $votingVotes       = $objResult->fields['votes'];
-            $votingDate           = $objResult->fields['datesec'];
-            $votingStatus       = $objResult->fields['status'];
-            $votingMethod       = $objResult->fields['submit_check'];
+            $votingDate        = $objResult->fields['datesec'];
+            $votingStatus      = $objResult->fields['status'];
+            $votingMethod      = $objResult->fields['submit_check'];
             $additional_fields = _create_additional_input_fields($objResult);
             $objResult->MoveNext();
         } else {
@@ -181,7 +181,7 @@ function votingShowCurrent($page_content){
                 }
             }
 
-            $submitbutton    = '<input type="submit" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" name="Submit" />';
+            $submitbutton   = '<input type="submit" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" name="Submit" />';
         } else {
             if ($objTpl->blockExists('voting_email_input')) {
                 $objTpl->hideBlock('voting_email_input');
@@ -193,7 +193,7 @@ function votingShowCurrent($page_content){
 
 
             $votingVotes    = $_ARRAYLANG['TXT_VOTING_TOTAL'].":    ".$votingVotes;
-            $submitbutton    ='';
+            $submitbutton   ='';
         }
 
 
@@ -204,7 +204,7 @@ function votingShowCurrent($page_content){
                 $objTpl->setVariable(array(
                     'VOTING_ADDITIONAL_INPUT_LABEL' => $label,
                     'VOTING_ADDITIONAL_INPUT'       => $tag,
-                       'VOTING_ADDITIONAL_NAME'        => $name
+                    'VOTING_ADDITIONAL_NAME'        => $name
                 ));
                 $objTpl->parse('additional_elements');
             }
@@ -215,15 +215,15 @@ function votingShowCurrent($page_content){
 
         $objTpl->setVariable(array(
             'VOTING_MSG'                    => $msg,
-            'VOTING_TITLE'                    => $votingTitle,
-            'VOTING_DATE'                    => showFormattedDate($votingDate),
-            'VOTING_OPTIONS_TEXT'            => $votingOptionText,
-            'VOTING_RESULTS_TEXT'            => $votingResultText,
+            'VOTING_TITLE'                  => $votingTitle,
+            'VOTING_DATE'                   => showFormattedDate($votingDate),
+            'VOTING_OPTIONS_TEXT'           => $votingOptionText,
+            'VOTING_RESULTS_TEXT'           => $votingResultText,
             'VOTING_RESULTS_TOTAL_VOTES'    => $votingVotes,
             'VOTING_OLDER_TITLE'            => $_ARRAYLANG['TXT_VOTING_OLDER'],
-            'TXT_DATE'                        => $_ARRAYLANG['TXT_DATE'],
-            'TXT_TITLE'                        => $_ARRAYLANG['TXT_TITLE'],
-            'TXT_VOTES'                        => $_ARRAYLANG['TXT_VOTES'],
+            'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
+            'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_VOTES'                     => $_ARRAYLANG['TXT_VOTES'],
             'TXT_SUBMIT'                    => $submitbutton
         ));
 
@@ -244,12 +244,12 @@ function votingShowCurrent($page_content){
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
         $objTpl->setVariable(array(
-            'VOTING_OLDER_TEXT'        => '',
-            'VOTING_OLDER_DATE'        => '',
-            'VOTING_VOTING_ID'        => '',
-            'VOTING_PAGING'            => '',
-            'TXT_DATE'                => '',
-            'TXT_TITLE'                => ''
+            'VOTING_OLDER_TEXT'     => '',
+            'VOTING_OLDER_DATE'     => '',
+            'VOTING_VOTING_ID'      => '',
+            'VOTING_PAGING'         => '',
+            'TXT_DATE'              => '',
+            'TXT_TITLE'             => ''
         ));
 
         while (!$objResult->EOF) {
@@ -260,11 +260,11 @@ function votingShowCurrent($page_content){
 
             if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
             $objTpl->setVariable(array(
-                'VOTING_OLDER_TEXT'        => '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
-                'VOTING_OLDER_DATE'        => showFormattedDate($votingDate),
-                'VOTING_VOTING_ID'        => $votingid,
-                'VOTING_LIST_CLASS'        => $class,
-                'VOTING_PAGING'            => $paging
+                'VOTING_OLDER_TEXT'     => '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
+                'VOTING_OLDER_DATE'     => showFormattedDate($votingDate),
+                'VOTING_VOTING_ID'      => $votingid,
+                'VOTING_LIST_CLASS'     => $class,
+                'VOTING_PAGING'         => $paging
             ));
             $objTpl->parse("votingRow");
             $i++;
@@ -388,7 +388,7 @@ function setVotingResult($template)
     $objTpl->setVariable(array(
         'VOTING_RESULTS_TOTAL_VOTES' => $votingVotes,
         'VOTING_TITLE'               => $votingTitle,
-        'VOTING_RESULTS_TEXT'         => $votingResultText
+        'VOTING_RESULTS_TEXT'        => $votingResultText
     ));
     $objTpl->parse();
     //$objTpl->parse('voting_result');
