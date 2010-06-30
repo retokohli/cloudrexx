@@ -270,7 +270,7 @@ class votingmanager
             $votingDate     = $objResult->fields['datesec'];
             $images         = 1;
 
-            // ok now we're getting all of them..
+            // ok now we're getting all the answers
             $query = "
                 SELECT 
                         `vs`.id,
@@ -331,13 +331,16 @@ class votingmanager
                         `vs`.status,
                         `vs`.submit_check,
                         UNIX_TIMESTAMP(`vs`.`date`) AS `datesec`,
-                        `vs`.votes 
+                        `vs`.votes,
+                        `vl`.`title`
                 FROM 
                         ".DBPREFIX."voting_system AS `vs`
                 LEFT JOIN
                         `".DBPREFIX."voting_lang` AS `vl`
                     ON
                         `vl`.`pollID` = `vs`.`id`
+                WHERE
+                    `vl`.`langID` = ".$langID."
                 ORDER BY 
                         id 
                 DESC
@@ -407,7 +410,9 @@ class votingmanager
 
         foreach ($langs as $lang) {
             $lang = $lang['id'];
-            $this->insertLang($id, $lang, $titles[$lang], $questions[$lang]);
+            $title = (!empty($titles[$lang])) ? $title[$lang] : $titles[0];
+            $question = (!empty($questions[$lang])) ? $questions[$lang] : $questions[0];
+            $this->insertLang($id, $lang, $title, $question);
         }
 
         // insert the answers
