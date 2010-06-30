@@ -65,30 +65,38 @@ function votingShowCurrent($page_content){
     }
 
     if ($_GET['vid'] != '' && $_GET['act'] != 'delete'){
-        $query= "SELECT
-            id,                                status,
-            UNIX_TIMESTAMP(date) as datesec,   question,
-            votes,                             submit_check,
-            additional_nickname,               additional_forename,
-            additional_surname,                additional_phone,
-            additional_street,                 additional_zip,
-            additional_city,                   additional_email,
-            additional_comment
-
-            FROM ".DBPREFIX."voting_system where id=".intval($_GET['vid']);
+        $where = 'id='.intval($_GET['vid']);
     } else {
-        $query= "SELECT
-            id,                                status,
-            UNIX_TIMESTAMP(date) as datesec,   question,
-            votes,                             submit_check,
-            additional_nickname,               additional_forename,
-            additional_surname,                additional_phone,
-            additional_street,                 additional_zip,
-            additional_city,                   additional_email,
-            additional_comment
-
-            FROM ".DBPREFIX."voting_system where status=1";
+        $where = 'status = 1';
     }
+
+    $query= "
+        SELECT
+                `vs`.id,
+                `vs`.status,
+                UNIX_TIMESTAMP(`vs`.date) as datesec,
+                `vs`.votes,
+                `vs`.submit_check,
+                `vs`.additional_nickname,
+                `vs`.additional_forename,
+                `vs`.additional_surname,
+                `vs`.additional_phone,
+                `vs`.additional_street,
+                `vs`.additional_zip,
+                `vs`.additional_city,
+                `vs`.additional_email,
+                `vs`.additional_comment,
+                `vl`.`question`
+        FROM 
+                ".DBPREFIX."voting_system AS `vs`
+        LEFT JOIN
+                `".DBPREFIX."voting_lang` AS `vl`
+            ON
+                `vl`.`pollID` = `vs`.`id`
+            AND
+                `vl`.`langID` = ".FRONTEND_LANG_ID."
+        WHERE 
+            ".$where;
 
     $objResult = $objDatabase->Execute($query);
 
@@ -109,8 +117,25 @@ function votingShowCurrent($page_content){
             ));
 
         /** start paging **/
-        $query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc";
+       $query = "
+            SELECT 
+                    `vs`.id,
+                    UNIX_TIMESTAMP(`vs`.date) as datesec,
+                    `vs`.votes,
+                    `vl`.`title`
+            FROM         
+                   ".DBPREFIX."voting_system AS `vs`
+            LEFT JOIN
+                    `".DBPREFIX."voting_lang` AS `vl`
+                ON
+                    `vl`.`pollID` = `vs`.`id`
+                AND
+                    `vl`.`langID` = ".FRONTEND_LANG_ID."
+            ORDER BY 
+                    id 
+            DESC";
         $objResult = $objDatabase->SelectLimit($query, 5);
+
         $count = $objResult->RecordCount();
         $pos = intval($_GET[pos]);
         if ($count > intval($_CONFIG['corePagingLimit'])){
@@ -118,7 +143,23 @@ function votingShowCurrent($page_content){
         }
         /** end paging **/
 
-        $query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system order by id desc ";
+        $query = "
+            SELECT 
+                    `vs`.id, 
+                    UNIX_TIMESTAMP(`vs`.date) AS datesec, 
+                    `vs`.votes,
+                    `vl`.`title`
+            FROM 
+                    ".DBPREFIX."voting_system AS `vs`
+            LEFT JOIN
+                    `".DBPREFIX."voting_lang` AS `vl`
+                ON
+                    `vl`.`pollID` = `vs`.`id`
+                AND
+                    `vl`.`langID` = ".FRONTEND_LANG_ID."
+            ORDER BY 
+                    id 
+            DESC ";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
         while (!$objResult->EOF) {
@@ -156,13 +197,30 @@ function votingShowCurrent($page_content){
         }
         $images = 1;
 
-        $query = "SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
+        $query = "
+            SELECT 
+                    `vr`.id,
+                    `vr`.votes,
+                    `va`.`answer`
+            FROM 
+                    ".DBPREFIX."voting_results AS `vr`
+            LEFT JOIN
+                    `".DBPREFIX."voting_answer` AS `va`
+                ON
+                    `va`.`resultID` = `vr`.`id`
+                AND
+                    `langID` = ".FRONTEND_LANG_ID."
+            WHERE 
+                    voting_system_id = '$votingId' 
+            ORDER BY 
+                    id
+            ";
         $objResult = $objDatabase->Execute($query);
 
         while (!$objResult->EOF) {
             if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
                 $votingOptionText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
-                $votingOptionText .= stripslashes($objResult->fields['question'])."<br />";
+                $votingOptionText .= stripslashes($objResult->fields['answer'])."<br />";
             }
             $objResult->MoveNext();
         }
@@ -230,7 +288,24 @@ function votingShowCurrent($page_content){
         // show other Poll entries
 
         /** start paging **/
-        $query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system WHERE id<>$votingId order by id desc";
+        $query = "
+            SELECT 
+                    `vs`.id,
+                    UNIX_TIMESTAMP(`vs`.date) as datesec,
+                    `vl`.`title`
+            FROM 
+                    ".DBPREFIX."voting_system  AS `vs`
+            LEFT JOIN
+                    `".DBPREFIX."voting_lang`  AS `vl`
+                ON
+                    `vl`.`pollID` = `vs`.`id`
+                AND
+                    `vl`.`langID` = ".FRONTEND_LANG_ID."
+            WHERE 
+                    id<>$votingId 
+            ORDER BY 
+                    id 
+                DESC";
         $objResult = $objDatabase->SelectLimit($query, 5);
         $count = $objResult->RecordCount();
         $pos = intval($_GET[pos]);
@@ -239,7 +314,19 @@ function votingShowCurrent($page_content){
         }
         /** end paging **/
 
-        $query="SELECT id, UNIX_TIMESTAMP(date) as datesec, title, votes FROM ".DBPREFIX."voting_system WHERE id<>$votingId order by id desc ";
+        $query = "
+            SELECT 
+                    `vs`.id,
+                    UNIX_TIMESTAMP(`vs`.date) AS datesec,
+                    `vs`.votes 
+            FROM 
+                    ".DBPREFIX."voting_system AS `vs`
+            LEFT JOIN
+                    `".DBPREFIX."voting_lang` AS `vl`
+                ON
+                    `vl`.`pollID` = `vs`.`id`
+            WHERE 
+                    id<>$votingId order by id desc ";
 
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
@@ -486,7 +573,24 @@ function _vote_result_html($votingId) {
     $votes_res = $objDatabase->Execute($query);
     $votingVotes = $votes_res->fields['votes'];
 
-    $query     = "SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
+    $query     = "
+        SELECT 
+                `vr`.id,
+                `vr`.votes,
+                `va`.`answer`
+        FROM 
+                ".DBPREFIX."voting_results  AS `vr`
+        LEFT JOIN
+                `".DBPREFIX."voting_answer` AS `va`
+            ON
+                `va`.`resultID` = `vr`.`id`
+            AND
+                `va`.`langID` = ".FRONTEND_LANG_ID."
+        WHERE 
+                voting_system_id = '$votingId'
+        ORDER BY 
+                `id`
+        ";
     $objResult = $objDatabase->Execute($query);
 
     $out = '';
