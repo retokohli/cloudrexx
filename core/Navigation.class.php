@@ -773,7 +773,10 @@ class Navigation
                     $LangURL = ASCMS_PATH_OFFSET.'/'.$arrLanguage['lang'].'/'.$LangURL;
                 }
 
-                $arrLanguageChangePlaceholders['LANG_CHANGE_'.strtoupper($arrLanguage['lang'])] = $LangURL;
+                $arrLanguageChangePlaceholders['LANG_CHANGE_'.strtoupper($arrLanguage['lang'])] =
+                    $LangURL;
+                 $arrLanguageChangePlaceholders['LANG_SELECTED_'.strtoupper($arrLanguage['lang'])] =
+                    $arrLanguage['id'] == FRONTEND_LANG_ID ? 'selected' : '';
             }
         }
 
