@@ -395,8 +395,6 @@ class votingmanager
     {
         global $objDatabase, $_ARRAYLANG;
         
-        $objDatabase->debug = true;
-
         // if not set, abort
         if (empty($_POST['votingquestions']) || empty($_POST['votingnames'])) return false;
 
@@ -454,7 +452,6 @@ class votingmanager
         $objDatabase->execute($query);
         $id = $objDatabase->insert_id();
 
-        print_r($answer);
         foreach ($answer as $lang => $a) {
             $this->insertSingleAnswer($id, $lang, $a);
         }
@@ -830,9 +827,17 @@ class votingmanager
     }
 
 
-    function votingEdit()
+    /**
+     * Show the edit page for polls
+     *
+     * @author      Comvation AG
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     */
+    private function votingEdit()
     {
         global $objDatabase, $_ARRAYLANG;
+
+        $pollID = intval($_GET['votingid']);
 
         $this->_objTpl->loadTemplateFile('voting_edit.html');
 
@@ -849,13 +854,21 @@ class votingmanager
             'TXT_ADDITIONAL'          => $_ARRAYLANG['TXT_ADDITIONAL'         ],
         ));
 
-        $query="SELECT * FROM ".DBPREFIX."voting_system where id=".intval($_GET['votingid'])." ";
+        // get the shit
+        $query = "
+            SELECT 
+                * 
+            FROM 
+                ".DBPREFIX."voting_system 
+            WHERE 
+                id=".$pollID;
+
         $objResult = $objDatabase->Execute($query);
         if(!$objResult->EOF) {
-            $votingname=stripslashes($objResult->fields["title"]);
-            $votingquestion=stripslashes($objResult->fields["question"]);
-            $votingid=$objResult->fields["id"];
-            $votingmethod = $objResult->fields['submit_check'];
+            $votingname          = stripslashes($objResult->fields["title"]);
+            $votingquestion      = stripslashes($objResult->fields["question"]);
+            $votingid            = $objResult->fields["id"];
+            $votingmethod        = $objResult->fields['submit_check'];
 
             $additional_nickname = $objResult->fields['additional_nickname'] ;
             $additional_forename = $objResult->fields['additional_forename'] ;
@@ -869,32 +882,20 @@ class votingmanager
 
         }
 
-        $query="SELECT question,id FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingid' ORDER BY id";
-        $objResult = $objDatabase->Execute($query);
-        $i=0;
-        while (!$objResult->EOF) {
-            $votingoptions .= stripslashes($objResult->fields['question'])."\n";
-            $voltingresults[$i]=$objResult->fields['id'];
-            $i++;
-            $objResult->MoveNext();
-        }
-
         $this->_objTpl->setVariable(array(
-            'TXT_VOTING_METHOD_OF_RESTRICTION_TXT'    => $_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'],
-            'TXT_VOTING_COOKIE_BASED'                => $_ARRAYLANG['TXT_VOTING_COOKIE_BASED'],
+            'TXT_VOTING_METHOD_OF_RESTRICTION_TXT'  => $_ARRAYLANG['TXT_VOTING_METHOD_OF_RESTRICTION_TXT'],
+            'TXT_VOTING_COOKIE_BASED'               => $_ARRAYLANG['TXT_VOTING_COOKIE_BASED'],
             'TXT_VOTING_EMAIL_BASED'                => $_ARRAYLANG['TXT_VOTING_EMAIL_BASED'],
-            'VOTING_METHOD_OF_RESTRICTION_COOKIE'    => $votingmethod == 'cookie' ? 'checked="checked"' : '',
+            'VOTING_METHOD_OF_RESTRICTION_COOKIE'   => $votingmethod == 'cookie' ? 'checked="checked"' : '',
             'VOTING_METHOD_OF_RESTRICTION_EMAIL'    => $votingmethod == 'email' ? 'checked="checked"' : '',
-            'TXT_VOTING_EDIT'                        => $_ARRAYLANG['TXT_VOTING_EDIT'],
-            'TXT_NAME'                                => $_ARRAYLANG['TXT_NAME'],
-            'TXT_VOTING_QUESTION'                      => $_ARRAYLANG['TXT_VOTING_QUESTION'],
-            'TXT_VOTING_ADD_OPTIONS'                 => $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
-            'TXT_STORE'                              => $_ARRAYLANG['TXT_STORE'],
+            'TXT_VOTING_EDIT'                       => $_ARRAYLANG['TXT_VOTING_EDIT'],
+            'TXT_NAME'                              => $_ARRAYLANG['TXT_NAME'],
+            'TXT_VOTING_QUESTION'                   => $_ARRAYLANG['TXT_VOTING_QUESTION'],
+            'TXT_VOTING_ADD_OPTIONS'                => $_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'],
+            'TXT_STORE'                             => $_ARRAYLANG['TXT_STORE'],
             'TXT_RESET'                             => $_ARRAYLANG['TXT_RESET'],
-            'EDIT_NAME'                                => $votingname,
-            'EDIT_QUESTION'                            => $votingquestion,
-            'EDIT_OPTIONS'                            => $votingoptions,
-            'VOTING_ID'                                => $votingid,
+            'TXT_EXTENDED'                          => $_ARRAYLANG['TXT_VOTING_EXTENDED'],
+            'VOTING_ID'                             => $votingid,
             'VOTING_RESULTS'                        => implode($voltingresults,";"),
             'VOTING_FLAG_ADDITIONAL_NICKNAME'       => $additional_nickname ? 'checked="checked"' : '',
             'VOTING_FLAG_ADDITIONAL_FORENAME'       => $additional_forename ? 'checked="checked"' : '',
@@ -906,8 +907,89 @@ class votingmanager
             'VOTING_FLAG_ADDITIONAL_EMAIL'          => $additional_email    ? 'checked="checked"' : '',
             'VOTING_FLAG_ADDITIONAL_COMMENT'        => $additional_comment  ? 'checked="checked"' : '',
         ));
+
+        list($titles, $questions) = $this->getLangValues($pollID);
+        $answers = $this->getAnswers($pollID);
+
+        $this->_objTpl->setVariable(
+            array(
+                'EDIT_NAME'         => $titles[1],
+                'EDIT_QUESTION'     => $questions[1],
+                'EDIT_OPTIONS'      => $answers[1]
+            )
+        );
+
+        $this->parseLanguages('showNameFields', $titles);
+        $this->parseLanguages('showQuestionFields', $questions);
+        $this->parseLanguages('showVotingOptionFields', $answers);
     }
 
+    /**
+     * Return the values of the languages
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $pollID
+     * @return      array
+     */
+    private function getLangValues($pollID) {
+        global $objDatabase;
+
+        $query = sprintf('
+            SELECT
+                `langID`,
+                `title`,
+                `question`
+            FROM
+                `%svoting_lang`
+            WHERE
+                `pollID` = %s',
+            DBPREFIX, $pollID);
+
+        $res = new DBIterator($objDatabase->execute($query));
+        $titles = array();
+        $questions = array();
+        foreach ($res as $row) {
+            $lang = $row['langID'];
+            $titles[$lang] = $row['title'];
+            $questions[$lang] = $row['question'];
+        }
+
+        return array($titles, $questions);
+    }
+
+    /**
+     * Get the answers of a poll
+     * 
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $pollID
+     * @return      array
+     */
+    private function getAnswers($pollID) {
+        global $objDatabase;
+
+        $query = sprintf('
+            SELECT
+                    `va`.`answer`,
+                    `va`.`langID`
+            FROM
+                    `%svoting_answer`  AS `va`
+            LEFT JOIN
+                    `%svoting_results` AS `vr`
+                ON
+                    `va`.`resultID` = `vr`.`id`
+            WHERE
+                    `vr`.`voting_system_id` = %s',
+            DBPREFIX, DBPREFIX, $pollID);
+
+        $res = new DBIterator($objDatabase->execute($query));
+
+        $answers = array();
+        foreach ($res as $row) {
+            $answers[$row['langID']] = $answers[$row['langID']]."\n".$row['answer'];
+        }
+
+        return $answers;
+    }
 
     function votingCode()
     {
