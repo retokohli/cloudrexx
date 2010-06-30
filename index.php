@@ -386,8 +386,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
                   ? $frontEditingContent
                   : $objResult->fields["content"])
               : '<div id="fe_PreviewContent">'.$objResult->fields["content"].'</div>');
-            $page_title = htmlentities(
-                $objResult->fields["title"], ENT_QUOTES, CONTREXX_CHARSET);
         }
     }
 
@@ -1723,13 +1721,13 @@ switch ($plainSection) {
         $objTemplate->setVariable(
             'CONTENT_TEXT', Hotelcard::getPage($page_content));
         break;
-        
-    
-        
+
+
+
     //-------------------------------------------------------
     // Media Directory Module
     //-------------------------------------------------------
-    case "mediadir": 
+    case "mediadir":
         $modulespath = "modules/mediadir/index.class.php";
         if (file_exists($modulespath)) require_once($modulespath);
         else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
