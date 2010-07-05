@@ -763,6 +763,7 @@ class votingmanager
      * @param       int $pollID
      */
     private function updatePoll($pollId) {
+        global $objDatabase;
         $query="
             UPDATE 
                 ".DBPREFIX."voting_system
