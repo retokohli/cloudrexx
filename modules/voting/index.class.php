@@ -608,7 +608,7 @@ function _vote_result_html($votingId) {
             $imagewidth = 80;
         }
 
-        $out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['question'])."</span><br />\n";
+        $out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['answer'])."</span><br />\n";
         $out .= "<img src='images/modules/voting/$images.gif' width='".$imagewidth."%' height='10' />";
         $out .= "&nbsp;<em>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</em><br />";
         $objResult->MoveNext();
