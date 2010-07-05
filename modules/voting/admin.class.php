@@ -1012,7 +1012,6 @@ class votingmanager
      * @param       array $values
      */
     private function parseLanguages($block, $values = array()) {
-
         if (empty($this->languages)) {
             $this->languages = $this->returnLanguages();
         }
@@ -1227,12 +1226,18 @@ class votingmanager
 
         $this->_objTpl->loadTemplateFile('voting_code.html');
 
-        $query= "SELECT id,
-                        status,
-                        UNIX_TIMESTAMP(date) as datesec,
-                        question,
-                        votes
-                   FROM ".DBPREFIX."voting_system
+        $query= "SELECT `vs`.id,
+                        `vs`.status,
+                        UNIX_TIMESTAMP(`vs`.date) as datesec,
+                        `vl`.question,
+                        `vs`.votes
+                   FROM ".DBPREFIX."voting_system AS `vs`
+                   LEFT JOIN
+                        `".DBPREFIX."voting_lang` AS `vl`
+                    ON
+                        `vl`.`pollID` = `vs`.`id`
+                    AND
+                        `vl`.`langID` = ".BACKEND_LANG_ID."
                   WHERE id=".intval($_GET['votingid']);
 
         $objResult = $objDatabase->Execute($query);
@@ -1249,12 +1254,28 @@ class votingmanager
             return false;
         }
 
-        $query="SELECT id, question, votes FROM ".DBPREFIX."voting_results WHERE voting_system_id='$votingId' ORDER BY id";
+        $query = "
+            SELECT 
+                `vr`.id,
+                `va`.`answer`,
+                `vr`.votes 
+            FROM 
+                `".DBPREFIX."voting_results` AS `vr`
+            LEFT JOIN
+                `".DBPREFIX."voting_answer` AS `va`
+            ON
+                `va`.`resultID` = `vr`.`id`
+            AND
+                `va`.`langID` = ".BACKEND_LANG_ID."
+            WHERE 
+                `voting_system_id` = ".$votingId."
+            ORDER BY 
+                id";
         $objResult = $objDatabase->Execute($query);
 
         while (!$objResult->EOF) {
             $votingResultText .= '<input type="radio" name="votingoption" value="'.$objResult->fields['id'].'" />';
-            $votingResultText .= $objResult->fields['question']."<br />\n";
+            $votingResultText .= $objResult->fields['answer']."<br />\n";
             $objResult->MoveNext();
         }
 
