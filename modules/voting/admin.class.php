@@ -717,6 +717,8 @@ class votingmanager
             return false;
         }
 
+        $this->updatePoll($pollID);
+
         $langs = $this->returnLanguages();
 
         $questions = $_POST['votingquestions'];
@@ -751,6 +753,35 @@ class votingmanager
             $answer['votes'] = $votes[$key];
             $this->insertAnswer($id, $answer);
         }
+    }
+
+    /**
+     * Update a poll
+     *
+     * @author      Comvation AG
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $pollID
+     */
+    private function updatePoll($pollId) {
+        $query="
+            UPDATE 
+                ".DBPREFIX."voting_system
+            SET 
+                submit_check        = '".$method."',
+                additional_nickname = '".($_POST['additional_nickname'] == 'on' ? 1 : 0)."',
+                additional_forename = '".($_POST['additional_forename'] == 'on' ? 1 : 0)."',
+                additional_surname  = '".($_POST['additional_surname' ] == 'on' ? 1 : 0)."',
+                additional_phone    = '".($_POST['additional_phone'   ] == 'on' ? 1 : 0)."',
+                additional_street   = '".($_POST['additional_street'  ] == 'on' ? 1 : 0)."',
+                additional_zip      = '".($_POST['additional_zip'     ] == 'on' ? 1 : 0)."',
+                additional_city     = '".($_POST['additional_city'    ] == 'on' ? 1 : 0)."',
+                additional_email    = '".($_POST['additional_email'   ] == 'on' ? 1 : 0)."',
+                additional_comment  = '".($_POST['additional_comment' ] == 'on' ? 1 : 0)."'
+
+            WHERE 
+                id = ".intval($pollID);
+
+        $objDatabase->query($query);
     }
 
 
