@@ -691,7 +691,7 @@ class votingmanager
         // delete the voting_lang table content
         $query = "
             DELETE FROM
-                `".DBPREFIX.".voting_lang`
+                `".DBPREFIX."voting_lang`
             WHERE
                 `pollID` = ".$id;
         $objDatabase->execute($query);
@@ -699,10 +699,12 @@ class votingmanager
 
         // delete the voting_answer table content
         $query = "
-            DELETE FROM
+            DELETE 
+                `va`
+            FROM
                 `".DBPREFIX."voting_answer`   AS `va`
-            JOIN
-                `".DBRPEFIX."voting_results`  AS `vr`
+            LEFT JOIN
+                `".DBPREFIX."voting_results`  AS `vr`
             ON
                 `va`.`resultID` = `vr`.`id`
             WHERE
@@ -714,7 +716,7 @@ class votingmanager
             DELETE FROM
                 `".DBPREFIX."voting_results`
             WHERE
-                `vorting_system_id` = ".$id;
+                `voting_system_id` = ".$id;
         $objDatabase->execute($query);
 
         // Delete the voting_rel_email_system table content
