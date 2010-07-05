@@ -442,7 +442,10 @@ class votingmanager
             FROM
                 `'.DBPREFIX.'voting_results`
             WHERE
-                `voting_system_id` = '.$pollID;
+                `voting_system_id` = 
+            ORDER BY
+                `id`
+            '.$pollID;
 
         $res = new DBIterator($objDatabase->execute($query));
 
@@ -1170,7 +1173,11 @@ class votingmanager
                 ON
                     `va`.`resultID` = `vr`.`id`
             WHERE
-                    `vr`.`voting_system_id` = %s',
+                `vr`.`voting_system_id` = %s
+
+            ORDER BY
+                `id`
+            ',
             DBPREFIX, DBPREFIX, $pollID);
 
         $res = new DBIterator($objDatabase->execute($query));
