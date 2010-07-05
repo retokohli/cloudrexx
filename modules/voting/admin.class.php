@@ -300,8 +300,10 @@ class votingmanager
                     $percentage = (round(($votes/$votingVotes)*10000))/100;
                     $imagewidth = round($percentage,0);
                 }
-                $votingResultText .= stripslashes($answer['question'])."<br />\n";
-                $votingResultText .= "<img src='images/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />";
+                $votingResultText .= stripslashes($answer['answer'])."<br />\n";
+                $votingResultText .= "
+                    <img src='images/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />
+                ";
                 $votingResultText .= "&nbsp;<font size='1'>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</font><br />\n";
             }
 
@@ -360,6 +362,7 @@ class votingmanager
                 } else {
                      $radio=" checked=\"checked\" />";
                 }
+
                 if (($i % 2) == 0) {
                     $class="row1";
                 } else {
