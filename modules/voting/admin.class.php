@@ -676,33 +676,168 @@ class votingmanager
     }
 
 
+    /**
+     * Delete a poll
+     *
+     * @author      Comvation AG
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     */
     function votingDelete()
     {
         global $objDatabase;
 
+        $id = intval($_GET['votingid']);
+
+        // delete the voting_lang table content
+        $query = "
+            DELETE FROM
+                `".DBPREFIX.".voting_lang`
+            WHERE
+                `pollID` = ".$id;
+        $objDatabase->execute($query);
+
+
+        // delete the voting_answer table content
+        $query = "
+            DELETE FROM
+                `".DBPREFIX."voting_answer`   AS `va`
+            JOIN
+                `".DBRPEFIX."voting_results`  AS `vr`
+            ON
+                `va`.`resultID` = `vr`.`id`
+            WHERE
+                `vr`.`voting_system_id` = ".$id;
+        $objDatabase->execute($query);
+
+        // delete the voting_results table content
+        $query = "
+            DELETE FROM
+                `".DBPREFIX."voting_results`
+            WHERE
+                `vorting_system_id` = ".$id;
+        $objDatabase->execute($query);
+
+        // Delete the voting_rel_email_system table content
+        $query = "
+            DELETE FROM 
+                `".DBPREFIX."voting_rel_email_system`
+            WHERE
+                system_id = ".intval($_GET['votingid']);
+
+        $objDatabase->Execute($query);
+        $this->_cleanUpEmails();
+
+        // now delete the actual poll
+        $query = "
+            DELETE FROM
+                `".DBPREFIX."voting_system`
+            WHERE
+                `id` = ".$id;
+        $objDatabase->execute($query);
+
+
+        // now set one of the polls active
+        $this->setOnePollActive();
+
         // Case when deleting the status active, it has to set another
-        $query="SELECT id FROM ".DBPREFIX."voting_system WHERE status=1";
+        // yeah! wait what??
+        //
+        //
+        /*
+        $query = "
+            SELECT 
+                id 
+            FROM 
+                ".DBPREFIX."voting_system 
+            WHERE 
+                status = 1
+        ";
         $objResult = $objDatabase->Execute($query);
         if(!$objResult->EOF && $_GET['votingid']==$objResult->fields["id"]) {
-            $query="SELECT  MAX(id) as maxid FROM ".DBPREFIX."voting_system WHERE status=0";
+            $query = "
+                SELECT 
+                     MAX(id) 
+                AS
+                    maxid 
+                FROM 
+                    ".DBPREFIX."voting_system 
+                WHERE 
+                    status = 0
+            ";
             $objResult = $objDatabase->query($query);
             if(!$objResult->EOF) {
                $maxid=$objResult->fields["maxid"];
                if (!is_null($maxid)) {
-                       $query="UPDATE ".DBPREFIX."voting_system set status=1,date=date WHERE id=$maxid";
+                       $query = "
+                            UPDATE 
+                                ".DBPREFIX."voting_system 
+                            SET 
+                                status = 1,
+                                date = date 
+                            WHERE 
+                                id = $maxid
+                        ";
                        $objDatabase->Execute($query);
                }
             }
 
         }
 
-        $objDatabase->Execute("DELETE FROM `".DBPREFIX."voting_rel_email_system` WHERE system_id=".intval($_GET['votingid']));
+        $objDatabase->Execute("
+            DELETE FROM 
+                `".DBPREFIX."voting_rel_email_system` 
+            WHERE
+                system_id = ".intval($_GET['votingid'])
+        );
         $this->_cleanUpEmails();
 
-          $query="DELETE FROM ".DBPREFIX."voting_system WHERE id=".intval($_GET['votingid'])." ";
+        $query = "
+            DELETE FROM
+                ".DBPREFIX."voting_system 
+            WHERE 
+                id=".intval($_GET['votingid']);
+
         $objDatabase->Execute($query);
-          $query="DELETE FROM ".DBPREFIX."voting_results WHERE voting_system_id=".intval($_GET['votingid'])." ";
+        $query = "
+            DELETE FROM 
+                ".DBPREFIX."voting_results 
+            WHERE 
+                voting_system_id = ".intval($_GET['votingid']);
         $objDatabase->Execute($query);
+         */
+    }
+
+
+    /**
+     * Set one poll active if there's none active
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     */
+    private function setOnePollActive() {
+        global $objDatabase;
+
+        $query = "
+            SELECT count(`status`) AS `count`
+            FROM
+                `".DBPREFIX."voting_system`
+            WHERE
+                `status` = 1
+        ";
+        $res = $objDatabase->SelectLimit($query, 1);
+
+        if ($res !== false) {
+            if ($res->field['count'] == 0) {
+                $query = "
+                    UPDATE
+                        `".DBPREFIX."voting_system`
+                    SET
+                        `status` = 1
+                    LIMIT 1
+                ";
+                $objDatabase->execute($query);
+            }
+
+        }
     }
 
 
