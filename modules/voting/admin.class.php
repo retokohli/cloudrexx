@@ -408,7 +408,7 @@ class votingmanager
 
         foreach ($langs as $lang) {
             $lang = $lang['id'];
-            $title = (!empty($titles[$lang])) ? $title[$lang] : $titles[0];
+            $title = (!empty($titles[$lang])) ? $titles[$lang] : $titles[0];
             $question = (!empty($questions[$lang])) ? $questions[$lang] : $questions[0];
             $this->insertLang($id, $lang, $title, $question);
         }
