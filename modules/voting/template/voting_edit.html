@@ -30,7 +30,7 @@ function showOrHide(strElement)
         <input maxlength="255" name="votingnames[0]" style="width: 450px;" value="{EDIT_NAME}" />&nbsp;<a href="javascript:showOrHide('langName');">{TXT_EXTENDED}</a>
             <div id="langName" style="display: none;">
                 <!-- BEGIN showNameFields -->
-                <input style="width: 450px;" type="text" name="votingnames{LANG_ID}" value="{LANG_VALUE}" id="name_{LANG_ID}"/>&nbsp;<label for="name_{LANG_ID}">{LANG_NAME}</label><br />
+                <input style="width: 450px;" type="text" name="votingnames[{LANG_ID}]" value="{LANG_VALUE}" id="name_{LANG_ID}"/>&nbsp;<label for="name_{LANG_ID}">{LANG_NAME}</label><br />
                 <!-- END showNameFields -->
             </div>
       </td>
