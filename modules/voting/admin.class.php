@@ -420,12 +420,65 @@ class votingmanager
         $postAnswers = $_POST['votingoptions'];
         $answers = $this->buildAnswers($postAnswers);
 
-
         foreach ($answers as $answer) {
             $this->insertAnswer($id, $answer);
         }
 
-        $objDatabase->debug = false;
+    }
+
+    /**
+     * Return the current vote values of the answers
+     *
+     * @author     Stefan Heinemann <sh@adfinis.com>
+     * @param      int $pollID
+     * @return     iterator
+     */
+    private function getResultVotes($pollID) {
+        global $objDatabase;
+
+        $query = '
+            SELECT
+                `votes`
+            FROM
+                `'.DBPREFIX.'voting_results`
+            WHERE
+                `voting_system_id` = '.$pollID;
+
+        $res = new DBIterator($objDatabase->execute($query));
+
+        return $res;
+    }
+
+    /**
+     * Clear the answers of a poll
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $pollID
+     */
+    private function clearAnswers($pollID) {
+        global $objDatabase;
+
+        // delete the voting_answer table content
+        $query = "
+            DELETE 
+                `va`
+            FROM
+                `".DBPREFIX."voting_answer`   AS `va`
+            LEFT JOIN
+                `".DBPREFIX."voting_results`  AS `vr`
+            ON
+                `va`.`resultID` = `vr`.`id`
+            WHERE
+                `vr`.`voting_system_id` = ".$pollID;
+        $objDatabase->execute($query);
+
+        // delete the voting_results table content
+        $query = "
+            DELETE FROM
+                `".DBPREFIX."voting_results`
+            WHERE
+                `voting_system_id` = ".$pollID;
+        $objDatabase->execute($query);
     }
 
     /**
@@ -438,6 +491,8 @@ class votingmanager
     private function insertAnswer($pollID, array $answer) {
         global $objDatabase;
 
+        $votes = (isset($answer['votes'])) ? intval($answer['votes']) : 0;
+
         $query = '
             INSERT INTO
                 `'.DBPREFIX.'voting_results`
@@ -448,15 +503,15 @@ class votingmanager
             VALUES
             (
                 '.$pollID.',
-                0
+                '.$votes.'
             )
         ';
 
         $objDatabase->execute($query);
         $id = $objDatabase->insert_id();
 
-        foreach ($answer as $lang => $a) {
-            $this->insertSingleAnswer($id, $lang, $a);
+        foreach ($answer['langs'] as $lang => $answer) {
+            $this->insertSingleAnswer($id, $lang, $answer);
         }
 
     }
@@ -500,7 +555,7 @@ class votingmanager
      * @param       array $postAnswers
      * @return      array
      */
-    private function buildAnswers($postAnswers)  {
+    private function buildAnswers($postAnswers) {
         $answers = array();
 
         $langs = $this->returnLanguages();
@@ -509,15 +564,15 @@ class votingmanager
             $lang = intval($lang);
             $counter = 0;
             foreach (explode("\n", $content) as $line) {
-                $answers[$counter++][$lang] = $line;
+                $answers[$counter++]['langs'][$lang] = $line;
             }
         }
 
         foreach ($answers as $key => $answer) {
             foreach ($langs as $c) {
                 $lang = $c['id'];
-                if (empty($answers[$key][$lang])) {
-                    $answers[$key][$lang] = $answers[$key][0];
+                if (empty($answers[$key]['langs'][$lang])) {
+                    $answers[$key]['langs'][$lang] = $answers[$key]['langs'][0];
                 }
             }
         }
@@ -589,6 +644,9 @@ class votingmanager
     private function insertLang($pollID, $langID, $title, $question) {
         global $objDatabase;
 
+        $title = contrexx_addslashes($title);
+        $question = contrexx_addslashes($question);
+
         $query = '
             INSERT INTO
                 `'.DBPREFIX.'voting_lang`
@@ -610,71 +668,85 @@ class votingmanager
         $objDatabase->execute($query);
     }
 
+    /**
+     * Update the language values of a poll
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $pollID
+     * @param       int $langID
+     * @param       string $title
+     * @param       string $question
+     */
+    private function updatelang($pollID, $langID, $title, $question) {
+        global $objDatabase;
 
+        $title = contrexx_addslashes($title);
+        $question = contrexx_addslashes($question);
+
+        $query = '
+            UPDATE
+                `'.DBPREFIX.'voting_lang`
+            SET
+                `title` = "'.$title.'",
+                `question` = "'.$question.'"
+            WHERE
+                `pollID` = '.$pollID.'
+            AND
+                `langID` = '.$langID;
+
+        $objDatabase->execute($query);
+    }
+
+
+    /**
+     * Insert the edited version of the poll
+     *
+     * @author      Comvation AG
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     */
     function votingEditSubmit()
     {
         global $objDatabase,$_ARRAYLANG;
-        $deleted_votes=0;
 
-        if (empty($_POST['votingquestion']) || empty($_POST['votingname'])) {
+        $id = intval($_POST['votingid']);
+
+        if (empty($_POST['votingquestions']) || empty($_POST['votingnames']) || $id == 0) {
             return false;
         }
 
-        $options= explode ("\n", $_POST['votingoptions']);
-        $optionsid= explode (";", $_POST['votingresults']);
-        $looptimes=max(count($options),count($optionsid));
-        $method = isset($_POST['votingRestrictionMethod']) ? contrexx_addslashes($_POST['votingRestrictionMethod']) : 'cookie';
+        $langs = $this->returnLanguages();
 
-        if (count(array_filter($options,"checkEntryData"))<2) {
-            return false;
+        $questions = $_POST['votingquestions'];
+        $titles = $_POST['votingnames'];
+
+        // update the langauge secific stuff
+        foreach ($langs as $lang) {
+            $lang = $lang['id'];
+            $title = (!empty($titles[$lang])) ? $titles[$lang] : $titles[0];
+            $question = (!empty($questions[$lang])) ? $questions[$lang] : $questions[0];
+            $this->updateLang($id, $lang, $title, $question);
         }
 
-        for ($i=0;$i<$looptimes;$i++) {
-            if (trim($options[$i])!="") {
-                if ($optionsid[$i]!="") {
-                    $query="UPDATE ".DBPREFIX."voting_results set question='".htmlspecialchars(addslashes(trim($options[$i])), ENT_QUOTES, CONTREXX_CHARSET)."' WHERE id='".intval($optionsid[$i])."'";
-                    $objDatabase->Execute($query);
-                } else {
-                     $query="INSERT INTO ".DBPREFIX."voting_results (voting_system_id,question,votes) values ('".intval($_POST['votingid'])."','".htmlspecialchars(addslashes(trim($options[$i])), ENT_QUOTES, CONTREXX_CHARSET)."',0)";
-                    $objDatabase->Execute($query);
-                }
-            } elseif ($optionsid[$i]!="") {
-                $query="SELECT votes FROM ".DBPREFIX."voting_results WHERE id='".intval($optionsid[$i])."'";
-                $objResult = $objDatabase->Execute($query);
-                if (!$objResult->EOF) {
-                    $deleted_votes = $objResult->fields["votes"];
-                }
-                $query="DELETE FROM ".DBPREFIX."voting_results WHERE id='".intval($optionsid[$i])."'";
-                $objDatabase->Execute($query);
-            }
+        // insert the answers
+        $voteList = $this->getResultVotes($id);
+        $votes = array();
+        $counter = 0;
+        foreach ($voteList as $vote) {
+            $votes[$counter++] = $vote['votes'];
         }
         #print_r($_POST);
 
-        $query="
-            UPDATE ".DBPREFIX."voting_system
-            SET date                = date,
-                title               = '".htmlspecialchars(addslashes($_POST['votingname']), ENT_QUOTES, CONTREXX_CHARSET)."',
-                question            = '".htmlspecialchars(addslashes($_POST['votingquestion']), ENT_QUOTES, CONTREXX_CHARSET)."',
-                votes               = votes-".$deleted_votes.",
-                submit_check        = '".$method."',
-                additional_nickname = '".($_POST['additional_nickname']=='on'?1:0)."',
-                additional_forename = '".($_POST['additional_forename']=='on'?1:0)."',
-                additional_surname  = '".($_POST['additional_surname' ]=='on'?1:0)."',
-                additional_phone    = '".($_POST['additional_phone'   ]=='on'?1:0)."',
-                additional_street   = '".($_POST['additional_street'  ]=='on'?1:0)."',
-                additional_zip      = '".($_POST['additional_zip'     ]=='on'?1:0)."',
-                additional_city     = '".($_POST['additional_city'    ]=='on'?1:0)."',
-                additional_email    = '".($_POST['additional_email'   ]=='on'?1:0)."',
-                additional_comment  = '".($_POST['additional_comment' ]=='on'?1:0)."'
+        // clear the current votes and their results
+        $this->clearAnswers($id);
 
-            WHERE id='".intval($_POST['votingid'])."'";
-        #print "<pre>$query</pre>";
-        if ($objDatabase->Execute($query)) {
-            $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_STORED_SUCCESSFUL'];
-            return true;
-        } else {
-            $this->strErrMessage = $_ARRAYLANG['TXT_SUBMIT_ERROR'];
-            return false;
+        // insert the answers
+        $postAnswers = $_POST['votingoptions'];
+        $answers = $this->buildAnswers($postAnswers);
+
+        // add the votes to the answers and finally add it
+        foreach ($answers as $key => $answer) {
+            $answer['votes'] = $votes[$key];
+            $this->insertAnswer($id, $answer);
         }
     }
 
@@ -699,28 +771,7 @@ class votingmanager
                 `pollID` = ".$id;
         $objDatabase->execute($query);
 
-
-        // delete the voting_answer table content
-        $query = "
-            DELETE 
-                `va`
-            FROM
-                `".DBPREFIX."voting_answer`   AS `va`
-            LEFT JOIN
-                `".DBPREFIX."voting_results`  AS `vr`
-            ON
-                `va`.`resultID` = `vr`.`id`
-            WHERE
-                `vr`.`voting_system_id` = ".$id;
-        $objDatabase->execute($query);
-
-        // delete the voting_results table content
-        $query = "
-            DELETE FROM
-                `".DBPREFIX."voting_results`
-            WHERE
-                `voting_system_id` = ".$id;
-        $objDatabase->execute($query);
+        $this->clearAnswers($id);
 
         // Delete the voting_rel_email_system table content
         $query = "
@@ -1036,7 +1087,8 @@ class votingmanager
             'TXT_RESET'                             => $_ARRAYLANG['TXT_RESET'],
             'TXT_EXTENDED'                          => $_ARRAYLANG['TXT_VOTING_EXTENDED'],
             'VOTING_ID'                             => $votingid,
-            'VOTING_RESULTS'                        => implode($voltingresults,";"),
+            // carries the results on or something
+            'VOTING_RESULTS'                        => implode($voltingresults,";"), 
             'VOTING_FLAG_ADDITIONAL_NICKNAME'       => $additional_nickname ? 'checked="checked"' : '',
             'VOTING_FLAG_ADDITIONAL_FORENAME'       => $additional_forename ? 'checked="checked"' : '',
             'VOTING_FLAG_ADDITIONAL_SURNAME'        => $additional_surname  ? 'checked="checked"' : '',
