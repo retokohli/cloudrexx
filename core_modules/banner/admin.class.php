@@ -517,7 +517,7 @@ class Banner extends bannerLibrary {
                             `banner_id`='.$intInsertedId.',
                             `group_id`='.$intGroupId.',
                             `page_id`='.$intBlogId.',
-                            type = "level"
+                            type = "blog"
                     ');
                 }
             }
@@ -878,29 +878,30 @@ class Banner extends bannerLibrary {
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_TITLE'];
 
         $this->_objTpl->setVariable(array(
-            'BANNER_GROUP_ID'                                =>    $intGid,
-            'TXT_BANNER_GROUP_DETAILS_STATUS'                =>    $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
-            'TXT_BANNER_GROUP_DETAILS_STATUS_2'                =>    $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
-            'TXT_BANNER_GROUP_DETAILS_DEFAULT'                =>    $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DEFAULT'],
-            'TXT_BANNER_GROUP_DETAILS_NAME'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_NAME'],
-            'TXT_BANNER_GROUP_DETAILS_RELATION_CONTENT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_CONTENT'],
-            'TXT_BANNER_GROUP_DETAILS_RELATION_NEWS'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_NEWS'],
-            'TXT_BANNER_GROUP_DETAILS_RELATION_TEASER'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_TEASER'],
-            'TXT_BANNER_GROUP_DETAILS_FUNCTIONS'            =>    $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_FUNCTIONS'],
-            'TXT_BANNER_GROUP_DETAILS_DELETE'                =>    $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DELETE'],
-            'TXT_BANNER_GROUP_DETAILS_DELETE_JS'            =>    $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DELETE_JS'],
-            'TXT_BANNER_GROUP_DETAILS_DELETE_ALL_JS'        =>    $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DELETE_ALL_JS'],
-            'TXT_BANNER_GROUP_DETAILS_EDIT'                    =>    $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_EDIT'],
-            'TXT_BANNER_GROUP_DETAILS_SAVE'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
-            'TXT_BANNER_GROUP_DETAILS_SELECT_ALL'            =>    $_ARRAYLANG['TXT_BANNER_SELECT_ALL'],
-            'TXT_BANNER_GROUP_DETAILS_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_BANNER_DESELECT_ALL'],
-            'TXT_BANNER_GROUP_DETAILS_SUBMIT_SELECT'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_SELECT'],
-            'TXT_BANNER_GROUP_DETAILS_SUBMIT_EXPAND'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_EXPAND'],
-            'TXT_BANNER_GROUP_DETAILS_SUBMIT_COMPRESS'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_COMPRESS'],
-            'TXT_BANNER_GROUP_DETAILS_SUBMIT_DELETE'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_DELETE'],
-            'TXT_BANNER_GROUP_DETAILS_SUBMIT_ACTIVATE'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_ACTIVATE'],
-            'TXT_BANNER_GROUP_DETAILS_SUBMIT_DEACTIVATE'    =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_DEACTIVATE'],
-    		'TXT_BANNER_GROUP_DETAILS_RELATION_LEVEL'		=>	"Verzeichnis-Ebenen",
+            'BANNER_GROUP_ID'                               => $intGid,
+            'TXT_BANNER_GROUP_DETAILS_STATUS'               => $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
+            'TXT_BANNER_GROUP_DETAILS_STATUS_2'             => $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
+            'TXT_BANNER_GROUP_DETAILS_DEFAULT'              => $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DEFAULT'],
+            'TXT_BANNER_GROUP_DETAILS_NAME'                 => $_ARRAYLANG['TXT_BANNER_ADD_NAME'],
+            'TXT_BANNER_GROUP_DETAILS_RELATION_CONTENT'     => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_CONTENT'],
+            'TXT_BANNER_GROUP_DETAILS_RELATION_NEWS'        => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_NEWS'],
+            'TXT_BANNER_GROUP_DETAILS_RELATION_TEASER'      => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_TEASER'],
+            'TXT_BANNER_GROUP_DETAILS_RELATION_BLOG'        => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_BLOG'],
+            'TXT_BANNER_GROUP_DETAILS_FUNCTIONS'            => $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_FUNCTIONS'],
+            'TXT_BANNER_GROUP_DETAILS_DELETE'               => $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DELETE'],
+            'TXT_BANNER_GROUP_DETAILS_DELETE_JS'            => $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DELETE_JS'],
+            'TXT_BANNER_GROUP_DETAILS_DELETE_ALL_JS'        => $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_DELETE_ALL_JS'],
+            'TXT_BANNER_GROUP_DETAILS_EDIT'                 => $_ARRAYLANG['TXT_BANNER_GROUP_DETAILS_EDIT'],
+            'TXT_BANNER_GROUP_DETAILS_SAVE'                 => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
+            'TXT_BANNER_GROUP_DETAILS_SELECT_ALL'           => $_ARRAYLANG['TXT_BANNER_SELECT_ALL'],
+            'TXT_BANNER_GROUP_DETAILS_DESELECT_ALL'         => $_ARRAYLANG['TXT_BANNER_DESELECT_ALL'],
+            'TXT_BANNER_GROUP_DETAILS_SUBMIT_SELECT'        => $_ARRAYLANG['TXT_BANNER_SUBMIT_SELECT'],
+            'TXT_BANNER_GROUP_DETAILS_SUBMIT_EXPAND'        => $_ARRAYLANG['TXT_BANNER_SUBMIT_EXPAND'],
+            'TXT_BANNER_GROUP_DETAILS_SUBMIT_COMPRESS'      => $_ARRAYLANG['TXT_BANNER_SUBMIT_COMPRESS'],
+            'TXT_BANNER_GROUP_DETAILS_SUBMIT_DELETE'        => $_ARRAYLANG['TXT_BANNER_SUBMIT_DELETE'],
+            'TXT_BANNER_GROUP_DETAILS_SUBMIT_ACTIVATE'      => $_ARRAYLANG['TXT_BANNER_SUBMIT_ACTIVATE'],
+            'TXT_BANNER_GROUP_DETAILS_SUBMIT_DEACTIVATE'    => $_ARRAYLANG['TXT_BANNER_SUBMIT_DEACTIVATE'],
+            'TXT_BANNER_GROUP_DETAILS_RELATION_LEVEL'       => "Verzeichnis-Ebenen",
             ));
 
         $objResult = $objDatabase->Execute('SELECT        id,
@@ -956,6 +957,22 @@ class Banner extends bannerLibrary {
 				$objResult->MoveNext();
 			}
 		}	
+
+        $objResult = $objDatabase->Execute('
+            SELECT
+                `category_id` AS `id`,
+                `name`
+            FROM
+                `'.DBPREFIX.'module_blog_categories`
+            WHERE
+                `lang_id` = '.BACKEND_LANG_ID.'
+        ');
+        if ($objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                $arrBlogCategories[$objResult->fields['id']] = $objResult->fields['name'];
+                $objResult->MoveNext();
+            }
+        }
 		    	
         $objResult = $objDatabase->Execute('SELECT        id,
                                                         name,
@@ -981,13 +998,16 @@ class Banner extends bannerLibrary {
 				$x=0;
 				$y=0;
 				$z=0;
+                $a = 0;
 				$i=0;
                 $strRelationsContent     = '';
                 $strRelationsNews        = '';
                 $strRelationsTeaser        = '';
 				$strRelationsLevel		= '';
+                $strRelationsBlog       = '';
                 if ($objSubResult->RecordCount() > 0) {
                     while(!$objSubResult->EOF) {
+                        print_r($objSubResult->fields);
                         switch ($objSubResult->fields['type']) {
                             case 'news':
 								if ($x <= 5) {
@@ -1007,6 +1027,11 @@ class Banner extends bannerLibrary {
 									$z++;
 								}
                             break;
+                            case 'blog':
+                                if ($a <= 5) {
+                                    $strRelationsBlog = '<a href="?cmd=blog&act=manageCategory">'.$arrBlogCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
+                                    $a++;
+                                }
                             default:
 								if ($i <= 5) {
                                 $arrValues = $objContentTree->getThisNode($objSubResult->fields['page_id']);
@@ -1028,9 +1053,10 @@ class Banner extends bannerLibrary {
                     'BANNER_LIVE'                => stripslashes($objResult->fields['banner_code']),
                     'BANNER_CODE'                => htmlspecialchars($objResult->fields['banner_code'], ENT_QUOTES, CONTREXX_CHARSET),
                     'BANNER_RELATIONS_CONTENT'     => $strRelationsContent,
-                    'BANNER_RELATIONS_NEWS'     => $strRelationsNews,
-                    'BANNER_RELATIONS_TEASER'     => $strRelationsTeaser,
-		            'BANNER_RELATIONS_LEVEL' 	=> $strRelationsLevel,
+                    'BANNER_RELATIONS_NEWS'         => $strRelationsNews,
+                    'BANNER_RELATIONS_TEASER'       => $strRelationsTeaser,
+		            'BANNER_RELATIONS_LEVEL' 	    => $strRelationsLevel,
+                    'BANNER_RELATIONS_BLOG'         => $strRelationsBlog,
 		            'TXT_BANNER_STATS'			=>	"Statistik",
 		    		'TXT_BANNER_DIAGRAMM'		=>	"Diagramm",
 		    		'TXT_BANNER_VIEWS'			=>	"Anzeigen",
