@@ -357,7 +357,7 @@ class votingmanager
                 $votingDate     = $voting['datesec'];
                 $votingStatus   = $voting['status'];
 
-                if ($votingStatus==0) {
+                if ($votingStatus == 0) {
                      $radio=" onclick=\"Javascript: window.location.replace('?cmd=voting&amp;act=changestatus&amp;votingid=$votingid');\" />";
                 } else {
                      $radio=" checked=\"checked\" />";
@@ -1045,6 +1045,8 @@ class votingmanager
                 name
             FROM 
                '.DBPREFIX.'languages
+            WHERE
+                `frontend` = 1
             ORDER BY 
                 id ASC';
         $res = $objDatabase->Execute($query);
