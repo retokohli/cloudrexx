@@ -424,6 +424,7 @@ class votingmanager
             $this->insertAnswer($id, $answer);
         }
 
+        $this->setOnePollActive();
     }
 
     /**
