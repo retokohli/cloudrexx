@@ -1,6 +1,7 @@
 <?php
 
 $_ARRAYLANG['TXT_BANNER_ADD_RELATION_BLOG'] = "Blog-Rubriken";
+$_ARRAYLANG['TXT_BANNER_EDIT_RELATION_BLOG'] = "Blog-Rubriken";
 
 /**
  * Banner management
@@ -634,7 +635,8 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_EDIT_RELATION_SELECT'    =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'],
             'TXT_BANNER_EDIT_RELATION_DESELECT'    =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'],
             'TXT_BANNER_EDIT_RELATION_SAVE'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
-    		'TXT_BANNER_EDIT_RELATION_LEVEL'	=>	"Verzeichnis-Ebenen",
+            'TXT_BANNER_EDIT_RELATION_LEVEL'	=>	"Verzeichnis-Ebenen",
+            'TXT_BANNER_EDIT_RELATION_BLOG'     => $_ARRAYLANG['TXT_BANNER_EDIT_RELATION_BLOG']
         ));
 
         //relation
@@ -646,6 +648,7 @@ class Banner extends bannerLibrary {
         $arrRelationContent = array();
         $arrRelationNews     = array();
         $arrRelationTeaser    = array();
+        $arrRelationBlog = array();
 
         if ($objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
@@ -655,6 +658,9 @@ class Banner extends bannerLibrary {
                     break;
                     case 'teaser':
                         $arrRelationTeaser[$objResult->fields['page_id']] = '';
+                    break;
+                    case 'blog'.
+                        $arrRelationBlog[$objResult->fields['page_id']] = "";
                     break;
                     default:
                         $arrRelationContent[$objResult->fields['page_id']] = '';
@@ -712,6 +718,27 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
+
+        // get blog-categories
+        $objResult = $objDatabase->Execute('
+            SELECT
+                `category_id` AS `id`,
+                `name`
+            FROM
+                `'.DBPREFIX.'module_blog_categories`
+            WHERE
+                `lang_id` = '.BACKEND_LANG_ID.'
+        ');
+        if ($objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                if (array_key_exists($objResult->fields['id'], $arrRelationBlog)) {
+                    $strSelectedBlog .= '<option value="'.$objResult->fields['id'].'">'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$objResult->fields['id'].') </option>'."\n";
+                } else {
+                    $strUnselectedBlog .= '<option value="'.$objResult->fields['id'].'">'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.$objResult->fields['id'].') </option>'."\n";
+                }
+                $objResult->MoveNext();
+            }
+        }
 		
 		//get directory-levels
 		$strUnselectedLevel 	= $this->getLevels($intBannerId,1);
@@ -739,7 +766,9 @@ class Banner extends bannerLibrary {
             'BANNER_EDIT_RELATION_TEASER_UNSELECTED'    =>    $strUnselectedTeaser,
 			'BANNER_EDIT_RELATION_TEASER_SELECTED'		=>	$strSelectedTeaser,
 			'BANNER_EDIT_RELATION_LEVEL_UNSELECTED'		=>	$strUnselectedLevel,
-			'BANNER_EDIT_RELATION_LEVEL_SELECTED'		=>	$strSelectedLevel,
+            'BANNER_EDIT_RELATION_LEVEL_SELECTED'		=>	$strSelectedLevel,
+            'BANNER_EDIT_RELATION_BLOG_UNSELECTED'      => $strUnselectedBlog,
+            'BANNER_EDIT_RELATION_BLOG_SELECTED'        => $strSelectedBlog
 		));    		
     }
 
@@ -823,6 +852,19 @@ class Banner extends bannerLibrary {
 										');
 				}	    			
 	    	}   	
+
+            if (is_array($_POST['selectedBlog'])) {
+                foreach ($_POST['selectedBlog'] as $intPageId) {
+                    $objDatabase->Execute('
+                        INSERT
+                        INTO    '.DBPREFIX.'module_banner_relations
+                        SET        banner_id='.$intBannerId.',
+                                group_id='.$intGroupId.',
+                                page_id='.$intPageId.',
+                                type="blog"
+                    ');
+                }
+            }
     	
             $this->strOkMessage = $_ARRAYLANG['TXT_BANNER_UPDATE_DONE'];
         }
@@ -1007,7 +1049,6 @@ class Banner extends bannerLibrary {
                 $strRelationsBlog       = '';
                 if ($objSubResult->RecordCount() > 0) {
                     while(!$objSubResult->EOF) {
-                        print_r($objSubResult->fields);
                         switch ($objSubResult->fields['type']) {
                             case 'news':
 								if ($x <= 5) {

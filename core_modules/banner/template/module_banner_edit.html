@@ -82,6 +82,7 @@ function switchDiv(strElement)
       document.getElementById('divRelationNews').style.display = 'none';
       document.getElementById('divRelationTeaser').style.display = 'none';
 			document.getElementById('divRelationLevel').style.display = 'none';
+      document.getElementById('divRelationBlog').style.display = 'none';
       break;
 
     case 'news':
@@ -89,6 +90,7 @@ function switchDiv(strElement)
       document.getElementById('divRelationNews').style.display = 'block';
       document.getElementById('divRelationTeaser').style.display = 'none';
 			document.getElementById('divRelationLevel').style.display = 'none';	
+      document.getElementById('divRelationBlog').style.display = 'none';
       break;
 
     case 'teaser':
@@ -96,13 +98,22 @@ function switchDiv(strElement)
       document.getElementById('divRelationNews').style.display = 'none';
       document.getElementById('divRelationTeaser').style.display = 'block';
 			document.getElementById('divRelationLevel').style.display = 'none';
+      document.getElementById('divRelationBlog').style.display = 'none';
 		break;	
 		case 'level':
 			document.getElementById('divRelationPages').style.display = 'none';
 			document.getElementById('divRelationNews').style.display = 'none';
 			document.getElementById('divRelationTeaser').style.display = 'none';		
 			document.getElementById('divRelationLevel').style.display = 'block';
+      document.getElementById('divRelationBlog').style.display = 'none';
       break;
+    case 'blog':
+      document.getElementById('divRelationPages').style.display = 'none';
+      document.getElementById('divRelationNews').style.display = 'none';
+      document.getElementById('divRelationTeaser').style.display = 'none';
+      document.getElementById('divRelationLevel').style.display = 'none';
+      document.getElementById('divRelationBlog').style.display = 'block';
+    break;
   }
 }
 // ]]>
@@ -114,7 +125,9 @@ function switchDiv(strElement)
                                                                                           selectAll(document.formEditBanner.elements['selectedTeaser[]']);
 						                                                                      				selectAll(document.formEditBanner.elements['notSelectedTeaser[]']);
 						                                                                      				selectAll(document.formEditBanner.elements['selectedLevel[]']);
-						                                                                      			 	selectAll(document.formEditBanner.elements['notSelectedLevel[]']);">
+                                                                                                            selectAll(document.formEditBanner.elements['notSelectedLevel[]']);
+                                                                                        selectAll(document.formEditBanner.elements['notSelectedBlog[]']);
+                                                                                        selectAll(document.formEditBanner.elements['selectedBlog[]']);">
 <input type="hidden" name="bannerId" value="{BANNER_EDIT_ID}" />
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
@@ -158,6 +171,9 @@ function switchDiv(strElement)
 					<!-- BEGIN showLevel -->	
 						<input type="radio" name="bannerRelationSelect" onclick="switchDiv('level');" {BANNER_LEVEL_CHECKED} id="bannerRelationSelectLevel" /><label for="bannerRelationSelectLevel">{TXT_BANNER_EDIT_RELATION_LEVEL}</label>
 					<!-- END showLevel -->
+          <!-- BEGIN showBlog -->
+            <input type="radio" name="bannerRelationSelect" onclick="switchDiv('blog');" {BANNER_BLOG_CHECKED} /><label for="bannerRelationSelect">{TXT_BANNER_EDIT_RELATION_BLOG}</label>
+          <!-- END showBlog -->
 				</div>
 				<div id="divRelationPages" style="display:{BANNER_CONTENT_DISPLAY};">
           <table width="100%" border="0">
@@ -271,9 +287,9 @@ function switchDiv(strElement)
 					    </td>
 					    <td width="4%"> 
 					      <div align="center"> 
-					        <input type="button" value=" &gt;&gt; " name="addnews" onclick="add(document.formEditBanner.elements['notSelectedLevel[]'],document.formEditBanner.elements['selectedLevel[]'],addnews,removenews);" />
+					        <input type="button" value=" &gt;&gt; " name="addnews" onclick="banner_add(document.formEditBanner.elements['notSelectedLevel[]'],document.formEditBanner.elements['selectedLevel[]'],addnews,removenews);" />
 					        <br />
-					        <input type="button" value=" &lt;&lt; " name="removenews" onclick="remove(document.formEditBanner.elements['notSelectedLevel[]'],document.formEditBanner.elements['selectedLevel[]'],addnews,removenews);" />
+					        <input type="button" value=" &lt;&lt; " name="removenews" onclick="banner_remove(document.formEditBanner.elements['notSelectedLevel[]'],document.formEditBanner.elements['selectedLevel[]'],addnews,removenews);" />
 					        <br /><br />
 					      </div>
 					    </td>
@@ -291,6 +307,42 @@ function switchDiv(strElement)
 					  </tr>
 					</table>				
 				</div>
+               
+        
+        <div id="divRelationBlog" style="display:{BANNER_BLOG_DISPLAY};">
+          <table width="100%" border="0">
+            <tr>
+              <td width="13%">
+                <select name="notSelectedBlog[]" size="12" style="width:200px;" multiple="multiple">
+                    {BANNER_EDIT_RELATION_BLOG_UNSELECTED}
+                </select>
+                <br />
+                <font size="1"><a href="javascript:selectAll(document.formBanner.elements['notSelectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_SELECT}<br />
+                </a><a href="javascript:deselectAll(document.formBanner.elements['notSelectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_DESELECT}</a></font>
+              </td>
+              <td width="4%">
+                <div align="center">
+                  <input type="button" value=" &gt;&gt; " name="addnews" onclick="banner_add(document.formEditBanner.elements['notSelectedBlog[]'],document.formEditBanner.elements['selectedBlog[]'],addnews,removenews);" />
+                  <br />
+                  <input type="button" value=" &lt;&lt; " name="removenews" onclick="banner_remove(document.formEditBanner.elements['notSelectedBlog[]'],document.formEditBanner.elements['selectedBlog[]'],addnews,removenews);" />
+                  <br /><br />
+                </div>
+              </td>
+              <td width="1%">
+                <div align="left">
+                  <select name="selectedBlog[]" size="12" style="width:200px;" multiple="multiple">
+                    {BANNER_EDIT_RELATION_BLOG_SELECTED}
+                  </select>
+                  <br />
+                  <font size="1"><a href="javascript:selectAll(document.formEditBanner.elements['selectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_SELECT}<br />
+                  </a><a href="javascript:deselectAll(document.formEditBanner.elements['selectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_DESELECT}</a></font>
+                </div>
+              </td>
+              <td width="82%">&nbsp;</td>
+            </tr>
+          </table>
+        </div>
+
       </td>
     </tr>
   </table>
