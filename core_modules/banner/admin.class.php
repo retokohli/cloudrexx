@@ -196,6 +196,15 @@ class Banner extends bannerLibrary {
                 $objDatabase->Execute('    UPDATE    '.DBPREFIX.'module_banner_settings
                                         SET        value="'.$intTeaserStatus.'"
                                         WHERE    name="teaser_banner"
+    									LIMIT	1
+    								');	
+    		}	
+    		
+    		$intTeaserStatus = intval($_POST['frmSettings_Level']);
+    		if ($intLevelStatus == 1 || $intLevelStatus == 0) {
+    			$objDatabase->Execute('	UPDATE	'.DBPREFIX.'module_banner_settings
+    									SET		value="'.$intTeaserStatus.'"
+    									WHERE	name="level_banner"
                                         LIMIT    1
                                     ');
             }
@@ -217,6 +226,7 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_SETTINGS_NEWS'        =>    $_ARRAYLANG['TXT_BANNER_SETTINGS_NEWS'],
             'TXT_BANNER_SETTINGS_CONTENT'    =>    $_ARRAYLANG['TXT_BANNER_SETTINGS_CONTENT'],
             'TXT_BANNER_SETTINGS_TEASER'    =>    $_ARRAYLANG['TXT_BANNER_SETTINGS_TEASER'],
+			'TXT_BANNER_SETTINGS_LEVEL'		=>	"Verzeichnis-Banner aktiviert",
             'TXT_BANNER_SETTINGS_SAVE'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE']
             ));
 
@@ -234,6 +244,8 @@ class Banner extends bannerLibrary {
             'SETTINGS_CONTENT_0'    =>    ($this->arrSettings['content_banner'] == 0) ? 'checked' : '',
             'SETTINGS_TEASER_1'        =>    ($this->arrSettings['teaser_banner'] == 1) ? 'checked' : '',
             'SETTINGS_TEASER_0'        =>    ($this->arrSettings['teaser_banner'] == 0) ? 'checked' : '',
+	    	'SETTINGS_LEVEL_1'		=>	($this->arrSettings['level_banner'] == 1) ? 'checked' : '',
+	    	'SETTINGS_LEVEL_0'		=>	($this->arrSettings['level_banner'] == 0) ? 'checked' : '',    	
         ));
     }
 
@@ -282,6 +294,7 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_GROUP_EDIT'                    =>    $_ARRAYLANG['TXT_BANNER_GROUP_EDIT'],
             'TXT_BANNER_GROUP_EMPTY'                =>    $_ARRAYLANG['TXT_BANNER_GROUP_EMPTY'],
             'TXT_BANNER_GROUP_EMPTY_JS'                =>    $_ARRAYLANG['TXT_BANNER_GROUP_EMPTY_JS'],
+			'TXT_BANNER_GROUP_DELETE_JS'			=>	$_ARRAYLANG['TXT_BANNER_GROUP_DELETE_JS'],
             'TXT_BANNER_GROUP_SELECT_ALL'            =>    $_ARRAYLANG['TXT_BANNER_SELECT_ALL'],
             'TXT_BANNER_GROUP_DESELECT_ALL'            =>    $_ARRAYLANG['TXT_BANNER_DESELECT_ALL'],
             'TXT_BANNER_GROUP_SUBMIT_SELECT'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_SELECT'],
@@ -374,6 +387,9 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
+		
+		//get directory-levels
+		$strLevel = $this->getLevels('',1);
 
         $this->_objTpl->setVariable(array(
             'TXT_BANNER_ADD_TITLE'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_TITLE'],
@@ -386,6 +402,7 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_ADD_RELATION_CONTENT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_CONTENT'],
             'TXT_BANNER_ADD_RELATION_NEWS'            =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_NEWS'],
             'TXT_BANNER_ADD_RELATION_TEASER'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_TEASER'],
+    		'TXT_BANNER_ADD_RELATION_LEVEL'			=>	"Verzeichnis-Ebenen",
             'TXT_BANNER_ADD_RELATION_SELECT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'],
             'TXT_BANNER_ADD_RELATION_DESELECT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'],
             'TXT_BANNER_ADD_RELATION_SAVE'            =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
@@ -393,6 +410,7 @@ class Banner extends bannerLibrary {
             'BANNER_ADD_RELATION_PAGES_UNSELECTED'    =>     $strPages,
             'BANNER_ADD_RELATION_NEWS_UNSELECTED'    =>     $strNews,
             'BANNER_ADD_RELATION_TEASER_UNSELECTED'    =>    $strTeaser,
+			'BANNER_ADD_RELATION_LEVEL_UNSELECTED'	=>	$strLevel,
         ));
     }
 
@@ -456,6 +474,18 @@ class Banner extends bannerLibrary {
                                         ');
                 }
             }
+
+	    	if (is_array($_POST['selectedLevel'])) {
+				foreach ($_POST['selectedLevel'] as $intPageId) {
+					$objDatabase->Execute('	INSERT
+											INTO	'.DBPREFIX.'module_banner_relations
+											SET		banner_id='.$intInsertedId.',
+													group_id='.$intGroupId.',
+													page_id='.$intPageId.',
+													type="level"
+										');
+				}	    			
+	    	}
 
             $this->setDefaultBanner($intGroupId);
 
@@ -569,6 +599,7 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_EDIT_RELATION_SELECT'    =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'],
             'TXT_BANNER_EDIT_RELATION_DESELECT'    =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'],
             'TXT_BANNER_EDIT_RELATION_SAVE'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
+    		'TXT_BANNER_EDIT_RELATION_LEVEL'	=>	"Verzeichnis-Ebenen",
         ));
 
         //relation
@@ -646,6 +677,10 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
+		
+		//get directory-levels
+		$strUnselectedLevel 	= $this->getLevels($intBannerId,1);
+		$strSelectedLevel 		= $this->getLevels($intBannerId,2);
 
            //values
         $objResult = $objDatabase->Execute('SELECT    parent_id,
@@ -667,9 +702,10 @@ class Banner extends bannerLibrary {
             'BANNER_EDIT_RELATION_NEWS_UNSELECTED'        =>    $strUnselectedNews,
             'BANNER_EDIT_RELATION_NEWS_SELECTED'        =>    $strSelectedNews,
             'BANNER_EDIT_RELATION_TEASER_UNSELECTED'    =>    $strUnselectedTeaser,
-            'BANNER_EDIT_RELATION_TEASER_SELECTED'        =>    $strSelectedTeaser
-        ));
-
+			'BANNER_EDIT_RELATION_TEASER_SELECTED'		=>	$strSelectedTeaser,
+			'BANNER_EDIT_RELATION_LEVEL_UNSELECTED'		=>	$strUnselectedLevel,
+			'BANNER_EDIT_RELATION_LEVEL_SELECTED'		=>	$strSelectedLevel,
+		));    		
     }
 
 
@@ -741,6 +777,18 @@ class Banner extends bannerLibrary {
                 }
             }
 
+	    	if (is_array($_POST['selectedLevel'])) {
+				foreach ($_POST['selectedLevel'] as $intPageId) {
+					$objDatabase->Execute('	INSERT
+											INTO	'.DBPREFIX.'module_banner_relations
+											SET		banner_id='.$intBannerId.',
+													group_id='.$intGroupId.',
+													page_id='.$intPageId.',
+													type="level"
+										');
+				}	    			
+	    	}   	
+    	
             $this->strOkMessage = $_ARRAYLANG['TXT_BANNER_UPDATE_DONE'];
         }
 
@@ -817,6 +865,7 @@ class Banner extends bannerLibrary {
             'TXT_BANNER_GROUP_DETAILS_SUBMIT_DELETE'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_DELETE'],
             'TXT_BANNER_GROUP_DETAILS_SUBMIT_ACTIVATE'        =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_ACTIVATE'],
             'TXT_BANNER_GROUP_DETAILS_SUBMIT_DEACTIVATE'    =>    $_ARRAYLANG['TXT_BANNER_SUBMIT_DEACTIVATE'],
+    		'TXT_BANNER_GROUP_DETAILS_RELATION_LEVEL'		=>	"Verzeichnis-Ebenen",
             ));
 
         $objResult = $objDatabase->Execute('SELECT        id,
@@ -860,11 +909,26 @@ class Banner extends bannerLibrary {
             }
         }
 
+		//create level-cat-array ($arrLevelCategories)
+		$objResult = $objDatabase->Execute('SELECT 		id,
+														name
+											FROM		'.DBPREFIX.'module_directory_levels
+											ORDER BY	name ASC
+										');
+		if ($objResult->RecordCount() > 0) {
+			while (!$objResult->EOF) {
+	           	$arrLevelCategories[$objResult->fields['id']] = $objResult->fields['name'];
+				$objResult->MoveNext();
+			}
+		}	
+		    	
         $objResult = $objDatabase->Execute('SELECT        id,
                                                         name,
                                                         banner_code,
                                                         status,
-                                                        is_default
+														is_default,
+														views,
+														clicks
                                             FROM        '.DBPREFIX.'module_banner_system
                                             WHERE        parent_id='.$intGid.'
                                             ORDER BY    is_default DESC,
@@ -879,21 +943,41 @@ class Banner extends bannerLibrary {
                                                         FROM    '.DBPREFIX.'module_banner_relations
                                                         WHERE    banner_id='.$objResult->fields['id'].'
                                                     ');
+				$x=0;
+				$y=0;
+				$z=0;
+				$i=0;
                 $strRelationsContent     = '';
                 $strRelationsNews        = '';
                 $strRelationsTeaser        = '';
+				$strRelationsLevel		= '';
                 if ($objSubResult->RecordCount() > 0) {
                     while(!$objSubResult->EOF) {
                         switch ($objSubResult->fields['type']) {
                             case 'news':
+								if ($x <= 5) {
                                 $strRelationsNews     .= '<a href="?cmd=news&amp;act=newscat">'.$arrNewsCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
+									$x++;
+								}
                             break;
                             case 'teaser':
+								if ($y <= 5) {
                                 $strRelationsTeaser    .= '<a href="?cmd=news&amp;act=teasers&amp;tpl=editFrame&amp;frameId='.$objSubResult->fields['page_id'].'">'.$arrTeaserCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
+									$y++;
+								}
+							break;
+							case 'level':
+								if ($z <= 5) {
+									$strRelationsLevel	.= '<a href="?cmd=directory&act=levels">'.$arrLevelCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
+									$z++;
+								}
                             break;
                             default:
+								if ($i <= 5) {
                                 $arrValues = $objContentTree->getThisNode($objSubResult->fields['page_id']);
                                 $strRelationsContent .= '<a href="?cmd=content&amp;act=edit&amp;pageId='.$arrValues['catid'].'">'.$arrValues['catname'].' ('.$arrValues['catid'].'</a>)<br />';
+									$i++;
+								}
                         }
                         $objSubResult->MoveNext();
                     }
@@ -911,7 +995,26 @@ class Banner extends bannerLibrary {
                     'BANNER_RELATIONS_CONTENT'     => $strRelationsContent,
                     'BANNER_RELATIONS_NEWS'     => $strRelationsNews,
                     'BANNER_RELATIONS_TEASER'     => $strRelationsTeaser,
-                ));
+		            'BANNER_RELATIONS_LEVEL' 	=> $strRelationsLevel,
+		            'TXT_BANNER_STATS'			=>	"Statistik",
+		    		'TXT_BANNER_DIAGRAMM'		=>	"Diagramm",
+		    		'TXT_BANNER_VIEWS'			=>	"Anzeigen",
+		    		'BANNER_VIEWS'				=>	$objResult->fields['views'],
+		    		'TXT_BANNER_CLICKS'			=>	"Klicks",
+		    		'BANNER_CLICKS'				=>	$objResult->fields['clicks'],
+		    		'TXT_BANNER_RESTORE_STATS'	=>	"Statistik zurücksetzten",
+				));
+				
+			//	if (0>0) {
+					$this->_objTpl->setVariable(array(
+						'BANNER_GRAPH' => '<img style="border: 1px solid #000000;" src="'.ASCMS_PATH_OFFSET.'/core_modules/banner/graph.php?banner_id='.$objResult->fields['id'].'" width="200" height="100" />',
+					));
+			/*	} else {
+					$this->_objTpl->setVariable(array(
+						'BANNER_GRAPH' => "keine Daten verfügbar"
+					));
+				}*/
+				
 
                 $this->_objTpl->parse('showBanner');
 
