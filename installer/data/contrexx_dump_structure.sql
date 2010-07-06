@@ -518,6 +518,50 @@ CREATE TABLE `contrexx_module_auction_spez_fields` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_banner_groups` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL default '',
+  `description` varchar(255) NOT NULL default '',
+  `placeholder_name` varchar(100) NOT NULL default '',
+  `status` int(1) NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_banner_relations` (
+  `banner_id` int(11) NOT NULL default '0',
+  `group_id` int(4) unsigned NOT NULL default '0',
+  `page_id` int(11) NOT NULL default '0',
+  `type` set('content','news','teaser','level') NOT NULL default 'content',
+  KEY `banner_id` (`banner_id`,`group_id`,`page_id`),
+  KEY `page_id` (`page_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_banner_settings` (
+  `name` varchar(50) NOT NULL default '',
+  `value` varchar(250) NOT NULL default '',
+  KEY `name` (`name`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_banner_system` (
+  `id` int(11) NOT NULL auto_increment,
+  `parent_id` int(11) NOT NULL default '0',
+  `name` varchar(150) NOT NULL default '',
+  `banner_code` mediumtext NOT NULL,
+  `status` int(1) NOT NULL default '1',
+  `is_default` tinyint(2) unsigned NOT NULL default '0',
+  `views` int(100) NOT NULL default '0',
+  `clicks` int(100) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_block_blocks` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `cat` int(10) unsigned NOT NULL default '0',
