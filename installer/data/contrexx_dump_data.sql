@@ -1197,6 +1197,8 @@ INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `descript
 INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (7,'editEntry','0','TXT_AUCTION_SET_EDIT_ENTRY',2);
 INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (8,'indexview','1','TXT_AUCTION_SET_INDEXVIEW',2);
 INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (12,'codeMode','0','TXT_AUCTION_SET_CODE_MODE',2);
+INSERT INTO `contrexx_module_banner_groups` (`id`, `name`, `description`, `placeholder_name`, `status`) VALUES (1,'Standard Design :: Skyscrapers rechte Seite','Standard Design :: Skyscrapers rechte Seite','[[BANNER_GROUP_1]]',0);
+INSERT INTO `contrexx_module_banner_groups` (`id`, `name`, `description`, `placeholder_name`, `status`) VALUES (2,'Standard Design :: Banner oben','Standard Design :: Banner oben','[[BANNER_GROUP_2]]',0);
 INSERT INTO `contrexx_module_banner_settings` (`name`, `value`) VALUES ('news_banner','1');
 INSERT INTO `contrexx_module_banner_settings` (`name`, `value`) VALUES ('content_banner','1');
 INSERT INTO `contrexx_module_banner_settings` (`name`, `value`) VALUES ('teaser_banner','1');
