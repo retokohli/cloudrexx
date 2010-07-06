@@ -137,24 +137,35 @@ function switchDiv(strElement) {
       document.getElementById('divRelationNews').style.display = 'none';
       document.getElementById('divRelationTeaser').style.display = 'none';
       document.getElementById('divRelationLevel').style.display = 'none';
+      document.getElementById('divRelationBlog').style.display = 'none';
     break;
     case 'news':
       document.getElementById('divRelationPages').style.display = 'none';
       document.getElementById('divRelationNews').style.display = 'block';
       document.getElementById('divRelationTeaser').style.display = 'none';
       document.getElementById('divRelationLevel').style.display = 'none';
+      document.getElementById('divRelationBlog').style.display = 'none';
     break;
     case 'teaser':
       document.getElementById('divRelationPages').style.display = 'none';
       document.getElementById('divRelationNews').style.display = 'none';
       document.getElementById('divRelationTeaser').style.display = 'block';
       document.getElementById('divRelationLevel').style.display = 'none';
+      document.getElementById('divRelationBlog').style.display = 'none';
     break;
     case 'level':
       document.getElementById('divRelationPages').style.display = 'none';
       document.getElementById('divRelationNews').style.display = 'none';
       document.getElementById('divRelationTeaser').style.display = 'none';
       document.getElementById('divRelationLevel').style.display = 'block';
+      document.getElementById('divRelationBlog').style.display = 'none';
+    break;
+    case 'blog':
+      document.getElementById('divRelationPages').style.display = 'none';
+      document.getElementById('divRelationNews').style.display = 'none';
+      document.getElementById('divRelationTeaser').style.display = 'none';
+      document.getElementById('divRelationLevel').style.display = 'none';
+      document.getElementById('divRelationBlog').style.display = 'block';
     break;
   }
 }
@@ -166,7 +177,9 @@ function switchDiv(strElement) {
                                                                                         selectAll(document.formBanner.elements['selectedTeaser[]']);
                                                                                         selectAll(document.formBanner.elements['notSelectedTeaser[]']);
                                                                                         selectAll(document.formBanner.elements['selectedLevel[]']);
-                                                                                        selectAll(document.formBanner.elements['notSelectedLevel[]']);">
+                                                                                        selectAll(document.formBanner.elements['notSelectedLevel[]']);
+                                                                                        selectAll(document.formBanner.elements['notSelectedBlog[]']);
+                                                                                        selectAll(document.formBanner.elements['selectedBlog[]']);">
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
       <th valign="top" colspan="2">
@@ -220,6 +233,9 @@ function switchDiv(strElement) {
           <!-- BEGIN showLevel -->
             <input type="radio" name="bannerRelationSelect" onClick="switchDiv('level');" {BANNER_LEVEL_CHECKED} /><label for="bannerRelationSelect">{TXT_BANNER_ADD_RELATION_LEVEL}</label>
           <!-- END showLevel -->
+          <!-- BEGIN showBlog -->
+            <input type="radio" name="bannerRelationSelect" onclick="switchDiv('blog');" {BANNER_BLOG_CHECKED} /><label for="bannerRelationSelect">{TXT_BANNER_ADD_RELATION_BLOG}</label>
+          <!-- END showBlog -->
         </div>
         <div id="divRelationPages" style="display:{BANNER_CONTENT_DISPLAY};">
           <table width="100%" border="0">
@@ -348,7 +364,42 @@ function switchDiv(strElement) {
               <td width="82%">&nbsp;</td>
             </tr>
           </table>
+      </div> 
+
+
+      <div id="divRelationBlog" style="display:{BANNER_BLOG_DISPLAY};">
+          <table width="100%" border="0">
+            <tr>
+              <td width="13%">
+                <select name="notSelectedBlog[]" size="12" style="width:200px;" multiple="multiple">
+                    {BANNER_ADD_RELATION_BLOG_UNSELECTED}
+                </select>
+                <br />
+                <font size="1"><a href="javascript:selectAll(document.formBanner.elements['notSelectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_SELECT}<br />
+                </a><a href="javascript:deselectAll(document.formBanner.elements['notSelectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_DESELECT}</a></font>
+              </td>
+              <td width="4%">
+                <div align="center">
+                  <input type="button" value=" &gt;&gt; " name="addnews" onclick="add(document.formBanner.elements['notSelectedBlog[]'],document.formBanner.elements['selectedBlog[]'],addnews,removenews);" />
+                  <br />
+                  <input type="button" value=" &lt;&lt; " name="removenews" onclick="remove(document.formBanner.elements['notSelectedBlog[]'],document.formBanner.elements['selectedBlog[]'],addnews,removenews);" />
+                  <br /><br />
+                </div>
+              </td>
+              <td width="1%">
+                <div align="left">
+                  <select name="selectedBlog[]" size="12" style="width:200px;" multiple="multiple">
+                  </select>
+                  <br />
+                  <font size="1"><a href="javascript:selectAll(document.formBanner.elements['selectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_SELECT}<br />
+                  </a><a href="javascript:deselectAll(document.formBanner.elements['selectedBlog[]']);" style="color:blue;">{TXT_BANNER_ADD_RELATION_DESELECT}</a></font>
+                </div>
+              </td>
+              <td width="82%">&nbsp;</td>
+            </tr>
+          </table>
         </div>
+
       </td>
       </tr>
   </table>
