@@ -533,7 +533,7 @@ CREATE TABLE `contrexx_module_banner_relations` (
   `banner_id` int(11) NOT NULL default '0',
   `group_id` int(4) unsigned NOT NULL default '0',
   `page_id` int(11) NOT NULL default '0',
-  `type` set('content','news','teaser','level') NOT NULL default 'content',
+  `type` set('content','news','teaser','level','blog') NOT NULL default 'content',
   KEY `banner_id` (`banner_id`,`group_id`,`page_id`),
   KEY `page_id` (`page_id`)
 ) TYPE=MyISAM;
