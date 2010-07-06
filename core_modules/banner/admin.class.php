@@ -1,5 +1,7 @@
 <?php
 
+$_ARRAYLANG['TXT_BANNER_ADD_RELATION_BLOG'] = "Blog-Rubriken";
+
 /**
  * Banner management
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -387,30 +389,49 @@ class Banner extends bannerLibrary {
                 $objResult->MoveNext();
             }
         }
+
+        // get blog-categories
+        $objResult = $objDatabase->Execute('
+            SELECT
+                `category_id` AS `id`,
+                `name`
+            FROM
+                `'.DBPREFIX.'module_blog_categories`
+            WHERE
+                `lang_id` = '.BACKEND_LANG_ID.'
+        ');
+        if ($objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                $strBlog .= '<option value="'.$objResult->fields['id'].'">'.$objResult->fields['name'].' ('.$objResult->fields['id'].') </option>'."\n";
+                $objResult->MoveNext();
+            }
+        }
 		
 		//get directory-levels
 		$strLevel = $this->getLevels('',1);
 
         $this->_objTpl->setVariable(array(
-            'TXT_BANNER_ADD_TITLE'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_TITLE'],
-            'TXT_BANNER_ADD_NAME'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_NAME'],
-            'TXT_BANNER_ADD_GROUP'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_GROUP'],
-            'TXT_BANNER_ADD_GROUP_SELECT'            =>    $_ARRAYLANG['TXT_BANNER_ADD_GROUP_SELECT'],
-            'TXT_BANNER_ADD_STATUS'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
-            'TXT_BANNER_ADD_CODE'                    =>    $_ARRAYLANG['TXT_BANNER_ADD_CODE'],
-            'TXT_BANNER_ADD_RELATION'                =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION'],
-            'TXT_BANNER_ADD_RELATION_CONTENT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_CONTENT'],
-            'TXT_BANNER_ADD_RELATION_NEWS'            =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_NEWS'],
-            'TXT_BANNER_ADD_RELATION_TEASER'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_TEASER'],
-    		'TXT_BANNER_ADD_RELATION_LEVEL'			=>	"Verzeichnis-Ebenen",
-            'TXT_BANNER_ADD_RELATION_SELECT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'],
-            'TXT_BANNER_ADD_RELATION_DESELECT'        =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'],
-            'TXT_BANNER_ADD_RELATION_SAVE'            =>    $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
-            'BANNER_ADD_GROUP_MENU'                    =>     $this->getBannerGroupMenu(1, ''),
-            'BANNER_ADD_RELATION_PAGES_UNSELECTED'    =>     $strPages,
-            'BANNER_ADD_RELATION_NEWS_UNSELECTED'    =>     $strNews,
-            'BANNER_ADD_RELATION_TEASER_UNSELECTED'    =>    $strTeaser,
-			'BANNER_ADD_RELATION_LEVEL_UNSELECTED'	=>	$strLevel,
+            'TXT_BANNER_ADD_TITLE'                      => $_ARRAYLANG['TXT_BANNER_ADD_TITLE'],
+            'TXT_BANNER_ADD_NAME'                       => $_ARRAYLANG['TXT_BANNER_ADD_NAME'],
+            'TXT_BANNER_ADD_GROUP'                      => $_ARRAYLANG['TXT_BANNER_ADD_GROUP'],
+            'TXT_BANNER_ADD_GROUP_SELECT'               => $_ARRAYLANG['TXT_BANNER_ADD_GROUP_SELECT'],
+            'TXT_BANNER_ADD_STATUS'                     => $_ARRAYLANG['TXT_BANNER_ADD_STATUS'],
+            'TXT_BANNER_ADD_CODE'                       => $_ARRAYLANG['TXT_BANNER_ADD_CODE'],
+            'TXT_BANNER_ADD_RELATION'                   => $_ARRAYLANG['TXT_BANNER_ADD_RELATION'],
+            'TXT_BANNER_ADD_RELATION_CONTENT'           => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_CONTENT'],
+            'TXT_BANNER_ADD_RELATION_NEWS'              => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_NEWS'],
+            'TXT_BANNER_ADD_RELATION_TEASER'            => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_TEASER'],
+    		'TXT_BANNER_ADD_RELATION_LEVEL'			    => "Verzeichnis-Ebenen",
+            'TXT_BANNER_ADD_RELATION_SELECT'            => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SELECT'],
+            'TXT_BANNER_ADD_RELATION_DESELECT'          => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_DESELECT'],
+            'TXT_BANNER_ADD_RELATION_SAVE'              => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_SAVE'],
+            'TXT_BANNER_ADD_RELATION_BLOG'              => $_ARRAYLANG['TXT_BANNER_ADD_RELATION_BLOG'],
+            'BANNER_ADD_GROUP_MENU'                     => $this->getBannerGroupMenu(1, ''),
+            'BANNER_ADD_RELATION_PAGES_UNSELECTED'      => $strPages,
+            'BANNER_ADD_RELATION_NEWS_UNSELECTED'       => $strNews,
+            'BANNER_ADD_RELATION_TEASER_UNSELECTED'     => $strTeaser,
+			'BANNER_ADD_RELATION_LEVEL_UNSELECTED'      => $strLevel,
+			'BANNER_ADD_RELATION_BLOG_UNSELECTED'       => $strBlog,
         ));
     }
 
@@ -486,6 +507,20 @@ class Banner extends bannerLibrary {
 										');
 				}	    			
 	    	}
+
+            if (is_array($_POST['selectedBlog'])) {
+                foreach ($_POST['selectedBlog'] as $intBlogId) {
+                    $objDatabase->execute('
+                        INSERT INTO
+                            `'.DBPREFIX.'module_banner_relations`
+                        SET
+                            `banner_id`='.$intInsertedId.',
+                            `group_id`='.$intGroupId.',
+                            `page_id`='.$intBlogId.',
+                            type = "level"
+                    ');
+                }
+            }
 
             $this->setDefaultBanner($intGroupId);
 
