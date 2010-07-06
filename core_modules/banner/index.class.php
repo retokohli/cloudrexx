@@ -103,6 +103,59 @@ class Banner extends bannerLibrary
                              AND relation.banner_id = system.id
                              AND relation.type='level'
                              AND system.status=1";
+            } elseif (isset($_GET['section']) 
+                    && $_GET['section'] == 'blog' 
+                    && isset($_GET['cmd'])
+                    && (
+                        $_GET['cmd'] == 'details' 
+                        ||
+                        (
+                            $_GET['cmd'] == 'search'
+                            &&
+                            isset($_GET['category'])
+                        )
+                    )
+            ) {
+                if ($_GET['cmd'] == 'details') {
+                    $id = intval($_GET['id']); 
+                    $query = "
+                        SELECT
+                            `category_id`
+                        FROM
+                            `".DBPREFIX."module_blog_message_to_category` 
+                        WHERE
+                            `message_id` = ".$id;
+
+                    $res = $objDatabase->execute($query);
+                    $arr = array();
+                    while (!$res->EOF) {
+                        $arr[] = $res->fields['category_id'];
+                        $res->MoveNext();
+                    }
+
+                    $list = implode(', ', $arr);
+                    $query = "SELECT system.banner_code AS banner_code,
+                                     system.id AS id
+                                FROM ".DBPREFIX."module_banner_relations AS relation,
+                                     ".DBPREFIX."module_banner_system AS system
+                               WHERE relation.group_id = ".$groupId."
+                                 AND relation.page_id IN (".$list.")
+                                 AND relation.banner_id = system.id
+                                 AND relation.type='blog'
+                                 AND system.status=1";
+                } elseif ($_GET['cmd'] == 'search' && isset($_GET['category'])) {
+                    $category = intval($_GET['category']);
+
+                    $query = "SELECT system.banner_code AS banner_code,
+                                     system.id AS id
+                                FROM ".DBPREFIX."module_banner_relations AS relation,
+                                     ".DBPREFIX."module_banner_system AS system
+                               WHERE relation.group_id = ".$groupId."
+                                 AND relation.page_id = ".$category."
+                                 AND relation.banner_id = system.id
+                                 AND relation.type='blog'
+                                 AND system.status=1";
+                }
             } else {
                 $query = "SELECT system.banner_code AS banner_code,
                                  system.id AS id
