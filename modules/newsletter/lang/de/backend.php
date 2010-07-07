@@ -389,4 +389,5 @@ $_ARRAYLANG['TXT_INFO_ABOUT_ADMIN_INFORM'] = "Diese E-Mail geht an die Adresse d
 $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY_ID'] = "Land-ID";
 $_ARRAYLANG['TXT_INFORM_ADMIN_EMAIL'] = "Der Newsletter konnte an folgende E-Mail-Adresse nicht verschickt werden:  %EMAIL%  Um die E-Mail-Adresse zu bearbeiten, klicken Sie bitte hier:  %LINK%";
 $_ARRAYLANG['TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT'] = "E-Mail-Text, um den Administrator zu informieren";
+$_ARRAYLANG['TXT_INFO_ABOUT_INFORM_TEXT'] = "Sie können folgende Platzhalter verwenden: %EMAIL%   und %LINK%";
 ?>
