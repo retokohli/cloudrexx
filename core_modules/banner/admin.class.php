@@ -1083,7 +1083,7 @@ class Banner extends bannerLibrary {
                             break;
                             case 'blog':
                                 if ($a <= 5) {
-                                    $strRelationsBlog = '<a href="?cmd=blog&act=manageCategory">'.$arrBlogCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
+                                    $strRelationsBlog .= '<a href="?cmd=blog&act=manageCategory">'.$arrBlogCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
                                     $a++;
                                 }
                             default:
