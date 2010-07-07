@@ -1624,16 +1624,16 @@ class newsletter extends NewsletterLib
         $this->_objTpl->loadTemplateFile('newsletter_config_html.html');
 
         $this->_objTpl->setVariable(array(
-            'HTML_CODE'             => htmlentities($this->_getHTML(), ENT_QUOTES, CONTREXX_CHARSET),
-            'TXT_TITLE'                => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_SELECT_ALL'         => $_ARRAYLANG['TXT_SELECT_ALL'],
-            'TXT_DISPATCH_SETINGS'    => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_GENERATE_HTML'        => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_PLACEHOLDER'        => $_ARRAYLANG['TXT_PLACEHOLDER'],
-            'TXT_CONFIRM_MAIL'         => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
-            'TXT_ACTIVATE_MAIL'        => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
-            'TXT_NOTIFICATION_MAIL'     => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-            'TXT_SYSTEM_SETINGS'        => "System",
+            'HTML_CODE'                             => htmlentities($this->_getHTML(), ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_TITLE'                             => $_ARRAYLANG['TXT_GENERATE_HTML'],
+            'TXT_SELECT_ALL'                        => $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_DISPATCH_SETINGS'                  => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
+            'TXT_GENERATE_HTML'                     => $_ARRAYLANG['TXT_GENERATE_HTML'],
+            'TXT_PLACEHOLDER'                       => $_ARRAYLANG['TXT_PLACEHOLDER'],
+            'TXT_CONFIRM_MAIL'                      => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
+            'TXT_ACTIVATE_MAIL'                     => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
+            'TXT_NOTIFICATION_MAIL'                 => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
+            'TXT_SYSTEM_SETINGS'                    => "System",
         ));
     }
 
@@ -1654,6 +1654,16 @@ class newsletter extends NewsletterLib
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST['text_break_after'])."' WHERE setname='text_break_after'");
 
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".contrexx_addslashes($_POST['newsletter_rejected_mail_task'])."' WHERE setname='rejected_mail_operation'");
+            $rejectText = contrexx_addslashes($_POST['reject_info_mail_text']);
+            $objDatabase->Execute("
+                INSERT INTO `".DBPREFIX."module_newsletter_settings`
+                ( `setvalue`, `setname`, `status`)
+                VALUES
+                ('".$rejectText."', 'reject_info_mail_text', 1)
+                ON DUPLICATE KEY UPDATE
+                setvalue = '".$rejectText."'
+                "
+            );
         }
 
         // Load Values
@@ -1717,7 +1727,10 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_REJECTED_MAIL_IGNORE'           => $arrSettings['rejected_mail_operation'] == 'ignore'     ? 'checked="checked"' : '',
             'NEWSLETTER_REJECTED_MAIL_DEACTIVATE'       => $arrSettings['rejected_mail_operation'] == 'deactivate' ? 'checked="checked"' : '',
             'NEWSLETTER_REJECTED_MAIL_DELETE'           => $arrSettings['rejected_mail_operation'] == 'delete'     ? 'checked="checked"' : '',
-            'NEWSLETTER_REJECTED_MAIL_INFORM'           => $arrSettings['rejected_mail_operation'] == 'inform'     ? 'checked="checked"' : ''
+            'NEWSLETTER_REJECTED_MAIL_INFORM'           => $arrSettings['rejected_mail_operation'] == 'inform'     ? 'checked="checked"' : '',
+            'TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT'  => $_ARRAYLANG['TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT'],
+            'NEWSLETTER_REJECT_INFO_MAIL_TEXT'      => $arrSettings['reject_info_mail_text'],
+            'TXT_INFO_ABOUT_INFORM_TEXT'            => $_ARRAYLANG['TXT_INFO_ABOUT_INFORM_TEXT']
         ));
 
     }
@@ -3071,7 +3084,7 @@ class newsletter extends NewsletterLib
     protected function getInformMailBody($userID, $mail, $type) {
         global $_ARRAYLANG, $_CONFIG;
 
-        $body = $_ARRAYLANG['TXT_INFORM_ADMIN_EMAIL'];
+        $body = $this->getSetting('reject_info_mail_text');
 
         if ($type == self::USER_TYPE_ACCESS) {
             $link = '/cadmin/index.php?cmd=access&act=user&tpl=modify&id='.$userID;
