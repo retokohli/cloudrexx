@@ -12,6 +12,7 @@
 
   Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
   Text[0]=["","{TXT_INFO_ABOUT_ADMIN_INFORM}"];
+  Text[1]=["","{TXT_INFO_ABOUT_INFORM_TEXT}"];
 
 // ]]>
 </script>
@@ -77,6 +78,14 @@
         <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
     </td>
   </tr>
+    <tr class="row2">
+        <td width="20%" style="vertical-align: top;">{TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT}
+            <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+</td>
+        <td width="80%">
+            <textarea name="reject_info_mail_text" style="width: 600px; height: 200px">{NEWSLETTER_REJECT_INFO_MAIL_TEXT}</textarea>
+        </td>
+    </tr>
 </table>
 <br />
 <input type="button" onclick="Update();" value="{TXT_SAVE}" />
