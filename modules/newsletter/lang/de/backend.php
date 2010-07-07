@@ -388,4 +388,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_INFORM_ADMIN'] = "Administrator per E-Mail informier
 $_ARRAYLANG['TXT_INFO_ABOUT_ADMIN_INFORM'] = "Diese E-Mail geht an die Adresse des Users, mit dem Sie gerade eingeloggt sind";
 $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY_ID'] = "Land-ID";
 $_ARRAYLANG['TXT_INFORM_ADMIN_EMAIL'] = "Der Newsletter konnte an folgende E-Mail-Adresse nicht verschickt werden:  %EMAIL%  Um die E-Mail-Adresse zu bearbeiten, klicken Sie bitte hier:  %LINK%";
+$_ARRAYLANG['TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT'] = "E-Mail-Text, um den Administrator zu informieren";
 ?>
