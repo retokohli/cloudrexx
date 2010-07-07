@@ -132,6 +132,8 @@ class Banner extends bannerLibrary
                         $arr[] = $res->fields['category_id'];
                         $res->MoveNext();
                     }
+                    $arr[] = 0; // do this so the query doesn't fail if there 
+                    //are no categories
 
                     $list = implode(', ', $arr);
                     $query = "SELECT system.banner_code AS banner_code,
@@ -139,7 +141,7 @@ class Banner extends bannerLibrary
                                 FROM ".DBPREFIX."module_banner_relations AS relation,
                                      ".DBPREFIX."module_banner_system AS system
                                WHERE relation.group_id = ".$groupId."
-                                 AND relation.page_id IN (".$list.")
+                                 AND relation.page_id IN ( ".$list.")
                                  AND relation.banner_id = system.id
                                  AND relation.type='blog'
                                  AND system.status=1";
