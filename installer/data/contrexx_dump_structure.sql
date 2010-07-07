@@ -2961,7 +2961,8 @@ CREATE TABLE `contrexx_module_newsletter_settings` (
   `setname` varchar(250) NOT NULL default '',
   `setvalue` text NOT NULL,
   `status` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`setid`)
+  PRIMARY KEY  (`setid`),
+  UNIQUE KEY `setname` (`setname`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
