@@ -184,8 +184,8 @@ class DBG
         if (self::$enable_time) {
             $t = self::$last_time;
             self::$last_time = microtime(true);
-            $diff_last  = round(self::$last_time  - $t, 5);
-            $diff_start = round(self::$last_time-self::$start_time, 5);
+            $diff_last  = round(self::$last_time - $t, 5);
+            $diff_start = round(self::$last_time - self::$start_time, 5);
             $callers = debug_backtrace();
             $f = self::_cleanfile($callers[0]['file']);
             $l = $callers[0]['line'];
@@ -322,10 +322,17 @@ class DBG
 
     static function enable_error_reporting()
     {
-        self::$log_php = E_ALL;// | E_STRICT;
+        self::$log_php =
+            E_ALL
+// Suppress all deprecated warnings
+// (disable this line and fix all warnings before release!)
+          & ~E_DEPRECATED
+// Enable strict warnings
+// (enable this line and fix all warnings before release!)
+//          | E_STRICT
+        ;
         error_reporting(self::$log_php);
         ini_set('display_errors', 1);
-
         if (!self::$firephp) {
             set_error_handler('DBG::phpErrorHandler');
         }
