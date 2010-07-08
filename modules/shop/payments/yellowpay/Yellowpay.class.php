@@ -244,6 +244,28 @@ class Yellowpay
 
 
     /**
+     * Initializes class
+     *
+     * Sets up the accepted payment methods according to the settings
+     */
+    static function init()
+    {
+        $strAcceptedPaymentMethods =
+            Settings::getValueByName('yellowpay_accepted_payment_methods');
+        // There needs to be at least one accepted payment method,
+        // if there is none, accept all.
+        if (!empty($strAcceptedPaymentMethods)) {
+            foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
+                // Remove payment methods not mentioned
+                if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
+                    unset(self::$arrAcceptedPaymentMethod[$strPaymentMethod]);
+                }
+            }
+        }
+    }
+
+
+    /**
      * Creates and returns the HTML-Form for requesting the yellowpay-service.
      *
      * @access  public
@@ -255,21 +277,7 @@ class Yellowpay
     ) {
         global $_ARRAYLANG;
 
-        $strAcceptedPaymentMethods =
-            Settings::getValueByName('yellowpay_accepted_payment_methods');
-        self::$strAuthorization =
-            Settings::getValueByName('yellowpay_authorization_type');
-        // There needs to be at least one accepted payment method,
-        // if there is none, accept all.
-        if (!empty($strAcceptedPaymentMethods)) {
-            foreach (Yellowpay::$arrKnownPaymentMethod as $strPaymentMethod) {
-                // Remove payment methods not mentioned
-                if (!preg_match("/$strPaymentMethod/", $strAcceptedPaymentMethods)) {
-                    unset(self::$arrAcceptedPaymentMethod[$strPaymentMethod]);
-                }
-            }
-        }
-
+        self::init();
         self::$arrShopOrder = $arrShopOrder;
         // Build the base URI from the referrer, which also includes the
         // protocol (http:// or https://)
@@ -604,6 +612,7 @@ class Yellowpay
      */
     static function getAcceptedPaymentMethods()
     {
+        self::init();
         return array_keys(self::$arrAcceptedPaymentMethod);
     }
 
@@ -619,6 +628,7 @@ class Yellowpay
     {
         global $_ARRAYLANG;
 
+        self::init();
         $strOptions = '';
         foreach (array_keys(self::$arrAcceptedPaymentMethod)
                   as $strPaymentMethod) {
@@ -643,6 +653,7 @@ class Yellowpay
     {
         global $_ARRAYLANG;
 
+        self::init();
         $strOptions = '';
         foreach (Yellowpay::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
             $strOptions .=
@@ -664,6 +675,8 @@ class Yellowpay
     {
         global $_ARRAYLANG;
 
+        self::$strAuthorization =
+            Settings::getValueByName('yellowpay_authorization_type');
         return
             '<option value="SAL"'.
             (self::$strAuthorization == 'SAL' ? ' selected="selected"' : '').'>'.

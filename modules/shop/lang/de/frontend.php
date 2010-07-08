@@ -253,7 +253,10 @@ $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL'] = "exkl. MwSt.";
 $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL'] = "inkl. MwSt.";
 $_ARRAYLANG['TXT_SHOP_VAT_RATE'] = "Mehrwertsteuer Satz";
 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_SAFERPAY'] = "Fehler beim initialisieren von Saferpay";
-$_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'] = "Fehler beim initialisieren von Yellowpay";
 $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
+
+// Changed
+$_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'] = "Fehler beim initialisieren des Postfinance E-Payment";
+
 ?>

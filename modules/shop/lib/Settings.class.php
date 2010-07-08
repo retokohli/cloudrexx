@@ -528,28 +528,24 @@ class Settings
     {
         global $objDatabase;
 
-        if (isset($_POST['countries']) && !empty($_POST['countries'])) {
-            $this->_initCountries();
-            // "list1" contains active countries
+        if (isset($_POST['list1'])) {
+            // "list1" contains the active countries
             $strCountryIdActive = join(',', $_POST['list1']);
-            $strCountryIdInactive = join(',', $_POST['list2']);
+            // Ignore if the list does not contain any countries
             if ($strCountryIdActive) {
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                        SET activation_status=1
-                     WHERE countries_id IN ($strCountryIdActive)
-                ";
+                     WHERE countries_id IN ($strCountryIdActive)";
                 $objDatabase->Execute($query);
-            }
-            if ($strCountryIdInactive) {
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                        SET activation_status=0
-                     WHERE countries_id IN ($strCountryIdInactive)
-                ";
+                     WHERE countries_id NOT IN ($strCountryIdActive)";
                 $objDatabase->Execute($query);
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
+            $this->_initCountries();
         }
     }
 
@@ -572,8 +568,7 @@ class Settings
         $objResult = $objDatabase->Execute("
             SELECT 1
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE name='".addslashes($name)."'
-        ");
+             WHERE name='".addslashes($name)."'");
         if (!$objResult) return false;
         if ($objResult->RecordCount() > 0) {
             // Exists, update it
@@ -581,8 +576,7 @@ class Settings
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_config
                    SET value='".addslashes($value)."',
                        status='".addslashes($status)."'
-                 WHERE name='".addslashes($name)."'
-            ");
+                 WHERE name='".addslashes($name)."'");
             if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
         } else {
             // Not present, insert it
@@ -597,6 +591,7 @@ class Settings
             ");
             if (!$objResult) return false;
         }
+//DBG::log("Settings::storeSetting(name=$name, value=$value, status=$status):  Stored successfully");
         return true;
     }
 

@@ -82,6 +82,16 @@ require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
 
 /**
+ * Check whether a session will be required and has to get inizialized
+ * @return  boolean     True if a session is required, false otherwise.
+ */
+function shopUseSession()
+{
+    return true;
+}
+
+
+/**
  * Shop
  * @internal    Extract code from this class and move it to other classes:
  *              Customer, Product, Order, ...
@@ -174,6 +184,7 @@ class Shop extends ShopLibrary
 
         // Check session and user data, log in if present
         $this->_authenticate();
+
         Vat::isReseller($this->objCustomer && $this->objCustomer->isReseller());
         // May be omitted, those structures are initialized on first use
         Vat::init();
