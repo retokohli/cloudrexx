@@ -2792,10 +2792,19 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_news_categories` (
   `catid` int(2) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
   `lang` int(2) unsigned NOT NULL default '1',
   PRIMARY KEY  (`catid`)
 ) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_categories_locale` (
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `category_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`lang_id`,`category_id`),
+  FULLTEXT KEY `name` (`name`)
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -2832,6 +2841,16 @@ CREATE TABLE `contrexx_module_news_settings` (
   `name` varchar(50) NOT NULL default '',
   `value` varchar(250) NOT NULL default '',
   KEY `name` (`name`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_settings_locale` (
+  `lang_id` int(11) unsigned NOT NULL default '0',
+  `name` varchar(50) NOT NULL default '',
+  `value` varchar(250) NOT NULL default '',
+  PRIMARY KEY  (`lang_id`,`name`),
+  FULLTEXT KEY `name` (`name`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
