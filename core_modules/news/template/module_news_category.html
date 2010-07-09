@@ -6,6 +6,16 @@ function deleteCategorie(id)
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
         window.location.replace("index.php?cmd=news&{CSRF_PARAM}&act=delcat&catId="+id);
 }
+
+function  toggleCatName(link)
+{
+    $J(link).next('div.category_name_lang_div').toggle();
+}
+
+function updateLangName(input)
+{
+    $J(input).siblings('div.category_name_lang_div').find('input').attr('value', $J(input).attr('value'));
+}
 // -->
 </script>
 <form name="form1" method="post" action="index.php?cmd=news&amp;act=newscat">
@@ -38,11 +48,16 @@ function deleteCategorie(id)
 		</tr>
 		<!-- BEGIN newsRow -->
 			<tr class="{NEWS_ROWCLASS}"> 
-				<td nowrap="nowrap"><div align="left">{NEWS_CAT_ID}</div></td>
+				<td nowrap="nowrap" valign="top"><div align="left">{NEWS_CAT_ID}</div></td>
 				<td nowrap="nowrap"> 
-					<input type="text" name="newsCatName[{NEWS_CAT_ID}]" value="{NEWS_CAT_NAME}" size="40" maxlength="250" />
+					<input type="text" value="{NEWS_CAT_NAME}" size="40" maxlength="250" onchange="updateLangName(this);" /> <a href="#" onclick="toggleCatName(this);" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a>
+					<div class="category_name_lang_div" style="display:none;">
+                    <!-- BEGIN category_name_list -->
+                        <input type="text" name="newsCatName[{NEWS_CAT_ID}][{NEWS_CAT_LANG_ID}]" id="newsCatName[{NEWS_CAT_ID}][{NEWS_CAT_LANG_ID}]" value="{NEWS_CAT_NAME_VALUE}" size="40" maxlength="250" style="margin-top:1px;" /> {NEWS_CAT_LANG_NAME}<br />
+                    <!-- END category_name_list -->
+                    </div>
 				</td>
-				<td width="13%"> 
+				<td width="13%" valign="top"> 
 					<div align="right"><a href="javascript:deleteCategorie('{NEWS_CAT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div>
 				</td>
 			</tr>

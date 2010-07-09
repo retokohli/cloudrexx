@@ -329,7 +329,6 @@ class newsManager extends newsLibrary {
             return $this->manageCategories();
         }
 
-        //$query = 'SELECT 1 FROM `'.DBPREFIX.'module_news` WHERE `lang` = '.$this->langId;
         $query = 'SELECT 1 FROM `' . DBPREFIX . 'module_news`';
         $objNewsCount = $objDatabase->SelectLimit($query, 1);
         if ($objNewsCount === false || $objNewsCount->RecordCount() == 0) {
@@ -389,13 +388,16 @@ class newsManager extends newsLibrary {
                          n.frontend_access_id,
                          n.userid,
                          l.name AS name,
-                         nc.name AS catname
+                         ncl.name AS catname
                     FROM ".DBPREFIX."module_news_categories AS nc,
                          ".DBPREFIX."languages AS l,
                          ".DBPREFIX."module_news AS n,
-                         ".DBPREFIX."module_news_locale AS nl
+                         ".DBPREFIX."module_news_locale AS nl,
+                         ".DBPREFIX."module_news_categories_locale AS ncl
                    WHERE l.id=".$this->langId."
                      AND nc.catid=n.catid
+                     AND ncl.category_id = n.catid
+                     AND ncl.lang_id = l.id
                      AND n.validated='1'
                      AND n.id = nl.news_id
                      AND nl.lang_id = l.id "
@@ -481,13 +483,16 @@ class newsManager extends newsLibrary {
                          n.validated AS validated,
                          n.userid,
                          l.name AS name,
-                         nc.name AS catname
+                         ncl.name AS catname
                     FROM ".DBPREFIX."module_news_categories AS nc,
                          ".DBPREFIX."languages AS l,
                          ".DBPREFIX."module_news AS n,
-                         ".DBPREFIX."module_news_locale AS nl
+                         ".DBPREFIX."module_news_locale AS nl,
+                         ".DBPREFIX."module_news_categories_locale AS ncl
                    WHERE l.id=" . $this->langId . "
                      AND nc.catid=n.catid
+                     AND ncl.category_id = n.catid
+                     AND ncl.lang_id = l.id
                      AND n.validated='0'
                      AND nl.news_id = n.id
                      AND nl.lang_id = l.id
@@ -736,7 +741,15 @@ class newsManager extends newsLibrary {
         
         // languages
         $arrLanguages = FWLanguage::getLanguageArray();
+        $default_lang_id = 0;
         foreach ($arrLanguages as $langId => $arrLanguage) {
+            if($arrLanguage['is_default'] == "true") {
+                $default_lang_id = $langId;
+                $this->_objTpl->setGlobalVariable(array(
+                    'NEWS_DEFAULT_LANG' => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+                ));
+            }
+            
             // parse tabs
             $this->_objTpl->setVariable(array(
                 'NEWS_LANG_ID'    => $langId,
@@ -816,7 +829,7 @@ class newsManager extends newsLibrary {
             'NEWS_STATUS'                   => $status ? 'checked="checked"' : '',
             'NEWS_ID'                       => "0",
             'NEWS_TOP_TITLE'                => $_ARRAYLANG['TXT_CREATE_NEWS'],
-            'NEWS_CAT_MENU'                 => $this->getCategoryMenu($this->langId, $newscat),
+            'NEWS_CAT_MENU'                 => $this->getCategoryMenu($default_lang_id, $newscat),
             'NEWS_STARTDATE'                => $startDate,
             'NEWS_ENDDATE'                  => $endDate,
             'NEWS_DATE'                     => date('Y-m-d H:i:s'),
@@ -1043,7 +1056,15 @@ class newsManager extends newsLibrary {
             $arrLanguages = FWLanguage::getLanguageArray();
             $langData = $this->getLangData($id);
             $newsText = "";
+            $default_lang_id = 0;
             foreach ($arrLanguages as $langId => $arrLanguage) {
+                if($arrLanguage['is_default'] == "true") {
+                    $default_lang_id = $langId;
+                    $this->_objTpl->setGlobalVariable(array(
+                        'NEWS_DEFAULT_LANG' => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
+                    ));
+                }
+                
                 if($arrLanguage['is_default'] == "true") {
                     $newsText = stripslashes($langData[$langId]['text']);
                 }
@@ -1222,7 +1243,7 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
         }
 
-        $this->_objTpl->setVariable("NEWS_CAT_MENU",$this->getCategoryMenu($this->langId, $newsCat));
+        $this->_objTpl->setVariable("NEWS_CAT_MENU",$this->getCategoryMenu($default_lang_id, $newsCat));
         $this->_objTpl->setVariable("NEWS_FORM_ACTION",(($copy) ? 'add' : 'update'));
         $this->_objTpl->setVariable("NEWS_STORED_FORM_ACTION","update");
         $this->_objTpl->setVariable("NEWS_TOP_TITLE",$_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
@@ -1730,7 +1751,7 @@ class newsManager extends newsLibrary {
             $newLocaleList['text'] = $_POST['news_text'];
             $newLocaleList['teaser_text'] = $_POST['newsTeaserText'];
             // store it
-            $localesSaving = $this->storeLocales($id, $newLocaleList);           
+            $localesSaving = $this->storeLocales($id, $newLocaleList);
             
             $objResult = $objDatabase->Execute("UPDATE  ".DBPREFIX."module_news
                                                 SET     date='".$date."',
@@ -1899,67 +1920,98 @@ class newsManager extends newsLibrary {
             'TXT_ACCEPT_CHANGES'                         => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
             'TXT_CONFIRM_DELETE_DATA'                    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
             'TXT_ACTION_IS_IRREVERSIBLE'                 => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
-            'TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK' => $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK']
+            'TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK' => $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'],
         ));
 
-        $this->_objTpl->setGlobalVariable(array('TXT_DELETE' => $_ARRAYLANG['TXT_DELETE']));
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_DELETE'            => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_NEWS_EXTENDED' => $_ARRAYLANG['TXT_NEWS_EXTENDED']
+        ));
 
         // Add a new category
         if (isset($_POST['addCat']) AND ($_POST['addCat']==true)){
-             $catName=contrexx_strip_tags($_POST['newCategorieName']);
-
-             if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories (name,lang)
-                                 VALUES ('$catName','$this->langId')") !== false) {
+            $catName = contrexx_strip_tags($_POST['newCategorieName']);
+            
+            $status = true;
+            
+            if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories (lang)
+                VALUES ($this->langId)") === false) {               
+                $status = false;
+            } else {
+                $catId = $objDatabase->Insert_ID();
+                if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories_locale (lang_id, category_id, name)
+                    SELECT id, '$catId', '$catName' FROM ".DBPREFIX."languages") === false) {
+                    $status = false;
+                }
+            }
+            
+            if($status) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
-             } else {
+            } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-             }
+            }
 
         }
 
         // Modify a new category
         if (isset($_POST['modCat']) AND ($_POST['modCat']==true)){
-            foreach ($_POST['newsCatName'] as $id => $name) {
-                $name=contrexx_strip_tags($name);
-                $id=intval($id);
-
-                if($objDatabase->Execute("UPDATE ".DBPREFIX."module_news_categories SET name='".contrexx_addslashes($name)."',lang=$this->langId WHERE catid=".intval($id)) !== false) {
-                    $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-                } else {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-                }
+            $newLangData = $_POST['newsCatName'];
+            
+            if($this->storeCategoriesLocales($_POST['newsCatName'])) {
+                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+            } else {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
 
-        $objResult = $objDatabase->Execute("SELECT catid,
-                           name,
-                           lang
-                      FROM ".DBPREFIX."module_news_categories
-                     WHERE lang=".$this->langId."
-                  ORDER BY catid asc");
-
+        $objResult = $objDatabase->Execute("SELECT category_id
+                      FROM ".DBPREFIX."module_news_categories_locale
+                  GROUP BY category_id
+                  ORDER BY category_id asc");
+        
         $this->_objTpl->setCurrentBlock('newsRow');
         $i=0;
+        
+        $arrLanguages = FWLanguage::getLanguageArray();
+        $catLangData = $this->getCategoriesLangData();
 
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $cssStyle = (($i % 2) == 0) ? "row1" : "row2";
-                $this->_objTpl->setVariable(array(
+                
+                $this->_objTpl->setGlobalVariable(array(
                     'NEWS_ROWCLASS'   => $cssStyle,
-                    'NEWS_CAT_ID'     => $objResult->fields['catid'],
-                    'NEWS_CAT_NAME'   => stripslashes($objResult->fields['name'])
+                    'NEWS_CAT_ID'     => $objResult->fields['category_id'],
                 ));
+                
+                $defCatName = "";
+                
+                foreach ($arrLanguages as $langId => $arrLanguage) {
+                    if($arrLanguage['is_default'] == "true") {
+                        $defCatName = $catLangData[$objResult->fields['category_id']][$langId];
+                    }
+                    
+                    $this->_objTpl->setVariable(array(
+                        'NEWS_CAT_LANG_NAME'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'NEWS_CAT_NAME_VALUE'  => stripslashes($catLangData[$objResult->fields['category_id']][$langId]),
+                        'NEWS_CAT_LANG_ID'     => $langId
+                    ));
+                    $this->_objTpl->parse('category_name_list');
+                }
+                
+                $this->_objTpl->setGlobalVariable(array(
+                    'NEWS_CAT_NAME' => $defCatName
+                ));
+                
                 $this->_objTpl->parseCurrentBlock();
+                
                 $i++;
                 $objResult->MoveNext();
             };
         }
     }
 
-
-
-
-
+    
     /**
     * Delete the news categories
     *
@@ -1979,7 +2031,8 @@ class newsManager extends newsLibrary {
                      $this->strErrMessage = $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'];
                 }
                 else {
-                    if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_categories WHERE catid=".$catId) !== false) {
+                    if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_categories WHERE catid=".$catId) !== false 
+                    && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_news_categories_locale WHERE category_id=".$catId) !== false) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                     } else {
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1989,11 +2042,7 @@ class newsManager extends newsLibrary {
         }
     }
 
-
-
-
-
-
+    
     /**
     * Create the RSS-Feed
     *
@@ -2008,9 +2057,11 @@ class newsManager extends newsLibrary {
             $objRSSWriter = new RSSWriter();
 
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
-            $objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'];
+            
+            $objRSSWriter->channelTitle = $this->arrSettings['news_feed_title'][$_FRONTEND_LANGID];
+            $objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'][$_FRONTEND_LANGID];
+            
             $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
-            $objRSSWriter->channelDescription = $this->arrSettings['news_feed_description'];
             $objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang');
             $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
@@ -2035,11 +2086,11 @@ class newsManager extends newsLibrary {
                             tblLocale.teaser_text,
                             tblCategory.name AS category
                 FROM        ".DBPREFIX."module_news AS tblNews
-                INNER JOIN  ".DBPREFIX."module_news_categories AS tblCategory
+                INNER JOIN  ".DBPREFIX."module_news_categories_locale AS tblCategory ON tblCategory.category_id = tblNews.catid
                 LEFT JOIN   ".DBPREFIX."module_news_locale AS tblLocale ON tblNews.id = tblLocale.news_id
-                USING       (catid)
                 WHERE       tblNews.status=1
                     AND     tblLocale.lang_id = " . $_FRONTEND_LANGID . "
+                    AND     tblCategory.lang_id = " . $_FRONTEND_LANGID . "
                     AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00 00:00:00')
                     AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00 00:00:00')"
                     .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
@@ -2135,18 +2186,14 @@ class newsManager extends newsLibrary {
 
         // Store settings
         if(isset($_GET['act']) && $_GET['act'] == 'settings' && isset($_POST['store'])) {
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
-                              SET value='".contrexx_strip_tags($_POST['newsFeedTitle'])."'
-                            WHERE name = 'news_feed_title'");
-
+            // save multilanguage news_feed_title and news_feed_description
+            $this->storeFeedLocales('news_feed_title', $_POST['newsFeedTitle']);
+            $this->storeFeedLocales('news_feed_description', $_POST['newsFeedDescription']);
+            
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".intval($_POST['newsFeedStatus'])."'
                             WHERE name = 'news_feed_status'");
-
-            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
-                              SET value='".contrexx_strip_tags($_POST['newsFeedDescription'])."'
-                            WHERE name = 'news_feed_description'");
-
+            
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".contrexx_addslashes($_POST['newsFeedImage'])."'
                             WHERE name='news_feed_image'");
@@ -2243,12 +2290,37 @@ class newsManager extends newsLibrary {
             $status ="";
             $icon ="";
         }
+        
+        // set language vars
+        $arrLanguages = FWLanguage::getLanguageArray();
+        $newsFeedTitle = "";
+        $newsFeedDescription = "";
+        foreach ($arrLanguages as $langId => $arrLanguage) {
+            if($arrLanguage['is_default'] == "true") {
+                $newsFeedTitle = $this->arrSettings['news_feed_title'][$langId];
+                $newsFeedDescription = $this->arrSettings['news_feed_description'][$langId];
+            }
+            
+            $this->_objTpl->setVariable(array(
+                'NEWS_FEED_LANG_NAME'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWS_FEED_TITLE_VALUE'  => stripslashes($this->arrSettings['news_feed_title'][$langId]),
+                'NEWS_FEED_TITLE_LANG_ID'     => $langId
+            ));
+            $this->_objTpl->parse('news_feed_title_list');
+            
+            $this->_objTpl->setVariable(array(
+                'NEWS_FEED_LANG_NAME'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                'NEWS_FEED_DESCRIPTION_VALUE'  => stripslashes($this->arrSettings['news_feed_description'][$langId]),
+                'NEWS_FEED_DESCRIPTION_LANG_ID'     => $langId
+            ));
+            $this->_objTpl->parse('news_feed_description_list');
+        }
 
         $this->_objTpl->setVariable(array(
-            'NEWS_FEED_TITLE'                       => stripslashes($this->arrSettings['news_feed_title']),
+            'NEWS_FEED_TITLE'                       => stripslashes($newsFeedTitle),
             'NEWS_FEED_STATUS'                      => $status,
             'NEWS_FEED_ICON'                        => $icon,
-            'NEWS_FEED_DESCRIPTION'                 => stripslashes($this->arrSettings['news_feed_description']),
+            'NEWS_FEED_DESCRIPTION'                 => stripslashes($newsFeedDescription),
             'NEWS_FEED_IMAGE'                       => htmlentities($this->arrSettings['news_feed_image'], ENT_QUOTES, CONTREXX_CHARSET),
             'NEWS_HEADLINES_LIMIT'                  =>(intval($this->arrSettings['news_headlines_limit'])),
             'NEWS_FEED_PATH'                        => $newsFeedPath,
@@ -2305,6 +2377,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_COMMENTS_TIMEOUT'             =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'],
             'TXT_NEWS_COMMENTS_TIMEOUT_HELP'        =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'],
             'TXT_NEWS_TEASERS_SETTINGS_TITLE'       =>  $_ARRAYLANG['TXT_NEWS_TEASERS_SETTINGS_TITLE'],
+            'TXT_NEWS_EXTENDED'                     =>  $_ARRAYLANG['TXT_NEWS_EXTENDED'],
         ));
         
         $this->_objTpl->setGlobalVariable(array(
@@ -2332,6 +2405,7 @@ class newsManager extends newsLibrary {
         }
         
     }
+    
     function _generate_notify_group_list() {
         $active_grp = $this->arrSettings['news_notify_group'];
         if (!empty($_POST['newsNotifySelectedGroup'])) {

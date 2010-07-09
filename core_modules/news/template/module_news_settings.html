@@ -11,6 +11,17 @@ Text[4]=["","{TXT_NEWS_COMMENTS_TIMEOUT_HELP}"];
 function SetUrl(url, width, height, alt) {
 	document.getElementById('newsFeedImage').value = url;
 }
+
+function  toggleLangFields(link)
+{
+    $J(link).next('div.news_feed_lang_div').toggle();
+}
+
+function updateLangName(input)
+{
+    $J(input).siblings('div.news_feed_lang_div').find('input').attr('value', $J(input).attr('value'));
+}
+
 // ]]>
 </script>
 <form action="index.php?cmd=news&amp;act=settings" method="post" name="settings">
@@ -23,12 +34,26 @@ function SetUrl(url, width, height, alt) {
 			<td width="85%" nowrap="nowrap"><input name="newsFeedStatus" type="checkbox" id="newsFeed" value="1" {NEWS_FEED_STATUS} />{NEWS_FEED_ICON}</td>
 		</tr>
 		<tr class="row2">
-			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_TITLE}</td>
-			<td width="85%" nowrap="nowrap"><input name="newsFeedTitle" type="text" id="newsFeedTitle" value="{NEWS_FEED_TITLE}" style="width:400px;" maxlength="250" /></td>
+			<td width="15%" nowrap="nowrap" valign="top">{TXT_NEWS_FEED_TITLE}</td>
+			<td width="85%" nowrap="nowrap">
+    			<input type="text" value="{NEWS_FEED_TITLE}" style="width:400px;" maxlength="250" onchange="updateLangName(this);" /> <a href="#" onclick="toggleLangFields(this);" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a>
+    			<div class="news_feed_lang_div" style="display:none;">
+                <!-- BEGIN news_feed_title_list -->
+                    <input type="text" name="newsFeedTitle[{NEWS_FEED_TITLE_LANG_ID}]" id="newsFeedTitle[{NEWS_FEED_TITLE_LANG_ID}]" value="{NEWS_FEED_TITLE_VALUE}" maxlength="250" style="width:400px;margin-top:1px;" /> {NEWS_FEED_LANG_NAME}<br />
+                <!-- END news_feed_title_list -->
+                </div>
+			</td>
 		</tr>
 		<tr class="row1">
-			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_DESCRIPTION}</td>
-			<td width="85%" nowrap="nowrap"><input name="newsFeedDescription" type="text" id="newsFeedDescription" value="{NEWS_FEED_DESCRIPTION}" style="width:400px;" maxlength="250" /></td>
+			<td width="15%" nowrap="nowrap" valign="top">{TXT_NEWS_FEED_DESCRIPTION}</td>
+			<td width="85%" nowrap="nowrap">
+			<input type="text" value="{NEWS_FEED_DESCRIPTION}" style="width:400px;" maxlength="250" onchange="updateLangName(this);" /> <a href="#" onclick="toggleLangFields(this);" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a>
+    			<div class="news_feed_lang_div" style="display:none;">
+                <!-- BEGIN news_feed_description_list -->
+                    <input type="text" name="newsFeedDescription[{NEWS_FEED_DESCRIPTION_LANG_ID}]" id="newsFeedDescription[{NEWS_FEED_DESCRIPTION_LANG_ID}]" value="{NEWS_FEED_DESCRIPTION_VALUE}" maxlength="250" style="width:400px;margin-top:1px;" /> {NEWS_FEED_LANG_NAME}<br />
+                <!-- END news_feed_description_list -->
+                </div>
+			</td>
 		</tr>
 		<tr class="row2">
 			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_IMAGE}</td>
