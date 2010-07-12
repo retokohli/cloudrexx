@@ -925,6 +925,16 @@ CREATE TABLE `contrexx_module_contact_recipient` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_contact_recipient_lang` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `recipient_id` int(10) unsigned NOT NULL,
+  `langID` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_contact_settings` (
   `setid` int(6) unsigned NOT NULL auto_increment,
   `setname` varchar(250) NOT NULL default '',
