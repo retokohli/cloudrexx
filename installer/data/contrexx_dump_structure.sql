@@ -930,7 +930,8 @@ CREATE TABLE `contrexx_module_contact_recipient_lang` (
   `recipient_id` int(10) unsigned NOT NULL,
   `langID` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `recipient_id` (`recipient_id`,`langID`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
