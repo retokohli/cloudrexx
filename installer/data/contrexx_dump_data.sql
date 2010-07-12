@@ -1426,7 +1426,7 @@ INSERT INTO `contrexx_module_contact_form_field` (`id`, `id_form`, `type`, `attr
 INSERT INTO `contrexx_module_contact_form_field` (`id`, `id_form`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES (61,7,'text','','0',1,6);
 INSERT INTO `contrexx_module_contact_form_field` (`id`, `id_form`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES (62,7,'text','','1',2,7);
 INSERT INTO `contrexx_module_contact_form_field` (`id`, `id_form`, `type`, `attributes`, `is_required`, `check_type`, `order_id`) VALUES (63,7,'textarea','','0',1,8);
-INSERT INTO `contrexx_module_contact_recipient` (`id`, `id_form`, `name`, `email`, `sort`) VALUES (1,0,'Administration','noreply@contrexx.com',1);
+INSERT INTO `contrexx_module_contact_recipient` (`id`, `id_form`, `email`, `sort`) VALUES (1,0,'noreply@contrexx.com',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (1,'fileUploadDepositionPath','/images/attach',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (2,'spamProtectionWordList','poker,casino,viagra,sex,porn',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (3,'fieldMetaDate','1',1);
