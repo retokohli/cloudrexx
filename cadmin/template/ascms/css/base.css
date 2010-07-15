@@ -811,3 +811,14 @@ a.nodeCollapsed {
 .hidden {
     display: none;
 }
+
+ul.monthColumn {
+    padding-left: 12px;
+    margin-top: -6px;
+    margin-bottom: 8px;
+}
+
+p#newsShownLabel {
+    margin-top:2px;
+    margin-bottom:11px;
+}

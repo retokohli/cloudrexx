@@ -345,6 +345,12 @@ class newsManager extends newsLibrary {
 
         $messageNr = 0;
         $validatorNr = 0;
+        
+        $monthlyStats = array();
+        $dateFilterName = 'date';
+        $monthColumn = 3;
+        $archCount = 0;
+        $unvCount = 0;
 
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
@@ -377,6 +383,78 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_MESSAGE_PROTECTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC']
         ));
+        
+        // month filter
+        // archive list
+        $monthCountQuery = "SELECT n.id AS id,
+                                   n.date AS date,
+                                   n.changelog AS changelog
+                            FROM   ".DBPREFIX."module_news AS n
+                            WHERE  n.validated='1'
+                                   ".($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
+                            ."ORDER BY date ASC";
+        $objResult = $objDatabase->Execute($monthCountQuery);
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $filterDate = $objResult->fields[$dateFilterName];
+                $newsYear = date("Y", $filterDate);
+                $newsMonth = date("m", $filterDate);
+                
+                if(!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
+                    $monthlyStats[$newsYear . "_" . $newsMonth] = array();
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)] . " " . $newsYear;
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["archive"] = 0;
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["unvalidated"] = 0;
+                }
+                $monthlyStats[$newsYear . "_" . $newsMonth]["archive"]++;
+                $archCount++;
+                $objResult->MoveNext();
+            }
+        }
+        // unvalidated list
+        $monthCountQuery = "SELECT n.id AS id,
+                                   n.date AS date,
+                                   n.changelog AS changelog
+                            FROM   ".DBPREFIX."module_news AS n
+                            WHERE  n.validated='0'
+                            ORDER BY date ASC";
+        $objResult = $objDatabase->Execute($monthCountQuery);
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $filterDate = $objResult->fields[$dateFilterName];
+                $newsYear = date("Y", $filterDate);
+                $newsMonth = date("m", $filterDate);
+                
+                if(!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
+                    $monthlyStats[$newsYear . "_" . $newsMonth] = array();
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)] . " " . $newsYear;
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["archive"] = 0;
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["unvalidated"] = 0;
+                }
+                $monthlyStats[$newsYear . "_" . $newsMonth]["unvalidated"]++;
+                $unvCount++;
+                $objResult->MoveNext();
+            }
+        }
+        
+        $monthLimitQuery = "";
+        $isFilteredByMonth = false;
+        if(isset($_GET['monthFilter'])) {
+            if(array_key_exists($_GET['monthFilter'], $monthlyStats)) {
+                $isFilteredByMonth = true;
+                $monthInfo = explode("_", $_GET['monthFilter']);
+                $monthLimitQuery = " AND n." . $dateFilterName;
+                $monthLimitQuery .= " BETWEEN " . mktime(0, 0, 0, $monthInfo[1], 1, $monthInfo[0]);
+                if($monthInfo[1] == 12) {
+                    $monthInfo[1] = 1;
+                    $monthInfo[0] = 0;
+                } else {
+                    $monthInfo[1]++;
+                }
+                $monthLimitQuery .= " AND " . mktime(0, 0, 0, $monthInfo[1], 1, $monthInfo[0]);
+            }
+        }
+        
 
         // set archive list
         $query = "SELECT n.id AS id,
@@ -401,10 +479,13 @@ class newsManager extends newsLibrary {
                      AND n.validated='1'
                      AND n.id = nl.news_id
                      AND nl.lang_id = l.id "
+                     .$monthLimitQuery
                      .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
-                ."ORDER BY date DESC";
+                ." ORDER BY date DESC";
         $objResult = $objDatabase->Execute($query);
+        
         if ($objResult !== false) {
+            
             $count = $objResult->RecordCount();
 
             if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
@@ -440,7 +521,7 @@ class newsManager extends newsLibrary {
                     $ccResult = $objDatabase->Execute('SELECT COUNT(1) AS com_num
                     								FROM '.DBPREFIX.'module_news_comments
                     								WHERE newsid = ' . intval($objResult->fields['id']));
-
+                    
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
                         'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
@@ -496,7 +577,8 @@ class newsManager extends newsLibrary {
                      AND n.validated='0'
                      AND nl.news_id = n.id
                      AND nl.lang_id = l.id
-                ORDER BY date DESC";
+                     " . $monthLimitQuery .
+                " ORDER BY date DESC";
 
         $objResult = $objDatabase->Execute($query);
 
@@ -573,6 +655,47 @@ class newsManager extends newsLibrary {
                     $objResult->MoveNext();
                 }
             }
+        }
+        
+        // month/year filter
+        if(!empty($monthlyStats)) {
+            $this->_objTpl->setVariable(array(
+                'TXT_NEWS_SHOWN'        => $_ARRAYLANG['TXT_NEWS_SHOWN'],
+                'TXT_NEWS_SHOWN_TITLE'  => ($isFilteredByMonth) ? $monthlyStats[$_GET['monthFilter']]['name'] : $_ARRAYLANG['TXT_NEWS_SHOWN_ALL'],
+                'TXT_NEWS_EXTENDED'     => $_ARRAYLANG['TXT_NEWS_EXTENDED'],
+                'NEWS_MONTH_HIDE'       => ($isFilteredByMonth) ? "block" : "none",
+                'TXT_NEWS_SHOWN_ALL'    => $_ARRAYLANG['TXT_NEWS_SHOWN_ALL'],
+                'NEWS_ARCHIVE_COUNT'    => $archCount,
+                'NEWS_UNVALIDATED_COUNT'=> $unvCount, 
+            ));
+            $this->_objTpl->setGlobalVariable(array(
+                'TXT_NEWS_ARCHIVE_SHORT'        => $_ARRAYLANG['TXT_NEWS_ARCHIVE_SHORT'],
+                'TXT_NEWS_UNVALIDATED_SHORT'    => $_ARRAYLANG['TXT_NEWS_UNVALIDATED_SHORT'],
+            ));
+            
+            $columnCount = 0;
+            $currentColumn = 1;
+            $totalMonthCount = count($monthlyStats);
+            $columnSize = ceil($totalMonthCount / $monthColumn);
+            
+            $this->_objTpl->setCurrentBlock('month_navigation_column');
+            foreach ($monthlyStats as $key => $value){
+                $columnCount++;
+                // if new column
+                if($columnCount > $currentColumn * $columnSize){
+                    $currentColumn++;
+                    $this->_objTpl->parseCurrentBlock();
+                    $this->_objTpl->setCurrentBlock('month_navigation_column');
+                }
+                $this->_objTpl->setVariable(array(
+                    'NEWS_MONTH_NAME'           => $value['name'],
+                    'NEWS_MONTH_ARCHIVE'        => $value['archive'],
+                    'NEWS_MONTH_UNVALIDATED'    => $value['unvalidated'],
+                    'NEWS_MONTH_KEY'            => $key,
+                ));
+                $this->_objTpl->parse('month_navigation_item');
+            }
+            $this->_objTpl->parseCurrentBlock();
         }
     }
 
