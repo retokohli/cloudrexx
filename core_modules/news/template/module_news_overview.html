@@ -24,6 +24,25 @@ function deletePages(form)
 }
 //-->
 </script>
+<!-- start month/year navigation -->
+<p id="newsShownLabel">{TXT_NEWS_SHOWN}: <strong>{TXT_NEWS_SHOWN_TITLE}</strong> <a href="#" onclick="$J('#monthTable').toggle();return false;" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a></p>
+<div id="monthTable" style="display:{NEWS_MONTH_HIDE};">
+<ul style="padding-left:15px;" type="circle" class="monthColumn"><li><a href="?cmd=news">{TXT_NEWS_SHOWN_ALL} ({TXT_NEWS_ARCHIVE_SHORT}:{NEWS_ARCHIVE_COUNT} {TXT_NEWS_UNVALIDATED_SHORT}:{NEWS_UNVALIDATED_COUNT})</a></li></ul>
+<table>
+    <tr>
+        <!-- BEGIN month_navigation_column -->
+        <td width="200px" valign="top">
+            <ul type="circle" class="monthColumn">
+                <!-- BEGIN month_navigation_item -->
+                <li><a href="?cmd=news&amp;monthFilter={NEWS_MONTH_KEY}">{NEWS_MONTH_NAME} ({TXT_NEWS_ARCHIVE_SHORT}:{NEWS_MONTH_ARCHIVE} {TXT_NEWS_UNVALIDATED_SHORT}:{NEWS_MONTH_UNVALIDATED})</a></li>
+                <!-- END month_navigation_item -->
+            </ul>
+        </td>
+        <!-- END month_navigation_column -->
+    </tr>
+</table>
+</div>
+<!-- end month/year navigation -->
 <!-- BEGIN newstable -->
 <table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
 	<tr>
