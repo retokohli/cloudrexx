@@ -348,9 +348,6 @@ class newsManager extends newsLibrary {
         
         $monthlyStats = array();
         $dateFilterName = 'date';
-        $monthColumn = 3;
-        $archCount = 0;
-        $unvCount = 0;
 
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
@@ -392,7 +389,7 @@ class newsManager extends newsLibrary {
                             FROM   ".DBPREFIX."module_news AS n
                             WHERE  n.validated='1'
                                    ".($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
-                            ."ORDER BY date ASC";
+                            ."ORDER BY date DESC";
         $objResult = $objDatabase->Execute($monthCountQuery);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -400,39 +397,17 @@ class newsManager extends newsLibrary {
                 $newsYear = date("Y", $filterDate);
                 $newsMonth = date("m", $filterDate);
                 
+                if(!isset($monthlyStats[$newsYear])) {
+                    $monthlyStats[$newsYear] = array();
+                    $monthlyStats[$newsYear]["name"] = $newsYear;
+                }
+                
                 if(!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
                     $monthlyStats[$newsYear . "_" . $newsMonth] = array();
-                    $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)] . " " . $newsYear;
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)];
                     $monthlyStats[$newsYear . "_" . $newsMonth]["archive"] = 0;
-                    $monthlyStats[$newsYear . "_" . $newsMonth]["unvalidated"] = 0;
                 }
                 $monthlyStats[$newsYear . "_" . $newsMonth]["archive"]++;
-                $archCount++;
-                $objResult->MoveNext();
-            }
-        }
-        // unvalidated list
-        $monthCountQuery = "SELECT n.id AS id,
-                                   n.date AS date,
-                                   n.changelog AS changelog
-                            FROM   ".DBPREFIX."module_news AS n
-                            WHERE  n.validated='0'
-                            ORDER BY date ASC";
-        $objResult = $objDatabase->Execute($monthCountQuery);
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $filterDate = $objResult->fields[$dateFilterName];
-                $newsYear = date("Y", $filterDate);
-                $newsMonth = date("m", $filterDate);
-                
-                if(!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
-                    $monthlyStats[$newsYear . "_" . $newsMonth] = array();
-                    $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)] . " " . $newsYear;
-                    $monthlyStats[$newsYear . "_" . $newsMonth]["archive"] = 0;
-                    $monthlyStats[$newsYear . "_" . $newsMonth]["unvalidated"] = 0;
-                }
-                $monthlyStats[$newsYear . "_" . $newsMonth]["unvalidated"]++;
-                $unvCount++;
                 $objResult->MoveNext();
             }
         }
@@ -444,14 +419,19 @@ class newsManager extends newsLibrary {
                 $isFilteredByMonth = true;
                 $monthInfo = explode("_", $_GET['monthFilter']);
                 $monthLimitQuery = " AND n." . $dateFilterName;
-                $monthLimitQuery .= " BETWEEN " . mktime(0, 0, 0, $monthInfo[1], 1, $monthInfo[0]);
-                if($monthInfo[1] == 12) {
-                    $monthInfo[1] = 1;
-                    $monthInfo[0] = 0;
+                if(count($monthInfo) == 1) { // month filter
+                    $monthLimitQuery .= " BETWEEN " . mktime(0, 0, 0, 1, 1, $monthInfo[0]);
+                    $monthLimitQuery .= " AND " . mktime(0, 0, 0, 1, 1, $monthInfo[0] + 1);
                 } else {
-                    $monthInfo[1]++;
+                    $monthLimitQuery .= " BETWEEN " . mktime(0, 0, 0, $monthInfo[1], 1, $monthInfo[0]);
+                    if($monthInfo[1] == 12) {
+                        $monthInfo[1] = 1;
+                        $monthInfo[0] = 0;
+                    } else {
+                        $monthInfo[1]++;
+                    }
+                    $monthLimitQuery .= " AND " . mktime(0, 0, 0, $monthInfo[1], 1, $monthInfo[0]);
                 }
-                $monthLimitQuery .= " AND " . mktime(0, 0, 0, $monthInfo[1], 1, $monthInfo[0]);
             }
         }
         
@@ -577,8 +557,7 @@ class newsManager extends newsLibrary {
                      AND n.validated='0'
                      AND nl.news_id = n.id
                      AND nl.lang_id = l.id
-                     " . $monthLimitQuery .
-                " ORDER BY date DESC";
+                 ORDER BY date DESC";
 
         $objResult = $objDatabase->Execute($query);
 
@@ -659,43 +638,14 @@ class newsManager extends newsLibrary {
         
         // month/year filter
         if(!empty($monthlyStats)) {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWS_SHOWN'        => $_ARRAYLANG['TXT_NEWS_SHOWN'],
-                'TXT_NEWS_SHOWN_TITLE'  => ($isFilteredByMonth) ? $monthlyStats[$_GET['monthFilter']]['name'] : $_ARRAYLANG['TXT_NEWS_SHOWN_ALL'],
-                'TXT_NEWS_EXTENDED'     => $_ARRAYLANG['TXT_NEWS_EXTENDED'],
-                'NEWS_MONTH_HIDE'       => ($isFilteredByMonth) ? "block" : "none",
-                'TXT_NEWS_SHOWN_ALL'    => $_ARRAYLANG['TXT_NEWS_SHOWN_ALL'],
-                'NEWS_ARCHIVE_COUNT'    => $archCount,
-                'NEWS_UNVALIDATED_COUNT'=> $unvCount, 
-            ));
-            $this->_objTpl->setGlobalVariable(array(
-                'TXT_NEWS_ARCHIVE_SHORT'        => $_ARRAYLANG['TXT_NEWS_ARCHIVE_SHORT'],
-                'TXT_NEWS_UNVALIDATED_SHORT'    => $_ARRAYLANG['TXT_NEWS_UNVALIDATED_SHORT'],
-            ));
-            
-            $columnCount = 0;
-            $currentColumn = 1;
-            $totalMonthCount = count($monthlyStats);
-            $columnSize = ceil($totalMonthCount / $monthColumn);
-            
-            $this->_objTpl->setCurrentBlock('month_navigation_column');
             foreach ($monthlyStats as $key => $value){
-                $columnCount++;
-                // if new column
-                if($columnCount > $currentColumn * $columnSize){
-                    $currentColumn++;
-                    $this->_objTpl->parseCurrentBlock();
-                    $this->_objTpl->setCurrentBlock('month_navigation_column');
-                }
                 $this->_objTpl->setVariable(array(
-                    'NEWS_MONTH_NAME'           => $value['name'],
-                    'NEWS_MONTH_ARCHIVE'        => $value['archive'],
-                    'NEWS_MONTH_UNVALIDATED'    => $value['unvalidated'],
+                    'NEWS_MONTH_NAME'           => (isset($value['archive'])) ? "&nbsp;&nbsp;" . $value['name'] . "(" . $value['archive'] . ")" : $value['name'],
                     'NEWS_MONTH_KEY'            => $key,
+                    'NEWS_MONTH_SELECTED'       => (isset($_GET['monthFilter']) && $_GET['monthFilter'] == $key) ? "selected='selected'" : "",
                 ));
                 $this->_objTpl->parse('month_navigation_item');
             }
-            $this->_objTpl->parseCurrentBlock();
         }
     }
 
