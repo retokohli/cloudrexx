@@ -714,6 +714,36 @@ class ContactManager extends ContactLib
 
         $lastFieldId = 0;
 
+ 
+        if ($formId == 0) {
+            // we're adding, so only parse one field 
+            $this->_objTpl->setVariable(
+                array(
+                    'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
+                        'contactFormFieldType[1]',
+                        'text',
+                        'id="contactFormFieldType_1" style="width:110px;" '.
+                            'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),
+                        this.value)"'
+                        ),
+
+                )
+            );
+
+            foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+                $this->_objTpl->setVariable(
+                    array(
+                        'FORM_FIELD_ROW_LANG_ID'    => $lang['id'],
+                        'FORM_FIELD_VALUE'          => $lang['name']
+                    )
+                );
+                $this->_objTpl->parse('formFieldRow');
+            }
+
+            $this->_objTpl->parse('formField');
+        }
+
+        /*
         if (isset($_POST['saveForm'])) {
             $null           = null;
             $arrFields      = $this->_getFormFieldsFromPost($null);
@@ -777,7 +807,8 @@ class ContactManager extends ContactLib
             $formId = 0;
         }
 
-
+        /**
+         * Parse the form fields
         if (isset($arrFields) && is_array($arrFields)) {
             foreach ($arrFields as $fieldId => $arrField) {
                 if ($arrField['is_required'] == 1 ) {
@@ -799,7 +830,7 @@ class ContactManager extends ContactLib
                 $lastFieldId = $fieldId > $lastFieldId ? $fieldId : $lastFieldId;
             }
         }
-
+*/
 
     }
 
