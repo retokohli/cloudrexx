@@ -91,8 +91,12 @@ class ContactLib
         return $this->_arrRecipients;
     }
 
+    /**
+     * @TODO: this won't work like this
+     */
     function initContactForms($allLanguages = false)
     {
+        return;
         global $objDatabase, $_FRONTEND_LANGID;
 
         if ($allLanguages) {
@@ -103,30 +107,52 @@ class ContactLib
 
         $this->arrForms = array();
 
-        $objContactForms = $objDatabase->Execute("SELECT tblForm.id, tblForm.name, tblForm.mails, tblForm.langId,
-                                                    tblForm.subject, tblForm.text, tblForm.feedback, tblForm.showForm, tblForm.`use_captcha`,tblForm.`use_custom_style`,tblForm.`send_copy`,
-                                                    COUNT(tblData.id) AS number, MAX(tblData.time) AS last
-                                                FROM ".DBPREFIX."module_contact_form AS tblForm
-                                                LEFT OUTER JOIN ".DBPREFIX."module_contact_form_data AS tblData ON tblForm.id=tblData.id_form
-                                                ".$sqlWhere."
-                                                GROUP BY tblForm.id
-                                                ORDER BY last DESC");
+        $objContactForms = $objDatabase->Execute(
+            "SELECT 
+                tblForm.id,
+                tblForm.name,
+                tblForm.mails,
+                tblForm.langId,
+                tblForm.subject,
+                tblForm.text,
+                tblForm.feedback,
+                tblForm.showForm,
+                tblForm.`use_captcha`,
+                tblForm.`use_custom_style`,
+                tblForm.`send_copy`,
+                COUNT(tblData.id)                    AS number,
+                MAX(tblData.time)                    AS last
+            FROM 
+                ".DBPREFIX."module_contact_form      AS tblForm
+            LEFT OUTER JOIN 
+                ".DBPREFIX."module_contact_form_data AS tblData 
+            ON 
+                tblForm.id=tblData.id_form
+
+            ".$sqlWhere."
+
+            GROUP BY 
+                tblForm.id
+            ORDER BY 
+                last 
+            DESC
+        ");
         if ($objContactForms !== false) {
             while (!$objContactForms->EOF) {
                 $this->arrForms[$objContactForms->fields['id']] = array(
-                    'name'  => $objContactForms->fields['name'],
-                    'emails'    => $objContactForms->fields['mails'],
-                    'number'    => intval($objContactForms->fields['number']),
-                    'subject'   => $objContactForms->fields['subject'],
-                    'last'      => intval($objContactForms->fields['last']),
-                    'text'      => $objContactForms->fields['text'],
-                    'lang'      => $objContactForms->fields['langId'],
-                    'feedback'  => $objContactForms->fields['feedback'],
-                    'showForm'  => $objContactForms->fields['showForm'],
+                    'name'          => $objContactForms->fields['name'],
+                    'emails'        => $objContactForms->fields['mails'],
+                    'number'        => intval($objContactForms->fields['number']),
+                    'subject'       => $objContactForms->fields['subject'],
+                    'last'          => intval($objContactForms->fields['last']),
+                    'text'          => $objContactForms->fields['text'],
+                    'lang'          => $objContactForms->fields['langId'],
+                    'feedback'      => $objContactForms->fields['feedback'],
+                    'showForm'      => $objContactForms->fields['showForm'],
                     'useCaptcha'    => $objContactForms->fields['use_captcha'],
                     'useCustomStyle'    => $objContactForms->fields['use_custom_style'],
-                    'sendCopy'  => $objContactForms->fields['send_copy'],
-                    'recipients' => $this->getRecipients($objContactForms->fields['id'], true)
+                    'sendCopy'      => $objContactForms->fields['send_copy'],
+                    'recipients'    => $this->getRecipients($objContactForms->fields['id'], true)
                 );
 
                 $objContactForms->MoveNext();
@@ -268,8 +294,48 @@ class ContactLib
         }
     }
 
-    function isUniqueFormName($name, $id = 0)
+    /**
+     * Check if there already exist a form with this name
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $name
+     * @param       int $id
+     * @param       int $lang
+     * @return      boolean
+     */
+    function isUniqueFormName($name, $lang, $id = 0)
     {
+        global $objDatabase;
+
+        $name = contrexx_addslashes($name);
+
+        $query = "
+            SELECT
+                `f`.`id`
+            FROM
+                `".DBPREFIX."module_contact_form`       AS `f`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_form_lang`  AS `l`
+            ON
+                `f`.`id` = `l`.`formID`
+            AND
+                `l`.`langID` = ".intval($lang)."
+            WHERE
+                `l`.`name` = '".$name."'
+        ";
+
+        $res = $objDatabase->Execute($query);
+
+        if ($id == 0) {
+            return $res->RecordCount() == 0;
+        } else {
+            return $res->RecordCount() == 0 || $res->fields[$id] == $id;
+        }
+
+        // this is crap. Why does it always read all of the forms?
+        // ok, admittedly, t's also crap to query the db for each language
+        // ... but i don't fucking care right now.
+        /*
         if (is_array($this->arrForms)) {
             foreach ($this->arrForms as $formId => $arrForm) {
                 if ($formId != $id && $arrForm['name'] == $name) {
@@ -278,14 +344,48 @@ class ContactLib
             }
         }
         return true;
+         */
     }
 
-    function updateForm($id, $name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
+    /**
+     * Update an existing form
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @TODO        pretty everything
+     */
+    function updateForm(
+        $id,
+        //$name,
+        $emails,
+        //$subject,
+        //$text,
+        $feedback,
+        $showForm,
+        $useCaptcha,
+        $useCustomStyle,
+        //$arrFields,
+        $sendCopy
+    )
     {
         global $objDatabase;
 
-        $objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form SET name='".$name."', mails='".addslashes($emails)."',
-                subject='".$subject."', text='".$text."', feedback='".$feedback."', showForm=".$showForm.", use_captcha=".$useCaptcha.", use_custom_style=".$useCustomStyle.", send_copy=".$sendCopy." WHERE id=".$id);
+        $objDatabase->Execute("
+            UPDATE 
+                ".DBPREFIX."module_contact_form 
+            SET 
+                #name='".$name."',
+                mails='".addslashes($emails)."',
+                #subject='".$subject."',
+                #text='".$text."',
+                #feedback='".$feedback."',
+                showForm=".$showForm.",
+                use_captcha=".$useCaptcha.",
+                use_custom_style=".$useCustomStyle.",
+                send_copy=".$sendCopy." 
+            WHERE 
+            id=".$id
+        );
 
         $arrFormFields = $this->getFormFields($id);
         $arrRemoveFormFields = array_diff_assoc($arrFormFields, $arrFields);
@@ -305,23 +405,118 @@ class ContactLib
         $this->initContactForms(true);
     }
 
-    function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
+    /**
+     * Add a new form
+     *
+     * @author      Comvation AG <info@Comvation.com>
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $emails
+     * @param       bool $showForm
+     * @param       bool $useCaptcha
+     * @param       bool $useCustomStyle
+     * @param       bool $sendCopy
+     */
+    function addForm(
+        $emails,
+        $showForm,
+        $useCaptcha,
+        $useCustomStyle,
+        $sendCopy
+    )
     {
         global $objDatabase, $_FRONTEND_LANGID;
 
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form
-                                  (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `langId`)
-                                  VALUES
-                                  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$useCustomStyle.", ".$sendCopy.", ".$_FRONTEND_LANGID.")") !== false) {
+        $query = "
+            INSERT INTO 
+                ".DBPREFIX."module_contact_form
+            (
+                `mails`,
+                `showForm`,
+                `use_captcha`,
+                `use_custom_style`,
+                `send_copy` 
+            )
+            VALUES
+            (
+                '".addslashes($emails)."',
+                ".$showForm.",
+                ".$useCaptcha.",
+                ".$useCustomStyle.",
+                ".$sendCopy."
+            )";
+
+        if ($objDatabase->Execute($query) !== false) {
             $formId = $objDatabase->Insert_ID();
 
+            /*
             foreach ($arrFields as $fieldId => $arrField) {
                 $this->_addFormField($formId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
             }
+             */
         }
         $_REQUEST['formId'] = $formId;
 
         $this->initContactForms(true);
+
+        return $formId;
+    }
+
+    /**
+     * Insert the language values, update them if they already exist
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       int $langID
+     * @param       string $name
+     * @param       string $text
+     * @param       string $feedback
+     * @param       string $subject
+     */
+    protected function insertFormLangValues(
+        $formID,
+        $langID,
+        $name,
+        $text,
+        $feedback,
+        $subject
+    ) {
+        global $objDatabase;
+
+        $formID = intval($formID);
+        $langID = intval($langID);
+        $name = contrexx_addslashes($name);
+        $text = contrexx_addslashes($text);
+        $feedback = contrexx_addslashes($feedback);
+        $subject = contrexx_addslashes($subject);
+
+        $query = "
+            INSERT INTO
+                `".DBPREFIX."module_contact_form_lang`
+            (
+                `formID`,
+                `langID`,
+                `name`,
+                `text`,
+                `feedback`,
+                `subject`
+            )
+            VALUES
+            (
+                ".$formID.",
+                ".$langID.",
+                '".$name."',
+                '".$text."',
+                '".$feedback."',
+                '".$subject."'
+            )
+            ON DUPLICATE KEY UPDATE
+                `name` = '".$name."',
+                `text` = '".$text."',
+                `feedback` = '".$feedback."',
+                `subject` = '".$subject."'
+        ";
+
+        $objDatabase->execute($query);
     }
 
     /**
