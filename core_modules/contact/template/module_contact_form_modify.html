@@ -354,18 +354,20 @@ var langTab = function(id) {
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
 <input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
 
-<table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-    <tr>
-        <th colspan="2">{CONTACT_ACTION_TITLE}</th>
-    </tr>
-    <tr class="row2" style="height:20px;">
-        <td>{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
-        <td><input style="width: 670px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *<td>
-    </tr>
-</table>
-<br /><br />
+
 
 <div class="tabs" id="tab_values">
+
+    <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+        <tr>
+            <th colspan="2">{CONTACT_ACTION_TITLE}</th>
+        </tr>
+        <tr class="row2" style="height:20px;">
+            <td>{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
+            <td><input style="width: 670px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *<td>
+        </tr>
+    </table>
+    <br /><br />
 
     <ul id="tabmenu">
         <!-- BEGIN languageTabs -->
@@ -409,7 +411,30 @@ var langTab = function(id) {
 </div>
 
 <div id="tab_fields" class="tabs" style="display: none">
-Field
+    <!-- BEGIN formField -->
+        <div class="formField" style="border: 1px solid black">
+            <table>
+                <tr>
+                    <th>Sprache</th>
+                    <th>Name</th>
+                    <th>Werte</th>
+                </tr>
+                <!-- BEGIN formFieldRow -->
+                <tr>
+                    <td>{FORM_FIELD_ROW_LANG}</td>
+                    <td><input type="text" name="formFieldName[{FORM_FIELD_ROW_LANG_ID}]" /></td>
+                    <td><input type="text" name="formFieldValue[{FORM_FIELD_VALUE}]" /><td>
+                </tr>
+                <!-- END formFieldRow -->
+            </table>
+            Typ: {CONTACT_FORM_FIELD_TYPE_MENU} 
+        </div>
+    <!-- END formField -->
+
+
+        <!-- I think this can be dismissed entirely -->
+
+
         <table>
           <tr class="row1">
                     <td>{TXT_CONTACT_FORM_FIELDS}</td>
