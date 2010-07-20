@@ -57,36 +57,6 @@ function addFormField() {
             $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
         }
     );
-
-    // adjust the ids
-
-    /*
-    var elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
-
-    $('formField_'+formFieldLastId).setAttribute('id', 'formField_'+(formFieldLastId+1));
-    $('contactFormFieldId_'+formFieldLastId).innerHTML = formFieldLastId+1;
-    $('contactFormFieldId_'+formFieldLastId).setAttribute('id', 'contactFormFieldId_'+(formFieldLastId+1));
-    $('contactFormFieldName_'+formFieldLastId).setAttribute('name', 'contactFormFieldName['+(formFieldLastId+1)+']');
-    $('contactFormFieldName_'+formFieldLastId).setAttribute('id', 'contactFormFieldName_'+(formFieldLastId+1));
-    $('contactFormFieldType_'+formFieldLastId).setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
-    $('contactFormFieldType_'+formFieldLastId).setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
-    $('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormElement('+(formFieldLastId+1)+', \'Field\')');
-    $('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDelete_'+(formFieldLastId+1));
-    $('contactFormFieldAttributeBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldAttributeBox_'+(formFieldLastId+1));
-    $('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formFieldLastId+1)+', \'Field\')');
-    $('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonUp_'+(formFieldLastId+1));
-    $('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formFieldLastId+1)+', \'Field\')');
-    $('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDown_'+(formFieldLastId+1));
-    $('contactFormFieldRequiredBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequiredBox_'+(formFieldLastId+1));
-    $('contactFormFieldRequired_'+formFieldLastId).setAttribute('name', 'contactFormFieldRequired['+(formFieldLastId+1)+']');
-    $('contactFormFieldRequired_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequired_'+(formFieldLastId+1));
-    $('contactFormFieldCheckType_'+formFieldLastId).setAttribute('name', 'contactFormFieldCheckType['+(formFieldLastId+1)+']');
-    $('contactFormFieldCheckType_'+formFieldLastId).setAttribute('id', 'contactFormFieldCheckType_'+(formFieldLastId+1));
-
-    formFieldLastId = formFieldLastId + 1;
-
-    document.getElementById('formFieldContainer').appendChild(elField);
-    */
 }
 
 /**
@@ -417,7 +387,7 @@ var langTab = function(id) {
             <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
                 <tbody style="vertical-align:top;">
                     <tr>
-                        <th colspan="2"> ({LANG_NAME})</th>
+                        <th colspan="2"> {LANG_NAME}</th>
                     </tr>
                     <tr class="row1" style="height:20px;">
                         <td width="10%">{TXT_CONTACT_NAME}</td>
@@ -448,7 +418,7 @@ var langTab = function(id) {
     <div id="formFields">
     <!-- BEGIN formField -->
         <div class="formField"  id="formField_1">
-            <div style="border: 1px solid grey; padding: 10px; position: relative">
+            <div style="border: 1px solid #DDE4FF; padding: 10px; position: relative">
                 <div style="position: absolute; right: 10px; top: 3px;">
                     <a id="removeLink_1" href="#" onclick="removeFormField(this)">X</a>
                 </div>

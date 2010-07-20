@@ -242,6 +242,9 @@ class ContactLib
         }
     }
 
+    /**
+     * TODO make this multi-lingual
+     */
     function getFormFields($id)
     {
         global $objDatabase;
@@ -249,7 +252,8 @@ class ContactLib
         $arrFields = array();
 
         if (isset($this->arrForms[$id])) {
-            $objFields  = $objDatabase->Execute("SELECT id, name, type,
+            $objFields  = $objDatabase->Execute("
+                SELECT id, name, type,
                         attributes, is_required,
                         check_type
                         FROM ".DBPREFIX."module_contact_form_field
