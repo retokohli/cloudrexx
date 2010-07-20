@@ -3,6 +3,9 @@ $_ARRAYLANG['TXT_FORM_VALUES'] = "Formularwerte";
 $_ARRAYLANG['TXT_FORM_FIELDS'] = "Formularfelder";
 $_ARRAYLANG['TXT_ADVANCED_SETTINGS'] = "Erweiterte Einstellungen";
 $_ARRAYLANG['TXT_FORM_RECIPIENTS'] = "Empfängerliste";
+$_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'] = "Sprache";
+$_ARRAYLANG['TXT_CONTACT_FORM_NAME'] = "Name";
+$_ARRAYLANG['TXT_CONTACT_FORM_VALUES'] = "Werte";
 
 /**
  * Contact
@@ -726,15 +729,31 @@ class ContactManager extends ContactLib
                             'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),
                         this.value)"'
                         ),
-
+                        'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
+                            'contactFormFieldRequired[1]',
+                            'contactFormFieldRequired_1',
+                            'text',
+                            false
+                        ),
+                        'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
+                            'contactFormFieldCheckType[1]',
+                            'contactFormFieldCheckType_1',
+                            $arrField['type'],
+                            $arrField['check_type']
+                        ),
                 )
             );
 
             foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                 $this->_objTpl->setVariable(
                     array(
-                        'FORM_FIELD_ROW_LANG_ID'    => $lang['id'],
-                        'FORM_FIELD_VALUE'          => $lang['name']
+                        'FORM_FIELD_ROW_LANG_ID'        => $lang['id'],
+                        'FORM_FIELD_ROW_LANG'           => $lang['name'],
+                        'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
+                        'TXT_NAME'                  => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
+                        'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
+                        'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
+                        'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD']
                     )
                 );
                 $this->_objTpl->parse('formFieldRow');
