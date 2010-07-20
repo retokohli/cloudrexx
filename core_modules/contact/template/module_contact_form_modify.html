@@ -37,8 +37,30 @@ function addRecipient()
     document.getElementById('formRecipientContainer').appendChild(elField);
 }
 
-function addFormField()
-{
+/**
+  Add a new section for a form field
+  */
+function addFormField() {
+    var divToCopy = $J('.formField:last')[0];
+
+    var copy = divToCopy.clone(true);
+
+    $J('#formFields').append(copy);
+
+    $J(copy).find('input, select').each(
+        function(key, elem) {
+            var name = $J(elem).attr('name');
+            var number = parseInt(name.match(/\[(\d+)\](?:\[\d+\])?$/)[1]);
+            number++;
+            // this regex was quite bitchy... (especially because the page reload
+            // took up to 35 seconds... nice testing)
+            $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
+        }
+    );
+
+    // adjust the ids
+
+    /*
     var elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
 
     $('formField_'+formFieldLastId).setAttribute('id', 'formField_'+(formFieldLastId+1));
@@ -64,6 +86,18 @@ function addFormField()
     formFieldLastId = formFieldLastId + 1;
 
     document.getElementById('formFieldContainer').appendChild(elField);
+    */
+}
+
+/**
+  Remove a form field
+  */
+function removeFormField(obj) {
+    // at least one field has to be there
+    if ($J('.formField').size() > 1) {
+        var remObj = $J($J($J(obj).parent()).parent()).parent();
+        $J(remObj).remove();
+    }
 }
 
 function removeFormElement(id, what)
@@ -410,91 +444,41 @@ var langTab = function(id) {
     <!-- END languageForm -->
 </div>
 
-<div id="tab_fields" class="tabs" style="display: none">
+<div id="tab_fields" class="tabs" style="display: none;">
+    <div id="formFields">
     <!-- BEGIN formField -->
-        <div class="formField" style="border: 1px solid black">
-            <table>
-                <tr>
-                    <th>Sprache</th>
-                    <th>Name</th>
-                    <th>Werte</th>
-                </tr>
-                <!-- BEGIN formFieldRow -->
-                <tr>
-                    <td>{FORM_FIELD_ROW_LANG}</td>
-                    <td><input type="text" name="formFieldName[{FORM_FIELD_ROW_LANG_ID}]" /></td>
-                    <td><input type="text" name="formFieldValue[{FORM_FIELD_VALUE}]" /><td>
-                </tr>
-                <!-- END formFieldRow -->
-            </table>
-            Typ: {CONTACT_FORM_FIELD_TYPE_MENU} 
+        <div class="formField"  id="formField_1">
+            <div style="border: 1px solid grey; padding: 10px; position: relative">
+                <div style="position: absolute; right: 10px; top: 3px;">
+                    <a id="removeLink_1" href="#" onclick="removeFormField(this)">X</a>
+                </div>
+                <table width="100%">
+                    <tr>
+                        <th style="width: 20%">{TXT_LANGUAGE}</th>
+                        <th style="width: 40%">{TXT_NAME}</th>
+                        <th style="width: 40%">{TXT_VALUES}</th>
+                    </tr>
+                    <!-- BEGIN formFieldRow -->
+                    <tr>
+                        <td>{FORM_FIELD_ROW_LANG}</td>
+                        <td>
+                            <input type="text" name="formFieldName[1][{FORM_FIELD_ROW_LANG_ID}]" class="formFieldElementsLang" style="width: 100%"/>
+                        </td>
+                        <td>
+                            <input type="text" name="formFieldValue[1][{FORM_FIELD_ROW_LANG_ID}]" class="formFieldElementsLang" style="width: 100%"/>
+                        </td>
+                    </tr>
+                    <!-- END formFieldRow -->
+                </table>
+                {TXT_TYPE}: {CONTACT_FORM_FIELD_TYPE_MENU} {FORM_FIELD_CHECK_BOX} {TXT_MANDATORY_FIELD} {FORM_FIELD_CHECK_MENU}
+
+            </div>
+            <br />
         </div>
     <!-- END formField -->
+    </div>
 
-
-        <!-- I think this can be dismissed entirely -->
-
-
-        <table>
-          <tr class="row1">
-                    <td>{TXT_CONTACT_FORM_FIELDS}</td>
-                    <td>
-                        <div id="formFieldContainer">
-                            <div style="white-space:nowrap; height:20px; clear:both;">
-                                <div style="width:55px; display:inline; float:left; text-align:center;">
-                                    &nbsp;
-                                </div>
-                                <div style="width:35px; display:inline; float:left; text-align:center;">
-                                    {TXT_CONTACT_ID}
-                                </div>
-                                <div style="width:135px; display:inline; float:left;">
-                                    {TXT_CONTACT_FIELD_NAME}
-                                </div>
-                                <div style="width:120px; display:inline; float:left;">
-                                    {TXT_CONTACT_TYPE}
-                                </div>
-                                <div style="width:240px; height:1px; display:inline; float:left;">
-                                    {TXT_CONTACT_VALUE_S}
-                                </div>
-                                <div style="width:150px; display:inline;">
-                                    {TXT_CONTACT_MANDATORY_FIELD}
-                                </div>
-                            </div>
-                            <!-- BEGIN contact_form_field_list -->
-                                <div style="white-space:nowrap; height:20px; clear:both;" id="formField_{CONTACT_FORM_FIELD_ID}">
-                                    <div style="width:55px; display:inline; float:left;">
-                                        <a href="javascript:removeFormElement('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-                                        <a href="javascript:moveFormElementUp('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-                                        <a href="javascript:moveFormElementDown('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-                                    </div>
-                                    <div style="width:35px; display:inline; float:left; text-align:center;">
-                                        {CONTACT_FORM_FIELD_ID}
-                                    </div>
-                                    <div style="width:135px; display:inline; float:left;">
-                                        <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_ID}" value="{CONTACT_FORM_FIELD_NAME}" />
-                                    </div>
-                                    <div style="width:120px; display:inline; float:left;">
-                                        {CONTACT_FORM_FIELD_TYPE_MENU}
-                                    </div>
-                                    <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_ID}">
-                                        {CONTACT_FORM_FIELD_ATTRIBUTES}
-                                    </div>
-                                    <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_ID}">
-                                        {CONTACT_FORM_FIELD_CHECK_BOX} {CONTACT_FORM_FIELD_CHECK_MENU}
-                                    </div>
-                                </div>
-                            <!-- END contact_form_field_list -->
-                        </div>
-                        <br />
-                        <br />
-                        <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
-                        <br />
-                        <br />
-                    </td>
-                </tr>
-          * {TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}
-      </table>
-
+    <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" id="addFieldButton"/>
 </div>
 
 <div id="tab_recipients" class="tabs" style="display: none;">
