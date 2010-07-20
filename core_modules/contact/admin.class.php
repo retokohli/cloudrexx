@@ -717,9 +717,22 @@ class ContactManager extends ContactLib
 
         $lastFieldId = 0;
 
+        $param = ($formId > 0) ? $formId : $null;
+        $fields = $this->_getFormFieldsFromPost($param);
+
+        // make an empty one so at least one is parsed
+        if (empty($fields)) {
+            foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+                $fields[0][$lang['id']] = array(
+                    'name'      => '',
+                    'value'     => ''
+                );
+                $fields[0]['type'] = 'text';
+                // etc.
+            }
+        }
  
-        if ($formId == 0) {
-            // we're adding, so only parse one field 
+        foreach ($fields as $field) {
             $this->_objTpl->setVariable(
                 array(
                     'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
@@ -738,8 +751,8 @@ class ContactManager extends ContactLib
                         'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
                             'contactFormFieldCheckType[1]',
                             'contactFormFieldCheckType_1',
-                            $arrField['type'],
-                            $arrField['check_type']
+                            $field['type'],
+                            $field['check_type']
                         ),
                 )
             );
@@ -747,8 +760,8 @@ class ContactManager extends ContactLib
             foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                 $this->_objTpl->setVariable(
                     array(
-                        'FORM_FIELD_ROW_LANG_ID'        => $lang['id'],
-                        'FORM_FIELD_ROW_LANG'           => $lang['name'],
+                        'FORM_FIELD_ROW_LANG_ID'    => $lang['id'],
+                        'FORM_FIELD_ROW_LANG'       => $lang['name'],
                         'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
                         'TXT_NAME'                  => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
                         'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
@@ -1320,6 +1333,9 @@ class ContactManager extends ContactLib
         return $arrRecipients;
     }
 
+    /**
+     * multi-lingual
+    */
     function _getFormFieldsFromPost(&$uniqueFieldNames)
     {
         $uniqueFieldNames = true;
