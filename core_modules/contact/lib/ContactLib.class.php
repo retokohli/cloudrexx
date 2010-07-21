@@ -374,6 +374,8 @@ class ContactLib
     {
         global $objDatabase;
 
+        return; // this is BS right now
+
         $objDatabase->Execute("
             UPDATE 
                 ".DBPREFIX."module_contact_form 
@@ -398,7 +400,9 @@ class ContactLib
             if (isset($arrFormFields[$fieldId])) {
                 $this->_updateFormField($fieldId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
             } else {
+                /*
                 $this->_addFormField($id, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
+                 */
             }
         }
 
@@ -561,12 +565,93 @@ class ContactLib
         $objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form_field SET name='".addslashes($name)."', type='".$type."', attributes='".addslashes($attributes)."', is_required='".$isRequired."', check_type='".$checkType."', order_id=".$orderId." WHERE id=".$id);
     }
 
+    /**
+     * Add a form field to the database
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $field
+     */
+    protected function addFormField($formID, $field) 
+    {
+        global $objDatabase;
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_form_field`
+            (
+                `id_form`,
+                `type`,
+                `is_required`,
+                `check_type`,
+                `order_id`
+            )
+            VALUES
+            (
+                "'.$formID.'",
+                "'.$field['type'].'",
+                "'.$field['is_required'].'",
+                "'.$field['check_type'].'",
+                "'.$field['order_id'].'"
+            )
+            ';
+
+        $objDatabase->execute($query);
+        $fieldID = $objDatabase->insert_id();
+
+        foreach ($field['lang'] as $langID => $values) {
+            $this->setFormFieldLang($fieldID, $langID, $values);
+        }
+    }
+
+    /**
+     * Add a form lang to a field
+     *
+     * In case it already exists, update the value
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $fieldID
+     * @param       array $values
+     */
+    protected function setFormFieldLang($fieldID, $langID, $values) 
+    {
+        global $objDatabase;
+
+        $name = contrexx_addslashes($values['name']);
+        $value = contrexx_addslashes($values['values']);
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_form_field_lang`
+            (
+                `fieldID`,
+                `name`,
+                `attributes`,
+                `langID`
+            )
+            VALUES
+            (
+                "'.$fieldID.'",
+                "'.$name.'",
+                "'.$value.'",
+                "'.$langID.'"
+            )
+            ON DUPLICATE KEY UPDATE
+            `name` = "'.$name.'",
+            `attributes` = "'.$value.'"';
+
+        $objDatabase->execute($query);
+    }
+
+
+    /*
     function _addFormField($formId, $name, $type, $attributes, $orderId, $isRequired, $checkType)
     {
         global $objDatabase;
 
         $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_field (`id_form`, `name`, `type`, `attributes`, `order_id`, `is_required`, `check_type`) VALUES (".$formId.", '".addslashes($name)."', '".$type."', '".addslashes($attributes)."', ".$orderId.", '".$isRequired."', '".$checkType."')");
     }
+     */
+
 
     function _deleteFormField($id)
     {
