@@ -722,7 +722,7 @@ class ContactManager extends ContactLib
 
         // make an empty one so at least one is parsed
         if (empty($fields)) {
-            foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+                foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                 $fields[0] = array (
                     'type'       => 'text',
                     'attributes' => '',
@@ -966,9 +966,6 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG, $_CONFIG;
         global $objDatabase;
         
-        $this->_modifyForm();
-        return;
-
         $objDatabase->debug = true;
 
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
@@ -1047,6 +1044,15 @@ class ContactManager extends ContactLib
 
             }
 
+            // do the fields
+            $fields = $this->_getFormFieldsFromPost();
+            foreach ($fields as $field) {
+                if ($adding) {
+                    $this->addFormField($formId, $field);
+                } else {
+                    $this->updateFormField($formId, $field);
+                }
+            }
 
             //foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                 /*
@@ -1463,6 +1469,7 @@ class ContactManager extends ContactLib
                 }
 
                 $arrFields[intval($id)] = array(
+                    'id'            => $id, // in case we're editing this should be the real id
                     'type'          => $type,
                     'attributes'    => $attributes,
                     'order_id'      => $orderId,
