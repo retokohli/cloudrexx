@@ -41,17 +41,29 @@ function addRecipient()
   Add a new section for a form field
   */
 function addFormField() {
-    var divToCopy = $J('.formField:last')[0];
+    var number = 0;
+    // find the highest number
+    $J('.formField').each(function(elem){
+        console.log('loop');
+        var nr = parseInt($J(elem).attr('id').split('_')[1]);
+        console.log(nr);
+        if (nr > number) {
+            number = nr;
+            divToCopy = elem;
+        }
+    });
+
+    number++;
 
     var copy = divToCopy.clone(true);
+    copy.attr('id', 'formField_' + number);
 
     $J('#formFields').append(copy);
 
     $J(copy).find('input, select').each(
         function(key, elem) {
             var name = $J(elem).attr('name');
-            var number = parseInt(name.match(/\[(\d+)\](?:\[\d+\])?$/)[1]);
-            number++;
+            //var number = parseInt(name.match(/\[(\d+)\](?:\[\d+\])?$/)[1]);
             // this regex was quite bitchy... (especially because the page reload
             // took up to 35 seconds... nice testing)
             $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
@@ -346,6 +358,11 @@ var langTab = function(id) {
     $J('.langTabs').hide();
     $J('#langTab_' + id).show();
 }
+
+$J(document).ready(function() {
+    //$J('.formFields').sortable();
+});
+
 // -->
 </script>
 
