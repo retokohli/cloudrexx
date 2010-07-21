@@ -723,21 +723,27 @@ class ContactManager extends ContactLib
         // make an empty one so at least one is parsed
         if (empty($fields)) {
             foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
-                $fields[0][$lang['id']] = array(
+                $fields[0] = array (
+                    'type'       => 'text',
+                    'attributes' => '',
+                    'order_id'   => 0,
+                    'is_required' => false,
+                    'check_type' => 1
+                );
+                $fields[0]['lang'][$lang['id']] = array(
                     'name'      => '',
                     'value'     => ''
                 );
-                $fields[0]['type'] = 'text';
-                // etc.
             }
         }
  
+        $counter = 1;
         foreach ($fields as $field) {
             $this->_objTpl->setVariable(
                 array(
                     'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
                         'contactFormFieldType[1]',
-                        'text',
+                        $field['type'],
                         'id="contactFormFieldType_1" style="width:110px;" '.
                             'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),
                         this.value)"'
@@ -745,7 +751,7 @@ class ContactManager extends ContactLib
                         'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
                             'contactFormFieldRequired[1]',
                             'contactFormFieldRequired_1',
-                            'text',
+                            $field['is_required'],
                             false
                         ),
                         'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
@@ -766,12 +772,16 @@ class ContactManager extends ContactLib
                         'TXT_NAME'                  => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
                         'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
                         'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
-                        'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD']
+                        'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
+                        'FORM_FIELD_ID'             => $counter, // probably use the real key if editing,
+                        'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['values'],
+                        'FORM_FIELD_NAME'           => $field['lang'][$lang['id']]['name']
                     )
                 );
                 $this->_objTpl->parse('formFieldRow');
             }
 
+            $counter++;
             $this->_objTpl->parse('formField');
         }
 
@@ -955,6 +965,9 @@ class ContactManager extends ContactLib
     {
         global $_ARRAYLANG, $_CONFIG;
         global $objDatabase;
+        
+        $this->_modifyForm();
+        return;
 
         $objDatabase->debug = true;
 
@@ -1334,22 +1347,98 @@ class ContactManager extends ContactLib
     }
 
     /**
-     * multi-lingual
-    */
+     * Get the form fields from the post variables
+     *
+     * This is only used when an error on saving occurs, to
+     * reparse the form fields.
+     */
     function _getFormFieldsFromPost(&$uniqueFieldNames)
     {
         $uniqueFieldNames = true;
         $arrFields = array();
         $arrFieldNames = array();
         $orderId = 0;
+        $types = array(
+            'text',
+            'label',
+            'file',
+            'textarea',
+            'hidden',
+            'radio',
+            'checkboxGroup',
+            'password',
+            'select'
+        );
 
-        if (isset($_POST['contactFormFieldName']) && is_array($_POST['contactFormFieldName'])) {
-            foreach ($_POST['contactFormFieldName'] as $id => $fieldName) {
-                $fieldName = strip_tags(contrexx_stripslashes($fieldName));
-                $type = isset($_POST['contactFormFieldType'][$id]) && array_key_exists(contrexx_stripslashes($_POST['contactFormFieldType'][$id]), $this->_arrFormFieldTypes) ? contrexx_stripslashes($_POST['contactFormFieldType'][$id]) : key($this->_arrFormFieldTypes);
-                $attributes = isset($_POST['contactFormFieldAttribute'][$id]) && !empty($_POST['contactFormFieldAttribute'][$id]) ? ($type == 'text' || $type == 'label' || $type == 'file' || $type == 'textarea' || $type == 'hidden' || $type == 'radio' || $type == 'checkboxGroup' || $type == 'password' || $type == 'select' ? strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id])) : intval($_POST['contactFormFieldAttribute'][$id])) : '';
-                $is_required = isset($_POST['contactFormFieldRequired'][$id]) ? 1 : 0;
-                $checkType = isset($_POST['contactFormFieldCheckType'][$id]) ? intval($_POST['contactFormFieldCheckType'][$id]) : 1;
+
+        // shorten the variables
+        $fieldNames      = $_POST['contactFormFieldName'];
+        $fieldValues     = $_POST['contactFormFieldValue'];
+        $fieldTypes      = $_POST['contactFormFieldType'];
+        $fieldRequireds  = $_POST['contactFormFieldRequired'];
+        $fieldCheckTypes = $_POST['contactFormFieldCheckType'];
+        $fieldAttributes = $_POST['contactFormFieldAttributes'];
+
+        if (isset($fieldNames) && is_array($fieldNames)) {
+            foreach ($fieldNames as $id => $fieldName) {
+                /*
+                 * ternary is ugly here
+                 *
+                $type = isset($fieldTypes[$id])  
+                    && array_key_exists(contrexx_stripslashes(
+                        $fieldTypes[$id]),
+                        $this->_arrFormFieldTypes
+                    ) 
+                    ? contrexx_stripslashes($fieldTypes[$id]) 
+                    : key($this->_arrFormFieldTypes);
+                */
+
+
+                $key = contrexx_stripslashes($fieldTypes[$id]);
+                if (isset($fieldTypes[$id]) && array_key_exists($key, $this->_arrFormFieldTypes)) {
+                    $type = $key;
+                } else {
+                    $type = key($this->_arrFormFieldTypes);
+                }
+
+                // i have no idea why this...
+                // update: ah now i get it... it's probably the values?
+                if (isset($fieldAttributes) && !empty($fieldAttributes)) {
+                    if (array_search($type, $types) !== false) {
+                        $attributes = strip_tags(
+                            contrexx_stripslashes($fieldAttributes[$id]));
+                    } else {
+                        $attributes = intval($fieldAttributes[$id]);
+                    }
+                } else {
+                    $attributes = '';
+                }
+
+                /*
+                 * my ass... where's the guidelines to prevent from such code
+                 *
+                $attributes = 
+                    isset($_POST['contactFormFieldAttribute'][$id]) 
+                    && !empty($_POST['contactFormFieldAttribute'][$id]) 
+                    ? (
+                        $type == 'text' 
+                        || $type == 'label' 
+                        || $type == 'file' 
+                        || $type == 'textarea' 
+                        || $type == 'hidden' 
+                        || $type == 'radio' 
+                        || $type == 'checkboxGroup' 
+                        || $type == 'password' 
+                        || $type == 'select' 
+                            ? strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id])) 
+                    : intval($_POST['contactFormFieldAttribute'][$id])) : '';
+                */
+
+                $is_required = isset($fieldRequireds[$id]) ? 1 : 0;
+
+                $checkType = isset($fieldCheckTypes[$id]) 
+                    ? intval($fieldCheckTypes[$id]) 
+                    : 1;
 
                 if (!in_array($fieldName, $arrFieldNames)) {
                     array_push($arrFieldNames, $fieldName);
@@ -1374,13 +1463,26 @@ class ContactManager extends ContactLib
                 }
 
                 $arrFields[intval($id)] = array(
-                    'name'          => $fieldName,
                     'type'          => $type,
                     'attributes'    => $attributes,
                     'order_id'      => $orderId,
                     'is_required'   => $is_required,
                     'check_type'    => $checkType
                 );
+
+
+                // hope the langs never change between editing and saving xD
+                foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+                    $langID = $lang['id'];
+                    $fieldName = strip_tags(contrexx_stripslashes($fieldNames[$id][$langID]));
+                    $fieldValue = strip_tags(contrexx_stripslashes($fieldValues[$id][$langID]));
+
+                    $arrFields[intval($id)]['lang'][$lang['id']] = array(
+                        'name'      => $fieldName,
+                        'values'    => $fieldValue
+                    );
+
+                }
 
                 $orderId++;
             }
