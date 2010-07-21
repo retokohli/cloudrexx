@@ -97,6 +97,27 @@ class FWLanguage
         return self::$arrLanguages;
     }
 
+    /**
+     * Return only the languages active in the frontend
+     *
+     * @author     Stefan Heinemann <sh@adfinis.com>
+     * @return     array
+     */
+    public static function getActiveFrontendLanguages() {
+        $arr = array();
+
+        if (empty(self::$arrLanguages)) {
+            self::init();
+        }
+
+        foreach (self::$arrLanguages as $id => $lang) {
+            if ($lang['frontend']) {
+                $arr[$id] = $lang;
+            }
+        }
+
+        return $arr;
+    }
 
     /**
      * Returns single language related fields
