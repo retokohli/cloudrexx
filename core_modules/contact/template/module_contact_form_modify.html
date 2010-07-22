@@ -43,10 +43,8 @@ function addRecipient()
 function addFormField() {
     var number = 0;
     // find the highest number
-    $J('.formField').each(function(elem){
-        console.log('loop');
+    $J('.formField').each(function(key, elem){
         var nr = parseInt($J(elem).attr('id').split('_')[1]);
-        console.log(nr);
         if (nr > number) {
             number = nr;
             divToCopy = elem;
@@ -56,7 +54,7 @@ function addFormField() {
     number++;
 
     var copy = divToCopy.clone(true);
-    copy.attr('id', 'formField_' + number);
+    $J(copy).attr('id', 'formField_' + number);
 
     $J('#formFields').append(copy);
 
