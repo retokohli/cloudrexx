@@ -64,10 +64,10 @@ $J(function(){
 			<td valign="top" nowrap="nowrap" width="1%"><b>{TXT_ID}</b></td>
 			<td valign="top" nowrap="nowrap" width="1%"><b>{TXT_STATUS}</b></td>
 			<td valign="top" nowrap="nowrap" width="5%">		
-			<select id="monthFilter">
-                <option value="0"/>- {TXT_DATE}</option>
+			<select id="monthFilter" style="font-weight:bold;">
+                <option value="0"/>{TXT_DATE}</option>
                 <!-- BEGIN month_navigation_item -->
-                <option value="{NEWS_MONTH_KEY}" {NEWS_MONTH_SELECTED}>- {NEWS_MONTH_NAME}</option>
+                <option style="font-weight:normal;" value="{NEWS_MONTH_KEY}" {NEWS_MONTH_SELECTED}> {NEWS_MONTH_NAME}</option>
                 <!-- END month_navigation_item -->
 			</select>
 			</td>

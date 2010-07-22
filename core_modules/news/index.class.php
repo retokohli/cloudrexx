@@ -97,7 +97,9 @@ class news extends newsLibrary {
         case 'feed':
             return $this->_showFeed();
             break;
-
+        case 'archive':
+            return $this->_getArchive();
+            break;
         default:
             return $this->getHeadlines();
             break;
@@ -1103,6 +1105,106 @@ RSS2JSCODE;
 
         //Nothing found, i guess the user didn't comment within within the timeout-period.
         return false;
+    }
+    
+    function _getArchive() 
+    {
+        global $_CONFIG, $objDatabase, $_ARRAYLANG;
+
+        $dateFilterName = 'date';
+        $monthColumn = 3;
+        
+        $objFWUser = FWUser::getFWUserObject();
+        
+        $this->_objTpl->setTemplate($this->pageContent);
+        
+        // month filter
+        // archive list
+        $monthCountQuery = "SELECT n.id             AS id,
+                                   n.date           AS date, 
+                                   n.changelog      AS changelog,
+                                   n.redirect       AS newsredirect,
+                                   nl.title         AS newstitle
+                            FROM   ".DBPREFIX."module_news AS n
+                                LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
+                            WHERE  n.validated='1'
+                                   AND nl.lang_id=".$this->langId."
+                                   AND n.status = 1
+                                   " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
+                                        :   " AND frontend_access_id=0 ")
+                                    :   '')
+                            ."ORDER BY date ASC";
+                                                        
+        $objResult = $objDatabase->Execute($monthCountQuery);
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $filterDate = $objResult->fields[$dateFilterName];
+                $newsYear = date("Y", $filterDate);
+                $newsMonth = date("m", $filterDate);
+                
+                if(!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
+                    $monthlyStats[$newsYear . "_" . $newsMonth] = array();
+                    $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)] . " " . $newsYear;
+                }
+                $monthlyStats[$newsYear . "_" . $newsMonth]["news"][] = $objResult->fields;
+                $monthlyStats[$newsYear . "_" . $newsMonth]["archive"]++;
+                $objResult->MoveNext();
+            }
+        }
+        
+        if(count($monthlyStats) == 0) {
+            $this->_objTpl->setVariable(array(
+                'TXT_NEWS_NOT_FOUND' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
+            ));
+            $this->_objTpl->parse("news_not_found");
+            $this->_objTpl->hideBlock("month_news_list");
+        } else {
+            
+            $this->_objTpl->hideBlock("news_not_found");
+            // create columns
+            $columnCount = 0;
+            $currentColumn = 1;
+            $totalCount = count($monthlyStats);
+            $columnSize = ceil($totalCount / $monthColumn);
+            
+            $this->_objTpl->setCurrentBlock('month_navigation_column');
+            foreach ($monthlyStats as $key => $value) {
+                $columnCount++;
+                if($columnCount > $currentColumn * $columnSize) {
+                    $currentColumn++;
+                    $this->_objTpl->parseCurrentBlock();
+                    $this->_objTpl->setCurrentBlock('month_navigation_column');
+                }
+                
+                $this->_objTpl->setVariable(array(
+                    'NEWS_MONTH_NAME' => $value['name'],
+                    'NEWS_MONTH_ARCHIVE' => count($value['news']),
+                    'NEWS_MONTH_KEY' => $key,
+                ));
+                $this->_objTpl->parse("month_navigation_item");
+                
+                foreach ($value['news'] as $news) {
+                    $newstitle = htmlspecialchars(stripslashes($news['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $this->_objTpl->setVariable(array(
+                        'NEWS_LINK_TITLE'    => (empty($news['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$news['id'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$news['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                    ));
+                    $this->_objTpl->parse("month_news_list_item");
+                }
+                
+                $this->_objTpl->setVariable(array(
+                    'NEWS_LIST_MONTH_NAME' => $value['name'],
+                    'NEWS_MONTH_KEY' => $key,
+                ));
+                
+                $this->_objTpl->parse('month_news_list');
+            }
+            $this->_objTpl->parseCurrentBlock();
+            
+        }
+        
+        return $this->_objTpl->get();
     }
 }
 ?>
