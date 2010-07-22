@@ -63,4 +63,17 @@ $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_SUBJECT'] = "New comm
 $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_BODY'] = "[USERNAME] has added a new comment to the news with the title \\\"[SUBJECT]\\\". The message is:\n\n----------\n[COMMENT]\n----------\n\nDepending on your system-settings you have to activate this comment in your controlpanel before it is visible to your visitors.";
 $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_ERROR_TIMEOUT'] = "Before writing another comment you have to wait [SECONDS] seconds.";
 $_ARRAYLANG['TXT_NEWS_COMMENTS'] = "Comments";
+$_ARRAYLANG['TXT_NEWS_MONTH_1'] = "January";
+$_ARRAYLANG['TXT_NEWS_MONTH_2'] = "February";
+$_ARRAYLANG['TXT_NEWS_MONTH_3'] = "March";
+$_ARRAYLANG['TXT_NEWS_MONTH_4'] = "April";
+$_ARRAYLANG['TXT_NEWS_MONTH_5'] = "May";
+$_ARRAYLANG['TXT_NEWS_MONTH_6'] = "June";
+$_ARRAYLANG['TXT_NEWS_MONTH_7'] = "July";
+$_ARRAYLANG['TXT_NEWS_MONTH_8'] = "August";
+$_ARRAYLANG['TXT_NEWS_MONTH_9'] = "September";
+$_ARRAYLANG['TXT_NEWS_MONTH_10'] = "Oktober";
+$_ARRAYLANG['TXT_NEWS_MONTH_11'] = "November";
+$_ARRAYLANG['TXT_NEWS_MONTH_12'] = "Desember";
+$_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found";
 ?>
