@@ -98,7 +98,6 @@ class ContactLib
     function initContactForms($allLanguages = false)
     {
         global $objDatabase, $_FRONTEND_LANGID;
-        $objDatabase->debug = true;
 
         if ($allLanguages) {
             $sqlWhere = '';
@@ -116,6 +115,8 @@ class ContactLib
                 tblForm.`use_captcha`,
                 tblForm.`use_custom_style`,
                 tblForm.`send_copy`,
+                # subquery sure aren't optimal here, but it doesn't work
+                # with the join...
                 (
                     SELECT
                         COUNT(id)
@@ -205,10 +206,6 @@ class ContactLib
                 $res->MoveNext();
             }
         }
-
-        // note: i don't like long variable names like $objContactForms. There's only
-        // one adodb result set in this method which makes it already perfectly clear, 
-        // no need for extensive variable names
     }
 
     function initCheckTypes()

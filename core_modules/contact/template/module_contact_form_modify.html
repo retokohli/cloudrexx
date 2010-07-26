@@ -365,17 +365,12 @@ $J(document).ready(function() {
 </script>
 
 
-<div id="subnavbar_level2">
-    <ul>
-        <li><a href="#" onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
-        <li><a href="#" onclick="superTab('fields')" title="{TXT_FORM_FIELDS}">{TXT_FORM_FIELDS}</a></li>
-        <li><a href="#" onclick="superTab('recipients')" title="{TXT_FORM_RECIPIENTS}">{TXT_FORM_RECIPIENTS}</a></li>
-        <li><a href="#" onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
-    </ul>
-</div>
-<br /> 
-
-
+<ul id="tabmenu">
+    <li><a href="#" onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
+    <li><a href="#" onclick="superTab('fields')" title="{TXT_FORM_FIELDS}">{TXT_FORM_FIELDS}</a></li>
+    <li><a href="#" onclick="superTab('recipients')" title="{TXT_FORM_RECIPIENTS}">{TXT_FORM_RECIPIENTS}</a></li>
+    <li><a href="#" onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
+</ul>
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
 <input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
 
@@ -394,7 +389,7 @@ $J(document).ready(function() {
     </table>
     <br /><br />
 
-    <ul id="tabmenu">
+    <ul class="tabmenu">
         <!-- BEGIN languageTabs -->
         <li>
             <a href="#" onclick="langTab({LANG_ID})" title="{LANG_NAME}" 
