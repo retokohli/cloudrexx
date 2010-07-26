@@ -291,37 +291,77 @@ class ContactLib
     }
 
     /**
-     * TODO make this multi-lingual
+     * Get the form fields
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @return      array
      */
-    function getFormFields($id)
+    function getFormFields($formID)
     {
+        if ($formID <= 0) {
+            return array();
+        }
+
         global $objDatabase;
 
         $arrFields = array();
 
-        if (isset($this->arrForms[$id])) {
-            $objFields  = $objDatabase->Execute("
-                SELECT id, name, type,
-                        attributes, is_required,
-                        check_type
-                        FROM ".DBPREFIX."module_contact_form_field
-                        WHERE id_form=".$id." ORDER BY order_id");
+        if (isset($this->arrForms[$formID])) {
+            $query = "
+                SELECT 
+                    `f`.`id`,
+                    `f`.`type`,
+                    `f`.`attributes`,
+                    `f`.`is_required`,
+                    `f`.`check_type`,
+                    `l`.`name`,
+                    `l`.`langID`,
+                    `l`.`attributes`
+                FROM 
+                    `".DBPREFIX."module_contact_form_field`         AS `f`
 
-            if ($objFields !== false) {
-                while (!$objFields->EOF) {
-                    $arrFields[$objFields->fields['id']] = array(
-                        'name'          => $objFields->fields['name'],
-                        'type'          => $objFields->fields['type'],
-                        'attributes'    => $objFields->fields['attributes'],
-                        'is_required'   => $objFields->fields['is_required'],
-                        'check_type'    => $objFields->fields['check_type']
+                LEFT JOIN
+                    `".DBPREFIX."module_contact_form_field_lang`    AS `l`
+                ON
+                    `f`.`id` = `l`.`fieldID`
+
+                WHERE 
+                    `id_form` = ".$formID."
+
+                ORDER BY 
+                    `f`.`id`,
+                    `f`.`order_id`
+            ";
+            $res  = $objDatabase->Execute($query);
+
+            $lastID = 0;
+            if ($res !== false) {
+                while (!$res->EOF) {
+                    $id = $res->fields['id'];
+                    if ($lastID != $id) {
+                        $lastID = $id;
+
+                        $arrFields[$id] = array(
+                            'type'          => $res->fields['type'],
+                            'attributes'    => $res->fields['attributes'],
+                            'is_required'   => $res->fields['is_required'],
+                            'check_type'    => $res->fields['check_type']
+                        );
+                    }
+
+                    $arrFields[$id]['lang'][$res->fields['langID']] = array(
+                        'name'  => $res->fields['name'],
+                        'value' => $res->fields['attributes']
                     );
-                    $objFields->MoveNext();
+
+                    $res->MoveNext();
                 }
             }
             return $arrFields;
         } else {
-            return false;
+            return array();
         }
     }
 

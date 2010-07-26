@@ -594,6 +594,7 @@ class ContactManager extends ContactLib
         if ($copy) {
             $this->initContactForms(true);
         }
+
         $this->_objTpl->loadTemplateFile('module_contact_form_modify.html');
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
 
@@ -613,7 +614,7 @@ class ContactManager extends ContactLib
 
 
         $langs = FWLanguage::getActiveFrontendLanguages();
-        $first = true;;
+        $first = true;
 
         foreach ($langs as $lang) {
             $langID = $lang['id'];
@@ -723,7 +724,12 @@ class ContactManager extends ContactLib
         $lastFieldId = 0;
 
         $param = ($formId > 0) ? $formId : $null;
-        $fields = $this->_getFormFieldsFromPost($param);
+        if (isset($_POST['saveForm'])) {
+            $fields = $this->_getFormFieldsFromPost($param);
+        } else {
+            // get the saved fields
+            $fields = $this->getFormFields($param);
+        }
 
         // make an empty one so at least one is parsed
         if (empty($fields)) {
