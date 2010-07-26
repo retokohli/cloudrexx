@@ -966,7 +966,7 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG, $_CONFIG;
         global $objDatabase;
         
-        $objDatabase->debug = true;
+        //$objDatabase->debug = true;
 
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         $adding = !$formId;

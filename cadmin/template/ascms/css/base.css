@@ -321,6 +321,7 @@ table.subnavbar {
 	cursor: pointer;
 }
 
+/*
 .tabmenu a.active, .tabmenu a {
 	border-left: 1px solid #B5C8DE;
 	border-right: 1px solid #B5C8DE;
@@ -328,6 +329,7 @@ table.subnavbar {
 	border-bottom: 1px solid #DDE4FF;
 	margin-right: 3px;
 }
+    */
 
 .tabmenu a.active {
 	background-color: #DDE4FF;
