@@ -6,7 +6,9 @@ $_ARRAYLANG['TXT_FORM_RECIPIENTS'] = "Empfängerliste";
 $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'] = "Sprache";
 $_ARRAYLANG['TXT_CONTACT_FORM_NAME'] = "Name";
 $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'] = "Werte";
-
+$_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'] = "Formularfelder";
+$_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Empfängerliste";
+$_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Erweiterte Einstellungen";
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -681,6 +683,9 @@ class ContactManager extends ContactLib
                     'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
                     'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
                     'CONTACT_ACTION_TITLE'                          => $actionTitle,
+                    'CONTACT_FORM_FIELDS_TITLE'                      => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
+                    'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
+                    'CONTACT_FORM_SETTINGS'                         => $_ARRAYLANG['CONTACT_FORM_SETTINGS'],
                     'CONTACT_FORM_ID'                               => $formId,
                     'CONTACT_FORM_TEXT'                             => get_wysiwyg_editor('contactFormText['.$langID.']', $formText, 'shop', $lang),
                     'CONTACT_FORM_FEEDBACK'                         => get_wysiwyg_editor('contactFormFeedback['.$langID.']', $formFeedback, 'shop', $lang),
