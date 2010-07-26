@@ -444,59 +444,36 @@ class ContactLib
      *
      * @author      Comvation AG <info@comvation.com>
      * @author      Stefan Heinemann <sh@adfinis.com>
-     * @TODO        pretty everything
+     * @param       int $formID
+     * @param       string $emails
+     * @param       bool $showForm
+     * @param       bool $useCaptcha
+     * @param       bool $useCustomStyle
+     * @param       bool $sendCopy
      */
     function updateForm(
-        $id,
-        //$name,
+        $formID,
         $emails,
-        //$subject,
-        //$text,
-        $feedback,
         $showForm,
         $useCaptcha,
         $useCustomStyle,
-        //$arrFields,
         $sendCopy
     )
     {
         global $objDatabase;
 
-        return; // this is BS right now
-
         $objDatabase->Execute("
             UPDATE 
-                ".DBPREFIX."module_contact_form 
+                `".DBPREFIX."module_contact_form`
             SET 
-                #name='".$name."',
-                mails='".addslashes($emails)."',
-                #subject='".$subject."',
-                #text='".$text."',
-                #feedback='".$feedback."',
-                showForm=".$showForm.",
-                use_captcha=".$useCaptcha.",
-                use_custom_style=".$useCustomStyle.",
-                send_copy=".$sendCopy." 
+                mails               = '".addslashes($emails)."',
+                showForm            = ".$showForm.",
+                use_captcha         = ".$useCaptcha.",
+                use_custom_style    = ".$useCustomStyle.",
+                send_copy           = ".$sendCopy." 
             WHERE 
-            id=".$id
+                id = ".$formID
         );
-
-        $arrFormFields = $this->getFormFields($id);
-        $arrRemoveFormFields = array_diff_assoc($arrFormFields, $arrFields);
-
-        foreach ($arrFields as $fieldId => $arrField) {
-            if (isset($arrFormFields[$fieldId])) {
-                $this->_updateFormField($fieldId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
-            } else {
-                /*
-                $this->_addFormField($id, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
-                 */
-            }
-        }
-
-        foreach (array_keys($arrRemoveFormFields) as $fieldId) {
-            $this->_deleteFormField($fieldId);
-        }
 
         $this->initContactForms(true);
     }
@@ -646,11 +623,36 @@ class ContactLib
         }
     }
 
-    function _updateFormField($id, $name, $type, $attributes, $orderId, $isRequired, $checkType)
+    /**
+     * Update a form field
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $field
+     */
+    protected function updateFormField(
+        $formID, 
+        $field
+    )
     {
         global $objDatabase;
 
-        $objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form_field SET name='".addslashes($name)."', type='".$type."', attributes='".addslashes($attributes)."', is_required='".$isRequired."', check_type='".$checkType."', order_id=".$orderId." WHERE id=".$id);
+        $fieldID = $field['id'];
+        $query = '
+            UPDATE
+                `'.DBPREFIX.'module_contact_form_field`
+            SET
+                `type`          = "'.$field['type'].'",
+                `is_required`   = "'.$field['is_required'].'",
+                `check_type`    = "'.$field['check_type'].'",
+                `order_id`      = "'.$field['order_id'].'"
+            WHERE
+                `id` = '.$fieldID;
+
+        $objDatabase->execute($query);
+        foreach ($field['lang'] as $langID => $values) {
+            $this->setFormFieldLang($fieldID, $langID, $values);
+        }
     }
 
     /**

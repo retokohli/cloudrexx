@@ -613,10 +613,9 @@ class ContactManager extends ContactLib
             $useCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
             $sendCopy       = $this->arrForms[$formId]['sendCopy'];
         } else {
-            $actionTitle = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
-            $lang = FRONTEND_LANG_ID;
+            $actionTitle    = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
+            $lang           = FRONTEND_LANG_ID;
         }
-
 
         $langs = FWLanguage::getActiveFrontendLanguages();
         $first = true;
@@ -679,7 +678,6 @@ class ContactManager extends ContactLib
                     'TXT_CONTACT_YES'                               => $_ARRAYLANG['TXT_CONTACT_YES'],
                     'TXT_CONTACT_NO'                                => $_ARRAYLANG['TXT_CONTACT_NO'],
                     'TXT_CONTACT_CAPTCHA_PROTECTION'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
-                    'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
                     'TXT_CONTACT_CAPTCHA'                           => $_ARRAYLANG['TXT_CONTACT_CAPTCHA'],
                     'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
                     'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
@@ -768,27 +766,28 @@ class ContactManager extends ContactLib
                 );
             }
         }
- 
+
         $counter = 1;
-        foreach ($fields as $field) {
+        foreach ($fields as $fieldID => $field) {
+            $realFieldID = ($formId > 0) ? $fieldID : $counter;
             $this->_objTpl->setVariable(
                 array(
                     'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
-                        'contactFormFieldType[1]',
+                        'contactFormFieldType['.$realFieldID.']',
                         $field['type'],
-                        'id="contactFormFieldType_1" style="width:110px;" '.
+                        'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
                             'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),
                         this.value)"'
                         ),
                         'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
-                            'contactFormFieldRequired[1]',
-                            'contactFormFieldRequired_1',
-                            $field['is_required'],
-                            false
+                            'contactFormFieldRequired['.$realFieldID.']',
+                            'contactFormFieldRequired_'.$realFieldID,
+                            '', // apparently this is the right thing
+                            $field['is_required']
                         ),
                         'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
-                            'contactFormFieldCheckType[1]',
-                            'contactFormFieldCheckType_1',
+                            'contactFormFieldCheckType['.$realFieldID.']',
+                            'contactFormFieldCheckType_'.$realFieldID,
                             $field['type'],
                             $field['check_type']
                         ),
@@ -805,7 +804,7 @@ class ContactManager extends ContactLib
                         'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
                         'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
                         'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
-                        'FORM_FIELD_ID'             => $counter, // probably use the real key if editing,
+                        'FORM_FIELD_ID'             => $realFieldID, 
                         'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['values'],
                         'FORM_FIELD_NAME'           => $field['lang'][$lang['id']]['name']
                     )
@@ -816,7 +815,6 @@ class ContactManager extends ContactLib
             $counter++;
             $this->_objTpl->parse('formField');
         }
-
 
         /*
         if (isset($_POST['saveForm'])) {
@@ -1015,22 +1013,14 @@ class ContactManager extends ContactLib
 
             if (!$adding) {
                 // This updates the database
-                /*
-                 TODO this won't work yet
                 $this->updateForm(
                     $formId,
-                    $formName,
-                    $formEmails,
-                    $formSubject,
-                    $formText,
-                    $formFeedback,
-                    $formShowForm,
-                    $formUseCaptcha,
-                    $formUseCustomStyle,
-                    $arrFields,
-                    $formSendCopy
+                    $emails,
+                    $showForm,
+                    $useCaptcha,
+                    $useCustomStyle,
+                    $sendCopy
                 );
-                 */
             } else {
                 $formId = $this->addForm(
                     $emails,
@@ -1079,101 +1069,23 @@ class ContactManager extends ContactLib
 
             // do the fields
             $fields = $this->_getFormFieldsFromPost();
+            $formFieldIDs = array();
             foreach ($fields as $field) {
                 if ($adding) {
                     $this->addFormField($formId, $field);
                 } else {
                     $this->updateFormField($formId, $field);
+                    $formFieldIDs[] = $field['id'];
                 }
             }
 
-            //foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
-                /*
+            if (!$adding) {
+                //$this->removeUnecessaryFormFields($formFieldIDs);
+            }
 
-                adv. settings
-                $formFeedback = isset($_POST['contactFormFeedback']) ? contrexx_addslashes($_POST['contactFormFeedback']) : '';
-                $formShowForm = intval($_POST['contactFormShowForm']);
-                $formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
-                $formUseCustomStyle = intval($_POST['contactFormUseCustomStyle']);
-                $formSendCopy = intval($_POST['contactFormSendCopy']);
-                 */
-
-            /*
-                if (!empty($formName)) {
-
-                    if ($this->isUniqueFormName($formName, $langID, $formId)) {
-        */
-                       
-                        /**
-                        if ($uniqueFieldNames) {
-                            $formEmailsTmp = isset($_POST['contactFormEmail']) 
-                                ? explode(',', strip_tags(contrexx_stripslashes($_POST['contactFormEmail']))) : '';
-
-                                                       if (empty($formEmails)) {
-                                $formEmails = $_CONFIG['contactFormEmail'];
-                            }
-
-                            $boolUsesRecipientField = false;
-                            foreach ($arrFields as $arrField) {
-                                if($arrField['type'] == 'recipient'){
-                                    $boolUsesRecipientField = true;
-                                }
-                            }                      
-
-                            if ($formId > 0) {
-                                // This updates the database
-                                $this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
-                            } else {
-                                $this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
-                            }                        
-                            
-                            $arrRecipients = $this->_getRecipientsFromPost($boolUsesRecipientField);
-                            if($this->_invalidRecipients && $boolUsesRecipientField){
-                                return $this->_modifyForm();
-                            }else{
-                                $this->setRecipients($arrRecipients);
-                            }
-
-                            $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
-
-                            if (isset($_POST['contentSiteAction'])) {
-                                switch ($_POST['contentSiteAction']) {
-                                    case 'create':
-                                        $this->_createContentPage();
-                                        break;
-
-                                    case 'update':
-                                        $this->_updateContentSite();
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                            }
-
-                            $this->_contactForms();
-                        } else {
-                            $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_UNIQUE_MSG'];
-                            $this->_modifyForm();
-                        }
-                         */
-                        $this->_contactForms();
-                    } else {
-                        $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_NAME_IS_NOT_UNIQUE_MSG'];
-                        $this->_modifyForm();
-                    }
-        /*
-                } else {
-                    $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_NAME_REQUIRED_MSG'];
-                    $this->_modifyForm();
-                }
-         */
-            //}
-                    /*
-        } else {
-            $this->_modifyForm();
         }
-                     */
+
+        $this->_modifyForm();
     }
 
     /**
@@ -1408,6 +1320,8 @@ class ContactManager extends ContactLib
             'password',
             'select'
         );
+
+        print_r($_POST);
 
 
         // shorten the variables
