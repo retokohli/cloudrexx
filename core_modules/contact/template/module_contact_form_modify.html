@@ -383,36 +383,39 @@ $J(document).ready(function() {
             <th colspan="2">{CONTACT_ACTION_TITLE}</th>
         </tr>
         <tr class="row2" style="height:20px;">
-            <td>{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
-            <td><input style="width: 670px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *<td>
+            <td style="width: 15%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
+            <td><input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *</td>
         </tr>
     </table>
     <br /><br />
 
-    <ul class="tabmenu">
-        <!-- BEGIN languageTabs -->
-        <li>
-            <a href="#" onclick="langTab({LANG_ID})" title="{LANG_NAME}" 
-                style="{TAB_DISPLAY}">{LANG_NAME}</a>
-        </li>
-        <!-- END languageTabs -->
-    </ul>
+    <div style="padding-left: 4px">
+        <ul class="tabmenu" style="margin-left: 15%">
+            <!-- BEGIN languageTabs -->
+            <li>
+                <a href="#" onclick="langTab({LANG_ID})" title="{LANG_NAME}" 
+                    style="{TAB_DISPLAY}">{LANG_NAME}</a>
+            </li>
+            <!-- END languageTabs -->
+        </ul>
+    </div>
 
     <!-- BEGIN languageForm -->
     <div style="display: {LANG_FORM_DISPLAY};"  id="langTab_{LANG_ID}" class="langTabs">
             <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
                 <tbody style="vertical-align:top;">
                     <tr>
-                        <th colspan="2"> {LANG_NAME}</th>
+                        <th>&nbsp;</th>
+                        <th> {LANG_NAME}</th>
                     </tr>
                     <tr class="row1" style="height:20px;">
-                        <td width="10%">{TXT_CONTACT_NAME}</td>
-                        <td width="90%"><input style="width:670px;" type="text" name="contactFormName[{LANG_ID}]" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
+                        <td width="15%">{TXT_CONTACT_NAME}</td>
+                        <td width="90%"><input style="width:300px;" type="text" name="contactFormName[{LANG_ID}]" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
                     </tr>
 
                     <tr class="row2">
                         <td>{TXT_CONTACT_SUBJECT}</td>
-                        <td><input style="width: 670px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
+                        <td><input style="width: 300px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
                     </tr>
 
                     <tr class="row1">
@@ -432,6 +435,13 @@ $J(document).ready(function() {
 
 <div id="tab_fields" class="tabs" style="display: none;">
     <div id="formFields">
+        <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+            <tr>
+                <th colspan="2">{CONTACT_FORM_FIELDS_TITLE}</th>
+            </tr>
+        </table>
+        <br />
+
     <!-- BEGIN formField -->
         <div class="formField"  id="formField_1">
             <div style="border: 1px solid #DDE4FF; padding: 10px; position: relative">
@@ -472,6 +482,12 @@ $J(document).ready(function() {
 </div>
 
 <div id="tab_recipients" class="tabs" style="display: none;">
+   <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+            <tr>
+                <th colspan="2">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
+            </tr>
+    </table>
+    <br />
     <table>
                     <tr class="row1" style="height:20px;">
                         <td>{TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION}</td>
@@ -505,7 +521,11 @@ $J(document).ready(function() {
 </div>
 
 <div id="tab_settings" class="tabs" style="display: none">
-    Settings
+   <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+            <tr>
+                <th colspan="2">{CONTACT_FORM_SETTINGS}</th>
+            </tr>
+    </table>
     <table>
                     <tr class="row1">
                         <td>{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
