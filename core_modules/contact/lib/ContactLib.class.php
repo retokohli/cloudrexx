@@ -64,6 +64,7 @@ class ContactLib
      */
     public function getRecipients($formId = 0, $refresh = false)
     {
+        return;
         global $objDatabase;
 
         $formId = intval($formId);
@@ -92,12 +93,12 @@ class ContactLib
     }
 
     /**
-     * @TODO: this won't work like this
+     * Read the contact forms 
      */
     function initContactForms($allLanguages = false)
     {
-        return;
         global $objDatabase, $_FRONTEND_LANGID;
+        $objDatabase->debug = true;
 
         if ($allLanguages) {
             $sqlWhere = '';
@@ -107,57 +108,107 @@ class ContactLib
 
         $this->arrForms = array();
 
-        $objContactForms = $objDatabase->Execute(
-            "SELECT 
+        $res = $objDatabase->Execute("
+            SELECT
                 tblForm.id,
-                tblForm.name,
                 tblForm.mails,
-                tblForm.langId,
-                tblForm.subject,
-                tblForm.text,
-                tblForm.feedback,
                 tblForm.showForm,
                 tblForm.`use_captcha`,
                 tblForm.`use_custom_style`,
                 tblForm.`send_copy`,
-                COUNT(tblData.id)                    AS number,
-                MAX(tblData.time)                    AS last
+                (
+                    SELECT
+                        COUNT(id)
+                    FROM
+                        `".DBPREFIX."module_contact_form_data`
+                    WHERE
+                        `tblForm`.`id` = `id_form`
+                )                                       AS number,
+                (
+                    SELECT
+                        MAX(time)
+                    FROM
+                        `".DBPREFIX."module_contact_form_data`
+                    WHERE
+                        `tblForm`.`id` = `id_form`
+                )                                       AS last,
+                `tblLang`.`name`                        AS `name`,
+                `tblLang`.`langID`                      AS `langID`,
+                `tblLang`.`text`                        AS `text`,
+                `tblLang`.`feedback`                    AS `feedback`,
+                `tblLang`.`subject`                     AS `subject`
+
             FROM 
-                ".DBPREFIX."module_contact_form      AS tblForm
-            LEFT OUTER JOIN 
-                ".DBPREFIX."module_contact_form_data AS tblData 
-            ON 
-                tblForm.id=tblData.id_form
+                ".DBPREFIX."module_contact_form         AS tblForm
+
+            LEFT JOIN
+                `".DBPREFIX."module_contact_form_lang`  AS `tblLang`
+            ON
+                `tblForm`.`id` = `tblLang`.`formID`
+
+            #LEFT JOIN 
+            #    `".DBPREFIX."module_contact_form_data`  AS `tblData`
+            #ON 
+            #    `tblForm`.`id` = `tblData`.`id_form`
 
             ".$sqlWhere."
 
-            GROUP BY 
-                tblForm.id
             ORDER BY 
-                last 
+                last
             DESC
         ");
-        if ($objContactForms !== false) {
-            while (!$objContactForms->EOF) {
-                $this->arrForms[$objContactForms->fields['id']] = array(
-                    'name'          => $objContactForms->fields['name'],
-                    'emails'        => $objContactForms->fields['mails'],
-                    'number'        => intval($objContactForms->fields['number']),
-                    'subject'       => $objContactForms->fields['subject'],
-                    'last'          => intval($objContactForms->fields['last']),
-                    'text'          => $objContactForms->fields['text'],
-                    'lang'          => $objContactForms->fields['langId'],
-                    'feedback'      => $objContactForms->fields['feedback'],
-                    'showForm'      => $objContactForms->fields['showForm'],
-                    'useCaptcha'    => $objContactForms->fields['use_captcha'],
-                    'useCustomStyle'    => $objContactForms->fields['use_custom_style'],
-                    'sendCopy'      => $objContactForms->fields['send_copy'],
-                    'recipients'    => $this->getRecipients($objContactForms->fields['id'], true)
-                );
 
-                $objContactForms->MoveNext();
+        $lastID = 0;
+
+        if ($res !== false) {
+            while (!$res->EOF) {
+                $fields = &$res->fields; // shorten the access
+                if ($fields['id'] != $lastID) {
+                    // create a new array
+                    $lastID = $fields['id'];
+
+                    $this->arrForms[$fields['id']] = array(
+                        // actually the following variables are different for
+                        // every language. I let them stay as sort of default values
+                        'name'              => $fields['name'], 
+                        'subject'           => $fields['subject'],
+                        'text'              => $fields['text'],
+                        'feedback'          => $fields['feedback'],
+
+                        'emails'            => $fields['mails'],
+                        'number'            => intval($fields['number']),
+                        //'last'              => intval($fields['last']),
+                        'showForm'          => $fields['showForm'],
+                        'useCaptcha'        => $fields['use_captcha'],
+                        'useCustomStyle'    => $fields['use_custom_style'],
+                        'sendCopy'          => $fields['send_copy'],
+                        //'recipients'        => $this->getRecipients($fields['id'], true)
+                        'lang'              => array(
+                            $field['langID'] => array(
+                                'name'      => $fields['name'],
+                                'text'      => $fields['text'],
+                                'feedback'  => $fields['feedback'],
+                                'subject'   => $fields['subject']
+                            )
+                        )
+                    );
+                } else {
+                    // only append the lang variables to the array
+                    $this->arrForms[$fields['id']]['lang'][$field['langID']] = array(
+                        'name'      => $fields['name'],
+                        'text'      => $fields['text'],
+                        'feedback'  => $fields['feedback'],
+                        'subject'   => $fields['subject']
+                    );
+                }
+
+                $res->MoveNext();
             }
         }
+
+        // note: i don't like long variable names like $objContactForms. There's only
+        // one adodb result set in this method which makes it already perfectly clear, 
+        // no need for extensive variable names
     }
 
     function initCheckTypes()
