@@ -185,7 +185,7 @@ class ContactLib
                         'sendCopy'          => $fields['send_copy'],
                         //'recipients'        => $this->getRecipients($fields['id'], true)
                         'lang'              => array(
-                            $field['langID'] => array(
+                            $fields['langID'] => array(
                                 'name'      => $fields['name'],
                                 'text'      => $fields['text'],
                                 'feedback'  => $fields['feedback'],
@@ -195,7 +195,7 @@ class ContactLib
                     );
                 } else {
                     // only append the lang variables to the array
-                    $this->arrForms[$fields['id']]['lang'][$field['langID']] = array(
+                    $this->arrForms[$fields['id']]['lang'][$fields['langID']] = array(
                         'name'      => $fields['name'],
                         'text'      => $fields['text'],
                         'feedback'  => $fields['feedback'],

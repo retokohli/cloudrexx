@@ -612,6 +612,7 @@ class ContactManager extends ContactLib
             $lang = FRONTEND_LANG_ID;
         }
 
+        print_r($this->arrForms);
 
         $langs = FWLanguage::getActiveFrontendLanguages();
         $first = true;
@@ -625,6 +626,16 @@ class ContactManager extends ContactLib
             );
 
             $this->_objTpl->parse('languageTabs');
+            $langVars = &$this->arrForms[$formId]['lang'][$langID];
+            if (isset($langVars)) {
+                $formText       = $langVars['text'];
+                $formFeedback   = $langVars['feedback'];
+                $formSubject    = $langVars['subject'];
+                $formName       = $langVars['name'];
+            } else {
+                $formText = $formFeedback = $formName = $formSubject = '';
+            }
+
 
             $this->_objTpl->setVariable(
                 array(
@@ -671,8 +682,8 @@ class ContactManager extends ContactLib
                     'TXT_CONTACT_CUSTOM_STYLE'                      => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
                     'TXT_CONTACT_SET_MANDATORY_FIELD'               => $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'],
 
-                    'CONTACT_FORM_NAME'                             => $formName,
-                    'CONTACT_FORM_EMAIL'                            => $formEmails,
+                    'CONTACT_FORM_NAME'                             => $this->arrForms[$formId]['lang'][$lang['id']]['name'],
+                    'CONTACT_FORM_EMAIL'                            => $formEmail,
                     'CONTACT_FORM_SUBJECT'                          => $formSubject,
                     'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
                     'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
@@ -735,15 +746,15 @@ class ContactManager extends ContactLib
         if (empty($fields)) {
                 foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                 $fields[0] = array (
-                    'type'       => 'text',
-                    'attributes' => '',
-                    'order_id'   => 0,
-                    'is_required' => false,
-                    'check_type' => 1
+                    'type'          => 'text',
+                    'attributes'    => '',
+                    'order_id'      => 0,
+                    'is_required'   => false,
+                    'check_type'    => 1
                 );
                 $fields[0]['lang'][$lang['id']] = array(
-                    'name'      => '',
-                    'value'     => ''
+                    'name'          => '',
+                    'value'         => ''
                 );
             }
         }
@@ -795,6 +806,7 @@ class ContactManager extends ContactLib
             $counter++;
             $this->_objTpl->parse('formField');
         }
+
 
         /*
         if (isset($_POST['saveForm'])) {
