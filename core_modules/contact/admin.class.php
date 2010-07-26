@@ -603,16 +603,20 @@ class ContactManager extends ContactLib
             : $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM']
         ;
 
-        // i think this is to differ between editing and adding
         if (isset($this->arrForms[$formId])) {
+            // editing
             $actionTitle = $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'];
-            $lang = $this->arrForms[$formId]['lang'];
+            $lang = $this->arrForms[$formId]['lang']; 
+
+            $showForm       = $this->arrForms[$formId]['showForm'];
+            $useCaptcha     = $this->arrForms[$formId]['useCaptcha'];
+            $useCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
+            $sendCopy       = $this->arrForms[$formId]['sendCopy'];
         } else {
             $actionTitle = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
             $lang = FRONTEND_LANG_ID;
         }
 
-        print_r($this->arrForms);
 
         $langs = FWLanguage::getActiveFrontendLanguages();
         $first = true;
@@ -628,6 +632,7 @@ class ContactManager extends ContactLib
             $this->_objTpl->parse('languageTabs');
             $langVars = &$this->arrForms[$formId]['lang'][$langID];
             if (isset($langVars)) {
+
                 $formText       = $langVars['text'];
                 $formFeedback   = $langVars['feedback'];
                 $formSubject    = $langVars['subject'];
@@ -701,12 +706,7 @@ class ContactManager extends ContactLib
                     'CONTACT_FORM_ID'                               => $formId,
                     'CONTACT_FORM_TEXT'                             => get_wysiwyg_editor('contactFormText['.$langID.']', $formText, 'shop', $lang),
                     'CONTACT_FORM_FEEDBACK'                         => get_wysiwyg_editor('contactFormFeedback['.$langID.']', $formFeedback, 'shop', $lang),
-                    'CONTACT_FORM_SHOW_FORM_YES'                    => $formShowForm ? 'checked="checked"' : '',
-                    'CONTACT_FORM_SHOW_FORM_NO'                     => $formShowForm ? '' : 'checked="checked"',
-                    'CONTACT_FORM_USE_CAPTCHA_YES'                  => $formUseCaptcha ? 'checked="checked"' : '',
-                    'CONTACT_FORM_USE_CAPTCHA_NO'                   => $formUseCaptcha ? '' : 'checked="checked"',
-                    'CONTACT_FORM_USE_CUSTOM_STYLE_YES'             => $formUseCustomStyle ? 'checked="checked"' : '',
-                    'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $formUseCustomStyle ? '' : 'checked="checked"',
+
                     'CONTACT_FORM_FIELD_TYPE_MENU_TPL'              => $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
                     'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', ''),
                     'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
@@ -715,15 +715,25 @@ class ContactManager extends ContactLib
                     'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', ''),
                     'CONTACT_FORM_FIELD_RADIO_TPL'                  => $this->_getFormFieldAttribute(0, 'radio', ''),
                     'CONTACT_FORM_FIELD_SELECT_TPL'                 => $this->_getFormFieldAttribute(0, 'select', ''),
-                    'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
-                    'CONTACT_FORM_SEND_COPY_YES'                    => $formSendCopy ? 'checked="checked"' : '',
-                    'CONTACT_FORM_SEND_COPY_NO'                     => $formSendCopy ? '' : 'checked="checked"',
+                    'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction
                     )
             );
             $this->_objTpl->parse('languageForm');
             $first = false;
         }
 
+        $this->_objTpl->setVariable(
+            array(
+                'CONTACT_FORM_SHOW_FORM_YES'                    => $showForm        ? 'checked="checked"' : '',
+                'CONTACT_FORM_SHOW_FORM_NO'                     => $showForm        ? '' : 'checked="checked"',
+                'CONTACT_FORM_USE_CAPTCHA_YES'                  => $useCaptcha      ? 'checked="checked"' : '',
+                'CONTACT_FORM_USE_CAPTCHA_NO'                   => $useCaptcha      ? '' : 'checked="checked"',
+                'CONTACT_FORM_USE_CUSTOM_STYLE_YES'             => $useCustomStyle  ? 'checked="checked"' : '',
+                'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $useCustomStyle  ? '' : 'checked="checked"',
+                'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
+                'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
+            )
+        );
 
 
         if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
