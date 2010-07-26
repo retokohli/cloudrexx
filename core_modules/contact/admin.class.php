@@ -448,7 +448,7 @@ class ContactManager extends ContactLib
             'TXT_CONTACT_NUMBER_OF_ENTRIES'             => $_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'],
             'TXT_CONTACT_CONTACT_FORMS'                 => $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'],
             'TXT_CONTACT_ID'                            => $_ARRAYLANG['TXT_CONTACT_ID'],
-            'TXT_CONTACT_LANG'                          => $_ARRAYLANG['TXT_CONTACT_LANG'],
+            //'TXT_CONTACT_LANG'                          => $_ARRAYLANG['TXT_CONTACT_LANG'],
             'TXT_CONTACT_NAME'                          => $_ARRAYLANG['TXT_CONTACT_NAME'],
             'TXT_CONTACT_FUNCTIONS'                     => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
             'TXT_CONTACT_ADD_NEW_CONTACT_FORM'          => $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'],
@@ -478,7 +478,7 @@ class ContactManager extends ContactLib
                     'CONTACT_FORM_NAME'                 => htmlentities($arrForm['name'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '&nbsp;',
                     'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $arrForm['number'],
-                    'CONTACT_FORM_LANG'                 => FWLanguage::getLanguageParameter($arrForm['lang'], 'name'),
+                    //'CONTACT_FORM_LANG'                 => FWLanguage::getLanguageParameter($arrForm['lang'], 'name'),
                     'CONTACT_DELETE_CONTENT'            => $pageId > 0 ? 'true' : 'false'
                 ));
 
