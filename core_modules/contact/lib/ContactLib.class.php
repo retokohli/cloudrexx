@@ -313,7 +313,6 @@ class ContactLib
                 SELECT 
                     `f`.`id`,
                     `f`.`type`,
-                    `f`.`attributes`,
                     `f`.`is_required`,
                     `f`.`check_type`,
                     `l`.`name`,
@@ -345,9 +344,9 @@ class ContactLib
 
                         $arrFields[$id] = array(
                             'type'          => $res->fields['type'],
-                            'attributes'    => $res->fields['attributes'],
                             'is_required'   => $res->fields['is_required'],
-                            'check_type'    => $res->fields['check_type']
+                            'check_type'    => $res->fields['check_type'],
+                            'editType'     => 'edit'
                         );
                     }
 
@@ -707,7 +706,7 @@ class ContactLib
         global $objDatabase;
 
         $name = contrexx_addslashes($values['name']);
-        $value = contrexx_addslashes($values['values']);
+        $value = contrexx_addslashes($values['value']);
 
         $query = '
             INSERT INTO
