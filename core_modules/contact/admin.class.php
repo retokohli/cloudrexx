@@ -1001,8 +1001,6 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG, $_CONFIG;
         global $objDatabase;
         
-        //$objDatabase->debug = true;
-
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         $adding = !$formId;
 
@@ -1076,7 +1074,7 @@ class ContactManager extends ContactLib
             $formFieldIDs = array();
             foreach ($fields as $field) {
                 if ($field['editType'] == 'new') {
-                    $this->addFormField($formId, $field);
+                    $formFieldIDs[] = $this->addFormField($formId, $field);
                 } else {
                     $this->updateFormField($formId, $field);
                     $formFieldIDs[] = $field['id'];
@@ -1084,12 +1082,13 @@ class ContactManager extends ContactLib
             }
 
             if (!$adding) {
-                //$this->removeUnecessaryFormFields($formFieldIDs);
+                $this->cleanFormFields($formId, $formFieldIDs);
             }
 
         }
 
-        $this->_modifyForm();
+        //$this->_modifyForm();
+        $this->_contactForms();
     }
 
     /**

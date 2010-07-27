@@ -660,6 +660,7 @@ class ContactLib
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $formID
      * @param       array $field
+     * @return      int 
      */
     protected function addFormField($formID, $field) 
     {
@@ -691,6 +692,52 @@ class ContactLib
         foreach ($field['lang'] as $langID => $values) {
             $this->setFormFieldLang($fieldID, $langID, $values);
         }
+
+        return $fieldID;
+    }
+
+    /**
+     * Remove the form fields that are not in the given list
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $formFields
+     */
+    protected function cleanFormFields($formID, $formFields) {
+        global $objDatabase;
+
+        if (count($formFields) == 0) {
+            return;
+        }
+
+        $list = implode(', ', $formFields);
+        $formID = intval($formID);
+
+        $query = '
+            DELETE 
+                `l`
+            FROM
+                `'.DBPREFIX.'module_contact_form_field_lang` AS  `l`
+            LEFT JOIN
+                `'.DBPREFIX.'module_contact_form_field`      AS `f`
+            ON
+                `fieldID` = `l`.`id`
+            WHERE
+                `fieldID` NOT IN ('.$list.')
+            AND
+                `id_Form` = '.$formID;
+
+        $objDatabase->execute($query);
+
+        $query = '
+            DELETE FROM
+                `'.DBPREFIX.'module_contact_form_field`
+            WHERE
+                `id` NOT IN ('.$list.')
+            AND
+                `id_form` = '.$formID;
+
+        $objDatabase->execute($query);
     }
 
     /**
