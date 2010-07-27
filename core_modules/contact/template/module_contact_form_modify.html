@@ -61,14 +61,19 @@ function addFormField() {
     $J(copy).find('input, select').each(
         function(key, elem) {
             var name = $J(elem).attr('name');
+            var id = $J(elem).attr('id');
             //var number = parseInt(name.match(/\[(\d+)\](?:\[\d+\])?$/)[1]);
             // this regex was quite bitchy... (especially because the page reload
             // took up to 35 seconds... nice testing)
             $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
+
+            // do the id too
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + number));
         }
     );
 
     $J(copy).find('input').val('');
+    $J(copy).find('input[type=hidden]').val('new');
 }
 
 /**
@@ -444,6 +449,7 @@ $J(document).ready(function() {
 
     <!-- BEGIN formField -->
         <div class="formField"  id="formField_1">
+            <input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" />
             <div style="border: 1px solid #DDE4FF; padding: 10px; position: relative">
                 <div style="position: absolute; right: 10px; top: 3px;">
                     <a id="removeLink_1" href="#" onclick="removeFormField(this)">X</a>

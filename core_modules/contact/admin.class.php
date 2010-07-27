@@ -686,7 +686,6 @@ class ContactManager extends ContactLib
                     'TXT_CONTACT_SET_MANDATORY_FIELD'               => $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'],
 
                     'CONTACT_FORM_NAME'                             => $this->arrForms[$formId]['lang'][$lang['id']]['name'],
-                    'CONTACT_FORM_EMAIL'                            => $formEmail,
                     'CONTACT_FORM_SUBJECT'                          => $formSubject,
                     'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
                     'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
@@ -730,6 +729,7 @@ class ContactManager extends ContactLib
                 'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $useCustomStyle  ? '' : 'checked="checked"',
                 'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
                 'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
+                'CONTACT_FORM_EMAIL'                            => $this->arrForms[$formId]['emails'],
             )
         );
 
@@ -758,7 +758,8 @@ class ContactManager extends ContactLib
                     'attributes'    => '',
                     'order_id'      => 0,
                     'is_required'   => false,
-                    'check_type'    => 1
+                    'check_type'    => 1,
+                    'editType'     => 'new'
                 );
                 $fields[0]['lang'][$lang['id']] = array(
                     'name'          => '',
@@ -770,29 +771,6 @@ class ContactManager extends ContactLib
         $counter = 1;
         foreach ($fields as $fieldID => $field) {
             $realFieldID = ($formId > 0) ? $fieldID : $counter;
-            $this->_objTpl->setVariable(
-                array(
-                    'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
-                        'contactFormFieldType['.$realFieldID.']',
-                        $field['type'],
-                        'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
-                            'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),
-                        this.value)"'
-                        ),
-                        'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
-                            'contactFormFieldRequired['.$realFieldID.']',
-                            'contactFormFieldRequired_'.$realFieldID,
-                            '', // apparently this is the right thing
-                            $field['is_required']
-                        ),
-                        'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
-                            'contactFormFieldCheckType['.$realFieldID.']',
-                            'contactFormFieldCheckType_'.$realFieldID,
-                            $field['type'],
-                            $field['check_type']
-                        ),
-                )
-            );
 
             foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                 $this->_objTpl->setVariable(
@@ -805,12 +783,38 @@ class ContactManager extends ContactLib
                         'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
                         'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
                         'FORM_FIELD_ID'             => $realFieldID, 
-                        'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['values'],
+                        'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['value'],
                         'FORM_FIELD_NAME'           => $field['lang'][$lang['id']]['name']
                     )
                 );
                 $this->_objTpl->parse('formFieldRow');
             }
+
+            $this->_objTpl->setVariable(
+                array(
+                    'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
+                        'contactFormFieldType['.$realFieldID.']',
+                        $field['type'],
+                        'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
+                            'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),
+                        this.value)"'
+                        ),
+                    'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
+                        'contactFormFieldRequired['.$realFieldID.']',
+                        'contactFormFieldRequired_'.$realFieldID,
+                        '', // apparently this is the right thing
+                        $field['is_required']
+                    ),
+                    'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
+                        'contactFormFieldCheckType['.$realFieldID.']',
+                        'contactFormFieldCheckType_'.$realFieldID,
+                        $field['type'],
+                        $field['check_type']
+                    ),
+                    'FORM_FIELD_ID'             => $realFieldID,
+                    'FORM_FIELD_TYPE'           => $field['editType']
+                )
+            );
 
             $counter++;
             $this->_objTpl->parse('formField');
@@ -1071,7 +1075,7 @@ class ContactManager extends ContactLib
             $fields = $this->_getFormFieldsFromPost();
             $formFieldIDs = array();
             foreach ($fields as $field) {
-                if ($adding) {
+                if ($field['editType'] == 'new') {
                     $this->addFormField($formId, $field);
                 } else {
                     $this->updateFormField($formId, $field);
@@ -1321,8 +1325,6 @@ class ContactManager extends ContactLib
             'select'
         );
 
-        print_r($_POST);
-
 
         // shorten the variables
         $fieldNames      = $_POST['contactFormFieldName'];
@@ -1331,6 +1333,7 @@ class ContactManager extends ContactLib
         $fieldRequireds  = $_POST['contactFormFieldRequired'];
         $fieldCheckTypes = $_POST['contactFormFieldCheckType'];
         $fieldAttributes = $_POST['contactFormFieldAttributes'];
+        $fieldEditType   = $_POST['contactFormFieldEditType'];
 
         if (isset($fieldNames) && is_array($fieldNames)) {
             foreach ($fieldNames as $id => $fieldName) {
@@ -1415,14 +1418,18 @@ class ContactManager extends ContactLib
                         break;
                 }
 
+                $editType = $fieldEditType[$id];
+
                 $arrFields[intval($id)] = array(
                     'id'            => $id, // in case we're editing this should be the real id
                     'type'          => $type,
                     'attributes'    => $attributes,
                     'order_id'      => $orderId,
                     'is_required'   => $is_required,
-                    'check_type'    => $checkType
+                    'check_type'    => $checkType,
+                    'editType'     => $editType
                 );
+
 
 
                 // hope the langs never change between editing and saving xD
@@ -1433,7 +1440,7 @@ class ContactManager extends ContactLib
 
                     $arrFields[intval($id)]['lang'][$lang['id']] = array(
                         'name'      => $fieldName,
-                        'values'    => $fieldValue
+                        'value'    => $fieldValue
                     );
 
                 }
