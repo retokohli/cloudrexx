@@ -352,18 +352,18 @@ function updateContentSite()
   @author  Stefan Heinemann <sh@adfinis.com>
   @param   string name 
 */
-var superTab = function(name) {
+function superTab(name) {
     $J('.tabs').hide();
     $J('#tab_' + name).show();
 }
 
-var langTab = function(id) {
+function langTab(id) {
     $J('.langTabs').hide();
     $J('#langTab_' + id).show();
 }
 
 $J(document).ready(function() {
-    //$J('.formFields').sortable();
+    $J('#formFields').sortable();
 });
 
 // -->
@@ -439,7 +439,6 @@ $J(document).ready(function() {
 </div>
 
 <div id="tab_fields" class="tabs" style="display: none;">
-    <div id="formFields">
         <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
             <tr>
                 <th colspan="2">{CONTACT_FORM_FIELDS_TITLE}</th>
@@ -447,8 +446,9 @@ $J(document).ready(function() {
         </table>
         <br />
 
+    <div id="formFields">
     <!-- BEGIN formField -->
-        <div class="formField"  id="formField_1">
+        <div class="formField"  id="formField_1" style="background-color: white;">
             <input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" />
             <div style="border: 1px solid #DDE4FF; padding: 10px; position: relative">
                 <div style="position: absolute; right: 10px; top: 3px;">
