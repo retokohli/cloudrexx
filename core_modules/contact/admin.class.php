@@ -591,6 +591,8 @@ class ContactManager extends ContactLib
     {
         global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
+        JS::activate('jquery-ui');
+
         if ($copy) {
             $this->initContactForms(true);
         }

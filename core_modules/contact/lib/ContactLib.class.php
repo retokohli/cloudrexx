@@ -330,8 +330,8 @@ class ContactLib
                     `id_form` = ".$formID."
 
                 ORDER BY 
-                    `f`.`id`,
-                    `f`.`order_id`
+                    `f`.`order_id`,
+                    `f`.`id`
             ";
             $res  = $objDatabase->Execute($query);
 
