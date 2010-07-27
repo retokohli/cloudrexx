@@ -94,6 +94,14 @@ class JS
             ),
             'specialcode'  => 'var $J = jQuery.noConflict();',
         ),
+        'jquery-ui'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery-ui-1.8.2.js'
+            ),
+            'dependencies'  => array(
+                'jquery'
+            )
+        ),
         'nestedsortable'     => array(
             'jsfiles'       => array(
                 'lib/javascript/inestedsortable.js'
