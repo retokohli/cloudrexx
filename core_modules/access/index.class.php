@@ -311,6 +311,7 @@ class Access extends AccessLib
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
         } elseif (isset($_POST['access_set_newsletters'])) {
             $objFWUser->objUser->setNewsletterCategories($_POST['newsletter_categories']);
+            $objFWUser->objUser->store();
         }
         $this->parseAccountAttributes($objFWUser->objUser, true);
         if ($_GET['cmd'] == 'settings_newsletter') {
