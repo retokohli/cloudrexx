@@ -853,7 +853,6 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_contact_form` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `mails` text NOT NULL,
-  `subject` varchar(255) NOT NULL default '',
   `showForm` tinyint(1) unsigned NOT NULL default '0',
   `use_captcha` tinyint(1) unsigned NOT NULL default '1',
   `use_custom_style` tinyint(1) unsigned NOT NULL default '0',
@@ -881,7 +880,6 @@ CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
   `type` enum('text','label','checkbox','checkboxGroup','date','file','hidden','password','radio','select','textarea','recipient') NOT NULL default 'text',
-  `attributes` text NOT NULL,
   `is_required` set('0','1') NOT NULL default '0',
   `check_type` int(3) NOT NULL default '1',
   `order_id` smallint(5) unsigned NOT NULL default '0',
@@ -895,9 +893,10 @@ CREATE TABLE `contrexx_module_contact_form_field_lang` (
   `fieldID` int(10) unsigned NOT NULL,
   `langID` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
+  `attributes` text NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `fieldID` (`fieldID`,`langID`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -907,10 +906,11 @@ CREATE TABLE `contrexx_module_contact_form_lang` (
   `langID` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
   `text` text NOT NULL,
-  `feed` text NOT NULL,
+  `feedback` text NOT NULL,
+  `subject` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `formID` (`formID`,`langID`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
