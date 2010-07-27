@@ -599,18 +599,60 @@ class ContactLib
      */
     function _deleteFormRecipients($id){
         global $objDatabase;
-        if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_recipient WHERE id_form = ".$id)){
+
+        $query = "
+            DELETE
+                `l`
+            FROM
+                `".DBPREFIX."module_contact_recipient_lang`     AS `l`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_recipient`          AS `r`
+            ON
+                `r`.`id` =  `l`.`recipient_id`
+            WHERE
+                `r`.`id_form` = ".$id;
+
+        $objDatabase->query($query);
+
+        $query = "
+            DELETE FROM 
+                ".DBPREFIX."module_contact_recipient 
+            WHERE 
+                id_form = ".$id;
+        if($objDatabase->Execute($query)){
             return true;
         }else{
             return false;
         }
     }
 
-    function deleteForm($id)
+    /**
+     * Delete a form 
+     *
+     * @author      Comvation AG <info@comvation.com>
+     */
+    protected function deleteForm($id)
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form WHERE id=".$id) !== false) {
+        $id = intval($id);
+
+        $query = "
+            DELETE FROM
+                `".DBPREFIX."module_contact_form_lang`
+            WHERE
+                `formID` = ".$id;
+
+        $objDatabase->execute($query);
+
+        $query = "
+            DELETE FROM 
+                ".DBPREFIX."module_contact_form 
+            WHERE 
+                id = ".$id;
+
+        $res = $objDatabase->Execute($query);
+        if ($res !== false) {
             $this->_deleteFormFieldsByFormId($id);
             $this->_deleteFormDataByFormId($id);
             $this->_deleteFormRecipients($id);
@@ -796,18 +838,55 @@ class ContactLib
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_field WHERE id=".$id);
     }
 
-    function _deleteFormFieldsByFormId($id)
+    /**
+     * Delete form fields
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @param       int $id
+     */
+    private function _deleteFormFieldsByFormId($id)
     {
         global $objDatabase;
 
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_field WHERE id_form=".$id);
+        $query = "
+            DELETE 
+                `l`
+            FROM
+                `".DBPREFIX."module_contact_form_field_lang`    AS `l`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_form_field`         AS `f`
+            ON
+                `l`.`fieldID` = `f`.`id`
+            WHERE
+                `f`.`id_form` = ".$id;
+
+        $objDatabase->Execute($query);
+
+        $query = "
+            DELETE FROM 
+                ".DBPREFIX."module_contact_form_field 
+            WHERE 
+                id_form = ".$id;
+
+        $objDatabase->Execute($query);
     }
 
-    function _deleteFormDataByFormId($id)
+    /**
+     * Delete form data 
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @param       int $id
+     */
+    private function _deleteFormDataByFormId($id)
     {
         global $objDatabase;
 
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$id);
+        $query = "
+            DELETE FROM 
+                `".DBPREFIX."module_contact_form_data`
+            WHERE 
+                `id_form` = ".$id;
+        $objDatabase->Execute($query);
     }
 
     function deleteFormEntry($id)

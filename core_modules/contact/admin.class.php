@@ -1142,7 +1142,12 @@ class ContactManager extends ContactLib
         $this->_contactFormEntries();
     }
 
-    function _deleteForm()
+    /**
+     * Delete a form 
+     *
+     * @author      Comvation AG <info@comvation.com>
+     */
+    private function _deleteForm()
     {
         global $_ARRAYLANG;
 
