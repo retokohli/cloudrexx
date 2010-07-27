@@ -271,11 +271,15 @@ class ContactManager extends ContactLib
             break;
 
         case 'copy':
+            /*
             if (isset($_REQUEST['selectLang']) && $_REQUEST['selectLang'] == 'true') {
                 $this->_selectFrontendLang();
             } else {
+             */
                 $this->_modifyForm(true);
+                /*
             }
+                 */
             break;
 
         case 'save':
@@ -714,11 +718,16 @@ class ContactManager extends ContactLib
                     'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', ''),
                     'CONTACT_FORM_FIELD_RADIO_TPL'                  => $this->_getFormFieldAttribute(0, 'radio', ''),
                     'CONTACT_FORM_FIELD_SELECT_TPL'                 => $this->_getFormFieldAttribute(0, 'select', ''),
-                    'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction
                     )
             );
             $this->_objTpl->parse('languageForm');
             $first = false;
+        }
+
+        if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
+            $jsSubmitFunction = "updateContentSite()";
+        } else {
+            $jsSubmitFunction = "createContentSite()";
         }
 
         $this->_objTpl->setVariable(
@@ -732,15 +741,10 @@ class ContactManager extends ContactLib
                 'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
                 'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
                 'CONTACT_FORM_EMAIL'                            => $this->arrForms[$formId]['emails'],
+                'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
+                'FORM_COPY'                                     => intval($copy)
             )
         );
-
-
-        if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
-            $jsSubmitFunction = "updateContentSite()";
-        } else {
-            $jsSubmitFunction = "createContentSite()";
-        }
 
         $lastFieldId = 0;
 
@@ -1004,7 +1008,7 @@ class ContactManager extends ContactLib
         global $objDatabase;
         
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-        $adding = !$formId;
+        $adding = $_POST['copy'] || !$formId;
 
         if (isset($_POST['saveForm'])) {
             $uniqueFieldNames = null;
