@@ -2670,7 +2670,7 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
     ) {
         global $objDatabase, $_ARRAYLANG, $_DBCONFIG;
 
-        require_once ASCMS_LIBRARY_PATH . '/phpmailer/class.phpmailer.php';
+        require_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php';
 
         $newsletterValues = $this->getNewsletterValues($NewsletterID);
         if ($newsletterValues !== false) {
@@ -2778,7 +2778,6 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
                 $objResultATT->MoveNext();
             }
         }
-
         $mail->AddAddress($TargetEmail);
 
         if ($UserID) {
@@ -2883,51 +2882,32 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
                     }
                     //}
                 }
-
                 $ReturnVar = $count;
             }
         }
         $mail->ClearAddresses();
         $mail->ClearAttachments();
-
         return $ReturnVar;
     }
 
 
     /**
      * Return the newsletter values
-     *
      * @param      int $id
      * @return     array | bool
      */
-    private function getNewsletterValues($id) {
+    private function getNewsletterValues($id)
+    {
         global $objDatabase;
 
         $queryNewsletterValues = "
-            SELECT
-                id,
-                subject,
-                template,
-                content,
-                content_text,
-                attachment,
-                format,
-                priority,
-                sender_email,
-                sender_name,
-                return_path,
-                smtp_server,
-                status,
-                count,
-                date_create,
-                date_sent
-            FROM
-                ".DBPREFIX."module_newsletter
-            WHERE
-                id=".$id."";
-
+            SELECT id, subject, template, content, content_text,
+                   attachment, format, priority, sender_email, sender_name,
+                   return_path, smtp_server, status, count,
+                   date_create, date_sent
+              FROM ".DBPREFIX."module_newsletter
+             WHERE id=$id";
         $result = $objDatabase->Execute($queryNewsletterValues);
-
         return $result !== false ? $result->fields : false;
     }
 
@@ -3053,30 +3033,23 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
 
     /**
      * Parse the newsletter
-     *
      * @author      Comvation AG
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       string $userType Which type the user has (newsletter or access)
      */
     function ParseNewsletter(
-        $subject,
-        $content_text,
-        $TemplateSource,
-        $format,
-        $TargetEmail,
-        $userData
+        $subject, $content_text, $TemplateSource,
+        $format, $TargetEmail, $userData
     ) {
         global $objDatabase, $_ARRAYLANG;
+
         $NewsletterBody = '';
-
-
         $country    = empty($userData['country_id'])
             ? ''
             : htmlentities(
-                FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$userData['country_id'])->getName(),
-                ENT_QUOTES, CONTREXX_CHARSET
-            );
-
+                  FWUser::getFWUserObject()->objUser->objAttribute->getById('country_'.$userData['country_id'])->getName(),
+                  ENT_QUOTES, CONTREXX_CHARSET
+              );
         switch ($userData['sex']) {
             case 'm':
                 $sex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
@@ -3121,11 +3094,9 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
             $userData['phone'],
             $userData['birthday']
         );
-
         // do the replacement
         $content_text       = str_replace($search, $replace, $content_text);
         $TemplateSource     = str_replace($search, $replace, $TemplateSource);
-
         // Replace the links in the content
         $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
 // TODO: $code is not defined
@@ -3165,10 +3136,8 @@ $code = '';
                 $i++;
             }
         }
-
         $NewsletterBody = str_replace("[[subject]]", $subject, $TemplateSource);
         $NewsletterBody = str_replace("[[content]]", $content_text, $TemplateSource);
-
         return $NewsletterBody;
     }
 
@@ -3280,7 +3249,7 @@ Was:
     /**
      * Get the URL to the page to unsubscribe
      */
-    function GetUnsubscribeURL($code, $email, $format, $type = 'newsletter')
+    function GetUnsubscribeURL($code, $email, $format, $type='newsletter')
     {
         global $_ARRAYLANG, $_CONFIG;
 
@@ -3288,14 +3257,15 @@ Was:
         if ($type == 'access') {
             $profileURI  = 'index.php?section=access&cmd=settings_newsletter';
         }
-
-        $uri = ASCMS_PROTOCOL.'://'
-            .$_CONFIG['domainUrl']
-            .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-            .ASCMS_PATH_OFFSET
-            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL)
-            .'/'.CONTREXX_DIRECTORY_INDEX
-            .$profileURI;
+        $uri =
+            ASCMS_PROTOCOL.'://'.
+            $_CONFIG['domainUrl'].
+            ($_SERVER['SERVER_PORT'] == 80
+              ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
+            ASCMS_PATH_OFFSET.
+            ($_CONFIG['useVirtualLanguagePath'] == 'on'
+              ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL).
+            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
 
         if ($format=="html") {
             return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_UNSUBSCRIBE'].'</a>';
@@ -3316,26 +3286,26 @@ Was:
         if ($type == 'access') {
             $profileURI = 'index.php?section=access&cmd=settings_accountdata';
         }
-
-        $uri = ASCMS_PROTOCOL.'://'
-            .$_CONFIG['domainUrl']
-            .($_SERVER['SERVER_PORT'] == 80 ? NULL : ':'.intval($_SERVER['SERVER_PORT']))
-            .ASCMS_PATH_OFFSET
-            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL)
-            .'/'.CONTREXX_DIRECTORY_INDEX
-            .$profileURI;
-
-        if ($format=="html") {
+        $uri =
+            ASCMS_PROTOCOL.'://'.
+            $_CONFIG['domainUrl'].
+            ($_SERVER['SERVER_PORT'] == 80
+              ? NULL : ':'.intval($_SERVER['SERVER_PORT'])).
+            ASCMS_PATH_OFFSET.
+            ($_CONFIG['useVirtualLanguagePath'] == 'on'
+              ? '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang') : NULL).
+            '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
+        if ($format == "html") {
             return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
-        } else {
-            return $_ARRAYLANG['TXT_EDIT_PROFILE'].' '.$uri."\n\n";
         }
+        return $_ARRAYLANG['TXT_EDIT_PROFILE'].' '.$uri."\n\n";
     }
 
 
     function _getNewsPage()
     {
         global $objDatabase, $_ARRAYLANG;
+
         $this->_pageTitle = 'Newsmeldungen';
         $this->_objTpl->loadTemplateFile('newsletter_news.html');
         $this->_objTpl->setVariable(array(
@@ -3360,7 +3330,6 @@ Was:
                     'NEWSLETTER_NEWS_TITLE' => $objNews->fields['title']."\n"
                 ));
                 $this->_objTpl->parse("row");
-
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_NEWS_DETAIL_DATE' => date(ASCMS_DATE_SHORT_FORMAT, $objNews->fields['date']),
                     'NEWSLETTER_NEWS_DETAIL_TITLE' => $objNews->fields['title']
@@ -3374,21 +3343,19 @@ Was:
                     'NEWSLETTER_NEWS_DETAIL_LINK' => $newslink
                 ));
                 $this->_objTpl->parse("detailrow");
-
                 $objNews->MoveNext();
             }
         }
     }
 
 
-    function exportuser() {
+    function exportuser()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $separator = ';';
         $listId = isset($_REQUEST['listId']) ? intval($_REQUEST['listId']) : 0;
-
         $arrRecipientTitles = &$this->_getRecipientTitles();
-
         if ($listId > 0) {
             $list = $this->_getList($listId);
             $listname = $list['name'];
@@ -3447,11 +3414,9 @@ $WhereStatement = '';
             $StringForFile .= $user['birthday'];
             $StringForFile .= chr(13).chr(10);
         }
-
         if (strtolower(CONTREXX_CHARSET) == 'utf-8') {
             $StringForFile = utf8_decode($StringForFile);
         }
-
         header("Content-Type: text/comma-separated-values");
         header('Content-Disposition: attachment; filename="'.date('Y_m_d')."-".$listname.'.csv"');
         die($StringForFile);
@@ -3722,9 +3687,11 @@ $WhereStatement = '';
      * Sets the list-categories for an User
      * @param int $CreatedID the ID of the user in the Database
      */
-    function _setCategories($CreatedID) {
+    function _setCategories($CreatedID)
+    {
         global $objDatabase, $_ARRAYLANG;
-        if ($_REQUEST['category']=="") {
+
+        if (empty($_REQUEST['category'])) {
             $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=$CreatedID");
             $queryIC         = "SELECT id FROM ".DBPREFIX."module_newsletter_category";
             $objResultIC     = $objDatabase->Execute($queryIC);
@@ -3735,8 +3702,7 @@ $WhereStatement = '';
                             user, category
                         ) VALUES (
                             $CreatedID, ".$objResultIC->fields['id']."
-                        )
-                    ");
+                        )");
                     $objResultIC->MoveNext();
                 }
             }
@@ -3769,17 +3735,20 @@ $WhereStatement = '';
     }
 
 
-    function check_email($email) {
+    function check_email($email)
+    {
         return preg_match('#^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]{2,}(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,6}))$#', $email);
     }
 
+
     /**
      * delete all inavtice recipients
-     *
      * @return void
      */
-    function _deleteInactiveRecipients() {
+    function _deleteInactiveRecipients()
+    {
         global $objDatabase, $_ARRAYLANG;
+
         $count = 0;
         if ( ($objRS = $objDatabase->Execute('SELECT `id` FROM `'.DBPREFIX.'module_newsletter_user` WHERE `status` = 0 ')) !== false ) {
             while(!$objRS->EOF) {
@@ -3795,19 +3764,19 @@ $WhereStatement = '';
     }
 
 
-    function newsletterOverview() {
+    function newsletterOverview()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER'];
         $this->_objTpl->loadTemplateFile('newsletter_newsletter.html');
-        $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_ACTION']);
-
         $this->_objTpl->setVariable(array(
+            'TXT_TITLE' => $_ARRAYLANG['TXT_ACTION'],
             'TXT_NEWSLETTER_EDIT' => $_ARRAYLANG['TXT_NEWSLETTER_EDIT'],
             'TXT_NEWSLETTER_NEW' => $_ARRAYLANG['TXT_NEWSLETTER_NEW'],
             'TXT_SEND_NEWSLETTER' => $_ARRAYLANG['TXT_SEND_NEWSLETTER'],
-            'TXT_NEWSLETTER_EDIT_SEND' => $_ARRAYLANG["TXT_NEWSLETTER_EDIT_SEND"]
-            ));
+            'TXT_NEWSLETTER_EDIT_SEND' => $_ARRAYLANG["TXT_NEWSLETTER_EDIT_SEND"],
+        ));
     }
 
 
@@ -3817,7 +3786,6 @@ $WhereStatement = '';
 
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS'];
         $this->_objTpl->loadTemplateFile('module_newsletter_user.html');
-
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_OVERVIEW' => $_ARRAYLANG['TXT_NEWSLETTER_OVERVIEW'],
             'TXT_NEWSLETTER_IMPORT' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT'],
@@ -3845,63 +3813,63 @@ $WhereStatement = '';
     }
 
 
-    function configOverview() {
+    function configOverview()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('newsletter_configuration.html');
         $this->_objTpl->setVariable('TXT_TITLE', $_ARRAYLANG['TXT_SETTINGS']);
-
-
         $this->_objTpl->setVariable(array(
             'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_CONFIRM_MAIL' => "Aktivierungs E-Mail",
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
-            ));
-
+        ));
     }
 
 
-    function UserCount() {
+    function UserCount()
+    {
         global $objDatabase;
-        $objResult_value = $objDatabase->SelectLimit("SELECT
-                                                    count(*) as counter
-                                                    FROM ".DBPREFIX."module_newsletter_user
-                                                    ", 1);
+
+        $objResult_value = $objDatabase->Execute("
+            SELECT COUNT(*) AS `counter`
+              FROM ".DBPREFIX."module_newsletter_user");
         if ($objResult_value !== false && !$objResult_value->EOF) {
             return $objResult_value->fields["counter"];
-        } else {
-            return 0;
         }
+        return 0;
     }
 
 
-    function NewsletterSendCount() {
+    function NewsletterSendCount()
+    {
         global $objDatabase;
-        $objResult_value = $objDatabase->SelectLimit("SELECT
-                                                    count(*) as counter
-                                                    FROM ".DBPREFIX."module_newsletter
-                                                    WHERE status=1", 1);
-        if ($objResult_value !== false && !$objResult_value->EOF) {
+
+        $objResult_value = $objDatabase->Execute("
+            SELECT COUNT(*) AS `counter`
+              FROM ".DBPREFIX."module_newsletter
+             WHERE status=1");
+        if ($objResult_value && !$objResult_value->EOF) {
             return $objResult_value->fields["counter"];
-        } else {
-            return 0;
         }
+        return 0;
     }
 
 
-    function NewsletterNotSendCount() {
+    function NewsletterNotSendCount()
+    {
         global $objDatabase;
-        $objResult_value = $objDatabase->SelectLimit("SELECT
-                                                    count(*) as counter
-                                                    FROM ".DBPREFIX."module_newsletter
-                                                    WHERE status=0", 1);
-        if ($objResult_value !== false && !$objResult_value->EOF) {
+
+        $objResult_value = $objDatabase->Execute("
+            SELECT COUNT(*) AS `counter`
+              FROM ".DBPREFIX."module_newsletter
+             WHERE status=0");
+        if ($objResult_value && !$objResult_value->EOF) {
             return $objResult_value->fields["counter"];
-        } else {
-            return 0;
         }
+        return 0;
     }
 
 
@@ -4052,7 +4020,6 @@ $WhereStatement = '';
                 'NEWSLETTER_LIST_ASSOCIATED' => in_array($listId, $arrAssociatedLists) ? 'checked="checked"' : ''
             ));
             $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
-
             $listNr++;
         }
 
@@ -4072,9 +4039,8 @@ $WhereStatement = '';
             'NEWSLETTER_RECIPIENT_COUNTRY' => $this->getCountryMenu($recipientCountry),
             'NEWSLETTER_RECIPIENT_PHONE' => htmlentities($recipientPhone, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_BIRTHDAY' => htmlentities($recipientBirthday, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_STATUS' => $recipientStatus == '1' ? 'checked="checked"' : ''
-        ));
-        $this->_objTpl->setVariable(array(
+            'NEWSLETTER_RECIPIENT_STATUS' => $recipientStatus == '1' ? 'checked="checked"' : '',
+
             'TXT_NEWSLETTER_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
             'TXT_NEWSLETTER_URI' => $_ARRAYLANG['TXT_NEWSLETTER_URI'],
             'TXT_NEWSLETTER_TITLE' => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
@@ -4101,7 +4067,6 @@ $WhereStatement = '';
 
 
     /**
-     *
      * @todo instead of just not linking the access users probably link to
      *       the access module in case the user has the appropriate rights
      */
@@ -4174,7 +4139,6 @@ $WhereStatement = '';
                     }
                 }
             }
-
 /*
             if (!empty($_POST['accessUserid'])) {
                 foreach ($_POST['accessUserid'] as $userID) {
@@ -4184,14 +4148,12 @@ $WhereStatement = '';
                 }
             }
 */
-
             if ($error) {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
             } else {
                 $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
             }
         }
-
 
         $queryCHECK         = "SELECT id, code FROM ".DBPREFIX."module_newsletter_user where code=''";
         $objResultCHECK     = $objDatabase->Execute($queryCHECK);
@@ -4258,8 +4220,8 @@ $WhereStatement = '';
                      OR firstname LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                      OR street LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                      OR zip LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
-                     OR city LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
-                     './*or country_id LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"*/'
+                     OR city LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"'.
+                     /*OR country_id LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"*/'
                      OR phone LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%"
                      OR birthday LIKE "%'.contrexx_addslashes($_REQUEST["keyword"]).'%")';
             }
@@ -4358,8 +4320,6 @@ $WhereStatement = '';
 
 
     /**
-     * Return all newsletter user
-     *
      * Return all newsletter users and those access users who are assigned
      * to the list and their information
      * @author      Stefan Heinemann <sh@adfinis.com>
@@ -4575,18 +4535,17 @@ function MultiAction() {
 
     function DateForDB()
     {
-        return date("Y")."-".date("m")."-".date("d");
+        return date(ASCMS_DATE_FORMAT_DATE);
     }
 
 
-    function _getTemplateMenu($selectedTemplate = '', $attributes = '')
+    function _getTemplateMenu($selectedTemplate='', $attributes='')
     {
         $menu = "<select".(!empty($attributes) ? " ".$attributes : "").">\n";
         foreach ($this->_getTemplates() as $templateId => $arrTemplate) {
             $menu .= "<option value=\"".$templateId."\"".($templateId == $selectedTemplate ? "selected=\"selected\"" : "").">".htmlentities($arrTemplate['name'], ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
         }
         $menu .= "</select>\n";
-
         return $menu;
     }
 
@@ -4596,7 +4555,6 @@ function MultiAction() {
         global $objDatabase;
 
         $arrTemplates = array();
-
         $objTemplate = $objDatabase->Execute("SELECT id, name, description, html, text FROM ".DBPREFIX."module_newsletter_template");
         if ($objTemplate !== false) {
             while (!$objTemplate->EOF) {
@@ -4609,12 +4567,11 @@ function MultiAction() {
                 $objTemplate->MoveNext();
             }
         }
-
         return $arrTemplates;
     }
 
 
-    function CategoryDropDown($name = 'category', $selected = 0, $attrs = '')
+    function CategoryDropDown($name='category', $selected=0, $attrs='')
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -4694,7 +4651,6 @@ function MultiAction() {
             'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
             'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-
             'TXT_NOTIFICATION_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
             'TXT_SYSTEM_SETINGS' => $_CORELANG['TXT_SETTINGS_MENU_SYSTEM'],
             'TXT_DEF_UNSUBSCRIBE' => $_ARRAYLANG['TXT_STATE_OF_SUBSCRIBED_USER'],
@@ -4715,7 +4671,6 @@ function MultiAction() {
 if (!class_exists('DBIterator')) {
     /**
      * Iterator wrapper for adodb result objects
-     *
      * @author      Stefan Heinemann <sh@adfinis.com>
      */
     class DBIterator implements Iterator {
