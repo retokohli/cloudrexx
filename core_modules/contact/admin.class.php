@@ -9,6 +9,10 @@ $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'] = "Werte";
 $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'] = "Formularfelder";
 $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Empfängerliste";
 $_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Erweiterte Einstellungen";
+$_ARRAYLANG['TXT_CONTACT_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_CONTACT_NAME'] = "Name";
+$_ARRAYLANG['TXT_CONTACT_EXTEND'] = "Erweitert";
+
 /**
  * Contact
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -623,10 +627,10 @@ class ContactManager extends ContactLib
             $lang           = FRONTEND_LANG_ID;
         }
 
-        $langs = FWLanguage::getActiveFrontendLanguages();
+        $activeLanguages = FWLanguage::getActiveFrontendLanguages();
         $first = true;
 
-        foreach ($langs as $lang) {
+        foreach ($activeLanguages as $lang) {
             $langID = $lang['id'];
             $this->_objTpl->setVariable(array(
                     'LANG_ID'       => $lang['id'],
@@ -742,7 +746,11 @@ class ContactManager extends ContactLib
                 'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
                 'CONTACT_FORM_EMAIL'                            => $this->arrForms[$formId]['emails'],
                 'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
-                'FORM_COPY'                                     => intval($copy)
+                'FORM_COPY'                                     => intval($copy),
+
+                'TXT_CONTACT_EMAIL'                             => $_ARRAYLANG['TXT_CONTACT_EMAIL'],
+                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'TXT_CONTACT_EXTEND'                            => $_ARRAYLANG['TXT_CONTACT_EXTEND']
             )
         );
 
@@ -758,7 +766,7 @@ class ContactManager extends ContactLib
 
         // make an empty one so at least one is parsed
         if (empty($fields)) {
-                foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+                foreach ($activeLanguages as $lang) {
                 $fields[0] = array (
                     'type'          => 'text',
                     'attributes'    => '',
@@ -778,7 +786,7 @@ class ContactManager extends ContactLib
         foreach ($fields as $fieldID => $field) {
             $realFieldID = ($formId > 0) ? $fieldID : $counter;
 
-            foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+            foreach ($activeLanguages as $lang) {
                 $this->_objTpl->setVariable(
                     array(
                         'FORM_FIELD_ROW_LANG_ID'    => $lang['id'],
@@ -824,6 +832,42 @@ class ContactManager extends ContactLib
 
             $counter++;
             $this->_objTpl->parse('formField');
+        }
+
+        if (empty($recipients)) {
+            // make an empty one so there's at least one
+            $recipients[0] = array(
+                'id'    => 1,
+                'email' => ''
+            );
+
+            foreach ($activeLanguages as $langID => $lang) {
+                $recipients[0]['lang'][$langID] = '';
+            }
+        }
+
+        // parse the recipients
+        foreach ($recipients as $rec) {
+            foreach ($activeLanguages as $langID => $lang) {
+                $this->_objTpl->setVariable(
+                    array(
+                        'CONTACT_FORM_RECIPIENT_ID'         => $rec['id'],
+                        'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langID,
+                        'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID],
+                        'CONTACT_FORM_LANGUAGE_NAME'        => $lang['name']
+                    )
+                );
+
+                $this->_objTpl->parse('recipientNameLang');
+            }
+
+            $this->_objTpl->setVariable(
+                array(
+                    'CONTACT_FORM_RECIPIENT_ID'     => $rec['id'],
+                    'CONTACT_FROM_RECIPIENT_EMAIL'  => $rec['email'],
+                    'CONTACT_FORM_LANGUAGE_NAME'    => $rec['lang'][0] // take the first one
+                )
+            );
         }
 
         /*
