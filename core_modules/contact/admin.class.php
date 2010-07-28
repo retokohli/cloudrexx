@@ -1145,6 +1145,7 @@ class ContactManager extends ContactLib
         }
 
         //$this->_modifyForm();
+        $this->initContactForms(true);
         $this->_contactForms();
     }
 
