@@ -1,4 +1,5 @@
 <?php
+
 /**
 * User Management
 * @copyright    CONTREXX CMS - COMVATION AG
@@ -31,6 +32,7 @@ class Access extends AccessLib
 {
     private $arrStatusMsg = array('ok' => array(), 'error' => array());
 
+
     public function __construct($pageContent)
     {
         parent::__construct();
@@ -41,42 +43,37 @@ class Access extends AccessLib
         $this->_objTpl->setTemplate($pageContent);
     }
 
+
     public function getPage(&$metaPageTitle, &$pageTitle)
     {
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
-
 
         CSRF::add_code();
         switch ($cmd[0]) {
             case 'signup':
                 $this->signUp();
                 break;
-
             case 'settings':
                 $this->settings();
                 break;
-
             case 'members':
                 $this->members();
                 break;
-
             case 'user':
                 $this->user($metaPageTitle, $pageTitle);
                 break;
-
             default:
                 $this->dashboard();
                 break;
         }
-
-
         return $this->_objTpl->get();
     }
 
+
     public function dashboard()
     {
-
     }
+
 
     private function user(&$metaPageTitle, &$pageTitle)
     {
@@ -106,16 +103,13 @@ class Access extends AccessLib
             $this->_objTpl->setGlobalVariable(array(
                 'ACCESS_USER_ID'            => $objUser->getId(),
                 'ACCESS_USER_USERNAME'      => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                'ACCESS_USER_PRIMARY_GROUP' => htmlentities($objUser->getPrimaryGroupName(), ENT_QUOTES, CONTREXX_CHARSET)
+                'ACCESS_USER_PRIMARY_GROUP' => htmlentities($objUser->getPrimaryGroupName(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
-
             if ($objUser->getEmailAccess() == 'everyone' ||
-                $objFWUser->objUser->login() &&
-                (
-                    $objUser->getId() == $objFWUser->objUser->getId() ||
+                   $objFWUser->objUser->login()
+                && ($objUser->getId() == $objFWUser->objUser->getId() ||
                     $objUser->getEmailAccess() == 'members_only' ||
-                    $objFWUser->objUser->getAdminStatus()
-                )
+                    $objFWUser->objUser->getAdminStatus())
             ) {
                 $this->parseAccountAttribute($objUser, 'email');
             } elseif ($this->_objTpl->blockExists('access_user_email')) {
@@ -128,7 +122,6 @@ class Access extends AccessLib
                 $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
                 $objUser->objAttribute->next();
             }
-
             $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
         } else {
             // or would it be better to redirect to the home page?
@@ -136,6 +129,7 @@ class Access extends AccessLib
             exit;
         }
     }
+
 
     private function members()
     {
@@ -213,6 +207,7 @@ class Access extends AccessLib
         }
     }
 
+
     private function settings()
     {
         global $_CONFIG, $_ARRAYLANG;
@@ -223,7 +218,6 @@ class Access extends AccessLib
             exit;
         }
         $settingsDone = false;
-
 
         if (isset($_POST['access_delete_account'])) {
             // delete account
@@ -310,6 +304,9 @@ class Access extends AccessLib
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
         } elseif (isset($_POST['access_set_newsletters'])) {
+            if (empty($_POST['newsletter_categories'])) {
+                $_POST['newsletter_categories'] = array();
+            }
             $objFWUser->objUser->setNewsletterCategories($_POST['newsletter_categories']);
             $objFWUser->objUser->store();
         }
@@ -320,16 +317,12 @@ class Access extends AccessLib
 
         while (!$objFWUser->objUser->objAttribute->EOF) {
             $objAttribute = $objFWUser->objUser->objAttribute->getById($objFWUser->objUser->objAttribute->getId());
-
-            if (!$objAttribute->isProtected() ||
-                (
-                    Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true) ||
-                    $objAttribute->checkModifyPermission()
-                )
+            if (   !$objAttribute->isProtected()
+                || (Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true)
+                    || $objAttribute->checkModifyPermission())
             ) {
                 $this->parseAttribute($objFWUser->objUser, $objAttribute->getId(), 0, true);
             }
-
             $objFWUser->objUser->objAttribute->next();
         }
 
@@ -342,7 +335,7 @@ class Access extends AccessLib
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
             'ACCESS_SET_NEWSLETTER_BUTTON'  => '<input type="submit" name="access_set_newsletters" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'] .'" />',
-            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode()
+            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
         ));
 
         if ($this->_objTpl->blockExists('access_settings')) {
@@ -353,28 +346,31 @@ class Access extends AccessLib
         }
     }
 
+
     /**
      * Parse the newsletter to the frontend
-     *
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $userID
      */
-    private function parseNewsletters($userID) {
-        $res = $this->getNewsletters($userID);
+    private function parseNewsletters($userID)
+    {
+        global $_ARRAYLANG;
 
+        $res = $this->getNewsletters($userID);
         while (!$res->EOF) {
             $selected = $res->fields['selected'] ? 'checked="checked"' : '';
-            $this->_objTpl->setVariable(
-                array(
-                    'ACCESS_NEWSLETTER_ID'  => $res->fields['id'],
-                    'ACCESS_NEWSLETTER_SELECTED' => $selected,
-                    'ACCESS_NEWSLETTER_NAME' => $res->fields['name']
-                )
-            );
+            $this->_objTpl->setVariable(array(
+                'ACCESS_NEWSLETTER_ID'  => $res->fields['id'],
+                'ACCESS_NEWSLETTER_SELECTED' => $selected,
+                'ACCESS_NEWSLETTER_NAME' => htmlentities(
+                    $res->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
+            ));
             $this->_objTpl->parse('newsletter_row');
             $res->MoveNext();
         }
+        $this->_objTpl->setGlobalVariable($_ARRAYLANG);
     }
+
 
     private function setLanguageCookie($currentLangId, $newLangId)
     {
@@ -383,12 +379,14 @@ class Access extends AccessLib
         // set a new cookie if the language id had been changed
         if ($currentLangId != $newLangId) {
             // check if the desired language is active at all. otherwise set default language
-    $objInit->arrLang[$newLangId]['frontend'];
-            if ($objInit->arrLang[$newLangId]['frontend'] || ($newLangId = $objInit->defaultFrontendLangId)) {
+            $objInit->arrLang[$newLangId]['frontend'];
+            if (   $objInit->arrLang[$newLangId]['frontend']
+                || ($newLangId = $objInit->defaultFrontendLangId)) {
                 setcookie("langId", $newLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
             }
         }
     }
+
 
     private function confirmSignUp($userId, $restoreKey)
     {
@@ -400,9 +398,8 @@ class Access extends AccessLib
             if (!$arrSettings['user_activation_timeout']['status'] || $objUser->getRestoreKeyTime() >= time()) {
                 if ($objUser->finishSignUp()) {
                     return true;
-                } else {
-                    $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
                 }
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
             } else {
                 $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_ACTIVATION_TIME_EXPIRED'];
                 $this->arrStatusMsg['error'][] = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=access&amp;cmd=signup" title="'.$_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'].'">'.$_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'].'</a>';
@@ -412,9 +409,9 @@ class Access extends AccessLib
             $adminEmail = '<a href="mailto:'.$_CONFIG['coreAdminEmail'].'?subject='.$mailSubject.'" title="'.$_CONFIG['coreAdminEmail'].'">'.$_CONFIG['coreAdminEmail'].'</a>';
             $this->arrStatusMsg['error'][] = str_replace('%EMAIL%', $adminEmail, $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME_OR_ACTIVATION_KEY']);
         }
-
         return false;
     }
+
 
     private function signUp()
     {
@@ -444,7 +441,6 @@ class Access extends AccessLib
 
         $objUser = new User();
         $arrSettings = User_Setting::getSettings();
-
 
         if (isset($_POST['access_signup'])) {
             $objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
@@ -569,6 +565,7 @@ class Access extends AccessLib
         $this->_objTpl->parse('access_signup_form');
     }
 
+
     private function checkCaptcha()
     {
         global $_ARRAYLANG;
@@ -584,6 +581,7 @@ class Access extends AccessLib
         return false;
     }
 
+
     private function checkTos()
     {
         global $_ARRAYLANG;
@@ -596,6 +594,7 @@ class Access extends AccessLib
         $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'];
         return false;
     }
+
 
     function handleSignUp($objUser)
     {
@@ -711,5 +710,7 @@ class Access extends AccessLib
         $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $adminEmail, $_ARRAYLANG['TXT_ACCESS_COULD_NOT_SEND_EMAIL']);
         return false;
     }
+
 }
+
 ?>
