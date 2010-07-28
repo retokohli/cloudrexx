@@ -13,10 +13,42 @@ var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
 
 function addRecipient()
 {
+    var number = 0;
+    // find the highest number
+    $J('.languageValueDiv').each(function(key, elem){
+        var nr = parseInt($J(elem).attr('id').split('_')[1]);
+        if (nr > number) {
+            number = nr;
+            divToCopy = elem;
+        }
+    });
+
+    number++;
     var toCopy = $J('.formRecipient:last');
     var copy = $J(toCopy).clone();
-    $J('#formRecipientContainer').append(copy);
 
+    $J(copy).find('input, select, .languageValueDiv').each(
+        function(key, elem) {
+            var name = $J(elem).attr('name');
+            var id = $J(elem).attr('id');
+
+            if (name != undefined) {
+                // the divs don't have names
+                $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
+            }
+
+            // do the id too
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + number));
+        }
+    );
+
+    $J(copy).find('.langToggleLink').attr('onclick', '');
+    $J(copy).find('.langToggleLink').unbind('click').bind('click', function() {
+            toggleLanguages(number);
+        }
+    );
+
+    $J('#formRecipientContainer').append(copy);
 
     /*
     var elField = document.getElementById('formRecipient_'+formRecipientLastId).cloneNode(true);
@@ -373,6 +405,18 @@ $J(document).ready(function() {
     $J('#formFields').sortable();
 });
 
+/**
+    Show the language input fields
+ */
+function toggleLanguages(id) {
+    var obj = $J($J('#languageValues_' + id));
+    if (obj.is(':visible')) {
+        obj.hide();
+    } else {
+        obj.show();
+    }
+}
+
 // -->
 </script>
 
@@ -495,53 +539,63 @@ $J(document).ready(function() {
 </div>
 
 <div id="tab_recipients" class="tabs" style="display: none;">
-   <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+   <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
         <tr>
             <th colspan="2">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
         </tr>
-    </table>
-    <br />
-    <table>
-        <tr class="row1" style="height:20px;">
+
+        <tr class="row3">
+            <td style="width: 315px;">{TXT_CONTACT_EMAIL}</td>
+            <td>{TXT_CONTACT_NAME}</td>
+        </tr>
+
+        <!--BEGIN contact_form_recipient_list -->
+        <tr class="formRecipient">
+            <td style="vertical-align: top;">
+                <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
+                    value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
+            </td>
             <td>
-                <div id="formRecipientContainer">
-                    <!-- BEGIN contact_form_recipient_list -->
+                <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][0]"
+                value="{CONTACT_FORM_RECIPIENT_NAME}" /> <a href="#" onclick="toggleLanguages({CONTACT_FORM_RECIPIENT_ID})" class="langToggleLink">{TXT_CONTACT_EXTEND} &gt;&gt;</a><br />
+                    <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
+                    <!-- BEGIN recipientNameLang -->
+                    <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
+                        value="{CONTACT_FORM_RECIPIENT_NAME}" /> {CONTACT_FORM_LANGUAGE_NAME} <br />
+                    <!-- END recipientNameLang -->
+                </div>
+            </td>
+        </tr>
+        <!-- END contact_form_recipient_list -->
+    </table>
+    
+                    <!-- BEGIN contact_form_recipient_list              
                     <div class="formRecipient">
                         <div style="white-space:nowrap; height:20px;" id="formRecipient_{CONTACT_FORM_RECIPIENT_ID}">
-                            <div style="width:55px; display:inline; float:left;">
-                                <a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" 
-                                        id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_ID}" 
-                                        title="{TXT_CONTACT_DELETE}">
-                                    <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
 
-                                </a>
-                            </div>
-                            <div style="width:35px; display:inline; float:left; text-align:center;">
-                                {CONTACT_FORM_RECIPIENT_ID}
-                            </div>
-                            <div style="width:290px; display:inline; float:left;">
-                                <input style="width:285px;" type="text" name="contactFormRecipientName[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
-                                    id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_ID}" 
-                                    value="{CONTACT_FORM_RECIPIENT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
+                            {CONTACT_FORM_RECIPIENT_ID}
+                            <input style="width:285px;" type="text" name="contactFormRecipientName[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
+                                id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_ID}" 
+                                value="{CONTACT_FORM_RECIPIENT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
 
-                            </div>
-                            <div style="width:290px; display:inline;">
-                                <input style="width:285px;" type="text" name="contactFormRecipientEmail[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
-                                    id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_EMAIL}" 
-                                    onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" /> *
+                            <input style="width:285px;" type="text" name="contactFormRecipientEmail[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
+                                id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_EMAIL}" 
+                                onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" /> *
 
-                                <input type="hidden"  name="contactFormRecipientSort[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
-                                        id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_SORT}" />
-                            </div>
+                            <input type="hidden"  name="contactFormRecipientSort[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
+                                    id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_SORT}" />
+
+                            <a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" 
+                                    id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_ID}" 
+                                    title="{TXT_CONTACT_DELETE}">
+                            <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
+
+                            </a>
                         </div>
                     </div>
-                    <!-- END contact_form_recipient_list -->
-                </div>
-                <br />
-                <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
-            <td>
-        </tr>
-    </table>
+                     END contact_form_recipient_list -->
+
+    <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
 </div>
 
 <div id="tab_settings" class="tabs" style="display: none">
