@@ -48,6 +48,7 @@ function addRecipient()
         }
     );
 
+    $J(copy).find('input[type=hidden]').val('new');
 
     $J('#formRecipientContainer').append(copy);
 }
@@ -531,12 +532,12 @@ function deleteRecipientRow(obj) {
         </tr>
 
         <tr class="row3">
-            <td style="width: 315px;">{TXT_CONTACT_EMAIL}</td>
-            <td>{TXT_CONTACT_NAME}</td>
+            <td style="width: 315px;"><strong>{TXT_CONTACT_EMAIL}</strong></td>
+            <td><strong>{TXT_CONTACT_NAME}</strong></td>
             <td>&nbsp;</td>
         </tr>
 
-        <!--BEGIN contact_form_recipient_list -->
+        <!-- BEGIN contact_form_recipient_list -->
         <tr class="formRecipient">
             <td style="vertical-align: top;">
                 <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
@@ -544,15 +545,17 @@ function deleteRecipientRow(obj) {
             </td>
             <td>
                 <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][0]"
-                value="{CONTACT_FORM_RECIPIENT_NAME}" /> <a href="#" onclick="toggleLanguages({CONTACT_FORM_RECIPIENT_ID})" class="langToggleLink">{TXT_CONTACT_EXTEND} &gt;&gt;</a><br />
-                    <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
-                    <!-- BEGIN recipientNameLang -->
+                        value="{CONTACT_FORM_RECIPIENT_NAME}" /> <a href="#" onclick="toggleLanguages({CONTACT_FORM_RECIPIENT_ID})" class="langToggleLink">{TXT_CONTACT_EXTEND} &gt;&gt;</a><br />
+
+                <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
+                <!-- BEGIN recipientNameLang -->
                     <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
                         value="{CONTACT_FORM_RECIPIENT_NAME}" /> {CONTACT_FORM_LANGUAGE_NAME} <br />
                     <!-- END recipientNameLang -->
+                    <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
                 </div>
             </td>
-            <td>
+            <td style="vertical-align: top;">
                 <a href="#" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
                     <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
                 </a>

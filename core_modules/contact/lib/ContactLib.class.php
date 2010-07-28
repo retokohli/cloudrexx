@@ -56,43 +56,6 @@ class ContactLib
     }
 
     /**
-     * load recipient list
-     *
-     * @param integer $formId
-     * @param boolean $refresh
-     * @return array
-     */
-    public function getRecipients($formId = 0, $refresh = false)
-    {
-        return;
-        global $objDatabase;
-
-        $formId = intval($formId);
-        if ($formId > 0 && isset($this->_arrRecipients[$formId]) && !$refresh){
-            return $this->_arrRecipients[$formId];
-        }
-        if ($formId == 0 && !empty($this->_arrRecipients) && !$refresh ){
-            return $this->_arrRecipients;
-        }
-        $this->_arrRecipients = array();
-        $objRS = $objDatabase->Execute("
-            SELECT `id`, `id_form`, `name`, `email`, `sort`
-            FROM `".DBPREFIX."module_contact_recipient`".
-            (($formId == 0) ? "" : " WHERE `id_form` = ".$formId).
-            " ORDER BY `sort` ASC");
-        while (!$objRS->EOF){
-            $this->_arrRecipients[$objRS->fields['id']] = array(
-                'id_form'     =>  $objRS->fields['id_form'],
-                'name'      =>  $objRS->fields['name'],
-                'email'     =>  $objRS->fields['email'],
-                'sort'      =>  $objRS->fields['sort'],
-            );
-            $objRS->MoveNext();
-        }
-        return $this->_arrRecipients;
-    }
-
-    /**
      * Read the contact forms 
      */
     function initContactForms($allLanguages = false)
@@ -362,6 +325,175 @@ class ContactLib
         } else {
             return array();
         }
+    }
+
+    /**
+     * Return the recipients of a form
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @return      array
+     */
+    protected function getRecipients($formID) 
+    {
+        global $objDatabase;
+
+        $formID = intval($formID);
+
+        if ($formID == 0) {
+            return array();
+        }
+
+
+        $query = '
+            SELECT
+                `r`.`id`,
+                `r`.`email`,
+                `r`.`sort`,
+                `l`.`name`,
+                `l`.`langID`
+            FROM
+                `'.DBPREFIX.'module_contact_recipient`      AS `r`
+
+            LEFT JOIN
+                `'.DBPREFIX.'module_contact_recipient_lang` AS `l`
+            ON
+                `l`.`recipient_id` = `r`.`id`
+
+            WHERE
+                `r`.`id_form` = '.$formID.'
+
+            ORDER BY
+                `sort`,
+                `r`.`id`
+        ';
+
+        $res = $objDatabase->execute($query);
+        $lastID = 0;
+        $recipients = array();
+        if ($res !== false) {
+            foreach ($res as $recipient) {
+                if ($lastID != $recipient['id']) {
+                    $recipients[$recipient['id']] = array(
+                        'id'        => $recipient['id'],
+                        'email'     => contrexx_stripslashes($recipient['email']),
+                        'sort'      => $recipient['sort'],
+                        'editType' => 'edit'
+                    );
+                    $lastID = $recipient['id'];
+                }
+
+                $recipients[$lastID]['lang'][$recipient['langID']] = 
+                    contrexx_stripslashes($recipient['name']);
+            }
+        }
+
+        return $recipients;
+    }
+
+    /**
+     * Add a new recipient
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $recipient
+     */
+    protected function addRecipient($formID, $recipient) 
+    {
+        global $objDatabase;
+
+        $email = contrexx_addslashes($recipient['email']);
+        $sort = intval($recipient['sort']);
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_recipient`
+            (
+                `id_form`,
+                `email`,
+                `sort`
+            )
+            VALUES
+            (
+                '.$formID.',
+                "'.$email.'",
+                '.$sort.'
+            )
+        ';
+
+        $objDatabase->execute($query);
+        $recipientID = $objDatabase->insert_id();
+
+        foreach ($recipient['lang'] as $langID => $name) {
+            $this->setRecipientLang($recipientID, $langID, $name);
+        }
+    }
+
+    /**
+     * Update the recipient
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       array $recipient
+     */
+    protected function updateRecipient($recipient)
+    {
+        global $objDatabase;
+
+        $id = intval($recipient['id']);
+        $email = contrexx_addslashes($recipient['email']);
+        $sort = intval($recipient['sort']);
+
+        $query = '
+            UPDATE
+                `'.DBPREFIX.'module_contact_recipient`
+            SET
+                `email` = "'.$email.'",
+                `sort` = '.$sort.'
+            WHERE
+                `id`  = '.$id.'
+        ';
+
+        $objDatabase->execute($query);
+
+        foreach ($recipient['lang'] as $langID => $name) {
+            $this->setRecipientLang($id, $langID, $name);
+        }
+    }
+
+    /**
+     * Set the recipient name of a lang
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $rcID
+     * @param       int $langID
+     * @param       string $name
+     */
+    private function setRecipientLang($rcID, $langID, $name) 
+    {
+        global $objDatabase;
+
+        $rcID = intval($rcID);
+        $langID = intval($langID);
+        $name = contrexx_addslashes($name);
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_recipient_lang`
+            (
+                `recipient_id`,
+                `name`,
+                `langID`
+            )
+            VALUES
+            (
+                '.$rcID.',
+                "'.$name.'",
+                '.$langID.'
+            )
+            ON DUPLICATE KEY UPDATE
+                `name` = "'.$name.'"';
+
+        $objDatabase->execute($query);
     }
 
     function getFormFieldNames($id)
@@ -672,7 +804,6 @@ class ContactLib
      * @param       array $field
      */
     protected function updateFormField(
-        $formID, 
         $field
     )
     {
@@ -814,8 +945,9 @@ class ContactLib
                 "'.$langID.'"
             )
             ON DUPLICATE KEY UPDATE
-            `name` = "'.$name.'",
-            `attributes` = "'.$value.'"';
+                `name` = "'.$name.'",
+                `attributes` = "'.$value.'"
+            ';
 
         $objDatabase->execute($query);
     }
