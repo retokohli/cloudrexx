@@ -894,7 +894,7 @@ class ContactLib
             LEFT JOIN
                 `'.DBPREFIX.'module_contact_form_field`      AS `f`
             ON
-                `fieldID` = `l`.`id`
+                `fieldID` = `f`.`id`
             WHERE
                 `fieldID` NOT IN ('.$list.')
             AND
@@ -911,6 +911,56 @@ class ContactLib
                 `id_form` = '.$formID;
 
         $objDatabase->execute($query);
+    }
+
+    /**
+     * Delete the recipients that aren't wanted anymore
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $recipients
+     */
+    protected function cleanRecipients($formID, $recipients) {
+        global $objDatabase;
+
+        $objDatabase->debug = true;
+
+        if (count($recipients) == 0) {
+            return;
+        }
+
+        $list = implode(', ', $recipients);
+        $formID = intval($formID);
+
+        $query = '
+            DELETE
+                `l`
+            FROM
+                `'.DBPREFIX.'module_contact_recipient_lang`  AS `l`
+
+            LEFT JOIN
+                `'.DBPREFIX.'module_contact_recipient`       AS `r`
+            ON
+                `recipient_id` = `r`.`id`
+
+            WHERE
+                `recipient_id` NOT IN ('.$list.')
+
+            AND
+                `id_form` = '.$formID;
+
+        $objDatabase->execute($query);
+
+        $query = '
+            DELETE FROM
+                `'.DBPREFIX.'module_contact_recipient`
+            WHERE
+                `id` NOT IN ('.$list.')
+            AND
+                `id_form` = '.$formID;
+
+        $objDatabase->execute($query);
+
     }
 
     /**
