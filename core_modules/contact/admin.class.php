@@ -1138,6 +1138,10 @@ class ContactManager extends ContactLib
                 }
             }
 
+            if (!$adding) {
+                $this->cleanRecipients($formId, $recipientIDs);
+            }
+
         }
 
         //$this->_modifyForm();
