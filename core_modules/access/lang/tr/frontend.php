@@ -81,4 +81,5 @@ $_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "I confirm the correctness of the entered
 $_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
 $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "You have to accept the Terms of Service to sign up!";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Security Code";
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Folgende Newsletter abonnieren:";
 ?>

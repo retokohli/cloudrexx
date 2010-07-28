@@ -145,4 +145,16 @@ $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Elenco destinatari";
 $_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "The e-mail address '%s' is not valid!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
 $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'] = "All Mandatory field values must be set!";
+$_ARRAYLANG['TXT_FORM_VALUES'] = "Formularwerte";
+$_ARRAYLANG['TXT_FORM_FIELDS'] = "Formularfelder";
+$_ARRAYLANG['TXT_ADVANCED_SETTINGS'] = "Erweiterte Einstellungen";
+$_ARRAYLANG['TXT_FORM_RECIPIENTS'] = "Empfängerliste";
+$_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'] = "Sprache";
+$_ARRAYLANG['TXT_CONTACT_FORM_NAME'] = "Name";
+$_ARRAYLANG['TXT_CONTACT_FORM_VALUES'] = "Werte";
+$_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'] = "Formularfelder";
+$_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Empfängerliste";
+$_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Erweiterte Einstellungen";
+$_ARRAYLANG['TXT_CONTACT_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_CONTACT_EXTEND'] = "Erweitert";
 ?>

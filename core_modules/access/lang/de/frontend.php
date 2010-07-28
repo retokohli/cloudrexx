@@ -80,4 +80,5 @@ $_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "Ich bestätige die Richtigkeit der gemac
 $_ARRAYLANG['TXT_ACCESS_TOS'] = "Allgemeine Geschäftsbedingungen";
 $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "Sie müssen die Allgemeinen Geschäftsbedingungen akzeptieren!";
 $_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Sicherheitscode";
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Folgende Newsletter abonnieren:";
 ?>

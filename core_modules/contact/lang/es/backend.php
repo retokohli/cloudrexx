@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME'] = "Formulario de contacto, entradas d
 $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'] = "Podr&iacute;a ser posible que este archivo est&eacute; infectado por un virus o troyano, \n ya que se ha sido subido por alguien desconocido. \ 
 \n \¿Desea abrirlo de todas formas?";
 $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'] = "\¡Esta acci&oacute;n no se puede deshacer!";
-$_ARRAYLANG['TXT_CONTACT_NAME'] = "Nombre";
+$_ARRAYLANG['TXT_CONTACT_NAME'] = "Name";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'] = "Direcci&oacute;n(es) de destinatario(s)";
 $_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'] = "A&ntilde;adir campo";
 $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'] = "Campos del formulario";
@@ -146,4 +146,16 @@ $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Seleccionar direcci&o
 $_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "\¡La direcci&oacute;n de email '%s' no es v&aacute;lida!";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
 $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'] = "All Mandatory field values must be set!";
+$_ARRAYLANG['TXT_FORM_VALUES'] = "Formularwerte";
+$_ARRAYLANG['TXT_FORM_FIELDS'] = "Formularfelder";
+$_ARRAYLANG['TXT_ADVANCED_SETTINGS'] = "Erweiterte Einstellungen";
+$_ARRAYLANG['TXT_FORM_RECIPIENTS'] = "Empfängerliste";
+$_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'] = "Sprache";
+$_ARRAYLANG['TXT_CONTACT_FORM_NAME'] = "Name";
+$_ARRAYLANG['TXT_CONTACT_FORM_VALUES'] = "Werte";
+$_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'] = "Formularfelder";
+$_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Empfängerliste";
+$_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Erweiterte Einstellungen";
+$_ARRAYLANG['TXT_CONTACT_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_CONTACT_EXTEND'] = "Erweitert";
 ?>
