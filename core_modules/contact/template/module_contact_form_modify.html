@@ -104,126 +104,11 @@ function removeFormField(obj) {
     }
 }
 
-function removeFormElement(id, what)
-{
-    document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
-}
 
-function moveFormElementUp(id, what)
-{
-    elField1 = document.getElementById('form'+what+'_'+id);
-    elField2 = document.getElementById('form'+what+'_'+id).cloneNode(true);
-    if(what == 'Field')
-        for (var i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-            if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-                elFieldType1 = i;
-                break;
-            }
-        }
-
-    elField3 = document.getElementById('form'+what+'_'+id).previousSibling;
-    if (elField3) {
-        try {
-            elField3Id = elField3.getAttribute('id');
-        } catch (e) {
-            elField3Id = '';
-        }
-        while (elField3.nodeType != 1 || elField3Id == '' || elField3Id.substring(0, 5+(what.length)) != 'form'+what+'_') {
-            elField3 = elField3.previousSibling;
-            if (!elField3) return;
-            try {
-                elField3Id = elField3.getAttribute('id');
-                if (typeof(elField3Id) != 'string') {
-                    elField3Id = '';
-                }
-            } catch (e) {
-                elField3Id = '';
-            }
-        }
-    } else {
-        return;
-    }
-
-    if(what == "Recipient"){
-        var recipientSortGoesDown   = getFieldByName(elField2, 'contactFormRecipientSort')
-        var recipientSortGoesUp     = getFieldByName(elField3, 'contactFormRecipientSort')
-        recipientSortGoesDown.value = recipientSortGoesDown.value*1 - 1;
-        recipientSortGoesUp.value   = recipientSortGoesUp.value*1 + 1;
-    }
-
-    document.getElementById('form'+what+'Container').removeChild(elField1);
-    document.getElementById('form'+what+'Container').insertBefore(elField2, elField3);
-
-    if(what == 'Field')
-        document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType1].selected = true;
-}
-
-function getFieldByName(obj, name)
-{
-    var fields = obj.getElementsByTagName("input");
-    for(var i = 0; i < fields.length; i++){
-        if(fields[i].name.indexOf(name) != -1){
-            return fields[i];
-        }
-    }
-}
-
-function moveFormElementDown(id, what)
-{
-    elField1 = document.getElementById('form'+what+'_'+id).cloneNode(true);
-
-    if(what == 'Field')
-        for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-            if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-                elFieldType1 = i;
-                break;
-            }
-        }
-
-    elField2 = document.getElementById('form'+what+'_'+id).nextSibling;
-    if (elField2) {
-        while (elField2.nodeType != 1) {
-            elField2 = elField2.nextSibling;
-            if (!elField2) {
-                return;
-            }
-        }
-    } else {
-        return;
-    }
-
-    if(what == 'Field')
-        for (i = 0; i < document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes.length; i++) {
-            if (document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[i].selected == true) {
-                elFieldType2 = i;
-                break;
-            }
-        }
-
-    elField3 = elField2;
-    elField2 = elField2.cloneNode(true);
-
-    if(what == "Recipient"){
-        var recipientSortGoesUp     = getFieldByName(elField2, 'contactFormRecipientSort')
-        recipientSortGoesUp.value   = recipientSortGoesUp.value*1 - 1;
-        var recipientSortGoesDown   = getFieldByName(elField1, 'contactFormRecipientSort')
-        recipientSortGoesDown.value = recipientSortGoesDown.value*1 + 1;
-    }
-
-
-    document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
-    document.getElementById('form'+what+'Container').replaceChild(elField1, elField3);
-    document.getElementById('form'+what+'Container').insertBefore(elField2, document.getElementById('form'+what+'_'+id));
-
-    if(what == 'Field'){
-        document.getElementById('contactFormFieldType_'+id).childNodes[elFieldType1].selected = true;
-        document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType2].selected = true;
-    }
-}
 
 /**
   and what on earth does this piece of code do pls?
-  pisses me off to read this...
+  what about comments??
   */
 function setFormFieldAttributeBox(el, type)
 {
@@ -570,32 +455,6 @@ function deleteRecipientRow(obj) {
         <!-- END contact_form_recipient_list -->
         </tbody>
     </table>
-    
-                    <!-- BEGIN contact_form_recipient_list              
-                    <div class="formRecipient">
-                        <div style="white-space:nowrap; height:20px;" id="formRecipient_{CONTACT_FORM_RECIPIENT_ID}">
-
-                            {CONTACT_FORM_RECIPIENT_ID}
-                            <input style="width:285px;" type="text" name="contactFormRecipientName[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
-                                id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_ID}" 
-                                value="{CONTACT_FORM_RECIPIENT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
-
-                            <input style="width:285px;" type="text" name="contactFormRecipientEmail[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
-                                id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_EMAIL}" 
-                                onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" /> *
-
-                            <input type="hidden"  name="contactFormRecipientSort[{LANG_ID}][{CONTACT_FORM_RECIPIENT_ID}]" 
-                                    id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_SORT}" />
-
-                            <a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" 
-                                    id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_ID}" 
-                                    title="{TXT_CONTACT_DELETE}">
-                            <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
-
-                            </a>
-                        </div>
-                    </div>
-                     END contact_form_recipient_list -->
 
     <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
 </div>
