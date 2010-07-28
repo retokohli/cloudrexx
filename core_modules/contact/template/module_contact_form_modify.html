@@ -48,32 +48,8 @@ function addRecipient()
         }
     );
 
+
     $J('#formRecipientContainer').append(copy);
-
-    /*
-    var elField = document.getElementById('formRecipient_'+formRecipientLastId).cloneNode(true);
-
-    $('formRecipient_'+formRecipientLastId).setAttribute('id', 'formRecipient_'+(formRecipientLastId+1));
-    $('contactFormRecipientId_'+formRecipientLastId).innerHTML = formRecipientLastId+1;
-    $('contactFormRecipientId_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientId_'+(formRecipientLastId+1));
-    $('contactFormRecipientName_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientName['+(formRecipientLastId+1)+']');
-    $('contactFormRecipientName_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientName_'+(formRecipientLastId+1));
-    $('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientEmail['+(formRecipientLastId+1)+']');
-    $('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientEmail_'+(formRecipientLastId+1));
-    $('contactFormRecipientSort_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientSort['+(formRecipientLastId+1)+']');
-    $('contactFormRecipientSort_'+formRecipientLastId).setAttribute('value', ++sort);
-    $('contactFormRecipientSort_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientSort_'+(formRecipientLastId+1));
-    $('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('href', 'javascript:removeFormElement('+(formRecipientLastId+1)+', \'Recipient\')');
-    $('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDelete_'+(formRecipientLastId+1));
-    $('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formRecipientLastId+1)+', \'Recipient\')');
-    $('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonUp_'+(formRecipientLastId+1));
-    $('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formRecipientLastId+1)+', \'Recipient\')');
-    $('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDown_'+(formRecipientLastId+1));
-
-    formRecipientLastId = formRecipientLastId + 1;
-
-    document.getElementById('formRecipientContainer').appendChild(elField);
-    */
 }
 
 /**
@@ -417,6 +393,16 @@ function toggleLanguages(id) {
     }
 }
 
+/*
+    Remove a recipient row. Prevent from
+    removing when there's only one left
+ */
+function deleteRecipientRow(obj) {
+    if ($J('.formRecipient').size() > 1) {
+        $J(obj).parents('tr:first').remove();
+    }
+}
+
 // -->
 </script>
 
@@ -541,12 +527,13 @@ function toggleLanguages(id) {
 <div id="tab_recipients" class="tabs" style="display: none;">
    <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
         <tr>
-            <th colspan="2">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
+            <th colspan="3">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
         </tr>
 
         <tr class="row3">
             <td style="width: 315px;">{TXT_CONTACT_EMAIL}</td>
             <td>{TXT_CONTACT_NAME}</td>
+            <td>&nbsp;</td>
         </tr>
 
         <!--BEGIN contact_form_recipient_list -->
@@ -564,6 +551,11 @@ function toggleLanguages(id) {
                         value="{CONTACT_FORM_RECIPIENT_NAME}" /> {CONTACT_FORM_LANGUAGE_NAME} <br />
                     <!-- END recipientNameLang -->
                 </div>
+            </td>
+            <td>
+                <a href="#" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
+                    <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
+                </a>
             </td>
         </tr>
         <!-- END contact_form_recipient_list -->
