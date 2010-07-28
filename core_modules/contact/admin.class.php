@@ -535,27 +535,39 @@ class ContactManager extends ContactLib
     }
 
     /**
-     * display recipients in backend
+     * Display recipients in backend
      *
      * @param array $arrRecipients
      */
-    function _showRecipients($arrRecipients = null){
+    function _showRecipients($recipients = array()){
         global $_ARRAYLANG;
-        if(!is_array($arrRecipients) || count($arrRecipients) < 1){
-            $arrRecipients[$this->getLastRecipientId()+1] = array(
-                'name'     => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                'email' => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
-                'sort' => 1,
+
+        $activeLanguages =  FWLanguage::getActiveFrontendLanguages();
+        foreach ($recipients as $rec) {
+            foreach ($activeLanguages as $langID => $lang) {
+                $this->_objTpl->setVariable(
+                    array(
+                        'CONTACT_FORM_RECIPIENT_ID'         => $rec['id'],
+                        'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langID,
+                        'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID],
+                        'CONTACT_FORM_LANGUAGE_NAME'        => $lang['name'],
+                    )
+                );
+
+                $this->_objTpl->parse('recipientNameLang');
+            }
+
+            $this->_objTpl->setVariable(
+                array(
+                    'CONTACT_FORM_RECIPIENT_ID'     => $rec['id'],
+                    'CONTACT_FROM_RECIPIENT_EMAIL'  => $rec['email'],
+                    'CONTACT_FORM_RECIPIENT_NAME'   => $rec['lang'][count($rec['lang'])-1], // take the first one
+                    'CONTACT_FORM_RECIPIENT_TYPE'   => $rec['editType'],
+                    'TXT_CONTACT_EXTEND'            => $_ARRAYLANG['TXT_CONTACT_EXTEND']
+                )
             );
-        }
-        foreach ($arrRecipients as $id => $arrRecipient) {
-            $this->_objTpl->setVariable(array(
-                'CONTACT_FORM_RECIPIENT_ID'        => $id,
-                'CONTACT_FORM_RECIPIENT_NAME'   => $arrRecipient['name'],
-                'CONTACT_FORM_RECIPIENT_EMAIL'  => $arrRecipient['email'],
-                'CONTACT_FORM_RECIPIENT_SORT'   => $arrRecipient['sort'],
-            ));
-            $this->_objTpl->parse("contact_form_recipient_list");
+
+            $this->_objTpl->parse('contact_form_recipient_list');
         }
     }
 
@@ -750,7 +762,6 @@ class ContactManager extends ContactLib
 
                 'TXT_CONTACT_EMAIL'                             => $_ARRAYLANG['TXT_CONTACT_EMAIL'],
                 'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                'TXT_CONTACT_EXTEND'                            => $_ARRAYLANG['TXT_CONTACT_EXTEND']
             )
         );
 
@@ -759,9 +770,11 @@ class ContactManager extends ContactLib
         $param = ($formId > 0) ? $formId : $null;
         if (isset($_POST['saveForm'])) {
             $fields = $this->_getFormFieldsFromPost($param);
+            $recipients = $this->getRecipientsFromPost();
         } else {
             // get the saved fields
             $fields = $this->getFormFields($param);
+            $recipients = $this->getRecipients($param);
         }
 
         // make an empty one so at least one is parsed
@@ -838,7 +851,8 @@ class ContactManager extends ContactLib
             // make an empty one so there's at least one
             $recipients[0] = array(
                 'id'    => 1,
-                'email' => ''
+                'email' => '',
+                'editType' => 'new'
             );
 
             foreach ($activeLanguages as $langID => $lang) {
@@ -847,31 +861,10 @@ class ContactManager extends ContactLib
         }
 
         // parse the recipients
-        foreach ($recipients as $rec) {
-            foreach ($activeLanguages as $langID => $lang) {
-                $this->_objTpl->setVariable(
-                    array(
-                        'CONTACT_FORM_RECIPIENT_ID'         => $rec['id'],
-                        'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langID,
-                        'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID],
-                        'CONTACT_FORM_LANGUAGE_NAME'        => $lang['name']
-                    )
-                );
+        $this->_showRecipients($recipients);
 
-                $this->_objTpl->parse('recipientNameLang');
-            }
-
-            $this->_objTpl->setVariable(
-                array(
-                    'CONTACT_FORM_RECIPIENT_ID'     => $rec['id'],
-                    'CONTACT_FROM_RECIPIENT_EMAIL'  => $rec['email'],
-                    'CONTACT_FORM_LANGUAGE_NAME'    => $rec['lang'][0] // take the first one
-                )
-            );
-        }
-
-        /*
-        if (isset($_POST['saveForm'])) {
+            /*
+            if (isset($_POST['saveForm'])) {
             $null           = null;
             $arrFields      = $this->_getFormFieldsFromPost($null);
             $arrRecipients  = $this->_getRecipientsFromPost(false);
@@ -1050,7 +1043,7 @@ class ContactManager extends ContactLib
     {
         global $_ARRAYLANG, $_CONFIG;
         global $objDatabase;
-        
+
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         $adding = $_POST['copy'] || !$formId;
 
@@ -1126,13 +1119,23 @@ class ContactManager extends ContactLib
                 if ($field['editType'] == 'new') {
                     $formFieldIDs[] = $this->addFormField($formId, $field);
                 } else {
-                    $this->updateFormField($formId, $field);
+                    $this->updateFormField($field);
                     $formFieldIDs[] = $field['id'];
                 }
             }
 
             if (!$adding) {
                 $this->cleanFormFields($formId, $formFieldIDs);
+            }
+
+            $recipients = $this->getRecipientsFromPost();
+            foreach ($recipients as $recipient) {
+                if ($recipient['editType'] == 'new') {
+                    $recipientIDs[] = $this->addRecipient($formId, $recipient);
+                } else {
+                    $this->updateRecipient($recipient);
+                    $recipientIDs[] = $recipient['id'];
+                }
             }
 
         }
@@ -1318,6 +1321,8 @@ class ContactManager extends ContactLib
         }
     }
 
+        /*
+         * this is the old one
     function _getRecipientsFromPost($logErrors = true)
     {
         global $_ARRAYLANG;
@@ -1354,6 +1359,7 @@ class ContactManager extends ContactLib
         }
         return $arrRecipients;
     }
+         */
 
     /**
      * Get the form fields from the post variables
@@ -1361,7 +1367,7 @@ class ContactManager extends ContactLib
      * This is only used when an error on saving occurs, to
      * reparse the form fields.
      */
-    function _getFormFieldsFromPost(&$uniqueFieldNames)
+    private function _getFormFieldsFromPost(&$uniqueFieldNames)
     {
         $uniqueFieldNames = true;
         $arrFields = array();
@@ -1503,6 +1509,42 @@ class ContactManager extends ContactLib
             }
         }
         return $arrFields;
+    }
+
+    /**
+     * Parse the post values and return a list of recipients
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @return      array
+     */
+    private function getRecipientsFromPost() {
+        $mails = $_POST['contactFormRecipientEmail'];
+        $names = $_POST['contactFormRecipientName'];
+        $editTypes = $_POST['contactFormRecipientEditType'];
+
+        $recipients = array();
+        if (count($mails) == 0) {
+            return $recipients;
+        }
+
+        $sortCounter = 0;
+        foreach ($mails as $key => $mail) {
+            $recipients[$key] = array(
+                'id'    => $key,
+                'email' => $mail,
+                'sort'  => $sortCounter++,
+                'editType' => $editTypes[$key]
+            );
+            foreach (FWLanguage::getActiveFrontendLanguages() as $langID => $lang) {
+                $name = ($names[$key][$langID]) 
+                    ? $names[$key][$langID] 
+                    : $names[$key][0]
+                ;
+                $recipients[$key]['lang'][$langID] = $name;
+            }
+        }
+
+        return $recipients;
     }
 
     /**
