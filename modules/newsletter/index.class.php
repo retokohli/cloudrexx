@@ -1,6 +1,5 @@
 <?php
-$_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "Der Empfänger %s hat sich vom Newsletter abgemeldet.";
-$_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Abmeldung";
+
 /**
  * Newsletter Modul
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -62,27 +61,21 @@ class newsletter extends NewsletterLib
             case 'profile':
                 $this->_profile();
                 break;
-
             case 'unsubscribe':
                 $this->_unsubscribe();
                 break;
-
              case 'subscribe':
                 $this->_profile();
                 break;
-
             case 'confirm':
                 $this->_confirm();
                 break;
-
             default:
                 $this->_profile();
                 break;
         }
-
         return $this->_objTpl->get();
     }
-
 
 
     function _confirm(){
@@ -683,5 +676,7 @@ class newsletter extends NewsletterLib
         $html = $this->_getHTML();
         $code = str_replace("{NEWSLETTER_BLOCK}", $html, $code);
     }
+
 }
+
 ?>
