@@ -23,207 +23,205 @@ require_once ASCMS_LIBRARY_PATH."/importexport/lib/importexport.class.php";
  */
 class Import extends ImportExport
 {
-	var $fieldNames;
-	var $importedData;
-	var $pairs = array();
+    public $fieldNames;
+    public $importedData;
+    public $pairs = array();
 
-	/**
-	 * getFinalData
-	 *
-	 * This function returns the associated fields and values.
-	 * @param array $fields Name of the fields
-	 */
-	function getFinalData($fields)
-	{
-		$this->setType($_POST['importtype']);
-		$this->setFieldPairs($_POST['pairs_left_keys'], $_POST['pairs_right_keys']);
-		$this->parseFile($_POST['importfile']);
 
-		$retval = array();
+    /**
+     * getFinalData
+     *
+     * This function returns the associated fields and values.
+     * @param array $fields Name of the fields
+     */
+    function getFinalData($fields)
+    {
+        $this->setType($_POST['importtype']);
+        $this->setFieldPairs($_POST['pairs_left_keys'], $_POST['pairs_right_keys']);
+        $this->parseFile($_POST['importfile']);
+        $retval = array();
+        foreach ($this->importedData as $datarow) {
+            foreach ($this->pairs as $key => $value) {
+                $retfields[$key] = $datarow[$value];
+                $retfields[$fields[$key]] = $datarow[$value];
+            }
+            $retval[] = $retfields;
+        }
+        return $retval;
+    }
 
-		foreach ($this->importedData as $datarow) {
-			foreach ($this->pairs as $key => $value) {
-				$retfields[$key] = $datarow[$value];
-				$retfields[$fields[$key]] = $datarow[$value];
-			}
 
-			$retval[] = $retfields;
-		}
+    /**
+     * Sets the field Pairs
+     * @param array $left_fields
+     * @param array $right_fields
+     */
+    function setFieldPairs($left_fields, $right_fields)
+    {
+        $lFields = explode(";", $left_fields);
+        $rFields = explode(";", $right_fields);
+        foreach ($rFields as $key => $rField) {
+            $this->pairs[$rField] = $lFields[$key];
+        }
+    }
 
-		return $retval;
 
-	}
+    /**
+     * Gets the fieldnames of the importing file
+     * @return array $fields
+     */
+    function getDataFields()
+    {
+        return $this->fieldNames;
+    }
 
-	/**
-	 * Sets the field Pairs
-	 *
-	 * @param array $left_fields
-	 * @param array $right_fields
-	 */
-	function setFieldPairs($left_fields, $right_fields)
-	{
-		$lFields = explode(";", $left_fields);
-		$rFields = explode(";", $right_fields);
 
-		foreach ($rFields as $key => $rField) {
-			$this->pairs[$rField] = $lFields[$key];
-		}
-	}
+    /**
+     * Parses the file
+     * @param array $file
+     * @param bool $delete Delete file after parsing or not
+     * @return string $file
+     */
+    function parseFile($file, $onlyHeader = false)
+    {
+        if ($onlyHeader) {
+            $path = ASCMS_TEMP_PATH . "/";
+            $newpath = $path . basename($file) . "." . time() . ".import";
+            move_uploaded_file($file, $newpath);
+            $file = $newpath;
+            $data = $this->dataClass->parse($file, 1);
+        } else {
+            $data = $this->dataClass->parse($file);
+        }
+        if (!empty($data)) {
+            if (isset($data['fieldnames'])) {
+                // Set the fieldnames
+                $this->fieldNames = $data['fieldnames'];
+            } else {
+                // Take the first data line as fieldnames
+                foreach ($data['data'][0] as $value) {
+                    $this->fieldNames[] = $value;
+                }
+            }
+            if (isset($data['data'])) {
+                $this->importedData = $data['data'];
+            }
+        }
+        if (!$onlyHeader) {
+            unlink($file);
+        }
+        return $file;
+    }
 
-	/**
-	 * Gets the fieldnames of the importing file
-	 *
-	 * @return array $fields
-	 */
-	function getDataFields()
-	{
-		return $this->fieldNames;
-	}
 
-	/**
-	 * Parses the file
-	 *
-	 * @param array $file
-	 * @param bool $delete Delete file after parsing or not
-	 * @return string $file
-	 */
-	function parseFile($file, $onlyHeader = false) {
-		if ($onlyHeader) {
-			$path = ASCMS_TEMP_PATH . "/";
+    /**
+     * Sets the template for the   file selection
+     *
+     * Sets the template and all neede variables
+     * for the file selection.
+     * @param object $tpl The template object (by reference)
+     */
+    function initFileSelectTemplate(&$tpl)
+    {
+        global $_ARRAYLANG;
 
-			$newpath = $path . basename($file) . "." . time() . ".import";
-			move_uploaded_file($file, $newpath);
-			$file = $newpath;
-			$data = $this->dataClass->parse($file, 1);
-		} else {
-			$data = $this->dataClass->parse($file);
-		}
+        $template = file_get_contents(
+            ASCMS_LIBRARY_PATH."/importexport/template/import.fileselect.html");
+        $tpl->setTemplate($template, true, true);
+        $tpl->setVariable(array(
+            "TXT_IMPORT" => $_ARRAYLANG['TXT_IMPORT'],
+            "IMPORT_TYPELIST" => $this->getTypeSelectList(),
+// TODO: Somehow this index seems to get lost sometimes,
+// i.e. cadmin/index.php?cmd=newsletter&act=users&tpl=import
+            "TXT_FILETYPE" =>
+                (isset($_ARRAYLANG['TXT_FILETYPE'])
+                    ? $_ARRAYLANG['TXT_FILETYPE'] : ''),
+            "TXT_CHOOSE_FILE" => $_ARRAYLANG['TXT_CHOOSE_FILE'],
+            "TXT_SEPARATOR" => $_ARRAYLANG['TXT_SEPARATOR'],
+            "TXT_ENCLOSURE" => $_ARRAYLANG['TXT_ENCLOSURE'],
+            "TXT_DESC_DELIMITER" => $_ARRAYLANG['TXT_DESC_DELIMITER'],
+            "TXT_DESC_ENCLOSURE" => $_ARRAYLANG['TXT_DESC_ENCLOSURE'],
+            "TXT_HELP" => $_ARRAYLANG['TXT_HELP'],
+        ));
+    }
 
-		if (!empty($data)) {
-			if (isset($data['fieldnames'])) {
-				// Set the fieldnames
-				$this->fieldNames = $data['fieldnames'];
-			} else {
-				// Take the first data line as fieldnames
-				foreach ($data['data'][0] as $value) {
-					$this->fieldNames[] = $value;
-				}
-			}
 
-			if (isset($data['data'])) {
-				$this->importedData = $data['data'];
-			}
-		}
+    /**
+     * Sets the template for the field selection
+     *
+     * Parses the given file and sets the template and values
+     * for the field selection.
+     * @param object $tpl The template object (by reference)
+     */
+    function initFieldSelectTemplate(&$tpl, $given_fields)
+    {
+        global $_ARRAYLANG;
 
-		if (!$onlyHeader) {
-			unlink($file);
-		}
+        $template = file_get_contents(ASCMS_LIBRARY_PATH . "/importexport/template/import.fieldselect.html");
+        $tpl->setTemplate($template, true, true);
+        // Pass the options
+        foreach ($_POST as $postkey => $postvar) {
+            if (preg_match('%^import\_options\_%', $postkey)) {
+                $optionvars[strtoupper($postkey)] = htmlentities(
+                    contrexx_stripslashes($postvar),
+                    ENT_QUOTES, CONTREXX_CHARSET);
+            }
+        }
+        $tpl->setVariable($optionvars);
+        $this->setType($_POST['importtype']);
+        $file = $this->parseFile($_FILES['importfile']['tmp_name'], true);
 
-		return $file;
-	}
+        $tpl->setVariable(array(
+// TODO: Somehow this index seems to get lost sometimes,
+// i.e. cadmin/index.php?cmd=newsletter&act=users&tpl=import
+// when trying to import from a file
+            "TXT_REMOVE_PAIR" =>
+                (isset($_ARRAYLANG['TXT_REMOVE_PAIR'])
+                  ? $_ARRAYLANG['TXT_REMOVE_PAIR'] : ''),
+            "TXT_ADD_PAIR" => $_ARRAYLANG['TXT_ADD_PAIR'],
+            "TXT_IMPORT" => $_ARRAYLANG['TXT_IMPORT'],
+            "TXT_FIELDSELECT_SELECT_DESC" => $_ARRAYLANG['TXT_FIELDSELECT_SELECT_DESC'],
+            "TXT_FIELDSELECT_SHOW_DESC" => $_ARRAYLANG['TXT_FIELDSELECT_SHOW_DESC'],
+            "IMPORT_FILE" => $file,
+            "IMPORT_TYPE" => $_POST['importtype'],
+            "TXT_CANCEL" => $_ARRAYLANG['TXT_CANCEL'],
+        ));
 
-	/**
-	 * Sets the template for the file selection
-	 *
-	 * Sets the template and all neede variables
-	 * for the file selection.
-	 * @param object $tpl The template object (by reference)
-	 */
-	function initFileSelectTemplate(&$tpl)
-	{
-		global $_ARRAYLANG;
+        // Set the given fields
+        foreach ($given_fields as $key => $field) {
+            if ($field['active']) {
+                $tpl->setVariable(array(
+                    "IMPORT_FIELD_VALUE" => $key,
+                    "IMPORT_FIELD_NAME" => $field,
+                ));
+                $tpl->parse("given_field_row");
+            }
+        }
 
-		$template = file_get_contents(ASCMS_LIBRARY_PATH . "/importexport/template/import.fileselect.html");
-		$tpl->setTemplate($template,true,true);
+        // Set the file fields
+        $fieldnames = $this->getDataFields();
+        foreach ($fieldnames as $key => $field) {
+            $tpl->setVariable(array(
+                "IMPORT_FIELD_VALUE" => $key,
+                "IMPORT_FIELD_NAME" => $field,
+            ));
+            $tpl->parse("file_field_row");
+        }
+    }
 
-		$tpl->setVariable(array(
-			"TXT_IMPORT"		=> $_ARRAYLANG['TXT_IMPORT'],
-			"IMPORT_TYPELIST"	=> $this->getTypeSelectList(),
-			"TXT_FILETYPE"		=> $_ARRAYLANG['TXT_FILETYPE'],
-			"TXT_CHOOSE_FILE"	=> $_ARRAYLANG['TXT_CHOOSE_FILE'],
-			"TXT_SEPARATOR"		=> $_ARRAYLANG['TXT_SEPARATOR'],
-			"TXT_ENCLOSURE"		=> $_ARRAYLANG['TXT_ENCLOSURE'],
-			"TXT_DESC_DELIMITER"	=> $_ARRAYLANG['TXT_DESC_DELIMITER'],
-			"TXT_DESC_ENCLOSURE"	=> $_ARRAYLANG['TXT_DESC_ENCLOSURE'],
-			"TXT_HELP"           => $_ARRAYLANG['TXT_HELP']
-		));
-	}
 
-	/**
-	 * Sets the template for the field selection
-	 *
-	 * Parses the given file and sets the template and values
-	 * for the field selection.
-	 * @param object $tpl The template object (by reference)
-	 */
-	function initFieldSelectTemplate(&$tpl, $given_fields)
-	{
-		global $_ARRAYLANG;
-
-		$template = file_get_contents(ASCMS_LIBRARY_PATH . "/importexport/template/import.fieldselect.html");
-		$tpl->setTemplate($template, true, true);
-
-		// Pass the options
-		foreach ($_POST as $postkey => $postvar) {
-			if (preg_match("%^import\_options\_%", $postkey)) {
-				$optionvars[strtoupper($postkey)] = htmlentities(contrexx_stripslashes($postvar), ENT_QUOTES, CONTREXX_CHARSET);
-			}
-		}
-		$tpl->setVariable($optionvars);
-
-		$this->setType($_POST['importtype']);
-		$file = $this->parseFile($_FILES['importfile']['tmp_name'], true);
-
-		$tpl->setVariable(array(
-			"TXT_REMOVE_PAIR"	=> $_ARRAYLANG['TXT_REMOVE_PAIR'],
-			"TXT_ADD_PAIR"		=> $_ARRAYLANG['TXT_ADD_PAIR'],
-			"TXT_IMPORT"		=> $_ARRAYLANG['TXT_IMPORT'],
-			"TXT_FIELDSELECT_SELECT_DESC"	=> $_ARRAYLANG['TXT_FIELDSELECT_SELECT_DESC'],
-			"TXT_FIELDSELECT_SHOW_DESC"		=> $_ARRAYLANG['TXT_FIELDSELECT_SHOW_DESC'],
-			"IMPORT_FILE"	=> $file,
-			"IMPORT_TYPE"	=> $_POST['importtype'],
-			"TXT_CANCEL"         => $_ARRAYLANG['TXT_CANCEL']
-		));
-
-		/*
-		 * Set the given fields
-		 */
-		foreach ($given_fields as $key => $field) {
-			if ($field['active']) {
-				$tpl->setVariable(array(
-					"IMPORT_FIELD_VALUE" => $key,
-					"IMPORT_FIELD_NAME"	=> $field
-				));
-
-				$tpl->parse("given_field_row");
-			}
-		}
-
-		// Set the file fields
-		$fieldnames = $this->getDataFields();
-		foreach ($fieldnames as $key => $field) {
-			$tpl->setVariable(array(
-				"IMPORT_FIELD_VALUE" => $key,
-				"IMPORT_FIELD_NAME"	=> $field,
-			));
-
-			$tpl->parse("file_field_row");
-		}
-	}
-
-	/**
-	 * Cancels the import operation
-	 *
-	 */
-	function cancel()
-	{
+    /**
+     * Cancels the import operation
+     */
+    function cancel()
+    {
         $file = $_POST['importfile'];
-
         $path = ASCMS_TEMP_PATH . "/";
         if (file_exists($path . $file)) {
             unlink($path);
         }
-	}
+    }
+
 }
 
 ?>
