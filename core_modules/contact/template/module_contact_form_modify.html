@@ -48,6 +48,7 @@ function addRecipient()
         }
     );
 
+    $J(copy).find('input').val('');
     $J(copy).find('input[type=hidden]').val('new');
 
     $J('#formRecipientContainer').append(copy);

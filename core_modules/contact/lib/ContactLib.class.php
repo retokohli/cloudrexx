@@ -427,6 +427,8 @@ class ContactLib
         foreach ($recipient['lang'] as $langID => $name) {
             $this->setRecipientLang($recipientID, $langID, $name);
         }
+
+        return $recipientID;
     }
 
     /**
@@ -922,8 +924,6 @@ class ContactLib
      */
     protected function cleanRecipients($formID, $recipients) {
         global $objDatabase;
-
-        $objDatabase->debug = true;
 
         if (count($recipients) == 0) {
             return;
