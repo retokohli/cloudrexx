@@ -1,7 +1,5 @@
 <?php
 
-$_ARRAYLANG['TXT_ACCESS_NEWSLETTER_LISTS'] = "Newsletter";
-
 /**
 * User Management
 * @copyright    CONTREXX CMS - COMVATION AG
@@ -57,16 +55,27 @@ class AccessManager extends AccessLib
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION', /*' <a href="index.php?cmd=access" title="'.$_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'">'.$_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>
-                                                            '.*/(Permission::checkAccess(18, 'static', true) ? '<a href="index.php?cmd=access&amp;act=user" title="'.$_ARRAYLANG['TXT_ACCESS_USERS'].'">'.$_ARRAYLANG['TXT_ACCESS_USERS'].'</a>' : '').'
-                                                            '.(Permission::checkAccess(18, 'static', true) ? '<a href="index.php?cmd=access&amp;act=group" title="'.$_ARRAYLANG['TXT_ACCESS_GROUPS'].'">'.$_ARRAYLANG['TXT_ACCESS_GROUPS'].'</a>' : '').'
-                                                            '.(Permission::checkAccess(18, 'static', true) ? '<a href="index.php?cmd=access&amp;act=config" title="'.$_ARRAYLANG['TXT_ACCESS_SETTINGS'].'">'.$_ARRAYLANG['TXT_ACCESS_SETTINGS'].'</a>' : ''));
+        $objTemplate->setVariable('CONTENT_NAVIGATION',
+            /*' <a href="index.php?cmd=access" title="'.
+              $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_OVERVIEW'].'</a>'.*/
+            (Permission::checkAccess(18, 'static', true)
+              ? '<a href="index.php?cmd=access&amp;act=user" title="'.
+              $_ARRAYLANG['TXT_ACCESS_USERS'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_USERS'].'</a>' : '').
+            (Permission::checkAccess(18, 'static', true)
+              ? '<a href="index.php?cmd=access&amp;act=group" title="'.
+              $_ARRAYLANG['TXT_ACCESS_GROUPS'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_GROUPS'].'</a>' : '').
+            (Permission::checkAccess(18, 'static', true)
+              ? '<a href="index.php?cmd=access&amp;act=config" title="'.
+              $_ARRAYLANG['TXT_ACCESS_SETTINGS'].'">'.
+              $_ARRAYLANG['TXT_ACCESS_SETTINGS'].'</a>' : ''));
     }
 
 
   /**
-    * export users of a group as CSV
-    *
+    * Export users of a group as CSV
     * @param integer $groupId
     */
     function _exportUsers($groupId = 0, $langId = null)
@@ -199,7 +208,6 @@ class AccessManager extends AccessLib
         if (!isset($_REQUEST['act'])) {
             $_REQUEST['act'] = '';
         }
-
         if (!isset($_REQUEST['tpl'])) {
             $_REQUEST['tpl'] = '';
         }
@@ -210,7 +218,7 @@ class AccessManager extends AccessLib
             case 'export':
                 $_GET['groupId'] = !empty($_GET['groupId']) ? intval($_GET['groupId']) : 0;
                 $this->_exportUsers($_GET['groupId'], $_GET['langId']);
-            break;
+                break;
             case 'user':
                 if (Permission::checkAccess(18, 'static', true) || (isset($_REQUEST['id']) && $_REQUEST['id'] == $objFWUser->objUser->getId() && Permission::checkAccess(31, 'static', true))) {
                     $this->user();
@@ -219,29 +227,25 @@ class AccessManager extends AccessLib
                     exit;
                 }
                 break;
-
             case 'group':
                  Permission::checkAccess(18, 'static');
                 $this->_group();
                 break;
-
             case 'config':
                  Permission::checkAccess(18, 'static');
                 $this->_config();
                 break;
-
             default:
                  Permission::checkAccess(18, 'static');
                 /*$this->overview();*/
                 $this->user();
                 break;
         }
-
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->_pageTitle,
             'CONTENT_OK_MESSAGE'        => implode("<br />\n", $this->arrStatusMsg['ok']),
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->arrStatusMsg['error']),
-            'ADMIN_CONTENT'             => $this->_objTpl->get()
+            'ADMIN_CONTENT'             => $this->_objTpl->get(),
         ));
     }
 
@@ -269,25 +273,20 @@ class AccessManager extends AccessLib
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplatefile('module_access_user.html');
-
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_OVERVIEW'           => $_ARRAYLANG['TXT_ACCESS_OVERVIEW'],
-            'TXT_ACCESS_CREATE_NEW_USER'    => $_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER']
+            'TXT_ACCESS_CREATE_NEW_USER'    => $_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER'],
         ));
-
         switch ($_REQUEST['tpl']) {
             case 'modify':
                 $this->modifyUser();
                 break;
-
             case 'changeStatus':
                 $this->changeUserStatus();
                 break;
-
             case 'delete':
                 $this->_deleteUser();
                 break;
-
             default:
                 $this->userList();
                 break;
@@ -1118,31 +1117,23 @@ class AccessManager extends AccessLib
             if (!Permission::hasAllAccess() && ($objUser->getId() != $objFWUser->objUser->getId() || !Permission::checkAccess(31, 'static', true))) {
                 Permission::noAccess();
             }
-
             $objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
-
             $objUser->setEmail(isset($_POST['access_user_email']) ? trim(contrexx_stripslashes($_POST['access_user_email'])) : '');
             $objUser->setFrontendLanguage(isset($_POST['access_user_frontend_language']) ? intval($_POST['access_user_frontend_language']) : 0);
             $objUser->setBackendLanguage(isset($_POST['access_user_backend_language']) ? intval($_POST['access_user_backend_language']) : 0);
-
             $oldActiveStatus = $objUser->getActiveStatus();
             $objUser->setActiveStatus(isset($_POST['access_user_active']) ? (bool)$_POST['access_user_active'] : false);
-
             $objUser->setEmailAccess(isset($_POST['access_user_email_access']) && $objUser->isAllowedToChangeEmailAccess() ? trim(contrexx_stripslashes($_POST['access_user_email_access'])) : '');
             $objUser->setProfileAccess(isset($_POST['access_user_profile_access']) && $objUser->isAllowedToChangeProfileAccess() ? trim(contrexx_stripslashes($_POST['access_user_profile_access'])) : '');
-
             $objUser->setNewsletterCategories(isset($_POST['access_user_newsletters']) ? $_POST['access_user_newsletters'] : array());
-
             if (isset($_POST['access_profile_attribute']) && is_array($_POST['access_profile_attribute'])) {
                 $arrProfile = $_POST['access_profile_attribute'];
-
                 if (isset($_FILES['access_profile_attribute_images']) && is_array($_FILES['access_profile_attribute_images'])) {
                     $upload_res = $this->addUploadedImagesToProfile($objUser, $arrProfile, $_FILES['access_profile_attribute_images']);
                     if (is_array($upload_res)) {
                         $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $upload_res);
                     }
                 }
-
                 $objUser->setProfile($arrProfile);
             }
 
@@ -1193,9 +1184,7 @@ class AccessManager extends AccessLib
             $objUser->setActiveStatus(true);
         }
 
-
         $this->_objTpl->addBlockfile('ACCESS_USER_TEMPLATE', 'module_access_user_modify', 'module_access_user_modify.html');
-
         if ($objUser->getId()) {
             $this->_pageTitle = $_ARRAYLANG['TXT_ACCESS_MODIFY_USER_ACCOUNT'];
             $this->_objTpl->touchBlock('access_user_active_notification_function_call');
@@ -1209,7 +1198,6 @@ class AccessManager extends AccessLib
             while (!$objGroup->EOF) {
                 $var = in_array($objGroup->getId(), $objUser->getAssociatedGroupIds()) ? 'associatedGroups' : 'notAssociatedGroups';
                 $$var .= "<option value=\"".$objGroup->getId()."\">".htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET)." [".$objGroup->getType()."]</option>\n";
-
                 $objGroup->next();
             }
 
@@ -1275,75 +1263,71 @@ class AccessManager extends AccessLib
         $this->parseNewsletterLists($userID);
 
         $this->_objTpl->setVariable(array(
-            'ACCESS_USER_ID'                        => $objUser->getId(),
-            'ACCESS_USER_IS_ADMIN'                  => $objUser->getAdminStatus() ? 'checked="checked"' : '',
-            'ACCESS_USER_ACTIVE'                    => $objUser->getActiveStatus() ? 'checked="checked"' : '',
-            'ACCESS_USER_NOT_ASSOCIATED_GROUPS'     => $notAssociatedGroups,
-            'ACCESS_USER_ASSOCIATED_GROUPS'         => $associatedGroups,
-            'ACCESS_USER_PRIMARY_GROUP_MENU'        => $this->getGroupMenu($objUser->getPrimaryGroupId(), 'name="access_user_primary_group" id="access_user_primary_group" onchange="accessAssignGroupToUser(this,document.getElementById(\'access_user_not_associated_groups\'),document.getElementById(\'access_user_associated_groups\'))"', false),
-            'ACCESS_USER_VALIDITY_EXPIRATION_MENU'  => $this->getUserValidityMenu($objUser->getValidityTimePeriod(), $objUser->getExpirationDate()),
-            'ACCESS_USER_VALIDITY_OPTION_DISPLAY'   => $objUser->getAdminStatus() ? 'none' : '',
-            'ACCESS_JAVASCRIPT_FUNCTIONS'           => $this->getJavaScriptCode(),
-            'CSS_DISPLAY_STATUS'                    => $cssDisplayStatus
+            'ACCESS_USER_ID'                       => $objUser->getId(),
+            'ACCESS_USER_IS_ADMIN'                 => $objUser->getAdminStatus() ? 'checked="checked"' : '',
+            'ACCESS_USER_ACTIVE'                   => $objUser->getActiveStatus() ? 'checked="checked"' : '',
+            'ACCESS_USER_NOT_ASSOCIATED_GROUPS'    => $notAssociatedGroups,
+            'ACCESS_USER_ASSOCIATED_GROUPS'        => $associatedGroups,
+            'ACCESS_USER_PRIMARY_GROUP_MENU'       => $this->getGroupMenu($objUser->getPrimaryGroupId(), 'name="access_user_primary_group" id="access_user_primary_group" onchange="accessAssignGroupToUser(this,document.getElementById(\'access_user_not_associated_groups\'),document.getElementById(\'access_user_associated_groups\'))"', false),
+            'ACCESS_USER_VALIDITY_EXPIRATION_MENU' => $this->getUserValidityMenu($objUser->getValidityTimePeriod(), $objUser->getExpirationDate()),
+            'ACCESS_USER_VALIDITY_OPTION_DISPLAY'  => $objUser->getAdminStatus() ? 'none' : '',
+            'ACCESS_JAVASCRIPT_FUNCTIONS'          => $this->getJavaScriptCode(),
+            'CSS_DISPLAY_STATUS'                   => $cssDisplayStatus,
         ));
 
         $rowNr = 0;
         while (!$objUser->objAttribute->EOF) {
             $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-
-            if (!$objAttribute->isProtected() ||
-                (
-                    Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true) ||
-                    $objAttribute->checkModifyPermission()
-                )
+            if (   !$objAttribute->isProtected()
+                || (   Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true)
+                    || $objAttribute->checkModifyPermission())
             ) {
                 $this->_objTpl->setVariable(array(
-                    'ACCESS_ATTRIBUTE_ROW_CLASS'    => $rowNr++ % 2 + 1,
+                    'ACCESS_ATTRIBUTE_ROW_CLASS'    => ++$rowNr % 2 + 1,
                     'ACCESS_PROFILE_ATTRIBUTE_DESC' => htmlentities($objUser->objAttribute->getName(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'ACCESS_PROFILE_ATTRIBUTE'      => $this->parseAttribute($objUser, $objAttribute->getId(), 0, true, true)
+                    'ACCESS_PROFILE_ATTRIBUTE'      => $this->parseAttribute($objUser, $objAttribute->getId(), 0, true, true),
                 ));
                 $this->_objTpl->parse('access_profile_attribute_list');
             }
-
             $objUser->objAttribute->next();
         }
-
-
         $this->parseModuleSpecificExtensions();
-
         $this->_objTpl->parse('module_access_user_modify');
         return true;
     }
 
+
     /**
      * Parse the newsletter lists
-     *
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $userID
      */
-    private function parseNewsletterLists($userID) {
+    private function parseNewsletterLists($userID)
+    {
         global $objDatabase;
 
         $res = $this->getNewsletters($userID);
-        if ($res !== false) {
-            $row = 0;
-            while (!$res->EOF) {
-                $selected = $res->fields['selected'] ? 'checked="checked"' : '';
-                $this->_objTpl->setVariable(
-                    array(
-                        'ACCESS_NEWSLETTER_ID'  => $res->fields['id'],
-                        'ACCESS_NEWSLETTER_SELECTED' => $selected,
-                        'ACCESS_NEWSLETTER_NAME' => $res->fields['name'],
-                        'ACCESS_NEWSLETTER_ROW_CLASS' => ($row++ % 2) + 1
-                    )
-                );
-
-                $this->_objTpl->parse('newsletter_list');
-
-                $res->MoveNext();
-            }
+        if (!$res) return;
+        $row = 0;
+        while (!$res->EOF) {
+            $id = $res->fields['id'];
+            $this->_objTpl->setVariable(array(
+                'ACCESS_NEWSLETTER_ID'  => $id,
+                'ACCESS_NEWSLETTER_SELECTED' =>
+                    (isset($_POST['access_save_user'])
+                      ? (   isset($_POST['access_user_newsletters'])
+                         && in_array($id, $_POST['access_user_newsletters'])
+                          ? 'checked="checked"' : '')
+                      : ($res->fields['selected']
+                          ? 'checked="checked"' : '')),
+                'ACCESS_NEWSLETTER_NAME' => $res->fields['name'],
+                'ACCESS_NEWSLETTER_ROW_CLASS' => ($row++ % 2) + 1
+            ));
+            $this->_objTpl->parse('newsletter_list');
+            $res->MoveNext();
         }
     }
+
 
     private function parseModuleSpecificExtensions()
     {
@@ -1352,7 +1336,6 @@ class AccessManager extends AccessLib
         $status = false;
         $rowNr = 0;
         $objModuleChecker = new ModuleChecker();
-
         // add a category in the digital asset management module
         if ($objModuleChecker->getModuleStatusById(53)) {
             $this->parseDigitalAssetManagementExtension($rowNr);
@@ -1361,7 +1344,6 @@ class AccessManager extends AccessLib
         } else {
             $this->_objTpl->hideBlock('access_additional_functions_dma');
         }
-
         if ($status) {
             $this->_objTpl->setGlobalVariable('TXT_ACCESS_ADDITIONAL_FUNCTIONS', $_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS']);
             $this->_objTpl->touchBlock('access_additional_functions_tab');
@@ -1369,6 +1351,7 @@ class AccessManager extends AccessLib
             $this->_objTpl->hideBlock('access_additional_functions_tab');
         }
     }
+
 
     private function parseDigitalAssetManagementExtension(&$rowNr)
     {
@@ -1382,6 +1365,7 @@ class AccessManager extends AccessLib
         ));
     }
 
+
     private function processModuleSpecificExtensions($objUser)
     {
         // add a category in the digital asset management module
@@ -1390,6 +1374,7 @@ class AccessManager extends AccessLib
             $this->processDigitalAssetManagementExtension($objUser);
         }
     }
+
 
     private function processDigitalAssetManagementExtension($objUser)
     {
@@ -2061,6 +2046,7 @@ class AccessManager extends AccessLib
 
     private function validateHexRGBColor($color)
     {
+        $match = array();
         if (preg_match('/^#(?:[a-z0-9]{3}|[a-z0-9]{6})$/i', $color, $match)) {
             if (strlen($match[0]) == 4) {
                 $color = $match[0];
@@ -2070,10 +2056,8 @@ class AccessManager extends AccessLib
                 $color[3] = $color[2];
                 $color[2] = $color[1];
             }
-
             return strtoupper($color);
         }
-
         return $this->defaultProfileThumbnailScaleColor;
     }
 
@@ -2463,17 +2447,22 @@ class AccessManager extends AccessLib
 
     /**
      * Show the HTML code of an attribute.
-     *
-     * @todo: This method is not yet usable. Extend to method $this->getUnparsedAtrributeCode() so that it returns the unparsed HTML code.
+     * @todo: This method is not yet usable.
+     *        Extend to method $this->getUnparsedAtrributeCode()
+     *        so that it returns the unparsed HTML code.
      */
     private function _configAttributeCode()
     {
         global $_ARRAYLANG;
 
         $objFWUser = FWUser::getFWUserObject();
-        $objAttribute = new User_Profile_Attribute();
+// TODO: $objAttribute is never used
+//        $objAttribute = new User_Profile_Attribute();
         $attributeId = isset($_GET['id']) ? contrexx_addslashes($_GET['id']) : 0;
-        if ($attributeId && ($objAttribute = $objFWUser->objUser->objAttribute->getById($attributeId))) {
+// TODO: $objAttribute is never used
+//        if ($attributeId && ($objAttribute = $objFWUser->objUser->objAttribute->getById($attributeId))) {
+        if (   $attributeId
+            && ($objFWUser->objUser->objAttribute->getById($attributeId))) {
             $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_attribute_code', 'module_access_config_attribute_code.html');
             $this->_objTpl->setVariable(array(
                 'TXT_ACCESS_ATTRIBUTE_CODE_DESC'    => $_ARRAYLANG['TXT_ACCESS_ATTRIBUTE_CODE_DESC'],
@@ -2482,11 +2471,11 @@ class AccessManager extends AccessLib
                 'ACCESS_ATTRIBUTE_CODE'             => $this->getUnparsedAtrributeCode($attributeId)
             ));
             $this->_objTpl->parse('module_access_config_attribute_code');
-        } else {
-            $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_PROFILE_ATTRIBUTE_SPECIFIED'];
-            $_REQUEST['id'] = 0;
-            return $this->_configAttributes();
+            return '';
         }
+        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_PROFILE_ATTRIBUTE_SPECIFIED'];
+        $_REQUEST['id'] = 0;
+        return $this->_configAttributes();
     }
 
 
@@ -2502,14 +2491,13 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_TYPE'                   => $_ARRAYLANG['TXT_ACCESS_TYPE'],
             'TXT_ACCESS_LANGUAGE'               => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
             'TXT_ACCESS_MAIL_SUBJECT'           => $_ARRAYLANG['TXT_ACCESS_MAIL_SUBJECT'],
-            'TXT_ACCESS_FUNCTIONS'              => $_ARRAYLANG['TXT_ACCESS_FUNCTIONS']
+            'TXT_ACCESS_FUNCTIONS'              => $_ARRAYLANG['TXT_ACCESS_FUNCTIONS'],
         ));
-
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ACCESS_CONFIRM_DELETE_MAIL'    => rawurlencode($_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_MAIL']),
             'TXT_ACCESS_DELETE_MAIL_TEMPLATE'   => $_ARRAYLANG['TXT_ACCESS_DELETE_MAIL_TEMPLATE'],
             'TXT_ACCESS_COPY_MAIL_TEMPLATE'     => $_ARRAYLANG['TXT_ACCESS_COPY_MAIL_TEMPLATE'],
-            'TXT_ACCESS_MODIFY_MAIL_TEMPLATE'   => $_ARRAYLANG['TXT_ACCESS_MODIFY_MAIL_TEMPLATE']
+            'TXT_ACCESS_MODIFY_MAIL_TEMPLATE'   => $_ARRAYLANG['TXT_ACCESS_MODIFY_MAIL_TEMPLATE'],
         ));
 
         $objUserMail = $objFWUser->getMail();
@@ -2523,7 +2511,7 @@ class AccessManager extends AccessLib
                     'ACCESS_MAIL_TYPE_TXT'   => $objUserMail->getLangId() ? '&rarr; '.$objUserMail->getTypeDescription() : $objUserMail->getTypeDescription(),
                     'ACCESS_MAIL_TYPE_STYLE' => $objUserMail->getLangId() ? 'text-indent:10px;' : '',
                     'ACCESS_MAIL_LANGUAGE'   => $objUserMail->getLangId() ? FWLanguage::getLanguageParameter($objUserMail->getLangId(), 'name') : $_ARRAYLANG['TXT_ACCESS_ALL'],
-                    'ACCESS_MAIL_SUBJECT'    => htmlentities($objUserMail->getSubject(), ENT_QUOTES, CONTREXX_CHARSET)
+                    'ACCESS_MAIL_SUBJECT'    => htmlentities($objUserMail->getSubject(), ENT_QUOTES, CONTREXX_CHARSET),
                 ));
 
                 if ($objUserMail->getLangId()) {
@@ -2535,9 +2523,7 @@ class AccessManager extends AccessLib
                     $this->_objTpl->touchBlock('access_email_delete_space');
                     $this->_objTpl->hideBlock('access_email_delete');
                 }
-
                 $this->_objTpl->parse('access_email_list');
-
                 $objUserMail->nextLanguage();
             }
             $objUserMail->next();
@@ -2546,7 +2532,7 @@ class AccessManager extends AccessLib
     }
 
 
-    function _configModifyMails($copy = false)
+    function _configModifyMails($copy=false)
     {
         global $_ARRAYLANG;
 
@@ -2588,7 +2574,6 @@ class AccessManager extends AccessLib
         }
 
         $this->_objTpl->addBlockfile('ACCESS_CONFIG_TEMPLATE', 'module_access_config_mail_modify', 'module_access_config_mail_modify.html');
-
         $this->_objTpl->setVariable(array(
             'TXT_ACCESS_MODIFY_EMAIL'           => $_ARRAYLANG['TXT_ACCESS_MODIFY_EMAIL'],
             'TXT_ACCESS_MAIL_SUBJECT'           => $_ARRAYLANG['TXT_ACCESS_MAIL_SUBJECT'],
@@ -2600,7 +2585,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_SAVE'                   => $_ARRAYLANG['TXT_ACCESS_SAVE'],
             'TXT_ACCESS_TYPE'                   => $_ARRAYLANG['TXT_ACCESS_TYPE'],
             'TXT_ACCESS_LANGUAGE'               => $_ARRAYLANG['TXT_ACCESS_LANGUAGE'],
-            'TXT_ACCESS_PLACEHOLDER_DIRECTORY'  => $_ARRAYLANG['TXT_ACCESS_PLACEHOLDER_DIRECTORY']
+            'TXT_ACCESS_PLACEHOLDER_DIRECTORY'  => $_ARRAYLANG['TXT_ACCESS_PLACEHOLDER_DIRECTORY'],
         ));
 
         if ($copy) {
