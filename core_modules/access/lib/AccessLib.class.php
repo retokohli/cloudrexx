@@ -26,7 +26,8 @@ require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 class AccessLib
 {
     /**
-     * @access private
+     * @access  private
+     * @var     HTML_Template_Sigma
      */
     var $_objTpl;
 

@@ -8,6 +8,10 @@
  * @package     contrexx
  * @subpackage  lib_framework
  */
+
+require_once('User_Profile.class.php');
+require_once('User_Setting.class.php');
+
 /**
  * User Object
  *
@@ -287,6 +291,7 @@ class User extends User_Profile
      */
     protected $newsletterCategories = array();
 
+
     public function __construct()
     {
         parent::__construct();
@@ -298,6 +303,7 @@ class User extends User_Profile
 
         $this->clean();
     }
+
 
     /**
      * Authenticate user against username and password
@@ -323,6 +329,7 @@ class User extends User_Profile
             && $this->updateLastAuthTime();
     }
 
+
     /**
      * Check password correctness
      *
@@ -337,6 +344,7 @@ class User extends User_Profile
 
         return ($objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."access_users` WHERE `id` = ".$this->id." AND `password` = '".md5($password)."'", 1)) !== false && $objResult->RecordCount() == 1;
     }
+
 
     /**
      * Clean user metadata
@@ -373,6 +381,7 @@ class User extends User_Profile
         $this->EOF = true;
         $this->loggedIn = false;
     }
+
 
     /**
      * Delete the current loaded user account
@@ -416,6 +425,7 @@ class User extends User_Profile
         return false;
     }
 
+
     public function finishSignUp()
     {
         $this->restore_key = '';
@@ -424,6 +434,7 @@ class User extends User_Profile
 
         return $this->store();
     }
+
 
     /**
      * Load first user
@@ -438,6 +449,7 @@ class User extends User_Profile
         }
     }
 
+
     public static function forceDefaultEmailAccess()
     {
         global $objDatabase;
@@ -446,6 +458,7 @@ class User extends User_Profile
         return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `email_access` = '".$arrSettings['default_email_access']['value']."'");
     }
 
+
     public static function forceDefaultProfileAccess()
     {
         global $objDatabase;
@@ -453,6 +466,7 @@ class User extends User_Profile
         $arrSettings = FWUser::getSettings();
         return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `profile_access` = '".$arrSettings['default_profile_access']['value']."'");
     }
+
 
     public function getActiveStatus()
     {
@@ -489,6 +503,7 @@ class User extends User_Profile
         return $this->is_admin;
     }
 
+
     public function getAssociatedGroupIds()
     {
         if (!isset($this->arrGroups)) {
@@ -497,10 +512,12 @@ class User extends User_Profile
         return $this->arrGroups;
     }
 
+
     public function getBackendLanguage()
     {
         return $this->backend_language;
     }
+
 
     public function getDynamicPermissionIds($reload = false)
     {
@@ -511,6 +528,7 @@ class User extends User_Profile
         return $this->arrCachedUsers[$this->id]['dynamic_access_ids'];
     }
 
+
     public function getEmail()
     {
         // START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
@@ -519,25 +537,30 @@ class User extends User_Profile
         // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
     }
 
+
     public function getEmailAccess()
     {
         return $this->email_access;
     }
+
 
     public function getErrorMsg()
     {
         return $this->error_msg;
     }
 
+
     public function getExpirationDate()
     {
         return $this->expiration;
     }
 
+
     public function getFilteredSearchUserCount()
     {
         return $this->filtered_search_count;
     }
+
 
     private function getFilteredUserIdList($arrFilter = null, $search = null)
     {
@@ -619,25 +642,30 @@ class User extends User_Profile
         );
     }
 
+
     public function getFrontendLanguage()
     {
         return $this->frontend_language;
     }
+
 
     public function getId()
     {
         return $this->id;
     }
 
+
     public function getLastActivityTime()
     {
         return $this->last_activity;
     }
 
+
     public function getLastAuthenticationTime()
     {
         return $this->last_auth;
     }
+
 
     public function getPrivacyAccessMenu($attrs, $option)
     {
@@ -652,10 +680,12 @@ class User extends User_Profile
         return $menu;
     }
 
+
     public function getProfileAccess()
     {
         return $this->profile_access;
     }
+
 
     public function getProfileAttribute($attributeId, $historyId = 0)
     {
@@ -668,20 +698,24 @@ class User extends User_Profile
         }
     }
 
+
     public function getRegistrationDate()
     {
         return $this->regdate;
     }
+
 
     public function getRestoreKey()
     {
         return $this->restore_key;
     }
 
+
     public function getRestoreKeyTime()
     {
         return $this->restore_key_time;
     }
+
 
     public function getStaticPermissionIds($reload = false)
     {
@@ -692,6 +726,7 @@ class User extends User_Profile
         return $this->arrCachedUsers[$this->id]['static_access_ids'];
     }
 
+
     public function getUser($id)
     {
         $objUser = clone $this;
@@ -699,15 +734,16 @@ class User extends User_Profile
 
         if ($objUser->load($id)) {
             return $objUser;
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     public function getUsername()
     {
         return $this->username;
     }
+
 
     public function getUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = 0)
     {
@@ -716,15 +752,16 @@ class User extends User_Profile
 
         if ($objUser->loadUsers($filter, $search, $arrSort, $arrAttributes, $limit, $offset)) {
             return $objUser;
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     public function getValidityTimePeriod()
     {
         return $this->validity;
     }
+
 
     /**
      * Load user data
@@ -775,6 +812,7 @@ class User extends User_Profile
 // TODO:  I guess this is wrong, then.
         return false;
     }
+
 
     private function loadUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = 0)
     {
@@ -869,15 +907,10 @@ class User extends User_Profile
     }
 
 
-
     public function __clone()
     {
         $this->clean();
     }
-
-
-
-
 
 
     /*private function parseFilterConditions($filter)
@@ -897,6 +930,7 @@ class User extends User_Profile
         return $arrConditions;
     }*/
 
+
     /*private function parseSearchConditions($search)
     {
         $arrConditions = array();
@@ -914,6 +948,7 @@ class User extends User_Profile
         return $arrConditions;
     }*/
 
+
     private function parseAccountSearchConditions($search)
     {
         $FWUser = FWUser::getFWUserObject();
@@ -929,6 +964,7 @@ class User extends User_Profile
 
         return $arrConditions;
     }
+
 
     private function setSortedUserIdList($arrSort, $sqlCondition = null, $limit = null, $offset = null)
     {
@@ -1042,11 +1078,13 @@ class User extends User_Profile
 //        return $arrUserIds;
     }
 
+
     public function setRestoreKey()
     {
         $this->restore_key = md5($this->username.$this->regdate.time());
         $this->restore_key_time = time() + 3600;
     }
+
 
     public function releaseRestoreKey()
     {
@@ -1055,6 +1093,7 @@ class User extends User_Profile
 
         return true;
     }
+
 
     /**
      * Parse account filter conditions
@@ -1169,6 +1208,7 @@ class User extends User_Profile
 
         return $arrConditions;
     }
+
 
     /**
      * Load group ID's of user
@@ -1348,9 +1388,10 @@ class User extends User_Profile
             $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_STORE_PROFILE'];
             return false;
         }
-    
+
         return true;
     }
+
 
     /**
      * Store group associations
@@ -1385,7 +1426,8 @@ class User extends User_Profile
         return $status;
     }
 
-    private function removeOutdatedAccounts()
+
+    static private function removeOutdatedAccounts()
     {
         global $objDatabase;
 
@@ -1412,6 +1454,7 @@ class User extends User_Profile
         }
     }
 
+
     private function validateUsername()
     {
         global $_CORELANG;
@@ -1430,13 +1473,11 @@ class User extends User_Profile
     }
 
 
-
-
-
     private function isLoggedIn()
     {
         return $this->loggedIn;
     }
+
 
     public function login($backend = false)
     {
@@ -1452,6 +1493,7 @@ class User extends User_Profile
             && $this->updateLastActivityTime()
             && ($this->loggedIn = true);
     }
+
 
     private function validateEmail()
     {
@@ -1469,6 +1511,7 @@ class User extends User_Profile
 
         return false;
     }
+
 
     /**
      * Validate language id
@@ -1501,10 +1544,8 @@ class User extends User_Profile
                   AND tblG.`is_active`
             GROUP BY tblI.`access_id`
             ORDER BY tblI.`access_id`');
-
         if ($objAccessId !== false) {
             $this->arrCachedUsers[$this->id][$type.'_access_ids'] = array();
-
             while (!$objAccessId->EOF) {
                 $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
                 $objAccessId->MoveNext();
@@ -1527,6 +1568,7 @@ class User extends User_Profile
             ", 1)) !== false && $objUser->RecordCount() == 1;
     }
 
+
     private function updateLastActivityTime()
     {
         global $objDatabase;
@@ -1539,12 +1581,14 @@ class User extends User_Profile
         return true;
     }
 
+
     private function updateLastAuthTime()
     {
         global $objDatabase;
 
         return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_auth` = '".time()."' WHERE `id` = ".$this->id);
     }
+
 
     /**
      * Sets username of user
@@ -1559,6 +1603,7 @@ class User extends User_Profile
     {
         $this->username = $username;
     }
+
 
     /**
      * Sets the validity period of the account
@@ -1582,10 +1627,12 @@ class User extends User_Profile
         return true;
     }
 
+
     private function setExpirationDate($expiration)
     {
         $this->expiration = $expiration;
     }
+
 
     /**
      * Sets email address of user
@@ -1608,6 +1655,7 @@ class User extends User_Profile
         // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         $this->email = $email;
     }
+
 
     /**
      * Sets password of user
@@ -1644,6 +1692,7 @@ class User extends User_Profile
         return false;
     }
 
+
     /**
      * Set frontend language ID of user
      *
@@ -1657,6 +1706,7 @@ class User extends User_Profile
         $this->frontend_language = intval($langId);
         $this->validateLanguageId('frontend');
     }
+
 
     /**
      * Set backend language ID of user
@@ -1672,6 +1722,7 @@ class User extends User_Profile
         $this->validateLanguageId('backend');
     }
 
+
     /**
      * Set active status of user
      *
@@ -1686,6 +1737,7 @@ class User extends User_Profile
         $this->is_active = (bool)$status;
     }
 
+
     /**
      * Set the Id of a user group that should be used as the user's primary group
      *
@@ -1697,7 +1749,6 @@ class User extends User_Profile
         if (!isset($this->arrGroups)) {
             $this->arrGroups = $this->loadGroups();
         }
-
         if (in_array($groupId, $this->arrGroups)) {
             $this->primary_group = $groupId;
         } elseif (count($this->arrGroups)) {
@@ -1732,6 +1783,7 @@ class User extends User_Profile
         }
     }
 
+
     /**
      * Set ID's of groups to which this user should belong to
      *
@@ -1752,15 +1804,18 @@ class User extends User_Profile
         }
     }
 
+
     public function setEmailAccess($emailAccess)
     {
         $this->email_access = in_array($emailAccess, array_keys($this->arrPrivacyAccessTypes)) ? $emailAccess : $this->defaultEmailAccessType;
     }
 
+
     public function setProfileAccess($profileAccess)
     {
         $this->profile_access = in_array($profileAccess, array_keys($this->arrPrivacyAccessTypes)) ? $profileAccess : $this->defaultProfileAccessTyp;
     }
+
 
     /**
      * Is last admin
@@ -1781,6 +1836,7 @@ class User extends User_Profile
             return true;
         }
     }
+
 
     /**
      * Is unique email
@@ -1806,6 +1862,7 @@ class User extends User_Profile
         }
     }
 
+
     /**
      * Is valid email
      *
@@ -1824,6 +1881,7 @@ class User extends User_Profile
         }
     }
 
+
     /**
      * Is unique username
      *
@@ -1833,19 +1891,20 @@ class User extends User_Profile
      * @param integer $id
      * @return boolean
      */
-    private function isUniqueUsername($username, $id = 0)
+    private static function isUniqueUsername($username, $id=0)
     {
         global $objDatabase;
 
-        $this->removeOutdatedAccounts();
-
-        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM ".DBPREFIX."access_users WHERE username='".addslashes($username)."' AND id != ".$id, 1);
-
-        if ($objResult && $objResult->RecordCount() == 0) {
-            return true;
-        }
+        self::removeOutdatedAccounts();
+        $objResult = $objDatabase->Execute("
+            SELECT 1
+              FROM ".DBPREFIX."access_users
+             WHERE username='".addslashes($username)."'
+               AND id!=$id");
+        if ($objResult && $objResult->EOF) return true;
         return false;
     }
+
 
     /**
      * Is valid username
@@ -1864,11 +1923,9 @@ class User extends User_Profile
         }
     }
 
+
     /**
-     * Is valid password
-     *
-     * Checks if the password is valid
-     *
+     * Checks whether the password is valid
      * @param string $password
      * @return boolean
      */
@@ -1881,6 +1938,7 @@ class User extends User_Profile
         }
     }
 
+
     public function isAllowedToChangeEmailAccess()
     {
         if ($this->getAdminStatus()) {
@@ -1890,6 +1948,7 @@ class User extends User_Profile
         $arrSettings = User_Setting::getSettings();
         return $arrSettings['user_config_email_access']['status'];
     }
+
 
     public function isAllowedToChangeProfileAccess()
     {
@@ -1901,11 +1960,13 @@ class User extends User_Profile
         return $arrSettings['user_config_profile_access']['status'];
     }
 
+
     public function isAllowedToDeleteAccount()
     {
         $arrSettings = User_Setting::getSettings();
         return $arrSettings['user_delete_account']['status'];
     }
+
 
     /**
      * Returns the e-mail address if the User accounts has been created
@@ -1929,76 +1990,152 @@ class User extends User_Profile
         return '';
     }
 
+
+    /**
+     * Tries to form a valid and unique username from the words given
+     *
+     * Usually, you would use first and last names as parameters.
+     * @return    string                The new user name on success,
+     *                                  false otherwise
+     */
+    static function makeUsername($word1, $word2)
+    {
+//echo("User::makeUsername($word1, $word2): Entered<br />");
+        // Just letters, please
+        $word1 = preg_replace('/[^a-z]/i', '', $word1);
+        $word2 = preg_replace('/[^a-z]/i', '', $word2);
+        $usernames = array(
+            $word2, "$word1$word2", "${word1}_$word2", "$word1.$word2", $word1,
+        );
+        $suffixes = array('');
+        for ($i = 0; $i < 10; ++$i) {
+            $suffixes[] = intval(mt_rand(10, 99));
+        }
+        foreach ($usernames as $username) {
+            foreach ($suffixes as $suffix) {
+//echo("Username /$username/$suffix/ ");
+                if (!self::isValidUsername($username.$suffix)) {
+//echo("not valid<br />");
+                    continue;
+                }
+                if (!self::isUniqueUsername($username.$suffix)) {
+//echo("not unique<br />");
+                    continue;
+                }
+                return $username.$suffix;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Returns a valid password
+     * @return    string                The new password
+     */
+    static function makePassword()
+    {
+        static $lower = 'qwertzupasdfghjkyxcvbnm';
+        static $upper = 'QWERTZUPASDFGHJKLYXCVBNM';
+        static $digit = '23456789';
+//        static $other = '-+_!?%&';
+
+        $password = '';
+        while (!self::isValidPassword($password)) {
+            $password = '';
+            $have_lower = 0;
+            $have_upper = 0;
+            $have_digit = 0;
+//            $have_other = 0;
+            while (strlen($password) < 8) {
+                if ($have_lower < 4 && mt_rand(0, 6) < 2) {
+                    $password .= substr($lower, mt_rand(0, strlen($lower))-1, 1);
+                    ++$have_lower;
+                    continue;
+                }
+                if ($have_upper < 4 && mt_rand(0, 6) < 2) {
+                    $password .= substr($upper, mt_rand(0, strlen($upper))-1, 1);
+                    ++$have_upper;
+                    continue;
+                }
+                if ($have_digit < 2 && mt_rand(0, 6) < 1) {
+                    $password .= substr($digit, mt_rand(0, strlen($digit))-1, 1);
+                    ++$have_digit;
+                    continue;
+                }
+//                if ($have_other < 1 && mt_rand(0, 6) < 1) {
+//                    $password .= substr($other, mt_rand(0, strlen($other))-1, 1);
+//                    ++$have_other;
+//                }
+            }
+        }
+        return $password;
+    }
+
+
     /**
      * Set the newsletter categories for saving
-     * 
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       array $categories
      */
-    public function setNewsletterCategories(array $categories) {
+    public function setNewsletterCategories($categories)
+    {
         $this->newsletterCategories = $categories;
     }
 
+
     /**
-     * Save the categories
+     * Updates the User to List relations
      *
+     * This only affects User accounts, not Newsletter Users.
+     * Adds new relations and removes missing ones.
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @return      bool
      */
-    public function storeNewsletterCategories() {
+    public function storeNewsletterCategories()
+    {
         global $objDatabase;
 
         $user = intval($this->id);
-
         $categories = $this->newsletterCategories;
 
         if (count($categories)) {
-            foreach ($categories as $key => $category) {
+            foreach (array_keys($categories) as $key) {
+                // Make sure they're integers
+                $categories[$key] = intval($categories[$key]);
                 $query = sprintf('
-                    INSERT IGNORE INTO
-                        `%smodule_newsletter_access_user`
-                    (`accessUserId`, `newsletterCategoryID`)
-                    VALUES
-                    (%s, %s)',
+                    INSERT IGNORE INTO `%smodule_newsletter_access_user` (
+                        `accessUserId`, `newsletterCategoryID`
+                    ) VALUES (
+                        %s, %s
+                    )',
                     DBPREFIX,
                     $user,
-                    intval($category)
+                    $categories[$key]
                 );
-
                 $objDatabase->execute($query);
-                // make sure they're int, for the next query
-                $categories[$key] = intval($category);
             }
-
-            $delString = implode(", ", $categories);
-
+            $delString = implode(',', $categories);
             $query = sprintf('
-                DELETE FROM
-                    `%smodule_newsletter_access_user`
-                WHERE
-                    `newsletterCategoryID` NOT IN (%s)
-                AND
-                    `accessUserId` = %s',
+                DELETE FROM `%smodule_newsletter_access_user`
+                WHERE `newsletterCategoryID` NOT IN (%s)
+                AND `accessUserId`=%s',
                 DBPREFIX,
                 $delString,
                 $user
             );
-
-            return (bool)$objDatabase->execute($query);
         } else {
             $query = sprintf('
-                DELETE FROM
-                    `%smodule_newsletter_access_user`
-                WHERE
-                    `accessUserId` = %s
-                ',
+                DELETE FROM `%smodule_newsletter_access_user`
+                WHERE `accessUserId`=%s',
                 DBPREFIX,
                 $user
             );
 
-            return (bool)$objDatabase->execute($query);
         }
+        return (bool)$objDatabase->execute($query);
     }
+
 }
 
 ?>
