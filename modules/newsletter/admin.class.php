@@ -460,17 +460,10 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
     }
 
 
-    function _addList($listName, $listStatus)
-    {
-        global $objDatabase;
-
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_category (`name`, `status`)
-                                    VALUES ('".$listName."', ".$listStatus.")") !== false) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+/**
+ * Moved to NewsletterLib.class.php
+ */
+//function _addList($listName, $listStatus)
 
 
     function _editMail($copy = false)
@@ -1575,19 +1568,17 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
     }
 
 
-    function _checkUniqueListName($listId, $listName) {
+    static function _checkUniqueListName($listId, $listName)
+    {
         global $objDatabase;
 
-        $result = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_category WHERE `name`='".$listName."' AND `id`!=".$listId, 1);
-        if ($result !== false) {
-            if ($result->RecordCount() == 0) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        $result = $objDatabase->SelectLimit("
+            SELECT id
+              FROM ".DBPREFIX."module_newsletter_category
+             WHERE `name`='".$listName."'
+               AND `id`!=".$listId, 1);
+        if ($result && $result->RecordCount() == 0) return true;
+        return false;
     }
 
 
@@ -3501,7 +3492,7 @@ $WhereStatement = '';
         CSRF::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        require_once ASCMS_LIBRARY_PATH . "/importexport/import.class.php";
+        require_once ASCMS_LIBRARY_PATH."/importexport/import.class.php";
         $objImport = new Import();
         $arrFields = array(
             'email' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],

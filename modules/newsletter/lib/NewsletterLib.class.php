@@ -31,8 +31,16 @@ class NewsletterLib
 {
     public $_arrRecipientTitles = null;
 
+    /**
+     * List of present Lists
+     * @see     getListIdByName()
+     * @var     array
+     * @static
+     */
+    private static $arrLists = null;
 
-    protected function _getLists($orderBy='')
+
+    static protected function _getLists($orderBy='')
     {
         global $objDatabase;
 
@@ -66,7 +74,7 @@ class NewsletterLib
                 $arrLists[$objList->fields['id']] = array(
                     'status'     => $objList->fields['status'],
                     'name'       => $objList->fields['name'],
-                    'recipients' => $this->getListRecipientCount($objList->fields['id']),
+                    'recipients' => self::getListRecipientCount($objList->fields['id']),
                     'mail_sent'  => $mailSend,
                     'mail_name'  => $mailName,
                     'mail_id'    => ($mailSend > 0 ? $mailId : 0),
@@ -86,7 +94,7 @@ class NewsletterLib
      * @param       int $id
      * @return      int
      */
-    protected function getListRecipientCount($id)
+    static protected function getListRecipientCount($id)
     {
         global $objDatabase;
 
@@ -460,22 +468,64 @@ class NewsletterLib
         global $objDatabase;
 
         $objResult = $objDatabase->Execute("
-                SELECT
-                    `id`, `name`
-                FROM
-                    ".DBPREFIX."lib_country
-                ORDER BY
-                    `name`
-            ");
-
+            SELECT `id`, `name`
+              FROM ".DBPREFIX."lib_country
+             ORDER BY `name`");
         $menu ='<select name="newsletter_country_id" size="1">';
         while (!$objResult->EOF) {
             $menu .= '<option value="'.$objResult->fields['id'].'"'.($objResult->fields['id'] == $selectedCountry ? ' selected="selected"' : '').'>'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
             $objResult->MoveNext();
         }
         $menu .= '</select>';
-
         return $menu;
+    }
+
+
+    /**
+     * Returns the ID of the list specified by its name
+     *
+     * Used for importing/setting up User-List relations
+     * @param   string  $list_name  The List name
+     * @return  integer             The matching list ID if found,
+     *                              null otherwise
+     */
+    static function getListIdByName($list_name)
+    {
+        if (!isset(self::$arrLists)) {
+            self::$arrLists = self::_getLists();
+        }
+        foreach (self::$arrLists as $id => $arrList) {
+            if ($list_name == $arrList['name']) return $id;
+        }
+        return null;
+    }
+
+
+    /**
+     * Add a list with the given name and status
+     *
+     * Upon successfully adding a new list, resets the $arrLists class
+     * variable to null.
+     * @param   string    $listName     The new list name
+     * @param   boolean   $listStatus   The new list status,
+     *                                  defaults to false for inactive
+     * @return  boolean                 True on success, false otherwise
+     */
+    static function _addList($listName, $listStatus=false)
+    {
+        global $objDatabase;
+
+        if ($objDatabase->Execute("
+            INSERT INTO ".DBPREFIX."module_newsletter_category (
+                `name`, `status`
+            ) VALUES (
+                '$listName', ".($listStatus ? 1 : 0)."
+            )")
+        ) {
+            self::$arrLists = null;
+            return $objDatabase->Insert_ID();
+        }
+        return false;
     }
 
 }

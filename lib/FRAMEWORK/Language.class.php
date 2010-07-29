@@ -97,9 +97,9 @@ class FWLanguage
         return self::$arrLanguages;
     }
 
+
     /**
      * Return only the languages active in the frontend
-     *
      * @author     Stefan Heinemann <sh@adfinis.com>
      * @return     array
      */
@@ -118,6 +118,7 @@ class FWLanguage
 
         return $arr;
     }
+
 
     /**
      * Returns single language related fields
@@ -285,7 +286,7 @@ class FWLanguage
     /**
      * Return the language code from the database for the given ID
      *
-     * Returns false on failure, or false if the code could not be found.
+     * Returns false on failure, or false if the ID is invalid
      * @global  ADONewConnection
      * @param   integer $langId         The language ID
      * @return  mixed                   The two letter code, or false
@@ -295,6 +296,25 @@ class FWLanguage
     {
         if (empty(self::$arrLanguages)) self::init();
         return self::getLanguageParameter($langId, 'lang');
+    }
+
+
+    /**
+     * Return the language ID for the given code
+     *
+     * Returns false on failure, or if the code is invalid
+     * @global  ADONewConnection
+     * @param   string                    The two letter code
+     * @return  integer   $langId         The language ID, or false
+     * @static
+     */
+    static function getLanguageIdByCode($code)
+    {
+        if (empty(self::$arrLanguages)) self::init();
+        foreach (self::$arrLanguages as $id => $arrLanguage) {
+            if ($arrLanguage['lang'] == $code) return $id;
+        }
+        return false;
     }
 
 }

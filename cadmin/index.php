@@ -26,7 +26,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-DBG::deactivate(DBG_PHP);
+DBG::deactivate();
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -1085,7 +1085,7 @@ switch ($plainCmd) {
             Hotelcard::getPage();
         }
         break;
-        
+
     /**
      * Mediadir Module
      * @author  Janik Tschanz <jt@comvation.com>
