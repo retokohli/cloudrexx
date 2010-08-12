@@ -770,7 +770,7 @@ class newsletter extends NewsletterLib
                 $street, $zip, $city, $phone, $birthday, $date,
                 '<a href="index.php?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.$email.'">Abmelden</a>',
                 '<a href="index.php?section=newsletter&cmd=profile&code='.$code.'&mail='.$email.'">Profil bearbeiten</a>',
-                $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&code='.$code.'&email='.$email.'&id='.$id
+                $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id
             );
             
             //in content and template
