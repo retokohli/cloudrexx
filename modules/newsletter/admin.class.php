@@ -2689,7 +2689,8 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
             $HTML_TemplateSource,
             "html",
             $TargetEmail,
-            $newsletterUserData
+            $newsletterUserData,
+            $NewsletterID
         );
         $NewsletterBody_TEXT = $this->ParseNewsletter(
             $subject,
@@ -2697,7 +2698,8 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
             $TEXT_TemplateSource,
             "text",
             $TargetEmail,
-            $newsletterUserData
+            $newsletterUserData,
+            $NewsletterID
         );
         $NewsletterBody_TEXT = wordwrap($NewsletterBody_TEXT, $break);
 
@@ -2719,7 +2721,8 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
                 $TEXT_TemplateSource,
                 "text",
                 $TargetEmail,
-                $newsletterUserData
+                $newsletterUserData,
+                $NewsletterID
             );
         }
 
@@ -3030,7 +3033,7 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
      */
     function ParseNewsletter(
         $subject, $content_text, $TemplateSource,
-        $format, $TargetEmail, $userData
+        $format, $TargetEmail, $userData,$NewsletterID
     ) {
         global $objDatabase, $_ARRAYLANG;
 
@@ -3069,7 +3072,8 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
             '[[city]]',
             '[[country]]',
             '[[phone]]',
-            '[[birthday]]'
+            '[[birthday]]',
+            '[[display_in_browser_url]]'
         );
         $replace = array(
             $userData['email'],
@@ -3083,8 +3087,12 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
             $userData['city'],
             $country,
             $userData['phone'],
-            $userData['birthday']
+            $userData['birthday'],
+            $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&code='.$code.'&email='.$email.'&id='.$NewsletterID
         );
+        
+                
+                
         // do the replacement
         $content_text       = str_replace($search, $replace, $content_text);
         $TemplateSource     = str_replace($search, $replace, $TemplateSource);
