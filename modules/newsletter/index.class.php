@@ -720,6 +720,11 @@ class newsletter extends NewsletterLib
     		exit();
 		}
 		
+		if (empty($content)) {
+			header("location: index.php");
+    		exit();
+		}
+		
 		
 		//get user details
 		$query = "select id, code, sex, email, uri, title, lastname, firstname, street, zip, city, phone, birthday, status, emaildate from ".DBPREFIX."module_newsletter_user where email = '".$email."';";
