@@ -1,4 +1,4 @@
-////////////////////////////////////////
+﻿////////////////////////////////////////
 // CHANGELOG 2.1.0-2.2.0 ///////////////
 ////////////////////////////////////////
 
@@ -61,6 +61,13 @@ Benutzerverwaltung
   aufgelistet, sofern eine Option ausgewählt wurde.
 - Für das Profilbild-Thumbnail kann ausgewählt werden, ob das Bild auf die
   Thumbnail-Grösse zugeschnitten oder skaliert werden soll.
+
+Newsletter
+- Neu kann der Newsletter vom Empfänger direkt im Browser aufgerufen und betrachtet
+  werden. Hierzu muss der Platzhalter [[display_in_browser_url]] wahlweise in 
+  das Newsletter-Template und/oder Content eingearbeitet werden.
+  Der Platzhalter generiert beim Versand dann automatisch einen individuellen Link
+  pro Empfänger.
 
 Kontakte Manager
 - Alle Benutzerprofil Eigenschaften des Besuchers (sofern dieser Authentifiziert
