@@ -3088,7 +3088,7 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
             $country,
             $userData['phone'],
             $userData['birthday'],
-            $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&code='.$code.'&email='.$email.'&id='.$NewsletterID
+            $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$NewsletterID
         );
         
                 
