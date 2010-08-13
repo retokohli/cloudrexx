@@ -83,5 +83,4 @@ $_ARRAYLANG['TXT_ACCESS_SEND_MSG'] = "Send besked";
 $_ARRAYLANG['TXT_ADD_TO_ADDRESS_BOOK'] = "Tilføj til adressebog";
 $_ARRAYLANG['TXT_ADD_ADDRESS'] = "Tilføj til adressebog";
 $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "The recipient %s unsubscribed from the newsletter.";
-$_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'] = "";
 ?>

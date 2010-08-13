@@ -382,6 +382,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_DEACTIVATE'] = "Deaktivieren";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'] = "Eintragung";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Abmeldung";
 $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'] = "Benachrichtigung bei Abmeldung";
+$_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'] = "Empfänger in der Benutzergruppe %1\$s anzeigen";
 $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'] = "Zugehörige Benutzergruppen";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_EMPTY_TEXT'] = "Der Text ist leer. Wollen Sie wirklich speichern?";
 $_ARRAYLANG['TXT_NEWSLETTER_INFORM_ADMIN'] = "Administrator per E-Mail informieren";
@@ -390,4 +391,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY_ID'] = "Land-ID";
 $_ARRAYLANG['TXT_INFORM_ADMIN_EMAIL'] = "Der Newsletter konnte an folgende E-Mail-Adresse nicht verschickt werden:  %EMAIL%  Um die E-Mail-Adresse zu bearbeiten, klicken Sie bitte hier:  %LINK%";
 $_ARRAYLANG['TXT_NEWSLETTER_REJECT_INFO_MAIL_TEXT'] = "E-Mail-Text, um den Administrator zu informieren";
 $_ARRAYLANG['TXT_INFO_ABOUT_INFORM_TEXT'] = "Sie können folgende Platzhalter verwenden: %EMAIL%   und %LINK%";
+$_ARRAYLANG['TXT_NEWSLETTER_EMAIL'] = "E-Mail";
+$_ARRAYLANG['TXT_REMOVE_PAIR'] = "Paar entfernen";
+$_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_IN_BROWSER_LINK'] = "Link zur Newsletteransicht im Browser";
 ?>
