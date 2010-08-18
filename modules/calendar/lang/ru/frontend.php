@@ -10,7 +10,7 @@ $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Следующее событие:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "Показать";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Не найдено ни одного события...";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS'] = "Событие";
-$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Все категории";
+$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Alle Kategorien";
 $_ARRAYLANG['TXT_CALENDAR_CAT'] = "Категория";
 $_ARRAYLANG['TXT_CALENDAR_NAME'] = "Тема";
 $_ARRAYLANG['TXT_CALENDAR_PLACE'] = "Место";
@@ -92,4 +92,7 @@ $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is
 $_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE'] = "Ungültige Dateiendung.";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_PIC'] = "Bild Upload";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_ATTACHMENT'] = "Anhang Upload";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUBMIT'] = "Absenden";
+$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "Bitte geben sie den Captcha Code erneut ein.";
+$_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";
 ?>

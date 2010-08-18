@@ -10,7 +10,7 @@ $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Los pr&oacute;ximos eventos:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "mostrar";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "No hay eventos..";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS'] = "Eventos";
-$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Todas las categor&iacute;as";
+$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Alle Kategorien";
 $_ARRAYLANG['TXT_CALENDAR_CAT'] = "Categor&iacute;a";
 $_ARRAYLANG['TXT_CALENDAR_NAME'] = "Asunto";
 $_ARRAYLANG['TXT_CALENDAR_PLACE'] = "Lugar";
@@ -92,4 +92,7 @@ $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is
 $_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE'] = "Ungültige Dateiendung.";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_PIC'] = "Bild Upload";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_ATTACHMENT'] = "Anhang Upload";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUBMIT'] = "Absenden";
+$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "Bitte geben sie den Captcha Code erneut ein.";
+$_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";
 ?>
