@@ -515,7 +515,7 @@ class InitCMS
             }
         }
 
-        if (ereg('media.?', $module)) {
+        if (preg_match('/^media\d+$/', $module)) {
             $module = 'media';
         }
 
