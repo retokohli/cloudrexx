@@ -11,6 +11,11 @@ var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
 var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
 var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
 
+/**
+Have count of the number of formfields added dynamically
+*/
+var formFieldNumber = 1;
+
 function addRecipient()
 {
     var number = 0;
@@ -58,36 +63,55 @@ function addRecipient()
   Add a new section for a form field
   */
 function addFormField() {
-    var number = 0;
-    // find the highest number
-    $J('.formField').each(function(key, elem){
-        var nr = parseInt($J(elem).attr('id').split('_')[1]);
-        if (nr > number) {
-            number = nr;
-            divToCopy = elem;
-        }
-    });
-
-    number++;
-
+    /**
+    	Clone the formField element last created
+    */
+    divToCopy = $J('.formField').last();
+    formFieldNumber++;
+    
     var copy = divToCopy.clone(true);
-    $J(copy).attr('id', 'formField_' + number);
-
+    $J(copy).attr('id', 'formField_' +formFieldNumber);
+	
     $J('#formFields').append(copy);
 
     $J(copy).find('input, select').each(
         function(key, elem) {
             var name = $J(elem).attr('name');
             var id = $J(elem).attr('id');
+            
             //var number = parseInt(name.match(/\[(\d+)\](?:\[\d+\])?$/)[1]);
             // this regex was quite bitchy... (especially because the page reload
             // took up to 35 seconds... nice testing)
-            $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
+            $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + formFieldNumber + "]$3"));
 
             // do the id too
-            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + number));
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
         }
     );
+    
+   	//Increment the class name of td on add each new fieldform
+    $J(copy).find('td').each(
+    	function(key, elem) {
+            var className = $J(elem).attr('class');
+            // do the class too
+            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+        }
+    );
+    
+    //Increment the span name of td on add each new fieldform
+    $J(copy).find('span').each(
+    	function(key, elem) {
+            var id = $J(elem).attr('id');
+            // do the class too
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+        }
+    );
+    
+    /**
+    	set the value of field type select wiyh the value of 
+    	the previous form filed type select on adding new formfield 
+    */
+   	$J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +(formFieldNumber-1)).val());
 
     $J(copy).find('input').val('');
     $J(copy).find('input[type=hidden]').val('new');
@@ -103,92 +127,75 @@ function removeFormField(obj) {
         $J(remObj).remove();
     }
 }
-
-
-
+  
 /**
-  and what on earth does this piece of code do pls?
-  what about comments??
-  */
+	change value fields onchange with the select box to Jquery script
+	hide/show the mandatory and type field depending on selected field type
+*/
 function setFormFieldAttributeBox(el, type)
 {
+
     elId = el.substr(21);
-    elField = document.getElementById('contactFormFieldAttributeBox_'+elId);
+    elField = $J('.contactFormFieldAttributeBox_'+elId);
+	
+	elField.html('');    
 
-    for (i=elField.childNodes.length-1; i>=0; i--) {
-        if (elField.childNodes[i].nodeType) {
-            switch (elField.childNodes[i].nodeType) {
-                case 1:
-                case 3:
-                    elField.removeChild(elField.childNodes[i]);
-                    break;
-            }
-        }
-    }
+	//Change the value fields dynamically with respect to type field
+	if($J('#formField'+type+'Attribute_0').length > 0 && 'formField'+type+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
+		$J(elField).each(function (index, domEle){
+			$J(domEle).html($J('#formField'+type+'Attribute_0').html());
+			$J(domEle).children(0).attr('name', 'contactFormFieldValue['+elId+']['+(index+1)+']');
+		});
+	} else {
+		//For Checkbox only one instance of select box is enough
+		$J(elField[0]).html($J('#formField'+type+'Attribute_0').html());
+		$J(elField[0]).children(0).attr('name', 'contactFormFieldValue['+elId+'][1]');
+	}
 
-    if (document.getElementById('formField'+type+'Attribute_0')) {
-        elAttribute = document.getElementById('formField'+type+'Attribute_0');
-        for (i=0; i<elAttribute.childNodes.length; i++) {
-            if (elAttribute.childNodes[i].nodeType == 1) {
-                if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldAttribute[0]') {
-                    elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldAttribute['+elId+']');
-                }
-            }
-            elField = elAttribute.childNodes[i].cloneNode(true);
-            document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
-        }
-    } else {
-        elField = document.createTextNode('');
-        document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
-    }
-
-    elField = document.getElementById('contactFormFieldRequiredBox_'+elId);
-
-    for (i=elField.childNodes.length-1; i>=0; i--) {
-        if (elField.childNodes[i].nodeType) {
-            switch (elField.childNodes[i].nodeType) {
-                case 1:
-                case 3:
-                    elField.removeChild(elField.childNodes[i]);
-                    break;
-            }
-        }
-    }
-
-    switch (type) {
-        case 'text':
-        case 'file':
+	/**
+		Add or remove the mandator checkbox and value type select box 
+		with respect to change in the fields type select box
+	*/
+	switch(type){
+		case 'text':
+	    case 'file':
         case 'password':
-        case 'textarea':
+        case 'textarea':        
+        	if($J('#contactFormFieldRequired_'+elId).length == 0){
+		    	var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
+				$J(requiredCopy).attr('id', 'contactFormFieldRequired_' + elId);
+				$J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
+				$J('#contactFormFieldCheckBox_'+elId).append(requiredCopy);
+			}
+			
+			if($J('#contactFormFieldCheckType_'+elId).length == 0){
+				var checkTypeCopy = $J('#contactFormFieldCheckType_0').clone(true);
+				$J(checkTypeCopy).attr('id', 'contactFormFieldCheckType_' + elId);
+				$J(requiredCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
+				$J('#contactFormFieldCheckMenu_'+elId).append(checkTypeCopy);
+			}
+			break;
+			
+		case 'label':
+		case 'hidden':
+		case 'select':
+		case 'recipient':
+			($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
+			($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
+			break;
+			
         case 'checkbox':
         case 'checkboxGroup':
         case 'date':
         case 'radio':
-            elAttribute = document.getElementById('contactFormFieldRequiredBox_0').cloneNode(true);
-            for (i=0; i<elAttribute.childNodes.length; i++) {
-                if (elAttribute.childNodes[i].nodeType == 1) {
-                    if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired['+elId+']') {
-                        elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldRequired['+elId+']');
-                        elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldRequired_'+elId);
-                    }
-
-                    if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType['+elId+']') {
-                        elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldCheckType['+elId+']');
-                        elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldCheckType_'+elId);
-                        if (type == 'checkbox' || type == 'checkboxGroup' || type == 'date' || type == 'select' || type == 'radio') {
-                            continue;
-                        }
-                    }
-                }
-
-                elField = elAttribute.childNodes[i].cloneNode(true);
-                document.getElementById('contactFormFieldRequiredBox_'+elId).appendChild(elField);
-            }
-            break;
-
-        default:
-            break;
-    }
+			var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
+			$J(requiredCopy).attr('id', 'contactFormFieldRequired_' + elId);
+			($J('#contactFormFieldRequired_'+elId).length == 0) ? $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy) : '';
+			($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
+			break;
+		default:
+			break;
+	}
 }
 
 function checkFieldValue()
@@ -294,6 +301,40 @@ function deleteRecipientRow(obj) {
 // -->
 </script>
 
+<!-- ss4u change -->
+<!-- Template of Field elements that is to be added dynamically.  -->
+<div style="display:none;">
+    <div style="display:inline;" id="formFieldtextAttribute_0">
+        {CONTACT_FORM_FIELD_TEXT_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldlabelAttribute_0">
+        {CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldcheckboxAttribute_0">
+        {CONTACT_FORM_FIELD_CHECKBOX_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldcheckboxGroupAttribute_0">
+        {CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldddateAttribute_0">
+        {CONTACT_FORM_FIELD_DATE_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldhiddenAttribute_0">
+        {CONTACT_FORM_FIELD_HIDDEN_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldradioAttribute_0">
+        {CONTACT_FORM_FIELD_RADIO_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldselectAttribute_0">
+        {CONTACT_FORM_FIELD_SELECT_TPL}
+    </div>
+    <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_0">
+        {CONTACT_FORM_FIELD_CHECK_BOX_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_TPL}
+    </div>
+
+</div>
+
+
 
 <ul id="tabmenu">
     <li><a href="#" onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
@@ -393,7 +434,9 @@ function deleteRecipientRow(obj) {
                                 value="{FORM_FIELD_NAME}"
                                 class="formFieldElementsLang" style="width: 100%"/>
                         </td>
-                        <td>
+                       	<!-- ss4u change -->
+                       	<!-- added class name to td -->
+                        <td class="contactFormFieldAttributeBox_{FORM_FIELD_ID}">
                             <input type="text" name="contactFormFieldValue[{FORM_FIELD_ID}][{FORM_FIELD_ROW_LANG_ID}]" 
                                 value="{FORM_FIELD_VALUE}"
                                 class="formFieldElementsLang" style="width: 100%"/>
@@ -401,8 +444,11 @@ function deleteRecipientRow(obj) {
                     </tr>
                     <!-- END formFieldRow -->
                 </table>
-                {TXT_TYPE}: {CONTACT_FORM_FIELD_TYPE_MENU} {FORM_FIELD_CHECK_BOX} {TXT_MANDATORY_FIELD} {FORM_FIELD_CHECK_MENU}
-
+                <!--
+                	ss4u change
+                	added two span with ids to hide/show mandatory checkbox and type select box
+                -->
+                {TXT_TYPE}: {CONTACT_FORM_FIELD_TYPE_MENU} <span id='contactFormFieldCheckBox_{FORM_FIELD_ID}'>{FORM_FIELD_CHECK_BOX}</span> <span id='contactFormFieldCheckMenu_{FORM_FIELD_ID}'>{TXT_MANDATORY_FIELD} {FORM_FIELD_CHECK_MENU}</span>
             </div>
             <br />
         </div>
@@ -489,7 +535,6 @@ function deleteRecipientRow(obj) {
 <br />
 <br />
 <input type="submit" name="saveForm" value="{TXT_CONTACT_SAVE}" />
-
 
 <!-- END module_contact_form_modify.html -->
 

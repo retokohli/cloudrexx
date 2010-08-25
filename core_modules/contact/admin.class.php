@@ -986,31 +986,31 @@ class ContactManager extends ContactLib
 
         switch ($type) {
         case 'text':
-            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
+            return "<input style=\"width:100%;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
             break;
 
         case 'label':
-            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
+            return "<input style=\"width:100%;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
             break;
 
         case 'checkbox':
-            return "<select style=\"width:228px;\" name=\"contactFormFieldAttribute[".$id."]\">\n
+            return "<select style=\"width:100%;\" name=\"contactFormFieldAttribute[".$id."]\">\n
                         <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
                         <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
                     </select>";
             break;
 
         case 'checkboxGroup':
-            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" /> *\n";
+            return "<input style=\"width:95%;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" /> *\n";
             break;
 
         case 'hidden':
-            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
+            return "<input style=\"width:100%;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
             break;
 
         case 'select':
         case 'radio':
-            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" /> *\n";
+            return "<input style=\"width:95%;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" /> *\n";
             break;
 
         default:
