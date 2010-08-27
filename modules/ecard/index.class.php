@@ -207,7 +207,7 @@ class ecard
                 $senderEmail.'</a>) '.$_ARRAYLANG['TXT_ECARD_HAS_SENT_YOU_AN_ECARD'],
             'ECARD_MOTIVE' =>
                 '<img src="'.ASCMS_ECARD_OPTIMIZED_WEB_PATH.'/'.$selectedMotive.
-                '" alt="'.$selectedMotive.'" />',
+                '" alt="'.$selectedMotive.'" title="'.$selectedMotive.'" />',
             'ECARD_MOTIVE_ID' => $id,
             'ECARD_MESSAGE' => $message,
             'ECARD_SENDER_NAME' => $senderName,
@@ -388,7 +388,7 @@ class ecard
                     $senderEmail.'</a>) '.$_ARRAYLANG['TXT_ECARD_HAS_SENT_YOU_AN_ECARD'],
                 'ECARD_MOTIVE' =>
                     '<img src="'.ASCMS_ECARD_SEND_ECARDS_WEB_PATH.'/'.$selectedMotive.
-                    '" alt="'.$selectedMotive.'" />',
+                    '" alt="'.$selectedMotive.'" title="'.$selectedMotive.'" />',
                 'ECARD_FROM' => $_ARRAYLANG['TXT_ECARD_FROM'].' '.$senderName,
                 'ECARD_MESSAGE' => $message,
                 'ECARD_SENDER_NAME' => $senderName,
