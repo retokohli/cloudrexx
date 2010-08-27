@@ -1295,6 +1295,11 @@ class newsManager extends newsLibrary {
                 $this->_objTpl->hideBlock('news_permission_tab');
             }
         }
+		else {
+			$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'];
+			$this->overview();
+			return;
+		}
 
         if ($_CONFIG['newsTeasersStatus'] == '1') {
             $this->_objTpl->parse('newsTeaserOptions');
