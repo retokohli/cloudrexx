@@ -273,6 +273,23 @@ class CSRF {
     background-color: #ffefef;
     margin-top: 100px;
   }
+  .safe, .unsafe {
+	display: block;
+	padding: 15px 30px;
+	color: #000;
+	text-align: center;
+	float: left;
+	margin: 0 15px;
+  }
+  .safe {
+	border: 1px solid #090;
+	background-color: #afa;
+  }
+  .unsafe {
+	border: 1px solid #f00;
+	color: #f00;
+  }
+  
 </style>
 </head>
 <body>
@@ -283,7 +300,8 @@ class CSRF {
   <p/>
   <form method="'.$_SERVER['REQUEST_METHOD'].'">
   _____ELEMENTS___
-  <input type="submit" value="'.$_CORELANG['TXT_CSRF_BUTTON'].'" />
+  <a href="index.php?cmd='.$_GET['cmd'].'" class="safe">'.$_CORELANG['TXT_CSRF_ABORT'].'</a>
+  <input type="submit" class="unsafe" value="'.$_CORELANG['TXT_CSRF_BUTTON'].'" />
   </form>
 </div>
 </body>
