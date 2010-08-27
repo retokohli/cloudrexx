@@ -941,6 +941,7 @@ class newsManager extends newsLibrary {
                                                         teaser_image_thumbnail_path
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
+												
         if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true) || $objResult->fields['userid'] == $objFWUser->objUser->getId())) {
             $newsCat=$objResult->fields['catid'];
             $id = $objResult->fields['id'];
@@ -1073,6 +1074,11 @@ class newsManager extends newsLibrary {
                 $this->_objTpl->hideBlock('news_permission_tab');
             }
         }
+		else {
+			$this->strErrMessage = $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'];
+			$this->overview();
+			return;
+		}
 
         if ($_CONFIG['newsTeasersStatus'] == '1') {
             $this->_objTpl->parse('newsTeaserOptions');
