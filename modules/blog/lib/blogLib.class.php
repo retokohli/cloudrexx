@@ -311,22 +311,22 @@ class BlogLibrary {
                                                             WHERE   message_id='.$intMessageId.'
                                                         ');
 
-                while (!$objResult->EOF) {
-                    $intLanguageId = $objResult->fields['lang_id'];
+                while (!$objLangResult->EOF) {
+                    $intLanguageId = $objLangResult->fields['lang_id'];
 
                     if ( ($intLanguageId == $this->_intLanguageId && !empty($objResult->fields['subject'])) ||
                          empty($arrReturn[$intMessageId]['subject']) )
                     {
-                        $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
+                        $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objLangResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
                     }
 
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active']   = $objResult->fields['is_active'];
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['subject']     = htmlentities(stripslashes($objResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = $objResult->fields['content'];
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['tags']        = htmlentities(stripslashes($objResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
-                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['image']       = htmlentities(stripslashes($objResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['is_active']   = $objLangResult->fields['is_active'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['subject']     = htmlentities(stripslashes($objLangResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['content']     = $objLangResult->fields['content'];
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['tags']        = htmlentities(stripslashes($objLangResult->fields['tags']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $arrReturn[$intMessageId]['translation'][$intLanguageId]['image']       = htmlentities(stripslashes($objLangResult->fields['image']), ENT_QUOTES, CONTREXX_CHARSET);
 
-                    $objResult->MoveNext();
+                    $objLangResult->MoveNext();
                 }
 
 
