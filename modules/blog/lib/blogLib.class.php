@@ -301,7 +301,7 @@ class BlogLibrary {
                 }
 
                 //Get existing translations for the current entry
-                $objResult = $objDatabase->Execute('SELECT  lang_id,
+                $objLangResult = $objDatabase->Execute('SELECT  lang_id,
                                                                     is_active,
                                                                     subject,
                                                                     content,
