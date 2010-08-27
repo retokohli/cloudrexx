@@ -485,7 +485,7 @@ class ImageManager
             case self::IMG_TYPE_JPEG:
                 $function = 'imagecreatefromjpeg';
                 $potentialRequiredMemory *=
-                    ($arrSizeInfo['bits']/8) * $arrSizeInfo['channels'];
+                    ($arrSizeInfo['bits']/8) * ($arrSizeInfo['channels'] < 3 ? 3 : $arrSizeInfo['channels']);
                 break;
             case self::IMG_TYPE_PNG:
                 $function = 'imagecreatefrompng';
