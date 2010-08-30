@@ -285,6 +285,6 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_RESULTS_OF'] = "Search results of";
 $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_INPUT'] = "Search term...";
 $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_ARTICLES'] = "Search articles";
 $_ARRAYLANG['TXT_KNOWLEDGE_JUMP'] = "Jump";
-$_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_SUCCESSFUL'] = "Stichworte wurden aufgeräumt.";
-$_ARRAYLANG['TXT_KNOWLEDGE_RESET_VOTES_SUCCESSFUL'] = "Bewertungsstatistiken wurden zurückgesetzt.";
+$_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_SUCCESSFUL'] = "Les mots clés ont été rangés ";
+$_ARRAYLANG['TXT_KNOWLEDGE_RESET_VOTES_SUCCESSFUL'] = "Les statistiques d'évaluations ont été réinitialisées.";
 ?>
