@@ -74,11 +74,11 @@ $_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'] = "Cliquer ici pour vous inscrire
 $_ARRAYLANG['TXT_ACCESS_YOUR_ACCOUNT_SUCCSESSFULLY_DELETED'] = "Compte supprimé";
 $_ARRAYLANG['TXT_ACCESS_SAVE'] = "Enregistrer";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_STORED_SUCCESSFULLY'] = "Compte utilisateur mis à jour";
-$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Veuillez saisir la séquence de caractères de l'image dans le champ ci-dessous. (Il s'agit d'une protection anti-spambot)";
-$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTCHA";
-$_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "I confirm the correctness of the entered data and I know the  <a href=\"%s\" target=\"_blank\" title=\"Terms of Service\">Terms of Service</a> and accept them.";
-$_ARRAYLANG['TXT_ACCESS_TOS'] = "Terms of Service";
-$_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "You have to accept the Terms of Service to sign up!";
-$_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Security Code";
-$_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Folgende Newsletter abonnieren:";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION'] = "Veuillez taper le code de sécurité dans la zone de texte dans l'image représentée.Ceci est nécessaire pour que le système puisse vous identifier comme personne naturelle.";
+$_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'] = "Le code d'entrée de sécurité était faux!";
+$_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'] = "Je confirme l'exactitude des indications faites et de connaître les<a href=\"%s\" target=\"_blank\" title=\"conditions générales\">conditions générales</a>et de les accepter.";
+$_ARRAYLANG['TXT_ACCESS_TOS'] = "Conditions générales";
+$_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'] = "Vous devez accepter les conditions générales!";
+$_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Code d'entrée de sécurité ";
+$_ARRAYLANG['TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON'] = "Abonner le bulletin d'information suivant:";
 ?>
