@@ -6,270 +6,245 @@ Text[0]=["","{TXT_CONTACT_FEEDBACK_EXPLANATION}"];
 Text[1]=["","{TXT_CONTACT_CAPTCHA_DESCRIPTION}"];
 Text[2]=["","{TXT_CONTACT_SEND_COPY_DESCRIPTION}"];
 Text[3]=["","{TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION}"];
+Text[4]=["","{TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}"];
 
 var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
 var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
 var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
 
+/**
+Have count of the number of formfields added dynamically
+*/
+var formFieldNumber = 1;
+
 function addRecipient()
 {
-    var elField = document.getElementById('formRecipient_'+formRecipientLastId).cloneNode(true);
+    var number = 0;
+    // find the highest number
+    $J('.languageValueDiv').each(function(key, elem){
+        var nr = parseInt($J(elem).attr('id').split('_')[1]);
+        if (nr > number) {
+            number = nr;
+            divToCopy = elem;
+        }
+    });
 
-    document.getElementById('formRecipient_'+formRecipientLastId).setAttribute('id', 'formRecipient_'+(formRecipientLastId+1));
-    document.getElementById('contactFormRecipientId_'+formRecipientLastId).innerHTML = formRecipientLastId+1;
-    document.getElementById('contactFormRecipientId_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientId_'+(formRecipientLastId+1));
-    document.getElementById('contactFormRecipientName_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientName['+(formRecipientLastId+1)+']');
-    document.getElementById('contactFormRecipientName_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientName_'+(formRecipientLastId+1));
-    document.getElementById('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientEmail['+(formRecipientLastId+1)+']');
-    document.getElementById('contactFormRecipientEmail_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientEmail_'+(formRecipientLastId+1));
-    document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('name', 'contactFormRecipientSort['+(formRecipientLastId+1)+']');
-    document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('value', ++sort);
-    document.getElementById('contactFormRecipientSort_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientSort_'+(formRecipientLastId+1));
-    document.getElementById('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('href', 'javascript:removeFormElement('+(formRecipientLastId+1)+', \'Recipient\')');
-    document.getElementById('contactFormRecipientButtonDelete_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDelete_'+(formRecipientLastId+1));
-    document.getElementById('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formRecipientLastId+1)+', \'Recipient\')');
-    document.getElementById('contactFormRecipientButtonUp_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonUp_'+(formRecipientLastId+1));
-    document.getElementById('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formRecipientLastId+1)+', \'Recipient\')');
-    document.getElementById('contactFormRecipientButtonDown_'+formRecipientLastId).setAttribute('id', 'contactFormRecipientButtonDown_'+(formRecipientLastId+1));
+    number++;
+    var toCopy = $J('.formRecipient:last');
+    var copy = $J(toCopy).clone();
 
-    formRecipientLastId = formRecipientLastId + 1;
+    $J(copy).find('input, select, .languageValueDiv').each(
+        function(key, elem) {
+            var name = $J(elem).attr('name');
+            var id = $J(elem).attr('id');
 
-    document.getElementById('formRecipientContainer').appendChild(elField);
-}
-
-function addFormField()
-{
-    var elField = document.getElementById('formField_'+formFieldLastId).cloneNode(true);
-
-    document.getElementById('formField_'+formFieldLastId).setAttribute('id', 'formField_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldId_'+formFieldLastId).innerHTML = formFieldLastId+1;
-    document.getElementById('contactFormFieldId_'+formFieldLastId).setAttribute('id', 'contactFormFieldId_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('name', 'contactFormFieldName['+(formFieldLastId+1)+']');
-    document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('id', 'contactFormFieldName_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
-    document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormElement('+(formFieldLastId+1)+', \'Field\')');
-    document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDelete_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldAttributeBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldAttributeBox_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementUp('+(formFieldLastId+1)+', \'Field\')');
-    document.getElementById('contactFormFieldButtonUp_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonUp_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('href', 'javascript:moveFormElementDown('+(formFieldLastId+1)+', \'Field\')');
-    document.getElementById('contactFormFieldButtonDown_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDown_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldRequiredBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequiredBox_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('name', 'contactFormFieldRequired['+(formFieldLastId+1)+']');
-    document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequired_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('name', 'contactFormFieldCheckType['+(formFieldLastId+1)+']');
-    document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('id', 'contactFormFieldCheckType_'+(formFieldLastId+1));
-
-    formFieldLastId = formFieldLastId + 1;
-
-    document.getElementById('formFieldContainer').appendChild(elField);
-}
-
-function removeFormElement(id, what)
-{
-    document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
-}
-
-function moveFormElementUp(id, what)
-{
-    elField1 = document.getElementById('form'+what+'_'+id);
-    elField2 = document.getElementById('form'+what+'_'+id).cloneNode(true);
-    if(what == 'Field')
-        for (var i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-            if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-                elFieldType1 = i;
-                break;
+            if (name != undefined) {
+                // the divs don't have names
+                $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
             }
+
+            // do the id too
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + number));
         }
+    );
 
-    elField3 = document.getElementById('form'+what+'_'+id).previousSibling;
-    if (elField3) {
-        try {
-            elField3Id = elField3.getAttribute('id');
-        } catch (e) {
-            elField3Id = '';
+    $J(copy).find('.langToggleLink').attr('onclick', '');
+    $J(copy).find('.langToggleLink').unbind('click').bind('click', function() {
+            toggleLanguages(number);
         }
-        while (elField3.nodeType != 1 || elField3Id == '' || elField3Id.substring(0, 5+(what.length)) != 'form'+what+'_') {
-            elField3 = elField3.previousSibling;
-            if (!elField3) return;
-            try {
-                elField3Id = elField3.getAttribute('id');
-                if (typeof(elField3Id) != 'string') {
-                    elField3Id = '';
-                }
-            } catch (e) {
-                elField3Id = '';
-            }
-        }
-    } else {
-        return;
-    }
+    );
 
-    if(what == "Recipient"){
-        var recipientSortGoesDown   = getFieldByName(elField2, 'contactFormRecipientSort')
-        var recipientSortGoesUp     = getFieldByName(elField3, 'contactFormRecipientSort')
-        recipientSortGoesDown.value = recipientSortGoesDown.value*1 - 1;
-        recipientSortGoesUp.value   = recipientSortGoesUp.value*1 + 1;
-    }
+    $J(copy).find('input').val('');
+    $J(copy).find('input[type=hidden]').val('new');
 
-    document.getElementById('form'+what+'Container').removeChild(elField1);
-    document.getElementById('form'+what+'Container').insertBefore(elField2, elField3);
-
-    if(what == 'Field')
-        document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType1].selected = true;
+    $J('#formRecipientContainer').append(copy);
 }
 
-function getFieldByName(obj, name)
-{
-    var fields = obj.getElementsByTagName("input");
-    for(var i = 0; i < fields.length; i++){
-        if(fields[i].name.indexOf(name) != -1){
-            return fields[i];
+/**
+  Add a new section for a form field
+  */
+function addFormField() {
+    /**
+    	Clone the formField element last created
+    */
+    divToCopy = $J('.formField').last();
+    formFieldNumber++;
+    
+    var copy = divToCopy.clone(true);
+    $J(copy).attr('id', 'formField_' +formFieldNumber);
+	
+    $J('#formFields').append(copy);
+
+    $J(copy).find('input, select').each(
+        function(key, elem) {
+            var name = $J(elem).attr('name');
+            var id = $J(elem).attr('id');
+            
+            //var number = parseInt(name.match(/\[(\d+)\](?:\[\d+\])?$/)[1]);
+            // this regex was quite bitchy... (especially because the page reload
+            // took up to 35 seconds... nice testing)
+            $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + formFieldNumber + "]$3"));
+
+            // do the id too
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
         }
-    }
+    );
+    
+   	//Increment the class name of td on add each new fieldform
+    $J(copy).find('td').each(
+    	function(key, elem) {
+            var className = $J(elem).attr('class');
+            // do the class too
+            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+        }
+    );
+    
+    //Increment the span name of td on add each new fieldform
+    $J(copy).find('span').each(
+    	function(key, elem) {
+            var id = $J(elem).attr('id');
+            // do the class too
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+        }
+    );
+    
+    /**
+    	set the value of field type select wiyh the value of 
+    	the previous form filed type select on adding new formfield 
+    */
+   	$J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +(formFieldNumber-1)).val());
+
+    $J(copy).find('input').val('');
+    $J(copy).find('input[type=hidden]').val('new');
 }
 
-function moveFormElementDown(id, what)
-{
-    elField1 = document.getElementById('form'+what+'_'+id).cloneNode(true);
-
-    if(what == 'Field')
-        for (i = 0; i < document.getElementById('contactFormFieldType_'+id).childNodes.length; i++) {
-            if (document.getElementById('contactFormFieldType_'+id).childNodes[i].selected == true) {
-                elFieldType1 = i;
-                break;
-            }
-        }
-
-    elField2 = document.getElementById('form'+what+'_'+id).nextSibling;
-    if (elField2) {
-        while (elField2.nodeType != 1) {
-            elField2 = elField2.nextSibling;
-            if (!elField2) {
-                return;
-            }
-        }
-    } else {
-        return;
-    }
-
-    if(what == 'Field')
-        for (i = 0; i < document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes.length; i++) {
-            if (document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[i].selected == true) {
-                elFieldType2 = i;
-                break;
-            }
-        }
-
-    elField3 = elField2;
-    elField2 = elField2.cloneNode(true);
-
-    if(what == "Recipient"){
-        var recipientSortGoesUp     = getFieldByName(elField2, 'contactFormRecipientSort')
-        recipientSortGoesUp.value   = recipientSortGoesUp.value*1 - 1;
-        var recipientSortGoesDown   = getFieldByName(elField1, 'contactFormRecipientSort')
-        recipientSortGoesDown.value = recipientSortGoesDown.value*1 + 1;
-    }
-
-
-    document.getElementById('form'+what+'Container').removeChild(document.getElementById('form'+what+'_'+id));
-    document.getElementById('form'+what+'Container').replaceChild(elField1, elField3);
-    document.getElementById('form'+what+'Container').insertBefore(elField2, document.getElementById('form'+what+'_'+id));
-
-    if(what == 'Field'){
-        document.getElementById('contactFormFieldType_'+id).childNodes[elFieldType1].selected = true;
-        document.getElementById('contactFormFieldType_'+elField2.getAttribute('id').substr(10)).childNodes[elFieldType2].selected = true;
+/**
+  Remove a form field
+  */
+function removeFormField(obj) {
+    // at least one field has to be there
+    if ($J('.formField').size() > 1) {
+        var remObj = $J($J($J(obj).parent()).parent()).parent();
+        $J(remObj).remove();
     }
 }
-
+  
+/**
+	Change value fields onchange with the select box to Jquery script
+	hide/show the mandatory and type field depending on selected field type
+*/
 function setFormFieldAttributeBox(el, type)
 {
+
     elId = el.substr(21);
-    elField = document.getElementById('contactFormFieldAttributeBox_'+elId);
+    elField = $J('.contactFormFieldAttributeBox_'+elId);
+	
+	elField.html('');    
 
-    for (i=elField.childNodes.length-1; i>=0; i--) {
-        if (elField.childNodes[i].nodeType) {
-            switch (elField.childNodes[i].nodeType) {
-                case 1:
-                case 3:
-                    elField.removeChild(elField.childNodes[i]);
-                    break;
-            }
-        }
-    }
+	//Change the value fields dynamically with respect to type field
+	if($J('#formField'+type+'Attribute_0').length > 0 && 'formField'+type+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
+		$J(elField).each(function (index, domEle){
+			$J(domEle).html($J('#formField'+type+'Attribute_0').html());
+			$J(domEle).children(0).attr('name', 'contactFormFieldValue['+elId+']['+(index+1)+']');
+		});
+	} else {
+		//For Checkbox only one instance of select box is enough
+		$J(elField[0]).html($J('#formField'+type+'Attribute_0').html());
+		$J(elField[0]).children(0).attr('name', 'contactFormFieldValue['+elId+'][1]');
+	}
 
-    if (document.getElementById('formField'+type+'Attribute_0')) {
-        elAttribute = document.getElementById('formField'+type+'Attribute_0');
-        for (i=0; i<elAttribute.childNodes.length; i++) {
-            if (elAttribute.childNodes[i].nodeType == 1) {
-                if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldAttribute[0]') {
-                    elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldAttribute['+elId+']');
-                }
-            }
-            elField = elAttribute.childNodes[i].cloneNode(true);
-            document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
-        }
-    } else {
-        elField = document.createTextNode('');
-        document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
-    }
-
-    elField = document.getElementById('contactFormFieldRequiredBox_'+elId);
-
-    for (i=elField.childNodes.length-1; i>=0; i--) {
-        if (elField.childNodes[i].nodeType) {
-            switch (elField.childNodes[i].nodeType) {
-                case 1:
-                case 3:
-                    elField.removeChild(elField.childNodes[i]);
-                    break;
-            }
-        }
-    }
-
-    switch (type) {
-        case 'text':
-        case 'file':
+	/**
+		Add or remove the mandator checkbox and value type select box 
+		with respect to change in the fields type select box
+	*/
+	switch(type){
+		case 'text':
+	    case 'file':
         case 'password':
-        case 'textarea':
+        case 'textarea':        
+        	if($J('#contactFormFieldRequired_'+elId).length == 0){
+		    	var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
+				$J(requiredCopy).attr('id', 'contactFormFieldRequired_' + elId);
+				$J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
+				$J('#contactFormFieldCheckBox_'+elId).append(requiredCopy);
+			}
+			
+			if($J('#contactFormFieldCheckType_'+elId).length == 0){
+				var checkTypeCopy = $J('#contactFormFieldCheckType_0').clone(true);
+				$J(checkTypeCopy).attr('id', 'contactFormFieldCheckType_' + elId);
+				$J(requiredCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
+				$J('#contactFormFieldCheckMenu_'+elId).append(checkTypeCopy);
+			}
+			break;
+			
+		case 'label':
+		case 'hidden':
+		case 'select':
+		case 'recipient':
+			($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
+			($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
+			break;
+			
         case 'checkbox':
         case 'checkboxGroup':
         case 'date':
         case 'radio':
-            elAttribute = document.getElementById('contactFormFieldRequiredBox_0').cloneNode(true);
-            for (i=0; i<elAttribute.childNodes.length; i++) {
-                if (elAttribute.childNodes[i].nodeType == 1) {
-                    if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldRequired['+elId+']') {
-                        elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldRequired['+elId+']');
-                        elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldRequired_'+elId);
-                    }
+			var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
+			$J(requiredCopy).attr('id', 'contactFormFieldRequired_' + elId);
+			($J('#contactFormFieldRequired_'+elId).length == 0) ? $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy) : '';
+			($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
+			break;
+		default:
+			break;
+	}
+}
 
-                    if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType[0]' || elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldCheckType['+elId+']') {
-                        elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldCheckType['+elId+']');
-                        elAttribute.childNodes[i].setAttribute('id', 'contactFormFieldCheckType_'+elId);
-                        if (type == 'checkbox' || type == 'checkboxGroup' || type == 'date' || type == 'select' || type == 'radio') {
-                            continue;
-                        }
-                    }
-                }
+function checkFieldValue()
+{
+	var elField, i, n, k,j, isSetAllValue;
+	var arr;
+	arr = ["checkboxGroup", "radio", "select"];
+		
+	isSetAllValue = true;
+	for (n=1; n<formFieldLastId; n++ ){		
+		if (document.getElementById('contactFormFieldAttributeBox_'+n)){
+			
+			k = -1;
+			for (var j=0; j < arr.length; j++) {
+			    if (arr[j] == document.getElementById('contactFormFieldType_'+n).value ) {
+			    	k=j; 
+			    	break
+			    } 		
+			}
+			
+			if (k != -1) {
+				elField = document.getElementById('contactFormFieldAttributeBox_'+n);	
+			    for (i=0; i<elField.childNodes.length; i++) {
+		            if (elField.childNodes[i].nodeType == 1) {	                            
+		                if (elField.childNodes[i].value == '') {	                	
+		                	isSetAllValue = false;
+		                }		                
+		            }             
+			    }
+			}		    
+		}
+	}
+	
+	return isSetAllValue;
 
-                elField = elAttribute.childNodes[i].cloneNode(true);
-                document.getElementById('contactFormFieldRequiredBox_'+elId).appendChild(elField);
-            }
-            break;
-
-        default:
-            break;
-    }
 }
 
 function createContentSite()
 {
-    if (confirm('{TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE}')) {
-        document.getElementById('contentSiteAction').value = "create";
-    }
-    return true;
+	if (checkFieldValue()) {	
+        if (confirm('{TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE}')) {
+            document.getElementById('contentSiteAction').value = "create";
+        }
+        return true;    
+	} else {
+		alert ("{TXT_CONTACT_SET_MANDATORY_FIELD}");
+		return false;
+	}
 }
 
 function updateContentSite()
@@ -279,48 +254,56 @@ function updateContentSite()
     }
     return true;
 }
+
+
+/**
+  Select the super tab according to the name
+
+  @author  Stefan Heinemann <sh@adfinis.com>
+  @param   string name 
+*/
+function superTab(name) {
+    $J('.tabs').hide();
+    $J('#tab_' + name).show();
+}
+
+function langTab(id) {
+    $J('.langTabs').hide();
+    $J('#langTab_' + id).show();
+}
+
+$J(document).ready(function() {
+    $J('#formFields').sortable();
+    $J('#formRecipientContainer tbody').sortable();
+});
+
+/**
+    Show the language input fields
+ */
+function toggleLanguages(id) {
+    var obj = $J($J('#languageValues_' + id));
+    if (obj.is(':visible')) {
+        obj.hide();
+    } else {
+        obj.show();
+    }
+}
+
+/*
+    Remove a recipient row. Prevent from
+    removing when there's only one left
+ */
+function deleteRecipientRow(obj) {
+    if ($J('.formRecipient').size() > 1) {
+        $J(obj).parents('tr:first').remove();
+    }
+}
+
 // -->
 </script>
+
+<!-- Template of Field elements that is to be added dynamically.  -->
 <div style="display:none;">
-    <div style="white-space:nowrap; height:20px; clear:both;" id="formRecipient_{CONTACT_FORM_RECIPIENT_NEXT_ID}">
-        <div style="width:55px; display:inline; float:left;">
-            <a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-            <a href="javascript:moveFormElementUp('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonUp_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-            <a href="javascript:moveFormElementDown('{CONTACT_FORM_RECIPIENT_NEXT_ID}', 'Recipient')" id="contactFormRecipientButtonDown_{CONTACT_FORM_RECIPIENT_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-        </div>
-        <div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormRecipientId_{CONTACT_FORM_RECIPIENT_NEXT_ID}" >
-            {CONTACT_FORM_RECIPIENT_NEXT_ID}
-        </div>
-        <div style="width:290px; display:inline; float:left;">
-            <input style="width:285px;" type="text" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{TXT_CONTACT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
-        </div>
-        <div style="width:290px; display:inline;">
-            <input style="width:285px;" type="text" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{TXT_CONTACT_REGEX_EMAIL}" onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" /> *
-            <input type="hidden" name="contactFormRecipientSort[{CONTACT_FORM_RECIPIENT_NEXT_ID}]" id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_NEXT_ID}" value="{CONTACT_FORM_RECIPIENT_NEXT_SORT}" />
-        </div>
-    </div>
-    <div style="white-space:nowrap; height:20px;" id="formField_{CONTACT_FORM_FIELD_NEXT_ID}">
-        <div style="width:55px; display:inline; float:left;">
-            <a href="javascript:removeFormElement('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-            <a href="javascript:moveFormElementUp('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-            <a href="javascript:moveFormElementDown('{CONTACT_FORM_FIELD_NEXT_ID}', 'Field')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_NEXT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-        </div>
-        <div style="width:35px; display:inline; float:left; text-align:center;" id="contactFormFieldId_{CONTACT_FORM_FIELD_NEXT_ID}" >
-            {CONTACT_FORM_FIELD_NEXT_ID}
-        </div>
-        <div style="width:120px; display:inline; float:left;">
-            <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_NEXT_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_NEXT_ID}" value="" />
-        </div>
-        <div style="width:135px; display:inline; float:left;">
-            {CONTACT_FORM_FIELD_TYPE_MENU_TPL}
-        </div>
-        <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_NEXT_ID}">
-            {CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
-        </div>
-        <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_NEXT_ID}">
-            {CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL}
-        </div>
-    </div>
     <div style="display:inline;" id="formFieldtextAttribute_0">
         {CONTACT_FORM_FIELD_TEXT_TPL}
     </div>
@@ -348,139 +331,206 @@ function updateContentSite()
     <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_0">
         {CONTACT_FORM_FIELD_CHECK_BOX_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_TPL}
     </div>
+
 </div>
+
+
+
+<ul id="tabmenu">
+    <li><a href="#" onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
+    <li><a href="#" onclick="superTab('fields')" title="{TXT_FORM_FIELDS}">{TXT_FORM_FIELDS}</a></li>
+    <li><a href="#" onclick="superTab('recipients')" title="{TXT_FORM_RECIPIENTS}">{TXT_FORM_RECIPIENTS}</a></li>
+    <li><a href="#" onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
+</ul>
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
-    <input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
+<input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
+<input type="hidden" name="copy" value="{FORM_COPY}" />
+
+
+
+<div class="tabs" id="tab_values">
+
     <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-        <tbody style="vertical-align:top;">
-            <tr>
-                <th colspan="2">{CONTACT_ACTION_TITLE}</th>
-            </tr>
-            <tr class="row1" style="height:20px;">
-                <td width="10%">{TXT_CONTACT_NAME}</td>
-                <td width="90%"><input style="width:670px;" type="text" name="contactFormName" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
-            </tr>
-            <tr class="row2" style="height:20px;">
-                <td>{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
-                <td><input style="width: 670px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *<td>
-            </tr>
-            <tr class="row1" style="height:20px;">
-                <td>{TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION}</td>
-                <td>
-                    <div id="formRecipientContainer">
-                        <!-- BEGIN contact_form_recipient_list -->
-                            <div style="white-space:nowrap; height:20px;" id="formRecipient_{CONTACT_FORM_RECIPIENT_ID}">
-                                <div style="width:55px; display:inline; float:left;">
-                                    <a href="javascript:removeFormElement('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonDelete_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-                                    <a href="javascript:moveFormElementUp('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonUp_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-                                    <a href="javascript:moveFormElementDown('{CONTACT_FORM_RECIPIENT_ID}', 'Recipient')" id="contactFormRecipientButtonDown_{CONTACT_FORM_RECIPIENT_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-                                </div>
-                                <div style="width:35px; display:inline; float:left; text-align:center;">
-                                    {CONTACT_FORM_RECIPIENT_ID}
-                                </div>
-                                <div style="width:290px; display:inline; float:left;">
-                                    <input style="width:285px;" type="text" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientName_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_NAME}" onclick="if(this.value=='{TXT_CONTACT_NAME}'){this.value='';}" />
-                                </div>
-                                <div style="width:290px; display:inline;">
-                                    <input style="width:285px;" type="text" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientEmail_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_EMAIL}" onclick="if(this.value=='{TXT_CONTACT_REGEX_EMAIL}'){this.value='';}" /> *
-                                    <input type="hidden"  name="contactFormRecipientSort[{CONTACT_FORM_RECIPIENT_ID}]" id="contactFormRecipientSort_{CONTACT_FORM_RECIPIENT_ID}" value="{CONTACT_FORM_RECIPIENT_SORT}" />
-                                </div>
-                            </div>
-                        <!-- END contact_form_recipient_list -->
-                    </div>
-                    <br /><input type="button" onclick="addRecipient()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
-                <td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_CONTACT_SUBJECT}</td>
-                <td><input style="width: 670px;" type="text" name="contactFormSubject" value="{CONTACT_FORM_SUBJECT}" /></td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
-                <td><input type="radio" name="contactFormUseCustomStyle" value="1" id="contactFormUseCustomStyle_1" {CONTACT_FORM_USE_CUSTOM_STYLE_YES} /><label for="contactFormUseCustomStyle_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCustomStyle" value="0" id="contactFormUseCustomStyle_0" {CONTACT_FORM_USE_CUSTOM_STYLE_NO} /><label for="contactFormUseCustomStyle_0">{TXT_CONTACT_NO}</label></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT}</td>
-                <td><input type="radio" name="contactFormShowForm" value="1" id="contactFormShowForm_1" {CONTACT_FORM_SHOW_FORM_YES} /><label for="contactFormShowForm_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormShowForm" value="0" id="contactFormShowForm_0" {CONTACT_FORM_SHOW_FORM_NO} /><label for="contactFormShowForm_0">{TXT_CONTACT_NO}</label></td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_CONTACT_CAPTCHA_PROTECTION}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
-                <td><input type="radio" name="contactFormUseCaptcha" value="1" id="contactFormUseCaptcha_1" {CONTACT_FORM_USE_CAPTCHA_YES} /><label for="contactFormUseCaptcha_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCaptcha" value="0" id="contactFormUseCaptcha_0" {CONTACT_FORM_USE_CAPTCHA_NO} /><label for="contactFormUseCaptcha_0">{TXT_CONTACT_NO}</label></td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
-                <td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_CONTACT_FORM_DESC}</td>
-                <td>{CONTACT_FORM_TEXT}</td>
-            </tr>
-            <tr class="row2">
-                <td>{TXT_CONTACT_FEEDBACK}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-                <td>{CONTACT_FORM_FEEDBACK}</td>
-            </tr>
-            <tr class="row1">
-                <td>{TXT_CONTACT_FORM_FIELDS}</td>
-                <td>
-                    <div id="formFieldContainer">
-                        <div style="white-space:nowrap; height:20px; clear:both;">
-                            <div style="width:55px; display:inline; float:left; text-align:center;">
-                                &nbsp;
-                            </div>
-                            <div style="width:35px; display:inline; float:left; text-align:center;">
-                                {TXT_CONTACT_ID}
-                            </div>
-                            <div style="width:135px; display:inline; float:left;">
-                                {TXT_CONTACT_FIELD_NAME}
-                            </div>
-                            <div style="width:120px; display:inline; float:left;">
-                                {TXT_CONTACT_TYPE}
-                            </div>
-                            <div style="width:240px; height:1px; display:inline; float:left;">
-                                {TXT_CONTACT_VALUE_S}
-                            </div>
-                            <div style="width:150px; display:inline;">
-                                {TXT_CONTACT_MANDATORY_FIELD}
-                            </div>
-                        </div>
-                        <!-- BEGIN contact_form_field_list -->
-                            <div style="white-space:nowrap; height:20px; clear:both;" id="formField_{CONTACT_FORM_FIELD_ID}">
-                                <div style="width:55px; display:inline; float:left;">
-                                    <a href="javascript:removeFormElement('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDelete_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_DELETE}"><img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" /></a>
-                                    <a href="javascript:moveFormElementUp('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonUp_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_UP}"><img style="vertical-align:middle;" src="images/icons/up.gif" alt="{TXT_CONTACT_MOVE_UP}" width="14" height="12" border="0" /></a>
-                                    <a href="javascript:moveFormElementDown('{CONTACT_FORM_FIELD_ID}', 'Field')" id="contactFormFieldButtonDown_{CONTACT_FORM_FIELD_ID}" title="{TXT_CONTACT_MOVE_DOWN}"><img style="vertical-align:middle;" src="images/icons/down.gif" alt="{TXT_CONTACT_MOVE_DOWN}" width="14" height="12" border="0" /></a>
-                                </div>
-                                <div style="width:35px; display:inline; float:left; text-align:center;">
-                                    {CONTACT_FORM_FIELD_ID}
-                                </div>
-                                <div style="width:135px; display:inline; float:left;">
-                                    <input type="text" name="contactFormFieldName[{CONTACT_FORM_FIELD_ID}]" id="contactFormFieldName_{CONTACT_FORM_FIELD_ID}" value="{CONTACT_FORM_FIELD_NAME}" />
-                                </div>
-                                <div style="width:120px; display:inline; float:left;">
-                                    {CONTACT_FORM_FIELD_TYPE_MENU}
-                                </div>
-                                <div style="width:240px; height:1px; display:inline; float:left;" id="contactFormFieldAttributeBox_{CONTACT_FORM_FIELD_ID}">
-                                    {CONTACT_FORM_FIELD_ATTRIBUTES}
-                                </div>
-                                <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_{CONTACT_FORM_FIELD_ID}">
-                                    {CONTACT_FORM_FIELD_CHECK_BOX} {CONTACT_FORM_FIELD_CHECK_MENU}
-                                </div>
-                            </div>
-                        <!-- END contact_form_field_list -->
-                    </div>
-                    <br />
-                    <br />
-                    <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
-                    <br />
-                    <br />
-                </td>
-            </tr>
-        </tbody>
+        <tr>
+            <th colspan="2">{CONTACT_ACTION_TITLE}</th>
+        </tr>
+        <tr class="row2" style="height:20px;">
+            <td style="width: 15%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
+            <td><input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *</td>
+        </tr>
+    </table>
+    <br /><br />
+
+    <div style="padding-left: 4px">
+        <ul class="tabmenu" style="margin-left: 15%">
+            <!-- BEGIN languageTabs -->
+            <li>
+                <a href="#" onclick="langTab({LANG_ID})" title="{LANG_NAME}" 
+                    style="{TAB_DISPLAY}">{LANG_NAME}</a>
+            </li>
+            <!-- END languageTabs -->
+        </ul>
+    </div>
+
+    <!-- BEGIN languageForm -->
+    <div style="display: {LANG_FORM_DISPLAY};"  id="langTab_{LANG_ID}" class="langTabs">
+            <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+                <tbody style="vertical-align:top;">
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th> {LANG_NAME}</th>
+                    </tr>
+                    <tr class="row1" style="height:20px;">
+                        <td width="15%">{TXT_CONTACT_NAME}</td>
+                        <td width="90%"><input style="width:300px;" type="text" name="contactFormName[{LANG_ID}]" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
+                    </tr>
+
+                    <tr class="row2">
+                        <td>{TXT_CONTACT_SUBJECT}</td>
+                        <td><input style="width: 300px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
+                    </tr>
+
+                    <tr class="row1">
+                        <td>{TXT_CONTACT_FORM_DESC}</td>
+                        <td>{CONTACT_FORM_TEXT}</td>
+                    </tr>
+                    <tr class="row2">
+                        <td>{TXT_CONTACT_FEEDBACK}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+                        <td>{CONTACT_FORM_FEEDBACK}</td>
+                    </tr>
+                  </tbody>
+            </table>
+    </div>
+    <!-- END languageForm -->
+</div>
+
+<div id="tab_fields" class="tabs" style="display: none;">
+    <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+        <tr>
+            <th colspan="2">{CONTACT_FORM_FIELDS_TITLE}</th>
+        </tr>
     </table>
     <br />
-    * {TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}
-    <br />
-    <br />
-    <input type="submit" name="saveForm" value="{TXT_CONTACT_SAVE}" />
-</form>
+
+    <div id="formFields">
+    <!-- BEGIN formField -->
+        <div class="formField"  id="formField_{FORM_FIELD_ID}" style="background-color: white;">
+            <input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" />
+            <div style="border: 1px solid #DDE4FF; padding: 10px; position: relative">
+                <div style="position: absolute; right: 10px; top: 3px;">
+                    <a id="removeLink_1" href="#" onclick="removeFormField(this)">X</a>
+                </div>
+                <table width="100%">
+                    <tr>
+                        <th style="width: 20%">{TXT_LANGUAGE}</th>
+                        <th style="width: 40%">{TXT_NAME}</th>
+                        <th style="width: 40%">{TXT_VALUES}</th>
+                    </tr>
+                    <!-- BEGIN formFieldRow -->
+                    <tr>
+                        <td>{FORM_FIELD_ROW_LANG}</td>
+                        <td>
+                            <input type="text" name="contactFormFieldName[{FORM_FIELD_ID}][{FORM_FIELD_ROW_LANG_ID}]" 
+                                value="{FORM_FIELD_NAME}"
+                                class="formFieldElementsLang" style="width: 100%"/>
+                        </td>
+                       	<!-- added class name to td -->
+                        <td class="contactFormFieldAttributeBox_{FORM_FIELD_ID}">
+                            {CONTACT_FORM_FIELD_VALUE_FIELD}
+                        </td>
+                    </tr>
+                    <!-- END formFieldRow -->
+                </table>
+                <!--
+                	added two span with ids to hide/show mandatory checkbox and type select box
+                -->
+                {TXT_TYPE}: {CONTACT_FORM_FIELD_TYPE_MENU} <span id='contactFormFieldCheckBox_{FORM_FIELD_ID}'>{FORM_FIELD_CHECK_BOX}</span> <span id='contactFormFieldCheckMenu_{FORM_FIELD_ID}'>{TXT_MANDATORY_FIELD} {FORM_FIELD_CHECK_MENU}</span>
+            </div>
+            <br />
+        </div>
+    <!-- END formField -->
+    </div>
+
+    <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" id="addFieldButton"/>
+</div>
+
+<div id="tab_recipients" class="tabs" style="display: none;">
+   <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
+       <thead>
+		    <tr>
+		        <th colspan="3">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
+		    </tr>
+
+		    <tr class="row3">
+		        <td style="width: 315px;"><strong>{TXT_CONTACT_EMAIL}</strong></td>
+		        <td><strong>{TXT_CONTACT_NAME}</strong></td>
+		        <td>&nbsp;</td>
+		    </tr>
+		</thead>
+
+        <tbody>
+
+        <!-- BEGIN contact_form_recipient_list -->
+        <tr class="formRecipient">
+            <td style="vertical-align: top;">
+                <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
+                    value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
+            </td>
+            <td>
+                <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][0]"
+                        value="{CONTACT_FORM_RECIPIENT_NAME}" /> <a href="#" onclick="toggleLanguages({CONTACT_FORM_RECIPIENT_ID})" class="langToggleLink">{TXT_CONTACT_EXTEND} &gt;&gt;</a><br />
+
+                <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
+                <!-- BEGIN recipientNameLang -->
+                    <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
+                        value="{CONTACT_FORM_RECIPIENT_NAME}" /> {CONTACT_FORM_LANGUAGE_NAME} <br />
+                    <!-- END recipientNameLang -->
+                    <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
+                </div>
+            </td>
+            <td style="vertical-align: top;">
+                <a href="#" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
+                    <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
+                </a>
+            </td>
+        </tr>
+        <!-- END contact_form_recipient_list -->
+        </tbody>
+    </table>
+
+    <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
+</div>
+
+<div id="tab_settings" class="tabs" style="display: none">
+   <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+        <tr>
+            <th colspan="2">{CONTACT_FORM_SETTINGS}</th>
+        </tr>
+    </table>
+    <table>
+        <tr class="row1">
+            <td>{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
+            <td><input type="radio" name="contactFormUseCustomStyle" value="1" id="contactFormUseCustomStyle_1" {CONTACT_FORM_USE_CUSTOM_STYLE_YES} /><label for="contactFormUseCustomStyle_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCustomStyle" value="0" id="contactFormUseCustomStyle_0" {CONTACT_FORM_USE_CUSTOM_STYLE_NO} /><label for="contactFormUseCustomStyle_0">{TXT_CONTACT_NO}</label></td>
+        </tr>
+        <tr class="row2">
+            <td>{TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT}</td>
+            <td><input type="radio" name="contactFormShowForm" value="1" id="contactFormShowForm_1" {CONTACT_FORM_SHOW_FORM_YES} /><label for="contactFormShowForm_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormShowForm" value="0" id="contactFormShowForm_0" {CONTACT_FORM_SHOW_FORM_NO} /><label for="contactFormShowForm_0">{TXT_CONTACT_NO}</label></td>
+        </tr>
+        <tr class="row1">
+            <td>{TXT_CONTACT_CAPTCHA_PROTECTION}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+            <td><input type="radio" name="contactFormUseCaptcha" value="1" id="contactFormUseCaptcha_1" {CONTACT_FORM_USE_CAPTCHA_YES} /><label for="contactFormUseCaptcha_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCaptcha" value="0" id="contactFormUseCaptcha_0" {CONTACT_FORM_USE_CAPTCHA_NO} /><label for="contactFormUseCaptcha_0">{TXT_CONTACT_NO}</label></td>
+        </tr>
+        <tr class="row2">
+            <td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
+            <td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
+        </tr>
+    </table>
+</div>
+
+<br />
+<br />
+<br />
+<input type="submit" name="saveForm" value="{TXT_CONTACT_SAVE}" />
+
 <!-- END module_contact_form_modify.html -->
+
