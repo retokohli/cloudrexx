@@ -7,10 +7,11 @@ maxHeight = 180;
 
 function setUrl(url, width, height, alt) {
 	window.opener.SetUrl( webPath+url, width, height, alt );
-    var dialog = window.opener.CKEDITOR.dialog.getCurrent();
+	if (typeof(window.opener.CKEDITOR) !== 'undefined' && {FILEBROWSER_NOT_ABSOLUTE_URI}) {
+        dialog = window.opener.CKEDITOR.dialog.getCurrent();
+        if (dialog !== null && typeof(dialog.getContentElement('info', 'protocol')) != 'undefined') {
     dialog.setValueOf('info','protocol','');
-	if (window.opener.document.getElementById('cmbLinkProtocol') !== null && {FILEBROWSER_NOT_ABSOLUTE_URI}) {
-     window.opener.document.getElementById('cmbLinkProtocol').value = '';
+        }
 	}
 	window.opener.focus();
 	window.top.close();

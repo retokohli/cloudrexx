@@ -488,7 +488,12 @@ class FileBrowser {
             $objFile->setChmod($strPath, $strWebPath, $file);
         }
         $fileType = pathinfo($strPath.$file);
-        if ($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif') {
+        if (isset($fileType['extension'])
+			 && (  $fileType['extension'] == 'jpg'
+				|| $fileType['extension'] == 'jpeg'
+				|| $fileType['extension'] == 'png'
+				|| $fileType['extension'] == 'gif')
+		) {
             if($this->_mediaType == 'mediadir') {
                 $objRSMediadirSettings = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_mediadir_settings WHERE name='settingsThumbSize'");
                 if ($objRSMediadirSettings !== false) {
@@ -655,7 +660,7 @@ class FileBrowser {
                     $arrEscapedPaths[] = FWValidator::getEscapedSource($arrFile['path']);
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".FWValidator::getEscapedSource($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
+                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".addslashes(htmlentities($arrFile['path'], ENT_COMPAT, CONTREXX_CHARSET))."',".$arrFile['width'].",".$arrFile['height'].",'')",
                         'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
                         'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
                         'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
