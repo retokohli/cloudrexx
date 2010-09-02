@@ -84,7 +84,7 @@ function alias_add_alias()
           {ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases_new[]" value="" style="width:200px;" />
           {TXT_ALIAS_STANDARD_RADIOBUTTON}
           <input type="radio" name="alias_use_default_tmpl" value="" />
-          <a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+this.previousSibling.value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" /></a>
+          <a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+this.previousSibling.previousSibling.previousSibling.previousSibling.value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" /></a>
         </div>
         <input type="button" value="{TXT_ALIAS_ADD_ANOTHER_ALIAS}" onclick="alias_add_alias()" />
       </td>

@@ -85,7 +85,12 @@ class AliasAdmin extends aliasLib
         }
 
         $arrConfig = $this->_getConfig();
-        if (!$arrConfig['aliasStatus']) {
+		/* this must be tested against an empty string because the initial setting
+         * of aliasStatus is defined as such. If aliasStatus is set to 0, then this will
+         * mean that the alias modul has been deactivated and therefor there should be
+         * no intention to activate the module automatically.
+         */
+        if ($arrConfig['aliasStatus'] == '') {
             if ($this->_isModRewriteInUse()) {
                 $this->_setAliasAdministrationStatus(true);
                 $this->_initConfig();
@@ -175,26 +180,45 @@ class AliasAdmin extends aliasLib
             ));
 
             $this->_objTpl->setGlobalVariable(array(
-                'TXT_ALIAS_DELETE'    => $_ARRAYLANG['TXT_ALIAS_DELETE'],
-                'TXT_ALIAS_MODIFY'    => $_ARRAYLANG['TXT_ALIAS_MODIFY']
+                'TXT_ALIAS_DELETE'                  => $_ARRAYLANG['TXT_ALIAS_DELETE'],
+                'TXT_ALIAS_MODIFY'                  => $_ARRAYLANG['TXT_ALIAS_MODIFY'],
+                'TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'   => $_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW']
             ));
 
+            $langPathPrefix = $_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($this->langId, 'lang') : '';
             $arrRewriteInfo = $this->_getRewriteInfo();
 
             foreach ($arrAliases[$this->langId] as $aliasId => $arrAlias) {
                 foreach ($arrAlias['sources'] as $arrAliasSource) {
 
                     $this->_objTpl->setVariable(array(
-                        'ALIAS_SOURCE_URL'    => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'<strong>/'.stripslashes($arrAliasSource['url']).'</strong>',
+                        'ALIAS_SOURCE_REAL_URL' => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'/'.stripslashes($arrAliasSource['url']),
+                        'ALIAS_SOURCE_URL'      => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'<strong>/'.stripslashes($arrAliasSource['url']).'</strong>',
                     ));
 
-                    if (!is_array($arrRewriteInfo) || !isset($arrRewriteInfo[($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])]) || !in_array($arrAliasSource['url'], $arrRewriteInfo[($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])])) {
-                        $this->_objTpl->setVariable('TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG', $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG']);
-                        $this->_objTpl->touchBlock('alias_source_not_set');
+                    if ($arrAlias['type'] == 'local') {
+                        // alias points to a local webpage
+                        $target = $arrAlias['pageUrl'];
                     } else {
-                        $this->_objTpl->hideBlock('alias_source_not_set');
+                        $target = $arrAlias['url'];
                     }
 
+                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                        // virtual language path has be taken in account
+                        $source = FWLanguage::getLanguageParameter($this->langId, 'lang').'/'.$arrAliasSource['url'];
+                    } else {
+                        $source = $arrAliasSource['url'];
+                    }
+
+                    if (   is_array($arrRewriteInfo) // check if there are any rewrite rules defined
+                        && isset($arrRewriteInfo[$target]) // check if one of the rewrite rules uses our target URI
+                        && in_array($source, $arrRewriteInfo[$target]) // check if the rewrite rule that uses our target URI also uses our source URI
+                    ) {
+                        $this->_objTpl->hideBlock('alias_source_not_set');
+                    } else {
+                        $this->_objTpl->setVariable('TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG', $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG']);
+                        $this->_objTpl->touchBlock('alias_source_not_set');
+                    }
                     $this->_objTpl->parse('alias_source_list');
                 }
                 $this->_objTpl->setVariable(array(
@@ -287,13 +311,24 @@ class AliasAdmin extends aliasLib
 
             if (!empty($arrAlias['url'])) {
                 if (!$this->_isUniqueAliasTarget($arrAlias['url'], $aliasId)) {
-                    $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'], htmlentities(($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url']), ENT_QUOTES, CONTREXX_CHARSET));
+                    $this->arrStatusMsg['error'][] = sprintf(
+                        $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'],
+                        htmlentities(
+                            ($arrAlias['type'] == 'local'
+                                ? $arrAlias['pageUrl'] : $arrAlias['url']),
+                            ENT_QUOTES, CONTREXX_CHARSET));
                 } elseif (count($arrAlias['sources'])) {
                     $error = false;
 
                     foreach ($arrAlias['sources'] as $arrSource) {
                         $target = $arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'];
-                        if (in_array($arrSource['url'], $arrSourceUrls) || !$this->_isUniqueAliasSource($arrSource['url'], $target, $oldTarget,(!empty($arrSource['id']) ? $arrSource['id'] : 0))) {
+// TODO: _isUniqueAliasSource RETURNS FALSE -> IMPROVE THE CHECK SO THAT NO FALSE POSITIVE HAPPENDS
+//print "!\$this->_isUniqueAliasSource( ${arrSource['url']}, $target, $oldTarget, ".(empty($arrSource['id']) ? 0 : $arrSource['id']).")";
+                        if (   in_array($arrSource['url'], $arrSourceUrls)
+                            || !$this->_isUniqueAliasSource(
+                                    $arrSource['url'], $target, $oldTarget,
+                                    (empty($arrSource['id']) ? 0 : $arrSource['id']))
+                        ) {
                             $error = true;
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($arrSource['url'], ENT_QUOTES, CONTREXX_CHARSET));
                         } elseif (!$this->is_alias_valid($arrSource['url'])) {
@@ -345,9 +380,11 @@ class AliasAdmin extends aliasLib
             'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
         ));
 
+        $langPathPrefix = $_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($this->langId, 'lang') : '';
+
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ALIAS_DELETE'                    => $_ARRAYLANG['TXT_ALIAS_DELETE'],
-            'ALIAS_DOMAIN_URL'                => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
+            'ALIAS_DOMAIN_URL'                => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'/',
             'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
         ));
 
@@ -367,7 +404,7 @@ class AliasAdmin extends aliasLib
 
         foreach ($arrAlias['sources'] as $arrAliasSource) {
             $this->_objTpl->setVariable(array(
-                'ALIAS_DOMAIN_URL'        => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
+                'ALIAS_DOMAIN_URL'        => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'/',
                 'ALIAS_ALIAS_ID'        => !empty($arrAliasSource['id']) ? $arrAliasSource['id'] : '',
                 'ALIAS_ALIAS_NR'        => $nr++,
                 'ALIAS_IS_DEFAULT'      => $arrAliasSource['isdefault'] == 1 ? 'checked' : '',

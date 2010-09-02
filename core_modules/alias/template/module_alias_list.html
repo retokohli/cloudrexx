@@ -5,7 +5,7 @@ function alias_delete(id, title)
 {
   strMsg = '{TXT_ALIAS_CONFIRM_DELETE_ALIAS}';
   if (confirm(strMsg.replace('%s', title)+'\n{TXT_ALIAS_OPERATION_IRREVERSIBLE}')) {
-    window.location.href = '?cmd=alias&act=delete&id='+id;
+		window.location.href = '?cmd=alias&{CSRF_PARAM}&act=delete&id='+id;
   }
 }
 
@@ -29,9 +29,9 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <tr class="{ALIAS_ROW_CLASS}">
       <td>
       <!-- BEGIN alias_source_list -->
-        {ALIAS_SOURCE_URL}
+				<a href="{ALIAS_SOURCE_REAL_URL}" title="{TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW}" target="_blank">{ALIAS_SOURCE_URL}</a>
         <!-- BEGIN alias_source_not_set -->
-          <strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" style="cursor:pointer;" onclick="window.location.href='index.php?cmd=alias&amp;act=rewriteRules'"></strong>
+					<strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" style="cursor:pointer;" onclick="window.location.href='index.php?cmd=alias&{CSRF_PARAM}&amp;act=rewriteRules'"></strong>
         <!-- END alias_source_not_set -->
         <br />
       <!-- END alias_source_list -->
