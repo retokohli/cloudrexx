@@ -14,6 +14,8 @@ Text[2]=['','{TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT}'];
 __CSRF__ = {key:"{CSRF_KEY}", code:"{CSRF_CODE}"};
 __CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
 
+newsElType = '';
+
 function goToUrlCSRF(url){
     if(url.indexOf('?') == -1){
         url = url+'?'+__CSRF__QSTR
@@ -244,6 +246,23 @@ function modusSelection(strAction) {
   }
 }
 
+function SetUrl(url, width, height, alt) {
+  switch (newsElType) {
+  case 'image':
+  case 'webpages':
+    document.getElementById(newsElInsertBox).value = url;
+    break
+  case 'link':
+    insertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
+    break;
+  default:
+    CKEDITOR.tools.callFunction(1, url);
+    break;
+  }
+
+    newsElType = '';
+}
+
 function getFileBrowser(elInsertBox, sType)
 {
   newsElInsertBox = elInsertBox;
@@ -375,12 +394,12 @@ waitMillisecs = function(millis){
     return true;
 }
 
-var setTitle = function(){	
-    if($J('#typeUseContentFromLang:checked').length == 1  
+var setTitle = function(){
+    if($J('#typeUseContentFromLang:checked').length == 1
  		 && $J.trim($J('input[name=newpage]').val()) == ''){
         var langName = $J('select[name=useContentFromLang] option:selected').text();
         $J('input[name=newpage]').val($J('input[name=newpage]').data(langName));
-        setText();           
+        setText();
    }
 }
 
@@ -658,13 +677,18 @@ var swapLanguage = function(aElement, langName){
 
     $J('form[name=formContent] input').removeAttr('disabled');
 
+    $J('#aliastarget').data(lastActive, $J('#aliastarget').text());
+    typeof $J('#aliastarget').data($a.text()) == 'undefined'
+      ? $J('#aliastarget').text('')
+      : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
+
     $form.find('input[type=text]').each(function(){ //swap input text contents
         var that = this;
         var inputName = $J.trim($J(this).attr('name'));
         switch(inputName){
             case 'command':
                 //contact module may have different commands
-                var moduleName = $J.trim($J('[name=selectmodule] option:selected').text());                
+                var moduleName = $J.trim($J('[name=selectmodule] option:selected').text());
                 if(moduleName == 'contact'){
             		$J(this).data(lastActive, $J(this).val());
             	} else {
@@ -672,9 +696,9 @@ var swapLanguage = function(aElement, langName){
                     	$J(that).data(name, $J(that).val());
                     });
             	}
-      	    break;       	   
+      	    break;
       	    default:
-    	        $J(this).data(lastActive, $J(this).val());     	   
+    	        $J(this).data(lastActive, $J(this).val());
         }
         typeof $J(this).data($a.text()) == 'undefined'
             ? $J(this).val('')
@@ -751,7 +775,7 @@ var swapLanguage = function(aElement, langName){
     });
 
     setTitle();
-    
+
     if($J.browser.msie && $J.browser.version.match(/^\d/)[0] == 6 ){ //redraw tabs because of buggy IE shit ("display: none;" bugs)
         var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
         var inactiveContentTab = $J('#tabmenu a:not(.active)').attr('id').replace('editorTab_', '');
@@ -1021,7 +1045,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
 	            var options = $J(sel).data($J(this).text()).options;
             } else {
             	var options = $J(sel).data('default').options;
-            }                
+            }
             $J(sel).data($J(this).text(), {options: options, value: $J('option:selected', sel).val()});
         });
     });
@@ -1159,7 +1183,7 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         var content = $J('textarea[name=html]').data($J('#copyLangContentSel option:selected').val())
         setFrameContent(content);
     });
-    
+
     $J('#toggleMetaData').toggle(function(){
         $J(this).removeClass('nodeCollapsed');
         $J(this).addClass('nodeExpanded');
@@ -1172,9 +1196,9 @@ $J(function($){ //this way we can use $ normally, but no prototype stuff can be 
         $J('.meta').addClass('hidden');
         resetRowClasses();
     });
-    
+
     $J('#typeUseContentFromLang,select[name=useContentFromLang]').click(setTitle);
-    
+
 }); //end document ready (~onload)
 })();//execute anonymous function
 
@@ -1242,7 +1266,7 @@ if(typeof console === 'undefined'){
     <!--<li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>-->
     <!-- BEGIN changelog1 -->
     <li><a id="editorTab_content5" href="javascript:{}" onclick="selectTab('content5')" title="{TXT_CHANGELOG}">{TXT_CHANGELOG}</a></li>
-    <!-- END changelog1 -->    
+    <!-- END changelog1 -->
   </ul>
 </div>
   <div id="content1" class="editorTab" style="display:block">
@@ -1715,7 +1739,7 @@ if(typeof console === 'undefined'){
   <!-- END changelog2 -->
   <!-- end content5 div -->
   <!-- start content6 div -->
-  <!-- 
+  <!--
   <div id="content6" class="editorTab" style="display: none">
     <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
       <thead>

@@ -37,6 +37,8 @@ CKEDITOR.editorConfig = function( config )
     // config.language = 'fr';
     // config.uiColor = '#AADC6E';
 
+    config.skin = 'v2';
+
     config.forcePasteAsPlainText = false;
     config.enterMode = CKEDITOR.ENTER_BR;
     config.shiftEnterMode = CKEDITOR.ENTER_P;
@@ -81,16 +83,5 @@ CKEDITOR.editorConfig = function( config )
         ['Source'],
         ['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
     ];
-
-    //backwards compatibility wrapper to set the selected link in the contrexx filebrowser
-    window.SetUrl = function(url, width, height, alt){
-        var $top = $J(top.document).contents();
-        if($top.find('#typeRedirect:checked').length == 1){
-            $top.find('#typeRedirectValue').val(url);
-        } else {
-            CKEDITOR.tools.callFunction(1, url);
-        }
-    };
-
 };
 
