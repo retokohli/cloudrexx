@@ -787,6 +787,19 @@ class ContactManager extends ContactLib
         foreach ($fields as $fieldID => $field) {
             $realFieldID = ($formId > 0) ? $fieldID : $counter;
 
+			/**
+				ss4u change
+				For copying a template, the edittype of the field must be 'new'
+			*/
+			if($copy){
+				$field['editType'] = 'new';
+			}
+			/**
+				ss4u change
+				Pass Frontend active languages array to javascript function
+			*/
+			$jsActiveLang =  "";
+			
             foreach ($activeLanguages as $lang) {
                 $this->_objTpl->setVariable(
                     array(
@@ -808,6 +821,7 @@ class ContactManager extends ContactLib
 	            		)
                     )
                 );
+                $jsActiveLang .= $lang['id']."-";
                 $this->_objTpl->parse('formFieldRow');
             }
 
@@ -817,8 +831,7 @@ class ContactManager extends ContactLib
                         'contactFormFieldType['.$realFieldID.']',
                         $field['type'],
                         'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
-                            'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),
-                        this.value)"'
+                            'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),this.value,\''.$jsActiveLang.'\')"'
                         ),
                     'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
                         'contactFormFieldRequired['.$realFieldID.']',
@@ -1008,13 +1021,13 @@ class ContactManager extends ContactLib
         case 'text':
         case 'hidden':
 		case 'label':
-            return "<input style=\"width:100%;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
+            return "<input style=\"width:100%;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
             break;
 
         case 'checkbox':
 			if($count == 0){
 				$count = 1;
-		        return "<select style=\"width:100%;\" name=\"contactFormFieldAttribute[".$id."][".$langid."]\">\n
+		        return "<select style=\"width:100%;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
 		                    <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
 		                    <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
 		                </select>";
@@ -1026,7 +1039,7 @@ class ContactManager extends ContactLib
         case 'checkboxGroup':
         case 'select':
         case 'radio':
-            return "<input style=\"width:93%;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
+            return "<input style=\"width:93%;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
             break;
 
         default:
@@ -1393,13 +1406,10 @@ class ContactManager extends ContactLib
             'password',
             'select'
         );
-
-
+        
         // shorten the variables
         $fieldNames      = $_POST['contactFormFieldName'];
-        //ss4u change
-        //changed  post value from 'contactFormFieldvalue' to 'contactFormFieldAttribute
-        $fieldValues     = $_POST['contactFormFieldAttribute'];
+        $fieldValues     = $_POST['contactFormFieldValue'];
         $fieldTypes      = $_POST['contactFormFieldType'];
         $fieldRequireds  = $_POST['contactFormFieldRequired'];
         $fieldCheckTypes = $_POST['contactFormFieldCheckType'];
@@ -1407,6 +1417,7 @@ class ContactManager extends ContactLib
         $fieldEditType   = $_POST['contactFormFieldEditType'];
 
         if (isset($fieldNames) && is_array($fieldNames)) {
+
             foreach ($fieldNames as $id => $fieldName) {
                 /*
                  * ternary is ugly here
@@ -1506,8 +1517,13 @@ class ContactManager extends ContactLib
                 // hope the langs never change between editing and saving xD
                 foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                     $langID = $lang['id'];
-                    $fieldName = strip_tags(contrexx_stripslashes($fieldNames[$id][$langID]));
-                    $fieldValue = strip_tags(contrexx_stripslashes($fieldValues[$id][$langID]));
+                    
+                    /**
+                    	ss4u change
+                    	name and value fields can accept html characters
+                    */
+                    $fieldName = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][$langID], ENT_QUOTES)));
+                    $fieldValue = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)));
 
                     $arrFields[intval($id)]['lang'][$lang['id']] = array(
                         'name'      => $fieldName,

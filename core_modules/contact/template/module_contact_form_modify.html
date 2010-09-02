@@ -132,10 +132,10 @@ function removeFormField(obj) {
 /**
 	Change value fields onchange with the select box to Jquery script
 	hide/show the mandatory and type field depending on selected field type
+	@parameter -  langId - gets the frontend active languages to name the field elements on change
 */
-function setFormFieldAttributeBox(el, type)
+function setFormFieldAttributeBox(el, type, langId)
 {
-
     elId = el.substr(21);
     elField = $J('.contactFormFieldAttributeBox_'+elId);
 	
@@ -145,7 +145,7 @@ function setFormFieldAttributeBox(el, type)
 	if($J('#formField'+type+'Attribute_0').length > 0 && 'formField'+type+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
 		$J(elField).each(function (index, domEle){
 			$J(domEle).html($J('#formField'+type+'Attribute_0').html());
-			$J(domEle).children(0).attr('name', 'contactFormFieldValue['+elId+']['+(index+1)+']');
+			$J(domEle).children(0).attr('name', 'contactFormFieldValue['+elId+']['+langId.split('-')[index]+']');
 		});
 	} else {
 		//For Checkbox only one instance of select box is enough
@@ -154,7 +154,7 @@ function setFormFieldAttributeBox(el, type)
 	}
 
 	/**
-		Add or remove the mandator checkbox and value type select box 
+		Add or remove the mandatory checkbox and value type select box 
 		with respect to change in the fields type select box
 	*/
 	switch(type){
