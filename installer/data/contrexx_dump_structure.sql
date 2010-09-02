@@ -393,8 +393,8 @@ CREATE TABLE `contrexx_module_alias_source` (
   `url` varchar(255) NOT NULL,
   `isdefault` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `url` (`url`),
-  KEY `isdefault` (`isdefault`)
+  KEY `isdefault` (`isdefault`),
+  KEY `url_lang_id` (`lang_id`,`url`)
 ) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
