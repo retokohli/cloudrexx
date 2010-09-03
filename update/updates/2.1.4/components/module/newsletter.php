@@ -23,7 +23,7 @@ function _newsletterUpdate()
                 'id'             => array('type' => 'INT(1)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'title'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'content'        => array('type' => 'LONGTEXT'),
-                'recipients'     => array('type' => 'TEXT')
+                'recipients'     => array('type' => 'MEDIUMTEXT')
             )
         );
 
@@ -143,29 +143,16 @@ function _newsletterUpdate()
     }
 
     // Add notification recipians to confirm_mail table
-    if (!isset($arrUserColumns['RECIPIENTS'])) {
-        $query = "
-            ALTER TABLE `".DBPREFIX."module_newsletter_confirm_mail`
-            ADD `recipients`  MEDIUMTEXT NOT NULL;
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
 
     //insert notification values
-    $query = "SELECT id FROM `".DBPREFIX."module_newsletter_confirm_mail` WHERE id='3'";
-    $objCheck = $objDatabase->SelectLimit($query, 1);
-    if ($objCheck !== false) {
-        if ($objCheck->RecordCount() == 0) {
-            $query =     "INSERT INTO `".DBPREFIX."module_newsletter_confirm_mail` (`id` ,`title` ,`content` ,`recipients`) VALUES ('3', '[[url]] - Neue Newsletter Empfänger [[action]]', 'Hallo Admin Eine neue Empfänger [[action]] in ihrem Newsletter System. Automatisch generierte Nachricht [[date]]', '');";
-            if ($objDatabase->Execute($query) === false) {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
+    try {
+        $objResult = UpdateUtil::sql("SELECT id FROM `".DBPREFIX."module_newsletter_confirm_mail` WHERE id='3'");
+        if ($objResult->RecordCount() == 0) {
+            UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_newsletter_confirm_mail` (`id` ,`title` ,`content` ,`recipients`) VALUES ('3', '[[url]] - Neue Newsletter EmpfÃ¤nger [[action]]', 'Hallo Admin Eine neue EmpfÃ¤nger [[action]] in ihrem Newsletter System. Automatisch generierte Nachricht [[date]]', '');");
         }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
     }
 
     //insert settings values
