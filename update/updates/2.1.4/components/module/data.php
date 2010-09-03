@@ -222,36 +222,33 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
 	* EXTENSION:	Thunbmail Image & Attachment description *
 	* ADDED:		Contrexx v2.1.0					         *
 	*********************************************************/
-    $arrColumns = $objDatabase->MetaColumnNames(DBPREFIX.'module_data_messages_lang');
-    if ($arrColumns === false) {
-        setUpdateMsg(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], DBPREFIX.'module_data_messages_lang'));
-        return false;
+    try {
+        UpdateUtil::table(
+            DBPREFIX.'module_data_messages_lang',
+            array(
+                '`message_id`'               => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                '`lang_id`'                  => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                '`is_active`'                => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '1'),
+                '`subject`'                  => array('type' => 'VARCHAR(250)'),
+                '`content`'                  => array('type' => 'text'),
+                '`tags`'                     => array('type' => 'VARCHAR(250)'),
+                '`image`'                    => array('type' => 'VARCHAR(250)'),
+                '`thumbnail`'                => array('type' => 'VARCHAR(250)'),
+                '`thumbnail_type`'           => array('type' => 'ENUM(\'original\',\'thumbnail\')', 'default' => 'original'),
+                '`thumbnail_width`'          => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                '`thumbnail_height`'         => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                '`attachment`'               => array('type' => 'VARCHAR(255)'),
+                '`attachment_description`'   => array('type' => 'VARCHAR(255)'),
+                '`mode`'                     => array('type' => 'SET(\'normal\',\'forward\')', 'default' => 'normal'),
+                '`forward_url`'              => array('type' => 'VARCHAR(255)'),
+                '`forward_target`'           => array('type' => 'VARCHAR(40)')
+            )
+        );
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
     }
 
-    if (!in_array('thumbnail', $arrColumns)) {
-        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail` VARCHAR( 250 ) NOT NULL AFTER `image`";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
-    if (!in_array('thumbnail_width', $arrColumns)) {
-        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail_width` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `thumbnail`";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
-    if (!in_array('thumbnail_height', $arrColumns)) {
-        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `thumbnail_height` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `thumbnail_width`";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
-    if (!in_array('attachment_description', $arrColumns)) {
-        $query = "ALTER TABLE `".DBPREFIX."module_data_messages_lang` ADD `attachment_description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `attachment`";
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
-    }
 
     return true;
 }

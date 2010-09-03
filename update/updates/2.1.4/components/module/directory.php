@@ -67,7 +67,7 @@ function _directoryUpdate() {
 	if ($objCheck !== false) {
 		if ($objCheck->RecordCount() == 0) {
 			$query = 	"INSERT INTO `".DBPREFIX."module_directory_settings` ( `setid` , `setname` , `setvalue` ,  `settyp` )
-						VALUES (NULL, 'country', ',Schweiz,Deutschland,Österreich', 0)";
+						VALUES (NULL, 'country', ',Schweiz,Deutschland,Ã–sterreich', 0)";
 			if ($objDatabase->Execute($query) === false) {
 				return _databaseError($query, $objDatabase->ErrorMsg());
 			}
