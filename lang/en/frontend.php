@@ -244,4 +244,6 @@ $_ARRAYLANG['TXT_CONNECT_OPENID_SIGNATURE_MISMATCH'] = "Supplied OpenID credenti
 $_ARRAYLANG['TXT_CONNECT_OPENID_LOG_IN_CANCELLED'] = "Authentication has been cancelled by the user.";
 $_ARRAYLANG['TXT_CONNECT_SUISSEID_NO_CERT_FOUND'] = "Could not find a SuisseID.";
 $_ARRAYLANG['TXT_CONNECT_DISABLED'] = "This site does not allow users to authenticate with ContrexxConnect.";
+$_ARRAYLANG['TXT_ELEARNING'] = "e-Learning";
+$_ARRAYLANG['TXT_ELEARNING_MODULE_DESCRIPTION'] = "e-Learning";
 ?>

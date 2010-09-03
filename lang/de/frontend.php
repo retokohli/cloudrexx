@@ -244,4 +244,6 @@ $_ARRAYLANG['TXT_CONNECT_OPENID_SIGNATURE_MISMATCH'] = "Die erhaltenen Zugangsda
 $_ARRAYLANG['TXT_CONNECT_OPENID_LOG_IN_CANCELLED'] = "Anmeldung vom Benutzer abgebrochen.";
 $_ARRAYLANG['TXT_CONNECT_SUISSEID_NO_CERT_FOUND'] = "Es konnte keine SuisseID gefunden werden.";
 $_ARRAYLANG['TXT_CONNECT_DISABLED'] = "Diese Seite erlaub keine Anmeldungen über ContrexxConnect.";
+$_ARRAYLANG['TXT_ELEARNING'] = "e-Learning";
+$_ARRAYLANG['TXT_ELEARNING_MODULE_DESCRIPTION'] = "e-Learning";
 ?>
