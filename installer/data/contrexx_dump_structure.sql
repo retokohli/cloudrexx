@@ -2498,7 +2498,7 @@ CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
   `id` int(1) NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
   `content` longtext NOT NULL,
-  `recipients` text NOT NULL,
+  `recipients` mediumtext NOT NULL,
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
