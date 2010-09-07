@@ -6,10 +6,10 @@
  * @package     contrexx
  * @subpackage  module_newsletter
  */
-$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Abonnement validé";
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Conferma ricevuta! Da d'esso riciverà la Newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_ERROR'] = "Les données saisies sont invalides. <br>Veuillez vérifier l'ID et l'adresse E-mail de la Newsletter.";
 $_ARRAYLANG['TXT_NEWSLETTER_SEND_TO_ALL_SUBSCRIBERS_SUCCESSFUL'] = "Newsletter envoyée à tous les abonnés";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "Votre adresse E-mail a été enregistrée et un E-mail de validation vous a été adressé.";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "La sua E-Mail e stata registrata, nei prossimi minuti riceverà una conferma.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION'] = "Abonnement Newsletter";
 $_ARRAYLANG['TXT_NEWSLETTER_MUST_CONFIRM'] = "Veuillez valider votre abonnement en cliquant sur le lien suivant:";
 $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "Infos";
@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "Elément supprimé!";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Erreur lors de la suppression de l'élément!";
 $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'] = "Erreur lors de l'envoi du message";
 $_ARRAYLANG['TXT_EMAIL'] = "E-mail";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED'] = "Votre adresse E-mail est déjà enregistrée dans notre Newsletter.";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED'] = "Il suo indirizzo E-Mail è già registrato.";
 $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Erreur: veuillez vérifier l'adresse E-mail.";
 $_ARRAYLANG['TXT_LASTNAME'] = "Nom";
 $_ARRAYLANG['TXT_FIRSTNAME'] = "Prénom";
@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_AUTHENTICATION_FAILED'] = "Erreur d'authentification";
 $_ARRAYLANG['TXT_CATEGORY_ERROR'] = "Veuillez saisir une catégorie avec au moins un destinataire";
 $_ARRAYLANG['TXT_NOT_VALID_EMAIL'] = "Adresse E-mail invalide.";
 $_ARRAYLANG['TXT_EMAL_ALLREDY_EXIST'] = "Cette adresse E-mail existe déjà";
-$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Votre adresse E-mail a été supprimée de la liste des abonnés.";
+$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Il suo indirizzo E-Mail è stato cancellato.";
 $_ARRAYLANG['TXT_STATISTICS'] = "Statistics";
 $_ARRAYLANG['TXT_GENERALLY'] = "Généralement";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "Tous";
@@ -67,11 +67,11 @@ $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Entreprise";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "Janvier,Février,Mars,Avril,Mai,Juin,Juillet,Août,Septembre,Octobre,Novembre,Décembre";
 $_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Veuillez sélectionner au moins une liste!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Vos données ont été mises à jour.";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Erreur lors de la mise à jour de vos données!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Erreur lors du processus d'abonnement à la Newsletter!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Dispiacevolmente nelle sue datte c'è un errore!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Nella sua Newsletter c'è entrato un errore!";
 $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Erreur d'authentification!";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "Le processus d'abonnement a été interrompu, car l'E-mail de validation n'a pas être envoyé!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Erreur lors du processus de désabonnement à la Newsletter!";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "Dispiacevolmente la sua registrazione è stata interotta, l'E-Mail non è stata spedita!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Mentre la cancellazzione del suo indirizzo E-Mail c'è stato uno sbaglio!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Sexe";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Inconnu";
 $_ARRAYLANG['TXT_NEWSLETTER_URI'] = "URI";
