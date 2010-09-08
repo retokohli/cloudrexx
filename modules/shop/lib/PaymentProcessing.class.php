@@ -350,7 +350,7 @@ foreach (PostfinanceMobile::getErrors() as $error) {
         global $_ARRAYLANG;
 
         $objSaferpay = new Saferpay();
-//        if (Settings::getStatusByName('saferpay_use_test_account'))
+//        if (SettingDb::getValue('saferpay_use_test_account'))
 //            $objSaferpay->isTest = true;
 
         $serverBase =
@@ -362,7 +362,7 @@ foreach (PostfinanceMobile::getErrors() as $error) {
             'AMOUNT'      => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY'    => Currency::getActiveCurrencyCode(),
             'ORDERID'     => $_SESSION['shop']['orderid'],
-            'ACCOUNTID'   => Settings::getValueByName('saferpay_id'),
+            'ACCOUNTID'   => SettingDb::getValue('saferpay_id'),
             'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=saferpay'),
             'FAILLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=0&handler=saferpay'),
             'BACKLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=2&handler=saferpay'),
@@ -382,7 +382,7 @@ foreach (PostfinanceMobile::getErrors() as $error) {
                 "<br />$payInitUrl</b></font>";
         }
         $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-        switch (Settings::getValueByName('saferpay_window_option')) {
+        switch (SettingDb::getValue('saferpay_window_option')) {
             case 0: // iframe
                 return
                     $return.
@@ -430,7 +430,7 @@ foreach (PostfinanceMobile::getErrors() as $error) {
         global $_ARRAYLANG;
 
         $arrShopOrder = array(
-            'PSPID'    => Settings::getValueByName('yellowpay_shop_id'),
+            'PSPID'    => SettingDb::getValue('postfinance_shop_id'),
             'orderID'  => $_SESSION['shop']['orderid'],
             'amount'   => intval($_SESSION['shop']['grand_total_price']*100),
             'language' => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
@@ -469,7 +469,7 @@ foreach (PostfinanceMobile::getErrors() as $error) {
 
         require_once(ASCMS_MODULE_PATH.'/shop/payments/datatrans/Datatrans.class.php');
         Datatrans::initialize(
-            Settings::getValueByName('datatrans_merchant_id'),
+            SettingDb::getValue('datatrans_merchant_id'),
             $_SESSION['shop']['orderid'],
             $_SESSION['shop']['grand_total_price'],
             Currency::getActiveCurrencyCode()
@@ -506,13 +506,13 @@ foreach (PostfinanceMobile::getErrors() as $error) {
                 $objSaferpay = new Saferpay();
                 $arrShopOrder = array();
 // Not used
-//                if (Settings::getStatusByName('saferpay_use_test_account')) {
+//                if (SettingDb::getValue('saferpay_use_test_account')) {
 //                    $objSaferpay->isTest = true;
 //                } else {
-                    $arrShopOrder['ACCOUNTID'] = Settings::getValueByName('saferpay_id');
+                    $arrShopOrder['ACCOUNTID'] = SettingDb::getValue('saferpay_id');
 //                }
                 $transaction = $objSaferpay->payConfirm();
-                if (Settings::getValueByName('saferpay_finalize_payment')) {
+                if (SettingDb::getValue('saferpay_finalize_payment')) {
 // payComplete() has been fixed to work
 //                    if ($objSaferpay->isTest == true) {
 //                        $transaction = true;

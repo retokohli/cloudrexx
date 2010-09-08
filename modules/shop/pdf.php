@@ -108,38 +108,40 @@ class pdfCreator
 
         $objResult = $objDatabase->Execute("
             SELECT pro.id, pro.product_id, pro.title, pro.catid,
-                   pro.normalprice, pro.status, pro.is_special_offer,
+                   pro.normalprice, pro.active, pro.is_special_offer,
                    cat.catname, cat.catid
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products as pro,
                     ".DBPREFIX."module_shop".MODULE_INDEX."_categories as cat
-              WHERE pro.catid=cat.catid AND pro.status=1
-              ORDER BY pro.id DESC
-        ");
+              WHERE pro.catid=cat.catid AND pro.active=1
+              ORDER BY pro.id DESC");
         while ($objResult && !$objResult->EOF) {
-            $this->arrProducts[$objResult->fields['id']] = array    (    'title' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['title']) : $objResult->fields['title']),
-                                                                'catname' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['catname']) : $objResult->fields['catname']),
-                                                                'product_id' => $objResult->fields['product_id'],
-                                                                'id' => $objResult->fields['id'],
-                                                                'normalprice' => $objResult->fields['normalprice']." ".$this->currencySymbol
-                                                            );
+            $this->arrProducts[$objResult->fields['id']] = array(
+                'title' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['title']) : $objResult->fields['title']),
+                'catname' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['catname']) : $objResult->fields['catname']),
+                'product_id' => $objResult->fields['product_id'],
+                'id' => $objResult->fields['id'],
+                'normalprice' => $objResult->fields['normalprice']." ".$this->currencySymbol
+            );
             $this->arrProductCat[$objResult->fields['id']] = $objResult->fields['catid'];
             $objResult->MoveNext();
         }
 
         //mark special offers
-        $objResult = $objDatabase->Execute("SELECT pro.id,pro.product_id,pro.title,pro.catid,pro.discountprice,pro.status,cat.catname,cat.catid
-                          FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products as pro,
-                                ".DBPREFIX."module_shop".MODULE_INDEX."_categories as cat
-                          WHERE pro.catid = cat.catid AND pro.status=1 AND pro.is_special_offer=1
-                          ORDER BY pro.id DESC");
+        $objResult = $objDatabase->Execute("
+            SELECT pro.id,pro.product_id,pro.title,pro.catid,pro.discountprice,pro.active,cat.catname,cat.catid
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products as pro,
+                   ".DBPREFIX."module_shop".MODULE_INDEX."_categories as cat
+             WHERE pro.catid=cat.catid AND pro.active=1 AND pro.is_special_offer=1
+             ORDER BY pro.id DESC");
 
         while ($objResult && !$objResult->EOF) {
-            $this->arrProducts[$objResult->fields['id']] = array(    'title' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['title']) : $objResult->fields['title']),
-                                                            'catname' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['catname']) : $objResult->fields['catname']),
-                                                            'product_id' => $objResult->fields['product_id'],
-                                                            'id' => $objResult->fields['id'],
-                                                            'normalprice' => "S ".$objResult->fields['discountprice']." ".$this->currencySymbol
-                                                          );
+            $this->arrProducts[$objResult->fields['id']] = array(
+                'title' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['title']) : $objResult->fields['title']),
+                'catname' => (strtolower($_CONFIG['coreCharacterEncoding']) == 'utf-8' ? utf8_decode($objResult->fields['catname']) : $objResult->fields['catname']),
+                'product_id' => $objResult->fields['product_id'],
+                'id' => $objResult->fields['id'],
+                'normalprice' => "S ".$objResult->fields['discountprice']." ".$this->currencySymbol
+            );
             $objResult->MoveNext();
         }
         $this->pdf = new Cezpdf('A4');
@@ -290,14 +292,9 @@ class pdfCreator
         }
 
         if ($this->pdfCATEGORIES == '*') { //all products
-            $objResult = $objDatabase->Execute("SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories ORDER BY catid");
-            while (!$objResult->EOF) {
-                $i++;
-                $catArray[$i] = $objResult->fields['catid'];
-                $objResult->MoveNext();
-            }
+            $catArray = ShopCategories::getArray();
         } else {
-            $catArray = explode(",",$this->pdfCATEGORIES);
+            $catArray = explode(',', $this->pdfCATEGORIES);
         }
         foreach ($catArray as $catValue) {
             foreach ($this->arrProductCat as $ProductCatKey => $ProductCatValue) {

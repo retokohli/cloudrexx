@@ -147,7 +147,7 @@ class Products
             // Limit Products to available and active in the frontend
             ($flagShowInactive
                 ? ''
-                : ' AND `p`.`status`=1 AND `p`.`stock`>0 AND `c`.`catstatus`=1').
+                : ' AND `p`.`active`=1 AND `p`.`stock`>0 AND `c`.`active`=1').
             // Limit Products visible to resellers or non-resellers
             ($flagIsReseller === true
               ? ' AND `b2b`=1'
@@ -243,9 +243,9 @@ class Products
         if (!is_array($arrProductId)) return false;
         // Look whether this is within a virtual ShopCategory
         $virtualContainer = '';
-        $parentId = $catId;
+        $parent_id = $catId;
         do {
-            $objShopCategory = ShopCategory::getById($parentId);
+            $objShopCategory = ShopCategory::getById($parent_id);
             if (!$objShopCategory) return false;
             if ($objShopCategory->isVirtual()) {
                 // The name of any virtual ShopCategory is used to mark
@@ -253,8 +253,8 @@ class Products
                 $virtualContainer = $objShopCategory->getName();
                 break;
             }
-            $parentId = $objShopCategory->getParentId();
-        } while ($parentId != 0);
+            $parent_id = $objShopCategory->getParentId();
+        } while ($parent_id != 0);
 
         // Remove the Products in one way or another
         foreach ($arrProductId as $productId) {
@@ -495,9 +495,9 @@ class Products
                     PRODUCT_IMAGE_PATH,
                     PRODUCT_IMAGE_WEB_PATH,
                     $imageName,
-                    $this->arrConfig['shop_thumbnail_max_width']['value'],
-                    $this->arrConfig['shop_thumbnail_max_height']['value'],
-                    $this->arrConfig['shop_thumbnail_quality']['value']
+                    SettingDb::getValue('thumbnail_max_width'),
+                    SettingDb::getValue('thumbnail_max_height'),
+                    SettingDb::getValue('thumbnail_quality')
                 );
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
@@ -652,13 +652,12 @@ class Products
                 // That is a new flag for which we have to clone the Article.
                 // Get the affected grandparent (group, root ShopCategory)
                 $objTargetRootCategory =
-                    ShopCategories::getChildNamed(0, $strFlag, false);
+                    ShopCategories::getChildNamed($strFlag, 0, false);
                 if (!$objTargetRootCategory) continue;
                 // Check whether the subgroup exists already
                 $objTargetSubGroupCategory =
                     ShopCategories::getChildNamed(
-                        $objTargetRootCategory->getId(), $subgroupName, false
-                    );
+                        $subgroupName, $objTargetRootCategory->getId(), false);
                 if (!$objTargetSubGroupCategory) {
                     // Nope, add the subgroup.
                     $objSubGroupCategory->makeClone();
@@ -670,8 +669,8 @@ class Products
                 // Check whether the Article ShopCategory exists already
                 $objTargetArticleCategory =
                     ShopCategories::getChildNamed(
-                        $objTargetSubGroupCategory->getId(),
                         $objArticleCategory->getName(),
+                        $objTargetSubGroupCategory->getId(),
                         false
                     );
                 if ($objTargetArticleCategory) {
@@ -788,7 +787,7 @@ class Products
                 weight, vat_id, handler,
                 group_id, article_id
             FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products
-            WHERE status=1';
+            WHERE active=1';
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
@@ -851,7 +850,7 @@ class Products
         $query = "
             SELECT id, title,
             FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-            WHERE status=1";
+            WHERE active=1";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         while (!$objResult->EOF) {
@@ -886,7 +885,7 @@ class Products
         $query = "
             SELECT `id`, `title`
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products".
-            ($activeonly ? " AND `status`=1" : '')."
+            ($activeonly ? " AND `active`=1" : '')."
              ORDER BY `title` ASC, `id` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;

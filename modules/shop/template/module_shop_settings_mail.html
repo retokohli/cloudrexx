@@ -7,14 +7,14 @@ function delMail(mailId)
     alert("{TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE}");
   } else {
     if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-      window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delMailId="+mailId);
+      window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&delMailId="+mailId);
   }
 }
 
 function delTpl(tplId)
 {
   if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delTplId="+tplId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&delTplId="+tplId);
 }
 
 function sendMail()
@@ -32,10 +32,10 @@ function sendMail()
 
 function loadTpl(tplId, langId, strTab)
 {
-  var strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
+  var strUri = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
   if (document.getElementById('portMail')) {
     if (document.shopFormEdit.elements['portMail'].checked == true) {
-      strUri += "&portLangId="+document.shopFormEdit.elements['loadedLangId'].value;
+      strUri += "&portLangId="+document.shopFormEdit.elements['lang_id'].value;
     }
   }
   if (strTab == "shopMailSend") {
@@ -47,11 +47,6 @@ function loadTpl(tplId, langId, strTab)
 }
 // ]]>
 </script>
-<style type="text/css">
-<!--
-.listBox {width: 270px;}
--->
-</style>
 <!-- BEGIN statusBar -->
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
@@ -111,23 +106,23 @@ function loadTpl(tplId, langId, strTab)
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_ORDER_ID}</td>
-      <td>&lt;ORDER_ID&gt;</td>
+      <td>[ORDER_ID]</td>
     </tr>
     <!--tr class="row1">
       <td>{TXT_SHOP_ORDER_ID_CUSTOM}</td>
-      <td>&lt;ORDER_ID_CUSTOM&gt;</td>
+      <td>[ORDER_ID_CUSTOM]</td>
     </tr-->
     <tr class="row1">
       <td>{TXT_ORDER_DETAILS}</td>
-      <td>&lt;ORDER_DATA&gt;</td>
+      <td>[ORDER_DATA]</td>
       </tr>
     <tr class="row2">
       <td>{TXT_ORDER_SUM}</td>
-      <td>&lt;ORDER_SUM&gt;</td>
+      <td>[ORDER_SUM]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_ORDER_TIME}</td>
-      <td>&lt;ORDER_TIME&gt;</td>
+      <td>[ORDER_TIME]</td>
     </tr>
     <tr class="row2">
       <td colspan="2">&nbsp;</td>
@@ -138,75 +133,75 @@ function loadTpl(tplId, langId, strTab)
     </tr>
     <tr class="row2">
       <td>{TXT_CUSTOMER_NR}</td>
-      <td>&lt;CUSTOMER_ID&gt;</td>
+      <td>[CUSTOMER_ID]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_COMPANY}</td>
-      <td>&lt;CUSTOMER_COMPANY&gt;</td>
+      <td>[CUSTOMER_COMPANY]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_PREFIX}</td>
-      <td>&lt;CUSTOMER_PREFIX&gt;</td>
+      <td>[CUSTOMER_PREFIX]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_FIRSTNAME}</td>
-      <td>&lt;CUSTOMER_FIRSTNAME&gt;</td>
+      <td>[CUSTOMER_FIRSTNAME]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_LASTNAME}</td>
-      <td>&lt;CUSTOMER_LASTNAME&gt;</td>
+      <td>[CUSTOMER_LASTNAME]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_ADDRESS}</td>
-      <td>&lt;CUSTOMER_ADDRESS&gt;</td>
+      <td>[CUSTOMER_ADDRESS]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_ZIP}</td>
-      <td>&lt;CUSTOMER_ZIP&gt;</td>
+      <td>[CUSTOMER_ZIP]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_CITY}</td>
-      <td>&lt;CUSTOMER_CITY&gt;</td>
+      <td>[CUSTOMER_CITY]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_COUNTRY}</td>
-      <td>&lt;CUSTOMER_COUNTRY&gt;</td>
+      <td>[CUSTOMER_COUNTRY]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_PHONE}</td>
-      <td>&lt;CUSTOMER_PHONE&gt;</td>
+      <td>[CUSTOMER_PHONE]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_FAX}</td>
-      <td>&lt;CUSTOMER_FAX&gt;</td>
+      <td>[CUSTOMER_FAX]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_EMAIL_ADDRESS}</td>
-      <td>&lt;CUSTOMER_EMAIL&gt;</td>
+      <td>[CUSTOMER_EMAIL]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_USERNAME}</td>
-      <td>&lt;USERNAME&gt;</td>
+      <td>[USERNAME]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_PASSWORD}</td>
-      <td>&lt;PASSWORD&gt;</td>
+      <td>[PASSWORD]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_DOWNLOAD_USERNAME}</td>
-      <td valign="top">&lt;DOWNLOAD_USERNAME&gt;</td>
+      <td valign="top">[DOWNLOAD_USERNAME]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_DOWNLOAD_PASSWORD}</td>
-      <td valign="top">&lt;DOWNLOAD_PASSWORD&gt;</td>
+      <td valign="top">[DOWNLOAD_PASSWORD]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_LOGIN_DATA}</td>
-      <td valign="top">&lt;LOGIN_DATA&gt;</td>
+      <td valign="top">[LOGIN_DATA]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_CUSTOMER_REMARKS}</td>
-      <td>&lt;REMARKS&gt;</td>
+      <td>[REMARKS]</td>
     </tr>
     <tr class="row2">
       <td colspan="2">&nbsp;</td>
@@ -217,39 +212,39 @@ function loadTpl(tplId, langId, strTab)
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_COMPANY}</td>
-      <td>&lt;SHIPPING_COMPANY&gt;</td>
+      <td>[SHIPPING_COMPANY]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_PREFIX}</td>
-      <td>&lt;SHIPPING_PREFIX&gt;</td>
+      <td>[SHIPPING_PREFIX]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_FIRSTNAME}</td>
-      <td>&lt;SHIPPING_FIRSTNAME&gt;</td>
+      <td>[SHIPPING_FIRSTNAME]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_LASTNAME}</td>
-      <td>&lt;SHIPPING_LASTNAME&gt;</td>
+      <td>[SHIPPING_LASTNAME]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_ADDRESS}</td>
-      <td>&lt;SHIPPING_ADDRESS&gt;</td>
+      <td>[SHIPPING_ADDRESS]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_ZIP}</td>
-      <td>&lt;SHIPPING_ZIP&gt;</td>
+      <td>[SHIPPING_ZIP]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_CITY}</td>
-      <td>&lt;SHIPPING_CITY&gt;</td>
+      <td>[SHIPPING_CITY]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_COUNTRY}</td>
-      <td>&lt;SHIPPING_COUNTRY&gt;</td>
+      <td>[SHIPPING_COUNTRY]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_PHONE}</td>
-      <td>&lt;SHIPPING_PHONE&gt;</td>
+      <td>[SHIPPING_PHONE]</td>
     </tr>
     <tr class="row1">
       <td colspan="2">&nbsp;</td>
@@ -260,7 +255,7 @@ function loadTpl(tplId, langId, strTab)
     </tr>
     <tr class="row1">
       <td>{TXT_DATE}</td>
-      <td>&lt;DATE&gt;</td>
+      <td>[DATE]</td>
     </tr>
   </table>
   <br />
@@ -271,8 +266,8 @@ function loadTpl(tplId, langId, strTab)
 <!-- start shopMailEdit div -->
 <div id="shopMailEdit" class="mailTab" style="{SHOP_MAIL_EDIT_STYLE}">
   <form name="shopFormEdit" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=mail">
-    <input type="hidden" id="loadedLangId" name="loadedLangId" value="{SHOP_LOADD_LANGUAGE_ID}" />
-    <input type="hidden" name="mailId" value="{SHOP_MAIL_ID}" />
+    <!--input type="hidden" id="lang_id" name="lang_id" value="{SHOP_LOADD_LANGUAGE_ID}" /-->
+    <!--input type="hidden" name="mailId" value="{SHOP_MAIL_ID}" /-->
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="3">{TXT_EDIT}/{TXT_ADD}</th>
@@ -280,7 +275,8 @@ function loadTpl(tplId, langId, strTab)
       <tr class="row2">
         <td width="15%">{TXT_TEMPLATE}</td>
         <td width="85%">
-          <select class="listBox" name="tplId" size="1" onchange="loadTpl(this.value,document.shopFormEdit.elements['langId'].value,'shopMailEdit');">
+          <select style="width: 270px;" name="tplId" size="1"
+              onchange="loadTpl(this.value,document.shopFormEdit.elements['lang_id'].value,'shopMailEdit');">
             <option value="0">{TXT_NEW_TEMPLATE}</option>
             {SHOP_MAIL_EDIT_TEMPLATES}
           </select>
@@ -323,19 +319,19 @@ function loadTpl(tplId, langId, strTab)
       <tr class="row2">
         <td valign="top" nowrap="nowrap">{TXT_MESSAGE}</td>
         <td colspan="2">
-           <textarea name="message" id="shopMailBody" style="width:85%; height:300px; FONT-SIZE: 8pt;" rows="20" cols="5">{SHOP_MAIL_MSG}</textarea>
+          <textarea name="message" id="shopMailBody" style="width:85%; height:300px; FONT-SIZE: 8pt;" rows="20" cols="5">{SHOP_MAIL_MSG}</textarea>
         </td>
       </tr>
       <tr class="row1">
-        <td colspan="" valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_USE_HTML}</td>
+        <td valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_USE_HTML}</td>
         <td colspan="2">
-           {SHOP_MAIL_HTML_CHECKBOX}
+          {SHOP_MAIL_HTML_CHECKBOX}
         </td>
       </tr>
       <tr class="row2">
-        <td colspan="" valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_HTML}</td>
+        <td valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_HTML}</td>
         <td colspan="2">
-           {SHOP_MAIL_MSG_HTML}
+          {SHOP_MAIL_MSG_HTML}
         </td>
       </tr>
     </table>
@@ -356,7 +352,7 @@ function loadTpl(tplId, langId, strTab)
       <tr class="row1">
         <td width="15%">{TXT_TEMPLATE}</td>
         <td width="85%">
-          <select class="listBox" name="tplId" size="1" onchange="loadTpl(this.value,document.shopFormSend.elements['langId'].value,'shopMailSend')">
+          <select style="width: 270px;" name="tplId" size="1" onchange="loadTpl(this.value,document.shopFormSend.elements['langId'].value,'shopMailSend')">
             <option value="0">keine Vorlage</option>
             {SHOP_MAIL_SEND_TEMPLATES}
           </select>
@@ -366,7 +362,7 @@ function loadTpl(tplId, langId, strTab)
       <tr class="row1">
         <td>{TXT_SHOP_RECIPIENT_ADDRESS}</td>
         <td>
-          <input type="text" id="shopMailTo" name="shopMailTo" size="50" value="{SHOP_MAIL_TO}" />&nbsp;( {TXT_SEPARATED_WITH_COMMAS} )
+          <input type="text" id="shopMailTo" name="shopMailTo" size="50" value="{SHOP_MAIL_TO}" />&nbsp;({TXT_SEPARATED_WITH_COMMAS})
         </td>
       </tr>
       <tr class="row2">
@@ -390,15 +386,15 @@ function loadTpl(tplId, langId, strTab)
       <tr class="row1">
         <td valign="top">{TXT_MESSAGE}</td>
         <td>
-           <textarea name="shopMailBody" style="width:85%; height:300px; FONT-SIZE: 8pt;" rows="20" cols="5">{SHOP_MAIL_MSG_SEND}</textarea>
+          <textarea name="shopMailBody" rows="20" cols="5"
+              style="width: 85%; height: 300px; font-size: 8pt;"
+          >{SHOP_MAIL_MSG_SEND}</textarea>
         </td>
       </tr>
 <!-- BEGIN shopMailSendHtml -->
       <tr class="row2">
-        <td colspan="" valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_HTML}</td>
-        <td colspan="2">
-           {SHOP_MAIL_MSG_HTML_SEND}
-        </td>
+        <td valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_HTML}</td>
+        <td>{SHOP_MAIL_MSG_HTML_SEND}</td>
       </tr>
 <!-- END shopMailSendHtml -->
     </table>

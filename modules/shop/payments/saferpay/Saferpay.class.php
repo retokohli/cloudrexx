@@ -426,7 +426,7 @@ class Saferpay
             // Business account *ONLY*, like the test account
             // There is no password setting (yet), so this is for
             // future testing porposes *ONLY*
-            (Settings::getStatusByName('saferpay_use_test_account')
+            (SettingDb::getValue('saferpay_use_test_account')
               ? '&spPassword=XAjc3Kna'
               : '');
         // This won't work without allow_url_fopen

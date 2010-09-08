@@ -121,14 +121,15 @@ function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
       <tr class="{SHOP_ROWCLASS}">
         <td nowrap="nowrap"><input type="checkbox" name="selectedCustomerId[]" value="{SHOP_CUSTOMERID}" /></td>
         <td nowrap="nowrap"><img src="images/icons/{SHOP_CUSTOMER_STATUS_IMAGE}" alt="{TXT_STATUS}" /></td>
-        <td nowrap="nowrap"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}">{SHOP_CUSTOMERID}</a></td>
+        <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}">{SHOP_CUSTOMERID}</a></td>
         <td nowrap="nowrap">{SHOP_COMPANY}</td>
-        <td nowrap="nowrap"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
+        <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
         <td nowrap="nowrap">{SHOP_ADDRESS}</td>
         <td nowrap="nowrap">{SHOP_ZIP}&nbsp;/&nbsp;{SHOP_CITY}</td>
         <td nowrap="nowrap">{SHOP_PHONE}</td>
         <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=mail&amp;strTab=shopMailSend&amp;shopMailTo={SHOP_EMAIL}" title="{TXT_SEND_MAIL_TO_ADDRESS}">{SHOP_EMAIL}</a></td>
-        <td nowrap="nowrap"><div style="text-align:right;"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>        <a href="?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteCustomer('{SHOP_CUSTOMERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
+        <td nowrap="nowrap"><div style="text-align:right;"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteCustomer('{SHOP_CUSTOMERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
     </tr>
     <!-- END customersRow -->
   </table>

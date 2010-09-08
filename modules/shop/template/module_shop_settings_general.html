@@ -24,8 +24,8 @@
     </tr>
     <tr class="row2">
       <td nowrap="nowrap" width="15%">{TXT_CONFIRMATION_EMAILS}</td>
-      <td nowrap="nowrap" ><input type="text" name="confirmation_emails" size="50" maxlength='255' value="{SHOP_CONFIRMATION_EMAILS}" />
-      ({TXT_SEPARATED_WITH_COMMAS}) </td>
+      <td nowrap="nowrap" ><input type="text" name="email_confirmation" size="50" maxlength='255' value="{SHOP_CONFIRMATION_EMAILS}" />
+      ({TXT_SEPARATED_WITH_COMMAS})</td>
     </tr>
 
     <tr class="row1">
@@ -54,7 +54,7 @@
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_SHOP_SETTING_WEIGHT_ENABLE}</td>
-      <td nowrap="nowrap"><input type="checkbox" name="shop_weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
+      <td nowrap="nowrap"><input type="checkbox" name="weight_enable" value="1"{SHOP_WEIGHT_ENABLE_CHECKED} /></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_SHOP_PRODUCT_SORTING}</td>
@@ -67,7 +67,7 @@
     <tr class="row2">
       <td nowrap="nowrap">{TXT_SHOP_SHOW_PRODUCTS_ON_START_PAGE}</td>
       <td nowrap="nowrap">
-        <select name="shop_show_products_default" style="width: 270px;">
+        <select name="show_products_default" style="width: 270px;">
           {SHOP_SHOW_PRODUCTS_DEFAULT_OPTIONS}
         </select>
     </tr>
@@ -96,8 +96,8 @@
     <tr valign="top" class="row2">
       <td width="15%" nowrap="nowrap">{TXT_YELLOWPAY_POSTFINANCE}</td>
       <td nowrap="nowrap">
-        <label for="yellowpay_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
-        <input name="yellowpay_swapper" id="yellowpay_swapper" type="checkbox" onclick="swapBlock('yellowpay');" value="1" />&nbsp;
+        <label for="postfinance_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
+        <input name="postfinance_swapper" id="postfinance_swapper" type="checkbox" onclick="swapBlock('postfinance');" value="1" />&nbsp;
         <div id="yellowpay" style="display:none;">
           <table width="100%" summary="">
             <tr>
@@ -105,7 +105,7 @@
                 {TXT_SHOP_YELLOWPAY_PSPID}
               </td>
               <td width="80%">
-                <input type="text" name="yellowpay_shop_id" value="{SHOP_YELLOWPAY_SHOP_ID}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_shop_id" value="{SHOP_YELLOWPAY_SHOP_ID}" size="15" maxlength="50" />
               </td>
             </tr>
             <tr>
@@ -113,7 +113,7 @@
                 {TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN}
               </td>
               <td>
-                <input type="text" name="yellowpay_hash_signature_in" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_IN}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_hash_signature_in" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_IN}" size="15" maxlength="50" />
               </td>
             </tr>
             <tr>
@@ -121,7 +121,7 @@
                 {TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}
               </td>
               <td>
-                <input type="text" name="yellowpay_hash_signature_out" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}" size="15" maxlength="50" />
+                <input type="text" name="postfinance_hash_signature_out" value="{SHOP_YELLOWPAY_HASH_SIGNATURE_OUT}" size="15" maxlength="50" />
               </td>
             </tr>
             <tr>
@@ -129,7 +129,7 @@
                 {TXT_AUTORIZATION}
               </td>
               <td>
-                <select name="yellowpay_authorization_type">
+                <select name="postfinance_authorization_type">
                   {SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS}
                 </select>
               </td>
@@ -145,19 +145,19 @@
             <tr>
               <td valign="top">{TXT_SHOP_YELLOWPAY_USE_TESTSERVER}</td>
               <td>
-                <input id="yellowpay_use_testserver_yes" type="radio"
-                  name="yellowpay_use_testserver" value="1"{SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED} />
-                <label for="yellowpay_use_testserver_yes">{TXT_SHOP_YES}</label>
+                <input id="postfinance_use_testserver_yes" type="radio"
+                  name="postfinance_use_testserver" value="1"{SHOP_YELLOWPAY_USE_TESTSERVER_YES_CHECKED} />
+                <label for="postfinance_use_testserver_yes">{TXT_SHOP_YES}</label>
                 <br />
-                <input id="yellowpay_use_testserver_no" type="radio"
-                  name="yellowpay_use_testserver" value="0"{SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED} />
-                <label for="yellowpay_use_testserver_no">{TXT_SHOP_NO}</label>
+                <input id="postfinance_use_testserver_no" type="radio"
+                  name="postfinance_use_testserver" value="0"{SHOP_YELLOWPAY_USE_TESTSERVER_NO_CHECKED} />
+                <label for="postfinance_use_testserver_no">{TXT_SHOP_NO}</label>
               </td>
             </tr>
           </table>
         </div>
       </td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="yellowpay_status" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
+      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="postfinance_active" value="1" {SHOP_YELLOWPAY_STATUS} /></div></td>
     </tr>
 
     <tr valign="top" class="row1">
@@ -240,7 +240,7 @@
           </table>
         </div>
       </td>
-      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="datatrans_status" value="1"{SHOP_DATATRANS_STATUS} /></div></td>
+      <td nowrap="nowrap"><div align="center"><input type="checkbox" name="datatrans_active" value="1"{SHOP_DATATRANS_STATUS} /></div></td>
     </tr>
 
     <tr valign="top" class="row1">
@@ -278,7 +278,7 @@
           </table>
         </div>
       </td>
-      <td nowrap="nowrap" ><div align="center"><input type="checkbox" name="saferpay_status" value="1" {SHOP_SAFERPAY_STATUS} /></div></td>
+      <td nowrap="nowrap" ><div align="center"><input type="checkbox" name="saferpay_active" value="1" {SHOP_SAFERPAY_STATUS} /></div></td>
     </tr>
     <tr valign="top" class="row2">
       <td width="15%">{TXT_PAYPAL}</td>
@@ -303,12 +303,12 @@
           </table>
         </div>
       </td>
-      <td ><div align="center"><input type="checkbox" name="paypal_status" value="1" {SHOP_PAYPAL_STATUS} /></div></td>
+      <td ><div align="center"><input type="checkbox" name="paypal_active" value="1" {SHOP_PAYPAL_STATUS} /></div></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_PAYMENT_LSV}</td>
       <td>&nbsp;</td>
-      <td ><div align="center"><input type="checkbox" name="payment_lsv_status" value="1" {SHOP_PAYMENT_LSV_STATUS} /></div></td>
+      <td ><div align="center"><input type="checkbox" name="payment_lsv_active" value="1" {SHOP_PAYMENT_LSV_STATUS} /></div></td>
     </tr>
   </table>
   <br />
@@ -326,7 +326,7 @@
           {TXT_SHOP_THUMBNAIL_MAX_WIDTH}
         </td>
         <td width='85%'>
-          <input type="text" name="shop_thumbnail_max_width" value="{SHOP_THUMBNAIL_MAX_WIDTH}" size="6" maxlength="3" />
+          <input type="text" name="thumbnail_max_width" value="{SHOP_THUMBNAIL_MAX_WIDTH}" size="6" maxlength="3" />
         </td>
       </tr>
       <tr class="row2">
@@ -334,7 +334,7 @@
           {TXT_SHOP_THUMBNAIL_MAX_HEIGHT}
         </td>
         <td width='85%'>
-          <input type="text" name="shop_thumbnail_max_height" value="{SHOP_THUMBNAIL_MAX_HEIGHT}" size="6" maxlength="3" />
+          <input type="text" name="thumbnail_max_height" value="{SHOP_THUMBNAIL_MAX_HEIGHT}" size="6" maxlength="3" />
         </td>
       </tr>
       <tr class="row1">
@@ -342,7 +342,7 @@
           {TXT_SHOP_THUMBNAIL_QUALITY}
         </td>
         <td width='85%'>
-          <input type="text" name="shop_thumbnail_quality" value="{SHOP_THUMBNAIL_QUALITY}" size="6" maxlength="3" />
+          <input type="text" name="thumbnail_quality" value="{SHOP_THUMBNAIL_QUALITY}" size="6" maxlength="3" />
         </td>
       </tr>
     </table>

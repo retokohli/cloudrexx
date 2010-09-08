@@ -20,12 +20,17 @@
 class Payment
 {
     /**
+     * Text keys
+     */
+    const TEXT_NAME = "shop_payment_name";
+
+    /**
      * Array of available payment service data
      * @var     array
      * @access  private
      * @static
      */
-    private static $arrPayments = array();
+    private static $arrPayments = null;
 
 
     /**
@@ -37,24 +42,44 @@ class Payment
     {
         global $objDatabase;
 
+
+
+        $arrSqlName = Text::getSqlSnippets(
+            '`PAYMENT`.`text_name_id`', FRONTEND_LANG_ID
+        );
         $query = "
-            SELECT id, name, processor_id, costs, costs_free_sum,
-                   sort_order, status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
+            SELECT `payment`.`id`, `payment`.`processor_id`,
+                   `payment`.`costs`, `payment`.`costs_free_sum`,
+                   `payment`.`ord`, `payment`.`active`".
+                   $arrSqlName['field']."
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_payment` AS `payment`".
+                   $arrSqlName['join']."
              ORDER BY id";
         $objResult = $objDatabase->Execute($query);
+        if (!$objResult) { return self::errorHandler(); }
+        self::$arrPayments = array();
+        if ($objResult->EOF) return true;
+        $text_name_id = $objResult->fields[$arrSqlName['name']];
+        $strName = $objResult->fields[$arrSqlName['text']];
+        if ($strName === null) {
+            $objText = Text::getById($text_name_id, 0);
+            $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+            $strName = $objText->getText();
+        }
         while ($objResult && !$objResult->EOF) {
             self::$arrPayments[$objResult->fields['id']] = array(
-                'id'             => $objResult->fields['id'],
-                'name'           => $objResult->fields['name'],
-                'processor_id'   => $objResult->fields['processor_id'],
-                'costs'          => $objResult->fields['costs'],
-                'costs_free_sum' => $objResult->fields['costs_free_sum'],
-                'sort_order'     => $objResult->fields['sort_order'],
-                'status'         => $objResult->fields['status'],
+                'id'           => $objResult->fields['id'],
+                'processor_id' => $objResult->fields['processor_id'],
+                'name'         => $objResult->fields['name'],
+                'text_name_id' => $text_name_id,
+                'fee'          => $objResult->fields['fee'],
+                'free_from'    => $objResult->fields['free_from'],
+                'ord'          => $objResult->fields['ord'],
+                'active'       => $objResult->fields['active'],
             );
             $objResult->MoveNext();
         }
+        return true;
     }
 
 
@@ -83,7 +108,7 @@ class Payment
      */
     static function getNameArray()
     {
-        if (empty(self::$arrPayments)) self::init();
+        if (is_null(self::$arrPayments)) self::init();
         $arrPaymentName = array();
         foreach (self::$arrPayments as $payment_id => $arrPayment) {
             $arrPaymentName[$payment_id] = $arrPayment['name'];
@@ -102,7 +127,7 @@ class Payment
      */
     static function getProperty($payment_id, $property_name)
     {
-        if (empty(self::$arrPayments)) self::init();
+        if (is_null(self::$arrPayments)) self::init();
         return
             (   isset(self::$arrPayments[$payment_id])
              && isset(self::$arrPayments[$payment_id][$property_name])
@@ -125,7 +150,7 @@ class Payment
     {
         global $objDatabase;
 
-        if (empty(self::$arrPayments)) self::init();
+        if (is_null(self::$arrPayments)) self::init();
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $arrAcceptedCurrencyCodes = array();
         $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
@@ -143,15 +168,15 @@ class Payment
             SELECT DISTINCT `p`.`payment_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                ON `c`.`zones_id`=`z`.`zones_id`
+                ON `c`.`zone_id`=`z`.`id`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `p`
-                ON `z`.`zones_id`=`p`.`zones_id`
-             WHERE `c`.`countries_id`=".intval($countryId)."
-               AND `z`.`activation_status`=1";
+                ON `z`.`id`=`p`.`zone_id`
+             WHERE `c`.`country_id`=".intval($countryId)."
+               AND `z`.`active`=1";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
             if (   isset(self::$arrPayments[$objResult->fields['payment_id']])
-                && self::$arrPayments[$objResult->fields['payment_id']]['status'] == 1
+                && self::$arrPayments[$objResult->fields['payment_id']]['active']
                 && (   self::$arrPayments[$objResult->fields['payment_id']]['processor_id'] != 2
                     || count($arrAcceptedCurrencyCodes) > 0)
             ) {
@@ -173,7 +198,7 @@ class Payment
      */
     static function getPaymentMenu($selectedId=0, $onchange='', $countryId=0)
     {
-           global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $menu =
             '<select name="paymentId"'.
@@ -201,14 +226,12 @@ class Payment
     {
         global $_ARRAYLANG;
 
-        // Initialize if necessary
-        if (empty(self::$arrPayments)) self::init();
+        if (is_null(self::$arrPayments)) self::init();
         // Get Payment IDs available in the selected country, if any, or all.
         $arrPaymentId =
             ($countryId
                 ? self::getCountriesRelatedPaymentIdArray(
-                    $countryId, Currency::getCurrencyArray()
-                  )
+                    $countryId, Currency::getCurrencyArray())
                 : array_keys(self::$arrPayments)
             );
         $strMenuoptions =
@@ -218,10 +241,11 @@ class Payment
                 "</option>\n"
               : ''
             );
+// TODO: Use Html::getOptions()
         foreach ($arrPaymentId as $id) {
             $strMenuoptions .=
                 '<option value="'.$id.'"'.
-                ($id == $selectedId ? ' selected="selected"' : '').'>'.
+                ($id == $selectedId ? HTML_ATTRIBUTE_SELECTED : '').'>'.
                 self::$arrPayments[$id]['name'].
                 "</option>\n";
         }
@@ -240,8 +264,7 @@ class Payment
      */
     static function getNameById($paymentId)
     {
-        // Initialize if necessary
-        if (empty(self::$arrPayments)) self::init();
+        if (is_null(self::$arrPayments)) self::init();
         return self::$arrPayments[$paymentId]['name'];
     }
 
@@ -265,6 +288,175 @@ class Payment
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF)
             return $objResult->fields['processor_id'];
+        return false;
+    }
+
+
+    /**
+     * Deletes the Payment method with its ID present in $_GET['paymentId'],
+     * if any.
+     *
+     * Returns null if no Payment ID is present.
+     * @return    boolean           True on success, false on failure, or null
+     */
+    static function delete()
+    {
+        global $objDatabase;
+
+        if (empty($_GET['paymentId'])) return null;
+        $objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment", 2, 0);
+        if ($objResult->RecordCount() < 2) return false;
+        if (!$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
+             WHERE payment_id=".intval($_GET['paymentId']))) return false;
+        if (!$objDatabase->Execute("
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
+             WHERE id=".intval($_GET['paymentId']))) return false;
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
+        return true;
+    }
+
+
+    /**
+     * Adds a new Payment method with its data present in the $_POST array,
+     * if any
+     *
+     * Returns null if no new Payment is present.
+     * @return    boolean           True on success, false on failure, or null
+     */
+    function add()
+    {
+        global $objDatabase;
+
+
+
+
+// TODO FROM HERE
+
+
+        if (empty($_POST['payment_add'])) return null;
+        $query = "
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_payment (
+                `name`, `processor_id`, `costs`, `costs_free_sum`, `status`
+            ) VALUES (
+                '".addslashes($_POST['paymentName_new'])."',
+                ".intval($_POST['paymentHandler_new']).",
+                ".floatval($_POST['paymentCosts_new']).",
+                ".floatval($_POST['paymentCostsFreeSumNew']).",
+                ".(empty($_POST['paymentActive_new']) ? 0 : 1)."
+            )";
+        if (!$objDatabase->Execute($query)) return false;
+        $pId = $objDatabase->Insert_ID();
+        if (!$objDatabase->Execute("
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment (
+                zones_id, payment_id
+            ) VALUES (
+                ".intval($_POST['paymentZone_new']).",
+                ".intval($pId)."
+            )")) return false;
+        return true;
+    }
+
+
+    /**
+     * Updates existing Payments with its data present in the $_POST array,
+     * if any
+     *
+     * Returns null if no Payment data is present.
+     * @return    boolean           True on success, false on failure, or null
+     */
+    function update()
+    {
+        global $objDatabase;
+
+        if (empty($_POST['payment'])) return null;
+        foreach ($_POST['paymentName'] as $pId => $value) {
+            $query = "
+                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_payment
+                   SET name='".addslashes($value)."',
+                       processor_id=".intval($_POST['paymentHandler'][$pId]).",
+                       costs=".floatval($_POST['paymentCosts'][$pId]).",
+                       costs_free_sum=".floatval($_POST['paymentCostsFreeSum'][$pId]).",
+                       status=".(empty($_POST['paymentActive'][$pId]) ? 0 : 1)."
+                 WHERE id=".intval($pId);
+            if (!$objDatabase->Execute($query)) return false;
+            if ($_POST['old_paymentZone'][$pId] != $_POST['paymentZone'][$pId]) {
+                if (!$objDatabase->Execute("
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
+                       SET zones_id=".intval($_POST['paymentZone'][$pId])."
+                     WHERE payment_id=".intval($pId))) return false;
+                if (!$objDatabase->Affected_Rows()) {
+                    if (!$objDatabase->Execute("
+                        INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment (
+                            zones_id, payment_id
+                        ) VALUES (
+                            ".intval($_POST['paymentZone'][$pId]).",
+                            ".intval($pId)."
+                        )")) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    static function errorHandler()
+    {
+        require_once(ASCMS_CORE_PATH.'/DbTool.class.php');
+
+DBG::activate(DBG_DB_FIREPHP);
+
+        // Fix the Text table first
+        Text::errorHandler();
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_payment';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+            'processor_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'name'),
+            'fee' => array('type' => 'INT(5)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'costs'),
+            'free_from' => array('type' => 'INT(5)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'costs_free_sum'),
+            'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
+            'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'status'),
+        );
+        $table_index =  array();
+
+        if (DbTool::table_exists($table_name)) {
+            if (DbTool::column_exists($table_name, 'name')) {
+                // Migrate all Payment names to the Text table first
+                $objResult = DbTool::sql("
+                    SELECT `id`, `name`
+                      FROM `$table_name");
+                if (!$objResult) {
+die("Payment::errorHandler(): Error: failed to query names, code atdauu43rjhj");
+                }
+                while (!$objResult->EOF) {
+                    $id = $objResult->fields['id'];
+                    $name = $objResult->fields['name'];
+                    $text_name_id = Text::replace(
+                        null, FRONTEND_LANG_ID,
+                        $name, MODULE_ID, self::TEXT_NAME);
+                    if (!$text_name_id) {
+die("Payment::errorHandler(): Error: failed to migrate name '$name', code sitktjsrn47bcs");
+                    }
+                    $objResult2 = DbTool::sql("
+                        UPDATE `$table_name`
+                           SET `name`='$text_name_id'
+                         WHERE `id`=$id");
+                    if (!$objResult2) {
+die("Payment::errorHandler(): Error: failed to update Payment ID $id, code djru344hasds");
+                    }
+                    $objResult->MoveNext();
+                }
+            }
+        }
+
+        if (!DbTool::table($table_name, $table_structure, $table_index)) {
+die("Payment::errorHandler(): Error: failed to migrate Payment table, code snbrujase42hds");
+        }
+
+        // Always
         return false;
     }
 

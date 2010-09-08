@@ -68,9 +68,8 @@ class Vat
     private static $vatDefaultId = false;
 
     /**
-     * @var     double  $vatDefaultRate The default VAT rate, determined by the tax_default_id entry
-     *                                  in the shop_config table.  See {@see init()},
-     *                                  {@see  calculateDefaultTax()}.
+     * @var     double  $vatDefaultRate The default VAT rate.
+     * @see     init(), calculateDefaultTax()
      * @static
      * @access  private
      */
@@ -181,37 +180,37 @@ class Vat
             // Foreign countries
             0 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_enabled_foreign_customer'),
+                0 => SettingDb::getValue('vat_enabled_foreign_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_enabled_foreign_reseller'),
+                1 => SettingDb::getValue('vat_enabled_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_enabled_home_customer'),
+                0 => SettingDb::getValue('vat_enabled_home_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_enabled_home_reseller'),
+                1 => SettingDb::getValue('vat_enabled_home_reseller'),
             ),
         );
         self::$arrVatIncluded = array(
             // Foreign country
             0 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_included_foreign_customer'),
+                0 => SettingDb::getValue('vat_included_foreign_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_included_foreign_reseller'),
+                1 => SettingDb::getValue('vat_included_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => Settings::getValueByName('vat_included_home_customer'),
+                0 => SettingDb::getValue('vat_included_home_customer'),
                 // Reseller
-                1 => Settings::getValueByName('vat_included_home_reseller'),
+                1 => SettingDb::getValue('vat_included_home_reseller'),
             ),
         );
-        self::$vatDefaultId = Settings::getValueByName('vat_default_id');
+        self::$vatDefaultId = SettingDb::getValue('vat_default_id');
         self::$vatDefaultRate = self::getRate(self::$vatDefaultId);
-        self::$vatOtherId = Settings::getValueByName('vat_other_id');
+        self::$vatOtherId = SettingDb::getValue('vat_other_id');
         return true;
     }
 

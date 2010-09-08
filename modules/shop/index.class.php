@@ -132,18 +132,10 @@ function shopUseSession()
  */
 class Shop extends ShopLibrary
 {
-    const noPictureName = 'no_picture.gif';
-    const thumbnailSuffix = '.thumb';
-    const usernamePrefix = 'user';
 
     private $pageContent;
 
-    private $arrCategoriesTable = array();
-    private $arrCategoriesName = array();
-    private $arrParentCategoriesTable = array();
-
-    private $statusMessage = '';
-    private $arrAttributes = array();
+    private static $statusMessage = '';
     private static $inactiveStyleName = 'inactive';
     private static $activeStyleName = 'active';
     private static $defaultImage = '';
@@ -196,7 +188,7 @@ class Shop extends ShopLibrary
     function __construct($pageContent)
     {
         $this->pageContent = $pageContent;
-        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.self::noPictureName;
+        self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         $this->uploadDir = ASCMS_PATH_OFFSET.'/upload';
 
         // PEAR Sigma template
@@ -206,12 +198,8 @@ class Shop extends ShopLibrary
         // Global module index for clones
         $this->objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
 
-        $this->_initConfiguration();
-
         // Check session and user data, log in if present
-        if (shopUseSession())
-            $this->_authenticate();
-//        if (empty($_COOKIE['PHPSESSID'])) $this->_authenticate();
+        $this->_authenticate();
 
         Vat::isReseller($this->objCustomer && $this->objCustomer->isReseller());
         // May be omitted, those structures are initialized on first use
@@ -222,165 +210,116 @@ class Shop extends ShopLibrary
 
         // Payment processing object
         $this->objProcessing = new PaymentProcessing($this->arrConfig);
-   }
+    }
 
 
-    function getShopPage()
+    /**
+     * Returns the Shop page for the present parameters
+     * @return  string                The Shop page content
+     */
+    function getPage()
     {
-        if (isset($_GET['cmd'])) {
-            switch($_GET['cmd']) {
-                case 'terms':
-                    $_GET['act'] = 'terms';
-                    break;
-                case 'shipment':
-                    $_GET['act'] = 'shipment';
-                    break;
-                case 'success':
-                    $_GET['act'] = 'success';
-                    break;
-                case 'confirm':
-                    $_GET['act'] = 'confirm';
-                    break;
-                case 'lsv':
-                    $_GET['act'] = 'lsv';
-                    break;
-                case 'einzug':
-                    $_GET['act'] = 'einzug';
-                    break;
-                case 'payment':
-                    $_GET['act'] = 'payment';
-                    break;
-                case 'account':
-                    $_GET['act'] = 'account';
-                    break;
-                case 'cart':
-                    $_GET['act'] = 'cart';
-                    break;
-                case 'products':
-                case 'details': // Redirected to products explicitly
-                    $_GET['act'] = 'products';
-                    break;
-                case 'discounts':
-                    $_GET['act'] = 'discounts';
-                    break;
-                case 'lastFive':
-                    $_GET['act'] = 'lastFive';
-                    break;
-                case 'login':
-                    $_GET['act'] = 'login';
-                    break;
-                case 'sendpass':
-                    $_GET['act'] = 'sendpass';
-                    break;
-                case 'changepass';
-                    $_GET['act'] = 'changepass';
-                    break;
-                default:
-                    $_GET['act'] = 'products';
-                    break;
-            }
-        }
+DBG::activate(DBG_ERROR_FIREPHP);
 
-        if (isset($_GET['act'])) {
-            switch($_GET['act']) {
-                case 'shipment':
-                    $this->showShipmentTerms();
-                    break;
-                case 'success':
-                    $this->success();
-                    break;
-                case 'confirm':
-                    $this->confirm();
-                    break;
-                case 'lsv':
-                    $this->lsv();
-                    break;
-                case 'einzug':
-                    $this->einzug();
-                    break;
-                case 'payment':
-                    $this->payment();
-                    break;
-                case 'account':
-                    $this->account();
-                    break;
-                case 'cart':
-                    $this->cart();
-                    break;
-                case 'products':
-                    $this->products();
-                    break;
-                case 'discounts':
-                    $this->discounts();
-                    break;
-                case 'lastFive':
-                    $this->products();
-                    break;
-                case 'login':
-                    $this->login();
-                    break;
-                case 'destroy':
-                    $this->destroyCart();
-                    $this->products();
-                    break;
-                case 'paypalIpnCheck':
-                    require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-                    $objPaypal = new PayPal;
-                    $objPaypal->ipnCheck();
-                    exit;
-                    break;
-                case 'sendpass':
-                    $this->_sendpass();
-                    break;
-                case 'changepass';
-                    $this->_changepass();
-                    break;
-                // Test for PayPal IPN.
-                // *DO NOT* remove this!  Needed for site testing.
-                case 'testIpn':
-                    require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    PayPal::testIpn(); // die()s!
-                // Test for PayPal IPN validation
-                // *DO NOT* remove this!  Needed for site testing.
-                case 'testIpnValidate':
-                    require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
-                    PayPal::testIpnValidate(); // die()s!
-                // Test mail body generation
-                // *DO NOT* remove this!  Needed for site testing.
-                case 'testMail':
+        // Global placeholders that are used on more (almost) all pages.
+        // Add more as desired.
+        $this->objTemplate->setGlobalVariable(array(
+            'SHOP_CURRENCY_CODE' => Currency::getActiveCurrencyCode(),
+            'SHOP_CURRENCY_SYMBOL' => Currency::getActiveCurrencySymbol(),
+        ));
+
+        if (!isset($_GET['cmd'])) $_GET['cmd'] = '';
+        if (!isset($_GET['act'])) $_GET['act'] = $_GET['cmd'];
+        switch($_GET['act']) {
+            case 'shipment':
+                $this->showShipmentTerms();
+                break;
+            case 'success':
+                $this->success();
+                break;
+            case 'confirm':
+                $this->confirm();
+                break;
+            case 'lsv':
+                $this->lsv();
+                break;
+            case 'einzug':
+                $this->einzug();
+                break;
+            case 'payment':
+                $this->payment();
+                break;
+            case 'account':
+                $this->account();
+                break;
+            case 'cart':
+                $this->cart();
+                break;
+            case 'discounts':
+                $this->discounts();
+                break;
+            case 'login':
+                $this->login();
+                break;
+            case 'paypalIpnCheck':
+                require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
+                $objPaypal = new PayPal;
+                $objPaypal->ipnCheck();
+                exit;
+            case 'sendpass':
+                $this->_sendpass();
+                break;
+            case 'changepass';
+                $this->_changepass();
+                break;
+
+            // Test for PayPal IPN.
+            // *DO NOT* remove this!  Needed for site testing.
+            case 'testIpn':
+                require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
+                PayPal::testIpn(); // die()s!
+            // Test for PayPal IPN validation
+            // *DO NOT* remove this!  Needed for site testing.
+            case 'testIpnValidate':
+                require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
+                PayPal::testIpnValidate(); // die()s!
+            // Test mail body generation
+            // *DO NOT* remove this!  Needed for site testing.
+            case 'testMail':
 //MailTemplate::errorHandler();die();
-                    $order_id = (isset($_GET['order_id']) ? $_GET['order_id'] : 10);
-                    $arrSubstitution =
-                        ShopLibrary::getOrderSubstitutionArray($order_id);
-                    $arrMailtemplate = array(
-                        'key'          => 1,
-                        'lang_id'      => $arrSubstitution['LANG_ID'],
-                        'substitution' => &$arrSubstitution,
-                        'to' => 'reto.kohli@comvation.com',
+                $order_id = (isset($_GET['order_id']) ? $_GET['order_id'] : 10);
+                $arrSubstitution =
+                    ShopLibrary::getOrderSubstitutionArray($order_id);
+                $arrMailtemplate = array(
+                    'key'          => 1,
+                    'lang_id'      => $arrSubstitution['LANG_ID'],
+                    'substitution' => &$arrSubstitution,
+                    'to' => 'reto.kohli@comvation.com',
 //                            $arrSubstitution['CUSTOMER_EMAIL'].','.
-//                            $this->arrConfig['confirmation_emails']['value'],
-                    );
-                    $customer_id = $arrMailtemplate['substitution']['CUSTOMER_ID'];
-                    $objCustomer = Customer::getById($customer_id);
-                    if (!$objCustomer) die("No Customer for ID $customer_id");
-                    $arrMailtemplate['substitution'] += $objCustomer->getSubstitutionArray();
+//                            SettingDb::getValue('email_confirmation'),
+                );
+                $customer_id = $arrMailtemplate['substitution']['CUSTOMER_ID'];
+                $objCustomer = Customer::getById($customer_id);
+                if (!$objCustomer) die("No Customer for ID $customer_id");
+                $arrMailtemplate['substitution'] += $objCustomer->getSubstitutionArray();
 //die(nl2br(htmlentities(var_export($this->arrConfig, true), ENT_QUOTES, CONTREXX_CHARSET)));
-                    echo(nl2br(htmlentities(var_export($arrMailtemplate, true), ENT_QUOTES, CONTREXX_CHARSET)));
-                    die(MailTemplate::send($arrMailtemplate));
+                echo(nl2br(htmlentities(var_export($arrMailtemplate, true), ENT_QUOTES, CONTREXX_CHARSET)));
+                die(MailTemplate::send($arrMailtemplate));
 
-                default:
-                    $this->products();
-                    break;
-            }
-        } else {
-            $this->products();
+            case 'destroy':
+                $this->destroyCart();
+                // No break on purpose
+            case 'lastFive':
+            case 'products':
+            default:
+                $this->products();
         }
         $this->objTemplate->setVariable('SHOP_STATUS', $this->statusMessage);
         return $this->objTemplate->get();
     }
 
 
-    function getShopNavbar($shopNavbarContent)
+    function getNavbar($shopNavbarContent)
     {
         global $_ARRAYLANG;
         static $strContent;
@@ -584,37 +523,6 @@ class Shop extends ShopLibrary
 
 
     /**
-     * Returns an array of all parent category names.
-     *
-     * The array is ordered from the innermost category at index 0
-     * to the root category at the end of the array.
-     * @param     integer  $currentid
-     * @return    integer  $allparents
-     */
-    function _makeArrCurrentCategories($currentid=1)
-    {
-        // Array of parent categories names, ordered from
-        // innermost category at index 0 to root category
-        // at the end of the category.
-        $arrParentIds = array();
-        while ($currentid != 0) {
-            if (   isset($this->arrParentCategoriesTable[$currentid])
-                && is_array($this->arrParentCategoriesTable[$currentid])) {
-                // parent ID => parent category name
-                $arrParentName  = $this->arrParentCategoriesTable[$currentid];
-                $result         = each($arrParentName);
-                $arrParentIds[] = $result[0];
-                $currentid      = $result[0];
-            } else {
-                $arrParentIds[] = 0;
-                $currentid      = 0;
-            }
-        }
-        return $arrParentIds;
-    }
-
-
-    /**
      * Change the customers' password
      *
      * If no customer is logged in, redirects to the login page.
@@ -722,21 +630,21 @@ class Shop extends ShopLibrary
 
     /**
      * Set up the subcategories block in the current shop page.
-     * @param   integer     $parentId   The optional parent ShopCategory ID,
+     * @param   integer     $parent_id   The optional parent ShopCategory ID,
      *                                  defaults to 0 (zero).
      * @return  boolean                 True on success, false otherwise
      * @global  array
      */
-    function showCategories($parentId=0)
+    function showCategories($parent_id=0)
     {
         global $_ARRAYLANG;
 
-        if ($parentId > 0) {
-            $objCategory = ShopCategory::getById($parentId);
+        if ($parent_id > 0) {
+            $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
             // not exist.
             if (!$objCategory) {
-                if ($parentId > 0) {
+                if ($parent_id > 0) {
                     // Retry using the root.
                     $this->showCategories(0);
                 }
@@ -757,9 +665,9 @@ class Shop extends ShopLibrary
             }
         }
 
-        // Get all active child categories with parent ID $parentId
+        // Get all active child categories with parent ID $parent_id
         $arrShopCategory =
-            ShopCategories::getChildCategoriesById($parentId, true);
+            ShopCategories::getChildCategoriesById($parent_id, true);
         if (!is_array($arrShopCategory)) {
             return false;
         }
@@ -830,7 +738,7 @@ class Shop extends ShopLibrary
 
             if ($this->objTemplate->blockExists('subCategories')) {
                 $this->objTemplate->parse('subCategories');
-                    if (++$cell % 4 == 0) {
+                if (++$cell % 4 == 0) {
                     $this->objTemplate->parse('subCategoriesRow');
                 }
             }
@@ -872,24 +780,16 @@ class Shop extends ShopLibrary
             return $picturePath;
         }
         // no picture in that category, try its subcategories
-        $querySubCat = "
-            SELECT catid
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-             WHERE parentid=$catId
-        ";
-        $objResultSubCat = $objDatabase->Execute($querySubCat);
-        // query failed, or no more subcategories? - give up
-        if (!$objResultSubCat || $objResultSubCat->RecordCount() == 0) {
+        $arrChildCategoryId = ShopCategories::getChildCategoryIdArray($catId);
+        if (empty($arrChildCategoryId)) {
             return false;
         }
-        while (!$objResultSubCat->EOF) {
-            $childCatId = $objResultSubCat->fields['catid'];
+        foreach ($arrChildCategoryId as $childCatId) {
             $picturePath =
                 $this->getFirstProductPictureFromCategory($childCatId);
             if ($picturePath) {
                 return $picturePath;
             }
-            $objResultSubCat->MoveNext();
         }
         // no more subcategories, no picture -- give up
         return false;
@@ -907,11 +807,11 @@ class Shop extends ShopLibrary
      */
     function products()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         JS::activate('shadowbox');
 
-        $flagSpecialoffer = intval($this->arrConfig['shop_show_products_default']['value']);
+        $flagSpecialoffer = intval(SettingDb::getValue('show_products_default'));
         $flagLastFive =
             (isset($_REQUEST['lastFive'])  ? true                   : false);
         $product_id =
@@ -927,6 +827,30 @@ class Shop extends ShopLibrary
         $pos =
             (isset($_REQUEST['pos'])       ? $_REQUEST['pos']       : 0);
 
+        $shopMenu =
+            '<input type="text" name="term" value="'.
+            htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).
+            '" style="width:150px;" />&nbsp;'.
+            '<select name="catId" style="width:150px;">'.
+            '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].
+            '</option>'.ShopCategories::getMenuoptions($catId).
+            '</select>&nbsp;'.Manufacturer::getMenu($manufacturerId).
+            '<input type="submit" name="Submit" value="'.$_ARRAYLANG['TXT_SEARCH'].
+            '" style="width:66px;" />';
+        $this->objTemplate->setGlobalVariable(
+            $_ARRAYLANG
+          + array(
+            'SHOP_MENU' => $shopMenu,
+            'SHOP_SEARCH_TERM' => htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET),
+            'SHOP_CART_INFO' => $this->showCartInfo(),
+            'SHOP_JAVASCRIPT_CODE' => $this->getJavascriptCode(),
+            // New from 3.0.0 - More flexible Shop menu
+            'SHOP_CATEGORIES_MENUOPTIONS' =>
+                ShopCategories::getMenuoptions($catId, true, 0, true),
+            'SHOP_MANUFACTURER_MENUOPTIONS' =>
+                Manufacturer::getMenuoptions($manufacturerId, true),
+        ));
+
         if ($catId && $term == '') {
             $this->showCategories($catId);
         } elseif ($term == '') {
@@ -934,54 +858,23 @@ class Shop extends ShopLibrary
         }
 
         if ($this->objTemplate->blockExists('shopNextCategoryLink')) {
-            $nextCat = ShopCategories::getNextShopCategoriesId($catId);
+            $nextCat = ShopCategory::getNextShopCategoryId($catId);
             $objCategory = ShopCategory::getById($nextCat);
             $this->objTemplate->setVariable(array(
                 'SHOP_NEXT_CATEGORY_ID'    => $nextCat,
                 'SHOP_NEXT_CATEGORY_TITLE' => str_replace('"', '&quot;', $objCategory->getName()),
-                'TXT_SHOP_GO_TO_CATEGORY'  => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
             ));
             $this->objTemplate->parse('shopNextCategoryLink');
         }
-        $this->objTemplate->setGlobalVariable(array(
-            'TXT_ADD_TO_CARD'            => $_ARRAYLANG['TXT_ADD_TO_CARD'],
-            'TXT_PRODUCT_ID'             => $_ARRAYLANG['TXT_PRODUCT_ID'],
-            'TXT_SHOP_PRODUCT_CUSTOM_ID' => $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'],
-            'TXT_WEIGHT'                 => $_ARRAYLANG['TXT_WEIGHT'],
-            'TXT_SHOP_CATEGORIES'        => $_ARRAYLANG['TXT_SHOP_CATEGORIES'],
-            'TXT_SHOP_NORMALPRICE'       => $_ARRAYLANG['TXT_SHOP_NORMALPRICE'],
-            'TXT_SHOP_DISCOUNTPRICE'     => $_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'],
-            'SHOP_JAVASCRIPT_CODE'       => $this->getJavascriptCode(),
-        ));
-// Moved to getShopPage()
-//        $this->objTemplate->setVariable('SHOPNAVBAR_FILE', $this->getShopNavbar($themesPages['shopnavbar']));
+// Moved to getPage()
+//        $this->objTemplate->setVariable(
+//            'SHOPNAVBAR_FILE',
+//            $this->getNavbar($themesPages['shopnavbar']));
 
         if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
             $cartProdId = $product_id;
             $product_id = $_SESSION['shop']['cart']['products'][$product_id]['id'];
         }
-
-        $shopMenu =
-            '<input type="text" name="term" value="'.
-            htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET).
-            '" style="width:150px;" />&nbsp;'.
-            '<select name="catId" style="width:150px;">'.
-            '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].
-            '</option>'.ShopCategories::getShopCategoriesMenuoptions($catId).
-            '</select>&nbsp;'.Manufacturer::getMenu($manufacturerId).
-            '<input type="submit" name="Submit" value="'.$_ARRAYLANG['TXT_SEARCH'].
-            '" style="width:66px;" />';
-        $this->objTemplate->setVariable(array(
-            'SHOP_MENU' => $shopMenu,
-            'SHOP_SEARCH_TERM' => htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET),
-            'SHOP_CART_INFO' => $this->showCartInfo(),
-            // New from 3.0.0 - More flexible Shop menu
-            'SHOP_CATEGORIES_MENUOPTIONS' => ShopCategories::getShopCategoriesMenuoptions($catId),
-            'SHOP_MANUFACTURER_MENUOPTIONS' => Manufacturer::getMenuoptions($manufacturerId),
-            'TXT_ALL_PRODUCT_GROUPS' => $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'],
-            'TXT_ALL_MANUFACTURER' => $_ARRAYLANG['TXT_ALL_MANUFACTURER'],
-            'TXT_SHOP_SEARCH' => $_ARRAYLANG['TXT_SHOP_SEARCH'],
-        ));
 
         $pagingCatId = '';
         $pagingManId = '';
@@ -1009,42 +902,39 @@ class Shop extends ShopLibrary
             $count, $pos,
             $product_id, $catId, $manufacturerId, $term,
             $flagSpecialoffer, $flagLastFive,
-            self::$arrProductOrder[$this->arrConfig['product_sorting']['value']],
+            self::$arrProductOrder[SettingDb::getValue('product_sorting')],
             $this->objCustomer && $this->objCustomer->isReseller()
         );
 
-        $paging     = '';
         $detailLink = '';
-        if ($count == 0) {
-            // Fixed for 2.0.2
-            $paging = ''; //$_ARRAYLANG['TXT_SELECT_SUB_GROUP'];
-        } elseif ($_CONFIG['corePagingLimit']) { // From /config/settings.php
-            $paging = getPaging(
-                $count, $pos,
-                '&amp;section=shop'.MODULE_INDEX.''.$pagingCatId.$pagingManId.$pagingTerm,
-                '',
-                true
-            );
-        }
-        if (isset($this->arrCategoriesName[$catId])) {
-            $this->objTemplate->setVariable(array(
-                'TXT_PRODUCTS_IN_CATEGORY' => $_ARRAYLANG['TXT_PRODUCTS_IN_CATEGORY'],
-                'SHOP_CATEGORY_NAME'       => str_replace('"', '&quot;', $this->arrCategoriesName[$catId]),
-            ));
-        }
-        $this->objTemplate->setVariable(array(
-            'SHOP_PRODUCT_PAGING' => $paging,
-            'SHOP_PRODUCT_TOTAL'  => $count,
-        ));
-
         if ($count == 0) {
             $this->objTemplate->hideBlock('shopProductRow');
             return true;
         }
+        $objCategory = ShopCategory::getById($catId);
+        if ($objCategory) {
+            $this->objTemplate->setVariable(array(
+                'SHOP_CATEGORY_NAME' =>
+                    str_replace('"', '&quot;', $objCategory->getName()),
+                // New (3.0.0)
+                'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
+                    $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
+                    htmlentities($objCategory->getName(),
+                        ENT_QUOTES, CONTREXX_CHARSET)),
+            ));
+        }
+        $this->objTemplate->setVariable(array(
+            'SHOP_PRODUCT_PAGING' => getPaging(
+                $count, $pos,
+                '&amp;section=shop'.MODULE_INDEX.
+                  $pagingCatId.$pagingManId.$pagingTerm,
+                '', true),
+            'SHOP_PRODUCT_TOTAL'  => $count,
+        ));
+
 
         $formId = 0;
         $arrDefaultImageSize = false;
-        $this->objTemplate->setCurrentBlock('shopProductRow');
         /** @var   Product $objProduct = null; */
         $flagUpload = false;
         foreach ($arrProduct as $objProduct) {
@@ -1056,7 +946,7 @@ class Shop extends ShopLibrary
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
                 if (   empty($image['img'])
-                    || $image['img'] == self::noPictureName) {
+                    || $image['img'] == ShopLibrary::noPictureName) {
                     // We have at least one picture on display already.
                     // No need to show "no picture" three times!
                     if ($havePicture) { continue; }
@@ -1322,7 +1212,7 @@ class Shop extends ShopLibrary
 
             // Hide the weight if it is zero or disabled in the configuration
             if (   $productWeight > 0
-                && $this->arrConfig['shop_weight_enable']['value']) {
+                && SettingDb::getValue('weight_enable')) {
                 $this->objTemplate->setVariable(array(
                     'TXT_SHOP_PRODUCT_WEIGHT' => $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'],
                     'SHOP_PRODUCT_WEIGHT'     => Weight::getWeightString($productWeight),
@@ -1631,8 +1521,8 @@ class Shop extends ShopLibrary
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS c USING (catid)
              WHERE p.is_special_offer=1
-               AND p.status=1
-               AND c.catstatus=1
+               AND p.active=1
+               AND c.active=1
              ORDER BY p.sort_order
         ";
         $objResult = $objDatabase->Execute($query);
@@ -1649,7 +1539,7 @@ class Shop extends ShopLibrary
             // no product picture available
             if (!$arrImages
              || $arrImages[1]['img'] == ''
-             || $arrImages[1]['img'] == self::noPictureName) {
+             || $arrImages[1]['img'] == ShopLibrary::noPictureName) {
                 $arrThumbnailPath[$i] = self::$defaultImage;
                 if (empty($arrDefaultImageSize)) {
                     $arrDefaultImageSize = getimagesize(ASCMS_SHOP_IMAGES_PATH.'/'.self::$defaultImage);
@@ -2375,7 +2265,7 @@ sendReq('', 1);
             (isset($_POST['countryId2'])
               ? intval($_POST['countryId2'])
               : (empty($_SESSION['shop']['countryId2'])
-                  ? $this->arrConfig['country_id']['value']
+                  ? SettingDb::getValue('country_id')
                   : $_SESSION['shop']['countryId2']
                 )
             );
@@ -2650,7 +2540,7 @@ sendReq('', 1);
                            is_special_offer, vat_id, weight,
                            group_id, article_id
                       FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                     WHERE status=1
+                     WHERE active=1
                        AND id=".$arrProduct['id']
                 );
                 if (!$objResult || $objResult->RecordCount() == 0) {
@@ -2759,14 +2649,14 @@ sendReq('', 1);
 //DBG::log("Shop::_parseCart(): GLOBAL; Got Coupon code $coupon_code");
             $objCoupon = Coupon::get(
                 $coupon_code, $total_price,  $customer_id, 0, $payment_id);
-            if ($objCoupon) {
+//            if ($objCoupon) {
 //DBG::log("Shop::_parseCart(): GLOBAL; Got Coupon ".var_export($objCoupon, true));
                 // This Coupon applies to the whole order
 //                $discount_amount = $objCoupon->getDiscountAmount($total_price);
 //                $total_discount_amount += $discount_amount;
 //                $total_price -= $discount_amount;
 //DBG::log("Shop::_parseCart(): GLOBAL; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
-            }
+//            }
 //DBG::log("Shop::_parseCart(): Got Coupon code $coupon_code");
             foreach ($arrProducts as $cartProdId => $arrProduct) {
                 if (!$objCoupon)
@@ -2856,7 +2746,7 @@ sendReq('', 1);
                     'SHOP_PRODUCT_ITEMPRICE'      => $arrProduct['itemprice'],
                     'SHOP_PRODUCT_ITEMPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                 ));
-                if ($this->arrConfig['shop_weight_enable']['value']) {
+                if (SettingDb::getValue('weight_enable')) {
                     $this->objTemplate->setVariable(array(
                         'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($arrProduct['weight']),
                         'TXT_WEIGHT'          => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
@@ -2936,8 +2826,8 @@ sendReq('', 1);
                         true, "document.forms['shopForm'].submit()"),
             ));
         }
-        if (   !empty($this->arrConfig['orderitems_amount_max']['value'])
-            && $this->arrConfig['orderitems_amount_max']['value'] <
+        if (   SettingDb::getValue('orderitems_amount_max') > 0
+            && SettingDb::getValue('orderitems_amount_max') <
                   $_SESSION['shop']['cart']['total_price']
         ) {
             $this->objTemplate->setVariable(
@@ -2945,7 +2835,7 @@ sendReq('', 1);
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'],
                         Currency::formatPrice(
-                            $this->arrConfig['orderitems_amount_max']['value']),
+                            SettingDb::getValue('orderitems_amount_max')),
                         Currency::getActiveCurrencySymbol()));
         } else {
             $this->objTemplate->setVariable(
@@ -3201,6 +3091,7 @@ sendReq('', 1);
             $_SESSION['shop']['agb'] = '';
         }
 
+// TODO: Use ContentManager class to find the page
         $query = "SELECT catid FROM ".DBPREFIX."content_navigation AS nav, ".
             DBPREFIX."modules AS modules ".
             "WHERE modules.name='shop' AND nav.module=modules.id ".
@@ -3428,7 +3319,7 @@ die("Z2");
                 $objPaypal = new PayPal;
                 if (!in_array(Currency::getActiveCurrencyCode(), Paypal::getAcceptedCurrencyCodeArray())) {
                     foreach (Currency::getCurrencyArray() as $arrCurrency) {
-                        if ($arrCurrency['status'] && $arrCurrency['code'] == $this->arrConfig['paypal_default_currency']['value']) {
+                        if ($arrCurrency['active'] && $arrCurrency['code'] == SettingDb::getValue('paypal_default_currency')) {
                             $_SESSION['shop']['currencyIdPrev'] = $_SESSION['shop']['currencyId'];
                             $_SESSION['shop']['currencyId'] = $arrCurrency['id'];
                             header('Location: index.php?section=shop'.MODULE_INDEX.'&cmd=payment');
@@ -3564,7 +3455,7 @@ die("YYY");
 
         Vat::setIsHomeCountry(
                empty($_SESSION['shop']['countryId2'])
-            || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
+            || $_SESSION['shop']['countryId2'] == SettingDb::getValue('country_id')
         );
         // VAT enabled?
         if (Vat::isEnabled()) {
@@ -3770,8 +3661,8 @@ die("YYY");
     {
         global $_ARRAYLANG;
 
-        $shopAddress = ($this->arrConfig['shop_address']['value']
-            ? $this->arrConfig['shop_address']['value']
+        $shopAddress = (SettingDb::getValue('shop_address')
+            ? SettingDb::getValue('shop_address')
             : ''
         );
         $shopAddress = preg_replace('/[\012\015]+/', ', ', $shopAddress);
@@ -3834,8 +3725,8 @@ right after the customer logs in!
             'TXT_SHOP_LSV_EE_DATE'        => $_ARRAYLANG['TXT_SHOP_LSV_EE_DATE'],
             'TXT_SHOP_LSV_EE_SIGNATURE'   => $_ARRAYLANG['TXT_SHOP_LSV_EE_SIGNATURE'],
             'TXT_SHOP_LSV_EE_PRINT'       => $_ARRAYLANG['TXT_SHOP_LSV_EE_PRINT'],
-            'SHOP_FAX'                    => $this->arrConfig['fax']['value'],
-            'SHOP_COMPANY'                => $this->arrConfig['shop_company']['value'],
+            'SHOP_FAX'                    => SettingDb::getValue('fax'),
+            'SHOP_COMPANY'                => SettingDb::getValue('shop_company'),
             'SHOP_ADDRESS'                => $shopAddress,
         ));
     }
@@ -3852,7 +3743,7 @@ right after the customer logs in!
         global $_ARRAYLANG;
 
         if (   $_SESSION['shop']['cart']['total_weight'] > 0
-            && $this->arrConfig['shop_weight_enable']['value']) {
+            && SettingDb::getValue('weight_enable')) {
             $this->objTemplate->setVariable(array(
                 'TXT_TOTAL_WEIGHT'        => $_ARRAYLANG['TXT_TOTAL_WEIGHT'],
                 'SHOP_TOTAL_WEIGHT'       => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
@@ -4087,7 +3978,7 @@ right after the customer logs in!
                            discountprice, is_special_offer,
                            vat_id, weight, handler
                       FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                     WHERE status=1 AND id=".$arrProduct['id'];
+                     WHERE active=1 AND id=".$arrProduct['id'];
                 $objResult = $objDatabase->Execute($query);
                 if (!$objResult) {
                     unset($_SESSION['shop']['orderid']);
@@ -4291,7 +4182,7 @@ right after the customer logs in!
                            discountprice, is_special_offer,
                            vat_id, weight, handler
                       FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                     WHERE status=1 AND id=".$arrProduct['id']
+                     WHERE active=1 AND id=".$arrProduct['id']
                 );
                 if ($objResult) {
                     $priceOptions = (empty($arrProduct['optionPrice'])
@@ -4376,7 +4267,7 @@ right after the customer logs in!
                         'SHOP_PRODUCT_ITEMPRICE'    => Currency::formatPrice($price),
                         'SHOP_UNIT'                 => Currency::getActiveCurrencySymbol(),
                     ));
-                    if ($this->arrConfig['shop_weight_enable']['value']) {
+                    if (SettingDb::getValue('weight_enable')) {
                         $this->objTemplate->setVariable(array(
                             'SHOP_PRODUCT_WEIGHT' => $weight,
                             'TXT_WEIGHT'          => $_ARRAYLANG['TXT_WEIGHT'],
