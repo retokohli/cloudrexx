@@ -27,6 +27,7 @@
  */
 include_once('../lib/DBG.php');
 DBG::deactivate();
+//DBG::activate(DBG_ERROR_FIREPHP);
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -496,7 +497,7 @@ switch ($plainCmd) {
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SHOP_ADMINISTRATION'];
         $objShopManager = new shopmanager();
-        $objShopManager->getShopPage();
+        $objShopManager->getPage();
         break;
 
     //-------------------------------------------------------

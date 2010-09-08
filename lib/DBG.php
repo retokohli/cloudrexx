@@ -1,13 +1,23 @@
 <?php
 
-define('DBG_NONE'       ,  0);
-define('DBG_PHP'        ,  1);
-define('DBG_ADODB'      ,  2);
-define('DBG_ADODB_TRACE',  4);
-define('DBG_ADODB_ERROR',  8);
-define('DBG_LOG_FILE'   , 16);
-define('DBG_LOG_FIREPHP', 32);
-define('DBG_ALL'        , 63);
+// Basic flags
+define('DBG_NONE',        0);
+define('DBG_PHP',         1<<0);
+define('DBG_ADODB',       1<<1);
+define('DBG_ADODB_TRACE', 1<<2);
+define('DBG_ADODB_ERROR', 1<<3);
+define('DBG_LOG_FILE',    1<<4);
+define('DBG_LOG_FIREPHP', 1<<5);
+// Full debugging (quite pointless really)
+define('DBG_ALL',
+      DBG_PHP
+    | DBG_ADODB | DBG_ADODB_TRACE | DBG_ADODB_ERROR
+    | DBG_LOG_FILE | DBG_LOG_FIREPHP);
+// Common debugging modes (add more as required)
+define('DBG_ERROR_FIREPHP',
+      DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+define('DBG_DB_FIREPHP',
+      DBG_PHP | DBG_ADODB | DBG_LOG_FIREPHP);
 
 
 class DBG
