@@ -43,6 +43,9 @@ class SettingDb
     const TYPE_FILEUPLOAD = 'fileupload';
     const TYPE_TEXT = 'text';
     const TYPE_EMAIL = 'email';
+    const TYPE_BUTTON = 'button';
+// Not implemented
+//    const TYPE_SUBMIT = 'submit';
 
 
     /**
@@ -225,13 +228,13 @@ class SettingDb
      * is returned.
      * @param   string    $name       The settings name
      * @return  mixed                 The settings value, if present,
-     *                                false otherwise
+     *                                null otherwise
      */
     function getValue($name)
     {
 //echo("SettingDb::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
         return (isset(self::$arrSettings[$name]['value'])
-            ? self::$arrSettings[$name]['value'] : false
+            ? self::$arrSettings[$name]['value'] : null
         );
     }
 
@@ -369,8 +372,10 @@ class SettingDb
         if (self::$arrSettings === false || self::$key != $key)
             self::init($key);
 
-        // Such an entry exists already, fail
-        if (self::getValue($name)) return false;
+        // Such an entry exists already, fail.
+        // Note that getValue() returns null if the entry is not present
+        $old_value = self::getValue($name);
+        if (isset($old_value)) return false;
 
         // Not present, insert it
         $objResult = $objDatabase->Execute("
@@ -397,7 +402,30 @@ class SettingDb
 
 
     /**
-     * Display the settings stored in the given array
+     * Delete a record from the settings table
+     *
+     * For maintenance/update purposes only.
+     * @param   string    $name     The setting name
+     * @param   string    $key      The optional key
+     * @return  boolean             True on success, false otherwise
+     */
+    static function delete($name, $key=null)
+    {
+        global $objDatabase;
+
+        // Fail if the name is invalid
+        if (empty($name)) return false;
+        $objResult = $objDatabase->Execute("
+            DELETE FROM `".DBPREFIX."core_setting`
+             WHERE `name`='".addslashes($name)."'".
+            (isset($key) ? " AND `key`='".addslashes($key)."'" : ''));
+        if (!$objResult) return self::errorHandler();
+        return true;
+    }
+
+
+    /**
+     * Display the settings present in the $arrSettings class array
      *
      * Uses the indices as the names for any parameter, the values
      * as themselves, and adds language variables for the settings' name
@@ -408,9 +436,9 @@ class SettingDb
      *    Prefix:   'TXT_'
      *  Results in placeholders to be set as follows:
      *    Placeholder         Value
-     *    SETTINGDB_NAME        The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
-     *    SETTINGDB_VALUE       The HTML element for the setting type with
-     *                          a name attribute of 'shop_dummy'
+     *    SETTINGDB_NAME      The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
+     *    SETTINGDB_VALUE     The HTML element for the setting type with
+     *                        a name attribute of 'shop_dummy'
      *
      * Placeholders:
      * The settings' name is to SETTINGDB_NAME, and the input element to
@@ -428,11 +456,10 @@ class SettingDb
      * The template object is given by reference, and if the block
      * 'core_settingdb_row' is not present, is replaced by the default backend
      * template.
-     * $uriBase *SHOULD* be the URI for the current module start page, without
-     * any 'act' parameter, i.e. 'index.php?section=mymodule'.
-     * If you want your settings to be stored, you *MUST* handle the parameter
-     * 'act=settings' in your modules' getPage() method, check for the 'bsubmit'
-     * index in the $_POST array, and call {@see SettingDb::store()}.
+     * $uriBase *SHOULD* be the URI for the current module page.
+     * If you want your settings to be stored, you *MUST* handle the post
+     * request, check for the 'bsubmit' index in the $_POST array, and call
+     * {@see SettingDb::store()}.
      * @param   HTML_Template_Sigma $objTemplateLocal   Template object
      * @param   string              $uriBase      The base URI for the module.
      * @param   string              $section      The optional section header
@@ -456,19 +483,19 @@ class SettingDb
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
-        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+        if (   !is_a($objTemplateLocal, 'HTML_Template_Sigma')
+            || !$objTemplateLocal->blockExists('core_settingdb_row')) {
             $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
             if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
                 die("Failed to load template settingDb.html");
         }
-        Html::replaceUriParameter($uriBase, 'act=settings');
+// TODO: Test if everything works without this line
+//        Html::replaceUriParameter($uriBase, 'act=settings');
         Html::replaceUriParameter($uriBase, 'active_tab='.self::$tab_index);
         // Default headings and elements
-        $objTemplateLocal->setGlobalVariable(array(
-            'TXT_CORE_SETTINGDB'       => $_CORELANG['TXT_CORE_SETTINGDB'],
-            'TXT_CORE_SETTINGDB_STORE' => $_CORELANG['TXT_CORE_SETTINGDB_STORE'],
-            'TXT_CORE_SETTINGDB_NAME'  => $_CORELANG['TXT_CORE_SETTINGDB_NAME'],
-            'TXT_CORE_SETTINGDB_VALUE' => $_CORELANG['TXT_CORE_SETTINGDB_VALUE'],
+        $objTemplateLocal->setGlobalVariable(
+            $_CORELANG
+          + array(
             'URI_BASE' => $uriBase,
         ));
 
@@ -521,11 +548,14 @@ class SettingDb
                 );
             }
             $value_align = (is_numeric($value) ? 'text-align: right;' : '');
+//DBG::log("Value: $value -> align $value_align");
             switch ($type) {
               // Dropdown menu
               case self::TYPE_DROPDOWN:
+                $arrValues = self::splitValues($arrSetting['values']);
+//DBG::log("Values: ".var_export($arrValues, true));
                 $element = Html::getSelect(
-                    $name, self::splitValues($arrSetting['values']), $value,
+                    $name, $arrValues, $value,
                     '', '',
                     'style="width: 220px;'.$value_align.'"');
                 break;
@@ -582,6 +612,29 @@ class SettingDb
                 $enctype = 'enctype="multipart/form-data"';
                 break;
 
+              case self::TYPE_BUTTON:
+                // The button is only available to trigger some event.
+                $event =
+                    'onclick=\''.
+                      'if (confirm("'.$_ARRAYLANG[$prefix.strtoupper($name).'_CONFIRM'].'")) {'.
+                        'document.getElementById("'.$name.'").value=1;'.
+                        'document.formSettings_'.self::$tab_index.'.submit();'.
+                      '}\'';
+//DBG::log("SettingDb::show(): Event: $event");
+                $element =
+                    Html::getInputButton(
+                        // The button itself gets a dummy name attribute value
+                        '__'.$name,
+                        $_ARRAYLANG[strtoupper($prefix.$name).'_LABEL'],
+                        'button', false,
+                        $event
+                    ).
+                    // The posted value is set to 1 when confirmed,
+                    // before the form is posted
+                    Html::getHidden($name, 0, '');
+//DBG::log("SettingDb::show(): Element: $element");
+                break;
+
 // More...
 //              case self::TYPE_:
 //                break;
@@ -618,12 +671,15 @@ class SettingDb
             $objTemplateLocal->parse('core_settingdb_section');
         }
 
+        // The tabindex must be set in the form name in any case
+        $objTemplateLocal->setGlobalVariable(
+            'CORE_SETTINGDB_TAB_INDEX', self::$tab_index);
         // Set up tab, if any
         if (!empty($tab_name)) {
             $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
-                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
+//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
                 'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
             ));
@@ -662,14 +718,18 @@ class SettingDb
         }
 
         $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
+        // The tabindex must be set in the form name in any case
+        $objTemplateLocal->setGlobalVariable(array(
+            'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
+            'CORE_SETTINGDB_EXTERNAL' => $content,
+        ));
         // Set up the tab, if any
         if (!empty($tab_name)) {
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
-                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
+//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
                 'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
-                'CORE_SETTINGDB_EXTERNAL'    => $content,
             ));
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
             $objTemplateLocal->parse('core_settingdb_tab_row');
@@ -789,6 +849,76 @@ class SettingDb
 
 
     /**
+     * Splits the string value at commas and returns an array of strings
+     *
+     * Commas escaped by a backslash (\) are ignored and replaced by a
+     * single comma.
+     * The values themselves may be composed of pairs of key and value,
+     * separated by a colon.  Colons escaped by a backslash (\) are ignored
+     * and replaced by a single colon.
+     * Leading and trailing whitespace is removed from both keys and values.
+     * Note that keys *MUST NOT* contain either commas or colons!
+     * @param   string    $strValues    The string to be split
+     * @return  array                   The array of strings
+     */
+    static function splitValues($strValues)
+    {
+/*
+Example:
+postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
+*/
+        $arrValues = array();
+        $match = array();
+        foreach (
+            preg_split(
+                '/\s*(?<!\\\\),\s*/', $strValues,
+                null, PREG_SPLIT_NO_EMPTY) as $value
+        ) {
+            $key = null;
+            if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
+                $key = $match[1];
+                $value = $match[2];
+//DBG::log("Split $key and $value");
+            }
+            str_replace(array('\\,', '\\:'), array(',', ':'), $value);
+            if (isset($key)) {
+                $arrValues[$key] = $value;
+            } else {
+                $arrValues[] = $value;
+            }
+//DBG::log("Split $key and $value");
+        }
+//DBG::log("Array: ".var_export($arrValues, true));
+        return $arrValues;
+    }
+
+
+    /**
+     * Joins the strings in the array with commas into a single values string
+     *
+     * Commas within the strings are escaped by a backslash (\).
+     * The array keys are prepended to the values, separated by a colon.
+     * Colons within the strings are escaped by a backslash (\).
+     * Note that keys *MUST NOT* contain either commas or colons!
+     * @param   array     $arrValues    The array of strings
+     * @return  string                  The concatenated values string
+     * @todo    Untested!  May or may not work as described.
+     */
+    static function joinValues($arrValues)
+    {
+        $strValues = '';
+        foreach ($arrValues as $key => $value) {
+            $value = str_replace(
+                array(',', ':'), array('\\,', '\\:'), $value);
+            $strValues .=
+                ($strValues ? ',' : '').
+                "$key:$value";
+        }
+        return $strValues;
+    }
+
+
+    /**
      * Should be called whenever there's a problem with the settings table
      *
      * Tries to fix or recreate the settings table.
@@ -798,7 +928,7 @@ class SettingDb
     {
         global $objDatabase;
 
-die("SettingDb::errorHandler(): Disabled!<br />");
+//die("SettingDb::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (!in_array(DBPREFIX."core_setting", $arrTables)) {

@@ -125,7 +125,8 @@ class Imagetype
                        ".$arrSqlName['field']."
                   FROM `".DBPREFIX."core_imagetype` AS `imagetype`".
                        $arrSqlName['join']."
-                 WHERE `imagetype`.`module_id`=".MODULE_ID.
+                 WHERE 1".
+                  (MODULE_ID ? ' AND `imagetype`.`module_id`='.MODULE_ID : '').
                   ($key
                     ? ' AND `imagetype`.`key`'.
                       (is_array($key)
@@ -616,6 +617,8 @@ class Imagetype
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
         $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+// TODO: Needed?
+//        CSRF::add_placeholder($objTemplateLocal);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplateLocal->loadTemplateFile('imagetypes.html'))
             die("Failed to load template imagetypes.html");
@@ -686,7 +689,7 @@ class Imagetype
                     Html::getInputText(
                         'imagetype_quality['.$key.']', $quality, false,
                         'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
                 'CORE_IMAGETYPE_WIDTH_THUMB'     =>
                     Html::getInputText(
                         'imagetype_width_thumb['.$key.']', $width_thumb, false,
@@ -701,7 +704,8 @@ class Imagetype
                     Html::getInputText(
                         'imagetype_quality_thumb['.$key.']', $quality_thumb, false,
                         'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
+// Disabled by popular demand
 //                'CORE_IMAGETYPE_FUNCTIONS' =>
 //                    Html::getBackendFunctions(array(
 //                            'delete' => $uri.'&amp;imagetype_delete_key='.urlencode($key),
@@ -739,7 +743,7 @@ class Imagetype
                 Html::getInputText(
                     'imagetype_quality[new]', self::DEFAULT_QUALITY, false,
                     'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
             'CORE_IMAGETYPE_WIDTH_THUMB'     =>
                 Html::getInputText(
                     'imagetype_width_thumb[new]', self::DEFAULT_WIDTH_THUMB, false,
@@ -754,7 +758,7 @@ class Imagetype
                 Html::getInputText(
                     'imagetype_quality_thumb[new]', self::DEFAULT_QUALITY_THUMB, false,
                     'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
             'CORE_IMAGETYPE_FUNCTIONS' => '',
         ));
         $objTemplateLocal->parse('core_imagetype_data');

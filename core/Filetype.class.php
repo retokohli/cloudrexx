@@ -98,7 +98,7 @@ class Filetype
         global $objDatabase;
 
         $arrSqlName = Text::getSqlSnippets(
-            '`filetype`.`name_text_id`', FRONTEND_LANG_ID,
+            '`filetype`.`text_name_id`', FRONTEND_LANG_ID,
             0, self::TEXT_NAME
         );
         $query = "
@@ -206,7 +206,7 @@ class Filetype
     {
         $arrMimetypes = array();
         foreach (self::getImageExtensions() as $extension) {
-        	 $arrMimetypes[] = self::$arrExtensions2Mimetypes[$extension]['mimetype'];
+             $arrMimetypes[] = self::$arrExtensions2Mimetypes[$extension]['mimetype'];
         }
         return $arrMimetypes;
     }
@@ -286,6 +286,17 @@ class Filetype
 
 die("Filetype::errorHandler(): Disabled!<br />");
 
+        $objResult = $objDatabase->Execute("
+            ALTER TABLE `".DBPREFIX."core_filetype`
+            CHANGE `name_text_id` `text_name_id` INT(10) UNSIGNED NOT NULL DEFAULT 0");
+        if (!$objResult) return false;
+
+        $objResult = $objDatabase->Execute("
+            ALTER TABLE `".DBPREFIX."core_filetype`
+            ADD `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0 AFTER `id`");
+        if (!$objResult) return false;
+die("Filetype::errorHandler(): Fixed Filetype table");
+
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."core_filetype", $arrTables)) {
             // The table does exist, but causes errors!  So...
@@ -296,8 +307,9 @@ die("Filetype::errorHandler(): Disabled!<br />");
 
         $objResult = $objDatabase->Execute("
             CREATE TABLE `".DBPREFIX."core_filetype` (
-              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-              `name_text_id` INT UNSIGNED NOT NULL DEFAULT 0,
+              `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+              `ord` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `text_name_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
               `extension` VARCHAR(16) NULL COMMENT 'Extension without the leading dot',
               `mimetype` VARCHAR(32) NULL COMMENT 'Mime type',
               PRIMARY KEY (`id`),
@@ -431,7 +443,7 @@ echo("Filetype::errorHandler(): Failed to store Text for type $mimetype<br />");
             }
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_filetype` (
-                    `name_text_id`, `extension`, `mimetype`
+                    `text_name_id`, `extension`, `mimetype`
                 ) VALUES (
                     $text_id, '".addslashes($extension)."', '".addslashes($mimetype)."'
                 )");

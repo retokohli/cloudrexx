@@ -762,14 +762,19 @@ class Image
         if ($maxwidth == 0 && $maxheight == 0) return $size;
         if ($maxwidth == 0) $maxwidth = 1e9;
         if ($maxheight == 0) $maxheight = 1e9;
-        $ratio    = $size[0] / $size[1];
-        $maxratio = $maxwidth / $maxheight;
-        if ($ratio < $maxratio) {
-            $width = intval($maxheight*$ratio);
-            $height = $maxheight;
+        if ($size[0] && $size[1]) {
+            $ratio    = $size[0] / $size[1];
+            $maxratio = $maxwidth / $maxheight;
+            if ($ratio < $maxratio) {
+                $width = intval($maxheight*$ratio);
+                $height = $maxheight;
+            } else {
+                $width = $maxwidth;
+                $height = intval($maxwidth/$ratio);
+            }
         } else {
             $width = $maxwidth;
-            $height = intval($maxwidth/$ratio);
+            $height = $maxheight;
         }
         return array(
             $width, $height, null,

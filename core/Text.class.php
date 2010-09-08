@@ -525,6 +525,10 @@ class Text
                     return $objText;
                 }
             }
+            // Return "* Text missing *".
+            // In order to avoid this being shown, check either
+            // the id of the object returned, which is non-empty
+            // for any valid Text.
             return new Text(
                 $_CORELANG['TXT_CORE_TEXT_MISSING'],
                 $lang_id, null, $key, null
@@ -581,7 +585,11 @@ class Text
         $objText->setLanguageId($lang_id);
         if (isset($module_id)) $objText->module_id = intval($module_id);
         if (isset($key)) $objText->key = $key;
-        if (!$objText->store()) return false;
+//echo("Storing Text: ".var_export($objText, true)."<br />");
+        if (!$objText->store()) {
+//die("Text::replace($text_id, $lang_id, $strText, $module_id, $key): Error: failed to store Text<br />");
+            return false;
+        }
         return $objText->id;
     }
 
@@ -659,6 +667,11 @@ class Text
      * Note that the $lang_id parameter is mandatory and *MUST NOT* be
      * emtpy.  Any of $module_id, $key, $alias, or $text_ids may be false,
      * in which case they are ignored.
+     * IMPORTANT NOTE: For the time being, the $module_id is ignored entirely
+     * and thus not present in the resulting SQL at all!
+     * This allows the use of content from different modules to be shown
+     * on the same page, as this value is usually determined by the global
+     * MODULE_ID constant.  A proper solution is desired, though.
      * @static
      * @param       string      $field_id_name  The name of the text ID
      *                                          foreign key field
@@ -690,12 +703,14 @@ class Text
             ' LEFT JOIN `'.DBPREFIX.'core_text` as `'.$table_alias.'`'.
             ' ON `'.$table_alias.'`.`id`='.$field_id_name.
             ' AND `'.$table_alias.'`.`lang_id`='.$lang_id.
-            ($module_id !== false ? " AND `$table_alias`.`module_id`=$module_id"       : '').
+//            ($module_id !== false ? " AND `$table_alias`.`module_id`=$module_id"       : '').
+//            ($module_id ? " AND `$table_alias`.`module_id`=$module_id"       : '').
             ($key       !== false ? " AND `$table_alias`.`key`='".addslashes($key)."'" : '').
             ($text_ids  !== false ? " AND `$table_alias`.`id` IN ($text_ids)"          : '');
 //echo("Text::getSqlSnippets(): got name /$field_id_name/, made ");
             // Remove table name, dot and backticks, if any
-            $field_id_name = preg_replace('/(?:`\w*`\.`)?(\w+)`?/', '$1', $field_id_name);
+            $field_id_name = preg_replace(
+                '/(?:\`?\w*\`\.)?\`?(\w+)\`?/', '$1', $field_id_name);
 //echo("/$field_id_name/<br />");
         return array(
             'id'    => $field_id,
@@ -845,7 +860,7 @@ class Text
     {
         global $objDatabase;
 
- die("Text::errorHandler(): Disabled!<br />");
+//die("Text::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (!in_array(DBPREFIX."core_text", $arrTables)) {
