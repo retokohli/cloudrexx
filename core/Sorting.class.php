@@ -114,7 +114,10 @@ class Sorting
                 : $_REQUEST[$this->orderUriParameter]
             )
         );
-//echo("Sorting::__construct(baseUri=$baseUri, arrField=$arrField, flagDefaultAsc=$flagDefaultAsc):<br />made order: ".$this->getOrder()."<br />");
+//DBG::log("Sorting::__construct(): baseUri=$baseUri");
+//DBG::log("Sorting::__construct(): arrField=".var_export($arrField, true));
+//DBG::log("Sorting::__construct(): flagDefaultAsc=$flagDefaultAsc");
+//DBG::log("Sorting::__construct(): Made order: ".$this->getOrder());
     }
 
 
@@ -140,16 +143,52 @@ class Sorting
     }
 
 
-    function getUri()
+    /**
+     * Returns the base URI
+     *
+     * If the optional $field parameter contains any valid field name,
+     * the sorting and direction for that field is appended.
+     * @param   string    $field    The optional field name
+     * @return  string              The URI
+     */
+    function getUri($field=null)
     {
-        return $this->baseUri;
+        return
+// TODO:  Should $baseUri be urldecode()d?
+            $this->baseUri.
+            ($field && $this->arrField[$field]
+                ? '&'.$this->getOrderUriEncoded($field) : '');
     }
+
+
+    /**
+     * Returns the base URI with HTML entities encoded
+     *
+     * If the optional $field parameter contains any valid field name,
+     * the sorting and direction for that field is appended.
+     * @param   string    $field    The optional field name
+     * @return  string              The URI
+     */
+    function getUri_entities($field=null)
+    {
+        return
+            $this->baseUri.
+            ($field && $this->arrField[$field]
+                ? '&amp;'.$this->getOrderUriEncoded($field) : '');
+    }
+
+
+    /**
+     * Sets the base URI
+     * @param   string    $uri      The URI
+     */
     function setUri($uri)
     {
         // Remove the order parameter name argument from the base URI
         Html::stripUriParam($uri, $this->orderUriParameter);
         $this->baseUri = $uri;
     }
+
 
     /**
      * Returns an array of strings to display the table headers.
@@ -181,29 +220,51 @@ class Sorting
      */
     function getHeaderForField($field)
     {
-        global $_CORELANG;
 //echo("Sorting::getHeaderForField(fieldName=$field): field names: ".var_export($this->arrField, true)."<br />");
 
+        // The field may consist of the database field name
+        // enclosed in backticks, plus optional direction
+        $match = array();
+        if (preg_match('/^`?(\w+)`?[\s\+]?/i', $field, $match)) {
+            $field = $match[1];
+//DBG::log("Sorting::getHeaderForField(fieldName=$field): Fixed");
+        }
         if (empty($this->arrField[$field])) return '';
-        $orderDirectionString =
-            ($this->orderDirection == 'ASC'
-                ? $_CORELANG['TXT_CORE_SORTING_ASCENDING']
-                : $_CORELANG['TXT_CORE_SORTING_DESCENDING']
-            );
-        $orderDirectionImage =
-            '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/'.
-                strtolower($this->orderDirection).
-            '.png" border=0 alt="'.$orderDirectionString.
-            '" title="'.$orderDirectionString.'" />';
         $header = $this->arrField[$field];
         $strHeader =
             "<a href='$this->baseUri".
             $this->getOrderReverseUriEncoded($field).
             "'>$header".
-            ($this->orderField == $field ? "&nbsp;$orderDirectionImage" : '').
+            ($this->orderField == $field
+                ? '&nbsp;'.$this->getOrderDirectionImage() : '').
             '</a>';
 //echo("Sorting::getHeaderForField(fieldName=$field): made header: ".htmlentities($strHeader)."<br />");
         return $strHeader;
+    }
+
+
+    /**
+     * Returns an HTML img tag with the icon representing the current
+     * order direction
+     *
+     * Note that the decision where to include the icon or not must
+     * be made by the code calling.
+     * @return    string        The HTML img tag for the sorting direction icon
+     */
+    function getOrderDirectionImage()
+    {
+        global $_CORELANG;
+
+        $orderDirectionString =
+            ($this->orderDirection == 'ASC'
+                ? $_CORELANG['TXT_CORE_SORTING_ASCENDING']
+                : $_CORELANG['TXT_CORE_SORTING_DESCENDING']
+            );
+        return
+            '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/'.
+                strtolower($this->orderDirection).
+            '.png" border=0 alt="'.$orderDirectionString.
+            '" title="'.$orderDirectionString.'" />';
     }
 
 
@@ -218,9 +279,14 @@ class Sorting
      */
     function getOrder()
     {
+        $field = $this->orderField;
+        $match = array();
+        if (preg_match('/^`?(\w+)`?[\s\+]?/i', $field, $match)) {
+            $field = $match[1];
+        }
         // Better backquote all field names to avoid SQL errors on
         // reserved words
-        return "`$this->orderField` $this->orderDirection";
+        return "`$field` $this->orderDirection";
     }
 
 
@@ -231,10 +297,21 @@ class Sorting
      */
     function setOrder($order)
     {
-        list ($orderField, $orderDirection) = split(' ', $order);
+        $orderField     = 'invalid';
+        $orderDirection = 'invalid';
+        $match = array();
+        if (preg_match('/^`?(\w+)`?(?:[\s\+]+((?:a|de)sc))?/i', $order, $match)) {
+            $orderField     = $match[1];
+            $orderDirection = (isset($match[2]) ? $match[2] : '');
+//DBG::log("Sorting::setOrder($order): got $orderField / $orderDirection");
+        } else {
+            $orderField = key($this->arrField);
+//DBG::log("Sorting::setOrder($order): using default $orderField");
+        }
         // If the order field isn't in the list of accepted field names,
         // fall back to default
-        if (empty($this->arrField[$orderField])) {
+        if (   empty($this->arrField[$orderField])
+            && empty($this->arrField["$orderField $orderDirection"])) {
             $orderField = key($this->arrField);
         }
         switch ($orderDirection) {
@@ -247,6 +324,7 @@ class Sorting
         }
         $this->orderField     = $orderField;
         $this->orderDirection = $orderDirection;
+//DBG::log("Sorting::setOrder($order): setting $orderField / $orderDirection");
         $_SESSION['sorting'][$this->orderUriParameter] = $order;
     }
 
@@ -265,12 +343,15 @@ class Sorting
         if (!$field) {
             $field = $this->orderField;
         }
+        if (!preg_match('/^`?\w+`?[\s\+]+(?:a|de)sc/i', $field)) {
+            $field .= ' '.$this->orderDirection;
+        }
         return
 // TODO: I guess that it's better to leave it to another piece of code
 // whether to add '?' or '&'...?
             //'&amp;'.
             $this->orderUriParameter.
-            '='.urlencode("$field $this->orderDirection");
+            '='.urlencode($field);
     }
 
 
@@ -287,6 +368,10 @@ class Sorting
     {
         if (!$field) {
             $field = $this->orderField;
+        }
+        $match = array();
+        if (preg_match('/^`?(\w+)`?[\s\+]?/i', $field, $match)) {
+            $field = $match[1];
         }
         $orderDirectionReverse = $this->getOrderDirectionReverse();
         return
@@ -305,6 +390,20 @@ class Sorting
     function getOrderDirection()
     {
         return $this->orderDirection;
+    }
+    /**
+     * Set the sorting direction string
+     *
+     * $direction defaults to 'ASC' and may be left empty, or set
+     * to 'ASC' or 'DESC'.
+     * Any other value is ignored and the default used instead.
+     * @param   string    $direction    The optional order direction string
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function setOrderDirection($direction='ASC')
+    {
+        $this->orderDirection =
+            (strtoupper($direction) == 'DESC' ? 'DESC' : 'ASC');
     }
 
 
@@ -339,6 +438,19 @@ class Sorting
     function getOrderField()
     {
         return $this->orderField;
+    }
+
+
+    /**
+     * Returns the field array as provided to the constructor
+     * @return  array         The field array
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @see     __construct()
+     * @see     $arrField
+     */
+    function getFieldArray()
+    {
+        return $this->arrField;
     }
 
 }

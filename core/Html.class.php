@@ -101,6 +101,21 @@ class Html
     const ICON_FUNCTION_MARK_DELETED = 'images/icons/empty.gif';
 
     /**
+     * Icon used on the link for marking as special
+     */
+    const ICON_FUNCTION_SPECIAL_ON = 'images/icons/special_on.png';
+
+    /**
+     * Icon used on the link for marking as not special
+     */
+    const ICON_FUNCTION_SPECIAL_OFF = 'images/icons/special_off.png';
+
+    /**
+     * Icon used on the link for downloading a PDF document
+     */
+    const ICON_FUNCTION_DOWNLOAD_PDF = 'images/icons/pdf.gif';
+
+    /**
      * Icon used for red status
      */
     const ICON_STATUS_RED       = 'images/icons/status_red.gif';
@@ -124,6 +139,33 @@ class Html
      * Icon used for the unchecked status
      */
     const ICON_STATUS_UNCHECKED = 'images/icons/pixel.gif';
+
+    /**
+     * Icon used for Comments (with tooltip containing the text)
+     */
+    const ICON_COMMENT = 'images/icons/comment.gif';
+
+    /**
+     * Icon used for Notes (with tooltip containing the text)
+     */
+    const ICON_NOTE = 'images/icons/info.gif';
+
+    /**
+     * Icon used for gift text (with tooltip containing the text)
+     * Only for the hotelcard module
+     */
+    const ICON_GIFT = 'images/icons/gift.gif';
+
+    /**
+     * Icon used to indicate a link to details for the object.
+     * Only for the hotelcard module
+     */
+    const ICON_DETAILS = 'images/icons/details.gif';
+
+    /**
+     * Icon used for omitted icons (for aligning/formatting)
+     */
+    const ICON_BLANK = 'images/icons/blank.gif';
 
     /**
      * Index counter for all form elements
@@ -582,7 +624,7 @@ class Html
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getCheckboxGroup(
-        $name, $arrOptions, $arrLabel='', $arrChecked='', $id='',
+        $name, $arrOptions, $arrLabel='', $arrChecked='', $id=false,
         $onchange='', $separator='',
         $attributeCheckbox='', $attributeLabel=''
     ) {
@@ -595,7 +637,7 @@ class Html
         $name_stripped = preg_replace('/\[.*$/', '', $name);
         if (!is_array($arrLabel)) $arrLabel = array();
         if (!is_array($arrChecked)) $arrChecked = array();
-        if (empty($id)) $id = $name_stripped;
+        if (empty($id) && $id !== false) $id = $name_stripped;
         $checkboxgroup = '';
         foreach ($arrOptions as $key => $value) {
             if (empty($index[$name_stripped])) $index[$name_stripped] = 0;
@@ -704,7 +746,7 @@ class Html
             (preg_match('/alt\=/i', $attribute)
               ? '' : ' alt="'.$path.'"').
             ($attribute ? ' '.$attribute : '').
-            " />\n";
+            " />";
     }
 
 
@@ -1044,13 +1086,14 @@ class Html
      * @param   string    $attribute  The optional attributes
      * @param   string    $id         The optional ID returned by reference
      * @return  string                The datepicker element HTML code
+     * @internal  Ignore the code analyzer warning about $id
      */
-    static function getSelectDate($name, $value='', $attribute='', &$id=null)
+    static function getSelectDate($name, $value='', $attribute='', &$id='')
     {
         static $index = 0;
 
         JS::activate('datepicker');
-        $id = 'DPC_edit'.++$index.'_'.ASCMS_DATE_SHORT_FORMAT;
+        $id .= 'DPC_edit'.++$index.'_'.ASCMS_DATE_SHORT_FORMAT;
         return self::getInputText(
             $name, $value, $id, $attribute);
     }
@@ -1083,6 +1126,10 @@ class Html
      * and action is only taken if it is confirmed.
      * Note that in that case, the action parameter *MUST* be a valid
      * URI, *NOT* some javascript statement!
+     * Any icon's alt and title tag is fitted with the default core language
+     * entry whose index is formed like "TXT_CORE_HTML_" plus the function name
+     * in upper case, e.g. "TXT_CORE_HTML_DELETE".  This text may be overridden
+     * by entries in the $arrText array, indexed like $arrFunction.
      * //Also, the current CSRF key and value pair is added to any URI processed.
      * @param   array   $arrFunction      The array of functions and actions
      * @param   array   $arrConfirmation  The optional array with confirmation
@@ -1090,10 +1137,14 @@ class Html
      * @param   boolean $align_right      Align the function icons to the right
      *                                    using an enclosing <div> if true.
      *                                    Defaults to true
+     * @param   array   $arrText          Alternative/title text for the icons.
+     *                                    Defaults to null, in which case the
+     *                                    core language entry is used,
+     *                                    if present
      * @return  string                    The HTML code for the function column
      */
     static function getBackendFunctions(
-        $arrFunction, $arrConfirmation=false, $align_right=true
+        $arrFunction, $arrConfirmation=false, $align_right=true, $arrText=null
     ) {
         global $_CORELANG;
 
@@ -1127,6 +1178,24 @@ class Html
                 break;
               case 'mark_deleted':
                 $objImage->setPath(self::ICON_FUNCTION_MARK_DELETED);
+                break;
+              case 'special_on':
+                $objImage->setPath(self::ICON_FUNCTION_SPECIAL_ON);
+                break;
+              case 'special_off':
+                $objImage->setPath(self::ICON_FUNCTION_SPECIAL_OFF);
+                break;
+              case 'download_pdf':
+              case 'download_pdf_hotelcard':
+              case 'download_pdf_invoice':
+              case 'download_pdf_letter':
+                $objImage->setPath(self::ICON_FUNCTION_DOWNLOAD_PDF);
+                break;
+              case 'details':
+                $objImage->setPath(self::ICON_DETAILS);
+                break;
+              case 'gift':
+                $objImage->setPath(self::ICON_GIFT);
                 break;
               default:
                 continue 2;
@@ -1164,22 +1233,24 @@ class Html
             if (!empty($arrConfirmation[$function])) {
 // Ask for confirmation, then either run the JS or go to the target URI
                 $onclick =
-                    'if(confirm(\''.$arrConfirmation[$function].'\'))'.
+                    'if (confirm(\''.$arrConfirmation[$function].'\'))'.
                     ($onclick
                       ? $onclick
                       : 'window.location.replace(\''.$_uri.'\');');
 // No direct link to the target URI
                 $_uri = 'javascript:void(0);';
             }
+            $text = (isset($arrText[$function])
+                ? $arrText[$function]
+                : (isset($_CORELANG['TXT_CORE_HTML_'.strtoupper($function)])
+                    ? $_CORELANG['TXT_CORE_HTML_'.strtoupper($function)]
+                    : ''));
             $function_html .=
                 '<a href="'.$_uri.'"'.
                 ($onclick ? ' onclick="'.$onclick.'"' : '').'>'.
                 self::getImageOriginal(
-                    $objImage, 'border="0" alt="'.
-                    $_CORELANG['TXT_CORE_HTML_'.strtoupper($function)].
-                    '" title="'.
-                    $_CORELANG['TXT_CORE_HTML_'.strtoupper($function)].
-                    '"').'</a>';
+                    $objImage, 'border="0" alt="'.$text.
+                    '" title="'.$text.'"').'</a>';
         }
 //echo("Backend function: ".htmlentities($function_html)."<hr />");
 // No longer needed
@@ -1224,8 +1295,8 @@ class Html
             return '';
         }
 //echo("Html::getLed($status, $action): led is ".$objImage->getPath()."<br />");
-        $objImage->setWidth(10);
-        $objImage->setHeight(10);
+        $objImage->setWidth(11);
+        $objImage->setHeight(11);
         $led_html = self::getImageOriginal(
             $objImage,
             'border="0"'.($alt ? ' alt="'.$alt.'" title="'.$alt.'"' : ''));
@@ -1615,7 +1686,7 @@ alert("change: ID mismatch: "+id);
     static function stripUriParam(&$uri, $parameter_name)
     {
         $match = array();
-//echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): Entered<br />");
+//DBG::log("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): Entered");
 
         // Match the parameter *WITH* equal sign and value (possibly empty)
         $uri = preg_match_replace(
@@ -1654,35 +1725,36 @@ alert("change: ID mismatch: "+id);
      */
     static function replaceUriParameter(&$uri, $parameter)
     {
-//echo("Html::replaceUriParameter(".htmlentities($uri).", ".htmlentities($parameter)."): Entered<br />");
+//DBG::log("Html::replaceUriParameter($uri, $parameter): Entered");
         $match = array();
         // Remove script name and leading question mark, if any
         if (preg_match('/^.*\?(.+)$/', $parameter, $match)) {
 //        if (preg_match('/^(.*)\?(.+)$/', $parameter, $match)) {
 //            $bogus_index = $match[1];
             $parameter = $match[1];
-//echo("Html::replaceUriParameter(): Split parameter in bogus index /$bogus_index/ and parameter /".htmlentities($parameter)."/<br />");
+//DBG::log("Html::replaceUriParameter(): Split parameter in bogus index /$bogus_index/ and parameter /".htmlentities($parameter)."/");
         }
         $arrParts = preg_split('/\&(?:amp;)?/', $parameter, -1, PREG_SPLIT_NO_EMPTY);
 
-//echo("Html::replaceUriParameter(): parts: ".htmlentities(var_export($arrParts, true))."<br />");
+//DBG::log("Html::replaceUriParameter(): parts: ".var_export($arrParts, true));
         foreach ($arrParts as $parameter) {
-//echo("Html::replaceUriParameter(): processing parameter ".htmlentities($parameter)."<br />");
+//DBG::log("Html::replaceUriParameter(): processing parameter ".htmlentities($parameter));
 
             if (!preg_match('/^([^=]+)\=?(.*)$/', $parameter, $match)) {
-//echo("Html::replaceUriParameter(): skipped illegal parameter ".htmlentities($parameter)."<br />");
+//DBG::log("Html::replaceUriParameter(): skipped illegal parameter ".htmlentities($parameter));
                 continue;
             }
             self::stripUriParam($uri, $match[1]);
 //            $old = self::stripUriParam($uri, $match[1]);
-//echo("Html::replaceUriParameter(): stripped to ".htmlentities($uri).", removed ".htmlentities($old)."<br />");
+//DBG::log("Html::replaceUriParameter(): stripped to $uri, removed $old");
             $uri .=
                 (preg_match('/\?/', $uri) ? '&amp;' : '?').
                 $parameter;
-//echo("Html::replaceUriParameter(): added to ".htmlentities($uri)."<br />");
+//DBG::log("Html::replaceUriParameter(): added to $uri");
         }
 //        $uri = ($index ? $index.'?' : '&amp;').$uri;
-//echo("Html::replaceUriParameter(".htmlentities($uri).", ".htmlentities($parameter)."): Exiting<hr />");
+//DBG::log("Html::replaceUriParameter($uri, $parameter): Exiting");
+//die();
     }
 
 
@@ -1708,6 +1780,7 @@ alert("change: ID mismatch: "+id);
                 '$1',
                 $text
             );
+// TODO: I should probably wrap this in htmlentities()
             $text = sprintf(
                 $_CORELANG['TXT_CORE_HTML_ETC'],
                 htmlentities($text, ENT_QUOTES, CONTREXX_CHARSET));
@@ -1894,11 +1967,11 @@ if (!div_element) return; //alert("cannot find div "+div_id);
 
     if (active_suffix == i) {
       div_element.style.display = "block";
-      tab_element.setAttribute(\'class\', tab_element.className.replace(/(?:_active)?$/, "_active"));
+      tab_element.className = tab_element.className.replace(/(?:_active)?$/, "_active");
 //alert("opened");
     } else {
       div_element.style.display = "none";
-      tab_element.setAttribute(\'class\', tab_element.className.replace(/(?:_active)?$/, ""));
+      tab_element.className = tab_element.className.replace(/(?:_active)?$/, "");
 //alert("closed");
     }
   }
