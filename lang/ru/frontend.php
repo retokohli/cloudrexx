@@ -247,4 +247,7 @@ $_ARRAYLANG['TXT_CONNECT_SUISSEID_NO_CERT_FOUND'] = "Could not find a SuisseID."
 $_ARRAYLANG['TXT_CONNECT_DISABLED'] = "This site does not allow users to authenticate with ContrexxConnect.";
 $_ARRAYLANG['TXT_ELEARNING'] = "e-Learning";
 $_ARRAYLANG['TXT_ELEARNING_MODULE_DESCRIPTION'] = "e-Learning";
+$_ARRAYLANG['TXT_LOGIN_OPENID'] = "OpenID";
+$_ARRAYLANG['TXT_LOGIN_SUBMIT_OPENID'] = "Sign in with OpenID";
+$_ARRAYLANG['TXT_LOGIN_SIGN_UP'] = "Don't have an account? Sign up now.";
 ?>
