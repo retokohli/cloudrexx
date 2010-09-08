@@ -1,10 +1,10 @@
 <!-- START shop_categories.html -->
 <script language="javascript" type="text/javascript">
 // <![CDATA[
-function deleteCategory(catId)
+function deleteCategory(id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcat&id="+catId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcat&id="+id);
 }
 
 function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
@@ -82,7 +82,7 @@ function cancelEdit()
 </script>
 <ul id="tabmenu">
 <li><a id="categoryTab_shopContent1" class="{SHOP_CATEGORY_LIST_ACTIVE}" href="javascript:void(0);" onclick="selectTab('shopContent1')" title="{TXT_SHOP_CATEGORY_LIST}">{TXT_SHOP_CATEGORY_LIST}</a></li>
-<li><a id="categoryTab_shopContent2" class="{SHOP_CATEGORY_EDIT_ACTIVE}" href="javascript:void(0);" onclick="selectTab('shopContent2')" title="{TXT_SHOP_CATEGORY_EDIT}">{TXT_SHOP_CATEGORY_EDIT}</a></li>
+<li><a id="categoryTab_shopContent2" class="{SHOP_CATEGORY_EDIT_ACTIVE}" href="javascript:void(0);" onclick="selectTab('shopContent2')" title="{TXT_SHOP_CATEGORY_ADD_OR_EDIT}">{TXT_SHOP_CATEGORY_ADD_OR_EDIT}</a></li>
 </ul>
 <div id="shopContent1" class="categoryTab"
   style="display:{SHOP_CATEGORY_LIST_DISPLAY};">
@@ -90,7 +90,7 @@ function cancelEdit()
       action="index.php?cmd=shop{MODULE_INDEX}&amp;act=modAllCategories">
     <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
       <tr>
-        <th colspan="6">{TXT_ARTICLEGROUPS}:&nbsp;({TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES})</th>
+        <th colspan="6">{TXT_CATEGORIES}:&nbsp;({TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES})</th>
       </tr>
       <tr class="row2">
         <td width="01%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
@@ -111,7 +111,7 @@ function cancelEdit()
             alt="{SHOP_CAT_STATUS}" title="{SHOP_CAT_STATUS}" />
           &nbsp;&nbsp;
           {SHOP_CAT_LEVELSPACE}<input type="text"
-            name="catSorting[{SHOP_CAT_ID}]"
+            name="ord[{SHOP_CAT_ID}]"
             value="{SHOP_CAT_SORTING}" size="3" maxlength="4" />
           &nbsp;
           <b>
@@ -121,16 +121,16 @@ function cancelEdit()
             </a>
           </b>
           &nbsp;
-          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;catId={SHOP_CAT_ID}"
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;id={SHOP_CAT_ID}"
             title="{TXT_PREVIEW}">
             <img src="images/icons/details.gif"
               width="14" height="16" border="0"
               alt="{TXT_PREVIEW}" />
           </a>
           <input type="hidden" value="{SHOP_CAT_SORTING}"
-            name="catSorting_old[{SHOP_CAT_ID}]" />
+            name="ord_old[{SHOP_CAT_ID}]" />
           <input type="hidden" value="{SHOP_CAT_ID}"
-            name="catId[{SHOP_CAT_ID}]" />
+            name="id[{SHOP_CAT_ID}]" />
         </td>
         <!--td nowrap="nowrap">
           <input type="checkbox" name="catVirtual[{SHOP_CAT_ID}]"
@@ -146,7 +146,7 @@ function cancelEdit()
         </td>
         <td nowrap="nowrap">
           <div style="text-align:right;">
-            <a href="?cmd=shop{MODULE_INDEX}&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
+            <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
               title="{TXT_EDIT}">
               <img src="images/icons/edit.gif" alt="{TXT_EDIT}"
                 border="0" />

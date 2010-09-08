@@ -126,19 +126,125 @@ class Attributes
     }
 
 
+
     /**
+     * Returns an array of ProductAttribute objects
+     * @param   integer   $count            The number of matching records,
+     *                                      by reference
+     * @param   integer   $offset           The optional offset,
+     *                                      defaults to 0 (zero)
+     * @param   integer   $limit            The optional limit for the number
+     *                                      of IDs returned,
+     *                                      defaults to null (all)
+     * @param   string    $order            The optional order field and
+     *                                      direction,
+     *                                      defaults to ID, ascending
+     * @param   string    $filter           The optional filter to be applied
+     *                                      to the name, defaults to null (any)
+     * @return  array                       The array of ProductAttributes
+     *                                      on success, false otherwise
+     * @global  mixed     $objDatabase      The Database connection
+     */
+    static function getArray(
+        &$count, $offset=0, $limit=null, $order='`id` ASC', $filter=null
+    ) {
+        global $objDatabase;
+
+        $arrId = self::getIdArray(
+            $count, $offset, $limit, $order, $filter);
+        if ($arrId === false) return false;
+        $arrPa = array();
+        foreach ($arrId as $id) {
+            $objPa = Attribute::getById($id);
+            // This should never happen
+            if (!$objPa) {
+DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
+                --$count;
+                continue;
+            }
+            $arrPa[$id] = $objPa;
+        }
+        return $arrPa;
+    }
+
+
+    /**
+     * Returns an array of ProductAttribute IDs
+     * @param   integer   $count            The number of matching records,
+     *                                      by reference
+     * @param   integer   $offset           The optional offset,
+     *                                      defaults to 0 (zero)
+     * @param   integer   $limit            The optional limit for the number
+     *                                      of IDs returned,
+     *                                      defaults to null (all)
+     * @param   string    $order            The optional order field and
+     *                                      direction,
+     *                                      defaults to ID, ascending
+     * @param   string    $filter           The optional filter to be applied
+     *                                      to the name, defaults to null (any)
+     * @return  array                       The array of IDs on success,
+     *                                      false otherwise
+     * @global  mixed     $objDatabase      The Database connection
+     */
+    static function getIdArray(
+        &$count, $offset=0, $limit=null, $order='`id` ASC', $filter=null
+    ) {
+        global $objDatabase;
+
+        $arrSqlName = Text::getSqlSnippets(
+            '`name`.`text_name_id`', FRONTEND_LANG_ID,
+            MODULE_ID, Attribute::TEXT_NAME, 'name'
+        );
+        $query_count = "
+            SELECT COUNT(*) AS `numof`";
+        $query_select = "
+            SELECT `name`.`id`";
+        $query_from = "
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name` AS `name`".
+                   $arrSqlName['join'];
+        $query_where =
+            (empty($filter)
+              ? ''
+              : " WHERE `name` LIKE '%".addslashes($filter)."%'" );
+        $query_order = "
+             ORDER BY $order";
+        $count = 0;
+        if (empty($limit)) $limit = -1;
+        $objResult = $objDatabase->SelectLimit(
+            $query_select.$query_from.$query_where.$query_order,
+            $limit, $offset);
+        if (!$objResult) {
+            return false;
+        }
+        $arrId = array();
+        while (!$objResult->EOF) {
+            $arrId[] = $objResult->fields['id'];
+            $objResult->MoveNext();
+        }
+        $objResult = $objDatabase->Execute(
+            $query_count.$query_from.$query_where);
+        if (!$objResult) {
+            return false;
+        }
+        $count = $objResult->fields['numof'];
+        return $arrId;
+    }
+
+
+    /**
+     * OBSOLETE
      * Returns an array of all available Attribute data arrays
      *
      * This array contains no options, just the Attribute name and type.
      * It is the complete array created by {@see initAttributeArray(()}.
      * @return  array                 The Attribute array
-     */
     static function getArray()
     {
         if (   !is_array(self::$arrAttributes)
             && !self::initAttributeArray()) return false;
         return self::$arrAttributes;
     }
+     */
 
 
     /**
@@ -154,9 +260,9 @@ class Attributes
      *    ),
      *    ... more ...
      *  )
-     * Note that internal calling methods like getArray(() or
-     * getArrayById() make no use of the optional parameter, so that
-     * the full array is initialised on the first call.
+     * If you specify a valid $attribute_id parameter value, only that Attribute
+     * is initialized.  But note that the static array is not automatically
+     * cleared, so you can use it as a cache.
      * @param   integer   $attribute_id   The optional Attribute ID
      * @return  boolean                   True on success, false otherwise
      */

@@ -106,10 +106,10 @@ class Product
     private $id = 0;
     /**
      * The status is either active (true), or inactive (false).
-     * @var     boolean         $status             Product status
+     * @var     boolean         $active             Product active status
      * @access  private
      */
-    private $status = true;
+    private $active = true;
     /**
      * @var     string          $pictures           Product pictures
      * @access  private
@@ -251,7 +251,7 @@ class Product
      * @param   string  $name           The Product name
      * @param   string  $distribution   The Distribution type
      * @param   double  $price          The Product price
-     * @param   integer $status         The status of the Product (0 or 1)
+     * @param   integer $active         The active status
      * @param   integer $order          The sorting order
      * @param   integer $weight         The Product weight
      * @param   integer $id             The optional Product ID to be updated
@@ -260,7 +260,7 @@ class Product
      */
     function __construct(
         $code, $categoryId, $name, $distribution, $price,
-        $status, $order, $weight, $id=0
+        $active, $order, $weight, $id=0
     ) {
         // Assign & check
         $this->code         = strip_tags($code);
@@ -271,7 +271,7 @@ class Product
         $this->order = intval($order);
         $this->weight       = intval($weight);
         $this->id           = intval($id);
-        $this->setStatus($status);
+        $this->setActive($active);
 
         if ($this->order <= 0) { $this->order = 0; }
         // Default values for everything else as stated above
@@ -418,22 +418,22 @@ class Product
     }
 
     /**
-     * Get the status
-     * @return  boolean                             Status
+     * Get the active status
+     * @return  boolean                             Active status
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getStatus()
+    function getActive()
     {
-        return $this->status;
+        return $this->active;
     }
     /**
-     * Set the status
-     * @param   boolean         $status              Status
+     * Set the active status
+     * @param   boolean         $active              Active status
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setStatus($status)
+    function setActive($active)
     {
-        $this->status = ($status ? true : false);
+        $this->active = ($active ? true : false);
     }
 
     /**
@@ -1059,7 +1059,7 @@ class Product
                     $fileArr = array();
                     preg_match('/(.+)(\.\w+)$/', $strFileName, $fileArr);
                     $pictureName = $fileArr[1].$fileArr[2];
-                    $thumbName = $pictureName.'.thumb';
+                    $thumbName = $pictureName.ShopLibrary::thumbnailSuffix;
                     // Continue even if deleting the images fails
                     File::delete_file(ASCMS_PATH_OFFSET.'/'.$thumbName);
                     File::delete_file(ASCMS_PATH_OFFSET.'/'.$pictureName);
@@ -1175,7 +1175,7 @@ class Product
                 stock_visibility=".($this->isStockVisible ? 1 : 0).",
                 discountprice=$this->discountPrice,
                 is_special_offer=".($this->isSpecialOffer ? 1 : 0).",
-                status=".($this->status ? 1 : 0).",
+                active=".($this->active ? 1 : 0).",
                 b2b=".($this->isB2B ? 1 : 0).",
                 b2c=".($this->isB2C ? 1 : 0).",
                 startdate='$this->startDate',
@@ -1217,7 +1217,7 @@ class Product
                 normalprice, resellerprice,
                 text_shortdesc_id, text_longdesc_id,
                 stock, stock_visibility, discountprice, is_special_offer,
-                status,
+                active,
                 b2b, b2c, startdate, enddate,
                 manufacturer, external_link,
                 sort_order, vat_id, weight,
@@ -1235,7 +1235,7 @@ class Product
                 ($this->isStockVisible ? 1 : 0).",
                 $this->discountPrice, ".
                 ($this->isSpecialOffer ? 1 : 0).", ".
-                ($this->status ? 1 : 0).", ".
+                ($this->active ? 1 : 0).", ".
                 ($this->isB2B ? 1 : 0).", ".
                 ($this->isB2C ? 1 : 0).",
                 '$this->startDate', '$this->endDate',
@@ -1286,7 +1286,7 @@ class Product
         );
         $query = "
             SELECT `id`, `product_id`, `catid`,
-                   `sort_order`, `status`, `weight`, `picture`,
+                   `sort_order`, `active`, `weight`, `picture`,
                    `normalprice`, `resellerprice`, `discountprice`, `is_special_offer`,
                    `stock`, `stock_visibility`,
                    `handler`, `startdate`, `enddate`, `manufacturer`,
@@ -1307,8 +1307,8 @@ class Product
             $objResult->fields[$arrSqlName['text']],
             $objResult->fields['handler'],
             $objResult->fields['normalprice'],
-            $objResult->fields['status'],
-            $objResult->fields['sort_order'],
+            $objResult->fields['active'],
+            $objResult->fields['ord'],
             $objResult->fields['weight'],
             $objResult->fields['id']
         );

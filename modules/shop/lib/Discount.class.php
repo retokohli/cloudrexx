@@ -1198,7 +1198,6 @@ class Coupon
 
         if (empty($code)) return false;
 
-//DBG::activate(DBG_ADODB);
         $query = "
             DELETE FROM `".DBPREFIX."module_shop_rel_customer_coupon`
              WHERE `code`='".addslashes($code)."'";
@@ -1223,7 +1222,6 @@ class Coupon
             $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_DELETED_SUCCESSFULLY'],
             $code
         );
-//DBG::deactivate(DBG_ADODB);
         return true;
     }
 

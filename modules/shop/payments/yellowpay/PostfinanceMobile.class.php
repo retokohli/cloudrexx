@@ -68,7 +68,7 @@ class PostfinanceMobile
 
         if (!isset($ijustwanttotest))
             $ijustwanttotest =
-                Settings::getValueByName('postfinance_mobile_ijustwanttotest');
+                SettingDb::getValue('postfinance_mobile_ijustwanttotest');
         if (empty($amount)) {
             self::$arrError[] = sprintf(
                 $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_INVALID_AMOUNT'],
@@ -88,12 +88,12 @@ class PostfinanceMobile
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_FAILED_TO_DETERMINE_ACTIVE_CURRENCY'];
             return false;
         }
-        $webuser = Settings::getValueByName('postfinance_mobile_webuser');
+        $webuser = SettingDb::getValue('postfinance_mobile_webuser');
         if (empty($webuser)) {
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_FAILED_TO_DETERMINE_WEBUSER'];
             return false;
         }
-        $sign = Settings::getValueByName('postfinance_mobile_sign');
+        $sign = SettingDb::getValue('postfinance_mobile_sign');
         if (empty($sign)) {
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_FAILED_TO_DETERMINE_SIGNATURE'];
             return false;
@@ -206,7 +206,7 @@ a successful payment.  Any other numbers will produce a failed transaction.
             self::$arrError[] = $_ARRAYLANG['TXT_SHOP_POSTFINANCE_MOBILE_ERROR_MISSING_SIGN'];
             return false;
         }
-        $sign     = Settings::getValueByName('postfinance_mobile_sign');
+        $sign     = SettingDb::getValue('postfinance_mobile_sign');
         $state    = $_POST['state'];
         if ($state != 'success') return false;
         $amount   = $_POST['amount'];

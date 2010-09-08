@@ -129,7 +129,7 @@ function DeleteImg(ImgID)
 function MakeExport(groupCode)
 {
   if (confirm("{TXT_SHOP_EXPORT_WARNING}")) {
-    document.location = "?cmd=shop{MODULE_INDEX}&act=import&group="+groupCode;
+    document.location = "index.php?cmd=shop{MODULE_INDEX}&act=import&group="+groupCode;
   }
 }
 
@@ -300,7 +300,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <!-- BEGIN imgRow -->
     <tr class="{CLASS_NAME}">
       <td>{IMG_NAME}</td>
-      <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a></div></td>
+      <td><div style="text-align:right;"><a href="javascript:DeleteImg({IMG_ID});"><img src="images/icons/delete.gif" border="0" alt="{TXT_SHOP_IMPORT_DELETE}" title="{TXT_SHOP_IMPORT_DELETE}" /></a></div></td>
     </tr>
     <!-- END imgRow -->
   </table>

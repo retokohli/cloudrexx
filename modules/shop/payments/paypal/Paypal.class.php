@@ -140,7 +140,7 @@ class PayPal
      */
     static function getBusiness()
     {
-        return Settings::getValueByName('paypal_account_email');
+        return SettingDb::getValue('paypal_account_email');
     }
 
 

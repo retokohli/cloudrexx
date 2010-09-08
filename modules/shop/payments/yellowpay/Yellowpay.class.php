@@ -254,9 +254,9 @@ class Yellowpay
         $arrShopOrder, $submitValue='send', $autopost=false
     ) {
         $strAcceptedPaymentMethods =
-            Settings::getValueByName('yellowpay_accepted_payment_methods');
+            SettingDb::getValue('postfinance_accepted_payment_methods');
         self::$strAuthorization =
-            Settings::getValueByName('yellowpay_authorization_type');
+            SettingDb::getValue('postfinance_authorization_type');
         // There needs to be at least one accepted payment method,
         // if there is none, accept all.
         if (!empty($strAcceptedPaymentMethods)) {
@@ -300,7 +300,7 @@ class Yellowpay
 //            '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
 // CURRENT Postfinance E-Commerce URI
             'action="https://e-payment.postfinance.ch/ncol/'.
-            (Settings::getValueByName('yellowpay_use_testserver') ? 'test' : 'prod').
+            (SettingDb::getValue('postfinance_use_testserver') ? 'test' : 'prod').
             '/orderstandard.asp"'.
             ">\n";
 /*
@@ -352,14 +352,14 @@ class Yellowpay
      *
      * Concatenates the values of the fields
      *  orderID, amount, currency, PSPID
-     * plus the secret taken from the 'yellowpay_hash_seed' setting
+     * plus the secret taken from the 'postfinance_hash_signature_in' setting
      * and computes the SHA1 hash.
      * Fails if one or more of the needed values are empty.
      * @return  boolean         True on success, false otherwise
      */
     private static function addHash()
     {
-        $seed = Settings::getValueByName('yellowpay_hash_signature_in');
+        $seed = SettingDb::getValue('postfinance_hash_signature_in');
         if (   empty(self::$arrShopOrder['orderID'])
             || empty(self::$arrShopOrder['amount'])
             || empty(self::$arrShopOrder['currency'])
@@ -577,7 +577,7 @@ class Yellowpay
             }
             $hash_string .= $_GET[$key];
         }
-        $hash_string .= Settings::getValueByName('yellowpay_hash_signature_out');
+        $hash_string .= SettingDb::getValue('postfinance_hash_signature_out');
         $hash = strtoupper(sha1($hash_string));
         if ($_GET['SHASIGN'] == $hash) {
             return true;

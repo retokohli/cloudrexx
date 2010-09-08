@@ -59,14 +59,7 @@ class ShopLibrary
 {
     const noPictureName = 'no_picture.gif';
     const thumbnailSuffix = '.thumb';
-
-    /**
-     * @todo These class variable *SHOULD* be initialized in the constructor,
-     * otherwise it makes no sense to have them as class variables
-     * -- unless they are indeed treated as public, which is dangerous.
-     * Someone might try to access them before they are set up!
-     */
-    public $arrConfig = array();
+    const usernamePrefix = 'user';
 
     /**
      * Array of all countries
@@ -236,40 +229,6 @@ class ShopLibrary
         }
         $menu .= "</select>\n";
         return $menu;
-    }
-
-
-    /**
-     * Initialize the shop configuration array
-     *
-     * The array created contains all of the common shop settings.
-     * @global  $objDatabase    Database object
-     * @return                  True on success, false otherwise
-     */
-    function _initConfiguration()
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT id, name, value, status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config";
-        $objResult = $objDatabase->Execute($query);
-        $this->arrConfig = array();
-        if (!$objResult) return false;
-        while (!$objResult->EOF) {
-            $this->arrConfig[$objResult->fields['name']] = array(
-                'id'     => $objResult->fields['id'],
-                'value'  => $objResult->fields['value'],
-                'status' => $objResult->fields['status'],
-            );
-            $objResult->MoveNext();
-        }
-        $this->arrConfig['js_cart'] = array(
-            'id'     => 9999,
-            'value'  => '',
-            'status' => '0',
-        );
-        return true;
     }
 
 
@@ -503,8 +462,8 @@ class ShopLibrary
      */
     function scaleImageSizeToThumbnail(&$arrSize)
     {
-        $thumbWidthMax = $this->arrConfig['shop_thumbnail_max_width']['value'];
-        $thumbHeightMax = $this->arrConfig['shop_thumbnail_max_height']['value'];
+        $thumbWidthMax = SettingDb::getValue('thumbnail_max_width');
+        $thumbHeightMax = SettingDb::getValue('thumbnail_max_height');
         $ratioWidth = $thumbWidthMax/$arrSize[0];
         $ratioHeight = $thumbHeightMax/$arrSize[1];
         if ($ratioWidth > $ratioHeight) {
@@ -667,7 +626,7 @@ class ShopLibrary
      * The enclosing <select> tag is only added if the $menuName argument
      * is non-empty.  If that is empty, however, an additional header
      * option is added.  See {@link getOrderStatusMenuoptions()} for details.
-     * @param   string  $selectedId     Optional preselected status ID
+     * @param   string  $selected       Optional selected status
      * @param   string  $menuName       Optional menu name
      * @param   string  $onchange       Optional onchange callback function
      * @return  string  $menu           The dropdown menu string
@@ -818,21 +777,20 @@ class ShopLibrary
         $customer_id = $arrSubstitution['CUSTOMER_ID'];
         $objCustomer = Customer::getById($customer_id);
         if (!$objCustomer) {
-die("Failed to get Customer for ID $customer_id");
+//die("Failed to get Customer for ID $customer_id");
             $return = false;
         } else {
             $arrSubstitution += $objCustomer->getSubstitutionArray();
 //die("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_export($arrSubstitution, true));
         }
         if (empty($arrSubstitution)) $return = false;
-        $lang_id = $arrSubstitution['LANG_ID'];
         // Prepared template for order confirmation
         $arrMailtemplate = array(
             'key'     => 1,
             'lang_id' => $arrSubstitution['LANG_ID'],
             'to'      =>
                 $arrSubstitution['CUSTOMER_EMAIL'].','.
-                Settings::getValueByName('confirmation_emails'),
+                SettingDb::getValue('email_confirmation'),
             'substitution' => &$arrSubstitution,
         );
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Template: ".var_export($arrMailtemplate, true));
