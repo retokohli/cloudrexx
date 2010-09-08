@@ -72,6 +72,10 @@ function addFormField() {
     
     var copy = divToCopy.clone(true);
     $J(copy).attr('id', 'formField_' +formFieldNumber);
+	//Increment the Form Feild ID to Display
+	$J(copy).find('#formfieldid').html(parseInt($J(copy).find('#formfieldid').html()) + 1);
+	//Alter the Row classname to change background color
+	$J(copy).toggleClass('row1 row2');
 	
     $J('#formFields').append(copy);
 
@@ -94,23 +98,17 @@ function addFormField() {
     $J(copy).find('td').each(
     	function(key, elem) {
             var className = $J(elem).attr('class');
-            // do the class too
-            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
-        }
-    );
-    
-    //Increment the span name of td on add each new fieldform
-    $J(copy).find('span').each(
-    	function(key, elem) {
             var id = $J(elem).attr('id');
             // do the class too
+            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            // do the id too
             $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
         }
     );
     
     /**
-    	set the value of field type select wiyh the value of 
-    	the previous form filed type select on adding new formfield 
+    	set the value of field type select with the value of 
+    	the previous form field type select on adding new formfield 
     */
    	$J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +(formFieldNumber-1)).val());
 
@@ -124,7 +122,8 @@ function addFormField() {
 function removeFormField(obj) {
     // at least one field has to be there
     if ($J('.formField').size() > 1) {
-        var remObj = $J($J($J(obj).parent()).parent()).parent();
+        //var remObj = $J($J($J(obj).parent()).parent()).parent();
+        var remObj = $J($J(obj).parent()).parent();
         $J(remObj).remove();
     }
 }
@@ -138,14 +137,23 @@ function setFormFieldAttributeBox(el, type, langId)
 {
     elId = el.substr(21);
     elField = $J('.contactFormFieldAttributeBox_'+elId);
-	
+
+	languages = langId.split('-');
 	elField.html('');    
 
 	//Change the value fields dynamically with respect to type field
 	if($J('#formField'+type+'Attribute_0').length > 0 && 'formField'+type+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
-		$J(elField).each(function (index, domEle){
-			$J(domEle).html($J('#formField'+type+'Attribute_0').html());
-			$J(domEle).children(0).attr('name', 'contactFormFieldValue['+elId+']['+langId.split('-')[index]+']');
+		$J.each(languages, function( intIndex, objValue ){
+			if(objValue == 1){ langname = "de"; }
+			else if(objValue == 2){ langname = "en"; }
+			else if(objValue == 3){ langname = "fr"; }
+			else if(objValue == 4){ langname = "it"; }
+			else if(objValue == 5){ langname = "dk"; }
+			else if(objValue == 6){ langname = "ru"; }
+				
+			$J('.contactFormFieldAttributeBox_'+elId).append($J('#formField'+type+'Attribute_0').html());
+			$J('.contactFormFieldAttributeBox_'+elId+' input').last().attr('name', 'contactFormFieldValue['+elId+']['+objValue+']');
+			$J('.contactFormFieldAttributeBox_'+elId+' input').last().css("background-image", "url(images/flags/flag_"+langname+".gif)");
 		});
 	} else {
 		//For Checkbox only one instance of select box is enough
@@ -273,8 +281,24 @@ function langTab(id) {
 }
 
 $J(document).ready(function() {
-    $J('#formFields').sortable();
+    $J('#formFields tbody').sortable();
     $J('#formRecipientContainer tbody').sortable();
+    
+    $J('.expandlink').css('display','none');
+/*    $J('.collapselink').click(function(){
+    	$J(this).css('display','none');
+    	$J(this).parent().find('.expandlink').css('display','block');
+    	$J(this).parent().parent().find('.formLanguageBlock').css('visibility','hidden');
+    	$J(this).parent().parent().find('.formNameBlock').css('visibility','hidden');
+    	$J(this).parent().parent().find('.formValueBlock').css('visibility','hidden');
+    });
+    $J('.expandlink').click(function(){
+	    $J(this).css('display','none');
+    	$J(this).parent().find('.collapselink').css('display','block');
+    	$J(this).parent().parent().find('.formLanguageBlock').css('visibility','visible');
+    	$J(this).parent().parent().find('.formNameBlock').css('visibility','visible');
+    	$J(this).parent().parent().find('.formValueBlock').css('visibility','visible');
+    });*/
 });
 
 /**
@@ -405,51 +429,59 @@ function deleteRecipientRow(obj) {
 </div>
 
 <div id="tab_fields" class="tabs" style="display: none;">
-    <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+    <table id="formFields" border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
         <tr>
-            <th colspan="2">{CONTACT_FORM_FIELDS_TITLE}</th>
+            <th colspan="10">{CONTACT_FORM_FIELDS_TITLE}</th>
         </tr>
+
+	    <tr class="row3">
+	    	<td&nbsp;><td>
+	        <td><strong>{TXT_CONTACT_ID}</strong></td>
+	        <td><strong>{TXT_CONTACT_FIELD_NAME}</strong></td>
+	        <td><strong>{TXT_CONTACT_TYPE}</strong></td>
+	        <td><strong>{TXT_CONTACT_VALUE_S}</strong></td>
+	        <td><strong>{TXT_CONTACT_VALIDATION}</strong></td>
+	        <td><strong>{TXT_CONTACT_MANDATORY_FIELD}</strong></td>
+	        <td colspan='2'></td>
+	        <td><strong>{TXT_CONTACT_ACTION}</strong></td>
+	    </tr>
+	    
+	    <!-- BEGIN formField -->
+	    <tr id="formField_{FORM_FIELD_ID}" class="formField {ROW_CLASS_NAME}" valign="top">
+			<td class="sort-handle"><input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" /></td>
+			<td id="formfieldid">{FORM_FIELD_ID}</td>	    	
+			<td class='formNameBlock'>
+				<!-- BEGIN formFieldName -->
+				<input type="text" name="contactFormFieldName[{FORM_FIELD_ID}][{FORM_FIELD_ROW_LANG_ID}]" 
+				value="{FORM_FIELD_NAME}" class="formFieldElementsLang" style="width: 200px;background:url(images/flags/flag_{FORM_FIELD_ROW_LANG_NAME}.gif) no-repeat 2px center;padding-left:18px;"/><br/>
+				<!-- END formFieldName -->
+			</td>
+			<td>{CONTACT_FORM_FIELD_TYPE_MENU}</td>
+			<td class="formValueBlock contactFormFieldAttributeBox_{FORM_FIELD_ID}">
+				<!-- BEGIN formFieldValue -->
+				{CONTACT_FORM_FIELD_VALUE_FIELD}<br/>
+				<!-- END formFieldValue -->
+			</td>
+			<td id="contactFormFieldCheckMenu_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_MENU}</td>
+			<td id="contactFormFieldCheckBox_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_BOX}</td>
+			<td class='formLanguageBlock'>
+				<!-- BEGIN formFieldLanguage -->
+				<div style="padding:3px 0px;">{FORM_FIELD_ROW_LANG}</div>
+				<!-- END formFieldLanguage -->
+			</td>	
+			<td valign='bottom'>
+				<a class='expandlink' href="#" title="Erweitert &gt;&gt;">Erweitert&gt;&gt;</a>
+				<a class='collapselink' href="#" title="&lt;&lt; Vereinfacht">&lt;&lt;Vereinfacht</a>
+			</td>
+			<td>
+				<a id="removeLink_1" href="#" onclick="removeFormField(this)">
+					<img border="0" title="Delete" alt="Delete" src="images/icons/delete.gif">
+				</a>
+			</td>
+	    </tr>
+	    <!-- END formField -->
     </table>
     <br />
-
-    <div id="formFields">
-    <!-- BEGIN formField -->
-        <div class="formField"  id="formField_{FORM_FIELD_ID}" style="background-color: white;">
-            <input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" />
-            <div style="border: 1px solid #DDE4FF; padding: 10px; position: relative">
-                <div style="position: absolute; right: 10px; top: 3px;">
-                    <a id="removeLink_1" href="#" onclick="removeFormField(this)">X</a>
-                </div>
-                <table width="100%">
-                    <tr>
-                        <th style="width: 20%">{TXT_LANGUAGE}</th>
-                        <th style="width: 40%">{TXT_NAME}</th>
-                        <th style="width: 40%">{TXT_VALUES}</th>
-                    </tr>
-                    <!-- BEGIN formFieldRow -->
-                    <tr>
-                        <td>{FORM_FIELD_ROW_LANG}</td>
-                        <td>
-                            <input type="text" name="contactFormFieldName[{FORM_FIELD_ID}][{FORM_FIELD_ROW_LANG_ID}]" 
-                                value="{FORM_FIELD_NAME}"
-                                class="formFieldElementsLang" style="width: 100%"/>
-                        </td>
-                       	<!-- added class name to td -->
-                        <td class="contactFormFieldAttributeBox_{FORM_FIELD_ID}">
-                            {CONTACT_FORM_FIELD_VALUE_FIELD}
-                        </td>
-                    </tr>
-                    <!-- END formFieldRow -->
-                </table>
-                <!--
-                	added two span with ids to hide/show mandatory checkbox and type select box
-                -->
-                {TXT_TYPE}: {CONTACT_FORM_FIELD_TYPE_MENU} <span id='contactFormFieldCheckBox_{FORM_FIELD_ID}'>{FORM_FIELD_CHECK_BOX}</span> <span id='contactFormFieldCheckMenu_{FORM_FIELD_ID}'>{TXT_MANDATORY_FIELD} {FORM_FIELD_CHECK_MENU}</span>
-            </div>
-            <br />
-        </div>
-    <!-- END formField -->
-    </div>
 
     <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" id="addFieldButton"/>
 </div>

@@ -788,43 +788,51 @@ class ContactManager extends ContactLib
             $realFieldID = ($formId > 0) ? $fieldID : $counter;
 
 			/**
-				ss4u change
-				For copying a template, the edittype of the field must be 'new'
+				While copying a template, the edittype of the field must be 'new'
 			*/
 			if($copy){
 				$field['editType'] = 'new';
 			}
 			/**
-				ss4u change
 				Pass Frontend active languages array to javascript function
 			*/
-			$jsActiveLang =  "";
+			$jsActiveLang = "";
 			
             foreach ($activeLanguages as $lang) {
+            	/**
+				* Places the flag corresponding to the language in name and value field
+				*/
+				if($lang['id'] == 1){ $langname = "de"; }
+				else if($lang['id'] == 2){ $langname = "en"; }
+				else if($lang['id'] == 3){ $langname = "fr"; }
+				else if($lang['id'] == 4){ $langname = "it"; }
+				else if($lang['id'] == 5){ $langname = "dk"; }
+				else if($lang['id'] == 6){ $langname = "ru"; }
+
                 $this->_objTpl->setVariable(
                     array(
                         'FORM_FIELD_ROW_LANG_ID'    => $lang['id'],
-                        'FORM_FIELD_ROW_LANG'       => $lang['name'],
-                        'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
-                        'TXT_NAME'                  => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
-                        'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
-                        'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
-                        'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
-                        'FORM_FIELD_ID'             => $realFieldID, 
+                        'FORM_FIELD_ROW_LANG'       => $lang['name'], 
+                        'FORM_FIELD_ROW_LANG_NAME'  => $langname, 
                         'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['value'],
                         'FORM_FIELD_NAME'           => $field['lang'][$lang['id']]['name'],
                         'CONTACT_FORM_FIELD_VALUE_FIELD' => $this->_getFormFieldAttribute(
    		            		$realFieldID,
 	                        $field['type'],
-	                        $lang['id'],
-		            		$field['lang'][$lang['id']]['value']
+		            		$field['lang'][$lang['id']]['value'],
+		            		$lang['id']
 	            		)
                     )
                 );
                 $jsActiveLang .= $lang['id']."-";
-                $this->_objTpl->parse('formFieldRow');
+                $this->_objTpl->parse('formFieldName');
+                $this->_objTpl->parse('formFieldValue');
+                $this->_objTpl->parse('formFieldLanguage');
             }
-
+			
+			// Remove the - from end of the string
+			$jsActiveLang = rtrim($jsActiveLang, "-");
+			
             $this->_objTpl->setVariable(
                 array(
                     'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
@@ -846,8 +854,17 @@ class ContactManager extends ContactLib
                         $field['type'],
                         $field['check_type']
                     ),
+	                'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
+                    'TXT_NAME'                  => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
+                    'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
+                    'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
+                    'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
+                    'TXT_CONTACT_VALIDATION'	=> $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
+                    'TXT_CONTACT_ACTION'		=> $_ARRAYLANG['TXT_CONTACT_ACTION'],
                     'FORM_FIELD_ID'             => $realFieldID,
-                    'FORM_FIELD_TYPE'           => $field['editType']
+                    'FORM_FIELD_ID'             => $realFieldID,
+                    'FORM_FIELD_TYPE'           => $field['editType'],
+                    'ROW_CLASS_NAME'			=> 'row'.(($realFieldID%2 == 0)?'1':'2')
                 )
             );
 
@@ -1002,7 +1019,7 @@ class ContactManager extends ContactLib
     }
 
 	// added langid as new parameter to support multi-lang
-    function _getFormFieldAttribute($id, $type, $langid = 1, $attr)
+    function _getFormFieldAttribute($id, $type, $attr, $langid = 1)
     {
         global $_ARRAYLANG;
 
@@ -1016,18 +1033,28 @@ class ContactManager extends ContactLib
 			$count = 0;
 		}
 		$previd = $id;
+		
+		/**
+		* Places the flag corresponding to the language
+		*/
+		if($langid == 1){ $langname = "de"; }
+		else if($langid == 2){ $langname = "en"; }
+		else if($langid == 3){ $langname = "fr"; }
+		else if($langid == 4){ $langname = "it"; }
+		else if($langid == 5){ $langname = "dk"; }
+		else if($langid == 6){ $langname = "ru"; }
 
         switch ($type) {
         case 'text':
         case 'hidden':
 		case 'label':
-            return "<input style=\"width:100%;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
+            return "<input style=\"width:350px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center; padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
             break;
 
         case 'checkbox':
 			if($count == 0){
 				$count = 1;
-		        return "<select style=\"width:100%;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
+		        return "<select style=\"width:370px;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
 		                    <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
 		                    <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
 		                </select>";
@@ -1039,7 +1066,7 @@ class ContactManager extends ContactLib
         case 'checkboxGroup':
         case 'select':
         case 'radio':
-            return "<input style=\"width:93%;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
+            return "<input style=\"width:330px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center;padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
             break;
 
         default:
