@@ -596,7 +596,7 @@ class ContactManager extends ContactLib
      */
     function _modifyForm($copy = false)
     {
-        global $_ARRAYLANG, $_CONFIG, $objDatabase;
+        global $_ARRAYLANG, $_CONFIG, $objDatabase, $objInit;
 
         JS::activate('jquery-ui');
 
@@ -640,7 +640,6 @@ class ContactManager extends ContactLib
             $this->_objTpl->parse('languageTabs');
             $langVars = &$this->arrForms[$formId]['lang'][$langID];
             if (isset($langVars)) {
-
                 $formText       = $langVars['text'];
                 $formFeedback   = $langVars['feedback'];
                 $formSubject    = $langVars['subject'];
@@ -800,7 +799,7 @@ class ContactManager extends ContactLib
 			
             foreach ($activeLanguages as $lang) {
             	/**
-				* Places the flag corresponding to the language in name and value field
+				* Places the flag corresponding to the language name and value field
 				*/
 				if($lang['id'] == 1){ $langname = "de"; }
 				else if($lang['id'] == 2){ $langname = "en"; }
@@ -830,7 +829,7 @@ class ContactManager extends ContactLib
                 $this->_objTpl->parse('formFieldLanguage');
             }
 			
-			// Remove the - from end of the string
+			// Remove the '-' from end of the string[Last element]
 			$jsActiveLang = rtrim($jsActiveLang, "-");
 			
             $this->_objTpl->setVariable(
@@ -854,6 +853,13 @@ class ContactManager extends ContactLib
                         $field['type'],
                         $field['check_type']
                     ),
+                    'FORM_FIELD_GLOBAL_NAME'		=> $field['lang'][$objInit->userFrontendLangId]['name'],
+                    'CONTACT_FORM_FIELD_GLOBAL_VALUE_FIELD' => $this->_getFormFieldAttribute(
+   		            		$realFieldID,
+	                        $field['type'],
+		            		$field['lang'][$objInit->userFrontendLangId]['value'],
+		            		0
+	            	),
 	                'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
                     'TXT_NAME'                  => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
                     'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
@@ -861,6 +867,8 @@ class ContactManager extends ContactLib
                     'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
                     'TXT_CONTACT_VALIDATION'	=> $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
                     'TXT_CONTACT_ACTION'		=> $_ARRAYLANG['TXT_CONTACT_ACTION'],
+                    'TXT_ADVANCED_VIEW'			=> $_ARRAYLANG['TXT_ADVANCED_VIEW'],
+                    'TXT_SIMPLIFIED_VIEW'		=> $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
                     'FORM_FIELD_ID'             => $realFieldID,
                     'FORM_FIELD_ID'             => $realFieldID,
                     'FORM_FIELD_TYPE'           => $field['editType'],
@@ -1019,7 +1027,7 @@ class ContactManager extends ContactLib
     }
 
 	// added langid as new parameter to support multi-lang
-    function _getFormFieldAttribute($id, $type, $attr, $langid = 1)
+    function _getFormFieldAttribute($id, $type, $attr, $langid = 0)
     {
         global $_ARRAYLANG;
 
@@ -1029,7 +1037,7 @@ class ContactManager extends ContactLib
 		* for any number of active front languages
 		*/
 		static $previd = 0, $count = 0;
-		if($previd != $id){
+		if($previd != $id || ($previd == $id && $langid == 0)){
 			$count = 0;
 		}
 		$previd = $id;
@@ -1043,18 +1051,19 @@ class ContactManager extends ContactLib
 		else if($langid == 4){ $langname = "it"; }
 		else if($langid == 5){ $langname = "dk"; }
 		else if($langid == 6){ $langname = "ru"; }
+		else if($langid == 0){ $langname = ""; }
 
         switch ($type) {
         case 'text':
         case 'hidden':
 		case 'label':
-            return "<input style=\"width:350px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center; padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
+            return "<input style=\"width:308px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center #FFFFFF; padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
             break;
 
         case 'checkbox':
 			if($count == 0){
 				$count = 1;
-		        return "<select style=\"width:370px;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
+		        return "<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
 		                    <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
 		                    <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
 		                </select>";
@@ -1066,7 +1075,7 @@ class ContactManager extends ContactLib
         case 'checkboxGroup':
         case 'select':
         case 'radio':
-            return "<input style=\"width:330px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center;padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
+            return "<input style=\"width:308px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center #FFFFFF;padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
             break;
 
         default:
@@ -1157,7 +1166,7 @@ class ContactManager extends ContactLib
 
             // do the fields
             $fields = $this->_getFormFieldsFromPost();
-
+            
             $formFieldIDs = array();
             foreach ($fields as $field) {
                 if ($field['editType'] == 'new') {
@@ -1418,6 +1427,8 @@ class ContactManager extends ContactLib
      */
     private function _getFormFieldsFromPost(&$uniqueFieldNames)
     {
+    	global $objInit;
+    
         $uniqueFieldNames = true;
         $arrFields = array();
         $arrFieldNames = array();
@@ -1433,7 +1444,7 @@ class ContactManager extends ContactLib
             'password',
             'select'
         );
-        
+
         // shorten the variables
         $fieldNames      = $_POST['contactFormFieldName'];
         $fieldValues     = $_POST['contactFormFieldValue'];
@@ -1457,7 +1468,6 @@ class ContactManager extends ContactLib
                     ? contrexx_stripslashes($fieldTypes[$id]) 
                     : key($this->_arrFormFieldTypes);
                 */
-
 
                 $key = contrexx_stripslashes($fieldTypes[$id]);
                 if (isset($fieldTypes[$id]) && array_key_exists($key, $this->_arrFormFieldTypes)) {
@@ -1538,27 +1548,47 @@ class ContactManager extends ContactLib
                     'check_type'    => $checkType,
                     'editType'     => $editType
                 );
-
-
-
+                
+                /**
+                	ss4u change
+                	Set lang '0' as Global field name and value
+                */
+                $fieldNameGlobal = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][0], ENT_QUOTES)));
+				$fieldValueGlobal = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][0], ENT_QUOTES)));
+                
                 // hope the langs never change between editing and saving xD
                 foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                     $langID = $lang['id'];
                     
                     /**
-                    	ss4u change
                     	name and value fields can accept html characters
                     */
                     $fieldName = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][$langID], ENT_QUOTES)));
                     $fieldValue = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)));
-
-                    $arrFields[intval($id)]['lang'][$lang['id']] = array(
-                        'name'      => $fieldName,
-                        'value'    => $fieldValue
-                    );
-
+					
+					/**
+						ss4u change
+						Assigns the default language Field name and value in empty fields
+					*/
+					$fieldName 	= ($fieldName == "") ? $fieldNameGlobal : $fieldName;
+					$fieldValue = ($fieldValue == "") ? $fieldValueGlobal : $fieldValue; 
+					
+					/**
+						Overrides the value of the frontend active language field with Global Values
+					*/
+	                if($lang['id'] == $objInit->userFrontendLangId){
+			            $arrFields[intval($id)]['lang'][$lang['id']] = array(
+			                'name'	=> $fieldNameGlobal,
+			                'value'	=> $fieldValueGlobal
+			            );
+	                } else {
+			            $arrFields[intval($id)]['lang'][$lang['id']] = array(
+			                'name'	=> $fieldName,
+			                'value'	=> $fieldValue
+			            );	                
+	                }
                 }
-
+          
                 $orderId++;
             }
         }
