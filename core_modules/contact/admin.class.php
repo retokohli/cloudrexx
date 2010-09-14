@@ -648,7 +648,6 @@ class ContactManager extends ContactLib
                 $formText = $formFeedback = $formName = $formSubject = '';
             }
 
-
             $this->_objTpl->setVariable(
                 array(
                     'LANG_ID'                                       => $lang['id'],
@@ -1063,10 +1062,10 @@ class ContactManager extends ContactLib
         case 'checkbox':
 			if($count == 0){
 				$count = 1;
-		        return "<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
-		                    <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
-		                    <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
-		                </select>";
+			    return "<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
+			                <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
+			                <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
+			            </select>";
 			} else {
 				return "";
 			}
@@ -1455,8 +1454,8 @@ class ContactManager extends ContactLib
         $fieldEditType   = $_POST['contactFormFieldEditType'];
 
         if (isset($fieldNames) && is_array($fieldNames)) {
-
             foreach ($fieldNames as $id => $fieldName) {
+
                 /*
                  * ternary is ugly here
                  *
@@ -1548,47 +1547,30 @@ class ContactManager extends ContactLib
                     'check_type'    => $checkType,
                     'editType'     => $editType
                 );
-                
-                /**
-                	ss4u change
-                	Set lang '0' as Global field name and value
-                */
-                $fieldNameGlobal = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][0], ENT_QUOTES)));
-				$fieldValueGlobal = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][0], ENT_QUOTES)));
-                
+
                 // hope the langs never change between editing and saving xD
                 foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                     $langID = $lang['id'];
-                    
+					
                     /**
                     	name and value fields can accept html characters
                     */
                     $fieldName = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][$langID], ENT_QUOTES)));
                     $fieldValue = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)));
 					
-					/**
-						ss4u change
-						Assigns the default language Field name and value in empty fields
+		            $arrFields[intval($id)]['lang'][$lang['id']] = array(
+		                'name'	=> $fieldName,
+		                'value'	=> $fieldValue
+		            );
+		            
+		            /**
+		            	ss4u change
+						Duplicate the values of checkbox for all languages
 					*/
-					$fieldName 	= ($fieldName == "") ? $fieldNameGlobal : $fieldName;
-					$fieldValue = ($fieldValue == "") ? $fieldValueGlobal : $fieldValue; 
-					
-					/**
-						Overrides the value of the frontend active language field with Global Values
-					*/
-	                if($lang['id'] == $objInit->userFrontendLangId){
-			            $arrFields[intval($id)]['lang'][$lang['id']] = array(
-			                'name'	=> $fieldNameGlobal,
-			                'value'	=> $fieldValueGlobal
-			            );
-	                } else {
-			            $arrFields[intval($id)]['lang'][$lang['id']] = array(
-			                'name'	=> $fieldName,
-			                'value'	=> $fieldValue
-			            );	                
-	                }
+		            if($arrFields[intval($id)]['type'] == 'checkbox'){
+						$arrFields[intval($id)]['lang'][$lang['id']]['value'] = $arrFields[intval($id)]['lang'][1]['value'];
+					}    
                 }
-          
                 $orderId++;
             }
         }
