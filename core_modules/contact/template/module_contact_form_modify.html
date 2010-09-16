@@ -12,11 +12,6 @@
     var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
     var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
 
-    /**
-Have count of the number of formfields added dynamically
-     */
-    var formFieldNumber = 1;
-
     function addRecipient()
     {
         var number = 0;
@@ -65,9 +60,17 @@ Have count of the number of formfields added dynamically
      */
     function addFormField() {
         /**
+        Have count of the number of formfields added dynamically
+         */
+        var formFieldNumber = 1;
+        /**
         Clone the formField element last created
          */
-        divToCopy = $J('.formField').last();
+        divToCopy = $J('.formField:last');
+        /**
+        Get the Form ID of the Fields at the last of the present form
+         */
+        var previousFormID = parseInt($J('.formField:last').find('.formFieldId').text());
         /**
          Find the last Field Id to Increment the id of added field
          */
@@ -77,8 +80,7 @@ Have count of the number of formfields added dynamically
         });
         formFieldNumber++;
 
-        var copy = divToCopy.clone(true);
-        
+        var copy = divToCopy.clone();
         $J(copy).attr('id', 'formField_' +formFieldNumber)
         //Increment the Form Feild ID to Display
         $J(copy).find('.formFieldId').html(formFieldNumber);
@@ -118,10 +120,10 @@ Have count of the number of formfields added dynamically
         set the value of field type select with the value of
         the previous form field type select on adding new formfield
          */
-        $J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +(formFieldNumber-1)).val());
-
+        $J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +previousFormID).val());
         $J(copy).find('input').val('');
         $J(copy).find('input[type=hidden]').val('new');
+        $J(copy).find('input[type=checkbox]').attr("checked", false);
     }
 
     /**
@@ -197,7 +199,7 @@ Have count of the number of formfields added dynamically
                 if($J('#contactFormFieldCheckType_'+elId).length == 0){
                     var checkTypeCopy = $J('#contactFormFieldCheckType_0').clone(true);
                     $J(checkTypeCopy).attr('id', 'contactFormFieldCheckType_' + elId);
-                    $J(requiredCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
+                    $J(checkTypeCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
                     $J('#contactFormFieldCheckMenu_'+elId).append(checkTypeCopy);
                 }
                 break;
@@ -216,6 +218,7 @@ Have count of the number of formfields added dynamically
             case 'radio':
                 var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
                 $J(requiredCopy).attr('id', 'contactFormFieldRequired_' + elId);
+                $J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
                 ($J('#contactFormFieldRequired_'+elId).length == 0) ? $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy) : '';
                 ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
                 break;
@@ -301,6 +304,7 @@ Have count of the number of formfields added dynamically
         $J('#formFields tbody').sortable({
             placeholder: 'ui-state-highlight',
             handle: '.sort-handle',
+            helper: 'clone',
             revert: true,
             opacity: 0.6,
             forcePlaceholderSize: true,
@@ -311,7 +315,7 @@ Have count of the number of formfields added dynamically
                 var i=0;
                 $J('#formFields tbody > tr.formField').each(function(){
                     $J(this).removeClass('row1 row2');
-                    $J(this).addClass('row' + (i++ % 2 == 0 ? 1 : 2));
+                    $J(this).addClass('row' + (i++ % 2 == 0 ? 2 : 1));
                 });
             },
             start: function(event, ui) {
@@ -320,7 +324,6 @@ Have count of the number of formfields added dynamically
                 $J('.ui-state-highlight .nshelper').css('height',$J('.ui-state-highlight').css('height'));
             }
         });
-        $J('#formFields tbody').disableSelection();
         $J('#formRecipientContainer tbody').sortable();
     
         $J('.formCollapseView input').css('padding-left','0px');
