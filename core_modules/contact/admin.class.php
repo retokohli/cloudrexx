@@ -864,13 +864,13 @@ class ContactManager extends ContactLib {
                     'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
                     'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
                     'TXT_CONTACT_VALIDATION'	=> $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
-                    'TXT_CONTACT_ACTION'		=> $_ARRAYLANG['TXT_CONTACT_ACTION'],
-                    'TXT_ADVANCED_VIEW'			=> $_ARRAYLANG['TXT_ADVANCED_VIEW'],
-                    'TXT_SIMPLIFIED_VIEW'		=> $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
+                    'TXT_CONTACT_ACTION'	=> $_ARRAYLANG['TXT_CONTACT_ACTION'],
+                    'TXT_ADVANCED_VIEW'		=> $_ARRAYLANG['TXT_ADVANCED_VIEW'],
+                    'TXT_SIMPLIFIED_VIEW'	=> $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
                     'FORM_FIELD_ID'             => $realFieldID,
                     'FORM_FIELD_ID'             => $realFieldID,
                     'FORM_FIELD_TYPE'           => $field['editType'],
-                    'ROW_CLASS_NAME'			=> 'row'.(($realFieldID%2 == 0)?'1':'2')
+                    'ROW_CLASS_NAME'		=> 'row'.(($counter%2 == 0)?'1':'2')
                     )
             );
 
