@@ -201,9 +201,7 @@ class DataLibrary
                             lang_id='.$intLanguageId.'
                     LIMIT
                             1';
-                if ($intCategoryId == 3) {
-                    echo $query;
-                }
+
                 $objResult = $objDatabase->Execute($query);
 
                 if ($objResult->RecordCount() > 0) {
@@ -218,7 +216,7 @@ class DataLibrary
                     $arrReturn[$intCategoryId]['sort']          = $objResult->fields['sort'];
                     $arrReturn[$intCategoryId]['box_height']    = $objResult->fields['box_height'];
                     $arrReturn[$intCategoryId]['box_width']     = $objResult->fields['box_width'];
-                    $arrReturn[$intCategoryId]['template']      = ''; //$objResult->fields['template'];
+                    $arrReturn[$intCategoryId]['template']      = $objResult->fields['template'];
                 }
             }
         }
