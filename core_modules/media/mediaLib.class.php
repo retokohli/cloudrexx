@@ -40,25 +40,26 @@ class MediaLibrary {
     
     // act: newDir
     // creates a new directory through php or ftp
-    function _createNewDir($dirName){
+    function _createNewDir($dirName)
+    {
         global $_ARRAYLANG, $objTemplate;
 
         $obj_file = new File();
         $dirName = $obj_file->replaceCharacters($dirName);
         $this->dirLog=$obj_file->mkDir($this->path, $this->webPath, $dirName);
-        if($this->dirLog != "error") {
+        if ($this->dirLog != "error") {
             $this->highlightName[] = $this->dirLog;
             $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR']);
-        }else{
+        } else {
             $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR']);
         }
     }
 
 
-
     // act: preview
     // previews the edited image
-    function _previewImage(){
+    function _previewImage()
+    {
         $arr = explode(',', $this->getData);
         $this->_objImage->loadImage($this->path . $this->getFile);
         $this->_objImage->resizeImage($arr[0], $arr[1], $arr[2]);
@@ -66,12 +67,10 @@ class MediaLibrary {
     }
 
 
-
-
-
     // act: previewSize
     // previews the size of the edite image
-    function _previewImageSize(){
+    function _previewImageSize()
+    {
         $arr = explode(',', $this->getData);
         $this->_objImage->loadImage($this->path . $this->getFile);
         $this->_objImage->resizeImage($arr[0], $arr[1], $arr[2]);
@@ -95,47 +94,44 @@ class MediaLibrary {
     }
 
 
-
-
-
-
     // act: upload
     // upload files to the current directory
-    function _uploadMedia(){
+    function _uploadMedia()
+    {
         global $_ARRAYLANG, $objTemplate;
 
-        if(isset($_FILES) && !empty($_FILES)){
+        if (isset($_FILES) && !empty($_FILES)) {
             $ok         = 0;
             $er         = 0;
             $errorFiles = array();
 
-            foreach(array_keys($_FILES) as $key){
+            foreach (array_keys($_FILES) as $key) {
                 $file    = $_FILES[$key];
 
-                for($x = 0; $x < count($file['name']); $x++){
+                for ($x = 0; $x < count($file['name']); $x++) {
                     $tmpFile  = $file['tmp_name'][$x];
                     $fileName = $this->_replaceCharacters($file['name'][$x]);
                     $fileName = preg_replace("/[^\x2c-\x7d]/", "_", $fileName, -1, $count);
 
-                    if(!empty($fileName)){
+                    if (!empty($fileName)) {
                         if (!FWValidator::is_file_ending_harmless($fileName)) {
                             continue;
                         }
 
-                        if(file_exists($this->path . $fileName)){
+                        if (file_exists($this->path . $fileName)) {
                             $info     = pathinfo($fileName);
                             $exte     = $info['extension'];
                             $exte     = (!empty($exte)) ? '.' . $exte : '';
                             $part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
-                            if(!empty($_REQUEST['uploadForceOverwrite']) && intval($_REQUEST['uploadForceOverwrite'] > 0)){
+                            if (!empty($_REQUEST['uploadForceOverwrite']) && intval($_REQUEST['uploadForceOverwrite'] > 0)) {
                                 $fileName = $part1 . $exte;
-                            }else{
+                            } else {
                                 $fileName = $part1 . '_' . (time() + $x) . $exte;
                             }
                         }
 
                         // delete old thumb
-                        if(file_exists($this->path . $fileName . '.thumb')){
+                        if (file_exists($this->path . $fileName . '.thumb')) {
                             @unlink($this->path . $fileName . '.thumb');
                         }
 
@@ -147,12 +143,12 @@ class MediaLibrary {
                         } else {
                             $warn = false;
                         }
-                        if(@move_uploaded_file($tmpFile, $this->path . $fileName)) {
+                        if (@move_uploaded_file($tmpFile, $this->path . $fileName)) {
                             $obj_file = new File();
                             $obj_file->setChmod($this->path, $this->webPath, $fileName);
                             $this->highlightName[] = $fileName;
                             $ok++;
-                        }else{
+                        } else {
                             $errorFiles[] = $fileName;
                             $er++;
                         }
@@ -161,7 +157,7 @@ class MediaLibrary {
             }
         }
 
-        if($ok != 0 && $er == 0) {
+        if ($ok != 0 && $er == 0) {
             $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_NEW_FILE']);
             if ($warn) {
                 $objTemplate->setVariable('CONTENT_WARNING_MESSAGE', $_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED']);
@@ -174,12 +170,11 @@ class MediaLibrary {
     }
 
 
-
-
     // act: download
     // downloads the media
-    function _downloadMediaOLD(){
-        if(is_file($this->path . $this->getFile)){
+    function _downloadMediaOLD()
+    {
+        if (is_file($this->path . $this->getFile)) {
             header("Location: ".$this->webPath . $this->getFile);
             exit;
         }
@@ -190,7 +185,8 @@ class MediaLibrary {
      * Send a file for downloading
      *
      */
-    function _downloadMedia(){
+    function _downloadMedia()
+    {
         // The file is already checked (media paths only)
         $file = $this->path . $this->getFile;
         //First, see if the file exists
@@ -240,15 +236,15 @@ class MediaLibrary {
     }
 
 
-
     // act: cut
     // cuts the media -> paste insterts the media
-    function _cutMedia(){
-        if(isset($_POST['formSelected']) && !empty($_POST['formSelected'])){
-            if(isset($_SESSION['mediaCutFile'])) {
+    function _cutMedia()
+    {
+        if (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
+            if (isset($_SESSION['mediaCutFile'])) {
                 unset($_SESSION['mediaCutFile']);
             }
-            if(isset($_SESSION['mediaCopyFile'])) {
+            if (isset($_SESSION['mediaCopyFile'])) {
                 unset($_SESSION['mediaCopyFile']);
             }
 
@@ -260,16 +256,15 @@ class MediaLibrary {
     }
 
 
-
-
     // act: copy
     // copys the media -> paste inserts the media
-    function _copyMedia(){
-        if(isset($_POST['formSelected']) && !empty($_POST['formSelected'])){
-            if(isset($_SESSION['mediaCutFile'])){
+    function _copyMedia()
+    {
+        if (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
+            if (isset($_SESSION['mediaCutFile'])) {
                 unset($_SESSION['mediaCutFile']);
             }
-            if(isset($_SESSION['mediaCopyFile'])){
+            if (isset($_SESSION['mediaCopyFile'])) {
                 unset($_SESSION['mediaCopyFile']);
             }
 
@@ -280,34 +275,32 @@ class MediaLibrary {
     }
 
 
-
-
-
     // act: paste
     // insterts the file
-    function _pasteMedia(){
+    function _pasteMedia()
+    {
         global $_ARRAYLANG, $objTemplate;
 
         // cut
-        if(isset($_SESSION['mediaCutFile']) && !empty($_SESSION['mediaCutFile'])){
+        if (isset($_SESSION['mediaCutFile']) && !empty($_SESSION['mediaCutFile'])) {
             $check = true;
 
-            foreach($_SESSION['mediaCutFile'][2] as $name){
-                if($_SESSION['mediaCutFile'][0] != $this->path){
+            foreach ($_SESSION['mediaCutFile'][2] as $name) {
+                if ($_SESSION['mediaCutFile'][0] != $this->path) {
                     $obj_file = new File();
 
-                    if(is_dir($_SESSION['mediaCutFile'][0].$name)){
+                    if (is_dir($_SESSION['mediaCutFile'][0].$name)) {
                         $this->dirLog=$obj_file->copyDir($_SESSION['mediaCutFile'][0], $_SESSION['mediaCutFile'][1], $name, $this->path, $this->webPath, $name);
-                        if($this->dirLog == "error") {
+                        if ($this->dirLog == "error") {
                             $check = false;
-                        }else {
+                        } else {
                             $obj_file->delDir($_SESSION['mediaCutFile'][0], $_SESSION['mediaCutFile'][1], $name);
                         }
-                    }else{
+                    } else {
                         $this->dirLog=$obj_file->copyFile($_SESSION['mediaCutFile'][0], $name, $this->path, $name);
-                        if($this->dirLog == "error") {
+                        if ($this->dirLog == "error") {
                             $check = false;
-                        }else {
+                        } else {
                             $obj_file->delFile($_SESSION['mediaCutFile'][0], $_SESSION['mediaCutFile'][1], $name);
                         }
                     }
@@ -320,30 +313,30 @@ class MediaLibrary {
                 }
             }
 
-            if($check != false){
+            if ($check != false) {
                 $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_CUT']);
                 unset($_SESSION['mediaCutFile']);
-            } else{
+            } else {
                 $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_CUT']);
             }
         }
 
         // copy
-        if(isset($_SESSION['mediaCopyFile']) && !empty($_SESSION['mediaCopyFile']))
+        if (isset($_SESSION['mediaCopyFile']) && !empty($_SESSION['mediaCopyFile']))
         {
             $check = true;
 
-            foreach($_SESSION['mediaCopyFile'][2] as $name) {
+            foreach ($_SESSION['mediaCopyFile'][2] as $name) {
                 $obj_file = new File();
 
-                if(is_dir($_SESSION['mediaCopyFile'][0].$name)){
+                if (is_dir($_SESSION['mediaCopyFile'][0].$name)) {
                     $this->dirLog=$obj_file->copyDir($_SESSION['mediaCopyFile'][0], $_SESSION['mediaCopyFile'][1], $name, $this->path, $this->webPath, $name);
-                    if($this->dirLog == "error") {
+                    if ($this->dirLog == "error") {
                         $check = false;
                     }
-                }else{
+                } else {
                     $this->dirLog=$obj_file->copyFile($_SESSION['mediaCopyFile'][0], $name, $this->path, $name);
-                    if($this->dirLog == "error") {
+                    if ($this->dirLog == "error") {
                         $check = false;
                     }
                 }
@@ -351,55 +344,56 @@ class MediaLibrary {
                 $this->highlightName[] = $this->dirLog;
             }
 
-            if($check != false){
+            if ($check != false) {
                 $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_COPY']);
                 unset($_SESSION['mediaCopyFile']);
-            } else{
+            } else {
                 $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_COPY']);
             }
         }
     }
 
 
-
     // act: delete
     // deletes a file or an directory
-    function _deleteMedia(){
+    function _deleteMedia()
+    {
         global $objTemplate;
 
-        if(isset($this->getFile) && !empty($this->getFile)){
+        if (isset($this->getFile) && !empty($this->getFile)) {
             $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($this->getFile));
-        }elseif(isset($_POST['formSelected']) && !empty($_POST['formSelected'])){
-            foreach($_POST['formSelected'] as $file){
+        } elseif (isset($_POST['formSelected']) && !empty($_POST['formSelected'])) {
+            foreach ($_POST['formSelected'] as $file) {
                 $objTemplate->setVariable('CONTENT_OK_MESSAGE',$this->_deleteMedia2($file));
             }
         }
     }
 
 
-    function _deleteMedia2($file){
+    function _deleteMedia2($file)
+    {
         global $_ARRAYLANG;
 
         $obj_file = new File();
 
-        if(is_dir($this->path.$file)){
+        if (is_dir($this->path.$file)) {
             $this->dirLog=$obj_file->delDir($this->path, $this->webPath, $file);
-            if($this->dirLog != "error") {
+            if ($this->dirLog != "error") {
                 $status = $_ARRAYLANG['TXT_MEDIA_MSG_DIR_DELETE'];
-            }else{
+            } else {
                 $status = $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_DIR'];
             }
-         } else{
-            if($this->_isImage($this->path.$file)){
-                if(file_exists($this->path.$file.'.thumb')){
+         } else {
+            if ($this->_isImage($this->path.$file)) {
+                if (file_exists($this->path.$file.'.thumb')) {
                     $this->dirLog=$obj_file->delFile($this->path, $this->webPath, $file.'.thumb');
                 }
             }
 
             $this->dirLog=$obj_file->delFile($this->path, $this->webPath, $file);
-            if($this->dirLog != "error") {
+            if ($this->dirLog != "error") {
                 $status = $_ARRAYLANG['TXT_MEDIA_MSG_FILE_DELETE'];
-            }else{
+            } else {
                 $status = $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_FILE'];
             }
         }
@@ -408,58 +402,56 @@ class MediaLibrary {
     }
 
 
-
-
-
-    function _renMedia(){
+    function _renMedia()
+    {
         global $_ARRAYLANG, $objTemplate;
 
         $obj_file = new File();
 
         // file or dir
-        if(isset($_POST['oldExt']) && !empty($_POST['oldExt'])){
+        if (isset($_POST['oldExt']) && !empty($_POST['oldExt'])) {
             $ext      = !empty($_POST['renExt']) && FWValidator::is_file_ending_harmless($_POST['renName'].".$ext") ? $_POST['renExt'] : 'txt';
             $fileName = $_POST['renName'] . '.' . $ext;
             $oldName  = $_POST['oldName'] . '.' . $_POST['oldExt'];
-        }else{
+        } else {
             $fileName = $_POST['renName'];
             $oldName  = $_POST['oldName'];
         }
 
-        if(!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1){
+        if (!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1) {
             // rename old to new
-            if(is_dir($this->path.$oldName)){
+            if (is_dir($this->path.$oldName)) {
                 $this->dirLog=$obj_file->renameDir($this->path, $this->webPath, $oldName, $fileName);
-                if($this->dirLog == "error") {
+                if ($this->dirLog == "error") {
                     $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                }else{
+                } else {
                     $this->highlightName[] = $this->dirLog;
                     $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
                 }
-            }else{
+            } else {
                 $this->dirLog=$obj_file->renameFile($this->path, $this->webPath, $oldName, $fileName);
-                if($this->dirLog == "error") {
+                if ($this->dirLog == "error") {
                     $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                }else{
+                } else {
                     $this->highlightName[] = $this->dirLog;
                     $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
                 }
             }
-        }elseif(isset($_POST['mediaInputAsCopy']) && $_POST['mediaInputAsCopy'] == 1){
+        } elseif (isset($_POST['mediaInputAsCopy']) && $_POST['mediaInputAsCopy'] == 1) {
             // copy old to new
-            if(is_dir($this->path.$oldName)){
+            if (is_dir($this->path.$oldName)) {
                 $this->dirLog=$obj_file->copyDir($this->path, $this->webPath, $oldName, $this->path, $this->webPath, $fileName);
-                if($this->dirLog == "error") {
+                if ($this->dirLog == "error") {
                     $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                }else{
+                } else {
                     $this->highlightName[] = $this->dirLog;
                      $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
                 }
-            }else{
+            } else {
                 $this->dirLog=$obj_file->copyFile($this->path, $oldName, $this->path, $fileName);
-                if($this->dirLog == "error") {
+                if ($this->dirLog == "error") {
                     $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_EDIT']);
-                }else{
+                } else {
                     $this->highlightName[] = $this->dirLog;
                      $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_EDIT']);
                 }
@@ -467,8 +459,8 @@ class MediaLibrary {
         }
 
         // resize image
-        if(isset($_POST['editImage']) && $_POST['editImage'] == 1){
-            if(isset($_POST['imgWidthPx']) && !empty($_POST['imgWidthPx']) && isset($_POST['imgHeightPx']) && !empty($_POST['imgWidthPx']) && !empty($_POST['imgQuality'])){
+        if (isset($_POST['editImage']) && $_POST['editImage'] == 1) {
+            if (isset($_POST['imgWidthPx']) && !empty($_POST['imgWidthPx']) && isset($_POST['imgHeightPx']) && !empty($_POST['imgWidthPx']) && !empty($_POST['imgQuality'])) {
                 $this->_objImage->loadImage($this->path . $this->dirLog);
                 $this->_objImage->resizeImage($_POST['imgWidthPx'], $_POST['imgHeightPx'], $_POST['imgQuality']);
                 //unlink($this->path . $this->dirLog);
@@ -478,27 +470,24 @@ class MediaLibrary {
     }
 
 
-
-
-
     // check if is image
-    function _isImage($file){
+    function _isImage($file)
+    {
         $img  = @getimagesize($file);
         $type = $img[2];
 
-        if($type >= 1 && $type <= 3){
+        if ($type >= 1 && $type <= 3) {
             // 1 = gif, 2 = jpg, 3 = png
             return $type;
-        } else{
+        } else {
             return false;
         }
     }
 
 
-
-
     // creates an image thumbnail
-    function _createThumbnail($file){
+    function _createThumbnail($file)
+    {
         global $_ARRAYLANG;
 
         $tmpSize    = getimagesize($file);
@@ -509,7 +498,7 @@ class MediaLibrary {
         $tmp->resizeImage($thumbWidth, $this->thumbHeight, $this->thumbQuality);
         $tmp->saveNewImage($file . '.thumb');
 
-        if(!file_exists($file . '.thumb')){
+        if (!file_exists($file . '.thumb')) {
             $img     = imagecreate(100, 50);
             $colBody = imagecolorallocate($img, 255, 255, 255);
             ImageFilledRectangle($img, 0, 0, 100, 50, $colBody);
@@ -523,26 +512,24 @@ class MediaLibrary {
     }
 
 
-
-
-
     // replaces some characters
-    function _replaceCharacters($string){
+    function _replaceCharacters($string)
+    {
         // replace $change with ''
         $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|', '+');
         // replace $signs1 with $signs
         $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
-        foreach($change as $str){
+        foreach ($change as $str) {
             $string = str_replace($str, '_', $string);
         }
-        for($x = 0; $x < count($signs1); $x++){
+        for ($x = 0; $x < count($signs1); $x++) {
             $string = str_replace($signs1[$x], $signs2[$x], $string);
         }
         $string = str_replace('__', '_', $string);
 
-        if(strlen($string) > 60){
+        if (strlen($string) > 60) {
             $info       = pathinfo($string);
             $stringExt  = $info['extension'];
 
@@ -554,23 +541,23 @@ class MediaLibrary {
     }
 
 
-
     // check for manual input in $_GET['path']
-    function _pathCheck($path){
+    function _pathCheck($path)
+    {
         $check = false;
-        if(!empty($path)){
-            foreach($this->arrWebPaths as $tmp){
-                if(substr($path, 0, strlen($tmp)) == $tmp && file_exists($this->docRoot . $path)){
+        if (!empty($path)) {
+            foreach ($this->arrWebPaths as $tmp) {
+                if (substr($path, 0, strlen($tmp)) == $tmp && file_exists($this->docRoot . $path)) {
                     $check = true;
                 }
             }
         }
 
-        if(empty($path) || $check == false){
+        if (empty($path) || $check == false) {
             $path = $this->arrWebPaths[$this->archive];
         }
 
-        if(substr($path, -1) != '/'){
+        if (substr($path, -1) != '/') {
             $path = $path . '/';
         }
 
@@ -578,29 +565,28 @@ class MediaLibrary {
     }
 
 
-
-
     // makes the dir tree with variables: icon, name, size, type, date, perm
-    function _dirTree($path) {
+    function _dirTree($path)
+    {
         $dir  = array();
         $file = array();
         $forbidden_files = array('.', '..', '.svn', '.htaccess', 'index.php');
 
-        if(is_dir($path)){
+        if (is_dir($path)) {
             $fd = @opendir($path);
-            while($name = @readdir($fd)){
-                if(!in_array($name, $forbidden_files)){
-                    if(is_dir($path . $name)){
+            while ($name = @readdir($fd)) {
+                if (!in_array($name, $forbidden_files)) {
+                    if (is_dir($path . $name)) {
                         $dir['icon'][] = $this->_getIcon($path.$name);
                         $dir['name'][] = $name;
                         $dir['size'][] = $this->_getSize($path.$name);
                         $dir['type'][] = $this->_getType($path.$name);
                         $dir['date'][] = $this->_getDate($path.$name);
                         $dir['perm'][] = $this->_getPerm($path.$name);
-                    } elseif(is_file($path . $name)){
-                        if(substr($name, -6) == '.thumb'){
+                    } elseif (is_file($path . $name)) {
+                        if (substr($name, -6) == '.thumb') {
                             $tmpName = substr($name, 0, strlen($name) - strlen(substr($name, -6)));
-                            if(!file_exists($path . $tmpName)){
+                            if (!file_exists($path . $tmpName)) {
                                 @unlink($path . $name);
                             }
                         } else {
@@ -625,8 +611,8 @@ class MediaLibrary {
     }
 
 
-
-    function _sortDirTree($tree){
+    function _sortDirTree($tree)
+    {
         $d    = $tree['dir'];
         $f    = $tree['file'];
         $direction = $this->sortDesc ? SORT_DESC : SORT_ASC;
@@ -672,9 +658,9 @@ class MediaLibrary {
     }
 
 
-
     // designs the sorting icons
-    function _sortingIcons(){
+    function _sortingIcons()
+    {
         $icon         = array(
             'size'    => null,
             'type'    => null,
@@ -685,7 +671,7 @@ class MediaLibrary {
         $icon1        = '&darr;';     // sort desc
         $icon2        = '&uarr;';     // sort asc
 
-        switch($this->sortBy){
+        switch ($this->sortBy) {
             case 'size':
                 $icon['size'] = $this->sortDesc ? $icon1 : $icon2;
                 break;
@@ -707,7 +693,8 @@ class MediaLibrary {
 
 
     // designs the sorting class
-    function _sortingClass(){
+    function _sortingClass()
+    {
         $class         = array(
             'size'    => null,
             'type'    => null,
@@ -718,7 +705,7 @@ class MediaLibrary {
         $class1        = 'sort';     // sort desc
         $class2        = 'sort';     // sort asc
 
-        switch($this->sortBy){
+        switch ($this->sortBy) {
             case 'size':
                 $class['size'] = $this->sortDesc ? $class1 : $class2;
                 break;
@@ -739,24 +726,23 @@ class MediaLibrary {
     }
 
 
-
     // gets the icon for the file
-    function _getIcon($file){
-        if(is_file($file)){
+    function _getIcon($file)
+    {
+        if (is_file($file) {
             $info = pathinfo($file);
             $icon = strtolower($info['extension']);
         }
 
-        if(is_dir($file)){
+        if (is_dir($file)) {
             $icon = '_folder';
         }
 
-        if(!file_exists($this->iconPath . $icon . '.gif') or !isset($icon)){
+        if (!file_exists($this->iconPath . $icon . '.gif') or !isset($icon)) {
             $icon = '_blank';
         }
         return $icon;
     }
-
 
 
     // gets the filesize
@@ -774,36 +760,36 @@ class MediaLibrary {
     }
 
 
-
     // formats the filesize
-    function _formatSize($size){
+    function _formatSize($size)
+    {
         $multi = 1024;
         $divid = 1000;
 
         $arrEnd = array(' Byte', ' Bytes', ' KB', ' MB', ' GB');
 
-        if($size != '[folder]'){
-            if($size >= ($multi * $multi * $multi)){
+        if ($size != '[folder]') {
+            if ($size >= ($multi * $multi * $multi)) {
                 $size = round($size / ($multi * $multi * $multi), 2);
                 $end  = 4;
             }
-            elseif($size >= ($multi * $multi)){
+            elseif ($size >= ($multi * $multi)) {
                 $size = round($size / ($multi * $multi), 2);
                 $end  = 3;
             }
-            elseif($size >= $multi){
+            elseif ($size >= $multi) {
                 $size = round($size / $multi, 2);
                 $end  = 2;
             }
-            elseif($size < $multi && $size > 1){
+            elseif ($size < $multi && $size > 1) {
                 $size = $size;
                 $end  = 1;
-            }else{
+            } else {
                 $size = $size;
                 $end  = 0;
             }
 
-            if($size >= $divid){
+            if ($size >= $divid) {
                 $size = round($size / $multi, 2);
                 $end  = $end + 1;
             }
@@ -816,15 +802,15 @@ class MediaLibrary {
     }
 
 
-
     // gets the filetype
-    function _getType($file){
-        if(is_file($file)){
+    function _getType($file)
+    {
+        if (is_file($file)) {
             $info = pathinfo($file);
             $type = strtoupper($info['extension']);
         }
 
-        if(is_dir($file)){
+        if (is_dir($file)) {
             $type = '[folder]';
         }
 
@@ -834,14 +820,14 @@ class MediaLibrary {
     }
 
 
-
     // formats the filetype
-    function _formatType($type){
+    function _formatType($type)
+    {
         global $_ARRAYLANG;
 
-        if($type != '-' && $type != '[folder]'){
+        if ($type != '-' && $type != '[folder]') {
             $type = $type.'-'.$_ARRAYLANG['TXT_MEDIA_FILE'];
-        }elseif($type == '[folder]'){
+        } elseif ($type == '[folder]') {
             $type = $_ARRAYLANG['TXT_MEDIA_FILE_DIRECTORY'];
         }
 
@@ -849,15 +835,14 @@ class MediaLibrary {
     }
 
 
-
-
     // gets the date of the last modification of the file
-    function _getDate($file){
-        if(@filectime($file)){
+    function _getDate($file)
+    {
+        if (@filectime($file)) {
             $date = filectime($file);
         }
 
-        if(!isset($file)){
+        if (!isset($file)) {
             $date = '';
         }
 
@@ -865,13 +850,12 @@ class MediaLibrary {
     }
 
 
-
     // formats the date of the last modification of the file
     function _formatDate($date)
     {
-        if(!empty($date)){
+        if (!empty($date)) {
             $date = date(ASCMS_DATE_FILE_FORMAT, $date);
-        }else{
+        } else {
             $date = '-';
         }
 
@@ -879,14 +863,14 @@ class MediaLibrary {
     }
 
 
-
     // gets the permission of the file
-    function _getPerm($file){
-        if(@fileperms($file)){
+    function _getPerm($file)
+    {
+        if (@fileperms($file)) {
             $perm = substr(decoct(fileperms($file)), -4);
         }
 
-        if(!isset($perm)) {
+        if (!isset($perm)) {
             $perm = '';
         }
 
@@ -894,10 +878,10 @@ class MediaLibrary {
     }
 
 
-
     // formats the permission of the file
-    function _formatPerm($perm, $key){
-        if(!empty($perm)){
+    function _formatPerm($perm, $key)
+    {
+        if (!empty($perm)) {
             $per   = array();
             $per[] = $perm[1];
             $per[] = $perm[2];
@@ -905,8 +889,8 @@ class MediaLibrary {
 
             ($key == 'dir')  ? $perm = 'd'       : '';
             ($key == 'file') ? $perm = '&minus;' : '';
-            foreach($per as $out){
-                switch($out){
+            foreach ($per as $out) {
+                switch ($out) {
                     case 7:
                         $perm .= ' rwx';
                         break;
@@ -932,7 +916,7 @@ class MediaLibrary {
                         $perm .= ' &minus;&minus;&minus;';
                 }
             }
-        }else{
+        } else {
             $perm = '-';
         }
 
@@ -940,7 +924,8 @@ class MediaLibrary {
     }
 
 
-    function _getJavaScriptCodePreview(){
+    function _getJavaScriptCodePreview()
+    {
         $code = <<<END
                     <script language="JavaScript" type="text/javascript">
                     /* <![CDATA[ */
@@ -972,11 +957,11 @@ END;
      * @global  ADONewConnection
      * @return  array       $arrReturn
      */
-    function createSettingsArray() {
+    function createSettingsArray() 
+    {
         global $objDatabase;
 
         $arrReturn = array();
-
         $objResult = $objDatabase->Execute('SELECT  name,
                                                     value
                                             FROM    '.DBPREFIX.'module_media_settings
@@ -989,5 +974,7 @@ END;
         }
         return $arrReturn;
     }
+
 }
+
 ?>
