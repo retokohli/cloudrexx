@@ -1581,7 +1581,7 @@ if (MY_DEBUG) echo("Support::ticketRow(): ERROR: Could not get the Ticket with I
             'SUPPORT_TICKET_ID'             => $supportTicketId,
             'SUPPORT_TICKET_EMAIL'          => $objTicket->getEmail(),
             'SUPPORT_TICKET_OWNER_ID'       => $ownerId,
-            'SUPPORT_TICKET_OWNER'          => htmlentities($ownerNamem, ENT_QUOTES, CONTREXX_CHARSET),
+            'SUPPORT_TICKET_OWNER'          => htmlentities($ownerName, ENT_QUOTES, CONTREXX_CHARSET),
             'SUPPORT_TICKET_DATE'           => $objTicket->getTimestamp(),
             'SUPPORT_TICKET_LANGUAGE_ID'    => $languageId,
             'SUPPORT_TICKET_LANGUAGE'       =>
