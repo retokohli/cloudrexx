@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contains database error class
  *
@@ -82,4 +83,7 @@ class DatabaseError extends Exception
                 strip_tags($objDatabase->ErrorMsg())."\n".
                 $this->getTraceAsString();
     }
+
 }
+
+?>

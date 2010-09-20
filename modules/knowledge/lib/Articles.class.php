@@ -32,21 +32,22 @@ class KnowledgeArticles
      */
     public function __construct()
     {
-        $this->basequery = "SELECT  articles.id as id,
-                            articles.active as active,
-                            articles.hits as hits,
-                            articles.votes as votes,
-                            articles.votevalue as value,
-                            articles.category as category,
-                            articles.date_created as date_created,
-                            articles.date_updated as date_updated,
-                            content.lang as lang,
-                            content.answer as answer,
-                            content.question as question,
-                            content.`index` as `index`
-                    FROM `".DBPREFIX."module_knowledge_articles` AS articles
-                    INNER JOIN `".DBPREFIX."module_knowledge_article_content`
-                    AS content ON articles.id = content.article";
+        $this->basequery = "
+            SELECT articles.id,
+                   articles.active,
+                   articles.hits,
+                   articles.votes,
+                   articles.votevalue as value,
+                   articles.category_ids,
+                   articles.date_created,
+                   articles.date_updated,
+                   content.lang,
+                   content.answer,
+                   content.question,
+                   content.`index` as `index`
+              FROM `".DBPREFIX."module_knowledge_articles` AS articles
+             INNER JOIN `".DBPREFIX."module_knowledge_article_content` AS content
+                ON articles.id=content.article";
     }
 
     /**
@@ -71,7 +72,7 @@ class KnowledgeArticles
     {
         if ($override === false && isset($this->articles)) {
             // the messages are already read out and override is not given
-            return;
+            return null;
         }
 
         global $objDatabase;
@@ -118,7 +119,8 @@ class KnowledgeArticles
                     'hits'          => intval($objRs->fields['hits']),
                     'votes'         => intval($objRs->fields['votes']),
                     'votevalue'     => intval($objRs->fields['value']),
-                    'category'      => intval($objRs->fields['category']),
+//                    'category'      => intval($objRs->fields['category']),
+                    'category'      => $objRs->fields['category_ids'],
                     'date_created'  => intval($objRs->fields['date_created']),
                     'date_updated'  => intval($objRs->fields['date_updated']),
                     'content'       => array(
@@ -135,9 +137,9 @@ class KnowledgeArticles
 
         if (empty($alt_query)) {
             $this->articles = $articles;
-        } else {
-            return $articles;
+            return null;
         }
+        return $articles;
     }
 
     /**
@@ -157,11 +159,12 @@ class KnowledgeArticles
 
         $arr = array();
         foreach ($this->articles as $id => $article) {
-            if ($article['category'] == $catid) {
+            if (FWValidator::is_value_in_comma_separated_list(
+                $catid, $article['category'])
+            ) {
                 $arr[$id] = $article;
             }
         }
-
         return $arr;
     }
 
@@ -230,18 +233,20 @@ class KnowledgeArticles
         global $objDatabase;
 
         $id = intval($id);
-        $query = "  DELETE FROM ".DBPREFIX."module_knowledge_article_content
-                    WHERE article = ".$id;
+        $query = "
+            DELETE FROM ".DBPREFIX."module_knowledge_article_content
+             WHERE article=$id";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to delete the content of a article");
         }
-
-        $query = "  DELETE FROM ".DBPREFIX."module_knowledge_articles
-                    WHERE id = ".$id;
+        $query = "
+            DELETE FROM ".DBPREFIX."module_knowledge_articles
+             WHERE id=$id";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to delete a article");
         }
     }
+
 
     /**
      * Delete the articles of a whole category
@@ -255,77 +260,84 @@ class KnowledgeArticles
         global $objDatabase;
 
         $catid = intval($catid);
-        $query = "  DELETE FROM ".DBPREFIX."module_knowledge_article_content
-                    WHERE article IN (
-                        SELECT id FROM ".DBPREFIX."module_knowledge_articles
-                        WHERE category = ".$catid."
-                        )";
+        $query = "
+            DELETE FROM ".DBPREFIX."module_knowledge_article_content
+             WHERE article IN (
+                SELECT id FROM ".DBPREFIX."module_knowledge_articles
+                WHERE (   `category_ids`='$catid'
+                       OR `category_ids` LIKE '$catid,%'
+                       OR `category_ids` LIKE '%,$catid,%'
+                       OR `category_ids` LIKE '%,$catid'))";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to delete an article's content");
         }
-
-        $query = "  DELETE FROM ".DBPREFIX."module_knowledge_articles
-                    WHERE id = ".$catid;
+        $query = "
+            DELETE FROM ".DBPREFIX."module_knowledge_articles
+             WHERE (   `category_ids`='$catid'
+                    OR `category_ids` LIKE '$catid,%'
+                    OR `category_ids` LIKE '%,$catid,%'
+                    OR `category_ids` LIKE '%,$catid')";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to delete a article");
         }
     }
 
+
     /**
      * Insert a new article
-     *
-     * @param int $category
+     * @param   array   $category_ids   The array of assigned category IDs
      * @param int $active
      * @global $objDatabase
      * @throws DatabaseError
      * @return int
      */
-    public function insert($category, $active)
+    public function insert($category_ids, $active)
     {
         global $objDatabase;
 
-        $category = intval($category);
+        $category_ids =
+            FWValidator::get_comma_separated_list_from_array($category_ids);
         $active = intval($active);
-
-        $query = "  INSERT INTO ".DBPREFIX."module_knowledge_articles
-                    (category, active, date_created, date_updated)
-                    VALUES
-                    (".$category.", ".$active.", ".time().", ".time().")";
+        $query = "
+            INSERT INTO ".DBPREFIX."module_knowledge_articles (
+                category_ids, active, date_created, date_updated
+            ) VALUES (
+                '$category_ids', $active, ".time().", ".time()."
+            )";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to insert a new article");
         }
-
         $id = $objDatabase->Insert_ID();
         $this->insertContent($id);
         return $id;
     }
 
+
     /**
      * Update article
-     *
      * @param int $id
-     * @param int $category
+     * @param   array   $category_ids     The array of assigned category IDs
      * @param int $active
      * @throws DatabaseError
      * @global $objDatabase
      */
-    public function update($id, $category, $active)
+    public function update($id, $category_ids, $active)
     {
         global $objDatabase;
 
         $id = intval($id);
-        $category = intval($category);
+        $category_ids =
+            FWValidator::get_comma_separated_list_from_array($category_ids);
         $active = intval($active);
-
-        $query = "  UPDATE ".DBPREFIX."module_knowledge_articles
-                    SET     category = ".$category.",
-                            active = ".$active.",
-                            date_updated = ".time()."
-                    WHERE id = ".$id;
+        $query = "
+            UPDATE ".DBPREFIX."module_knowledge_articles
+               SET category_ids='$category_ids',
+                   active=$active,
+                   date_updated=".time()."
+             WHERE id=$id";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to update the article");
         }
-
         $this->deleteContent($id);
         $this->insertContent($id);
     }
@@ -356,20 +368,22 @@ class KnowledgeArticles
      * @throws DatabaseError
      * @return int
      */
-    public function countEntriesByCategory($id)
+    public function countEntriesByCategory($category_id)
     {
         global $objDatabase;
 
-        $id = intval($id);
-
-        $query = "  SELECT count(id) AS amount
-                    FROM ".DBPREFIX."module_knowledge_articles
-                    WHERE category = ".$id;
+        $category_id = intval($category_id);
+        $query = "
+            SELECT COUNT(*) AS amount
+              FROM ".DBPREFIX."module_knowledge_articles
+             WHERE (   `category_ids`='$category_id'
+                    OR `category_ids` LIKE '$category_id,%'
+                    OR `category_ids` LIKE '%,$category_id,%'
+                    OR `category_ids` LIKE '%,$category_id')";
         $objRs = $objDatabase->Execute($query);
         if ($objRs === false) {
             throw new DatabaseError("Error getting amount of entries of a category");
         }
-
         return intval($objRs->fields['amount']);
     }
 
@@ -385,9 +399,8 @@ class KnowledgeArticles
         $article = array_pop($this->articles);
         if (!isset($article)) {
             return false;
-        } else {
-            return $article;
         }
+        return $article;
     }
 
     /**
@@ -405,13 +418,15 @@ class KnowledgeArticles
         $id = intval($id);
         $position = intval($position);
 
-        $query = "  UPDATE ".DBPREFIX."module_knowledge_articles
-                    SET sort = ".$position."
-                    WHERE id = ".$id;
+        $query = "
+            UPDATE ".DBPREFIX."module_knowledge_articles
+               SET sort=$position
+             WHERE id=$id";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("error sorting the article ".$id);
         }
     }
+
 
     /**
      * Hit an article
@@ -426,10 +441,10 @@ class KnowledgeArticles
         global $objDatabase;
 
         $id = intval($id);
-
-        $query = "  UPDATE ".DBPREFIX."module_knowledge_articles
-                    SET hits = hits + 1
-                    WHERE id = ".$id;
+        $query = "
+            UPDATE ".DBPREFIX."module_knowledge_articles
+               SET hits=hits+1
+             WHERE id=$id";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("error 'hitting' an article ");
         }
@@ -449,10 +464,11 @@ class KnowledgeArticles
         $value = intval($value);
         $id = intval($id);
 
-        $query = "  UPDATE ".DBPREFIX."module_knowledge_articles
-                    SET votes = votes + 1,
-                        votevalue = votevalue + ".$value."
-                    WHERE id = ".$id;
+        $query = "
+            UPDATE ".DBPREFIX."module_knowledge_articles
+               SET votes=votes+1,
+                   votevalue=votevalue+$value
+             WHERE id=$id";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("error voting an article");
         }
@@ -473,12 +489,11 @@ class KnowledgeArticles
         $lang = intval($lang);
 
         $query = $this->basequery;
-        $query .= " WHERE lang = ".$lang." ORDER BY hits DESC";
-
+        $query .= "
+            WHERE lang=$lang ORDER BY hits DESC";
         if ($amount != null) {
-           $query .= " LIMIT ".$amount;
+           $query .= " LIMIT $amount";
         }
-
         $articles = $this->readArticles(true, 0, 0, $query);
         return $articles;
     }
@@ -494,40 +509,30 @@ class KnowledgeArticles
     {
         $amount = intval($amount);
         $lang = intval($lang);
-
-        // Unfortunately we cannot use the basequery here
-        $query = "  SELECT  articles.id AS id,
-                            articles.active AS active,
-                            articles.hits AS hits,
-                            articles.votes AS votes,
-                            articles.votevalue AS value,
-                            articles.category AS category,
-                            articles.date_created AS date_created,
-                            articles.date_updated AS date_updated,
-                            content.lang AS lang,
-                            content.answer AS answer,
-                            content.question AS question,
-                            content.`index` as `index`,
-                            rating
-                    FROM (
-                        SELECT * , (votevalue / votes) AS rating
-                        FROM `".DBPREFIX."module_knowledge_articles`
-                        ) AS articles
-                    INNER JOIN  `".DBPREFIX."module_knowledge_article_content`
-                                AS content ON articles.id = content.article
-                    WHERE lang = ".$lang."
-                    ORDER BY rating DESC";
+        $query = "
+            SELECT articles.id, articles.active,
+                   articles.hits, articles.votes,
+                   articles.votevalue AS value,
+                   articles.category_ids,
+                   articles.date_created, articles.date_updated,
+                   content.lang, content.answer,
+                   content.question, content.`index`,
+                   (votevalue/votes) AS rating
+              FROM `".DBPREFIX."module_knowledge_articles` AS articles
+             INNER JOIN `".DBPREFIX."module_knowledge_article_content`
+                   AS content ON articles.id=content.article
+             WHERE lang=$lang
+             ORDER BY rating DESC";
         if ($amount != null) {
-            $query .= " LIMIT ".$amount;
-
+            $query .= " LIMIT $amount";
         }
         $articles = $this->readArticles(true, 0, 0, $query);
         return $articles;
     }
 
+
     /**
-     * Set all votes back to 0
-     *
+     * Reset all votes
      * @global $objDatabase
      * @throws DatabaseError
      */
@@ -535,17 +540,17 @@ class KnowledgeArticles
     {
         global $objDatabase;
 
-        $query = "  UPDATE ".DBPREFIX."module_knowledge_articles
-                    SET votes = 0, votevalue = 0";
+        $query = "
+            UPDATE ".DBPREFIX."module_knowledge_articles
+               SET votes=0, votevalue=0";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("failed to reset the votes");
         }
-
     }
+
 
     /**
      * Insert the content of an article
-     *
      * @param int $id
      * @global $objDatabase
      * @throws DatabaseError
@@ -559,21 +564,22 @@ class KnowledgeArticles
             $question = $values['question'];
             $answer = $values['answer'];
             $index = $values['index'];
-
-            $query = " INSERT INTO ".DBPREFIX."module_knowledge_article_content
-                           (article, lang, question, answer, `index`)
-                       VALUES
-                       (".$id.", ".$lang.", '".$question."',
-                        '".$answer."', '".$index."')";
+            $query = "
+                INSERT INTO ".DBPREFIX."module_knowledge_article_content (
+                    article, lang, question, answer, `index`
+                ) VALUES (
+                    $id, $lang, '$question',
+                    '$answer', '$index'
+                )";
             if ($objDatabase->Execute($query) === false) {
                 throw new DatabaseError("inserting category content failed");
             }
         }
     }
 
+
     /**
      * Delete the content of an article
-     *
      * @param int $id
      * @global $objDatabase
      * @throws DatabaseError
@@ -583,9 +589,9 @@ class KnowledgeArticles
         global $objDatabase;
 
         $id = intval($id);
-
-        $query = "  DELETE FROM ".DBPREFIX."module_knowledge_article_content
-                    WHERE article = ".$id;
+        $query = "
+            DELETE FROM ".DBPREFIX."module_knowledge_article_content
+             WHERE article=$id";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("deleting article content failed");
         }
@@ -594,7 +600,6 @@ class KnowledgeArticles
 
     /**
      * Return the glossary entries
-     *
      * @access public
      * @param $lang The Language id
      * @return array
@@ -603,15 +608,13 @@ class KnowledgeArticles
     {
         global $objDatabase;
 
-        $query = $this->basequery  ."
-            WHERE content.`index` != '0'
-            AND articles.active = 1
+        $query = $this->basequery."
+            WHERE content.`index`!='0'
+              AND articles.active=1
             ORDER BY content.`index`";
-
         $articles = $this->readArticles(true, $lang, 0, $query);
-
         $ret = array();
-        foreach ($articles as $articlekey =>  $article) {
+        foreach ($articles as $article) {
             $index = $article['content'][$lang]['index'];
             if (array_key_exists($index, $ret)) {
                 $ret[$index][] = $article;
@@ -619,9 +622,9 @@ class KnowledgeArticles
                 $ret[$index] = array($article);
             }
         }
-
         return $ret;
     }
+
 
     /**
      * Search in the articles for names
@@ -640,15 +643,12 @@ class KnowledgeArticles
         global $objDatabase;
 
         $searchterm = addslashes($searchterm);
-
         $query = $this->basequery ."
-            WHERE question LIKE '%".$searchterm."%'
-        ";
-
+            WHERE question LIKE '%".$searchterm."%'";
         $articles = $this->readArticles(true, $lang, 0, $query);
-
         return $articles;
     }
+
 }
 
 ?>

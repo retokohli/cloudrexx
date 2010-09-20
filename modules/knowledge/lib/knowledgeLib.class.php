@@ -32,28 +32,28 @@ class KnowledgeLibrary {
     /**
      * The settings object
      *
-     * @var object
+     * @var KnowledgeSettings
      */
     protected $settings;
 
     /**
      * The articles object
      *
-     * @var object
+     * @var KnowledgeArticles
      */
     protected $articles;
 
     /**
      * The categories object
      *
-     * @var object
+     * @var KnowledgeCategory
      */
     protected $categories;
 
     /**
      * The tags object
      *
-     * @var object
+     * @var KnowledgeTags
      */
     protected $tags;
 
@@ -132,27 +132,26 @@ class KnowledgeLibrary {
      * @global     object        $objDatabase
      * @return    array        $arrReturn
      */
-    function createLanguageArray() {
+    function createLanguageArray()
+    {
         global $objDatabase;
 
+        $objResult = $objDatabase->Execute('
+            SELECT id, lang, name
+              FROM '.DBPREFIX.'languages
+             WHERE frontend=1
+             ORDER BY id');
         $arrReturn = array();
-
-        $objResult = $objDatabase->Execute('SELECT        id,
-                                                        lang,
-                                                        name
-                                            FROM        '.DBPREFIX.'languages
-                                            WHERE        frontend=1
-                                            ORDER BY    id
-                                        ');
         while (!$objResult->EOF) {
-            $arrReturn[$objResult->fields['id']] = array(    'short'    =>    stripslashes($objResult->fields['lang']),
-                                                            'long'    =>    htmlentities(stripslashes($objResult->fields['name']),ENT_QUOTES, CONTREXX_CHARSET)
-                                                        );
+            $arrReturn[$objResult->fields['id']] = array(
+                'short' => stripslashes($objResult->fields['lang']),
+                'long'  => htmlentities(stripslashes($objResult->fields['name']),ENT_QUOTES, CONTREXX_CHARSET),
+            );
             $objResult->MoveNext();
         }
-
         return $arrReturn;
     }
+
 }
 
 ?>

@@ -24,8 +24,7 @@ class Knowledge extends KnowledgeLibrary
 {
     /**
      * The template object
-     *
-     * @var object
+     * @var   HTML_Template_Sigma
      */
     private $tpl;
 
@@ -41,10 +40,8 @@ class Knowledge extends KnowledgeLibrary
         global $_LANGID;
 
         KnowledgeLibrary::__construct();
-
         $this->languageId = intval($_LANGID);
-
-        $this->tpl = &new HTML_Template_Sigma('.');
+        $this->tpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->tpl);
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->tpl->setTemplate($pageContent);
@@ -124,19 +121,19 @@ class Knowledge extends KnowledgeLibrary
                 }
                 break;
         }
-
         return $this->tpl->get();
     }
 
+
     /**
      * The frontpage
-     *
      * @global $_LANGID
      * @global $_ARRAYLANG
      */
     private function frontPage()
     {
         global $_LANGID, $_ARRAYLANG;
+        static $e;
 
         try {
             $this->categories->readCategories();
@@ -199,9 +196,9 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/frontend/slider.js');
     }
 
+
     /**
      * Show a category
-     *
      * @param int $id
      * @global $_LANGID
      * @global $_ARRAYLANG
@@ -209,6 +206,7 @@ class Knowledge extends KnowledgeLibrary
     private function category($id=null)
     {
         global $_LANGID, $_ARRAYLANG;
+        static $e;
 
         try {
            $this->categories->readCategories();
@@ -221,7 +219,7 @@ class Knowledge extends KnowledgeLibrary
             $id = intval($_GET['id']);
         }
 
-      //JS::activate('prototype');
+        //JS::activate('prototype');
 
         $category = &$this->categories->categories[$id];
         $this->tpl->setVariable(array(
@@ -259,7 +257,6 @@ class Knowledge extends KnowledgeLibrary
 
     /**
      * Show the most read articles
-     *
      * @global $_ARRAYLANG
      * @global $_LANGID
      */
@@ -271,9 +268,9 @@ class Knowledge extends KnowledgeLibrary
         $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], 0);
     }
 
+
     /**
      * Show the best rated articles
-     *
      * @global $_LANGID
      * @global $_ARRAYLANG
      */
@@ -285,6 +282,7 @@ class Knowledge extends KnowledgeLibrary
         $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], 0);
     }
 
+
     /**
      * Show an article
      *
@@ -294,6 +292,7 @@ class Knowledge extends KnowledgeLibrary
     private function article()
     {
         global $_LANGID, $_ARRAYLANG;
+        static $e;
 
         if (empty($_GET['id'])) {
             return;
@@ -347,6 +346,7 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/rating.js');
     }
 
+
     /**
      * Show the tags of an article
      *
@@ -373,16 +373,18 @@ class Knowledge extends KnowledgeLibrary
         $this->tpl->parse("tags");
     }
 
+
     /**
      * Hit article
-     *
+
      * Increment the hit counter of an article.
      * Called through ajax.
      */
     private function hitArticle()
     {
-        $id = intval($_GET['id']);
+        static $e;
 
+        $id = intval($_GET['id']);
         try {
             $this->articles->hit($id);
         } catch (DatabaseError $e) {
@@ -391,9 +393,9 @@ class Knowledge extends KnowledgeLibrary
         die();
     }
 
+
     /**
      * Show all articles of a tag
-     *
      * @global $_LANGID
      * @global $_ARRAYLANG
      */
@@ -456,6 +458,7 @@ class Knowledge extends KnowledgeLibrary
         }
     }
 
+
     /**
      * Show the search results
      *
@@ -465,6 +468,7 @@ class Knowledge extends KnowledgeLibrary
     private function search()
     {
         global $_ARRAYLANG, $_LANGID;
+        static $e;
 
         require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterface.php";
         require_once ASCMS_MODULE_PATH."/knowledge/lib/searchInterfaces/searchKnowledge.php";
@@ -580,6 +584,7 @@ class Knowledge extends KnowledgeLibrary
     private function parseArticleList($articles, $title, $counter=0, $url="")
     {
         global $_ARRAYLANG, $_LANGID;
+        static $e;
 
         if (count($articles)) {
             foreach ($articles as $articleKey => $article) {
@@ -713,10 +718,7 @@ class Knowledge extends KnowledgeLibrary
      */
     private function rate()
     {
-        global $_CONFIG;
-
         $id = intval($_POST['id']);
-
         $rated = intval($_POST['rated']);
         if (!isset($_COOKIE['knowledge_rating_'.$id])) {
             try {

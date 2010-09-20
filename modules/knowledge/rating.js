@@ -225,4 +225,3 @@ Rating.prototype.click = function(event)
     this.rated = true;
     this.fg.style.background = 'url('+this.starPath+this.rateStar+') repeat-x';
 }
-

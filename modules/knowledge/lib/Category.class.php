@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contains the class for category operations
  *
@@ -42,22 +43,22 @@ class KnowledgeCategory
      */
     public function readCategories($override = false, $id = 0)
     {
+        global $objDatabase;
+
         if ($override === false && isset($this->categories)) {
             // the cateogories are already read out and override is not given
             return;
         }
 
-        global $objDatabase;
-
-        $query = "  SELECT  categories.id as id,
-                            categories.active as active,
-                            categories.parent as parent,
-                            content.name as name,
-                            content.lang as lang
-                    FROM ".DBPREFIX."module_knowledge_categories AS categories
-                    INNER JOIN ".DBPREFIX."module_knowledge_categories_content AS content
-                    ON categories.id = content.category";
-
+        $query = "
+            SELECT categories.id,
+                   categories.active,
+                   categories.parent,
+                   content.name,
+                   content.lang
+              FROM ".DBPREFIX."module_knowledge_categories AS categories
+             INNER JOIN ".DBPREFIX."module_knowledge_categories_content AS content
+                ON categories.id=content.category";
         // if only one category should be read add a where to the query
         if ($id > 0) {
             $id = intval($id);
@@ -386,4 +387,7 @@ class KnowledgeCategory
             }
         }
     }
+
 }
+
+?>
