@@ -2250,7 +2250,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_knowledge_articles` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `category` int(10) unsigned NOT NULL default '0',
+  `category_ids` varchar(1024) NOT NULL,
   `active` tinyint(1) NOT NULL default '1',
   `hits` int(11) NOT NULL default '0',
   `votes` int(11) NOT NULL default '0',
