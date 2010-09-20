@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Media Manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -55,7 +56,8 @@ class MediaManager extends MediaLibrary {
     * @param  string
     * @access public
     */
-    function MediaManager($pageContent, $archive){
+    function MediaManager($pageContent, $archive)
+    {
         $this->__construct($pageContent, $archive);
     }
 
@@ -66,7 +68,8 @@ class MediaManager extends MediaLibrary {
      * @param  array   $_ARRAYLANG
      * @access public
      */
-    function __construct($pageContent, $archive){
+    function __construct($pageContent, $archive)
+    {
         MediaLibrary::__construct();
         $this->archive = (intval(substr($archive,-1,1)) == 0) ? 'media1' : $archive;
 
@@ -107,13 +110,13 @@ class MediaManager extends MediaLibrary {
     * @return string  cleaned web path
     */
     function getWebPath($defaultWebPath) {
-        if(isset($_GET['path']) AND !empty($_GET['path']) AND !stristr($_GET['path'],'..')) {
+        if (isset($_GET['path']) AND !empty($_GET['path']) AND !stristr($_GET['path'],'..')) {
             $webPath = trim($_GET['path']);
         } else {
             $webPath = $defaultWebPath;
         }
 
-        if(substr($webPath, 0, strlen($defaultWebPath)) != $defaultWebPath || !file_exists($this->docRoot . $webPath)){
+        if (substr($webPath, 0, strlen($defaultWebPath)) != $defaultWebPath || !file_exists($this->docRoot . $webPath)) {
             $webPath = $defaultWebPath;
         }
         return $webPath;
@@ -127,7 +130,8 @@ class MediaManager extends MediaLibrary {
     * @return    string    parsed content
     */
 
-    function getMediaPage(){
+    function getMediaPage()
+    {
 
         global $_ARRAYLANG, $template;
 
@@ -149,10 +153,11 @@ class MediaManager extends MediaLibrary {
     * @return    string    parsed content
     */
 
-    function _overviewMedia(){
+    function _overviewMedia()
+    {
         global $_CONFIG, $_ARRAYLANG;
 
-        switch($this->getAct){
+        switch($this->getAct) {
             case 'download':
                 $this->_downloadMedia();
                 break;
@@ -167,18 +172,18 @@ class MediaManager extends MediaLibrary {
 
         // tree navigation
         $tmp = $this->arrWebPaths[$this->archive];
-        if(substr($this->webPath, 0, strlen($tmp)) == $tmp){
+        if (substr($this->webPath, 0, strlen($tmp)) == $tmp) {
             $this->_objTpl->setVariable(array(  // navigation #1
                 'MEDIA_TREE_NAV_MAIN'      => "Home /", //$this->arrWebPaths[$x],
                 'MEDIA_TREE_NAV_MAIN_HREF' => CONTREXX_SCRIPT_PATH.'?section='.$this->archive.$this->getCmd.'&amp;path=' . rawurlencode($this->arrWebPaths[$this->archive])
             ));
 
-            if(strlen($this->webPath) != strlen($tmp)){
+            if (strlen($this->webPath) != strlen($tmp)) {
                 $tmpPath = substr($this->webPath, -(strlen($this->webPath) - strlen($tmp)));
                 $tmpPath = explode('/', $tmpPath);
                 $tmpLink = '';
-                foreach($tmpPath as $path){
-                    if(!empty($path)){
+                foreach ($tmpPath as $path) {
+                    if (!empty($path)) {
                         $tmpLink .= $path . '/';
                         $this->_objTpl->setVariable(array(  // navigation #2
                             'MEDIA_TREE_NAV_DIR'      => $path,
@@ -198,11 +203,11 @@ class MediaManager extends MediaLibrary {
         $i       = 0;
         $dirTree = $this->_dirTree($this->path);
         $dirTree = $this->_sortDirTree($dirTree);
-        foreach(array_keys($dirTree) as $key){
-            if(is_array($dirTree[$key]['icon'])){
-                for($x = 0; $x < count($dirTree[$key]['icon']); $x++){
+        foreach (array_keys($dirTree) as $key) {
+            if (is_array($dirTree[$key]['icon'])) {
+                for ($x = 0; $x < count($dirTree[$key]['icon']); $x++) {
                     $class = ($i % 2) ? 'row2' : 'row1';
-                    if(in_array($dirTree[$key]['name'][$x], $this->highlightName)) // highlight
+                    if (in_array($dirTree[$key]['name'][$x], $this->highlightName)) // highlight
                     {
                         $class .= '" style="background-color: ' . $this->highlightColor . ';';
                     }
@@ -215,14 +220,14 @@ class MediaManager extends MediaLibrary {
                         'MEDIA_FILE_DATE'     => $this->_formatDate($dirTree[$key]['date'][$x]),
                     ));
 
-                    if($key == 'dir'){
+                    if ($key == 'dir') {
                         $tmpHref= CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
                     }
-                    elseif($key == 'file'){
-                        if($this->_isImage($this->path . $dirTree[$key]['name'][$x])){
+                    elseif ($key == 'file') {
+                        if ($this->_isImage($this->path . $dirTree[$key]['name'][$x])) {
                             $tmpSize = getimagesize($this->path . $dirTree[$key]['name'][$x]);
                             $tmpHref = 'javascript: preview(\'' . $this->webPath . $dirTree[$key]['name'][$x] . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
-                        }else{
+                        } else {
                             $tmpHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . '&amp;act=download&amp;path=' . rawurlencode($this->webPath) . '&amp;file='. rawurlencode($dirTree[$key]['name'][$x]);
                         }
                     }
@@ -238,7 +243,7 @@ class MediaManager extends MediaLibrary {
         }
 
         // empty dir or php safe mode restriction
-        if($i == 0 && !@opendir($this->rootPath)){
+        if ($i == 0 && !@opendir($this->rootPath)) {
             $tmpMessage = (!@opendir($this->path)) ? 'PHP Safe Mode Restriction or wrong path' : $_ARRAYLANG['TXT_MEDIA_DIR_EMPTY'];
 
             $this->_objTpl->setVariable(array(
@@ -271,7 +276,7 @@ class MediaManager extends MediaLibrary {
             'MEDIA_JAVASCRIPT'          => $this->_getJavaScriptCodePreview()
         ));
 
-        if(!$this->uploadAccessGranted()) {
+        if (!$this->uploadAccessGranted()) {
             // if user not allowed to upload files and creating folders -- hide that blocks
             if ($this->_objTpl->blockExists('media_simple_file_upload')) {
                 $this->_objTpl->hideBlock('media_simple_file_upload');
@@ -343,10 +348,10 @@ class MediaManager extends MediaLibrary {
     private function uploadAccessGranted()
     {
         $uploadAccessSetting = $this->_arrSettings[$this->archive . '_frontend_changable'];
-        if(is_numeric($uploadAccessSetting)
+        if (is_numeric($uploadAccessSetting)
            && Permission::checkAccess(intval($uploadAccessSetting), 'dynamic', true)) { // access group
             return true;
-        } else if($uploadAccessSetting == 'on') {
+        } else if ($uploadAccessSetting == 'on') {
             return true;
         }
         return false;
@@ -391,7 +396,7 @@ class MediaManager extends MediaLibrary {
         global $_ARRAYLANG;
 
         if (empty($dir_name)) {
-            if(!isset($_GET['highlightFiles'])) {
+            if (!isset($_GET['highlightFiles'])) {
                 $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_EMPTY_DIR_NAME'];
             }
             return;
@@ -399,7 +404,7 @@ class MediaManager extends MediaLibrary {
             $dir_name = contrexx_stripslashes($dir_name);
         }
 
-        if(!$this->uploadAccessGranted()) {
+        if (!$this->uploadAccessGranted()) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
             return;
         }
@@ -407,10 +412,10 @@ class MediaManager extends MediaLibrary {
         $obj_file = new File();
         $dir_name = $obj_file->replaceCharacters($dir_name);
         $creationStatus = $obj_file->mkDir($this->path, $this->webPath, $dir_name);
-        if($creationStatus != "error") {
+        if ($creationStatus != "error") {
             $this->highlightName[] = $dir_name;
             $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_MSG_NEW_DIR'];
-        }else{
+        } else {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_DIR'];
         }
     }
@@ -432,7 +437,7 @@ class MediaManager extends MediaLibrary {
     function _uploadFiles()
     {
         // check permissions
-        if(!$this->uploadAccessGranted()) {
+        if (!$this->uploadAccessGranted()) {
             $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
             return;
         }
@@ -508,5 +513,7 @@ class MediaManager extends MediaLibrary {
         }
         return false;
     }
+
 }
+
 ?>
