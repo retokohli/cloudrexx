@@ -1,6 +1,7 @@
-<?PHP
+<?php
 
-class Settings {
+class PartnerSettings
+{
     private $__table = null;
     private $__data  = array();
 
@@ -28,5 +29,7 @@ class Settings {
         NGDb::execute($sql);
         $this->__data[$key] = serialize($value);
     }
+
 }
 
+?>

@@ -4,25 +4,24 @@
 <script type="text/javascript" src="{PARTNERS_DROPDOWN_JS_LOCATION}"></script>
 <script type="text/javascript" src="{PARTNERS_LABELBROWSER_JS_LOCATION}"></script>
 <script type="text/javascript">
-    LabelBrowser.config({'select_size': 1});
+  LabelBrowser.config({'select_size': 1});
 </script>
 
-
 <ul id="tabmenu">
-	<li><a title="{TXT_PARTNERS_SETTINGS_PARSE_BLOCKS}" onclick="selectTab('BlockParsing')" href="javascript:{}" class="active" id="categories_BlockParsing">{TXT_PARTNERS_SETTINGS_PARSE_BLOCKS}</a></li>
-	<li><a title="{TXT_PARTNERS_SETTINGS_MISC}" onclick="selectTab('Misc')" href="javascript:{}" class="inactive" id="categories_Misc">{TXT_PARTNERS_SETTINGS_MISC}</a></li>
+  <li><a title="{TXT_PARTNERS_SETTINGS_PARSE_BLOCKS}" onclick="selectTab('BlockParsing')" href="javascript:{}" class="active" id="categories_BlockParsing">{TXT_PARTNERS_SETTINGS_PARSE_BLOCKS}</a></li>
+  <li><a title="{TXT_PARTNERS_SETTINGS_MISC}" onclick="selectTab('Misc')" href="javascript:{}" class="inactive" id="categories_Misc">{TXT_PARTNERS_SETTINGS_MISC}</a></li>
 </ul>
 
 <div class="categories" id="BlockParsing">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-	<tr>
-		<th colspan="3">{TXT_PARTNERS_LABELS}</th>
-	</tr>
+  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+    <tr>
+      <th colspan="3">{TXT_PARTNERS_LABELS}</th>
+    </tr>
     <!-- BEGIN settings_parsing_labels -->
         <tr class="row3">
             <td><span style="font-weight: bold">{TXT_PARTNERS_LABEL} '{PARTNERS_ASSIGNABLELABEL}'</span></td>
             <td><span style="font-weight: bold;">{TXT_PARTNERS_BLOCK_TO_PARSE}</span></td>
-			<td>&nbsp;</td>
+            <td>&nbsp;</td>
         </tr>
         <!-- BEGIN settings_parsing_label_entry -->
         <tr class="{ROW_CLASS}">
@@ -54,13 +53,13 @@
         </tr>
     <!-- END settings_parsing_labels -->
 
-	</table>
+  </table>
 </div>
 
 <div class="categories" id="Misc" style="display:none">
 
     <form method="POST" action="index.php?cmd=partners&amp;act=settings&amp;do=misc">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+      <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <tr>
             <th colspan="3">{TXT_PARTNERS_SETTINGS_MISC}</th>
         </tr>
@@ -81,11 +80,9 @@
             <td style="width: 400px;"><input type="checkbox" {PARTNERS_HIDE_EMPTY_CHECKED} value="1" name="hide_empty_labels"></td>
             <td> </td>
         </tr>
-	</table>
-	<p/>
-	<input type="submit" value="{TXT_SAVE}"/>
+      </table>
+      <p/>
+      <input type="submit" value="{TXT_SAVE}"/>
     </form>
 </div>
-
- <!-- END list_partners.html -->
-
+<!-- END list_partners.html -->
