@@ -30,17 +30,16 @@ require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
  * @subpackage  core_module_news
  */
 class news extends newsLibrary {
-    var $newsTitle;
-    var $langId;
-    var $arrSettings = array();
-    var $_objTpl;
-    var $_submitMessage;
+    public $newsTitle;
+    public $langId;
+    public $arrSettings = array();
+    public $_objTpl;
+    public $_submitMessage;
+    public $_commentErrorMessage = '';
+    public $_commentTitle = '';
+    public $_commentMessage = '';
+    public $_commentAuthor = '';
 
-    var $_commentErrorMessage = '';
-	var $_commentTitle = '';
-	var $_commentMessage = '';
-	var $_commentAuthor = '';
-    
     /**
     * Constructor
     *
@@ -83,14 +82,13 @@ class news extends newsLibrary {
             $_REQUEST['cmd'] = '';
         }
 
-        switch($_REQUEST['cmd']) {
+        switch ($_REQUEST['cmd']) {
         case 'details':
-        	if (isset($_REQUEST['comment']) && $_REQUEST['comment'] == 'add') {
-        		$this->addComment();
-        	}
+            if (isset($_REQUEST['comment']) && $_REQUEST['comment'] == 'add') {
+                $this->addComment();
+            }
             return $this->getDetails();
             break;
-
         case 'submit':
             return $this->_submit();
             break;
@@ -120,7 +118,7 @@ class news extends newsLibrary {
 
         $paging     = '';
         $pos        = 0;
-        $i 			= 0;
+        $i          = 0;
 
         if (isset($_GET['pos'])) {
             $pos = intval($_GET['pos']);
@@ -146,7 +144,7 @@ class news extends newsLibrary {
                                                     FROM    '.DBPREFIX.'module_news AS news
                                                       INNER JOIN '.DBPREFIX.'module_news_categories AS cat ON cat.catid = news.catid
                                                       INNER JOIN '.DBPREFIX.'module_news_categories_locale AS catl ON catl.category_id = news.catid
-                                                      INNER JOIN '.DBPREFIX.'module_news_locale AS locale ON news.id = locale.news_id 
+                                                      INNER JOIN '.DBPREFIX.'module_news_locale AS locale ON news.id = locale.news_id
                                                     WHERE   news.status = 1 AND
                                                             news.id = '.$newsid.' AND
                                                             locale.lang_id ='.$this->langId.' AND
@@ -206,113 +204,101 @@ class news extends newsLibrary {
                     } else {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
-
                     $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
-                    
                     //Show comment-part
-			        if ($this->arrSettings['news_comments_activated']) {
-			            //comments are activated
-                    
-	                    // get comments list
-	                    $query = '  SELECT      title            AS commentstitle,
-				                                date             AS commentsdate,
-				                                poster_name      AS commentsauthor,
-				                                userid           AS userid,
-				                                text             AS commentscontent
-				                    FROM        '.DBPREFIX.'module_news_comments
-				                    WHERE       newsid = '.$newsid.' AND is_active = "1"
-				                    ORDER BY    date DESC';
-				
-				        /***start paging ****/
-				        $comResult = $objDatabase->Execute($query);
-				        $count = $comResult->RecordCount();
-				        if ($count > intval($_CONFIG['corePagingLimit'])) {
-				            $paging = getPaging($count, $pos, "&amp;section=news&amp;cmd=details&amp;newsid=".$newsid, $_ARRAYLANG['TXT_NEWS_COMMENTS'], true);
-				        }
-				        $this->_objTpl->setVariable("COMMENTS_PAGING", $paging);
-				        $comResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
-				        /*** end paging ***/
-				        if ($count >= 1) {
-				            while (!$comResult->EOF) {
-				                ($i % 2) ? $class  = 'row2' : $class  = 'row1';
-				                $strUserName 	= '';
-			                	$strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.User_Profile::$arrNoAvatar['src'].'" alt="'.$strUserName.'" />';
-								$objUser = $objFWUser->objUser->getUser($comResult->fields['userid']);
-								if ($comResult->fields['userid'] == 0 || $objUser === false) {
-									$strUserName = htmlentities($comResult->fields['commentsauthor'], ENT_QUOTES, CONTREXX_CHARSET);
-			                	} else {
-									$strUserName = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-			
-									if ($objUser->getProfileAttribute('picture') != '') {
-										$strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
-									}
-			                	}
-				                
-				                $commentstitle = htmlentities(stripslashes($comResult->fields['commentstitle']), ENT_QUOTES, CONTREXX_CHARSET);
-				                $commentsbody = contrexx_stripslashes(nl2br($comResult->fields['commentscontent']));
-				
-				                $this->_objTpl->setVariable(array(
-				                           'NEWS_COMMENTS_CSS'          => $class,
-				                           'NEWS_COMMENTS_TITLE'        => $commentstitle,
-				                           'NEWS_COMMENTS_BODY'		    => $commentsbody,
-				                           'NEWS_COMMENTS_DATE'         => $this->getPostedByString($strUserName, date(ASCMS_DATE_FORMAT,$comResult->fields['commentsdate'])),
-				                           'NEWS_COMMENTS_AVATAR'		=> $strUserAvatar
-				                ));
-				                
-				                $this->_objTpl->parse('commentsrow');
-				                $i++;
-				                $comResult->MoveNext();
-				            }
-				        } else {
-				        	$this->_objTpl->setVariable('TXT_NEWS_COMMENTS_NONE_EXISTING', $_ARRAYLANG['TXT_NEWS_COMMENTS_NONE_EXISTING']);
-	                		$this->_objTpl->parse('showNoComment');
-				        }
-				        
-				        $objFWUser = FWUser::getFWUserObject();
-		                $userid = $objFWUser->objUser->getId();
-				        if ($this->arrSettings['news_comments_anonymous'] == '1' || $userid) {
-                			//Anonymous comments allowed or user is logged in
-					        // generate form for adding comments
-							// generate captcha code for comments
-		                    $captcha = "";
-		                    $authorInput = '<input type="text" name="cAuthor" id="cAuthor" value="' . htmlentities($this->_commentAuthor, ENT_QUOTES, CONTREXX_CHARSET) . '" />';
-		                    if (!$userid) { // need captcha
-		                    	require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-		                		$objCaptcha = new Captcha();
-		                    	$captcha = "<p><label>" . $_ARRAYLANG['TXT_SPAM_PREVENT'] . "</label>
-		                    	<img src='" . $objCaptcha->getUrl() . "' 
-		                    		alt='" . $objCaptcha->getAlt() . "'
-		                    		title='" . $objCaptcha->getAlt() . "' /><br/>
-		    					<input type='hidden' name='cOffset' value='" . $objCaptcha->getOffset() . "' />
-		    					<input type='text' name='cCaptcha'/></p>";
-		                    } else {
-		                    	$this->_commentAuthor = htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-		                    	
-		                    	$authorInput = $this->_commentAuthor . '<input type="hidden" name="cAuthor" id="cAuthor" value="' . $this->_commentAuthor . '" /><input type="hidden" name="cAuthorID" value="' . $userid . '" />';
-		                    }
-		                    $this->_objTpl->setVariable(array(
-		                    	'COMMENT_ERROR_MESSAGE' => $this->_commentErrorMessage,
-								'COMMENT_TITLE' 		=> htmlentities($this->_commentTitle, ENT_QUOTES, CONTREXX_CHARSET),
-								'COMMENT_MESSAGE' 	=> htmlentities($this->_commentMessage, ENT_QUOTES, CONTREXX_CHARSET),
-								'AUTHOR_INPUT'	 	=> $authorInput,
-								'COMMENT_CAPTCHA'	=> $captcha,
-								'TARGET_NEWS_ID' 	=> $newsid,
-							   	'TXT_NEWS_COMMENTS' 			=> $_ARRAYLANG['TXT_NEWS_COMMENTS'],
-							   	'TXT_NEWS_COMMENTS_ADD_COMMENT' => $_ARRAYLANG['TXT_NEWS_COMMENTS_ADD_COMMENT'],
-							   	'TXT_NEWS_COMMENTS_AUTHOR' 		=> $_ARRAYLANG['TXT_NEWS_COMMENTS_AUTHOR'],
-							   	'TXT_NEWS_COMMENTS_TITLE' 		=> $_ARRAYLANG['TXT_NEWS_COMMENTS_TITLE'],
-							   	'TXT_NEWS_COMMENTS_MESSAGE' 	=> $_ARRAYLANG['TXT_NEWS_COMMENTS_MESSAGE'],
-							   	'TXT_NEWS_COMMENTS_ADD' 		=> $_ARRAYLANG['TXT_NEWS_COMMENTS_ADD']
-		                    ));
-				        } else {
-				        	// hide add comment form
-				        	$this->_objTpl->hideBlock('addComment');
-				        }
-				        
-			        } else {
-			        	$this->_objTpl->hideBlock('showComments');
-					}
-
+                    if ($this->arrSettings['news_comments_activated']) {
+                        //comments are activated
+                        // get comments list
+                        $query = '  SELECT      title            AS commentstitle,
+                                                date             AS commentsdate,
+                                                poster_name      AS commentsauthor,
+                                                userid           AS userid,
+                                                text             AS commentscontent
+                                    FROM        '.DBPREFIX.'module_news_comments
+                                    WHERE       newsid = '.$newsid.' AND is_active = "1"
+                                    ORDER BY    date DESC';
+                        /***start paging ****/
+                        $comResult = $objDatabase->Execute($query);
+                        $count = $comResult->RecordCount();
+                        if ($count > intval($_CONFIG['corePagingLimit'])) {
+                            $paging = getPaging($count, $pos, "&amp;section=news&amp;cmd=details&amp;newsid=".$newsid, $_ARRAYLANG['TXT_NEWS_COMMENTS'], true);
+                        }
+                        $this->_objTpl->setVariable("COMMENTS_PAGING", $paging);
+                        $comResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+                        /*** end paging ***/
+                        if ($count >= 1) {
+                            while (!$comResult->EOF) {
+                                ($i % 2) ? $class  = 'row2' : $class  = 'row1';
+                                $strUserName     = '';
+                                $strUserAvatar    = '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.User_Profile::$arrNoAvatar['src'].'" alt="'.$strUserName.'" />';
+                                $objUser = $objFWUser->objUser->getUser($comResult->fields['userid']);
+                                if ($comResult->fields['userid'] == 0 || $objUser === false) {
+                                    $strUserName = htmlentities($comResult->fields['commentsauthor'], ENT_QUOTES, CONTREXX_CHARSET);
+                                } else {
+                                    $strUserName = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+                                    if ($objUser->getProfileAttribute('picture') != '') {
+                                        $strUserAvatar    = '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
+                                    }
+                                }
+                                $commentstitle = htmlentities(stripslashes($comResult->fields['commentstitle']), ENT_QUOTES, CONTREXX_CHARSET);
+                                $commentsbody = contrexx_stripslashes(nl2br($comResult->fields['commentscontent']));
+                                $this->_objTpl->setVariable(array(
+                                           'NEWS_COMMENTS_CSS'          => $class,
+                                           'NEWS_COMMENTS_TITLE'        => $commentstitle,
+                                           'NEWS_COMMENTS_BODY'            => $commentsbody,
+                                           'NEWS_COMMENTS_DATE'         => $this->getPostedByString($strUserName, date(ASCMS_DATE_FORMAT,$comResult->fields['commentsdate'])),
+                                           'NEWS_COMMENTS_AVATAR'        => $strUserAvatar
+                                ));
+                                $this->_objTpl->parse('commentsrow');
+                                $i++;
+                                $comResult->MoveNext();
+                            }
+                        } else {
+                            $this->_objTpl->setVariable('TXT_NEWS_COMMENTS_NONE_EXISTING', $_ARRAYLANG['TXT_NEWS_COMMENTS_NONE_EXISTING']);
+                            $this->_objTpl->parse('showNoComment');
+                        }
+                        $objFWUser = FWUser::getFWUserObject();
+                        $userid = $objFWUser->objUser->getId();
+                        if ($this->arrSettings['news_comments_anonymous'] == '1' || $userid) {
+                            //Anonymous comments allowed or user is logged in
+                            // generate form for adding comments
+                            // generate captcha code for comments
+                            $captcha = "";
+                            $authorInput = '<input type="text" name="cAuthor" id="cAuthor" value="' . htmlentities($this->_commentAuthor, ENT_QUOTES, CONTREXX_CHARSET) . '" />';
+                            if (!$userid) { // need captcha
+                                require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+                                $objCaptcha = new Captcha();
+                                $captcha = "<p><label>" . $_ARRAYLANG['TXT_SPAM_PREVENT'] . "</label>
+                                <img src='" . $objCaptcha->getUrl() . "'
+                                    alt='" . $objCaptcha->getAlt() . "'
+                                    title='" . $objCaptcha->getAlt() . "' /><br/>
+                                <input type='hidden' name='cOffset' value='" . $objCaptcha->getOffset() . "' />
+                                <input type='text' name='cCaptcha'/></p>";
+                            } else {
+                                $this->_commentAuthor = htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+                                $authorInput = $this->_commentAuthor . '<input type="hidden" name="cAuthor" id="cAuthor" value="' . $this->_commentAuthor . '" /><input type="hidden" name="cAuthorID" value="' . $userid . '" />';
+                            }
+                            $this->_objTpl->setVariable(array(
+                                'COMMENT_ERROR_MESSAGE' => $this->_commentErrorMessage,
+                                'COMMENT_TITLE'         => htmlentities($this->_commentTitle, ENT_QUOTES, CONTREXX_CHARSET),
+                                'COMMENT_MESSAGE'     => htmlentities($this->_commentMessage, ENT_QUOTES, CONTREXX_CHARSET),
+                                'AUTHOR_INPUT'         => $authorInput,
+                                'COMMENT_CAPTCHA'    => $captcha,
+                                'TARGET_NEWS_ID'     => $newsid,
+                                   'TXT_NEWS_COMMENTS'             => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
+                                   'TXT_NEWS_COMMENTS_ADD_COMMENT' => $_ARRAYLANG['TXT_NEWS_COMMENTS_ADD_COMMENT'],
+                                   'TXT_NEWS_COMMENTS_AUTHOR'         => $_ARRAYLANG['TXT_NEWS_COMMENTS_AUTHOR'],
+                                   'TXT_NEWS_COMMENTS_TITLE'         => $_ARRAYLANG['TXT_NEWS_COMMENTS_TITLE'],
+                                   'TXT_NEWS_COMMENTS_MESSAGE'     => $_ARRAYLANG['TXT_NEWS_COMMENTS_MESSAGE'],
+                                   'TXT_NEWS_COMMENTS_ADD'         => $_ARRAYLANG['TXT_NEWS_COMMENTS_ADD']
+                            ));
+                        } else {
+                            // hide add comment form
+                            $this->_objTpl->hideBlock('addComment');
+                        }
+                    } else {
+                        $this->_objTpl->hideBlock('showComments');
+                    }
                     $this->_objTpl->setVariable(array(
                        'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
                        'NEWS_TITLE'         => $newstitle,
@@ -322,7 +308,7 @@ class news extends newsLibrary {
                        'NEWS_SOURCE'        => $newsSource,
                        'NEWS_URL'           => $newsUrl,
                        'NEWS_AUTHOR'        => $author,
-					   'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
+                       'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
 
                     if (!empty($objResult->fields['newsimage'])) {
@@ -743,9 +729,8 @@ class news extends newsLibrary {
                     $newsCat = $_POST['newsCat'];
                     $newsText = $_POST['newsText'];
 
-                    if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) && 
-                         (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {                        
-                             
+                    if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) &&
+                         (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {
                         $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
                     }
                 }
@@ -763,8 +748,6 @@ class news extends newsLibrary {
             global $wysiwygEditor, $FCKeditorBasePath;
             $wysiwygEditor = "FCKeditor";
             $FCKeditorBasePath = "/editor/fckeditor/";
-
-
 
             $this->_objTpl->setVariable(array(
                 'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
@@ -817,10 +800,8 @@ class news extends newsLibrary {
     }
 
 
-
     /**
     * Insert a new news message
-    *
     * @access private
     * @global ADONewConnection
     * @global array
@@ -861,10 +842,7 @@ class news extends newsLibrary {
             /*$this->langId, '',         '',      */       $enable,
             $enable,        $userid,    /*$newsTeaserText,*/  $date
         );
-        
         // title, text and teasertext stored in locale table
-
-
         $into   = "`" . join("`, `", $insert_fields) . "`";
         $values = "'" . join("', '", array_map('contrexx_addslashes', $insert_values)) . "'";
 
@@ -872,7 +850,6 @@ class news extends newsLibrary {
             INSERT INTO ".DBPREFIX."module_news ( $into)
             VALUES ( $values )"
         );
-
         if ($objResult !== false) {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED']."<br /><br />";
             $ins_id = $objDatabase->Insert_ID();
@@ -884,9 +861,9 @@ class news extends newsLibrary {
         }
     }
 
+
     /**
     * Show feed page
-    *
     * @access private
     * @global array
     * @global integer
@@ -930,43 +907,44 @@ RSS2JSCODE;
         ));
         return $this->_objTpl->get();
     }
-    
+
+
     /**
      * Validate comment before saving
      * (check all fields to be not null & captcha)
      * @global    ADONewConnection
-     * 
+     *
      * @return boolean
      */
     function _validateComment()
     {
-    	global $_ARRAYLANG;
-    	if (!isset($_REQUEST['cAuthorID']) && (!isset($_REQUEST['cAuthor']) || $_REQUEST['cAuthor'] == "")) {
-    		$this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_AUTHOR'];
-    	} elseif (!isset($_REQUEST['cTitle']) || $_REQUEST['cTitle'] == "") {
-    		$this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_TITLE'];
-    	} elseif (!isset($_REQUEST['cMessage']) || $_REQUEST['cMessage'] == "") {
-    		$this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_MESSAGE'];
-    	} elseif (isset($_REQUEST['cOffset'])) {
-    		require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
-			$captcha = new Captcha();
+        global $_ARRAYLANG;
+        if (!isset($_REQUEST['cAuthorID']) && (!isset($_REQUEST['cAuthor']) || $_REQUEST['cAuthor'] == "")) {
+            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_AUTHOR'];
+        } elseif (!isset($_REQUEST['cTitle']) || $_REQUEST['cTitle'] == "") {
+            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_TITLE'];
+        } elseif (!isset($_REQUEST['cMessage']) || $_REQUEST['cMessage'] == "") {
+            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_MESSAGE'];
+        } elseif (isset($_REQUEST['cOffset'])) {
+            require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
+            $captcha = new Captcha();
 
-			$offset = $captcha->getOffset();
-			if (!$captcha->compare($_POST['cCaptcha'], $_POST['cOffset'])) {
-            	$this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_CAPTCHA'];
+            $offset = $captcha->getOffset();
+            if (!$captcha->compare($_POST['cCaptcha'], $_POST['cOffset'])) {
+                $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_CAPTCHA'];
             }
-    	}
-    	
-    	if ("" == $this->_commentErrorMessage) {
-    		return true;
-    	} else {
-    		$this->_commentTitle = $_POST['cTitle'];
-    		$this->_commentMessage = $_POST['cMessage'];
-    		$this->_commentAuthor = $_POST['cAuthor'];
-    		return false;
-    	}
+        }
+        if ("" == $this->_commentErrorMessage) {
+            return true;
+        } else {
+            $this->_commentTitle = $_POST['cTitle'];
+            $this->_commentMessage = $_POST['cMessage'];
+            $this->_commentAuthor = $_POST['cAuthor'];
+            return false;
+        }
     }
-    
+
+
     /**
      * Insert comment into database
      * @global    ADONewConnection
@@ -975,7 +953,7 @@ RSS2JSCODE;
      */
     function _addComment()
     {
-    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $date = time();
         $comment_title = contrexx_addslashes(contrexx_strip_tags($_POST['cTitle']));
@@ -983,9 +961,7 @@ RSS2JSCODE;
         $comment_author = contrexx_addslashes(contrexx_strip_tags($_POST['cAuthor']));
         $news_id = intval($_REQUEST['newsid']);
         $user_id = (isset($_POST['cAuthorID'])) ? intval($_POST['cAuthorID']) : 0;
-        
         $intIsActive = intval($this->arrSettings['news_comments_autoactivate']);
-        
         $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_comments (
             title,
             text,
@@ -1005,17 +981,14 @@ RSS2JSCODE;
             '" . $_SERVER['REMOTE_ADDR'] . "',
             '$intIsActive')"
         );
-
         if ($objResult === false) {
             $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_SAVING_ERROR'];
             return false;
         }
-        
         //Set a cookie with the current timestamp. Avoids flooding.
         setcookie('NewsCommentLast', $date, 0, ASCMS_PATH_OFFSET.'/');
-        
         $intIsNotification = intval($this->arrSettings['news_comments_notification']);
-		if ($intIsNotification) {
+        if ($intIsNotification) {
             //Send notification to administrator
             if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 $objMail = new phpmailer();
@@ -1030,17 +1003,14 @@ RSS2JSCODE;
                         $objMail->Password = $arrSmtp['password'];
                     }
                 }
-
                 if ($user_id > 0) {
                     $objFWUser = FWUser::getFWUserObject();
                     $strName = htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
                 }
-
                 $strMailSubject = str_replace('[SUBJECT]', $comment_title, $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_SUBJECT']);
                 $strMailBody    = str_replace('[USERNAME]', $strName, $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_BODY']);
                 $strMailBody    = str_replace('[SUBJECT]', $comment_title, $strMailBody);
                 $strMailBody    = str_replace('[COMMENT]', $comment_message, $strMailBody);
-
                 $objMail->CharSet = CONTREXX_CHARSET;
                 $objMail->From = $_CONFIG['coreAdminEmail'];
                 $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
@@ -1052,11 +1022,12 @@ RSS2JSCODE;
             }
         }
     }
-    
+
+
     function addComment()
     {
-    	global $_ARRAYLANG;
-    	//Check for activated function
+        global $_ARRAYLANG;
+        //Check for activated function
         if (!$this->arrSettings['news_comments_activated']) {
             $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_ERROR_ACTIVATED'];
             return;
@@ -1066,31 +1037,28 @@ RSS2JSCODE;
             $this->_commentErrorMessage = str_replace('[SECONDS]', intval($this->arrSettings['news_comments_timeout']), $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_ERROR_TIMEOUT']);
             return;
         }
-        
-    	if($this->_validateComment()) {        		
-    		$this->_addComment();
-    	}
+        if ($this->_validateComment()) {
+            $this->_addComment();
+        }
     }
-    
+
+
     /**
      * Check if the current user has already written a comment within the definied timeout-time (settings-value).
-     *
      * @return  boolean     true, if the user hast just written a comment before.
      */
     function hasUserJustCommented()
-	{
+    {
         global $objDatabase;
 
         //Check cookie first
         if (isset($_COOKIE['NewsCommentLast'])) {
             $intLastCommentTime = intval($_COOKIE['NewsCommentLast']);
-
             if (time() < $intLastCommentTime + intval($this->arrSettings['news_comments_timeout'])) {
                 //The current system-time is smaller than the time in the cookie plus timeout-time, so the user just wrote a comment
                 return true;
             }
         }
-
         //Now check database (make sure the user didn't delete the cookie
         $objCommentResult = $objDatabase->Execute(' SELECT  id
                                                     FROM    '.DBPREFIX.'module_news_comments
@@ -1098,30 +1066,26 @@ RSS2JSCODE;
                                                             date > '.(time() - intval($this->arrSettings['news_comments_timeout'])).'
                                                     LIMIT   1
                                                 ');
-
         if ($objCommentResult->RecordCount() == 1) {
             return true;
         }
-
         //Nothing found, i guess the user didn't comment within within the timeout-period.
         return false;
     }
-    
-    function _getArchive() 
+
+
+    function _getArchive()
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $dateFilterName = 'date';
         $monthColumn = 3;
-        
         $objFWUser = FWUser::getFWUserObject();
-        
         $this->_objTpl->setTemplate($this->pageContent);
-        
         // month filter
         // archive list
         $monthCountQuery = "SELECT n.id             AS id,
-                                   n.date           AS date, 
+                                   n.date           AS date,
                                    n.changelog      AS changelog,
                                    n.redirect       AS newsredirect,
                                    nl.title         AS newstitle
@@ -1136,15 +1100,13 @@ RSS2JSCODE;
                                         :   " AND frontend_access_id=0 ")
                                     :   '')
                             ."ORDER BY date ASC";
-                                                        
         $objResult = $objDatabase->Execute($monthCountQuery);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $filterDate = $objResult->fields[$dateFilterName];
                 $newsYear = date("Y", $filterDate);
                 $newsMonth = date("m", $filterDate);
-                
-                if(!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
+                if (!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
                     $monthlyStats[$newsYear . "_" . $newsMonth] = array();
                     $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)] . " " . $newsYear;
                 }
@@ -1153,38 +1115,33 @@ RSS2JSCODE;
                 $objResult->MoveNext();
             }
         }
-        
-        if(count($monthlyStats) == 0) {
+        if (count($monthlyStats) == 0) {
             $this->_objTpl->setVariable(array(
                 'TXT_NEWS_NOT_FOUND' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
             ));
             $this->_objTpl->parse("news_not_found");
             $this->_objTpl->hideBlock("month_news_list");
         } else {
-            
             $this->_objTpl->hideBlock("news_not_found");
             // create columns
             $columnCount = 0;
             $currentColumn = 1;
             $totalCount = count($monthlyStats);
             $columnSize = ceil($totalCount / $monthColumn);
-            
             $this->_objTpl->setCurrentBlock('month_navigation_column');
             foreach ($monthlyStats as $key => $value) {
                 $columnCount++;
-                if($columnCount > $currentColumn * $columnSize) {
+                if ($columnCount > $currentColumn * $columnSize) {
                     $currentColumn++;
                     $this->_objTpl->parseCurrentBlock();
                     $this->_objTpl->setCurrentBlock('month_navigation_column');
                 }
-                
                 $this->_objTpl->setVariable(array(
                     'NEWS_MONTH_NAME' => $value['name'],
                     'NEWS_MONTH_ARCHIVE' => count($value['news']),
                     'NEWS_MONTH_KEY' => $key,
                 ));
                 $this->_objTpl->parse("month_navigation_item");
-                
                 foreach ($value['news'] as $news) {
                     $newstitle = htmlspecialchars(stripslashes($news['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
                     $this->_objTpl->setVariable(array(
@@ -1192,18 +1149,14 @@ RSS2JSCODE;
                     ));
                     $this->_objTpl->parse("month_news_list_item");
                 }
-                
                 $this->_objTpl->setVariable(array(
                     'NEWS_LIST_MONTH_NAME' => $value['name'],
                     'NEWS_MONTH_KEY' => $key,
                 ));
-                
                 $this->_objTpl->parse('month_news_list');
             }
             $this->_objTpl->parseCurrentBlock();
-            
         }
-        
         return $this->_objTpl->get();
     }
 }
