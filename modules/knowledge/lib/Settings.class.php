@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file holds the settings object for the knowledge module
  *
@@ -125,4 +126,7 @@ class KnowledgeSettings
     {
         return preg_replace("/\[\[([A-Z_]+)\]\]/", '{$1}', $template);
     }
+
 }
+
+?>

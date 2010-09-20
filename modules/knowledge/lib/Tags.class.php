@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contains the class that provides the tag operations
  *
@@ -358,4 +359,7 @@ class KnowledgeTags
             }
         }
     }
+
 }
+
+?>

@@ -175,3 +175,5 @@ class TagCloud
         return preg_replace("/%id/i", $id, $this->urlFormat);
     }
 }
+
+?>
