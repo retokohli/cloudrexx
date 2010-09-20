@@ -949,7 +949,7 @@ echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
         }
 
         // Use SettingDb::add(); in your module code to add missing and
-        // new settings.
+        // new settings.  Example:
 //        SettingDb::init('country');
 //        SettingDb::add('core_country_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
 

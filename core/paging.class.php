@@ -35,20 +35,23 @@ if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
  * @version   1.0.0
  * @global    array       $_CONFIG        Configuration
  * @global    array       $_CORELANG      Core language
- * @param     int         $count          The number of rows being displayed
+ * @param     int         $numof_rows     The number of rows being displayed
  * @param     int         $pos            The offset from the first row
  * @param     string      $uri_parameter
  * @param     string      $paging_text
  * @param     boolean     $showeverytime
- * @param     int         $limit
+ * @param     int         $results_per_page
  * @return    string      Result
  * @todo      Change the system to use the new, static class method,
  *            then remove this one.
  */
-function getPaging($count, $pos=null, $uri_parameter, $paging_text, $showeverytime=false, $limit=null)
-{
+function getPaging(
+    $numof_rows, $pos=null, $uri_parameter, $paging_text,
+    $showeverytime=false, $results_per_page=null
+) {
     return Paging::getPaging(
-        $count, $pos, $uri_parameter, $paging_text, $showeverytime, $limit
+        $numof_rows, $pos, $uri_parameter, $paging_text,
+        $showeverytime, $results_per_page
     );
 }
 
@@ -69,7 +72,7 @@ class Paging
      * @access    public
      * @global    array       $_CONFIG        Configuration
      * @global    array       $_CORELANG      Core language
-     * @param     integer     $count          The number of rows available
+     * @param     integer     $numof_rows     The number of rows available
      * @param     integer     $position       The optional starting position
      *                                        offset.  Defaults to null
      * @param     string      $uri_parameter  Optional additional URI parameters,
@@ -77,51 +80,45 @@ class Paging
      *                                        ampersand (&amp;)
      * @param     string      $paging_text    The text to be put in front of the paging
      * @param     boolean     $showeverytime  If true, the paging is shown even if
-     *                                        $count is less than the number of rows
+     *                                        $numof_rows is less than the number of rows
      *                                        on a single page
-     * @param     integer     $limit          The optional maximum number of
+     * @param     integer     $results_per_page   The optional maximum number of
      *                                        rows to be shown on a single page.
      *                                        Defaults to the corePagingLimit
      *                                        setting.
      * @return    string                      HTML code for the paging
      */
     static function getPaging(
-        $count, $position=null, &$uri_parameter, $paging_text, $showeverytime=false, $limit=0)
-    {
+        $numof_rows, $position=null, &$uri_parameter, $paging_text,
+        $showeverytime=false, $results_per_page=0
+    ) {
         global $_CONFIG, $_CORELANG;
 
-        $results_per_page =
-            (empty($limit) ? intval($_CONFIG['corePagingLimit']) : $limit);
-        if ($count <= $limit && !$showeverytime) return '';
-        $numof_rows = $count;
+        if (empty($results_per_page))
+            $results_per_page = intval($_CONFIG['corePagingLimit']);
+        if ($numof_rows <= $results_per_page && !$showeverytime) return '';
 
         // Remove the old position parameter from the URI
         Html::stripUriParam($uri_parameter, 'pos');
-        // Replace leading '?', '&', or '&amp;' by a leading '&amp;'
+        // Strip script path and name from the URI
+        $uri_parameter = preg_replace('/^.*?index.php/', '', $uri_parameter);
+        // Remove leading '?', '&', or '&amp;'
         $uri_parameter = preg_replace(
-            '/^(?:\?|\&(?:amp;)?)?/', '&amp;', $uri_parameter);
-
-// I don't think it's a good idea to decode the URI without re-encoding
-// it again later...
-//        $uri_parameter = urldecode($uri_parameter);
-        $uri_parameter = $uri_parameter;
-        // Strip script path, script name, and query mark (?) from the
-        // local URI
-        $uri_parameter = preg_replace('/.*?index.php\??/', '', $uri_parameter);
-        // Prepend an encoded ampersand if the query is not empty
+            '/^(?:\?|\&(?:amp;)?)?/', '', $uri_parameter);
+        // Prepend an encoded ampersand only if the query is not empty
         if ($uri_parameter) $uri_parameter = '&amp;'.$uri_parameter;
-
-        if (empty($position))
-            $position = self::getPosition();
-
+// I don't think it's a good idea to decode the URI without re-encoding
+// it later (see getPagingArray())!
+//        $uri_parameter = urldecode($uri_parameter);
+        if (!isset($position)) $position = self::getPosition();
         // Fix illegal values:
         // The position must be in the range [0 .. numof_rows - 1].
-        // If it's outside this range, reset it to zero
-        if ($position < 0 || $position >= $numof_rows)
-            $position = $numof_rows - 1;
+        // If it's outside this range, reset it
+        if ($position < 0 || $position >= $numof_rows) $position = 0;
 
         // Total number of pages: [1 .. n]
-        $numof_pages = intval(0.999 + $numof_rows / $results_per_page);
+//        $numof_pages = intval(0.999 + $numof_rows / $results_per_page);
+        $numof_pages = ceil($numof_rows / $results_per_page);
         // Current page number: [1 .. numof_pages]
         $page_number = 1 + intval($position / $results_per_page);
 
@@ -132,12 +129,12 @@ class Paging
 
         // Set up the base navigation entries
         $array_paging = array(
-            'first' => '<a id="pagingFirst" href="index.php?pos=0'.
+            'first' => '<a class="pagingFirst" href="index.php?pos=0'.
                           $uri_parameter.'">',
-            'last'  => '<a id="pagingLast" href="index.php?pos='.
+            'last'  => '<a class="pagingLast" href="index.php?pos='.
                           ($numof_rows - $corr_value).$uri_parameter.'">',
             'total' => $numof_rows,
-            'lower' => $position + 1,
+            'lower' => ($numof_rows ? $position + 1 : 0),
             'upper' => $numof_rows,
         );
         if ($position + $results_per_page < $numof_rows) {
@@ -161,34 +158,35 @@ class Paging
         for ($i = 1; $i <= $numof_pages; ++$i) {
             if ($i == $page_number) {
                 $array_paging[$i] =
-                    '<b id="pagingPage'.$i.'">'.$i.'</b>';
+                    '<b class="pagingPage'.$i.'">'.$i.'</b>';
             } else {
                 $array_paging[$i] =
-                    '<a id="pagingPage'.$i.'" href="index.php?pos='.
+                    '<a class="pagingPage'.$i.'" href="index.php?pos='.
                     (($i-1) * $results_per_page).
                     $uri_parameter.'">'.$i.'</a>';
             }
         }
         $paging =
             $paging_text.
-            '&nbsp;<span id="pagingLower">'.$array_paging['lower'].
+            '&nbsp;<span class="pagingLower">'.$array_paging['lower'].
             '</span>&nbsp;'.$_CORELANG['TXT_TO'].
-            '&nbsp;<span id="pagingUpper">'.$array_paging['upper'].
+            '&nbsp;<span class="pagingUpper">'.$array_paging['upper'].
             '</span>&nbsp;'.$_CORELANG['TXT_FROM'].
-            '&nbsp;<span id="pagingTotal">'.$array_paging['total'].
-            '</span>&nbsp;&nbsp;[&nbsp;'.$array_paging['first'].
+            '&nbsp;<span class="pagingTotal">'.$array_paging['total'].
+            '</span>';
+        if ($numof_pages) $paging .=
+            '&nbsp;&nbsp;[&nbsp;'.$array_paging['first'].
             '&lt;&lt;</a>&nbsp;&nbsp;'.
-            '<span id="pagingPages">';
+            '<span class="pagingPages">';
         if ($page_number > 3) $paging .= $array_paging[$page_number-3].'&nbsp;';
         if ($page_number > 2) $paging .= $array_paging[$page_number-2].'&nbsp;';
         if ($page_number > 1) $paging .= $array_paging[$page_number-1].'&nbsp;';
-        $paging .= $array_paging[$page_number].'&nbsp;';
+        if ($numof_pages) $paging .= $array_paging[$page_number].'&nbsp;';
         if ($page_number < $numof_pages-0) $paging .= $array_paging[$page_number+1].'&nbsp;';
         if ($page_number < $numof_pages-1) $paging .= $array_paging[$page_number+2].'&nbsp;';
         if ($page_number < $numof_pages-2) $paging .= $array_paging[$page_number+3].'&nbsp;';
-        $paging .=
+        if ($numof_pages) $paging .=
             '</span>&nbsp;'.$array_paging['last'].'&gt;&gt;</a>&nbsp;]';
-//echo("Paging::getPaging(count $count, uri_parameter $uri_parameter, paging_text $paging_text, showeverytime $showeverytime, limit $limit):<br />"."results_per_page ".$results_per_page."<br />numof_rows ".$numof_rows."<br />position ".$position."<br />uri_parameter ".$uri_parameter."<br />page_number ".$page_number."<br />numof_pages ".$numof_pages."<br />"."PAGING: ".htmlentities($paging)."<br />".$paging."<hr />");
         return $paging;
     }
 
