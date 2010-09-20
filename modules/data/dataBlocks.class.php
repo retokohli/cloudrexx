@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -38,37 +39,32 @@ class dataBlocks extends DataLibrary
 
     /**
      * Constructor for PHP5
-     *
      * @param int $lang
      */
-    function __construct($lang)
+    function __construct($lang=null)
     {
         global $objDatabase, $objInit;
 
         $objRs = $objDatabase->Execute("
-            SELECT 
-                `setvalue`
-            FROM 
-                `".DBPREFIX."settings`
-            WHERE 
-                `setname`='dataUseModule'");
+            SELECT `setvalue`
+              FROM `".DBPREFIX."settings`
+             WHERE `setname`='dataUseModule'");
         if ($objRs && $objRs->fields['setvalue'] == 1) {
             $this->active = true;
         } else {
             $this->active = false;
             return;
         }
-
-        $this->lang = $lang;
+        $this->lang = (isset($lang) ? $lang : FRONTEND_LANG_ID);
         $this->_arrSettings = $this->createSettingsArray();
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
-		CSRF::add_placeholder($this->_objTpl);
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        CSRF::add_placeholder($this->_objTpl);
         $this->langVars = $objInit->loadLanguageData('data');
     }
 
+
     /**
      * Do the replacements
-     *
      * @param string $data The pages on which the replacement should be done
      * @return string
      */
@@ -80,20 +76,20 @@ class dataBlocks extends DataLibrary
                     $data[$key] = $this->replace($value);
                 }
             } else {
-                if (preg_match_all("/\{DATA_[A-Z_0-9]+\}/", $data, $matches) > 0) {
+                $matches = array();
+                if (preg_match_all('/\{DATA_[A-Z_0-9]+\}/', $data, $matches) > 0) {
                     foreach ($matches[0] as $match) {
                         $data = str_replace($match, $this->getData($match), $data);
                     }
                 }
             }
         }
-
         return $data;
     }
 
+
     /**
      * Get the replacement content for the placeholder
-     *
      * @param string $placeholder
      * @return string
      */
@@ -129,12 +125,12 @@ class dataBlocks extends DataLibrary
                 return $this->getDetail($id);
             }
         }
-		return '';
+        return '';
     }
+
 
     /**
      * Get the subcategories of a category
-     *
      * @param int $id
      * @return string
      */
@@ -152,9 +148,9 @@ class dataBlocks extends DataLibrary
         return $categories;
     }
 
+
     /**
      * Get a category and its entries
-     *
      * @param int $id
      * @return string
      */
@@ -162,53 +158,43 @@ class dataBlocks extends DataLibrary
     {
         global $_LANGID;
 
-
         if ($this->entryArray == 0) {
             $this->entryArray = $this->createEntryArray();
         }
-
         if ($parcat == 0) {
             $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->arrCategories[$id]['template']));
         } else {
             $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->arrCategories[$parcat]['template']));
         }
-
         $lang = $_LANGID;
         $width = $this->arrCategories[$id]['box_width'];
         $height = $this->arrCategories[$id]['box_height'];
-
         if ($parcat) {
             $this->_objTpl->setVariable("CATTITLE", $this->arrCategories[$id][$_LANGID]['name']);
         }
-
         if ($this->arrCategories[$id]['action'] == "content") {
                 $cmd = $this->arrCategories[$id]['cmd'];
                 $url = "index.php?section=data&amp;cmd=".$cmd;
             } else {
                 $url = "index.php?section=data&amp;act=shadowbox&amp;lang=".$lang;
         }
-
         foreach ($this->entryArray as $entryId => $entry) {
             if (!$entry['active'] || !$entry['translation'][$_LANGID]['is_active']) {
                 continue;
             }
-
             // check date
             if ($entry['release_time'] != 0) {
                if ($entry['release_time'] > time()) {
                    // too old
                    continue;
                }
-
                // if it is not endless (0), check if 'now' is past the given date
                if ($entry['release_time_end'] !=0 && time() > $entry['release_time_end']) {
                    continue;
                }
             }
-
             //if (array_key_exists($id, $entry['categories'][$_LANGID])) {
             if ($this->categoryMatches($id, $entry['categories'][$_LANGID])) {
-
                 $translation = $entry['translation'][$_LANGID];
                 $image = '';
                 if (!empty($translation['thumbnail'])) {
@@ -227,26 +213,21 @@ class dataBlocks extends DataLibrary
                         $image = $path;
                     }
                 }
-
                 if (!empty($image)) {
                     $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
                 } else {
                     $image = '';
                 }
-                
                 if ($entry['mode'] == "normal") {
                     $href = $url."&amp;id=".$entryId;
                 } else {
                     $href = $entry['translation'][$_LANGID]['forward_url'];
                 }
-
                 if (!empty($entry['translation'][$_LANGID]['forward_target'])) {
                     $target = "target=\"".$entry['translation'][$_LANGID]['forward_target']."\"";
                 } else {
                     $target = "";
                 }
-
-
                 $title = $entry['translation'][$_LANGID]['subject'];
                 $content = $this->getIntroductionText($entry['translation'][$_LANGID]['content']);
                 $this->_objTpl->setVariable(array(
@@ -270,13 +251,12 @@ class dataBlocks extends DataLibrary
         } else {
             $this->_objTpl->parse("datalist_single_category");
         }
-
         return $this->_objTpl->get();
     }
 
+
     /**
      * Get a single entry view
-     *
      * @param int $id
      * @return string
      */
@@ -287,13 +267,10 @@ class dataBlocks extends DataLibrary
         if ($this->entryArray === false) {
             $this->entryArray = $this->createEntryArray();
         }
-
         $entry = $this->entryArray[$id];
         $title = $entry['translation'][$_LANGID]['subject'];
         $content = $this->getIntroductionText($entry['translation'][$_LANGID]['content']);
-
         $this->_objTpl->setTemplate($this->adjustTemplatePlaceholders($this->_arrSettings['data_template_entry']));
-
         $translation = $entry['translation'][$_LANGID];
         $image = '';
         if (!empty($translation['thumbnail'])) {
@@ -312,17 +289,14 @@ class dataBlocks extends DataLibrary
                 $image = $path;
             }
         }
-
         if (!empty($image)) {
             $image = '<img src='.$image.' alt=\"\" style=\"float: left\" />';
         } else {
             $image = '';
         }
-
         $lang = $_LANGID;
         $width = $this->_arrSettings['data_shadowbox_width'];
         $height = $this->_arrSettings['data_shadowbox_height'];
-
         if ($entry['mode'] == "normal") {
             if ($this->_arrSettings['data_entry_action'] == "content") {
                 $cmd = $this->_arrSettings['data_target_cmd'];
@@ -333,7 +307,6 @@ class dataBlocks extends DataLibrary
         } else {
             $url = $entry['translation'][$_LANGID]['forward_url'];
         }
-
         $templateVars = array(
             "TITLE"         => $title,
             "IMAGE"         => $image,
@@ -343,19 +316,21 @@ class dataBlocks extends DataLibrary
             "TXT_MORE"      => $this->langVars['TXT_DATA_MORE']
         );
         $this->_objTpl->setVariable($templateVars);
-
         $this->_objTpl->parse("datalist_entry");
         return $this->_objTpl->get();
     }
 
+
     /**
      * Make the [[PLACEHOLDERS]] to {PLACEHOLDER}
-     *
      * @param string $str
      * @return string
      */
     function adjustTemplatePlaceholders($str)
     {
-        return preg_replace("/\[\[([A-Z_]+)\]\]/", '{$1}', $str);
+        return preg_replace('/\[\[([A-Z_]+)\]\]/', '{$1}', $str);
     }
+
 }
+
+?>
