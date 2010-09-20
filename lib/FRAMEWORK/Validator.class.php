@@ -218,13 +218,82 @@ class FWValidator
     /**
      * Returns true if the value is part of the comma separated list
      * @param  string    $value    The value
-     * @param  string    $list     The list
-     * @return boolean             True or false
+     * @param   string    $list     The comma separated list
+     * @return  boolean             True or false
      */
     static function is_value_in_comma_separated_list($value, $list)
     {
         $regex = '/(?:,|^)'.preg_quote($value).'(?:,|$)/';
         return (boolean)preg_match($regex, $list);
+    }
+
+
+    /**
+     * Removes the value from the comma separated list
+     *
+     * If the value is not present, no change is made.
+     * @param   string    $value    The value
+     * @param   string    $list     The comma separated list
+     * @return  string              The list without the value
+     */
+    static function remove_value_from_comma_separated_list($value, $list)
+    {
+        $regex = '/(?:,|^)'.preg_quote($value).'(?:,|$)/';
+        return preg_replace('/^,|,$/', '', preg_replace($regex, ',', $list));
+    }
+
+
+    /**
+     * Appends the value to the comma separated list
+     *
+     * If the same value is already present, no change is made.
+     * @param   string    $value    The value
+     * @param   string    $list     The comma separated list
+     * @return  string              The list with the new value appended
+     */
+    static function append_value_to_comma_separated_list($value, $list)
+    {
+        if (!self::is_value_in_comma_separated_list($value, $list)) {
+            $list .= ($list ? ',' : '').$value;
+        }
+        return $list;
+    }
+
+    /**
+     * Prepends the value to the comma separated list
+     *
+     * If the same value is already present, no change is made.
+     * @param   string    $value    The value
+     * @param   string    $list     The comma separated list
+     * @return  string              The list with the new value prepended
+     */
+    static function prepend_value_to_comma_separated_list($value, $list)
+    {
+        if (!self::is_value_in_comma_separated_list($value, $list)) {
+            $list = $value.($list ? ',' : '').$list;
+        }
+        return $list;
+    }
+
+    /**
+     * Returns the values from a comma separated list as an array
+     * @param   string    $list     The comma separated list
+     * @return  array               The value array
+     */
+    static function get_array_from_comma_separated_list($list)
+    {
+        return preg_split('/,+/', $list); //, PREG_SPLIT_NO_EMPTY);
+    }
+
+
+    /**
+     * Returns the comma separated list of the values in an array
+     * @param   array     $array    The value array
+     * @return  string              The comma separated list
+     */
+    static function get_comma_separated_list_from_array($array)
+    {
+        return join(',', $array);
     }
 
 }

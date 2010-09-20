@@ -768,7 +768,6 @@ class User extends User_Profile
      *
      * Get username, email, lang_id, is_active and is_admin states from database
      * and put them into the analogous class variables.
-     *
      * @param integer $id
      * @return unknown
      */
@@ -949,6 +948,22 @@ class User extends User_Profile
     }*/
 
 
+    /**
+     * Creates the SQL query snippet to match username (and e-mail in the
+     * backend) fields against the search term(s)
+     *
+     * Matches single (scalar) or multiple (array) search terms against a
+     * number of fields.  Generally, the term(s) are enclosed in percent
+     * signs ("%term%"), so any fields that contain them will match.
+     * However, if the search parameter is a string and does contain a percent
+     * sign already, none will be added to the query.
+     * This allows searches using custom patterns, like "fields beginning
+     * with "a" ("a%").
+     * (You might even want to extend this to work with arrays, too.
+     * Currently, only the shop module uses this feature.) -- RK 20100910
+     * @param   mixed     $search   The term or array of terms
+     * @return  array               The array of SQL snippets
+     */
     private function parseAccountSearchConditions($search)
     {
         $FWUser = FWUser::getFWUserObject();
@@ -958,8 +973,15 @@ class User extends User_Profile
         if ($FWUser->isBackendMode()) {
             $arrAttribute[] = 'email';
         }
+        $percent = '%';
+        if (!is_array($search) && strpos('%', $search) !== false)
+            $percent = '';
         foreach ($arrAttribute as $attribute) {
-            $arrConditions[] = "(tblU.`".$attribute."` LIKE '%".(is_array($search) ? implode("%' OR tblU.`".$attribute."` LIKE '%", array_map('addslashes', $search)) : addslashes($search))."%')";
+            $arrConditions[] =
+                "(tblU.`".$attribute."` LIKE '$percent".
+                (is_array($search)
+                  ? implode("$percent' OR tblU.`".$attribute."` LIKE '$percent", array_map('addslashes', $search))
+                  : addslashes($search))."%')";
         }
 
         return $arrConditions;
@@ -1033,7 +1055,7 @@ class User extends User_Profile
             .($joinCustomTbl ? ' INNER JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`' : '')
             .($joinGroupTbl ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
             .($joinGroupTbl && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id` = tblG.`group_id`' : '')
-            .(count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '')
+            .(count($arrCustomJoins) ? ' '.implode(' ', $arrCustomJoins) : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
