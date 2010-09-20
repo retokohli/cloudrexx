@@ -792,7 +792,7 @@ class Products
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-            $shopDistribution = $objResult->fields['handler'];
+            $distribution = $objResult->fields['handler'];
             $strJsArrProduct .=
                 'arrProducts['.$id.'] = {'.
                 'id:'.$objResult->fields['product_id'].
@@ -801,7 +801,7 @@ class Products
                 ',percent:'.
                     // Store VAT as percentage, not ID, as we will only update the order items
                     Vat::getRate($objResult->fields['vat_id']).
-                ',weight:'.($shopDistribution == 'delivery'
+                ',weight:'.($distribution == 'delivery'
                     ? Weight::getWeightString($objResult->fields['weight']) : '0' ).
                 ',group_id:'.$objResult->fields['group_id'].
                 ',article_id:'.$objResult->fields['article_id'].

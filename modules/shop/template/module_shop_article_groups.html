@@ -12,19 +12,19 @@ function deleteGroup(groupId)
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-  <li><a id="groupTab_shopContent1" class="{SHOP_GROUP_LIST_CLASS}"
+  <li><a id="groupTab_content1" class="{SHOP_GROUP_LIST_CLASS}"
         href="javascript:void(0);"
-        onclick="selectTab('shopContent1')" title="{TXT_SHOP_ARTICLE_GROUPS}">
+        onclick="selectTab('content1')" title="{TXT_SHOP_ARTICLE_GROUPS}">
       {TXT_SHOP_ARTICLE_GROUPS}</a></li>
-  <li><a id="groupTab_shopContent2" class="{SHOP_GROUP_EDIT_CLASS}"
+  <li><a id="groupTab_content2" class="{SHOP_GROUP_EDIT_CLASS}"
         href="javascript:void(0);"
-        onclick="selectTab('shopContent2')" title="{TXT_ADD_OR_EDIT}">
+        onclick="selectTab('content2')" title="{TXT_ADD_OR_EDIT}">
       {TXT_ADD_OR_EDIT}</a></li>
 </ul>
-<form name="shopForm" method="post"
+<form name="groupForm" method="post"
     action="index.php?cmd=shop&amp;act=products&amp;tpl=groups">
-  <!-- start shopContent1 div -->
-  <div id="shopContent1" class="groupTab" style="display:{SHOP_GROUP_LIST_DISPLAY};">
+  <!-- start content1 div -->
+  <div id="content1" class="groupTab" style="display:{SHOP_GROUP_LIST_DISPLAY};">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th width="50%"><b>{TXT_SHOP_ARTICLE_GROUP_NAME}</b></th>
@@ -53,10 +53,10 @@ function deleteGroup(groupId)
       <!-- END shopGroup -->
     </table>
   </div>
-  <!-- end shopContent1 div -->
+  <!-- end content1 div -->
 
-  <!-- start shopContent2 div -->
-  <div id="shopContent2" class="groupTab" style="display:{SHOP_GROUP_EDIT_DISPLAY}">
+  <!-- start content2 div -->
+  <div id="content2" class="groupTab" style="display:{SHOP_GROUP_EDIT_DISPLAY}">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="2"><b>{TXT_SHOP_EDIT_ARTICLE_GROUP}</b></th>
@@ -78,6 +78,6 @@ function deleteGroup(groupId)
         onclick="javascript:window.location.href='index.php?cmd=shop&act=products&tpl=groups';"
     />
   </div>
-  <!-- end shopContent2 div -->
+  <!-- end content2 div -->
 </form>
 <!-- END module_shop_article_groups.html -->

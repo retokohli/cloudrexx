@@ -976,6 +976,8 @@ DBG::activate(DBG_DB_FIREPHP);
         if (DbTool::table_exists($table_name)) {
             if (DbTool::column_exists($table_name, 'catname')) {
                 // Migrate all ShopCategory names to the Text table first
+                Text::deleteByKey(self::TEXT_NAME);
+                Text::deleteByKey(self::TEXT_DESCRIPTION);
                 $objResult = DbTool::sql("
                     SELECT `catid`, `catname`
                       FROM `$table_name`");

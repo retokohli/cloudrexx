@@ -21,12 +21,12 @@ Text[2]=["","{TXT_SHOP_SHIPMENT_NEW_TIP}"];
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-<li><a id="shipmentTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_SHIPPING_METHODS}">{TXT_SHIPPING_METHODS}</a></li>
-<li><a id="shipmentTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
+<li><a id="shipmentTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_SHIPPING_METHODS}">{TXT_SHIPPING_METHODS}</a></li>
+<li><a id="shipmentTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=shipment">
-<!-- start shopContent1 div -->
-<div id="shopContent1" class="shipmentTab" style="display:block">
+<!-- start content1 div -->
+<div id="content1" class="shipmentTab" style="display:block">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 <tr>
 <th colspan="7"><b>{TXT_SHIPPING_METHODS}</b></th>
@@ -71,10 +71,10 @@ Text[2]=["","{TXT_SHOP_SHIPMENT_NEW_TIP}"];
 <br />
 <input type="submit" name="shipment" value="{TXT_STORE}" />
 </div>
-<!-- end shopContent1 div -->
+<!-- end content1 div -->
 
-<!-- start shopContent2 div -->
-<div id="shopContent2" class="shipmentTab" style="display:none">
+<!-- start content2 div -->
+<div id="content2" class="shipmentTab" style="display:none">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
 <tr>
 <th colspan="3"><b>{TXT_ADD}</b></th>
@@ -93,6 +93,6 @@ Text[2]=["","{TXT_SHOP_SHIPMENT_NEW_TIP}"];
 <br />
 <input type="submit" name="shipper_add" value="{TXT_ADD}" />
 </div>
-<!-- end shopContent2 div -->
+<!-- end content2 div -->
 </form>
 <!-- END module_shop_settings_shipment.html -->

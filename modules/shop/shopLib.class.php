@@ -62,14 +62,6 @@ class ShopLibrary
     const usernamePrefix = 'user';
 
     /**
-     * Array of all countries
-     * @var     array [$arrCountries] array of all countries
-     * @access  public
-     * @see     _initCountries()
-     */
-    public $arrCountries = array();
-
-    /**
      * Sorting order strings according to the corresponding setting
      *
      * Order 1: By order field value ascending, ID descending
@@ -84,69 +76,6 @@ class ShopLibrary
         2 => 'p.title ASC, p.product_id ASC',
         3 => 'p.product_id ASC, p.title ASC',
     );
-
-
-    /**
-     * Returns an array of all known zones
-     * @return  array   The zones array
-     */
-    function _getZones()
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT zones_id, zones_name, activation_status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-             ORDER BY zones_name";
-        $objResult = $objDatabase->Execute($query);
-        while (!$objResult->EOF) {
-            $arrZones[$objResult->fields['zones_id']] = array(
-                'zones_id'          => $objResult->fields['zones_id'],
-                'zones_name'        => $objResult->fields['zones_name'],
-                'activation_status' => $objResult->fields['activation_status'],
-            );
-            $objResult->MoveNext();
-        }
-        return $arrZones;
-    }
-
-
-    /**
-     * Returns a dropdown menu or hidden input field (plus name) string
-     * for the active country/-ies.
-     *
-     * If there is just one active country, returns a hidden <input> tag with the
-     * countries' name appended.  If there are more, returns a dropdown menu with
-     * the optional ID preselected and optional onchange method added.
-     * @param   string  $menuName   Optional name of the menu
-     * @param   string  $selectedId Optional pre-selected country ID
-     * @param   string  $onchange   Optional onchange callback function
-     * @return  string              The dropdown menu string
-     */
-    function _getCountriesMenu($menuName='countryId', $selectedId='', $onchange='')
-    {
-        global $objDatabase;
-
-        $onchange = !empty($onchange) ? "onchange=\"".$onchange."\"" : "";
-        $menu = "\n<select name=\"".$menuName."\" ".$onchange.">\n";
-
-        $query = "SELECT countries_id, countries_name ".
-            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries ".
-            "WHERE activation_status=1";
-        $objResult = $objDatabase->Execute($query);
-
-        if ($objResult->RecordCount() > 1) {
-            while (!$objResult->EOF) {
-                $selected = (intval($selectedId)==$objResult->fields['countries_id']) ? "selected=\"selected\"" : "";
-                $menu .="<option value=\"".$objResult->fields['countries_id']."\" ".$selected.">".$objResult->fields['countries_name']."</option>\n";
-                $objResult->MoveNext();
-            }
-            $menu .= "</select>\n";
-        } else {
-            $menu = "\n<input name=\"".$menuName."\" type=\"hidden\" value=\"".$objResult->fields['countries_id']."\">".$objResult->fields['countries_name']."\n";
-        }
-        return $menu;
-    }
 
 
     /**
@@ -171,31 +100,6 @@ class ShopLibrary
         }
         $menu .= "</select>\n";
         return $menu;
-    }
-
-
-    function _initCountries()
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT countries_id, countries_name,
-                   countries_iso_code_2, countries_iso_code_3,
-                   activation_status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-             ORDER BY countries_id
-         ";
-         $objResult = $objDatabase->Execute($query);
-         while (!$objResult->EOF) {
-            $this->arrCountries[$objResult->fields['countries_id']] = array(
-                'countries_id' => $objResult->fields['countries_id'],
-                'countries_name' => $objResult->fields['countries_name'],
-                'countries_iso_code_2' => $objResult->fields['countries_iso_code_2'],
-                'countries_iso_code_3' => $objResult->fields['countries_iso_code_3'],
-                'activation_status' => $objResult->fields['activation_status']
-            );
-            $objResult->MoveNext();
-        }
     }
 
 
@@ -287,13 +191,13 @@ class ShopLibrary
      * Get the selected mail template and associated fields from the database.
      * @static
      * @param   integer $shopTemplateId     The mail template ID
-     * @param   integer $langId             The language ID
+     * @param   integer $lang_id             The language ID
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  mixed                       The mail template array on success,
      *                                      false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function shopSetMailtemplate($shopTemplateId, $langId)
+    static function shopSetMailtemplate($shopTemplateId, $lang_id)
     {
         global $objDatabase;
 
@@ -301,7 +205,7 @@ class ShopLibrary
             SELECT from_mail, xsender, subject, message
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
              WHERE tpl_id=$shopTemplateId
-               AND lang_id=$langId
+               AND lang_id=$lang_id
         ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
@@ -881,7 +785,7 @@ class ShopLibrary
             // Must be present in the Order, so the Customer can be found
             'CUSTOMER_ID'         => $customer_id,
             'SHIPPING_COMPANY'    => $objResult->fields['ship_company'],
-            'SHIPPING_PREFIX'     => $objResult->fields['ship_prefix'],
+            'SHIPPING_TITLE'      => $objResult->fields['ship_title'],
             'SHIPPING_FIRSTNAME'  => $objResult->fields['ship_firstname'],
             'SHIPPING_LASTNAME'   => $objResult->fields['ship_lastname'],
             'SHIPPING_ADDRESS'    => $objResult->fields['ship_address'],

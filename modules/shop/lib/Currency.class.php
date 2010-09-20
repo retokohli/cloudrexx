@@ -578,22 +578,21 @@ DBG::activate(DBG_DB_FIREPHP);
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
             'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
             'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
-            'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+            'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'name'),
             'rate' => array('type' => 'DECIMAL(10,6)', 'unsigned' => true, 'notnull' => true, 'default' => '1.000000'),
             'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'status'),
             'default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'is_default'),
         );
+        $table_index =  array();
 
         if (DbTool::table_exists($table_name)) {
             if (DbTool::column_exists($table_name, 'name')) {
                 // Migrate all Currency names to the Text table first
-                if (!DbTool::column_exists($table_name, 'text_name_id')) {
-                    DbTool::check_columns($table_name, $table_structure, true);
-                }
+                Text::deleteByKey(self::TEXT_NAME);
                 $objResult = DbTool::sql("
                     SELECT `id`, `name`
-                      FROM `".DBPREFIX."module_shop".MODULE_INDEX."_currencies`");
+                      FROM `$table_name`");
                 if (!$objResult) {
 die("Currency::errorHandler(): Error: failed to query names, code rvnla7hw");
                 }
@@ -608,16 +607,16 @@ die("Currency::errorHandler(): Error: failed to migrate name '$name', code hrdsa
                     }
                     $objResult2 = DbTool::sql("
                         UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_currencies`
-                           SET `text_name_id`=$text_name_id
+                           SET `name`=$text_name_id
                          WHERE `id`=$id");
                     if (!$objResult2) {
 die("Currency::errorHandler(): Error: failed to update Currency ID $id, code t5kjfas");
                     }
                     $objResult->MoveNext();
                 }
-                if (!DbTool::drop_column($table_name, 'name')) {
-die("Currency::errorHandler(): Error: failed to drop obsolete name column, code aseh4hlehwe");
-                }
+            }
+            if (!DbTool::table($table_name, $table_structure, $table_index)) {
+die("Currency::errorHandler(): Error: failed to migrate Currency table, code jstrhs4wh");
             }
             return false;
         }

@@ -1204,9 +1204,9 @@ DBG::activate(DBG_ERROR_FIREPHP);
                     'SHOP_PRODUCT_DETAILLINK' => $detailLink,
                 ));
             }
-            $shopDistribution = $objProduct->getDistribution();
+            $distribution = $objProduct->getDistribution();
             $productWeight = '';
-            if ($shopDistribution == 'delivery') {
+            if ($distribution == 'delivery') {
                 $productWeight = $objProduct->getWeight();
             }
 
@@ -1779,9 +1779,9 @@ DBG::activate(DBG_ERROR_FIREPHP);
     {
         $paymentPrice = 0;
         if (!$payment_id) return $paymentPrice;
-        if (  Payment::getProperty($payment_id, 'costs_free_sum') == 0
-           || $totalPrice < Payment::getProperty($payment_id, 'costs_free_sum')) {
-            $paymentPrice = Payment::getProperty($payment_id, 'costs');
+        if (  Payment::getProperty($payment_id, 'free_from') == 0
+           || $totalPrice < Payment::getProperty($payment_id, 'free_from')) {
+            $paymentPrice = Payment::getProperty($payment_id, 'fee');
         }
         return Currency::getCurrencyPrice($paymentPrice);
     }
@@ -2869,7 +2869,7 @@ sendReq('', 1);
                 // Initialize the Customer data in the session, so that the account
                 // page may be skipped
                 $_SESSION['shop']['company']    = $this->objCustomer->getCompany();
-                $_SESSION['shop']['prefix']     = $this->objCustomer->getPrefix();
+                $_SESSION['shop']['title']     = $this->objCustomer->getPrefix();
                 $_SESSION['shop']['lastname']   = $this->objCustomer->getLastname();
                 $_SESSION['shop']['firstname']  = $this->objCustomer->getFirstname();
                 $_SESSION['shop']['address']    = $this->objCustomer->getAddress();
@@ -2990,7 +2990,7 @@ sendReq('', 1);
             if (!empty($_POST['equalAddress'])) {
                 // Copy address
                 $_SESSION['shop']['company2'] = $_SESSION['shop']['company'];
-                $_SESSION['shop']['prefix2'] = $_SESSION['shop']['prefix'];
+                $_SESSION['shop']['title2'] = $_SESSION['shop']['title'];
                 $_SESSION['shop']['lastname2'] = $_SESSION['shop']['lastname'];
                 $_SESSION['shop']['firstname2'] = $_SESSION['shop']['firstname'];
                 $_SESSION['shop']['address2'] = $_SESSION['shop']['address'];
@@ -3030,7 +3030,7 @@ sendReq('', 1);
         // Verify the form
         // Note that the Country IDs are either set before or
         // come from a dropdown menu
-        if (empty($_SESSION['shop']['prefix']) ||
+        if (empty($_SESSION['shop']['title']) ||
             empty($_SESSION['shop']['lastname']) ||
             empty($_SESSION['shop']['firstname']) ||
             empty($_SESSION['shop']['address']) ||
@@ -3116,36 +3116,36 @@ sendReq('', 1);
         // in the session!
         if ($this->objCustomer && empty($_SESSION['shop']['address'])) {
             $this->objTemplate->setVariable(array(
-                'SHOP_ACCOUNT_COMPANY'       => $this->objCustomer->getCompany(),
-                'SHOP_ACCOUNT_PREFIX'        => $this->objCustomer->getPrefix(),
-                'SHOP_ACCOUNT_LASTNAME'      => $this->objCustomer->getLastname(),
-                'SHOP_ACCOUNT_FIRSTNAME'     => $this->objCustomer->getFirstname(),
-                'SHOP_ACCOUNT_ADDRESS'       => $this->objCustomer->getAddress(),
-                'SHOP_ACCOUNT_ZIP'           => $this->objCustomer->getZip(),
-                'SHOP_ACCOUNT_CITY'          => $this->objCustomer->getCity(),
+                'SHOP_ACCOUNT_COMPANY'   => $this->objCustomer->getCompany(),
+                'SHOP_ACCOUNT_TITLE'     => $this->objCustomer->getTitle(),
+                'SHOP_ACCOUNT_LASTNAME'  => $this->objCustomer->getLastname(),
+                'SHOP_ACCOUNT_FIRSTNAME' => $this->objCustomer->getFirstname(),
+                'SHOP_ACCOUNT_ADDRESS'   => $this->objCustomer->getAddress(),
+                'SHOP_ACCOUNT_ZIP'       => $this->objCustomer->getZip(),
+                'SHOP_ACCOUNT_CITY'      => $this->objCustomer->getCity(),
                 // New template - since 2.1.0
                 'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
 // TODO: Ensure that only active Countries are included in the menu
                     Country::getMenuoptions($this->objCustomer->getCountryId()),
                 // Old template
                 // Compatibility with 2.0 and older versions
-                'SHOP_ACCOUNT_COUNTRY'       => Country::getMenu(
+                'SHOP_ACCOUNT_COUNTRY'   => Country::getMenu(
                     'countryId', $this->objCustomer->getCountryId()),
-                'SHOP_ACCOUNT_EMAIL'         => $this->objCustomer->getEmail(),
-                'SHOP_ACCOUNT_PHONE'         => $this->objCustomer->getPhone(),
-                'SHOP_ACCOUNT_FAX'           => $this->objCustomer->getFax(),
-                'SHOP_ACCOUNT_ACTION'        => "index.php?section=shop".MODULE_INDEX."&amp;cmd=account",
+                'SHOP_ACCOUNT_EMAIL'     => $this->objCustomer->getEmail(),
+                'SHOP_ACCOUNT_PHONE'     => $this->objCustomer->getPhone(),
+                'SHOP_ACCOUNT_FAX'       => $this->objCustomer->getFax(),
+                'SHOP_ACCOUNT_ACTION'    => "index.php?section=shop".MODULE_INDEX."&amp;cmd=account",
             ));
         } else {
             $this->objTemplate->setVariable(array(
                 // the $_SESSION fields may be undefined!
-                'SHOP_ACCOUNT_COMPANY'       => (isset($_SESSION['shop']['company'])    ? stripslashes($_SESSION['shop']['company']) : ''),
-                'SHOP_ACCOUNT_PREFIX'        => (isset($_SESSION['shop']['prefix'])     ? stripslashes($_SESSION['shop']['prefix']) : ''),
-                'SHOP_ACCOUNT_LASTNAME'      => (isset($_SESSION['shop']['lastname'])   ? stripslashes($_SESSION['shop']['lastname']) : ''),
-                'SHOP_ACCOUNT_FIRSTNAME'     => (isset($_SESSION['shop']['firstname'])  ? stripslashes($_SESSION['shop']['firstname']) : ''),
-                'SHOP_ACCOUNT_ADDRESS'       => (isset($_SESSION['shop']['address'])    ? stripslashes($_SESSION['shop']['address']) : ''),
-                'SHOP_ACCOUNT_ZIP'           => (isset($_SESSION['shop']['zip'])        ? stripslashes($_SESSION['shop']['zip']) : ''),
-                'SHOP_ACCOUNT_CITY'          => (isset($_SESSION['shop']['city'])       ? stripslashes($_SESSION['shop']['city']) : ''),
+                'SHOP_ACCOUNT_COMPANY'       => (isset($_SESSION['shop']['company'])   ? stripslashes($_SESSION['shop']['company']) : ''),
+                'SHOP_ACCOUNT_TITLE'         => (isset($_SESSION['shop']['title'])     ? stripslashes($_SESSION['shop']['title']) : ''),
+                'SHOP_ACCOUNT_LASTNAME'      => (isset($_SESSION['shop']['lastname'])  ? stripslashes($_SESSION['shop']['lastname']) : ''),
+                'SHOP_ACCOUNT_FIRSTNAME'     => (isset($_SESSION['shop']['firstname']) ? stripslashes($_SESSION['shop']['firstname']) : ''),
+                'SHOP_ACCOUNT_ADDRESS'       => (isset($_SESSION['shop']['address'])   ? stripslashes($_SESSION['shop']['address']) : ''),
+                'SHOP_ACCOUNT_ZIP'           => (isset($_SESSION['shop']['zip'])       ? stripslashes($_SESSION['shop']['zip']) : ''),
+                'SHOP_ACCOUNT_CITY'          => (isset($_SESSION['shop']['city'])      ? stripslashes($_SESSION['shop']['city']) : ''),
                 // New template - since 2.1.0
                 'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
                     Country::getMenuoptions(
@@ -3166,7 +3166,7 @@ sendReq('', 1);
         if (!empty($_SESSION['shop']['shipment'])) {
             $this->objTemplate->setVariable(array(
                 'SHOP_ACCOUNT_COMPANY2'      => (isset($_SESSION['shop']['company2'])   ? stripslashes($_SESSION['shop']['company2']) : ''),
-                'SHOP_ACCOUNT_PREFIX2'       => (isset($_SESSION['shop']['prefix2'])    ? stripslashes($_SESSION['shop']['prefix2']) : ''),
+                'SHOP_ACCOUNT_TITLE2'        => (isset($_SESSION['shop']['title2'])     ? stripslashes($_SESSION['shop']['title2']) : ''),
                 'SHOP_ACCOUNT_LASTNAME2'     => (isset($_SESSION['shop']['lastname2'])  ? stripslashes($_SESSION['shop']['lastname2']) : ''),
                 'SHOP_ACCOUNT_FIRSTNAME2'    => (isset($_SESSION['shop']['firstname2']) ? stripslashes($_SESSION['shop']['firstname2']) : ''),
                 'SHOP_ACCOUNT_ADDRESS2'      => (isset($_SESSION['shop']['address2'])   ? stripslashes($_SESSION['shop']['address2']) : ''),
@@ -3672,7 +3672,7 @@ This information should be read and stored in the session
 right after the customer logs in!
         // fill in the address for known customers
         if ($this->objCustomer) {
-            $_SESSION['shop']['prefix']    = $this->objCustomer->getPrefix();
+            $_SESSION['shop']['title']     = $this->objCustomer->getTitle();
             $_SESSION['shop']['firstname'] = $this->objCustomer->getFirstName();
             $_SESSION['shop']['lastname']  = $this->objCustomer->getLastName();
             $_SESSION['shop']['address']   = $this->objCustomer->getAddress();
@@ -3685,7 +3685,7 @@ right after the customer logs in!
 */
 
         $this->objTemplate->setVariable(array(
-            'SHOP_CUSTOMER_PREFIX'     => (isset($_SESSION['shop']['prefix'])    ? stripslashes($_SESSION['shop']['prefix'])    : ''),
+            'SHOP_CUSTOMER_TITLE'      => (isset($_SESSION['shop']['title'])     ? stripslashes($_SESSION['shop']['title'])    : ''),
             'SHOP_CUSTOMER_FIRST_NAME' => (isset($_SESSION['shop']['firstname']) ? stripslashes($_SESSION['shop']['firstname']) : ''),
             'SHOP_CUSTOMER_LAST_NAME'  => (isset($_SESSION['shop']['lastname'])  ? stripslashes($_SESSION['shop']['lastname'])  : ''),
             'SHOP_CUSTOMER_ADDRESS'    => (isset($_SESSION['shop']['address'])   ? stripslashes($_SESSION['shop']['address'])   : ''),
@@ -3867,7 +3867,7 @@ right after the customer logs in!
             if (!$this->objCustomer) {
                 // new customer
                 $this->objCustomer = new Customer(
-                    $_SESSION['shop']['prefix'],
+                    $_SESSION['shop']['title'],
                     $_SESSION['shop']['firstname'],
                     $_SESSION['shop']['lastname'],
                     $_SESSION['shop']['company'],
@@ -3887,7 +3887,7 @@ right after the customer logs in!
             } else {
                 // update the Customer object from the session array
                 // (she may have edited it)
-                $this->objCustomer->setPrefix($_SESSION['shop']['prefix']);
+                $this->objCustomer->setTitle($_SESSION['shop']['title']);
                 $this->objCustomer->setFirstName($_SESSION['shop']['firstname']);
                 $this->objCustomer->setLastName($_SESSION['shop']['lastname']);
                 $this->objCustomer->setCompany($_SESSION['shop']['company']);
@@ -4306,7 +4306,7 @@ right after the customer logs in!
                 'SHOP_GRAND_TOTAL'      => Currency::formatPrice(
                       $_SESSION['shop']['grand_total_price']),
                 'SHOP_COMPANY'          => stripslashes($_SESSION['shop']['company']),
-                'SHOP_PREFIX'           => stripslashes($_SESSION['shop']['prefix']),
+                'SHOP_TITLE'            => stripslashes($_SESSION['shop']['title']),
                 'SHOP_LASTNAME'         => stripslashes($_SESSION['shop']['lastname']),
                 'SHOP_FIRSTNAME'        => stripslashes($_SESSION['shop']['firstname']),
                 'SHOP_ADDRESS'          => stripslashes($_SESSION['shop']['address']),
@@ -4317,7 +4317,7 @@ right after the customer logs in!
                 'SHOP_PHONE'            => stripslashes($_SESSION['shop']['phone']),
                 'SHOP_FAX'              => stripslashes($_SESSION['shop']['fax']),
                 'SHOP_COMPANY2'         => stripslashes($_SESSION['shop']['company2']),
-                'SHOP_PREFIX2'          => stripslashes($_SESSION['shop']['prefix2']),
+                'SHOP_TITLE2'           => stripslashes($_SESSION['shop']['title2']),
                 'SHOP_LASTNAME2'        => stripslashes($_SESSION['shop']['lastname2']),
                 'SHOP_FIRSTNAME2'       => stripslashes($_SESSION['shop']['firstname2']),
                 'SHOP_ADDRESS2'         => stripslashes($_SESSION['shop']['address2']),
@@ -4539,18 +4539,18 @@ right after the customer logs in!
         if (!$objResult || $objResult->EOF) {
             return SHOP_ORDER_STATUS_CANCELLED;
         }
-        $orderStatus = $objResult->fields['order_status'];
+        $order_status = $objResult->fields['order_status'];
 
         // Never change a non-pending status!
         // Whether a payment was successful or not, the status must be
         // left alone.
-        if ($orderStatus != SHOP_ORDER_STATUS_PENDING) {
+        if ($order_status != SHOP_ORDER_STATUS_PENDING) {
             // The status of the order is not pending.
             // This may be due to a wrong order ID, a page reload,
             // or a PayPal IPN that has been received already.
             // No order status is changed automatically in these cases!
             // Leave it as it is.
-            return $orderStatus;
+            return $order_status;
         }
 
         // Determine and verify the payment handler
@@ -4569,7 +4569,7 @@ right after the customer logs in!
             if (   $handler != 'PaypalIPN'
                 && $newOrderStatus != SHOP_ORDER_STATUS_CANCELLED
             ) {
-                return $orderStatus;
+                return $order_status;
             }
         } elseif (
                $handler
@@ -4727,8 +4727,8 @@ right after the customer logs in!
                 foreach ($arrConditions as $arrData) {
                     $this->objTemplate->setVariable(array(
                         'SHOP_MAX_WEIGHT' => $arrData['max_weight'],
-                        'SHOP_COST_FREE'  => $arrData['price_free'],
-                        'SHOP_COST'       => $arrData['cost'],
+                        'SHOP_COST_FREE'  => $arrData['free_from'],
+                        'SHOP_COST'       => $arrData['fee'],
                         'SHOP_UNIT'       => Currency::getActiveCurrencySymbol(),
                     ));
                     $this->objTemplate->parseCurrentBlock();
@@ -4895,7 +4895,7 @@ right after the customer logs in!
 
         // check the submission
         if (   empty($_SESSION['shop']['cart'])
-            || empty($_SESSION['shop']['prefix'])
+            || empty($_SESSION['shop']['title'])
             || empty($_SESSION['shop']['lastname'])
             || empty($_SESSION['shop']['firstname'])
             || empty($_SESSION['shop']['address'])

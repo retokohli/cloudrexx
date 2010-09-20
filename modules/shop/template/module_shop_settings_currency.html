@@ -82,12 +82,12 @@ function updateExchangeRates(selectedElement)
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-<li><a id="currencyTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_CURRENCIES}">{TXT_CURRENCIES}</a></li>
-<li><a id="currencyTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="W&auml;hrung hinzuf&uuml;gen">{TXT_ADD}</a></li>
+<li><a id="currencyTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_CURRENCIES}">{TXT_CURRENCIES}</a></li>
+<li><a id="currencyTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="W&auml;hrung hinzuf&uuml;gen">{TXT_ADD}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=currency">
-<!-- start shopContent1 div -->
-<div id="shopContent1" class="currencyTab" style="display:block">
+<!-- start content1 div -->
+<div id="content1" class="currencyTab" style="display:block">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="6"><b>{TXT_CURRENCIES}</b></th>
@@ -120,10 +120,10 @@ function updateExchangeRates(selectedElement)
 <br />
 <input type="submit" name="currency" value="{TXT_STORE}" />
 </div>
-<!-- end shopContent1 div -->
+<!-- end content1 div -->
 
-<!-- start shopContent2 div -->
-<div id="shopContent2" class="currencyTab" style="display:none">
+<!-- start content2 div -->
+<div id="content2" class="currencyTab" style="display:none">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="5"><b>{TXT_ADD}</b></th>
@@ -257,6 +257,6 @@ function updateExchangeRates(selectedElement)
 <br />
 <input type="submit" name="currency_add" value="{TXT_ADD}" />
 </div>
-<!-- end shopContent2 div -->
+<!-- end content2 div -->
 </form>
 <!-- END module_shop_settings_currency.html -->
