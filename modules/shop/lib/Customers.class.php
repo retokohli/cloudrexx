@@ -25,10 +25,29 @@
 class Customers
 {
     /**
+     * Static Customer
+     * @var   Customer
+     */
+    private static $objCustomer = null;
+
+
+    /**
      * Create a Customers helper object (PHP5)
      */
     function __construct()
     {
+    }
+
+
+    static function get(
+        $filter=null, $search=null, $arrSort=null,
+        $arrAttributes=null, $limit=null, $offset=0
+    ) {
+        if (is_null(self::$objCustomer))
+            self::$objCustomer = new Customer();
+        return self::$objCustomer->getUsers(
+            $filter, $search, $arrSort,
+            $arrAttributes, $limit, $offset);
     }
 
 
@@ -39,14 +58,17 @@ class Customers
      * @return  string                  The Menuoptions HTML code
      * @static
      */
-    static function getCustomerTypeMenuoptions($selected=-1)
+    static function getTypeMenuoptions($selected=-1)
     {
         global $_ARRAYLANG;
 
-        $arrType = array(
-            -1 => '--&nbsp;'.$_ARRAYLANG['TXT_CUSTOMER_TYP'].'&nbsp;--',
-             0 => $_ARRAYLANG['TXT_CUSTOMER'],
-             1 => $_ARRAYLANG['TXT_RESELLER'],
+        $arrType = ($selected < 0
+            ? array(
+                -1 => '-- '.$_ARRAYLANG['TXT_CUSTOMER_TYP'].' --')
+            : array())
+          + array(
+            0 => $_ARRAYLANG['TXT_CUSTOMER'],
+            1 => $_ARRAYLANG['TXT_RESELLER'],
         );
         return Html::getOptions($arrType, $selected);
     }
@@ -59,12 +81,12 @@ class Customers
      * @return  string                  The Menuoptions HTML code
      * @static
      */
-    static function getCustomerStatusMenuoptions($selected)
+    static function getActiveMenuoptions($selected)
     {
         global $_ARRAYLANG;
 
         $arrStatus = array(
-            -1 => '--&nbsp;'.$_ARRAYLANG['TXT_STATUS'].'&nbsp;--',
+            -1 => '-- '.$_ARRAYLANG['TXT_STATUS'].' --',
              0 => $_ARRAYLANG['TXT_INACTIVE'],
              1 => $_ARRAYLANG['TXT_ACTIVE'],
         );
@@ -77,19 +99,17 @@ class Customers
      * dropdown menu options
      * @param   integer     $selected   The optional preselected order
      * @return  string                  The Menuoptions HTML code
+     * @static
      */
-    function getCustomerSortMenuoptions($selected='customerid')
+    static function getSortMenuoptions($selected='id')
     {
         global $_ARRAYLANG;
 
         $arrField = array(
-// TODO: The customer ID cannot be used for the time being, as there may be
-// a name conflict in the resulting query.
-// See the customer overview code in the backend.
-//            'customerid' => $_ARRAYLANG['TXT_SHOP_ID'],
-            'lastname'   => $_ARRAYLANG['TXT_LAST_NAME'],
-            'firstname'  => $_ARRAYLANG['TXT_FIRST_NAME'],
-            'company'    => $_ARRAYLANG['TXT_COMPANY'],
+            'id'        => $_ARRAYLANG['TXT_SHOP_ID'],
+            'lastname'  => $_ARRAYLANG['TXT_LAST_NAME'],
+            'firstname' => $_ARRAYLANG['TXT_FIRST_NAME'],
+            'company'   => $_ARRAYLANG['TXT_COMPANY'],
         );
         return Html::getOptions($arrField, $selected);
     }

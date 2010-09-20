@@ -9,7 +9,7 @@ function deleteCustomer(customerId)
 
 function sendForm(letter)
 {
-    document.formSearchCustomers.shopListLetter.value = letter;
+    document.formSearchCustomers.listletter.value = letter;
     document.formSearchCustomers.submit();
 }
 
@@ -46,21 +46,21 @@ function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
     </tr>
     <tr class="row1">
       <td>
-        <input type="text" name="shopSearchTerm" value="{SHOP_CUSTOMER_TERM}"
+        <input type="text" name="searchterm" value="{SHOP_CUSTOMER_TERM}"
             size="40" maxlength="255" />
-        <select name="shopCustomer" size="1">
+        <select name="is_reseller" size="1">
           {SHOP_CUSTOMER_TYPE_MENUOPTIONS}
         </select>
-        <select name="shopCustomerStatus" size="1">
+        <select name="active" size="1">
           {SHOP_CUSTOMER_STATUS_MENUOPTIONS}
         </select>
-        <input type="submit" name="shopSearchCustomers" value="{TXT_SEARCH}" />
+        <input type="submit" name="searchCustomers" value="{TXT_SEARCH}" />
       </td>
     </tr>
     <tr class="row2">
       <td>
         {TXT_SORT_ORDER}
-        <select name="shopListSort" size="1"
+        <select name="listsort" size="1"
             onchange="forms.formSearchCustomers.submit();">
           {SHOP_CUSTOMER_SORT_MENUOPTIONS}
         </select>
@@ -95,7 +95,7 @@ function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
         [ <a href="javascript:sendForm('Y')" title="Y">Y</a> ]
         [ <a href="javascript:sendForm('Z')" title="Z">Z</a> ]
         [ <a href="javascript:sendForm('')" title="Alle">Alle</a> ]
-        <input type="hidden" name="shopListLetter" value="{SHOP_CUSTOMER_LISTLETTER}" />
+        <input type="hidden" name="listletter" value="{SHOP_CUSTOMER_LISTLETTER}" />
         <!--{SHOP_LISTLETTER_MENUOPTIONS}-->
       </td>
     </tr>
@@ -103,7 +103,7 @@ function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
 </form>
 <br />
 <!-- BEGIN shopCustomersOverview -->
-<form name="shopSelectCustomers" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=customers">
+<form name="selectCustomers" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=customers">
   <table class="adminlist" border="0" width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" style="text-align:center;">#</th>
@@ -145,7 +145,7 @@ function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
 <br />
 <br />
 <form name="formNewCustomer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer">
-  <input type="submit" name="shopAddNewCustomer" value="{TXT_ADD_NEW_CUSTOMER}" />
+  <input type="submit" name="addNewCustomer" value="{TXT_ADD_NEW_CUSTOMER}" />
 </form>
 <p>{SHOP_CUSTOMER_PAGING}&nbsp;</p>
 <!-- END shop_customers.html -->

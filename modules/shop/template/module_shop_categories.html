@@ -81,12 +81,12 @@ function cancelEdit()
 
 </script>
 <ul id="tabmenu">
-<li><a id="categoryTab_shopContent1" class="{SHOP_CATEGORY_LIST_ACTIVE}" href="javascript:void(0);" onclick="selectTab('shopContent1')" title="{TXT_SHOP_CATEGORY_LIST}">{TXT_SHOP_CATEGORY_LIST}</a></li>
-<li><a id="categoryTab_shopContent2" class="{SHOP_CATEGORY_EDIT_ACTIVE}" href="javascript:void(0);" onclick="selectTab('shopContent2')" title="{TXT_SHOP_CATEGORY_ADD_OR_EDIT}">{TXT_SHOP_CATEGORY_ADD_OR_EDIT}</a></li>
+<li><a id="categoryTab_content1" class="{SHOP_CATEGORY_LIST_ACTIVE}" href="javascript:void(0);" onclick="selectTab('content1')" title="{TXT_SHOP_CATEGORY_LIST}">{TXT_SHOP_CATEGORY_LIST}</a></li>
+<li><a id="categoryTab_content2" class="{SHOP_CATEGORY_EDIT_ACTIVE}" href="javascript:void(0);" onclick="selectTab('content2')" title="{TXT_SHOP_CATEGORY_ADD_OR_EDIT}">{TXT_SHOP_CATEGORY_ADD_OR_EDIT}</a></li>
 </ul>
-<div id="shopContent1" class="categoryTab"
+<div id="content1" class="categoryTab"
   style="display:{SHOP_CATEGORY_LIST_DISPLAY};">
-  <form name="shopSelectCat" method="post"
+  <form name="selectCat" method="post"
       action="index.php?cmd=shop{MODULE_INDEX}&amp;act=modAllCategories">
     <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
       <tr>
@@ -172,9 +172,9 @@ function cancelEdit()
     <input type="submit" name="store" value="{TXT_ACCEPT_CHANGES}" />
   </form>
 </div>
-<div id="shopContent2" class="categoryTab"
+<div id="content2" class="categoryTab"
   style="display:{SHOP_CATEGORY_EDIT_DISPLAY};">
-  <form name="shopForm1" method="post"
+  <form name="categoryForm" method="post"
       action="index.php?cmd=shop{MODULE_INDEX}&amp;act=newcat">
     <table summary="" width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
       <tr>

@@ -251,8 +251,8 @@ if (_PAYPAL_DEBUG) {
   $query = "SELECT order_status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
   $objResult = $objDatabase->Execute($query);
   @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-  $orderStatus = $objResult->fields['order_status'];
-  @fwrite($log, "order status: $orderStatus\r\n");
+  $order_status = $objResult->fields['order_status'];
+  @fwrite($log, "order status: $order_status\r\n");
   @fwrite($log, "finished, leaving\r\n");
   @fclose($log);
 }

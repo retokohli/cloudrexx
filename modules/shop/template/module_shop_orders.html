@@ -26,11 +26,11 @@ function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
 
 function sendForm(letter)
 {
-  document.formSearchOrders.shopListLetter.value = letter;
+  document.formSearchOrders.listletter.value = letter;
   document.formSearchOrders.submit();
 }
 
-function changeOrderStatus(orderId, orderStatus, newOrderStatus)
+function changeOrderStatus(orderId, order_status, newOrderStatus)
 {
   if (confirm('{TXT_CONFIRM_CHANGE_STATUS}')) {
     var strURI = "index.php?cmd=shop{MODULE_INDEX}&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
@@ -44,7 +44,7 @@ function changeOrderStatus(orderId, orderStatus, newOrderStatus)
     }
     window.location.replace(strURI);
   } else {
-    document.getElementById("shopOrderStatusId["+orderId+"]").setAttribute("value", orderStatus);
+    document.getElementById("orderstatusid["+orderId+"]").setAttribute("value", order_status);
   }
 }
 
@@ -63,27 +63,27 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     </tr>
     <tr class=row1>
       <td>
-        <input type="text" name="shopSearchTerm" size="40" maxlength="255"
+        <input type="text" name="searchterm" size="40" maxlength="255"
           value="{SHOP_SEARCH_TERM}" />
-        <select name="shopCustomerType">
+        <select name="customer_type">
           {SHOP_CUSTOMER_TYPE_MENUOPTIONS}
         </select>
-        <select name="shopOrderStatus">
+        <select name="order_status">
           {SHOP_ORDER_STATUS_MENUOPTIONS}
         </select>
-        <input type="submit" name="shopSearchOrders" value="{TXT_SEARCH}" />
+        <input type="submit" name="searchOrders" value="{TXT_SEARCH}" />
       </td>
     </tr>
     <tr class=row1>
       <td>{TXT_SORT_ORDER}
-        <select name="shopListSort"
+        <select name="listsort"
           onchange="document.formSearchOrders.submit();">
           {SHOP_CUSTOMER_SORT_MENUOPTIONS}
         </select>
         &nbsp;&nbsp;&nbsp;
         <label for="shopShowPendingOrders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
         <input type="checkbox"{SHOP_SHOW_PENDING_ORDERS_CHECKED}
-          id="shopShowPendingOrders" name="shopShowPendingOrders"
+          id="shopShowPendingOrders" name="showPendingOrders"
           onchange="document.formSearchOrders.submit();" />
       </td>
     </tr>
@@ -116,7 +116,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         [ <a href="javascript:sendForm('Y')" title="Y">Y</a> ]
         [ <a href="javascript:sendForm('Z')" title="Z">Z</a> ]
         [ <a href="javascript:sendForm('')" title="Alle">Alle</a> ]
-        <input type="hidden" name="shopListLetter" value="{SHOP_CUSTOMER_LISTLETTER}" />
+        <input type="hidden" name="listLetter" value="{SHOP_CUSTOMER_LISTLETTER}" />
         <!--{SHOP_LISTLETTER_MENUOPTIONS}-->
       </td>
     </tr>
@@ -125,7 +125,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </form>
 <!-- BEGIN orderTable -->
 {SHOP_ORDER_PAGING}
-<form name="shopSelectOrders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
+<form name="selectOrders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
   <table class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" style="text-align:center;">#</th>

@@ -229,15 +229,15 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 // ]]>
 </script>
 <ul id="tabmenu">
-  <li><a id="attributeTab_shopContent1" class="active" href="javascript:{}"
-      onclick="selectTab('shopContent1')" title="{TXT_OPTIONS}">{TXT_OPTIONS}</a></li>
-  <li><a id="attributeTab_shopContent2" href="javascript:{}"
-      onclick="selectTab('shopContent2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
+  <li><a id="attributeTab_content1" class="active" href="javascript:{}"
+      onclick="selectTab('content1')" title="{TXT_OPTIONS}">{TXT_OPTIONS}</a></li>
+  <li><a id="attributeTab_content2" href="javascript:{}"
+      onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
 </ul>
 <input name="option_value_tpl" id="option_value_tpl" value="" maxlength="32" style="display: none; width: 170px;" type="text" />
 <input name="option_price_tpl" id="option_price_tpl" value="0.00" maxlength="9" style="display: none; width: 170px; text-align: right;" type="text" />
-<!-- start shopContent1 div -->
-<div id="shopContent1" class="attributeTab" style="display:block">
+<!-- start content1 div -->
+<div id="content1" class="attributeTab" style="display:block">
   <form name="shopSelectOptions" id="shopSelectOptions" method="post" action="">
     <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
@@ -285,9 +285,9 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
   <br />
   {SHOP_PAGING}
 </div>
-<!-- end shopContent1 div -->
-<!-- start shopContent2 div -->
-<div id="shopContent2" class="attributeTab" style="display:none">
+<!-- end content1 div -->
+<!-- start content2 div -->
+<div id="content2" class="attributeTab" style="display:none">
   <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
     <table summary="" border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
       <tr>
@@ -324,5 +324,5 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
     <input type="submit" name="addAttributeOption" value="{TXT_ADD}" />
   </form>
 </div>
-<!-- end shopContent1 div -->
+<!-- end content1 div -->
 <!-- END module_shop_products_attribute_options.html -->

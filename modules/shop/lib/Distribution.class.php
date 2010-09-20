@@ -84,7 +84,7 @@ class Distribution
      * @static
      */
     static function getDistributionMenu(
-        $selected='', $menuName='shopDistribution',
+        $selected='', $menuName='distribution',
         $onChange='', $selectAttributes='')
     {
         $menu =

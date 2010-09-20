@@ -52,7 +52,7 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
     </tr>
     <tr class="row1">
       <td>
-        <input type="text" name="shopSearchTerm" size="40" maxlength="255" />
+        <input type="text" name="searchterm" size="40" maxlength="255" />
         <select name="catId" size="1">
           <option value='0'>{TXT_ALL_PRODUCT_GROUPS}</option>
           {SHOP_CAT_MENUOPTIONS}
@@ -94,12 +94,12 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
     <!-- BEGIN productRow -->
       <tr class="{SHOP_ROWCLASS}" style="vertical-align:top;">
         <td><input type="checkbox" name="selectedProductId[]" value="{SHOP_PRODUCT_ID}" /></td>
-        <td>{SHOP_PRODUCT_ID}<input type="hidden" name="shopProductId[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
+        <td>{SHOP_PRODUCT_ID}<input type="hidden" name="productId[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
         <td>
           <img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" />
           <input type="checkbox" name="active[{SHOP_PRODUCT_ID}]" value="1"{SHOP_PRODUCT_STATUS} /><input type="hidden" name="activeOld[{SHOP_PRODUCT_ID}]" value="{SHOP_ACTIVE_VALUE_OLD}" />
         </td>
-        <td><input type="text" name="shopSortOrder[{SHOP_PRODUCT_ID}]" size="5" maxlength="5" value="{SHOP_SORT_ORDER}" /><input type="hidden" name="shopSortOrderOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" /></td>
+        <td><input type="text" name="sortOrder[{SHOP_PRODUCT_ID}]" size="5" maxlength="5" value="{SHOP_SORT_ORDER}" /><input type="hidden" name="sortOrderOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SORT_ORDER}" /></td>
         <td>
           <input type="checkbox" name="shownonstartpage[{SHOP_PRODUCT_ID}]" value="1"{SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED} />
           <input type="hidden" name="shownonstartpageOld[{SHOP_PRODUCT_ID}]" value="{SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD}" />
@@ -146,6 +146,6 @@ Text[0]=["","{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}"];
   {SHOP_PRODUCT_PAGING}
   <br />
   <br />
-  <input type="submit" name="shopSaveProductAttributes" value="{TXT_ACCEPT_CHANGES}" />
+  <input type="submit" name="saveProductAttributes" value="{TXT_ACCEPT_CHANGES}" />
 </form>
 <!-- END shop_product_catalog.html -->

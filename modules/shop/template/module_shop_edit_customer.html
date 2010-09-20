@@ -1,103 +1,86 @@
 <!-- START shop_customer_edit.html -->
 <form name="formCustomer" method="post"
-    action="index.php?cmd=shop{MODULE_INDEX}&amp;act={SHOP_CUSTOMER_ACT}">
+    action="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer">
   <table width="100%" cellspacing="0" cellpadding="2" class="adminlist" border="0">
     <tr>
       <th nowrap="nowrap" colspan="4">{TXT_CUSTOMER_DATA}</th>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap" width="15%">{TXT_CUSTOMER_NUMBER}</td>
-      <td width="35%">{SHOP_CUSTOMERID}</td>
+      <td width="35%">
+        <input type="hidden" name="customerid" value="{SHOP_CUSTOMERID}" />
+        {SHOP_CUSTOMERID}
+      </td>
       <td width="15%">&nbsp;</td>
       <td width="35%">&nbsp;</td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_COMPANY}</td>
-      <td><input type="text" name="shopCompany" value="{SHOP_COMPANY}" size="42" tabindex="1" /></td>
+      <td><input type="text" name="company" value="{SHOP_COMPANY}" size="42" tabindex="1" /></td>
       <td nowrap="nowrap">{TXT_SHOP_DISCOUNT_GROUP_CUSTOMER}</td>
       <td>
-        <select name="shopDiscountGroupCustomer" style="width: 230px;" tabindex="21">
+        <select name="discountgroupcustomer" style="width: 230px;" tabindex="21">
           {SHOP_DISCOUNT_GROUP_CUSTOMER}
         </select>
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_PREFIX}</td>
-      <td><input type="text" name="shopPrefix" value="{SHOP_PREFIX}" size="42" tabindex="2" /></td>
+      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
+      <td><input type="text" name="title" value="{SHOP_TITLE}" size="42" tabindex="2" /></td>
       <td nowrap="nowrap">{TXT_CUSTOMER_TYP}</td>
       <td>
-        <select name="shopCustomerClass" size="1" tabindex="22" style="width: 230px;">
-          <option value="0" {SHOP_IS_CUSTOMER}>{TXT_CUSTOMER}</option>
-          <option value="1" {SHOP_IS_RESELLER}>{TXT_RESELLER}</option>
+        <select name="customerclass" size="1" tabindex="22" style="width: 230px;">
+          {SHOP_CUSTOMER_TYPE_MENUOPTIONS}
         </select>
       </td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_LAST_NAME}</td>
-      <td><input type="text" name="shopLastname" value="{SHOP_LASTNAME}" size="42" tabindex="3" /></td>
+      <td><input type="text" name="lastname" value="{SHOP_LASTNAME}" size="42" tabindex="3" /></td>
       <td nowrap="nowrap">{TXT_LOGIN_NAME}</td>
-      <td><input type="text" name="shopUsername" value="{SHOP_USERNAME}" size="42" tabindex="23" /></td>
+      <td><input type="text" name="username" value="{SHOP_USERNAME}" size="42" tabindex="23" /></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
-      <td><input type="text" name="shopFirstname" value="{SHOP_FIRSTNAME}" size="42" tabindex="4" /></td>
+      <td><input type="text" name="firstname" value="{SHOP_FIRSTNAME}" size="42" tabindex="4" /></td>
       <td nowrap="nowrap">{TXT_RESET_PASSWORD}</td>
-      <td><input type="text" name="shopPassword" value="{SHOP_PASSWORD}" size="42" tabindex="24" /></td>
+      <td><input type="text" name="password" value="{SHOP_PASSWORD}" size="42" tabindex="24" /></td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_ADDRESS}</td>
-      <td><input type="text" name="shopAddress" value="{SHOP_ADDRESS}" size="42" tabindex="5" /></td>
+      <td><input type="text" name="address" value="{SHOP_ADDRESS}" size="42" tabindex="5" /></td>
       <td nowrap="nowrap">{TXT_REGISTER_DATE}</td>
-      <td><input type="text" name="shopRegisterDate" value="{SHOP_REGISTER_DATE}" size="42" tabindex="25" /></td>
+      <td><input type="text" name="registerdate" value="{SHOP_REGISTER_DATE}" size="42" tabindex="25" /></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
       <td>
-        <input type="text" name="shopZip" value="{SHOP_ZIP}" size="10" maxlength="10" tabindex="6" />
-        <input type="text" name="shopCity" value="{SHOP_CITY}" size="28" tabindex="7" tabindex="26" /></td>
+        <input type="text" name="zip" value="{SHOP_ZIP}" size="10" maxlength="10" tabindex="6" />
+        <input type="text" name="city" value="{SHOP_CITY}" size="28" tabindex="7" tabindex="26" /></td>
       <td nowrap="nowrap">{TXT_CUSTOMER_STATUS}</td>
       <td>
-        <select name="shopCustomerStatus" size="1" tabindex="27" style="width: 230px;">
-          <option value="0" {SHOP_CUSTOMER_STATUS_0}>{TXT_INACTIVE}</option>
-          <option value="1" {SHOP_CUSTOMER_STATUS_1}>{TXT_ACTIVE}</option>
+        <select name="active" size="1" tabindex="27" style="width: 230px;">
+          {SHOP_CUSTOMER_ACTIVE_MENUOPTIONS}
         </select>
       </td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_PHONE}</td>
-      <td><input type="text" name="shopPhone" value="{SHOP_PHONE}" size="42" tabindex="8" /></td>
+      <td><input type="text" name="phone" value="{SHOP_PHONE}" size="42" tabindex="8" /></td>
       <td nowrap="nowrap">{TXT_COUNTRY}</td>
       <td>
-        <select name="shopCountry" style="width: 230px;" tabindex="28">
+        <select name="country_id" style="width: 230px;" tabindex="28">
           {SHOP_COUNTRY_MENUOPTIONS}
         </select>
       </td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_EMAIL}</td>
-      <td><input type="text" name="shopEmail" value="{SHOP_EMAIL}" size="42" tabindex="9" /></td>
+      <td><input type="text" name="email" value="{SHOP_EMAIL}" size="42" tabindex="9" /></td>
       <td nowrap="nowrap">{TXT_FAX}</td>
-      <td><input type="text" name="shopFax" value="{SHOP_FAX}" size="42" tabindex="29" /></td>
+      <td><input type="text" name="fax" value="{SHOP_FAX}" size="42" tabindex="29" /></td>
     </tr>
   </table>
-  <!--br />
-  <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
-    <tr>
-      <th nowrap="nowrap" colspan="4">{TXT_PAYMENT_INFORMATIONS}</td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="15%">{TXT_CREDIT_CARD_OWNER}</td>
-      <td width="35%"><input type="text" name="shopCcname" value="{SHOP_CCNAME}" size="40" /></td>
-      <td nowrap="nowrap" width="15%">{TXT_CARD_NUMBER}</td>
-      <td width="35%"><input type="text" name="shopCcnumber" value="{SHOP_CCNUMBER}" size="40" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_EXPIRY_DATE}</td>
-      <td><input type="text" name="shopCcdate" value="{SHOP_CCDATE}" size="10" maxlength="10" /></td>
-      <td nowrap="nowrap">{TXT_CVC_CODE}</td>
-      <td><input type="text" name="shopCvcCode" value="{SHOP_CVC_CODE}" size="5" maxlength="5" /></td>
-    </tr>
-  </table-->
   <br />
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
@@ -105,12 +88,12 @@
     </tr>
     <tr class="row1">
       <td nowrap="nowrap" width="15%"><div style="vertical-align:top;">{TXT_REMARK}</div></td>
-      <td width="85%"><textarea name="shopCompanyNote" rows="4" cols="80" tabindex="41">{SHOP_COMPANY_NOTE}</textarea></td>
+      <td width="85%"><textarea name="companynote" rows="4" cols="80" tabindex="41">{SHOP_COMPANY_NOTE}</textarea></td>
     </tr>
   </table>
   <br />
-    <input type="submit" name="shopStore" value="{TXT_SAVE_CHANGES}" tabindex="52" />
-    <input type="checkbox" id="shopSendLoginData" name="shopSendLoginData" value="checkbox" {SHOP_SEND_LOGING_DATA_STATUS} tabindex="51" />
-    <label for="shopSendLoginData">{TXT_SEND_LOGIN_DATA}</label>
+    <input type="submit" name="store" value="{TXT_SAVE_CHANGES}" tabindex="52" />
+    <input type="checkbox" name="sendlogindata" value="checkbox" {SHOP_SEND_LOGING_DATA_STATUS} tabindex="51" />
+    <label for="sendlogindata">{TXT_SEND_LOGIN_DATA}</label>
 </form>
 <!-- END shop_customer_edit.html -->

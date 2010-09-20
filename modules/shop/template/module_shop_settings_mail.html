@@ -30,9 +30,9 @@ function sendMail()
   return true;
 }
 
-function loadTpl(tplId, langId, strTab)
+function loadTpl(tplId, lang_id, strTab)
 {
-  var strUri = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
+  var strUri = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&tplId="+tplId+"&lang_id="+lang_id+"&strTab="+strTab;
   if (document.getElementById('portMail')) {
     if (document.shopFormEdit.elements['portMail'].checked == true) {
       strUri += "&portLangId="+document.shopFormEdit.elements['lang_id'].value;
@@ -140,8 +140,8 @@ function loadTpl(tplId, langId, strTab)
       <td>[CUSTOMER_COMPANY]</td>
     </tr>
     <tr class="row2">
-      <td>{TXT_SHOP_PREFIX}</td>
-      <td>[CUSTOMER_PREFIX]</td>
+      <td>{TXT_SHOP_TITLE}</td>
+      <td>[CUSTOMER_TITLE]</td>
     </tr>
     <tr class="row1">
       <td>{TXT_SHOP_FIRSTNAME}</td>
@@ -215,8 +215,8 @@ function loadTpl(tplId, langId, strTab)
       <td>[SHIPPING_COMPANY]</td>
     </tr>
     <tr class="row1">
-      <td>{TXT_SHOP_PREFIX}</td>
-      <td>[SHIPPING_PREFIX]</td>
+      <td>{TXT_SHOP_TITLE}</td>
+      <td>[SHIPPING_TITLE]</td>
     </tr>
     <tr class="row2">
       <td>{TXT_SHOP_FIRSTNAME}</td>
@@ -352,7 +352,7 @@ function loadTpl(tplId, langId, strTab)
       <tr class="row1">
         <td width="15%">{TXT_TEMPLATE}</td>
         <td width="85%">
-          <select style="width: 270px;" name="tplId" size="1" onchange="loadTpl(this.value,document.shopFormSend.elements['langId'].value,'shopMailSend')">
+          <select style="width: 270px;" name="tplId" size="1" onchange="loadTpl(this.value,document.shopFormSend.elements['lang_id'].value,'shopMailSend')">
             <option value="0">keine Vorlage</option>
             {SHOP_MAIL_SEND_TEMPLATES}
           </select>

@@ -19,20 +19,20 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-  <li><a id="discountTab_shopContent1" class="{SHOP_DISCOUNT_LIST_CLASS}"
+  <li><a id="discountTab_content1" class="{SHOP_DISCOUNT_LIST_CLASS}"
         href="javascript:void(0);"
-        onclick="selectTab('shopContent1')" title="{TXT_SHOP_DISCOUNT_GROUPS}">
+        onclick="selectTab('content1')" title="{TXT_SHOP_DISCOUNT_GROUPS}">
       {TXT_SHOP_DISCOUNT_GROUPS}</a></li>
   <li>
-    <a id="discountTab_shopContent2" class="{SHOP_DISCOUNT_EDIT_CLASS}"
+    <a id="discountTab_content2" class="{SHOP_DISCOUNT_EDIT_CLASS}"
         href="javascript:void(0);"
-        onclick="selectTab('shopContent2')" title="{TXT_ADD_OR_EDIT}">
+        onclick="selectTab('content2')" title="{TXT_ADD_OR_EDIT}">
       {TXT_ADD_OR_EDIT}</a></li>
 </ul>
 <form name="shopForm" method="post"
     action="index.php?cmd=shop&amp;act=products&amp;tpl=discounts">
-  <!-- start shopContent1 div -->
-  <div id="shopContent1" class="discountTab" style="display:{SHOP_DISCOUNT_LIST_DISPLAY};">
+  <!-- start content1 div -->
+  <div id="content1" class="discountTab" style="display:{SHOP_DISCOUNT_LIST_DISPLAY};">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th width="49%"><b>{TXT_SHOP_DISCOUNT_GROUP_NAME}</b></th>
@@ -68,10 +68,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <!-- END shopDiscount -->
     </table>
   </div>
-  <!-- end shopContent1 div -->
+  <!-- end content1 div -->
 
-  <!-- start shopContent2 div -->
-  <div id="shopContent2" class="discountTab" style="display:{SHOP_DISCOUNT_EDIT_DISPLAY}">
+  <!-- start content2 div -->
+  <div id="content2" class="discountTab" style="display:{SHOP_DISCOUNT_EDIT_DISPLAY}">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="4"><b>{TXT_SHOP_EDIT_DISCOUNT_GROUP}</b></th>
@@ -120,6 +120,6 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         onclick="javascript:window.location.href='index.php?cmd=shop&act=products&tpl=discounts';"
     />
   </div>
-  <!-- end shopContent2 div -->
+  <!-- end content2 div -->
 </form>
 <!-- END module_shop_discount_groups_count.html -->

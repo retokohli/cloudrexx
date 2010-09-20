@@ -7,13 +7,13 @@
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-<li><a id="generalTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_GENERAL_SETTINGS}">{TXT_GENERAL_SETTINGS}</a></li>
-<li><a id="generalTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_PAYMENT_HANDLER}">{TXT_PAYMENT_HANDLER}</a></li>
-<li><a id="generalTab_shopContent4" href="javascript:{}" onclick="selectTab('shopContent4')" title="{TXT_SHOP_IMAGE_SETTINGS}">{TXT_SHOP_IMAGE_SETTINGS}</a></li>
+<li><a id="generalTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_GENERAL_SETTINGS}">{TXT_GENERAL_SETTINGS}</a></li>
+<li><a id="generalTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_PAYMENT_HANDLER}">{TXT_PAYMENT_HANDLER}</a></li>
+<li><a id="generalTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_SHOP_IMAGE_SETTINGS}">{TXT_SHOP_IMAGE_SETTINGS}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=general">
-<!-- start shopContent1 div -->
-<div id="shopContent1" class="generalTab" style="display:block">
+<!-- start content1 div -->
+<div id="content1" class="generalTab" style="display:block">
   <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="2"> <b>{TXT_GENERAL_SETTINGS}</b></th>
@@ -30,11 +30,11 @@
 
     <tr class="row1">
       <td nowrap="nowrap">{TXT_CONTACT_COMPANY}</td>
-      <td nowrap="nowrap"><input type="text" name="shop_company" size="50" maxlength='255' value="{SHOP_CONTACT_COMPANY}" /></td>
+      <td nowrap="nowrap"><input type="text" name="company" size="50" maxlength='255' value="{SHOP_CONTACT_COMPANY}" /></td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_CONTACT_ADDRESS}</td>
-      <td nowrap="nowrap"><textarea cols="36" rows="5" name="shop_address">{SHOP_CONTACT_ADDRESS}</textarea></td>
+      <td nowrap="nowrap"><textarea cols="36" rows="5" name="address">{SHOP_CONTACT_ADDRESS}</textarea></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_PHONE_NUMBER}</td>
@@ -80,10 +80,10 @@
   </table>
   <br />
 </div>
-<!-- end shopContent1 div -->
+<!-- end content1 div -->
 
-<!-- start shopContent2 div -->
-<div id="shopContent2" class="generalTab" style="display:none;">
+<!-- start content2 div -->
+<div id="content2" class="generalTab" style="display:none;">
   <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="3">{TXT_PAYMENT_HANDLER}</th>
@@ -98,7 +98,7 @@
       <td nowrap="nowrap">
         <label for="postfinance_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="postfinance_swapper" id="postfinance_swapper" type="checkbox" onclick="swapBlock('postfinance');" value="1" />&nbsp;
-        <div id="yellowpay" style="display:none;">
+        <div id="postfinance" style="display:none;">
           <table width="100%" summary="">
             <tr>
               <td width="20%">
@@ -313,10 +313,10 @@
   </table>
   <br />
 </div>
-<!-- end shopContent2 div -->
+<!-- end content2 div -->
 
-<!-- start shopContent4 div -->
-<div id="shopContent4" class="generalTab" style="display:none;">
+<!-- start content4 div -->
+<div id="content4" class="generalTab" style="display:none;">
     <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="2">{TXT_SHOP_IMAGE_SETTINGS}</th>
@@ -348,7 +348,7 @@
     </table>
   <br />
 </div>
-<!-- end shopContent4 div -->
+<!-- end content4 div -->
 
 <input type="submit" name="general" value="{TXT_STORE}" />
 </form>
