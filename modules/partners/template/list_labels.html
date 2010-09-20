@@ -1,21 +1,18 @@
 <!-- START list_labels.html -->
 <script type="text/javascript">
-	function toggle_all() {
-		var all_checkboxes = $$('input.label_checkbox');
-		var master         =  $('toggleall_checkbox');
-
-        all_checkboxes.each(function(elem) {
-			elem.checked = master.checked;
-        });
-	}
-
+function toggle_all() {
+  var all_checkboxes = $$('input.label_checkbox');
+  var master         =  $('toggleall_checkbox');
+  all_checkboxes.each(function(elem) {
+    elem.checked = master.checked;
+  });
+}
 </script>
 
 <ul id="tabmenu">
-	<li><a title="{TXT_PARTNERS_OVERVIEW_TITLE}" onclick="selectTab('Overview')" href="javascript:{}" class="active" id="categories_Overview">{TXT_PARTNERS_OVERVIEW_TITLE}</a></li>
-	<li><a title="Add category" onclick="selectTab('NewLabel')" href="javascript:{}" class="inactive" id="categories_NewLabel">{TXT_PARTNERS_NEW_LABEL}</a></li>
+  <li><a title="{TXT_PARTNERS_OVERVIEW_TITLE}" onclick="selectTab('Overview')" href="javascript:{}" class="active" id="categories_Overview">{TXT_PARTNERS_OVERVIEW_TITLE}</a></li>
+  <li><a title="Add category" onclick="selectTab('NewLabel')" href="javascript:{}" class="inactive" id="categories_NewLabel">{TXT_PARTNERS_NEW_LABEL}</a></li>
 </ul>
-
 
 <div class="categories" id="Overview">
     <form action="index.php?cmd=partners&amp;act=labelmultiaction" method="POST" id="entries_form">
@@ -93,6 +90,4 @@
         }
     </script>
 </div>
-
- <!-- END list_labels.html -->
-
+<!-- END list_labels.html -->

@@ -1,15 +1,13 @@
 <!-- START list_partners.html -->
 <script type="text/javascript" src="{PARTNERS_DROPDOWN_JS_LOCATION}"></script>
 <script type="text/javascript">
-	function toggle_all() {
-		var all_checkboxes = $$('input.partner_checkbox');
-		var master         =  $('toggleall_checkbox');
-
-        all_checkboxes.each(function(elem) {
-			elem.checked = master.checked;
-        });
-	}
-
+function toggle_all() {
+  var all_checkboxes = $$('input.partner_checkbox');
+  var master         =  $('toggleall_checkbox');
+  all_checkboxes.each(function(elem) {
+    elem.checked = master.checked;
+  });
+}
 </script>
 <style type="text/css">
     #Search input,
@@ -18,10 +16,9 @@
     }
 </style>
 
-
 <ul id="tabmenu">
-	<li><a title="{TXT_PARTNERS_OVERVIEW_TITLE}" href="#" class="active" id="categories_Overview">{TXT_PARTNERS_OVERVIEW_TITLE}</a></li>
-	<li><a href="index.php?cmd=partners&amp;tab=new" class="inactive" id="categories_NewPartner">{TXT_PARTNERS_NEW_PARTNER}</a></li>
+  <li><a title="{TXT_PARTNERS_OVERVIEW_TITLE}" href="#" class="active" id="categories_Overview">{TXT_PARTNERS_OVERVIEW_TITLE}</a></li>
+  <li><a href="index.php?cmd=partners&amp;tab=new" class="inactive" id="categories_NewPartner">{TXT_PARTNERS_NEW_PARTNER}</a></li>
 </ul>
 
 <div class="categories" id="Overview">
@@ -52,9 +49,9 @@
                         <input type="button" onclick="window.location='index.php?cmd=partners&reset_search=1'" value="{TXT_PARTNERS_RESET_SEARCH}"/>
                         <input type="button" onclick="window.location='index.php?cmd=partners&labelfree=1'" value="{TXT_PARTNERS_LOOK_FOR_LABELFREE}"/>
                     </div>
-					<div style="clear: both">
-						<br/>
-					</div>
+          <div style="clear: both">
+            <br/>
+          </div>
                 </td>
             </tr>
         </table>
@@ -77,8 +74,8 @@
     <!-- BEGIN partner_entry -->
     <tr class="{ROW_CLASS}" id="partner_row_{PARTNER_ID}">
         <td><input type="checkbox" id="checked_{PARTNER_ID}" class="partner_checkbox" name="checked_partner[]" value="{PARTNER_ID}"/></td>
-		<td><a href="index.php?cmd=partners&act=statustoggle&id={PARTNER_ID}"><img src="images/icons/led_{LED_COLOR}.gif" style="border:none"/></a></td>
-		<td><input type="text" name="partner_inst[{PARTNER_ID}]" style="width: 3em;" value="{PARTNER_NUM_INSTALLATIONS}"/></th>
+    <td><a href="index.php?cmd=partners&act=statustoggle&id={PARTNER_ID}"><img src="images/icons/led_{LED_COLOR}.gif" style="border:none"/></a></td>
+    <td><input type="text" name="partner_inst[{PARTNER_ID}]" style="width: 3em;" value="{PARTNER_NUM_INSTALLATIONS}"/></th>
         <td><a href="index.php?cmd=partners&amp;act=editpartner&amp;id={PARTNER_ID}">{PARTNER_NAME}</a></td>
         <td><a href="mailto:{PARTNER_CONTACT_EMAIL}">{PARTNER_CONTACT_NAME}</a></td>
         <td><a href="{PARTNER_WEB_URL}">{PARTNER_WEB_URL}</a></td>
@@ -150,5 +147,4 @@
         }
     </script>
 </div>
- <!-- END list_partners.html -->
-
+<!-- END list_partners.html -->

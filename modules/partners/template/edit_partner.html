@@ -1,31 +1,31 @@
 <!-- START edit_partner.html -->
 <style tyle="text/css">
-    table.adminlist td {
-        vertical-align: top;
-    }
-    ul.label_list {
-        padding: 0px;
-        margin: 0px;
-        display: inline;
-    }
-    ul.label_list li  {
-        list-style-type: none;
-        border: 1px solid blue;
-        padding: 3px;
-        margin: 1px 10px 1px 1px;
-        display: block;
-        float: left;
-        background-color: #f0f0ff;
-    }
-    ul.label_list li span {
-        display: block;
-        float: left;
-    }
-    ul.label_list li a {
-        float: right;
-        height: 1em;
-        width: 16px;
-    }
+table.adminlist td {
+  vertical-align: top;
+}
+ul.label_list {
+  padding: 0px;
+  margin: 0px;
+  display: inline;
+}
+ul.label_list li  {
+  list-style-type: none;
+  border: 1px solid blue;
+  padding: 3px;
+  margin: 1px 10px 1px 1px;
+  display: block;
+  float: left;
+  background-color: #f0f0ff;
+}
+ul.label_list li span {
+  display: block;
+  float: left;
+}
+ul.label_list li a {
+  float: right;
+  height: 1em;
+  width: 16px;
+}
 </style>
 <script type="text/javascript" src="../lib/datepickercontrol/datepickercontrol.js"></script>
 <script type="text/javascript" src="{PARTNERS_LABEL_JS_LOCATION}"></script>
@@ -34,34 +34,33 @@
 <script type="text/javascript" src="{PARTNERS_LABELBROWSER_JS_LOCATION}"></script>
 
 <script type="text/javascript">
-    LabelTools.setup({
-        'assign_url': '{PARTNERS_LABELENTRY_ASSIGN_URL}',
-        'drop_url':   '{PARTNERS_LABELENTRY_DROP_URL}'
-    });
+LabelTools.setup({
+  'assign_url': '{PARTNERS_LABELENTRY_ASSIGN_URL}',
+  'drop_url':   '{PARTNERS_LABELENTRY_DROP_URL}'
+});
 
-    function browse_logo() {
-        window.open(
-           "index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners",
-           "width=800,height=600,resizable=yes,status=no,scrollbars=yes"
-       ).focus();
-    }
-    function clear_logo() {
-        SetUrl('');
-    }
+function browse_logo() {
+  window.open(
+    "index.php?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners",
+    "width=800,height=600,resizable=yes,status=no,scrollbars=yes"
+ ).focus();
+}
+function clear_logo() {
+  SetUrl('');
+}
 
-    function SetUrl(url, width, height, alt) {
-        if(url) {
-            var url_save = url.substring('{PARTNERS_IMAGE_PREFIX}'.length);
-            //console.dir({url: url, url_save:url_save, prefix:'{PARTNERS_IMAGE_PREFIX}'});
-            $('company_logo_input').setValue(url_save);
-            $('company_logo'      ).src    = url;
-        }
-        else {
-            $('company_logo_input').setValue(url);
-            $('company_logo'      ).src    = url;
-        }
-    }
-
+function SetUrl(url, width, height, alt) {
+  if(url) {
+    var url_save = url.substring('{PARTNERS_IMAGE_PREFIX}'.length);
+    //console.dir({url: url, url_save:url_save, prefix:'{PARTNERS_IMAGE_PREFIX}'});
+    $('company_logo_input').setValue(url_save);
+    $('company_logo'      ).src    = url;
+  }
+  else {
+    $('company_logo_input').setValue(url);
+    $('company_logo'      ).src    = url;
+  }
+}
 </script>
 <form name="edit_partner" method="POST" target="{EDITPARTNER_FORM_TARGET}">
     <input type="hidden" name="savepartner" value="1" />
@@ -82,11 +81,11 @@
         <tr class="row2"><td>{TXT_PARTNERS_COMPANY_QUOTE}</td> <td><textarea style="width: 400px; height: 5em" name="customer_quote">{PARTNER_CUSTOMER_QUOTE}</textarea></td></tr>
         <tr class="row1"><td>{TXT_PARTNERS_LINKED_USERID}</td> <td><input style="width: 400px" type="text" name="user_id" value="{PARTNER_USER_ID}"/></td></tr>
         <tr class="row2"><td>{TXT_PARTNERS_NUM_INSTALLATIONS}</td> <td><input style="width: 400px" type="text" name="num_installations" value="{PARTNER_NUM_INSTALLATIONS}"/></td></tr>
-		<tr class="row1"><td>{TXT_PARTNERS_COMPANY_LOGO}</td> <td>
-                <img src="{PARTNER_LOGO_URL}" id="company_logo" style="width: 100px; height: 100px;"/>
-                <input type="hidden" name="logo_url" id="company_logo_input" value="{PARTNER_LOGO_URL_INPUT}"/>
-                <a href="#" onclick="browse_logo();return false;">{TXT_PARTNERS_COMPANY_LOGO_EDIT}</a> /
-                <a href="#" onclick="clear_logo();return false;">{TXT_PARTNERS_COMPANY_LOGO_REMOVE}</a>
+        <tr class="row1"><td>{TXT_PARTNERS_COMPANY_LOGO}</td> <td>
+          <img src="{PARTNER_LOGO_URL}" id="company_logo" style="width: 100px; height: 100px;"/>
+          <input type="hidden" name="logo_url" id="company_logo_input" value="{PARTNER_LOGO_URL_INPUT}"/>
+          <a href="#" onclick="browse_logo();return false;">{TXT_PARTNERS_COMPANY_LOGO_EDIT}</a> /
+          <a href="#" onclick="clear_logo();return false;">{TXT_PARTNERS_COMPANY_LOGO_REMOVE}</a>
         </td></tr>
 
         <tr><th colspan="2">{TXT_PARTNERS_LABELS}</th></tr>
@@ -96,7 +95,7 @@
                 <td>{LABEL_NAME}</td>
                 <td><span id="label_list_{LABEL_ID}">{LABEL_LIST}</span>
                     <a href="#" onclick="Popup.show_addlabel({LABEL_ID}, {PARTNER_ID});return false;">{TXT_PARTNERS_ADD_LABEL}</a>
-					<span id="popuptarget_{LABEL_ID}"></span>
+          <span id="popuptarget_{LABEL_ID}"></span>
                 </td>
             </tr>
             <!-- END add_labels -->
@@ -116,5 +115,4 @@
     <input type="submit" value="{TXT_SAVE}"/>
 
 </form>
- <!-- END edit_partner.html -->
-
+<!-- END edit_partner.html -->
