@@ -338,8 +338,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_EMAILS_DELETED'] = "Die E-Mails wurden erfolgreich g
 $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_DELETED'] = "Die E-Mail wurde erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_NEWSLETTER_ERROR_EMAIL_DELETE'] = "Beim Löschen der E-Mail trat ein Datenbankfehler auf!";
 $_ARRAYLANG['TXT_NEWSLETTER_ERROR_EMAILS_DELETE'] = "Beim Löschen der E-Mails trat ein Datenbankfehler auf!";
-$_ARRAYLANG['TXT_NEWSLETTER_SEND_TESTMAIL_FIRST'] = "Bevor Sie den Newsletter verschicken können, müssen Sie ein Testmail verschicken. 
-Bitte beachten Sie, dass im Testmail die eingefügten Platzhalter nicht ersetzt werden und die Links zum Bearbeiten oder Abmelden des Profiles nicht funktionieren.";
+$_ARRAYLANG['TXT_NEWSLETTER_SEND_TESTMAIL_FIRST'] = "Bevor Sie den Newsletter verschicken können, müssen Sie ein Testmail verschicken. Bitte beachten Sie, dass im Testmail die eingefügten Platzhalter nicht ersetzt werden und die Links zum Bearbeiten oder Abmelden des Profiles nicht funktionieren.";
 $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_RECIPIENT_OF_ADDRESS'] = "Möchten Sie den Empfänger mit der Adresse %s wirklich löschen?";

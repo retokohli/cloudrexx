@@ -736,4 +736,8 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_ANY'] = "quelconque";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_NONE'] = "-";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY'] = "quelconque";
 $_ARRAYLANG['TXT_DISTRIBUTION_COUPON'] = "Bon";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING'] = "Fehler beim speichern der Kundendaten";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_LOADING'] = "Fehler beim laden der Kundendaten";
+$_ARRAYLANG['TXT_SHOP_TIME_NOW'] = "Jetzt";
+$_ARRAYLANG['TXT_SHOP_TITLE'] = "Anrede";
 ?>

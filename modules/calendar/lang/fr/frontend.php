@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "En arrière ";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Prochaines manifestations";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "Afficher";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Aucun élément ne correspond...";
@@ -95,4 +96,6 @@ $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_ATTACHMENT'] = "Envoyer une annexe";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUBMIT'] = "Envoyer";
 $_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "S'il vous plaît tapez de nouveau le code Captcha.";
 $_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Type";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "";
 ?>

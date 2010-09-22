@@ -628,7 +628,7 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_0'] = "Keine";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_1'] = "Markierte";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_2'] = "Sonderangebote";
 $_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE'] = "Produkt auf der Shop Startseite anzeigen";
-$_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP'] = "Markierte Produkte werden auf der Startseite angezeigt, sofern in den allgemeinen Einstellungen unter \"Produkte auf der Shop Startseite anzeigen\" die Option \"Markierte\" ausgewählt ist.";
+$_ARRAYLANG['TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP'] = "Markierte Produkte werden auf der Startseite angezeigt, sofern in den allgemeinen Einstellungen unter &quot;Produkte auf der Shop Startseite anzeigen&quot; die Option &quot;Markierte&quot; ausgewählt ist.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_DEFAULT_VIEW_3'] = "Neuste fünf";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_0'] = "pendent";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_1'] = "bestätigt";
@@ -734,4 +734,8 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_ANY'] = "beliebig";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_NONE'] = "-";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY'] = "beliebig";
 $_ARRAYLANG['TXT_DISTRIBUTION_COUPON'] = "Gutschein";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING'] = "Fehler beim speichern der Kundendaten";
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_LOADING'] = "Fehler beim laden der Kundendaten";
+$_ARRAYLANG['TXT_SHOP_TIME_NOW'] = "Jetzt";
+$_ARRAYLANG['TXT_SHOP_TITLE'] = "Anrede";
 ?>
