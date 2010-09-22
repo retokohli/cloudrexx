@@ -940,6 +940,26 @@ class DataAdmin extends DataLibrary {
                 } else {
                     $mode = $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'];
                 }
+				
+				// List multiple categories -fs
+				$catList = '';
+				$separator = ', ';
+				foreach ($category_keys as $k) {
+					$catName = $arrCategories[$k][$this->_intLanguageId]['name'];
+					
+					// if a catId is set, we'll want to highlight that particular category (and have it
+					// displayed first)
+					if ($k == $_GET['catId']) {
+						$catList = '<strong>'.$catName.'</strong>'.$separator.$catList;
+					}
+					else {
+						$catList .= $catName.$separator;
+					}
+				}
+				// cut off the last ", ".
+				$catList = substr($catList, 0, -2);
+				
+				
                    $this->_objTpl->setVariable(array(
                        'ENTRY_ROWCLASS'        =>    ($intRowClass % 2 == 0) ? 'row1' : 'row2',
                        'ENTRY_ID'                =>    $intEntryId,
@@ -954,7 +974,7 @@ class DataAdmin extends DataLibrary {
                        //'ENTRY_USER'            =>    $arrEntryValues['user_name'],
                        'ACTIVE_LED'            =>  ($arrEntryValues['active']) ? "green" : "red",
                        'ACTIVE_STATE'          =>  ($arrEntryValues['active']) ? 0 : 1,
-                       'ENTRY_CATEGORY'        =>  $arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
+                       'ENTRY_CATEGORY'        =>  $catList, //$arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
                        'ENTRY_MODE'            =>  $mode
                    ));
 
