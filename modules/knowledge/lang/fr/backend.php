@@ -287,4 +287,8 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_ARTICLES'] = "Search articles";
 $_ARRAYLANG['TXT_KNOWLEDGE_JUMP'] = "Jump";
 $_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_SUCCESSFUL'] = "Les mots clés ont été rangés ";
 $_ARRAYLANG['TXT_KNOWLEDGE_RESET_VOTES_SUCCESSFUL'] = "Les statistiques d'évaluations ont été réinitialisées.";
+$_ARRAYLANG['TXT_KNOWLEDGE_AVAILABLE_CATEGORIES'] = "Verfügbare Kategorien";
+$_ARRAYLANG['TXT_KNOWLEDGE_CHECK_ALL'] = "Alle markieren";
+$_ARRAYLANG['TXT_KNOWLEDGE_UNCHECK_ALL'] = "Auswahl löschen";
+$_ARRAYLANG['TXT_KNOWLEDGE_ASSIGNED_CATEGORIES'] = "Zugewiesene Kategorien";
 ?>
