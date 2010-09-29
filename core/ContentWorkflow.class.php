@@ -33,6 +33,7 @@ class ContentWorkflow
     var $strPageTitle;
     var $strErrMessage = array();
     var $strOkMessage = '';
+    var $strWarningMessage = '';
 
     /**
     * Constructor
@@ -108,7 +109,7 @@ class ContentWorkflow
             break;
             case 'validate':
                 Permission::checkAccess(78, 'static');
-                $this->validatePage($_GET['id'],$_GET['acc']);
+                $this->validatePage($_GET['id'],$_GET['acc'],$_GET['prompt']);
                 $this->showHistory('unvalidated');
             break;
             case 'showClean':
@@ -130,6 +131,7 @@ class ContentWorkflow
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->strPageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
+            'CONTENT_WARNING_MESSAGE'   => $this->strWarningMessage,
             'CONTENT_STATUS_MESSAGE'    => implode("<br />\n", $this->strErrMessage)
         ));
     }
@@ -338,8 +340,8 @@ class ContentWorkflow
                         $strIcon = '<a href="javascript:restoreDeleted(\''.$objResult->fields['navID'].'\');"><img src="images/icons/import.gif" alt="'.$_CORELANG['TXT_DELETED_RESTORE'].'" title="'.$_CORELANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>';
                     break;
                     case 'unvalidated':
-                        $strIcon = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=workflow&amp;act=validate&amp;acc=1&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_up.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" border="0" align="middle" /></a>&nbsp;';
-                        $strIcon .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=workflow&amp;act=validate&amp;acc=0&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_down.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" border="0" align="middle" /></a>&nbsp;';
+                        $strIcon = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=workflow&amp;act=validate&amp;acc=1&amp;prompt=warn&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_up.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_ACCEPT'].'" border="0" align="middle" /></a>&nbsp;';
+                        $strIcon .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=workflow&amp;act=validate&amp;acc=0&amp;prompt=warn&amp;id='.$intLogfileId.'"><img src="images/icons/thumb_down.gif" alt="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" title="'.$_CORELANG['TXT_WORKFLOW_VALIDATE_DECLINE'].'" border="0" align="middle" /></a>&nbsp;';
                         $s = isset($arrModules[$objResult->fields['navModule']]) ? $arrModules[$objResult->fields['navModule']] : '';
                         $c = $objResult->fields['navCMD'];
                         $section = ($s=="" || $s == '-') ? "" : "&amp;section=$s";
@@ -675,13 +677,13 @@ class ContentWorkflow
      * @param    integer      $intHistoryId       The entry with this id will be validated
      * @return   integer       $intValidateStatus  1 -> accept page, 0 -> decline page
      */
-    function validatePage($intLogfileId,$intValidateStatus)
+    function validatePage($intLogfileId,$intValidateStatus,$prompt)
     {
         global $objDatabase, $_CORELANG;
 
         $intLogfileId = intval($intLogfileId);
         $intValidateStatus = intval($intValidateStatus);
-
+       
         if ($intLogfileId != 0) {
             $objResult = $objDatabase->Execute('SELECT  action,
                                                         history_id
@@ -702,6 +704,33 @@ class ContentWorkflow
             $row = $objResult->FetchRow();
             $intPageId = $row['page_id'];
             $langId    = $row['lang_id'];
+
+            if($prompt == 'warn' && $intValidateStatus == 0){
+                $objNavPageId = $objDatabase->SelectLimit('SELECT  navTable.catid AS navPageId,
+                                                                   navTable.lang AS navLang FROM '.DBPREFIX.'content_navigation_history AS navTable
+                                                    INNER JOIN  '.DBPREFIX.'content_history AS conTable
+                                                    ON          conTable.id = navTable.id
+                                                    WHERE       navTable.id = '.$intHistoryId, 1);
+
+                $navPageid = $objNavPageId->fields['navPageId'];
+                $navlang = $objNavPageId->fields['navLang'];
+
+                $objResult = $objDatabase->Execute('SELECT navTable.catname            AS navCatname,
+                                                           navTable.username           AS navUsername,
+                                                           navTable.changelog          AS navChangelog
+                                                    FROM        '.DBPREFIX.'content_navigation_history AS navTable
+                                                    WHERE       navTable.catid = '.$navPageid.'
+                                                    AND         navTable.lang = '.$navlang );
+
+                $this->strWarningMessage = "Please confirm deletion of multiple versions<br/>List of revisions:<br/><br/>";
+                while(!$objResult->EOF){
+                    $this->strWarningMessage .= "Page '".$objResult->fields['navCatname']."' By ".$objResult->fields['navUsername']." on ".date('d.m.Y H:i:s',$objResult->fields['navChangelog'])."<br/><br/>";
+                    $objResult->MoveNext();
+                }
+                $this->strWarningMessage .= "<a title='Cancel' href='".CONTREXX_DIRECTORY_INDEX."?cmd=workflow'><input type='button' value='Cancel'></a>&nbsp;&nbsp;&nbsp;";
+                $this->strWarningMessage .= "<a title='Continue' href='".CONTREXX_DIRECTORY_INDEX."?cmd=workflow&amp;act=validate&amp;acc=0&amp;id=".$intLogfileId."'><input type='button' value='Continue'></a>";
+                return false;
+            }
 
             switch ($strAction) {
                 case 'new':
