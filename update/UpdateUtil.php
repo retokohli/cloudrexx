@@ -36,7 +36,7 @@ class UpdateUtil {
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
-    public static function table($name, array $struc, array $idx = array(), $engine = 'MyISAM') {
+    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM') {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
@@ -91,7 +91,7 @@ class UpdateUtil {
         self::sql("ALTER TABLE `$name` ENGINE=$engine");
     }
 
-    private static function create_table($name, array $struc, $idx, $engine) {
+    private static function create_table($name, $struc, $idx, $engine) {
         global $objDatabase, $_ARRAYLANG;
 
         // create table statement
