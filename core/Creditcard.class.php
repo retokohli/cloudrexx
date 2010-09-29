@@ -114,7 +114,7 @@ class Creditcard
 //echo("Creditcard::getNameArray():  Initializing<br />");
         if (empty(self::$arrCreditcards)) self::init();
         if (empty(self::$arrCreditcards)) {
-echo("Creditcard::getNameArray():  Failed to initialize<br />");
+//echo("Creditcard::getNameArray():  Failed to initialize<br />");
             return false;
         }
         $arrCreditcardNames = array();
@@ -220,27 +220,24 @@ echo("Creditcard::getNameArray():  Failed to initialize<br />");
     {
         global $objDatabase;
 
-echo("Creditcard::errorHandler(): Entered<br />");
+die("Creditcard::errorHandler(): Disabled!<br />");
 
-        $arrTables = $objDatabase->MetaTables('TABLES');
-        if (in_array(DBPREFIX."core_creditcard", $arrTables)) {
-            // TODO:  Fix it!
-        } else {
-            $query = "
-                CREATE TABLE `".DBPREFIX."core_creditcard` (
-                  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                  `name` TINYTEXT NOT NULL DEFAULT '',
-                  `ord` INT UNSIGNED NOT NULL DEFAULT 0,
-                  PRIMARY KEY (`id`)
-                ) ENGINE=MYISAM";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return false;
-echo("Creditcard::errorHandler(): Created table ".DBPREFIX."core_creditcard<br />");
-        }
+        $query = "
+            DROP TABLE IF EXISTS `".DBPREFIX."core_creditcard`";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
 
-// TODO:  Try to DROP old records
+        $query = "
+            CREATE TABLE `".DBPREFIX."core_creditcard` (
+              `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+              `name` TINYTEXT NOT NULL DEFAULT '',
+              `ord` INT UNSIGNED NOT NULL DEFAULT 0,
+              PRIMARY KEY (`id`)
+            ) ENGINE=MYISAM";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return false;
 
-        // Re-insert creditcard records from scratch
+        // Insert creditcard records from scratch
         $arrCreditcards = array(
             'Barzahlung',
             'American Express',
@@ -283,7 +280,7 @@ echo("Creditcard::errorHandler(): Created table ".DBPREFIX."core_creditcard<br /
                   ".($ord * 1000)."
                 )");
             if (!$objResult) {
-echo("Creditcard::errorHandler(): Failed to insert Creditcard $creditcard<br />");
+//echo("Creditcard::errorHandler(): Failed to insert Creditcard $creditcard<br />");
                 continue;
             }
         }

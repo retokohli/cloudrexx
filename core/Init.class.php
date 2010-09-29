@@ -106,7 +106,7 @@ class InitCMS
         } else {
             $backendLangId = $this->defaultBackendLangId;
         }
-        if ($this->arrLang[$backendLangId]['backend'] != 1) {
+        if (empty($this->arrLang[$backendLangId]['backend'])) {
             $backendLangId = $this->defaultBackendLangId;
         }
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
@@ -197,7 +197,6 @@ class InitCMS
             $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
         } elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
-
         } elseif ($is_small_screen and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['mobile_themes_id'];
         } else {
@@ -463,7 +462,7 @@ class InitCMS
      * initialise the language settings array
      * @return    array   $arrayLanguageSettings
      */
-    function loadLanguageData($module = '')
+    function loadLanguageData($module='')
     {
         global $objInit, $_CORELANG, $_CONFIG, $objDatabase;
 
@@ -505,29 +504,29 @@ class InitCMS
         // load variables
         if (empty($module)) {
             return $_CORELANG;
-        } else {
-            if (!empty($path)) {
-                //require_once($path);
-                require($path);
-                // remove escape characters
-                foreach (array_keys($_ARRAYLANG) as $langTxtId) {
-                    $_ARRAYLANG[$langTxtId] = preg_replace("#\\\"#", "\"", $_ARRAYLANG[$langTxtId]);
-                    if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
-                        $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
-                        $moduleID = $objRS->fields['id'];
-                        $objRS = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."language_variable_names
-                                                        WHERE module_id = $moduleID
-                                                        AND name = '$langTxtId'", 1);
-                        if ($objRS) {
-                            $_ARRAYLANG[$langTxtId] .= " ( ".$objRS->fields['id']." )";
-                        }
+        }
+        if (!empty($path)) {
+            //require_once($path);
+            require($path);
+            // remove escape characters
+            foreach (array_keys($_ARRAYLANG) as $langTxtId) {
+                $_ARRAYLANG[$langTxtId] = preg_replace("#\\\"#", "\"", $_ARRAYLANG[$langTxtId]);
+                if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
+                    $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
+                    $moduleID = $objRS->fields['id'];
+                    $objRS = $objDatabase->SelectLimit("
+                        SELECT id FROM ".DBPREFIX."language_variable_names
+                         WHERE module_id=$moduleID
+                           AND name='$langTxtId'", 1);
+                    if ($objRS) {
+                        $_ARRAYLANG[$langTxtId] .= " (".$objRS->fields['id'].")";
                     }
                 }
-                return $_ARRAYLANG;
             }
-            //die("init::loadLanguageData() error (".$objInit->arrModulePath[$module].$objInit->arrLang[$_LANGID]['lang'].'/'.$objInit->mode.'.php'.")");
-            return $_CORELANG;
+            return $_ARRAYLANG;
         }
+        //die("init::loadLanguageData() error (".$objInit->arrModulePath[$module].$objInit->arrLang[$_LANGID]['lang'].'/'.$objInit->mode.'.php'.")");
+        return $_CORELANG;
     }
 
 
@@ -715,12 +714,11 @@ class InitCMS
     function _is_mobile_phone()
     {
         $isMobile = false;
-// TODO: What a crap!  Check the indices for existence before reading them.
-        $old_er = error_reporting(0);
-        $op = strtolower(isset($_SERVER['HTTP_X_OPERAMINI_PHONE']) ? $_SERVER['HTTP_X_OPERAMINI_PHONE'] : '');
+        $op = strtolower(
+            (isset($_SERVER['HTTP_X_OPERAMINI_PHONE'])
+              ? $_SERVER['HTTP_X_OPERAMINI_PHONE'] : ''));
         $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
         $ac = strtolower($_SERVER['HTTP_ACCEPT']);
-        error_reporting($old_er);
         $isMobile = strpos($ac, 'application/vnd.wap.xhtml+xml') !== false
             || $op != ''
 // TODO: Use a "handy" regex instead
