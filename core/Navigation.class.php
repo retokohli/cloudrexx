@@ -266,7 +266,7 @@ class Navigation
 
         if ($boolShop) {
             global $shopObj, $themesPages;
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', $shopObj->getNavbar($themesPages['shopnavbar']));
         }
 
         if (isset($this->_objTpl->_blocks['navigation_dropdown'])) {

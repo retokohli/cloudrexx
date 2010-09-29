@@ -316,7 +316,7 @@ class DatabaseManager
                 $strRowContent = '';
                 preg_match_all('/<tr><td class="e">.*<\/td><\/tr>/sU', $strTable, $arrRows);
 
-                foreach($arrRows[0] as $intRowKey => $strRow) {
+                foreach ($arrRows[0] as $intRowKey => $strRow) {
                     $strRow = preg_replace('/<tr>/U', '<tr class="row'.($intRowKey % 2).'">', $strRow);
                     $strRowContent .= preg_replace('/<td class=".*">(.*)<\/td>/U', '<td>$1</td>', $strRow);
                 }
@@ -457,7 +457,7 @@ class DatabaseManager
         while (!$objTableContent->EOF) {
             $strTableContent .= '<tr class="row'.(($intRowClass++) % 2).'">';
 
-            foreach(array_keys($arrColumnNames) as $strColumnName) {
+            foreach (array_keys($arrColumnNames) as $strColumnName) {
                 $strColumnContent = $this->_prepareOutput($objTableContent->fields[$strColumnName]);
                 $strTableContent .= '<td style="vertical-align: top;">'.$strColumnContent.'</td>';
 
@@ -506,7 +506,7 @@ class DatabaseManager
             //No tables selected, just optimize everything.
             $objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'%"');
 
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $objDatabase->Execute('OPTIMIZE TABLE '.$objResult->fields['Name']);
                 $objResult->MoveNext();
             }
@@ -534,7 +534,7 @@ class DatabaseManager
             //No tables selected, just repair everything.
             $objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'%"');
 
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $objDatabase->Execute('REPAIR TABLE '.$objResult->fields['Name']);
                 $objResult->MoveNext();
             }
@@ -813,7 +813,7 @@ class DatabaseManager
             $strExecutedQuery .= '<table cellspacing="0" cellpadding="3" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000;">';
             $strExecutedQuery .= '<tr><td style="border-right: 1px solid #000000;"><b>'.implode('</b></td><td style="border-right: 1px solid #000000;"><b>', array_keys($objResult->fields)).'</b></td></tr>';
 
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $strExecutedQuery .= '<tr><td style="border-top: 1px solid #000000; border-right: 1px solid #000000;">'.implode('</td><td style="border-top: 1px solid #000000; border-right: 1px solid #000000;">', array_map(array($this, '_prepareOutput'), $objResult->fields)).'</td></tr>';
                 $objResult->MoveNext();
             }
@@ -880,7 +880,7 @@ class DatabaseManager
         //Show tables
         $objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'%"');
 
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             if (stripos($objResult->fields['Name'],'backup') == 0) {
                 //Don't backup the backup-table..
                 $objTemplate->setVariable('TABLE_NAME', $objResult->fields['Name']);
@@ -1658,7 +1658,7 @@ final class SQLBackup extends BackupBase
             //Add values
             while (!$objTableContent->EOF) {
                 $strReturn .= '(';
-                foreach($arrColumnNames as $strColumnName) {
+                foreach ($arrColumnNames as $strColumnName) {
                     if (isset($objTableContent->fields[$strColumnName])) {
                         $strReturn .= '\''.addslashes($objTableContent->fields[$strColumnName]).'\', ';
                     } else {
@@ -1857,7 +1857,7 @@ final class CSVBackup extends BackupBase
         if (!$objResult || $objResult->EOF) return false;
         while (!$objResult->EOF) {
             $arrRow = array();
-            foreach($arrColumnNames as $strColumnName) {
+            foreach ($arrColumnNames as $strColumnName) {
                 if (isset($objResult->fields[$strColumnName])) {
                     $strValue = $objResult->fields[$strColumnName];
                     $strValue = '"'.preg_replace('/"/', '""', $strValue).'"';

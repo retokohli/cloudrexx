@@ -1768,7 +1768,7 @@ class ContentManager
             $editstatus = $_POST['editstatus'];
         }
         $robotstatus = "noindex";
-        if ($_POST['robots']== "index") {
+        if (isset($_POST['robots']) && $_POST['robots'] == "index") {
             $robotstatus = "index";
         }
 
