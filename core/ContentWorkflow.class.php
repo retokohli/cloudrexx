@@ -680,7 +680,7 @@ class ContentWorkflow
     function validatePage($intLogfileId,$intValidateStatus,$prompt)
     {
         global $objDatabase, $_CORELANG;
-
+        
         $intLogfileId = intval($intLogfileId);
         $intValidateStatus = intval($intValidateStatus);
        
@@ -696,42 +696,16 @@ class ContentWorkflow
             $intHistoryId = $objResult->fields['history_id'];
             $strAction = $objResult->fields['action'];
 
-            $objResult = $objDatabase->Execute('SELECT  page_id, lang_id
-                                                FROM    '.DBPREFIX.'content_history
+            $objResult = $objDatabase->Execute('SELECT  catid, lang, changelog
+                                                FROM    '.DBPREFIX.'content_navigation_history
                                                 WHERE   id = '.$intHistoryId.'
                                                 LIMIT   1
                                             ');
             $row = $objResult->FetchRow();
-            $intPageId = $row['page_id'];
-            $langId    = $row['lang_id'];
-
-            if($prompt == 'warn' && $intValidateStatus == 0){
-                $objNavPageId = $objDatabase->SelectLimit('SELECT  navTable.catid AS navPageId,
-                                                                   navTable.lang AS navLang FROM '.DBPREFIX.'content_navigation_history AS navTable
-                                                    INNER JOIN  '.DBPREFIX.'content_history AS conTable
-                                                    ON          conTable.id = navTable.id
-                                                    WHERE       navTable.id = '.$intHistoryId, 1);
-
-                $navPageid = $objNavPageId->fields['navPageId'];
-                $navlang = $objNavPageId->fields['navLang'];
-
-                $objResult = $objDatabase->Execute('SELECT navTable.catname            AS navCatname,
-                                                           navTable.username           AS navUsername,
-                                                           navTable.changelog          AS navChangelog
-                                                    FROM        '.DBPREFIX.'content_navigation_history AS navTable
-                                                    WHERE       navTable.catid = '.$navPageid.'
-                                                    AND         navTable.lang = '.$navlang );
-
-                $this->strWarningMessage = "Please confirm deletion of multiple versions<br/>List of revisions:<br/><br/>";
-                while(!$objResult->EOF){
-                    $this->strWarningMessage .= "Page '".$objResult->fields['navCatname']."' By ".$objResult->fields['navUsername']." on ".date('d.m.Y H:i:s',$objResult->fields['navChangelog'])."<br/><br/>";
-                    $objResult->MoveNext();
-                }
-                $this->strWarningMessage .= "<a title='Cancel' href='".CONTREXX_DIRECTORY_INDEX."?cmd=workflow'><input type='button' value='Cancel'></a>&nbsp;&nbsp;&nbsp;";
-                $this->strWarningMessage .= "<a title='Continue' href='".CONTREXX_DIRECTORY_INDEX."?cmd=workflow&amp;act=validate&amp;acc=0&amp;id=".$intLogfileId."'><input type='button' value='Continue'></a>";
-                return false;
-            }
-
+            $intPageId = $row['catid'];
+            $langId    = $row['lang'];
+            $changeLog = $row['changelog'];
+            
             switch ($strAction) {
                 case 'new':
                     if ($intValidateStatus == 1) {
@@ -818,7 +792,7 @@ class ContentWorkflow
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_DELETE_DECLINE'];
                     }
                 break;
-                default: //update
+                default://update
                     if ($intValidateStatus == 1) {
                         //allow update
                         $this->loadHistory($intHistoryId,false);
@@ -827,27 +801,77 @@ class ContentWorkflow
                                                 WHERE   id='.$intLogfileId.'
                                                 LIMIT   1
                                             ');
+                        /*
+                         * Remove the older version of the accepted page
+                         */
+                        /*$objResult = $objDatabase->Execute('SELECT navTable.changelog   AS navChangeLog
+                                                    FROM        '.DBPREFIX.'content_navigation_history AS navTable
+                                                    WHERE       (
+                                                                SELECT      history_id
+                                                                FROM        '.DBPREFIX.'content_logfile
+                                                                WHERE       id= '.$intLogfileId.'
+                                                                )
+                                                    LIMIT       1');
+                        $row = $objResult->FetchRow();
+                        $navChangeLog = $row['navChangeLog'];
+                        
+                        $objResult = $objDatabase->Execute('SELECT navTable.id   AS navId
+                                                    FROM        '.DBPREFIX.'content_navigation_history AS navTable
+                                                    WHERE       navTable.changelog < '.$navChangeLog);
+
+                        while(!$objResult->EOF){
+                            echo $objResult->fields['navId']."<br/>";
+                            $objResult->MoveNext();
+                        }*/
+
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_ACCEPT'];
                     } else {
                         //decline update
-                        $objDatabase->Execute(' DELETE
-                                                FROM    '.DBPREFIX.'content_logfile
-                                                WHERE   id='.$intLogfileId.'
-                                                LIMIT   1
-                                            ');
-                        $objDatabase->Execute(' DELETE
-                                                FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE   id='.$intHistoryId.'
-                                                  AND   lang='.$langId.'
-                                                LIMIT   1
-                                            ');
-                        $objDatabase->Execute(' DELETE
-                                                FROM    '.DBPREFIX.'content_history
-                                                WHERE   id='.$intHistoryId.'
-                                                  AND   lang_id='.$langId.'
-                                                LIMIT   1
-                                            ');
-                        $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_DECLINE'];
+                        /*
+                         * Display warning for rejecting the older version pages
+                         */
+                        if($prompt == 'warn'){
+                            $objResult = $objDatabase->Execute('SELECT navTable.catname            AS navCatname,
+                                                                       navTable.username           AS navUsername,
+                                                                       navTable.changelog          AS navChangelog
+                                                                FROM        '.DBPREFIX.'content_navigation_history AS navTable
+                                                                WHERE       navTable.catid = '.$intPageId.'
+                                                                AND         navTable.lang = '.$langId.'
+                                                                AND         navTable.changelog <= '.$changeLog);
+
+                            $this->strWarningMessage = "Please confirm deletion of multiple versions<br/>List of revisions:<br/><br/>";
+                            while(!$objResult->EOF){
+                                $this->strWarningMessage .= "Page '".$objResult->fields['navCatname']."' By ".$objResult->fields['navUsername']." on ".date('d.m.Y H:i:s',$objResult->fields['navChangelog'])."<br/><br/>";
+                                $objResult->MoveNext();
+                            }
+                            $this->strWarningMessage .= "<a title='Cancel' href='".CONTREXX_DIRECTORY_INDEX."?cmd=workflow'>Cancel</a>&nbsp;&nbsp;&nbsp;";
+                            $this->strWarningMessage .= "<a title='Continue' href='".CONTREXX_DIRECTORY_INDEX."?cmd=workflow&amp;act=validate&amp;acc=0&amp;id=".$intLogfileId."'>Continue</a>";
+                        } else {
+                            /*
+                             * Fetch ids of all the versions of rejected page
+                             */
+                            $objResult = $objDatabase->Execute('SELECT navTable.id AS navId
+                                                    FROM        '.DBPREFIX.'content_navigation_history AS navTable
+                                                    WHERE       navTable.catid = '.$intPageId.'
+                                                    AND         navTable.lang = '.$langId.'
+                                                    AND         navTable.changelog <= '.$changeLog);
+                            while(!$objResult->EOF){
+                                $objDatabase->Execute(' DELETE
+                                                    FROM    '.DBPREFIX.'content_logfile
+                                                    WHERE   history_id='.$objResult->fields['navId']);
+                                $objDatabase->Execute(' DELETE
+                                                    FROM    '.DBPREFIX.'content_history
+                                                    WHERE   id='.$objResult->fields['navId']);
+                                $objResult->MoveNext();
+                            }
+
+                            $objDatabase->Execute(' DELETE
+                                                    FROM    '.DBPREFIX.'content_navigation_history
+                                                    WHERE   catid='.$intPageId.'
+                                                    AND     lang='.$langId.'
+                                                    AND     changelog <= '.$changeLog  );
+                            $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_DECLINE'];
+                        }
                     }
             }
 
