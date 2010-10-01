@@ -803,26 +803,49 @@ class ContentWorkflow
                                             ');
                         /*
                          * Remove the older version of the accepted page
+                         *
+                         * Fetch pageid, langid and changelog with selected id
                          */
-                        /*$objResult = $objDatabase->Execute('SELECT navTable.changelog   AS navChangeLog
+                        $objResult = $objDatabase->Execute('SELECT navTable.changelog   AS navChangeLog,
+                                                                   navTable.catid       AS navCatId,
+                                                                   navTable.lang        AS navLang
                                                     FROM        '.DBPREFIX.'content_navigation_history AS navTable
-                                                    WHERE       (
+                                                    WHERE       id = (
                                                                 SELECT      history_id
                                                                 FROM        '.DBPREFIX.'content_logfile
                                                                 WHERE       id= '.$intLogfileId.'
                                                                 )
                                                     LIMIT       1');
+
                         $row = $objResult->FetchRow();
                         $navChangeLog = $row['navChangeLog'];
-                        
+                        $navCatId = $row['navCatId'];
+                        $navLang = $row['navLang'];
+
+                        /*
+                         * Select id of the matched pages that are inactive and older than selected version
+                         */
                         $objResult = $objDatabase->Execute('SELECT navTable.id   AS navId
                                                     FROM        '.DBPREFIX.'content_navigation_history AS navTable
-                                                    WHERE       navTable.changelog < '.$navChangeLog);
+                                                    LEFT JOIN   '.DBPREFIX.'content_logfile AS navLog
+                                                    ON          navTable.id = navLog.history_id
+                                                    WHERE       navTable.catid = '.$navCatId.'
+                                                    AND         navTable.lang = '.$navLang.'
+                                                    AND         (navTable.is_active = "0" OR navLog.action = "new")
+                                                    AND         navTable.changelog < '.$navChangeLog);
 
                         while(!$objResult->EOF){
-                            echo $objResult->fields['navId']."<br/>";
+                             $objDatabase->Execute(' DELETE
+                                                FROM    '.DBPREFIX.'content_logfile
+                                                WHERE   history_id='.$objResult->fields['navId']);
+                             /*$objDatabase->Execute(' DELETE
+                                                FROM    '.DBPREFIX.'content_history
+                                                WHERE   id='.$objResult->fields['navId']);*/
+                             $objDatabase->Execute(' DELETE
+                                                FROM    '.DBPREFIX.'content_navigation_history
+                                                WHERE   id='.$objResult->fields['navId']);
                             $objResult->MoveNext();
-                        }*/
+                        }
 
                         $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_ACCEPT'];
                     } else {
@@ -835,8 +858,11 @@ class ContentWorkflow
                                                                        navTable.username           AS navUsername,
                                                                        navTable.changelog          AS navChangelog
                                                                 FROM        '.DBPREFIX.'content_navigation_history AS navTable
+                                                                LEFT JOIN   '.DBPREFIX.'content_logfile AS navLog
+                                                                ON          navTable.id = navLog.history_id
                                                                 WHERE       navTable.catid = '.$intPageId.'
                                                                 AND         navTable.lang = '.$langId.'
+                                                                AND         (navTable.is_active = "0" OR navLog.action = "new")
                                                                 AND         navTable.changelog <= '.$changeLog);
 
                             $this->strWarningMessage = "Please confirm deletion of multiple versions<br/>List of revisions:<br/><br/>";
@@ -848,12 +874,15 @@ class ContentWorkflow
                             $this->strWarningMessage .= "<a title='Continue' href='".CONTREXX_DIRECTORY_INDEX."?cmd=workflow&amp;act=validate&amp;acc=0&amp;id=".$intLogfileId."'>Continue</a>";
                         } else {
                             /*
-                             * Fetch ids of all the versions of rejected page
+                             * Fetch ids of all the versions of rejected page and delete related data
                              */
                             $objResult = $objDatabase->Execute('SELECT navTable.id AS navId
                                                     FROM        '.DBPREFIX.'content_navigation_history AS navTable
+                                                    LEFT JOIN   '.DBPREFIX.'content_logfile AS navLog
+                                                    ON          navTable.id = navLog.history_id
                                                     WHERE       navTable.catid = '.$intPageId.'
                                                     AND         navTable.lang = '.$langId.'
+                                                    AND         (navTable.is_active= "0" OR navLog.action = "new")
                                                     AND         navTable.changelog <= '.$changeLog);
                             while(!$objResult->EOF){
                                 $objDatabase->Execute(' DELETE
@@ -862,14 +891,11 @@ class ContentWorkflow
                                 $objDatabase->Execute(' DELETE
                                                     FROM    '.DBPREFIX.'content_history
                                                     WHERE   id='.$objResult->fields['navId']);
+                                $objDatabase->Execute(' DELETE
+                                                    FROM    '.DBPREFIX.'content_navigation_history
+                                                    WHERE   id='.$objResult->fields['navId']);
                                 $objResult->MoveNext();
                             }
-
-                            $objDatabase->Execute(' DELETE
-                                                    FROM    '.DBPREFIX.'content_navigation_history
-                                                    WHERE   catid='.$intPageId.'
-                                                    AND     lang='.$langId.'
-                                                    AND     changelog <= '.$changeLog  );
                             $this->strOkMessage = $_CORELANG['TXT_WORKFLOW_VALIDATE_UPDATE_DECLINE'];
                         }
                     }
