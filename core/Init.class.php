@@ -789,9 +789,9 @@ class InitCMS
     {
         global $objDatabase;
 
-	$mobileThemeDefinedAndRequested = $this->arrLang[$frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
+	$mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
 	//only set customized theme if not in printview AND no mobile devic
-        if(!isset($_GET['printview']) && $mobilethemeDefinedAndRequested) {
+        if(!isset($_GET['printview']) && !$mobileThemeDefinedAndRequested) {
             $themesId=intval($themesId);
             if($themesId>0){
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins");
