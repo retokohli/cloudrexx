@@ -1,6 +1,9 @@
 <!-- START module_news_teasers_modify_frame.html -->
 <script language="javascript" type="text/javascript">
 <!--
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_TEASER_COMMENT_BOX_NAME}"];
+
 function loadTeaserFrameTemplate() {
   document.getElementById('newsTeasersFrameForm').action = "index.php?cmd=news&act=teasers&tpl=updateFrame&frameId={NEWS_TEASER_FRAME_ID}";
   document.getElementById('newsTeasersFrameForm').submit();
@@ -14,7 +17,10 @@ function loadTeaserFrameTemplate() {
     </tr>
     <tr class="row1">
       <td width="15%">{TXT_BOX_NAME}</td>
-      <td width="85%"><input type="text" name="teaserFrameName" style="width:250px;" maxlength="50" value="{NEWS_TEASER_FRAME_NAME}" /></td>
+      <td width="85%">
+      	<input type="text" name="teaserFrameName" style="width:250px;" maxlength="50" value="{NEWS_TEASER_FRAME_NAME}" />
+      	<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+      </td>
     </tr>
     <tr class="row2">
       <td width="15%">{TXT_BOX_TEMPLATE}</td>
