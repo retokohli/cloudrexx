@@ -729,7 +729,7 @@ class MediaLibrary {
     // gets the icon for the file
     function _getIcon($file)
     {
-        if (is_file($file) {
+        if (is_file($file)) {
             $info = pathinfo($file);
             $icon = strtolower($info['extension']);
         }
