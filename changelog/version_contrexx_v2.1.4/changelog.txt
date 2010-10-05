@@ -7,6 +7,7 @@
 ****************************************
 Allgemein
 - Thumbnail-Erstellung von Transparenten Bildern wird nun unterstützt.
+- Das Handy-Template wird nun dem seitenspezifisch gesetzten Template vorgezogen.
 
 Media Archive
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
