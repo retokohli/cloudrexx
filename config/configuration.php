@@ -24,7 +24,7 @@ $_DBCONFIG['host'] = 'localhost'; // This is normally set to localhost
 $_DBCONFIG['database'] = ''; // Database name
 $_DBCONFIG['tablePrefix'] = 'contrexx_'; // Database table prefix
 $_DBCONFIG['user'] = ''; // Database username
-$_DBCONFIG['password'] = '; // Database password
+$_DBCONFIG['password'] = ''; // Database password
 $_DBCONFIG['dbType'] = 'mysql';	// Database type (e.g. mysql,postgres ..)
 $_DBCONFIG['charset'] = 'default'; // Charset (default, latin1, utf8, ..)
 
