@@ -41,6 +41,17 @@ class InitCMS
     private $themesPath;
 
     /**
+    * int $isMobileDevice
+    * whether we're dealing with a mobile device.
+    * values 1 or 0.
+    * @see InitCMS::_initFrontendLanguage()
+    * @see InitCMS::_setCustomizedThemesId()
+    * @access private
+    */
+    private $isMobileDevice = 0;
+
+
+    /**
      * string $mode
      * frontend or backend
      */
@@ -156,14 +167,14 @@ class InitCMS
 
         // small screen view (mobile etc). use index.php?smallscreen=1 to
         // enable, ?smallscreen=0 to disable.
-        $is_small_screen = 0;
+        $this->isMobileDevice = 0;
         // only set the smallscreen environment if there's actually a mobile theme defined.
         if (isset($_GET['smallscreen']) ) {
             // user wants to enable/disable smallscreen mode.
             if ($_GET['smallscreen'] && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
                 // enable
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
-                $is_small_screen = 1;
+                $this->isMobileDevice = 1;
             }
             else {
                 // now: either smallscreen=1 requested, but no smallscreen theme
@@ -171,18 +182,18 @@ class InitCMS
                 // cookie to be set to zero, so the javascript doesn't redirect
                 // all the time!
                 setcookie('smallscreen', 0, 0, ASCMS_PATH_OFFSET.'/');
-                $is_small_screen = 0;
+                $this->isMobileDevice = 0;
             }
         } elseif (isset($_COOKIE['smallscreen'])) {
             // no need to check mobile_themes_id here: it's been checked
             // when the cookie was set.
-            $is_small_screen =intval($_COOKIE['smallscreen']);
+            $this->isMobileDevice =intval($_COOKIE['smallscreen']);
         } else {
             // auto detection
             if ($this->_is_mobile_phone() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
                 // same here: only set smallscreen mode if there IS a smallscreen theme
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
-                $is_small_screen = 1;
+                $this->isMobileDevice = 1;
             } else {
                 // Don't even think about setting the cookie
                 // to 0 in this case: 0 means the user disabled
@@ -197,7 +208,7 @@ class InitCMS
             $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
         } elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
-        } elseif ($is_small_screen and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+        } elseif ($this->isMobileDevice and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['mobile_themes_id'];
         } else {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
@@ -627,7 +638,11 @@ class InitCMS
     {
         global $objDatabase;
 
+	$mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
+	//only set customized theme if not in printview AND no mobile device
+	if ($mobileThemeDefinedAndRequested) return;	
         if (isset($_GET['printview'])) return;
+
         $themesId = intval($themesId);
         if ($themesId <= 0) return;
         $objResult = $objDatabase->Execute("

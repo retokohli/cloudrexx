@@ -20,6 +20,8 @@ Allgemein
   Inhalts Navigation.
 - Thumbnail-Erstellung von Transparenten Bildern wird nun unterstützt.
 - Das Sprachselektionsmenu hat nun eine "selected" CSS-Klasse gesetzt für die aktive Sprache
+- Das Handy-Template wird nun dem seitenspezifisch gesetzten Template vorgezogen.
+
 
 File Browser
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
