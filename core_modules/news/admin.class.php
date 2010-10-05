@@ -2404,6 +2404,7 @@ class newsManager extends newsLibrary {
             'NEWS_SETTINGS_COMMENTS_NOTIFICATION_ON'        =>  ($this->arrSettings['news_comments_notification'] == '1') ? 'checked="checked"' : '',
             'NEWS_SETTINGS_COMMENTS_NOTIFICATION_OFF'       =>  ($this->arrSettings['news_comments_notification'] == '0') ? 'checked="checked"' : '',
             'NEWS_SETTINGS_COMMENTS_TIMEOUT'                =>  intval($this->arrSettings['news_comments_timeout']),
+            'TXT_NEWS_COMMENTS_HEADLINES_LIMIT'     =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_HEADLINES_LIMIT'],
             'TXT_NEWS_COMMENTS_TITLE'               =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TITLE'],
             'TXT_NEWS_COMMENTS_ALLOW'               =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW'],
             'TXT_NEWS_COMMENTS_ALLOW_HELP'          =>  $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_ALLOW_HELP'],
@@ -3179,6 +3180,7 @@ class newsManager extends newsLibrary {
             'TXT_BOX_NAME'      => $_ARRAYLANG['TXT_BOX_NAME'],
             'TXT_BOX_TEMPLATE'  => $_ARRAYLANG['TXT_BOX_TEMPLATE'],
             'TXT_CANCEL'            => $_ARRAYLANG['TXT_CANCEL'],
+            'TXT_TEASER_COMMENT_BOX_NAME'   =>  $_ARRAYLANG['TXT_TEASER_COMMENT_BOX_NAME'],
             'TXT_SAVE'              => $_ARRAYLANG['TXT_SAVE']
         ));
         // get teaser frame id

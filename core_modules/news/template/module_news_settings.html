@@ -7,6 +7,7 @@ Text[1]=["","{TXT_NEWS_COMMENTS_ALLOW_ANONYMOUS_HELP}"];
 Text[2]=["","{TXT_NEWS_COMMENTS_AUTO_ACTIVATE_HELP}"];
 Text[3]=["","{TXT_NEWS_COMMENTS_NOTIFICATION_HELP}"];
 Text[4]=["","{TXT_NEWS_COMMENTS_TIMEOUT_HELP}"];
+Text[5]=["","{TXT_NEWS_COMMENTS_HEADLINES_LIMIT}"];
 
 function SetUrl(url, width, height, alt) {
   document.getElementById('newsFeedImage').value = url;
@@ -61,7 +62,10 @@ function updateLangName(input)
     </tr>
     <tr class="row1">
       <td width="15%" nowrap="nowrap">{TXT_NEWS_HEADLINES_LIMIT}</td>
-      <td width="85%" nowrap="nowrap"><input name="headlinesLimit" type="text" id="headlinesLimit" value="{NEWS_HEADLINES_LIMIT}" style="width:400px;" maxlength="2" /></td>
+      <td width="85%" nowrap="nowrap">
+      	<input name="headlinesLimit" type="text" id="headlinesLimit" value="{NEWS_HEADLINES_LIMIT}" style="width:400px;" maxlength="2" />
+      	<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" /></td>
+      </td>
     </tr>
     <tr class="row2">
       <td width="15%" style="vertical-align: top;">{TXT_SUBMIT_NEWS}</td>
