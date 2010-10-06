@@ -36,6 +36,7 @@ Veranstaltungskalender
 Kontaktformular
 - Es werden neu Zeichenfolgen mit HTML Special Chars (z.B. '<' und '>') auch als solche
   gespeichert und auch ausgeben.
+- Muss-Felder können nicht mehr durch eingeben einer leeren Zeichenfolge umgangen werden.
 
 Newsletter
 - Newsletter abbestellen via Platzhalter im Mail funktioniert.
