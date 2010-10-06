@@ -519,7 +519,6 @@ class Blog extends BlogLibrary  {
         //Validate specified-input
         if ($this->_intCurrentUserId == 0) {
             if (empty($strName)) {                                  $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_NAME']); }
-            if (empty($strEMail)) {                                 $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_EMAIL']); }
             if (!$objValidator->isEmail($strEMail)) {               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_EMAIL']); }
         }
 
