@@ -134,6 +134,10 @@ class ContactLib
         }
     }
 
+    /**
+     * Sets the regular expressions used to validate the various types of form content.
+     * (one expression per type)
+     */
     function initCheckTypes()
     {
         global $objDatabase;
@@ -151,8 +155,12 @@ class ContactLib
                 'regex' => '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=\/\#\%]*$',
                 'name'  => 'TXT_CONTACT_REGEX_URL'
             ),
+	    /*a bit redundant, because we want a minimum of one non-space character.
+	      the query does a [spaceorchar]*[char]+[spaceorchar]* to ensure this. */
             4   => array(
-                'regex' => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*$',
+	        'regex' => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*'.
+        	'[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').']+'.
+	        '[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*$',
                 'name'  => 'TXT_CONTACT_REGEX_TEXT'
             ),
             5   => array(
