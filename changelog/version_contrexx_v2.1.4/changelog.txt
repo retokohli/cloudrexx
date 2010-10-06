@@ -39,3 +39,6 @@ Kontaktformular
 
 Newsletter
 - Newsletter abbestellen via Platzhalter im Mail funktioniert.
+
+Blog:
+- Fehler wird nicht mehr doppelt angezeigt, wenn beim Kommentieren keine E-Mail-Adresse angegeben wird.
