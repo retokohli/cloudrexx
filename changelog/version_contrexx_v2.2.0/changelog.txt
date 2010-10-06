@@ -90,6 +90,9 @@ News Manager
 - Bei den Teasern kann der neue Platzhalter [[TEASER_FULL_TEXT]] verwendet
   werden, um den kompletten Inhalt der News Meldungen auszugeben.
 - Kommentarfunktion für Meldungen hinzugefügt.
+- Wird in Home » News Manager » Einstellungen unter "Anzahl Headlines" 0 angegeben, werden auch keine HL angezeigt.
+  Neues verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
+
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
