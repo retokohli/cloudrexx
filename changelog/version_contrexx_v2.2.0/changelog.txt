@@ -222,6 +222,7 @@ Modul: Blog
 - Umlaute bei den Überschriften des RSS-Feeds werden korrekt angezeigt.
 - Anführungszeichen werden bei Kommentaren akzeptiert.
 - Die Statistik wird von Suchmaschinen nicht beeinflusst.
+- Fehler wird nicht mehr doppelt angezeigt, wenn beim Kommentieren keine E-Mail-Adresse angegeben wird.
 
 Modul: E-Card
 - Die Bilder werden gemäss den Einstellungen verkleinert.
