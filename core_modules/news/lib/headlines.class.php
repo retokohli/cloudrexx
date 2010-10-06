@@ -58,52 +58,63 @@ class newsHeadlines
     {
         global $_CORELANG, $objDatabase, $_LANGID;
 
+        $objResult=0;
         $catId= intval($catId);
-        $newsLimit = intval($this->arrSettings['news_headlines_limit']);
-        if ($newsLimit<1 OR $newsLimit>50) {
-            $newsLimit=10;
-        }
+
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
         $this->_objTemplate->setCurrentBlock('headlines_row');
-        $objResult = $objDatabase->SelectLimit("
-            SELECT id, title, date,
-                   teaser_image_path, teaser_image_thumbnail_path,
-                   teaser_text, redirect
-              FROM ".DBPREFIX."module_news
-             WHERE status=1".
-               ($catId > 0 ? " AND catid=$catId" : '')."
-               AND teaser_only='0'
-               AND lang=".$_LANGID."
-               AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
-               AND (enddate>='".date('Y-m-d H:i:s')."' OR enddate='0000-00-00 00:00:00')".
-               ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()
-                  ? (($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login()
-                      ? " AND (frontend_access_id IN (".
-                        implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).
-                        ") OR userid=".$objFWUser->objUser->getId().") "
-                      : " AND frontend_access_id=0 ")
-                  : '').
-               "ORDER BY date DESC", $newsLimit);
+
+        $newsLimit = intval($this->arrSettings['news_headlines_limit']);
+        if ($newsLimit>50) { //limit to a maximum of 50 news
+            $newsLimit=50;
+        }
+
+        if ($newsLimit<1) //do not get any news if 0 was specified as the limit.
+        {
+            $objResult=false;
+        }
+        else //fetch news
+        { 
+            $objResult = $objDatabase->SelectLimit("
+                SELECT id, title, date,
+                       teaser_image_path, teaser_image_thumbnail_path,
+                       teaser_text, redirect
+                  FROM ".DBPREFIX."module_news
+                 WHERE status=1".
+                   ($catId > 0 ? " AND catid=$catId" : '')."
+                   AND teaser_only='0'
+                   AND lang=".$_LANGID."
+                   AND (startdate<='".date('Y-m-d H:i:s')."' OR startdate='0000-00-00 00:00:00')
+                   AND (enddate>='".date('Y-m-d H:i:s')."' OR enddate='0000-00-00 00:00:00')".
+                   ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess()
+                      ? (($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login()
+                          ? " AND (frontend_access_id IN (".
+                            implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).
+                            ") OR userid=".$objFWUser->objUser->getId().") "
+                          : " AND frontend_access_id=0 ")
+                      : '').
+                   "ORDER BY date DESC", $newsLimit);
+        }
 
         if ($objResult !== false && $objResult->RecordCount() >= 0) {
-            while (!$objResult->EOF) {
-                $url = CONTREXX_SCRIPT_PATH;
-                $newsid    = $objResult->fields['id'];
-                $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
-                $newsparam = 'section=news&amp;cmd=details';
-                $news_link = (empty($objResult->fields['redirect']))
-                    ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>'
-                    : '<a class="headlineLink" href="'.$objResult->fields['redirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>';
-                if (!empty($objResult->fields['teaser_image_path'])) {
-                    $thumb_name = ImageManager::getThumbnailFilename(
-                        $objResult->fields['teaser_image_path']);
-                    if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
-                        $image = $objResult->fields['teaser_image_thumbnail_path'];
+        while (!$objResult->EOF) {
+            $url = CONTREXX_SCRIPT_PATH;
+        $newsid    = $objResult->fields['id'];
+        $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
+        $newsparam = 'section=news&amp;cmd=details';
+        $news_link = (empty($objResult->fields['redirect']))
+            ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>'
+            : '<a class="headlineLink" href="'.$objResult->fields['redirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>';
+        if (!empty($objResult->fields['teaser_image_path'])) {
+            $thumb_name = ImageManager::getThumbnailFilename(
+                $objResult->fields['teaser_image_path']);
+            if (!empty($objResult->fields['teaser_image_thumbnail_path'])) {
+                $image = $objResult->fields['teaser_image_thumbnail_path'];
                     } elseif (file_exists(ASCMS_PATH.$thumb_name)) {
-                        $image = $thumb_name;
+                $image = $thumb_name;
                     } else {
-                        $image = $objResult->fields['teaser_image_path'];
-                    }
+                $image = $objResult->fields['teaser_image_path'];
+            }
                 } else {
                     $image = "";
                 }
@@ -115,10 +126,10 @@ class newsHeadlines
                 $this->_objTemplate->parseCurrentBlock();
                 $objResult->MoveNext();
             }
-            $this->_objTemplate->setVariable("TXT_MORE_NEWS", $_CORELANG['TXT_MORE_NEWS']);
         } else {
             $this->_objTemplate->hideBlock('headlines_row');
         }
+        $this->_objTemplate->setVariable("TXT_MORE_NEWS", $_CORELANG['TXT_MORE_NEWS']);
         return $this->_objTemplate->get();
     }
 }
