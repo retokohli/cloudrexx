@@ -43,3 +43,6 @@ Newsletter
 
 Blog:
 - Fehler wird nicht mehr doppelt angezeigt, wenn beim Kommentieren keine E-Mail-Adresse angegeben wird.
+
+Shop:
+- Paging bei der Bestellungsübersicht funktioniert nun auch, wenn Filterkriterien angegeben wurden.
