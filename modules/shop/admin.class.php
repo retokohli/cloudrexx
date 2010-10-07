@@ -3316,6 +3316,7 @@ class shopmanager extends ShopLibrary
         $shopCustomerType = -1;
         $shopListLetter = '';
         $shopSearchTerm = '';
+	$shopShowPendingOrders = '';
         if (!empty($_REQUEST['shopSearchTerm'])) {
             $shopSearchTerm = htmlspecialchars(
                 $_REQUEST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET
@@ -3375,6 +3376,7 @@ class shopmanager extends ShopLibrary
             self::$objTemplate->setVariable(
                 'SHOP_SHOW_PENDING_ORDERS_CHECKED', ' checked="checked"'
             );
+	    $shopShowPendingOrders = 1;
         }
         if (!empty($_REQUEST['shopListLetter'])) {
             $shopListLetter = htmlspecialchars(
@@ -3452,7 +3454,10 @@ class shopmanager extends ShopLibrary
                 '&amp;cmd=shop'.MODULE_INDEX.'&amp;act=orders'.
                   ($shopSearchTerm ? '&amp;shopSearchTerm='.$shopSearchTerm : '').
                   ($shopListLetter ? '&amp;shopListLetter='.$shopListLetter : '').
-                  ($shopCustomerOrder != 'customerid' ? '&amp;shopListSort='.$shopCustomerOrder : ''),
+                  ($shopCustomerOrder != 'customerid' ? '&amp;shopListSort='.$shopCustomerOrder : '').
+                  ($shopCustomerType>-1 ? '&amp;shopCustomerType='.$shopCustomerType : '').
+                  ($shopOrderStatus ? '&amp;shopOrderStatus='.$shopOrderStatus : '').
+                  ($shopShowPendingOrders ? '&amp;shopShowPendingOrders='.$shopShowPendingOrders : ''),
                 $_ARRAYLANG['TXT_ORDERS'],
                 $viewPaging
             );
