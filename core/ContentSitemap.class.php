@@ -223,7 +223,16 @@ class ContentSitemap
    	    $objTpl->parse('list');
 
    	    $arrIndex = 0;
+            $objFWUser = FWUser::getFWUserObject();
+            $isAdmin = $objFWUser->objUser->getAdminStatus();
+            $currentUser = $objFWUser->objUser->getUsername();
         foreach ($arrNestedNavigation as $pageId => $arrPage) {
+            /*
+             * UnApproved page will be visible only to admin and Owner of the page
+             */
+            if(!$this->navIsValidated[$pageId] && $this->navUsername[$pageId] != $currentUser && !$isAdmin){
+                continue;
+            }
             $arrIndex++;
         	$rc      = "row".($this->rowIndex % 2 == 0 ? 1 : 2);         //rowclass
         	if($this->navIsValidated[$pageId] == 0){
