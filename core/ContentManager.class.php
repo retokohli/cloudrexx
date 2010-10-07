@@ -2420,14 +2420,18 @@ class ContentManager
                 }
             }
 
+            /*
+             * Fetched username to allow owner delete page
+             */
             $objResult = $objDatabase->Execute("
-                SELECT parcat, catid, module
+                SELECT parcat, catid, module, username
                   FROM ".DBPREFIX."content_navigation
                  WHERE (parcat=$pageId OR catid=$pageId)
                  ORDER BY catid"); /*AND `lang`=".$this->langId."*/
             $numLangsForThisPage = $objResult->RecordCount();
             if ($objResult !== false && $objResult->RecordCount()>0) {
                 $moduleId = $objResult->fields['module'];
+                $pageOwner = $objResult->fields['username'];
                 // needed for recordcount
                 while (!$objResult->EOF) {
                     $objResult->MoveNext();
@@ -2441,6 +2445,28 @@ class ContentManager
                             $_CORELANG['TXT_NOT_DELETE_REQUIRED_MODULES'];
                     } else {
                         if ($this->boolHistoryEnabled) {
+                             /*
+                             * Delete update logs, Remove revisions from admin approval list
+                             */
+                            $objResult = $objDatabase->Execute('
+                                SELECT id
+                                  FROM '.DBPREFIX.'content_navigation_history
+                                 WHERE catid='.$pageId); //.' AND `lang`='.$this->langId
+                            while(!$objResult->EOF) {
+                                $objDatabase->Execute('
+                                    DELETE FROM '.DBPREFIX.'content_logfile
+                                        WHERE   history_id ='.$objResult->fields["id"]);
+                                $objResult->MoveNext();
+                            }
+                            $objDatabase->Execute('
+                                UPDATE '.DBPREFIX.'content_navigation_history
+                                   SET changelog='.time().'
+                                 WHERE catid='.$pageId.'
+                                   AND is_active="1"'); //AND `lang`='.$this->langId
+
+                            /*
+                             * Set Deleted page as validated
+                             */
                             $objResult = $objDatabase->Execute('
                                 SELECT id
                                   FROM '.DBPREFIX.'content_navigation_history
@@ -2451,19 +2477,18 @@ class ContentManager
                                     INSERT INTO '.DBPREFIX.'content_logfile
                                        SET action="delete",
                                            history_id='.$objResult->fields['id'].',
-                                           is_validated="'.($this->boolHistoryActivate ? 1 : 0).'"');
+                                           is_validated="1"');
                                 $objResult->MoveNext();
                             }
-                            $objDatabase->Execute('
-                                UPDATE '.DBPREFIX.'content_navigation_history
-                                   SET changelog='.time().'
-                                 WHERE catid='.$pageId.'
-                                   AND is_active="1"'); //AND `lang`='.$this->langId
                         }
 
                         $boolDelete = true;
+                        $objFWUser = FWUser::getFWUserObject();
                         if ($this->boolHistoryEnabled) {
-                            if (!$this->boolHistoryActivate) {
+                            /*
+                             * Only Admin and Page Owner can delete a page
+                             */
+                            if ($pageOwner != $objFWUser->objUser->getUsername() && !$objFWUser->objUser->getAdminStatus()) {
                                 $boolDelete = false;
                                 $this->strOkMessage =
                                     $_CORELANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL_VALIDATE'];
