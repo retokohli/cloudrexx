@@ -186,7 +186,6 @@
          */
         switch(type){
             case 'text':
-            case 'file':
             case 'password':
             case 'textarea':
                 if($J('#contactFormFieldRequired_'+elId).length == 0){
@@ -215,6 +214,7 @@
             case 'checkbox':
             case 'checkboxGroup':
             case 'date':
+            case 'file':
             case 'radio':
                 var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
                 $J(requiredCopy).attr('id', 'contactFormFieldRequired_' + elId);
@@ -445,7 +445,10 @@
             </tr>
             <tr class="row2" style="height:20px;">
                 <td style="width: 15%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
-                <td><input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" /> *</td>
+                <td>
+                    <input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" />&nbsp;
+                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
+                </td>
             </tr>
         </table>
         <br /><br />
@@ -537,7 +540,7 @@
                     </div>
                 </td>
                 <td valign="top" style="padding:6px 5px 5px;" id="contactFormFieldCheckMenu_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_MENU}</td>
-                <td valign="top" style="padding:6px 5px 5px;" id="contactFormFieldCheckBox_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_BOX}</td>
+                <td valign="top" style="padding:6px 62px 5px 5px;" id="contactFormFieldCheckBox_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_BOX}</td>
                 <td>
                     <div class='formExpandView' style="display:none;">
                         <!-- BEGIN formFieldLanguage -->
@@ -606,7 +609,7 @@
             </tbody>
         </table>
 
-        <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_OTHER_FIELD}" />
+        <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_RECIPIENT}" />
     </div>
 
     <div id="tab_settings" class="tabs" style="display: none">
@@ -614,8 +617,6 @@
             <tr>
                 <th colspan="2">{CONTACT_FORM_SETTINGS}</th>
             </tr>
-        </table>
-        <table>
             <tr class="row1">
                 <td>{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
                 <td><input type="radio" name="contactFormUseCustomStyle" value="1" id="contactFormUseCustomStyle_1" {CONTACT_FORM_USE_CUSTOM_STYLE_YES} /><label for="contactFormUseCustomStyle_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCustomStyle" value="0" id="contactFormUseCustomStyle_0" {CONTACT_FORM_USE_CUSTOM_STYLE_NO} /><label for="contactFormUseCustomStyle_0">{TXT_CONTACT_NO}</label></td>
