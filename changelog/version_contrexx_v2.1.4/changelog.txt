@@ -37,6 +37,7 @@ Kontaktformular
 - Es werden neu Zeichenfolgen mit HTML Special Chars (z.B. '<' und '>') auch als solche
   gespeichert und auch ausgeben.
 - Muss-Felder können nicht mehr durch eingeben einer leeren Zeichenfolge umgangen werden.
+- Einige vorgenerierte <br />-Tags, welche sich für Webdesigner als eher störend erwiesen, wurden entfernt.
 
 Newsletter
 - Newsletter abbestellen via Platzhalter im Mail funktioniert.
