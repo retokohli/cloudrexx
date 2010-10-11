@@ -867,12 +867,12 @@ class ContentWorkflow
                              $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_logfile
                                                 WHERE   history_id='.$objResult->fields['navId']);
-                             /*$objDatabase->Execute(' DELETE
+                             $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_history
                                                 WHERE   id='.$objResult->fields['navId']);
                              $objDatabase->Execute(' DELETE
                                                 FROM    '.DBPREFIX.'content_navigation_history
-                                                WHERE   id='.$objResult->fields['navId']);*/
+                                                WHERE   id='.$objResult->fields['navId']);
                             $objResult->MoveNext();
                         }
 
