@@ -1746,11 +1746,10 @@ class ContactManager extends ContactLib {
         $sourcecode = array();
         $this->initContactForms(true);
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
-        $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText --><br /><br />";
+        $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText -->";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
         $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
-        $sourcecode[] = "<br />";
         $sourcecode[] = "<!-- BEGIN contact_form -->";
         $sourcecode[] = '<fieldset id="contactFrame">';
         $sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
