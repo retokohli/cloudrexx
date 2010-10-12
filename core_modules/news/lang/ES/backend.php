@@ -190,6 +190,7 @@ $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'] = "Texto Introductorio";
 $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'] = "Define un texto para el enlace:";
 $_ARRAYLANG['TXT_NEWS_INSERT_LINK'] = "Insertar enlace";
 $_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "General";
+$_ARRAYLANG['TXT_HEADLINE_AUTHOR_DESCRIPTION'] = "Vor- und Nachname des Autors";
 $_ARRAYLANG['TXT_HEADLINE_ID_DESCRIPTION'] = "ID de la noticia";
 $_ARRAYLANG['TXT_NOTIFY_GROUP'] = "Notificar a grupo:";
 $_ARRAYLANG['TXT_NOTIFY_USER'] = "Notificar a usuario:";
