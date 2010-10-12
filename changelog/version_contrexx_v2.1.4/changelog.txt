@@ -41,6 +41,7 @@ Kontaktformular
 - Einige vorgenerierte <br />-Tags, welche sich für Webdesigner als eher störend erwiesen, wurden entfernt.
 - Heraufgeladene Dateien werden nun auch unter UTF8 richtig umbenannt, falls unerlaubte Zeichen im Dateinamen sind
 - Fehler beim Erstellen von Formularen mit mehreren Auswahllisten entfernt
+- HTML-Code der generierten Formulare wurde bereinigt (fieldset nun innerhalb form)
 
 Newsletter
 - Newsletter abbestellen via Platzhalter im Mail funktioniert.
