@@ -1765,10 +1765,10 @@ class ContactManager extends ContactLib {
         $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
         $sourcecode[] = "<!-- BEGIN contact_form -->";
-        $sourcecode[] = '<fieldset id="contactFrame">';
-        $sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
         $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
         $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
+        $sourcecode[] = '<fieldset id="contactFrame">';
+        $sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
 
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
@@ -1890,8 +1890,8 @@ class ContactManager extends ContactLib {
         $sourcecode[] = "<p>";
         $sourcecode[] = '<input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
         $sourcecode[] = "</p>";
-        $sourcecode[] = "</form>";
         $sourcecode[] = "</fieldset>";
+        $sourcecode[] = "</form>";
         $sourcecode[] = "<!-- END contact_form -->";
 
         $sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);

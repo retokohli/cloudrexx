@@ -84,6 +84,7 @@ Kontakte Manager
   E-Mail als Dateianhänge angefügt.
 - Einige vorgenerierte <br />-Tags, welche sich für Webdesigner als eher störend erwiesen, wurden entfernt.
 - Heraufgeladene Dateien werden nun auch unter UTF-8 korrekt umbenannt
+- HTML-Code der generierten Formulare wurde bereinigt (fieldset nun innerhalb form)
 
 Korrespondierende Mehrsprachigkeit
 - Auch bei mehreren Sprachen haben alle Seiten die gleiche ID
