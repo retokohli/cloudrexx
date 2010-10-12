@@ -40,6 +40,7 @@ Kontaktformular
 - Muss-Felder können nicht mehr durch eingeben einer leeren Zeichenfolge umgangen werden.
 - Einige vorgenerierte <br />-Tags, welche sich für Webdesigner als eher störend erwiesen, wurden entfernt.
 - Heraufgeladene Dateien werden nun auch unter UTF8 richtig umbenannt, falls unerlaubte Zeichen im Dateinamen sind
+- Fehler beim Erstellen von Formularen mit mehreren Auswahllisten entfernt
 
 Newsletter
 - Newsletter abbestellen via Platzhalter im Mail funktioniert.
