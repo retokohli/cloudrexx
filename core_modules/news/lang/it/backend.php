@@ -263,4 +263,5 @@ $_ARRAYLANG['TXT_NEWS_SHOWN_ALL'] = "All";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_SHORT'] = "arch";
 $_ARRAYLANG['TXT_NEWS_UNVALIDATED_SHORT'] = "unv";
 $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'] = "Could not find a news entry with the provided id.";
+$_ARRAYLANG['TXT_HEADLINE_AUTHOR_DESCRIPTION'] = "Author's first and last name";
 ?>

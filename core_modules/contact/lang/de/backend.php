@@ -93,7 +93,7 @@ $_ARRAYLANG['TXT_CONTACT_VALUE_S'] = "Wert(e)";
 $_ARRAYLANG['TXT_CONTACT_FIELD_NAME'] = "Feldname";
 $_ARRAYLANG['TXT_CONTACT_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_CONTACT_FEEDBACK_EXPLANATION'] = "Dieser Text wird angezeigt nachdem das Formular abgeschickt wurde.<br />Sie können hier die Namen der Formularfelder als Platzhalter verwenden.<br />Zum Beispiel können Sie den Ausdruck <b>[[Wohnort]]</b> als Platzhalter für ein Formularfeld mit dem Namen <b>Wohnort</b> verwenden.<br />Der Ausdruck <b>[[Wohnort]]</b> wird dann durch den Wert, den der Besucher im Kontaktformular eingetragen hat, ersetzt.";
-$_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'] = "Pflichtfeld (Typ)";
+$_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'] = "Pflichtfeld";
 $_ARRAYLANG['TXT_CONTACT_DESELECT_ALL'] = "Markierung löschen";
 $_ARRAYLANG['TXT_CONTACT_SUBMIT_SELECT'] = "Aktion wählen";
 $_ARRAYLANG['TXT_CONTACT_SUBMIT_DELETE'] = "Markierte löschen";
@@ -157,4 +157,8 @@ $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Empfängerliste";
 $_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Erweiterte Einstellungen";
 $_ARRAYLANG['TXT_CONTACT_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_CONTACT_EXTEND'] = "Erweitert";
+$_ARRAYLANG['TXT_CONTACT_VALIDATION'] = "Validierung";
+$_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Erweitert";
+$_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Vereinfacht";
+$_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "weiteren Empfänger hinzufügen";
 ?>

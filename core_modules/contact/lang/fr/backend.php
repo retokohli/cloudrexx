@@ -157,4 +157,8 @@ $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Liste de destinataires ";
 $_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Paramètres élargies ";
 $_ARRAYLANG['TXT_CONTACT_EMAIL'] = "E-mail";
 $_ARRAYLANG['TXT_CONTACT_EXTEND'] = "Elargie";
+$_ARRAYLANG['TXT_CONTACT_VALIDATION'] = "Validité";
+$_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Avancée";
+$_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Simplifié";
+$_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Ajouter un autre destinataire";
 ?>

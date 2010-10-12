@@ -264,4 +264,5 @@ $_ARRAYLANG['TXT_NEWS_SHOWN_ALL'] = "All";
 $_ARRAYLANG['TXT_NEWS_ARCHIVE_SHORT'] = "arch";
 $_ARRAYLANG['TXT_NEWS_UNVALIDATED_SHORT'] = "unv";
 $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'] = "Es konnte kein Newseintrag mit dieser ID gefunden werden.";
+$_ARRAYLANG['TXT_HEADLINE_AUTHOR_DESCRIPTION'] = "Vor- und Nachname des Autors";
 ?>

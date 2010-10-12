@@ -158,4 +158,8 @@ $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Empfängerliste";
 $_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Erweiterte Einstellungen";
 $_ARRAYLANG['TXT_CONTACT_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_CONTACT_EXTEND'] = "Erweitert";
+$_ARRAYLANG['TXT_CONTACT_VALIDATION'] = "Validez";
+$_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Avanzada";
+$_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Simplificado";
+$_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Agregar otro destinatario";
 ?>
