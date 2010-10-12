@@ -28,7 +28,8 @@ News Manager
 - Bei der Bearbeitung einer News Meldung wird der Teaser Text mit dem richtigen
   Zeichensatz angezeigt.
 - Wird in Home » News Manager » Einstellungen unter "Anzahl Headlines" 0 angegeben, werden auch keine HL angezeigt.
-  Neues verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
+- Neues verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
+- Neuer Platzhalter HEADLINE_AUTHOR für Headlines.
 
 Veranstaltungskalender
 - Das Bearbeiten der Veranstaltungen funktioniert.

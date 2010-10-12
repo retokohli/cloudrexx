@@ -190,6 +190,7 @@ $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'] = "Teaser tekst";
 $_ARRAYLANG['TXT_NEWS_DEFINE_LINK_ALT_TEXT'] = "Indtsæt en tekst for linken: ";
 $_ARRAYLANG['TXT_NEWS_INSERT_LINK'] = "Indsæt link";
 $_ARRAYLANG['TXT_NEWS_OVERVIEW'] = "Oversigt";
+$_ARRAYLANG['TXT_HEADLINE_AUTHOR_DESCRIPTION'] = "Vor- und Nachname des Autors";
 $_ARRAYLANG['TXT_HEADLINE_ID_DESCRIPTION'] = "ID af nyheden";
 $_ARRAYLANG['TXT_NOTIFY_GROUP'] = "send gruppen en besked:";
 $_ARRAYLANG['TXT_NOTIFY_USER'] = "Send besked til brugeren";

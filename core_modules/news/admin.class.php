@@ -2586,7 +2586,7 @@ class newsManager extends newsLibrary {
         if (isset($_POST['teaserFrameTemplateId'])) {
             $teaserFrameTemplateId = intval($_POST['teaserFrameTemplateId']);
         } elseif (isset($this->_objTeaser->arrTeaserFrames[$teaserFrameId])) {
-            $teaserFrameTemplateId = $this->_objTeaser->arrTeaserFrames[$teaserFrameId]['frame_template_id'];
+             $teaserFrameTemplateId = $this->_objTeaser->arrTeaserFrames[$teaserFrameId]['frame_template_id'];
         } else {
             $teaserFrameTemplateId = $this->_objTeaser->getFirstTeaserFrameTemplateId();
         }
@@ -2654,7 +2654,8 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_IMAGE_ALT_DESCRIPTION'            => $_ARRAYLANG['TXT_NEWS_IMAGE_ALT_DESCRIPTION'],
             'TXT_NEWS_CATEGORY_NAME_DESCRIPTION'        => $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'],
             'TXT_NEWS_IMAGE_ROW_DESCRIPTION'            => $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'],
-            'TXT_NEWS_TEASER_TEXT_DESCRIPTION'          => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION']
+            'TXT_NEWS_TEASER_TEXT_DESCRIPTION'          => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'],
+            'TXT_HEADLINE_AUTHOR_DESCRIPTION'           => $_ARRAYLANG['TXT_HEADLINE_AUTHOR_DESCRIPTION']
         ));
     }
 }
