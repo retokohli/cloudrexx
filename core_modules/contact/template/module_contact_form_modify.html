@@ -46,8 +46,6 @@ function addFormField()
     document.getElementById('contactFormFieldId_'+formFieldLastId).setAttribute('id', 'contactFormFieldId_'+(formFieldLastId+1));
     document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('name', 'contactFormFieldName['+(formFieldLastId+1)+']');
     document.getElementById('contactFormFieldName_'+formFieldLastId).setAttribute('id', 'contactFormFieldName_'+(formFieldLastId+1));
-    document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
-    document.getElementById('contactFormFieldType_'+formFieldLastId).setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
     document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('href', 'javascript:removeFormElement('+(formFieldLastId+1)+', \'Field\')');
     document.getElementById('contactFormFieldButtonDelete_'+formFieldLastId).setAttribute('id', 'contactFormFieldButtonDelete_'+(formFieldLastId+1));
     document.getElementById('contactFormFieldAttributeBox_'+formFieldLastId).setAttribute('id', 'contactFormFieldAttributeBox_'+(formFieldLastId+1));
@@ -60,6 +58,14 @@ function addFormField()
     document.getElementById('contactFormFieldRequired_'+formFieldLastId).setAttribute('id', 'contactFormFieldRequired_'+(formFieldLastId+1));
     document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('name', 'contactFormFieldCheckType['+(formFieldLastId+1)+']');
     document.getElementById('contactFormFieldCheckType_'+formFieldLastId).setAttribute('id', 'contactFormFieldCheckType_'+(formFieldLastId+1));
+
+    //same as above, but remembering contactFormFieldType in order to update attribute box later
+    contactFormFieldType = document.getElementById('contactFormFieldType_'+formFieldLastId)
+    contactFormFieldType.setAttribute('name', 'contactFormFieldType['+(formFieldLastId+1)+']');
+    contactFormFieldType.setAttribute('id', 'contactFormFieldType_'+(formFieldLastId+1));
+
+    //update attribute box so ids are updated if needed
+    setFormFieldAttributeBox(contactFormFieldType.getAttribute('id'), contactFormFieldType.value);
 
     formFieldLastId = formFieldLastId + 1;
 
@@ -188,6 +194,7 @@ function setFormFieldAttributeBox(el, type)
     elId = el.substr(21);
     elField = document.getElementById('contactFormFieldAttributeBox_'+elId);
 
+    //empty attribute box    
     for (i=elField.childNodes.length-1; i>=0; i--) {
         if (elField.childNodes[i].nodeType) {
             switch (elField.childNodes[i].nodeType) {
@@ -199,22 +206,26 @@ function setFormFieldAttributeBox(el, type)
         }
     }
 
+    //if we have a template attribute box for the selected type...
     if (document.getElementById('formField'+type+'Attribute_0')) {
         elAttribute = document.getElementById('formField'+type+'Attribute_0');
+        //fill our attribute box with the copies of the template box's childs
         for (i=0; i<elAttribute.childNodes.length; i++) {
-            if (elAttribute.childNodes[i].nodeType == 1) {
-                if (elAttribute.childNodes[i].getAttribute('name') == 'contactFormFieldAttribute[0]') {
-                    elAttribute.childNodes[i].setAttribute('name', 'contactFormFieldAttribute['+elId+']');
+            elField = elAttribute.childNodes[i].cloneNode(true);
+            if (elField.nodeType == 1) {
+                if (elField.getAttribute('name') == 'contactFormFieldAttribute[0]') {
+                    elField.setAttribute('name', 'contactFormFieldAttribute['+elId+']');
                 }
             }
-            elField = elAttribute.childNodes[i].cloneNode(true);
+            
             document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
         }
-    } else {
+    } else { //no template, leave the box empty
         elField = document.createTextNode('');
         document.getElementById('contactFormFieldAttributeBox_'+elId).appendChild(elField);
     }
 
+    //empty require box
     elField = document.getElementById('contactFormFieldRequiredBox_'+elId);
 
     for (i=elField.childNodes.length-1; i>=0; i--) {
@@ -228,6 +239,7 @@ function setFormFieldAttributeBox(el, type)
         }
     }
 
+    //fill the require box for the following types   
     switch (type) {
         case 'text':
         case 'file':
@@ -256,12 +268,12 @@ function setFormFieldAttributeBox(el, type)
 
                 elField = elAttribute.childNodes[i].cloneNode(true);
                 document.getElementById('contactFormFieldRequiredBox_'+elId).appendChild(elField);
-            }
+            }// end for
             break;
 
         default:
             break;
-    }
+    }//end switch
 }
 
 function checkFieldValue()
