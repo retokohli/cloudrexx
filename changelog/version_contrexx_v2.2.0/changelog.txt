@@ -92,7 +92,8 @@ News Manager
   werden, um den kompletten Inhalt der News Meldungen auszugeben.
 - Kommentarfunktion für Meldungen hinzugefügt.
 - Wird in Home » News Manager » Einstellungen unter "Anzahl Headlines" 0 angegeben, werden auch keine HL angezeigt.
-  Neues verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
+- Neues Verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
+- Neuer Platzhalter HEADLINE_AUTHOR für Headlines.
 
 
 Modul: Digital Asset Management

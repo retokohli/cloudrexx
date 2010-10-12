@@ -76,11 +76,13 @@ class newsHeadlines
         else //fetch news
         { 
             $objResult = $objDatabase->SelectLimit("
-                SELECT id, title, date,
+                SELECT ".DBPREFIX."module_news.id AS id, ".DBPREFIX."module_news.title AS title, date, 
                        teaser_image_path, teaser_image_thumbnail_path,
-                       teaser_text, redirect
+                       teaser_text, redirect,
+                       firstname, lastname
                   FROM ".DBPREFIX."module_news
-                 WHERE status=1".
+                      INNER JOIN ".DBPREFIX."access_user_profile ON userid = ".DBPREFIX."access_user_profile.user_id 
+                  WHERE status=1".
                    ($catId > 0 ? " AND catid=$catId" : '')."
                    AND teaser_only='0'
                    AND lang=".$_LANGID."
@@ -102,6 +104,7 @@ class newsHeadlines
         $newsid    = $objResult->fields['id'];
         $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
         $newsparam = 'section=news&amp;cmd=details';
+	$name = htmlspecialchars(stripslashes($objResult->fields['firstname'] . " " . $objResult->fields['lastname']), ENT_QUOTES, CONTREXX_CHARSET); 
         $news_link = (empty($objResult->fields['redirect']))
             ? '<a class="headlineLink" href="'.$url.'?'.$newsparam.'&amp;newsid='.$newsid.'" title="'.$newstitle.'">'.$newstitle.'</a>'
             : '<a class="headlineLink" href="'.$objResult->fields['redirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>';
@@ -123,6 +126,7 @@ class newsHeadlines
                 $this->_objTemplate->setVariable("HEADLINE_IMAGE_PATH", $image);
                 $this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br($objResult->fields['teaser_text']));
                 $this->_objTemplate->setVariable("HEADLINE_ID", intval($objResult->fields['id']));
+                $this->_objTemplate->setVariable("HEADLINE_AUTHOR", $name); 
                 $this->_objTemplate->parseCurrentBlock();
                 $objResult->MoveNext();
             }
