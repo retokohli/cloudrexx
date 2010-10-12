@@ -157,4 +157,8 @@ $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'] = "Empfängerliste";
 $_ARRAYLANG['CONTACT_FORM_SETTINGS'] = "Erweiterte Einstellungen";
 $_ARRAYLANG['TXT_CONTACT_EMAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_CONTACT_EXTEND'] = "Erweitert";
+$_ARRAYLANG['TXT_CONTACT_VALIDATION'] = "Geldigheid";
+$_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Geavanceerde";
+$_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Vereenvoudigde";
+$_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Voeg een andere ontvanger";
 ?>
