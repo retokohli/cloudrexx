@@ -21,7 +21,7 @@ Allgemein
 - Thumbnail-Erstellung von Transparenten Bildern wird nun unterstützt.
 - Das Sprachselektionsmenu hat nun eine "selected" CSS-Klasse gesetzt für die aktive Sprache
 - Das Handy-Template wird nun dem seitenspezifisch gesetzten Template vorgezogen.
-
+- Wird ein neues Template erstellt und dabei ein bereits vorhandenes Template als Vorlage angegeben, aktualisiert Contrexx nun die Links in den kopierten Templatedateien, damit diese auf das neue Template zeigen. (Bsp: styles.css in index.html)
 
 File Browser
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
