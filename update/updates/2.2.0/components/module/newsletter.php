@@ -1,4 +1,5 @@
 <?php
+//@TODO: should we use the script from 2.1.4? old setting notifyOnUnsubscribe is not merged into notificationUnsubscribe here.
 
 function _newsletterUpdate()
 {
