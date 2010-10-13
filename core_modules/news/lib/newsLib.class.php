@@ -22,7 +22,7 @@
 class newsLibrary
 {
 
-	/**
+    /**
     * Gets the categorie option menu string
     *
     * @global    ADONewConnection

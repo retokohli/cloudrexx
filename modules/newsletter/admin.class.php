@@ -1869,12 +1869,9 @@ class newsletter extends NewsletterLib
 
         //Update
         if ($_POST["update"]=="exe") {
-
-
-
             if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_confirm_mail SET title='".contrexx_addslashes($_POST["mailSubject"])."', content='".contrexx_addslashes($_POST["mailContent"])."', recipients='".contrexx_addslashes($_POST["mailRecipients"])."' WHERE id=3") !== false) {
-                 if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST["mailSendSubscribe"])."' WHERE setid=10") !== false) {
-                    if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST["mailSendUnsubscribe"])."' WHERE setid=11") !== false) {
+                if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST["mailSendSubscribe"])."' WHERE setname='notificationSubscribe'") !== false) {
+                    if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings SET setvalue='".intval($_POST["mailSendUnsubscribe"])."' WHERE setname='notificationUnsubscribe'") !== false) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_MAIL_UPDATED_SUCCESSFULLY'];
                     } else {
                         $this->_strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_ERROR_SAVE_CONFIRM_MAIL'];
@@ -1895,7 +1892,7 @@ class newsletter extends NewsletterLib
             $recipients = $objResult->fields['recipients'];
         }
 
-        $query         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setid='10'";
+        $query         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificationSubscribe'";
         $objResult     = $objDatabase->Execute($query);
         if ($objResult !== false) {
             if($objResult->fields['setvalue'] == 1) {
@@ -1907,7 +1904,7 @@ class newsletter extends NewsletterLib
             }
         }
 
-        $query         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setid='11'";
+        $query         = "SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificationUnsubscribe'";
         $objResult     = $objDatabase->Execute($query);
         if ($objResult !== false) {
             if($objResult->fields['setvalue'] == 1) {

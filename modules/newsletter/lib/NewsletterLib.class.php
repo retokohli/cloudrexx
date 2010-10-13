@@ -238,7 +238,7 @@ class NewsletterLib
                     $arrSettings[$objSettings->fields['setname']] = array(
                         'setid'        => $objSettings->fields['setid'],
                         'setvalue'    => $objSettings->fields['setvalue'],
-                        'setatus'    => $objSettings->fields['status']
+                        'status'    => $objSettings->fields['status']
                     );
 
                     $objSettings->MoveNext();
