@@ -459,10 +459,11 @@ class ContactManager extends ContactLib {
                 $pageId = $this->_getContentSiteId($formId);
 
                 $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
+                $arrForm['lang'][FRONTEND_LANG_ID]['name'] = ($arrForm['lang'][FRONTEND_LANG_ID]['name'] == "") ? 'Untitled' : $arrForm['lang'][FRONTEND_LANG_ID]['name'];
 
                 $this->_objTpl->setVariable(array(
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
-                        'CONTACT_FORM_NAME'                 => htmlentities($arrForm['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'CONTACT_FORM_NAME'                 => htmlentities($arrForm['name'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '&nbsp;',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $arrForm['number'],
                         //'CONTACT_FORM_LANG'                 => FWLanguage::getLanguageParameter($arrForm['lang'], 'name'),
@@ -1296,6 +1297,9 @@ class ContactManager extends ContactLib {
         $this->_contactForms();
     }
 
+    /*
+     * Delete Site content for all languages even though language is not active
+     */
     function _deleteContentSite($formId) {
         global $objDatabase, $_ARRAYLANG;
 
@@ -1307,26 +1311,28 @@ class ContactManager extends ContactLib {
 
         if ($pageId != 0) {
             if ($this->boolHistoryEnabled) {
-                $objResult = $objDatabase->Execute('SELECT  id
+                $objResult = $objDatabase->Execute('SELECT  id, lang
                                                     FROM    '.DBPREFIX.'content_navigation_history
                                                     WHERE   is_active="1" AND
-                                                            catid='.$pageId.' AND
-                                                            `lang`='.$langId.'
-                                                    LIMIT   1
-                                                ');
-                $objDatabase->Execute(' INSERT
-                                        INTO    '.DBPREFIX.'content_logfile
-                                        SET     action="delete",
-                                                history_id='.$objResult->fields['id'].',
-                                                is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
-                                    ');
-                $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                                            catid='.$pageId
+                                                    );
+                while(!$objResult->EOF){
+                    $objDatabase->Execute(' INSERT
+                                            INTO    '.DBPREFIX.'content_logfile
+                                            SET     action="delete",
+                                                    history_id='.$objResult->fields['id'].',
+                                                    is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
+                                        ');
+                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
                                         SET     changelog='.time().'
                                         WHERE   catid='.$pageId.' AND
                                                 is_active="1" AND
-                                                `lang`='.$langId.'
+                                                `lang`='.$objResult->fields['lang'].'
                                         LIMIT   1
                                     ');
+                    
+                    $objResult->MoveNext();
+                }
             }
 
             if ($this->boolHistoryEnabled) {
@@ -1341,8 +1347,8 @@ class ContactManager extends ContactLib {
             }
 
             if ($boolDelete) {
-                $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId.' AND `lang_id`='.$langId;
-                $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId.' AND `lang`='.$langId;
+                $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId;
+                $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId;
                 if ($objDatabase->Execute($q1) === false || $objDatabase->Execute($q2) === false) {
                     $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
                 } else {
@@ -1743,8 +1749,8 @@ class ContactManager extends ContactLib {
                     'CONTACT_CONTENT_SITE_ACTION'       => $contentSiteExists > 0 ? 'updateContent' : 'newContent',
                     'CONTACT_SOURCECODE_OF'             => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_SOURCECODE_OF_NAME']),
                     'CONTACT_PREVIEW_OF'                => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_PREVIEW_OF_NAME']),
-                    'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, false, true), ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, true),
+                    'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, 0, false, true), ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, 0, true),
                     'FORM_ID'                           => $formId
             ));
         } else {
@@ -1752,23 +1758,36 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _getSourceCode($id, $preview = false, $show = false) {
+    /*
+     * Generates the HTML Source code of the Submission form designed in backend
+     * @id      Submission form id
+     * @lang    Language for which source code to be generated
+     * @preview Boolean, generated preview source or raw source
+     * @show    Boolean, generated frontend code
+     */
+    function _getSourceCode($id, $lang = 1, $preview = false, $show = false) {
         global $_ARRAYLANG, $objInit, $objDatabase;
 
         $arrFields = $this->getFormFields($id);
         $sourcecode = array();
-        $frontendLang = $objInit->userFrontendLangId;
         $this->initContactForms(true);
+        
+        if($lang == 0){
+            $frontendLang = $objInit->userFrontendLangId;
+        } else {
+            $frontendLang = $lang;
+        }
+        
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
-        $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText -->";
+        $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['lang'][$frontendLang]['text'] . "<!-- END formText -->";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
         $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
         $sourcecode[] = "<!-- BEGIN contact_form -->";
+        $sourcecode[] = '<fieldset id="contactFrame">';
+        $sourcecode[] = "<legend>".$this->arrForms[$id]['lang'][$frontendLang]['name']."</legend>";
         $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
         $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
-        $sourcecode[] = '<fieldset id="contactFrame">';
-        $sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
 
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
@@ -1890,8 +1909,8 @@ class ContactManager extends ContactLib {
         $sourcecode[] = "<p>";
         $sourcecode[] = '<input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
         $sourcecode[] = "</p>";
-        $sourcecode[] = "</fieldset>";
         $sourcecode[] = "</form>";
+        $sourcecode[] = "</fieldset>";
         $sourcecode[] = "<!-- END contact_form -->";
 
         $sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
@@ -2108,21 +2127,28 @@ class ContactManager extends ContactLib {
 
         $formId = intval($_REQUEST['formId']);
         if ($formId > 0) {
+            $activeLanguages = FWLanguage::getActiveFrontendLanguages();
             $objFWUser = FWUser::getFWUserObject();
-            $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_field_lang WHERE fieldID=".$formId, 1);
-            if ($objContactForm !== false) {
-                $catname = addslashes($objContactForm->fields['name']);
+
+            if(!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
+                    $pageId = intval($_REQUEST['pageId']);
+                }else {
+                    $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
+                    $pageId = $objRS->fields['nextId'];
             }
 
-            $currentTime = time();
-            $content = addslashes($this->_getSourceCode($formId));
-            if(!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
-                $pageId = intval($_REQUEST['pageId']);
-            }else {
-                $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
-                $pageId = $objRS->fields['nextId'];
-            }
-            $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
+            foreach ($activeLanguages as $lang) {
+                $langID = $lang['id'];
+
+                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang WHERE formID=".$formId." AND langID=".$langID, 1);
+                if ($objContactForm !== false) {
+                    $catname = addslashes($objContactForm->fields['name']);
+                }
+
+                $currentTime = time();
+                $content = addslashes($this->_getSourceCode($formId, $langID));
+
+                $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
                                         catid,
                                         catname,
                                         displayorder,
@@ -2140,11 +2166,11 @@ class ContactManager extends ContactLib {
                                         '".$objFWUser->objUser->getUsername()."',
                                         '".$currentTime."',
                                         '".$formId."',
-                                        '".FRONTEND_LANG_ID."',
+                                        '".$langID."',
                                         '6')";
-            $objDatabase->Execute($q1);
+                $objDatabase->Execute($q1);
 
-            $q2 ="INSERT INTO ".DBPREFIX."content (id,
+                $q2 ="INSERT INTO ".DBPREFIX."content (id,
                                                     lang_id,
                                                     content,
                                                     title,
@@ -2152,69 +2178,69 @@ class ContactManager extends ContactLib {
                                                     metadesc,
                                                     metakeys)
                                             VALUES (".$pageId.",
-                                                    ".FRONTEND_LANG_ID.",
+                                                    ".$langID.",
                                                     '".$content."',
                                                     '".$catname."',
                                                     '".$catname."',
                                                     '".$catname."',
                                                     '".$catname."')";
 
-            if ($objDatabase->Execute($q2) !== false) {
-                //create backup for history
-                if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
-                    //user is not allowed to validated, so set if "off"
-                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
-                                            SET     is_validated="0",
-                                                    activestatus="0"
-                                            WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANG_ID.'
-                                            LIMIT   1
-                                        ');
-                }
+                if ($objDatabase->Execute($q2) !== false) {
+                    //create backup for history
+                    if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
+                        //user is not allowed to validated, so set if "off"
+                        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
+                                                SET     is_validated="0",
+                                                        activestatus="0"
+                                                WHERE   catid='.$pageId.' AND `lang`='.$langID.'
+                                                LIMIT   1
+                                            ');
+                    }
 
-                if ($this->boolHistoryEnabled) {
-                    $objDatabase->Execute('SELECT  protected,
-                                                                frontend_access_id,
-                                                                backend_access_id
-                                                        FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANG_ID.'
-                                                        LIMIT   1
-                                                    ');
-                    $objDatabase->Execute(' INSERT
-                                            INTO    '.DBPREFIX.'content_navigation_history
-                                            SET     is_active="1",
-                                                    catid='.$pageId.',
-                                                    catname="'.$catname.'",
-                                                    displayorder=1,
-                                                    displaystatus="off",
-                                                    username="'.$objFWUser->objUser->getUsername().'",
-                                                    changelog="'.$currentTime.'",
-                                                    cmd="'.$formId.'",
-                                                    lang="'.FRONTEND_LANG_ID.'",
-                                                    module="6"');
-                    $intHistoryId = $objDatabase->insert_id();
-                    $objDatabase->Execute(' INSERT
-                                            INTO    '.DBPREFIX.'content_history
-                                            SET     id='.$intHistoryId.',
-                                                    page_id='.$pageId.',
-                                                    lang_id="'.FRONTEND_LANG_ID.'",
-                                                    content="'.$content.'",
-                                                    title="'.$catname.'",
-                                                    metatitle="'.$catname.'",
-                                                    metadesc="'.$catname.'",
-                                                    metakeys="'.$catname.'"');
-                    $objDatabase->Execute(' INSERT
-                                            INTO    '.DBPREFIX.'content_logfile
-                                            SET     action="new",
-                                                    history_id='.$intHistoryId.',
-                                                    is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
-                                        ');
+                    if ($this->boolHistoryEnabled) {
+                        $objDatabase->Execute('SELECT  protected,
+                                                                    frontend_access_id,
+                                                                    backend_access_id
+                                                            FROM    '.DBPREFIX.'content_navigation
+                                                            WHERE   catid='.$pageId.' AND `lang`='.$langID.'
+                                                            LIMIT   1
+                                                        ');
+                        $objDatabase->Execute(' INSERT
+                                                INTO    '.DBPREFIX.'content_navigation_history
+                                                SET     is_active="1",
+                                                        catid='.$pageId.',
+                                                        catname="'.$catname.'",
+                                                        displayorder=1,
+                                                        displaystatus="off",
+                                                        username="'.$objFWUser->objUser->getUsername().'",
+                                                        changelog="'.$currentTime.'",
+                                                        cmd="'.$formId.'",
+                                                        lang="'.$langID.'",
+                                                        module="6"');
+                        $intHistoryId = $objDatabase->insert_id();
+                        $objDatabase->Execute(' INSERT
+                                                INTO    '.DBPREFIX.'content_history
+                                                SET     id='.$intHistoryId.',
+                                                        page_id='.$pageId.',
+                                                        lang_id="'.$langID.'",
+                                                        content="'.$content.'",
+                                                        title="'.$catname.'",
+                                                        metatitle="'.$catname.'",
+                                                        metadesc="'.$catname.'",
+                                                        metakeys="'.$catname.'"');
+                        $objDatabase->Execute(' INSERT
+                                                INTO    '.DBPREFIX.'content_logfile
+                                                SET     action="new",
+                                                        history_id='.$intHistoryId.',
+                                                        is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
+                                            ');
+                    }
+                } else {
+                    $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
                 }
-
-                header("Location: ".ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId);
-                exit;
-            } else {
-                $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
             }
+            header("Location: ".ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
+            exit;
         }
     }
 
@@ -2226,103 +2252,109 @@ class ContactManager extends ContactLib {
         $pageId = $this->_getContentSiteId($formId);
         $parcat = $this->_getContentSiteParCat($formId);
         if ($pageId > 0) {
+            $activeLanguages = FWLanguage::getActiveFrontendLanguages();
             $objFWUser = FWUser::getFWUserObject();
-            $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_field_lang WHERE fieldID=".$formId, 1);
-            if ($objContactForm !== false) {
-                $catname = addslashes($objContactForm->fields['name']);
-            }
-            $content = addslashes($this->_getSourceCode($formId));
-            $currentTime = time();
 
-            //make sure the user is allowed to update the content
-            if ($this->boolHistoryEnabled) {
-                if ($this->boolHistoryActivate) {
-                    $boolDirectUpdate = true;
+            foreach ($activeLanguages as $lang) {
+                $langID = $lang['id'];
+
+                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang WHERE fieldID=".$formId." AND langID=".$langID, 1);
+                if ($objContactForm !== false) {
+                    $catname = addslashes($objContactForm->fields['name']);
+                }
+                $content = addslashes($this->_getSourceCode($formId, $langID));
+                $currentTime = time();
+
+                //make sure the user is allowed to update the content
+                if ($this->boolHistoryEnabled) {
+                    if ($this->boolHistoryActivate) {
+                        $boolDirectUpdate = true;
+                    } else {
+                        $boolDirectUpdate = false;
+                    }
                 } else {
-                    $boolDirectUpdate = false;
+                    $boolDirectUpdate = true;
                 }
-            } else {
-                $boolDirectUpdate = true;
-            }
 
-            if ($boolDirectUpdate) {
-                $objDatabase->Execute("UPDATE   ".DBPREFIX."content
-                                       SET      content='".$content."'
-                                        WHERE   id=".$pageId.' AND `lang_id`='.FRONTEND_LANG_ID);
-            }
-
-            if ($parcat!=$pageId) {
-                //create copy of parcat (for history)
-                $intHistoryParcat = $parcat;
                 if ($boolDirectUpdate) {
-                    $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
-                                            SET     username='".$objFWUser->objUser->getUsername()."',
-                                                    changelog='".$currentTime."'
-                                            WHERE catid=".$pageId.' AND `lang`='.FRONTEND_LANG_ID);
+                    $objDatabase->Execute("UPDATE   ".DBPREFIX."content
+                                           SET      content='".$content."'
+                                            WHERE   id=".$pageId.' AND `lang_id`='.$langID);
                 }
-            } else {
-                //create copy of parcat (for history)
-                $intHistoryParcat = 0;
+
+                if ($parcat!=$pageId) {
+                    //create copy of parcat (for history)
+                    $intHistoryParcat = $parcat;
+                    if ($boolDirectUpdate) {
+                        $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
+                                                SET     username='".$objFWUser->objUser->getUsername()."',
+                                                        changelog='".$currentTime."'
+                                                WHERE catid=".$pageId.' AND `lang`='.$langID);
+                    }
+                } else {
+                    //create copy of parcat (for history)
+                    $intHistoryParcat = 0;
+                    if ($boolDirectUpdate) {
+                        $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
+                                                SET     username='".$objFWUser->objUser->getUsername()."',
+                                                        changelog='".$currentTime."'
+                                                WHERE   catid=".$pageId.' AND `lang`='.$langID);
+                    }
+                }
+
                 if ($boolDirectUpdate) {
-                    $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
-                                            SET     username='".$objFWUser->objUser->getUsername()."',
-                                                    changelog='".$currentTime."'
-                                            WHERE   catid=".$pageId.' AND `lang`='.FRONTEND_LANG_ID);
-                }
-            }
-
-            if ($boolDirectUpdate) {
-                $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_CONTENT_PAGE_SUCCESSFULLY_UPDATED']."<br />";
-            } else {
-                $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE']."<br />";
-            }
-
-            //create backup for history
-            if ($this->boolHistoryEnabled) {
-                $objDatabase->Execute('SELECT  displayorder,
-                                                            protected,
-                                                            frontend_access_id,
-                                                            backend_access_id
-                                                    FROM    '.DBPREFIX.'content_navigation
-                                                    WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANG_ID.'
-                                                    LIMIT   1
-                                                ');
-                if ($boolDirectUpdate) {
-                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
-                                            SET     is_active="0"
-                                            WHERE   catid='.$pageId.' AND `lang`='.FRONTEND_LANG_ID);
+                    $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_CONTENT_PAGE_SUCCESSFULLY_UPDATED']."<br />";
+                } else {
+                    $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE']."<br />";
                 }
 
-                $objDatabase->Execute(' INSERT
-                                        INTO    '.DBPREFIX.'content_navigation_history
-                                        SET     is_active="'.(($boolDirectUpdate) ? 1 : 0).'",
-                                                catid='.$pageId.',
-                                                parcat="'.$intHistoryParcat.'",
-                                                catname="'.$catname.'",
-                                                username="'.$objFWUser->objUser->getUsername().'",
-                                                changelog="'.$currentTime.'",
-                                                lang="'.FRONTEND_LANG_ID.'",
-                                                cmd="'.$formId.'",
-                                                module="6"
-                                           ');
-                $intHistoryId = $objDatabase->insert_id();
-                $objDatabase->Execute(' INSERT
-                                        INTO    '.DBPREFIX.'content_history
-                                        SET     id='.$intHistoryId.',
-                                                page_id='.$pageId.',
-                                                lang_id='.FRONTEND_LANG_ID.',
-                                                content="'.$content.'",
-                                                title="'.$catname.'",
-                                                metatitle="'.$catname.'",
-                                                metadesc="'.$catname.'",
-                                                metakeys="'.$catname.'"'
-                );
-                $objDatabase->Execute(' INSERT
-                                        INTO    '.DBPREFIX.'content_logfile
-                                        SET     action="update",
-                                                history_id='.$intHistoryId.',
-                                                is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"
-                                    ');
+                //create backup for history
+                if ($this->boolHistoryEnabled) {
+                    $objDatabase->Execute('SELECT  displayorder,
+                                                                protected,
+                                                                frontend_access_id,
+                                                                backend_access_id
+                                                        FROM    '.DBPREFIX.'content_navigation
+                                                        WHERE   catid='.$pageId.' AND `lang`='.$langID.'
+                                                        LIMIT   1
+                                                    ');
+                    if ($boolDirectUpdate) {
+                        $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                                SET     is_active="0"
+                                                WHERE   catid='.$pageId.' AND `lang`='.$langID);
+                    }
+
+                    $objDatabase->Execute(' INSERT
+                                            INTO    '.DBPREFIX.'content_navigation_history
+                                            SET     is_active="'.(($boolDirectUpdate) ? 1 : 0).'",
+                                                    catid='.$pageId.',
+                                                    parcat="'.$intHistoryParcat.'",
+                                                    catname="'.$catname.'",
+                                                    username="'.$objFWUser->objUser->getUsername().'",
+                                                    changelog="'.$currentTime.'",
+                                                    lang="'.$langID.'",
+                                                    cmd="'.$formId.'",
+                                                    module="6"
+                                               ');
+                    $intHistoryId = $objDatabase->insert_id();
+                    $objDatabase->Execute(' INSERT
+                                            INTO    '.DBPREFIX.'content_history
+                                            SET     id='.$intHistoryId.',
+                                                    page_id='.$pageId.',
+                                                    lang_id='.$langID.',
+                                                    content="'.$content.'",
+                                                    title="'.$catname.'",
+                                                    metatitle="'.$catname.'",
+                                                    metadesc="'.$catname.'",
+                                                    metakeys="'.$catname.'"'
+                    );
+                    $objDatabase->Execute(' INSERT
+                                            INTO    '.DBPREFIX.'content_logfile
+                                            SET     action="update",
+                                                    history_id='.$intHistoryId.',
+                                                    is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"
+                                        ');
+                }
             }
         }
     }
