@@ -82,6 +82,22 @@ function _newsletterUpdate()
         return UpdateUtil::DefaultActionHandler($e);
     }
     DBG::msg("Done checking tables.. going to check settings");
+    
+    //the two values notifyOnUnsubscribe and notificationUnsubscribe have been merged into the latter.
+    $unsubscribeVal=1;
+    try {
+        DBG::msg("Retrieving old unsubscribe value if set.");
+        $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
+        
+        if(!$res->EOF)
+            $unsubscribeVal = $res->fields['setvalue'];
+
+        UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
+    }
+    catch (UpdateException $e) {
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+        
     $settings = array(
         'sender_mail'             => array('setid' =>  1, 'setname' => 'sender_mail',             'setvalue' => 'info@example.com', 'status' => 1),
         'sender_name'             => array('setid' =>  2, 'setname' => 'sender_name',             'setvalue' => 'admin',            'status' => 1),
@@ -92,7 +108,8 @@ function _newsletterUpdate()
         'overview_entries_limit'  => array('setid' =>  7, 'setname' => 'overview_entries_limit',  'setvalue' => '10',               'status' => 1),
         'rejected_mail_operation' => array('setid' =>  8, 'setname' => 'rejected_mail_operation', 'setvalue' => 'delete',           'status' => 1),
         'defUnsubscribe'          => array('setid' =>  9, 'setname' => 'defUnsubscribe',          'setvalue' => '0',                'status' => 1),
-        'notifyOnUnsubscribe'     => array('setid' => 10, 'setname' => 'notifyOnUnsubscribe',     'setvalue' => '1',                'status' => 1),
+        'notificationSubscribe'   => array('setid' => 11, 'setname' => 'notificationSubscribe',   'setvalue' => '1',                'status' => 1),
+        'notificationUnsubscribe' => array('setid' => 10, 'setname' => 'notificationUnsubscribe', 'setvalue' => $unsubscribeVal,    'status' => 1),
     );
 
     try {
