@@ -929,6 +929,7 @@ class skins
                 } elseif($_POST['fromTheme'] != "" && $_POST['fromDB'] == "") {
                     $this->dirLog=$this->_objFile->copyDir($this->path, $this->webPath, $_POST['fromTheme'], $this->path, $this->webPath, $dirName);
                     if($this->dirLog != "error") {
+                        $this->_replaceThemeName($this->replaceCharacters($_POST['fromTheme']), $dirName, $this->path.$dirName);
                         $this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
                     }
                     $this->strOkMessage  = $_POST['dbName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
@@ -958,6 +959,51 @@ class skins
         } else {
             $this->strErrMessage = $_CORELANG['TXT_STATUS_CHECK_INPUTS'];
             $this->newdir();
+        }
+    }
+
+    /**
+     * Replaces remainders of the original theme in a freshly copied theme.
+     * (links to stylesheets, js, images etc.)
+     * CAUTION: as this is intended for subroutine-use, no validation or
+     *          escaping of given parameters is done.
+     *
+     * @param string $org original theme name
+     * @param string $copy copied theme name
+     * @param string $copyPath full path to copied theme's directory
+     * @see skins::createDir()
+     *
+     * @return string "error" on error, else empty string
+     */                        
+    function _replaceThemeName($org, $copy, $path)
+    {
+        //extensions of files that could contain links still pointing to the old template 
+        $regexValidExtensions = '\.css|\.htm|\.html';
+            
+        $dir = opendir($path);
+        $file = readdir($dir);
+        while($file)
+        {
+            if($file!='.' && $file != '..')
+            {
+                $ourFile = $path.'/'.$file;
+                if(!is_dir($ourFile))
+                {
+                    //has the file one of our extensions defined above?
+                    if(preg_match('/['.$regexValidExtensions.']$/',$ourFile))
+                    {
+                        //replace name of old template with new template's name
+                        $fileContents = file_get_contents($ourFile);
+                        $fileContents = str_replace($org,$copy,$fileContents);
+                        file_put_contents($ourFile, $fileContents);
+                    }
+                }
+                else //directory, call this function again to process it
+                {
+                    $this->_replaceThemeName($org,$copy,$ourFile);
+                }
+            }
+            $file=readdir($dir);
         }
     }
 
