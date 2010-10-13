@@ -3048,7 +3048,9 @@ class newsManager extends newsLibrary {
             $templateId = intval($_GET['templateId']);
             $sourceCodeMode = isset($_POST['teaserFrameTplSource']) ? intval($_POST['teaserFrameTplSource']) : 0;
             $templateDescription = contrexx_strip_tags($_POST['teaserFrameTplDescription']);
-            if (empty($templateDescription)) {
+
+	    $tmp = trim($templateDescription);
+            if (empty($tmp)) {
                 $this->strErrMessage .= $_ARRAYLANG['TXT_SET_TEMPLATE_DESCRIPTION_TEXT'];
                 $this->_editTeaserFrameTemplate();
                 return;

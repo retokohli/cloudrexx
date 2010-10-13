@@ -209,6 +209,7 @@ News Manager
   Zeichensatz angezeigt.
 - Ist eine News als Weiterleitung eingerichtet und soll die Weiterleitung nun
   wieder entfernt werden, so ist keine Leerung des Input-Fields (Link) mehr notwendig.
+- Es können keine Teaserboxen mehr mit leerem Titel (bzw. nur Spaces) erstellt werden.
 
 Volltextsuche
 - Die News Meldungen werden mit einer entsprechenden Relevanz bewertet.
