@@ -161,4 +161,5 @@ $_ARRAYLANG['TXT_CONTACT_VALIDATION'] = "Platnost";
 $_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Rozšířené";
 $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Zjednodušený";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Přidat další příjemce";
+$_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 ?>

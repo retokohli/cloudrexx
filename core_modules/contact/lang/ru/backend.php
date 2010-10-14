@@ -161,4 +161,5 @@ $_ARRAYLANG['TXT_CONTACT_VALIDATION'] = "Действия";
 $_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Расширенный";
 $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Упрощенный";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Добавить другого получателя";
+$_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 ?>
