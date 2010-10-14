@@ -213,6 +213,10 @@ $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'] = "Teaser Text der Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NAME_DESCRIPTION'] = "Name der zugehörigen Kategorie";
 $_ARRAYLANG['TXT_NEWS_IMAGE_LINK_DESCRIPTION'] = "Bild-Link zur Newsmeldung";
 $_ARRAYLANG['TXT_NEWS_IMAGE_SRC_DESCRIPTION'] = "Quelle/Pfad des Bildes";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_ADD_ERROR_EMPTY'] = "Konnte Kategorie nicht hinzufügen, kein Name angegeben.";
+$_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'] = "Teaser Box hinzugefügt.";
+$_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'] = "Teaser Box aktualisiert.";
+$_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'] = "Kein Eintrag ausgewählt, nichts geändert.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optionaler Block zur Darstellung des Bildes.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
