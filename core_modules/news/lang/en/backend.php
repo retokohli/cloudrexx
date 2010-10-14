@@ -265,4 +265,8 @@ $_ARRAYLANG['TXT_NEWS_ARCHIVE_SHORT'] = "arch";
 $_ARRAYLANG['TXT_NEWS_UNVALIDATED_SHORT'] = "unv";
 $_ARRAYLANG['TXT_NEWS_ENTRY_NOT_FOUND'] = "Could not find a news entry with the provided id.";
 $_ARRAYLANG['TXT_HEADLINE_AUTHOR_DESCRIPTION'] = "Author's first and last name";
+$_ARRAYLANG['TXT_NEWS_CATEGORY_ADD_ERROR_EMPTY'] = "Couldn't add category; no name provided.";
+$_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'] = "Added teaser box.";
+$_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'] = "Teaser box updated.";
+$_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'] = "No entry selected, nothing changed.";
 ?>

@@ -249,4 +249,5 @@ $_ARRAYLANG['TXT_ELEARNING_MODULE_DESCRIPTION'] = "e-Learning";
 $_ARRAYLANG['TXT_LOGIN_OPENID'] = "OpenID";
 $_ARRAYLANG['TXT_LOGIN_SUBMIT_OPENID'] = "Mit OpenID anmelden";
 $_ARRAYLANG['TXT_LOGIN_SIGN_UP'] = "Haben Sie noch kein Account? Jetzt registrieren";
+$_ARRAYLANG['TXT_CORE_UNLIMITED'] = "unbegrenzt";
 ?>

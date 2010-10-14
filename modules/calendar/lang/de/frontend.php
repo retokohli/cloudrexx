@@ -98,4 +98,5 @@ $_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "Bitte geben sie den Captcha 
 $_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "Die Veranstaltung ist leider ausgebucht. Es können keine weiteren Anmeldungen entgegen genommen werden.";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Ihre Anmeldung wurde erfolgreich in unserem System gespeichert.";
+$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Uhr";
 ?>
