@@ -463,7 +463,7 @@ class ContactManager extends ContactLib {
 
                 $this->_objTpl->setVariable(array(
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
-                        'CONTACT_FORM_NAME'                 => htmlentities($arrForm['name'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'CONTACT_FORM_NAME'                 => htmlentities($arrForm['lang'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET),
                         'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '&nbsp;',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $arrForm['number'],
                         //'CONTACT_FORM_LANG'                 => FWLanguage::getLanguageParameter($arrForm['lang'], 'name'),
@@ -903,12 +903,12 @@ class ContactManager extends ContactLib {
             $arrFields      = $this->_getFormFieldsFromPost($null);
             $arrRecipients  = $this->_getRecipientsFromPost(false);
             $this->_showRecipients($arrRecipients);
-            $formName       = isset($_POST['contactFormName']) 
-                ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET) 
+            $formName       = isset($_POST['contactFormName'])
+                ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET)
                 : ''
             ;
-            $formEmails = isset($_POST['contactFormEmail']) 
-                ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET) 
+            $formEmails = isset($_POST['contactFormEmail'])
+                ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET)
                 : ''
             ;
             if (empty($formEmails)) {
@@ -1109,7 +1109,7 @@ class ContactManager extends ContactLib {
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         $adding = $_POST['copy'] || !$formId;
         $content = $_POST['contentSiteAction'];
-        
+
         if (isset($_POST['saveForm'])) {
             $uniqueFieldNames = null;
 
@@ -1330,7 +1330,7 @@ class ContactManager extends ContactLib {
                                                 `lang`='.$objResult->fields['lang'].'
                                         LIMIT   1
                                     ');
-                    
+
                     $objResult->MoveNext();
                 }
             }
@@ -1482,12 +1482,12 @@ class ContactManager extends ContactLib {
                 /*
                  * ternary is ugly here
                  *
-                $type = isset($fieldTypes[$id])  
+                $type = isset($fieldTypes[$id])
                     && array_key_exists(contrexx_stripslashes(
                         $fieldTypes[$id]),
                         $this->_arrFormFieldTypes
-                    ) 
-                    ? contrexx_stripslashes($fieldTypes[$id]) 
+                    )
+                    ? contrexx_stripslashes($fieldTypes[$id])
                     : key($this->_arrFormFieldTypes);
                 */
 
@@ -1514,20 +1514,20 @@ class ContactManager extends ContactLib {
                 /*
                  * my ass... where's the guidelines to prevent from such code
                  *
-                $attributes = 
-                    isset($_POST['contactFormFieldAttribute'][$id]) 
-                    && !empty($_POST['contactFormFieldAttribute'][$id]) 
+                $attributes =
+                    isset($_POST['contactFormFieldAttribute'][$id])
+                    && !empty($_POST['contactFormFieldAttribute'][$id])
                     ? (
-                        $type == 'text' 
-                        || $type == 'label' 
-                        || $type == 'file' 
-                        || $type == 'textarea' 
-                        || $type == 'hidden' 
-                        || $type == 'radio' 
-                        || $type == 'checkboxGroup' 
-                        || $type == 'password' 
-                        || $type == 'select' 
-                            ? strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id])) 
+                        $type == 'text'
+                        || $type == 'label'
+                        || $type == 'file'
+                        || $type == 'textarea'
+                        || $type == 'hidden'
+                        || $type == 'radio'
+                        || $type == 'checkboxGroup'
+                        || $type == 'password'
+                        || $type == 'select'
+                            ? strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id]))
                     : intval($_POST['contactFormFieldAttribute'][$id])) : '';
                 */
 
@@ -1771,13 +1771,13 @@ class ContactManager extends ContactLib {
         $arrFields = $this->getFormFields($id);
         $sourcecode = array();
         $this->initContactForms(true);
-        
+
         if($lang == 0){
             $frontendLang = $objInit->userFrontendLangId;
         } else {
             $frontendLang = $lang;
         }
-        
+
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
         $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['lang'][$frontendLang]['text'] . "<!-- END formText -->";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
