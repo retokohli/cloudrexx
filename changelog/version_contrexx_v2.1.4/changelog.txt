@@ -32,6 +32,7 @@ News Manager
 - Neues verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
 - Neuer Platzhalter HEADLINE_AUTHOR für Headlines.
 - Es können keine Teaserboxen mehr mit leerem Titel (bzw. nur Spaces) erstellt werden.
+- Konsequentere Statusmeldungen
 
 Veranstaltungskalender
 - Das Bearbeiten der Veranstaltungen funktioniert.

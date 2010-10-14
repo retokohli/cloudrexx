@@ -806,6 +806,9 @@ class newsManager extends newsLibrary {
     function delete(){
         global $objDatabase, $_ARRAYLANG;
 
+        //have we deleted a news entry?
+        $entryDeleted=false;
+
         $newsId = "";
         if(isset($_GET['newsId'])){
             $newsId = intval($_GET['newsId']);
@@ -815,6 +818,7 @@ class newsManager extends newsLibrary {
             } else {
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
             }
+            $entryDeleted=true;
         }
 
         if(isset($_POST['selectedNewsId']) && is_array($_POST['selectedNewsId'])){
@@ -827,6 +831,7 @@ class newsManager extends newsLibrary {
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                     }
                 }
+                $entryDeleted=true;
             }
         } elseif (isset($_POST['selectedUnvalidatedNewsId']) && is_array($_POST['selectedUnvalidatedNewsId'])) {
             foreach ($_POST['selectedUnvalidatedNewsId'] AS $value){
@@ -838,8 +843,11 @@ class newsManager extends newsLibrary {
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
                     }
                 }
+                $entryDeleted=true;
             }
         }
+        if(!$entryDeleted)
+            $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'];
     }
 
 
@@ -1354,17 +1362,23 @@ class newsManager extends newsLibrary {
     function changeStatus(){
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        //have we modified any news entry? (validated, (de)activated)
+        $entryModified = false;
+
         if(isset($_POST['deactivate']) AND !empty($_POST['deactivate'])){
             $status = 0;
         }
         if(isset($_POST['activate']) AND !empty($_POST['activate'])){
             $status = 1;
         }
+
+        //(de)activate news where ticked
         if(isset($status)){
             if(isset($_POST['selectedNewsId']) && is_array($_POST['selectedNewsId'])){
                 foreach ($_POST['selectedNewsId'] as $value){
                     if (!empty($value)){
                         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_news SET status = '".$status."' WHERE id = '".intval($value)."'");
+			$entryModified = true;
                     }
                     if($objResult === false){
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1374,12 +1388,17 @@ class newsManager extends newsLibrary {
                 }
             }
         }
-
+        
+        //validate unvalidated news where ticks set
         if (isset($_POST['validate']) && isset($_POST['selectedUnvalidatedNewsId']) && is_array($_POST['selectedUnvalidatedNewsId'])) {
             foreach ($_POST['selectedUnvalidatedNewsId'] as $value) {
                 $objDatabase->Execute("UPDATE ".DBPREFIX."module_news SET status=1, validated='1' WHERE id=".intval($value));
+		$entryModified = true;
             }
         }
+        
+        if(!$entryModified)
+            $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'];
 
         $this->createRSS();
     }
@@ -1450,8 +1469,11 @@ class newsManager extends newsLibrary {
         // Add a new category
         if (isset($_POST['addCat']) AND ($_POST['addCat']==true)){
              $catName=contrexx_strip_tags($_POST['newCategorieName']);
-
-             if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories (name,lang)
+             $tmp=trim($catName);
+             if(empty($tmp)){
+		 $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_CATEGORY_ADD_ERROR_EMPTY'];
+             }
+             else if($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories (name,lang)
                                  VALUES ('$catName','$this->langId')") !== false) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
              } else {
@@ -2538,8 +2560,10 @@ class newsManager extends newsLibrary {
 
             if ($id != 0) {
                 $this->_objTeaser->updateTeaserFrame($id, $templateId, $name);
+                $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'];
             } else {
                 $this->_objTeaser->addTeaserFrame($id, $templateId, $name);
+                $this->strOkMessage = $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'];
             }
             $this->_objTeaser->initializeTeaserFrames($id);
 
