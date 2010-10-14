@@ -922,6 +922,9 @@ class ContactManager extends ContactLib
                 $this->deleteFormEntry(intval($entryId));
             }
         }
+	
+        $this->_statusMessageOk = $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'];
+
         $this->initContactForms(true);
         $this->_contactFormEntries();
     }

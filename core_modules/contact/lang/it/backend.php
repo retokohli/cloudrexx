@@ -143,5 +143,6 @@ $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'] = "Eigenen Stil verwenden";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Cancellare";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Elenco destinatari";
 $_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "Die E-Mail Adresse '%s' ist nicht gültig!";
+$_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'] = "All Mandatory field values must be set!";
 ?>

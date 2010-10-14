@@ -120,5 +120,6 @@ $_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'] = "Formular beim Feedback Text
 $_ARRAYLANG['TXT_CONTACT_LANG'] = "Sprache";
 $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'] = "Details";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES'] = "Eintr�ge";
+$_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'] = "All Mandatory field values must be set!";
 ?>
