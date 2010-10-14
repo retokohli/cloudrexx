@@ -161,4 +161,5 @@ $_ARRAYLANG['TXT_CONTACT_VALIDATION'] = "Gyldighed";
 $_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Avanceret";
 $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Forenklet";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Tilføje en anden modtager";
+$_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 ?>
