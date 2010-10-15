@@ -224,9 +224,17 @@ class ContactLib
 
     function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$showForm, &$useCaptcha, &$sendCopy)
     {
-        global $objDatabase, $_CONFIG, $_ARRAYLANG;
+        global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
-        $objContactForm = $objDatabase->SelectLimit("SELECT mails, subject, feedback, showForm, use_captcha, send_copy FROM ".DBPREFIX."module_contact_form WHERE id=".$id, 1);
+        $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, f.showForm,
+                                                            f.use_captcha, f.send_copy
+                                                     FROM ".DBPREFIX."module_contact_form AS f
+                                                     LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
+                                                     ON ( f.id = l.formID )
+                                                     WHERE f.id = ".$id."
+                                                     AND l.langID = ".$_LANGID
+                          , 1);
+
         if ($objContactForm !== false && $objContactForm->RecordCount() == 1) {
             $this->arrForms[$id] = array();
             $arrEmails = explode(',', $objContactForm->fields['mails']);
