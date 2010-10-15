@@ -77,6 +77,7 @@ class Contact extends ContactLib
         $this->objTemplate = new HTML_Template_Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
+        $this->initContactForms(true);
     }
 
     /**
@@ -88,7 +89,7 @@ class Contact extends ContactLib
      */
     function getContactPage()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID;
 
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
@@ -135,6 +136,28 @@ class Contact extends ContactLib
                 $this->objTemplate->touchBlock('contact_form');
             }
         }
+
+        $arrFields = $this->getFormFields($formId);
+        foreach ($arrFields as $fieldId => $arrField) {
+            $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
+
+            if($arrField['type'] == 'checkboxGroup' || $arrField['type'] == 'radio' || $arrField['type'] == 'select') {
+                $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                foreach ($options as $index => $option) {
+                    $this->objTemplate->setVariable(array(
+                        $fieldId.'_'.$index.'_VALUE'    => $option
+                    ));
+                }
+            }
+
+            $this->objTemplate->setVariable(array(
+                $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
+                $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
+                $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name'],
+                $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
+            ));
+        }
+        $this->objTemplate->parse('contact_form');
 
         return $this->objTemplate->get();
     }

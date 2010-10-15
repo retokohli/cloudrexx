@@ -1749,8 +1749,8 @@ class ContactManager extends ContactLib {
                     'CONTACT_CONTENT_SITE_ACTION'       => $contentSiteExists > 0 ? 'updateContent' : 'newContent',
                     'CONTACT_SOURCECODE_OF'             => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_SOURCECODE_OF_NAME']),
                     'CONTACT_PREVIEW_OF'                => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_PREVIEW_OF_NAME']),
-                    'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, 0, false, true), ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, 0, true),
+                    'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, false, true), ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, true),
                     'FORM_ID'                           => $formId
             ));
         } else {
@@ -1765,27 +1765,22 @@ class ContactManager extends ContactLib {
      * @preview Boolean, generated preview source or raw source
      * @show    Boolean, generated frontend code
      */
-    function _getSourceCode($id, $lang = 1, $preview = false, $show = false) {
+    function _getSourceCode($id, $preview = false, $show = false) {
         global $_ARRAYLANG, $objInit, $objDatabase;
 
         $arrFields = $this->getFormFields($id);
         $sourcecode = array();
         $this->initContactForms(true);
-
-        if($lang == 0){
-            $frontendLang = $objInit->userFrontendLangId;
-        } else {
-            $frontendLang = $lang;
-        }
+        $frontendLang = $objInit->userFrontendLangId;
 
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
-        $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['lang'][$frontendLang]['text'] . "<!-- END formText -->";
+        $sourcecode[] = "<!-- BEGIN formText -->". ($preview ? $this->arrForms[$id]['lang'][$frontendLang]['text'] : "{".$id."_FORM_TEXT}") ."<!-- END formText -->";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
         $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
         $sourcecode[] = "<!-- BEGIN contact_form -->";
         $sourcecode[] = '<fieldset id="contactFrame">';
-        $sourcecode[] = "<legend>".$this->arrForms[$id]['lang'][$frontendLang]['name']."</legend>";
+        $sourcecode[] = "<legend>". ($preview ? $this->arrForms[$id]['lang'][$frontendLang]['name'] : "{".$id."_FORM_NAME}")."</legend>";
         $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
         $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
 
@@ -1796,17 +1791,17 @@ class ContactManager extends ContactLib {
                 $required = "";
             }
 
-            $sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['lang'][$frontendLang]['name'] : '&nbsp;')." ".$required.'</label>';
+            $sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}") : '&nbsp;')." ".$required.'</label>';
 
             $arrField['lang'][$frontendLang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$frontendLang]['value']);
 
             switch ($arrField['type']) {
                 case 'text':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($arrField['lang'][$frontendLang]['value'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['lang'][$frontendLang]['value']).'" />';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
                     break;
 
                 case 'label':
-                    $sourcecode[] = $arrField['lang'][$frontendLang]['value'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['lang'][$frontendLang]['value'];
+                    $sourcecode[] = $preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}';
                     break;
 
                 case 'checkbox':
@@ -1817,7 +1812,7 @@ class ContactManager extends ContactLib {
                     $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
                     $options = explode(',', $arrField['lang'][$frontendLang]['value']);
                     foreach ($options as $index => $option) {
-                        $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
+                        $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
                     }
                     $sourcecode[] = '</p>';
                     break;
@@ -1831,7 +1826,7 @@ class ContactManager extends ContactLib {
                     break;
 
                 case 'hidden':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($arrField['lang'][$frontendLang]['value'] == "" ? "{".$fieldId."_VALUE}" : $arrField['lang'][$frontendLang]['value']).'" />';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : "{".$fieldId."_VALUE}").'" />';
                     break;
 
                 case 'password':
@@ -1842,7 +1837,7 @@ class ContactManager extends ContactLib {
                     $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
                     $options = explode(',', $arrField['lang'][$frontendLang]['value']);
                     foreach ($options as $index => $option) {
-                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
+                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
                     }
                     $sourcecode[] = '</p>';
                     break;
@@ -1851,7 +1846,7 @@ class ContactManager extends ContactLib {
                     $options = explode(',', $arrField['lang'][$frontendLang]['value']);
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                     foreach ($options as $index => $option) {
-                        $sourcecode[] = "<option {SELECTED_".$fieldId."_".$index."}>".$option."</option>";
+                        $sourcecode[] = "<option value=".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')." {SELECTED_".$fieldId."_".$index."}>".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')."</option>";
                     }
                     $sourcecode[] = "</select>";
                     break;
@@ -2146,7 +2141,7 @@ class ContactManager extends ContactLib {
                 }
 
                 $currentTime = time();
-                $content = addslashes($this->_getSourceCode($formId, $langID));
+                $content = addslashes($this->_getSourceCode($formId));
 
                 $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
                                         catid,
@@ -2262,7 +2257,7 @@ class ContactManager extends ContactLib {
                 if ($objContactForm !== false) {
                     $catname = addslashes($objContactForm->fields['name']);
                 }
-                $content = addslashes($this->_getSourceCode($formId, $langID));
+                $content = addslashes($this->_getSourceCode($formId));
                 $currentTime = time();
 
                 //make sure the user is allowed to update the content
