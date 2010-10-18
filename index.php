@@ -239,7 +239,7 @@ $objInit = new InitCMS();
  *   It *MUST NOT* be used to determine the language for any kind of content!
  * @since 2.2.0
  */
-define('FRONTEND_LANG_ID', $objInit->userFrontendLangId);
+define('FRONTEND_LANG_ID', $objInit->getFrontendLangId());
 define('LANG_ID',          FRONTEND_LANG_ID);
 
 /**
