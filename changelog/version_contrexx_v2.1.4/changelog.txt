@@ -45,6 +45,7 @@ Kontaktformular
 - Heraufgeladene Dateien werden nun auch unter UTF8 richtig umbenannt, falls unerlaubte Zeichen im Dateinamen sind
 - Fehler beim Erstellen von Formularen mit mehreren Auswahllisten entfernt
 - HTML-Code der generierten Formulare wurde bereinigt (fieldset nun innerhalb form)
+- Beim Löschen eines Eintrags wird eine Rückmeldung gegeben
 
 Newsletter
 - Newsletter abbestellen via Platzhalter im Mail funktioniert.

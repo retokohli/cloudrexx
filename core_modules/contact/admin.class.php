@@ -914,6 +914,8 @@ class ContactManager extends ContactLib
 
     function _deleteFormEntry()
     {
+	global $_ARRAYLANG;
+
         if (isset($_GET['entryId'])) {
             $entryId = intval($_GET['entryId']);
             $this->deleteFormEntry($entryId);
