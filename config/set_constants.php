@@ -26,6 +26,11 @@ define('CONTREXX_SCRIPT_PATH',                ASCMS_PATH_OFFSET.CONTREXX_VIRTUAL
 define('ASCMS_DATE_FORMAT',                    'H:i:s d.m.Y');
 define('ASCMS_DATE_SHORT_FORMAT',            'd.m.Y'); // only the following characters are allowed: d, j, m, n, Y, y
 define('ASCMS_DATE_FILE_FORMAT',            'd.m.Y H:i:s');
+// 20100930 -- Date formats added (for DATE, DATETIME, TIME, and TIMESTAMP)
+define('ASCMS_DATE_FORMAT_DATE',            'Y-m-d');
+define('ASCMS_DATE_FORMAT_DATETIME',        'Y-m-d H:i:s');
+define('ASCMS_DATE_FORMAT_TIME',            'H:i:s');
+
 define('DBPREFIX',                          $_DBCONFIG['tablePrefix']);
 define('ASCMS_DOCUMENT_ROOT',                ASCMS_PATH.ASCMS_PATH_OFFSET);
 define('ASCMS_ADMIN_PATH',                    ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_PATH);
