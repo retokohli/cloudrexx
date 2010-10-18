@@ -62,6 +62,7 @@ class ShopSettings
         self::$success = true;
         self::$changed = false;
 
+        SettingDb::init();
         self::storeGeneral();
         self::storeCurrencies();
         self::storePayments();
@@ -633,9 +634,12 @@ die("ShopSettings::errorHandler(): Error: failed to query config, code rstjaer57
                   case 'yellowpay_hash_seed':
                   case 'yellowpay_hash_signature_in':
                   case 'yellowpay_hash_signature_out':
-                  case 'yellowpay_id':
                   case 'yellowpay_use_testserver':
                     $name = preg_replace('/^yellowpay(.*)$/', 'postfinance$1', $name);
+                    break;
+                  case 'yellowpay_id':
+                    // Obsolete
+                    $name = null;
                     break;
 
                   // VALUE & STATUS
@@ -646,6 +650,7 @@ die("ShopSettings::errorHandler(): Error: failed to query config, code rstjaer57
                     $name_status = 'saferpay_active';
                     break;
                   case 'yellowpay_shop_id':
+                    $name = 'postfinance_shop_id';
                     $name_status = 'postfinance_active';
                     break;
 
@@ -660,14 +665,18 @@ die("ShopSettings::errorHandler(): Error: failed to query config, code rstjaer57
                     break;
                 }
                 if ($name && !SettingDb::add($name, $value, ++$i)) {
-die("ShopSettings::errorHandler(): Error: failed to add SettingDb entry for $name, code adgmezwea442wy");
+DBG::log("ShopSettings::errorHandler(): Warning: failed to add SettingDb entry for value $name, assuming it already exists");
                 }
-                if ($name_status && !SettingDb::add($name, $status, ++$i)) {
-die("ShopSettings::errorHandler(): Error: failed to add SettingDb entry for $name, code srs37sus");
+                if ($name_status && !SettingDb::add($name_status, $status, ++$i)) {
+DBG::log("ShopSettings::errorHandler(): Warning: failed to add SettingDb entry for status $name_status, assuming it already exists");
                 }
                 $objResult->MoveNext();
             }
         }
+
+        // Add new/missing settings, e.g.
+//        SettingDb::add('product_sorting', 1, ++$i);
+        // more?
 
         if (!DbTool::drop_table($table_name)) {
 die("ShopSettings::errorHandler(): Error: failed to drop table $table_name, code aw47ane");

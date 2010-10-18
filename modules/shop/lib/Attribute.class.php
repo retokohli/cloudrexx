@@ -15,8 +15,7 @@
  *
  * These may be associated with zero or more Products.
  * Each attribute consists of a name part
- * (module_shop_products_attributes_name) and zero or more value parts
- * (module_shop_products_attributes_value).
+ * (module_shop_attribute) and zero or more value parts (module_shop_option).
  * Each of the values can be associated with an arbitrary number of Products
  * by inserting the respective record into the relations table
  * module_shop_products_attributes.
@@ -35,8 +34,8 @@ class Attribute
     /**
      * Text keys
      */
-    const TEXT_NAME  = 'shop_product_attribute';
-    const TEXT_VALUE = 'shop_product_option';
+    const TEXT_ATTRIBUTE_NAME = 'shop_attribute_name';
+    const TEXT_OPTION_NAME = 'shop_option_name';
 
     /**
      * Attribute type constants
@@ -214,7 +213,7 @@ class Attribute
      *      'id' => option ID,
      *      'attribute_id' => Attribute ID,
      *      'value' => value name,
-     *      'text_value_id' => Text ID,
+     *      'text_name_id' => Text ID,
      *      'price' => price,
      *    ),
      *    ... more ...
@@ -310,16 +309,16 @@ class Attribute
 
         // Remove relations to Products
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute
              WHERE option_id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         // Remove Text records
-        if (!Text::deleteById($this->arrValues[$option_id]['text_value_id']))
+        if (!Text::deleteById($this->arrValues[$option_id]['text_name_id']))
             return false;
         // Remove the value
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option
              WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -345,17 +344,17 @@ class Attribute
 
         // Delete references to products first
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute
              WHERE attribute_id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
         // Delete values' Text records
         foreach ($this->arrValues as $arrValue)
-            if (!Text::deleteById($arrValue['text_value_id'])) return false;
+            if (!Text::deleteById($arrValue['text_name_id'])) return false;
         // Delete values
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option
              WHERE attribute_id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -364,11 +363,15 @@ class Attribute
         if (!Text::deleteById($this->text_name_id)) return false;
         // Delete name
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_attribute
              WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         unset($this);
+// TODO: From time to time...
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_attribute");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_option");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_product_attribute");
         return true;
     }
 
@@ -384,7 +387,7 @@ class Attribute
     {
         $this->text_name_id = Text::replace(
             $this->text_name_id, FRONTEND_LANG_ID,
-            $this->name, MODULE_ID, self::TEXT_NAME);
+            $this->name, MODULE_ID, self::TEXT_ATTRIBUTE_NAME);
         if (!$this->text_name_id) return false;
         if ($this->id && $this->recordExists()) {
             if (!$this->update()) return false;
@@ -409,7 +412,7 @@ class Attribute
 
         $query = "
             SELECT 1
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_attribute
              WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return false;
@@ -430,7 +433,7 @@ class Attribute
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_attribute
                SET text_name_id=$this->text_name_id,
                    type=$this->type
              WHERE id=$this->id";
@@ -453,7 +456,7 @@ class Attribute
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_attribute (
                 text_name_id, type
             ) VALUES (
                 $this->text_name_id, $this->type
@@ -476,14 +479,14 @@ class Attribute
         // be inserted, even though the object itself has got a valid ID!
         foreach ($this->arrValues as $arrValue) {
             // The Text ID is not set for values that have been added
-            $text_value_id =
-                (empty($arrValue['text_value_id'])
-                    ? 0 : $arrValue['text_value_id']);
+            $text_name_id =
+                (empty($arrValue['text_name_id'])
+                    ? 0 : $arrValue['text_name_id']);
             // Store Text
-            $arrValue['text_value_id'] = Text::replace(
-                $text_value_id, FRONTEND_LANG_ID, $arrValue['value'],
-                MODULE_ID, self::TEXT_VALUE);
-            if (!$arrValue['text_value_id']) return false;
+            $arrValue['text_name_id'] = Text::replace(
+                $text_name_id, FRONTEND_LANG_ID, $arrValue['value'],
+                MODULE_ID, self::TEXT_OPTION_NAME);
+            if (!$arrValue['text_name_id']) return false;
             // Note that the array index and the option ID stored
             // in $arrValue['id'] are only identical for value
             // records already present in the database.
@@ -514,9 +517,9 @@ class Attribute
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_option
                SET attribute_id=$this->id,
-                   text_value_id=".$arrValue['text_value_id'].",
+                   text_name_id=".$arrValue['text_name_id'].",
                    price=".floatval($arrValue['price'])."
              WHERE id=".$arrValue['id'];
         $objResult = $objDatabase->Execute($query);
@@ -541,11 +544,11 @@ class Attribute
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value (
-                attribute_id, text_value_id, price
+            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_option (
+                attribute_id, text_name_id, price
             ) VALUES (
                 $this->id,
-                ".$arrValue['text_value_id'].",
+                ".$arrValue['text_name_id'].",
                 ".floatval($arrValue['price'])."
             )";
         $objResult = $objDatabase->Execute($query);
@@ -569,7 +572,7 @@ class Attribute
 
         $query = "
             SELECT 1
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option
              WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount()) return true;
@@ -587,7 +590,7 @@ class Attribute
      */
     static function getById($attribute_id)
     {
-        $arrName = Attributes::getNameArrayByNameId($attribute_id);
+        $arrName = Attributes::getArrayById($attribute_id);
         if ($arrName === false) return false;
         $objAttribute = new Attribute(
             $arrName['name'], $arrName['type'], $attribute_id
@@ -625,10 +628,10 @@ class Attribute
 
         $arrSqlName = Text::getSqlSnippets(
             'text_name_id', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_NAME);
+            MODULE_ID, self::TEXT_ATTRIBUTE_NAME);
         $query = "
             SELECT 1".$arrSqlName['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name".
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_attribute".
                    $arrSqlName['join']."
              WHERE id=$nameId";
         $objResult = $objDatabase->Execute($query);
@@ -651,7 +654,7 @@ class Attribute
 
         $query = "
             SELECT attribute_id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option
              WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() != 1)
@@ -680,11 +683,11 @@ class Attribute
         global $objDatabase;
 
         $arrSqlValue = Text::getSqlSnippets(
-            'text_value_id', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_VALUE);
+            'text_name_id', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_OPTION_NAME);
         $query = "
             SELECT id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value".
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option".
                    $arrSqlValue['join']."
              WHERE ".$arrSqlValue['name']."='".addslashes($value)."'";
         $objResult = $objDatabase->Execute($query);
@@ -711,6 +714,136 @@ class Attribute
                 "<br />";
         }
         return $string;
+    }
+
+
+    static function errorHandler()
+    {
+        require_once(ASCMS_CORE_PATH.'/DbTool.class.php');
+
+DBG::activate(DBG_DB_FIREPHP);
+
+        // Fix the Text table first
+        Text::errorHandler();
+
+        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_attribute';
+        if (!DbTool::table_exists($table_name_new)) {
+            $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes_name';
+            $table_structure = array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+                'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'name'),
+                'type' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'display_type'),
+            );
+            $table_index =  array();
+
+            if (DbTool::table_exists($table_name_old)) {
+                if (DbTool::column_exists($table_name_old, 'name')) {
+                    // Migrate all Product strings to the Text table first
+                    Text::deleteByKey(self::TEXT_ATTRIBUTE_NAME);
+                    $objResult = DbTool::sql("
+                        SELECT `id`, `name`
+                          FROM `$table_name_old`");
+                    if (!$objResult) {
+die("Attribute::errorHandler(): Error: failed to query Attribute names, code rherkg4362sgsdg");
+                    }
+                    while (!$objResult->EOF) {
+                        $id = $objResult->fields['id'];
+                        $name = $objResult->fields['name'];
+                        $text_name_id = Text::replace(
+                            null, FRONTEND_LANG_ID,
+                            $name, MODULE_ID, self::TEXT_ATTRIBUTE_NAME);
+                        if (!$text_name_id) {
+die("Attribute::errorHandler(): Error: failed to migrate Attribute name '$name', code hrej5fgdf");
+                        }
+                        $objResult2 = DbTool::sql("
+                            UPDATE `$table_name_old`
+                               SET `name`='$text_name_id'
+                             WHERE `id`=$id");
+                        if (!$objResult2) {
+die("Attribute::errorHandler(): Error: failed to update Attribute ID $id, code aeje26zhetrs");
+                        }
+                        $objResult->MoveNext();
+                    }
+                }
+            }
+            if (!DbTool::table($table_name_old, $table_structure, $table_index)) {
+die("Attribute::errorHandler(): Error: failed to migrate Attribute table, code ajitreawzh32hdas");
+            }
+            if (!DbTool::table_rename($table_name_old, $table_name_new)) {
+die("Attribute::errorHandler(): Error: failed to rename Attribute table $table_name_old to $table_name_new, code dbk348fkbesdav");
+            }
+        }
+
+
+        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_option';
+        if (!DbTool::table_exists($table_name_new)) {
+            $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes_value';
+            $table_structure = array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+                'attribute_id' => array('type' => 'INT(10)', 'unsigned' => true, 'renamefrom' => 'name_id'),
+                'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'value'),
+                'price' => array('type' => 'DECIMAL(9,2)', 'default' => '0.00'),
+            );
+            $table_index =  array();
+            if (DbTool::table_exists($table_name_old)) {
+                if (DbTool::column_exists($table_name_old, 'value')) {
+                    // Migrate all Product strings to the Text table first
+                    Text::deleteByKey(self::TEXT_OPTION_NAME);
+                    $objResult = DbTool::sql("
+                        SELECT `id`, `value`
+                          FROM `$table_name_old`");
+                    if (!$objResult) {
+die("Attribute::errorHandler(): Error: failed to query option names, code sekgg37shb");
+                    }
+                    while (!$objResult->EOF) {
+                        $id = $objResult->fields['id'];
+                        $name = $objResult->fields['value'];
+                        $text_name_id = Text::replace(
+                            null, FRONTEND_LANG_ID,
+                            $name, MODULE_ID, self::TEXT_OPTION_NAME);
+                        if (!$text_name_id) {
+die("Attribute::errorHandler(): Error: failed to migrate option name '$name', code h3heh3zgsd");
+                        }
+                        $objResult2 = DbTool::sql("
+                            UPDATE `$table_name_old`
+                               SET `value`='$text_name_id'
+                             WHERE `id`=$id");
+                        if (!$objResult2) {
+die("Attribute::errorHandler(): Error: failed to update option ID $id, code yjrer3hj57hrds");
+                        }
+                        $objResult->MoveNext();
+                    }
+                }
+            }
+            if (!DbTool::table($table_name_old, $table_structure, $table_index)) {
+die("Attribute::errorHandler(): Error: failed to migrate Option table, code bydru4zhaqwe");
+            }
+            if (!DbTool::table_rename($table_name_old, $table_name_new)) {
+die("Attribute::errorHandler(): Error: failed to rename Option table $table_name_old to $table_name_new, code erhkwe346kwdjs");
+            }
+        }
+
+        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_product_attribute';
+        if (!DbTool::table_exists($table_name_new)) {
+            $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes';
+            $table_structure = array(
+                'product_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+                'option_id' => array('type' => 'INT(10)', 'unsigned' => true, 'renamefrom' => 'attributes_value_id'),
+                'ord' => array('type' => 'INT(10)', 'default' => '0', 'renamefrom' => 'sort_id'),
+            );
+            $table_index =  array(
+                'primary' => array('product_id', 'option_id')
+            );
+            if (!DbTool::table($table_name_old, $table_structure, $table_index)) {
+die("Attribute::errorHandler(): Error: failed to migrate Product-Attribute relation table, code ksarb4i68ufds");
+            }
+            if (!DbTool::table_rename($table_name_old, $table_name_new)) {
+die("Attribute::errorHandler(): Error: failed to rename Product-Attribute relation table $table_name_old to $table_name_new, code kuhasdih3kgs");
+            }
+        }
+
+        // Always
+        return false;
     }
 
 }

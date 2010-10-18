@@ -332,10 +332,7 @@ class Discount
         $arrGroup = Discount::getArticleGroupArray();
         if ($arrGroup === false) return false;
         $arrGroup = array(
-            0 =>
-                '<option value="0">'.
-                $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
-                '</option>',
+            0 => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'],
         ) + $arrGroup;
         return Html::getOptions($arrGroup, $selectedId);
     }

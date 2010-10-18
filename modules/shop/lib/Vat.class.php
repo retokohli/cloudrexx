@@ -683,14 +683,14 @@ class Vat
      * Otherwise, returns -1.
      * Note: This function returns the VAT rate no matter whether it is
      * enabled in the shop or not.  Check this yourself!
-     * @param   double  $productId  The product ID
+     * @param   double  $product_id  The product ID
      * @global  ADONewConnection
      * @return  double              The (positive) associated vat rate
      *                              in percent, or -1 if the record could
      *                              not be found.
      * @static
      */
-    static function getAssociatedTaxRate($productId)
+    static function getAssociatedTaxRate($product_id)
     {
         global $objDatabase;
 
@@ -698,7 +698,7 @@ class Vat
             SELECT percent FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat vat
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products products
                 ON vat.id=products.vat_id
-             WHERE products.id=$productId
+             WHERE products.id=$product_id
         ";
         $objResult = $objDatabase->Execute($query);
         // There must be exactly one match
