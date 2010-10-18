@@ -55,7 +55,8 @@ class DbTool
     static function table($name, $struc, $idx=array(), $engine='MyISAM')
     {
         if (self::table_exists($name)) {
-            return self::check_columns($name, $struc)
+            return self::check_indexes($name, array(), $struc, true)
+                && self::check_columns($name, $struc)
                 && self::check_indexes($name, $idx, $struc)
                 && self::check_dbtype($name, $engine);
         }
@@ -140,6 +141,19 @@ die("DbTool::create_table($name, $struc, $idx, $engine): Error: failed to create
 die("DbTool::create_table($name, $struc, $idx, $engine): Error: failed to create indices");
         }
         return true;
+    }
+
+
+    /**
+     * Rename the table $table_name_old to $table_name_new
+     * @param   string  $table_name_old   The current table name
+     * @param   string  $table_name_new   The new table name
+     * @return  boolean                   True on success, false otherwise
+     */
+    static function table_rename($table_name_old, $table_name_new)
+    {
+        return (boolean)self::sql(
+            "RENAME TABLE `$table_name_old` TO `$table_name_new`");
     }
 
 
@@ -322,8 +336,9 @@ die("DbTool::create_table($name, $struc, $idx, $engine): Error: failed to create
     }
 
 
-    private static function check_indexes($name, $idx=array(), $struc=null)
-    {
+    private static function check_indexes(
+        $name, $idx=array(), $struc=null, $droponly=null
+    ) {
         global $objDatabase;
 
         # mysql> show index from contrexx_access_user_mail;
@@ -360,12 +375,24 @@ DBG::log("DbTool::check_indexes($name, \$idx, \$struc): Obsolete key: ".$keyinfo
                 || count(array_diff($arr_primaries, $new_primaries))) {
                 // delete current primary key, in case there is one
                 if (count($arr_primaries)) {
+// TODO: This won't work for auto_increment fields!
+// Need to remove this flag first and add it again afterwards.
+//DBG::log("Struc: ".var_export($struc, true));
+//DBG::log("Primary OLD: ".var_export($arr_primaries, true));
+//DBG::log("Primary NEW: ".var_export($new_primaries, true));
+foreach ($arr_primaries as $key) {
+    if (!empty($struc[$key]['auto_increment'])) {
+        $struc_temp = $struc[$key];
+        unset($struc_temp['auto_increment']);
+        self::sql("ALTER TABLE $name CHANGE $key $key ".self::colspec($struc_temp));
+    }
+}
                     $drop_st = "ALTER TABLE `$name` DROP PRIMARY KEY";
 DBG::log("DbTool::check_indexes($name, \$idx, \$struc): Dropping obsolete primary: ".$drop_st);
                     self::sql($drop_st);
                 }
                 // add new primary key, in case one is defined
-                if (count($new_primaries)) {
+                if (count($new_primaries) && empty($droponly)) {
                     $new_st = "ALTER TABLE `$name` ADD PRIMARY KEY (`".join("`, `", $new_primaries)."`)";
 DBG::log("DbTool::check_indexes($name, \$idx, \$struc): Adding new primary: ".$new_st);
                     self::sql($new_st);
@@ -380,6 +407,7 @@ DBG::log("DbTool::check_indexes($name, \$idx, \$struc): Dropping obsolete key: "
                 self::sql($drop_st);
             }
         }
+        if (empty($droponly)) return true;
         // create new keys
         foreach ($idx as $keyname => $spec) {
 DBG::log("DbTool::check_indexes($name, \$idx, \$struc): Checking new key: ".$keyname);
