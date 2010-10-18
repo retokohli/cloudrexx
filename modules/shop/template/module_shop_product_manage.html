@@ -20,11 +20,11 @@ function reloadPage()
   document.formShopProduct.submit();
 }
 
-function setDateToday(txtValue)
+function setDateToday(element)
 {
   with (document.formShopProduct) {
-    if (txtValue.value == "") {
-      txtValue.value = date.value;
+    if (element.value == "") {
+      element.value = date.value;
     }
   }
 }
@@ -251,7 +251,7 @@ function disableButtons(from, dest, add, remove) {
 <form name="formShopProduct"
   action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage"
   method="post"
-  onsubmit="selectAll(document.formShopProduct.elements['shopGroupsAssigned[]']);"
+  onsubmit="selectAll(document.formShopProduct.elements['groupsAssigned[]']);"
 >
   <div id="content1" class="productManageTab" style="display: block;">
     <input type="hidden" name="date" value="{SHOP_DATE}" />
@@ -261,14 +261,14 @@ function disableButtons(from, dest, add, remove) {
     <input type="hidden" name="ImageName" value="{SHOP_IMAGE_NAME}" />
     <table summary="" class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
-        <th nowrap colspan="2">
+        <th nowrap="nowrap" colspan="2">
           <div align="left">{TXT_PRODUCT_INFORMATIONS}</div>
         </th>
       </tr>
       {SHOP_ID_COMMENT_START}
       <tr valign="top" class="row1">
-        <td nowrap width="17%">{TXT_ID}</td>
-        <td nowrap width="83%">{SHOP_PRODUCT_ID}</td>
+        <td nowrap="nowrap" width="25%">{TXT_ID}</td>
+        <td nowrap="nowrap" width="75%">{SHOP_PRODUCT_ID}</td>
       </tr>
       {SHOP_ID_COMMENT_END}
       <tr valign="top" class="row2">
@@ -378,23 +378,23 @@ function disableButtons(from, dest, add, remove) {
                 <br />
                 <font size="1">
                   <a href="javascript:void(0);"
-                      onclick="selectAll(document.formShopProduct.elements['shopGroupsAvailable[]'])"
+                      onclick="selectAll(document.formShopProduct.elements['groupsAvailable[]'])"
                       style="color:blue;">{TXT_SHOP_SELECT_ALL}</a><br />
                   <a href="javascript:void(0);"
-                      onclick="deselectAll(document.formShopProduct.elements['shopGroupsAvailable[]'])"
+                      onclick="deselectAll(document.formShopProduct.elements['groupsAvailable[]'])"
                       style="color:blue;">{TXT_SHOP_DESELECT_ALL}</a>
                 </font>
               </td>
               <td style="border-bottom: 0px;">
                 &nbsp;&nbsp;&nbsp;
                 <input type="button" value="&gt;&gt;" name="addGroup"
-                    onclick="moveOptions(document.formShopProduct.elements['shopGroupsAvailable[]'],document.formShopProduct.elements['shopGroupsAssigned[]'],addGroup,removeGroup);"
+                    onclick="moveOptions(document.formShopProduct.elements['groupsAvailable[]'],document.formShopProduct.elements['groupsAssigned[]'],addGroup,removeGroup);"
                     style="margin-bottom:1px;" />
                 &nbsp;&nbsp;
                 <br />
                 &nbsp;&nbsp;&nbsp;
                 <input type="button" value="&lt;&lt;"  name="removeGroup"
-                    onclick="moveOptions(document.formShopProduct.elements['shopGroupsAssigned[]'],document.formShopProduct.elements['shopGroupsAvailable[]'],removeGroup,addGroup);" />
+                    onclick="moveOptions(document.formShopProduct.elements['groupsAssigned[]'],document.formShopProduct.elements['groupsAvailable[]'],removeGroup,addGroup);" />
                 &nbsp;&nbsp;
               </td>
               <td style="border-bottom: 0px;">
@@ -405,10 +405,10 @@ function disableButtons(from, dest, add, remove) {
                 <br />
                 <font size="1">
                   <a href="javascript:void(0);"
-                      onclick="selectAll(document.formShopProduct.elements['shopGroupsAssigned[]'])"
+                      onclick="selectAll(document.formShopProduct.elements['groupsAssigned[]'])"
                       style="color:blue;">{TXT_SHOP_SELECT_ALL}</a> <br />
                   <a href="javascript:void(0);"
-                      onclick="deselectAll(document.formShopProduct.elements['shopGroupsAssigned[]'])"
+                      onclick="deselectAll(document.formShopProduct.elements['groupsAssigned[]'])"
                       style="color:blue;">{TXT_SHOP_DESELECT_ALL}</a>
                 </font>
               </td>
@@ -464,7 +464,7 @@ function disableButtons(from, dest, add, remove) {
   <div id="content2" class="productManageTab" style="display: none;">
     <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
-        <th nowrap  colspan="2"> <div align="left">{TXT_PRODUCT_OPTIONS}</div></th>
+        <th nowrap="nowrap"  colspan="2"> <div align="left">{TXT_PRODUCT_OPTIONS}</div></th>
       </tr>
       <tr class="row1">
           <td nowrap="nowrap" width="5%"><b>{TXT_SHOP_SORTING_ORDER}</b></td>
@@ -514,8 +514,8 @@ function disableButtons(from, dest, add, remove) {
         </th>
       </tr>
       <tr  class="row1">
-        <td nowrap width="17%" valign="top"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
-        <td width="27%">
+        <td nowrap="nowrap" width="25%" valign="top"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
+        <td width="25%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
               onclick="openBrowser('index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop','1','width=800,height=640,resizable=yes,status=no,scrollbars=yes','img','');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
@@ -537,7 +537,7 @@ function disableButtons(from, dest, add, remove) {
           <input type="hidden" id="hi_1_h" name="productImage1_height"
               value="{SHOP_PICTURE1_IMG_HEIGHT}" />
         </td>
-        <td width="27%">
+        <td width="25%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
               onclick="openBrowser('index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop','2','width=800,height=640,resizable=yes,status=no,scrollbars=yes','img','');" >
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
@@ -559,7 +559,7 @@ function disableButtons(from, dest, add, remove) {
           <input type="hidden" id="hi_2_h" name="productImage2_height"
               value="{SHOP_PICTURE2_IMG_HEIGHT}" />
         </td>
-        <td width="27%">
+        <td width="25%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
               onclick="openBrowser('index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop','3','width=800,height=640,resizable=yes,status=no,scrollbars=yes','img','');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
@@ -589,25 +589,29 @@ function disableButtons(from, dest, add, remove) {
   <div id="content4" class="productManageTab" style="display: none;">
     <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
-        <th nowrap  colspan="2">
+        <th nowrap="nowrap" colspan="2">
           <div align="left">{TXT_PRODUCT_STATUS}</div>
         </th>
       </tr>
       <tr valign="top" class="row1">
-        <td nowrap colspan="2">
-          {TXT_ACTIVE}
-          <input type="checkbox" name="articleActive" value="1" {SHOP_ARTICLE_ACTIVE} />
-          B2B
-          <input type="checkbox" name="B2B" value="1" {SHOP_B2B} />
-          B2C
-          <input type="checkbox" name="B2C" value="1" {SHOP_B2C} />
-          <!-- // unused
-          {TXT_START_DATE}:
-          <input type="text" name="startdate" size="20" maxlength="20" onClick="setDateToday(shopStartdate)" value="{SHOP_STARTDATE}" />
-          {TXT_END_DATE}:
-          <input type="text" name="enddate" size="20" maxlength="20" onClick="setDateToday(shopEnddate)" value="{SHOP_ENDDATE}" />
-           -->
-        </td>
+        <td>{TXT_ACTIVE}</td>
+        <td><input type="checkbox" name="articleActive" value="1" {SHOP_ARTICLE_ACTIVE} /></td>
+      </tr>
+      <tr valign="top" class="row2">
+        <td>{TXT_B2B}</td>
+        <td><input type="checkbox" name="B2B" value="1" {SHOP_B2B} /></td>
+      </tr>
+      <tr valign="top" class="row1">
+        <td>{TXT_B2C}</td>
+        <td><input type="checkbox" name="B2C" value="1" {SHOP_B2C} /></td>
+      </tr>
+      <tr valign="top" class="row2">
+        <td>{TXT_START_DATE}</td>
+        <td><input type="text" name="startdate" size="20" maxlength="20" onClick="setDateToday(startdate)" value="{SHOP_STARTDATE}" /></td>
+      </tr>
+      <tr valign="top" class="row1">
+        <td>{TXT_END_DATE}</td>
+        <td><input type="text" name="enddate" size="20" maxlength="20" onClick="setDateToday(enddate)" value="{SHOP_ENDDATE}" /></td>
       </tr>
     </table>
   </div>

@@ -54,10 +54,12 @@ class Product
     /**
      * Text keys
      */
-    const TEXT_NAME      = 'shop_product_name';
-    const TEXT_SHORTDESC = 'shop_product_shortdesc';
-    const TEXT_LONGDESC  = 'shop_product_longdesc';
-    const TEXT_KEYWORDS  = 'shop_product_keywords';
+    const TEXT_NAME  = 'shop_product_name';
+    const TEXT_SHORT = 'shop_product_short';
+    const TEXT_LONG  = 'shop_product_long';
+    const TEXT_CODE  = 'shop_product_code';
+    const TEXT_URI   = 'shop_product_uri';
+    const TEXT_KEYS  = 'shop_product_keys';
 
     /**
      * @var     string          $code               Product code
@@ -65,10 +67,16 @@ class Product
      */
     private $code = '';
     /**
-     * @var     integer         $categoryId         ShopCategory of the Product
+     * @var     integer         $text_code_id         The Text ID of the
+     *                                                Product code
      * @access  private
      */
-    private $categoryId = 0;
+    private $text_code_id = null;
+    /**
+     * @var     integer         $category_id         Category of the Product
+     * @access  private
+     */
+    private $category_id = 0;
     /**
      * @var     string          $name               Product name
      * @access  private
@@ -90,10 +98,10 @@ class Product
      */
     private $price = 0.00;
     /**
-     * @var     integer         $order              Sorting order of the Product
+     * @var     integer         $ord              Sorting order of the Product
      * @access  private
      */
-    private $order = 1;
+    private $ord = 1;
     /**
      * @var     integer         $weight             Product weight (in grams)
      * @access  private
@@ -116,68 +124,68 @@ class Product
      */
     private $pictures = '';
     /**
-     * @var     double          $resellerPrice      Product price for resellers
+     * @var     double          $resellerprice      Product price for resellers
      * @access  private
      */
-    private $resellerPrice = 0;
+    private $resellerprice = 0;
     /**
-     * @var     string            $shortdesc        Product short description
+     * @var     string            $short        Product short description
      * @access  private
      */
-    private $shortdesc = '';
+    private $short = '';
     /**
-     * @var     integer         $text_shortdesc_id  The Text ID of the
+     * @var     integer         $text_short_id  The Text ID of the
      *                                              short description
      * @access  private
      */
-    private $text_shortdesc_id = 0;
+    private $text_short_id = 0;
     /**
-     * @var     string          $description        Product description
+     * @var     string          $long        Product long description
      * @access  private
      */
-    private $description = '';
+    private $long = '';
     /**
-     * @var     integer         $text_longdesc_id   The Text ID of the
+     * @var     integer         $text_long_id   The Text ID of the
      *                                              long description
      * @access  private
      */
-    private $text_longdesc_id = 0;
+    private $text_long_id = 0;
     /**
      * @var     integer         $stock              Product stock
      * @access  private
      */
     private $stock = 10;
     /**
-     * @var     boolean         $isStockVisible     Product stock visibility
+     * @var     boolean         $stock_visible     Product stock visibility
      * @access  private
      */
-    private $isStockVisible = false;
+    private $stock_visible = false;
     /**
-     * @var     double          $discountPrice      Product discount price
+     * @var     double          $discountprice      Product discount price
      * @access  private
      */
-    private $discountPrice = 0.00;
+    private $discountprice = 0.00;
     /**
-     * @var     boolean         $isSpecialOffer     Product is special offer
+     * @var     boolean         $discount_active     Product is special offer
      * @access  private
      */
-    private $isSpecialOffer = false;
+    private $discount_active = false;
     /**
-     * @var     boolean         $isB2B              Product available for isB2B
+     * @var     boolean         $b2b              Product available for b2b
      * @access  private
      */
-    private $isB2B = true;
+    private $b2b = true;
     /**
-     * @var     boolean         $isB2C              Product available for b2c
+     * @var     boolean         $b2c              Product available for b2c
      * @access  private
      */
-    private $isB2C = true;
+    private $b2c = true;
     /**
      * For future use -- currently not used in the Shop!
-     * @var     string          $startDate          Product startdate
+     * @var     string          $startdate          Product startdate
      * @access  private
      */
-    private $startDate = '0000-00-00';
+    private $startdate = '0000-00-00';
     /**
      * For future use -- currently not used in the Shop!
      * @var     string          $endDate            Product enddate
@@ -185,20 +193,25 @@ class Product
      */
     private $endDate = '0000-00-00';
     /**
-     * @var     integer         $manufacturerId     Product manufacturer ID
+     * @var     integer         $manufacturer_id     Product manufacturer ID
      * @access  private
      */
-    private $manufacturerId = 0;
+    private $manufacturer_id = 0;
     /**
-     * @var     string          $externalLink       Product external link
+     * @var     string          $uri       Product external link
      * @access  private
      */
-    private $externalLink = '';
+    private $uri = '';
     /**
-     * @var     integer         $vatId              Product VAT ID
+     * @var     integer         $text_uri_id       The Text ID for the URI
      * @access  private
      */
-    private $vatId = 0;
+    private $text_uri_id = '';
+    /**
+     * @var     integer         $vat_id              Product VAT ID
+     * @access  private
+     */
+    private $vat_id = 0;
     /**
      * The Product flags
      * @var string
@@ -210,27 +223,27 @@ class Product
      * Comma separated list
      * @var string
      */
-    private $usergroups = '';
+    private $usergroup_ids = '';
     /**
      * The count type discount group ID
      * @var     integer
      */
-    private $groupCountId = 0;
+    private $group_id = 0;
     /**
      * The article group ID
      * @var     integer
      */
-    private $groupArticleId = 0;
+    private $article_id = 0;
     /**
      * The list of keywords
      * @var     string
      */
     private $keywords = '';
     /**
-     * @var     integer         $text_keywords_id   The Text ID of the keywords
+     * @var     integer         $text_keys_id   The Text ID of the keywords
      * @access  private
      */
-    private $text_keywords_id = 0;
+    private $text_keys_id = 0;
     /**
      * @var     array   $arrRelations   The relation array
      * @access  private
@@ -247,33 +260,33 @@ class Product
      * access methods.
      * @access  public
      * @param   string  $code           The Product code
-     * @param   integer $categoryId     The ShopCategory ID of the Product
+     * @param   integer $category_id     The Category ID of the Product
      * @param   string  $name           The Product name
      * @param   string  $distribution   The Distribution type
      * @param   double  $price          The Product price
      * @param   integer $active         The active status
-     * @param   integer $order          The sorting order
+     * @param   integer $ord          The sorting order
      * @param   integer $weight         The Product weight
      * @param   integer $id             The optional Product ID to be updated
      * @return  Product                 The Product
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $code, $categoryId, $name, $distribution, $price,
-        $active, $order, $weight, $id=0
+        $code, $category_id, $name, $distribution, $price,
+        $active, $ord, $weight, $id=0
     ) {
         // Assign & check
         $this->code         = strip_tags($code);
-        $this->categoryId   = intval($categoryId);
+        $this->category_id   = intval($category_id);
         $this->name         = strip_tags($name);
         $this->distribution = strip_tags($distribution);
         $this->price        = floatval($price);
-        $this->order = intval($order);
+        $this->ord = intval($ord);
         $this->weight       = intval($weight);
         $this->id           = intval($id);
-        $this->setActive($active);
+        $this->active($active);
 
-        if ($this->order <= 0) { $this->order = 0; }
+        if ($this->ord <= 0) { $this->ord = 0; }
         // Default values for everything else as stated above
 
         // Enable cloning of Products with Attributes
@@ -285,11 +298,11 @@ class Product
 
 
     /**
-     * Get the ID
+     * The ID
      * @return  integer                             Product ID
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getId()
+    function id()
     {
         return $this->id;
     }
@@ -299,312 +312,237 @@ class Product
      */
 
     /**
-     * Get the Product code
-     * @return  string                              Product code
+     * The Product code
+     * @param   string    $code         The optional Product code
+     * @return  string                  The Product code
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCode()
+    function code($code=null)
     {
+        if (isset($code)) {
+            $this->code = trim(strip_tags($code));
+        }
         return $this->code;
     }
-    /**
-     * Set the Product code
-     * @param   string          $code               Product code
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setCode($code)
-    {
-        $this->code = trim(strip_tags($code));
-    }
 
     /**
-     * Get the Product name
-     * @return  string                              Product name
+     * The Product name
+     * @param   string    $name         The optional Product name
+     * @return  string                  The Product name
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getName()
+    function name($name=null)
     {
+        if (isset($name) && $name != '') {
+            $this->name = trim(strip_tags($name));
+        }
         return $this->name;
     }
+
     /**
-     * Set the Product name.
-     * @param   string          $name               Product name
+     * The Category ID
+     * @return  integer   $category_id  The optional Category ID
+     * @param   integer                 The Category ID
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setName($name)
+    function category_id($category_id=null)
     {
-        $this->name = trim(strip_tags($name));
+        if (isset($category_id)) {
+            $this->category_id = intval($category_id);
+        }
+        return $this->category_id;
     }
 
     /**
-     * Get the ShopCategory ID
-     * @return  integer                             ShopCategory ID
+     * The Product price
+     * @param   double    $price        The optional Product price
+     * @return  double                  The Product price
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getShopCategoryId()
+    function price($price=null)
     {
-        return $this->categoryId;
-    }
-    /**
-     * Set the ShopCategory ID
-     * @param   integer         $shopCategoryId     ShopCategory ID
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setShopCategoryId($shopCategoryId)
-    {
-        $this->categoryId = intval($shopCategoryId);
-    }
-
-    /**
-     * Get the Product price
-     * @return  double                              Product price
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getPrice()
-    {
+        if (isset($price)) {
+            $this->price = floatval($price);
+        }
         return $this->price;
     }
+
     /**
-     * Set the Product price
-     * @param   double          $price              Product price
+     * The Product ordinal value
+     * @param   integer   $ord          The optional ordinal value
+     * @return  integer                 The ordinal value
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setPrice($price)
+    function ord($ord=null)
     {
-        $this->price = floatval($price);
+        if (isset($ord)) {
+            $this->ord = intval($ord);
+        }
+        return $this->ord;
     }
 
     /**
-     * Get the Product sorting order
-     * @return  integer                             Sorting order
+     * The Distribution type
+     * @param   string    $distribution The optional distribution type
+     * @return  string                  The distribution type
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getOrder()
+    function distribution($distribution=null)
     {
-        return $this->order;
-    }
-    /**
-     * Set the Product sorting order
-     * @param   integer         $order              Sorting order
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setOrder($order)
-    {
-        $this->order = intval($order);
-    }
-
-    /**
-     * Get the Distribution type
-     * @return  string                              Distribution type
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getDistribution()
-    {
+        if (isset($distribution)) {
+            $this->distribution =
+                (Distribution::isDistributionType($distribution)
+                    ? $distribution : Distribution::getDefault());
+        }
         return $this->distribution;
     }
-    /**
-     * Set the Distribution type
-     * @param   string          $distribution       Distribution type
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setDistribution($distribution)
-    {
-        // fix this to be real static for PHP5
-        $objDistribution = new Distribution();
-        $this->distribution =
-            ($objDistribution->isDistributionType($distribution)
-                ? $distribution : $objDistribution->getDefault()
-            );
-    }
 
     /**
-     * Get the active status
-     * @return  boolean                             Active status
+     * The active status
+     * @param   boolean   $active       The optional active status
+     * @return  boolean                 The active status
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getActive()
+    function active($active=null)
     {
+        if (isset($active)) {
+            $this->active = (boolean)$active;
+        }
         return $this->active;
     }
-    /**
-     * Set the active status
-     * @param   boolean         $active              Active status
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setActive($active)
-    {
-        $this->active = ($active ? true : false);
-    }
 
     /**
-     * Get the pictures
-     * @return  string                              Encoded picture string
+     * The pictures
+     * @param   string    $pictures     The optional encoded picture string
+     * @return  string                  The Encoded picture string
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getPictures()
+    function pictures($pictures=null)
     {
+        if (isset($pictures)) {
+            $this->pictures = $pictures;
+        }
         return $this->pictures;
     }
+
     /**
-     * Set the pictures
-     * @param   string          $pictures           Encoded picture string
+     * The reseller price
+     * @param   double    $resellerprice  The optional reseller price
+     * @return  double                    The reseller price
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setPictures($pictures)
+    function resellerprice($resellerprice=null)
     {
-        $this->pictures = $pictures;
+        if (isset($resellerprice)) {
+            $this->resellerprice = floatval($resellerprice);
+        }
+        return $this->resellerprice;
     }
 
     /**
-     * Get the reseller price
-     * @return  double                              Reseller price
+     * The short description
+     * @param   string    $short          The optional short description
+     * @return  string                    The short description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getResellerPrice()
+    function short($short=null)
     {
-        return $this->resellerPrice;
-    }
-    /**
-     * Set the reseller price
-     * @param   double          $resellerPrice      Reseller price
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setResellerPrice($resellerPrice)
-    {
-        $this->resellerPrice = floatval($resellerPrice);
+        if (isset($short)) {
+            $this->short = trim($short);
+        }
+        return $this->short;
     }
 
     /**
-     * Get the short description
-     * @return  string                              Short description
+     * The long description
+     * @param   string    $long           The optional long description
+     * @return  string                    The long description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getshortdesc()
+    function long($long=null)
     {
-        return $this->shortdesc;
-    }
-    /**
-     * Set the short description
-     * @param   string          $shortdesc          Short description
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setshortdesc($shortdesc)
-    {
-        $this->shortdesc = trim($shortdesc);
+        if (isset($long)) {
+            $this->long = trim($long);
+        }
+        return $this->long;
     }
 
     /**
-     * Get the description
-     * @return  string                              Long description
+     * The stock
+     * @param   integer   $stock          The optional stock
+     * @return  integer                   The stock
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getDescription()
+    function stock($stock=null)
     {
-        return $this->description;
-    }
-    /**
-     * Set the description
-     * @param   string          $description        Long description
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setDescription($description)
-    {
-        $this->description = trim($description);
-    }
-
-    /**
-     * Get the stock
-     * @return  integer                             Stock
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getStock()
-    {
+        if (isset($stock)) {
+            $this->stock = intval($stock);
+        }
         return $this->stock;
     }
+
     /**
-     * Set the stock
-     * @param   integer         $stock              Stock
+     * The stock visibility
+     * @param   boolean   $stock_visible  The optional stock visibility
+     * @return  boolean                   The stock visibility
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setStock($stock)
+    function stock_visible($stock_visible=null)
     {
-        $this->stock = intval($stock);
+        if (isset($stock_visible)) {
+            $this->stock_visible = (boolean)$stock_visible;
+        }
+        return $this->stock_visible;
     }
 
     /**
-     * Get the stock visibility
-     * @return  boolean                             Stock visibility
+     * The discount price
+     * @param   double    $discountprice  The optional discount price
+     * @return  double                    The discount price
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function isStockVisible()
+    function discountprice($discountprice=null)
     {
-        return $this->isStockVisible;
-    }
-    /**
-     * Set the stock visibility
-     * @param   boolean         $isStockVisible     Stock visibility
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setStockVisible($isStockVisible)
-    {
-        $this->isStockVisible = ($isStockVisible ? true : false);
+        if (isset($discountprice)) {
+            $this->discountprice = floatval($discountprice);
+        }
+        return $this->discountprice;
     }
 
     /**
-     * Get the discount price
-     * @return  double                              Discount price
+     * The special offer flag
+     * @param   boolean   $discount_active  The optional special offer flag
+     * @return  boolean                     The special offer flag
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getDiscountPrice()
+    function discount_active($discount_active=null)
     {
-        return $this->discountPrice;
-    }
-    /**
-     * Set the discount price
-     * @param   double          $discountPrice      Discount price
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setDiscountPrice($discountPrice)
-    {
-        $this->discountPrice = floatval($discountPrice);
+        if (isset($discount_active)) {
+            $this->discount_active = (boolean)$discount_active;
+        }
+        return $this->discount_active;
     }
 
     /**
-     * Get the special offer flag
-     * @return  boolean                             Is special offer
+     * The Product flags
+     * @param   string    $flags            The optional Product flags
+     * @return  string                      The Product flags
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function isSpecialOffer()
+    function flags($flags=null)
     {
-        return $this->isSpecialOffer;
-    }
-    /**
-     * Set the special offer flag
-     * @param   boolean         $isSpecialOffer     Is special offer
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setSpecialOffer($isSpecialOffer)
-    {
-        $this->isSpecialOffer = ($isSpecialOffer ? true : false);
-    }
-
-    /**
-     * Get the Product flags
-     * @return  string              The Product flags
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getFlags()
-    {
+        if (isset($flags)) {
+            $this->flags = $flags;
+        }
         return $this->flags;
     }
     /**
      * Add a flag
      *
+     * If the flag is already present, nothing is changed.
      * Note that the match is case sensitive.
-     * @param   string              The flag to be added
-     * @return  boolean             Boolean true if the flags were accepted
-     *                              or already present, false otherwise
-     *                              (always true for the time being).
+     * @param   string    $flag             The flag to be added
+     * @return  boolean                     Always true for the time being
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function addFlag($flag)
@@ -617,11 +555,10 @@ class Product
     /**
      * Remove a flag
      *
+     * If the flag is not present, nothing is changed.
      * Note that the match is case insensitive.
-     * @param   string              The flag to be removed
-     * @return  boolean             Boolean true if the flags could be removed
-     *                              or wasn't present, false otherwise
-     *                              (always true for the time being).
+     * @param   string    $flag             The flag to be removed
+     * @return  boolean                     Always true for the time being
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function removeFlag($flag)
@@ -630,25 +567,12 @@ class Product
         return true;
     }
     /**
-     * Set the Product flags
-     * @param   string              The Product flags
-     * @return  boolean             Boolean true if the flags were accepted,
-     *                              false otherwise
-     *                              (Always true for the time being).
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setFlags($flags)
-    {
-        $this->flags = $flags;
-    }
-
-    /**
      * Test for a match with the Product flags.
      *
      * Note that the match is case sensitive.
-     * @param   string              The Product flag to test
-     * @return  boolean             Boolean true if the flag is set,
-     *                              false otherwise.
+     * @param   string    $flag             The Product flag to test
+     * @return  boolean                     Boolean true if the flag is present,
+     *                                      false otherwise.
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function testFlag($flag)
@@ -657,237 +581,183 @@ class Product
     }
 
     /**
-     * Get the B2B flag
-     * @return  boolean                             Is B2B
+     * The B2B flag
+     * @param   boolean   $b2b              The optional B2B flag
+     * @return  boolean                     The B2B flag
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function isB2B()
+    function b2b($b2b=null)
     {
-        return $this->isB2B;
-    }
-    /**
-     * Set the B2B flag
-     * @param   boolean         $isB2B              Is B2B
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setB2B($isB2B)
-    {
-        $this->isB2B = ($isB2B ? true : false);
+        if (isset($b2b)) {
+            $this->b2b = (boolean)$b2b;
+        }
+        return $this->b2b;
     }
 
     /**
-     * Get the B2C flag
-     * @return  boolean                             Is B2C
+     * The B2C flag
+     * @param   boolean   $b2c              The optional B2C flag
+     * @return  boolean                     The B2C flag
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function isB2C()
+    function b2c($b2c=null)
     {
-        return $this->isB2C;
-    }
-    /**
-     * Set the B2C flag
-     * @param   boolean         $isB2C              Is B2C
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setB2C($isB2C)
-    {
-        $this->isB2C = ($isB2C ? true : false);
+        if (isset($b2c)) {
+            $this->b2c = (boolean)$b2c;
+        }
+        return $this->b2c;
     }
 
     /**
-     * Get the start date
-     * @return  string                              Start date
+     * The start date
+     * @param   string    $startdate        The optional start date
+     * @return  string                      The start date
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getStartDate()
+    function startdate($startdate=null)
     {
-        return $this->startDate;
-    }
-    /**
-     * Set the start date
-     * @param   string          $startDate          Start date
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setStartDate($startDate)
-    {
-        $this->startDate = $startDate;
+        if (isset($startdate)) {
+            $this->startdate =
+                date(ASCMS_DATE_FORMAT_DATETIME, strtotime($startdate));
+        }
+        return $this->startdate;
     }
 
     /**
-     * Get the end date
-     * @return  string                              End date
+     * The end date
+     * @param   string    $enddate          The optional end date
+     * @return  string                      The end date
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getEndDate()
+    function enddate($enddate=null)
     {
-        return $this->endDate;
-    }
-    /**
-     * Set the end date
-     * @param   string          $endDate            End date
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setEndDate($endDate)
-    {
-        $this->endDate = $endDate;
+        if (isset($enddate)) {
+            $this->enddate =
+                date(ASCMS_DATE_FORMAT_DATETIME, strtotime($enddate));
+        }
+        return $this->enddate;
     }
 
     /**
-     * Get the Manufacturer ID
-     * @return  integer                             Manufacturer ID
+     * The Manufacturer ID
+     * @param   integer   $manufacturer     The optional Manufacturer ID
+     * @return  integer                     The Manufacturer ID
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getManufacturerId()
+    function manufacturer_id($manufacturer_id=null)
     {
-        return $this->manufacturerId;
-    }
-    /**
-     * Set the Manufacturer ID
-     * @param   integer         $manufacturer       Manufacturer ID
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setManufacturerId($manufacturerId)
-    {
-        $this->manufacturerId = $manufacturerId;
+        if (isset($manufacturer_id)) {
+            $this->manufacturer_id = intval($manufacturer_id);
+        }
+        return $this->manufacturer_id;
     }
 
     /**
-     * Get the external link
-     * @return  string                              External link
+     * The external link
+     * @param   string    $uri              The optional external link
+     * @return  string                      The external link
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getExternalLink()
+    function uri($uri=null)
     {
-        return $this->externalLink;
-    }
-    /**
-     * Set the external link
-     * @param   string          $externalLink       External link
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setExternalLink($externalLink)
-    {
-        $this->externalLink = $externalLink;
+        if (isset($uri)) {
+            $this->uri = trim(strip_tags($uri));
+        }
+        return $this->uri;
     }
 
     /**
-     * Get the VAT Id
-     * @return  string                              VAT Id
+     * The VAT ID
+     * @param   string    $vat_id           The optional VAT ID
+     * @return  string                      The VAT ID
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getVatId()
+    function vat_id($vat_id=null)
     {
-        return $this->vatId;
-    }
-    /**
-     * Set the VAT Id
-     * @param   string          $vatId              VAT Id
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setVatId($vatId)
-    {
-        $this->vatId = intval($vatId);
+        if (isset($vat_id)) {
+            $this->vat_id = intval($vat_id);
+        }
+        return $this->vat_id;
     }
 
     /**
-     * Get the weight
-     * @return  string                              Weight
+     * The weight
+     * @param   string    $weight           The optional weight
+     * @return  string                      The weight
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getWeight()
+    function weight($weight=null)
     {
+        if (isset($weight)) {
+            $this->weight = intval($weight);
+        }
         return $this->weight;
     }
+
     /**
-     * Set the weight
-     * @param   string          $weight             Weight
+     * The assigned Usergroups
+     * @param   string    $usergroup_ids    The optional comma separated list
+     *                                      of assigned user groups
+     * @return  string                      The comma separated list
+     *                                      of assigned user groups
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setWeight($weight)
+    function usergroup_ids($usergroup_ids=null)
     {
-        $this->weight = intval($weight);
+        if (isset($usergroup_ids)) {
+            $this->usergroup_ids = trim(strip_tags($usergroup_ids));
+        }
+        return $this->usergroup_ids;
     }
 
     /**
-     * Get the assigned user groups
-     * @return  string                               Comma separated list of
-     *                                               assigned user groups
+     * The keywords
+     * @param   string    $keywords         The optional product keywords
+     * @return  string                      The product keywords
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getUsergroups()
+    function keywords($keywords=null)
     {
-        return $this->usergroups;
-    }
-    /**
-     * Set the assigned user groups
-     * @param   string          $usergroups         Comma separated list of
-     *                                              assigned user groups
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setUsergroups($usergroups)
-    {
-        $this->usergroups = $usergroups;
-    }
-
-    /**
-     * Get the keywords
-     * @return  string                               The product keywords
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function getKeywords()
-    {
+        if (isset($keywords)) {
+            $this->keywords = trim(strip_tags($keywords));
+        }
         return $this->keywords;
     }
-    /**
-     * Set the keywords
-     * @param   string          $keywords         The product keywords
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setKeywords($keywords)
-    {
-        $this->keywords = $keywords;
-    }
 
 
     /**
-     * Get the visibility of the Product on the start page
-     * @return  boolean                             Visibility
+     * The visibility of the Product on the start page
+     * @param   boolean   $shown_on_startpage   The optional visibility flag
+     * @return  boolean                         The visibility flag
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function isShownOnStartpage()
+    function shown_on_startpage($shown_on_startpage=null)
     {
-        return $this->testFlag('__SHOWONSTARTPAGE__');
-    }
-    /**
-     * Set the visibility of the Product on the start page
-     * @param   boolean         $shownOnStartpage   Visibility
-     * @return  boolean         True if the flag could be set or cleared
-     *                          successfully, false otherwise.
-     *
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setShownOnStartpage($shownOnStartpage)
-    {
-        if ($shownOnStartpage) {
-            return $this->addFlag('__SHOWONSTARTPAGE__');
+        if (isset($shown_on_startpage)) {
+            if ($shown_on_startpage) {
+                return $this->addFlag('__SHOWONSTARTPAGE__');
+            }
+            return $this->removeFlag('__SHOWONSTARTPAGE__');
         }
-        return $this->removeFlag('__SHOWONSTARTPAGE__');
+        return $this->testFlag('__SHOWONSTARTPAGE__');
     }
 
 
     /**
      * Return the correct Product price for any Customer and Product.
      *
-     * Note that if this method is called without a valid Customer object,
-     * no reseller price will be returned.
+     * Returns the reseller price if a valid Customer object is provided and
+     * if this is of the type "reseller".
+     * If this method is called without a valid Customer object,
+     * the reseller price will never be returned.
      * @param   Customer    $objCustomer    The optional Customer object.
      * @return  double                      The Product price
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCustomerPrice($objCustomer=false)
+    function getCustomerPrice(&$objCustomer=false)
     {
         if (is_a($objCustomer, 'Customer') && $objCustomer->isReseller()) {
-            return $this->resellerPrice;
+            return $this->resellerprice;
         }
         return $this->price;
     }
@@ -896,51 +766,55 @@ class Product
     /**
      * Return the current discounted price for any Product, if applicable.
      * @return  mixed                       The Product discount price,
-     *                                      or false if there is no discount.
+     *                                      or null if there is no discount.
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function getDiscountedPrice()
     {
-        if ($this->hasDiscount()) {
-            $price = $this->price;
-            if ($this->isSpecialOffer) {
-                $price = $this->discountPrice;
-            }
-            if ($this->testFlag('Outlet')) {
-                $discountRate = $this->getOutletDiscountRate();
-                $price = number_format(
-                    $price * (100 - $discountRate) / 100,
-                    2, '.', '');
-            }
-            return $price;
+        if (!$this->hasDiscount()) return null;
+        $price = $this->price;
+        if ($this->discount_active) {
+            $price = $this->discountprice;
         }
-        return false;
+// NOTE: Add more conditions and rules as desired, i.e.
+//        if ($this->testFlag('Outlet')) {
+//            $discountRate = $this->getOutletDiscountRate();
+//            $price = number_format(
+//                $price * (100 - $discountRate) / 100,
+//                2, '.', '');
+//        }
+        return $price;
     }
 
 
     /**
      * Returns boolean true if this Product has any kind of discount.
      *
-     * This may either be the regular discount price if isSpecialOffer
+     * This may either be the regular discount price if discount_active
      * is true, or the "Outlet" discount, or both.
      * Use {@link getDiscountPrice()} to get the correct discount price.
      * @return  boolean                 True if there is a discount,
      *                                  false otherwise.
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function hasDiscount()
+    function has_discount()
     {
-        return $this->isSpecialOffer || $this->testFlag('Outlet');
+        return $this->discount_active
+// NOTE: Add more conditions and rules as desired, i.e.
+//            || $this->isOutlet()
+        ;
     }
 
 
     /**
-     * Returns boolean true if this Product is in the "Outlet" Category.
-     * @return  boolean                 True if this is in the "Outlet",
+     * Returns boolean true if this Product is flagged as "Outlet"
+     *
+     * Note that this is an example extension only.
+     * @return  boolean                 True if this is "Outlet",
      *                                  false otherwise.
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function isOutlet()
+    function is_outlet()
     {
         return $this->testFlag('Outlet');
     }
@@ -948,10 +822,11 @@ class Product
 
     /**
      * Return the discount rate for any Product in the virtual "Outlet"
-     * ShopCategory.
+     * Category.
      *
      * The rules for the discount are: 21% at the first date of the month,
      * plus an additional 1% per day, for a maximum rate of 51% on the 31st.
+     * Note that this is an example extension only.
      * @return  integer                 The current Outlet discount rate
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -963,41 +838,31 @@ class Product
 
 
     /**
-     * Get the count type discount group ID
-     * @return  string         The group ID
+     * The count type discount group ID
+     * @param   integer   $group_id       The optional group ID
+     * @return  integer                   The group ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getGroupCountId()
+    function group_id($group_id=null)
     {
-        return $this->groupCountId;
-    }
-    /**
-     * Set the count type discount group ID
-     * @param   string         $groupCountId       The group ID
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setGroupCountId($groupCountId)
-    {
-        $this->groupCountId = intval($groupCountId);
+        if (isset($group_id)) {
+            $this->group_id = intval($group_id);
+        }
+        return $this->group_id;
     }
 
     /**
-     * Get the article group ID
-     * @return  string         The group ID
+     * The article group ID
+     * @param   integer   $article_id   The optional article group ID
+     * @return  string                  The article group ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getGroupArticleId()
+    function article_id($article_id=null)
     {
-        return $this->groupArticleId;
-    }
-    /**
-     * Set the article group ID
-     * @param   string         $groupArticleId       The group ID
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setGroupArticleId($groupArticleId)
-    {
-        $this->groupArticleId = intval($groupArticleId);
+        if (isset($article_id)) {
+            $this->article_id = intval($article_id);
+        }
+        return $this->article_id;
     }
 
 
@@ -1016,11 +881,11 @@ class Product
         $this->id = 0;
     }
 
+
     /**
-     * Delete the Product specified by its ID from the database.
+     * Delete this Product from the database.
      *
      * Associated Attributes and pictures are deleted with it.
-     * @param   integer           $productId    The Product ID
      * @return  boolean                         True on success, false otherwise
      * @global  ADONewConnection  $objDatabase  Database connection object
      * @author  Reto Kohli <reto.kohli@comvation.com>
@@ -1049,29 +914,26 @@ class Product
                     SELECT picture FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                      WHERE picture LIKE '%".addslashes($arrPicture[0])."%'";
                 $objResult = $objDatabase->Execute($query);
-                if ($objResult->RecordCount() == 1) {
+//                if ($objResult->RecordCount() == 1) {
                     // The only one -- it can be deleted.
-                    // Delete the picture and thumbnail:
-                    // Split file name and extension -- in case someone
-                    // finally decides that inserting '.thumb' between the
-                    // file name and extension is better than the current way
-                    // of doing it...
-                    $fileArr = array();
-                    preg_match('/(.+)(\.\w+)$/', $strFileName, $fileArr);
-                    $pictureName = $fileArr[1].$fileArr[2];
-                    $thumbName = $pictureName.ShopLibrary::thumbnailSuffix;
+                    // Delete the picture and thumbnail.
+//                    $thumbName = Image::getThumbnailPath($strFileName);
                     // Continue even if deleting the images fails
-                    File::delete_file(ASCMS_PATH_OFFSET.'/'.$thumbName);
-                    File::delete_file(ASCMS_PATH_OFFSET.'/'.$pictureName);
-                }
+// TODO: Implement!
+//                    File::delete_file($strFileName);
+//                    File::delete_file($thumbName);
+//                }
             }
         }
         // Remove any Text records present
-        if (!Text::deleteById($this->text_name_id))      return false;
-        if (!Text::deleteById($this->text_shortdesc_id)) return false;
-        if (!Text::deleteById($this->text_longdesc_id))  return false;
-        if (!Text::deleteById($this->text_keywords_id))  return false;
+        if (!Text::deleteById($this->text_name_id))  return false;
+        if (!Text::deleteById($this->text_short_id)) return false;
+        if (!Text::deleteById($this->text_long_id))  return false;
+        if (!Text::deleteById($this->text_keys_id))  return false;
+        if (!Text::deleteById($this->text_code_id))  return false;
+        if (!Text::deleteById($this->text_uri_id))   return false;
         // Delete the Product attribute relations and the Product itself
+// TODO: Move to Attributes class
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
              WHERE product_id=$this->id");
@@ -1117,29 +979,40 @@ class Product
     function store()
     {
         $this->text_name_id = Text::replace(
-            $this->text_name_id, FRONTEND_LANG_ID, $this->name);
+            $this->text_name_id, FRONTEND_LANG_ID, $this->name,
+            MODULE_ID, self::TEXT_NAME);
         if (empty($this->text_name_id)) return false;
-        $this->text_shortdesc_id = Text::replace(
-            $this->text_shortdesc_id, FRONTEND_LANG_ID, $this->shortdesc);
-        if (empty($this->text_shortdesc_id)) return false;
-        $this->text_longdesc_id = Text::replace(
-            $this->text_longdesc_id, FRONTEND_LANG_ID, $this->description);
-        if (empty($this->text_longdesc_id)) return false;
-        $this->text_keywords_id = Text::replace(
-            $this->text_keywords_id, FRONTEND_LANG_ID, $this->keywords);
-        if (empty($this->text_keywords_id)) return false;
+        $this->text_short_id = Text::replace(
+            $this->text_short_id, FRONTEND_LANG_ID, $this->short,
+            MODULE_ID, self::TEXT_SHORT);
+        if (empty($this->text_short_id)) return false;
+        $this->text_long_id = Text::replace(
+            $this->text_long_id, FRONTEND_LANG_ID, $this->long,
+            MODULE_ID, self::TEXT_LONG);
+        if (empty($this->text_long_id)) return false;
+        $this->text_keys_id = Text::replace(
+            $this->text_keys_id, FRONTEND_LANG_ID, $this->keywords,
+            MODULE_ID, self::TEXT_KEYS);
+        if (empty($this->text_keys_id)) return false;
+        $this->text_code_id = Text::replace(
+            $this->text_code_id, FRONTEND_LANG_ID, $this->code,
+            MODULE_ID, self::TEXT_CODE);
+        if (empty($this->text_code_id)) return false;
+        $this->text_uri_id = Text::replace(
+            $this->text_uri_id, FRONTEND_LANG_ID, $this->uri,
+            MODULE_ID, self::TEXT_URI);
+        if (empty($this->text_uri_id)) return false;
         if ($this->recordExists()) {
             if (!$this->update()) return false;
-            if (!Attributes::removeFromProduct($this->id))
-                return false;
+            if (!Attributes::removeFromProduct($this->id)) return false;
         } else {
             if (!$this->insert()) return false;
         }
         // Store Attributes, if any
         if (is_array($this->arrRelations)) {
-            foreach ($this->arrRelations as $value_id => $order) {
+            foreach ($this->arrRelations as $value_id => $ord) {
                 if (!Attributes::addOptionToProduct(
-                    $value_id, $this->id, $order
+                    $value_id, $this->id, $ord
                 )) return false;
             }
         }
@@ -1162,36 +1035,35 @@ class Product
 
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
-            SET product_id='".addslashes($this->code)."',
+            SET text_code_id=$this->text_code_id,
                 picture='$this->pictures',
                 text_name_id=$this->text_name_id,
-                catid=$this->categoryId,
-                handler='$this->distribution',
+                category_id=$this->category_id,
+                distribution='$this->distribution',
                 normalprice=$this->price,
-                resellerprice=$this->resellerPrice,
-                text_shortdesc_id=$this->text_shortdesc_id,
-                text_longdesc_id=$this->text_longdesc_id,
+                resellerprice=$this->resellerprice,
+                text_short_id=$this->text_short_id,
+                text_long_id=$this->text_long_id,
                 stock=$this->stock,
-                stock_visibility=".($this->isStockVisible ? 1 : 0).",
-                discountprice=$this->discountPrice,
-                is_special_offer=".($this->isSpecialOffer ? 1 : 0).",
+                stock_visible=".($this->stock_visible ? 1 : 0).",
+                discountprice=$this->discountprice,
+                discount_active=".($this->discount_active ? 1 : 0).",
                 active=".($this->active ? 1 : 0).",
-                b2b=".($this->isB2B ? 1 : 0).",
-                b2c=".($this->isB2C ? 1 : 0).",
-                startdate='$this->startDate',
+                b2b=".($this->b2b ? 1 : 0).",
+                b2c=".($this->b2c ? 1 : 0).",
+                startdate='$this->startdate',
                 enddate='$this->endDate',
-                manufacturer=$this->manufacturerId,
-                external_link='".addslashes($this->externalLink)."',
-                sort_order=$this->order,
-                vat_id=$this->vatId,
+                manufacturer_id=$this->manufacturer_id,
+                text_uri_id=$this->text_uri_id,
+                ord=$this->ord,
+                vat_id=$this->vat_id,
                 weight=$this->weight,
                 flags='".addslashes($this->flags)."',
-                usergroups='$this->usergroups',
-                group_id=$this->groupCountId,
-                article_id=$this->groupArticleId,
-                text_keywords_id=$this->text_keywords_id
-          WHERE id=$this->id
-        ";
+                usergroup_ids='$this->usergroup_ids',
+                group_id=$this->group_id,
+                article_id=$this->article_id,
+                text_keys_id=$this->text_keys_id
+          WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -1213,39 +1085,33 @@ class Product
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products (
-                product_id, picture, text_name_id, catid, handler,
+                text_code_id, picture, text_name_id, category_id, distribution,
                 normalprice, resellerprice,
-                text_shortdesc_id, text_longdesc_id,
-                stock, stock_visibility, discountprice, is_special_offer,
+                text_short_id, text_long_id,
+                stock, stock_visible, discountprice, discount_active,
                 active,
                 b2b, b2c, startdate, enddate,
-                manufacturer, external_link,
-                sort_order, vat_id, weight,
-                flags, usergroups,
-                group_id, article_id, text_keywords_id
-            ) VALUES ('".
-                addslashes($this->code)."', '$this->pictures',
-                $this->text_name_id,
-                $this->categoryId,
+                manufacturer_id, text_uri_id,
+                ord, vat_id, weight,
+                flags, usergroup_ids,
+                group_id, article_id, text_keys_id
+            ) VALUES (
+                $this->text_code_id, '$this->pictures',
+                $this->text_name_id, $this->category_id,
                 '$this->distribution',
-                $this->price, $this->resellerPrice,
-                $this->text_shortdesc_id,
-                $this->text_longdesc_id,
-                $this->stock, ".
-                ($this->isStockVisible ? 1 : 0).",
-                $this->discountPrice, ".
-                ($this->isSpecialOffer ? 1 : 0).", ".
+                $this->price, $this->resellerprice,
+                $this->text_short_id, $this->text_long_id,
+                $this->stock, ".($this->stock_visible ? 1 : 0).",
+                $this->discountprice, ".($this->discount_active ? 1 : 0).", ".
                 ($this->active ? 1 : 0).", ".
-                ($this->isB2B ? 1 : 0).", ".
-                ($this->isB2C ? 1 : 0).",
-                '$this->startDate', '$this->endDate',
-                $this->manufacturerId, '".
-                addslashes($this->externalLink)."',
-                $this->order, $this->vatId, $this->weight,
+                ($this->b2b ? 1 : 0).", ".($this->b2c ? 1 : 0).",
+                '$this->startdate', '$this->endDate',
+                $this->manufacturer_id, $this->text_uri_id,
+                $this->ord, $this->vat_id, $this->weight,
                 '".addslashes($this->flags)."',
-                '$this->usergroups',
-                $this->groupCountId, $this->groupArticleId,
-                $this->text_keywords_id
+                '$this->usergroup_ids',
+                $this->group_id, $this->article_id,
+                $this->text_keys_id
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -1273,69 +1139,131 @@ class Product
             MODULE_ID, self::TEXT_NAME
         );
         $arrSqlShort = Text::getSqlSnippets(
-            '`product`.`text_shortdesc_id`', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_SHORTDESC
+            '`product`.`text_short_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_SHORT
         );
         $arrSqlLong = Text::getSqlSnippets(
-            '`product`.`text_longdesc_id`', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_LONGDESC
+            '`product`.`text_long_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_LONG
         );
         $arrSqlKeyword = Text::getSqlSnippets(
-            '`product`.`text_keywords_id`', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_KEYWORDS
+            '`product`.`text_keys_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_KEYS
+        );
+        $arrSqlCode = Text::getSqlSnippets(
+            '`product`.`text_code_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_CODE
+        );
+        $arrSqlUri = Text::getSqlSnippets(
+            '`product`.`text_uri_id`', FRONTEND_LANG_ID,
+            MODULE_ID, self::TEXT_URI
         );
         $query = "
-            SELECT `id`, `product_id`, `catid`,
-                   `sort_order`, `active`, `weight`, `picture`,
-                   `normalprice`, `resellerprice`, `discountprice`, `is_special_offer`,
-                   `stock`, `stock_visibility`,
-                   `handler`, `startdate`, `enddate`, `manufacturer`,
-                   `b2b`, `b2c`, `vat_id`, `external_link`,
-                   `flags`, `usergroups`, `group_id`, `article_id`".
+            SELECT `product`.`id`, `product`.`category_id`,
+                   `product`.`ord`, `product`.`active`, `product`.`weight`,
+                   `product`.`picture`,
+                   `product`.`normalprice`, `product`.`resellerprice`,
+                   `product`.`discountprice`, `product`.`discount_active`,
+                   `product`.`stock`, `product`.`stock_visible`,
+                   `product`.`distribution`,
+                   `product`.`startdate`, `product`.`enddate`,
+                   `product`.`manufacturer_id`,
+                   `product`.`b2b`, `product`.`b2c`,
+                   `product`.`vat_id`,
+                   `product`.`flags`,
+                   `product`.`usergroup_ids`,
+                   `product`.`group_id`, `product`.`article_id`".
                    $arrSqlName['field'].$arrSqlShort['field'].
-                   $arrSqlLong['field'].$arrSqlKeyword['field']."
+                   $arrSqlLong['field'].$arrSqlKeyword['field'].
+                   $arrSqlCode['field'].$arrSqlUri['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products` AS `product`".
                    $arrSqlName['join'].$arrSqlShort['join'].
-                   $arrSqlLong['join'].$arrSqlKeyword['join']."
-             WHERE id=$id";
+                   $arrSqlLong['join'].$arrSqlKeyword['join'].
+                   $arrSqlCode['join'].$arrSqlUri['join']."
+             WHERE `product`.`id`=$id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) return self::errorHandler();
         if ($objResult->RecordCount() != 1) return false;
+
+        $text_code_id = $objResult->fields[$arrSqlCode['name']];
+        $strCode = $objResult->fields[$arrSqlCode['text']];
+        if ($text_code_id && $strCode === null) {
+            $objText = Text::getById($text_code_id, 0);
+            $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+            $strCode = $objText->getText();
+        }
+        $text_name_id = $objResult->fields[$arrSqlName['name']];
+        $strName = $objResult->fields[$arrSqlName['text']];
+        if ($text_name_id && $strName === null) {
+            $objText = Text::getById($text_name_id, 0);
+            $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+            $strName = $objText->getText();
+        }
+        $text_short_id = $objResult->fields[$arrSqlShort['name']];
+        $strShort = $objResult->fields[$arrSqlShort['text']];
+        if ($text_short_id && $strShort === null) {
+            $objText = Text::getById($text_short_id, 0);
+            $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+            $strShort = $objText->getText();
+        }
+        $text_long_id = $objResult->fields[$arrSqlLong['name']];
+        $strLong = $objResult->fields[$arrSqlLong['text']];
+        if ($text_long_id && $strLong === null) {
+            $objText = Text::getById($text_long_id, 0);
+            $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+            $strLong = $objText->getText();
+        }
+        $text_uri_id = $objResult->fields[$arrSqlUri['name']];
+        $strUri = $objResult->fields[$arrSqlUri['text']];
+        if ($text_uri_id && $strUri === null) {
+            $objText = Text::getById($text_uri_id, 0);
+            $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+            $strUri = $objText->getText();
+        }
+        $text_keys_id = $objResult->fields[$arrSqlKeyword['name']];
+        $strKeys = $objResult->fields[$arrSqlKeyword['text']];
+        if ($text_keys_id && $strKeys === null) {
+            $objText = Text::getById($text_keys_id, 0);
+            $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+            $strKeys = $objText->getText();
+        }
         $objProduct = new Product(
-            $objResult->fields['product_id'],
-            $objResult->fields['catid'],
-            $objResult->fields[$arrSqlName['text']],
-            $objResult->fields['handler'],
+            $strCode,
+            $objResult->fields['category_id'],
+            $strName,
+            $objResult->fields['distribution'],
             $objResult->fields['normalprice'],
             $objResult->fields['active'],
             $objResult->fields['ord'],
             $objResult->fields['weight'],
             $objResult->fields['id']
         );
-        $objProduct->text_name_id      = $objResult->fields[$arrSqlName['name']];
-        $objProduct->pictures          = $objResult->fields['picture'];
-        $objProduct->resellerPrice     = floatval($objResult->fields['resellerprice']);
-        $objProduct->shortdesc         = $objResult->fields[$arrSqlShort['text']];
-        $objProduct->text_shortdesc_id = $objResult->fields[$arrSqlShort['name']];
-        $objProduct->description       = $objResult->fields[$arrSqlLong['text']];
-        $objProduct->text_longdesc_id  = $objResult->fields[$arrSqlLong['name']];
-        $objProduct->stock             = intval($objResult->fields['stock']);
-        $objProduct->setStockVisible($objResult->fields['stock_visibility']);
-        $objProduct->discountPrice     = floatval($objResult->fields['discountprice']);
-        $objProduct->setSpecialOffer($objResult->fields['is_special_offer']);
-        $objProduct->setB2B($objResult->fields['b2b']);
-        $objProduct->setB2C($objResult->fields['b2c']);
-        $objProduct->startDate         = $objResult->fields['startdate'];
-        $objProduct->endDate           = $objResult->fields['enddate'];
-        $objProduct->manufacturerId    = intval($objResult->fields['manufacturer']);
-        $objProduct->externalLink      = $objResult->fields['external_link'];
-        $objProduct->vatId             = intval($objResult->fields['vat_id']);
-        $objProduct->flags             = $objResult->fields['flags'];
-        $objProduct->usergroups        = $objResult->fields['usergroups'];
-        $objProduct->groupCountId      = intval($objResult->fields['group_id']);
-        $objProduct->groupArticleId    = intval($objResult->fields['article_id']);
-        $objProduct->keywords          = $objResult->fields[$arrSqlKeyword['text']];
-        $objProduct->text_keywords_id  = $objResult->fields[$arrSqlKeyword['name']];
+        $objProduct->text_code_id = $text_code_id;
+        $objProduct->text_name_id = $text_name_id;
+        $objProduct->pictures = $objResult->fields['picture'];
+        $objProduct->resellerprice = floatval($objResult->fields['resellerprice']);
+        $objProduct->short = $strShort;
+        $objProduct->text_short_id = $text_short_id;
+        $objProduct->long = $strLong;
+        $objProduct->text_long_id = $text_long_id;
+        $objProduct->stock($objResult->fields['stock']);
+        $objProduct->stock_visible($objResult->fields['stock_visible']);
+        $objProduct->discountprice = floatval($objResult->fields['discountprice']);
+        $objProduct->discount_active($objResult->fields['discount_active']);
+        $objProduct->b2b($objResult->fields['b2b']);
+        $objProduct->b2c($objResult->fields['b2c']);
+        $objProduct->startdate($objResult->fields['startdate']);
+        $objProduct->enddate($objResult->fields['enddate']);
+        $objProduct->manufacturer_id = $objResult->fields['manufacturer_id'];
+        $objProduct->uri = $strUri;
+        $objProduct->text_uri_id = $text_uri_id;
+        $objProduct->vat_id = $objResult->fields['vat_id'];
+        $objProduct->flags = $objResult->fields['flags'];
+        $objProduct->usergroup_ids = $objResult->fields['usergroup_ids'];
+        $objProduct->group_id = $objResult->fields['group_id'];
+        $objProduct->article_id = $objResult->fields['article_id'];
+        $objProduct->keywords = $strKeys;
+        $objProduct->text_keys_id = $text_keys_id;
         // Fetch the Product Attribute relations
         $objProduct->arrRelations =
             Attributes::getRelationArray($objProduct->id);
@@ -1349,13 +1277,13 @@ class Product
      * Note that the relation is is only permanently created after
      * the object is store()d.
      * @param   integer     $value_id    The Product Attribute value ID
-     * @param   integer     $order      The sorting order value
+     * @param   integer     $ord      The sorting order value
      * @return  boolean                 True. Always.
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function addAttribute($value_id, $order)
+    function addAttribute($value_id, $ord)
     {
-        $this->arrRelations[$value_id] = $order;
+        $this->arrRelations[$value_id] = $ord;
         return true;
     }
 
@@ -1396,7 +1324,7 @@ class Product
      * Decrease the Product stock count
      *
      * This applies to "real", shipped goods only.  These have "delivery"
-     * set as their "handler" field value.
+     * set as their "distribution" field value.
      * @param   integer   $quantity       The quantity to subtract
      *                                    from the stock
      * @return  boolean                   True on success, false otherwise
@@ -1409,8 +1337,147 @@ class Product
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
                SET stock=stock-$quantity
              WHERE id=$this->id
-               AND handler='delivery'";
+               AND distribution='delivery'";
         return (boolean)$objDatabase->Execute($query);
+    }
+
+
+    static function errorHandler()
+    {
+        require_once(ASCMS_CORE_PATH.'/DbTool.class.php');
+
+DBG::activate(DBG_DB_FIREPHP);
+
+        // Fix the Text table first
+        Text::errorHandler();
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
+        $table_structure = array(
+
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true),
+            'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'title'),
+            'text_short_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'shortdesc'),
+            'text_long_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'description'),
+            'text_code_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'product_id'),
+            'text_uri_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'external_link'),
+            'text_keys_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'keywords'),
+            'normalprice' => array('type' => 'DECIMAL(9,2)', 'default' => '0.00'),
+            'resellerprice' => array('type' => 'DECIMAL(9,2)', 'default' => '0.00'),
+            'discountprice' => array('type' => 'DECIMAL(9,2)', 'default' => '0.00'),
+            'discount_active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'is_special_offer'),
+            'stock' => array('type' => 'INT(10)', 'default' => '10'),
+            'stock_visible' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'stock_visibility'),
+            'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1', 'renamefrom' => 'status'),
+            'b2b' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1'),
+            'b2c' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1'),
+            'startdate' => array('type' => 'DATETIME', 'default' => '0000-00-00 00:00:00'),
+            'enddate' => array('type' => 'DATETIME', 'default' => '0000-00-00 00:00:00'),
+            'weight' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
+            'category_id' => array('type' => 'INT(10)', 'unsigned' => true, 'renamefrom' => 'catid'),
+            'vat_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
+            'manufacturer_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'manufacturer'),
+            'group_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
+            'article_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
+            'usergroup_ids' => array('type' => 'VARCHAR(4096)', 'notnull' => false, 'default' => null, 'renamefrom' => 'usergroup_ids'),
+            'ord' => array('type' => 'INT(10)', 'default' => '0', 'renamefrom' => 'sort_order'),
+            'distribution' => array('type' => 'VARCHAR(16)', 'default' => '', 'renamefrom' => 'handler'),
+            'picture' => array('type' => 'VARCHAR(4096)', 'notnull' => false, 'default' => null),
+            'flags' => array('type' => 'VARCHAR(4096)', 'notnull' => false, 'default' => null),
+// Obsolete:
+//`property1` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',
+//`property2` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',
+//`manufacturer_url` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+        );
+        $table_index =  array(
+            'group_id' => array('fields' => 'group_id',    'type' => 'KEY', ),
+            'article_id' => array('fields' => 'article_id',    'type' => 'KEY', ),
+            'flags' => array('fields' => 'flags',    'type' => 'FULLTEXT', ),
+            'keywords' => array('fields' => 'keywords',    'type' => 'FULLTEXT', ),
+        );
+
+        if (DbTool::table_exists($table_name)) {
+            if (DbTool::column_exists($table_name, 'title')) {
+                // Migrate all Product strings to the Text table first
+                Text::deleteByKey(self::TEXT_NAME);
+                Text::deleteByKey(self::TEXT_SHORT);
+                Text::deleteByKey(self::TEXT_LONG);
+                Text::deleteByKey(self::TEXT_CODE);
+                Text::deleteByKey(self::TEXT_URI);
+                Text::deleteByKey(self::TEXT_KEYS);
+                $objResult = DbTool::sql("
+                    SELECT `id`, `title`, `shortdesc`, `description`,
+                           `product_id`, `external_link`, `keywords`
+                      FROM `$table_name`");
+                if (!$objResult) {
+die("Product::errorHandler(): Error: failed to query Product strings, code aerja3hbder");
+                }
+                while (!$objResult->EOF) {
+                    $id = $objResult->fields['id'];
+                    $name = $objResult->fields['title'];
+                    $text_name_id = Text::replace(
+                        null, FRONTEND_LANG_ID,
+                        $name, MODULE_ID, self::TEXT_NAME);
+                    if (!$text_name_id) {
+die("Product::errorHandler(): Error: failed to migrate name '$name', code hrej5435fgdf");
+                    }
+                    $short = $objResult->fields['shortdesc'];
+                    $text_short_id = Text::replace(
+                        null, FRONTEND_LANG_ID,
+                        $short, MODULE_ID, self::TEXT_SHORT);
+                    if (!$text_short_id) {
+die("Product::errorHandler(): Error: failed to migrate short '$short', code nadduaur344fd");
+                    }
+                    $long = $objResult->fields['description'];
+                    $text_long_id = Text::replace(
+                        null, FRONTEND_LANG_ID,
+                        $long, MODULE_ID, self::TEXT_LONG);
+                    if (!$text_long_id) {
+die("Product::errorHandler(): Error: failed to migrate long '$long', code bwsai4wjyfd");
+                    }
+                    $code = $objResult->fields['product_id'];
+                    $text_code_id = Text::replace(
+                        null, FRONTEND_LANG_ID,
+                        $code, MODULE_ID, self::TEXT_CODE);
+                    if (!$text_code_id) {
+die("Product::errorHandler(): Error: failed to migrate code '$code', code ajkar34rjdf");
+                    }
+                    $uri = $objResult->fields['external_link'];
+                    $text_uri_id = Text::replace(
+                        null, FRONTEND_LANG_ID,
+                        $uri, MODULE_ID, self::TEXT_URI);
+                    if (!$text_uri_id) {
+die("Product::errorHandler(): Error: failed to migrate uri '$uri', code yfbrej43hsjd");
+                    }
+                    $keys = $objResult->fields['keywords'];
+                    $text_keys_id = Text::replace(
+                        null, FRONTEND_LANG_ID,
+                        $keys, MODULE_ID, self::TEXT_KEYS);
+                    if (!$text_keys_id) {
+die("Product::errorHandler(): Error: failed to migrate keys '$keys', code fnyr842fhdd");
+                    }
+                    $objResult2 = DbTool::sql("
+                        UPDATE `$table_name`
+                           SET `title`='$text_name_id',
+                               `shortdesc`='$text_short_id',
+                               `description`='$text_long_id',
+                               `product_id`='$text_code_id',
+                               `external_link`='$text_uri_id',
+                               `keywords`='$text_keys_id'
+                         WHERE `id`=$id");
+                    if (!$objResult2) {
+die("Product::errorHandler(): Error: failed to update Product ID $id, code t5kjfas");
+                    }
+                    $objResult->MoveNext();
+                }
+            }
+        }
+
+        if (!DbTool::table($table_name, $table_structure, $table_index)) {
+die("Product::errorHandler(): Error: failed to migrate Product table, code agkjgb7ls");
+        }
+
+        // Always
+        return false;
     }
 
 }

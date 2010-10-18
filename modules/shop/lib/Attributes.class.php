@@ -69,6 +69,7 @@ class Attributes
 
 
     /**
+     * OBSOLETE AND DISFUNCT
      * Returns an array of Attribute names.
      *
      * If the optional $product_id argument is greater than zero,
@@ -79,16 +80,15 @@ class Attributes
      * @param   integer     $product_id      The optional Product ID
      * @return  array                       Array of Attribute names
      *                                      upon success, false otherwise.
-     */
     static function getArrayByProductId($product_id=0)
     {
         global $objDatabase;
 
         $query = "
             SELECT DISTINCT `id`, `name`, `type`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_attribute`
             ".($product_id
-              ? "INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`
+              ? "INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute`
                     ON `attribute_id`=`id`
                  WHERE `product_id`=$product_id
                  ORDER BY `ord` ASC
@@ -107,6 +107,7 @@ class Attributes
         }
         return self::$arrAttributes;
     }
+    */
 
 
     /**
@@ -124,7 +125,6 @@ class Attributes
         if (empty(self::$arrAttributes[$attribute_id])) return false;
         return self::$arrAttributes[$attribute_id];
     }
-
 
 
     /**
@@ -146,10 +146,8 @@ class Attributes
      * @global  mixed     $objDatabase      The Database connection
      */
     static function getArray(
-        &$count, $offset=0, $limit=null, $order='`id` ASC', $filter=null
+        &$count, $offset=0, $limit=null, $order='`name`.`id` ASC', $filter=null
     ) {
-        global $objDatabase;
-
         $arrId = self::getIdArray(
             $count, $offset, $limit, $order, $filter);
         if ($arrId === false) return false;
@@ -165,6 +163,42 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
             $arrPa[$id] = $objPa;
         }
         return $arrPa;
+    }
+
+
+    /**
+     * Returns an array of all ProductAttribute names
+     *
+     * Backend use only.
+     * The resulting array is limited to the first 1000 Attributes found,
+     * if the $limit parameter value is missing.
+     * @param   integer   $count            The number of matching records,
+     *                                      by reference
+     * @param   integer   $offset           The optional offset,
+     *                                      defaults to 0 (zero)
+     * @param   integer   $limit            The optional limit for the number
+     *                                      of IDs returned,
+     *                                      defaults to null (all)
+     * @param   string    $order            The optional order field and
+     *                                      direction,
+     *                                      defaults to ID, ascending
+     * @param   string    $filter           The optional filter to be applied
+     *                                      to the name, defaults to null (any)
+     * @return  array                       The array of ProductAttribute
+     *                                      names on success, false otherwise
+     */
+    static function getNameArray(
+        &$count, $offset=0, $limit=1000, $order=null, $filter=null
+    ) {
+        $count = 0;
+        $arrAttribute = self::getArray(
+            $count, $offset, $limit, $order, $filter);
+        if ($arrAttribute === false) return false;
+        $arrName = array();
+        foreach ($arrAttribute as $id => $objAttribute) {
+            $arrName[$id] = $objAttribute->getName();
+        }
+        return $arrName;
     }
 
 
@@ -187,27 +221,28 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
      * @global  mixed     $objDatabase      The Database connection
      */
     static function getIdArray(
-        &$count, $offset=0, $limit=null, $order='`id` ASC', $filter=null
+        &$count, $offset=0, $limit=null, $order='`name`.`id` ASC', $filter=null
     ) {
         global $objDatabase;
 
+//DBG::log("Attributes::getIdArray(count $count, offset $offset, limit $limit, order $order, filter $filter): Entered");
+
         $arrSqlName = Text::getSqlSnippets(
             '`name`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, Attribute::TEXT_NAME, 'name'
+            MODULE_ID, Attribute::TEXT_ATTRIBUTE_NAME, 'name'
         );
         $query_count = "
             SELECT COUNT(*) AS `numof`";
         $query_select = "
             SELECT `name`.`id`";
         $query_from = "
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name` AS `name`".
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_attribute` AS `name`".
                    $arrSqlName['join'];
         $query_where =
             (empty($filter)
               ? ''
               : " WHERE `name` LIKE '%".addslashes($filter)."%'" );
-        $query_order = "
-             ORDER BY $order";
+        $query_order = ($order ? " ORDER BY $order" : '');
         $count = 0;
         if (empty($limit)) $limit = -1;
         $objResult = $objDatabase->SelectLimit(
@@ -273,12 +308,12 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
         if (!isset(self::$arrAttributes)) self::$arrAttributes = array();
         $arrSqlName = Text::getSqlSnippets(
             '`name`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, Attribute::TEXT_NAME
+            MODULE_ID, Attribute::TEXT_ATTRIBUTE_NAME
         );
         $query = "
             SELECT `name`.`id`, `name`.`type`".
                    $arrSqlName['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name` AS `name`".
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_attribute` AS `name`".
                    $arrSqlName['join'].
             ($attribute_id ? " WHERE `name`.`id`=$attribute_id" : '');
         $objResult = $objDatabase->Execute($query);
@@ -345,7 +380,7 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
      *        'id' => The option ID,
      *        'attribute_id' => The Attribute ID,
      *        'value' => The option name (according to FRONTEND_LANG_ID),
-     *        'text_value_id' => The option name Text ID,
+     *        'text_name_id' => The option name Text ID,
      *        'price' => The option price (including the sign),
      *      ),
      *      ... more ...
@@ -361,13 +396,13 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
 
         if (!isset(self::$arrOptions)) self::$arrOptions = array();
         $arrSqlValue = Text::getSqlSnippets(
-            '`value`.`text_value_id`', FRONTEND_LANG_ID,
-            MODULE_ID, TEXT_SHOP_PRODUCTS_ATTRIBUTES_VALUE
+            '`value`.`text_name_id`', FRONTEND_LANG_ID,
+            MODULE_ID, Attribute::TEXT_OPTION_NAME
         );
         $query = "
             SELECT `value`.`id`, `value`.`attribute_id`,
                    `value`.`price`".$arrSqlValue['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value` as `value`".
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_option` as `value`".
                    $arrSqlValue['join'].
             ($attribute_id ? " WHERE `value`.`attribute_id`=$attribute_id" : '');
         $objResult = $objDatabase->Execute($query);
@@ -375,11 +410,11 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
         while (!$objResult->EOF) {
             $option_id = $objResult->fields['id'];
             $attribute_id = $objResult->fields['attribute_id'];
-            $text_value_id = $objResult->fields[$arrSqlValue['name']];
+            $text_name_id = $objResult->fields[$arrSqlValue['name']];
             $strValue = $objResult->fields[$arrSqlValue['text']];
             // Replace Text in a missing language by another, if available
             if ($strValue === null) {
-                $objText = Text::getById($text_value_id, 0);
+                $objText = Text::getById($text_name_id, 0);
                 if ($objText)
                     $objText->markDifferentLanguage(FRONTEND_LANG_ID);
                     $strValue = $objText->getText();
@@ -390,7 +425,7 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
                 'id'            => $option_id,
                 'attribute_id'  => $attribute_id,
                 'value'         => $strValue,
-                'text_value_id' => $text_value_id,
+                'text_name_id'  => $text_name_id,
                 'price'         => $objResult->fields['price'],
             );
             $objResult->MoveNext();
@@ -416,11 +451,11 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
         global $objDatabase;
 
         $arrSqlValue = Text::getSqlSnippets(
-            'text_value_id', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_VALUE);
+            'text_name_id', FRONTEND_LANG_ID,
+            MODULE_ID, Attribute::TEXT_OPTION_NAME);
         $query = "
             SELECT ".$arrSqlValue['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value".
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option".
                    $arrSqlValue['join']."
              WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
@@ -446,7 +481,7 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
 
         $query = "
             SELECT price
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_value
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option
              WHERE id=$option_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return false;
@@ -499,11 +534,11 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
 
         $query = "
             SELECT `product_id`, `option_id`, `ord`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`".
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute`".
             ($product_id ? " WHERE `product_id`=$product_id" : '')."
              ORDER BY `ord` ASC";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) return self::errorHandler();
         if (!isset(self::$arrRelation)) self::$arrRelation = array();
         while (!$objResult->EOF) {
             $product_id = $objResult->fields['product_id'];
@@ -534,17 +569,13 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
     {
         global $objDatabase;
 
-        $attribute_id = Attribute::getIdByOptionId($option_id);
-        if ($attribute_id <= 0) return false;
         $query = "
-            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes` (
+            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute` (
                 `product_id`,
-                `attribute_id`,
                 `option_id`,
                 `ord`
             ) VALUES (
                 $product_id,
-                $attribute_id,
                 $option_id,
                 $order
             )";
@@ -566,7 +597,7 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
         global $objDatabase;
 
         $query = "
-            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes`
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute`
              WHERE `product_id`=$product_id";
         $objResult = $objDatabase->Execute($query);
         return $objResult;
@@ -770,6 +801,12 @@ DBG::log("Attributes::getArray(): Warning: failed to get Attribute for ID $id");
         }
         $jsVars .= "\nindex = ".$highestIndex.";\n";
         return $jsVars;
+    }
+
+
+    static function errorHandler()
+    {
+        return Attribute::errorHandler();
     }
 
 }

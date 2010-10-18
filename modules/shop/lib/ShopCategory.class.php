@@ -113,7 +113,7 @@ class ShopCategory
         $this->setName($name);
         $this->setDescription($description);
         $this->setParentId($parent_id);
-        $this->setActive($active);
+        $this->active($active);
         $this->setOrd($ord);
     }
 
@@ -208,24 +208,17 @@ class ShopCategory
     }
 
     /**
-     * Get the ShopCategory active status
-     * @return  integer             The ShopCategory active status
+     * The active status
+     * @param   boolean         $active     The optional active status
+     * @return  boolean                     The active status
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getActive()
+    function active($active=null)
     {
+        if (isset($active)) {
+            $this->active = (boolean)$active;
+        }
         return $this->active;
-    }
-    /**
-     * Set the ShopCategory active status
-     * @param   boolean   $active   The ShopCategory active status
-     * @return  boolean             Boolean true. Always.
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setActive($active)
-    {
-        $this->active = ($active ? true : false);
-        return true;
     }
 
     /**
@@ -311,7 +304,8 @@ class ShopCategory
     function removeFlag($flag)
     {
         $this->flags = trim(preg_replace(
-            '/(?:^|\s)$flag(?:\s|\=\S*]|$)/i', ' ', $this->flags));
+            '/(?:^|\s)'.preg_quote($flag, '/').'(?:\s|\=\S*]|$)/i', ' ',
+            $this->flags));
         return true;
     }
     /**
@@ -352,7 +346,9 @@ class ShopCategory
      */
     static function testFlag2($flag, $flags)
     {
-        return preg_match('/(?:^|\s)$flag(?:\s|\=|$)/i', $flags);
+        return preg_match(
+            '/(?:^|\s)'.preg_quote($flag, '/').'(?:\s|\=|$)/i',
+            $flags);
     }
     /**
      * Returns true if this ShopCategory is virtual
@@ -439,7 +435,7 @@ class ShopCategory
         if ($flagWithProducts) {
             foreach (Products::getByShopCategory($oldId) as $objProduct) {
                 $objProduct->makeClone();
-                $objProduct->setShopCategoryId($newId);
+                $objProduct->category_id($newId);
                 if (!$objProduct->store()) {
                     return false;
                 }
@@ -501,7 +497,9 @@ class ShopCategory
         $query = "
             UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_categories`
               SET `text_name_id`=$this->text_name_id,
-                  `text_description_id`=$this->text_description_id,
+                  `text_description_id`=".
+            ($this->text_description_id
+              ? $this->text_description_id : 'NULL').",
                   `parent_id`=$this->parent_id,
                   `active`=".($this->active ? 1 : 0).",
                   `ord`=$this->ord,
@@ -534,7 +532,9 @@ class ShopCategory
                 `picture`, `flags`
                 ".($this->id ? ', id' : '')."
             ) VALUES (
-                $this->text_name_id, $this->text_description_id,
+                $this->text_name_id, ".
+            ($this->text_description_id
+              ? $this->text_description_id : 'NULL').",
                 $this->parent_id, ".($this->active ? 1 : 0).", $this->ord,
                 '".addslashes($this->picture)."', '".addslashes($this->flags)."'
                 ".($this->id ? ", $this->id" : '')."
@@ -645,14 +645,14 @@ class ShopCategory
 
         $text_name_id = $objResult->fields[$arrSqlName['name']];
         $strName = $objResult->fields[$arrSqlName['text']];
-        if ($strName === null) {
+        if ($text_name_id && $strName === null) {
             $objText = Text::getById($text_name_id, 0);
             $objText->markDifferentLanguage(FRONTEND_LANG_ID);
             $strName = $objText->getText();
         }
-        $text_description_id = $objResult->fields[$arrSqlName['name']];
-        $strDescription = $objResult->fields[$arrSqlName['text']];
-        if ($strDescription === null) {
+        $text_description_id = $objResult->fields[$arrSqlDescription['name']];
+        $strDescription = $objResult->fields[$arrSqlDescription['text']];
+        if ($text_description_id && $strDescription === null) {
             $objText = Text::getById($text_description_id, 0);
             $objText->markDifferentLanguage(FRONTEND_LANG_ID);
             $strDescription = $objText->getText();
@@ -804,7 +804,7 @@ class ShopCategory
             $childCategoryId = $objChildShopCategory->getId();
             $arrCategoryTree[$parent_id][$childCategoryId] = array(
                 'ord'    => $objChildShopCategory->getOrd(),
-                'active' => $objChildShopCategory->getactive(),
+                'active' => $objChildShopCategory->active(),
                 'level'  => $level,
             );
             // get the grandchildren

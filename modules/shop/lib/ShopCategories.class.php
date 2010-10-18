@@ -268,7 +268,7 @@ class ShopCategories
                 'description' => $objCategory->getDescription(),
                 'parent_id'   => $objCategory->getParentId(),
                 'ord'         => $objCategory->getOrd(),
-                'active'      => $objCategory->getActive(),
+                'active'      => $objCategory->active(),
                 'picture'     => $objCategory->getPicture(),
                 'flags'       => $objCategory->getFlags(),
                 'virtual'     => $objCategory->isVirtual(),

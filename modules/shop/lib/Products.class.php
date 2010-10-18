@@ -40,6 +40,22 @@ define('SHOP_PRODUCT_DEFAULT_VIEW_COUNT',     4);
 class Products
 {
     /**
+     * Sorting order strings according to the corresponding setting
+     *
+     * Order 1: By order field value ascending, ID descending
+     * Order 2: By name ascending, Product ID ascending
+     * Order 3: By Product ID ascending, name ascending
+     * @var     array
+     * @see     Products::getByShopParam()
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public static $arrProductOrder = array(
+        1 => '`product`.`ord` ASC, `product`.`id` DESC',
+        2 => '`name` ASC, `code` ASC',
+        3 => '`code` ASC, `name` ASC',
+    );
+
+    /**
      * Returns an array of Product objects sharing the same Product code.
      * @param   string      $customId   The Product code
      * @return  mixed                   The array of matching Product objects
@@ -76,9 +92,9 @@ class Products
      * @param   integer     $count          The desired number of Products,
      *                                      by reference
      * @param   integer     $offset         The Product offset
-     * @param   integer     $productId      The Product ID
-     * @param   integer     $shopCategoryId The ShopCategory ID
-     * @param   integer     $manufacturerId The Manufacturer ID
+     * @param   integer     $product_id     The Product ID
+     * @param   integer     $category_id    The ShopCategory ID
+     * @param   integer     $manufacturer_id  The Manufacturer ID
      * @param   string      $pattern        A search pattern
      * @param   boolean     $flagSpecialoffer Limit results to special offers
      *                                      if true.  Disabled if either
@@ -105,7 +121,7 @@ class Products
      */
     static function getByShopParams(
         &$count, $offset=0,
-        $productId=0, $shopCategoryId=0, $manufacturerId=0, $pattern='',
+        $product_id=0, $category_id=0, $manufacturer_id=0, $pattern='',
         $flagSpecialoffer=false, $flagLastFive=false,
         $orderSetting='',
         $flagIsReseller=null,
@@ -114,9 +130,9 @@ class Products
         global $objDatabase, $_CONFIG;
 
         // Do not show any Products if no selection is made at all
-        if (   empty($productId)
-            && empty($shopCategoryId)
-            && empty($manufacturerId)
+        if (   empty($product_id)
+            && empty($category_id)
+            && empty($manufacturer_id)
             && empty($pattern)
             && empty($flagSpecialoffer)
             && empty($flagLastFive)
@@ -124,9 +140,9 @@ class Products
         ) return array();
 // TODO
 // This is an optimization, but does not yet consider the other parameters.
-        if ($productId) {
+        if ($product_id) {
             // select single Product by ID
-            $objProduct = Product::getById($productId);
+            $objProduct = Product::getById($product_id);
             if ($objProduct) {
                 $count = 1;
                 return array($objProduct);
@@ -135,26 +151,43 @@ class Products
             return false;
         }
 
-        $querySelect = "SELECT `p`.`id`";
+        // The name and code fields may be used for sorting.
+        // Include them in the field list in order to introduce the alias
+        $arrSqlName = Text::getSqlSnippets(
+            '`product`.`text_name_id`', FRONTEND_LANG_ID,
+            MODULE_ID, Product::TEXT_NAME, 'name'
+        );
+        $arrSqlCode = Text::getSqlSnippets(
+            '`product`.`text_code_id`', FRONTEND_LANG_ID,
+            MODULE_ID, Product::TEXT_CODE, 'code'
+        );
+        $querySelect = "
+            SELECT `product`.`id`".
+                   $arrSqlName['field'].
+                   $arrSqlCode['field'];
         $queryCount = "SELECT COUNT(*) AS `numof_products`";
 
         $queryJoin = '
-            FROM `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_products` AS `p`
-            LEFT JOIN `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories` AS `c`
-              ON `c`.`catid`=`p`.`catid`';
+            FROM `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_products` AS `product`
+            LEFT JOIN `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories` AS `category`
+              ON `category`.`id`=`product`.`category_id`'.
+              $arrSqlName['join'].
+              $arrSqlCode['join'];
 
         $queryWhere = ' WHERE 1'.
             // Limit Products to available and active in the frontend
             ($flagShowInactive
                 ? ''
-                : ' AND `p`.`active`=1 AND `p`.`stock`>0 AND `c`.`active`=1').
+                : ' AND `product`.`active`=1
+                    AND `product`.`stock`>0
+                    AND `category`.`active`=1').
             // Limit Products visible to resellers or non-resellers
             ($flagIsReseller === true
               ? ' AND `b2b`=1'
               : ($flagIsReseller === false ? ' AND `b2c`=1' : ''));
 
         if (empty($orderSetting))
-            $orderSetting = ' `p`.`sort_order` ASC, `p`.`id` DESC';
+            $orderSetting = ' `product`.`sort_order` ASC, `product`.`id` DESC';
         $queryOrder = ' ORDER BY '.$orderSetting;
 
         $limit = ($count > 0
@@ -175,41 +208,63 @@ class Products
             $querySpecialOffer =
                 (   $flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS
                  || $flagSpecialoffer === true // Old behavior!
-                  ? ' AND `p`.`is_special_offer`=1'
+                  ? ' AND `product`.`is_special_offer`=1'
                   : ($flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_MARKED
-                      ? " AND `p`.`flags` LIKE '%__SHOWONSTARTPAGE__%'" : '')
+                      ? " AND `product`.`flags` LIKE '%__SHOWONSTARTPAGE__%'" : '')
                 );
             // Limit Products by Manufacturer ID, if any
-            if ($manufacturerId > 0) {
+            if ($manufacturer_id > 0) {
                 $queryJoin .= '
                     INNER JOIN `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer` AS `m`
-                       ON `m`.`id`=`p`.`manufacturer`';
-                $queryWhere .= ' AND `p`.`manufacturer`='.$manufacturerId;
+                       ON `m`.`id`=`product`.`manufacturer`';
+                $queryWhere .= ' AND `product`.`manufacturer`='.$manufacturer_id;
             }
             // Limit Products by ShopCategory ID, if any
-            if ($shopCategoryId > 0) {
-                $queryWhere .= ' AND `p`.`catid`='.$shopCategoryId;
+            if ($category_id > 0) {
+                $queryWhere .= ' AND `product`.`category_id`='.$category_id;
             }
             // Limit Products by search pattern, if any
             if ($pattern != '') {
+                $arrSqlShort = Text::getSqlSnippets(
+                    '`product`.`text_short_id`', FRONTEND_LANG_ID,
+                    MODULE_ID, Product::TEXT_SHORT, 'short'
+                );
+                $arrSqlLong = Text::getSqlSnippets(
+                    '`product`.`text_long_id`', FRONTEND_LANG_ID,
+                    MODULE_ID, Product::TEXT_LONG, 'long'
+                );
+                $arrSqlKeys = Text::getSqlSnippets(
+                    '`product`.`text_keys_id`', FRONTEND_LANG_ID,
+                    MODULE_ID, Product::TEXT_KEYS, 'keys'
+                );
+                $arrSqlUri = Text::getSqlSnippets(
+                    '`product`.`text_uri_id`', FRONTEND_LANG_ID,
+                    MODULE_ID, Product::TEXT_URI, 'uri'
+                );
+                $queryJoin .=
+                    $arrSqlCode['join'].
+                    $arrSqlShort['join'].
+                    $arrSqlLong['join'].
+                    $arrSqlKeys['join'].
+                    $arrSqlUri['join'];
                 $pattern = addslashes($pattern);
                 $queryWhere .= "
-                    AND (   `p`.`title` LIKE '%$pattern%'
-                         OR `p`.`description` LIKE '%$pattern%'
-                         OR `p`.`shortdesc` LIKE '%$pattern%'
-                         OR `p`.`product_id` LIKE '%$pattern%'
-                         OR `p`.`id` LIKE '%$pattern%'
-                         OR `p`.`keywords` LIKE '%$pattern%')";
+                    AND (   `id` LIKE '%$pattern%'
+                         OR `name` LIKE '%$pattern%'
+                         OR `code` LIKE '%$pattern%'
+                         OR `long` LIKE '%$pattern%'
+                         OR `short` LIKE '%$pattern%'
+                         OR `keys` LIKE '%$pattern%')";
             }
         }
         $queryTail =
             $queryJoin.
             $queryWhere.
-            $querySpecialOffer.
-            $queryOrder;
+            $querySpecialOffer;
         $count = 0;
-        $objResult = $objDatabase->SelectLimit($querySelect.$queryTail, $limit, $offset);
-        if (!$objResult) return false;
+        $objResult = $objDatabase->SelectLimit(
+            $querySelect.$queryTail.$queryOrder, $limit, $offset);
+        if (!$objResult) return Product::errorHandler();
         $arrProduct = array();
         while (!$objResult->EOF) {
             $product_id = $objResult->fields['id'];
@@ -232,18 +287,18 @@ class Products
      * immediately without trying to delete the remaining Products.
      * Deleting the ShopCategory after this method failed will most
      * likely result in Product bodies in the database!
-     * @param       integer     $catid          The ShopCategory ID
-     * @return      boolean                     True on success, false otherwise
+     * @param   integer   $category_id    The ShopCategory ID
+     * @return  boolean                   True on success, false otherwise
      * @static
-     * @author      Reto Kohli <reto.kohli@comvation.com>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function deleteByShopCategory($catId, $flagDeleteImages=false)
+    static function deleteByShopCategory($category_id, $flagDeleteImages=false)
     {
-        $arrProductId = Products::getIdArrayByShopCategory($catId);
+        $arrProductId = Products::getIdArrayByShopCategory($category_id);
         if (!is_array($arrProductId)) return false;
         // Look whether this is within a virtual ShopCategory
         $virtualContainer = '';
-        $parent_id = $catId;
+        $parent_id = $category_id;
         do {
             $objShopCategory = ShopCategory::getById($parent_id);
             if (!$objShopCategory) return false;
@@ -257,25 +312,25 @@ class Products
         } while ($parent_id != 0);
 
         // Remove the Products in one way or another
-        foreach ($arrProductId as $productId) {
-            $objProduct = Product::getById($productId);
+        foreach ($arrProductId as $product_id) {
+            $objProduct = Product::getById($product_id);
             if (!$objProduct) return false;
             if ($virtualContainer != ''
-             && $objProduct->getFlags() != '') {
+             && $objProduct->flags() != '') {
                 // Virtual ShopCategories and their content depends on
                 // the Product objects' flags.
                 foreach ($arrProductId as $objProduct) {
                     $objProduct->removeFlag($virtualContainer);
                     if (!Products::changeFlagsByProductCode(
-                        $objProduct->getCode(),
-                        $objProduct->getFlags()
+                        $objProduct->code(),
+                        $objProduct->flags()
                     )) return false;
                 }
             } else {
                 // Normal, non-virtual ShopCategory.
                 // Remove all Products having the same Product code.
                 if (!Products::deleteByCode(
-                    $objProduct->getCode(),
+                    $objProduct->code(),
                     $flagDeleteImages)
                 ) return false;
             }
@@ -310,22 +365,21 @@ class Products
     /**
      * Returns an array of Product IDs contained by the given
      * ShopCategory ID.
-     * @param   integer     $catId      The ShopCategory ID
+     * @param   integer   $category_id  The ShopCategory ID
      * @return  mixed                   The array of Product IDs on success,
      *                                  false otherwise.
      * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getIdArrayByShopCategory($catId)
+    static function getIdArrayByShopCategory($category_id)
     {
         global $objDatabase;
 
         $query = "
             SELECT id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE catid=$catId
-          ORDER BY sort_order ASC
-        ";
+             WHERE category_id=$category_id
+          ORDER BY sort_order ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrProductId = array();
@@ -347,17 +401,16 @@ class Products
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @todo    Apply the order setting!
      */
-    static function getPictureByCategoryId($catId)
+    static function getPictureByCategoryId($category_id)
     {
         global $objDatabase;
 
         $query = "
             SELECT picture
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE catid=$catId
+             WHERE category_id=$category_id
                AND picture!=''
-          ORDER BY sort_order ASC
-        ";
+          ORDER BY sort_order ASC";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture
@@ -386,16 +439,15 @@ class Products
         global $objDatabase;
 
         $query = "
-            SELECT DISTINCT catId
+            SELECT DISTINCT category_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE flags LIKE '%$strName%'
-          ORDER BY catId ASC
-        ";
+          ORDER BY category_id ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrShopCategoryId = array();
         while (!$objResult->EOF) {
-            $arrShopCategoryId[] = $objResult->Fields['catid'];
+            $arrShopCategoryId[] = $objResult->fields['category_id'];
             $objResult->MoveNext();
         }
         return $arrShopCategoryId;
@@ -457,7 +509,7 @@ class Products
                     sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $id);
                 continue;
             }
-            $imageName = $objProduct->getPictures();
+            $imageName = $objProduct->pictures();
             $imagePath = PRODUCT_IMAGE_PATH.'/'.$imageName;
             // only try to create thumbs from entries that contain a
             // plain text file name (i.e. from an import)
@@ -510,7 +562,7 @@ class Products
                     '?'.base64_encode($width).
                     '?'.base64_encode($height).
                     ':??:??';
-                $objProduct->setPictures($shopPicture);
+                $objProduct->pictures($shopPicture);
                 $objProduct->store();
             } else {
                 $arrFailedCreatingThumb[] = $id;
@@ -579,8 +631,8 @@ class Products
         // ShopCategories, and all sibling Products within them.
         foreach ($arrProduct as $objProduct) {
             // Get the containing article ShopCategory.
-            $catId = $objProduct->getShopCategoryId();
-            $objArticleCategory = ShopCategory::getById($catId);
+            $category_id = $objProduct->category_id();
+            $objArticleCategory = ShopCategory::getById($category_id);
             if (!$objArticleCategory) continue;
 
             // Get parent (subgroup)
@@ -608,7 +660,7 @@ class Products
             // Set the new flag set for all Products within the Article
             // ShopCategory.
             foreach ($arrSiblingProducts as $objProduct) {
-                $objProduct->setFlags($strNewFlags);
+                $objProduct->flags($strNewFlags);
                 $objProduct->store();
             }
 
@@ -782,8 +834,8 @@ class Products
             ";\nvar arrProducts = new Array();\n";
         // set products menu and javascript array
         $query = '
-            SELECT id, product_id, title,
-                resellerprice, normalprice, discountprice, is_special_offer,
+            SELECT id, product_id, name,
+                resellerprice, normalprice, discountprice, discount_active,
                 weight, vat_id, handler,
                 group_id, article_id
             FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products

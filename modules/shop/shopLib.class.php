@@ -61,22 +61,6 @@ class ShopLibrary
     const thumbnailSuffix = '.thumb';
     const usernamePrefix = 'user';
 
-    /**
-     * Sorting order strings according to the corresponding setting
-     *
-     * Order 1: By order field value ascending, ID descending
-     * Order 2: By title ascending, Product ID ascending
-     * Order 3: By Product ID ascending, title ascending
-     * @var     array
-     * @see     Products::getByShopParam()
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    public static $arrProductOrder = array(
-        1 => 'p.sort_order ASC, p.id DESC',
-        2 => 'p.title ASC, p.product_id ASC',
-        3 => 'p.product_id ASC, p.title ASC',
-    );
-
 
     /**
      * Returns a dropdown menu string with all available languages.
@@ -907,7 +891,7 @@ die("Product ID $product_id not found");
             // Decrease the Product stock count,
             // applies to "real", shipped goods only
             $objProduct->decreaseStock($quantity);
-            $product_code = $objProduct->getCode();
+            $product_code = $objProduct->code();
 
             // Pick the order items attributes from the database
             $query = "
@@ -965,11 +949,11 @@ die("Product ID $product_id not found");
                     // In case there are protected downloads in the cart,
                     // collect the group IDs
                     $arrUsergroupId = array();
-                    if ($objProduct->getDistribution() == 'download') {
-                        $usergroupIds = $objProduct->getUsergroups();
+                    if ($objProduct->distribution() == 'download') {
+                        $usergroupIds = $objProduct->usergroup_ids();
                         if ($usergroupIds != '') {
                             $arrUsergroupId = explode(',', $usergroupIds);
-                            $validity = $objProduct->getWeight();
+                            $validity = $objProduct->weight();
                         }
                     }
                     // create an account that belongs to all collected
@@ -1017,7 +1001,7 @@ die("Product ID $product_id not found");
                         );
                     }
 //echo("Instance $instance");
-                    if ($objProduct->getDistribution() == 'coupon') {
+                    if ($objProduct->distribution() == 'coupon') {
                         if (empty($arrProduct['COUPON_DATA']))
                             $arrProduct['COUPON_DATA'] = array();
 //DBG::log("Getting code");

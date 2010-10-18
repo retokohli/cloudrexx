@@ -92,6 +92,11 @@ class shopmanager extends ShopLibrary
         global $_ARRAYLANG, $objTemplate;
 
         SettingDb::init('config');
+// TODO
+// This is a temporary fix, needs to be replaced by the proper update()
+        if (is_null(SettingDb::getValue('product_sorting'))) {
+            ShopSettings::errorHandler();
+        }
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
@@ -405,8 +410,7 @@ DBG::activate(DBG_DB_FIREPHP);
             if (isset($_POST['clearCategories']) && $_POST['clearCategories']) {
                 $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
                 $objDatabase->Execute($query);
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes';
-                $objDatabase->Execute($query);
+                Attributes::deleteAll();
                 $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
                 $objDatabase->Execute($query);
             }
@@ -435,13 +439,10 @@ DBG::activate(DBG_DB_FIREPHP);
         // Import
         if (isset($_REQUEST['importFileProducts'])) {
             if (isset($_POST['clearProducts']) && $_POST['clearProducts']) {
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
-                $objDatabase->Execute($query);
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products_attributes';
-                $objDatabase->Execute($query);
+                Products::deleteAll();
+                Attributes::deleteAll();
                 // The categories need not be removed, but it is done by design!
-                $query = 'DELETE FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories';
-                $objDatabase->Execute($query);
+                ShopCategories::deleteAll();
             }
             $arrFileContent = $this->objCSVimport->GetFileContent();
             $query = '
@@ -606,7 +607,7 @@ DBG::activate(DBG_DB_FIREPHP);
                     $fieldNames = array(
                         'id', 'product_id', 'picture', 'title', 'catid', 'handler',
                         'normalprice', 'resellerprice', 'shortdesc', 'description',
-                        'stock', 'stock_visibility', 'discountprice', 'is_special_offer',
+                        'stock', 'stock_visible', 'discountprice', 'is_special_offer',
                         'active', 'b2b', 'b2c', 'startdate', 'enddate',
                         'manufacturer', 'manufacturer_url', 'external_link',
                         'ord', 'vat_id', 'weight',
@@ -614,7 +615,7 @@ DBG::activate(DBG_DB_FIREPHP);
                     $query = "
                         SELECT id, product_id, picture, title, catid, handler,
                                normalprice, resellerprice, shortdesc, description,
-                               stock, stock_visibility, discountprice, is_special_offer,
+                               stock, stock_visible, discountprice, is_special_offer,
                                active, b2b, b2c, startdate, enddate,
                                manufacturer, manufacturer_url, external_link,
                                sort_order, vat_id, weight,
@@ -630,7 +631,7 @@ DBG::activate(DBG_DB_FIREPHP);
                         'catid', 'category', 'parentcategory', 'handler',
                         'normalprice', 'resellerprice', 'discountprice', 'is_special_offer',
                         'shortdesc', 'description',
-                        'stock', 'stock_visibility',
+                        'stock', 'stock_visible',
                         'active', 'b2b', 'b2c',
                         'startdate', 'enddate',
                         'manufacturer_name', 'manufacturer_website',
@@ -645,12 +646,12 @@ DBG::activate(DBG_DB_FIREPHP);
                         SELECT p.id, p.product_id, p.picture, p.title,
                                p.catid, c1.catname as category, c2.catname as parentcategory, p.handler,
                                p.normalprice, p.resellerprice, p.discountprice, p.is_special_offer,
-                               p.shortdesc, p.description, p.stock, p.stock_visibility,
+                               p.shortdesc, p.description, p.stock, p.stock_visible,
                                p.active, p.b2b, p.b2c, p.startdate, p.enddate,
                                m.name as manufacturer_name,
                                m.url as manufacturer_website,
                                p.manufacturer_url, p.external_link,
-                               p.sort_order,
+                               p.ord,
                                v.percent as vat_percent, p.weight,
                                d.name AS discount_group,
                                a.name AS article_group,
@@ -1018,7 +1019,8 @@ DBG::activate(DBG_DB_FIREPHP);
     function _getAttributeList($product_id=0)
     {
         $i = 0;
-        foreach (Attributes::getNameArray() as $attribute_id => $arrAttributeName) {
+        $count = 0;
+        foreach (Attributes::getNameArray($count) as $attribute_id => $arrAttributeName) {
             $arrRelation = array();
             // If a Product is selected, check those Product Attribute values
             // associated with it
@@ -1181,9 +1183,6 @@ DBG::activate(DBG_DB_FIREPHP);
             }
         }
 */
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_value");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes_name");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_products_attributes");
         return true;
     }
 
@@ -1232,7 +1231,7 @@ DBG::activate(DBG_DB_FIREPHP);
         // $success may also be '', in which case no changed setting has
         // been detected.
         // Refresh the Settings, so changes are made visible right away
-        SettingDb::flush();
+        SettingDb::init();
 
         $i = 0;
         self::$pageTitle= $_ARRAYLANG['TXT_SETTINGS'];
@@ -1970,7 +1969,7 @@ DBG::activate(DBG_DB_FIREPHP);
             if ($id != $parentid) $objCategory->setParentId($parentid);
             $objCategory->setName($name);
             $objCategory->setDescription($description);
-            $objCategory->setStatus($active);
+            $objCategory->active($active);
         } else {
             // Add new ShopCategory
             $objCategory = new ShopCategory(
@@ -2024,7 +2023,7 @@ DBG::activate(DBG_DB_FIREPHP);
              || $virtual != $_POST['virtual_old'][$id]) {
                 $objCategory = ShopCategory::getById($id);
                 $objCategory->setSorting($order);
-                $objCategory->setStatus($active);
+                $objCategory->active($active);
                 $objCategory->setVirtual($virtual);
                 if (!$objCategory->store()) {
                     return false;
@@ -2086,7 +2085,7 @@ DBG::activate(DBG_DB_FIREPHP);
                 // Delete the products in the category
                 foreach ($arrProducts as $objProduct) {
                     // Check whether there are orders with this Product ID
-                    $id = $objProduct->getId();
+                    $id = $objProduct->id();
                     $query = "
                         SELECT 1
                           FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
@@ -2156,11 +2155,11 @@ DBG::activate(DBG_DB_FIREPHP);
             foreach ($arrProductId as $id) {
                 $objProduct = Product::getById($id);
                 if (!$objProduct) continue;
-//                $code = $objProduct->getCode();
+//                $code = $objProduct->code();
 //                if (empty($code)) {
                     $result &= $objProduct->delete();
 //                } else {
-//                    $result &= !Products::deleteByCode($objProduct->getCode());
+//                    $result &= !Products::deleteByCode($objProduct->code());
 //                }
             }
         }
@@ -2201,7 +2200,7 @@ DBG::activate(DBG_DB_FIREPHP);
         global $_ARRAYLANG, $_FILES;
 
         // Default values
-        $productId =  0;
+        $product_id =  0;
         $productName = '';
         $productIdentifier = '';
         $category_id = '';
@@ -2238,7 +2237,7 @@ DBG::activate(DBG_DB_FIREPHP);
 //            unset($_SESSION['shopPM']['TempThumbnailName']);
 //        }
 
-        $productId = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+        $product_id = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
         $objProduct = false;
 
         // Store Product data if form is sent
@@ -2246,47 +2245,47 @@ DBG::activate(DBG_DB_FIREPHP);
             $productName = contrexx_stripslashes(strip_tags($_POST['productName']));
             $productIdentifier = contrexx_stripslashes(strip_tags($_POST['productCode']));
             $category_id = intval($_POST['category_id']);
-            $customerPrice = floatval($_POST['CustomerPrice']);
-            $resellerPrice = floatval($_POST['ResellerPrice']);
+            $customerPrice = floatval($_POST['customerPrice']);
+            $resellerPrice = floatval($_POST['resellerPrice']);
             $specialOffer =
-                (isset($_POST['SpecialOffer']) ? 1 : 0);
-            $discount = floatval($_POST['Discount']);
-            $vat_id = (isset($_POST['TaxId']) ? $_POST['TaxId'] : 0);
-            $shortDescription = contrexx_stripslashes($_POST['ShortDescription']);
-            $description = contrexx_stripslashes($_POST['Description']);
-            $stock = intval($_POST['Stock']);
+                (isset($_POST['specialOffer']) ? 1 : 0);
+            $discount = floatval($_POST['discount']);
+            $vat_id = (isset($_POST['vat_id']) ? $_POST['vat_id'] : 0);
+            $shortDescription = contrexx_stripslashes($_POST['shortDescription']);
+            $description = contrexx_stripslashes($_POST['description']);
+            $stock = intval($_POST['stock']);
             $stockVisibility =
-                (isset($_POST['StockVisibility']) ? 1 : 0);
-            $manufacturerUrl = htmlspecialchars(strip_tags(contrexx_stripslashes($_POST['ManufacturerUrl'])), ENT_QUOTES, CONTREXX_CHARSET);
+                (isset($_POST['stockVisibility']) ? 1 : 0);
+            $manufacturerUrl = htmlspecialchars(strip_tags(contrexx_stripslashes($_POST['manufacturerUrl'])), ENT_QUOTES, CONTREXX_CHARSET);
             $articleActive =
-                (isset($_POST['ArticleActive']) ? 1 : 0);
+                (isset($_POST['articleActive']) ? 1 : 0);
             $b2b = isset($_POST['B2B']);
             $b2c = isset($_POST['B2C']);
-            $startdate = !empty($_POST['Startdate']) ? contrexx_stripslashes($_POST['Startdate']) : '0000-00-00 00:00:00';
-            $enddate = !empty($_POST['Enddate']) ? contrexx_stripslashes($_POST['Enddate']) : '0000-00-00 00:00:00';
-            $manufacturerId = intval($_POST['ManufacturerId']);
+            $startdate = !empty($_POST['startdate']) ? contrexx_stripslashes($_POST['startdate']) : '0000-00-00 00:00:00';
+            $enddate = !empty($_POST['enddate']) ? contrexx_stripslashes($_POST['enddate']) : '0000-00-00 00:00:00';
+            $manufacturerId = intval($_POST['manufacturerId']);
 // Currently not used on the detail page
 //            $flags = (isset($_POST['Flags'])
 //                    ? join(' ', $_POST['Flags']) : '');
-            $distribution = $_POST['Distribution'];
+            $distribution = $_POST['distribution'];
             // Different meaning of the "weight" field for downloads!
             // The getWeight() method will treat purely numeric values
             // like the validity period (in days) the same as a weight
             // without its unit and simply return its integer value.
             $weight =
                 ($distribution == 'delivery'
-                    ? Weight::getWeight($_POST['Weight'])
-                    : $_POST['AccountValidity']
+                    ? Weight::getWeight($_POST['weight'])
+                    : $_POST['accountValidity']
                 );
             // Assigned frontend groups for protected downloads
             $userGroupIds =
-                (isset($_POST['GroupsAssigned'])
-                  ? implode(',', $_POST['GroupsAssigned'])
+                (isset($_POST['groupsAssigned'])
+                  ? implode(',', $_POST['groupsAssigned'])
                   : ''
                 );
-            $groupId = intval($_POST['DiscountGroupCount']);
-            $articleId = intval($_POST['DiscountGroupArticle']);
-            $keywords = contrexx_addslashes($_POST['Keywords']);
+            $groupId = intval($_POST['discountGroupCount']);
+            $articleId = intval($_POST['discountGroupArticle']);
+            $keywords = contrexx_addslashes($_POST['keywords']);
 
             for ($i = 1; $i <= 3; ++$i) {
                 // Images outside the above directory are copied to the shop image folder.
@@ -2323,7 +2322,7 @@ DBG::activate(DBG_DB_FIREPHP);
             // flags are needed for their own update later.
 
             // Add a new product
-            if ($productId == 0) {
+            if ($product_id == 0) {
                 $objProduct = new Product(
                     $productIdentifier,
                     $category_id,
@@ -2335,7 +2334,7 @@ DBG::activate(DBG_DB_FIREPHP);
                     $weight
                 );
                 $objProduct->store();
-                $productId = $objProduct->getId();
+                $product_id = $objProduct->id();
             }
 
             // Apply the changes to all Products with the same Product code.
@@ -2349,38 +2348,38 @@ DBG::activate(DBG_DB_FIREPHP);
 
             foreach ($arrProduct as $objProduct) {
                 // Update product
-                $objProduct = Product::getById($productId);
+                $objProduct = Product::getById($product_id);
 
-                $objProduct->setCode($productIdentifier);
+                $objProduct->code($productIdentifier);
 // NOTE: Only change the parent ShopCategory for a Product
 // that is in a real ShopCategory.
-                $objProduct->setShopCategoryId($category_id);
-                $objProduct->setName($productName);
-                $objProduct->setPrice($customerPrice);
-                $objProduct->setStatus($articleActive);
-                $objProduct->setResellerPrice($resellerPrice);
-                $objProduct->setSpecialOffer($specialOffer);
-                $objProduct->setDiscountPrice($discount);
-                $objProduct->setVatId($vat_id);
-                $objProduct->setShortDesc($shortDescription);
-                $objProduct->setDescription($description);
-                $objProduct->setStock($stock);
-                $objProduct->setStockVisible($stockVisibility);
-                $objProduct->setExternalLink($manufacturerUrl);
-                $objProduct->setB2B($b2b);
-                $objProduct->setB2C($b2c);
-                $objProduct->setStartDate($startdate);
-                $objProduct->setEndDate($enddate);
-                $objProduct->setManufacturerId($manufacturerId);
-                $objProduct->setPictures($imageName);
-                $objProduct->setDistribution($distribution);
-                $objProduct->setWeight($weight);
+                $objProduct->category_id($category_id);
+                $objProduct->name($productName);
+                $objProduct->price($customerPrice);
+                $objProduct->active($articleActive);
+                $objProduct->resellerprice($resellerPrice);
+                $objProduct->discount_active($specialOffer);
+                $objProduct->discountprice($discount);
+                $objProduct->vat_id($vat_id);
+                $objProduct->short($shortDescription);
+                $objProduct->long($description);
+                $objProduct->stock($stock);
+                $objProduct->stock_visible($stockVisibility);
+                $objProduct->uri($manufacturerUrl);
+                $objProduct->b2b($b2b);
+                $objProduct->b2c($b2c);
+                $objProduct->startdate($startdate);
+                $objProduct->enddate($enddate);
+                $objProduct->manufacturer_id($manufacturerId);
+                $objProduct->pictures($imageName);
+                $objProduct->distribution($distribution);
+                $objProduct->weight($weight);
 // Currently not used on the detail page
-//                $objProduct->setFlags($flags);
-                $objProduct->setUsergroups($userGroupIds);
-                $objProduct->setGroupCountId($groupId);
-                $objProduct->setGroupArticleId($articleId);
-                $objProduct->setKeywords($keywords);
+//                $objProduct->flags($flags);
+                $objProduct->usergroup_ids($userGroupIds);
+                $objProduct->group_id($groupId);
+                $objProduct->article_id($articleId);
+                $objProduct->keywords($keywords);
 
                 // Remove old Product Attributes.
                 // They are re-added below.
@@ -2406,7 +2405,7 @@ DBG::activate(DBG_DB_FIREPHP);
 //                $productIdentifier, $flags
 //            );
 
-            if ($productId > 0) {
+            if ($product_id > 0) {
                 $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
                 $_SESSION['shop']['strOkMessage'] = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
@@ -2436,18 +2435,17 @@ DBG::activate(DBG_DB_FIREPHP);
                 }
             }
 
-            switch ($_POST['AfterStoreAction']) {
+            switch ($_POST['afterStoreAction']) {
                 case 'newEmpty':
                     header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage");
                     exit();
                 case 'newTemplate':
                     header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products&tpl=manage&id=".
-                        $objProduct->getId()."&new=1"
+                        $objProduct->id()."&new=1"
                     );
                     exit();
                 default:
                     header("Location: index.php?cmd=shop".MODULE_INDEX."&act=products");
-                    // prevent further output, go back to product overview
                     exit();
             }
         }
@@ -2471,13 +2469,13 @@ DBG::activate(DBG_DB_FIREPHP);
             ));
             $this->_getAttributeList();
         } else {
-            $productId = intval($_REQUEST['id']);
-            $this->_getAttributeList($productId);
+            $product_id = intval($_REQUEST['id']);
+            $this->_getAttributeList($product_id);
         }
 
         // Edit product
-        if ($productId > 0) {
-            $objProduct = Product::getById($productId);
+        if ($product_id > 0) {
+            $objProduct = Product::getById($product_id);
         }
         if (!$objProduct) {
             $objProduct = new Product('', 0, '', '', 0, 1, 0, 0);
@@ -2485,12 +2483,12 @@ DBG::activate(DBG_DB_FIREPHP);
 
         // extract product image infos (path, width, height)
         $arrImages = Products::getShopImagesFromBase64String(
-            $objProduct->getPictures()
+            $objProduct->pictures()
         );
 
 //        $flagsSelection =
 //            ShopCategories::getVirtualCategoriesSelectionForFlags(
-//                $objProduct->getFlags()
+//                $objProduct->flags()
 //            );
 //        if ($flagsSelection) {
 //            self::$objTemplate->setVariable(
@@ -2498,12 +2496,12 @@ DBG::activate(DBG_DB_FIREPHP);
 //        }
 
         // The distribution type (delivery, download, or none)
-        $distribution = $objProduct->getDistribution();
+        $distribution = $objProduct->distribution();
 
         // Available active frontend groups, and those assigned to the product
         $objFWUser = FWUser::getFWUserObject();
         $objGroup = $objFWUser->objGroup->getGroups(array('type' => 'frontend', 'is_active' => true), array('group_id' => 'asc'));
-        $userGroupIds = $objProduct->getUsergroups();
+        $userGroupIds = $objProduct->usergroup_ids();
         $arrAssignedFrontendGroupId = explode(',', $userGroupIds);
         $strActiveFrontendGroupOptions = '';
         $strAssignedFrontendGroupOptions = '';
@@ -2519,42 +2517,42 @@ DBG::activate(DBG_DB_FIREPHP);
             }
             $objGroup->next();
         }
-        $groupId = $objProduct->getGroupCountId();
-        $articleId = $objProduct->getGroupArticleId();
-        $keywords = $objProduct->getKeywords();
+        $groupId = $objProduct->group_id();
+        $articleId = $objProduct->article_id();
+        $keywords = $objProduct->keywords();
         self::$objTemplate->setVariable(array(
-            'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->getId()),
-            'SHOP_PRODUCT_CUSTOM_ID' => $objProduct->getCode(),
+            'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->id()),
+            'SHOP_PRODUCT_CUSTOM_ID' => $objProduct->code(),
             'SHOP_DATE' => date('Y-m-d H:m'),
-            'SHOP_PRODUCT_NAME' => $objProduct->getName(),
+            'SHOP_PRODUCT_NAME' => $objProduct->name(),
             'SHOP_CAT_MENUOPTIONS' => ShopCategories::getMenuoptions(
-                $objProduct->getShopCategoryId(), false),
-            'SHOP_CUSTOMER_PRICE' => Currency::formatPrice($objProduct->getPrice()),
-            'SHOP_RESELLER_PRICE' => Currency::formatPrice($objProduct->getResellerPrice()),
-            'SHOP_DISCOUNT' => Currency::formatPrice($objProduct->getDiscountPrice()),
-            'SHOP_SPECIAL_OFFER' => ($objProduct->isSpecialOffer() ? HTML_ATTRIBUTE_CHECKED : ''),
+                $objProduct->category_id(), false),
+            'SHOP_CUSTOMER_PRICE' => Currency::formatPrice($objProduct->price()),
+            'SHOP_RESELLER_PRICE' => Currency::formatPrice($objProduct->resellerprice()),
+            'SHOP_DISCOUNT' => Currency::formatPrice($objProduct->discountprice()),
+            'SHOP_SPECIAL_OFFER' => ($objProduct->discount_active() ? HTML_ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_MENUOPTIONS' => Vat::getMenuoptions(
-                $objProduct->getVatId(), true),
+                $objProduct->vat_id(), true),
             'SHOP_SHORT_DESCRIPTION' => get_wysiwyg_editor(
                 'shortDescription',
-                $objProduct->getShortDesc(),
+                $objProduct->short(),
                 'shop'),
             'SHOP_DESCRIPTION' => get_wysiwyg_editor(
                 'description',
-                $objProduct->getDescription(),
+                $objProduct->long(),
                 'shop'),
-            'SHOP_STOCK' => $objProduct->getStock(),
+            'SHOP_STOCK' => $objProduct->stock(),
             'SHOP_MANUFACTURER_URL' => htmlentities(
-                $objProduct->getExternalLink(),
+                $objProduct->uri(),
                 ENT_QUOTES, CONTREXX_CHARSET),
-            'SHOP_STARTDATE' => $objProduct->getStartDate(),
-            'SHOP_ENDDATE' => $objProduct->getEndDate(),
+            'SHOP_STARTDATE' => $objProduct->startdate(),
+            'SHOP_ENDDATE' => $objProduct->enddate(),
             'SHOP_ARTICLE_ACTIVE' => ($objProduct->active() ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_B2B' => ($objProduct->isB2B() ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_B2C' => ($objProduct->isB2C() ? HTML_ATTRIBUTE_CHECKED : ''),
-            'SHOP_STOCK_VISIBILITY' => ($objProduct->isStockVisible() ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_B2B' => ($objProduct->b2b() ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_B2C' => ($objProduct->b2c() ? HTML_ATTRIBUTE_CHECKED : ''),
+            'SHOP_STOCK_VISIBILITY' => ($objProduct->stock_visible() ? HTML_ATTRIBUTE_CHECKED : ''),
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
-                Manufacturer::getMenuoptions($objProduct->getManufacturerId()),
+                Manufacturer::getMenuoptions($objProduct->manufacturer_id()),
             'SHOP_PICTURE1_IMG_SRC' =>
                 (   !empty($arrImages[1]['img'])
                  && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
@@ -2592,19 +2590,19 @@ DBG::activate(DBG_DB_FIREPHP);
             'SHOP_PICTURE3_IMG_WIDTH' => $arrImages[3]['width'],
             'SHOP_PICTURE3_IMG_HEIGHT' => $arrImages[3]['height'],
             'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu(
-                $objProduct->getDistribution(),
+                $objProduct->distribution(),
                 'distribution',
                 'distributionChanged();',
                 'style="width: 220px"'),
             'SHOP_WEIGHT' => ($distribution == 'delivery'
-                ? Weight::getWeightString($objProduct->getWeight())
+                ? Weight::getWeightString($objProduct->weight())
                 : '0 g'),
             // User group menu, returns 'userGroupId'
             'SHOP_GROUPS_AVAILABLE' => $strActiveFrontendGroupOptions,
             'SHOP_GROUPS_ASSIGNED' => $strAssignedFrontendGroupOptions,
             'SHOP_ACCOUNT_VALIDITY_OPTIONS' => FWUser::getValidityMenuOptions(
                 ($distribution == 'download'
-                  ? $objProduct->getWeight() : 0)),
+                  ? $objProduct->weight() : 0)),
             'SHOP_CREATE_ACCOUNT_YES_CHECKED' => (empty($userGroupIds) ? '' : HTML_ATTRIBUTE_CHECKED),
             'SHOP_CREATE_ACCOUNT_NO_CHECKED' => (empty($userGroupIds) ? HTML_ATTRIBUTE_CHECKED : ''),
             'SHOP_DISCOUNT_GROUP_COUNT_MENU_OPTIONS' => Discount::getMenuOptionsGroupCount($groupId),
@@ -3904,7 +3902,7 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
         global $_ARRAYLANG, $_CONFIG;
 
         // Store changed values
-        if (isset($_REQUEST['saveAttributes'])) {
+        if (isset($_POST['bsubmit'])) {
             $this->storeProducts();
         }
 
@@ -3950,7 +3948,7 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
         $arrProducts = Products::getByShopParams(
             $count, $pos, 0, $catId, $manufacturerId, $searchTerm,
             false, false,
-            self::$arrProductOrder[SettingDb::getValue('product_sorting')],
+            Products::$arrProductOrder[SettingDb::getValue('product_sorting')],
             '', true // Include inactive Products
         );
         $limit = intval($_CONFIG['corePagingLimit']);
@@ -3967,6 +3965,10 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
             'SHOP_SEARCH_TERM' => $searchTerm,
             'SHOP_PRODUCT_TOTAL' => $count,
         ));
+        if (empty($arrProducts)) {
+            self::$objTemplate->setVariable(
+                'SHOP_PRODUCT_NAME', $_ARRAYLANG['TXT_SHOP_PRODUCT_NONE_FOUND']);
+        }
 
         $i = 0;
         self::$objTemplate->setCurrentBlock('productRow');
@@ -3981,45 +3983,45 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
             }
             $specialOffer = '';
             $specialOfferValue = '';
-            if ($objProduct->isSpecialoffer()) {
+            if ($objProduct->discount_active()) {
                 $specialOffer = HTML_ATTRIBUTE_CHECKED;
                 $specialOfferValue = 1;
             }
 
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => (++$i % 2 ? 'row1' : 'row2'),
-                'SHOP_PRODUCT_ID' => $objProduct->getId(),
-                'SHOP_PRODUCT_CUSTOM_ID' => $objProduct->getCode(),
-                'SHOP_PRODUCT_NAME' => $objProduct->getName(),
-                'SHOP_PRODUCT_PRICE1' => Currency::formatPrice($objProduct->getPrice()),
-                'SHOP_PRODUCT_PRICE2' => Currency::formatPrice($objProduct->getResellerprice()),
-                'SHOP_PRODUCT_DISCOUNT' => Currency::formatPrice($objProduct->getDiscountprice()),
+                'SHOP_PRODUCT_ID' => $objProduct->id(),
+                'SHOP_PRODUCT_CUSTOM_ID' => $objProduct->code(),
+                'SHOP_PRODUCT_NAME' => $objProduct->name(),
+                'SHOP_PRODUCT_PRICE1' => Currency::formatPrice($objProduct->price()),
+                'SHOP_PRODUCT_PRICE2' => Currency::formatPrice($objProduct->resellerprice()),
+                'SHOP_PRODUCT_DISCOUNT' => Currency::formatPrice($objProduct->discountprice()),
                 'SHOP_PRODUCT_SPECIAL_OFFER' => $specialOffer,
                 'SHOP_SPECIAL_OFFER_VALUE_OLD' => $specialOfferValue,
                 'SHOP_PRODUCT_VAT_MENU' => Vat::getShortMenuString(
-                    $objProduct->getVatId(),
-                    'taxId['.$objProduct->getId().']'),
-                'SHOP_PRODUCT_VAT_ID' => ($objProduct->getVatId()
-                    ? $objProduct->getVatId() : 'NULL'),
-                'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->getDistribution(),
-                'SHOP_PRODUCT_STOCK' => $objProduct->getStock(),
-                'SHOP_PRODUCT_SHORT_DESC' => $objProduct->getShortdesc(),
+                    $objProduct->vat_id(),
+                    'taxId['.$objProduct->id().']'),
+                'SHOP_PRODUCT_VAT_ID' => ($objProduct->vat_id()
+                    ? $objProduct->vat_id() : 'NULL'),
+                'SHOP_PRODUCT_DISTRIBUTION' => $objProduct->distribution(),
+                'SHOP_PRODUCT_STOCK' => $objProduct->stock(),
+                'SHOP_PRODUCT_SHORT_DESC' => $objProduct->short(),
                 'SHOP_PRODUCT_STATUS' => $productStatus,
                 'SHOP_PRODUCT_STATUS_PICTURE' => $productStatusPicture,
                 'SHOP_ACTIVE_VALUE_OLD' => $productStatusValue,
-                'SHOP_SORT_ORDER' => $objProduct->getOrder(),
-//                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->getDistribution(), "distribution[".$objProduct->getId()."]"),
-//                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->getWeight()),
+                'SHOP_SORT_ORDER' => $objProduct->ord(),
+//                'SHOP_DISTRIBUTION_MENU' => Distribution::getDistributionMenu($objProduct->distribution(), "distribution[".$objProduct->id()."]"),
+//                'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($objProduct->weight()),
                 'SHOP_DISTRIBUTION' => $_ARRAYLANG['TXT_DISTRIBUTION_'.
-                    strtoupper($objProduct->getDistribution())],
+                    strtoupper($objProduct->distribution())],
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_CHECKED' =>
-                    ($objProduct->isShownOnStartpage()
+                    ($objProduct->shown_on_startpage()
                       ? HTML_ATTRIBUTE_CHECKED : ''),
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD' =>
-                    ($objProduct->isShownOnStartpage() ? '1' : ''),
+                    ($objProduct->shown_on_startpage() ? '1' : ''),
 // This is used when the Product name can be edited right on the overview
                 'SHOP_TITLE' => htmlentities(
-                    $objProduct->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+                    $objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
             self::$objTemplate->parse('productRow');
         }
@@ -4041,11 +4043,11 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
         global $_ARRAYLANG;
 
         $arrError = array();
-        foreach (array_keys($_POST['ProductId']) as $id) {
+        foreach (array_keys($_POST['product_id']) as $id) {
             $productIdentifier = $_POST['identifier'][$id];
             $productIdentifierOld = $_POST['identifierOld'][$id];
-            $sortOrder = $_POST['SortOrder'][$id];
-            $sortOrderOld = $_POST['SortOrderOld'][$id];
+            $ord = $_POST['ord'][$id];
+            $ordOld = $_POST['ordOld'][$id];
             $specialOffer = (isset($_POST['specialOffer'][$id]) ? 1 : 0);
             $specialOfferOld = $_POST['specialOfferOld'][$id];
             $discount = $_POST['discount'][$id];
@@ -4063,8 +4065,8 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
             $shownOnStartpage = (isset($_POST['shownonstartpage'][$id]) ? $_POST['shownonstartpage'][$id] : 0);
             $shownOnStartpageOld = (isset($_POST['shownonstartpageOld'][$id]) ? $_POST['shownonstartpageOld'][$id] : 0);
 // This is used when the Product name can be edited right on the overview
-            $title = $_POST['title'][$id];
-            $titleOld = $_POST['titleOld'][$id];
+            $name = (isset($_POST['name'][$id]) ? $_POST['name'][$id] : null);
+            $nameOld = (isset($_POST['nameOld'][$id]) ? $_POST['nameOld'][$id] : null);
 
 /*
     Distribution and weight have been removed from the overview due to the
@@ -4112,7 +4114,7 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
 
             // Check if any one value has been changed
             if (   $productIdentifier != $productIdentifierOld
-                || $sortOrder != $sortOrderOld
+                || $ord != $ordOld
                 || $specialOffer != $specialOfferOld
                 || $discount != $discountOld
                 || $normalprice != $normalpriceOld
@@ -4122,7 +4124,7 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
                 || $vat_id != $vat_id_old
                 || $shownOnStartpage != $shownOnStartpageOld
 // This is used when the Product name can be edited right on the overview
-                || $title != $titleOld
+                || $name != $nameOld
 /*
                 || $distribution != $distributionOld
                 // Weight, see above
@@ -4143,20 +4145,23 @@ die(var_export($objCustomer->getProfileAttribute('title'), true));
                         $arrError[$productIdentifier] = true;
                         continue;
                     }
-                    $objProduct->setCode($productIdentifier);
-                    $objProduct->setOrder($sortOrder);
-                    $objProduct->setSpecialOffer($specialOffer);
-                    $objProduct->setDiscountPrice($discount);
-                    $objProduct->setPrice($normalprice);
-                    $objProduct->setResellerPrice($resellerprice);
-                    $objProduct->setStock($stock);
-                    $objProduct->setStatus($status);
-                    $objProduct->setVatId($vat_id);
-//                    $objProduct->setDistribution($distribution);
-//                    $objProduct->setWeight($weight);
-                    $objProduct->setShownOnStartpage($shownOnStartpage);
+                    $objProduct->code($productIdentifier);
+                    $objProduct->ord($ord);
+                    $objProduct->discount_active($specialOffer);
+                    $objProduct->discountprice($discount);
+                    $objProduct->price($normalprice);
+                    $objProduct->resellerprice($resellerprice);
+                    $objProduct->stock($stock);
+                    $objProduct->active($status);
+                    $objProduct->vat_id($vat_id);
+//                    $objProduct->distribution($distribution);
+//                    $objProduct->weight($weight);
+                    $objProduct->shown_on_startpage($shownOnStartpage);
 // This is used when the Product name can be edited right on the overview
-                    $objProduct->setName(contrexx_stripslashes($title));
+                    // Note: No need to check whether it is valid; if it's set
+                    // to null above name() will do nothing but return the
+                    // current name
+                    $objProduct->name(contrexx_stripslashes($name));
                     if (!$objProduct->store()) {
                         $arrError[$productIdentifier] = true;
                     }

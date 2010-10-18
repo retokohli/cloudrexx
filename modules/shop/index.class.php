@@ -83,40 +83,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Manufacturer.class.php';
 
 
 /**
- * Check whether a session will be required and has to get inizialized
- * @return  boolean     True if a session is required, false otherwise.
- */
-function shopUseSession()
-{
-    if (!empty($_COOKIE['PHPSESSID'])) {
-        return true;
-    } elseif (!empty($_REQUEST['currency'])) {
-        return true;
-    } else {
-        $command = '';
-        if (!empty($_GET['cmd'])) {
-            $command = $_GET['cmd'];
-        } elseif (!empty($_GET['act'])) {
-            $command = $_GET['act'];
-        }
-        if (in_array($command, array('', 'discounts', 'details', 'terms', 'cart'))) {
-            if (   $command == 'details'
-                && isset($_REQUEST['referer'])
-                && $_REQUEST['referer'] == 'cart'
-            ) {
-                return true;
-            } elseif ($command == 'cart' && (isset($_REQUEST['productId']) || (isset($_GET['remoteJs']) && $_GET['remoteJs'] == 'addProduct' && !empty($_GET['product'])))) {
-                return true;
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-}
-
-
-/**
  * Shop
  * @internal    Extract code from this class and move it to other classes:
  *              Customer, Product, Order, ...
@@ -314,7 +280,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
             default:
                 $this->products();
         }
-        $this->objTemplate->setVariable('SHOP_STATUS', $this->statusMessage);
+        $this->objTemplate->setVariable('SHOP_STATUS', self::$statusMessage);
         return $this->objTemplate->get();
     }
 
@@ -406,7 +372,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                     $product_id = $_SESSION['shop']['cart']['products'][$product_id]['id'];
                 }
                 $objProduct = Product::getById($product_id);
-                $selectedCatId = $objProduct->getShopCategoryId();
+                $selectedCatId = $objProduct->category_id();
             }
 
             // Array of all visible ShopCategories
@@ -810,6 +776,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
         global $_ARRAYLANG;
 
         JS::activate('shadowbox');
+        SettingDb::init();
 
         $flagSpecialoffer = intval(SettingDb::getValue('show_products_default'));
         $flagLastFive =
@@ -902,7 +869,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
             $count, $pos,
             $product_id, $catId, $manufacturerId, $term,
             $flagSpecialoffer, $flagLastFive,
-            self::$arrProductOrder[SettingDb::getValue('product_sorting')],
+            Products::$arrProductOrder[SettingDb::getValue('product_sorting')],
             $this->objCustomer && $this->objCustomer->isReseller()
         );
 
@@ -938,10 +905,10 @@ DBG::activate(DBG_ERROR_FIREPHP);
         /** @var   Product $objProduct = null; */
         $flagUpload = false;
         foreach ($arrProduct as $objProduct) {
-            $id = $objProduct->getId();
+            $id = $objProduct->id();
 //DBG::log("Product ID $id, Product ".var_export($objProduct, true));
             $productSubmitFunction = '';
-            $arrPictures = Products::getShopImagesFromBase64String($objProduct->getPictures());
+            $arrPictures = Products::getShopImagesFromBase64String($objProduct->pictures());
             $havePicture = false;
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
@@ -995,7 +962,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                     ));
                 } else {
                     $this->objTemplate->setVariable(array(
-                        'TXT_SEE_LARGE_PICTURE' => $objProduct->getName(),
+                        'TXT_SEE_LARGE_PICTURE' => $objProduct->name(),
                     ));
                 }
 /*
@@ -1014,9 +981,9 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 ++$i;
             }
 
-            $stock = ($objProduct->isStockVisible()
+            $stock = ($objProduct->stock_visible()
                 ? $_ARRAYLANG['TXT_STOCK'].': '.
-                  intval($objProduct->getStock())
+                  intval($objProduct->stock())
                 : ''
             );
 
@@ -1027,8 +994,8 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 true  // Ignore special offers
             );
             // If there is a discountprice and it's enabled
-            if (   $objProduct->getDiscountPrice() > 0
-                && $objProduct->isSpecialOffer()) {
+            if (   $objProduct->discountprice() > 0
+                && $objProduct->discount_active()) {
                 $price = '<s>'.$price.'</s>';
                 $discountPrice = $this->_getProductPrice(
                     $id,
@@ -1040,8 +1007,8 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 $discountPrice = '';
             }
 
-            $groupCountId = $objProduct->getGroupCountId();
-            $groupArticleId = $objProduct->getGroupArticleId();
+            $groupCountId = $objProduct->group_id();
+            $groupArticleId = $objProduct->article_id();
             $groupCustomerId = 0;
             if ($this->objCustomer) {
                 $groupCustomerId = $this->objCustomer->getGroupId();
@@ -1055,9 +1022,9 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 $objProduct->getCustomerPrice($this->objCustomer)
             );
             $discountPrice = '';
-            $isSpecialoffer = $objProduct->isSpecialOffer();
-            if ($isSpecialoffer) {
-                $discountPrice = $objProduct->getDiscountPrice();
+            $discount_active = $objProduct->discount_active();
+            if ($discount_active) {
+                $discountPrice = $objProduct->discountprice();
                 if ($discountPrice > 0) {
                     $price = "<s>$price</s>";
                     $discountPrice =
@@ -1065,14 +1032,14 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 }
             }
 */
-            $shortDescription = $objProduct->getShortDesc();
-            $longDescription  = $objProduct->getDescription();
+            $shortDescription = $objProduct->short();
+            $longDescription  = $objProduct->long();
 
             $detailLink = false;
             if ($product_id == 0 && !empty($longDescription)) {
                 $detailLink =
                     '<a href="index.php?section=shop'.MODULE_INDEX.'&amp;cmd=details&amp;productId='.
-                    $objProduct->getId().
+                    $objProduct->id().
                     '" title="'.$_ARRAYLANG['TXT_MORE_INFORMATIONS'].'">'.
                     $_ARRAYLANG['TXT_MORE_INFORMATIONS'].'</a>';
             }
@@ -1090,12 +1057,12 @@ DBG::activate(DBG_ERROR_FIREPHP);
              && isset($_GET['referer']) && $_GET['referer'] == 'cart') {
                 $productSubmitName = "updateProduct[$cartProdId]";
                 $productSubmitFunction = $this->productOptions(
-                    $objProduct->getId(), $formId, $cartProdId, $flagMultipart
+                    $objProduct->id(), $formId, $cartProdId, $flagMultipart
                 );
             } else {
                 $productSubmitName = 'addProduct';
                 $productSubmitFunction = $this->productOptions(
-                    $objProduct->getId(), $formId, false, $flagMultipart
+                    $objProduct->id(), $formId, false, $flagMultipart
                 );
             }
             // Should be used by getJavaScript()
@@ -1104,9 +1071,9 @@ DBG::activate(DBG_ERROR_FIREPHP);
 
             $this->objTemplate->setVariable(array(
                 'SHOP_ROWCLASS'                   => (++$formId % 2 ? 'row2' : 'row1'),
-                'SHOP_PRODUCT_ID'                 => $objProduct->getId(),
-                'SHOP_PRODUCT_CUSTOM_ID'          => htmlentities($objProduct->getCode(), ENT_QUOTES, CONTREXX_CHARSET),
-                'SHOP_PRODUCT_TITLE'              => htmlentities($objProduct->getName(), ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_ID'                 => $objProduct->id(),
+                'SHOP_PRODUCT_CUSTOM_ID'          => htmlentities($objProduct->code(), ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_TITLE'              => htmlentities($objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_DESCRIPTION'        => $shortDescription,
                 'SHOP_PRODUCT_DETAILDESCRIPTION'  => $longDescription,
                 'SHOP_PRODUCT_FORM_NAME'          => $shopProductFormName,
@@ -1124,7 +1091,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
 
             $manufacturerName = '';
             $manufacturerUrl  = '';
-            $manufacturerId   = $objProduct->getManufacturerId();
+            $manufacturerId   = $objProduct->manufacturer_id();
             if ($manufacturerId) {
                 $manufacturerName =
                     Manufacturer::getNameById($manufacturerId, FRONTEND_LANG_ID);
@@ -1150,7 +1117,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
             // This is now extended by the Manufacturer table and should thus
             // get a new purpose.  As it is product specific, it could be
             // renamed and reused as a link to individual Products!
-            $externalLink = $objProduct->getExternalLink();
+            $externalLink = $objProduct->uri();
             if (!empty($externalLink)) {
                 $this->objTemplate->setVariable(array(
                     'SHOP_EXTERNAL_LINK'     =>
@@ -1194,7 +1161,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                         Currency::getActiveCurrencySymbol(),
                 ));
             }
-            if ($objProduct->isStockVisible()) {
+            if ($objProduct->stock_visible()) {
                 $this->objTemplate->setVariable(array(
                     'SHOP_PRODUCT_STOCK' => $stock,
                 ));
@@ -1204,10 +1171,10 @@ DBG::activate(DBG_ERROR_FIREPHP);
                     'SHOP_PRODUCT_DETAILLINK' => $detailLink,
                 ));
             }
-            $distribution = $objProduct->getDistribution();
+            $distribution = $objProduct->distribution();
             $productWeight = '';
             if ($distribution == 'delivery') {
-                $productWeight = $objProduct->getWeight();
+                $productWeight = $objProduct->weight();
             }
 
             // Hide the weight if it is zero or disabled in the configuration
@@ -1226,13 +1193,13 @@ DBG::activate(DBG_ERROR_FIREPHP);
                             : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
                          ),
                     'SHOP_PRODUCT_TAX'        =>
-                        Vat::getShort($objProduct->getVatId())
+                        Vat::getShort($objProduct->vat_id())
                 ));
             }
 
             // Add flag images for flagged Products
             $strImage = '';
-            $strFlags = $objProduct->getFlags();
+            $strFlags = $objProduct->flags();
             $arrVirtual = ShopCategories::getVirtualCategoryNameArray(FRONTEND_LANG_ID);
             foreach (split(' ', $strFlags) as $strFlag) {
                 if (in_array($strFlag, $arrVirtual)) {
@@ -1297,22 +1264,22 @@ DBG::activate(DBG_ERROR_FIREPHP);
             if ($cartProdId !== false)
                 $product_id =
                     $_SESSION['shop']['cart']['products'][$cartProdId]['id'];
-            $arrAttributeNames = Attributes::getNameArrayByProductId($product_id);
+            $arrAttributes = Attributes::NameArrayByProductId($product_id);
             // When there are no Attributes for this Product, hide the
             // options blocks
-            if (empty($arrAttributeNames)) {
+            if (empty($arrAttributes)) {
                 $this->objTemplate->hideBlock('shopProductOptionsRow');
                 $this->objTemplate->hideBlock('shopProductOptionsValuesRow');
             } else {
                 // Loop through the Attribute Names for the Product
-                foreach ($arrAttributeNames as $attribute_id => $arrAttributeName) {
+                foreach ($arrAttributes as $attribute_id => $arrAttribute) {
                     $arrOptions = Attributes::getOptionArrayByAttributeId($attribute_id);
                     $arrRelation = Attributes::getRelationArray($product_id);
                     // This attribute does not apply for this product
                     if (empty($arrRelation)) continue;
                     $selectValues = '';
                     // create head of option menu/checkbox/radiobutton
-                    switch ($arrAttributeName['type']) {
+                    switch ($arrAttribute['type']) {
                       case '0': // Dropdown menu (optional attribute)
                       // There is no hidden input field here, as there is no
                       // mandatory choice, the status need not be verified.
@@ -1322,7 +1289,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                             $product_id.'-'.$attribute_id.'-'.$domId.
                             '" style="width:180px;">'."\n".
                             '<option value="0">'.
-                            $arrAttributeName['name'].'&nbsp;'.
+                            $arrAttribute['name'].'&nbsp;'.
                             $_ARRAYLANG['TXT_CHOOSE']."</option>\n";
                         break;
                       case '1': // Radio buttons
@@ -1331,7 +1298,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
-                            '" value="'.$arrAttributeName['name'].'" />'."\n";
+                            '" value="'.$arrAttribute['name'].'" />'."\n";
                         $checkOptionIds .= "$attribute_id;";
                         break;
                       // No container for checkboxes (2), as there is no
@@ -1340,7 +1307,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
-                            '" value="'.$arrAttributeName['name'].'" />'."\n".
+                            '" value="'.$arrAttribute['name'].'" />'."\n".
                             '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
                             $product_id.'-'.$attribute_id.'-'.$domId.
@@ -1349,7 +1316,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                             // why bother the customer at all?
                             (count($arrOptions) > 1
                                 ? '<option value="0">'.
-                                  $arrAttributeName['name'].'&nbsp;'.
+                                  $arrAttribute['name'].'&nbsp;'.
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
                                 : ''
                             );
@@ -1362,7 +1329,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
-                            '" value="'.$arrAttributeName['name'].'" />'."\n";
+                            '" value="'.$arrAttribute['name'].'" />'."\n";
                         $checkOptionIds .= "$attribute_id;";
                         break;
 
@@ -1372,7 +1339,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
-                            '" value="'.$arrAttributeName['name'].'" />'."\n";
+                            '" value="'.$arrAttribute['name'].'" />'."\n";
                         $checkOptionIds .= "$attribute_id;";
                         break;
                     }
@@ -1397,7 +1364,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                                 $selected = true;
                         }
                         // create option menu/checkbox/radiobutton
-                        switch ($arrAttributeName['type']) {
+                        switch ($arrAttribute['type']) {
                           case '0': // Dropdown menu (optional attribute)
                             $selectValues .=
                                 '<option value="'.$option_id.'" '.
@@ -1461,7 +1428,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                         ++$domId;
                     }
                     // create foot of option menu/checkbox/radiobutton
-                    switch ($arrAttributeName['type']) {
+                    switch ($arrAttribute['type']) {
                         case '0':
                             $selectValues .= "</select><br />\n";
                             break;
@@ -1491,7 +1458,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                         // left old spelling for comatibility (obsolete)
                         'SHOP_PRODCUT_OPTION' => $selectValues,
                         'SHOP_PRODUCT_OPTION' => $selectValues,
-                        'SHOP_PRODUCT_OPTIONS_NAME'  => $arrAttributeName['name'],
+                        'SHOP_PRODUCT_OPTIONS_NAME'  => $arrAttribute['name'],
                         'SHOP_PRODUCT_OPTIONS_TITLE' =>
                             '<a href="javascript:{}" onclick="toggleOptions('.
                             $product_id.')" title="'.
@@ -1511,6 +1478,10 @@ DBG::activate(DBG_ERROR_FIREPHP);
     }
 
 
+    /**
+     * @todo    Rewrite this using the Product class
+     * @return  boolean             True on success, false otherwise
+     */
     function discounts()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1520,11 +1491,10 @@ DBG::activate(DBG_ERROR_FIREPHP);
                    p.normalprice, p.resellerprice, p.discountprice
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_categories AS c USING (catid)
-             WHERE p.is_special_offer=1
+             WHERE p.discount_active=1
                AND p.active=1
                AND c.active=1
-             ORDER BY p.sort_order
-        ";
+             ORDER BY p.ord";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             $this->errorHandling();
@@ -1710,12 +1680,12 @@ DBG::activate(DBG_ERROR_FIREPHP);
     {
         $objProduct = Product::getById($productId);
         if (!$objProduct) return false;
-        $normalPrice = $objProduct->getPrice();
-        $resellerPrice = $objProduct->getResellerPrice();
-        $discountPrice = $objProduct->getDiscountPrice();
-        $is_special_offer = $objProduct->isSpecialOffer();
-        $groupCountId = $objProduct->getGroupCountId();
-        $groupArticleId = $objProduct->getGroupArticleId();
+        $normalPrice = $objProduct->price();
+        $resellerPrice = $objProduct->resellerprice();
+        $discountPrice = $objProduct->discountprice();
+        $is_special_offer = $objProduct->discount_active();
+        $groupCountId = $objProduct->group_id();
+        $groupArticleId = $objProduct->article_id();
         if (   !$flagIgnoreSpecialoffer
             && $is_special_offer == 1
             && $discountPrice != 0) {
