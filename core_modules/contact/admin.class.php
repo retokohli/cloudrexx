@@ -1259,6 +1259,8 @@ class ContactManager extends ContactLib {
 
 
     function _deleteFormEntry() {
+        global $_ARRAYLANG;
+
         if (isset($_GET['entryId'])) {
             $entryId = intval($_GET['entryId']);
             $this->deleteFormEntry($entryId);
@@ -1267,6 +1269,8 @@ class ContactManager extends ContactLib {
                 $this->deleteFormEntry(intval($entryId));
             }
         }
+        $this->_statusMessageOk = $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'];
+
         $this->initContactForms(true);
         $this->_contactFormEntries();
     }
