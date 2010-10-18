@@ -141,7 +141,7 @@ class ContactLib
 
                         'emails'            => $fields['mails'],
                         'number'            => intval($fields['number']),
-                        //'last'              => intval($fields['last']),
+                        'last'              => intval($fields['last']),
                         'showForm'          => $fields['showForm'],
                         'useCaptcha'        => $fields['use_captcha'],
                         'useCustomStyle'    => $fields['use_custom_style'],
