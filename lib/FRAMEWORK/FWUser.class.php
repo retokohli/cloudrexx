@@ -512,7 +512,7 @@ class FWUser extends User_Setting
         $unit = 'DAY';
         if ($validity == 0) {
             $validity = '';
-            $unit = $_CORELANG['TXT_USERS_UNLIMITED'];
+            $unit = $_CORELANG['TXT_CORE_UNLIMITED'];
         } else {
             if ($validity >= 30) {
                 $unit = 'MONTH';
@@ -523,11 +523,12 @@ class FWUser extends User_Setting
                 }
             }
             $unit =
-                $_CORELANG['TXT_USERS_'.$unit.
+                $_CORELANG['TXT_CORE_'.$unit.
                 ($validity > 1 ? 'S' : '')];
         }
         return "$validity $unit";
     }
+
 
     /**
      * Returns a SECID for logging in (Backend, Frontend editing)
@@ -538,12 +539,12 @@ class FWUser extends User_Setting
         $chars = 'ACDEFGHJKLMNPRTUWXZ345679';
         $max   = strlen($chars) -1;
         $ret = '';
-        for ($i=0;$i<4;$i++) {
-
-            $ret .= $chars{rand(0,$max)};
+        for ($i = 0; $i < 4; ++$i) {
+            $ret .= $chars{rand(0, $max)};
         }
         return $ret;
     }
+
 }
 
 ?>
