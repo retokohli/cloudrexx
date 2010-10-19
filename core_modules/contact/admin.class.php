@@ -131,7 +131,7 @@ class ContactManager extends ContactLib {
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
 
         $arrEntry = &$this->getFormEtry($entryId);
-
+        
         if (is_array($arrEntry)) {
 
             $this->_objTpl->loadTemplateFile('module_contact_entries_details.html');
@@ -1923,7 +1923,7 @@ class ContactManager extends ContactLib {
 
 
     function _getEntryDetails($arrEntry, $formId) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID ;
 
         $arrFormFields = $this->getFormFields($formId);
         $rowNr = 0;
@@ -1931,16 +1931,16 @@ class ContactManager extends ContactLib {
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $arrField) {
             $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
-            $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".$arrField['name'].($arrField['type'] == 'hidden' ? ' (hidden)' : '')."</td>\n";
+            $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".$arrField['lang'][$_LANGID]['name'].($arrField['type'] == 'hidden' ? ' (hidden)' : '')."</td>\n";
             $sourcecode .= "<td width=\"85%\">";
 
             switch ($arrField['type']) {
                 case 'checkbox':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) && $arrEntry['data'][$arrField['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$_LANGID]['name']]) && $arrEntry['data'][$arrField['lang'][$_LANGID]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
                     break;
 
                 case 'file':
-                    $file = $arrEntry['data'][$arrField['name']];
+                    $file = $arrEntry['data'][$arrField['lang'][$_LANGID]['name']];
                     if (isset($file)) {
                         if (preg_match('/^a:2:{/', $file)) {
                             $file = unserialize($file);
@@ -1967,7 +1967,7 @@ class ContactManager extends ContactLib {
                 case 'radio':
                 case 'select':
                 case 'textarea':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$_LANGID]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][$_LANGID]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                     break;
             }
 

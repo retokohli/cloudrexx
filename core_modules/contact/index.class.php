@@ -100,45 +100,44 @@ class Contact extends ContactLib
             'TXT_CONTACT_RESET'     => $_ARRAYLANG['TXT_CONTACT_RESET']
         ));
 
-        $this->setCaptcha($useCaptcha);
-        $this->setProfileData();
         if ($this->objTemplate->blockExists('contact_form')) {
-            if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
-                $this->objTemplate->hideBlock('contact_form');
-            } else {
-                $arrFields = $this->getFormFields($formId);
-                foreach ($arrFields as $fieldId => $arrField) {
-                    $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
+            $this->setCaptcha($useCaptcha);
+            $this->setProfileData();
+            
+            $arrFields = $this->getFormFields($formId);
+            foreach ($arrFields as $fieldId => $arrField) {
+                $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
 
-                    if($arrField['type'] == 'checkboxGroup' || $arrField['type'] == 'radio' || $arrField['type'] == 'select') {
-                        $options = explode(',', $arrField['lang'][$_LANGID]['value']);
-                        foreach ($options as $index => $option) {
-                            $this->objTemplate->setVariable(array(
-                                $fieldId.'_'.$index.'_VALUE'    => $option
-                            ));
-                        }
+                if($arrField['type'] == 'checkboxGroup' || $arrField['type'] == 'radio' || $arrField['type'] == 'select') {
+                    $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                    foreach ($options as $index => $option) {
+                        $this->objTemplate->setVariable(array(
+                            $fieldId.'_'.$index.'_VALUE'    => $option
+                        ));
                     }
-
-                    $this->objTemplate->setVariable(array(
-                        $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
-                        $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
-                        $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name'],
-                        $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
-                    ));
                 }
-                $this->objTemplate->parse('contact_form');
-            }
-        }
 
+                $this->objTemplate->setVariable(array(
+                    $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
+                    $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
+                    $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name'],
+                    $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
+                ));
+            }
+            $this->objTemplate->parse('contact_form');
+        }
+        
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
             $this->_getParams();
-            $arrFormData =& $this->_getContactFormData();
+            $arrFormData =& $this->_getContactFormData();            
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
                     $this->_sendMail($arrFormData);
-                    $this->objTemplate->hideBlock("formText");
-                    $this->objTemplate->hideBlock('contact_form');
+                    if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
+                        $this->objTemplate->hideBlock("formText");
+                        $this->objTemplate->hideBlock('contact_form');
+                    }
                 } else {
                     return $this->_showError();
                 }
@@ -157,7 +156,7 @@ class Contact extends ContactLib
             }
             $this->_getParams();
         }
-
+        
         return $this->objTemplate->get();
     }
 
@@ -250,7 +249,7 @@ class Contact extends ContactLib
      */
     function _getContactFormData()
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG, $_LANGID;
 
         if (isset($_POST) && !empty($_POST)) {
             $arrFormData = array();
@@ -258,7 +257,7 @@ class Contact extends ContactLib
             if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
                 foreach ($arrFormData['fields'] as $field) {
-                    $this->arrFormFields[] = $field['name'];
+                    $this->arrFormFields[] = $field['lang'][$_LANGID]['name'];
                 }
             } else {
                 $arrFormData['id'] = 0;
@@ -268,12 +267,12 @@ class Contact extends ContactLib
                 //$arrFormData['sendCopy'] = 0;
             }
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
-
+            
             foreach ($_POST as $key => $value) {
                 if (!empty($value) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha', 'contactFormCaptchaOffset'))) {
                     $id = intval(substr($key, 17));
                     if (isset($arrFormData['fields'][$id])) {
-                        $key = $arrFormData['fields'][$id]['name'];
+                        $key = $arrFormData['fields'][$id]['lang'][$_LANGID]['name'];
                     } else {
                         $key = stripslashes(contrexx_strip_tags($key));
                     }
@@ -398,7 +397,7 @@ class Contact extends ContactLib
         $noalpha = 'áéíóúàèìòùäëïöüÁÉÍÓÚÀÈÌÒÙÄËÏÖÜâêîôûÂÊÎÔÛñçÇ@';
         $alpha =   'aeiouaeiouaeiouAEIOUAEIOUAEIOUaeiouAEIOUncCa';
         $name = substr ($name, 0, $maxlen);
-        $name = $this->strtr ($name, $noalpha, $alpha);
+        $name = strtr($name, $noalpha, $alpha);
         $mixChars = array('Þ' => 'th', 'þ' => 'th', 'Ð' => 'dh', 'ð' => 'dh',
                           'ß' => 'ss', 'Œ' => 'oe', 'œ' => 'oe', 'Æ' => 'ae',
                           'æ' => 'ae', '$' => 's',  '¥' => 'y');
@@ -451,7 +450,7 @@ class Contact extends ContactLib
      */
     function _checkValues($arrFields, $useCaptcha)
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID;
 
         $error = false;
         $arrSettings = $this->getSettings();
@@ -461,13 +460,13 @@ class Contact extends ContactLib
             foreach ($arrFields['fields'] as $field) {
                 $source = $field['type'] == 'file' ? 'uploadedFiles' : 'data';
                 $regex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
-                if ($field['is_required'] && empty($arrFields[$source][$field['name']])) {
+                if ($field['is_required'] && empty($arrFields[$source][$field['lang'][$_LANGID]['name']])) {
                     $error = true;
-                } elseif (empty($arrFields[$source][$field['name']])) {
+                } elseif (empty($arrFields['data'][$field['lang'][$_LANGID]['name']]) && empty($arrFields['uploadedFiles'])) {
                     continue;
                 }
 
-                $fieldValue = $arrFields[$source][$field['name']];
+                $fieldValue = $arrFields[$source][$field['lang'][$_LANGID]['name']];
                 if ($field['type'] == 'file') {
                     // $fieldValue is an array of the form array('path' => file_path, 'name' => 'file_name')
                     $fieldValue = $fieldValue['path'];
@@ -475,7 +474,7 @@ class Contact extends ContactLib
 
                 if(!preg_match($regex, $fieldValue)) {
                     $error = true;
-                } elseif ($this->_isSpam($fieldValue, $arrSpamKeywords)) {
+                } elseif ($this->_isSpam($fieldValue, $arrSpamKeywords)) {    
                     $error = true;
                 }
             }
