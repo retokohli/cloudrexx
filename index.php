@@ -239,7 +239,7 @@ $objInit = new InitCMS();
  *   It *MUST NOT* be used to determine the language for any kind of content!
  * @since 2.2.0
  */
-define('FRONTEND_LANG_ID', $objInit->getFrontendLangId());
+define('FRONTEND_LANG_ID', $objInit->userFrontendLangId);
 define('LANG_ID',          FRONTEND_LANG_ID);
 
 /**
@@ -1299,7 +1299,7 @@ switch ($plainSection) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $contactObj = new Contact($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $contactObj->getContactPage());
-        $moduleStyleFile = ASCMS_CORE_MODULE_PATH.'/contact/frontend_style.css';
+        $moduleStyleFile = ASCMS_CORE_MODULE_WEB_PATH.'/contact/frontend_style.css';
         break;
 
     //-------------------------------------------------------
