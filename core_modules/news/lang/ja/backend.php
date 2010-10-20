@@ -269,4 +269,5 @@ $_ARRAYLANG['TXT_NEWS_CATEGORY_ADD_ERROR_EMPTY'] = "Couldn't add category; no na
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'] = "Added teaser box.";
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'] = "Teaser box updated.";
 $_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'] = "No entry selected, nothing changed.";
+$_ARRAYLANG['TXT_COPY'] = "Copy";
 ?>
