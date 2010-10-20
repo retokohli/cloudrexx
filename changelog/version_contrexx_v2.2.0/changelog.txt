@@ -96,6 +96,7 @@ News Manager
 - Wird in Home » News Manager » Einstellungen unter "Anzahl Headlines" 0 angegeben, werden auch keine HL angezeigt.
 - Neues Verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
 - Neuer Platzhalter HEADLINE_AUTHOR für Headlines.
+- alt-Text für Kopiericon hinzugefügt
 
 
 Modul: Digital Asset Management
