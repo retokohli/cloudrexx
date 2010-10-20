@@ -33,6 +33,7 @@ News Manager
 - Neuer Platzhalter HEADLINE_AUTHOR für Headlines.
 - Es können keine Teaserboxen mehr mit leerem Titel (bzw. nur Spaces) erstellt werden.
 - Konsequentere Statusmeldungen
+- Tooltip für Kopieren der News ergänzt
 
 Veranstaltungskalender
 - Das Bearbeiten der Veranstaltungen funktioniert.
