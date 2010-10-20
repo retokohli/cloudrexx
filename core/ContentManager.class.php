@@ -2272,7 +2272,7 @@ class ContentManager
         $objDatabase->Execute($q1);
 
         $err = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
-        if ($err) $objTemplate->setVariable("ALIAS_STATUS", $err);
+        if ($err) $this->strErrMessage[] = $err;
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
