@@ -2271,8 +2271,7 @@ class ContentManager
         ";
         $objDatabase->Execute($q1);
 
-        $err = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
-        if ($err) $this->strErrMessage[] = $err;
+        $aliasError = $this->_set_default_alias($pageId, $_POST['alias'], $langId);
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (
@@ -2392,6 +2391,7 @@ class ContentManager
                 'pageId'        => $pageId,
                 'langName'      => $langName,
                 'lastUpdate'    => $lastUpdate,
+                'error'         => $aliasError
             )));
         }
         die(json_encode(array('pageId' => -1)));
