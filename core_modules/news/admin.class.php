@@ -375,6 +375,7 @@ class newsManager extends newsLibrary {
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ARCHIVE'                   => $_ARRAYLANG['TXT_ARCHIVE'],
             'TXT_EDIT'                      => $_ARRAYLANG['TXT_EDIT'],
+            'TXT_COPY'                      => $_ARRAYLANG['TXT_COPY'],
             'TXT_DELETE'                    => $_ARRAYLANG['TXT_DELETE'],
             'TXT_NEWS_COMMENTS'               => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
             'TXT_NEWS_MESSAGE_PROTECTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
