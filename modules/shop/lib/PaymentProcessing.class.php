@@ -403,11 +403,13 @@ class PaymentProcessing
     {
         global $_ARRAYLANG;
 
+        $language = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
+        $language = strtolower($language).'_'.strtoupper($language);
         $arrShopOrder = array(
             'PSPID'    => Settings::getValueByName('yellowpay_shop_id'),
             'orderID'  => $_SESSION['shop']['orderid'],
             'amount'   => intval($_SESSION['shop']['grand_total_price']*100),
-            'language' => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
+            'language' => $language,
             'currency' => Currency::getActiveCurrencyCode(),
         );
         $yellowpayForm = Yellowpay::getForm(
