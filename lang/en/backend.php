@@ -1048,5 +1048,6 @@ $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "No settings found";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
 $_ARRAYLANG['TXT_CSRF_TITLE'] = "Ein Fehler ist aufgetreten";
 $_ARRAYLANG['TXT_CSRF_DESCR'] = "Aus Sicherheitsgründen wurde diese Aktion blockiert. Falls diese Meldung wiederholt auftaucht, versuchen Sie, weniger Browserfenster offen zu halten.";
+$_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 ?>
