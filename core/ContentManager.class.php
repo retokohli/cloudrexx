@@ -1438,8 +1438,8 @@ class ContentManager
 
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
-			$objTemplate->setVariable("ALIAS_STATUS", $err);
-		}
+            $this->strErrMessage[] = $err;
+	}
 
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
@@ -1660,8 +1660,8 @@ class ContentManager
         $pageId = $objDatabase->Insert_ID();
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
-			$objTemplate->setVariable("ALIAS_STATUS", $err);
-		}
+            $this->strErrMessage[] = $err;
+        }
 
         $q2 = "
             INSERT INTO ".DBPREFIX."content (

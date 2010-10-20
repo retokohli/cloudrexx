@@ -56,3 +56,6 @@ Blog:
 
 Shop:
 - Paging bei der Bestellungsübersicht funktioniert nun auch, wenn Filterkriterien angegeben wurden.
+
+Content Manager:
+- Fehlermeldung für aufgrund von bereits vorhandenem gleichnamigen Ordner ungültige Aliase hinzugefügt
