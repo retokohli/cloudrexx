@@ -921,6 +921,7 @@ class skins
                 } elseif ($_POST['fromTheme'] != "" && $_POST['fromDB'] == "") {
                     $this->dirLog=$this->_objFile->copyDir($this->path, $this->webPath, $_POST['fromTheme'], $this->path, $this->webPath, $dirName);
                     if ($this->dirLog != "error") {
+                        $this->_replaceThemeName($this->replaceCharacters($_POST['fromTheme']), $dirName, $this->path.$dirName);
                         $this->insertIntoDb($_POST['dbName'], $this->dirLog, $_POST['fromDB']);
                     }
                     $this->strOkMessage  = $_POST['dbName']." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
