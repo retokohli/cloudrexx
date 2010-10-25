@@ -212,6 +212,19 @@ class Vat
         self::$vatDefaultId = Settings::getValueByName('vat_default_id');
         self::$vatDefaultRate = self::getRate(self::$vatDefaultId);
         self::$vatOtherId = Settings::getValueByName('vat_other_id');
+
+// NOTE: Temporary fix for VAT rate change on 2011-01-01 in switzerland
+        if (   isset(self::$arrVat[10])
+            && self::$arrVat[10]['rate'] == 7.6) {
+            $date = date('Y-m-d');
+            if ($date >= '2011-01-01') {
+                self::updateVat(
+                    array(10 => self::$arrVat[10]['class']),
+                    array(10 => '8.00'));
+                self::$arrVat[10]['rate'] = '8.00';
+            }
+        }
+
         return true;
     }
 
