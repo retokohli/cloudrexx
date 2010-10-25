@@ -215,8 +215,7 @@ class skins
     {
         global $objTemplate;
 
-        if
-        (!isset($_GET['act'])) {
+        if (!isset($_GET['act'])) {
             $_GET['act']="";
         }
         switch($_GET['act']){
@@ -448,8 +447,11 @@ class skins
             if (isset($_FILES['importlocal']['type'])) {
                 if (   !preg_match('/zip$/i', $_FILES['importlocal']['type'])
                    && !(   preg_match('/binary$/', $_FILES['importlocal']['type'])
-                        || preg_match('/application\/octetstream/', $_FILES['importlocal']['type']))) {
-                    $this->strErrMessage = $_FILES['importlocal']['name'].': '.$_CORELANG['TXT_THEME_IMPORT_WRONG_MIMETYPE'];
+                        || preg_match('/application\/octet\-?stream/', $_FILES['importlocal']['type']))) {
+                    $this->strErrMessage =
+                        $_FILES['importlocal']['name'].': '.
+                        $_CORELANG['TXT_THEME_IMPORT_WRONG_MIMETYPE'].': '.
+                        $_FILES['importlocal']['type'];
                     return false;
                 }
             }
@@ -964,12 +966,12 @@ class skins
      * @param string $copyPath full path to copied theme's directory
      * @return string "error" on error, else empty string
      * @see skins::createDir()
-     */                        
+     */
     function _replaceThemeName($org, $copy, $path)
     {
-        //extensions of files that could contain links still pointing to the old template 
+        //extensions of files that could contain links still pointing to the old template
         $regexValidExtensions = '\.css|\.htm|\.html';
-            
+
         $dir = opendir($path);
         $file = readdir($dir);
         while($file)
@@ -1220,7 +1222,7 @@ class skins
             'THEMES_MENU'           => $this->getThemesDropdown($themes),
             'THEMES_PAGE_VALUE'     => $this->getFilesContent($themes, $themesPage),
             'THEMES_PAGE_DEL_VALUE' => $this->getFilesDropdownDel($themes),
-            'THEMES_MENU_DEL'       => $this->_getThemesDropdownDelete()
+            'THEMES_MENU_DEL'       => $this->_getThemesDropdownDelete(),
         ));
     }
 
@@ -1353,7 +1355,8 @@ class skins
             $strFile = readdir($hDir);
             while ($strFile !== false) {
                 // don't need ., .., .svn
-                if (in_array($strFile, array('.', '..', '.svn'))){
+                if (in_array($strFile, array('.', '..', '.svn'))) {
+                    $strFile = readdir($hDir);
                     continue;
                 }
 
@@ -1414,8 +1417,9 @@ class skins
             $file = $this->path.$themes;
             if (file_exists($file)) {
                 $this->_parentPath = $file;
-                $skin_folder_page = opendir ($file);
-                while (false !== ($strPage = readdir ($skin_folder_page))) {
+                $skin_folder_page = opendir($file);
+                $strPage = readdir($skin_folder_page);
+                while (false !== $strPage) {
                     if (!in_array($strPage, array('.', '..', '.svn')) && is_dir($file.'/'.$strPage)){
                         $this->subDirs = array_merge($this->subDirs, $this->_getDirListing($file.'/'.$strPage, $this->fileextensions));
                     }
@@ -1434,6 +1438,7 @@ class skins
                             }
                         }
                     }
+                    $strPage = readdir($skin_folder_page);
                 }
                 closedir($skin_folder_page);
                 ksort($this->subDirs, SORT_STRING);
