@@ -130,7 +130,7 @@ class Contact extends ContactLib
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
             $this->_getParams();
-            $arrFormData =& $this->_getContactFormData();            
+            $arrFormData =& $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
                     $this->_sendMail($arrFormData);
@@ -313,8 +313,8 @@ class Contact extends ContactLib
      */
     function _uploadFiles($arrFields)
     {
-        global $_ARRAYLANG;
-
+        global $_ARRAYLANG, $_LANGID;
+        
         $arrSettings = $this->getSettings();
 
         $arrFiles = array();
@@ -355,13 +355,13 @@ class Contact extends ContactLib
                                 $suffix = '-'.++$i;
                                 $filePath = $arrSettings['fileUploadDepositionPath'].'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
                             }
-
+            
                             $arrMatch = array();
                             if (FWValidator::is_file_ending_harmless($fileName)) {
                                 if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$filePath)) {
                                     $id = intval(substr($file, 17));
                                     if (isset($arrFields[$id])) {
-                                        $key = $arrFields[$id]['name'];
+                                        $key = $arrFields[$id]['lang'][$_LANGID]['name'];
                                     } else {
                                         $key = contrexx_strip_tags($file);
                                     }
@@ -534,28 +534,42 @@ class Contact extends ContactLib
     function _insertIntoDatabase($arrFormData)
     {
         global $objDatabase, $_ARRAYLANG;
-        
+
         if (!empty($this->errorMsg)) return false;
 
-        $arrDbEntry = array();
+        $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_data
+                                        (`id_form`, `time`, `host`, `lang`, `browser`, `ipaddress`)
+                                        VALUES
+                                        (".$arrFormData['id'].",
+                                         ".$arrFormData['meta']['time'].",
+                                         '".$arrFormData['meta']['host']."',
+                                         '".$arrFormData['meta']['lang']."',
+                                         '".$arrFormData['meta']['browser']."',
+                                         '".$arrFormData['meta']['ipaddress']."')");
+        if ($objResult === false) {
+            $this->errorMsg .= $_ARRAYLANG['TXT_CONTACT_FAILED_SUBMIT_REQUEST'].'<br />';
+            return false;
+        }
 
-        if(!empty($arrFormData['data'])) {
+        $lastInsertId = $objDatabase->insert_id();
+        if (!empty($arrFormData['data'])) {
             foreach ($arrFormData['data'] as $key => $value) {
-                array_push($arrDbEntry, base64_encode($key).",".base64_encode($value));
+                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_submit_data
+                                        (`id_entry`, `formlabel`, `formvalue`)
+                                        VALUES
+                                        (".$lastInsertId.",
+                                         '".$key."',
+                                         '".html_entity_decode(contrexx_addslashes($value), ENT_QUOTES, CONTREXX_CHARSET)."')");
             }
         }
 
         foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-            array_push($arrDbEntry, base64_encode($key).",".base64_encode(contrexx_strip_tags(serialize($file))));
-        }
-
-        $message = implode(';', $arrDbEntry);
-
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_data (`id_form`, `time`, `host`, `lang`, `browser`, `ipaddress`, `data`) VALUES (".$arrFormData['id'].", ".$arrFormData['meta']['time'].", '".$arrFormData['meta']['host']."', '".$arrFormData['meta']['lang']."', '".$arrFormData['meta']['browser']."', '".$arrFormData['meta']['ipaddress']."', '".$message."')") !== false) {
-            return true;
-        } else {
-            $this->errorMsg .= $_ARRAYLANG['TXT_CONTACT_FAILED_SUBMIT_REQUEST'].'<br />';
-            return false;
+            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_submit_data
+                                        (`id_entry`, `formlabel`, `formvalue`)
+                                        VALUES
+                                        (".$lastInsertId.",
+                                         '".$key."',
+                                         '".contrexx_strip_tags(serialize($file))."')");
         }
     }
 

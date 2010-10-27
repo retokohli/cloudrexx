@@ -1093,7 +1093,9 @@ class ContactLib
         $arrEntries = array();
         $arrCols = array();
 
-        $query = "SELECT id, `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$formId." ORDER BY `time` DESC";
+        $query    = "SELECT `id`, `time`, `host`, `lang`, `ipaddress`
+                  FROM ".DBPREFIX."module_contact_form_data
+                  WHERE id_form=".$formId." ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
 
         $count = $objEntry->RecordCount();
@@ -1104,15 +1106,19 @@ class ContactLib
 
         if ($objEntry !== false) {
             while (!$objEntry->EOF) {
-                $arrKeyValue = explode(';', $objEntry->fields['data']);
                 $arrData = array();
-                foreach ($arrKeyValue as $keyValue) {
-                    $arrTmp = explode(',', $keyValue);
-                    $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
+                $objResult = $objDatabase->SelectLimit("SELECT `formlabel`, `formvalue`
+                                                    FROM ".DBPREFIX."module_contact_form_submit_data
+                                                    WHERE id_entry=".$objEntry->fields['id']."
+                                                    ORDER BY id");
+                
+                while (!$objResult->EOF) {
+                    $arrData[$objResult->fields['formlabel']] = $objResult->fields['formvalue'];
 
-                    if (!in_array(base64_decode($arrTmp[0]), $arrCols)) {
-                        array_push($arrCols, base64_decode($arrTmp[0]));
+                    if (!in_array($objResult->fields['formlabel'], $arrCols)) {
+                        array_push($arrCols, $objResult->fields['formlabel']);
                     }
+                    $objResult->MoveNext();
                 }
 
                 $arrEntries[$objEntry->fields['id']] = array(
@@ -1134,19 +1140,19 @@ class ContactLib
         global $objDatabase;
 
         $arrEntry;
-        $arrCols = array();
-        $objEntry = $objDatabase->SelectLimit("SELECT `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id, 1);
+        $objEntry = $objDatabase->SelectLimit("SELECT `id`, `time`, `host`, `lang`, `ipaddress`
+                                               FROM ".DBPREFIX."module_contact_form_data
+                                               WHERE id=".$id, 1);
 
         if ($objEntry !== false) {
-            $arrKeyValue = explode(';', $objEntry->fields['data']);
+            $objResult = $objDatabase->SelectLimit("SELECT `formlabel`, `formvalue`
+                                                    FROM ".DBPREFIX."module_contact_form_submit_data
+                                                    WHERE id_entry=".$objEntry->fields['id']."
+                                                    ORDER BY id");
             $arrData = array();
-            foreach ($arrKeyValue as $keyValue) {
-                $arrTmp = explode(',', $keyValue);
-                $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
-
-                if (!in_array(base64_decode($arrTmp[0]), $arrCols)) {
-                    array_push($arrCols, base64_decode($arrTmp[0]));
-                }
+            while(!$objResult->EOF){
+                $arrData[$objResult->fields['formlabel']] = $objResult->fields['formvalue'];   
+                $objResult->MoveNext();
             }
 
             $arrEntry = array(
