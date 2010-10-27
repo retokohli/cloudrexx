@@ -347,7 +347,7 @@ class ContactManager extends ContactLib {
                         'CONTACT_FORM_ENTRIES_TITLE'            => str_replace('%NAME%', htmlentities($this->arrForms[$formId]['name'], ENT_QUOTES, CONTREXX_CHARSET), $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME']),
                         'CONTACT_FORM_PAGING'                   => $paging
                 ));
-
+                
                 $colNr = 0;
                 foreach ($arrCols as $col) {
                     if ($colNr == $maxFields) {
@@ -428,7 +428,7 @@ class ContactManager extends ContactLib {
         $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'];
 
         $this->_objTpl->setVariable(array(
-                'TXT_CONTACT_CONFIRM_DELETE_FORM'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_FORM'],
+                'TXT_CONTACT_CONFIRM_DELETE_FORM'           => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_FORM'],
                 'TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'  => $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'],
                 'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'        => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
                 'TXT_CONTACT_LATEST_ENTRY'                  => $_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'],
@@ -1798,7 +1798,7 @@ class ContactManager extends ContactLib {
             $sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}") : '&nbsp;')." ".$required.'</label>';
 
             $arrField['lang'][$frontendLang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$frontendLang]['value']);
-
+        
             switch ($arrField['type']) {
                 case 'text':
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
@@ -1924,51 +1924,57 @@ class ContactManager extends ContactLib {
 
     function _getEntryDetails($arrEntry, $formId) {
         global $_ARRAYLANG, $_LANGID ;
-
+        
         $arrFormFields = $this->getFormFields($formId);
         $rowNr = 0;
 
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $arrField) {
             $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
-            $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".$arrField['lang'][$_LANGID]['name'].($arrField['type'] == 'hidden' ? ' (hidden)' : '')."</td>\n";
+            $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
+                            $arrField['lang'][$_LANGID]['name'].
+                            ($arrField['type'] == 'hidden' ? ' (hidden)' : '').
+                            ($arrField['type'] == 'label' ? ' (label)' : '').
+                            "</td>\n";
             $sourcecode .= "<td width=\"85%\">";
 
             switch ($arrField['type']) {
-                case 'checkbox':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$_LANGID]['name']]) && $arrEntry['data'][$arrField['lang'][$_LANGID]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
-                    break;
+            case 'checkbox':
+                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$_LANGID]['name']]) && $arrEntry['data'][$arrField['lang'][$_LANGID]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                break;
 
-                case 'file':
-                    $file = $arrEntry['data'][$arrField['lang'][$_LANGID]['name']];
-                    if (isset($file)) {
-                        if (preg_match('/^a:2:{/', $file)) {
-                            $file = unserialize($file);
-                        } else {
-                            $file = array(
-                                    'path' => $file,
-                                    'name' => basename($file)
-                            );
-                        }
-                        $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
-                        $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
-                        $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                        $sourcecode .= '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
+            case 'file':
+                $file = $arrEntry['data'][$arrField['lang'][$_LANGID]['name']];
+                if (isset($file)) {
+                    if (preg_match('/^a:2:{/', $file)) {
+                        $file = unserialize($file);
                     } else {
-                        $sourcecode .= '&nbsp;';
+                        $file = array(
+                                'path' => $file,
+                                'name' => basename($file)
+                        );
                     }
-                    break;
-
-                case 'text':
-                case 'checkboxGroup':
-                case 'date':
-                case 'hidden':
-                case 'password':
-                case 'radio':
-                case 'select':
-                case 'textarea':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$_LANGID]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][$_LANGID]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
-                    break;
+                    $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
+                    $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
+                    $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                    $sourcecode .= '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
+                } else {
+                    $sourcecode .= '&nbsp;';
+                }
+                break;
+            case 'label':
+                $sourcecode .= isset($arrField['lang'][$_LANGID]['name']) ? nl2br(htmlentities($arrField['lang'][$_LANGID]['value'], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                break;
+            case 'text':
+            case 'checkboxGroup':
+            case 'date':
+            case 'hidden':
+            case 'password':
+            case 'radio':
+            case 'select':
+            case 'textarea':
+                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$_LANGID]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][$_LANGID]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                break;
             }
 
             $sourcecode .= "</td>\n";
@@ -2129,11 +2135,11 @@ class ContactManager extends ContactLib {
             $activeLanguages = FWLanguage::getActiveFrontendLanguages();
             $objFWUser = FWUser::getFWUserObject();
 
-            if(!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
-                    $pageId = intval($_REQUEST['pageId']);
-                }else {
-                    $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
-                    $pageId = $objRS->fields['nextId'];
+            if (!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
+                $pageId = intval($_REQUEST['pageId']);
+            } else {
+                $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
+                $pageId = $objRS->fields['nextId'];
             }
 
             foreach ($activeLanguages as $lang) {
@@ -2257,7 +2263,7 @@ class ContactManager extends ContactLib {
             foreach ($activeLanguages as $lang) {
                 $langID = $lang['id'];
 
-                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang WHERE fieldID=".$formId." AND langID=".$langID, 1);
+                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang WHERE formID=".$formId." AND langID=".$langID, 1);
                 if ($objContactForm !== false) {
                     $catname = addslashes($objContactForm->fields['name']);
                 }
