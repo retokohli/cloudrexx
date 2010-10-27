@@ -49,25 +49,6 @@ function _dataUpdate()
               PRIMARY KEY (`message_id`)
             ) ENGINE=InnoDB",
         #################################################################################
-            'module_data_messages_lang' => "CREATE TABLE `".DBPREFIX."module_data_messages_lang` (
-              `message_id` int(6) unsigned NOT NULL default '0',
-              `lang_id` int(2) unsigned NOT NULL default '0',
-              `is_active` enum('0','1')  NOT NULL default '1',
-              `subject` varchar(250)  NOT NULL default '',
-              `content` text  NOT NULL,
-              `tags` varchar(250)  NOT NULL default '',
-              `image` varchar(250)  NOT NULL default '',
-              `thumbnail` varchar(250)  NOT NULL,
-              `thumbnail_width` tinyint(3) unsigned NOT NULL default '0',
-              `thumbnail_height` tinyint(3) unsigned NOT NULL default '0',
-              `attachment` varchar(255)  NOT NULL default '',
-              `attachment_description` varchar(255)  NOT NULL default '',
-              `mode` set('normal','forward')  NOT NULL default 'normal',
-              `forward_url` varchar(255)  NOT NULL default '',
-              `forward_target` varchar(40)  default NULL,
-              PRIMARY KEY  (`message_id`,`lang_id`)
-            ) ENGINE=InnoDB",
-        #################################################################################
         'module_data_settings' => "CREATE TABLE `".DBPREFIX."module_data_settings` (
               `name` varchar(50) NOT NULL default '',
               `value` text NOT NULL,
@@ -226,22 +207,22 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
         UpdateUtil::table(
             DBPREFIX.'module_data_messages_lang',
             array(
-                '`message_id`'               => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                '`lang_id`'                  => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                '`is_active`'                => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '1'),
-                '`subject`'                  => array('type' => 'VARCHAR(250)'),
-                '`content`'                  => array('type' => 'text'),
-                '`tags`'                     => array('type' => 'VARCHAR(250)'),
-                '`image`'                    => array('type' => 'VARCHAR(250)'),
-                '`thumbnail`'                => array('type' => 'VARCHAR(250)'),
-                '`thumbnail_type`'           => array('type' => 'ENUM(\'original\',\'thumbnail\')', 'default' => 'original'),
-                '`thumbnail_width`'          => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                '`thumbnail_height`'         => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                '`attachment`'               => array('type' => 'VARCHAR(255)'),
-                '`attachment_description`'   => array('type' => 'VARCHAR(255)'),
-                '`mode`'                     => array('type' => 'SET(\'normal\',\'forward\')', 'default' => 'normal'),
-                '`forward_url`'              => array('type' => 'VARCHAR(255)'),
-                '`forward_target`'           => array('type' => 'VARCHAR(40)')
+                'message_id'               => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'lang_id'                  => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'is_active'                => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '1'),
+                'subject'                  => array('type' => 'VARCHAR(250)'),
+                'content'                  => array('type' => 'text'),
+                'tags'                     => array('type' => 'VARCHAR(250)'),
+                'image'                    => array('type' => 'VARCHAR(250)'),
+                'thumbnail'                => array('type' => 'VARCHAR(250)'),
+                'thumbnail_type'           => array('type' => 'ENUM(\'original\',\'thumbnail\')', 'default' => 'original', 'after' => 'thumbnail'),
+                'thumbnail_width'          => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'thumbnail_height'         => array('type' => 'TINYINT(3)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'attachment'               => array('type' => 'VARCHAR(255)'),
+                'attachment_description'   => array('type' => 'VARCHAR(255)'),
+                'mode'                     => array('type' => 'SET(\'normal\',\'forward\')', 'default' => 'normal'),
+                'forward_url'              => array('type' => 'VARCHAR(255)'),
+                'forward_target'           => array('type' => 'VARCHAR(40)')
             )
         );
     }
