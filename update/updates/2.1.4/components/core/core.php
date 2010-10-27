@@ -116,17 +116,17 @@ function _coreUpdate()
         UpdateUtil::table(
             DBPREFIX.'log',
             array(
-                '`id`'                       => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true),
-                '`userid`'                   => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => false),
-                '`datetime`'                 => array('type' => 'datetime', 'default' => '0000-00-00 00:00:00'),
-                '`useragent`'                => array('type' => 'VARCHAR(250)'),
-                '`userlanguage`'             => array('type' => 'VARCHAR(250)'),
-                '`remote_addr`'              => array('type' => 'VARCHAR(250)'),
-                '`remote_host`'              => array('type' => 'VARCHAR(250)'),
-                '`http_via`'                 => array('type' => 'VARCHAR(250)'),
-                '`http_client_ip`'           => array('type' => 'VARCHAR(250)'),
-                '`http_x_forwarded_for`'     => array('type' => 'VARCHAR(250)'),
-                '`referer`'                  => array('type' => 'VARCHAR(250)')
+                'id'                       => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'userid'                   => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => false),
+                'datetime'                 => array('type' => 'datetime', 'default' => '0000-00-00 00:00:00'),
+                'useragent'                => array('type' => 'VARCHAR(250)'),
+                'userlanguage'             => array('type' => 'VARCHAR(250)'),
+                'remote_addr'              => array('type' => 'VARCHAR(250)'),
+                'remote_host'              => array('type' => 'VARCHAR(250)'),
+                'http_via'                 => array('type' => 'VARCHAR(250)'),
+                'http_client_ip'           => array('type' => 'VARCHAR(250)'),
+                'http_x_forwarded_for'     => array('type' => 'VARCHAR(250)'),
+                'referer'                  => array('type' => 'VARCHAR(250)')
             )
         );
     }
