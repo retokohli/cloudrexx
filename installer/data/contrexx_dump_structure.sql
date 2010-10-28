@@ -865,12 +865,12 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_contact_form_data` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
+  `id_lang` int(10) unsigned NOT NULL default '1',
   `time` int(14) unsigned NOT NULL default '0',
   `host` varchar(255) NOT NULL default '',
   `lang` varchar(64) NOT NULL default '',
   `browser` varchar(255) NOT NULL default '',
   `ipaddress` varchar(15) NOT NULL default '',
-  `data` text NOT NULL,
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
@@ -911,6 +911,16 @@ CREATE TABLE `contrexx_module_contact_form_lang` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `formID` (`formID`,`langID`)
 ) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_contact_form_submit_data` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_entry` int(10) unsigned NOT NULL,
+  `formlabel` text NOT NULL,
+  `formvalue` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
