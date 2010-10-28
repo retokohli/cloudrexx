@@ -61,16 +61,16 @@ class ContactLib
     function initContactForms($allLanguages = false)
     {
         global $objDatabase, $_FRONTEND_LANGID;
-
+        
         if ($allLanguages) {
             $sqlWhere = '';
         } else {
-            $sqlWhere = "WHERE tblForm.langId=".$_FRONTEND_LANGID;
+            $sqlWhere = "WHERE tblData.id_lang=".$_FRONTEND_LANGID;
         }
 
         $this->arrForms = array();
 
-        $res = $objDatabase->Execute("
+        $objResult = $objDatabase->Execute("
             SELECT
                 tblForm.id,
                 tblForm.mails,
@@ -87,6 +87,8 @@ class ContactLib
                         `".DBPREFIX."module_contact_form_data`
                     WHERE
                         `tblForm`.`id` = `id_form`
+  #                  AND
+  #                     `id_lang` = ".$_FRONTEND_LANGID."
                 )                                       AS number,
                 (
                     SELECT
@@ -95,6 +97,8 @@ class ContactLib
                         `".DBPREFIX."module_contact_form_data`
                     WHERE
                         `tblForm`.`id` = `id_form`
+  #                    AND
+  #                       `id_lang` = ".$_FRONTEND_LANGID."
                 )                                       AS last,
                 `tblLang`.`name`                        AS `name`,
                 `tblLang`.`langID`                      AS `langID`,
@@ -110,10 +114,10 @@ class ContactLib
             ON
                 `tblForm`.`id` = `tblLang`.`formID`
 
-            #LEFT JOIN 
-            #    `".DBPREFIX."module_contact_form_data`  AS `tblData`
-            #ON 
-            #    `tblForm`.`id` = `tblData`.`id_form`
+            LEFT JOIN 
+                `".DBPREFIX."module_contact_form_data`  AS `tblData`
+            ON 
+                `tblForm`.`id` = `tblData`.`id_form`
 
             ".$sqlWhere."
 
@@ -124,9 +128,9 @@ class ContactLib
 
         $lastID = 0;
 
-        if ($res !== false) {
-            while (!$res->EOF) {
-                $fields = &$res->fields; // shorten the access
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $fields = &$objResult->fields; // shorten the access
                 if ($fields['id'] != $lastID) {
                     // create a new array
                     $lastID = $fields['id'];
@@ -146,7 +150,7 @@ class ContactLib
                         'useCaptcha'        => $fields['use_captcha'],
                         'useCustomStyle'    => $fields['use_custom_style'],
                         'sendCopy'          => $fields['send_copy'],
-                        //'recipients'        => $this->getRecipients($fields['id'], true)
+                        'recipients'        => $this->getRecipients($lastID, true),
                         'lang'              => array(
                             $fields['langID'] => array(
                                 'name'      => $fields['name'],
@@ -166,7 +170,7 @@ class ContactLib
                     );
                 }
 
-                $res->MoveNext();
+                $objResult->MoveNext();
             }
         }
     }
@@ -395,7 +399,7 @@ class ContactLib
                     contrexx_stripslashes($recipient['name']);
             }
         }
-
+        
         return $recipients;
     }
 
@@ -511,9 +515,15 @@ class ContactLib
         global $objDatabase;
 
         $arrFieldNames = array();
-
+        
         if (isset($this->arrForms[$id])) {
-            $objFields  = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_contact_form_field WHERE id_form=".$id." ORDER BY order_id");
+            $objFields  = $objDatabase->Execute("SELECT `f`.`id`, `l`.`name`
+                                                 FROM `".DBPREFIX."module_contact_form_field` as `f`
+                                                 LEFT JOIN `".DBPREFIX."module_contact_form_field_lang` as `l`
+                                                 ON `f`.`id` = `l`.`fieldID`
+                                                 WHERE `f`.`id_form` = ".$id."
+                                                 AND `l`.`langID` = ".FRONTEND_LANG_ID."
+                                                 ORDER BY `f`.`order_id`");
 
             if ($objFields !== false) {
                 while (!$objFields->EOF) {
@@ -1095,7 +1105,9 @@ class ContactLib
 
         $query    = "SELECT `id`, `time`, `host`, `lang`, `ipaddress`
                   FROM ".DBPREFIX."module_contact_form_data
-                  WHERE id_form=".$formId." ORDER BY `time` DESC";
+                  WHERE id_form = ".$formId."
+                  AND id_lang = ".FRONTEND_LANG_ID."
+                  ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
 
         $count = $objEntry->RecordCount();
