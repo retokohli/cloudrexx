@@ -90,9 +90,17 @@ function _newsletterUpdate()
         $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         
         if(!$res->EOF)
+	{
             $unsubscribeVal = $res->fields['setvalue'];
+	}
+	else //maybe update ran already => preserve new value
+	{
+            DBG::msg("Not found. Retrieving new unsubscribe value if set.");
+	    $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
+	    if(!$res->EOF)
+		$unsubscribeVal = $res->fields['setvalue'];
+	}
 
-        UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
     }
     catch (UpdateException $e) {
         return UpdateUtil::DefaultActionHandler($e);
@@ -137,8 +145,9 @@ function _newsletterUpdate()
                     '$setid', '$field', '$value', '$status'
                 );
             ");
-
         }
+	DBG::msg("Deleting old unsubscribe key if set");
+        UpdateUtil::sql("DELETE FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         DBG::msg("Done with newsletter update");
     }
     catch (UpdateException $e) {
