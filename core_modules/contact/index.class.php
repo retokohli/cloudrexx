@@ -103,11 +103,12 @@ class Contact extends ContactLib
         if ($this->objTemplate->blockExists('contact_form')) {
             $this->setCaptcha($useCaptcha);
             $this->setProfileData();
-            
+
             $arrFields = $this->getFormFields($formId);
+            $recipients = $this->getRecipients($formId);
             foreach ($arrFields as $fieldId => $arrField) {
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
-
+                
                 if($arrField['type'] == 'checkboxGroup' || $arrField['type'] == 'radio' || $arrField['type'] == 'select') {
                     $options = explode(',', $arrField['lang'][$_LANGID]['value']);
                     foreach ($options as $index => $option) {
@@ -115,11 +116,17 @@ class Contact extends ContactLib
                             $fieldId.'_'.$index.'_VALUE'    => $option
                         ));
                     }
+                } elseif ($arrField['type'] == 'recipient') {
+                    foreach ($recipients as $index => $recipient) {
+                        $this->objTemplate->setVariable(array(
+                            $fieldId.'_'.$index.'_VALUE'    => $recipient['lang'][$_LANGID]
+                        ));
+                    }
                 }
 
                 $this->objTemplate->setVariable(array(
-                    $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
-                    $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
+                   // $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
+                  //  $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
                     $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name'],
                     $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
                 ));
@@ -533,14 +540,15 @@ class Contact extends ContactLib
      */
     function _insertIntoDatabase($arrFormData)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         if (!empty($this->errorMsg)) return false;
 
         $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_data
-                                        (`id_form`, `time`, `host`, `lang`, `browser`, `ipaddress`)
+                                        (`id_form`, `id_lang`, `time`, `host`, `lang`, `browser`, `ipaddress`)
                                         VALUES
                                         (".$arrFormData['id'].",
+                                         ".$_LANGID.",
                                          ".$arrFormData['meta']['time'].",
                                          '".$arrFormData['meta']['host']."',
                                          '".$arrFormData['meta']['lang']."',
