@@ -80,11 +80,13 @@ $_ARRAYLANG['TXT_MEDIA_START_FILE_UPLOADER'] = "Start File Uploader...";
 $_ARRAYLANG['TXT_MEDIA_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_MEDIA_SETTINGS_SAVE_SUCCESSFULL'] = "Settings saved successfull";
 $_ARRAYLANG['TXT_MEDIA_ACCESS_SETTINGS'] = "Access settings for change media archive";
-$_ARRAYLANG['TXT_MEDIA_ADDING_DENIED_FOR_ALL'] = "Upload files and creating folders are deactivated";
-$_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_ALL'] = "Upload files and creating folders are allowed for everybody";
-$_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP'] = "Only members of selected groups are allowed to upload files and creating folders";
+$_ARRAYLANG['TXT_MEDIA_ADDING_DENIED_FOR_ALL'] = "Nobody (Function disabled)";
+$_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_ALL'] = "Everybody";
+$_ARRAYLANG['TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP'] = "Only members of selected groups";
 $_ARRAYLANG['TXT_MEDIA_AVAILABLE_USER_GROUPS'] = "Available user groups";
 $_ARRAYLANG['TXT_MEDIA_ASSIGNED_USER_GROUPS'] = "Assigned user groups";
 $_ARRAYLANG['TXT_MEDIA_CHECK_ALL'] = "Select All";
 $_ARRAYLANG['TXT_MEDIA_UNCHECK_ALL'] = "Deselect All";
+$_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'] = "Define which users should be allowed to upload files and create new directories from within the frontend.";
+$_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'] = "Frontend File Upload";
 ?>
