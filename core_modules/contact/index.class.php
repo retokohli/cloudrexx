@@ -93,18 +93,19 @@ class Contact extends ContactLib
 
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
-
+        $arrFields = $this->getFormFields($formId);
+        
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
             'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
-            'TXT_CONTACT_RESET'     => $_ARRAYLANG['TXT_CONTACT_RESET']
+            'TXT_CONTACT_RESET'     => $_ARRAYLANG['TXT_CONTACT_RESET'],
+            'CONTACT_JAVASCRIPT'    => $this->_getJsSourceCode($formId, $arrFields)
         ));
 
         if ($this->objTemplate->blockExists('contact_form')) {
             $this->setCaptcha($useCaptcha);
             $this->setProfileData();
 
-            $arrFields = $this->getFormFields($formId);
             $recipients = $this->getRecipients($formId);
             foreach ($arrFields as $fieldId => $arrField) {
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
@@ -125,8 +126,8 @@ class Contact extends ContactLib
                 }
 
                 $this->objTemplate->setVariable(array(
-                   // $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
-                  //  $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
+                    $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
+                    $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
                     $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name'],
                     $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
                 ));
@@ -543,7 +544,7 @@ class Contact extends ContactLib
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         if (!empty($this->errorMsg)) return false;
-
+        
         $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_data
                                         (`id_form`, `id_lang`, `time`, `host`, `lang`, `browser`, `ipaddress`)
                                         VALUES
@@ -560,25 +561,30 @@ class Contact extends ContactLib
         }
 
         $lastInsertId = $objDatabase->insert_id();
-        if (!empty($arrFormData['data'])) {
-            foreach ($arrFormData['data'] as $key => $value) {
+        foreach ($arrFormData['fields'] as $key => $arrField) {
+            $value = "";
+
+            if ($arrField['type'] == 'file' ) {
+                if (isset($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']])) {
+                    $value = contrexx_strip_tags(serialize($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]));
+                }
+            } else {
+                if (isset($arrFormData['data'][$arrField['lang'][$_LANGID]['name']])){
+                    $value = html_entity_decode(contrexx_addslashes($arrFormData['data'][$arrField['lang'][$_LANGID]['name']]), ENT_QUOTES, CONTREXX_CHARSET);
+                }
+            }
+
+            if ($value != "") {
                 $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_submit_data
-                                        (`id_entry`, `formlabel`, `formvalue`)
+                                        (`id_entry`, `id_field`, `formlabel`, `formvalue`)
                                         VALUES
                                         (".$lastInsertId.",
-                                         '".$key."',
-                                         '".html_entity_decode(contrexx_addslashes($value), ENT_QUOTES, CONTREXX_CHARSET)."')");
+                                         ".$key.",
+                                         '".$arrField['lang'][$_LANGID]['name']."',
+                                         '".$value."')");
             }
         }
-
-        foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_submit_data
-                                        (`id_entry`, `formlabel`, `formvalue`)
-                                        VALUES
-                                        (".$lastInsertId.",
-                                         '".$key."',
-                                         '".contrexx_strip_tags(serialize($file))."')");
-        }
+        return true;
     }
 
     /**
