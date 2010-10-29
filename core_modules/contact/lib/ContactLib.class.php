@@ -87,8 +87,6 @@ class ContactLib
                         `".DBPREFIX."module_contact_form_data`
                     WHERE
                         `tblForm`.`id` = `id_form`
-  #                  AND
-  #                     `id_lang` = ".$_FRONTEND_LANGID."
                 )                                       AS number,
                 (
                     SELECT
@@ -97,8 +95,6 @@ class ContactLib
                         `".DBPREFIX."module_contact_form_data`
                     WHERE
                         `tblForm`.`id` = `id_form`
-  #                    AND
-  #                       `id_lang` = ".$_FRONTEND_LANGID."
                 )                                       AS last,
                 `tblLang`.`name`                        AS `name`,
                 `tblLang`.`langID`                      AS `langID`,
@@ -346,7 +342,7 @@ class ContactLib
      * @param       int $formID
      * @return      array
      */
-    protected function getRecipients($formID) 
+    protected function getRecipients($formID, $allLanguages = true)
     {
         global $objDatabase;
 
@@ -356,6 +352,9 @@ class ContactLib
             return array();
         }
 
+        if ($allLanguages == false) {
+            $sqlWhere = "";
+        }
 
         $query = '
             SELECT
@@ -522,7 +521,6 @@ class ContactLib
                                                  LEFT JOIN `".DBPREFIX."module_contact_form_field_lang` as `l`
                                                  ON `f`.`id` = `l`.`fieldID`
                                                  WHERE `f`.`id_form` = ".$id."
-                                                 AND `l`.`langID` = ".FRONTEND_LANG_ID."
                                                  ORDER BY `f`.`order_id`");
 
             if ($objFields !== false) {
@@ -827,7 +825,7 @@ class ContactLib
         $field
     )
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $fieldID = $field['id'];
         $query = '
@@ -843,6 +841,16 @@ class ContactLib
 
         $objDatabase->execute($query);
         foreach ($field['lang'] as $langID => $values) {
+            if ($field['type'] == 'select') {
+                $replaceString = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].',';
+                if ($field['is_required'] == 1) {
+                    if (strpos($values['value'], $replaceString) === false) {
+                        $values['value'] = $replaceString.$values['value'];
+                    }
+                } else {
+                    $values['value'] = str_replace($replaceString,'',$values['value']);
+                }
+            }
             $this->setFormFieldLang($fieldID, $langID, $values);
         }
     }
@@ -857,7 +865,7 @@ class ContactLib
      */
     protected function addFormField($formID, $field) 
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $query = '
             INSERT INTO
@@ -883,6 +891,9 @@ class ContactLib
         $fieldID = $objDatabase->insert_id();
 
         foreach ($field['lang'] as $langID => $values) {
+            if ($field['type'] == 'select' && $field['is_required'] == 1) {
+                    $values['value'] = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].','.$values['value'];
+            }
             $this->setFormFieldLang($fieldID, $langID, $values);
         }
 
@@ -1103,10 +1114,9 @@ class ContactLib
         $arrEntries = array();
         $arrCols = array();
 
-        $query    = "SELECT `id`, `time`, `host`, `lang`, `ipaddress`
+        $query    = "SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`
                   FROM ".DBPREFIX."module_contact_form_data
                   WHERE id_form = ".$formId."
-                  AND id_lang = ".FRONTEND_LANG_ID."
                   ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
 
@@ -1134,6 +1144,7 @@ class ContactLib
                 }
 
                 $arrEntries[$objEntry->fields['id']] = array(
+                    'langId'    => $objEntry->fields['id_lang'],
                     'time'      => $objEntry->fields['time'],
                     'host'      => $objEntry->fields['host'],
                     'lang'      => $objEntry->fields['lang'],
@@ -1152,7 +1163,7 @@ class ContactLib
         global $objDatabase;
 
         $arrEntry;
-        $objEntry = $objDatabase->SelectLimit("SELECT `id`, `time`, `host`, `lang`, `ipaddress`
+        $objEntry = $objDatabase->SelectLimit("SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`
                                                FROM ".DBPREFIX."module_contact_form_data
                                                WHERE id=".$id, 1);
 
@@ -1168,6 +1179,7 @@ class ContactLib
             }
 
             $arrEntry = array(
+                'langId'    => $objEntry->fields['id_lang'],
                 'time'      => $objEntry->fields['time'],
                 'host'      => $objEntry->fields['host'],
                 'lang'      => $objEntry->fields['lang'],
@@ -1177,6 +1189,209 @@ class ContactLib
         }
 
         return $arrEntry;
+    }
+
+    /**
+     * Get Javascript Source
+     *
+     * Makes the sourcecode for the javascript based
+     * field checking
+     */
+    function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
+    {
+        $code = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
+        $code .= "<script type=\"text/javascript\">\n";
+        $code .= "/* <![CDATA[ */\n";
+
+        $code .= "fields = new Array();\n";
+
+        foreach ($formFields as $key => $field) {
+            $code .= "fields[$key] = Array(\n";
+            $code .= "\t'".addslashes($field['lang'][$objInit->userFrontendLangId]['name'])."',\n";
+            $code .= "\t{$field['is_required']},\n";
+            if ($preview) {
+                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
+            } elseif ($show) {
+                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
+            } else {
+                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
+            }
+            $code .= "\t'".$field['type']."');\n";
+        }
+
+        $code .= <<<JS_checkAllFields
+function checkAllFields() {
+    var isOk = true;
+
+    for (var field in fields) {
+        var type = fields[field][3];
+        if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {
+            value = document.getElementsByName('contactFormField_' + field)[0].value;
+            if (value == "" && isRequiredNorm(fields[field][1], value)) {
+                isOk = false;
+                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            } else if (value != "" && !matchType(fields[field][2], value)) {
+                isOk = false;
+                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            } else {
+                document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+            }
+        } else if (type == 'checkbox') {
+            if (!isRequiredCheckbox(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'checkboxGroup') {
+            if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'radio') {
+            if (!isRequiredRadio(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'select') {
+            if (!isRequiredSelect(fields[field][1], field)) {
+                isOk = false;
+            }
+        }
+    }
+
+    if (!isOk) {
+        document.getElementById('contactFormError').style.display = "block";
+    }
+    return isOk;
+}
+
+JS_checkAllFields;
+
+        // This is for checking normal text input field if they are required.
+        // If yes, it also checks if the field is set. If it is not set, it returns true.
+        $code .= <<<JS_isRequiredNorm
+function isRequiredNorm(required, value) {
+    if (required == 1) {
+        if (value == "") {
+            return true;
+        }
+    }
+    return false;
+}
+
+JS_isRequiredNorm;
+
+        // Matches the type of the value and pattern. Returns true if it matched, false if not.
+        $code .= <<<JS_matchType
+function matchType(pattern, value) {
+    var reg = new RegExp(pattern);
+    if (value.match(reg)) {
+        return true;
+    }
+    return false;
+}
+
+JS_matchType;
+
+        // Checks if a checkbox is required but not set. Returns false when finding an error.
+        $code .= <<<JS_isRequiredCheckbox
+function isRequiredCheckbox(required, field) {
+    if (required == 1) {
+        if (!document.getElementsByName('contactFormField_' + field)[0].checked) {
+            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            return false;
+        }
+    }
+    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+
+    return true;
+}
+
+JS_isRequiredCheckbox;
+
+        // Checks if a multile checkbox is required but not set. Returns false when finding an error.
+        $code .= <<<JS_isRequiredCheckBoxGroup
+function isRequiredCheckBoxGroup(required, field) {
+    if (required == true) {
+        var boxes = document.getElementsByName('contactFormField_' + field + '[]');
+        var checked = false;
+        for (var i = 0; i < boxes.length; i++) {
+            if (boxes[i].checked) {
+                checked = true;
+            }
+        }
+        if (checked) {
+            setListBorder('contactFormField_' + field + '[]', false);
+            return true;
+        } else {
+            setListBorder('contactFormField_' + field + '[]', '1px red solid');
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+
+JS_isRequiredCheckBoxGroup;
+
+        // Checks if some radio button need to be checked. Returns false if it finds an error
+        $code .= <<<JS_isRequiredRadio
+function isRequiredRadio(required, field) {
+    if (required == 1) {
+        var buttons = document.getElementsByName('contactFormField_' + field);
+        var checked = false;
+        for (var i = 0; i < buttons.length; i++) {
+            if (buttons[i].checked) {
+                checked = true;
+            }
+        }
+        if (checked) {
+            setListBorder('contactFormField_' + field, false);
+            return true;
+        } else {
+            setListBorder('contactFormField_' + field, '1px red solid');
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+
+JS_isRequiredRadio;
+
+        $code .=<<<JS_isRequiredSelect
+function isRequiredSelect(required, field){
+    if(required == 1){
+        menuIndex = document.getElementById('contactFormFieldId_' + field).selectedIndex;
+        if (menuIndex == 0) {
+            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            return false;
+        }
+    }
+    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+    return true;
+}
+
+JS_isRequiredSelect;
+
+        // Sets the border attribute of a group of checkboxes or radiobuttons
+        $code .= <<<JS_setListBorder
+function setListBorder(field, borderColor) {
+    var boxes = document.getElementsByName(field);
+    for (var i = 0; i < boxes.length; i++) {
+        if (borderColor) {
+            boxes[i].style.border = borderColor;
+        } else {
+            boxes[i].style.borderColor = '';
+        }
+    }
+}
+
+
+JS_setListBorder;
+
+        $code .= <<<JS_misc
+/* ]]> */
+</script>
+
+JS_misc;
+        return $code;
     }
 }
 ?>

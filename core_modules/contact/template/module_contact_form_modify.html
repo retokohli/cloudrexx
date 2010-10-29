@@ -205,7 +205,6 @@
 			
             case 'label':
             case 'hidden':
-            case 'select':
             case 'recipient':
                 ($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
                 ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
@@ -216,6 +215,7 @@
             case 'date':
             case 'file':
             case 'radio':
+            case 'select':
                 var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
                 $J(requiredCopy).attr('id', 'contactFormFieldRequired_' + elId);
                 $J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');

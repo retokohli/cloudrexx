@@ -370,6 +370,7 @@ class ContactManager extends ContactLib {
                     $this->_objTpl->parse('contact_form_entry_data');
 
                     $colNr = 0;
+                    $langId = $arrEntry['langId'];
                     foreach ($arrCols as $col) {
                         if ($colNr == $maxFields) {
                             break;
@@ -395,8 +396,8 @@ class ContactManager extends ContactLib {
                                     $value = '&nbsp;';
                                 }
                             } elseif (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'recipient') {
-                                $recipient = $this->getRecipients($formId);
-                                $value = htmlentities($recipient[$arrEntry['data'][$col]]['lang'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET);
+                                $recipient = $this->getRecipients($formId, false);
+                                $value = htmlentities($recipient[$arrEntry['data'][$col]]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET);
                             } else {
                                 $value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
                             }
@@ -820,11 +821,11 @@ class ContactManager extends ContactLib {
                         'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['value'],
                         'FORM_FIELD_NAME'           => $field['lang'][$lang['id']]['name'],
                         'CONTACT_FORM_FIELD_VALUE_FIELD' => $this->_getFormFieldAttribute(
-                        $realFieldID,
-                        $field['type'],
-                        $field['lang'][$lang['id']]['value'],
-                        $lang['id']
-                        )
+                            $realFieldID,
+                            $field['type'],
+                            $field['lang'][$lang['id']]['value'],
+                            $lang['id']
+                            )
                         )
                 );
                 $jsActiveLang .= $lang['id']."-";
@@ -1710,8 +1711,7 @@ class ContactManager extends ContactLib {
         global $_ARRAYLANG;
 
         switch ($type) {
-            case 'hidden':
-            case 'select':
+            case 'hidden':            
             case 'label':
             case 'recipient':
                 return '';
@@ -1915,7 +1915,7 @@ class ContactManager extends ContactLib {
         $sourcecode[] = "</fieldset>";
         $sourcecode[] = "<!-- END contact_form -->";
 
-        $sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
+        $sourcecode[] = $preview ? $this->_getJsSourceCode($id, $arrFields, $preview, $show) : "{CONTACT_JAVASCRIPT}";
 
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
@@ -1931,12 +1931,13 @@ class ContactManager extends ContactLib {
         $arrFormFields = $this->getFormFields($formId);
         $recipient = $this->getRecipients($formId);
         $rowNr = 0;
-        
+        $langId = $arrEntry['langId'];
+      
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $arrField) {
             $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
             $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
-                            $arrField['lang'][FRONTEND_LANG_ID]['name'].
+                            $arrField['lang'][$langId]['name'].
                             ($arrField['type'] == 'hidden' ? ' (hidden)' : '').
                             ($arrField['type'] == 'label' ? ' (label)' : '').
                             "</td>\n";
@@ -1944,11 +1945,11 @@ class ContactManager extends ContactLib {
 
             switch ($arrField['type']) {
             case 'checkbox':
-                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][FRONTEND_LANG_ID]['name']]) && $arrEntry['data'][$arrField['lang'][FRONTEND_LANG_ID]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) && $arrEntry['data'][$arrField['lang'][$langId]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
                 break;
 
             case 'file':
-                $file = $arrEntry['data'][$arrField['lang'][FRONTEND_LANG_ID]['name']];
+                $file = $arrEntry['data'][$arrField['lang'][$langId]['name']];
                 if (isset($file)) {
                     if (preg_match('/^a:2:{/', $file)) {
                         $file = unserialize($file);
@@ -1967,11 +1968,11 @@ class ContactManager extends ContactLib {
                 }
                 break;
             case 'label':
-                $sourcecode .= isset($arrField['lang'][FRONTEND_LANG_ID]['name']) ? nl2br(htmlentities($arrField['lang'][FRONTEND_LANG_ID]['value'], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                $sourcecode .= isset($arrField['lang'][$langId]['name']) ? nl2br(htmlentities($arrField['lang'][$langId]['value'], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                 break;
             case 'recipient':
-                $recipientId = $arrEntry['data'][$arrField['lang'][FRONTEND_LANG_ID]['name']];
-                $sourcecode .= isset($recipient[$recipientId]['lang'][FRONTEND_LANG_ID]) ? htmlentities($recipient[$recipientId]['lang'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
+                $recipientId = $arrEntry['data'][$arrField['lang'][$langId]['name']];
+                $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
                 break;
             case 'text':
             case 'checkboxGroup':
@@ -1981,7 +1982,7 @@ class ContactManager extends ContactLib {
             case 'radio':
             case 'select':
             case 'textarea':
-                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][FRONTEND_LANG_ID]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][FRONTEND_LANG_ID]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][$langId]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                 break;
             }
 
@@ -2252,7 +2253,7 @@ class ContactManager extends ContactLib {
                     $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
                 }
             }
-            header("Location: ".ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
+            header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
             exit;
         }
     }
@@ -2424,188 +2425,6 @@ class ContactManager extends ContactLib {
                 }
             }
         }
-    }
-
-    /**
-     * Get Javascript Source
-     *
-     * Makes the sourcecode for the javascript based
-     * field checking
-     */
-    function _getJsSourceCode($id, $formFields, $preview = false, $show = false) {
-        $code = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
-        $code .= "<script type=\"text/javascript\">\n";
-        $code .= "/* <![CDATA[ */\n";
-
-        $code .= "fields = new Array();\n";
-
-        foreach ($formFields as $key => $field) {
-            $code .= "fields[$key] = Array(\n";
-            $code .= "\t'".addslashes($field['lang'][$objInit->userFrontendLangId]['name'])."',\n";
-            $code .= "\t{$field['is_required']},\n";
-            if ($preview) {
-                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-            } elseif ($show) {
-                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-            } else {
-                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-            }
-            $code .= "\t'".$field['type']."');\n";
-        }
-
-        $code .= <<<JS_checkAllFields
-function checkAllFields() {
-    var isOk = true;
-
-    for (var field in fields) {
-        var type = fields[field][3];
-        if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {
-            value = document.getElementsByName('contactFormField_' + field)[0].value;
-            if (value == "" && isRequiredNorm(fields[field][1], value)) {
-                isOk = false;
-                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
-            } else if (value != "" && !matchType(fields[field][2], value)) {
-                isOk = false;
-                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
-            } else {
-                document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
-            }
-        } else if (type == 'checkbox') {
-            if (!isRequiredCheckbox(fields[field][1], field)) {
-                isOk = false;
-            }
-        } else if (type == 'checkboxGroup') {
-            if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
-                isOk = false;
-            }
-        } else if (type == 'radio') {
-            if (!isRequiredRadio(fields[field][1], field)) {
-                isOk = false;
-            }
-        }
-    }
-
-    if (!isOk) {
-        document.getElementById('contactFormError').style.display = "block";
-    }
-    return isOk;
-}
-
-JS_checkAllFields;
-
-        // This is for checking normal text input field if they are required.
-        // If yes, it also checks if the field is set. If it is not set, it returns true.
-        $code .= <<<JS_isRequiredNorm
-function isRequiredNorm(required, value) {
-    if (required == 1) {
-        if (value == "") {
-            return true;
-        }
-    }
-    return false;
-}
-
-JS_isRequiredNorm;
-
-        // Matches the type of the value and pattern. Returns true if it matched, false if not.
-        $code .= <<<JS_matchType
-function matchType(pattern, value) {
-    var reg = new RegExp(pattern);
-    if (value.match(reg)) {
-        return true;
-    }
-    return false;
-}
-
-JS_matchType;
-
-        // Checks if a checkbox is required but not set. Returns false when finding an error.
-        $code .= <<<JS_isRequiredCheckbox
-function isRequiredCheckbox(required, field) {
-    if (required == 1) {
-        if (!document.getElementsByName('contactFormField_' + field)[0].checked) {
-            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
-            return false;
-        }
-    }
-    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
-
-    return true;
-}
-
-JS_isRequiredCheckbox;
-
-        // Checks if a multile checkbox is required but not set. Returns false when finding an error.
-        $code .= <<<JS_isRequiredCheckBoxGroup
-function isRequiredCheckBoxGroup(required, field) {
-    if (required == true) {
-        var boxes = document.getElementsByName('contactFormField_' + field + '[]');
-        var checked = false;
-        for (var i = 0; i < boxes.length; i++) {
-            if (boxes[i].checked) {
-                checked = true;
-            }
-        }
-        if (checked) {
-            setListBorder('contactFormField_' + field + '[]', false);
-            return true;
-        } else {
-            setListBorder('contactFormField_' + field + '[]', '1px red solid');
-            return false;
-        }
-    } else {
-        return true;
-    }
-}
-
-JS_isRequiredCheckBoxGroup;
-
-        // Checks if some radio button need to be checked. Returns false if it finds an error
-        $code .= <<<JS_isRequiredRadio
-function isRequiredRadio(required, field) {
-    if (required == 1) {
-        var buttons = document.getElementsByName('contactFormField_' + field);
-        var checked = false;
-        for (var i = 0; i < buttons.length; i++) {
-            if (buttons[i].checked) {
-                checked = true;
-            }
-        }
-        if (checked) {
-            setListBorder('contactFormField_' + field, false);
-            return true;
-        } else {
-            setListBorder('contactFormField_' + field, '1px red solid');
-            return false;
-        }
-    } else {
-        return true;
-    }
-}
-
-JS_isRequiredRadio;
-
-        // Sets the border attribute of a group of checkboxes or radiobuttons
-        $code .= <<<JS_setListBorder
-function setListBorder(field, borderColor) {
-    var boxes = document.getElementsByName(field);
-    for (var i = 0; i < boxes.length; i++) {
-        if (borderColor) {
-            boxes[i].style.border = borderColor;
-        } else {
-            boxes[i].style.borderColor = '';
-        }
-    }
-}
-
-JS_setListBorder;
-
-        $code .= <<<JS_misc
-/* ]]> */
-</script>
-
-JS_misc;
-        return $code;
     }
 }
 ?>
