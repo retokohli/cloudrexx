@@ -162,4 +162,5 @@ $_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Erweitert";
 $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Vereinfacht";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "weiteren Empfänger hinzufügen";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "Der Eintrag wurde gelöscht.";
+$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Bitte wählen";
 ?>
