@@ -162,4 +162,5 @@ $_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Részletes";
 $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Egyszerűsített";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Újabb címzett";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
+$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Kérem válasszon";
 ?>

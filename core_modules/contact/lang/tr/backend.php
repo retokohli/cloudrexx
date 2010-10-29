@@ -162,4 +162,5 @@ $_ARRAYLANG['TXT_ADVANCED_VIEW'] = "Ileri";
 $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Basitleştirilmiş";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Başka bir alıcı ekle";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
+$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Lütfen seçin";
 ?>
