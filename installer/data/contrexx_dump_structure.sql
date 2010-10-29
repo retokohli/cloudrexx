@@ -917,6 +917,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_contact_form_submit_data` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_entry` int(10) unsigned NOT NULL,
+  `id_field` int(10) unsigned NOT NULL,
   `formlabel` text NOT NULL,
   `formvalue` text NOT NULL,
   PRIMARY KEY  (`id`)
