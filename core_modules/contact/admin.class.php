@@ -369,7 +369,7 @@ class ContactManager extends ContactLib {
 
                     $this->_objTpl->parse('contact_form_entry_data');
 
-                    $colNr = 0;
+                    $colNr  = 0;
                     $langId = $arrEntry['langId'];
                     foreach ($arrCols as $col) {
                         if ($colNr == $maxFields) {
@@ -461,7 +461,7 @@ class ContactManager extends ContactLib {
         if (is_array($this->arrForms)) {
             foreach ($this->arrForms as $formId => $arrForm) {
                 $pageId = $this->_getContentSiteId($formId);
-
+                
                 $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
                 $arrForm['lang'][FRONTEND_LANG_ID]['name'] = ($arrForm['lang'][FRONTEND_LANG_ID]['name'] == "") ? 'Untitled' : $arrForm['lang'][FRONTEND_LANG_ID]['name'];
 
@@ -1803,78 +1803,78 @@ class ContactManager extends ContactLib {
             $arrField['lang'][$frontendLang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$frontendLang]['value']);
         
             switch ($arrField['type']) {
-                case 'text':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
-                    break;
+            case 'text':
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
+                break;
 
-                case 'label':
-                    $sourcecode[] = $preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}';
-                    break;
+            case 'label':
+                $sourcecode[] = $preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}';
+                break;
 
-                case 'checkbox':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1"'.($arrField['lang'][$frontendLang]['value'] == '1' ? ' checked="checked"' : '').' />';
-                    break;
+            case 'checkbox':
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1"'.($arrField['lang'][$frontendLang]['value'] == '1' ? ' checked="checked"' : '').' />';
+                break;
 
-                case 'checkboxGroup':
-                    $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                    $options = explode(',', $arrField['lang'][$frontendLang]['value']);
-                    foreach ($options as $index => $option) {
-                        $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
-                    }
-                    $sourcecode[] = '</p>';
-                    break;
+            case 'checkboxGroup':
+                $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
+                foreach ($options as $index => $option) {
+                    $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
+                }
+                $sourcecode[] = '</p>';
+                break;
 
-                case 'date':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
-                    break;
+            case 'date':
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
+                break;
 
-                case 'file':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
-                    break;
+            case 'file':
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
+                break;
 
-                case 'hidden':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : "{".$fieldId."_VALUE}").'" />';
-                    break;
+            case 'hidden':
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : "{".$fieldId."_VALUE}").'" />';
+                break;
 
-                case 'password':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
-                    break;
+            case 'password':
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
+                break;
 
-                case 'radio':
-                    $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                    $options = explode(',', $arrField['lang'][$frontendLang]['value']);
-                    foreach ($options as $index => $option) {
-                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
-                    }
-                    $sourcecode[] = '</p>';
-                    break;
+            case 'radio':
+                $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
+                foreach ($options as $index => $option) {
+                    $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
+                }
+                $sourcecode[] = '</p>';
+                break;
 
-                case 'select':
-                    $options = explode(',', $arrField['lang'][$frontendLang]['value']);
-                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                    foreach ($options as $index => $option) {
-                        $sourcecode[] = "<option value=".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')." {SELECTED_".$fieldId."_".$index."}>".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')."</option>";
-                    }
-                    $sourcecode[] = "</select>";
-                    break;
+            case 'select':
+                $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
+                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                foreach ($options as $index => $option) {
+                    $sourcecode[] = "<option value=\"".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')."\" {SELECTED_".$fieldId."_".$index."}>".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')."</option>";
+                }
+                $sourcecode[] = "</select>";
+                break;
 
-                case 'textarea':
-                    $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
-                    break;
-                case 'recipient':
-                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id=contactFormField_'.$fieldId.'">';
-                    foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
-                        $sourcecode[] = "<option value='".$index."' {SELECTED_".$fieldId."_".$index."}>".($preview ? $arrRecipient['lang'][FRONTEND_LANG_ID] : '{'.$fieldId.'_'.$index.'_VALUE}')."</option>";
-                    }
-                    $sourcecode[] = "</select>";
-                    break;
+            case 'textarea':
+                $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
+                break;
+            case 'recipient':
+                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$fieldId.'">';
+                foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
+                    $sourcecode[] = "<option value='".$index."' {SELECTED_".$fieldId."_".$index."}>".($preview ? $arrRecipient['lang'][FRONTEND_LANG_ID] : '{'.$fieldId.'_'.$index.'_VALUE}')."</option>";
+                }
+                $sourcecode[] = "</select>";
+                break;
             }
             $sourcecode[] = "</p>";
         }
 
         if ($preview) {
             $themeId = $objInit->arrLang[$frontendLang]['themesid'];
-            if(($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false) {
+            if (($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false) {
                 $themePath = $objRS->fields['foldername'];
             }
             $sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';
@@ -1925,19 +1925,20 @@ class ContactManager extends ContactLib {
     }
 
 
-    function _getEntryDetails($arrEntry, $formId) {
+    function _getEntryDetails($arrEntry, $formId)
+    {
         global $_ARRAYLANG;
         
         $arrFormFields = $this->getFormFields($formId);
-        $recipient = $this->getRecipients($formId);
-        $rowNr = 0;
-        $langId = $arrEntry['langId'];
+        $recipient     = $this->getRecipients($formId);
+        $rowNr         = 0;
+        $langId        = $arrEntry['langId'];
       
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $arrField) {
             $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
             $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
-                            $arrField['lang'][$langId]['name'].
+                            $arrField['lang'][FRONTEND_LANG_ID]['name'].
                             ($arrField['type'] == 'hidden' ? ' (hidden)' : '').
                             ($arrField['type'] == 'label' ? ' (label)' : '').
                             "</td>\n";

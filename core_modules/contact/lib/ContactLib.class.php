@@ -516,7 +516,7 @@ class ContactLib
         $arrFieldNames = array();
         
         if (isset($this->arrForms[$id])) {
-            $objFields  = $objDatabase->Execute("SELECT `f`.`id`, `l`.`name`
+            $objFields = $objDatabase->Execute("SELECT `f`.`id`, `l`.`name`
                                                  FROM `".DBPREFIX."module_contact_form_field` as `f`
                                                  LEFT JOIN `".DBPREFIX."module_contact_form_field_lang` as `l`
                                                  ON `f`.`id` = `l`.`fieldID`
@@ -848,7 +848,7 @@ class ContactLib
                         $values['value'] = $replaceString.$values['value'];
                     }
                 } else {
-                    $values['value'] = str_replace($replaceString,'',$values['value']);
+                    $values['value'] = str_replace($replaceString, '', $values['value']);
                 }
             }
             $this->setFormFieldLang($fieldID, $langID, $values);
@@ -1112,33 +1112,34 @@ class ContactLib
         global $objDatabase, $_CONFIG;
 
         $arrEntries = array();
-        $arrCols = array();
-
-        $query    = "SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`
-                  FROM ".DBPREFIX."module_contact_form_data
-                  WHERE id_form = ".$formId."
-                  ORDER BY `time` DESC";
+        $arrCols    = array();
+        $arrFields  = $this->getFormFields($formId);
+        $query      = "SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`
+                      FROM ".DBPREFIX."module_contact_form_data
+                      WHERE id_form = ".$formId."
+                      ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
 
         $count = $objEntry->RecordCount();
         if ($limit && $count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES']);
+            $paging   = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES']);
             $objEntry = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pagingPos);
         }
 
         if ($objEntry !== false) {
             while (!$objEntry->EOF) {
-                $arrData = array();
-                $objResult = $objDatabase->SelectLimit("SELECT `formlabel`, `formvalue`
+                $arrData   = array();
+                $objResult = $objDatabase->SelectLimit("SELECT `id_field`, `formlabel`, `formvalue`
                                                     FROM ".DBPREFIX."module_contact_form_submit_data
                                                     WHERE id_entry=".$objEntry->fields['id']."
                                                     ORDER BY id");
-                
-                while (!$objResult->EOF) {
-                    $arrData[$objResult->fields['formlabel']] = $objResult->fields['formvalue'];
 
-                    if (!in_array($objResult->fields['formlabel'], $arrCols)) {
-                        array_push($arrCols, $objResult->fields['formlabel']);
+                while (!$objResult->EOF) {
+                     $fieldLabel = $arrFields[$objResult->fields['id_field']]['lang'][FRONTEND_LANG_ID]['name'];
+                    $arrData[$fieldLabel] = $objResult->fields['formvalue'];
+
+                    if (!in_array($fieldLabel, $arrCols)) {
+                        array_push($arrCols, $fieldLabel);
                     }
                     $objResult->MoveNext();
                 }
@@ -1173,7 +1174,7 @@ class ContactLib
                                                     WHERE id_entry=".$objEntry->fields['id']."
                                                     ORDER BY id");
             $arrData = array();
-            while(!$objResult->EOF){
+            while (!$objResult->EOF){
                 $arrData[$objResult->fields['formlabel']] = $objResult->fields['formvalue'];   
                 $objResult->MoveNext();
             }
@@ -1199,7 +1200,7 @@ class ContactLib
      */
     function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
     {
-        $code = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
+        $code  = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
         $code .= "<script type=\"text/javascript\">\n";
         $code .= "/* <![CDATA[ */\n";
 

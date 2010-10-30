@@ -93,7 +93,7 @@ class Contact extends ContactLib
 
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
-        $arrFields = $this->getFormFields($formId);
+        $arrFields  = $this->getFormFields($formId);
         
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
@@ -103,14 +103,15 @@ class Contact extends ContactLib
         ));
 
         if ($this->objTemplate->blockExists('contact_form')) {
-            $this->setCaptcha($useCaptcha);
-            $this->setProfileData();
-
+            if (!$this->setProfileData()) {
+                $this->setCaptcha($useCaptcha);
+            }
+            
             $recipients = $this->getRecipients($formId);
             foreach ($arrFields as $fieldId => $arrField) {
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
                 
-                if($arrField['type'] == 'checkboxGroup' || $arrField['type'] == 'radio' || $arrField['type'] == 'select') {
+                if ($arrField['type'] == 'checkboxGroup' || $arrField['type'] == 'radio' || $arrField['type'] == 'select') {
                     $options = explode(',', $arrField['lang'][$_LANGID]['value']);
                     foreach ($options as $index => $option) {
                         $this->objTemplate->setVariable(array(
@@ -171,7 +172,7 @@ class Contact extends ContactLib
     private function setProfileData()
     {
         if (!FWUser::getFWUserObject()->objUser->login()) {
-            return;
+            return false;
         }
 
         $objUser = FWUser::getFWUserObject()->objUser;
@@ -216,6 +217,7 @@ class Contact extends ContactLib
             $this->objTemplate->setVariable('ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($objAttribute->getId()), htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET));
             $objUser->objAttribute->next();
         }
+        return true;
     }
 
     function setCaptcha($useCaptcha)
@@ -520,7 +522,7 @@ class Contact extends ContactLib
     {
         foreach ($arrKeywords as $keyword) {
             if (!empty($keyword)) {
-                if (preg_match("#{$keyword}#i",$string)) {
+                if (preg_match("#{$keyword}#i", $string)) {
                     return true;
                 }
             }
@@ -569,7 +571,7 @@ class Contact extends ContactLib
                     $value = contrexx_strip_tags(serialize($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]));
                 }
             } else {
-                if (isset($arrFormData['data'][$arrField['lang'][$_LANGID]['name']])){
+                if (isset($arrFormData['data'][$arrField['lang'][$_LANGID]['name']])) {
                     $value = html_entity_decode(contrexx_addslashes($arrFormData['data'][$arrField['lang'][$_LANGID]['name']]), ENT_QUOTES, CONTREXX_CHARSET);
                 }
             }
@@ -615,7 +617,7 @@ class Contact extends ContactLib
 
         $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
 
-        if(!empty($arrFormData['data'])) {
+        if (!empty($arrFormData['data'])) {
             if (!empty($arrFormData['fields'])) {
                 foreach ($arrFormData['fields'] as $arrField) {
                     if ($arrField['check_type'] == '2' && ($mail = trim($arrFormData['data'][$arrField['name']]))  && !empty($mail)) {
