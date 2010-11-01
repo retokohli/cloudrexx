@@ -256,6 +256,28 @@ class JS
     }
 
     /**
+     * Deactivate a previously activated js file
+     *
+     * @param string $name
+     * @access public
+     * @static
+     * @return bool
+     */
+    public static function deactivate($name)
+    {
+        $name = strtolower($name);
+        $searchResult = array_search($name, self::$active);
+        if ($searchResult === false)
+        {
+            self::$error = $name.' is not a valid name for
+                an available javascript type';
+            return false;
+        }
+        unset(self::$active[$searchResult]);
+        return true;
+    }
+
+    /**
      * Register a custom js file
      *
      * Adds a new, individual JS file to the list.
