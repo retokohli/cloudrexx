@@ -1,0 +1,49 @@
+<!-- START module_alias_mapping_list.html -->
+<script type="text/javascript">
+//<![CDATA[
+function mapping_delete(id)
+{
+  if (confirm('{TXT_ALIAS_CONFIRM_DELETE_MAPPING}\n{TXT_ALIAS_OPERATION_IRREVERSIBLE}')) {
+		window.location.href = '?cmd=alias&{CSRF_PARAM}&act=deletemap&id='+id;
+  }
+}
+
+Text[0]=["","{TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG}"];
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
+
+//]]>
+</script>
+<table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+  <tbody style="vertical-align:top;">
+    <tr>
+      <th colspan="3">{TXT_ALIAS_DOMAIN_MAPPINGS}</th>
+    </tr>
+    <!-- BEGIN mapping_data -->
+    <tr class="row3" style="font-weight:bold;">
+      <td width="47%">{TXT_ALIAS_MAPPING_DOMAIN}</td>
+      <td width="47%">{TXT_ALIAS_MAPPING_TARGET}</td>
+      <td width="6%" style="text-align:right;">{TXT_ALIAS_FUNCTIONS}</td>
+    </tr>
+    <!-- BEGIN mapping_list -->
+    <tr class="{ALIAS_ROW_CLASS}">
+      <td>
+    	<a href="{ALIAS_MAPPING_DOMAIN_URL}" title="{TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW}" target="_blank">{ALIAS_MAPPING_DOMAIN}</a>
+        <br />
+      </td>
+      <td>{ALIAS_MAPPING_TITLE}</td>
+      <td style="text-align:right;">
+        <a href="index.php?cmd=alias&amp;act=mapmod&amp;id={ALIAS_MAPPING_ID}" title="{TXT_MAPPING_MODIFY}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_MAPPING_MODIFY}" /></a>
+        <a href="javascript:void(0);" onclick="mapping_delete({ALIAS_MAPPING_ID})" title="{TXT_ALIAS_MAPPING_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_MAPPING_DELETE}" /></a>
+      </td>
+    </tr>
+    <!-- END mapping_list -->
+    <!-- END mapping_data -->
+    <!-- BEGIN mapping_no_data -->
+    <tr class="row3">
+      <td colspan="3">{TXT_ALIAS_NO_MAPPINGS_MSG}</td>
+    </tr>
+    <!-- END mapping_no_data -->
+  </tbody>
+</table>
+{ALIAS_PAGING}
+<!-- END module_alias_mapping_list.html -->
