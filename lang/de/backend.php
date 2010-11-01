@@ -1260,4 +1260,7 @@ $_ARRAYLANG['TXT_LOGIN_SUBMIT_OPENID'] = "Mit OpenID anmelden";
 $_ARRAYLANG['TXT_LOGIN_SIGN_UP'] = "Haben Sie noch kein Account? Jetzt registrieren";
 $_ARRAYLANG['TXT_CORE_UNLIMITED'] = "unbegrenzt";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Das Alias %s kann nicht verwendet werden, da es physikalisch vorhanden ist! ";
+$_ARRAYLANG['TXT_CALENDAR_ADD_ENTRIES'] = "Veranstaltungen hinzufügen";
+$_ARRAYLANG['TXT_CALENDAR_MANAGE_KATEGORIES'] = "Kategorien verwalten";
+$_ARRAYLANG['TXT_CALENDAR_SETTINGS'] = "Einstellungen";
 ?>

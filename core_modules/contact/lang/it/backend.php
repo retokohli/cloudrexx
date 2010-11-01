@@ -163,4 +163,5 @@ $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Semplificato";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Aggiungere un altro destinatario";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Selezionare";
+$_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Destinatario campi già definito!";
 ?>

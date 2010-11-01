@@ -163,4 +163,5 @@ $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Förenklad";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Lägg till en annan mottagare";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Välj";
+$_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Mottagare fält redan definierade!";
 ?>

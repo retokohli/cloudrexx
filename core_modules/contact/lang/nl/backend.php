@@ -163,4 +163,5 @@ $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Vereenvoudigde";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Voeg een andere ontvanger";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Selecteer";
+$_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Begunstigde gebieden al gedefinieerd!";
 ?>

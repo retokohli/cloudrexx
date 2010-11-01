@@ -1262,4 +1262,7 @@ $_ARRAYLANG['TXT_LOGIN_SUBMIT_OPENID'] = "Sign in with OpenID";
 $_ARRAYLANG['TXT_LOGIN_SIGN_UP'] = "Don't have an account? Sign up now.";
 $_ARRAYLANG['TXT_CORE_UNLIMITED'] = "unbegrenzt";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
+$_ARRAYLANG['TXT_CALENDAR_ADD_ENTRIES'] = "Add Events";
+$_ARRAYLANG['TXT_CALENDAR_MANAGE_KATEGORIES'] = "Manage Categories";
+$_ARRAYLANG['TXT_CALENDAR_SETTINGS'] = "Settings";
 ?>

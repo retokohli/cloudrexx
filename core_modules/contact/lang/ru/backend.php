@@ -163,4 +163,5 @@ $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'] = "Упрощенный";
 $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Добавить другого получателя";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Выберите, пожалуйста";
+$_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Получатель поля уже определены!";
 ?>
