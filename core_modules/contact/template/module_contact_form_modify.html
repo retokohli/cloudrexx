@@ -120,18 +120,27 @@
         set the value of field type select with the value of
         the previous form field type select on adding new formfield
          */
-        $J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +previousFormID).val());
+        var previousType = $J("#contactFormFieldType_" +previousFormID).val();
+        if (previousType == 'recipient') {
+             $J("#contactFormFieldType_"+formFieldNumber).val('text');
+             $J("#contactFormFieldType_"+formFieldNumber).change();
+        } else {
+            $J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +previousFormID).val());
+        }
         $J(copy).find('input').val('');
         $J(copy).find('input[type=hidden]').val('new');
         $J(copy).find('input[type=checkbox]').attr("checked", false);
     }
 
     /**
-  Remove a form field
+     Remove a form field
      */
     function removeFormField(obj) {
         // at least one field has to be there
         if ($J('.formField').size() > 1) {
+            if ($J(obj).parent().parent().find('.contactFormFieldType').val() == 'recipient') {
+                 $J('#tab_recipients').css('display','none');
+            }
             var remObj = $J($J(obj).parent()).parent();
             $J(remObj).remove();
         }
@@ -147,6 +156,32 @@
         elId = el.substr(21);
         elFieldExpand = $J('#contactFormFieldAttributeBox_'+elId+' .formExpandView');
         elFieldCollapse = $J('#contactFormFieldAttributeBox_'+elId+' .formCollapseView');
+
+        /**
+            Check for recipent field to hide/show recipient list
+        */
+        if (type == "recipient") {
+            if ($J('#tab_recipients').is(":visible") == false) {
+                $J('#tab_recipients').css('display','block');
+            } else {
+                alert('already exsist');
+                $J("#contactFormFieldType_"+elId).val('text');
+                setFormFieldAttributeBox(el, 'text', langId);
+                return false;
+            }
+        } else {
+            var found = 0;
+            $J('.formField').each(function(e){
+                if ($J(this).find('.contactFormFieldType').val() == 'recipient') {
+                    found = 1;
+                    return true;
+                }
+            });
+
+            if (found == 0) {
+                $J('#tab_recipients').css('display','none');
+            }
+        }
 
         languages = langId.split('-');
         elFieldExpand.html('');
@@ -333,14 +368,14 @@
          */
         $J('.collapselink').css('display','none');
         $J('.collapselink').live('click',function(){
-            $J(this).css('display','none');
-            $J(this).parent().find('.expandlink').css('display','block');
+            $J(this).parent().parent().find('.collapselink').css('display','none');
+            $J(this).parent().parent().find('.expandlink').css('display','block');
             $J(this).parent().parent().find('.formCollapseView').css('display','block');
             $J(this).parent().parent().find('.formExpandView').css('display','none');
         });
         $J('.expandlink').live('click',function(){
-            $J(this).css('display','none');
-            $J(this).parent().find('.collapselink').css('display','block');
+            $J(this).parent().parent().find('.expandlink').css('display','none');
+            $J(this).parent().parent().find('.collapselink').css('display','block');
             $J(this).parent().parent().find('.formCollapseView').css('display','none');
             $J(this).parent().parent().find('.formExpandView').css('display','block');
         });
@@ -363,6 +398,16 @@
         $J('.formCollapseView select, .formExpandView select').live('change',function(){
             $J(this).parent().parent().find('.formCollapseView select').val($J(this).val());
             $J(this).parent().parent().find('.formExpandView select').val($J(this).val());
+        });
+
+        /**
+            Check for recipent field to hide/show recipient list
+        */
+        $J('.formField').each(function(e){
+            if ($J(this).find('.contactFormFieldType').val() == 'recipient') {
+                $J('#tab_recipients').css('display','block');
+                return true;
+            }
         });
     });
 
@@ -428,7 +473,6 @@
 <ul id="tabmenu">
     <li><a href="#" onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
     <li><a href="#" onclick="superTab('fields')" title="{TXT_FORM_FIELDS}">{TXT_FORM_FIELDS}</a></li>
-    <li><a href="#" onclick="superTab('recipients')" title="{TXT_FORM_RECIPIENTS}">{TXT_FORM_RECIPIENTS}</a></li>
     <li><a href="#" onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
 </ul>
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
@@ -504,9 +548,9 @@
             <tr class="row3">
                 <td width="2%"></td>
                 <td width="3%"><strong>{TXT_CONTACT_ID}</strong></td>
-                <td width="25%"><strong>{TXT_CONTACT_FIELD_NAME}</strong></td>
+                <td width="25%" colspan="3"><strong>{TXT_CONTACT_FIELD_NAME}</strong></td>
                 <td width="13%"><strong>{TXT_CONTACT_TYPE}</strong></td>
-                <td width="42%"><strong>{TXT_CONTACT_VALUE_S}</strong></td>
+                <td width="42%" colspan="3"><strong>{TXT_CONTACT_VALUE_S}</strong></td>
                 <td width="17%"><strong>{TXT_CONTACT_VALIDATION}</strong></td>
                 <td width="10%"><strong>{TXT_CONTACT_MANDATORY_FIELD}</strong></td>
                 <td colspan='2'></td>
@@ -528,6 +572,17 @@
                         <!-- END formFieldName -->
                     </div>
                 </td>
+                <td>
+                    <div class='formExpandView' style="display:none;">
+                        <!-- BEGIN formFieldNameLanguage -->
+                        <div style="padding:3px 0px;">{FORM_FIELD_ROW_NAME_LANG}</div>
+                        <!-- END formFieldNameLanguage -->
+                    </div>
+                </td>
+                <td valign="top" style="padding:6px 5px 5px;">
+                    <a class='expandlink' href="javascript:void(0);" title="{TXT_ADVANCED_VIEW}">{TXT_ADVANCED_VIEW}&raquo;</a>
+                    <a class='collapselink' href="javascript:void(0);" title="{TXT_SIMPLIFIED_VIEW}">&laquo;{TXT_SIMPLIFIED_VIEW}</a>
+                </td>
                 <td valign="top" style="padding:6px 5px 5px;">{CONTACT_FORM_FIELD_TYPE_MENU}</td>
                 <td id="contactFormFieldAttributeBox_{FORM_FIELD_ID}" class="formValueView">
                     <div class="formCollapseView" style="width:350px;">
@@ -539,19 +594,19 @@
                         <!-- END formFieldValue -->
                     </div>
                 </td>
-                <td valign="top" style="padding:6px 5px 5px;" id="contactFormFieldCheckMenu_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_MENU}</td>
-                <td valign="top" style="padding:6px 62px 5px 5px;" id="contactFormFieldCheckBox_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_BOX}</td>
                 <td>
                     <div class='formExpandView' style="display:none;">
-                        <!-- BEGIN formFieldLanguage -->
-                        <div style="padding:3px 0px;">{FORM_FIELD_ROW_LANG}</div>
-                        <!-- END formFieldLanguage -->
+                        <!-- BEGIN formFieldValueLanguage -->
+                        <div style="padding:3px 0px;">{FORM_FIELD_ROW_VALUE_LANG}</div>
+                        <!-- END formFieldValueLanguage -->
                     </div>
                 </td>
                 <td valign="top" style="padding:6px 5px 5px;">
                     <a class='expandlink' href="javascript:void(0);" title="{TXT_ADVANCED_VIEW}">{TXT_ADVANCED_VIEW}&raquo;</a>
                     <a class='collapselink' href="javascript:void(0);" title="{TXT_SIMPLIFIED_VIEW}">&laquo;{TXT_SIMPLIFIED_VIEW}</a>
                 </td>
+                <td valign="top" style="padding:6px 5px 5px;" id="contactFormFieldCheckMenu_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_MENU}</td>
+                <td valign="top" style="padding:6px 62px 5px 5px;" id="contactFormFieldCheckBox_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_BOX}</td>
                 <td valign="top" style="padding:6px 5px 5px;">
                     <a id="removeLink_1" href="javascript:void(0);" onclick="removeFormField(this)">
                         <img border="0" title="Delete" alt="Delete" src="images/icons/delete.gif">
@@ -563,56 +618,57 @@
         <br />
 
         <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" id="addFieldButton"/>
+
+        <br/><br/>
+        <div id="tab_recipients" style="display: none;">
+            <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
+                <thead>
+                    <tr>
+                        <th colspan="3">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
+                    </tr>
+
+                    <tr class="row3">
+                        <td style="width: 315px;"><strong>{TXT_CONTACT_EMAIL}</strong></td>
+                        <td><strong>{TXT_CONTACT_NAME}</strong></td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <!-- BEGIN contact_form_recipient_list -->
+                    <tr class="formRecipient">
+                        <td style="vertical-align: top;">
+                            <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
+                                   value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
+                        </td>
+                        <td>
+                            <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][0]"
+                                   value="{CONTACT_FORM_RECIPIENT_NAME}" /> <a href="javascript:void(0);" onclick="toggleLanguages({CONTACT_FORM_RECIPIENT_ID})" class="langToggleLink">{TXT_CONTACT_EXTEND} &gt;&gt;</a><br />
+
+                            <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
+                                <!-- BEGIN recipientNameLang -->
+                                <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
+                                       value="{CONTACT_FORM_RECIPIENT_NAME}" /> {CONTACT_FORM_LANGUAGE_NAME} <br />
+                                <!-- END recipientNameLang -->
+                                <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
+                            </div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <a href="javascript:void(0);" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
+                                <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
+                            </a>
+                        </td>
+                    </tr>
+                    <!-- END contact_form_recipient_list -->
+                </tbody>
+            </table>
+            <br/>
+            <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_RECIPIENT}" />
+        </div>
     </div>
-
-    <div id="tab_recipients" class="tabs" style="display: none;">
-        <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
-            <thead>
-                <tr>
-                    <th colspan="3">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
-                </tr>
-
-                <tr class="row3">
-                    <td style="width: 315px;"><strong>{TXT_CONTACT_EMAIL}</strong></td>
-                    <td><strong>{TXT_CONTACT_NAME}</strong></td>
-                    <td>&nbsp;</td>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <!-- BEGIN contact_form_recipient_list -->
-                <tr class="formRecipient">
-                    <td style="vertical-align: top;">
-                        <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
-                               value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
-                    </td>
-                    <td>
-                        <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][0]"
-                               value="{CONTACT_FORM_RECIPIENT_NAME}" /> <a href="#" onclick="toggleLanguages({CONTACT_FORM_RECIPIENT_ID})" class="langToggleLink">{TXT_CONTACT_EXTEND} &gt;&gt;</a><br />
-
-                        <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
-                            <!-- BEGIN recipientNameLang -->
-                            <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
-                                   value="{CONTACT_FORM_RECIPIENT_NAME}" /> {CONTACT_FORM_LANGUAGE_NAME} <br />
-                            <!-- END recipientNameLang -->
-                            <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
-                        </div>
-                    </td>
-                    <td style="vertical-align: top;">
-                        <a href="#" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
-                            <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
-                        </a>
-                    </td>
-                </tr>
-                <!-- END contact_form_recipient_list -->
-            </tbody>
-        </table>
-
-        <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_RECIPIENT}" />
-    </div>
-
-    <div id="tab_settings" class="tabs" style="display: none">
+    <br />
+    <div id="tab_settings" class="tabs" style="display:none;">
         <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
             <tr>
                 <th colspan="2">{CONTACT_FORM_SETTINGS}</th>
