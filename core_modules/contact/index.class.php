@@ -103,7 +103,9 @@ class Contact extends ContactLib
         ));
 
         if ($this->objTemplate->blockExists('contact_form')) {
-            if (!$this->setProfileData()) {
+            if ($this->setProfileData()) {
+                $useCaptcha = false;
+            } else {
                 $this->setCaptcha($useCaptcha);
             }
             

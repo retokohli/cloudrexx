@@ -685,6 +685,7 @@ class ContactManager extends ContactLib {
                     'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'          => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
                     'TXT_CONTACT_CUSTOM_STYLE'                      => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
                     'TXT_CONTACT_SET_MANDATORY_FIELD'               => $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'],
+                    'TXT_CONTACT_RECIPIENT_ALREADY_SET'             => $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'],
 
                     'CONTACT_FORM_NAME'                             => $this->arrForms[$formId]['lang'][$lang['id']]['name'],
                     'CONTACT_FORM_SUBJECT'                          => $formSubject,
@@ -794,29 +795,26 @@ class ContactManager extends ContactLib {
                 /**
                  * Places the flag corresponding to the language name and value field
                  */
-                if($lang['id'] == 1) {
-                    $langname = "de";
-                }
-                else if($lang['id'] == 2) {
-                    $langname = "en";
-                }
-                else if($lang['id'] == 3) {
-                    $langname = "fr";
-                }
-                else if($lang['id'] == 4) {
-                    $langname = "it";
-                }
-                else if($lang['id'] == 5) {
-                    $langname = "dk";
-                }
-                else if($lang['id'] == 6) {
-                    $langname = "ru";
+                switch ($lang['id']) {
+                case 1: $langname = "de";
+                        break;
+                case 2: $langname = "en";
+                        break;
+                case 3: $langname = "fr";
+                        break;
+                case 4: $langname = "it";
+                        break;
+                case 5: $langname = "dk";
+                        break;
+                case 6: $langname = "ru";
+                        break;
                 }
 
                 $this->_objTpl->setVariable(
                         array(
                         'FORM_FIELD_ROW_LANG_ID'    => $lang['id'],
-                        'FORM_FIELD_ROW_LANG'       => $lang['name'],
+                        'FORM_FIELD_ROW_NAME_LANG'  => $lang['name'],
+                        'FORM_FIELD_ROW_VALUE_LANG' => $lang['name'],
                         'FORM_FIELD_ROW_LANG_NAME'  => $langname,
                         'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['value'],
                         'FORM_FIELD_NAME'           => $field['lang'][$lang['id']]['name'],
@@ -831,7 +829,8 @@ class ContactManager extends ContactLib {
                 $jsActiveLang .= $lang['id']."-";
                 $this->_objTpl->parse('formFieldName');
                 $this->_objTpl->parse('formFieldValue');
-                $this->_objTpl->parse('formFieldLanguage');
+                $this->_objTpl->parse('formFieldNameLanguage');
+                $this->_objTpl->parse('formFieldValueLanguage');
             }
 
             // Remove the '-' from end of the string[Last element]
@@ -1651,7 +1650,7 @@ class ContactManager extends ContactLib {
      */
     function _getFormFieldTypesMenu($name, $selectedType, $attrs = '') {
 
-        $menu = "<select name=\"".$name."\" ".$attrs.">\n";
+        $menu = "<select class=\"contactFormFieldType\" name=\"".$name."\" ".$attrs.">\n";
 
         foreach ($this->_arrFormFieldTypes as $type => $desc) {
             $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '').">".$desc."</option>\n";
