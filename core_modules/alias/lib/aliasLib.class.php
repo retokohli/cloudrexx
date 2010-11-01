@@ -71,6 +71,52 @@ class aliasLib
         }
     }
 
+    function _getMappings($limit = null)
+    {
+        global $objDatabase, $_CONFIG;
+
+        $arrMappings = array();
+        $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+
+        $query = "
+            SELECT
+               `id`,
+               `domain`,
+               `target`
+            FROM `".DBPREFIX."module_alias_domain_mapping`
+            ORDER BY `domain` ASC";
+        if (!empty($limit)) {
+            $objRS = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+        } else {
+            $objRS = $objDatabase->Execute($query);
+        }
+
+        if ($objRS !== false) {
+            while (!$objRS->EOF) {
+                $arrMappings[$objRS->fields['id']] = $objRS->fields;
+                $objRS->MoveNext();
+            }
+        }
+        return $arrMappings;
+    }
+
+	function _getMapping($mappingId)
+    {
+        global $objDatabase;
+        $objMapping = $objDatabase->Execute("
+             SELECT
+               `id`,
+               `domain`,
+               `target`
+            FROM `".DBPREFIX."module_alias_domain_mapping`
+            WHERE `id` = ".intval($mappingId));
+        if ($objMapping && $objMapping->RecordCount()) {
+            return $objMapping->fields;
+        }
+        return false;
+    }
+    
+    
     function _getAliases($limit = null, $allLanguages = false)
     {
         global $objDatabase, $_CONFIG;
@@ -155,10 +201,51 @@ class aliasLib
         return $arrAliases;
     }
 
+    function _getPageURL($pageId){
+    	global $objDatabase, $_CONFIG;
+    	if($pageId == 0){
+    		return '';
+    	}
+    	
+    	$objRS = $objDatabase->SelectLimit("
+                    SELECT
+                        n.`catid`,
+                        n.`catname`,
+                        n.`cmd`,
+                        n.`lang`,
+                        m.`name`
+                    FROM
+                        `".DBPREFIX."content_navigation` AS n
+                    LEFT OUTER JOIN `".DBPREFIX."modules` AS m ON m.`id` = n.`module`
+                    WHERE (n.`catid` = ".$pageId." AND n.`lang` = ".$this->langId.')');
+    	
+    	$pageURL = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET
+            .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($objRS->fields['lang'], 'lang') : null)
+            .'/'.CONTREXX_DIRECTORY_INDEX
+            .(!empty($objRS->fields['name']) ? '?section='.$objRS->fields['name'] : '?page='.$objRS->fields['catid'])
+            .(empty($objRS->fields['cmd']) ? '' : '&cmd='.$objRS->fields['cmd']);
+                   
+		return $pageURL;                   
+    }
+    
     function is_alias_valid($alias) {
         return !file_exists(ASCMS_DOCUMENT_ROOT.'/'.$alias);
     }
 
+    function _getMappingCount()
+    {
+        global $objDatabase;
+
+        $objRS = $objDatabase->Execute("
+            SELECT SUM(1) AS mappingCount
+            FROM `".DBPREFIX."module_alias_domain_mapping`");
+        if ($objRS !== false) {
+            return $objRS->fields['mappingCount'];
+        } else {
+            return 0;
+        };
+    }
+    
     function _getAliasesCount()
     {
         global $objDatabase;
@@ -242,6 +329,63 @@ class aliasLib
         }
     }
 
+    function _addMapping($arrMapping)
+    {
+        global $objDatabase;
+
+        $objRS = $objDatabase->SelectLimit("
+            SELECT `id` FROM `".DBPREFIX."module_alias_domain_mapping`
+            WHERE `domain` = '".addslashes($arrMapping['domain'])."'", 1);
+        if ($objRS !== false && $objRS->RecordCount() == 1){
+            $mappingId = $objRS->fields['id'];
+        } else {
+            if ($objDatabase->Execute("
+                INSERT INTO `".DBPREFIX."module_alias_domain_mapping` (`domain`, `target`)
+                VALUES ('".contrexx_addslashes($arrMapping['domain'])."','".contrexx_addslashes($arrMapping['target'])."')
+                ON DUPLICATE KEY
+                UPDATE `domain`='".contrexx_addslashes($arrMapping['domain'])."', 
+                	   `target`='".contrexx_addslashes($arrMapping['target'])."'") !== false) {
+                $mappingId = $objDatabase->Insert_ID();
+            } else {
+                return false;
+            }
+        }
+        return $this->_writeHtAccessMappings();
+    }
+    
+    function _updateMapping($mappingId, $arrMapping)
+    {
+        global $objDatabase;
+
+        $upd_query = "
+            UPDATE `".DBPREFIX."module_alias_domain_mapping`
+            SET `domain`      = '".contrexx_addslashes($arrMapping['domain'])."',
+                `target`       = '".contrexx_addslashes($arrMapping['target'])."'
+            WHERE `id` =       ".intval($mappingId);
+        if ($objDatabase->Execute($upd_query) !== false) {
+            return $this->_writeHtAccessMappings();
+        } else {
+            return false;
+        }
+    }
+    
+    function _writeHtAccessMappings(){
+    	global $_CONFIG;
+
+        $arrRewriteRules = array();
+        $limit = null;
+        $arrRedirectAliases = array();
+        $arrDefinedMappings = $this->_getMappings($limit);
+
+        foreach ($arrDefinedMappings as $arrMapping) {           
+        	$arrRewriteRules[] = 'RewriteCond %{HTTP_HOST} ^'.$arrMapping['domain'].'$ [NC]';
+        	$arrRewriteRules[] = 'RewriteRule ^.*$ http://'.$_CONFIG['domainUrl'].'/'
+        											 .CONTREXX_DIRECTORY_INDEX.'?page='.$arrMapping['target'].' [L,NC]';
+        }
+        $this->objFWHtAccess->setSection('core_modules__domainmapping', $arrRewriteRules);
+        return $this->objFWHtAccess->write();
+    }
+           
     function _addAlias($arrAlias)
     {
         global $objDatabase;
@@ -346,7 +490,7 @@ class aliasLib
         }
         return false;
     }
-
+        
     function _getRewriteInfo()
     {
         $arrRules = $this->objFWHtAccess->getSection('core_modules__alias');
@@ -483,6 +627,18 @@ class aliasLib
         return false;
     }
 
+    function _deleteMapping($mappingId)
+    {
+        global $objDatabase;
+
+        if ($objDatabase->Execute("
+            DELETE FROM `".DBPREFIX."module_alias_domain_mapping`
+            WHERE `id`=".intval($mappingId))){
+            return true;
+        }
+        return false;
+    }
+    
     function _deleteAlias($aliasId)
     {
         global $objDatabase, $_CONFIG;

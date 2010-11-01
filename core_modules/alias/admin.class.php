@@ -99,8 +99,12 @@ class AliasAdmin extends aliasLib
         }
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            ($arrConfig['aliasStatus'] == '1' && $this->objFWHtAccess->isHtAccessFileLoaded() ? "<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
-            ."<a href='index.php?cmd=alias&amp;act=modify'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>" : '')
+            ($arrConfig['aliasStatus'] == '1' && $this->objFWHtAccess->isHtAccessFileLoaded()
+                ?   "<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
+                   ."<a href='index.php?cmd=alias&amp;act=modify'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>"
+                   ."<a href='index.php?cmd=alias&amp;act=maplist'>".$_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS']."</a>"
+                   ."<a href='index.php?cmd=alias&amp;act=mapmod'>".$_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS_ADD']."</a>"
+                : '')
             ."<a href='index.php?cmd=alias&amp;act=settings'>".$_ARRAYLANG['TXT_ALIAS_SETTINGS']."</a>"
         );
     }
@@ -134,6 +138,18 @@ class AliasAdmin extends aliasLib
                 $this->_modifyAlias();
                 break;
 
+            case 'maplist':
+                $this->_listMappings();
+                break;
+
+            case 'mapmod':
+                $this->_modifyMapping();
+                break;
+                
+            case 'deletemap':
+            	$this->_deletemap();
+            	break; 
+                
             case 'delete':
                 $this->_delete();
 
@@ -241,6 +257,86 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->hideBlock('alias_data');
             $this->_objTpl->parse('alias_no_data');
         }
+    }
+
+
+    function _modifyMapping()
+    {
+        global $_ARRAYLANG, $_CONFIG;
+
+        $mappingId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+        $arrMapping = array();
+        
+        $this->_objTpl->loadTemplateFile('module_alias_mapping_modify.html');
+        $this->_pageTitle = $mappingId ? $_ARRAYLANG['TXT_ALIAS_MAPPING_MODIFY'] : $_ARRAYLANG['TXT_ALIAS_MAPPING_ADD'];
+        $this->_objTpl->setVariable($_ARRAYLANG);
+        $error = false;
+        
+        if(isset($_REQUEST['alias_mapping_save'])){
+	        $arrMapping['target'] = $_REQUEST['alias_mapping_page_id'];
+	        $arrMapping['domain'] = $_REQUEST['alias_mapping_domain'];
+	        if(empty($arrMapping['domain'])){
+	        	$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_DOMAIN'];
+	        	$error = true;
+	        }       	
+	        if(empty($arrMapping['target'])){
+	        	$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_TARGET'];
+	        	$error = true;
+	        }        
+	        
+	        if (!$mappingId) { //new
+	        	if(!$error){
+	        		$this->_addMapping($arrMapping);        	        		
+	        	}        	
+	        } else {
+	        	$this->_updateMapping($mappingId, $arrMapping);
+	        }
+	        
+	        if(!$error){
+				$this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_SAVED_SUCCESSFULLY'];	
+				return $this->_listMappings();
+			}		        
+        } 
+        	
+        $arrMapping = $this->_getMapping($mappingId);
+                
+        $this->_objTpl->setVariable(array(
+       		'ALIAS_MAPPING_ID' 			=> $mappingId,
+        	'ALIAS_MAPPING_TITLE_TXT' 	=> $this->_pageTitle,
+        	'ALIAS_MAPPING_PAGE_ID' 	=> $arrMapping['target'],
+        	'ALIAS_MAPPING_DOMAIN' 		=> $arrMapping['domain'],
+        	'ALIAS_MAPPING_PAGE_URL'	=> $this->_getPageURL($arrMapping['target'])
+		));           
+    }
+
+    function _listMappings()
+    {
+   		global $_ARRAYLANG, $_CONFIG;
+   		
+    	$this->_objTpl->loadTemplateFile('module_alias_mapping_list.html');
+        $this->_pageTitle = $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS'];
+        $this->_objTpl->setVariable($_ARRAYLANG);
+
+        $arrMappings = $this->_getMappings($_CONFIG['corePagingLimit']);
+        if($arrMappings){
+        	$this->_objTpl->hideBlock('mapping_no_data');
+        } else {
+        	$this->_objTpl->hideBlock('mapping_data');
+        }
+        
+        foreach($arrMappings as $arrMapping){
+        	$this->_objTpl->setVariable(array(
+        		'ALIAS_MAPPING_ID' 			=> $arrMapping['id'], 
+        		'ALIAS_MAPPING_DOMAIN_URL' 	=> 'http://'.$arrMapping['domain'], 
+        		'ALIAS_MAPPING_DOMAIN' 		=> $arrMapping['domain'],
+        		'ALIAS_MAPPING_TITLE'  		=> $this->_getPageURL($arrMapping['target']),
+        	));
+        	$this->_objTpl->parse('mapping_list');    	
+        }    
+        $mappingCount = $this->_getMappingCount();
+        if ($mappingCount > count($arrMappings)) {
+        	$this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($mappingCount, !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&amp;cmd=alias&amp;act=maplist', $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS']));
+        }	
     }
 
     function _modifyAlias()
@@ -487,6 +583,24 @@ class AliasAdmin extends aliasLib
         }
     }
 
+    function _deletemap()
+    {
+   		global $_ARRAYLANG;
+
+        $mappingId = !empty($_GET['id']) ? intval($_GET['id']) : 0;
+
+        if ($mappingId) {
+            if ($this->_deleteMapping($mappingId)) {
+                $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_SUCCESSFULLY_REMOVED'];
+            } else {
+                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_REMOVE_FAILED'];
+                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
+            }
+        }
+        $this->_writeHtAccessMappings();
+        $this->_listMappings();
+    }
+    
     function _delete()
     {
         global $_ARRAYLANG;

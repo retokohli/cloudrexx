@@ -1118,6 +1118,26 @@ class ContentManager
         return $objResult->fields['setvalue'];
     }
 
+    /**
+     * checks if $strPageId is an alias and returns the corresponding pageId
+     * if it's a numeric local resource, otherwise false
+     *
+     * @param string $strPageId
+     * @return pageId on success, false if no corresponding entry was found
+     */
+    function isPageIdAnAlias($strPageId){
+        global $objDatabase;
+        $query =  "SELECT t.`url` AS targetUrl
+                   FROM `contrexx_module_alias_target` AS t
+                   INNER JOIN `contrexx_module_alias_source` AS s
+                     ON s.`target_id` = t.`id`
+                   WHERE  t.`type` = 'local' AND  s.`url`  = '".$strPageId."'";
+        $objRS = $objDatabase->SelectLimit($query, 1);
+        if($objRS && $objRS->RecordCount()){
+            return $objRS->fields['targetUrl'];
+        }
+        return false;
+    }
 
     /**
      * This method manages all aspects of content editing
@@ -1138,8 +1158,14 @@ class ContentManager
         $assignedBackendGroups = '';
         $redirect = '';
 
-        if (empty($pageId)) $pageId = intval($_REQUEST['pageId']);
-        if ($pageId == 0) { header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); }
+        if( ($pageId = $this->isPageIdAnAlias($_REQUEST['pageId'])) === false){
+            if (empty($pageId)) $pageId = intval($_REQUEST['pageId']);
+            if ($pageId == 0) { header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content'); die(); }
+        } else {
+            header('Location: '.CONTREXX_DIRECTORY_INDEX.'?cmd=content&act=edit&pageId='.$pageId);
+            die();
+        }
+
 
         $objRS = $objDatabase->Execute('
             SELECT `n`.`lang`
