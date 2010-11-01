@@ -6,12 +6,14 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 Grundeinstellungen / WYSIWYG Editor
-- In den Grundeinstellungen gibt es neu die Option "Eigenen Style im WYSIWYG Editor verwenden".
-Ist diese aktiviert, wird die Datei "style.css" des aktuellen Standard-Template in den WYSIWYG Editor
-eingebunden. Somit kann der Style bereits schon während dem editieren geladen und angeschaut werden.
-Wird diese Option deaktivert, wird der normale WYSIWYG Editor Style geladen.
-- Aus sicherheits- und benutzerfreundlichen Gründen wird nun standardmässig jeder Text der in den
-WYSIWYG Editor kopiert wird, als Plaintext eingefügt. (FCKConfig.ForcePasteAsPlainText = true;)
+- In den Grundeinstellungen gibt es neu die Option "Eigenen Style im WYSIWYG
+  Editor verwenden". Ist diese aktiviert, wird die Datei "style.css" des
+  aktuellen Standard-Template in den WYSIWYG Editor eingebunden. Somit kann
+  der Style bereits schon während dem editieren geladen und angeschaut werden.
+  Wird diese Option deaktivert, wird der normale WYSIWYG Editor Style geladen.
+- Aus sicherheits- und benutzerfreundlichen Gründen wird nun standardmässig
+  jeder Text der in den WYSIWYG Editor kopiert wird, als Plaintext eingefügt.
+  (FCKConfig.ForcePasteAsPlainText = true;)
 
 Allgemein
 - Neue Platzhalter für Datumsfragmente:
@@ -19,16 +21,21 @@ Allgemein
 - Neu, über den Modul Manager installierte Module, erscheinen nicht in der
   Inhalts Navigation.
 - Thumbnail-Erstellung von Transparenten Bildern wird nun unterstützt.
-- Das Sprachselektionsmenu hat nun eine "selected" CSS-Klasse gesetzt für die aktive Sprache
+- Das Sprachselektionsmenu hat nun eine "selected" CSS-Klasse gesetzt für die
+  aktive Sprache
 - Das Handy-Template wird nun dem seitenspezifisch gesetzten Template vorgezogen.
-- Wird ein neues Template erstellt und dabei ein bereits vorhandenes Template als Vorlage angegeben, aktualisiert Contrexx nun die Links in den kopierten Templatedateien, damit diese auf das neue Template zeigen. (Bsp: styles.css in index.html)
+- Wird ein neues Template erstellt und dabei ein bereits vorhandenes Template
+  als Vorlage angegeben, aktualisiert Contrexx nun die Links in den kopierten
+  Templatedateien, damit diese auf das neue Template zeigen.
+  (Bsp: styles.css in index.html)
 
 File Browser
 - Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
   File Uploader Moduls (sofern vorhanden) ausgewählt werden.
 
 Content Manager
-- Der CSS-Name und das "target" für Navigationslinks können nun auch an Unterseiten vererbt werden
+- Der CSS-Name und das "target" für Navigationslinks können nun auch an
+  Unterseiten vererbt werden
 - Editeren einer Seite in mehreren Sprachen auf einmal
 - Vorschau-Funktion
 - Die Seiten Struktur wird nun für alle Sprachen synchronisiert
@@ -37,6 +44,8 @@ Content Manager
 - Eine Contentseite kann nun auf eine andere Sprache verweisen und deren
   Content verwenden, damit nicht Seiten mit gleichem Inhalt in mehreren
   Sprachen erfasst werden müssen.
+- In der Quick-Edit Box unten links können jetzt auch Aliase anstatt nur
+  Page-IDs eingegeben werden
 
 Benutzerverwaltung
 - Beim Erfassen eines neuen Benutzerkontos kann automatisch eine persönliche
@@ -66,7 +75,7 @@ Benutzerverwaltung
 
 Newsletter
 - Neu kann der Newsletter vom Empfänger direkt im Browser aufgerufen und betrachtet
-  werden. Hierzu muss der Platzhalter [[display_in_browser_url]] wahlweise in 
+  werden. Hierzu muss der Platzhalter [[display_in_browser_url]] wahlweise in
   das Newsletter-Template und/oder Content eingearbeitet werden.
   Der Platzhalter generiert beim Versand dann automatisch einen individuellen Link
   pro Empfänger.
@@ -98,6 +107,9 @@ News Manager
 - Neuer Platzhalter HEADLINE_AUTHOR für Headlines.
 - alt-Text für Kopiericon hinzugefügt
 
+Modul: Aliase
+- Im Alias Modul können nun zusätzlich Domain-Namen direkt auf Seiten im
+  CMS gemappt werden.
 
 Modul: Digital Asset Management
 - Bei einem Download muss zwingend eine Datei oder URL als Quelle angegeben
