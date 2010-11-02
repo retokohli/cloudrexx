@@ -266,7 +266,7 @@ class Contact extends ContactLib
         if (isset($_POST) && !empty($_POST)) {
             $arrFormData = array();
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'])) {
+            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['htmlMail'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
                 foreach ($arrFormData['fields'] as $field) {
                     $this->arrFormFields[] = $field['lang'][$_LANGID]['name'];
@@ -277,6 +277,7 @@ class Contact extends ContactLib
                 $arrFormData['subject'] = $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
                 $arrFormData['showForm'] = 1;
                 //$arrFormData['sendCopy'] = 0;
+                $arrFormData['htmlMail'] = 1;
             }
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
             
@@ -604,11 +605,98 @@ class Contact extends ContactLib
      */
     function _sendMail($arrFormData)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG, $_LANGID;
 
         $body = '';
         $replyAddress = '';
+        $htmlMessage  = '';
+        $isHtml = $arrFormData['htmlMail'] == 1
+                  ? true : false;
+        if ($isHtml) {
+            /*
+             * Generate HTML Code For Mail
+             */
+            $htmlTemplate = new HTML_Template_Sigma('.');
+            $htmlTemplate->setErrorHandling(PEAR_ERROR_DIE);
+            $htmlTemplate->setTemplate($arrFormData['mailTemplate']);
 
+            $htmlTemplate->setVariable(array(
+                    'DATE'              => date(ASCMS_DATE_FORMAT, $arrFormData['meta']['time']),
+                    'HOSTNAME'          => htmlentities($arrFormData['meta']['host'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'IP_ADDRESS'        => htmlentities($arrFormData['meta']['ipaddress'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'BROWSER_LANGUAGE'  => htmlentities($arrFormData['meta']['lang'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'BROWSER_VERSION'   => htmlentities($arrFormData['meta']['browser'], ENT_QUOTES, CONTREXX_CHARSET)
+                ));
+
+            /*
+             * Fetch Field name and values of the whole form
+             */
+            if ($htmlTemplate->blockExists('form_field')) {
+                foreach ($arrFormData['fields'] as $key => $arrField) {
+                    $field_value = '';
+                    switch ($arrField['type']) {
+                    case 'file':
+                        if (isset($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']])) {
+                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."' >".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."</a>";
+                        }
+                        break;
+                    case 'checkbox':
+                        $field_value = ($arrFormData['data'][$arrField['lang'][$_LANGID]['name']] == 1)
+                                        ? $_ARRAYLANG['TXT_CONTACT_YES']
+                                        : $_ARRAYLANG['TXT_CONTACT_NO'] ;
+                        break;
+                    default :
+                        $field_value = htmlentities($arrFormData['data'][$arrField['lang'][$_LANGID]['name']], ENT_QUOTES, CONTREXX_CHARSET);
+                        break;
+                    }
+
+                    if ($field_value != "") {
+                        $htmlTemplate->setVariable(array(
+                            'FIELD_LABEL'   => $arrField['lang'][$_LANGID]['name'],
+                            'FIELD_VALUE'   => $field_value
+                        ));
+                        $htmlTemplate->parse('form_field');
+                    }
+                }
+            }
+
+            /*
+             * Block to fetch form field names and values of individual fields
+             */
+            foreach ($arrFormData['fields'] as $key => $arrField) {
+                if ($htmlTemplate->blockExists('field_'.$key)) {
+                    $field_value = '';
+                    switch ($arrField['type']) {
+                    case 'file':
+                        if (isset($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']])) {
+                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."' >".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."</a>";
+                        }
+                        break;
+                    case 'checkbox':
+                        $field_value = ($arrFormData['data'][$arrField['lang'][$_LANGID]['name']] == 1)
+                                        ? $_ARRAYLANG['TXT_CONTACT_YES']
+                                        : $_ARRAYLANG['TXT_CONTACT_NO'] ;
+                        break;
+                    default :
+                        $field_value = htmlentities($arrFormData['data'][$arrField['lang'][$_LANGID]['name']], ENT_QUOTES, CONTREXX_CHARSET);
+                        break;
+                    }
+
+                    if ($field_value != "") {
+                        $htmlTemplate->setVariable(array(
+                            'FIELD_'.$key.'_LABEL' => $arrField['lang'][$_LANGID]['name'],
+                            'FIELD_'.$key.'_VALUE' => $field_value
+                        ));
+                        $htmlTemplate->parse('field_'.$key);
+                    } else {
+                        $htmlTemplate->hideBlock('field_'.$key);
+                    }
+                }
+            }
+
+            $htmlMessage = $htmlTemplate->get();
+        }
+        
         if (count($arrFormData['uploadedFiles']) > 0) {
             $body .= $_ARRAYLANG['TXT_CONTACT_UPLOADS'].":\n";
             foreach ($arrFormData['uploadedFiles'] as $key => $file) {
@@ -622,7 +710,7 @@ class Contact extends ContactLib
         if (!empty($arrFormData['data'])) {
             if (!empty($arrFormData['fields'])) {
                 foreach ($arrFormData['fields'] as $arrField) {
-                    if ($arrField['check_type'] == '2' && ($mail = trim($arrFormData['data'][$arrField['name']]))  && !empty($mail)) {
+                    if ($arrField['check_type'] == '2' && ($mail = trim($arrFormData['data'][$arrField['lang'][$_LANGID]['name']]))  && !empty($mail)) {
                         $replyAddress = $mail;
                         break;
                     }
@@ -691,8 +779,14 @@ class Contact extends ContactLib
 
             }
             $objMail->Subject = $arrFormData['subject'];
-            $objMail->IsHTML(false);
-            $objMail->Body = $message;
+
+            if ($isHtml) {
+                $objMail->Body = $htmlMessage;
+                $objMail->AltBody = $message;
+            } else {
+                $objMail->IsHTML(false);
+                $objMail->Body = $message;
+            }
 
             if (count($arrFormData['uploadedFiles']) > 0) {
                 foreach ($arrFormData['uploadedFiles'] as $key => $file) {

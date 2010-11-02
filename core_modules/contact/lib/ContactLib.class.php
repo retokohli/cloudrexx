@@ -78,6 +78,7 @@ class ContactLib
                 tblForm.`use_captcha`,
                 tblForm.`use_custom_style`,
                 tblForm.`send_copy`,
+                tblForm.`html_mail`,
                 # subquery sure aren't optimal here, but it doesn't work
                 # with the join...
                 (
@@ -100,6 +101,7 @@ class ContactLib
                 `tblLang`.`langID`                      AS `langID`,
                 `tblLang`.`text`                        AS `text`,
                 `tblLang`.`feedback`                    AS `feedback`,
+                `tblLang`.`mailTemplate`                AS `mailTemplate`,
                 `tblLang`.`subject`                     AS `subject`
 
             FROM 
@@ -146,23 +148,26 @@ class ContactLib
                         'useCaptcha'        => $fields['use_captcha'],
                         'useCustomStyle'    => $fields['use_custom_style'],
                         'sendCopy'          => $fields['send_copy'],
+                        'htmlMail'          => $fields['html_mail'],
                         'recipients'        => $this->getRecipients($lastID, true),
                         'lang'              => array(
                             $fields['langID'] => array(
-                                'name'      => $fields['name'],
-                                'text'      => $fields['text'],
-                                'feedback'  => $fields['feedback'],
-                                'subject'   => $fields['subject']
+                                'name'        => $fields['name'],
+                                'text'        => $fields['text'],
+                                'feedback'    => $fields['feedback'],
+                                'mailTemplate'=> $fields['mailTemplate'],
+                                'subject'     => $fields['subject']
                             )
                         )
                     );
                 } else {
                     // only append the lang variables to the array
                     $this->arrForms[$fields['id']]['lang'][$fields['langID']] = array(
-                        'name'      => $fields['name'],
-                        'text'      => $fields['text'],
-                        'feedback'  => $fields['feedback'],
-                        'subject'   => $fields['subject']
+                        'name'        => $fields['name'],
+                        'text'        => $fields['text'],
+                        'feedback'    => $fields['feedback'],
+                        'mailTemplate'=> $fields['mailTemplate'],
+                        'subject'     => $fields['subject']
                     );
                 }
 
@@ -222,12 +227,12 @@ class ContactLib
         return $this->_arrSettings;
     }
 
-    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$showForm, &$useCaptcha, &$sendCopy)
+    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$htmlMail)
     {
         global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
-        $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, f.showForm,
-                                                            f.use_captcha, f.send_copy
+        $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, l.mailTemplate, f.showForm,
+                                                            f.use_captcha, f.send_copy, f.html_mail
                                                      FROM ".DBPREFIX."module_contact_form AS f
                                                      LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
                                                      ON ( f.id = l.formID )
@@ -237,12 +242,14 @@ class ContactLib
 
         if ($objContactForm !== false && $objContactForm->RecordCount() == 1) {
             $this->arrForms[$id] = array();
-            $arrEmails = explode(',', $objContactForm->fields['mails']);
-            $subject = !empty($objContactForm->fields['subject']) ? $objContactForm->fields['subject'] : $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
-            $feedback = $objContactForm->fields['feedback'];
-            $showForm = $objContactForm->fields['showForm'];
+            $arrEmails  = explode(',', $objContactForm->fields['mails']);
+            $subject    = !empty($objContactForm->fields['subject']) ? $objContactForm->fields['subject'] : $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
+            $feedback   = $objContactForm->fields['feedback'];
+            $mailTemplate   = $objContactForm->fields['mailTemplate'];
+            $showForm   = $objContactForm->fields['showForm'];
             $useCaptcha = $objContactForm->fields['use_captcha'];
-            $sendCopy = $objContactForm->fields['send_copy'];
+            $sendCopy   = $objContactForm->fields['send_copy'];
+            $htmlMail   = $objContactForm->fields['html_mail'];
             return true;
         } else {
             return false;
@@ -606,7 +613,8 @@ class ContactLib
         $showForm,
         $useCaptcha,
         $useCustomStyle,
-        $sendCopy
+        $sendCopy,
+        $sendHtmlMail
     )
     {
         global $objDatabase;
@@ -619,7 +627,8 @@ class ContactLib
                 showForm            = ".$showForm.",
                 use_captcha         = ".$useCaptcha.",
                 use_custom_style    = ".$useCustomStyle.",
-                send_copy           = ".$sendCopy." 
+                send_copy           = ".$sendCopy." ,
+                html_mail           = ".$sendHtmlMail."
             WHERE 
                 id = ".$formID
         );
@@ -643,7 +652,8 @@ class ContactLib
         $showForm,
         $useCaptcha,
         $useCustomStyle,
-        $sendCopy
+        $sendCopy,
+        $sendHtmlMail
     )
     {
         global $objDatabase, $_FRONTEND_LANGID;
@@ -656,7 +666,8 @@ class ContactLib
                 `showForm`,
                 `use_captcha`,
                 `use_custom_style`,
-                `send_copy` 
+                `send_copy`,
+                `html_mail`
             )
             VALUES
             (
@@ -664,7 +675,8 @@ class ContactLib
                 ".$showForm.",
                 ".$useCaptcha.",
                 ".$useCustomStyle.",
-                ".$sendCopy."
+                ".$sendCopy.",
+                ".$sendHtmlMail."
             )";
 
         if ($objDatabase->Execute($query) !== false) {
@@ -700,16 +712,18 @@ class ContactLib
         $name,
         $text,
         $feedback,
+        $mailTemplate,
         $subject
     ) {
         global $objDatabase;
 
-        $formID = intval($formID);
-        $langID = intval($langID);
-        $name = contrexx_addslashes($name);
-        $text = contrexx_addslashes($text);
-        $feedback = contrexx_addslashes($feedback);
-        $subject = contrexx_addslashes($subject);
+        $formID       = intval($formID);
+        $langID       = intval($langID);
+        $name         = contrexx_addslashes($name);
+        $text         = contrexx_addslashes($text);
+        $feedback     = contrexx_addslashes($feedback);
+        $mailTemplate = contrexx_addslashes($mailTemplate);
+        $subject      = contrexx_addslashes($subject);
 
         $query = "
             INSERT INTO
@@ -720,6 +734,7 @@ class ContactLib
                 `name`,
                 `text`,
                 `feedback`,
+                `mailTemplate`,
                 `subject`
             )
             VALUES
@@ -729,13 +744,15 @@ class ContactLib
                 '".$name."',
                 '".$text."',
                 '".$feedback."',
+                '".$mailTemplate."',
                 '".$subject."'
             )
             ON DUPLICATE KEY UPDATE
-                `name` = '".$name."',
-                `text` = '".$text."',
-                `feedback` = '".$feedback."',
-                `subject` = '".$subject."'
+                `name`         = '".$name."',
+                `text`         = '".$text."',
+                `feedback`     = '".$feedback."',
+                `mailTemplate` = '".$mailTemplate."',
+                `subject`      = '".$subject."'
         ";
 
         $objDatabase->execute($query);
@@ -866,7 +883,7 @@ class ContactLib
     protected function addFormField($formID, $field) 
     {
         global $objDatabase, $_ARRAYLANG;
-
+        
         $query = '
             INSERT INTO
                 `'.DBPREFIX.'module_contact_form_field`
