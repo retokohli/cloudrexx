@@ -164,7 +164,7 @@
             if ($J('#tab_recipients').is(":visible") == false) {
                 $J('#tab_recipients').css('display','block');
             } else {
-                alert('already exsist');
+                alert('{TXT_CONTACT_RECIPIENT_ALREADY_SET}');
                 $J("#contactFormFieldType_"+elId).val('text');
                 setFormFieldAttributeBox(el, 'text', langId);
                 return false;
@@ -241,6 +241,7 @@
             case 'label':
             case 'hidden':
             case 'recipient':
+            case 'horizontalLine':
                 ($J('#contactFormFieldRequired_'+elId).length > 0) ? $J('#contactFormFieldRequired_'+elId).remove() : '';
                 ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
                 break;
@@ -358,11 +359,34 @@
                 $J('.ui-state-highlight .nshelper').css('height',$J('.ui-state-highlight').css('height'));
             }
         });
-        $J('#formRecipientContainer tbody').sortable();
-    
+
+        $J('#formRecipientContainer tbody').sortable({
+            placeholder: 'ui-state-highlight',
+            handle: '.sort-handle',
+            revert: true,
+            opacity: 0.6,
+            forceHelperSize: true,
+            forcePlaceholderSize: true,
+            items: 'tr.formRecipient',
+            stop: function(event, ui) {
+                /*Reset Row classes to maintain the alternate background color*/
+                var i=0;
+                $J('#formRecipientContainer tbody > tr.formRecipient').each(function(){
+                    $J(this).removeClass('row1 row2');
+                    $J(this).addClass('row' + (i++ % 2 == 0 ? 2 : 1));
+                });
+            },
+            start: function(event, ui) {
+                $J('.ui-state-highlight').append("<td colspan='10'><div class='nshelper'></div></td>");
+                $J('.ui-state-highlight .nshelper').css('width',$J('.ui-state-highlight').css('width'));
+                $J('.ui-state-highlight .nshelper').css('height',$J('.ui-state-highlight').css('height'));
+            }
+        });
+        
         $J('.formCollapseView input').css('padding-left','0px');
         $J('.formValueView .formCollapseView input').css('width','93%');
         $J('.formValueView .formCollapseView select').css('width','93%');
+        
         /**
         Hide/Show Advanced or simplified view on clicking the link
          */
@@ -532,6 +556,10 @@
                         <td>{TXT_CONTACT_FEEDBACK}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
                         <td>{CONTACT_FORM_FEEDBACK}</td>
                     </tr>
+                    <tr class="row1">
+                        <td>{TXT_CONTACT_MAIL_TEMPLATE}</td>
+                        <td>{CONTACT_MAIL_TEMPLATE}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -624,10 +652,11 @@
             <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
                 <thead>
                     <tr>
-                        <th colspan="3">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
+                        <th colspan="4">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
                     </tr>
 
                     <tr class="row3">
+                        <td></td>
                         <td style="width: 315px;"><strong>{TXT_CONTACT_EMAIL}</strong></td>
                         <td><strong>{TXT_CONTACT_NAME}</strong></td>
                         <td>&nbsp;</td>
@@ -637,7 +666,8 @@
                 <tbody>
 
                     <!-- BEGIN contact_form_recipient_list -->
-                    <tr class="formRecipient">
+                    <tr class="formRecipient {ROW_CLASS_NAME}">
+                        <td><div class="sort-handle"></div></td>
                         <td style="vertical-align: top;">
                             <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
                                    value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
@@ -667,7 +697,7 @@
             <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_RECIPIENT}" />
         </div>
     </div>
-    <br />
+    
     <div id="tab_settings" class="tabs" style="display:none;">
         <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
             <tr>
@@ -688,6 +718,10 @@
             <tr class="row2">
                 <td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
                 <td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_CONTACT_SEND_HTML_MAIL}</td>
+                <td><input type="checkbox" name="contactFormHtmlMail" value="1" id="contactFormHtmlMail" {CONTACT_FORM_SEND_HTML_MAIL} /></td>
             </tr>
         </table>
     </div>
