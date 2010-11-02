@@ -867,6 +867,7 @@ CREATE TABLE `contrexx_module_contact_form` (
   `use_captcha` tinyint(1) unsigned NOT NULL default '1',
   `use_custom_style` tinyint(1) unsigned NOT NULL default '0',
   `send_copy` int(1) NOT NULL default '0',
+  `html_mail` tinyint(1) unsigned NOT NULL default '1',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
@@ -917,6 +918,7 @@ CREATE TABLE `contrexx_module_contact_form_lang` (
   `name` varchar(255) NOT NULL,
   `text` text NOT NULL,
   `feedback` text NOT NULL,
+  `mailTemplate` text NOT NULL,
   `subject` varchar(255) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `formID` (`formID`,`langID`)
