@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Tilføje en anden modtager";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Vælg";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Modtageren felter allerede defineret!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Vandret linje";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail-skabelon";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Send e-mail, som HTML";
 ?>

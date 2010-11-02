@@ -420,4 +420,6 @@ $_ARRAYLANG['TXT_CALENDAR_CATEGORY_COUNT_ENTRIES'] = "Anzahl Einträge im Dropdo
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'] = "Veranstaltungstyp";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'] = "Veranstaltung";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'] = "Weiterleitung";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Veranstaltung erfolgreich gespeichert";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'] = "Fehler beim Speichern der Veranstaltung";
 ?>

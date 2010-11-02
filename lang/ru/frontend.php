@@ -251,4 +251,5 @@ $_ARRAYLANG['TXT_LOGIN_OPENID'] = "OpenID";
 $_ARRAYLANG['TXT_LOGIN_SUBMIT_OPENID'] = "Sign in with OpenID";
 $_ARRAYLANG['TXT_LOGIN_SIGN_UP'] = "Don't have an account? Sign up now.";
 $_ARRAYLANG['TXT_CORE_UNLIMITED'] = "unbegrenzt";
+$_ARRAYLANG['TXT_CAPTCHA'] = "Captcha";
 ?>

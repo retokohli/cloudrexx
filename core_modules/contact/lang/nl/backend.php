@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Voeg een andere ontvanger";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Selecteer";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Begunstigde gebieden al gedefinieerd!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Línea horizontal";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail template";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Stuur mij een email als HTML";
 ?>
