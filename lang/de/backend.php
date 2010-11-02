@@ -1263,4 +1263,6 @@ $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Das Alias %s kann nicht verwendet
 $_ARRAYLANG['TXT_CALENDAR_ADD_ENTRIES'] = "Veranstaltungen hinzufügen";
 $_ARRAYLANG['TXT_CALENDAR_MANAGE_KATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_CALENDAR_SETTINGS'] = "Einstellungen";
+$_ARRAYLANG['TXT_CALENDAR_MANAGE_ENTRIES'] = "Einträge verwalten";
+$_ARRAYLANG['TXT_CAPTCHA'] = "Sicherheitscode";
 ?>

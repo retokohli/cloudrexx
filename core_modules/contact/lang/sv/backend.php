@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Lägg till en annan mottagare";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Välj";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Mottagare fält redan definierade!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Vågrät linje";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mall";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Skicka E-postmeddelande som HTML";
 ?>

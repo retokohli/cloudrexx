@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Újabb címzett";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Kérem válasszon";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Címzett mező már létezik!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Vízszintes vonal";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail sablon";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Értesítés küldése e-mail, mint a HTML";
 ?>

@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Добавяне на друг по�
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Изберете";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Получател полета вече са определени!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Хоризонтална линия";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "Имейл шаблон";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Изпраща съобщение Email като HTML";
 ?>

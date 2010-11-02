@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "weiteren Empfänger hinzufügen";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "Der Eintrag wurde gelöscht.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Bitte wählen";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Empfänger bereits definierten Felder!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Horizontale Linie";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-Mail-Vorlage";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Senden Sie E-Mail als HTML-Notification";
 ?>

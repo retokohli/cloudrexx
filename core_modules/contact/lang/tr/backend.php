@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Başka bir alıcı ekle";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Lütfen seçin";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Alıcı zaten tanımlı alanlar!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Yatay çizgi";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-posta Şablonu";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "HTML olarak gönder E-posta Bildirimi";
 ?>

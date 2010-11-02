@@ -99,4 +99,6 @@ $_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "Die Veranstaltung ist leider ausgebucht. Es können keine weiteren Anmeldungen entgegen genommen werden.";
 $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Ihre Anmeldung wurde erfolgreich in unserem System gespeichert.";
 $_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Uhr";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Veranstaltung erfolgreich gespeichert";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'] = "Fehler beim Speichern der Veranstaltung";
 ?>

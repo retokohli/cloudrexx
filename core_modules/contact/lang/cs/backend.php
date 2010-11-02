@@ -164,4 +164,7 @@ $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'] = "Přidat další příjemce";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "The entry has been deleted.";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Prosím, vyberte";
 $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Příjemce pole již definována!";
+$_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Vodorovná čára";
+$_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail šablony";
+$_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Poslat upozornění e-mailem jako HTML";
 ?>
