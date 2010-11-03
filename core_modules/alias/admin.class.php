@@ -301,6 +301,8 @@ class AliasAdmin extends aliasLib
         $arrMapping = $this->_getMapping($mappingId);
                 
         $this->_objTpl->setVariable(array(
+            'CSRF_KEY'                  => CSRF::key(),
+            'CSRF_CODE'                 => CSRF::code(),
        		'ALIAS_MAPPING_ID' 			=> $mappingId,
         	'ALIAS_MAPPING_TITLE_TXT' 	=> $this->_pageTitle,
         	'ALIAS_MAPPING_PAGE_ID' 	=> $arrMapping['target'],

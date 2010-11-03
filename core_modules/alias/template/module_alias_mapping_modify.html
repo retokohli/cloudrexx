@@ -1,10 +1,15 @@
 <!-- START module_alias_mapping_modify.html -->
 <script type="text/javascript">
 //<![CDATA[
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_ALIAS_MAPPING_DOMAIN_HELP}"];
+
+__CSRF__ = {key:"{CSRF_KEY}", code:"{CSRF_CODE}"};
+__CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
 
 function alias_get_fileBrowser()
 {
-  mappingPopup = window.open('?cmd=fileBrowser&standalone=true&noAliases=1&absoluteURIs=true&getPageId=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+  mappingPopup = window.open('?cmd=fileBrowser&standalone=true&noAliases=1&absoluteURIs=true&getPageId=true&type=webpages&'+__CSRF__QSTR,'','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
   mappingPopup.focus();
 }
 
@@ -27,6 +32,7 @@ function SetUrl(url, pageId)
       <td width="15%">{TXT_ALIAS_MAPPING_DOMAIN}</td>
       <td width="85%">  		
         <input type="text" name="alias_mapping_domain" style="width: 350px;" value="{ALIAS_MAPPING_DOMAIN}" />
+         <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" alt="" />
       </td>
     </tr>
     <tr class="row2">
