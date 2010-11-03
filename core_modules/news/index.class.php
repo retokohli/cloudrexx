@@ -35,6 +35,14 @@ class news extends newsLibrary {
     var $arrSettings = array();
     var $_objTpl;
     var $_submitMessage;
+    
+    /**
+     * Holds the teaser text when displaying details.
+     * Accessed via news::getTeaser().
+     * @var String $_teaser
+     * @access private
+     */
+    var $_teaser = null;
 
     /**
     * Constructor
@@ -187,17 +195,24 @@ class news extends newsLibrary {
                     }
 
                     $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
+		    $newsTeaser = nl2br($objResult->fields['teasertext']);
                     $this->_objTpl->setVariable(array(
                        'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
                        'NEWS_TITLE'         => $newstitle,
                        'NEWS_TEXT'          => stripslashes($objResult->fields['text']),
-                       'NEWS_TEASER_TEXT'   => nl2br($objResult->fields['teasertext']),
+                       'NEWS_TEASER_TEXT'   => $newsTeaser,
                        'NEWS_LASTUPDATE'    => $newsLastUpdate,
                        'NEWS_SOURCE'        => $newsSource,
                        'NEWS_URL'           => $newsUrl,
                        'NEWS_AUTHOR'        => $author,
                        'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
+
+		    /*
+		     * save the teaser text.
+		     * purpose of this: @link news::getTeaser()
+		     */
+		    $this->_teaser = $newsTeaser;
 
                     if (!empty($objResult->fields['newsimage'])) {
                         $this->_objTpl->setVariable(array(
@@ -799,6 +814,17 @@ RSS2JSCODE;
             'NEWS_RSS_FEED_URL' => $rssFeedUrl
         ));
         return $this->_objTpl->get();
+    }
+
+    /**
+     * Returns Teaser Text if displaying a detail page.
+     * Used in index.php to overwrite the meta description.
+     * @access public
+     * @return String Teaser if displaying detail page, else null
+     */
+    public function getTeaser()
+    {
+	return $this->_teaser;
     }
 }
 ?>

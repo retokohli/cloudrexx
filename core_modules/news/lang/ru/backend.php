@@ -216,6 +216,7 @@ $_ARRAYLANG['TXT_NEWS_CATEGORY_ADD_ERROR_EMPTY'] = "Couldn't add category; no na
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'] = "Added teaser box.";
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'] = "Teaser box updated.";
 $_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'] = "No entry selected, nothing changed.";
+$_ARRAYLANG['TXT_REPUBLISHING'] = "Republishing";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";
