@@ -399,6 +399,12 @@ class ContactManager extends ContactLib {
                             } elseif (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'recipient') {
                                 $recipient = $this->getRecipients($formId, false);
                                 $value = htmlentities($recipient[$arrEntry['data'][$col]]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET);
+                            } elseif (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'checkbox') {
+                                if ($arrEntry['data'][$col] == 1) {
+                                    $value = $_ARRAYLANG['TXT_CONTACT_YES'];
+                                } else {
+                                    $value = $_ARRAYLANG['TXT_CONTACT_NO'];
+                                }
                             } else {
                                 $value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
                             }
@@ -917,6 +923,12 @@ class ContactManager extends ContactLib {
 
             foreach ($activeLanguages as $langID => $lang) {
                 $recipients[0]['lang'][$langID] = '';
+            }
+        }
+
+        foreach($recipients as $recipientID => $recipientField){
+            if($copy) {
+                $recipients[$recipientID]['editType'] = 'new';
             }
         }
 
@@ -1977,61 +1989,66 @@ class ContactManager extends ContactLib {
       
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $arrField) {
-            $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
-            $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
-                            $arrField['lang'][FRONTEND_LANG_ID]['name'].
-                            ($arrField['type'] == 'hidden' ? ' (hidden)' : '').
-                            ($arrField['type'] == 'label' ? ' (label)' : '').
-                            "</td>\n";
-            $sourcecode .= "<td width=\"85%\">";
+            /*
+             * Horizontal Field Type need not be displayed in the details page
+             */
+            if ($arrField['type'] != 'horizontalLine') {
+                $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
+                $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
+                                $arrField['lang'][FRONTEND_LANG_ID]['name'].
+                                ($arrField['type'] == 'hidden' ? ' (hidden)' : '').
+                                ($arrField['type'] == 'label' ? ' (label)' : '').
+                                "</td>\n";
+                $sourcecode .= "<td width=\"85%\">";
 
-            switch ($arrField['type']) {
-            case 'checkbox':
-                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) && $arrEntry['data'][$arrField['lang'][$langId]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
-                break;
+                switch ($arrField['type']) {
+                case 'checkbox':
+                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) && $arrEntry['data'][$arrField['lang'][$langId]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                    break;
 
-            case 'file':
-                $file = $arrEntry['data'][$arrField['lang'][$langId]['name']];
-                if (isset($file)) {
-                    if (preg_match('/^a:2:{/', $file)) {
-                        $file = unserialize($file);
+                case 'file':
+                    $file = $arrEntry['data'][$arrField['lang'][$langId]['name']];
+                    if (isset($file)) {
+                        if (preg_match('/^a:2:{/', $file)) {
+                            $file = unserialize($file);
+                        } else {
+                            $file = array(
+                                    'path' => $file,
+                                    'name' => basename($file)
+                            );
+                        }
+                        $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
+                        $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
+                        $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                        $sourcecode .= '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
                     } else {
-                        $file = array(
-                                'path' => $file,
-                                'name' => basename($file)
-                        );
+                        $sourcecode .= '&nbsp;';
                     }
-                    $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
-                    $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
-                    $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $sourcecode .= '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
-                } else {
-                    $sourcecode .= '&nbsp;';
+                    break;
+                case 'label':
+                    $sourcecode .= isset($arrField['lang'][$langId]['name']) ? nl2br(htmlentities($arrField['lang'][$langId]['value'], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                    break;
+                case 'recipient':
+                    $recipientId = $arrEntry['data'][$arrField['lang'][$langId]['name']];
+                    $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
+                    break;
+                case 'text':
+                case 'checkboxGroup':
+                case 'date':
+                case 'hidden':
+                case 'password':
+                case 'radio':
+                case 'select':
+                case 'textarea':
+                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][$langId]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                    break;
                 }
-                break;
-            case 'label':
-                $sourcecode .= isset($arrField['lang'][$langId]['name']) ? nl2br(htmlentities($arrField['lang'][$langId]['value'], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
-                break;
-            case 'recipient':
-                $recipientId = $arrEntry['data'][$arrField['lang'][$langId]['name']];
-                $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
-                break;
-            case 'text':
-            case 'checkboxGroup':
-            case 'date':
-            case 'hidden':
-            case 'password':
-            case 'radio':
-            case 'select':
-            case 'textarea':
-                $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][$langId]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
-                break;
+
+                $sourcecode .= "</td>\n";
+                $sourcecode .= "</tr>\n";
+
+                $rowNr++;
             }
-
-            $sourcecode .= "</td>\n";
-            $sourcecode .= "</tr>\n";
-
-            $rowNr++;
         }
         $sourcecode .= "</table>\n";
 
