@@ -138,8 +138,9 @@ class ContactLib
                         // every language. I let them stay as sort of default values
                         'name'              => $fields['name'], 
                         'subject'           => $fields['subject'],
-                        'text'              => $fields['text'],
-                        'feedback'          => $fields['feedback'],
+                        'text'              => contrexx_stripslashes($fields['text']),
+                        'feedback'          => contrexx_stripslashes($fields['feedback']),
+                        'mailTemplate'      => contrexx_stripslashes($fields['mailTemplate']),
 
                         'emails'            => $fields['mails'],
                         'number'            => intval($fields['number']),
@@ -153,9 +154,9 @@ class ContactLib
                         'lang'              => array(
                             $fields['langID'] => array(
                                 'name'        => $fields['name'],
-                                'text'        => $fields['text'],
-                                'feedback'    => $fields['feedback'],
-                                'mailTemplate'=> $fields['mailTemplate'],
+                                'text'        => stripslashes($fields['text']),
+                                'feedback'    => stripslashes($fields['feedback']),
+                                'mailTemplate'=> stripslashes($fields['mailTemplate']),
                                 'subject'     => $fields['subject']
                             )
                         )
@@ -164,9 +165,9 @@ class ContactLib
                     // only append the lang variables to the array
                     $this->arrForms[$fields['id']]['lang'][$fields['langID']] = array(
                         'name'        => $fields['name'],
-                        'text'        => $fields['text'],
-                        'feedback'    => $fields['feedback'],
-                        'mailTemplate'=> $fields['mailTemplate'],
+                        'text'        => stripslashes($fields['text']),
+                        'feedback'    => stripslashes($fields['feedback']),
+                        'mailTemplate'=> stripslashes($fields['mailTemplate']),
                         'subject'     => $fields['subject']
                     );
                 }
