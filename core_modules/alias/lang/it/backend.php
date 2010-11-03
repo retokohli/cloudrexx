@@ -65,4 +65,5 @@ $_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_TARGET'] = "Bitte geben Sie eine Zielseit
 $_ARRAYLANG['TXT_ALIAS_MAPPING_SUCCESSFULLY_REMOVED'] = "Mapping wurde entfernt.";
 $_ARRAYLANG['TXT_ALIAS_MAPPING_REMOVE_FAILED'] = "Mapping konnte nicht entfernt werden.";
 $_ARRAYLANG['TXT_ALIAS_CONFIRM_DELETE_MAPPING'] = "Soll dieses Mapping wirklich gelöscht werden?";
+$_ARRAYLANG['TXT_ALIAS_MAPPING_DOMAIN_HELP'] = "Geben Sie hier die Domain (z.B. www.example.com) an, welche auf die unten angebene Seite weiterleitet, falls ein Besucher diese Domain im Browser eingibt.";
 ?>
