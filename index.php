@@ -55,6 +55,7 @@
  * @uses        /modules/immo/index.class.php
  * @uses        /modules/blog/homeContent.class.php
  * @uses        /modules/blog/index.class.php
+ * @uses        /lib/FRAMEWORK/SocialNetworks.class.php
  */
 
 /**
@@ -1073,6 +1074,12 @@ switch ($plainSection) {
         $newsObj= new news($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
         $newsObj->getPageTitle($page_title);
+
+        //set the meta page description to the teaser if we're displaying news details.
+        $teaser = $newsObj->getTeaser();
+        if($teaser !== null) //news details, else getTeaser would return null
+            $page_desc = $teaser;
+
         $page_title = $newsObj->newsTitle;
         $page_metatitle = $page_title;
         break;
@@ -1788,6 +1795,12 @@ $objTemplate->setVariable(array(
     'TXT_CORE_LAST_MODIFIED_PAGE' => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE'   => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
 ));
+
+//include and initialize handler to fill Social Network template variables
+require_once('lib/SocialNetworks.class.php');
+$socialNetworkTemplater = new SocialNetworks($_CONFIG['domainUrl'].$objInit->getCurrentPageUri());
+//set Social Network template variables
+$objTemplate->setVariable('SN_FACEBOOK_LIKE', 'aaaa');
 
 if ($objTemplate->blockExists('access_logged_in')) {
     $objFWUser = FWUser::getFWUserObject();

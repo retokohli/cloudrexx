@@ -217,6 +217,7 @@ $_ARRAYLANG['TXT_NEWS_CATEGORY_ADD_ERROR_EMPTY'] = "Konnte Kategorie nicht hinzu
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'] = "Teaser Box hinzugefügt.";
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'] = "Teaser Box aktualisiert.";
 $_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'] = "Kein Eintrag ausgewählt, nichts geändert.";
+$_ARRAYLANG['TXT_REPUBLISHING'] = "Republishing";
 $_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optionaler Block zur Darstellung des Bildes.<br />
 Starttag: &lt!-- BEGIN news_image --&gt;<br />
 Endtag: &lt!-- END news_image --&gt;";

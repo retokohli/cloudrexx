@@ -324,6 +324,7 @@ class newsManager extends newsLibrary {
             'TXT_USER'                   => $_ARRAYLANG['TXT_USER'],
             'TXT_LAST_EDIT'              => $_ARRAYLANG['TXT_LAST_EDIT'],
             'TXT_ACTION'                 => $_ARRAYLANG['TXT_ACTION'],
+	    'TXT_REPUBLISHING'           => $_ARRAYLANG['TXT_REPUBLISHING'],
             'TXT_CATEGORY'               => $_ARRAYLANG['TXT_CATEGORY'],
             'TXT_CONFIRM_DELETE_DATA'    => $_ARRAYLANG['TXT_NEWS_DELETE_CONFIRM'],
             'TXT_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
@@ -400,6 +401,11 @@ class newsManager extends newsLibrary {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
 
+		    require_once('../lib/SocialNetworks.class.php');
+		    $socialNetworkTemplater = new SocialNetworks();
+
+		    $socialNetworkTemplater->setUrl($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=news&cmd=details&newsid='.$objResult->fields['id']);
+
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
                         'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
@@ -411,6 +417,7 @@ class newsManager extends newsLibrary {
                         'NEWS_CATEGORY'         => stripslashes($objResult->fields['catname']),
                         'NEWS_STATUS'           => $objResult->fields['status'],
                         'NEWS_STATUS_PICTURE'   => $statusPicture,
+			'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton(),
                     ));
 
                     $this->_objTpl->setVariable(array(
@@ -519,7 +526,7 @@ class newsManager extends newsLibrary {
                         'NEWS_CLASS'            => $class,
                         'NEWS_CATEGORY'         => stripslashes($objResult->fields['catname']),
                         'NEWS_STATUS'           => $objResult->fields['status'],
-                        'NEWS_STATUS_PICTURE'   => $statusPicture
+                        'NEWS_STATUS_PICTURE'   => $statusPicture,
                     ));
 
                     $this->_objTpl->parse('news_validator_row');

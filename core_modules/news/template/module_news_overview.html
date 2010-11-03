@@ -58,10 +58,11 @@ function deletePages(form)
 			<td valign="top" nowrap="nowrap" width="1%"><b>{TXT_STATUS}</b></td>
 			<td valign="top" nowrap="nowrap" width="5%"><b>{TXT_DATE}</b></td>
 			<td valign="top" nowrap="nowrap"><b>{TXT_TITLE}</b></td>
-			<td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_CATEGORY}</b></td>
-			<td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_USER}</b></td>
-			<td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_LAST_EDIT}</b></td>
-			<td valign="top" nowrap="nowrap" width="2%"><div align="right"><b>{TXT_ACTION}</b></div></td>
+			<td valign="top" nowrap="nowrap" width="10%"><b>{TXT_CATEGORY}</b></td>
+			<td valign="top" nowrap="nowrap" width="5%"><b>{TXT_USER}</b></td>
+			<td valign="top" nowrap="nowrap" width="5%"><b>{TXT_LAST_EDIT}</b></td>
+			<td valign="top" nowrap="nowrap" width="5%"><b>{TXT_REPUBLISHING}</b></td>
+			<td valign="top" nowrap="nowrap" width="1%"><b>{TXT_ACTION}</b></td>
 		</tr>
 		<!-- BEGIN newsrow -->
 			<tr class="{NEWS_CLASS}">
@@ -79,9 +80,10 @@ function deletePages(form)
 				<td nowrap="nowrap">{NEWS_CATEGORY}&nbsp;</td>
 				<td nowrap="nowrap">{NEWS_USER}&nbsp;</td>
 				<td nowrap="nowrap">{NEWS_CHANGELOG}&nbsp;</td>
+				<td nowrap="nowrap">{NEWS_FACEBOOK_SHARE_BUTTON}</td>
 				<td nowrap="nowrap">
 					<div align="right">
-						<a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
+                                                <a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
 						<a href="?cmd=news&amp;act=copy&amp;newsId={NEWS_ID}" title="{TXT_COPY}"><img src="images/icons/copy.gif" border="0" width="16" height="16" alt="{TXT_COPY}" /></a>
 						<a href="javascript:deletePage({NEWS_ID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" /></a>
 					</div>
@@ -130,6 +132,7 @@ function deletePages(form)
 				<td nowrap="nowrap">{NEWS_CATEGORY}&nbsp;</td>
 				<td nowrap="nowrap">{NEWS_USER}&nbsp;</td>
 				<td nowrap="nowrap">{NEWS_CHANGELOG}&nbsp;</td>
+				
 				<td nowrap="nowrap">
 					<div align="right">
 						<a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}&amp;validate=true" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
