@@ -1265,4 +1265,5 @@ $_ARRAYLANG['TXT_CALENDAR_MANAGE_KATEGORIES'] = "Kategorien verwalten";
 $_ARRAYLANG['TXT_CALENDAR_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_CALENDAR_MANAGE_ENTRIES'] = "Einträge verwalten";
 $_ARRAYLANG['TXT_CAPTCHA'] = "Sicherheitscode";
+$_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPING'] = "Domain-Mappings";
 ?>
