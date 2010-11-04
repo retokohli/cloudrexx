@@ -274,26 +274,35 @@ class AliasAdmin extends aliasLib
         
         if(isset($_REQUEST['alias_mapping_save'])){
 	        $arrMapping['target'] = $_REQUEST['alias_mapping_page_id'];
-	        $arrMapping['domain'] = $_REQUEST['alias_mapping_domain'];
+	        $arrMapping['domain'] = trim($_REQUEST['alias_mapping_domain']);
 	        if(empty($arrMapping['domain'])){
 	        	$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_DOMAIN'];
 	        	$error = true;
-	        }       	
+	        } else {
+	        	if($arrMapping['domain'] == $_CONFIG['domainUrl']){
+	        		$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_DOMAIN_CANNOT_BE_SAME_AS_DEFAULT'];
+	        		$error = true;
+	        	}
+
+	        	if(!preg_match('#^(?:\w+\.)?(?:\w+\.|\w+)+(?:\w{2,6})?[^.]$#', $arrMapping['domain'])){
+	        		$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_INVALID_DOMAIN_NAME'];
+	        		$error = true;
+	        	}	        	
+	        }       
+	        
 	        if(empty($arrMapping['target'])){
 	        	$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_TARGET'];
 	        	$error = true;
 	        }        
 	        
-	        if (!$mappingId) { //new
-	        	if(!$error){
-	        		$this->_addMapping($arrMapping);        	        		
-	        	}        	
-	        } else {
-	        	$this->_updateMapping($mappingId, $arrMapping);
-	        }
-	        
 	        if(!$error){
-				$this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_SAVED_SUCCESSFULLY'];	
+		        if (!$mappingId) { //new
+		        	$this->_addMapping($arrMapping);        	        		
+		        } else {
+		        	$this->_updateMapping($mappingId, $arrMapping);
+		        }
+
+		        $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_SAVED_SUCCESSFULLY'];	
 				return $this->_listMappings();
 			}		        
         } 
