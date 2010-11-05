@@ -323,6 +323,33 @@ CREATE TABLE `contrexx_content_navigation_history` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_setting` (
+  `name` tinytext NOT NULL,
+  `module_id` int(10) NOT NULL default '0',
+  `key` tinytext NOT NULL,
+  `value` text NOT NULL,
+  `type` varchar(32) NOT NULL default 'text',
+  `values` text,
+  `ord` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`name`(32),`module_id`,`key`(32))
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_text` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `lang_id` int(10) unsigned NOT NULL default '1',
+  `module_id` int(10) unsigned NOT NULL default '0',
+  `key` tinytext NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`),
+  KEY `module_id` (`module_id`),
+  KEY `key` (`key`(32)),
+  FULLTEXT KEY `text` (`text`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `timestamp` int(14) default NULL,
@@ -3436,16 +3463,6 @@ CREATE TABLE `contrexx_module_shop_categories` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_shop_config` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(64) NOT NULL default '',
-  `value` varchar(255) NOT NULL default '',
-  `status` tinyint(1) unsigned NOT NULL default '1',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_shop_countries` (
   `countries_id` int(10) unsigned NOT NULL auto_increment,
   `countries_name` varchar(64) NOT NULL default '',
@@ -3462,11 +3479,11 @@ CREATE TABLE `contrexx_module_shop_currencies` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `code` char(3) NOT NULL default '',
   `symbol` varchar(20) NOT NULL default '',
-  `name` varchar(50) NOT NULL default '',
+  `text_name_id` int(10) unsigned NOT NULL default '0',
   `rate` decimal(10,6) unsigned NOT NULL default '1.000000',
-  `sort_order` int(5) unsigned NOT NULL default '0',
-  `status` tinyint(1) unsigned NOT NULL default '1',
-  `is_default` tinyint(1) unsigned NOT NULL default '0',
+  `ord` int(5) unsigned NOT NULL default '0',
+  `active` tinyint(1) unsigned NOT NULL default '1',
+  `default` tinyint(1) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
