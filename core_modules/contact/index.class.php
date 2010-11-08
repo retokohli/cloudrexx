@@ -141,7 +141,7 @@ class Contact extends ContactLib
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
             $this->_getParams();
-            $arrFormData =& $this->_getContactFormData();
+            $arrFormData = &$this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
                     $this->_sendMail($arrFormData);
@@ -606,7 +606,7 @@ class Contact extends ContactLib
     function _sendMail($arrFormData)
     {
         global $_ARRAYLANG, $_CONFIG, $_LANGID;
-
+        
         $body = '';
         $replyAddress = '';
         $htmlMessage  = '';
@@ -637,7 +637,7 @@ class Contact extends ContactLib
                     switch ($arrField['type']) {
                     case 'file':
                         if (isset($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']])) {
-                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."' >".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."</a>";
+                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]['path']."' >".$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]['name']."</a>";
                         }
                         break;
                     case 'checkbox':
@@ -669,7 +669,7 @@ class Contact extends ContactLib
                     switch ($arrField['type']) {
                     case 'file':
                         if (isset($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']])) {
-                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."' >".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]."</a>";
+                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]['path']."' >".$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]['name']."</a>";
                         }
                         break;
                     case 'checkbox':
@@ -745,7 +745,7 @@ class Contact extends ContactLib
         if ($arrSettings['fieldMetaHost']) {
             $message .= $_ARRAYLANG['TXT_CONTACT_HOSTNAME']." : ".$arrFormData['meta']['host']."\n";
         }
-        if ($arrSettings['fieldMetaIP'])   {
+        if ($arrSettings['fieldMetaIP']) {
             $message .= $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS']." : ".$arrFormData['meta']['ipaddress']."\n";
         }
         if ($arrSettings['fieldMetaLang']) {
@@ -795,7 +795,7 @@ class Contact extends ContactLib
             }
 
             $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
-            if(!empty($arrFormData['data']['contactFormField_recipient'])){
+            if (!empty($arrFormData['data']['contactFormField_recipient'])) {
                 foreach (explode(',', $arrRecipients[intval($arrFormData['data']['contactFormField_recipient'])]['email']) as $sendTo) {
                      if (!empty($sendTo)) {
                         $objMail->AddAddress($sendTo);
@@ -803,7 +803,7 @@ class Contact extends ContactLib
                         $objMail->ClearAddresses();
                     }
                 }
-            }else{
+            } else {
                 foreach ($arrFormData['emails'] as $sendTo) {
                     if (!empty($sendTo)) {
                         $objMail->AddAddress($sendTo);
@@ -869,17 +869,8 @@ class Contact extends ContactLib
         $feedback = $arrFormData['feedback'];
 
         $arrMatch = array();
-        if (isset($arrFormData['fields']) && preg_match_all(
-            '#\[\[('.
-                implode(
-                    '|',
-                    array_unique(
-                        array_merge(
-                            $this->arrFormFields,
-                            array_keys($arrFormData['data'])
-                        )
-                    )
-                )
+        if (isset($arrFormData['fields']) && preg_match_all('#\[\[('.
+                implode('|', array_unique(array_merge($this->arrFormFields, array_keys($arrFormData['data']))))
             .')\]\]#',
             html_entity_decode($feedback, ENT_QUOTES, CONTREXX_CHARSET),
             $arrMatch)
@@ -887,17 +878,17 @@ class Contact extends ContactLib
             foreach ($arrFormData['fields'] as $field) {
                 if (in_array($field['name'], $arrMatch[1])) {
                     switch ($field['type']) {
-                        case 'checkbox':
-                            $value = isset($arrFormData['data'][$field['name']]) ? $_ARRAYLANG['TXT_CONTACT_YES'] : $_ARRAYLANG['TXT_CONTACT_NO'];
-                            break;
+                    case 'checkbox':
+                        $value = isset($arrFormData['data'][$field['name']]) ? $_ARRAYLANG['TXT_CONTACT_YES'] : $_ARRAYLANG['TXT_CONTACT_NO'];
+                        break;
 
-                        case 'textarea':
-                            $value = nl2br(htmlentities((isset($arrFormData['data'][$field['name']]) ? $arrFormData['data'][$field['name']] : ''), ENT_QUOTES, CONTREXX_CHARSET));
-                            break;
+                    case 'textarea':
+                        $value = nl2br(htmlentities((isset($arrFormData['data'][$field['name']]) ? $arrFormData['data'][$field['name']] : ''), ENT_QUOTES, CONTREXX_CHARSET));
+                        break;
 
-                        default:
-                            $value = htmlentities((isset($arrFormData['data'][$field['name']]) ? $arrFormData['data'][$field['name']] : ''), ENT_QUOTES, CONTREXX_CHARSET);
-                            break;
+                    default:
+                        $value = htmlentities((isset($arrFormData['data'][$field['name']]) ? $arrFormData['data'][$field['name']] : ''), ENT_QUOTES, CONTREXX_CHARSET);
+                        break;
                     }
                     $feedback = str_replace('[['.htmlentities($field['name'], ENT_QUOTES, CONTREXX_CHARSET).']]', $value, $feedback);
                 }
@@ -957,24 +948,24 @@ class Contact extends ContactLib
             $objFields = $objDatabase->Execute('SELECT `id`, `type`, `attributes` FROM `'.DBPREFIX.'module_contact_form_field` WHERE `id_form`='.$formId);
             if ($objFields !== false) {
                 while (!$objFields->EOF) {
-                    if($objFields->fields['type'] == 'recipient'){
-                        if(!empty($_GET['contactFormField_recipient'])){
+                    if ($objFields->fields['type'] == 'recipient') {
+                        if (!empty($_GET['contactFormField_recipient'])) {
                             $_POST['contactFormField_recipient'] = $_GET['contactFormField_recipient'];
                         }
-                        if(!empty($_POST['contactFormField_recipient'])){
+                        if (!empty($_POST['contactFormField_recipient'])) {
                             $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$_POST['contactFormField_recipient']] = 'selected="selected"';
                         }
                     }
                     if (!empty($_GET[$objFields->fields['id']])) {
-                        if(in_array($objFields->fields['type'], array('select', 'radio'))){
-                            $index = array_search($_GET['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
+                        if (in_array($objFields->fields['type'], array('select', 'radio'))) {
+                            $index                                                      = array_search($_GET['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
                             $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
                         }
                         $arrFields[$objFields->fields['id'].'_VALUE'] = $_GET[$objFields->fields['id']];
                     }
-                    if(!empty($_POST['contactFormField_'.$objFields->fields['id']])){
-                        if(in_array($objFields->fields['type'], array('select', 'radio'))){
-                            $index = array_search($_POST['contactFormField_'.$objFields->fields['id']], explode(',' ,$objFields->fields['attributes']));
+                    if (!empty($_POST['contactFormField_'.$objFields->fields['id']])) {
+                        if (in_array($objFields->fields['type'], array('select', 'radio'))) {
+                            $index                                                      = array_search($_POST['contactFormField_'.$objFields->fields['id']], explode(',', $objFields->fields['attributes']));
                             $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$index] = 'selected="selected"';
                         }
                         $arrFields[$objFields->fields['id'].'_VALUE'] = contrexx_stripslashes($_POST['contactFormField_'.$objFields->fields['id']]);

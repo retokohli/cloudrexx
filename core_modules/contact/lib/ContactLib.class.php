@@ -243,14 +243,14 @@ class ContactLib
 
         if ($objContactForm !== false && $objContactForm->RecordCount() == 1) {
             $this->arrForms[$id] = array();
-            $arrEmails  = explode(',', $objContactForm->fields['mails']);
-            $subject    = !empty($objContactForm->fields['subject']) ? $objContactForm->fields['subject'] : $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
-            $feedback   = $objContactForm->fields['feedback'];
-            $mailTemplate   = $objContactForm->fields['mailTemplate'];
-            $showForm   = $objContactForm->fields['showForm'];
-            $useCaptcha = $objContactForm->fields['use_captcha'];
-            $sendCopy   = $objContactForm->fields['send_copy'];
-            $htmlMail   = $objContactForm->fields['html_mail'];
+            $arrEmails           = explode(',', $objContactForm->fields['mails']);
+            $subject             = !empty($objContactForm->fields['subject']) ? $objContactForm->fields['subject'] : $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
+            $feedback            = $objContactForm->fields['feedback'];
+            $mailTemplate        = $objContactForm->fields['mailTemplate'];
+            $showForm            = $objContactForm->fields['showForm'];
+            $useCaptcha          = $objContactForm->fields['use_captcha'];
+            $sendCopy            = $objContactForm->fields['send_copy'];
+            $htmlMail            = $objContactForm->fields['html_mail'];
             return true;
         } else {
             return false;

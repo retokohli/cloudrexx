@@ -626,6 +626,7 @@ class ContactManager extends ContactLib {
         } else {
             $actionTitle    = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
             $lang           = FRONTEND_LANG_ID;
+            $sendHtmlMail   = 1;
         }
 
         $activeLanguages = FWLanguage::getActiveFrontendLanguages();
@@ -644,7 +645,7 @@ class ContactManager extends ContactLib {
             if (isset($langVars)) {
                 $formText         = $langVars['text'];
                 $formFeedback     = $langVars['feedback'];
-                $formMailTemplate = $langVars['mailTemplate'];
+                $formMailTemplate = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $langVars['mailTemplate']);
                 $formSubject      = $langVars['subject'];
                 $formName         = $langVars['name'];
             } else {
@@ -1207,7 +1208,7 @@ class ContactManager extends ContactLib {
 
                 $formMailTemplate =
                         isset($_POST['contactMailTemplate'][$langID])
-                        ? contrexx_addslashes($_POST['contactMailTemplate'][$langID])
+                        ? preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}', contrexx_addslashes($_POST['contactMailTemplate'][$langID]))
                         :''
                 ;
                 
@@ -2350,11 +2351,53 @@ class ContactManager extends ContactLib {
                 }
 
                 if ($boolDirectUpdate) {
-                    $objDatabase->Execute("UPDATE   ".DBPREFIX."content
-                                           SET      content='".$content."'
+                    $objResult = $objDatabase->Execute("SELECT COUNT(id) As count FROM ".DBPREFIX."content
                                             WHERE   id=".$pageId.' AND `lang_id`='.$langID);
-                }
+                    if ($objResult->fields['count'] == 0) {
+                        $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
+                                        catid,
+                                        catname,
+                                        displayorder,
+                                        displaystatus,
+                                        username,
+                                        changelog,
+                                        cmd,
+                                        lang,
+                                        module
+                                        ) VALUES(
+                                        '".$pageId."',
+                                        '".$catname."',
+                                        '1',
+                                        'on',
+                                        '".$objFWUser->objUser->getUsername()."',
+                                        '".$currentTime."',
+                                        '".$formId."',
+                                        '".$langID."',
+                                        '6')";
+                        $objDatabase->Execute($q1);
 
+                        $q2 ="INSERT INTO ".DBPREFIX."content (id,
+                                                    lang_id,
+                                                    content,
+                                                    title,
+                                                    metatitle,
+                                                    metadesc,
+                                                    metakeys)
+                                            VALUES (".$pageId.",
+                                                    ".$langID.",
+                                                    '".$content."',
+                                                    '".$catname."',
+                                                    '".$catname."',
+                                                    '".$catname."',
+                                                    '".$catname."')";
+                        $objDatabase->Execute($q2);
+                    } else {
+                        $objDatabase->Execute("UPDATE   ".DBPREFIX."content
+                                               SET      content='".$content."'
+                                               WHERE   id=".$pageId.' AND `lang_id`='.$langID);
+                    }
+                }
+                
                 if ($parcat!=$pageId) {
                     //create copy of parcat (for history)
                     $intHistoryParcat = $parcat;
