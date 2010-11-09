@@ -167,4 +167,5 @@ $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "受取人が既に定義フ�
 $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "水平線";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "メールテンプレート";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "HTMLとして送信通知メール";
+$_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "国";
 ?>

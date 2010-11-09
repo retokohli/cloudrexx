@@ -167,4 +167,5 @@ $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Alıcı zaten tanımlı alan
 $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Yatay çizgi";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-posta Şablonu";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "HTML olarak gönder E-posta Bildirimi";
+$_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Ülke";
 ?>

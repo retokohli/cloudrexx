@@ -167,4 +167,5 @@ $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Příjemce pole již definov
 $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Vodorovná čára";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail šablony";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Poslat upozornění e-mailem jako HTML";
+$_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Země";
 ?>

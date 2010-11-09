@@ -167,4 +167,5 @@ $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Begunstigde gebieden al gede
 $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Línea horizontal";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail template";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Stuur mij een email als HTML";
+$_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Land";
 ?>

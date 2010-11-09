@@ -167,4 +167,5 @@ $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'] = "Destinatario campi già defi
 $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Linea orizzontale";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "Modello di email";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Notifica e-mail Invia come HTML";
+$_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Paese";
 ?>
