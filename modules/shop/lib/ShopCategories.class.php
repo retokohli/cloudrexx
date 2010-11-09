@@ -44,25 +44,25 @@ class ShopCategories
      * @var     array
      * @access  private
      */
-    private static $arrShopCategory;
+    private static $arrCategory;
     /**
      * ShopCategory array index
      * @var     array
      * @access  private
      */
-    private static $arrShopCategoryIndex;
+    private static $arrCategoryIndex;
     /**
      * Virtual ShopCategory Tree array
      * @var     array
      * @access  private
      */
-    private static $arrShopCategoryVirtual;
+    private static $arrCategoryVirtual;
     /**
      * Virtual ShopCategory array index
      * @var     array
      * @access  private
      */
-    private static $arrShopCategoryVirtualIndex;
+    private static $arrCategoryVirtualIndex;
     /**
      * The trail from the root (0, zero) to the selected ShopCategory.
      *
@@ -109,15 +109,16 @@ class ShopCategories
         $selected_id=0, $parent_id=0, $maxlevel=0
     ) {
         // Return the same array if it's already been initialized
-// TODO:  This won't work for the shopnavbar, as the categories menu is built first.
+// OPEN: This won't work for the shopnavbar, as the categories menu is
+// built first.
 // This needs to be able to detect whether the arguments are the same.
-//        if (is_array(self::$arrShopCategory))
-//            return self::$arrShopCategory;
+//        if (is_array(self::$arrCategory))
+//            return self::$arrCategory;
         // Otherwise, initialize it now
         if (self::buildTreeArray(
             $flagFull, $active, $flagVirtual,
             $selected_id, $parent_id, $maxlevel
-        )) return self::$arrShopCategory;
+        )) return self::$arrCategory;
         // It failed, probably due to a value of $selected_id that doesn't
         // exist.  Retry without it.
         if ($selected_id > 0)
@@ -132,7 +133,7 @@ class ShopCategories
 
     /**
      * Returns an array representing the index for the tree of ShopCategories
-     * {@link $arrShopCategory}.
+     * {@link $arrCategory}.
      *
      * See {@link ShopCategories::buildTreeArray()} for a detailed explanation
      * of the array structure.
@@ -148,14 +149,14 @@ class ShopCategories
     static function getTreeIndexArray()
     {
         // Return the same array if it's already been initialized
-        if (is_array(self::$arrShopCategoryIndex))
-            return self::$arrShopCategoryIndex;
+        if (is_array(self::$arrCategoryIndex))
+            return self::$arrCategoryIndex;
         return false;
     }
 
 
     /**
-     * Builds the $arrShopCategory array as returned by
+     * Builds the $arrCategory array as returned by
      * {@link ShopCategories::getTreeArray()}, representing a tree of
      * ShopCategories, not including the root chosen.
      *
@@ -203,8 +204,8 @@ class ShopCategories
         $flagFull=false, $active=true, $flagVirtual=true,
         $selected_id=0, $parent_id=0, $maxlevel=0
     ) {
-        self::$arrShopCategory = array();
-        self::$arrShopCategoryIndex = array();
+        self::$arrCategory = array();
+//        self::$arrCategoryIndex = array();
         // Set up the trail from the root (0, zero) to the selected ShopCategory
         if (!self::buildTrailArray($selected_id)) return false;
         if (!self::buildTreeArrayRecursive(
@@ -216,7 +217,7 @@ class ShopCategories
 
 
     /**
-     * Recursively builds the $arrShopCategory array as returned by
+     * Recursively builds the $arrCategory array as returned by
      * {@link ShopCategories::getTreeArray()}.
      *
      * See {@link buildTreeArray()} for details.
@@ -253,16 +254,17 @@ class ShopCategories
         $selected_id=0, $parent_id=0, $maxlevel=0, $level=0
     ) {
         // Get the ShopCategories's children
-        $arrShopCategory =
+        $arrCategory =
             ShopCategories::getChildCategoriesById(
                 $parent_id, $active, $flagVirtual
             );
         // Has there been an error?
-        if ($arrShopCategory === false) return false;
-        foreach ($arrShopCategory as $objCategory) {
+        if ($arrCategory === false) return false;
+        foreach ($arrCategory as $objCategory) {
             $id = $objCategory->getId();
-            $index = count(self::$arrShopCategory);
-            self::$arrShopCategory[$index] = array(
+//            $index = count(self::$arrCategory);
+//            self::$arrCategory[$index] = array(
+            self::$arrCategory[$id] = array(
                 'id'          => $id,
                 'name'        => $objCategory->getName(),
                 'description' => $objCategory->getDescription(),
@@ -274,7 +276,7 @@ class ShopCategories
                 'virtual'     => $objCategory->isVirtual(),
                 'level'       => $level,
             );
-            self::$arrShopCategoryIndex[$id] = $index;
+//            self::$arrCategoryIndex[$id] = $index;
             // Get the grandchildren if
             // - the maximum depth has not been exceeded and
             // - the full list has been requested, or the current ShopCategory
@@ -361,7 +363,7 @@ class ShopCategories
         if (is_array(self::$arrTrail)) return self::$arrTrail;
         // Otherwise, initialize it now
         if (!self::buildTrailArray($selected_id)) return false;
-        return self::$arrShopCategory;
+        return self::$arrCategory;
     }
 
 
@@ -408,8 +410,8 @@ class ShopCategories
      */
     static function invalidateTreeArray()
     {
-        self::$arrShopCategory = false;
-        self::$arrShopCategoryIndex = false;
+        self::$arrCategory = false;
+        self::$arrCategoryIndex = false;
     }
 
 
@@ -423,8 +425,8 @@ class ShopCategories
      */
     static function getTreeNodeCount()
     {
-        if (!is_array(self::$arrShopCategory)) return false;
-        return count(self::$arrShopCategory);
+        if (!is_array(self::$arrCategory)) return false;
+        return count(self::$arrCategory);
     }
 
 
@@ -440,9 +442,27 @@ class ShopCategories
      */
     static function getArrayById($id)
     {
-        if (!isset(self::$arrShopCategoryIndex[$id])) return false;
-        $index = self::$arrShopCategoryIndex[$id];
-        return self::$arrShopCategory[$index];
+        if (!isset(self::$arrCategoryIndex[$id])) return false;
+        $index = self::$arrCategoryIndex[$id];
+        return self::$arrCategory[$index];
+    }
+
+
+    /**
+     * Deletes the Category with the given ID
+     *
+     * Does not delete subcategories nor pictures.
+     * Use {@see delete()} for that.
+     * If the Category doesn't exist to begin with, returns null.
+     * @param   integer     $id         The ShopCategory ID
+     * @return  boolean                 True on success, false on failure,
+     *                                  or null otherwise
+     */
+    static function deleteById($id)
+    {
+        $objCategory = ShopCategory::getById($id);
+        if ($objCategory === null) return null;
+        return $objCategory->delete();
     }
 
 
@@ -463,7 +483,6 @@ class ShopCategories
         foreach ($arrChildCategoryId as $id) {
             $objCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
             // delete siblings and Products as well; delete images if desired.
-// TODO: Add deleteById() method
             if (!$objCategory->delete($flagDeleteImages)) return false;
         }
         return true;
@@ -564,8 +583,8 @@ class ShopCategories
      */
     static function getCategoryById($id)
     {
-        $index = self::$arrShopCategoryIndex[$id];
-        return self::$arrShopCategory[$index];
+        $index = self::$arrCategoryIndex[$id];
+        return self::$arrCategory[$index];
     }
 
 
@@ -612,10 +631,8 @@ class ShopCategories
             : '').
         (!empty($objCategory->parent_id)
             ? " AND parentid=$objCategory->parent_id" : '').
-// TODO: This implementation does not allow any value other than boolean values
-// true or false.  As false is considered to be empty, this won't work in that
-// case.  We better ignore the active status for the time being.
-//        (!empty($objCategory->active)   ? " AND active=$objCategory->active" : '').
+        (isset($objCategory->active)
+            ? " AND active=".($objCategory->active ? 1 : 0) : '').
         (!empty($objCategory->ord)
             ? " AND ord=$objCategory->ord" : '').
         (!empty($objCategory->picture)
@@ -687,10 +704,10 @@ class ShopCategories
     ) {
         global $_ARRAYLANG;
 
-// TODO: Implement this in a way so that both the Shopnavbar and the Shopmenu
+// OPEN: Implement this in a way so that both the Shopnavbar and the Shopmenu
 // can be set up using only one call to buildTreeArray().
 // Unfortunately, the set of records used is not identical in both cases.
-//        if (!self::$arrShopCategory) {
+//        if (!self::$arrCategory) {
         self::buildTreeArray(
             true, $active, true, $selected_id, 0, $maxlevel
         );
@@ -701,7 +718,7 @@ class ShopCategories
         $trailIndex = count(self::$arrTrail);
         while (   $selected_id > 0
                && $trailIndex > 0
-               && !isset(self::$arrShopCategoryIndex[$selected_id])
+               && !isset(self::$arrCategoryIndex[$selected_id])
         ) {
             // So we choose its highest level ancestor present.
             $selected_id = self::$arrTrail[--$trailIndex];
@@ -712,7 +729,7 @@ class ShopCategories
                 $_ARRAYLANG['TXT_SHOP_CATEGORY_ALL'].
                 '</option>'
               : '');
-        foreach (self::$arrShopCategory as $arrCategory) {
+        foreach (self::$arrCategory as $arrCategory) {
             $level = $arrCategory['level'];
             $id    = $arrCategory['id'];
             $name  = $arrCategory['name'];
@@ -723,9 +740,8 @@ class ShopCategories
                 // A little arithmetic solves that, however.
                 ($selected_id-$id ? '' : ' selected="selected"').'>'.
                 str_repeat('...', $level).
-// TODO: This used to fail sometimes when UTF8 was used.
+// NOTE: This used to fail sometimes when UTF8 was used.
 // Should be thoroughly tested.
-// Alternative: $name
                 (empty($name)
                   ? '&nbsp;'
                   : htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)).
@@ -829,9 +845,9 @@ class ShopCategories
      */
     static function getParentCategoryId($shopCategoryId)
     {
-        $arrShopCategory = self::getArrayById($shopCategoryId);
-        if (!$arrShopCategory) return false;
-        return $arrShopCategory['parent_id'];
+        $arrCategory = self::getArrayById($shopCategoryId);
+        if (!$arrCategory) return false;
+        return $arrCategory['parent_id'];
     }
 
 

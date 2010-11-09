@@ -8,14 +8,14 @@ optionId = new Array();
 // Event handlers
 onChangeHandler = new Array();
 arrElements = new Array();
-arrElements[0] = 'option_value';
+arrElements[0] = 'option_name';
 arrElements[1] = 'option_price';
 
 function storeNewOption()
 {
-  if (document.getElementById('option_name-0').value == "") {
+  if (document.getElementById('attribute_name-0').value == "") {
     alert('{TXT_DEFINE_NAME_FOR_OPTION}');
-    document.getElementById('option_name-0').focus();
+    document.getElementById('attribute_name-0').focus();
     return false;
   } else {
     if (document.getElementById('option_id-0').length == 0) {
@@ -37,7 +37,7 @@ function storeChanges()
   for (selectboxNr=0;selectboxNr<document.getElementsByTagName('select').length;selectboxNr++) {
     strName = document.getElementsByTagName('select')[selectboxNr].getAttribute('id');
     if (strName) {
-      if (strName.substring(0,18) == "option_id") {
+      if (strName.substring(0, 9) == "option_id") {
         document.getElementsByTagName('select')[selectboxNr].setAttribute('multiple','multiple');
         document.getElementsByTagName('select')[selectboxNr].focus();
         for (valueId=document.getElementsByTagName('select')[selectboxNr].options.length-1;valueId>=0;valueId--) {
@@ -75,20 +75,20 @@ function setSelectedValue(id)
 
   // hide old elements
 //alert("(1) hiding name id "+id+", value id "+optionId[id]);
-  document.getElementById('option_value-'+optionId[id]).style.display = "none";
+  document.getElementById('option_name-'+optionId[id]).style.display = "none";
   document.getElementById('option_price-'+optionId[id]).style.display = "none";
 
   optionId[id] = document.getElementById('option_id-'+id).options[document.getElementById('option_id-'+id).selectedIndex].value;
 
   // show selected elements
-  document.getElementById('option_value-'+optionId[id]).style.display = "inline";
+  document.getElementById('option_name-'+optionId[id]).style.display = "inline";
   document.getElementById('option_price-'+optionId[id]).style.display = "inline";
 }
 
 function updateOptionList(id)
 {
 // shirtprint
-  typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
+  typeMenu = document.getElementsByName("attribute_type["+id+"]");
 //alert("typeMenu "+typeMenu[0]+", name "+typeMenu[0].name);
   type = typeMenu[0].selectedIndex;
   count = document.getElementById('option_id-'+id).options.length;
@@ -110,12 +110,12 @@ function updateOptionList(id)
       valueId = document.getElementById('option_id-'+id).options[i].value;
       if (type > 3) {
         // Clear the value name for text and upload fields
-        document.getElementById('option_value-'+valueId).value = '';
-        document.getElementById('option_value-'+valueId).disabled = true;
+        document.getElementById('option_name-'+valueId).value = '';
+        document.getElementById('option_name-'+valueId).disabled = true;
       } else {
-        document.getElementById('option_value-'+valueId).disabled = false;
+        document.getElementById('option_name-'+valueId).disabled = false;
       }
-      value = document.getElementById('option_value-'+valueId).value;
+      value = document.getElementById('option_name-'+valueId).value;
       price = document.getElementById('option_price-'+valueId).value;
 //alert("value "+value+", price "+price);
       document.getElementById('option_id-'+id).options[i].childNodes[0].nodeValue =
@@ -147,7 +147,7 @@ function removeSelectedValues(id)
 function addOption(id)
 {
   // Cannot add more than one option for text and upload fields
-  typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
+  typeMenu = document.getElementsByName("attribute_type["+id+"]");
   type = typeMenu[0].selectedIndex;
   count = document.getElementById('option_id-'+id).options.length;
   if (type > 3) {
@@ -159,9 +159,9 @@ function addOption(id)
 
   index++;
   // Create new inputboxes
-  elValue = document.getElementById('option_value_tpl').cloneNode(true);
-  elValue.setAttribute('id','option_value-'+index);
-  elValue.setAttribute('name','option_value['+index+']');
+  elValue = document.getElementById('option_name_tpl').cloneNode(true);
+  elValue.setAttribute('id','option_name-'+index);
+  elValue.setAttribute('name','option_name['+index+']');
   elValue.style.display = 'inline';
 
   elPrice = document.getElementById('option_price_tpl').cloneNode(true);
@@ -170,15 +170,15 @@ function addOption(id)
   elPrice.style.display = 'inline';
 
   // Hide old elements
-  if (document.getElementById('option_value-'+optionId[id])) {
-    document.getElementById('option_value-'+optionId[id]).style.display = "none";
+  if (document.getElementById('option_name-'+optionId[id])) {
+    document.getElementById('option_name-'+optionId[id]).style.display = "none";
     document.getElementById('option_price-'+optionId[id]).style.display = "none";
   }
 
   optionId[id] = index;
   // Add new elements
-  document.getElementById('option_value_input-'+id).appendChild(elValue);
-  document.getElementById('option_price_input-'+id).appendChild(elPrice);
+  document.getElementById('option_name_div-'+id).appendChild(elValue);
+  document.getElementById('option_price_div-'+id).appendChild(elPrice);
 
   // Update the content of the option_id
   document.getElementById('option_id-'+id).options[document.getElementById('option_id-'+id).options.length] = new Option('(+0.00 {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})',index,false,false);
@@ -189,15 +189,14 @@ function addOption(id)
       document.getElementById('option_id-'+id).options[i].selected = false;
     }
   }
-  document.getElementById('option_value-'+index).focus();
-  document.getElementById('option_value-'+index).onchange = "updateOptionList('"+id+"')";
+  document.getElementById('option_name-'+index).focus();
+  document.getElementById('option_name-'+index).onchange = "updateOptionList('"+id+"')";
   document.getElementById('option_price-'+index).onchange = "updateOptionList('"+id+"')";
 
   // Set event handlers
   for (i = 0; i < arrElements.length; ++i) {
     onChangeHandler[arrElements[i]+'-'+index] =
       new Function(document.getElementById(arrElements[i]+'-'+index).onchange);
-
     if (document.getElementById(arrElements[i]+'-'+index).addEventListener) {
         document.getElementById(arrElements[i]+'-'+index).addEventListener('change', onChangeHandler[arrElements[i]+'-'+index], false);
     } else if (document.getElementById(arrElements[i]+'-'+index).attachEvent) {
@@ -207,7 +206,6 @@ function addOption(id)
 
   // Update the content of the option_id
   updateOptionList(id);
-
 }
 
 function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
@@ -234,7 +232,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
   <li><a id="attributeTab_content2" href="javascript:{}"
       onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
 </ul>
-<input name="option_value_tpl" id="option_value_tpl" value="" maxlength="32" style="display: none; width: 170px;" type="text" />
+<input name="option_name_tpl" id="option_name_tpl" value="" maxlength="32" style="display: none; width: 170px;" type="text" />
 <input name="option_price_tpl" id="option_price_tpl" value="0.00" maxlength="9" style="display: none; width: 170px; text-align: right;" type="text" />
 <!-- start content1 div -->
 <div id="content1" class="attributeTab" style="display:block">
@@ -249,8 +247,8 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
       </tr>
 <!-- BEGIN attributeList -->
         <tr class="{SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS}" style="vertical-align:top;">
-          <td nowrap="nowrap" width="2%"><input name="selectedOptionId[]" value="{SHOP_PRODUCT_ATTRIBUTE_ID}" type="checkbox" /></td>
-          <td nowrap="nowrap" width="13%"><input type="text" name="option_name[{SHOP_PRODUCT_ATTRIBUTE_ID}]" size="20" maxlength="32" value="{SHOP_PRODUCT_ATTRIBUTE_NAME}" /></td>
+          <td nowrap="nowrap" width="2%"><input name="selectedAttributeId[]" value="{SHOP_PRODUCT_ATTRIBUTE_ID}" type="checkbox" /></td>
+          <td nowrap="nowrap" width="13%"><input type="text" name="attribute_name[{SHOP_PRODUCT_ATTRIBUTE_ID}]" size="20" maxlength="32" value="{SHOP_PRODUCT_ATTRIBUTE_NAME}" /></td>
           <td nowrap="nowrap" width="20%"><div style="text-align:center;vertical-align:top;">{SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU}</div></td>
           <td nowrap="nowrap" width="60%">
             {TXT_DISPLAY_AS}&nbsp;{SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE}
@@ -258,11 +256,11 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
               <table summary="" border="0" cellpadding="0" cellspacing="4" style="vertical-align:top;">
                 <tr>
                   <td><div style="border-bottom:0px;">{TXT_VALUE}</div></td>
-                  <td id="option_value_input-{SHOP_PRODUCT_ATTRIBUTE_ID}"><div style="border-bottom:0px;text-align:right;">{SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES}</div></td>
+                  <td id="option_name_div-{SHOP_PRODUCT_ATTRIBUTE_ID}"><div style="border-bottom:0px;text-align:right;">{SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES}</div></td>
                 </tr>
                 <tr>
                   <td><div style="border-bottom:0px;">{TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})</div></td>
-                  <td nowrap="nowrap"><div style="border-bottom:0px;text-align:right;display:inline;" id="option_price_input-{SHOP_PRODUCT_ATTRIBUTE_ID}">{SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}</div></td>
+                  <td nowrap="nowrap"><div style="border-bottom:0px;text-align:right;display:inline;" id="option_price_div-{SHOP_PRODUCT_ATTRIBUTE_ID}">{SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}</div></td>
                 </tr>
                 <tr>
                   <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" id="newAttributeValue-{SHOP_PRODUCT_ATTRIBUTE_ID}" value="{TXT_ADD_NEW_VALUE}" onclick="addOption({SHOP_PRODUCT_ATTRIBUTE_ID})" /></div></td>
@@ -275,9 +273,9 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 <!-- END attributeList -->
     </table>
     <img src="images/icons/arrow.gif" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" border="0" height="22" width="38" />
-    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedOptionId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
-    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedOptionId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
-    <select name="selectAction" onchange="shopOptionDoAction('shopSelectOptions','selectedOptionId[]',this,this.value)"><option value="0" selected="selected">{TXT_SELECT_ACTION}:</option><option value="del">{TXT_DELETE}</option></select>
+    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedAttributeId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedAttributeId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+    <select name="selectAction" onchange="shopOptionDoAction('shopSelectOptions','selectedAttributeId[]',this,this.value)"><option value="0" selected="selected">{TXT_SELECT_ACTION}:</option><option value="del">{TXT_DELETE}</option></select>
     <br />
     <br />
     <input type="submit" name="updateAttributeOptions" value="{TXT_SAVE_CHANGES}" onclick="storeChanges()" />
@@ -296,7 +294,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
         <th nowrap="nowrap" width="65%">{TXT_OPTIONS}<th>
       </tr>
       <tr class="row1" style="vertical-align:top;">
-        <td nowrap="nowrap" width="15%"><input type="text" id="option_name-0" name="option_name[0]" size="20" maxlength="32" value="" /></td>
+        <td nowrap="nowrap" width="15%"><input type="text" id="attribute_name-0" name="attribute_name[0]" size="20" maxlength="32" value="" /></td>
         <td nowrap="nowrap" width="200"><div style="text-align:center;vertical-align:top;">
           <select name="option_id[0][]" id="option_id-0" size="10" onchange="setSelectedValue(0)" style="width:200px;"></select>
           <br />
@@ -307,11 +305,11 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
           <table summary="" border="0" cellpadding="0" cellspacing="4" style="vertical-align:top;text-align:right;width:250px;">
             <tr>
               <td><div style="border-bottom:0px;">{TXT_VALUE}</div></td>
-              <td id="option_value_input-0"><div style="border-bottom:0px;text-align:right;"></div></td>
+              <td id="option_name_div-0"><div style="border-bottom:0px;text-align:right;"></div></td>
             </tr>
             <tr>
               <td><div style="border-bottom:0px;">{TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})</div></td>
-              <td nowrap="nowrap"><div style="border-bottom:0px;" id="option_price_input-0"></div></td>
+              <td nowrap="nowrap"><div style="border-bottom:0px;" id="option_price_div-0"></div></td>
             </tr>
             <tr>
               <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" value="{TXT_ADD_NEW_VALUE}" onclick="addOption(0)" /></div></td>

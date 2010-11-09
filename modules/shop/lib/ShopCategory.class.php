@@ -15,6 +15,7 @@
  * Access to Products
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
 
 /**
@@ -96,17 +97,18 @@ class ShopCategory
      * If the optional argument $category_id is greater than zero, the corresponding
      * category is updated.  Otherwise, a new category is created.
      * @access  public
-     * @param   string  $name           The new category name
-     * @param   string  $description    The new category description
-     * @param   integer $parent_id      The new parent ID of the category
-     * @param   integer $active         The new active status of the category (0 or 1)
-     * @param   integer $ord            The sorting order
-     * @param   integer $id             The optional category ID to be updated
+     * @param   string  $name           The category name
+     * @param   string  $description    The optional category description
+     * @param   integer $parent_id      The optional parent ID of the category
+     * @param   integer $active         The optional active status category.
+     *                                  Defaults to null (unset)
+     * @param   integer $ord            The optional ordinal value
+     * @param   integer $id             The optional category ID
      * @return  ShopCategory            The ShopCategory
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        $name, $description='', $parent_id, $active=false, $ord=0, $id=0
+        $name, $description=null, $parent_id=0, $active=null, $ord=0, $id=0
     ) {
         $this->id = intval($id);
         // Use access methods here, various checks included.
@@ -563,7 +565,7 @@ class ShopCategory
         global $objDatabase;
 
         // Delete Products and images
-        if (!Products::deleteByShopCategory($this->id, $flagDeleteImages)) {
+        if (Products::deleteByShopCategory($this->id, $flagDeleteImages) === false) {
             return false;
         }
         // Delete subcategories
@@ -572,6 +574,12 @@ class ShopCategory
                 return false;
             }
         }
+
+// TEST: Delete pictures, if requested
+        if ($flagDeleteImages) {
+        	File::delete_file($this->getPicture());
+        }
+
         // Delete Category
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
@@ -607,10 +615,12 @@ class ShopCategory
 
     /**
      * Returns a ShopCategory selected by its ID from the database.
+     *
+     * Returns null if the Category does not exist.
      * @static
      * @param   integer                     The Shop Category ID
      * @return  ShopCategory                The Shop Category object on success,
-     *                                      false otherwise.
+     *                                      false on failure, or null otherwise.
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -641,7 +651,7 @@ class ShopCategory
              WHERE `category`.`id`=$category_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) { return self::errorHandler(); }
-        if ($objResult->EOF) return false;
+        if ($objResult->EOF) return null;
 
         $text_name_id = $objResult->fields[$arrSqlName['name']];
         $strName = $objResult->fields[$arrSqlName['text']];

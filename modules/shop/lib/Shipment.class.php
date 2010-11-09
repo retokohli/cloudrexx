@@ -67,6 +67,8 @@ class Shipment
     {
         global $objDatabase;
 
+DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
+
         $arrSqlName = Text::getSqlSnippets(
             '`shipper`.`text_name_id`', FRONTEND_LANG_ID,
             MODULE_ID, self::TEXT_NAME);
@@ -116,6 +118,19 @@ class Shipment
             $objResult->MoveNext();
         }
         return true;
+    }
+
+
+    /**
+     * Clears the Shippers and Shipments stored in the class
+     *
+     * Call this after updating the database.  The data will be reinitialized
+     * on demand.
+     */
+    static function reset()
+    {
+        self::$arrShippers = null;
+        self::$arrShipments = null;
     }
 
 
@@ -264,38 +279,55 @@ class Shipment
 
         if (empty(self::$arrShippers)) self::init();
         $arrId = self::getCountriesRelatedShippingIdArray($countryId);
-        $menu =
-            (   intval($selectedId) == 0
-             && count($arrId) > 1
-                ? '<option value="0" selected="selected">'.
-                  $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
-                  "</option>\n"
-                : ''
-            );
-        $haveShipper = false;
-        foreach (array_keys(self::$arrShippers) as $sid) {
+        if (empty($arrId))
+            return $_ARRAYLANG['TXT_SHOP_SHIPMENT_NONE_FOR_COUNTRY'];
+/*
+         // If no shipment has been chosen yet, select the first.
+        if (empty($selectedId)) {
+            $selectedId = current($arrId);
+        }
+*/
+        foreach ($arrId as $sid) {
             // Only show suitable shipments in the menu if the user is on the payment page,
             // check the availability of the shipment in her country,
             // and verify that the shipper will be able to handle the freight.
-            if (!($_REQUEST['cmd'] == 'payment') ||
-                ((!$countryId || in_array($sid, $arrId)) &&
-                self::calculateShipmentPrice(
+            if (empty($_REQUEST['cmd']) || $_REQUEST['cmd'] != 'payment') {
+                continue;
+            }
+            if (self::calculateShipmentPrice(
                     $sid,
                     $_SESSION['shop']['cart']['total_price'],
-                    $_SESSION['shop']['cart']['total_weight']) != -1
-            )) {
-                $menu .=
-                    '<option value="'.$sid.'"'.
-                    ($sid==intval($selectedId) ? ' selected="selected"' : '').
-                    '>'.self::$arrShippers[$sid]['name']."</option>\n";
-                $haveShipper = true;
+                    $_SESSION['shop']['cart']['total_weight']) < 0) {
+                unset($arrId[$id]);
             }
         }
-        if (!$haveShipper)
+        if (empty($arrId)) {
             return $_ARRAYLANG['TXT_SHOP_SHIPMENT_TOO_HEAVY'];
-        if ($onchange)
+        }
+        if (count($arrId) == 1) {
+            return
+                htmlentities(
+                    self::$arrShippers[$sid]['name'],
+                    ENT_QUOTES, CONTREXX_CHARSET).
+                '<input type="hidden" name="shipperId"'.
+                ' value="'.current($arrId).'"'."\n";
+        }
+        $menu =
+            (empty($selectedId)
+                ? '<option value="0" selected="selected">'.
+                  $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
+                  "</option>\n"
+                : '');
+        foreach ($arrId as $sid) {
+            $menu .=
+                '<option value="'.$sid.'"'.
+                ($sid==intval($selectedId) ? ' selected="selected"' : '').
+                '>'.self::$arrShippers[$sid]['name']."</option>\n";
+        }
+        if ($onchange) {
             $menu =
                 '<select name="shipperId" onchange="'.$onchange.'">'.$menu.'</select>';
+        }
         return $menu;
     }
 
@@ -350,7 +382,8 @@ class Shipment
      * @param   string  $name       The Shipper name
      * @param   boolean $active     If true, the Shipper is made active.
      *                              Defaults to false
-     * @return  boolean             True on success, false otherwise
+     * @return  integer             The ID of the new Shipper on success,
+     *                              false otherwise
      * @static
      */
     function addShipper($name, $active=false)
@@ -367,7 +400,8 @@ class Shipment
             ) VALUES (
                 $text_name_id, ".($active ? 1 : 0)."
             )");
-        return (boolean)$objResult;
+        if (!$objResult) return false;
+        return $objDatabase->Insert_ID();
     }
 
 
@@ -420,18 +454,14 @@ class Shipment
 
 
     /**
-     * Update the Shipper
-     *
-     * Note that the name cannot be changed in the settings.
-     * Create a new shipper, change the association from the old shipper
-     * to the new one, and delete the old.
+     * Update the Shipper active status
      * @param   integer $svalue     The ID of the Shipper
      * @param   boolean $active     If true, the Shipper is made active.
      *                              Defaults to false
      * @return  boolean             True on success, false otherwise
      * @static
      */
-    static function updateShipper($sid, $active)
+    static function updateShipper($sid, $active=false)
     {
         global $objDatabase;
 
@@ -440,6 +470,36 @@ class Shipment
                SET `active`=".($active ? 1 : 0)."
              WHERE `id`=$sid");
         return (boolean)$objResult;
+    }
+
+
+    /**
+     * Update the Shipper name in the current frontend language
+     * @param   integer $svalue     The ID of the Shipper
+     * @param   string  $name       The new Shipper name
+     * @return  boolean             True on success, false otherwise
+     * @static
+     */
+    static function renameShipper($sid, $name)
+    {
+        global $objDatabase;
+
+        if (empty(self::$arrShippers)) self::init();
+        $text_id = (empty(self::$arrShippers[$sid]['text_name_id'])
+            ? 0 : self::$arrShippers[$sid]['text_name_id']);
+        $text_id = Text::replace(
+            $text_id, FRONTEND_LANG_ID, $name, MODULE_ID, self::TEXT_NAME);
+        if (!$text_id) return false;
+        // The Text ID only changes if it hasn't been set before
+        // (this should never happen)
+        if (empty(self::$arrShippers[$sid]['text_name_id'])) {
+            $objResult = $objDatabase->Execute("
+                UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_shipper`
+                   SET `text_name_id`=$text_id
+                 WHERE `id`=$sid");
+            return (boolean)$objResult;
+        }
+        return true;
     }
 
 

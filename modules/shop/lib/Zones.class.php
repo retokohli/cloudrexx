@@ -80,6 +80,32 @@ class Zones
     }
 
 
+
+    /**
+     * Returns the Zone ID associated with the given Payment ID, if any
+     *
+     * If the Payment isn't associated with any Zone, returns null.
+     * @param   integer     $payment_id     The Payment ID
+     * @return  integer                     The Zone ID, if any, or null
+     */
+    static function getZoneIdByPaymentId($payment_id)
+    {
+    	global $objDatabase;
+
+        $query = "
+            SELECT r.zone_id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment AS r
+              JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_zones AS z
+                ON z.id=r.zone_id
+             WHERE z.active=1
+               AND r.payment_id=".$arrPayment['id'];
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return null;
+        if ($objResult->EOF) return null;
+        return $objResult->fields['zone_id'];
+    }
+
+
     static function store()
     {
         $total_result = true;

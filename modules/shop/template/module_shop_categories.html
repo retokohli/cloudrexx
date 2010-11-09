@@ -7,9 +7,9 @@ function deleteCategory(id)
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcat&id="+id);
 }
 
-function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
+function shopCatDoAction(strForm, strCheckbox, objSelect, strAct)
 {
-  if (checkboxIsChecked(strForm,strCheckbox) == true) {
+  if (checkboxIsChecked(strForm, strCheckbox)) {
     switch (strAct) {
       case 'del':
         if (confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
@@ -72,7 +72,6 @@ function SetUrl(url, width, height, alt)
   }
 }
 
-
 function cancelEdit()
 {
   window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=cat");
@@ -121,7 +120,7 @@ function cancelEdit()
             </a>
           </b>
           &nbsp;
-          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;id={SHOP_CAT_ID}"
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;category_id={SHOP_CAT_ID}"
             title="{TXT_PREVIEW}">
             <img src="images/icons/details.gif"
               width="14" height="16" border="0"
@@ -162,9 +161,9 @@ function cancelEdit()
       <!-- END catRow -->
     </table>
     <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
-    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectCat','selectedCatId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
-    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectCat','selectedCatId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
-    <select name="selectAction" onchange="shopCatDoAction('shopSelectCat','selectedCatId[]',this,this.value)">
+    <a href="javascript:{}" onclick="changeCheckboxes('selectCat','selectedCatId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+    <a href="javascript:{}" onclick="changeCheckboxes('selectCat','selectedCatId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+    <select name="selectAction" onchange="shopCatDoAction('selectCat','selectedCatId[]',this,this.value)">
       <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
       <option value="del">{TXT_DELETE_MARKED}</option>
     </select>
