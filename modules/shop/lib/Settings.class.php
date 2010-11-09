@@ -214,7 +214,7 @@ class ShopSettings
             self::$changed = true;
             self::$success &= $result;
         }
-        Payment::flush();
+        Payment::reset();
     }
 
 
@@ -241,6 +241,7 @@ class ShopSettings
         self::_storeNewShipper();
         self::_storeNewShipments();
         self::_updateShipment();
+        Shipment::reset();
     }
 
 
@@ -273,16 +274,16 @@ class ShopSettings
      */
     function _storeNewShipper()
     {
-        global $objDatabase; // remove this if you move the INSERT below!
         if (empty($_POST['shipperNameNew'])) return true;
         self::$changed = true;
-        if (!Shipment::addShipper(
+        $shipper_id = Shipment::addShipper(
             $_POST['shipperNameNew'],
             (isset($_POST['shipperActiveNew']) ? 1 : 0),
             intval($_POST['shipmentZoneNew'])
-        )) return false;
-        $shipper_id = $objDatabase->Insert_ID();
-        return Zones::storeShipmentRelation($_POST['shipmentZoneNew'], $shipper_id);
+        );
+        if (!$shipper_id) return false;
+        return Zones::storeShipmentRelation(
+            $_POST['shipmentZoneNew'], $shipper_id);
     }
 
 
@@ -297,21 +298,18 @@ class ShopSettings
         if (isset($_POST['shipment']) && !empty($_POST['shipment'])) {
             // check whether form fields contain valid new values
             // at least one of them must be non-zero!
-            foreach ($_POST['shipmentMaxWeightNew'] as $id => $value) {
-                if ( (isset($value) && $value > 0) ||
-                     (isset($_POST['shipmentCostNew'][$id]) && $_POST['shipmentCostNew'][$id] > 0) ||
-                     (isset($_POST['shipmentPriceFreeNew'][$id]) && $_POST['shipmentPriceFreeNew'][$id] > 0)
+            foreach ($_POST['shipmentMaxWeightNew'] as $shipper_id => $value) {
+                if (   (isset($value) && $value > 0)
+                    || (   isset($_POST['shipmentCostNew'][$shipper_id])
+                        && $_POST['shipmentCostNew'][$shipper_id] > 0)
+                    || (   isset($_POST['shipmentPriceFreeNew'][$shipper_id])
+                        && $_POST['shipmentPriceFreeNew'][$shipper_id] > 0)
                 ) {
                     self::$changed = true;
-                    // note: the old shipper id which belonged to this row may have been
-                    // changed using the dropdown menu.
-                    // that's why we *MUST* use the current value from the menu's value
-                    // as foreign key!
-                    $shipper_id = intval($_POST['shipperId'][$id]);
                     $success &= Shipment::addShipment(
                         $shipper_id,
-                        floatval($_POST['shipmentCostNew'][$id]),
-                        floatval($_POST['shipmentPriceFreeNew'][$id]),
+                        floatval($_POST['shipmentCostNew'][$shipper_id]),
+                        floatval($_POST['shipmentPriceFreeNew'][$shipper_id]),
                         Weight::getWeight($value)
                     );
                 }
@@ -328,21 +326,16 @@ class ShopSettings
      */
     function _updateShipment()
     {
-        global $objDatabase;
         $success = true;
         if (isset($_POST['shipment']) && !empty($_POST['shipment'])) {
             self::$changed = true;
             // Update all shipment conditions
             if (!empty($_POST['shipmentMaxWeight'])) {
-                // Note: $shipment_id is the shipment ID.
                 foreach ($_POST['shipmentMaxWeight'] as $shipment_id => $cvalue) {
-                    // Note: we must use the (possibly changed) shipper id from $shipper_id_new as ID here!
-                    // the old value is stored in the sid[$shipment_id] field, use that to find the current
-                    // $shipper_id_new from the shipperId array.
-                    $shipper_id_new = $_POST['shipperId'][$_POST['sid'][$shipment_id]];
+                    $shipper_id = $_POST['sid'][$shipment_id];
                     $success &= Shipment::updateShipment(
                         $shipment_id,
-                        $shipper_id_new,
+                        $shipper_id,
                         $_POST['shipmentCost'][$shipment_id],
                         $_POST['shipmentPriceFree'][$shipment_id],
                         Weight::getWeight($cvalue)
@@ -350,20 +343,14 @@ class ShopSettings
                 }
             }
 
-            // may be that $shipper_id == $shipper_id_new, but may also have changed
-            // if the user assigned a whole bunch of shipment conditions
-            // to another shipper.
-            // in the latter case, $shipper_id is the original shipper ID, and
-            // $shipper_id_new is the changed one.
-            foreach ($_POST['shipperId'] as $shipper_id => $shipper_id_new) {
+            foreach ($_POST['shipper_name'] as $shipper_id => $shipper_name) {
                 // update the status field in the Shipper
                 $shipperActive =
-                    (isset($_POST['shipperActive'][$shipper_id]) ? true : false);
-                // note: we must use the (possibly changed) shipper id from $shipper_id_new as ID here!
+                    (empty($_POST['shipperActive'][$shipper_id]) ? false : true);
                 $success &= Shipment::updateShipper(
-                    $shipper_id_new,
-                    intval($shipperActive)
-                );
+                    $shipper_id,intval($shipperActive));
+                $success &= Shipment::renameShipper(
+                    $shipper_id, $shipper_name);
 
                 // lastly, update the zones
                 if ($_POST['old_shipmentZone'][$shipper_id] != $_POST['shipmentZone'][$shipper_id]) {
@@ -371,7 +358,7 @@ class ShopSettings
                     // also use the (possibly changed) svalue where necessary.
                     // note that shipment_id here actually refers to a shipper!
                     if (!Zones::storeShipmentRelation(
-                        $_POST['shipmentZone'][$shipper_id], $shipper_id_new)
+                        $_POST['shipmentZone'][$shipper_id], $shipper_id)
                     ) {
                         $success = false;
                     }

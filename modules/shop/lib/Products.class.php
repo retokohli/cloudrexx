@@ -138,8 +138,8 @@ class Products
             && empty($flagLastFive)
             && empty($flagShowInactive) // Backend only!
         ) return array();
-// TODO
-// This is an optimization, but does not yet consider the other parameters.
+// NOTE:
+// This is an optimization, but does not (yet) consider the other parameters.
         if ($product_id) {
             // select single Product by ID
             $objProduct = Product::getById($product_id);
@@ -186,8 +186,11 @@ class Products
               ? ' AND `b2b`=1'
               : ($flagIsReseller === false ? ' AND `b2c`=1' : ''));
 
+        if (   is_numeric($orderSetting)
+            && isset(self::$arrProductOrder[$orderSetting]))
+            $orderSetting = self::$arrProductOrder[$orderSetting];
         if (empty($orderSetting))
-            $orderSetting = ' `product`.`sort_order` ASC, `product`.`id` DESC';
+            $orderSetting = self::$arrProductOrder[1];
         $queryOrder = ' ORDER BY '.$orderSetting;
 
         $limit = ($count > 0
@@ -294,14 +297,27 @@ class Products
      */
     static function deleteByShopCategory($category_id, $flagDeleteImages=false)
     {
+        // Verify that the Category still exists
+        $objShopCategory = ShopCategory::getById($category_id);
+        if (!$objShopCategory) {
+DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Info: Category ID $category_id does not exist");
+            return null;
+        }
+
         $arrProductId = Products::getIdArrayByShopCategory($category_id);
-        if (!is_array($arrProductId)) return false;
+        if (!is_array($arrProductId)) {
+DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs in that Category");
+            return false;
+        }
         // Look whether this is within a virtual ShopCategory
         $virtualContainer = '';
         $parent_id = $category_id;
         do {
             $objShopCategory = ShopCategory::getById($parent_id);
-            if (!$objShopCategory) return false;
+            if (!$objShopCategory) {
+DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get parent Category");
+                return false;
+            }
             if ($objShopCategory->isVirtual()) {
                 // The name of any virtual ShopCategory is used to mark
                 // Products within
@@ -314,7 +330,10 @@ class Products
         // Remove the Products in one way or another
         foreach ($arrProductId as $product_id) {
             $objProduct = Product::getById($product_id);
-            if (!$objProduct) return false;
+            if (!$objProduct) {
+DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs $product_id");
+                return false;
+            }
             if ($virtualContainer != ''
              && $objProduct->flags() != '') {
                 // Virtual ShopCategories and their content depends on
@@ -324,7 +343,10 @@ class Products
                     if (!Products::changeFlagsByProductCode(
                         $objProduct->code(),
                         $objProduct->flags()
-                    )) return false;
+                    )) {
+DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to update Product flags for ID ".$objProduct->id());
+                        return false;
+                    }
                 }
             } else {
                 // Normal, non-virtual ShopCategory.
@@ -332,7 +354,10 @@ class Products
                 if (!Products::deleteByCode(
                     $objProduct->code(),
                     $flagDeleteImages)
-                ) return false;
+                ) {
+DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to delete Products by code ".$objProduct->code());
+                    return false;
+                }
             }
         }
         return true;
@@ -365,6 +390,8 @@ class Products
     /**
      * Returns an array of Product IDs contained by the given
      * ShopCategory ID.
+     *
+     * Orders the array by ascending ordinal field value
      * @param   integer   $category_id  The ShopCategory ID
      * @return  mixed                   The array of Product IDs on success,
      *                                  false otherwise.
@@ -376,10 +403,10 @@ class Products
         global $objDatabase;
 
         $query = "
-            SELECT id
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE category_id=$category_id
-          ORDER BY sort_order ASC";
+            SELECT `id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products`
+             WHERE `category_id`=$category_id
+          ORDER BY `ord` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrProductId = array();
@@ -406,11 +433,11 @@ class Products
         global $objDatabase;
 
         $query = "
-            SELECT picture
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             WHERE category_id=$category_id
-               AND picture!=''
-          ORDER BY sort_order ASC";
+            SELECT `picture`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products`
+             WHERE `category_id`=$category_id
+               AND `picture`!=''
+          ORDER BY `ord` ASC";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture

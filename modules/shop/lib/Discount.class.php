@@ -942,7 +942,7 @@ class Coupon
      * @param   integer   $product_id     The Product ID
      * @param   integer   $payment_id     The Payment ID
      * @return  Coupon                    The matching Coupon on success,
-     *                                    false otherwise
+     *                                    null otherwise
      * @static
      */
     static function get(
@@ -969,9 +969,13 @@ class Coupon
              ($payment_id ? ' OR `payment_id`='.$payment_id : '').")";
         $objResult = $objDatabase->Execute($query);
         // Failure or none found
-        if (!$objResult || $objResult->EOF) {
+        if (!$objResult) {
+DBG::log("Coupon::get($code, $order_amount, $customer_id, $product_id, $payment_id): Query error");
+            return self::errorHandler();
+        }
+        if ($objResult->EOF) {
 //DBG::log("Coupon::get($code, $order_amount, $customer_id, $product_id, $payment_id): None found");
-            return false;
+            return null;
         }
 
         $objCoupon = new Coupon();
@@ -1003,7 +1007,7 @@ class Coupon
         // See if the Coupon is still available for her.
         if ($objCoupon->uses_available() > 0)
             return $objCoupon;
-        return false;
+        return null;
     }
 
 
@@ -1260,7 +1264,6 @@ class Coupon
         $count = 0;
         if (empty($order)) $order='`end_time` DESC';
 
-
         $query = "
             SELECT `code`, `payment_id`, `start_time`, `end_time`,
                    `minimum_amount`, `discount_rate`, `discount_amount`,
@@ -1268,7 +1271,7 @@ class Coupon
               FROM `".DBPREFIX."module_shop_discount_coupon`
              ORDER BY $order";
         $objResult = $objDatabase->SelectLimit($query, $limit, $offset);
-        if (!$objResult) return false;
+        if (!$objResult) return self::errorHandler();
         $arrCoupons = array();
         while (!$objResult->EOF) {
 //echo("Fields: ".var_export($objResult->fields, true));
@@ -1769,6 +1772,42 @@ class Coupon
             This never happens, but the code analyzer complains
             if there's no return, exit() or die() here
         ");
+    }
+
+
+    static function errorHandler()
+    {
+
+        $table_name = DBPREFIX.'module_shop_discount_coupon';
+        $table_structure = array(
+            'code' => array('type' => 'varchar(20)', 'default' => '', 'primary' => true),
+            'customer_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'product_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'start_time' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'end_time' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'uses_available' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'global' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '0'),
+            'minimum_amount' => array('type' => 'decimal(9,2)', 'unsigned' => true, 'default' => '0.00'),
+            'discount_amount' => array('type' => 'decimal(9,2)', 'unsigned' => true, 'default' => '0.00'),
+            'discount_rate' => array('type' => 'decimal(3,0)', 'unsigned' => true, 'default' => '0'),
+        );
+        $table_index = array('primary' => array('code', 'customer_id', ));
+        if (!DbTool::table($table_name, $table_structure, $table_index)) {
+die("Shipment::errorHandler(): Error: failed to migrate Coupon table, code jadufdajh4rjh4hfds");
+        }
+
+        $table_name = DBPREFIX.'module_shop_rel_customer_coupon';
+        $table_structure = array(
+            'code' => array('type' => 'varchar(20)', 'default' => ''),
+            'customer_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'count' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00'),
+        );
+        $table_index = array('primary' => array('code', 'customer_id', ));
+        if (!DbTool::table($table_name, $table_structure, $table_index)) {
+die("Shipment::errorHandler(): Error: failed to migrate Coupon relation table, code neruf4537uf");
+        }
     }
 
 }

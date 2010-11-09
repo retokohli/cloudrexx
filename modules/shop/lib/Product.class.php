@@ -801,7 +801,7 @@ class Product
     {
         return $this->discount_active
 // NOTE: Add more conditions and rules as desired, i.e.
-//            || $this->isOutlet()
+//            || $this->is_outlet()
         ;
     }
 
@@ -914,15 +914,14 @@ class Product
                     SELECT picture FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
                      WHERE picture LIKE '%".addslashes($arrPicture[0])."%'";
                 $objResult = $objDatabase->Execute($query);
-//                if ($objResult->RecordCount() == 1) {
+                if ($objResult->RecordCount() == 1) {
                     // The only one -- it can be deleted.
                     // Delete the picture and thumbnail.
-//                    $thumbName = Image::getThumbnailPath($strFileName);
+                    $thumbName = Image::getThumbnailPath($strFileName);
                     // Continue even if deleting the images fails
-// TODO: Implement!
-//                    File::delete_file($strFileName);
-//                    File::delete_file($thumbName);
-//                }
+                    File::delete_file($strFileName);
+                    File::delete_file($thumbName);
+                }
             }
         }
         // Remove any Text records present
@@ -933,11 +932,10 @@ class Product
         if (!Text::deleteById($this->text_code_id))  return false;
         if (!Text::deleteById($this->text_uri_id))   return false;
         // Delete the Product attribute relations and the Product itself
-// TODO: Move to Attributes class
-        $objResult = $objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes
-             WHERE product_id=$this->id");
-        if (!$objResult) return false;
+// TEST
+        if (!Attributes::removeFromProduct($this->id)) {
+        	return false;
+        }
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE id=$this->id");

@@ -623,10 +623,10 @@ die("Currency::errorHandler(): Error: failed to migrate Currency table, code jst
 
         $arrCurrencies = array(
             array('CHF', 'sFr.', 'Schweizer Franken', 1.000000, 1, 1, 1),
-// TODO: I dunno if I'm just lucky, or if this will work with any charsets
+// OPEN: I dunno if I'm just lucky, or if this will work with any charsets
 // configured for PHP and mySQL?
 // Anyway, neither entering the Euro-E literally nor various hacks involving
-// utf8_decode()/utf8_encode() did the trick for me...
+// utf8_decode()/utf8_encode() did the trick...
             array('EUR', html_entity_decode("&euro;"), 'Euro', 1.360000, 2, 1, 0),
             array('USD', '$', 'United States Dollars', 1.080000, 3, 1, 0),
         );

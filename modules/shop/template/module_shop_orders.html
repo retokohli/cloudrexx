@@ -38,7 +38,7 @@ function changeOrderStatus(orderId, order_status, newOrderStatus)
         || newOrderStatus == 4
         || newOrderStatus == 5
         || newOrderStatus == 6) {
-      if (confirm('{TXT_SEND_TEMPLATE_TO_CUSTOMER}?')) {
+      if (confirm('{SHOP_SEND_TEMPLATE_TO_CUSTOMER}?')) {
         strURI += "&shopSendMail=1";
       }
     }
@@ -74,16 +74,16 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <input type="submit" name="searchOrders" value="{TXT_SEARCH}" />
       </td>
     </tr>
-    <tr class=row1>
+    <tr class=row2>
       <td>{TXT_SORT_ORDER}
         <select name="listsort"
           onchange="document.formSearchOrders.submit();">
           {SHOP_CUSTOMER_SORT_MENUOPTIONS}
         </select>
         &nbsp;&nbsp;&nbsp;
-        <label for="shopShowPendingOrders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
+        <label for="show_pending_orders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
         <input type="checkbox"{SHOP_SHOW_PENDING_ORDERS_CHECKED}
-          id="shopShowPendingOrders" name="showPendingOrders"
+          id="show_pending_orders" name="show_pending_orders"
           onchange="document.formSearchOrders.submit();" />
       </td>
     </tr>
@@ -116,7 +116,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         [ <a href="javascript:sendForm('Y')" title="Y">Y</a> ]
         [ <a href="javascript:sendForm('Z')" title="Z">Z</a> ]
         [ <a href="javascript:sendForm('')" title="Alle">Alle</a> ]
-        <input type="hidden" name="listLetter" value="{SHOP_CUSTOMER_LISTLETTER}" />
+        <input type="hidden" name="listletter" value="{SHOP_CUSTOMER_LISTLETTER}" />
         <!--{SHOP_LISTLETTER_MENUOPTIONS}-->
       </td>
     </tr>
@@ -131,10 +131,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <th nowrap="nowrap" style="text-align:center;">#</th>
       <th nowrap="nowrap" width="2%">{TXT_ID}&nbsp;</th>
       <th nowrap="nowrap" width="11%">{TXT_DATE}&nbsp;</th>
-      <th nowrap="nowrap" width="7%"> {TXT_STATUS}&nbsp;</th>
+      <th nowrap="nowrap" width="7%">{TXT_STATUS}&nbsp;</th>
       <th nowrap="nowrap" width="22%">{TXT_NAME}&nbsp;</th>
       <th nowrap="nowrap" width="5%">&nbsp;</th>
-      <th style="text-align:left;">{TXT_ORDER_SUM}&nbsp;</th>
+      <th style="text-align: right;">{TXT_ORDER_SUM}&nbsp;</th>
       <th nowrap="nowrap" width="56%" style="text-align:right;">{TXT_ACTION}</th>
     </tr>
     <!-- BEGIN orderRow -->
@@ -145,7 +145,7 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <td nowrap="nowrap">{SHOP_ORDER_STATUS}&nbsp;&nbsp;</td>
         <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
         <td nowrap="nowrap">{SHOP_TIP_LINK}&nbsp;</td>
-        <td nowrap="nowrap"><div style="text-align:left;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
+        <td nowrap="nowrap"><div style="text-align: right;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
         <td><div style="text-align:right;"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>&nbsp;<a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=editorder&amp;orderid={SHOP_ORDERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteOrder('{SHOP_ORDERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
       </tr>
     <!-- END orderRow -->

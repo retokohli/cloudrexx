@@ -509,64 +509,6 @@ class ShopLibrary
 
 
     /**
-     * Returns a dropdown menu string with all available order status.
-     *
-     * The enclosing <select> tag is only added if the $menuName argument
-     * is non-empty.  If that is empty, however, an additional header
-     * option is added.  See {@link getOrderStatusMenuoptions()} for details.
-     * @param   string  $selected       Optional selected status
-     * @param   string  $menuName       Optional menu name
-     * @param   string  $onchange       Optional onchange callback function
-     * @return  string  $menu           The dropdown menu string
-     * @global  array
-     */
-    static function getOrderStatusMenu($selected='', $menuName='', $onchange='')
-    {
-        if ($menuName != '') {
-            $menu =
-                '<select name="'.$menuName.'" id="'.$menuName.'" '.
-                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
-                ">\n".
-                self::getOrderStatusMenuoptions(
-                    $selected, empty($menuName)
-                ).
-                "</select>\n";
-        }
-        return $menu;
-    }
-
-
-    /**
-     * Returns the HTML menu options for selecting an order status
-     *
-     * Adds a "-- Status --" header option with empty string value
-     * if the $flagFilter parameter is true.
-     * @param   string      $selected       The value of the preselected status
-     * @param   boolean     $flagFilter     If true, the header option is added
-     * @return  string                      The HTML menu options string
-     */
-    static function getOrderStatusMenuoptions($selected='', $flagFilter=false)
-    {
-           global $_ARRAYLANG;
-
-        $strMenuoptions =
-            ($flagFilter
-                ? '<option value="">-- '.
-                  $_ARRAYLANG['TXT_STATUS'].
-                  " --</option>\n"
-                : ''
-            );
-        for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {
-            $strMenuoptions .=
-                '<option value="'.$i.'"'.
-                ($i === $selected ? ' selected="selected"' : '').'>'.
-                $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$i]."</option>\n";
-        }
-        return $strMenuoptions;
-    }
-
-
-    /**
      * Moves Product or Category images to the shop image folder if necessary
      * and changes the given file path from absolute to relative to the
      * shop image folder
@@ -652,26 +594,25 @@ class ShopLibrary
      * Send a confirmation e-mail with the order data
      * @static
      * @param   integer   $order_id   The order ID
-     * @return  boolean               True on success, false otherwise
+     * @return  boolean               The Customers' e-mail address on success,
+     *                                false otherwise
      * @access  private
      */
     static function sendConfirmationMail($order_id, $create_accounts=true)
     {
         global $objDatabase;
 
-        $return = true;
         $arrSubstitution =
             ShopLibrary::getOrderSubstitutionArray($order_id, $create_accounts);
         $customer_id = $arrSubstitution['CUSTOMER_ID'];
         $objCustomer = Customer::getById($customer_id);
         if (!$objCustomer) {
 //die("Failed to get Customer for ID $customer_id");
-            $return = false;
-        } else {
-            $arrSubstitution += $objCustomer->getSubstitutionArray();
-//die("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_export($arrSubstitution, true));
+            return false;
         }
-        if (empty($arrSubstitution)) $return = false;
+        $arrSubstitution += $objCustomer->getSubstitutionArray();
+//die("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_export($arrSubstitution, true));
+        if (empty($arrSubstitution)) return false;
         // Prepared template for order confirmation
         $arrMailtemplate = array(
             'key'     => 1,
@@ -682,8 +623,8 @@ class ShopLibrary
             'substitution' => &$arrSubstitution,
         );
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Template: ".var_export($arrMailtemplate, true));
-        if (!MailTemplate::send($arrMailtemplate)) $return = false;
-        return $return;
+        if (!MailTemplate::send($arrMailtemplate)) return false;
+        return $arrSubstitution['CUSTOMER_EMAIL'];
     }
 
 
@@ -989,8 +930,8 @@ die("Product ID $product_id not found");
                             'phone_fax'    => array(0 => $arrSubstitution['CUSTOMER_FAX']),
                         ));
                         if (!$objUser->store()) {
-                            // TODO: $this can't be used here due that this is a static function. There is so far no way to report an error in case one had occured.
-                            // $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
+                            Shop::addMessage(implode(
+                                '<br />', $objUser->getErrorMsg()));
                             return false;
                         }
                         if (empty($arrProduct['USER_DATA']))

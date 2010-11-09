@@ -9,6 +9,9 @@
  * @version     2.1.0
  */
 
+require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
+
 /**
  * Payment service manager
  * @package     contrexx
@@ -58,6 +61,7 @@ class Payment
         self::$arrPayments = array();
         if ($objResult->EOF) return true;
         while ($objResult && !$objResult->EOF) {
+        	$id = $objResult->fields['id'];
             $text_name_id = $objResult->fields[$arrSqlName['name']];
             $strName = $objResult->fields[$arrSqlName['text']];
             if ($strName === null) {
@@ -65,8 +69,8 @@ class Payment
                 $objText->markDifferentLanguage(FRONTEND_LANG_ID);
                 $strName = $objText->getText();
             }
-            self::$arrPayments[$objResult->fields['id']] = array(
-                'id'           => $objResult->fields['id'],
+            self::$arrPayments[$id] = array(
+                'id'           => $id,
                 'processor_id' => $objResult->fields['processor_id'],
                 'name'         => $strName,
                 'text_name_id' => $text_name_id,
@@ -138,47 +142,57 @@ class Payment
     /**
      * Returns the countries related payment ID array.
      *
+     * If PayPal is the selected payment method, any Currencies not supported
+     * will be removed from the Currency array.
+     * Returns the Payment IDs allowed for the given Country ID.
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @param    integer $countryId         The country ID
-     * @param    array   $arrCurrencies     The currencies array
+     * @param    array   $arrCurrencies     The currencies array, by reference
      * @return   array                      Array of payment IDs, like:
      *                                      array( index => paymentId )
      */
-    static function getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies)
+    static function getCountriesRelatedPaymentIdArray($countryId, &$arrCurrencies)
     {
         global $objDatabase;
 
         if (is_null(self::$arrPayments)) self::init();
-        require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
-        $arrAcceptedCurrencyCodes = array();
-        $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
-        foreach ($arrCurrencies as $arrCurrency) {
-            if (   $arrCurrency['status']
-                && in_array($arrCurrency['code'],
-                            $arrPaypalAcceptedCurrencyCodes)
-            ) {
-                array_push($arrAcceptedCurrencyCodes, $arrCurrency['code']);
+// TODO: Rewrite to only test this when it's selected,
+// and to include any currency otherwise.
+        if (   isset($_SESSION['shop']['paymentId'])) {
+        	$payment_id = $_SESSION['shop']['paymentId'];
+        	$processor_id = self::getPaymentProcessorId($payment_id);
+        	if ($processor_id == 2) {
+		        $arrPaypalAcceptedCurrencyCodes =
+		           PayPal::getAcceptedCurrencyCodeArray();
+		        foreach ($arrCurrencies as $index => $arrCurrency) {
+		            if (!in_array($arrCurrency['code'],
+		                   $arrPaypalAcceptedCurrencyCodes)) {
+		                unset($arrCurrencies[$index]);
+		            }
+		        }
             }
         }
 
         $arrPaymentId = array();
         $query = "
-            SELECT DISTINCT `p`.`payment_id`
+            SELECT DISTINCT `p`.`id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
                 ON `c`.`zone_id`=`z`.`id`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `p`
-                ON `z`.`id`=`p`.`zone_id`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `r`
+                ON `z`.`id`=`r`.`zone_id`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_payment` AS `p`
+                ON `p`.`id`=`r`.`payment_id`
              WHERE `c`.`country_id`=".intval($countryId)."
+               AND `p`.`active`=1
                AND `z`.`active`=1";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
-            if (   isset(self::$arrPayments[$objResult->fields['payment_id']])
-                && self::$arrPayments[$objResult->fields['payment_id']]['active']
-                && (   self::$arrPayments[$objResult->fields['payment_id']]['processor_id'] != 2
-                    || count($arrAcceptedCurrencyCodes) > 0)
+            if (   isset(self::$arrPayments[$objResult->fields['id']])
+                && (   self::$arrPayments[$objResult->fields['id']]['processor_id'] != 2
+                    || count($arrCurrencies))
             ) {
-                $arrPaymentId[] = $objResult->fields['payment_id'];
+                $arrPaymentId[] = $objResult->fields['id'];
             }
             $objResult->MoveNext();
         }
@@ -226,28 +240,17 @@ class Payment
 
         if (is_null(self::$arrPayments)) self::init();
         // Get Payment IDs available in the selected country, if any, or all.
-        $arrPaymentId =
-            ($countryId
-                ? self::getCountriesRelatedPaymentIdArray(
-                    $countryId, Currency::getCurrencyArray())
-                : array_keys(self::$arrPayments)
-            );
-        $strMenuoptions =
-            (empty($selectedId)
-              ? '<option value="" selected="selected">'.
-                $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'].
-                "</option>\n"
-              : ''
-            );
-// TODO: Use Html::getOptions()
+        $arrPaymentId = ($countryId
+            ? self::getCountriesRelatedPaymentIdArray(
+                  $countryId, Currency::getCurrencyArray())
+            : array_keys(self::$arrPayments));
+        $arrOption = (empty($selectedId)
+              ? array(0 => $_ARRAYLANG['TXT_SHOP_PLEASE_SELECT'])
+              : array());
         foreach ($arrPaymentId as $id) {
-            $strMenuoptions .=
-                '<option value="'.$id.'"'.
-                ($id == $selectedId ? HTML_ATTRIBUTE_SELECTED : '').'>'.
-                self::$arrPayments[$id]['name'].
-                "</option>\n";
+            $arrOption[$id] = self::$arrPayments[$id]['name'];
         }
-        return $strMenuoptions;
+        return Html::getOptions($arrOption, $selectedId);
     }
 
 
@@ -406,12 +409,68 @@ class Payment
     }
 
 
-    static function flush()
+    /**
+     * Clear the Payments stored in the class
+     *
+     * Call this after updating the database.  The Payments will be
+     * reinitialized on demand.
+     */
+    static function reset()
     {
         self::$arrPayments = null;
     }
 
 
+    /**
+     * Sets up the Payment settings view
+     * @param   HTML_Template_Sigma $objTemplate    The optional Template,
+     *                                              by reference
+     * @return  boolean                             True on success,
+     *                                              false otherwise
+     */
+    static function view_settings(&$objTemplate=null)
+    {
+        if (!$objTemplate) {
+		    $objTemplate = new HTML_Template_Sigma();
+		    $objTemplate->loadTemplateFile('module_shop_settings_payment.html');
+	    } else {
+		    $objTemplate->addBlockfile('SHOP_SETTINGS_FILE', 'settings_block', 'module_shop_settings_payment.html');
+	    }
+    	$i = 0;
+		foreach (Payment::getArray() as $payment_id => $arrPayment) {
+            $zone_id = Zones::getZoneIdByPaymentId($payment_id);
+	        $objTemplate->setVariable(array(
+                'SHOP_PAYMENT_STYLE' => 'row'.(++$i % 2 + 1),
+                'SHOP_PAYMENT_ID' => $arrPayment['id'],
+                'SHOP_PAYMENT_NAME' => $arrPayment['name'],
+                'SHOP_PAYMENT_HANDLER_MENUOPTIONS' =>
+                    PaymentProcessing::getMenuoptions($arrPayment['processor_id']),
+                'SHOP_PAYMENT_COST' => $arrPayment['fee'],
+                'SHOP_PAYMENT_COST_FREE_SUM' => $arrPayment['free_from'],
+                'SHOP_ZONE_SELECTION' => Zones::getMenu(
+                    $zone_id, "paymentZone[$payment_id]"),
+                'SHOP_PAYMENT_STATUS' => (intval($arrPayment['active'])
+                    ? HTML_ATTRIBUTE_CHECKED : ''),
+            ));
+            $objTemplate->parse('shopPayment');
+        }
+        $objTemplate->setVariable(array(
+            'SHOP_PAYMENT_HANDLER_MENUOPTIONS_NEW' =>
+                // Selected PSP ID is -1 to disable the "please select" option
+                PaymentProcessing::getMenuoptions(-1),
+            'SHOP_ZONE_SELECTION_NEW' => Zones::getMenu(0, 'paymentZone_new'),
+        ));
+        return true;
+    }
+
+
+    /**
+     * Handles any kind of database errors
+     *
+     * Includes updating the payments table (I guess from version 1.2.0(?),
+     * note that this is unconfirmed)
+     * @return  boolean               False.  Always.
+     */
     static function errorHandler()
     {
         require_once(ASCMS_CORE_PATH.'/DbTool.class.php');

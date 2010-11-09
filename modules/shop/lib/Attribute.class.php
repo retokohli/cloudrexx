@@ -306,7 +306,6 @@ class Attribute
 
         // Anything to be removed?
         if (empty($this->arrValues[$option_id])) return true;
-
         // Remove relations to Products
         $query = "
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute
@@ -344,8 +343,12 @@ class Attribute
 
         // Delete references to products first
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute
-             WHERE attribute_id=$this->id";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute`
+             WHERE `option_id` IN (
+                SELECT `id`
+                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_option`
+                 WHERE `attribute_id`=$this->id
+             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
@@ -354,8 +357,8 @@ class Attribute
             if (!Text::deleteById($arrValue['text_name_id'])) return false;
         // Delete values
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_option
-             WHERE attribute_id=$this->id";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_option`
+             WHERE `attribute_id`=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
@@ -363,12 +366,11 @@ class Attribute
         if (!Text::deleteById($this->text_name_id)) return false;
         // Delete name
         $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_attribute
-             WHERE id=$this->id";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_attribute`
+             WHERE `id`=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         unset($this);
-// TODO: From time to time...
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_attribute");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_option");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop_rel_product_attribute");
@@ -631,9 +633,9 @@ class Attribute
             MODULE_ID, self::TEXT_ATTRIBUTE_NAME);
         $query = "
             SELECT 1".$arrSqlName['field']."
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_attribute".
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_attribute` AS `attribute`".
                    $arrSqlName['join']."
-             WHERE id=$nameId";
+             WHERE `attribute`.`id`=$nameId";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return false;
         return $objResult->fields[$arrSqlName['text']];
@@ -697,11 +699,9 @@ class Attribute
 
 
     /**
-     * TODO
      * Returns a string representation of the Attribute
      * @return  string
      */
-
     function toString()
     {
         $string = "ID: $this->id, name: $this->name, type: $this->type<br />  values:<br />";
@@ -710,7 +710,6 @@ class Attribute
                 "    id: ".  $value['id'].
                 ", value: ". $value['value'].
                 ", price: ". $value['price'].
-                ", prefix: ".$value['prefix'].
                 "<br />";
         }
         return $string;

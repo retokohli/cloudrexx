@@ -4,7 +4,7 @@
  * Shop Customer
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  * @todo        Test!
@@ -12,9 +12,11 @@
 
 /**
  * Customer as used in the Shop.
+ *
+ * Extends the User class
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.1.0
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
  */
@@ -40,7 +42,11 @@ class Customer extends User
      */
     function auth($userName, $password)
     {
-        return parent::auth($userName, $password);
+        if (!parent::auth($userName, $password)) return false;
+        $objUser = FWUser::getFWUserObject()->objUser;
+        $customer_id = $objUser->getId();
+DBG::log("Customer::auth(): This: ".var_export($objUser, true));
+DBG::log("Customer::auth(): Usergroups: ".var_export($objUser->getAssociatedGroupIds(), true));
     }
 
 
@@ -320,7 +326,9 @@ class Customer extends User
     static function getById($id)
     {
         $objCustomer = new Customer();
-        return $objCustomer->getUser($id);
+        $objCustomer = $objCustomer->getUser($id);
+        if (!$objCustomer) return false;
+DBG::log("Customer::getById($id): Usergroups: ".var_export($this->getAssociatedGroupIds(), true));
     }
 
 
@@ -464,6 +472,9 @@ die("Customer::errorHandler(): Error: failed to add User_Profile_Attribute 'note
 die("Customer::errorHandler(): Error: failed to store customer, code ahas3u5redsw");
             }
             // Update the Orders table with the new Customer ID
+            // Note that we use the unambiguous e-mail field, not the
+            // primary ID.  The latter could be inconsistent after the first
+            // update already!
             if (!DbTool::sql("
                 UPDATE `".DBPREFIX."module_shop_orders`
                    SET `customerid`=".$objCustomer->getId()."
@@ -481,7 +492,7 @@ die("Customer::errorHandler(): Error: failed to update orders, code har7rh342dfg
             $objGroup = new UserGroup();
             $objGroup->setActiveStatus(true);
             $objGroup->setDescription('Online Shop Endkunden');
-            $objGroup->setName('Endkunden');
+            $objGroup->setName('Shop Endkunden');
             $objGroup->setType('frontend');
         }
         $objGroup->setUsers(array_keys($arrCustomerId));
@@ -498,7 +509,7 @@ die("Customer::errorHandler(): Error: failed to add UserGroup setting for custom
             $objGroup = new UserGroup();
             $objGroup->setActiveStatus(true);
             $objGroup->setDescription('Online Shop Wiederverkäufer');
-            $objGroup->setName('Wiederverkäufer');
+            $objGroup->setName('Shop Wiederverkäufer');
             $objGroup->setType('frontend');
         }
         $objGroup->setUsers(array_keys($arrResellerId));
