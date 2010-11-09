@@ -62,6 +62,7 @@ class ContactManager extends ContactLib {
                 'label'         => $_ARRAYLANG['TXT_CONTACT_TEXT'],
                 'checkbox'      => $_ARRAYLANG['TXT_CONTACT_CHECKBOX'],
                 'checkboxGroup' => $_ARRAYLANG['TXT_CONTACT_CHECKBOX_GROUP'],
+                'country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
                 'date'          => $_ARRAYLANG['TXT_CONTACT_DATE'],
                 'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD'],
                 'hidden'        => $_ARRAYLANG['TXT_CONTACT_HIDDEN_FIELD'],
@@ -534,10 +535,12 @@ class ContactManager extends ContactLib {
         $counter = 1;
         foreach ($recipients as $rec) {
             foreach ($activeLanguages as $langID => $lang) {
+                $langname = $this->getLangShortName($lang['id']);
                 $this->_objTpl->setVariable(
                         array(
                         'CONTACT_FORM_RECIPIENT_ID'         => $rec['id'],
                         'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langID,
+                        'FORM_FIELD_ROW_LANG_NAME'          => $langname,
                         'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID],
                         'CONTACT_FORM_LANGUAGE_NAME'        => $lang['name'],
                         )
@@ -551,7 +554,7 @@ class ContactManager extends ContactLib {
                     'ROW_CLASS_NAME'                => 'row'.(($counter%2 == 0)?'1':'2'),
                     'CONTACT_FORM_RECIPIENT_ID'     => $rec['id'],
                     'CONTACT_FROM_RECIPIENT_EMAIL'  => $rec['email'],
-                    'CONTACT_FORM_RECIPIENT_NAME'   => $rec['lang'][count($rec['lang'])-1], // take the first one
+                    'CONTACT_FORM_RECIPIENT_NAME'   => $rec['lang'][FRONTEND_LANG_ID], // take the active frontend language
                     'CONTACT_FORM_RECIPIENT_TYPE'   => $rec['editType'],
                     'TXT_CONTACT_EXTEND'            => $_ARRAYLANG['TXT_CONTACT_EXTEND']
                     )
@@ -561,6 +564,30 @@ class ContactManager extends ContactLib {
         }
     }
 
+    public function getLangShortName($langId){
+        /**
+         * Places the flag corresponding to the language name and value field
+         */
+        switch ($langId) {
+        case 0: $langname = "";
+            break;
+        case 1: $langname = "de";
+                break;
+        case 2: $langname = "en";
+                break;
+        case 3: $langname = "fr";
+                break;
+        case 4: $langname = "it";
+                break;
+        case 5: $langname = "dk";
+                break;
+        case 6: $langname = "ru";
+                break;
+        default:$langname = "de";
+                break;
+        }
+        return $langname;
+    }
 
     /**
      * update recipient list
@@ -822,23 +849,7 @@ class ContactManager extends ContactLib {
             $jsActiveLang = "";
 
             foreach ($activeLanguages as $lang) {
-                /**
-                 * Places the flag corresponding to the language name and value field
-                 */
-                switch ($lang['id']) {
-                case 1: $langname = "de";
-                        break;
-                case 2: $langname = "en";
-                        break;
-                case 3: $langname = "fr";
-                        break;
-                case 4: $langname = "it";
-                        break;
-                case 5: $langname = "dk";
-                        break;
-                case 6: $langname = "ru";
-                        break;
-                }
+                $langname = $this->getLangShortName($lang['id']);
 
                 $this->_objTpl->setVariable(
                         array(
@@ -1076,32 +1087,8 @@ class ContactManager extends ContactLib {
         if($previd != $id || ($previd == $id && $langid == 0)) {
             $count = 0;
         }
-        $previd = $id;
-
-        /**
-         * Places the flag corresponding to the language
-         */
-        if($langid == 1) {
-            $langname = "de";
-        }
-        else if($langid == 2) {
-            $langname = "en";
-        }
-        else if($langid == 3) {
-            $langname = "fr";
-        }
-        else if($langid == 4) {
-            $langname = "it";
-        }
-        else if($langid == 5) {
-            $langname = "dk";
-        }
-        else if($langid == 6) {
-            $langname = "ru";
-        }
-        else if($langid == 0) {
-            $langname = "";
-        }
+        $previd   = $id;
+        $langname = $this->getLangShortName($langid);
 
         switch ($type) {
             case 'text':
@@ -1721,6 +1708,7 @@ class ContactManager extends ContactLib {
         switch ($type) {
             case 'checkbox':
             case 'checkboxGroup':
+            case 'country':
             case 'date':
             case 'hidden':
             case 'radio':
@@ -1874,6 +1862,16 @@ class ContactManager extends ContactLib {
                 $sourcecode[] = '</p>';
                 break;
 
+            case 'country':
+                $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
+                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                while (!$objResult->EOF) {
+                    $sourcecode[] = "<option value=\"".$objResult->fields['name']."\">".$objResult->fields['name']."</option>";
+                    $objResult->MoveNext();
+                }
+                $sourcecode[] = "</select>";
+                break;
+
             case 'date':
                 $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
                 break;
@@ -1987,7 +1985,7 @@ class ContactManager extends ContactLib {
         $recipient     = $this->getRecipients($formId);
         $rowNr         = 0;
         $langId        = $arrEntry['langId'];
-      
+
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $arrField) {
             /*
@@ -2035,6 +2033,7 @@ class ContactManager extends ContactLib {
                     break;
                 case 'text':
                 case 'checkboxGroup':
+                case 'country':
                 case 'date':
                 case 'hidden':
                 case 'password':
