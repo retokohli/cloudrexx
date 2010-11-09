@@ -154,7 +154,7 @@ class Sorting
     function getUri($field=null)
     {
         return
-// TODO:  Should $baseUri be urldecode()d?
+// OPEN:  Should $baseUri be urldecode()d?
             $this->baseUri.
             ($field && $this->arrField[$field]
                 ? '&'.$this->getOrderUriEncoded($field) : '');
@@ -347,7 +347,7 @@ class Sorting
             $field .= ' '.$this->orderDirection;
         }
         return
-// TODO: I guess that it's better to leave it to another piece of code
+// NOTE: I guess that it's better to leave it to another piece of code
 // whether to add '?' or '&'...?
             //'&amp;'.
             $this->orderUriParameter.
