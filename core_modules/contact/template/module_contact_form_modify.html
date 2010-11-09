@@ -415,6 +415,15 @@
                 }
             });
         });
+
+        $J('.formRecipient .globalRecipientName').live('blur',function(){
+            var globalValue = $J(this).val();
+            $J(this).parent().find('.languageValueDiv input').each(function(key, elem){
+                if(elem.value == ""){
+                    $J(elem).val(globalValue);
+                }
+            });
+        });
     
         /**
         Set both select inside advanced and simplified view to have same value
@@ -673,12 +682,12 @@
                                    value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
                         </td>
                         <td>
-                            <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][0]"
+                            <input style="width: 300px;" class="globalRecipientName" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][0]"
                                    value="{CONTACT_FORM_RECIPIENT_NAME}" /> <a href="javascript:void(0);" onclick="toggleLanguages({CONTACT_FORM_RECIPIENT_ID})" class="langToggleLink">{TXT_CONTACT_EXTEND} &gt;&gt;</a><br />
 
                             <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
                                 <!-- BEGIN recipientNameLang -->
-                                <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
+                                <input style="width: 282px;background:url('images/flags/flag_{FORM_FIELD_ROW_LANG_NAME}.gif') no-repeat 2px center #FFFFFF;padding-left:18px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
                                        value="{CONTACT_FORM_RECIPIENT_NAME}" /> {CONTACT_FORM_LANGUAGE_NAME} <br />
                                 <!-- END recipientNameLang -->
                                 <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
