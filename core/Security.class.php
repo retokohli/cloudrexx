@@ -86,13 +86,13 @@ class Security
     function getRequestInfo($reqarray, $arrname)
     {
         $retdata = "";
-        if(!is_array($reqarray))
+        if (!is_array($reqarray))
             return "";
 
         // For each content of the $reqarray
-        foreach($reqarray as $nname => $nval){
+        foreach ($reqarray as $nname => $nval) {
             // If this is an array
-            if(is_array($nval)){
+            if (is_array($nval)) {
                 // It's an array. Add the contents of it.
                 $retdata .= $arrname." [$nname] : array {\r\n";
                 $retdata .= $this->getRequestInfo($nval, $arrname." [$nname]");
@@ -121,7 +121,7 @@ class Security
         $httpvia = isset($_SERVER['HTTP_VIA']) ? $_SERVER['HTTP_VIA'] : "Not set";
         $httpclientip = isset($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : "Not set";
         $gethostbyname = gethostbyname($remoteaddr);
-        if($gethostbyname == $remoteaddr)
+        if ($gethostbyname == $remoteaddr)
             $gethostbyname = "No matching hostname";
 
         // Add all the user's info to $user
@@ -204,78 +204,77 @@ class Security
     {
      //print_r($array);
         // If it's not an array, test this record for safety and return the result
-        if(!is_array($array)){
-            while(1){
+        if (!is_array($array)) {
+            while(1) {
                 $safe = 1;
                 // Test the string (called $array) for cross site scripting attacks
-                if(
+                if (
                     // Disallow <*script
-                    eregi("<[^>a-z0-9]*script[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*script[^a-z]+/', $array) ||
                     // Disallow <*xml*
-                    eregi("<[^>a-z0-9]*xml[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*xml[^a-z]+/', $array) ||
                     // Disallow <*style*
-                    eregi("<[^>a-z0-9]*style[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*style[^a-z]+/', $array) ||
                     // Disallow <*form*
-                    eregi("<[^>a-z0-9]*form[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*form[^a-z]+/', $array) ||
                     // Disallow <*input*
-                    eregi("<[^>a-z0-9]*input[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*input[^a-z]+/', $array) ||
                     // Disallow <*window*
-                    eregi("<[^>a-z0-9]*window[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*window[^a-z]+/', $array) ||
                     // Disallow <*alert*
-                    eregi("<[^>a-z0-9]*alert[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*alert[^a-z]+/', $array) ||
                     // Disallow <*img*
-                    eregi("<[^>a-z0-9]*img[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*img[^a-z]+/', $array) ||
                      // Disallow <*cookie*
-                    eregi("<[^>a-z0-9]*cookie[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*cookie[^a-z]+/', $array) ||
                     // Disallow <*object*
-                    eregi("<[^>a-z0-9]*object[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*object[^a-z]+/', $array) ||
                     // Disallow <*iframe*
-                    eregi("<[^>a-z0-9]*iframe[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*iframe[^a-z]+/', $array) ||
                     // Disallow <*applet*
-                    eregi("<[^>a-z0-9]*applet[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*applet[^a-z]+/', $array) ||
                     // Disallow <*meta*
-                    eregi("<[^>a-z0-9]*meta[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*meta[^a-z]+/', $array) ||
                     // Disallow <*body*
-                    eregi("<[^>a-z0-9]*body[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*body[^a-z]+/', $array) ||
                     // Disallow <*font*
-                    eregi("<[^>a-z0-9]*font[^a-z]+", $array) ||
+                    preg_match('/<[^>a-z0-9]*font[^a-z]+/', $array) ||
                     // Disallow <*p*
-                //    eregi("<[^>a-z0-9]*p[^a-z]+", $array) ||
+//                    preg_match('/<[^>a-z0-9]*p[^a-z]+/', $array) ||
                     // Disallow "javascript: and 'javascript
-                    eregi("[\"|']javascript:", $array) ||
+                    preg_match('/["\']javascript:/', $array) ||
                     // Disallow =javascript:
-                    eregi("=javascript:", $array) ||
+                    preg_match('/=javascript:/', $array) ||
                     // Disallow "vbscript: and 'vbscript:
-                    eregi("[\"|']vbscript:", $array) ||
+                    preg_match('/["\']vbscript:/', $array) ||
                     // Disallow =vbscript:
-                    eregi("=vbscript:", $array) ||
+                    preg_match('/=vbscript:/', $array) ||
                     // Disallow on*=
-                    eregi("[^a-z0-9]*on[a-z]+[\t ]*=", $array)
-                  )
-                {
+                    preg_match('/[^a-z0-9]*on[a-z]+\s*=/', $array)
+                ) {
                     // Report a potential cross site scripting attack
-                    if($this->reportingMode == true){
+                    if ($this->reportingMode) {
                         $this->reportIntrusion("XSS Attack");
                     }
                     $safe = 0;
 
                     // Use special ways to protect to some cross site scriptings
-                    if(
-                        eregi("[\"|']javascript:", $array) ||
-                        eregi("=[\t ]*javascript:", $array) ||
-                        eregi("[\"|']vbscript:", $array) ||
-                        eregi("=[\t ]*vbscript:", $array)
+                    if (
+                        preg_match('/["\']javascript:/', $array) ||
+                        preg_match('/=\s*javascript:/', $array) ||
+                        preg_match('/["\']vbscript:/', $array) ||
+                        preg_match('/=\s*vbscript:/', $array)
                       )
                     {
                         // Remove the ':'
-                        $array = eregi_replace("([\"|']javascript):", "\\1", $array);
-                        $array = eregi_replace("(=[\t ]*javascript):", "\\1", $array);
-                        $array = eregi_replace("([\"|']vbscript):", "\\1", $array);
-                        $array = eregi_replace("(=[\t ]*vbscript):", "\\1", $array);
+                        $array = preg_replace('/(["\']javascript):/', '\\1', $array);
+                        $array = preg_replace('/(=\s*javascript):/', '\\1', $array);
+                        $array = preg_replace('/(["\']vbscript):/', '\\1', $array);
+                        $array = preg_replace('/(=\s*vbscript):/', '\\1', $array);
                     }
-                    if(eregi("[^a-z0-9]*on[a-z]+[\t ]*=", $array)){
+                    if (preg_match('/[^a-z0-9]*on[a-z]+\s*=/', $array)) {
                         // Remove the =
-                        $array = eregi_replace("([^a-z0-9]*on[a-z]+[\t ]*)=", "\\1", $array);
+                        $array = preg_replace('/([^a-z0-9]*on[a-z]+\s*)=/', '\\1', $array);
                     }
                     // Secure it using htmlspecialchars
                     $array = htmlspecialchars($array, ENT_QUOTES, CONTREXX_CHARSET);
@@ -284,29 +283,29 @@ class Security
 // This is crap!  Every second english language sentence matches those.
 /*
                 // Test for SQL injection
-                if(
+                if (
                     // Disallow "*or/and*=*" or "*or*like*"
-                    eregi("([^a-z]+|^)(OR|AND)[^a-z]+.*(=|like)", $array) ||
+                    preg_match('/([^a-z]+|^)(OR|AND)[^a-z]+.*(=|like)", $array) ||
                     // Disallow "*UNION*SELECT "
-                    eregi("([^a-z]+|^)UNION[^a-z]+.*SELECT[\t ]+", $array)
+                    preg_match('/([^a-z]+|^)UNION[^a-z]+.*SELECT[\t ]+", $array)
                   )
                 {
                     // Report for an intrusion attempt
-                    if($this->reportingMode == true){
+                    if ($this->reportingMode == true) {
                         $this->reportIntrusion("SQL Injection");
                     }
                     $safe = 0;
 
                     // On "*or/and*=/like*", remove OR/AND
-                    $array = eregi_replace("([^a-z]+|^)(OR|AND)([^a-z]+.*(=|like))", "\\1\\3", $array);
+                    $array = preg_replace('/([^a-z]+|^)(OR|AND)([^a-z]+.*(=|like))", "\\1\\3", $array);
 
                     // On "*UNION*SELECT ", remove union
-                    $array = eregi_replace("([^a-z]+|^)UNION([^a-z]+.*SELECT[\t ]+)", "\\1\\3", $array);
+                    $array = preg_replace('/([^a-z]+|^)UNION([^a-z]+.*SELECT[\t ]+)", "\\1\\3", $array);
                 }
 */
 
                 // Return the untrusted value, it's fine
-                if($safe == 1) {
+                if ($safe == 1) {
                     return $array;
                 }
             }
@@ -316,7 +315,7 @@ class Security
         $trusted = array();
 
         // For each record in the array
-        foreach($array as $nname => $untrusted){
+        foreach ($array as $nname => $untrusted) {
             // Get untrusted's trusted value and store it
             $trusted[$nname] = $this->detectIntrusion($untrusted);
         }

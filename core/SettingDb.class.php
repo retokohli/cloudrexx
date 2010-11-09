@@ -489,8 +489,6 @@ class SettingDb
             if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
                 die("Failed to load template settingDb.html");
         }
-// TODO: Test if everything works without this line
-//        Html::replaceUriParameter($uriBase, 'act=settings');
         Html::replaceUriParameter($uriBase, 'active_tab='.self::$tab_index);
         // Default headings and elements
         $objTemplateLocal->setGlobalVariable(
@@ -806,7 +804,6 @@ class SettingDb
                         $value = $target_path;
                     } else {
 //echo("SettingDb::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
-// TODO: Add error message
                         self::$error_message = File::getErrorString();
                         $result = false;
                     }
