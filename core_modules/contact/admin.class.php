@@ -1842,7 +1842,10 @@ class ContactManager extends ContactLib {
         
             switch ($arrField['type']) {
             case 'text':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
+                $defaultTextValue = $arrField['lang'][$frontendLang]['value'] == ""
+                                    ? '{ACCESS_PROFILE_ATTRIBUTE_'.strtoupper(str_replace(' ', '', $arrField['lang'][$frontendLang]['name'])).'}'
+                                    : '{'.$fieldId.'_VALUE}';
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : $defaultTextValue).'" />';
                 break;
 
             case 'label':
@@ -1865,9 +1868,18 @@ class ContactManager extends ContactLib {
             case 'country':
                 $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
                 $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                while (!$objResult->EOF) {
-                    $sourcecode[] = "<option value=\"".$objResult->fields['name']."\">".$objResult->fields['name']."</option>";
-                    $objResult->MoveNext();
+                if ($arrField['is_required'] == 1) {
+                    $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
+                }
+                if ($preview) {
+                    while (!$objResult->EOF) {
+                        $sourcecode[] = "<option value=\"".$objResult->fields['name']."\" >".$objResult->fields['name']."</option>";
+                        $objResult->MoveNext();
+                    }
+                } else {
+                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                    $sourcecode[] = "<option value=\"{".$fieldId."_VALUE}\" >{".$fieldId."_VALUE}</option>";
+                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
                 break;
@@ -1904,8 +1916,14 @@ class ContactManager extends ContactLib {
             case 'select':
                 $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
                 $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                foreach ($options as $index => $option) {
-                    $sourcecode[] = "<option value=\"".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')."\" {SELECTED_".$fieldId."_".$index."}>".($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}')."</option>";
+                if ($preview) {
+                    foreach ($options as $index => $option) {
+                        $sourcecode[] = "<option value='".$option."'>". $option ."</option>";
+                    }
+                } else {
+                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                    $sourcecode[] = "<option value='{".$fieldId."_VALUE}'>". '{'.$fieldId.'_VALUE}'."</option>";
+                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
                 break;
@@ -1915,8 +1933,14 @@ class ContactManager extends ContactLib {
                 break;
             case 'recipient':
                 $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$fieldId.'">';
-                foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
-                    $sourcecode[] = "<option value='".$index."' {SELECTED_".$fieldId."_".$index."}>".($preview ? $arrRecipient['lang'][FRONTEND_LANG_ID] : '{'.$fieldId.'_'.$index.'_VALUE}')."</option>";
+                if ($preview) {
+                    foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
+                        $sourcecode[] = "<option value='".$index."'>". $arrRecipient['lang'][FRONTEND_LANG_ID] ."</option>";
+                    }
+                } else {
+                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                    $sourcecode[] = "<option value='{".$fieldId."_VALUE_ID}'>". '{'.$fieldId.'_VALUE}'."</option>";
+                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
                 break;

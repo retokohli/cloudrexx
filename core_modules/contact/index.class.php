@@ -89,7 +89,7 @@ class Contact extends ContactLib
      */
     function getContactPage()
     {
-        global $_ARRAYLANG, $_LANGID;
+        global $_ARRAYLANG, $_LANGID, $objDatabase;
 
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
@@ -103,7 +103,8 @@ class Contact extends ContactLib
         ));
 
         if ($this->objTemplate->blockExists('contact_form')) {
-            if ($this->setProfileData()) {
+            $isLoggedin = $this->setProfileData();
+            if ($isLoggedin) {
                 $useCaptcha = false;
             } else {
                 $this->setCaptcha($useCaptcha);
@@ -112,21 +113,6 @@ class Contact extends ContactLib
             $recipients = $this->getRecipients($formId);
             foreach ($arrFields as $fieldId => $arrField) {
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
-                
-                if ($arrField['type'] == 'checkboxGroup' || $arrField['type'] == 'radio' || $arrField['type'] == 'select') {
-                    $options = explode(',', $arrField['lang'][$_LANGID]['value']);
-                    foreach ($options as $index => $option) {
-                        $this->objTemplate->setVariable(array(
-                            $fieldId.'_'.$index.'_VALUE'    => $option
-                        ));
-                    }
-                } elseif ($arrField['type'] == 'recipient') {
-                    foreach ($recipients as $index => $recipient) {
-                        $this->objTemplate->setVariable(array(
-                            $fieldId.'_'.$index.'_VALUE'    => $recipient['lang'][$_LANGID]
-                        ));
-                    }
-                }
 
                 $this->objTemplate->setVariable(array(
                     $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
@@ -134,8 +120,51 @@ class Contact extends ContactLib
                     $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name'],
                     $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
                 ));
+                
+                switch ($arrField['type']) {
+                case 'checkboxGroup':
+                case 'radio':
+                    $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                    foreach ($options as $index => $option) {
+                        $this->objTemplate->setVariable(array(
+                            $fieldId.'_'.$index.'_VALUE'    => $option
+                        ));
+                    }
+                    break;
+                case 'select':
+                    $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                    foreach ($options as $index => $option) {
+                        $this->objTemplate->setVariable(array(
+                            $fieldId.'_VALUE' => $option
+                        ));
+                        $this->objTemplate->parse('field_'.$fieldId);
+                    }
+                    break;
+                case 'recipient':
+                    foreach ($recipients as $index => $recipient) {
+                        $this->objTemplate->setVariable(array(
+                            $fieldId.'_VALUE_ID'    => $index,
+                            $fieldId.'_VALUE'    => $recipient['lang'][$_LANGID]
+                        ));
+                        $this->objTemplate->parse('field_'.$fieldId);
+                    }
+                    break;
+                case 'country':
+                    $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
+                    while (!$objResult->EOF) {
+                        $this->objTemplate->setVariable(array(
+                            $fieldId.'_VALUE'    => $objResult->fields['name']
+                        ));
+                        $objResult->MoveNext();
+                        $this->objTemplate->parse('field_'.$fieldId);
+                    }
+                    $this->objTemplate->setVariable(array(
+                            'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']
+                        ));
+                    break;
+                }
             }
-            $this->objTemplate->parse('contact_form');
+            
         }
         
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
