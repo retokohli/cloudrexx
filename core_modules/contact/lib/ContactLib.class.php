@@ -1267,7 +1267,7 @@ function checkAllFields() {
             if (!isRequiredRadio(fields[field][1], field)) {
                 isOk = false;
             }
-        } else if (type == 'select') {
+        } else if (type == 'select' || type == 'country') {
             if (!isRequiredSelect(fields[field][1], field)) {
                 isOk = false;
             }
