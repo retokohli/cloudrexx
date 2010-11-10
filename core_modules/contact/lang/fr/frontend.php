@@ -34,4 +34,5 @@ $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Saisie erronée du code CAPTC
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reculer ";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Liste d'adresse de destinataires";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
+$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "S'il vous plaît Choisir";
 ?>
