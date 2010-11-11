@@ -1842,10 +1842,7 @@ class ContactManager extends ContactLib {
         
             switch ($arrField['type']) {
             case 'text':
-                $defaultTextValue = $arrField['lang'][$frontendLang]['value'] == ""
-                                    ? '{ACCESS_PROFILE_ATTRIBUTE_'.strtoupper(str_replace(' ', '', $arrField['lang'][$frontendLang]['name'])).'}'
-                                    : '{'.$fieldId.'_VALUE}';
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : $defaultTextValue).'" />';
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
                 break;
 
             case 'label':
@@ -1860,7 +1857,7 @@ class ContactManager extends ContactLib {
                 $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
                 $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
                 foreach ($options as $index => $option) {
-                    $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
+                    $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" {SELECTED_'.$fieldId.'_'.$index.'}/><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
                 }
                 $sourcecode[] = '</p>';
                 break;
@@ -1878,7 +1875,7 @@ class ContactManager extends ContactLib {
                     }
                 } else {
                     $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value=\"{".$fieldId."_VALUE}\" >{".$fieldId."_VALUE}</option>";
+                    $sourcecode[] = "<option value=\"{".$fieldId."_VALUE}\" {SELECTED_".$fieldId."} >{".$fieldId."_VALUE}</option>";
                     $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
@@ -1922,7 +1919,7 @@ class ContactManager extends ContactLib {
                     }
                 } else {
                     $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value='{".$fieldId."_VALUE}'>". '{'.$fieldId.'_VALUE}'."</option>";
+                    $sourcecode[] = "<option value='{".$fieldId."_VALUE}' {SELECTED_".$fieldId."} >". '{'.$fieldId.'_VALUE}'."</option>";
                     $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
@@ -1939,7 +1936,7 @@ class ContactManager extends ContactLib {
                     }
                 } else {
                     $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value='{".$fieldId."_VALUE_ID}'>". '{'.$fieldId.'_VALUE}'."</option>";
+                    $sourcecode[] = "<option value='{".$fieldId."_VALUE_ID}' {SELECTED_".$fieldId."} >". '{'.$fieldId.'_VALUE}'."</option>";
                     $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
