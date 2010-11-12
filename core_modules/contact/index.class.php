@@ -94,7 +94,7 @@ class Contact extends ContactLib
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
         $arrFields  = $this->getFormFields($formId);
-        
+
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
             'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
@@ -106,54 +106,71 @@ class Contact extends ContactLib
             $recipients = $this->getRecipients($formId);
             foreach ($arrFields as $fieldId => $arrField) {
                  /*
-                  * Set Default value through URL Modifiers
+                  * Set Default field value through URL Modifiers
                   */
                 if (!empty($_GET[$fieldId])) {
-                    if (in_array($arrField['type'], array('checkboxGroup', 'radio'))) {
-                        $index= array_search($_GET[$fieldId], explode(',' ,$arrField['lang'][$_LANGID]['value']));                        
+                    switch ($arrField['type']) {
+                    case 'checkboxGroup' :
+                    case 'radio' :
+                        $index= array_search($_GET[$fieldId], explode(',' ,$arrField['lang'][$_LANGID]['value']));
                         $this->objTemplate->setVariable(array(
                             'SELECTED_'.$fieldId.'_'.$index => 'checked="checked"'
                         ));
-                    } else if (in_array($arrField['type'], array('select', 'country', 'recipient'))) {
-
-                    } else {
+                        break;
+                    case 'select':
+                    case 'country':
+                    case 'recipient':
+                        break;
+                    default:
                         $arrField['lang'][$_LANGID]['value'] = htmlentities($_GET[$fieldId], ENT_QUOTES, CONTREXX_CHARSET);
                     }
                 }
 
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
 
-              if (preg_match('/\{([A-Z_]+)\}/', $arrField['lang'][$_LANGID]['value'])) {
-                    $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId;
-                    $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, $arrField['lang'][$_LANGID]['value']);
-                } else {
-                    $this->objTemplate->setVariable(array(
-                        $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
-                    ));
-                }
-
                 $this->objTemplate->setVariable(array(
                     $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
                     $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
                     $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name']
                 ));
-                
+
+                /*
+                 * Generate values for dropdown checkbox and radio fields
+                 */
+                $userProfileRegExp = '/\{([A-Z_]+)\}/';
                 switch ($arrField['type']) {
+                case 'checkbox':
+                    if ($arrField['lang'][$_LANGID]['value'] == 1) {
+                        $this->objTemplate->setVariable(array(
+                            'SELECTED_'.$fieldId => 'checked="checked"'
+                        ));
+                    }
+                    break;
                 case 'checkboxGroup':
                 case 'radio':
                     $options = explode(',', $arrField['lang'][$_LANGID]['value']);
                     foreach ($options as $index => $option) {
-                        $this->objTemplate->setVariable(array(
-                            $fieldId.'_'.$index.'_VALUE'    => $option
-                        ));
+                        if (preg_match($userProfileRegExp, $option)) {
+                            $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
+                            $this->objTemplate->addBlock($fieldId.'_'.$index.'_VALUE', $valuePlaceholderBlock, $option);
+                        } else {
+                            $this->objTemplate->setVariable(array(
+                                $fieldId.'_'.$index.'_VALUE' => $option
+                            ));
+                        }
                     }
                     break;
                 case 'select':
                     $options = explode(',', $arrField['lang'][$_LANGID]['value']);
                     foreach ($options as $index => $option) {
-                        $this->objTemplate->setVariable(array(
-                            $fieldId.'_VALUE' => $option
-                        ));
+                        if (preg_match($userProfileRegExp, $option)) {
+                            $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
+                            $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, $option);
+                        } else {
+                            $this->objTemplate->setVariable(array(
+                                $fieldId.'_VALUE' => $option
+                            ));
+                        }
                         if (!empty($_GET[$fieldId])) {
                             if ($index == array_search($_GET[$fieldId], explode(',' ,$arrField['lang'][$_LANGID]['value']))) {
                                 $this->objTemplate->setVariable(array(
@@ -166,9 +183,17 @@ class Contact extends ContactLib
                     break;
                 case 'recipient':
                     foreach ($recipients as $index => $recipient) {
+                        $recipient['lang'][$_LANGID] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $recipient['lang'][$_LANGID]);
+                        if (preg_match('/\{([A-Z_]+)\}/', $recipient['lang'][$_LANGID])) {
+                            $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
+                            $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, $recipient['lang'][$_LANGID]);
+                        } else {
+                            $this->objTemplate->setVariable(array(
+                                $fieldId.'_VALUE'    => $recipient['lang'][$_LANGID]
+                            ));
+                        }
                         $this->objTemplate->setVariable(array(
-                            $fieldId.'_VALUE_ID'    => $index,
-                            $fieldId.'_VALUE'    => $recipient['lang'][$_LANGID]
+                            $fieldId.'_VALUE_ID'    => $index
                         ));
                         if (!empty($_GET[$fieldId])) {
                             if ($recipient['lang'][$_LANGID] == $_GET[$fieldId] ) {
@@ -200,15 +225,34 @@ class Contact extends ContactLib
                             'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']
                         ));
                     break;
+                default :
+                    /*
+                     * Set default field value through User profile attribute
+                     */
+                    if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
+                        $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId;
+                        $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, $arrField['lang'][$_LANGID]['value']);
+                    } else {
+                        $this->objTemplate->setVariable(array(
+                            $fieldId.'_VALUE'       => $arrField['lang'][$_LANGID]['value']
+                        ));
+                    }
+                }
+
+                /*
+                 * Parse the blocks created for parsing user profile data with addBlock()
+                 */
+                if($this->objTemplate->blockExists($valuePlaceholderBlock)){
+                    $this->objTemplate->parse($valuePlaceholderBlock);
                 }
             }
+        }
 
-            $isLoggedin = $this->setProfileData();
-            if ($isLoggedin) {
-                $useCaptcha = false;
-            } else {
-                $this->setCaptcha($useCaptcha);
-            }
+         $isLoggedin = $this->setProfileData();
+        if ($isLoggedin) {
+            $useCaptcha = false;
+        } else {
+            $this->setCaptcha($useCaptcha);
         }
         
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
@@ -558,9 +602,9 @@ class Contact extends ContactLib
                     $fieldValue = $fieldValue['path'];
                 }
 
-                if(!preg_match($regex, $fieldValue)) {
+                if (!preg_match($regex, $fieldValue)) {
                     $error = true;
-                } elseif ($this->_isSpam($fieldValue, $arrSpamKeywords)) {    
+                } elseif ($this->_isSpam($fieldValue, $arrSpamKeywords)) {
                     $error = true;
                 }
             }

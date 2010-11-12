@@ -400,12 +400,8 @@ class ContactManager extends ContactLib {
                             } elseif (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'recipient') {
                                 $recipient = $this->getRecipients($formId, false);
                                 $value = htmlentities($recipient[$arrEntry['data'][$col]]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET);
-                            } elseif (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'checkbox') {
-                                if ($arrEntry['data'][$col] == 1) {
-                                    $value = $_ARRAYLANG['TXT_CONTACT_YES'];
-                                } else {
-                                    $value = $_ARRAYLANG['TXT_CONTACT_NO'];
-                                }
+                            } elseif ($arrFormFields[$arrFormFieldNames[$col]]['type'] == 'checkbox') {
+                                $value = $_ARRAYLANG['TXT_CONTACT_YES'];
                             } else {
                                 $value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
                             }
@@ -414,6 +410,13 @@ class ContactManager extends ContactLib {
                         }
                         if (empty($value)) {
                             $value = '&nbsp;';
+                        }
+
+                        /*
+                         * Sets value if checkbox is not selected
+                         */
+                        if ($arrFormFields[$arrFormFieldNames[$col]]['type'] == 'checkbox' && $arrEntry['data'][$col] == null) {
+                            $value = $_ARRAYLANG['TXT_CONTACT_NO'];
                         }
 
                         $this->_objTpl->setVariable('CONTACT_FORM_ENTRIES_CELL_CONTENT', $value);
@@ -1850,7 +1853,7 @@ class ContactManager extends ContactLib {
                 break;
 
             case 'checkbox':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1"'.($arrField['lang'][$frontendLang]['value'] == '1' ? ' checked="checked"' : '').' />';
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1" {SELECTED_'.$fieldId.'} />';
                 break;
 
             case 'checkboxGroup':
@@ -2006,7 +2009,7 @@ class ContactManager extends ContactLib {
         $recipient     = $this->getRecipients($formId);
         $rowNr         = 0;
         $langId        = $arrEntry['langId'];
-
+        
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $arrField) {
             /*
