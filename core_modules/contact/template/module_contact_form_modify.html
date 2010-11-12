@@ -51,6 +51,7 @@
 
         $J(copy).find('input').val('');
         $J(copy).find('input[type=hidden]').val('new');
+        $J(copy).toggleClass('row1 row2');
 
         $J('#formRecipientContainer').append(copy);
     }
@@ -248,6 +249,7 @@
 			
             case 'checkbox':
             case 'checkboxGroup':
+            case 'country':
             case 'date':
             case 'file':
             case 'radio':
@@ -677,7 +679,7 @@
                     <!-- BEGIN contact_form_recipient_list -->
                     <tr class="formRecipient {ROW_CLASS_NAME}">
                         <td><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
-                        <td style="vertical-align: top;">
+                        <td style="vertical-align: top;padding-top:6px;">
                             <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
                                    value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
                         </td>
