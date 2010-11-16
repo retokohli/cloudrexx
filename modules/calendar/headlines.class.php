@@ -33,6 +33,7 @@ class calHeadlines extends calendarLibrary
     public $_pageContent;
     public $_objTemplate;
     public $objSeries;
+    public $category;
 
 
     /**
@@ -56,11 +57,11 @@ class calHeadlines extends calendarLibrary
         $startdate = mktime(0, 0, 0, $month, $day, $year);
         $enddate = mktime(23, 59, 59, $month, $day, $year+10);
 
-        //get category
+        //get category      
         if ($_CONFIG['calendarheadlinescat'] != 0) {
-            $category = $_CONFIG['calendarheadlinescat'];
+            $this->category = $_CONFIG['calendarheadlinescat'];
         } else {
-            $category = null;
+            $this->category = null;
         }
 
         //check access
@@ -70,7 +71,7 @@ class calHeadlines extends calendarLibrary
         
         //get events list
         $this->objSeries     = new seriesManager();
-        $this->eventList     = $this->objSeries->getEventList($startdate,$enddate,$count, $auth, null, $category, true);
+        $this->eventList     = $this->objSeries->getEventList($startdate,$enddate,$count, $auth, null, $this->category, true);
         
         
         //generate list
