@@ -1797,8 +1797,8 @@ $objTemplate->setVariable(array(
 ));
 
 //include and initialize handler to fill Social Network template variables
-require_once('lib/SocialNetworks.class.php');
-$socialNetworkTemplater = new SocialNetworks($_CONFIG['domainUrl'].$objInit->getCurrentPageUri());
+//require_once('lib/SocialNetworks.class.php');
+//$socialNetworkTemplater = new SocialNetworks($_CONFIG['domainUrl'].$objInit->getCurrentPageUri());
 //set Social Network template variables
 $objTemplate->setVariable('SN_FACEBOOK_LIKE', 'aaaa');
 

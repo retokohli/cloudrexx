@@ -194,7 +194,7 @@ class news extends newsLibrary {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
 
-                    $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
+                    $newstitle = stripslashes($objResult->fields['title']);
 		    $newsTeaser = nl2br($objResult->fields['teasertext']);
                     $this->_objTpl->setVariable(array(
                        'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
@@ -363,7 +363,7 @@ class news extends newsLibrary {
                     $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                 }
 
-                $newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
+                $newstitle = stripslashes($objResult->fields['newstitle']);
                 if (!empty($objResult->fields['newsimagethumbnail'])) {
                     $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
                     $imageSrc = $objResult->fields['newsimagethumbnail'];
