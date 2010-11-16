@@ -401,10 +401,10 @@ class newsManager extends newsLibrary {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
 
-		    require_once('../lib/SocialNetworks.class.php');
+		    /*require_once('../lib/SocialNetworks.class.php');
 		    $socialNetworkTemplater = new SocialNetworks();
 
-		    $socialNetworkTemplater->setUrl($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=news&cmd=details&newsid='.$objResult->fields['id']);
+		    $socialNetworkTemplater->setUrl($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/index.php?section=news&cmd=details&newsid='.$objResult->fields['id']);*/
 
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
@@ -417,7 +417,7 @@ class newsManager extends newsLibrary {
                         'NEWS_CATEGORY'         => stripslashes($objResult->fields['catname']),
                         'NEWS_STATUS'           => $objResult->fields['status'],
                         'NEWS_STATUS_PICTURE'   => $statusPicture,
-			'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton(),
+			//'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton(),
                     ));
 
                     $this->_objTpl->setVariable(array(
@@ -575,7 +575,7 @@ class newsManager extends newsLibrary {
         $endDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
-        $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
+        $newsTeaserText         = contrexx_addslashes(htmlentities($_POST['newsTeaserText']), ENT_QUOTES, CONTREXX_CHARSET);
         $newsTeaserImagePath    = contrexx_addslashes($_POST['newsTeaserImagePath']);
         $newsTeaserImageThumbnailPath    = contrexx_addslashes($_POST['newsTeaserImageThumbnailPath']);
         $newsTeaserShowLink     = isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : intval(!count($_POST));

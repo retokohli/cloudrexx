@@ -113,7 +113,7 @@ OR startdate = '0000-00-00 00:00:00'
         while (!$objResult->EOF) {
             $url = CONTREXX_SCRIPT_PATH;
         $newsid    = $objResult->fields['id'];
-        $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
+        $newstitle = stripslashes($objResult->fields['title']);
         $newsparam = 'section=news&amp;cmd=details';
 	$name = htmlspecialchars(stripslashes($objResult->fields['firstname'] . " " . $objResult->fields['lastname']), ENT_QUOTES, CONTREXX_CHARSET);
         $news_link = (empty($objResult->fields['redirect']))
