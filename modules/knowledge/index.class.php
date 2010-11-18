@@ -57,9 +57,7 @@ class Knowledge extends KnowledgeLibrary
     public function getPage()
     {
         global $_LANGID;
-        JS::activate('prototype');
-        JS::registerJS('modules/knowledge/frontend/fix_prototype.js');
-        JS::activate('scriptaculous');
+        JS::activate('jquery');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
@@ -189,8 +187,6 @@ class Knowledge extends KnowledgeLibrary
         $counter = $this->parseArticleList($mostRead, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=mostRead");
         $this->parseArticleList($bestRated, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=bestRated");
 
-        JS::activate('prototype');
-        JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
@@ -248,8 +244,6 @@ class Knowledge extends KnowledgeLibrary
 
         $this->showCrumbtrail($id);
 
-        JS::activate('prototype');
-        JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
@@ -341,8 +335,6 @@ class Knowledge extends KnowledgeLibrary
 
         $this->pageTitle = $article['content'][$_LANGID]['question'];
 
-        JS::activate('prototype');
-        JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
     }
 
@@ -533,8 +525,6 @@ class Knowledge extends KnowledgeLibrary
                 "TXT_SEARCH_INPUT"  => $searchterm
          ));
 
-        JS::activate("prototype");
-        JS::activate("scriptaculous");
         JS::registerJS("modules/knowledge/rating.js");
         JS::registerJS("modules/knowledge/frontend/search.js");
         JS::registerJS("modules/knowledge/frontend/slider.js");
