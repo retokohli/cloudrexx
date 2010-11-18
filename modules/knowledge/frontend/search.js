@@ -1,18 +1,3 @@
-/**
- * Ajax.Request.abort
- * extend the prototype.js Ajax.Request object so that it supports an abort method
- */
-Ajax.Request.prototype.abort = function() {
-    // prevent and state change callbacks from being issued
-    this.transport.onreadystatechange = Prototype.emptyFunction;
-    // abort the XHR
-    this.transport.abort();
-    // update the request counter
-    Ajax.activeRequestCount--;
-};
-
-
-
 var Search = {
     /**
      * Time in miliseconds since 1970 when a key was pressed
@@ -35,21 +20,13 @@ var Search = {
      */
     assign : function(field, resultBox)
     {
-        var onKeyPress = $(field).onkeypress;
-        $(field).onkeypress = function() {
-            if (onKeyPress) {
-                onKeyPress();
-            }
+        $J('#'+field).bind('keypress', function() {
             Search.keyPress();
-        };
+        });
         
-        var onBlur = $(field).onblur;
-        $(field).onblur = function() {
-            if (onBlur) {
-                onBlur();
-            }
+        $J('#'+field).bind('blur',function() {
             Search.hideBoxDelayed();
-        };
+        });
         
         this.resultBox = resultBox;
     },
@@ -96,44 +73,39 @@ var Search = {
             this.curRequest.abort();
         }
         
-        this.curRequest = new Ajax.Request("modules/knowledge/search.php", {
-            method : "get",
-            parameters : {
+        this.curRequest = $J.getJSON(
+            "modules/knowledge/search.php",
+            {
                 section : "knowledge",
                 act : "liveSearch",
-                searchterm : $('searchinput').value
+                searchterm : $J('#searchinput').val()
             },
-            onSuccess : function(transport)
+            function(data)
             {
-                var data = transport.responseText.evalJSON();
                 if (data.status == 1) {
                     ref.clearBox();
-                    $(ref.resultBox).insert(data.content);
+                    $J('#'+ref.resultBox).html(data.content);
                     ref.showBox();
                 } else {
                     ref.hideBox();
                 } 
-            }
-        });
+            });
     },
     clearBox : function()
     {
-      var children = $(this.resultBox).childNodes;  
-      for (var i = 0; i < children.length; i++) {
-          $(this.resultBox).removeChild(children[i]);
-      }
+      $J('#'+this.resultBox).empty();
     },
     /**
      * Make the box visible
      */
     showBox : function() {
-        $(this.resultBox).show();
+        $J('#'+this.resultBox).show();
     },
     /**
      * Hide the result box
      */
     hideBox : function() {
-        $(this.resultBox).hide();
+        $J('#'+this.resultBox).hide();
     },
     /**
      * Hide a box delayed
@@ -150,15 +122,12 @@ var Search = {
 
 
 /** knowledge specific **/
-
-
 function submitSearch(obj)
 {
-	var searchinput = $('searchinput');
-	var val = searchinput.value;
-	$('searchHidden').value = val;
-	searchinput.value = "";
-	searchinput.name = "";
+	var searchinput = $J('#searchinput');
+	$J('#searchHidden').attr("value",searchinput.attr("value"));
+	searchinput.attr("value","");
+	searchinput.attr("name","");
 	return true;
 }
 

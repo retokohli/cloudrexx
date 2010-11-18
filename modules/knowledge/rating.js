@@ -96,51 +96,64 @@ var Rating = function(nr, currentRate, options)
     
 
     this.currentSize = currentRate * (this.width / this.stars);
-    var obj = $(this.elemPrefix+nr);
+    var obj = $J('#'+this.elemPrefix+nr);
 
     // add the events
     var ref = this;
     if (!this.locked) { 
-        obj.observe('mousemove', function(event) { ref.moving(event); });    
-        obj.observe('mouseout', function(event) { ref.blur(event); });
-        obj.observe('mouseover', function(event) { ref.over(event); });
-        obj.observe('click', function(event) { ref.click(event); });
+        obj.bind('mousemove', function(event) { ref.moving(event); });    
+        obj.bind('mouseout', function(event) { ref.blur(event); });
+        obj.bind('mouseover', function(event) { ref.over(event); });
+        obj.bind('click', function(event) { ref.click(event); });
     }
     // ad the divs
-    this.bg = document.createElement("div");
-    this.fg = document.createElement("div");
-    obj.appendChild(this.bg);
-    obj.appendChild(this.fg);
+    this.bg = $J('<div></div>');
+    this.fg = $J('<div></div>');
+    obj.append(this.bg);
+    obj.append(this.fg);
  
 
     // ad the style
-    obj.style.position = "relative"; 
-    obj.style.width = this.width + 'px';
-    obj.style.height = this.starHeight + 'px';
-    obj.style.overlay = "hidden";
+    obj.css({
+      'position': 'relative',
+      'width':    this.width + 'px',
+      'height':   this.starHeight + 'px',
+      'overlay':  'hidden'
+    });
 
-    this.bg.style.width = this.width+"px";
-    this.bg.style.height = this.starHeight+'px';
-    this.bg.style.position = "absolute";
-    this.bg.style.left = '0px';
-    this.bg.style.top = '0px';
-    this.bg.style.background = 'url('+this.starPath+this.bgStar+') repeat-x';
+    this.bg.css({
+      'width':            this.width+"px",
+      'height':           this.starHeight+'px',
+      'position':         'absolute',
+      'left':             '0px',
+      'top':              '0px',
+      'background': 'url('+this.starPath+this.bgStar+') repeat-x'
+    });
     if (!this.locked) {
-        this.bg.style.cursor = "pointer";
+       this.bg.css({
+         'cursor': 'pointer'
+       });
     } 	
-     
-    this.fg.style.height = this.starHeight+'px';
-    this.fg.style.position = 'absolute';
-    this.fg.style.top = '0px';
-    this.fg.style.left = '0px';
-    this.fg.style.zIndex = "2";
-    this.fg.style.width = this.currentSize+"px";
+    
+    this.fg.css({
+      'height': this.starHeight+'px',
+      'position': 'absolute',
+      'top': '0px',
+      'left': '0px',
+      'z-index': '2',
+      'width': this.currentSize+'px'
+    }); 
 
     if (this.locked) {
-        this.fg.style.background = 'url('+this.starPath+this.rateStar+') repeat-x';
+      this.fg.css({
+        'background': 'url('+this.starPath+this.rateStar+') repeat-x'
+      });
+
     } else {
-        this.fg.style.background = 'url('+this.starPath+this.fgStar+') repeat-x';
-        this.fg.style.cursor = "pointer";
+	this.fg.css({
+	  'background': 'url('+this.starPath+this.fgStar+') repeat-x',
+          'cursor': 'pointer'
+        });
     }
 }
 
@@ -159,9 +172,11 @@ Rating.prototype.moving = function(event)
             if (x <= this.starWidth/4) {
                 X = 0;
             } else {
-                var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2)
+                var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2);
             }
-            this.fg.style.width = X+'px';
+            this.fg.css({
+              'width': X+'px'
+	    });
         }
     }
 }
@@ -172,7 +187,9 @@ Rating.prototype.moving = function(event)
 Rating.prototype.blur = function(event) 
 {
     if (!this.rated) {
-        this.fg.style.width = this.currentSize+'px';
+        this.fg.css({
+	  'width': this.currentSize+'px'
+        });
     }
 }
 
@@ -191,9 +208,11 @@ Rating.prototype.over =  function(event)
             if (x <= this.starWidth/4) {
                 X = 0;
             } else {
-                var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2)
+                var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2);
             }
-            this.fg.style.width = X+'px';
+            this.fg.css({
+              'width': X+'px'
+            });
         }
     }
 }
@@ -213,9 +232,11 @@ Rating.prototype.click = function(event)
         if (x <= this.starWidth/4) {
             X = 0;
         } else {
-            var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2)
+            var X = (parseInt(x / (this.starWidth/2)) + 1) * (this.starWidth/2);
         }
-        this.fg.style.width = X+'px';
+        this.fg.css({
+           'width': X+'px'
+        });
         this.currentSize = X;
         this.rated = true;
     }
@@ -223,5 +244,7 @@ Rating.prototype.click = function(event)
     var rating = (X / this.width) * this.stars;
     this.onRate(this.callbackData, rating);
     this.rated = true;
-    this.fg.style.background = 'url('+this.starPath+this.rateStar+') repeat-x';
+    this.fg.css({
+      'background': 'url('+this.starPath+this.rateStar+') repeat-x'
+    });
 }
