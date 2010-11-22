@@ -132,8 +132,7 @@ class ContactManager extends ContactLib {
         $entryId = isset($_REQUEST['entryId']) ? intval($_REQUEST['entryId']) : 0;
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
 
-        $arrEntry = &$this->getFormEtry($entryId);
-        
+        $arrEntry = &$this->getFormEntry($entryId);
         if (is_array($arrEntry)) {
 
             $this->_objTpl->loadTemplateFile('module_contact_entries_details.html');
@@ -355,7 +354,7 @@ class ContactManager extends ContactLib {
                     if ($colNr == $maxFields) {
                         break;
                     }
-                    $this->_objTpl->setVariable('CONTACT_COL_NAME', $col);
+                    $this->_objTpl->setVariable('CONTACT_COL_NAME', $arrFormFields[$col]['lang'][FRONTEND_LANG_ID]['name']);
                     $this->_objTpl->parse('contact_col_names');
                     $colNr++;
                 }
@@ -372,14 +371,14 @@ class ContactManager extends ContactLib {
                     $this->_objTpl->parse('contact_form_entry_data');
 
                     $colNr  = 0;
-                    $langId = $arrEntry['langId'];
+                    $langId = $arrEntry['langId'];                    
                     foreach ($arrCols as $col) {
                         if ($colNr == $maxFields) {
                             break;
                         }
-
+                        
                         if (isset($arrEntry['data'][$col])) {
-                            if (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'file') {
+                            if (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'file') {
                                 $file = $arrEntry['data'][$col];
                                 if (isset($file)) {
                                     if (preg_match('/^a:2:{/', $file)) {
@@ -397,10 +396,10 @@ class ContactManager extends ContactLib {
                                 } else {
                                     $value = '&nbsp;';
                                 }
-                            } elseif (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'recipient') {
+                            } elseif (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'recipient') {
                                 $recipient = $this->getRecipients($formId, false);
                                 $value = htmlentities($recipient[$arrEntry['data'][$col]]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET);
-                            } elseif ($arrFormFields[$arrFormFieldNames[$col]]['type'] == 'checkbox') {
+                            } elseif ($arrFormFields[$col]['type'] == 'checkbox') {
                                 $value = $_ARRAYLANG['TXT_CONTACT_YES'];
                             } else {
                                 $value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
@@ -1215,7 +1214,7 @@ class ContactManager extends ContactLib {
             }
 
             // do the fields
-            $fields = $this->_getFormFieldsFromPost();
+            $fields = $this->_getFormFieldsFromPost($uniqueFieldNames);
 
             $formFieldIDs = array();
             foreach ($fields as $field) {
@@ -1922,7 +1921,7 @@ class ContactManager extends ContactLib {
                     }
                 } else {
                     $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value='{".$fieldId."_VALUE}' {SELECTED_".$fieldId."} >". '{'.$fieldId.'_VALUE}'."</option>";
+                    $sourcecode[] = "<option value='{".$fieldId."_VALUE}' {SELECTED_".$fieldId."}>". '{'.$fieldId.'_VALUE}'."</option>";
                     $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
@@ -2011,7 +2010,7 @@ class ContactManager extends ContactLib {
         $langId        = $arrEntry['langId'];
         
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
-        foreach ($arrFormFields as $arrField) {
+        foreach ($arrFormFields as $key => $arrField) {
             /*
              * Horizontal Field Type need not be displayed in the details page
              */
@@ -2023,14 +2022,14 @@ class ContactManager extends ContactLib {
                                 ($arrField['type'] == 'label' ? ' (label)' : '').
                                 "</td>\n";
                 $sourcecode .= "<td width=\"85%\">";
-
+                
                 switch ($arrField['type']) {
                 case 'checkbox':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) && $arrEntry['data'][$arrField['lang'][$langId]['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                    $sourcecode .= isset($arrEntry['data'][$key]) && $arrEntry['data'][$key] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
                     break;
 
                 case 'file':
-                    $file = $arrEntry['data'][$arrField['lang'][$langId]['name']];
+                    $file = $arrEntry['data'][$key];
                     if (isset($file)) {
                         if (preg_match('/^a:2:{/', $file)) {
                             $file = unserialize($file);
@@ -2052,7 +2051,7 @@ class ContactManager extends ContactLib {
                     $sourcecode .= isset($arrField['lang'][$langId]['name']) ? nl2br(htmlentities($arrField['lang'][$langId]['value'], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                     break;
                 case 'recipient':
-                    $recipientId = $arrEntry['data'][$arrField['lang'][$langId]['name']];
+                    $recipientId = $arrEntry['data'][$key];
                     $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
                     break;
                 case 'text':
@@ -2064,7 +2063,7 @@ class ContactManager extends ContactLib {
                 case 'radio':
                 case 'select':
                 case 'textarea':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['lang'][$langId]['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['lang'][$langId]['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                    $sourcecode .= isset($arrEntry['data'][$key]) ? nl2br(htmlentities($arrEntry['data'][$key], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                     break;
                 }
 
