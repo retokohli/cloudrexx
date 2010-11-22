@@ -1153,11 +1153,11 @@ class ContactLib
                                                     ORDER BY id");
 
                 while (!$objResult->EOF) {
-                     $fieldLabel = $arrFields[$objResult->fields['id_field']]['lang'][FRONTEND_LANG_ID]['name'];
-                    $arrData[$fieldLabel] = $objResult->fields['formvalue'];
+                    $field_id = $objResult->fields['id_field'];
+                    $arrData[$field_id] = $objResult->fields['formvalue'];
 
-                    if (!in_array($fieldLabel, $arrCols)) {
-                        array_push($arrCols, $fieldLabel);
+                    if (!in_array($field_id, $arrCols)) {
+                        array_push($arrCols, $field_id);
                     }
                     $objResult->MoveNext();
                 }
@@ -1173,11 +1173,11 @@ class ContactLib
                 $objEntry->MoveNext();
             }
         }
-
+        
         return $arrEntries;
     }
 
-    function getFormEtry($id)
+    function getFormEntry($id)
     {
         global $objDatabase;
 
@@ -1187,13 +1187,13 @@ class ContactLib
                                                WHERE id=".$id, 1);
 
         if ($objEntry !== false) {
-            $objResult = $objDatabase->SelectLimit("SELECT `formlabel`, `formvalue`
+            $objResult = $objDatabase->SelectLimit("SELECT `id_field`, `formlabel`, `formvalue`
                                                     FROM ".DBPREFIX."module_contact_form_submit_data
                                                     WHERE id_entry=".$objEntry->fields['id']."
                                                     ORDER BY id");
             $arrData = array();
             while (!$objResult->EOF){
-                $arrData[$objResult->fields['formlabel']] = $objResult->fields['formvalue'];   
+                $arrData[$objResult->fields['id_field']] = $objResult->fields['formvalue'];
                 $objResult->MoveNext();
             }
 

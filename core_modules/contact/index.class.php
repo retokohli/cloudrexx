@@ -238,9 +238,8 @@ class Contact extends ContactLib
                         ));
                     }
                 }
-
                 /*
-                 * Parse the blocks created for parsing user profile data with addBlock()
+                 * Parse the blocks created for parsing user profile data using addBlock()
                  */
                 if($this->objTemplate->blockExists($valuePlaceholderBlock)){
                     $this->objTemplate->parse($valuePlaceholderBlock);
@@ -248,7 +247,7 @@ class Contact extends ContactLib
             }
         }
 
-         $isLoggedin = $this->setProfileData();
+        $isLoggedin = $this->setProfileData();
         if ($isLoggedin) {
             $useCaptcha = false;
         } else {
@@ -410,7 +409,7 @@ class Contact extends ContactLib
                         $value = implode(', ', $value);
                     }
 
-                    $arrFormData['data'][$key] = stripslashes(contrexx_strip_tags($value));
+                    $arrFormData['data'][$id] = stripslashes(contrexx_strip_tags($value));
                 }
             }
 
@@ -424,7 +423,7 @@ class Contact extends ContactLib
             $arrFormData['meta']['host'] = contrexx_strip_tags(@gethostbyaddr($arrFormData['meta']['ipaddress']));
             $arrFormData['meta']['lang'] = contrexx_strip_tags($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
             $arrFormData['meta']['browser'] = contrexx_strip_tags($_SERVER["HTTP_USER_AGENT"]);
-
+            
             return $arrFormData;
         }
         return false;
@@ -490,12 +489,7 @@ class Contact extends ContactLib
                             if (FWValidator::is_file_ending_harmless($fileName)) {
                                 if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$filePath)) {
                                     $id = intval(substr($file, 17));
-                                    if (isset($arrFields[$id])) {
-                                        $key = $arrFields[$id]['lang'][$_LANGID]['name'];
-                                    } else {
-                                        $key = contrexx_strip_tags($file);
-                                    }
-                                    $arrFiles[$key] = array(
+                                    $arrFiles[$id] = array(
                                         'path' => $filePath,
                                         'name' => $fileName
                                     );
@@ -510,7 +504,7 @@ class Contact extends ContactLib
                 }
             }
         }
-
+        
         return $arrFiles;
     }
 
@@ -687,12 +681,12 @@ class Contact extends ContactLib
             $value = "";
 
             if ($arrField['type'] == 'file' ) {
-                if (isset($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']])) {
-                    $value = contrexx_strip_tags(serialize($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]));
+                if (isset($arrFormData['uploadedFiles'][$key])) {
+                    $value = contrexx_strip_tags(serialize($arrFormData['uploadedFiles'][$key]));
                 }
             } else {
-                if (isset($arrFormData['data'][$arrField['lang'][$_LANGID]['name']])) {
-                    $value = html_entity_decode(contrexx_addslashes($arrFormData['data'][$arrField['lang'][$_LANGID]['name']]), ENT_QUOTES, CONTREXX_CHARSET);
+                if (isset($arrFormData['data'][$key])) {
+                    $value = html_entity_decode(contrexx_addslashes($arrFormData['data'][$key]), ENT_QUOTES, CONTREXX_CHARSET);
                 }
             }
 
