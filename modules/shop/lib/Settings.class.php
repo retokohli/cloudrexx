@@ -591,7 +591,6 @@ class Settings
             ");
             if (!$objResult) return false;
         }
-//DBG::log("Settings::storeSetting(name=$name, value=$value, status=$status):  Stored successfully");
         return true;
     }
 

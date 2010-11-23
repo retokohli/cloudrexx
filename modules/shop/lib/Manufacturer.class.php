@@ -208,6 +208,7 @@ class Manufacturer
     static function getMenuoptions($selected_id=0)
     {
         if (empty(self::$arrManufacturer)) self::init();
+        if (empty(self::$arrManufacturer)) return '';
         $strMenu = '';
         foreach (self::$arrManufacturer as $id => $arrManufacturer) {
             $strMenu .=

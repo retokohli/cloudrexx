@@ -454,7 +454,7 @@ class Product
      * @return  string                              Short description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function getshortdesc()
+    function getShortdesc()
     {
         return $this->shortdesc;
     }
@@ -463,7 +463,7 @@ class Product
      * @param   string          $shortdesc          Short description
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    function setshortdesc($shortdesc)
+    function setShortdesc($shortdesc)
     {
         $this->shortdesc = trim($shortdesc);
     }
@@ -1092,7 +1092,7 @@ class Product
      */
     function store()
     {
-        if ($this->recordExists()) {
+        if ($this->id && $this->recordExists()) {
             if (!$this->update()) return false;
             if (!ProductAttributes::deleteByProductId($this->id))
                 return false;
@@ -1123,37 +1123,36 @@ class Product
         global $objDatabase;
 
         $query = "
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
-            SET product_id='".addslashes($this->code)."',
-                picture='$this->pictures',
-                title='".addslashes($this->name)."',
-                catid=$this->categoryId,
-                handler='$this->distribution',
-                normalprice=$this->price,
-                resellerprice=$this->resellerPrice,
-                shortdesc='".addslashes($this->shortdesc)."',
-                description='".addslashes($this->description)."',
-                stock=$this->stock,
-                stock_visibility=".($this->isStockVisible ? 1 : 0).",
-                discountprice=$this->discountPrice,
-                is_special_offer=".($this->isSpecialOffer ? 1 : 0).",
-                status=".($this->status ? 1 : 0).",
-                b2b=".($this->isB2B ? 1 : 0).",
-                b2c=".($this->isB2C ? 1 : 0).",
-                startdate='$this->startDate',
-                enddate='$this->endDate',
-                manufacturer=$this->manufacturerId,
-                external_link='".addslashes($this->externalLink)."',
-                sort_order=$this->order,
-                vat_id=$this->vatId,
-                weight=$this->weight,
-                flags='".addslashes($this->flags)."',
-                usergroups='$this->usergroups',
-                group_id=$this->groupCountId,
-                article_id=$this->groupArticleId,
-                keywords='".addslashes($this->keywords)."'
-          WHERE id=$this->id
-        ";
+            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_products`
+               SET `product_id`='".addslashes($this->code)."',
+                   `picture`='$this->pictures',
+                   `title`='".addslashes($this->name)."',
+                   `catid`=$this->categoryId,
+                   `handler`='$this->distribution',
+                   `normalprice`=$this->price,
+                   `resellerprice`=$this->resellerPrice,
+                   `shortdesc`='".addslashes($this->shortdesc)."',
+                   `description`='".addslashes($this->description)."',
+                   `stock`=$this->stock,
+                   `stock_visibility`=".($this->isStockVisible ? 1 : 0).",
+                   `discountprice`=$this->discountPrice,
+                   `is_special_offer`=".($this->isSpecialOffer ? 1 : 0).",
+                   `status`=".($this->status ? 1 : 0).",
+                   `b2b`=".($this->isB2B ? 1 : 0).",
+                   `b2c`=".($this->isB2C ? 1 : 0).",
+                   `startdate`='$this->startDate',
+                   `enddate`='$this->endDate',
+                   `manufacturer`=$this->manufacturerId,
+                   `external_link`='".addslashes($this->externalLink)."',
+                   `sort_order`=$this->order,
+                   `vat_id`=$this->vatId,
+                   `weight`=$this->weight,
+                   `flags`='".addslashes($this->flags)."',
+                   `usergroups`='$this->usergroups',
+                   `group_id`=$this->groupCountId,
+                   `article_id`=$this->groupArticleId,
+                   `keywords`='".addslashes($this->keywords)."'
+             WHERE `id`=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -1172,25 +1171,29 @@ class Product
         global $objDatabase;
 
         $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products (
-                product_id, picture, title, catid, handler,
-                normalprice, resellerprice,
-                shortdesc, description,
-                stock, stock_visibility, discountprice, is_special_offer,
-                status,
-                b2b, b2c, startdate, enddate,
-                manufacturer, external_link,
-                sort_order, vat_id, weight,
-                flags, usergroups,
-                group_id, article_id, keywords
-            ) VALUES ('".
-                addslashes($this->code)."', '$this->pictures', '".
-                addslashes($this->name)."',
+            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_products` (
+                ".($this->id ? '`id`, ' : '')."
+                `product_id`, `picture`, `title`, `catid`, `handler`,
+                `normalprice`, `resellerprice`,
+                `shortdesc`, `description`,
+                `stock`, `stock_visibility`,
+                `discountprice`, `is_special_offer`,
+                `status`,
+                `b2b`, `b2c`, `startdate`, `enddate`,
+                `manufacturer`, `external_link`,
+                `sort_order`, `vat_id`, `weight`,
+                `flags`, `usergroups`,
+                `group_id`, `article_id`, `keywords`
+            ) VALUES (".
+                ($this->id ? "$this->id, " : '')."
+                '".addslashes($this->code)."',
+                '".addslashes($this->pictures)."',
+                '".addslashes($this->name)."',
                 $this->categoryId,
-                '$this->distribution',
-                $this->price, $this->resellerPrice, '".
-                addslashes($this->shortdesc)."', '".
-                addslashes($this->description)."',
+                '".addslashes($this->distribution)."',
+                $this->price, $this->resellerPrice,
+                '".addslashes($this->shortdesc)."',
+                '".addslashes($this->description)."',
                 $this->stock, ".
                 ($this->isStockVisible ? 1 : 0).",
                 $this->discountPrice, ".
@@ -1199,13 +1202,13 @@ class Product
                 ($this->isB2B ? 1 : 0).", ".
                 ($this->isB2C ? 1 : 0).",
                 '$this->startDate', '$this->endDate',
-                $this->manufacturerId, '".
-                addslashes($this->externalLink)."',
+                $this->manufacturerId,
+                '".addslashes($this->externalLink)."',
                 $this->order, $this->vatId, $this->weight,
                 '".addslashes($this->flags)."',
-                '$this->usergroups',
-                $this->groupCountId, $this->groupArticleId, '".
-                addslashes($this->keywords)."'
+                '".addslashes($this->usergroups)."',
+                $this->groupCountId, $this->groupArticleId,
+                '".addslashes($this->keywords)."'
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -1228,7 +1231,19 @@ class Product
     {
         global $objDatabase;
 
-        $query = "SELECT * FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products WHERE id=$id";
+        $query = "
+            SELECT `product_id`, `picture`, `title`, `catid`,
+                   `handler`, `normalprice`, `resellerprice`,
+                   `shortdesc`, `description`,
+                   `stock`, `stock_visibility`,
+                   `discountprice`, `is_special_offer`,
+                   `status`, `b2b`, `b2c`, `startdate`, `enddate`,
+                   `manufacturer`, `external_link`,
+                   `sort_order`, `vat_id`, `weight`,
+                   `flags`, `usergroups`,
+                   `group_id`, `article_id`, `keywords`
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
+             WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             return false;
@@ -1236,7 +1251,7 @@ class Product
         if ($objResult->RecordCount() != 1) {
             return false;
         }
-        // constructor also read ProductAttributes if ID > 0
+        // The constructor also reads ProductAttributes if ID > 0
         $objProduct = new Product(
             $objResult->fields['product_id'],
             $objResult->fields['catid'],
@@ -1246,7 +1261,7 @@ class Product
             $objResult->fields['status'],
             $objResult->fields['sort_order'],
             $objResult->fields['weight'],
-            $objResult->fields['id']
+            $id
         );
         $objProduct->pictures         = $objResult->fields['picture'];
         $objProduct->resellerPrice    = floatval($objResult->fields['resellerprice']);
