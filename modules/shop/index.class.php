@@ -1128,17 +1128,17 @@ DBG::deactivate();
                 ));
             }
             $distribution = $objProduct->distribution();
-            $productWeight = '';
+            $weight = '';
             if ($distribution == 'delivery') {
-                $productWeight = $objProduct->weight();
+                $weight = $objProduct->weight();
             }
 
             // Hide the weight if it is zero or disabled in the configuration
-            if (   $productWeight > 0
+            if (   $weight > 0
                 && SettingDb::getValue('weight_enable')) {
                 $this->objTemplate->setVariable(array(
                     'TXT_SHOP_PRODUCT_WEIGHT' => $_ARRAYLANG['TXT_SHOP_PRODUCT_WEIGHT'],
-                    'SHOP_PRODUCT_WEIGHT'     => Weight::getWeightString($productWeight),
+                    'SHOP_PRODUCT_WEIGHT'     => Weight::getWeightString($weight),
                 ));
             }
             if (Vat::isEnabled()) {
@@ -1593,7 +1593,8 @@ DBG::log("Attributes: ".var_export($arrAttributes, true));
 
         $price = 0;
         if (!empty($cart['products'])) {
-            $count = 0;
+// TODO: What was $count intended for?
+//            $count = 0;
             foreach ($cart['products'] as $arrProduct) {
                 $optionPrice = 0;
                 //foreach ($arrProduct['options'] as $arrOptionIds) {
@@ -3784,8 +3785,8 @@ right after the customer logs in!
 // TODO: The $result should be tested
 //            $result = $this->objCustomer->store();
             if (!$this->objCustomer->store()) {
-            	self::addMessage($_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING']);
-            	return false;
+              	self::addMessage($_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING']);
+              	return false;
             }
             // Probably used nowhere
             //$_SESSION['shop']['customerid'] = $this->objCustomer->getId();
@@ -3795,53 +3796,42 @@ right after the customer logs in!
                 $_SESSION['shop']['countryId2'] = 0;
             }
 
-            // Add to order table
-            $query = "
-                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_orders (
-                    customerid, selected_currency_id, currency_order_sum,
-                    order_date, order_status, ship_company, ship_prefix,
-                    ship_firstname, ship_lastname, ship_address, ship_city,
-                    ship_zip, ship_country_id, ship_phone,
-                    tax_price, currency_ship_price,
-                    shipping_id, payment_id, currency_payment_price,
-                    customer_ip, customer_host, customer_lang,
-                    customer_browser, customer_note
-                ) VALUES (
-                    ".$this->objCustomer->getId().",
-                    '{$_SESSION['shop']['currencyId']}',
-                    '{$_SESSION['shop']['grand_total_price']}',
-                    NOW(),
-                    '0',
-                    '".addslashes($_SESSION['shop']['company2'])."',
-                    '".addslashes($_SESSION['shop']['prefix2'])."',
-                    '".addslashes($_SESSION['shop']['firstname2'])."',
-                    '".addslashes($_SESSION['shop']['lastname2'])."',
-                    '".addslashes($_SESSION['shop']['address2'])."',
-                    '".addslashes($_SESSION['shop']['city2'])."',
-                    '".addslashes($_SESSION['shop']['zip2'])."',
-                    '".intval($_SESSION['shop']['countryId2'])."',
-                    '".addslashes($_SESSION['shop']['phone2'])."',
-                    '{$_SESSION['shop']['vat_price']}',
-                    '{$_SESSION['shop']['shipment_price']}', ".
-                    (   isset($_SESSION['shop']['shipperId'])
-                     && $_SESSION['shop']['shipperId']
-                        ? $_SESSION['shop']['shipperId'] : 0).",
-                    {$_SESSION['shop']['paymentId']},
-                    '{$_SESSION['shop']['payment_price']}',
-                    '".addslashes($customer_ip)."',
-                    '".addslashes($customer_host)."',
-                    '".FRONTEND_LANG_ID."',
-                    '".addslashes($customer_browser)."',
-                    '".addslashes($_SESSION['shop']['customer_note'])."'
-                )
-            ";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
+            $objOrder = new Order();
+
+            $objOrder->customer_id($this->objCustomer->getId());
+            $objOrder->currency_id($_SESSION['shop']['currencyId']);
+            $objOrder->sum($_SESSION['shop']['grand_total_price']);
+            $objOrder->date_time(date(ASCMS_DATE_FORMAT_DATETIME));
+            $objOrder->status(0);
+            $objOrder->company($_SESSION['shop']['company2']);
+            $objOrder->prefix($_SESSION['shop']['prefix2']);
+            $objOrder->firstname($_SESSION['shop']['firstname2']);
+            $objOrder->lastname($_SESSION['shop']['lastname2']);
+            $objOrder->address($_SESSION['shop']['address2']);
+            $objOrder->city($_SESSION['shop']['city2']);
+            $objOrder->zip($_SESSION['shop']['zip2']);
+            $objOrder->country_id($_SESSION['shop']['countryId2']);
+            $objOrder->phone($_SESSION['shop']['phone2']);
+            $objOrder->vat_amount($_SESSION['shop']['vat_price']);
+            $objOrder->shipment_amount($_SESSION['shop']['shipment_price']);
+            $objOrder->shipment_id(
+                   isset($_SESSION['shop']['shipperId'])
+                && $_SESSION['shop']['shipperId']
+                    ? $_SESSION['shop']['shipperId'] : null);
+            $objOrder->payment_id($_SESSION['shop']['paymentId']);
+            $objOrder->payment_amount($_SESSION['shop']['payment_price']);
+            $objOrder->ip($customer_ip);
+            $objOrder->host($customer_host);
+            $objOrder->lang_id(FRONTEND_LANG_ID);
+            $objOrder->browser($customer_browser);
+            $objOrder->note($_SESSION['shop']['customer_note']);
+
+            if (!$objOrder->store()) {
                 // $order_id is unset!
                 self::addMessage($_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA']);
                 return false;
             }
-            $order_id = $objDatabase->Insert_ID();
+            $order_id = $objOrder->id();
             $_SESSION['shop']['orderid'] = $order_id;
             // The products will be tested one by one below.
             // If any single one of them requires delivery, this
@@ -3858,19 +3848,19 @@ right after the customer logs in!
                     return false;
                 }
                 $product_id = $arrProduct['id'];
-                $productName = $objProduct->name();
+                $name = $objProduct->name();
                 $priceOptions = (!empty($arrProduct['optionPrice'])
                     ? $arrProduct['optionPrice'] : 0
                 );
-                $productQuantity = $arrProduct['quantity'];
-                $productPrice    = $this->_getProductPrice(
+                $quantity = $arrProduct['quantity'];
+                $price    = $this->_getProductPrice(
                     $product_id,
                     $priceOptions,
-                    $productQuantity
+                    $quantity
                 );
 
                 $productVatId = $objProduct->vat_id();
-                $productVatRate =
+                $vat_rate =
                     ($productVatId && Vat::getRate($productVatId)
                         ? Vat::getRate($productVatId) : '0.00'
                     );
@@ -3879,68 +3869,17 @@ right after the customer logs in!
                 if ($productDistribution == 'delivery') {
                     $_SESSION['shop']['isDelivery'] = true;
                 }
-                $productWeight   = ($productDistribution == 'delivery'
+                $weight   = ($productDistribution == 'delivery'
                     ? $objProduct->weight() : 0); // grams
-                if ($productWeight == '') { $productWeight = 0; }
+                if ($weight == '') { $weight = 0; }
                 // Add to order items table
-                $query = "
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items (
-                        orderid, productid, product_name,
-                        price, quantity, vat_percent, weight
-                    ) VALUES (
-                        $order_id, $product_id, '".addslashes($productName)."',
-                        '$productPrice', '$productQuantity',
-                        '$productVatRate', '$productWeight'
-                    )";
-                $objResult = $objDatabase->Execute($query);
-                if (!$objResult) {
+                $result = $objOrder->addItem(
+                    $product_id, $name, $price, $quantity,
+                    $vat_rate, $weight, $arrProduct['options']);
+                if (!$result) {
                     unset($_SESSION['shop']['orderid']);
-                    self::addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM']);
+// TODO: Verify error message set by Order::addItem()
                     return false;
-                }
-                $orderItemsId = $objDatabase->Insert_ID();
-                foreach ($arrProduct['options'] as $attribute_id => $arrOptionIds) {
-                    $objAttribute = Attribute::getById($attribute_id);
-                    if (!$objAttribute) {
-                        continue;
-                    }
-                    $name = $objAttribute->getName();
-                    foreach ($arrOptionIds as $option_id) {
-                        if ($objAttribute->getType() >= Attribute::TYPE_TEXT_OPTIONAL) {
-                            // There is no value ID stored for text and upload
-                            // fields.  Thus, we use the name ID to get the
-                            // options' values.
-                            $arrOptions = Attributes::getOptionArrayByAttributeId($attribute_id);
-                            // There is exactly one option record for these
-                            // types.  Use this and overwrite the "default"
-                            // value with the text or file name.
-                            $arrOption = current($arrOptions);
-                            $arrOption['value'] = $option_id;
-                        } else {
-                            // There is exactly one option record for the option
-                            // ID given.  Use this.
-                            $arrOptions = Attributes::getOptionArrayByAttributeId($attribute_id);
-                            $arrOption = $arrOptions[$option_id];
-                        }
-                        if (!is_array($arrOption)) {
-                            continue;
-                        }
-                        // add product attributes to order items attribute table
-                        $query = "
-                            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
-                               SET order_items_id=$orderItemsId,
-                                order_id=$order_id,
-                                product_id=$product_id,
-                                attribute_name='".addslashes($name)."',
-                                option_value='".addslashes($arrOption['value'])."',
-                                option_price='".$arrOption['price']."'";
-                        $objResult = $objDatabase->Execute($query);
-                        if (!$objResult) {
-                            unset($_SESSION['shop']['orderid']);
-                            self::addMessage($_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM_ATTRIBUTE']);
-                            return false;
-                        }
-                    }
                 }
             } // foreach product in cart
 
@@ -3948,7 +3887,7 @@ right after the customer logs in!
             // Note the negative sign for the amount!
             if (isset($_SESSION['shop']['coupon_code'])) {
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes (
+                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_attributes (
                         order_id, order_items_id, product_id,
                         product_option_name,
                         product_option_value,
@@ -4067,7 +4006,8 @@ right after the customer logs in!
                  && count($arrProduct['options']) > 0) {
                     foreach ($arrProduct['options'] as $attribute_id => $arrOptionIds) {
                         if (count($arrOptionIds) > 0) {
-                            $objAttribute = Attribute::getById($attribute_id);
+// TODO: Not used
+//                            $objAttribute = Attribute::getById($attribute_id);
                             // Should be tested!
                             //if (!$objAttribute) { ... }
                             $productOptions .=

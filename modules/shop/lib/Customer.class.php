@@ -31,6 +31,7 @@ class Customer extends User
     function __construct()
     {
         parent::__construct();
+//DBG::log("Customer::__construct(): Made new ".get_class());
     }
 
 
@@ -43,10 +44,11 @@ class Customer extends User
     function auth($userName, $password)
     {
         if (!parent::auth($userName, $password)) return false;
-        $objUser = FWUser::getFWUserObject()->objUser;
-        $customer_id = $objUser->getId();
-DBG::log("Customer::auth(): This: ".var_export($objUser, true));
-DBG::log("Customer::auth(): Usergroups: ".var_export($objUser->getAssociatedGroupIds(), true));
+//        $objUser = FWUser::getFWUserObject()->objUser;
+//        $customer_id = $objUser->getId();
+//DBG::log("Customer::auth(): This: ".var_export($objUser, true));
+//DBG::log("Customer::auth(): Usergroups: ".var_export($objUser->getAssociatedGroupIds(), true));
+        return true;
     }
 
 
@@ -328,7 +330,8 @@ DBG::log("Customer::auth(): Usergroups: ".var_export($objUser->getAssociatedGrou
         $objCustomer = new Customer();
         $objCustomer = $objCustomer->getUser($id);
         if (!$objCustomer) return false;
-DBG::log("Customer::getById($id): Usergroups: ".var_export($this->getAssociatedGroupIds(), true));
+DBG::log("Customer::getById($id): Usergroups: ".var_export($objCustomer->getAssociatedGroupIds(), true));
+        return $objCustomer;
     }
 
 

@@ -166,6 +166,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 $this->showCategories();
                 break;
             case 'edit':
+// TODO: HUH?! Modules??!!!
                 self::$pageTitle = $_ARRAYLANG['TXT_CATEGORIES'];
                 $this->modModules();
                 $this->showModules();
@@ -177,18 +178,10 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 $this->shopShowOrders();
                 break;
             case 'orderdetails':
-                self::$pageTitle = $_ARRAYLANG['TXT_ORDER_DETAILS'];
-                $this->shopShowOrderdetails('module_shop_order_details.html',0);
+                $this->shopShowOrderdetails();
                 break;
             case 'editorder':
-                if (isset($_REQUEST['shopSaveOrderChanges'])) {
-                    self::$pageTitle = $_ARRAYLANG['TXT_ORDER_DETAILS'];
-                    $this->shopStoreOrderdetails();
-                    $this->shopShowOrderdetails('module_shop_order_details.html',0);
-                } else {
-                    self::$pageTitle = $_ARRAYLANG['TXT_EDIT_ORDER'];
-                    $this->shopShowOrderdetails('module_shop_order_edit.html',1);
-                }
+                $this->shopShowOrderdetails(true);
                 break;
             case 'delorder':
                 $this->shopDeleteOrder();
@@ -2614,456 +2607,64 @@ DBG::activate(DBG_ERROR_FIREPHP);
 
 
     /**
+     * OBSOLETE -- Moved to Order class
      * Set up details of the selected order
      * @access  public
-     * @param   string  $templateName   Name of the template file
-     * @param   integer $type           1: edit order, 0: just display it
-     * @global  ADONewConnection  $objDatabase    Database connection object    Database
-     * @global  array   $_ARRAYLANG     Language array
+     * @param   boolean           $edit           Edit if true, view otherwise
+     * @global  ADONewConnection  $objDatabase    Database connection object
+     * @global  array             $_ARRAYLANG     Language array
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
-    function shopShowOrderdetails($templateName, $type)
-    {
-        global $objDatabase, $_ARRAYLANG;
-        // initalize vars
-        // The order total -- in the currency chosen by the customer
-        $currencyOrderSum = 0;
-        // recalculated VAT total
-        $total_vat_amount = 0;
-
-        // set template -- may be one of
-        //  'module_shop_order_details.html'
-        //  'module_shop_order_edit.html'
-        self::$objTemplate->loadTemplateFile($templateName, true, true);
-
-        $order_id = intval($_REQUEST['orderid']);
-
-        // lsv data
-        $query = "
-            SELECT * FROM ".DBPREFIX."module_shop_lsv
-             WHERE order_id=$order_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            $this->errorHandling();
-        }
-        if ($objResult->RecordCount() == 1) {
-            self::$objTemplate->hideBlock('creditCard');
-            self::$objTemplate->setVariable(array(
-                'SHOP_ACCOUNT_HOLDER' => $objResult->fields['holder'],
-                'SHOP_ACCOUNT_BANK' => $objResult->fields['bank'],
-                'SHOP_ACCOUNT_BLZ' => $objResult->fields['blz'],
-            ));
-        } else {
-            self::$objTemplate->hideBlock('lsv');
-        }
-
-        $objOrder = Order::getById($order_id);
-        if (!$objOrder) {
-            self::addMessage($_ARRAYLANG[TXT_SHOP_ORDER_ERROR_NOT_FOUND]);
-        }
-        $customer_id = $objOrder->customer_id();
-        if (!$customer_id) {
-            self::addMessage($_ARRAYLANG[TXT_SHOP_ORDER_INVALID_CUSTOMER_ID]);
-        }
-        $objCustomer = Customer::getById($customer_id);
-        if (!$objCustomer) {
-            self::addMessage($_ARRAYLANG[TXT_SHOP_ORDER_INVALID_CUSTOMER]);
-        }
-        Vat::isReseller($objCustomer->isReseller());
-        Vat::setIsHomeCountry(
-            SettingDb::getValue('country_id') == $objOrder->country_id());
-        self::$objTemplate->setGlobalVariable(
-            'SHOP_CURRENCY',
-            Currency::getCurrencySymbolById($objOrder->currency_id()));
-        self::$objTemplate->setVariable(array(
-            'SHOP_CUSTOMER_ID' => $customer_id,
-            'SHOP_ORDERID' => $order_id,
-            'SHOP_DATE' => date(ASCMS_DATE_FORMAT_DATETIME,
-                $objOrder->date_time()),
-            'SHOP_ORDER_STATUS' => ($type == 1
-                ? Order::getStatusMenu(
-                    $objOrder->status(), false, 'orderstatusid',
-                    'swapSendToStatus(this.value)')
-                : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objOrder->status()]),
-            'SHOP_SEND_MAIL_STYLE' =>
-                ($objOrder->status() == SHOP_ORDER_STATUS_CONFIRMED
-                    ? 'display: inline;' : 'display: none;'),
-            'SHOP_SEND_MAIL_STATUS' => ($type == 1
-                ? ($objOrder->status() != SHOP_ORDER_STATUS_CONFIRMED
-                    ? HTML_ATTRIBUTE_CHECKED : '')
-                : ''),
-            'SHOP_ORDER_SUM' =>
-                Currency::getDefaultCurrencyPrice($objOrder->sum()),
-            'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
-            'SHOP_TITLE' => $objCustomer->getTitle(),
-            'SHOP_COMPANY' => $objCustomer->getCompany(),
-            'SHOP_FIRSTNAME' => $objCustomer->getFirstname(),
-            'SHOP_LASTNAME' => $objCustomer->getLastname(),
-            'SHOP_ADDRESS' => $objCustomer->getAddress(),
-            'SHOP_ZIP' => $objCustomer->getZip(),
-            'SHOP_CITY' => $objCustomer->getCity(),
-            'SHOP_COUNTRY' => Country::getNameById($objCustomer->getCountryId()),
-            'SHOP_SHIP_TITLE' => $objOrder->prefix(),
-            'SHOP_SHIP_COMPANY' => $objOrder->company(),
-            'SHOP_SHIP_FIRSTNAME' => $objOrder->firstname(),
-            'SHOP_SHIP_LASTNAME' => $objOrder->lastname(),
-            'SHOP_SHIP_ADDRESS' => $objOrder->address(),
-            'SHOP_SHIP_ZIP' => $objOrder->zip(),
-            'SHOP_SHIP_CITY' => $objOrder->city(),
-            'SHOP_SHIP_COUNTRY' => ($type == 1
-                ? Country::getMenu('shipcountry', $objOrder->country_id())
-                : Country::getNameById($objOrder->country_id())),
-            'SHOP_SHIP_PHONE' => $objOrder->phone(),
-            'SHOP_PHONE' => $objCustomer->getPhone(),
-            'SHOP_FAX' => $objCustomer->getFax(),
-            'SHOP_EMAIL' => $objCustomer->getEmail(),
-            'SHOP_PAYMENTTYPE' => Payment::getProperty($objOrder->payment_id(), 'name'),
-// OBSOLETE
-//            'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
-//            'SHOP_CCDATE' => $objResult->fields['ccdate'],
-//            'SHOP_CCNAME' => $objResult->fields['ccname'],
-//            'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
-            'SHOP_CUSTOMER_NOTE' => $objOrder->note(),
-            'SHOP_CUSTOMER_IP' => ($objOrder->ip()
-                ? '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
-                  $objOrder->ip().'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-                  $objOrder->ip().'</a>'
-                : '&nbsp;'),
-            'SHOP_CUSTOMER_HOST' => ($objOrder->host()
-                ? '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
-                  $objOrder->host().'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-                  $objOrder->host().'</a>'
-                : '&nbsp;'),
-            'SHOP_CUSTOMER_LANG' => FWLanguage::getLanguageParameter(
-                $objOrder->lang_id(), 'name'),
-            'SHOP_CUSTOMER_BROWSER' => ($objOrder->browser()
-                ? $objOrder->browser() : '&nbsp;'),
-            'SHOP_COMPANY_NOTE' => $objCustomer->getCompanyNote(),
-            'SHOP_LAST_MODIFIED' => ($objOrder->modified_on()
-                ? $objOrder->modified_on().'&nbsp;'.
-                  $_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.
-                  $objOrder->modified_by()
-                : $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED']),
-            'SHOP_SHIPPING_TYPE' => ($objOrder->shipping_id()
-                ? Shipment::getShipperName($objOrder->shipping_id())
-                : '&nbsp;'),
-        ));
-        $ppName = '';
-        $psp_id = Payment::getPaymentProcessorId($objOrder->payment_id());
-        if ($psp_id) {
-            $ppName = PaymentProcessing::getPaymentProcessorName($psp_id);
-        }
-        self::$objTemplate->setVariable(array(
-            'SHOP_SHIPPING_PRICE' => $objOrder->shipment_amount(),
-            'SHOP_PAYMENT_PRICE' => $objOrder->payment_amount(),
-            'SHOP_PAYMENT_HANDLER' => $ppName,
-            'SHOP_LAST_MODIFIED_DATE' => $objOrder->modified_on(),
-        ));
-        if ($type == 1) {
-            // edit order
-            $strJsArrShipment = Shipment::getJSArrays();
-            self::$objTemplate->setVariable(array(
-                'SHOP_SEND_TEMPLATE_TO_CUSTOMER' =>
-                    str_replace(
-                        'TXT_ORDER_COMPLETE',
-                        $_ARRAYLANG['TXT_ORDER_COMPLETE'],
-                        $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']),
-                'SHOP_SHIPPING_TYP_MENU' => Shipment::getShipperMenu(
-                    $objOrder->country_id(),
-                    $objOrder->shipping_id(),
-                    "javascript:calcPrice(0)"),
-                'SHOP_JS_ARR_SHIPMENT' => $strJsArrShipment,
-                'SHOP_PRODUCT_IDS_MENU_NEW' => Products::getMenuoptions(),
-                'SHOP_JS_ARR_PRODUCT' => Products::getJavascriptArray(
-                    $objCustomer->getGroupId(), $objCustomer->isReseller()),
-            ));
-        }
-
-        $arrProductOptions = $objOrder->getOptionArray();
-
-        // set up the order details
-        $query = "
-            SELECT order_items_id, product_name, productid, price, quantity,
-                   vat_percent, weight
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
-             WHERE orderid=$order_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            $this->errorHandling();
-        } else {
-            self::$objTemplate->setCurrentBlock('orderdetailsRow');
-            // modulo counter
-            $i = 0;
-            // reset totals
-            $total_weight = 0;
-            $total_vat_amount = 0;
-            $total_net_price = 0;
-
-            // products loop
-            while (!$objResult->EOF) {
-                if ($type == 1) {
-                    $productName = $objResult->fields['product_name'];
-                } else {
-                    $productName = $objResult->fields['product_name'];
-                    if (isset($arrProductOptions[$objResult->fields['order_items_id']])) {
-                        $productName .=
-                            '<i><br />- '.
-                            implode(
-                                '<br />- ',
-                                $arrProductOptions[$objResult->fields['order_items_id']]['options']).
-                            '</i>';
-                    }
-                }
-
-                $product_id = $objResult->fields['productid'];
-                // Get missing product details
-                $query = "
-                    SELECT product_id, handler
-                    FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                    WHERE id=$product_id";
-                $objResult2 = $objDatabase->Execute($query);
-                if (!$objResult2) {
-                    $this->errorHandling();
-                }
-                $productCode = $objResult2->fields['product_id'];
-                $productDistribution = $objResult2->fields['handler'];
-                $productPrice = $objResult->fields['price'];
-                $productQuantity = $objResult->fields['quantity'];
-                $productVatRate = $objResult->fields['vat_percent'];
-                // $rowNetPrice means 'product times price' from here
-                $rowNetPrice = $productPrice * $productQuantity;
-                $rowPrice = $rowNetPrice; // VAT added later, if applicable
-                $rowVatAmount = 0;
-                $total_net_price += $rowNetPrice;
-
-                // Here, the VAT has to be recalculated before setting up the
-                // fields.  If the VAT is excluded, it must be added here.
-                // Note: the old shop_order.tax_price field is no longer valid,
-                // individual shop_order_items *MUST* have been UPDATEd by the
-                // time PHP parses this line.
-                // Also note that this implies that the vat_number and
-                // country_id can be ignored, as they are considered when the
-                // order is placed and the VAT is applied to the order
-                // accordingly.
-
-                // calculate the VAT amount per row, included or excluded
-                $rowVatAmount = Vat::amount($productVatRate, $rowNetPrice);
-                // and add it to the total VAT amount
-                $total_vat_amount += $rowVatAmount;
-
-                if (!Vat::isIncluded()) {
-                    // Add tax to price
-                    $rowPrice += $rowVatAmount;
-                }
-                //else {
-                    // VAT is disabled.
-                    // there shouldn't be any non-zero percentages in the order_items!
-                    // but if there are, there probably has been a change and we *SHOULD*
-                    // still treat them as if VAT had been enabled at the time the order
-                    // was placed!
-                    // that's why the else {} block is commented out.
-                //}
-
-                $weight = '-';
-                if ($productDistribution != 'download') {
-                    $weight = $objResult->fields['weight'];
-                    if (intval($weight) > 0) {
-                        $total_weight += $weight*$productQuantity;
-                    }
-                }
-
-                self::$objTemplate->setVariable(array(
-                    'SHOP_ROWCLASS' => (++$i % 2 ? 'row2' : 'row1'),
-                    'SHOP_QUANTITY' => $productQuantity,
-                    'SHOP_PRODUCT_NAME' => $productName,
-                    'SHOP_PRODUCT_PRICE' => Currency::formatPrice($productPrice),
-                    'SHOP_PRODUCT_SUM' => Currency::formatPrice($rowNetPrice),
-                    'SHOP_P_ID' => ($type == 1
-                        ? $objResult->fields['order_items_id']
-                        // If we're just showing the order details, the
-                        // product ID is only used in the product ID column
-                        : $objResult->fields['productid']),
-                    'SHOP_PRODUCT_CUSTOM_ID' => $productCode,
-                    // fill VAT field
-                    'SHOP_PRODUCT_TAX_RATE' => ($type == 1
-                        ? $productVatRate
-                        : Vat::format($productVatRate)),
-                    'SHOP_PRODUCT_TAX_AMOUNT' => Currency::formatPrice($rowVatAmount),
-                    'SHOP_PRODUCT_WEIGHT' => Weight::getWeightString($weight),
-                    'SHOP_ACCOUNT_VALIDITY' => FWUser::getValidityString($weight),
-                ));
-
-                // Get a product menu for each Product if $type == 1 (edit).
-                // Preselects the current Product ID.
-                // Move this to Product.class.php!
-                if ($type == 1) {
-                    self::$objTemplate->setVariable(
-                        'SHOP_PRODUCT_IDS_MENU', Products::getMenuoptions());
-                }
-                self::$objTemplate->parse('orderdetailsRow');
-                $objResult->MoveNext();
-            }
-
-            // Show VAT with the individual products:
-            // If VAT is enabled, and we're both in the same country
-            // ($total_vat_amount has been set above if both conditions are met)
-            // show the VAT rate.
-            // If there is no VAT, the amount is 0 (zero).
-            //if ($total_vat_amount) {
-                // distinguish between included VAT, and additional VAT added to sum
-                $tax_part_percentaged = (Vat::isIncluded()
-                    ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                    : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']);
-                self::$objTemplate->setVariable(array(
-                    'SHOP_TAX_PRICE' => Currency::formatPrice($total_vat_amount),
-                    'SHOP_PART_TAX_PROCENTUAL' => $tax_part_percentaged,
-                ));
-            //} else {
-                // No VAT otherwise
-                // remove it from the details overview if empty
-                //self::$objTemplate->hideBlock('taxprice');
-                //$tax_part_percentaged = $_ARRAYLANG['TXT_NO_TAX'];
-            //}
-            self::$objTemplate->setVariable(array(
-                'SHOP_ROWCLASS_NEW' => (++$i % 2 ? 'row2' : 'row1'),
-                'SHOP_CURRENCY_ORDER_SUM' => Currency::formatPrice($currencyOrderSum),
-                'SHOP_TOTAL_WEIGHT' => Weight::getWeightString($total_weight),
-                'SHOP_NET_PRICE' => Currency::formatPrice($total_net_price),
-            ));
-        }
-
-        self::$objTemplate->setVariable(array(
-            'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
-            // inserted VAT, weight here
-            // change header depending on whether the tax is included or excluded
-            'TXT_TAX_RATE' => (Vat::isIncluded()
-                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']),
-            'TXT_SHOP_ACCOUNT_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
-        ));
-    }
-
-
-    /**
-     * Store order
-     *
-     * @global  array   $_ARRAYLANG     Language array
-     * @global  ADONewConnection  $objDatabase    Database connection object    Database object
-     */
-    function shopStoreOrderdetails()
+    function shopShowOrderdetails($edit=false)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $order_id = intval($_POST['orderid']);
-        $objFWUser = FWUser::getFWUserObject();
-
-        // calculate the total order sum in the selected currency of the customer
-        $totalOrderSum =
-            floatval($_POST['ShippingPrice'])
-          + floatval($_POST['PaymentPrice']);
-        // the tax amount will be set, even if it's included in the price already.
-        // thus, we have to check the setting.
-        if (!Vat::isIncluded()) {
-            $totalOrderSum += floatval($_POST['TaxPrice']);
-        }
-        // store the product details and add the price of each product
-        // to the total order sum $totalOrderSum
-        foreach ($_REQUEST['productlist'] as $orderItemId => $product_id) {
-            if ($orderItemId != 0 && $product_id == 0) {
-                // delete the product from the list
-                $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items ".
-                    "WHERE order_items_id = $orderItemId";
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult !== false) {
-                    $query = "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes ".
-                    "WHERE order_items_id = ".
-                    intval(substr(contrexx_stripslashes($orderItemId),1,-1));
-                    $objResult = $objDatabase->Execute($query);
-                }
-            } elseif ($orderItemId == 0 && $product_id != 0) {
-                // add a new product to the list
-                $productPrice = floatval($_REQUEST['productprice'][$orderItemId]);
-                $productQuantity = intval($_REQUEST['productquantity'][$orderItemId]) < 1 ? 1 : intval($_REQUEST['productquantity'][$orderItemId]);
-                $totalOrderSum += $productPrice * $productQuantity;
-                $productTaxPercent = floatval($_REQUEST['producttaxpercent'][$orderItemId]);
-                $productWeight = Weight::getWeight($_REQUEST['productweight'][$orderItemId]);
-                $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_order_items ".
-                    "(orderid, productid, product_name, price, quantity, vat_percent, weight) ".
-                    "VALUES ($order_id, $product_id, '".
-                    contrexx_strip_tags($_POST['ProductName'][$orderItemId]).
-                    "', $productPrice, $productQuantity, ".
-                    "$productTaxPercent, $productWeight)";
-                $objResult = $objDatabase->Execute($query);
-            } elseif ($orderItemId != 0 && $product_id != 0) {
-                // update the order item
-                $productPrice = floatval($_REQUEST['productprice'][$orderItemId]);
-                $productQuantity = intval($_REQUEST['productquantity'][$orderItemId]) < 1 ? 1 : intval($_REQUEST['productquantity'][$orderItemId]);
-                $totalOrderSum += $productPrice * $productQuantity;
-                $productTaxPercent = floatval($_REQUEST['producttaxpercent'][$orderItemId]);
-                $productWeight = Weight::getWeight($_REQUEST['productweight'][$orderItemId]);
-                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_order_items SET ".
-                        "price = $productPrice".
-                        ", quantity = $productQuantity".
-                        ", productid = ".intval($_POST['ProductList'][$orderItemId]).
-                        ", product_name='".contrexx_strip_tags($_POST['ProductName'][$orderItemId]).
-                        "', vat_percent = $productTaxPercent".
-                        ", weight = $productWeight".
-                    " WHERE order_items_id=$orderItemId";
-                $objResult = $objDatabase->Execute($query);
-            }
-        }
-
-        // store the order details
-        $query = "
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-               SET currency_order_sum=".floatval($totalOrderSum).",
-                   currency_ship_price=".floatval($_POST['ShippingPrice']).",
-                   currency_payment_price=".floatval($_POST['PaymentPrice']).",
-                   order_status ='".intval($_POST['OrderStatusId'])."',
-                   ship_prefix='".addslashes(strip_tags($_POST['ShipPrefix']))."',
-                   ship_company='".addslashes(strip_tags($_POST['ShipCompany']))."',
-                   ship_firstname='".addslashes(strip_tags($_POST['ShipFirstname']))."',
-                   ship_lastname='".addslashes(strip_tags($_POST['ShipLastname']))."',
-                   ship_address='".addslashes(strip_tags($_POST['ShipAddress']))."',
-                   ship_city='".addslashes(strip_tags($_POST['ShipCity']))."',
-                   ship_zip='".addslashes(strip_tags($_POST['ShipZip']))."',
-                   ship_country_id=".intval($_POST['ShipCountry']).",
-                   ship_phone='".addslashes(strip_tags($_POST['ShipPhone']))."',
-                   tax_price=".floatval($_POST['TaxPrice']).",
-                   shipping_id=".intval($_POST['shipperId']).",
-                   modified_by='".$objFWUser->objUser->getUsername()."',
-                   last_modified=now()
-             WHERE orderid = $order_id";
-        // should not be changed, see above
-        // ", payment_id = ".intval($_POST['paymentId']).
-        if (!$objDatabase->Execute($query)) {
-            $this->errorHandling();
-            return false;
-        } else {
+        // Storing can only fail if an order is posted.
+        // If there is nothing to do, it will return null.
+        $result = Order::storeFromPost();
+        if ($result === false) {
+            self::addError($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_STORING']);
+            // Edit again after failing to store
+            $edit = true;
+// TODO: Add Message
+        } elseif ($result === true) {
             self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
             // Send an email to the customer, if requested
             if (!empty($_POST['SendMail'])) {
+// TODO: Check Order ID
+                $order_id = $_REQUEST['orderid'];
                 $result = ShopLibrary::sendConfirmationMail($order_id);
-                if (!empty($result)) {
-                    self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
-                } else {
+                if ($result === false) {
                     self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
-                    return false;
+                    // Edit again after failing to send e-mail
+                    $edit = true;
+                } else {
+                    self::addMessage(sprintf(
+                        $_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
                 }
             }
         }
-        return true;
+        if ($edit) {
+            self::$pageTitle = $_ARRAYLANG['TXT_EDIT_ORDER'];
+            self::$objTemplate->loadTemplateFile('module_shop_order_edit.html');
+        } else {
+            self::$pageTitle = $_ARRAYLANG['TXT_ORDER_DETAILS'];
+            self::$objTemplate->loadTemplateFile('module_shop_order_details.html');
+        }
+        return Order::view_detail(self::$objTemplate, $edit);
     }
 
 
     /**
-     * Delete Order
+     * Delete one or more Orders
      *
-     * @version  1.0      initial version
-     * @param    integer  $selectedid
-     * @return   string   $result
+     * If the $order_id parameter value is empty, checks $_GET['orderId']
+     * and $_POST['selectedOrderId'] in this order for Order IDs.
+     * @version   1.0                       Initial version
+     * @param     integer   $order_id       The optional Order ID to be deleted
+     * @return    boolean                   True on success, false otherwise
      */
-    function shopDeleteOrder($order_id=0)
+    function shopDeleteOrder($order_id=null)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -3071,69 +2672,24 @@ DBG::activate(DBG_ERROR_FIREPHP);
 
         // prepare the array $arrOrderId with the ids of the orders to delete
         if (empty($order_id)) {
-            if (isset($_GET['orderId']) && !empty($_GET['orderId'])) {
+            if (!empty($_GET['orderId'])) {
                 array_push($arrOrderId, $_GET['orderId']);
-            } elseif (isset($_POST['selectedOrderId']) && !empty($_POST['selectedOrderId'])) {
+            } elseif (!empty($_POST['selectedOrderId'])) {
                 $arrOrderId = $_POST['selectedOrderId'];
             }
         } else {
             array_push($arrOrderId, $order_id);
         }
-
-        // delete each selected order
-        if (count($arrOrderId) > 0) {
-            foreach ($arrOrderId as $oId) {
-                // Delete files uploaded with the order
-                $query = "
-                    SELECT product_option_name
-                      FROM ".DBPREFIX."module_shop_order_items_attributes
-                     WHERE order_id=$oId
-                ";
-                $objResult = $objDatabase->Execute($query);
-                if (!$objResult) {
-                    $this->errorHandling();
-                } else {
-                    while (!$objResult->EOF) {
-                        $filename =
-                            ASCMS_PATH.'/'.$this->uploadDir.'/'.
-                            $objResult->fields['product_option_name'];
-                        if (file_exists($filename)) {
-                            if (!@unlink($filename)) {
-                                self::addError(sprintf($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $filename));
-                            }
-                        }
-                        $objResult->MoveNext();
-                    }
-                }
-                $query = "
-                    DELETE FROM ".DBPREFIX."module_shop_order_items_attributes
-                     WHERE order_id=".intval($oId);
-                if (!$objDatabase->Execute($query)) {
-                    $this->errorHandling();
-                }
-                $query = "
-                    DELETE FROM ".DBPREFIX."module_shop_order_items
-                     WHERE orderid=".intval($oId);
-                if (!$objDatabase->Execute($query)) {
-                    $this->errorHandling();
-                }
-                $query = "
-                    DELETE FROM ".DBPREFIX."module_shop_lsv
-                     WHERE order_id=".intval($oId);
-                if (!$objDatabase->Execute($query)) {
-                    $this->errorHandling();
-                }
-                $query = "
-                    DELETE FROM ".DBPREFIX."module_shop_orders
-                     WHERE orderid=".intval($oId);
-                if (!$objDatabase->Execute($query)) {
-                    $this->errorHandling();
-                    return false;
-                }
-            } // foreach
+        if (empty($arrOrderId)) return null;
+        $result = true;
+        foreach ($arrOrderId as $oId) {
+            $result &= Order::deleteById($oId);
+// TODO: Verify error messages set in Order class
         }
-        self::addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
-        return true;
+        if ($result) {
+            self::addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
+        }
+        return $result;
     }
 
 
@@ -4640,6 +4196,7 @@ DBG::log("admin.class.php::errorHandler()");
      * If necessary, inserts a line break tag (<br />) between
      * error messages.
      * @param   string  $strErrorMessage    The error message to add
+     * @return  boolean                     False
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @static
      */
@@ -4649,6 +4206,7 @@ DBG::log("admin.class.php::errorHandler()");
             (self::$strErrMessage != '' && $strErrorMessage != ''
                 ? '<br />' : ''
             ).$strErrorMessage;
+        return false;
     }
 
 
@@ -4658,6 +4216,7 @@ DBG::log("admin.class.php::errorHandler()");
      * If necessary, inserts a line break tag (<br />) between
      * messages.
      * @param   string  $strOkMessage       The message to add
+     * @return  boolean                     True
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @static
      */
@@ -4667,6 +4226,7 @@ DBG::log("admin.class.php::errorHandler()");
             (self::$strOkMessage != '' && $strOkMessage != ''
                 ? '<br />' : ''
             ).$strOkMessage;
+        return true;
     }
 
 
