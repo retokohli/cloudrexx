@@ -166,25 +166,31 @@ class ShopLibrary
     {
         global $objDatabase;
 
-        $onchange = !empty($onchange) ? "onchange=\"".$onchange."\"" : "";
-        $menu = "\n<select name=\"".$menuName."\" ".$onchange.">\n";
-
-        $query = "SELECT countries_id, countries_name ".
-            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries ".
-            "WHERE activation_status=1";
+        $query = "
+            SELECT countries_id, countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE activation_status=1";
         $objResult = $objDatabase->Execute($query);
-
         if ($objResult->RecordCount() > 1) {
+            $menu =
+                '<select name="'.$menuName.'"'.
+                (empty($onchange)
+                  ? ''
+                  : ' onchange="'.$onchange.'"').">\n";
             while (!$objResult->EOF) {
-                $selected = (intval($selectedId)==$objResult->fields['countries_id']) ? "selected=\"selected\"" : "";
-                $menu .="<option value=\"".$objResult->fields['countries_id']."\" ".$selected.">".$objResult->fields['countries_name']."</option>\n";
+                $menu .=
+                    '<option value="'.$objResult->fields['countries_id'].'"'.
+                    (intval($selectedId) == $objResult->fields['countries_id']
+                      ? ' selected="selected"' : '').
+                    '>'.$objResult->fields['countries_name']."</option>\n";
                 $objResult->MoveNext();
             }
-            $menu .= "</select>\n";
-        } else {
-            $menu = "\n<input name=\"".$menuName."\" type=\"hidden\" value=\"".$objResult->fields['countries_id']."\">".$objResult->fields['countries_name']."\n";
+            return $menu."</select>\n";
         }
-        return $menu;
+        return
+            '<input name="'.$menuName.'" type="hidden" value="'.
+            $objResult->fields['countries_id'].'" />'.
+            $objResult->fields['countries_name']."\n";
     }
 
 
@@ -204,8 +210,7 @@ class ShopLibrary
         $menu = "\n<select name=\"".$menuName."\">\n";
         $menu .= ($selectedId==0) ? "<option value=\"0\" selected=\"selected\">All</option>\n" : "<option value=\"0\">All</option>\n";
 
-        foreach ($arrLanguage AS $id => $data)
-        {
+        foreach ($arrLanguage as $id => $data) {
             $selected = (intval($selectedId)==$id) ? "selected=\"selected\"" : "";
             $menu .="<option value=\"".$id."\" $selected>".$data['name']."</option>\n";
         }

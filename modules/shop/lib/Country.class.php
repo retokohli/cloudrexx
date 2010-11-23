@@ -256,16 +256,14 @@ class Country
 //                ON `country`.`id`=`relation`.`country_id`
 //             WHERE `country`.`status`=1
 //               AND `relation`.`zone_id`=$zone_id
-//             ORDER BY ".$arrSqlName['text']." ASC
-//        ";
+//             ORDER BY ".$arrSqlName['text']." ASC";
         $query = "
             SELECT `relation`.`countries_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
               JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `country`
                 ON `country`.`countries_id`=`relation`.`countries_id`
              WHERE `relation`.`zones_id`=$zone_id
-             ORDER BY `country`.`countries_name`
-        ";
+             ORDER BY `country`.`countries_name`";
 //             WHERE `country`.`activation_status`=1
 //             ORDER BY ".//$arrSqlName['text']."`country`.`countries_name` ASC
         $objResult = $objDatabase->Execute($query);
@@ -274,6 +272,7 @@ class Country
         $arrZoneCountries = array('in' => array(), 'out' => array());
         while (!$objResult->EOF) {
             $id = $objResult->fields['countries_id'];
+            $objResult->MoveNext();
             // Country may only be in the Zone if it exists and is active
             if (   empty(self::$arrCountries[$id])
                 || empty(self::$arrCountries[$id]['status']))
@@ -284,7 +283,6 @@ class Country
 // Probably not needed:
 //                'text_name_id' => $text_name_id,
             );
-            $objResult->MoveNext();
         }
         foreach (self::$arrCountries as $id => $arrCountry) {
             // Country may only be available for the Zone if it is active

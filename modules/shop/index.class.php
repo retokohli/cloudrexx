@@ -111,12 +111,10 @@ class Shop extends ShopLibrary
     const usernamePrefix = 'user';
 
     private $pageContent;
-
     private $arrCategoriesTable = array();
     private $arrParentCategoriesTable = array();
-
-    private $statusMessage = '';
     private $arrProductAttributes = array();
+    private static $statusMessage = '';
     private static $inactiveStyleName = 'inactive';
     private static $activeStyleName = 'active';
     private static $defaultImage = '';
@@ -200,59 +198,8 @@ class Shop extends ShopLibrary
     function getShopPage()
     {
         if (isset($_GET['cmd'])) {
-            switch($_GET['cmd']) {
-                case 'terms':
-                    $_GET['act'] = 'terms';
-                    break;
-                case 'shipment':
-                    $_GET['act'] = 'shipment';
-                    break;
-                case 'success':
-                    $_GET['act'] = 'success';
-                    break;
-                case 'confirm':
-                    $_GET['act'] = 'confirm';
-                    break;
-                case 'lsv':
-                    $_GET['act'] = 'lsv';
-                    break;
-                case 'einzug':
-                    $_GET['act'] = 'einzug';
-                    break;
-                case 'payment':
-                    $_GET['act'] = 'payment';
-                    break;
-                case 'account':
-                    $_GET['act'] = 'account';
-                    break;
-                case 'cart':
-                    $_GET['act'] = 'cart';
-                    break;
-                case 'products':
-                case 'details': // Redirected to products explicitly
-                    $_GET['act'] = 'products';
-                    break;
-                case 'discounts':
-                    $_GET['act'] = 'discounts';
-                    break;
-                case 'lastFive':
-                    $_GET['act'] = 'lastFive';
-                    break;
-                case 'login':
-                    $_GET['act'] = 'login';
-                    break;
-                case 'sendpass':
-                    $_GET['act'] = 'sendpass';
-                    break;
-                case 'changepass';
-                    $_GET['act'] = 'changepass';
-                    break;
-                default:
-                    $_GET['act'] = 'products';
-                    break;
-            }
+            $_GET['act'] = $_GET['cmd'];
         }
-
         if (isset($_GET['act'])) {
             switch($_GET['act']) {
                 case 'shipment':
@@ -324,7 +271,7 @@ class Shop extends ShopLibrary
         } else {
             $this->products();
         }
-        $this->objTemplate->setVariable('SHOP_STATUS', $this->statusMessage);
+        $this->objTemplate->setVariable('SHOP_STATUS', self::$statusMessage);
         return $this->objTemplate->get();
     }
 
@@ -1707,8 +1654,6 @@ class Shop extends ShopLibrary
      */
     function _calculatePrice($cart)
     {
-//        global $objDatabase;
-
         $price = 0;
         if (!empty($cart['products'])) {
             foreach ($cart['products'] as $arrProduct) {
@@ -1869,6 +1814,8 @@ class Shop extends ShopLibrary
     function getJavascriptCode($flagUpload=false)
     {
         global $_ARRAYLANG, $_CONFIGURATION;
+
+        JS::activate('shadowbox');
 
         $javascriptCode =
 "<script language=\"JavaScript\" type=\"text/javascript\">
@@ -2548,7 +2495,15 @@ sendReq('', 1);
                                     '<a href="'.$this->uploadDir.'/'.$arrValue['value'].
                                     '" target="uploadimage">'.$optionValue.'</a>';
                         }
-                        $productOptions .= " [$optionValue]";
+                        $productOptions .=
+                            ($productOptions ? ', ' : '').
+                            $objProductAttribute->getName().
+                            ': '.$optionValue.
+                            ($arrValue['price'] != 0
+                              ? ' ('.($arrValue['price'] > 0 ? '+' : '-').
+                                $arrValue['price'].' '.
+                                Currency::getActiveCurrencySymbol().')'
+                              : '');
                         $productOptionsPrice += $arrValue['price'];
                     }
                 }
@@ -2723,8 +2678,8 @@ sendReq('', 1);
                 // Removed parenthesess for 2.0.2
                 // Add them to the template if desired!
                 'SHOP_TOTAL_TAX_AMOUNT' =>
-                    $_SESSION['shop']['cart']['total_vat_amount']
-                    .'&nbsp;'.Currency::getActiveCurrencySymbol(),
+                    $_SESSION['shop']['cart']['total_vat_amount'].
+                    '&nbsp;'.Currency::getActiveCurrencySymbol(),
             ));
         }
         if ($_SESSION['shop']['shipment']) {
@@ -2787,7 +2742,7 @@ sendReq('', 1);
                 'index.php?section=shop&amp;cmd=login'.
                 (!empty($redirect) ? "&amp;redirect=$redirect" : ''),
             // Should be replaced by the global SHOP_STATUS placeholder.
-            'SHOP_LOGIN_STATUS'                  => $this->statusMessage,
+            'SHOP_LOGIN_STATUS'                  => self::$statusMessage,
         ));
     }
 
@@ -3296,6 +3251,17 @@ die("YYY");
                empty($_SESSION['shop']['countryId2'])
             || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
         );
+/*
+Alternative method that treats Schweiz and Liechtenstein
+as the same country:
+        $home_country_id = intval($this->arrConfig['country_id']['value']);
+        // Switzerland and Liechtenstein are treated as one country
+        $is_home_country =
+            (    $_SESSION['shop']['countryId'] == $home_country_id
+             || (   ($home_country_id == 204 || $home_country_id == 122)
+                 && (   $_SESSION['shop']['countryId'] == 204
+                     || $_SESSION['shop']['countryId'] == 122))
+*/
         // VAT enabled?
         if (Vat::isEnabled()) {
             // VAT included?
@@ -3719,7 +3685,7 @@ right after the customer logs in!
                 $this->objCustomer->setPhone($_SESSION['shop']['phone']);
                 $this->objCustomer->setFax($_SESSION['shop']['fax']);
             }
-/*  Move to order class
+/*  TODO:  Move to order class
             $this->objCustomer->setCcNumber(isset($_SESSION['shop']['ccnumber']) ? $_SESSION['shop']['ccnumber'] : '');
             $this->objCustomer->setCcDate  (isset($_SESSION['shop']['ccdate'])   ? $_SESSION['shop']['ccdate']   : '');
             $this->objCustomer->setCcName  (isset($_SESSION['shop']['ccname'])   ? $_SESSION['shop']['ccname']   : '');
@@ -3776,8 +3742,7 @@ right after the customer logs in!
                     '$customer_lang',
                     '$customer_browser',
                     '{$_SESSION['shop']['customer_note']}'
-                )
-            ";
+                )";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
                 // $order_id is unset!
@@ -3998,12 +3963,19 @@ right after the customer logs in!
                                 //if (!$objProductAttribute) { ... }
                                 $productOptions .=
                                     ($productOptions ? '<br />' : '').'- '.
-                                    ProductAttribute::getNameById($optionId).': ';
+                                    $objProductAttribute->getName().': ';
                                 $productOptionsValues = '';
                                 foreach ($arrValueIds as $value_id) {
                                     if (intval($value_id)) {
+                                        $optionPrice =
+                                            ProductAttribute::getValuePriceById($value_id);
                                         $optionValue =
-                                            ProductAttribute::getValueNameById($value_id);
+                                            ProductAttribute::getValueNameById($value_id).
+                                            ($optionPrice != 0
+                                              ? ' ('.($optionPrice > 0 ? '+' : '-').
+                                                $optionPrice.' '.
+                                                Currency::getActiveCurrencySymbol().')'
+                                              : '');
                                     } else {
                                         $optionValue = ShopLibrary::stripUniqidFromFilename($value_id);
                                         if (   $optionValue != $value_id
@@ -4257,7 +4229,7 @@ right after the customer logs in!
         if (   isset($_REQUEST['result'])
             && $_REQUEST['result'] < 0) die('');
         // Comment this for testing, so you can reuse the same account and cart
-// COMMENT OUT FOR TEST ONLY
+// NOTE: Comment for testing only
         $this->destroyCart();
         // clear backup ID, avoid success() from being run again
         unset($_SESSION['shop']['orderid_checkin']);
@@ -4419,8 +4391,7 @@ right after the customer logs in!
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
              USING (customerid)
-             WHERE orderid=$order_id
-        ";
+             WHERE orderid=$order_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() == 0) {
             // Order not found
@@ -4448,8 +4419,7 @@ right after the customer logs in!
         $query = "
             SELECT value
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE name='confirmation_emails'
-        ";
+             WHERE name='confirmation_emails'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
             $copies = explode(',', trim($objResult->fields['value']));
@@ -4511,8 +4481,7 @@ right after the customer logs in!
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c
              USING (customerid)
-             WHERE orderid=$order_id
-        ";
+             WHERE orderid=$order_id";
         $objResultOrder = $objDatabase->Execute($query);
         if (!$objResultOrder || $objResultOrder->RecordCount() == 0) {
             // Order not found
@@ -4552,8 +4521,7 @@ right after the customer logs in!
         $query = "
             SELECT order_items_id, productid, product_name, price, quantity
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
-             WHERE orderid=$order_id
-        ";
+             WHERE orderid=$order_id";
         $objResultItem = $objDatabase->Execute($query);
         if (!$objResultItem || $objResultItem->RecordCount() == 0) {
             // Order not found
@@ -4600,7 +4568,9 @@ right after the customer logs in!
 
             // Pick the order items attributes from the database
             $query = "
-                SELECT product_option_name, product_option_value
+                SELECT product_option_name,
+                       product_option_value,
+                       product_option_values_price
                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
                  WHERE order_items_id=$orderItemId
                  ORDER BY product_option_name ASC
@@ -4614,12 +4584,19 @@ right after the customer logs in!
                 while (!$objResultAttribute->EOF) {
                     $optionName = $objResultAttribute->fields['product_option_name'];
                     $optionValue = $objResultAttribute->fields['product_option_value'];
+                    $optionPrice = $objResultAttribute->fields['product_option_values_price'];
                     // Recognize the names of uploaded files,
                     // verify their presence and use the original name
                     $optionValueStripped = ShopLibrary::stripUniqidFromFilename($optionValue);
                     if (   $optionValue != $optionValueStripped
                         && file_exists(ASCMS_PATH.'/'.self::$uploadDir.'/'.$optionValue)) {
                             $optionValue = $optionValueStripped;
+                    }
+                    if ($optionPrice != 0) {
+                      $optionValue .=
+                          ' ('.($optionPrice > 0 ? '+' : '-').
+                          $optionPrice.' '.
+                          Currency::getActiveCurrencySymbol().')';
                     }
 
                     if ($optionName != $optionNamePrevious) {
@@ -4648,7 +4625,7 @@ right after the customer logs in!
                     $orderItemPrice*$orderItemQuantity
                 ).' '.
                 $strCurrencyCode."\n".
-                (empty($productOptions) ? '' : $productOptions."\n");
+//                (empty($productOptions) ? '' : $productOptions."\n");
             $orderItemCount += $orderItemQuantity;
             $priceTotalItems += $orderItemPrice*$orderItemQuantity;
 
@@ -4705,7 +4682,7 @@ right after the customer logs in!
 
                     if (!$objUser->store()) {
                         // TODO: $this can't be used here due that this is a static function. There is so far no way to report an error in case one had occured.
-                        // $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
+                        // self::$statusMessage .= implode('<br />', $objUser->getErrorMsg());
                         return false;
                     }
                     $loginData .=
@@ -4831,7 +4808,9 @@ right after the customer logs in!
         $body = preg_replace('/^.*\<DOWNLOAD_PASSWORD\>.*$\n?/m', '', $body);
 
         // Strip CRs
-        $body = str_replace("\r", '', $body); //echo("made mail body:<br />".str_replace("\n", '<br />', htmlentities($body))."<br />");
+        $body = str_replace("\r", '', $body);
+// NOTE: Test only
+//die("made mail body:<br />".nl2br(htmlentities($body, ENT_QUOTES, CONTREXX_CHARSET))."<br />");
         return $body;
     }
 
@@ -4846,8 +4825,8 @@ right after the customer logs in!
      */
     function addMessage($strMessage)
     {
-        $this->statusMessage .=
-            ($this->statusMessage ? '<br />' : '').
+        self::$statusMessage .=
+            (self::$statusMessage ? '<br />' : '').
             $strMessage;
     }
 

@@ -261,14 +261,14 @@ function disableButtons(from, dest, add, remove) {
     <input type="hidden" name="shopImageName" value="{SHOP_IMAGE_NAME}" />
     <table summary="" class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
-        <th nowrap colspan="2">
+        <th nowrap="nowrap" colspan="2">
           <div align="left">{TXT_PRODUCT_INFORMATIONS}</div>
         </th>
       </tr>
       {SHOP_ID_COMMENT_START}
       <tr valign="top" class="row1">
-        <td nowrap width="17%">{TXT_ID}</td>
-        <td nowrap width="83%">{SHOP_PRODUCT_ID}</td>
+        <td nowrap="nowrap" width="17%">{TXT_ID}</td>
+        <td nowrap="nowrap" width="83%">{SHOP_PRODUCT_ID}</td>
       </tr>
       {SHOP_ID_COMMENT_END}
       <tr valign="top" class="row2">
@@ -449,7 +449,7 @@ function disableButtons(from, dest, add, remove) {
   <div id="shopContent2" class="productManageTab" style="display: none;">
     <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
-        <th nowrap  colspan="2"> <div align="left">{TXT_PRODUCT_OPTIONS}</div></th>
+        <th nowrap="nowrap" colspan="2"> <div align="left">{TXT_PRODUCT_OPTIONS}</div></th>
       </tr>
       <tr class="row1">
           <td nowrap="nowrap" width="5%"><b>Reihenfolge</b></td>
@@ -480,7 +480,7 @@ function disableButtons(from, dest, add, remove) {
         </th>
       </tr>
       <tr  class="row1">
-        <td nowrap width="17%" valign="top"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
+        <td nowrap="nowrap" width="17%" valign="top"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
         <td width="27%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" onclick="openBrowser('index.php?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true&amp;type=shop', '1', 'width=800,height=640,resizable=yes,status=no,scrollbars=yes', 'img', '');"  >{TXT_SHOP_EDIT_OR_ADD_IMAGE}<br /> <span id="img_1"><img id="img1" style="width: {SHOP_IMG1_WIDTH}px; height: {SHOP_IMG1_HEIGHT}px; border: none;" src="{SHOP_PICTURE1_IMG_SRC}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" /></span></a> <a href="javascript:void(0);" onclick="document.getElementById('img_1').innerHTML='<img src=\'{SHOP_NO_PICTURE_ICON}\' border=\'0\' id=\'img1\' title=\'{TXT_SHOP_EDIT_OR_ADD_IMAGE}\' >',document.getElementById('hi_1').value='{SHOP_NO_PICTURE_ICON}',document.getElementById('hi_1_w').value='0',document.getElementById('hi_1_h').value='0'" title="{TXT_SHOP_DEL_ICON}"><img src="{SHOP_DELETE_ICON}" border="0" alt="{TXT_SHOP_DEL_ICON}"/></a>
           <input type="hidden" id="hi_1" name="productImage1" value="{SHOP_PICTURE1_IMG_SRC_NO_THUMB}" />
@@ -507,24 +507,48 @@ function disableButtons(from, dest, add, remove) {
   <div id="shopContent4" class="productManageTab" style="display: none;">
     <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr valign="top">
-        <th nowrap  colspan="2">
+        <th nowrap="nowrap" colspan="2">
           <div align="left">{TXT_PRODUCT_STATUS}</div>
         </th>
       </tr>
       <tr valign="top" class="row1">
-        <td nowrap colspan="2">
+        <td nowrap="nowrap" width="17%">
           {TXT_ACTIVE}
+        </td>
+        <td nowrap="nowrap" width="83%">
           <input type="checkbox" name="shopArticleActive" value="1" {SHOP_ARTICLE_ACTIVE} />
+        </td>
+      </tr>
+      <tr valign="top" class="row2">
+        <td nowrap="nowrap">
           B2B
+        </td>
+        <td nowrap="nowrap">
           <input type="checkbox" name="shopB2B" value="1" {SHOP_B2B} />
+        </td>
+      </tr>
+      <tr valign="top" class="row1">
+        <td nowrap="nowrap">
           B2C
+        </td>
+        <td nowrap="nowrap">
           <input type="checkbox" name="shopB2C" value="1" {SHOP_B2C} />
-          <!-- // unused
+        </td>
+      </tr>
+      <tr valign="top" class="row2">
+        <td nowrap="nowrap">
           {TXT_START_DATE}:
+        </td>
+        <td nowrap="nowrap">
           <input type="text" name="shopStartdate" size="20" maxlength="20" onClick="setDateToday(shopStartdate)" value="{SHOP_STARTDATE}" />
+        </td>
+      </tr>
+      <tr valign="top" class="row1">
+        <td nowrap="nowrap">
           {TXT_END_DATE}:
+        </td>
+        <td nowrap="nowrap">
           <input type="text" name="shopEnddate" size="20" maxlength="20" onClick="setDateToday(shopEnddate)" value="{SHOP_ENDDATE}" />
-           -->
         </td>
       </tr>
     </table>
