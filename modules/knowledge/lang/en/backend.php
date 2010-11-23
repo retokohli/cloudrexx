@@ -292,4 +292,7 @@ $_ARRAYLANG['TXT_KNOWLEDGE_AVAILABLE_CATEGORIES'] = "Available categories";
 $_ARRAYLANG['TXT_KNOWLEDGE_CHECK_ALL'] = "Select all";
 $_ARRAYLANG['TXT_KNOWLEDGE_UNCHECK_ALL'] = "Clear selection";
 $_ARRAYLANG['TXT_KNOWLEDGE_ASSIGNED_CATEGORIES'] = "Assigned categories";
+$_ARRAYLANG['TXT_MANAGE'] = "manage";
+$_ARRAYLANG['TXT_CONFIRM_COMMENT_DELETION'] = "The comment will be irreversably deleted. Are you sure?";
+$_ARRAYLANG['TXT_TITLE'] = "Title";
 ?>
