@@ -385,6 +385,7 @@ class ShopLibrary
 
 
     /**
+     * OBSOLETE -- REMOVE
      * Deletes the order with the given ID.
      *
      * If no valid ID is specified, looks in the GET and POST request
@@ -398,6 +399,7 @@ class ShopLibrary
      */
     function deleteOrder($orderId=0)
     {
+die("OBSOLETE: ShopLibrary::deleteOrder()");
         global $objDatabase, $_ARRAYLANG;
 
         $arrOrderId = array();
