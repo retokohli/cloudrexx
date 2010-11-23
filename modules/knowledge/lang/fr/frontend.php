@@ -64,4 +64,6 @@ $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'] = "Nombre d'évaluations";
 $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'] = "Evaluation moyenne";
 $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'] = "Votre évaluation";
 $_ARRAYLANG['TXT_KNOWLEDGE_NO_GLOSSARY_ENTRIES'] = "There are no entries in the glossary";
+$_ARRAYLANG['TXT_COMMENT'] = "write a comment";
+$_ARRAYLANG['TXT_SHOW_COMMENTS'] = "show comments";
 ?>
