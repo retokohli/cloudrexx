@@ -2335,6 +2335,20 @@ CREATE TABLE `contrexx_module_knowledge_categories_content` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_knowledge_comments` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `article_content_id` int(10) unsigned NOT NULL,
+  `parent_id` int(11) unsigned default NULL,
+  `name` varchar(255) default NULL,
+  `email` varchar(255) default NULL,
+  `subject` varchar(255) default NULL,
+  `user_id` int(11) default NULL,
+  `comment` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_knowledge_settings` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) NOT NULL default '',
