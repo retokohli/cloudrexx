@@ -131,7 +131,7 @@ class Contact extends ContactLib
                 $this->objTemplate->setVariable(array(
                     $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
                     $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
-                    $fieldId.'_LABEL'       => $arrField['lang'][$_LANGID]['name']
+                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? $arrField['lang'][$_LANGID]['name'] : "&nbsp;"
                 ));
 
                 /*
@@ -581,16 +581,16 @@ class Contact extends ContactLib
         $arrSpamKeywords = explode(',', $arrSettings['spamProtectionWordList']);
         $this->initCheckTypes();
         if (count($arrFields['fields']) > 0) {
-            foreach ($arrFields['fields'] as $field) {
+            foreach ($arrFields['fields'] as $fieldId => $field) {
                 $source = $field['type'] == 'file' ? 'uploadedFiles' : 'data';
                 $regex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
-                if ($field['is_required'] && empty($arrFields[$source][$field['lang'][$_LANGID]['name']])) {
+                if ($field['is_required'] && empty($arrFields[$source][$fieldId])) {
                     $error = true;
-                } elseif (empty($arrFields['data'][$field['lang'][$_LANGID]['name']]) && empty($arrFields['uploadedFiles'])) {
+                } elseif (empty($arrFields['data'][$fieldId]) && empty($arrFields['uploadedFiles'])) {
                     continue;
                 }
 
-                $fieldValue = $arrFields[$source][$field['lang'][$_LANGID]['name']];
+                $fieldValue = $arrFields[$source][$fieldId];
                 if ($field['type'] == 'file') {
                     // $fieldValue is an array of the form array('path' => file_path, 'name' => 'file_name')
                     $fieldValue = $fieldValue['path'];
