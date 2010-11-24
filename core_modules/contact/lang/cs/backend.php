@@ -168,4 +168,5 @@ $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Vodorovná čára";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail šablony";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Poslat upozornění e-mailem jako HTML";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Země";
+$_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
 ?>

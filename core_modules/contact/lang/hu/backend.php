@@ -168,4 +168,5 @@ $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Vízszintes vonal";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-mail sablon";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Értesítés küldése e-mail, mint a HTML";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Ország";
+$_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
 ?>

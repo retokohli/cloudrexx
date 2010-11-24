@@ -169,4 +169,5 @@ $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Horizontal line";
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "Plantilla de correo electrónico";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Notificación Enviar correo electrónico como HTML";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "País";
+$_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
 ?>
