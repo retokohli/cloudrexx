@@ -106,7 +106,7 @@ function knowledgeSwitchAnswer(langId)
 
   <ul id="tabmenu">
     <!-- BEGIN showLanguageTabs -->
-  	<li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:void(0);" onclick="selectTab('{TABS_DIV_ID}');knowledgeSwitchAnswer({TABS_LANG_ID})" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
+  	<li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:void(0);" onclick="selectTab('{TABS_DIV_ID}');knowledgeSwitchAnswer({TABS_LANG_ID});commentInterface.setArticleContentId({CONTENT_ID});" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
     <!-- END showLanguageTabs -->
   </ul>
 
@@ -222,6 +222,14 @@ function knowledgeSwitchAnswer(langId)
             </select>
           </td>
         </tr>
+        <tr class="row1">
+          <td>
+            Kommentare
+          </td>
+          <td colspan="2">
+	      <a onclick="commentInterface.showCommentEditBox()">{TXT_MANAGE}</a>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -255,4 +263,64 @@ function knowledgeSwitchAnswer(langId)
   <input type="submit" value="{TXT_SUBMIT}" />
 </form>
 
+<!-- BEGIN comment_editing -->
+<div id="commentTemplate" class="adminComment" style="display:none">
+    <a class="adminCommentDelete" href="#">{TXT_DELETE}</a>
+    <table>
+	<tbody>
+	    <tr>
+		<td class="adminCommentDescription">
+		    ID
+		</td>
+		<td>
+		    <div class="comment_id"></div>
+		</td>
+	    </tr>
+	    <tr>
+		<td class="adminCommentDescription">
+		{TXT_NAME}    
+		</td>
+		<td>
+		    <div class="comment_name"></div>
+		</td>
+	    </tr>
+	    <tr>
+		<td class="adminCommentDescription">
+		{TXT_EMAIL}
+		</td>
+		<td>
+		    <div class="comment_email"></div>
+		</td>
+	    </tr>
+	    <tr>
+		<td class="adminCommentDescription">
+		{TXT_TITLE}
+		</td>
+		<td>
+		    <div class="comment_subject"></div>
+		</td>
+	    </tr>
+	    <tr>
+		<td class="adminCommentDescription">
+		Kommentar
+		</td>
+		<td>
+		    <div class="comment_comment"></div>
+		</td>
+	    </tr>
+	</tbody>
+    </table>
+</div>
+<div id="commentEditBox" style="display:none">
+
+</div>
+<div id="commentDeleteConfirmBox">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>{TXT_CONFIRM_COMMENT_DELETION}</p>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+$J('document').ready(function(){ commentInterface = new CommentInterface({CONTENT_ID}); commentInterface.i18n({'TXT_DELETE': '{TXT_DELETE}', 'TXT_CANCEL': '{TXT_CANCEL}'}) });
+/* ]]> */
+</script>
+<!-- END comment_editing -->
 <!-- END module_knowledge_articles_edit.html -->

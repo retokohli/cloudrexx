@@ -44,7 +44,8 @@ class KnowledgeArticles
                    content.lang,
                    content.answer,
                    content.question,
-                   content.`index` as `index`
+                   content.`index` as `index`,
+                   content.id as cid
               FROM `".DBPREFIX."module_knowledge_articles` AS articles
              INNER JOIN `".DBPREFIX."module_knowledge_article_content` AS content
                 ON articles.id=content.article";
@@ -99,7 +100,6 @@ class KnowledgeArticles
             // add some order.
             $query .= " ORDER BY sort ASC";
         }
-
         $objRs = $objDatabase->Execute($query);
         if ($objRs === false) {
             throw new DatabaseError("read articles failed");
@@ -107,12 +107,15 @@ class KnowledgeArticles
 
         $articles = array();
         while (!$objRs->EOF) {
+
             $curId = $objRs->fields['id'];
             if (isset($articles[$curId])) {
                 $articles[$curId]['content'][$objRs->fields['lang']]['question'] = $objRs->fields['question'];
                 $articles[$curId]['content'][$objRs->fields['lang']]['answer'] = $objRs->fields['answer'];
                 $articles[$curId]['content'][$objRs->fields['lang']]['index'] = $objRs->fields['index'];
+		$articles[$curId]['content'][$objRs->fields['lang']]['id'] = $objRs->fields['cid'];
             } else {
+		$cid = intval($objRs->fields['cid']);
                 $articles[$curId] = array(
                     'id'            => intval($objRs->fields['id']),
                     'active'        => intval($objRs->fields['active']),
@@ -128,6 +131,7 @@ class KnowledgeArticles
                             'question'      => stripslashes($objRs->fields['question']),
                             'answer'        => stripslashes($objRs->fields['answer']),
                             'index'         => $objRs->fields['index'],
+			    'id'            => $cid
                         )
                     )
                 );

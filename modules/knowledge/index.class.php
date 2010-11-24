@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Knowledge
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -61,6 +60,8 @@ class Knowledge extends KnowledgeLibrary
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
+        JS::registerJS('modules/knowledge/frontend/commentBox.js');
+        JS::registerJS('lib/javascript/FRAMEWORK/ajaxFormHelpers.js');
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = "";
@@ -80,8 +81,13 @@ class Knowledge extends KnowledgeLibrary
         } elseif ($_GET['act'] == "rate") {
             $this->rate();
             die();
-        }
-
+        } elseif ($_GET['act'] == 'comment') {
+	    $this->actComment();
+	}
+	elseif ($_GET['act'] == 'getComments') {
+	    $this->actGetComments();
+	}	
+	 
         if(!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         }
@@ -305,6 +311,7 @@ class Knowledge extends KnowledgeLibrary
         $article = $this->articles->articles[$id];
         $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
         $amount = $article['votes'];
+	$contentId = $article['content'][$_LANGID]['id'];
 
         $this->tpl->setVariable(array(
            "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
@@ -314,10 +321,14 @@ class Knowledge extends KnowledgeLibrary
            "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
            "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
            "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
+	   "TXT_COMMENT" => $_ARRAYLANG['TXT_COMMENT'],
+	   "TXT_SHOW_COMMENTS" => $_ARRAYLANG['TXT_SHOW_COMMENTS'],
 
            "ARTICLEID"     => $id,
+	   "CONTENTID"     => $contentId,
            "QUESTION"      => $article['content'][$_LANGID]['question'],
            "ANSWER"        => $article['content'][$_LANGID]['answer'],
+	   "LANGUAGE"      => $_LANGID,
            "AVERAGE"       => round($average, 2),
            "AMOUNT_OF_RATING" => $amount,
 
@@ -326,7 +337,9 @@ class Knowledge extends KnowledgeLibrary
            "HITS"          => $article['hits'],
 
            "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
-           "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
+           "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated']),
+
+      	   "AMOUNT_OF_COMMENTS" => $this->countComments($contentId)
         ));
 
         $this->showCrumbtrail($article['category']);
@@ -336,6 +349,7 @@ class Knowledge extends KnowledgeLibrary
         $this->pageTitle = $article['content'][$_LANGID]['question'];
 
         JS::registerJS('modules/knowledge/rating.js');
+        JS::registerJS('modules/knowledge/frontend/commentInterface.js');
     }
 
 
@@ -712,7 +726,6 @@ class Knowledge extends KnowledgeLibrary
         $rated = intval($_POST['rated']);
         if (!isset($_COOKIE['knowledge_rating_'.$id])) {
             try {
-                var_dump(setcookie('knowledge_rating_'.$id, 'rated', 0, ASCMS_PATH_OFFSET.'/'));
                 $this->articles->vote($id, $rated);
             } catch (DatabaseError $e) {
                 die($e->plain());
@@ -733,6 +746,41 @@ class Knowledge extends KnowledgeLibrary
         }
     }
 
-}
+    /**
+     * Ajax comment call
+     */
+    private function actComment()
+    {
+	require_once(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
+	require_once(ASCMS_CORE_PATH.'/validator.inc.php');
+	if(isset($_GET['id']) && isset($_GET['target']) && isset($_POST['commentData'])) {
+	    if($_GET['target'] == 'article') {
+		$commentData = $_POST['commentData'];
+		
+		//check email address
+		if(strlen($commentData['email']) > 0 && !FWValidator::isEmail($commentData['email']))
+		    die(json_encode(array('status' => 'error',
+					  'message' => 'no valid email address given.')));
+		
+		$commentData = contrexx_addslashes($commentData);
+		
+		//ok, print json
+		die(json_encode($this->comment('create', intval($_GET['id']), $commentData)));
+	    }
+	}
+	//we're missing a field
+	die(json_encode(array('status' => 'error',
+			      'message' => 'not all required fields set.')));
+    }
 
+    private function actGetComments()
+    {
+	if(!isset($_GET['id'])) {
+	    die(json_encode(array('status' => 'error',
+				  'message' => 'no id given.')));	    
+	}
+	
+	die(json_encode($this->loadComments(intval($_GET['id']))));
+    }
+}
 ?>
