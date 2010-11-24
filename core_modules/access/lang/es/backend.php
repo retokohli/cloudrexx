@@ -271,4 +271,7 @@ $_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_USER_CREATED'] = "Benutzerkonto angelegt"
 $_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_USER_UPDATED'] = "Benutzerkonto aktualisiert";
 $_ARRAYLANG['TXT_ACCESS_IMPORT_ERROR_CREATING_USER'] = "Benutzerkonto konnte nicht angelegt werden";
 $_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_LIST_CREATED'] = "Liste angelegt";
+$_ARRAYLANG['TXT_ACCESS_DELETE'] = "Eliminar";
+$_ARRAYLANG['TXT_ACCESS_SELECT_ACTION'] = "Seleccionar acci&oacute;n";
+$_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USERS'] = "Est&aacute; usted seguro de que desea eliminar las usuarios seleccionadas?";
 ?>
