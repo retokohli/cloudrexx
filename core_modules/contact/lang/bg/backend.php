@@ -168,4 +168,5 @@ $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'] = "Хоризонтална лини�
 $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "Имейл шаблон";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Изпраща съобщение Email като HTML";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Страна";
+$_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
 ?>
