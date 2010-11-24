@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Knowledge backend stuff
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -97,7 +96,6 @@ class KnowledgeAdmin extends KnowledgeLibrary
         if(!isset($_GET['act'])) {
             $_GET['act']='';
         }
-
         $_GET['section'] = (empty($_GET['section'])) ? "" :  $_GET['section'];
         $active = '';
         switch ($_GET['section']) {
@@ -205,6 +203,12 @@ class KnowledgeAdmin extends KnowledgeLibrary
                         $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES);
                         $this->deleteArticle();
                         break;
+		    case 'getComments': //ajax request: comments for article_content_id
+                        $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES);
+			$this->getComments();
+		    case 'delComment': //ajax request: delete comment with id id
+                        $this->checkAjaxAccess(KNOWLEDGE_ACCESS_ID_EDIT_ARTICLES);
+			$this->delComment();
                     case 'overview':
                     default:
                         Permission::checkAccess(KNOWLEDGE_ACCESS_ID_OVERVIEW, 'static');
@@ -1232,6 +1236,9 @@ class KnowledgeAdmin extends KnowledgeLibrary
     {
         global $_ARRAYLANG;
 
+	JS::registerJS('lib/javascript/jquery-ui-1.8.2.js'); //this is a fix so jquery-ui works
+	JS::registerJS('modules/knowledge/backend/commentInterface.js');
+
         $this->pageTitle = $_ARRAYLANG['TXT_EDIT_ARTICLE'];
         $this->tpl->loadTemplateFile('module_knowledge_articles_edit.html', true, true);
         $this->tpl->setGlobalVariable(array(
@@ -1287,6 +1294,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             'TXT_SUBMIT'                 => $_ARRAYLANG['TXT_KNOWLEDGE_SUBMIT'],
             'TXT_CHOOSE_CATEGORY'        => $_ARRAYLANG['TXT_KNOWLEDGE_CHOOSE_CATEGORY'],
             'TXT_PLEASE_CHOOSE_CATEGORY' => $_ARRAYLANG['TXT_KNOWLEDGE_PLEASE_CHOOSE_CATEGORY'],
+	    'TXT_KNOWLEDGE_CATEGORIES'   => $_ARRAYLANG['TXT_KNOWLEDGE_CATEGORIES'],
         ));
 
         $first = true;
@@ -1312,6 +1320,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                "TABS_LINK_ID"      => $lang['long'],
                "TABS_LANG_ID"      => $langId,
                "TABS_CLASS"        => ($first) ? "active" : "inactive",
+               "CONTENT_ID"        => isset($article['content'][$langId]['id']) ? $article['content'][$langId]['id'] : -1,
             ));
             $this->tpl->parse("showLanguageTabs");
 
@@ -1335,8 +1344,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 "ANSWER"            => isset($article['content'][$langId]) ?
                                        htmlentities($article['content'][$langId]['answer'], ENT_QUOTES, CONTREXX_CHARSET)
                                        : '',
-
-                "TXT_INDEX_OPTIONS"  => $this->getIndexOptionList(
+		"TXT_INDEX_OPTIONS"  => $this->getIndexOptionList(
                     (isset($article['content'][$langId])
                       ? $article['content'][$langId]['index'] : 0)),
 //                "CATEGORIES"        => $this->categoryDropdown($this->categories->categoryTree, $article['category'], 0, $langId),
@@ -1351,16 +1359,37 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 'TXT_KNOWLEDGE_CHECK_ALL' => $_ARRAYLANG['TXT_KNOWLEDGE_CHECK_ALL'],
                 'TXT_KNOWLEDGE_UNCHECK_ALL' => $_ARRAYLANG['TXT_KNOWLEDGE_UNCHECK_ALL'],
                 'TXT_KNOWLEDGE_ASSIGNED_CATEGORIES' => $_ARRAYLANG['TXT_KNOWLEDGE_ASSIGNED_CATEGORIES'],
+		'TXT_MANAGE' => $_ARRAYLANG['TXT_MANAGE'],
+		'TXT_CONFIRM_COMMENT_DELETION' => $_ARRAYLANG['TXT_CONFIRM_COMMENT_DELETION'],
+
+		'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+		'TXT_CANCEL' => $_ARRAYLANG['TXT_CANCEL'],
+		'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
+		'TXT_EMAIL' => $_ARRAYLANG['TXT_EMAIL'],
+		'TXT_TITLE' => $_ARRAYLANG['TXT_TITLE'],
+		
             ));
             $this->tpl->parse("langDiv");
             if ($first) {
+		
+		/*
+		 *comment_editing: set the initial language id so we can initialize the knowledgeInterface-JS correctly.
+		 */
+		$this->tpl->setVariable(array(
+		    "CONTENT_ID"        => isset($article['content'][$langId]['id']) ? $article['content'][$langId]['id'] : -1,
+		));
+		$this->tpl->parse("comment_editing");
+
                 $this->tpl->setVariable(array(
                     "ANSWER_PREVIEW"        => get_wysiwyg_editor('answer_preview',
                                                isset($article['content'][$langId]) ?
                                                $article['content'][$langId]['answer']
                                                : ''),
                     "KNOWLEDGE_ANSWER_LANG"  => $langId,
+		    "CONTENT_ID"        => isset($article['content'][$langId]['id']) ? $article['content'][$langId]['id'] : -1,
                 ));
+
+		
             }
             $first = false;
         }
@@ -1781,6 +1810,28 @@ class KnowledgeAdmin extends KnowledgeLibrary
         return $this->tpl->get();
     }
 
-}
+    /**
+     * Get comments for articles' content.
+     *
+     * This is an ajax request.
+     */
+    private function getComments()
+    {
+	$id = intval($_GET['id']);
+	$comments = $this->loadComments($id,true);
+	die(json_encode($comments));
+    }
 
+    /**
+     * Delete comment with provided id.
+     *
+     * This is an ajax request.
+     */
+    private function delComment()
+    {
+	$id = intval($_GET['id']);
+	$this->deleteComment($id);
+	die(json_encode(array('status' => 'success')));
+    }
+}
 ?>

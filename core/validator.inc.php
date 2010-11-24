@@ -35,15 +35,22 @@ function contrexx_strip_tags($string)
 
 /**
  * addslashes wrapper to check for gpc_magic_quotes
- * @param    string    $string
+ * @param    string    $string | array
  * @return   string    $string (cleaned)
  */
-function contrexx_addslashes($string)
+function contrexx_addslashes($param)
 {
     // if magic quotes is on the string is already quoted,
     // just return it
-    if (CONTREXX_ESCAPE_GPC) return $string;
-    return addslashes($string);
+    if (CONTREXX_ESCAPE_GPC) return $param;
+    if (is_array($param)) {
+	$slashed_array = array();
+	foreach($param as $k => $v) {
+	    $slashed_array[$k] = addslashes($v);
+	}
+	return $slashed_array;
+    }
+    return addslashes($param);
 }
 
 

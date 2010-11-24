@@ -172,3 +172,32 @@
 .knowledge_taglist ul li.typing {
     background-color: #C8D7EE;
 }
+
+.adminComment
+{
+    margin:5px;
+    width:100%;
+    border: 1px solid #aaa;
+}
+
+.adminComment .adminCommentDelete
+{
+    color: #ff0000;
+}
+
+.adminComment .adminCommentDescription
+{
+    width:80px;
+}
+
+resizable: false,
+			height:140,
+			modal: true,
+			buttons: {
+				"Delete all items": function() {
+					$( this ).dialog( "close" );
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			}
