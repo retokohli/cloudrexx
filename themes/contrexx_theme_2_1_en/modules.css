@@ -37,6 +37,7 @@ form label, form  span {
     clear: left;
     font-weight: bold;
     float: left;
+    margin-top: 5px;
     width: 180px;
 }
 
@@ -160,13 +161,10 @@ div#livecam #CALBUTTONDPC_datum {
 /***************************************************/
 /* CSS DEFINITIONS FOR CONTACT MODULE              */
 /***************************************************/
-form#contactForm label{
-    clear: left;
-}
-
 form#contactForm .noCaption{
     clear: none;
     width: 420px;
+    margin: 0px;
 }
 
 form#contactForm input{

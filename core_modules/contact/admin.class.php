@@ -65,6 +65,7 @@ class ContactManager extends ContactLib {
                 'country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
                 'date'          => $_ARRAYLANG['TXT_CONTACT_DATE'],
                 'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD'],
+                'fieldset'      => $_ARRAYLANG['TXT_CONTACT_FIELDSET'],
                 'hidden'        => $_ARRAYLANG['TXT_CONTACT_HIDDEN_FIELD'],
                 'horizontalLine'=> $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'],
                 'password'      => $_ARRAYLANG['TXT_CONTACT_PASSWORD_FIELD'],
@@ -1712,6 +1713,7 @@ class ContactManager extends ContactLib {
             case 'checkboxGroup':
             case 'country':
             case 'date':
+            case 'fieldset':
             case 'hidden':
             case 'radio':
             case 'select':
@@ -1750,6 +1752,7 @@ class ContactManager extends ContactLib {
             case 'hidden':            
             case 'label':
             case 'recipient':
+            case 'fieldset':
             case 'horizontalLine':
                 return '';
                 break;
@@ -1823,10 +1826,10 @@ class ContactManager extends ContactLib {
         $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
         $sourcecode[] = "<!-- BEGIN contact_form -->";
-        $sourcecode[] = '<fieldset id="contactFrame">';
-        $sourcecode[] = "<legend>". ($preview ? $this->arrForms[$id]['lang'][$frontendLang]['name'] : "{".$id."_FORM_NAME}")."</legend>";
         $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
         $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
+        $sourcecode[] = '<fieldset id="contactFrame">';
+        $sourcecode[] = "<legend>". ($preview ? $this->arrForms[$id]['lang'][$frontendLang]['name'] : "{".$id."_FORM_NAME}")."</legend>";
 
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
@@ -1842,6 +1845,11 @@ class ContactManager extends ContactLib {
                 break;
             case 'label':
                 $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">&nbsp;</label>';
+                break;
+            case 'fieldset':
+                $sourcecode[] = '</fieldset>';
+                $sourcecode[] = '<fieldset id="contactFormFieldId_'.$fieldId.'">';
+                $sourcecode[] = "<legend>".($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")."</legend>";
                 break;
             default:
                 $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
@@ -1899,7 +1907,7 @@ class ContactManager extends ContactLib {
             case 'file':
                 $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
                 break;
-
+            
             case 'hidden':
                 $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : "{".$fieldId."_VALUE}").'" />';
                 break;
@@ -1995,8 +2003,8 @@ class ContactManager extends ContactLib {
         }
 
         $sourcecode[] = '<label>&nbsp;</label><input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
-        $sourcecode[] = "</form>";
         $sourcecode[] = "</fieldset>";
+        $sourcecode[] = "</form>";
         $sourcecode[] = "<!-- END contact_form -->";
 
         $sourcecode[] = $preview ? $this->_getJsSourceCode($id, $arrFields, $preview, $show) : "{CONTACT_JAVASCRIPT}";
@@ -2021,9 +2029,9 @@ class ContactManager extends ContactLib {
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
         foreach ($arrFormFields as $key => $arrField) {
             /*
-             * Horizontal Field Type need not be displayed in the details page
+             * Fieldset and Horizontal Field Type need not be displayed in the details page
              */
-            if ($arrField['type'] != 'horizontalLine') {
+            if ($arrField['type'] != 'horizontalLine' && $arrField['type'] != 'fieldset') {
                 $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
                 $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
                                 $arrField['lang'][FRONTEND_LANG_ID]['name'].
