@@ -1360,23 +1360,22 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 'TXT_KNOWLEDGE_UNCHECK_ALL' => $_ARRAYLANG['TXT_KNOWLEDGE_UNCHECK_ALL'],
                 'TXT_KNOWLEDGE_ASSIGNED_CATEGORIES' => $_ARRAYLANG['TXT_KNOWLEDGE_ASSIGNED_CATEGORIES'],
 		'TXT_MANAGE' => $_ARRAYLANG['TXT_MANAGE'],
-		'TXT_CONFIRM_COMMENT_DELETION' => $_ARRAYLANG['TXT_CONFIRM_COMMENT_DELETION'],
-
-		'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
-		'TXT_CANCEL' => $_ARRAYLANG['TXT_CANCEL'],
-		'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
-		'TXT_EMAIL' => $_ARRAYLANG['TXT_EMAIL'],
-		'TXT_TITLE' => $_ARRAYLANG['TXT_TITLE'],
-		
             ));
             $this->tpl->parse("langDiv");
             if ($first) {
-		
 		/*
 		 *comment_editing: set the initial language id so we can initialize the knowledgeInterface-JS correctly.
 		 */
 		$this->tpl->setVariable(array(
 		    "CONTENT_ID"        => isset($article['content'][$langId]['id']) ? $article['content'][$langId]['id'] : -1,
+		    		'TXT_CONFIRM_COMMENT_DELETION' => $_ARRAYLANG['TXT_CONFIRM_COMMENT_DELETION'],
+				
+		'TXT_DELETE' => $_ARRAYLANG['TXT_DELETE'],
+		'TXT_CANCEL' => $_ARRAYLANG['TXT_CANCEL'],
+		'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
+		'TXT_EMAIL' => $_ARRAYLANG['TXT_EMAIL'],
+		'TXT_TITLE' => $_ARRAYLANG['TXT_TITLE'],
+
 		));
 		$this->tpl->parse("comment_editing");
 
@@ -1386,10 +1385,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                                                $article['content'][$langId]['answer']
                                                : ''),
                     "KNOWLEDGE_ANSWER_LANG"  => $langId,
-		    "CONTENT_ID"        => isset($article['content'][$langId]['id']) ? $article['content'][$langId]['id'] : -1,
                 ));
-
-		
             }
             $first = false;
         }
