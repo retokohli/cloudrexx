@@ -1158,7 +1158,7 @@ class newsManager extends newsLibrary {
                 // parse teaser text
                 $this->_objTpl->setVariable(array(
                     'NEWS_LANG_ID'              => $langId,
-                    'NEWS_TEASER_TEXT'          => htmlentities((isset($langData[$langId]['teaser_text']) ? $langData[$langId]['teaser_text'] : ""), ENT_QUOTES, CONTREXX_CHARSET),
+                    'NEWS_TEASER_TEXT'          => (isset($langData[$langId]['teaser_text']) ? $langData[$langId]['teaser_text'] : ""),
                     'NEWS_TEASER_TEXT_LENGTH'   => strlen((isset($langData[$langId]['teaser_text']) ? $langData[$langId]['teaser_text'] : "")),
                     'NEWS_TITLE_DISPLAY'        => $arrLanguage['is_default'] == "true" ? 'block' : 'none'
                 ));
