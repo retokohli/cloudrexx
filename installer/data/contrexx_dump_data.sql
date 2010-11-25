@@ -2204,7 +2204,6 @@ INSERT INTO `contrexx_module_knowledge_categories` (`id`, `active`, `parent`, `s
 INSERT INTO `contrexx_module_knowledge_categories_content` (`id`, `category`, `name`, `lang`) VALUES (5,1,'Example category',1);
 INSERT INTO `contrexx_module_knowledge_categories_content` (`id`, `category`, `name`, `lang`) VALUES (7,5,'Comvation',1);
 INSERT INTO `contrexx_module_knowledge_categories_content` (`id`, `category`, `name`, `lang`) VALUES (8,4,'Contrexx',1);
-INSERT INTO `contrexx_module_knowledge_comments` (`id`, `article_content_id`, `parent_id`, `name`, `email`, `subject`, `user_id`, `comment`) VALUES (34,3,0,'asdf','','asdf',NULL,'asdf');
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (1,'max_subcategories','5');
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (2,'column_number','2');
 INSERT INTO `contrexx_module_knowledge_settings` (`id`, `name`, `value`) VALUES (3,'max_rating','8');
