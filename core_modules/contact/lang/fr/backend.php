@@ -169,4 +169,5 @@ $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "Modèle de courrier électronique";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Notification par email au format HTML Envoyer";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Pays";
 $_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
+$_ARRAYLANG['TXT_CONTACT_UNTITLED_FORM'] = "Untitled formulaire";
 ?>

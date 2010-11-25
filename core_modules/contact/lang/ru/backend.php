@@ -169,4 +169,5 @@ $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "Шаблон электронног�
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Отправить уведомление по электронной почте как HTML";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Страна";
 $_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
+$_ARRAYLANG['TXT_CONTACT_UNTITLED_FORM'] = "Untitled форма";
 ?>
