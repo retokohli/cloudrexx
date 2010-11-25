@@ -61,7 +61,7 @@ $_ARRAYLANG['TXT_CONTACT_PASSWORD_FIELD'] = "Password field";
 $_ARRAYLANG['TXT_CONTACT_RADIO_BOXES'] = "Select fields";
 $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_FORM'] = "Do you really want to delete this form?";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'] = "All contact entries of the form will be deleted!";
-$_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'] = "Lastest Submission";
+$_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'] = "Latest Submission";
 $_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'] = "Number of Submissions";
 $_ARRAYLANG['TXT_CONTACT_ID'] = "ID";
 $_ARRAYLANG['TXT_CONTACT_MODIFY'] = "Modify";
@@ -169,4 +169,5 @@ $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "Email Template";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Send Notification Email as HTML";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Country";
 $_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
+$_ARRAYLANG['TXT_CONTACT_UNTITLED_FORM'] = "Untitled Form";
 ?>

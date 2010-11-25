@@ -169,4 +169,5 @@ $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'] = "E-posta Şablonu";
 $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "HTML olarak gönder E-posta Bildirimi";
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Ülke";
 $_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
+$_ARRAYLANG['TXT_CONTACT_UNTITLED_FORM'] = "Untitled Form";
 ?>
