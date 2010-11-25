@@ -186,7 +186,7 @@ class KnowledgeLibrary {
 	}
 	//try to fetch the target
 	$objTarget = $objDatabase->Execute($qTarget);
-	if($qTarget->EOF) //no target
+	if($objTarget->EOF) //no target
 	    return array('status' => 'error', 'message' => 'non-existent target given');
 
 	$query = '';
@@ -195,9 +195,7 @@ class KnowledgeLibrary {
 	//create mysql string for data
 	$dataValues = array_values($commentData);
 	// { val, val2 } => { 'val', 'val2' }
-	array_walk($dataValues,function(&$value) {
-		$value = "'".$value."'";		
-	    });
+	array_walk($dataValues, array($this, 'addStringTokens'));
 	$dataValues = join($dataValues,',');
 
 	//our target is valid. next, decide what's to do.
@@ -209,11 +207,18 @@ class KnowledgeLibrary {
               (article_content_id, parent_id, '.$dataColumns.') VALUES (
               '.$articleContentId.','.$commentId.','.$dataValues.')';
 	}
-	
 	if($objDatabase->Execute($query) === false)
 	    return array('status' => 'error', 'message' => 'query failed.');
 
 	return array('status' => 'success', 'data' => $commentData);
+    }
+
+    /**
+     * @see KnowledgeLib::comment()
+     */
+    public function addStringTokens(&$string)
+    {
+	$string = "'".$string."'";
     }
 
     /**
