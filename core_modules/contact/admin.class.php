@@ -459,13 +459,10 @@ class ContactManager extends ContactLib {
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-                'TXT_CONTACT_SHOW_ENTRIES'                  => $_ARRAYLANG['TXT_CONTACT_SHOW_ENTRIES'],
                 'TXT_CONTACT_MODIFY'                        => $_ARRAYLANG['TXT_CONTACT_MODIFY'],
                 'TXT_CONTACT_DELETE'                        => $_ARRAYLANG['TXT_CONTACT_DELETE'],
                 'TXT_CONTACT_SHOW_SOURCECODE'               => $_ARRAYLANG['TXT_CONTACT_SHOW_SOURCECODE'],
-                'TXT_CONTACT_USE_AS_TEMPLATE'               => $_ARRAYLANG['TXT_CONTACT_USE_AS_TEMPLATE'],
-                'TXT_CONTACT_GET_CSV'                       => $_ARRAYLANG['TXT_CONTACT_GET_CSV'],
-                'TXT_CONTACT_DOWNLOAD'                      => $_ARRAYLANG['TXT_CONTACT_DOWNLOAD']
+                'TXT_CONTACT_USE_AS_TEMPLATE'               => $_ARRAYLANG['TXT_CONTACT_USE_AS_TEMPLATE']
         ));
 
         $rowNr = 0;
@@ -474,14 +471,22 @@ class ContactManager extends ContactLib {
                 $pageId = $this->_getContentSiteId($formId);
                 
                 $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
-                $arrForm['lang'][FRONTEND_LANG_ID]['name'] = ($arrForm['lang'][FRONTEND_LANG_ID]['name'] == "") ? 'Untitled' : $arrForm['lang'][FRONTEND_LANG_ID]['name'];
+                $arrForm['lang'][FRONTEND_LANG_ID]['name'] = ($arrForm['lang'][FRONTEND_LANG_ID]['name'] == "") ? $_ARRAYLANG['TXT_CONTACT_UNTITLED_FORM'] : $arrForm['lang'][FRONTEND_LANG_ID]['name'];
+
+                if ($arrForm['number'] > 0) {
+                    $formName = "<a href='index.php?cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId."' title='".$_ARRAYLANG['TXT_CONTACT_SHOW_ENTRIES']."'>".htmlentities($arrForm['lang'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>";
+                    $getCSVLink = "<a href='index.php?cmd=contact&amp;act=forms&amp;tpl=csv&amp;formId=".$formId."' title='".$_ARRAYLANG['TXT_CONTACT_GET_CSV']."'>".$_ARRAYLANG['TXT_CONTACT_DOWNLOAD']."</a>";
+                } else {
+                    $formName = htmlentities($arrForm['lang'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                    $getCSVLink = ' - ';
+                }
 
                 $this->_objTpl->setVariable(array(
                         'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
-                        'CONTACT_FORM_NAME'                 => htmlentities($arrForm['lang'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '&nbsp;',
-                        'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $arrForm['number'],
-                        //'CONTACT_FORM_LANG'                 => FWLanguage::getLanguageParameter($arrForm['lang'], 'name'),
+                        'CONTACT_FORM_NAME'                 => $formName,
+                        'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : ' - ',
+                        'CONTACT_FORM_NUMBER_OF_ENTRIES'    => ($arrForm['number'] > 0) ? $arrForm['number'] : ' - ',
+                        'CONATCT_FORM_CSV_DOWNLOAD'         => $getCSVLink,
                         'CONTACT_DELETE_CONTENT'            => $pageId > 0 ? 'true' : 'false'
                 ));
 
@@ -1851,6 +1856,17 @@ class ContactManager extends ContactLib {
                 $sourcecode[] = '<fieldset id="contactFormFieldId_'.$fieldId.'">';
                 $sourcecode[] = "<legend>".($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")."</legend>";
                 break;
+            case 'checkboxGroup':
+            case 'radio':
+                $sourcecode[] = '<label>'.
+                                ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")
+                                .$required.'</label>';
+                break;
+            case 'date':
+                $sourcecode[] = '<label for="DPC_date'.$fieldId.'_YYYY-MM-DD">'.
+                                ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")
+                                .$required.'</label>';
+                break;
             default:
                 $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
                                 ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")
@@ -1948,7 +1964,7 @@ class ContactManager extends ContactLib {
                 $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
                 break;
             case 'recipient':
-                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$fieldId.'">';
+                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                 if ($preview) {
                     foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
                         $sourcecode[] = "<option value='".$index."'>". $arrRecipient['lang'][FRONTEND_LANG_ID] ."</option>";
