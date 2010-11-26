@@ -48,7 +48,8 @@ class ContactManager extends ContactLib {
      * @global array
      * @global array
      */
-    function __construct() {
+    function __construct()
+    {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
@@ -93,7 +94,8 @@ class ContactManager extends ContactLib {
      * @access public
      * @global HTML_Template_Sigma
      */
-    function getPage() {
+    function getPage()
+    {
         global $objTemplate;
 
         if (!isset($_REQUEST['act'])) {
@@ -127,7 +129,8 @@ class ContactManager extends ContactLib {
         ));
     }
 
-    function _getEntriesPage() {
+    function _getEntriesPage()
+    {
         global $_ARRAYLANG;
 
         $entryId = isset($_REQUEST['entryId']) ? intval($_REQUEST['entryId']) : 0;
@@ -158,7 +161,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _getSettingsPage() {
+    function _getSettingsPage()
+    {
         switch ($_REQUEST['tpl']) {
             case 'save':
                 $this->_saveSettings();
@@ -169,7 +173,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _settings() {
+    function _settings()
+    {
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_contact_settings.html');
@@ -200,7 +205,8 @@ class ContactManager extends ContactLib {
         ));
     }
 
-    function _saveSettings() {
+    function _saveSettings()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $saveStatus = true;
@@ -249,7 +255,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _getContactFormPage() {
+    function _getContactFormPage()
+    {
         switch ($_REQUEST['tpl']) {
             case 'edit':
                 $this->_modifyForm();
@@ -306,7 +313,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _contactFormEntries() {
+    function _contactFormEntries()
+    {
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_contact_form_entries.html');
@@ -436,7 +444,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _contactForms() {
+    function _contactForms()
+    {
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_contact_forms_overview.html');
@@ -497,7 +506,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _selectFrontendLang() {
+    function _selectFrontendLang()
+    {
         global $_ARRAYLANG;
 
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
@@ -536,7 +546,8 @@ class ContactManager extends ContactLib {
      *
      * @param array $arrRecipients
      */
-    function _showRecipients($recipients = array()) {
+    function _showRecipients($recipients = array())
+    {
         global $_ARRAYLANG;
 
         $activeLanguages =  FWLanguage::getActiveFrontendLanguages();
@@ -572,7 +583,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    public function getLangShortName($langId){
+    public function getLangShortName($langId)
+    {
         /**
          * Places the flag corresponding to the language name and value field
          */
@@ -604,7 +616,8 @@ class ContactManager extends ContactLib {
      * @param boolean $refresh
      * @return array
      */
-    public function setRecipients($arrRecipients) {
+    public function setRecipients($arrRecipients)
+    {
         global $objDatabase;
 
         $objDatabase->Execute("
@@ -631,7 +644,8 @@ class ContactManager extends ContactLib {
      * @access private
      * @param bool $copy If the form should be copied or not
      */
-    function _modifyForm($copy = false) {
+    function _modifyForm($copy = false)
+    {
         global $_ARRAYLANG, $_CONFIG, $objDatabase, $objInit;
 
         JS::activate('jquery-ui');
@@ -1046,7 +1060,8 @@ class ContactManager extends ContactLib {
 
     }
 
-    function _getContentSiteLang($formId) {
+    function _getContentSiteLang($formId)
+    {
         global $objDatabase;
 
         $objContentSite = $objDatabase->SelectLimit("SELECT `lang` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
@@ -1058,7 +1073,8 @@ class ContactManager extends ContactLib {
         return false;
     }
 
-    function _getContentSiteId($formId) {
+    function _getContentSiteId($formId)
+    {
         global $objDatabase;
 
         $objContentSite = $objDatabase->SelectLimit("SELECT `catid` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
@@ -1070,7 +1086,8 @@ class ContactManager extends ContactLib {
         return false;
     }
 
-    function _getContentSiteParCat($formId) {
+    function _getContentSiteParCat($formId)
+    {
         global $objDatabase;
 
         $objParentCat = $objDatabase->SelectLimit("SELECT `parcat` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
@@ -1083,7 +1100,8 @@ class ContactManager extends ContactLib {
     }
 
     // added langid as new parameter to support multi-lang
-    function _getFormFieldAttribute($id, $type, $attr, $langid = 0) {
+    function _getFormFieldAttribute($id, $type, $attr, $langid = 0)
+    {
         global $_ARRAYLANG;
 
         /**
@@ -1136,7 +1154,8 @@ class ContactManager extends ContactLib {
      *
      * @access private
      */
-    function _saveForm() {
+    function _saveForm()
+    {
         global $_ARRAYLANG, $_CONFIG;
         global $objDatabase;
 
@@ -1274,7 +1293,8 @@ class ContactManager extends ContactLib {
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @return      string
      */
-    private function getPostRecipients() {
+    private function getPostRecipients()
+    {
         $formEmailsTmp = isset($_POST['contactFormEmail'])
                 ? explode(
                 ',',
@@ -1302,7 +1322,8 @@ class ContactManager extends ContactLib {
     }
 
 
-    function _deleteFormEntry() {
+    function _deleteFormEntry()
+    {
         global $_ARRAYLANG;
 
         if (isset($_GET['entryId'])) {
@@ -1324,7 +1345,8 @@ class ContactManager extends ContactLib {
      *
      * @author      Comvation AG <info@comvation.com>
      */
-    private function _deleteForm() {
+    private function _deleteForm()
+    {
         global $_ARRAYLANG;
 
         if (isset($_GET['formId'])) {
@@ -1348,7 +1370,8 @@ class ContactManager extends ContactLib {
     /*
      * Delete Site content for all languages even though language is not active
      */
-    function _deleteContentSite($formId) {
+    function _deleteContentSite($formId)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         Permission::checkAccess(26, 'static');
@@ -1413,7 +1436,8 @@ class ContactManager extends ContactLib {
      *
      * @global    ADONewConnection
      */
-    function _collectLostPages() {
+    function _collectLostPages()
+    {
         global $objDatabase;
 
         $objResult = $objDatabase->Execute('    SELECT  catid,
@@ -1496,7 +1520,8 @@ class ContactManager extends ContactLib {
      * This is only used when an error on saving occurs, to
      * reparse the form fields.
      */
-    private function _getFormFieldsFromPost(&$uniqueFieldNames) {
+    private function _getFormFieldsFromPost(&$uniqueFieldNames)
+    {
         global $objInit;
 
         $uniqueFieldNames = true;
@@ -1653,7 +1678,8 @@ class ContactManager extends ContactLib {
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @return      array
      */
-    private function getRecipientsFromPost() {
+    private function getRecipientsFromPost()
+    {
         $mails = $_POST['contactFormRecipientEmail'];
         $names = $_POST['contactFormRecipientName'];
         $editTypes = $_POST['contactFormRecipientEditType'];
@@ -1689,8 +1715,8 @@ class ContactManager extends ContactLib {
      * Generates a xhtml selection list with all the field types
      * @access private
      */
-    function _getFormFieldTypesMenu($name, $selectedType, $attrs = '') {
-
+    function _getFormFieldTypesMenu($name, $selectedType, $attrs = '')
+    {
         $menu = "<select class=\"contactFormFieldType\" name=\"".$name."\" ".$attrs.">\n";
 
         foreach ($this->_arrFormFieldTypes as $type => $desc) {
@@ -1710,7 +1736,8 @@ class ContactManager extends ContactLib {
      * @param array $list List with all of the possible types (email, url, text, numbers...)
      * @param int $selected Which option has to be selected
      */
-    function _getFormFieldCheckTypesMenu($name, $id,  $type, $selected) {
+    function _getFormFieldCheckTypesMenu($name, $id,  $type, $selected)
+    {
         global $_ARRAYLANG;
 
         switch ($type) {
@@ -1750,7 +1777,8 @@ class ContactManager extends ContactLib {
         return  $menu;
     }
 
-    function _getFormFieldRequiredCheckBox($name, $id, $type, $selected) {
+    function _getFormFieldRequiredCheckBox($name, $id, $type, $selected)
+    {
         global $_ARRAYLANG;
 
         switch ($type) {
@@ -1775,7 +1803,8 @@ class ContactManager extends ContactLib {
      * @access public
      * @global array
      */
-    function _sourceCode($formId = NULL) {
+    function _sourceCode($formId = NULL)
+    {
         global $_ARRAYLANG;
 
         if (!isset($formId)) {
@@ -1817,7 +1846,8 @@ class ContactManager extends ContactLib {
      * @preview Boolean, generated preview source or raw source
      * @show    Boolean, generated frontend code
      */
-    function _getSourceCode($id, $preview = false, $show = false) {
+    function _getSourceCode($id, $preview = false, $show = false)
+    {
         global $_ARRAYLANG, $objInit, $objDatabase;
 
         $arrFields = $this->getFormFields($id);
@@ -2119,7 +2149,8 @@ class ContactManager extends ContactLib {
      * @global array
      * @global array
      */
-    function _getCsv() {
+    function _getCsv()
+    {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $id = intval($_GET['formId']);
@@ -2202,7 +2233,8 @@ class ContactManager extends ContactLib {
      * @param string $value
      * @return string
      */
-    function _escapeCsvValue(&$value) {
+    function _escapeCsvValue(&$value)
+    {
         $value = preg_replace('/\r\n/', "\n", $value);
         $valueModified = str_replace('"', '""', $value);
 
@@ -2222,7 +2254,8 @@ class ContactManager extends ContactLib {
      * @param $filename string Filename where the characters have
      *                         to be replaced
      */
-    function _replaceFilename($filename) {
+    function _replaceFilename($filename)
+    {
         $filename = strtolower($filename);
 
         // replace whitespaces
@@ -2249,7 +2282,8 @@ class ContactManager extends ContactLib {
      * @global integer
      * @global array
      */
-    function _createContentPage() {
+    function _createContentPage()
+    {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
         Permission::checkAccess(5, 'static');
@@ -2262,14 +2296,16 @@ class ContactManager extends ContactLib {
             if (!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
                 $pageId = intval($_REQUEST['pageId']);
             } else {
-                $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
+                $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId`
+                                                    FROM `'.DBPREFIX.'content_navigation`');
                 $pageId = $objRS->fields['nextId'];
             }
 
             foreach ($activeLanguages as $lang) {
                 $langID = $lang['id'];
 
-                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang WHERE formID=".$formId." AND langID=".$langID, 1);
+                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang
+                                                            WHERE formID=".$formId." AND langID=".$langID, 1);
                 if ($objContactForm !== false) {
                     $catname = addslashes($objContactForm->fields['name']);
                 }
@@ -2373,7 +2409,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _updateContentSite() {
+    function _updateContentSite()
+    {
         global $objDatabase, $_ARRAYLANG;
 
         Permission::checkAccess(35, 'static');
@@ -2530,7 +2567,8 @@ class ContactManager extends ContactLib {
         }
     }
 
-    function _createContactFeedbackSite() {
+    function _createContactFeedbackSite()
+    {
         global $objDatabase;
 
         // Check if the thanks page is already active

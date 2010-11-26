@@ -105,9 +105,9 @@ class Contact extends ContactLib
         if ($this->objTemplate->blockExists('contact_form')) {
             $recipients = $this->getRecipients($formId);
             foreach ($arrFields as $fieldId => $arrField) {
-                 /*
-                  * Set Default field value through URL Modifiers
-                  */
+             /*
+              * Set Default field value through URL Modifiers
+              */
                 if (!empty($_GET[$fieldId])) {
                     switch ($arrField['type']) {
                     case 'checkboxGroup' :
@@ -129,9 +129,9 @@ class Contact extends ContactLib
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
 
                 $this->objTemplate->setVariable(array(
-                    $formId.'_FORM_NAME'    => $this->arrForms[$formId]['lang'][$_LANGID]['name'],
+                    $formId.'_FORM_NAME'    => wordwrap($this->arrForms[$formId]['lang'][$_LANGID]['name'], 90, "<br/>\n", true),
                     $formId.'_FORM_TEXT'    => $this->arrForms[$formId]['lang'][$_LANGID]['text'],
-                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? $arrField['lang'][$_LANGID]['name'] : "&nbsp;"
+                    $fieldId.'_LABEL'       => ($arrField['lang'][$_LANGID]['name'] != "") ? wordwrap($arrField['lang'][$_LANGID]['name'], 90, "<br/>\n", true) : "&nbsp;"
                 ));
 
                 /*
