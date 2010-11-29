@@ -170,4 +170,5 @@ $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'] = "Értesítés küldése e-mail, mint
 $_ARRAYLANG['TXT_CONTACT_COUNTRY'] = "Ország";
 $_ARRAYLANG['TXT_CONTACT_FIELDSET'] = "Fieldset";
 $_ARRAYLANG['TXT_CONTACT_UNTITLED_FORM'] = "Névtelen forma";
+$_ARRAYLANG['TXT_FORM_NOTIFICATION'] = "Értesítés";
 ?>
