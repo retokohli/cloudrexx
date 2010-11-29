@@ -339,6 +339,11 @@
         $J('#langTab_' + id).show();
     }
 
+    function notifylangTab(id) {
+        $J('.notifylangTabs').hide();
+        $J('#notifylangTab_' + id).show();
+    }
+
     $J(document).ready(function() {
         $J('#formFields tbody').sortable({
             placeholder: 'ui-state-highlight',
@@ -501,15 +506,14 @@
     <div style="width:150px; display:inline;" id="contactFormFieldRequiredBox_0">
         {CONTACT_FORM_FIELD_CHECK_BOX_TPL} {CONTACT_FORM_FIELD_CHECK_MENU_TPL}
     </div>
-
 </div>
-
 
 
 <ul id="tabmenu">
     <li><a href="#" onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
     <li><a href="#" onclick="superTab('fields')" title="{TXT_FORM_FIELDS}">{TXT_FORM_FIELDS}</a></li>
     <li><a href="#" onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
+    <li><a href="#" onclick="superTab('notification')" title="{TXT_FORM_NOTIFICATION}">{TXT_FORM_NOTIFICATION}</a></li>
 </ul>
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
     <input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
@@ -522,13 +526,6 @@
         <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
             <tr>
                 <th colspan="2">{CONTACT_ACTION_TITLE}</th>
-            </tr>
-            <tr class="row2" style="height:20px;">
-                <td style="width: 15%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
-                <td>
-                    <input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" />&nbsp;
-                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
-                </td>
             </tr>
         </table>
         <br /><br />
@@ -550,27 +547,19 @@
                 <tbody style="vertical-align:top;">
                     <tr>
                         <th>&nbsp;</th>
-                        <th> {LANG_NAME}</th>
+                        <th>{LANG_NAME}</th>
                     </tr>
                     <tr class="row1" style="height:20px;">
                         <td width="15%">{TXT_CONTACT_NAME}</td>
                         <td width="90%"><input style="width:300px;" type="text" name="contactFormName[{LANG_ID}]" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
                     </tr>
                     <tr class="row2">
-                        <td>{TXT_CONTACT_SUBJECT}</td>
-                        <td><input style="width: 300px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
-                    </tr>
-                    <tr class="row1">
                         <td>{TXT_CONTACT_FORM_DESC}</td>
                         <td>{CONTACT_FORM_TEXT}</td>
                     </tr>
-                    <tr class="row2">
+                    <tr class="row1">
                         <td>{TXT_CONTACT_FEEDBACK}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
                         <td>{CONTACT_FORM_FEEDBACK}</td>
-                    </tr>
-                    <tr class="row1">
-                        <td>{TXT_CONTACT_MAIL_TEMPLATE}</td>
-                        <td>{CONTACT_MAIL_TEMPLATE}</td>
                     </tr>
                 </tbody>
             </table>
@@ -658,7 +647,7 @@
         <br />
 
         <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" id="addFieldButton"/>
-
+        
         <br/><br/>
         <div id="tab_recipients" style="display: none;">
             <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
@@ -674,9 +663,7 @@
                         <td>&nbsp;</td>
                     </tr>
                 </thead>
-
                 <tbody>
-
                     <!-- BEGIN contact_form_recipient_list -->
                     <tr class="formRecipient {ROW_CLASS_NAME}">
                         <td><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
@@ -727,6 +714,21 @@
                 <td>{TXT_CONTACT_CAPTCHA_PROTECTION}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
                 <td><input type="radio" name="contactFormUseCaptcha" value="1" id="contactFormUseCaptcha_1" {CONTACT_FORM_USE_CAPTCHA_YES} /><label for="contactFormUseCaptcha_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCaptcha" value="0" id="contactFormUseCaptcha_0" {CONTACT_FORM_USE_CAPTCHA_NO} /><label for="contactFormUseCaptcha_0">{TXT_CONTACT_NO}</label></td>
             </tr>
+        </table>
+    </div>
+
+    <div id="tab_notification" class="tabs" style="display:none;">
+        <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+            <tr>
+                <th colspan="2">{TXT_FORM_NOTIFICATION}</th>
+            </tr>
+            <tr class="row1" style="height:20px;">
+                <td style="width: 18%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
+                <td>
+                    <input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" />&nbsp;
+                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
+                </td>
+            </tr>
             <tr class="row2">
                 <td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
                 <td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
@@ -735,9 +737,42 @@
                 <td>{TXT_CONTACT_SEND_HTML_MAIL}</td>
                 <td><input type="checkbox" name="contactFormHtmlMail" id="contactFormHtmlMail" {CONTACT_FORM_SEND_HTML_MAIL} /></td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <div style="padding-left: 4px">
+                        <ul class="tabmenu" style="margin-left: 15%">
+                            <!-- BEGIN notificationLanguageTabs -->
+                            <li>
+                                <a href="#" onclick="notifylangTab({LANG_ID})" title="{LANG_NAME}"
+                                   style="{TAB_DISPLAY}">{LANG_NAME}</a>
+                            </li>
+                            <!-- END notificationLanguageTabs -->
+                        </ul>
+                    </div>
+                    <!-- BEGIN notificationLanguageForm -->
+                    <div style="display: {LANG_FORM_DISPLAY};"  id="notifylangTab_{LANG_ID}" class="notifylangTabs">
+                        <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+                            <tbody style="vertical-align:top;">
+                                <tr>
+                                    <th>&nbsp;</th>
+                                    <th>{LANG_NAME}</th>
+                                </tr>
+                                <tr class="row1">
+                                    <td width="15%">{TXT_CONTACT_SUBJECT}</td>
+                                    <td><input style="width: 300px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
+                                </tr>
+                                <tr class="row2">
+                                    <td>{TXT_CONTACT_MAIL_TEMPLATE}</td>
+                                    <td>{CONTACT_MAIL_TEMPLATE}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- END notificationLanguageForm -->
+                </td>
+            </tr>
         </table>
     </div>
-
     <br />
     <br />
     <br />

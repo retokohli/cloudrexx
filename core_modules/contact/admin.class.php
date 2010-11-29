@@ -694,25 +694,9 @@ class ContactManager extends ContactLib {
             if (isset($langVars)) {
                 $formText         = $langVars['text'];
                 $formFeedback     = $langVars['feedback'];
-                $formMailTemplate = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $langVars['mailTemplate']);
-                $formSubject      = $langVars['subject'];
                 $formName         = $langVars['name'];
             } else {
-                $formText = $formFeedback = $formName = $formSubject = '';
-                $formMailTemplate = "<table>
-                                     <tbody>
-                                     <!-- BEGIN form_field -->
-                                        <tr>
-                                            <td>
-                                                [[FIELD_LABEL]]
-                                            </td>
-                                            <td>
-                                                [[FIELD_VALUE]]
-                                            </td>
-                                        </tr>
-                                     <!-- END form_field -->
-                                     </tbody>
-                                     </table>";
+                $formText = $formFeedback = $formName = '';
             }
 
             $this->_objTpl->setVariable(
@@ -733,6 +717,7 @@ class ContactManager extends ContactLib {
                     'TXT_FORM_FIELDS'                               => $_ARRAYLANG['TXT_FORM_FIELDS'],
                     'TXT_FORM_RECIPIENTS'                           => $_ARRAYLANG['TXT_FORM_RECIPIENTS'],
                     'TXT_ADVANCED_SETTINGS'                         => $_ARRAYLANG['TXT_ADVANCED_SETTINGS'],
+                    'TXT_FORM_NOTIFICATION'                         => $_ARRAYLANG['TXT_FORM_NOTIFICATION'],
                     'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
                     'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
                     'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
@@ -796,6 +781,55 @@ class ContactManager extends ContactLib {
             );
             $this->_objTpl->parse('languageForm');
             $first = false;
+        }
+
+        $first = true;
+        foreach ($activeLanguages as $lang) {
+            $langID = $lang['id'];
+            $this->_objTpl->setVariable(array(
+                    'LANG_ID'       => $lang['id'],
+                    'LANG_NAME'     => $lang['name']
+                    )
+            );
+            $this->_objTpl->parse('notificationLanguageTabs');
+
+            $langVars = &$this->arrForms[$formId]['lang'][$langID];
+            if (isset($langVars)) {
+                $formMailTemplate = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $langVars['mailTemplate']);
+                $formSubject      = $langVars['subject'];
+            } else {
+                $formSubject = '';
+                $formMailTemplate = "<table>
+                                     <tbody>
+                                     <!-- BEGIN form_field -->
+                                        <tr>
+                                            <td>
+                                                [[FIELD_LABEL]]
+                                            </td>
+                                            <td>
+                                                [[FIELD_VALUE]]
+                                            </td>
+                                        </tr>
+                                     <!-- END form_field -->
+                                     </tbody>
+                                     </table>";
+            }
+
+            $this->_objTpl->setVariable(
+                    array(
+                    'LANG_ID'                                       => $lang['id'],
+                    'LANG_NAME'                                     => $lang['name'],
+                    'LANG_FORM_DISPLAY'                             => ($first) ? 'block' : 'none',
+
+                    'TXT_CONTACT_SUBJECT'                           => $_ARRAYLANG['TXT_CONTACT_SUBJECT'],
+                    'CONTACT_FORM_SUBJECT'                          => $formSubject,
+                    'TXT_CONTACT_MAIL_TEMPLATE'                     => $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'],
+                    'CONTACT_MAIL_TEMPLATE'                         => get_wysiwyg_editor('contactMailTemplate['.$langID.']', $formMailTemplate, 'shop', $lang)
+                    )
+            );
+            $this->_objTpl->parse('notificationLanguageForm');
+            $first = false;
+
         }
 
         if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
@@ -1240,7 +1274,7 @@ class ContactManager extends ContactLib {
 
             // do the fields
             $fields = $this->_getFormFieldsFromPost($uniqueFieldNames);
-
+            
             $formFieldIDs = array();
             foreach ($fields as $field) {
                 if ($field['editType'] == 'new') {
@@ -1663,7 +1697,9 @@ class ContactManager extends ContactLib {
                      Duplicate the values of checkbox for all languages
                      */
                     if($arrFields[intval($id)]['type'] == 'checkbox') {
-                        $arrFields[intval($id)]['lang'][$lang['id']]['value'] = $fieldValues[intval($id)][0];
+                        $arrFields[intval($id)]['lang'][$lang['id']]['value'] = (isset($fieldValues[intval($id)][0])
+                                                                                ? $fieldValues[intval($id)][0]
+                                                                                : $fieldValues[intval($id)][1]);
                     }
                 }
                 $orderId++;
