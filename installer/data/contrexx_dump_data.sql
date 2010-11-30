@@ -1468,8 +1468,8 @@ INSERT INTO `contrexx_module_contact_form_field_lang` (`id`, `fieldID`, `langID`
 INSERT INTO `contrexx_module_contact_form_field_lang` (`id`, `fieldID`, `langID`, `name`, `attributes`) VALUES (18,9,2,'Number','');
 INSERT INTO `contrexx_module_contact_form_field_lang` (`id`, `fieldID`, `langID`, `name`, `attributes`) VALUES (19,10,1,'Tier','Hund,Katze,Maus');
 INSERT INTO `contrexx_module_contact_form_field_lang` (`id`, `fieldID`, `langID`, `name`, `attributes`) VALUES (20,10,2,'Animal','Dog,Cat,Mouse');
-INSERT INTO `contrexx_module_contact_form_lang` (`id`, `formID`, `langID`, `name`, `text`, `feedback`, `mailTemplate`, `subject`) VALUES (1,1,1,'Kontaktformular','<br />\r\nDas ist ein Kontaktformular<br />\r\n','<br />\r\nBesten Dank f&uuml;r Ihre Anfrage!<br />\r\n','','Kontakt von Webseite');
-INSERT INTO `contrexx_module_contact_form_lang` (`id`, `formID`, `langID`, `name`, `text`, `feedback`, `mailTemplate`, `subject`) VALUES (2,1,2,'Contact form','<br />\r\nThis is a contact form.<br />\r\n','Thank you for your request.<br />\r\n','','Contact request from website');
+INSERT INTO `contrexx_module_contact_form_lang` (`id`, `formID`, `langID`, `is_active`, `name`, `text`, `feedback`, `mailTemplate`, `subject`) VALUES (1,1,1,1,'Kontaktformular','<br />\r\nDas ist ein Kontaktformular<br />\r\n','<br />\r\nBesten Dank f&uuml;r Ihre Anfrage!<br />\r\n','','Kontakt von Webseite');
+INSERT INTO `contrexx_module_contact_form_lang` (`id`, `formID`, `langID`, `is_active`, `name`, `text`, `feedback`, `mailTemplate`, `subject`) VALUES (2,1,2,1,'Contact form','<br />\r\nThis is a contact form.<br />\r\n','Thank you for your request.<br />\r\n','','Contact request from website');
 INSERT INTO `contrexx_module_contact_recipient` (`id`, `id_form`, `email`, `sort`) VALUES (1,1,'tom@comvation.com',0);
 INSERT INTO `contrexx_module_contact_recipient` (`id`, `id_form`, `email`, `sort`) VALUES (2,1,'thomas.daeppen@comvation.com',1);
 INSERT INTO `contrexx_module_contact_recipient_lang` (`id`, `recipient_id`, `langID`, `name`) VALUES (1,1,1,'Verkauf');

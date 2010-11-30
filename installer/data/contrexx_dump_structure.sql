@@ -942,6 +942,7 @@ CREATE TABLE `contrexx_module_contact_form_lang` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `formID` int(10) unsigned NOT NULL,
   `langID` int(10) unsigned NOT NULL,
+  `is_active` int(1) NOT NULL default '1',
   `name` varchar(255) NOT NULL,
   `text` text NOT NULL,
   `feedback` text NOT NULL,
