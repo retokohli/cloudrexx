@@ -1,0 +1,202 @@
+<script src="lib/javascript/prototype.js"></script>
+<script src="lib/javascript/scriptaculous/scriptaculous.js"></script>
+<script src="lib/javascript/accordion/javascript/accordion.js"></script>
+<div id="wrapper_banner">
+	<div id="banner">
+		<div id="banner_text">
+			{BLOCK_GLOBAL}
+		</div>
+	</div>
+</div> 
+
+<div id="wrapper_content">
+	<div id="content">
+		<div id="frame_home" class="clear">
+			<div id="frame_home_left">
+				<h1>{CONTENT_TITLE}</h1>
+				{CONTENT_TEXT}
+				<div id="boxes_home" class="clear">
+					<div class="box">
+						<h1>Weitere Informationen</h1>
+						<div class="content">
+							<h2>Lassen Sie Ihre Seite finden</h2>
+							Bereits während der Erstellung des Internetauftrittes können Sie auf einige Punkte für die Suchmaschinenoptimierung achten, dannach empfehlen wir Ihnen die Webseiten bei den entsprechenden Suchmaschinen anzumelden. Die Indexierung der Suchmaschinen können Sie in der Statistik von Contrexx mitverfolgen.
+							<p class="more"><a href="http://www.contrexx.com/wiki/de/index.php?title=Suchmaschinenoptimierung_(SEO)" class="out">Weitere Tipps</a></p>
+						</div>
+						<div class="content">
+							<h2>Laufend über Contrexx® informiert</h2>
+							Wir sind überzeugt, dass Contrexx® die richtige Wahl ist: Die Bedienung ist einfach, der professionelle Support unterstützt Sie auf Anfrage und Contrexx® wird laufend weiter entwickelt. Informieren Sie sich regelmässig unter www.contrexx.com oder abonnieren Sie unseren RSS-Feed.
+							<p class="more"><a href="http://www.contrexx.com/feed/news_headlines_de.xml" class="out">Contrexx RSS-Feed</a></p>
+						</div>
+						<div class="content">
+							<h2>Referenz werden</h2>
+							Bewerben Sie sich nach Abschluss Ihres Projektes als Referenz bei Contrexx®, nach einer kurzen Prüfung werden wir die Referenz freischalten. Damit erhalten Sie eine weitere Verlinkung auf Ihre Webseite und damit gewinnen Sie eine höhere Relevanz bei Suchmaschinen.
+							<p class="more"><a href="http://www.contrexx.com/de/index.php?section=directory&amp;cmd=add" class="out">Referenz anmelden</a></p>
+						</div>
+					</div>
+					<div class="box" style="width:100%;">
+						<h1>Werbung</h1>
+						<div class="content">
+							<div align="center">{BLOCK_RANDOMIZER}&nbsp;{BLOCK_RANDOMIZER_2}&nbsp;{BLOCK_RANDOMIZER_3}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="frame_home_right">
+				<div class="box">
+					<h1>Neuste Einträge</h1>
+					<div id="accordion">
+						<h2 class="toggler">Newsmeldungen</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{HEADLINES_FILE}
+					</div></div>
+					
+						<h2 class="toggler">Forum</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{FORUM_FILE}
+					</div></div>
+	
+						<h2 class="toggler">Podcast</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{PODCAST_FILE}
+					</div></div>
+					
+						<h2 class="toggler">Blog</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						{BLOG_FILE}
+						<div class="content" style="width:278px;">
+							{BLOG_TAG_CLOUD}
+						</div>
+						<div class="content clear">
+						<p class="more"><a href="index.php?section=blog">Weitere Beiträge</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Verzeichnis</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<!-- BEGIN directoryLatest_row_1 -->
+						<div class="content">
+						<p class="date">Hinzugefügt am {DIRECTORY_DATE}</p>
+						<h2><a href="index.php?section=directory&amp;cmd=detail&amp;id={DIRECTORY_ID}">{DIRECTORY_TITLE}</a></h2>{DIRECTORY_DESC}
+						</div>
+						<!-- END directoryLatest_row_1 -->
+						<div class="content">
+						<p class="more"><a href="index.php?section=directory">Weitere Einträge</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Bildergalerie</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<div class="content">
+							<div align="center">{GALLERY_RANDOM}</div>
+						</div>
+						<div class="content">
+						<p class="more"><a href="index.php?section=gallery">Weitere Bildergalerien</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Newsletter</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<div class="content">
+							<div id="newsletter_home">{NEWSLETTER_BLOCK}</div>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Inseratemarkt</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<!-- BEGIN marketLatest -->
+						<div class="content">
+							<p class="date">Online bis {MARKET_DATE}</p>
+							<h2><a href="index.php?section=market&amp;cmd=detail&amp;id={MARKET_ID}">{MARKET_TITLE}</a></h2>
+						</div>
+						<!-- END marketLatest -->
+						<div class="content">
+						<p class="more"><a href="index.php?section=market">Weitere Inserate</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Wissensdatenbank</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;"><div>
+						<div class="content"><p class="date">Meistgelesene Artikel</p></div>
+						{KNOWLEDGE_MOST_READ}
+						<div class="content"><p class="date">Bestbewertete Artikel</p></div>
+						{KNOWLEDGE_BEST_RATED}
+						<div class="content">
+							{KNOWLEDGE_TAG_CLOUD}
+						</div>
+						<div class="content">
+							<p class="more"><a href="index.php?section=knowledge">Weitere Einträge</a></p>
+						</div>
+					</div></div>
+					
+						<h2 class="toggler">Veranstaltungen</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;">
+						{EVENTS_FILE}
+						</div>
+					
+						<h2 class="toggler">Umfragen</h2>
+						<div class="accordion_content" style=" height: 0px; overflow:hidden;">
+						<div class="content">
+							<p class="date">Mittwoch, 18. Juni 2008</p>
+							<h2>Wie finden Sie unsere neue Website?</h2>
+							<div id="voting">
+								<form name="VotingForm" action="index.php?section=voting" method="post">
+								<input type="radio" name="votingoption" value="36" />Hammermässig<br />
+								<input type="radio" name="votingoption" value="37" />Verdammt gut<br />
+								<input type="radio" name="votingoption" value="38" />Sehr schön<br />
+								<input type="radio" name="votingoption" value="39" />Nicht schlecht<br />
+								<input type="radio" name="votingoption" value="40" />Geht so<br />
+								<input type="radio" name="votingoption" value="41" />Habe schon besseres gesehen<br />
+								<input type="radio" name="votingoption" value="42" />gefällt mir nicht<br />
+								<br />
+								<input type="submit" value="Speichern" name="Submit" />
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+				
+				<!-- BEGIN access_latest_registered_member_list -->
+				<div class="box">
+					<h1>Kürzlich registrierte Benutzer</h1>
+					<!-- BEGIN access_latest_registered_members -->
+					<div class="content">
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+							<tbody>
+								<tr>
+									<td valign="top" width="50" class="none">
+										<a href="index.php?section=access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}"><img src="{ACCESS_PROFILE_ATTRIBUTE_PICTURE_THUMBNAIL_SRC}" border="0" alt="" /></a>
+									</td>
+									<td valign="top" class="none">
+										<h2><a href="index.php?section=access&amp;cmd=user&amp;id={ACCESS_USER_ID}" title="{ACCESS_USER_USERNAME}">{ACCESS_USER_USERNAME}</a></h2>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<!-- END access_latest_registered_members -->
+					<div class="content">
+					<p class="more"><a href="index.php?section=access&amp;cmd=members">Mitgliederliste</a></p>
+					</div>
+				</div>
+				<!-- END access_latest_registered_member_list -->
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var acc = new accordion(
+	'accordion',
+	{
+		classNames: {
+			toggle:       'toggler',
+			toggleActive: 'toggler_active',
+			content:      'accordion_content'
+		}
+	}
+);
+acc.activate($$('.toggler')[0]);
+//--><!]]>
+</script>
