@@ -1,0 +1,26 @@
+/* Update: 21.09.2010 */
+
+* html #content-wrap {border: 1px solid #888;}
+
+* html #container {background: none;}
+
+* html #main {height: 480px;} /* min-height simulation */
+
+/* hasLayout ie6 */
+* html .group,
+* html #nav-sub a {height: 1%;}
+
+/* hasLayout ie7 */
+*:first-child+html .group {min-height: 1px;}
+
+#main input[type=submit],
+#main input[type=button],
+#frame_home input[type=submit],
+#frame_home input[type=button],
+#boxes_home input[type=submit],
+#boxes_home input[type=button],
+input.submit,
+input.button {
+  padding-left: 0;
+  padding-right: 0;
+}
