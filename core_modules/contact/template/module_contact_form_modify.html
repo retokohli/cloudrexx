@@ -11,7 +11,63 @@
     var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
     var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
     var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
+    arrTabToDiv = new Object();
+    {EDIT_JS_TAB_TO_DIV}
+    
+    function switchBoxAndTab(objElement, strTabId) {
+        if (countActiveLanguages() == 0) {
+            //We just "unchecked" the last language, disallow this
+            objElement.checked = true;
+        } else {
+            //There are more active languages, hide the tab
+            switchTabVisibility(strTabId);
+        }
+        
+        //Now make sure that a possible div is shown
+        activateAnyActiveDiv();
+    }
 
+    function switchTabVisibility(strTabId) {
+        if (document.getElementById(strTabId).style.display == 'none') {
+            document.getElementById(strTabId).style.display = 'inline';
+        } else {
+            document.getElementById(strTabId).style.display = 'none';
+        }
+    }
+
+    function countActiveLanguages() {
+        var activeLanguages = 0;
+
+        for (var h=0; h < document.forms.length;h++) {
+            for (var i=0; i < document.forms[h].elements.length;i++) {
+                //read out all form-elements with the loop
+                if(document.forms[h].elements[i].name.search('contactModify_Languages') != -1) {
+                    if(document.forms[h].elements[i].checked) {
+                        activeLanguages++;
+                    }
+                }
+            }
+        }
+        return activeLanguages;
+    }
+
+    function activateAnyActiveDiv() {
+      //Deactivate every div first first
+      for (var TabName in arrTabToDiv) {
+        document.getElementById(TabName).className = 'inactive';
+        document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
+      }
+
+      //Activate the first possible div with an acitvated checkbox
+      for (var TabName in arrTabToDiv) {
+        if (document.getElementById(TabName).style.display == 'inline') {
+          document.getElementById(TabName).className = 'active';
+          document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
+          break;
+        }
+      }
+    }
+    
     function addRecipient()
     {
         var number = 0;
@@ -450,6 +506,7 @@
                 return true;
             }
         });
+        $J('#addFrom_').css('display','none');
     });
 
     /**
@@ -508,18 +565,14 @@
     </div>
 </div>
 
-
 <ul id="tabmenu">
     <li><a href="#" onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
-    <li><a href="#" onclick="superTab('fields')" title="{TXT_FORM_FIELDS}">{TXT_FORM_FIELDS}</a></li>
-    <li><a href="#" onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
     <li><a href="#" onclick="superTab('notification')" title="{TXT_FORM_NOTIFICATION}">{TXT_FORM_NOTIFICATION}</a></li>
+    <li><a href="#" onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
 </ul>
 <form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
     <input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
     <input type="hidden" name="copy" value="{FORM_COPY}" />
-
-
 
     <div class="tabs" id="tab_values">
 
@@ -528,14 +581,25 @@
                 <th colspan="2">{CONTACT_ACTION_TITLE}</th>
             </tr>
         </table>
-        <br /><br />
+        <br />
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+          <th colspan="4">{TXT_LANGUAGE}</th>
+        </tr>
+        <tr class="row1">
+          <td width="10%">{TXT_LANGUAGE}</td>
+          <td width="12%" valign="top">{EDIT_LANGUAGES_1}</td>
+          <td width="12%" valign="top">{EDIT_LANGUAGES_2}</td>
+          <td width="66%" valign="top">{EDIT_LANGUAGES_3}</td>
+        </tr>
+    </table>
+    <br /><br />
 
         <div style="padding-left: 4px">
             <ul class="tabmenu" style="margin-left: 15%">
                 <!-- BEGIN languageTabs -->
                 <li>
-                    <a href="#" onclick="langTab({LANG_ID})" title="{LANG_NAME}"
-                       style="{TAB_DISPLAY}">{LANG_NAME}</a>
+                    <a id="addFrom_{LANG_NAME}" style="{CONTACT_LANGTAB_DISPLAY}" href="#" onclick="langTab({LANG_ID})" title="{LANG_NAME}" >{LANG_NAME}</a>
                 </li>
                 <!-- END languageTabs -->
             </ul>
