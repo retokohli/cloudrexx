@@ -1045,8 +1045,9 @@ $_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Einstellung";
 $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Fehler bei der Abfrage der Einstellungen";
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "Keine Einstellungen gefunden";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digital Postcards";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Ein Fehler ist aufgetreten";
-$_ARRAYLANG['TXT_CSRF_DESCR'] = "Aus Sicherheitsgründen wurde diese Aktion blockiert. Falls diese Meldung wiederholt auftaucht, versuchen Sie, weniger Browserfenster offen zu halten.";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Security information";
+$_ARRAYLANG['TXT_CSRF_DESCR'] = "You are changing the system configuration. If you see this message<ul><li>after clicking a link in the administration interface, click <strong>save changes</strong></li><li>after clicking a link inside an e-mail message or outside the administration interface, click <strong>discard changes</strong></li></ul>";
+$_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
+$_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
-$_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 ?>

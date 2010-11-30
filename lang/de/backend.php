@@ -1046,8 +1046,9 @@ $_ARRAYLANG['TXT_CORE_SETTING_VALUE'] = "Einstellung";
 $_ARRAYLANG['TXT_CORE_SETTINGS_ERROR_RETRIEVING'] = "Fehler bei der Abfrage der Einstellungen";
 $_ARRAYLANG['TXT_CORE_SETTINGS_NONE_FOUND'] = "Keine Einstellungen gefunden";
 $_ARRAYLANG['TXT_ECARD_MODULE_DESCRIPTION'] = "Digitalen Postkarten";
-$_ARRAYLANG['TXT_CSRF_TITLE'] = "Ein Fehler ist aufgetreten";
-$_ARRAYLANG['TXT_CSRF_DESCR'] = "Aus Sicherheitsgründen wurde diese Aktion blockiert. Falls diese Meldung wiederholt auftaucht, versuchen Sie, weniger Browserfenster offen zu halten.";
+$_ARRAYLANG['TXT_CSRF_TITLE'] = "Sicherheitshinweis";
+$_ARRAYLANG['TXT_CSRF_DESCR'] = "Sie sind dabei, &Auml;nderungen am System herbeizuf&uuml;hren. Falls Sie diese Meldung<ul><li>nach einem Klick auf einen Link in der Administrationsoberfl&auml;che sehen, klicken Sie auf <strong>&Auml;nderungen &uuml;bernehmen</strong></li><li>nach einem Klick auf einen Link in einer E-Mail oder ausserhalb der Administrationsoberfl&auml;che sehen, klicken Sie auf <strong>Ohne &Auml;nderungen fortfahren</strong></li></ul>";
+$_ARRAYLANG['TXT_CSRF_ABORT'] = "Ohne &Auml;nderungen fortfahren";
+$_ARRAYLANG['TXT_CSRF_CONTINUE'] = "&Auml;nderungen &uuml;bernehmen";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Das Alias %s kann nicht verwendet werden, da es physikalisch vorhanden ist!";
-$_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 ?>
