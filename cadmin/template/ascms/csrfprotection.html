@@ -81,19 +81,26 @@
       </div>  
       <div class="message">{TXT_CSRF_DESCR}</div>
       <div class="buttons">
-	<a href="#cancel">
-	  <div class="button bluebg"><span><strong>{TXT_CSRF_ABORT}</strong></span></div>
+	<a href="{SAFE_CMD}">
+	  <div class="button bluebg""><span><strong>{TXT_CSRF_ABORT}</strong></span></div>
 	</a>
-	<a href="#continue">
+	<a href="javascript:sendData()">
           <div class="button greenbg"><span><strong>{TXT_CSRF_CONTINUE}</strong></span></div>
 	</a>
 	<div style="clear:both"></div>
       </div>
     </div>
         
-    <form method="{REQUEST_METHOD}">
+    <form method="{REQUEST_METHOD}" id="theForm">
       {FORM_ELEMENTS}
     </form>
+
+    <script type="text/javascript">
+      function sendData()
+      {
+        document.forms['theForm'].submit();
+      }
+    </script>
   </body>
 </html>
 
