@@ -97,6 +97,7 @@ class ContactLib
                     WHERE
                         `tblForm`.`id` = `id_form`
                 )                                       AS last,
+                `tblLang`.`is_active`                   AS `is_active`,
                 `tblLang`.`name`                        AS `name`,
                 `tblLang`.`langID`                      AS `langID`,
                 `tblLang`.`text`                        AS `text`,
@@ -153,6 +154,7 @@ class ContactLib
                         'recipients'        => $this->getRecipients($lastID, true),
                         'lang'              => array(
                             $fields['langID'] => array(
+                                'is_active'   => $fields['is_active'],
                                 'name'        => $fields['name'],
                                 'text'        => stripslashes($fields['text']),
                                 'feedback'    => stripslashes($fields['feedback']),
@@ -164,6 +166,7 @@ class ContactLib
                 } else {
                     // only append the lang variables to the array
                     $this->arrForms[$fields['id']]['lang'][$fields['langID']] = array(
+                        'is_active'   => $fields['is_active'],
                         'name'        => $fields['name'],
                         'text'        => stripslashes($fields['text']),
                         'feedback'    => stripslashes($fields['feedback']),
@@ -1125,6 +1128,37 @@ class ContactLib
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
     }
 
+    /**
+     * Creates an array containing all frontend-languages.
+     *
+     * Contents:
+     * $arrValue[$langId]['short']      =>  For Example: en, de, fr, ...
+     * $arrValue[$langId]['long']       =>  For Example: 'English', 'Deutsch', 'French', ...
+     * @global  ADONewConnection
+     * @return  array       $arrReturn
+     */
+    function createLanguageArray() {
+        global $objDatabase;
+
+        $arrReturn = array();
+
+        $objResult = $objDatabase->Execute('SELECT      id,
+                                                        lang,
+                                                        name
+                                            FROM        '.DBPREFIX.'languages
+                                            WHERE       frontend=1
+                                            ORDER BY    id
+                                        ');
+        while (!$objResult->EOF) {
+            $arrReturn[$objResult->fields['id']] = array(   'short' =>  stripslashes($objResult->fields['lang']),
+                                                            'long'  =>  htmlentities(stripslashes($objResult->fields['name']),ENT_QUOTES, CONTREXX_CHARSET)
+                                                        );
+            $objResult->MoveNext();
+        }
+
+        return $arrReturn;
+    }
+    
     function getFormEntries($formId, &$arrCols, $pagingPos, &$paging, $limit = true)
     {
         global $objDatabase, $_CONFIG;
