@@ -713,6 +713,7 @@ class ContactLib
     protected function insertFormLangValues(
         $formID,
         $langID,
+        $isActive,
         $name,
         $text,
         $feedback,
@@ -723,6 +724,7 @@ class ContactLib
 
         $formID       = intval($formID);
         $langID       = intval($langID);
+        $isActive     = intval($isActive);
         $name         = contrexx_addslashes($name);
         $text         = contrexx_addslashes($text);
         $feedback     = contrexx_addslashes($feedback);
@@ -735,6 +737,7 @@ class ContactLib
             (
                 `formID`,
                 `langID`,
+                `is_active`,
                 `name`,
                 `text`,
                 `feedback`,
@@ -745,6 +748,7 @@ class ContactLib
             (
                 ".$formID.",
                 ".$langID.",
+                ".$isActive.",
                 '".$name."',
                 '".$text."',
                 '".$feedback."',
@@ -753,6 +757,7 @@ class ContactLib
             )
             ON DUPLICATE KEY UPDATE
                 `name`         = '".$name."',
+                `is_active`    = '".$isActive."',
                 `text`         = '".$text."',
                 `feedback`     = '".$feedback."',
                 `mailTemplate` = '".$mailTemplate."',
