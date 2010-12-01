@@ -95,7 +95,7 @@ function _newsletterUpdate()
 	}
 	else //maybe update ran already => preserve new value
 	{
-            DBG::msg("Not found. Retrieving new unsubscribe value if set.");
+        DBG::msg("Not found. Retrieving new unsubscribe value if set.");
 	    $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
 	    if(!$res->EOF)
 		$unsubscribeVal = $res->fields['setvalue'];
@@ -168,46 +168,16 @@ function _newsletterUpdate()
         return UpdateUtil::DefaultActionHandler($e);
     }
 
-    // Add notification recipians to confirm_mail table
-
-    //insert notification values
+    // Add notification recipients to confirm_mail table
     try {
         $objResult = UpdateUtil::sql("SELECT id FROM `".DBPREFIX."module_newsletter_confirm_mail` WHERE id='3'");
         if ($objResult->RecordCount() == 0) {
+            DBG::msg("inserting standard confirm mails";)
             UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_newsletter_confirm_mail` (`id` ,`title` ,`content` ,`recipients`) VALUES ('3', '[[url]] - Neue Newsletter Empfänger [[action]]', 'Hallo Admin Eine neue Empfänger [[action]] in ihrem Newsletter System. Automatisch generierte Nachricht [[date]]', '');");
         }
     }
     catch (UpdateException $e) {
         return UpdateUtil::DefaultActionHandler($e);
-    }
-
-    //insert settings values
-    $query = "SELECT setid FROM `".DBPREFIX."module_newsletter_settings` WHERE setname='notificationSubscribe'";
-    $objCheck = $objDatabase->SelectLimit($query, 1);
-    if ($objCheck !== false) {
-        if ($objCheck->RecordCount() == 0) {
-            $query =     "INSERT INTO `".DBPREFIX."module_newsletter_settings` (`setid` ,`setname` ,`setvalue` ,`status`) VALUES ('11', 'notificationSubscribe', '1', '1');
-            ";
-            if ($objDatabase->Execute($query) === false) {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
-    }
-
-    $query = "SELECT setid FROM `".DBPREFIX."module_newsletter_settings` WHERE setname='notificationUnsubscribe'";
-    $objCheck = $objDatabase->SelectLimit($query, 1);
-    if ($objCheck !== false) {
-        if ($objCheck->RecordCount() == 0) {
-            $query =     "INSERT INTO `".DBPREFIX."module_newsletter_settings` (`setid` ,`setname` ,`setvalue` ,`status`) VALUES ('12', 'notificationUnsubscribe', '1', '1');
-            ";
-            if ($objDatabase->Execute($query) === false) {
-                return _databaseError($query, $objDatabase->ErrorMsg());
-            }
-        }
-    } else {
-        return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
     return true;
