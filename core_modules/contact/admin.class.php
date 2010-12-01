@@ -554,18 +554,14 @@ class ContactManager extends ContactLib {
         $counter = 1;
         foreach ($recipients as $rec) {
             foreach ($activeLanguages as $langID => $lang) {
-                $langname = $this->getLangShortName($lang['id']);
                 $this->_objTpl->setVariable(
                         array(
                         'CONTACT_FORM_RECIPIENT_ID'         => $rec['id'],
                         'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langID,
-                        'FORM_FIELD_ROW_LANG_NAME'          => $langname,
                         'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID],
                         'CONTACT_FORM_LANGUAGE_NAME'        => $lang['name'],
                         )
                 );
-
-                $this->_objTpl->parse('recipientNameLang');
             }
 
             $this->_objTpl->setVariable(
@@ -581,32 +577,6 @@ class ContactManager extends ContactLib {
             $counter++;
             $this->_objTpl->parse('contact_form_recipient_list');
         }
-    }
-
-    public function getLangShortName($langId)
-    {
-        /**
-         * Places the flag corresponding to the language name and value field
-         */
-        switch ($langId) {
-        case 0: $langname = "";
-            break;
-        case 1: $langname = "de";
-                break;
-        case 2: $langname = "en";
-                break;
-        case 3: $langname = "fr";
-                break;
-        case 4: $langname = "it";
-                break;
-        case 5: $langname = "dk";
-                break;
-        case 6: $langname = "ru";
-                break;
-        default:$langname = "de";
-                break;
-        }
-        return $langname;
     }
 
     /**
@@ -695,36 +665,127 @@ class ContactManager extends ContactLib {
                     $boolLanguageIsActive = true;
                 }
 
-                $arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactModify_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addFrom_'.$arrLanguage['long'].'\');" />'.$arrLanguage['long'].' ['.$arrLanguage['short'].']<br />';
+                $arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'addFrom_'.$arrLanguage['long'].'\');" />'.$arrLanguage['long'].' ['.$arrLanguage['short'].']<br />';
                 $strJsTabToDiv .= 'arrTabToDiv["addFrom_'.$arrLanguage['long'].'"] = "langTab_'.$intLanguageId.'";'."\n";
                 ++$intLanguageCounter;
             }
 
             $this->_objTpl->setVariable(array(
+                    'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
                     'EDIT_LANGUAGES_1'          =>  $arrLanguages[0],
                     'EDIT_LANGUAGES_2'          =>  $arrLanguages[1],
                     'EDIT_LANGUAGES_3'          =>  $arrLanguages[2],
                     'EDIT_JS_TAB_TO_DIV'        =>  $strJsTabToDiv
                 ));
         }
+
+        $lastFieldId = 0;
+        $param = ($formId > 0) ? $formId : $null;
+        if (isset($_POST['saveForm'])) {
+            $fields = $this->_getFormFieldsFromPost($param);
+            $recipients = $this->getRecipientsFromPost();
+        } else {
+            // get the saved fields
+            $fields = $this->getFormFields($param);
+            $recipients = $this->getRecipients($param);
+        }
+
+        // make an empty one so at least one is parsed
+        if (empty($fields)) {
+            foreach ($activeLanguages as $lang) {
+                $fields[0] = array (
+                        'type'          => 'text',
+                        'attributes'    => '',
+                        'order_id'      => 0,
+                        'is_required'   => false,
+                        'check_type'    => 1,
+                        'editType'     => 'new'
+                );
+                $fields[0]['lang'][$lang['id']] = array(
+                        'name'          => '',
+                        'value'         => ''
+                );
+            }
+        }
         
         foreach ($activeLanguages as $lang) {
             $langID = $lang['id'];
+
+            $langVars = &$this->arrForms[$formId]['lang'][$langID];
+            $boolLanguageIsActive = ($formId > 0)
+                ? $langVars['is_active']
+                : 1;
             
             $this->_objTpl->setVariable(array(
-                    'LANG_ID'       => $lang['id'],
-                    'LANG_NAME'     => $lang['name']
+                    'LANG_ID'                   => $lang['id'],
+                    'LANG_NAME'                 => $lang['name'],
+                    'CONTACT_LANGTAB_DISPLAY'   => ($boolLanguageIsActive ? 'display:inline;' : 'display:none;'),
                     )
             );
             $this->_objTpl->parse('languageTabs');
-            
-            $langVars = &$this->arrForms[$formId]['lang'][$langID];
+             
             if (isset($langVars)) {
                 $formText         = $langVars['text'];
                 $formFeedback     = $langVars['feedback'];
                 $formName         = $langVars['name'];
             } else {
                 $formText = $formFeedback = $formName = '';
+            }
+            
+            $counter = 1;
+            foreach ($fields as $fieldID => $field) {
+                $realFieldID = ($formId > 0) ? $fieldID : $counter;
+
+                /**
+                 While copying a template, the edittype of the field must be 'new'
+                 */
+                if($copy) {
+                    $field['editType'] = 'new';
+                }
+                
+                $this->_objTpl->setVariable(
+                        array(
+                        'FORM_FIELD_NAME'               => $field['lang'][$lang['id']]['name'],
+                        'LANG_ID'                       => $lang['id'],
+                        'CONTACT_FORM_FIELD_VALUE'      => $this->_getFormFieldAttribute(
+                                                                $realFieldID,
+                                                                $field['type'],
+                                                                $field['lang'][$lang['id']]['value'],
+                                                                $lang['id']
+                                                                ),
+                        'CONTACT_FORM_FIELD_TYPE_MENU'  => $this->_getFormFieldTypesMenu(
+                                                            'contactFormFieldType['.$realFieldID.']',
+                                                            $field['type'],
+                                                            'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
+                                                            'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),this.value)"'
+                                                            ),
+                        'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
+                                                            'contactFormFieldRequired['.$realFieldID.']',
+                                                            'contactFormFieldRequired_'.$realFieldID,
+                                                            $field['type'],
+                                                            $field['is_required']
+                                                            ),
+                        'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
+                                                            'contactFormFieldCheckType['.$realFieldID.']',
+                                                            'contactFormFieldCheckType_'.$realFieldID,
+                                                            $field['type'],
+                                                            $field['check_type']
+                                                            ),
+                        'TXT_NAME'                      => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
+                        'TXT_VALUES'                    => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
+                        'TXT_TYPE'                      => $_ARRAYLANG['TXT_CONTACT_TYPE'],
+                        'TXT_MANDATORY_FIELD'           => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
+                        'TXT_CONTACT_VALIDATION'	=> $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
+                        'TXT_CONTACT_ACTION'            => $_ARRAYLANG['TXT_CONTACT_ACTION'],
+                        'TXT_ADVANCED_VIEW'		=> $_ARRAYLANG['TXT_ADVANCED_VIEW'],
+                        'TXT_SIMPLIFIED_VIEW'           => $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
+                        'FORM_FIELD_ID'                 => $realFieldID,
+                        'FORM_FIELD_TYPE'               => $field['editType'],
+                        'ROW_CLASS_NAME'		=> 'row'.(($counter%2 == 0)?'1':'2')
+                        )
+                );
+                $counter++;
+                $this->_objTpl->parse('formField');
             }
 
             $this->_objTpl->setVariable(
@@ -753,6 +814,7 @@ class ContactManager extends ContactLib {
                     'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
                     'TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
                     'TXT_CONTACT_SUBJECT'                           => $_ARRAYLANG['TXT_CONTACT_SUBJECT'],
+                    'TXT_CONTACT_FORM_DATA'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DATA'],
                     'TXT_CONTACT_FORM_DESC'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DESC'],
                     'TXT_CONTACT_FEEDBACK'                          => $_ARRAYLANG['TXT_CONTACT_FEEDBACK'],
                     'TXT_CONTACT_MAIL_TEMPLATE'                     => $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'],
@@ -780,7 +842,6 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_NAME'                             => $this->arrForms[$formId]['lang'][$lang['id']]['name'],
                     'CONTACT_FORM_SUBJECT'                          => $formSubject,
                     'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
-                    'CONTACT_LANGTAB_DISPLAY'                       => ($boolLanguageIsActive ? 'display:inline;' : 'display:none;'),
                     'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
                     'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
                     'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', ''),
@@ -790,7 +851,7 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
                     'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
                     'CONTACT_ACTION_TITLE'                          => $actionTitle,
-                    'CONTACT_FORM_FIELDS_TITLE'                      => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
+                    'CONTACT_FORM_FIELDS_TITLE'                     => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
                     'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
                     'CONTACT_FORM_SETTINGS'                         => $_ARRAYLANG['CONTACT_FORM_SETTINGS'],
                     'CONTACT_FORM_ID'                               => $formId,
@@ -885,129 +946,6 @@ class ContactManager extends ContactLib {
                 'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
                 )
         );
-
-        $lastFieldId = 0;
-
-        $param = ($formId > 0) ? $formId : $null;
-        if (isset($_POST['saveForm'])) {
-            $fields = $this->_getFormFieldsFromPost($param);
-            $recipients = $this->getRecipientsFromPost();
-        } else {
-            // get the saved fields
-            $fields = $this->getFormFields($param);
-            $recipients = $this->getRecipients($param);
-        }
-
-        // make an empty one so at least one is parsed
-        if (empty($fields)) {
-            foreach ($activeLanguages as $lang) {
-                $fields[0] = array (
-                        'type'          => 'text',
-                        'attributes'    => '',
-                        'order_id'      => 0,
-                        'is_required'   => false,
-                        'check_type'    => 1,
-                        'editType'     => 'new'
-                );
-                $fields[0]['lang'][$lang['id']] = array(
-                        'name'          => '',
-                        'value'         => ''
-                );
-            }
-        }
-
-        $counter = 1;
-
-        foreach ($fields as $fieldID => $field) {
-            $realFieldID = ($formId > 0) ? $fieldID : $counter;
-
-            /**
-             While copying a template, the edittype of the field must be 'new'
-             */
-            if($copy) {
-                $field['editType'] = 'new';
-            }
-            /**
-             Pass Frontend active languages array to javascript function
-             */
-            $jsActiveLang = "";
-
-            foreach ($activeLanguages as $lang) {
-                $langname = $this->getLangShortName($lang['id']);
-
-                $this->_objTpl->setVariable(
-                        array(
-                        'FORM_FIELD_ROW_LANG_ID'    => $lang['id'],
-                        'FORM_FIELD_ROW_NAME_LANG'  => $lang['name'],
-                        'FORM_FIELD_ROW_VALUE_LANG' => $lang['name'],
-                        'FORM_FIELD_ROW_LANG_NAME'  => $langname,
-                        'FORM_FIELD_VALUE'          => $field['lang'][$lang['id']]['value'],
-                        'FORM_FIELD_NAME'           => $field['lang'][$lang['id']]['name'],
-                        'CONTACT_FORM_FIELD_VALUE_FIELD' => $this->_getFormFieldAttribute(
-                            $realFieldID,
-                            $field['type'],
-                            $field['lang'][$lang['id']]['value'],
-                            $lang['id']
-                            )
-                        )
-                );
-                $jsActiveLang .= $lang['id']."-";
-                $this->_objTpl->parse('formFieldName');
-                $this->_objTpl->parse('formFieldValue');
-                $this->_objTpl->parse('formFieldNameLanguage');
-                $this->_objTpl->parse('formFieldValueLanguage');
-            }
-
-            // Remove the '-' from end of the string[Last element]
-            $jsActiveLang = rtrim($jsActiveLang, "-");
-
-            $this->_objTpl->setVariable(
-                    array(
-                    'CONTACT_FORM_FIELD_TYPE_MENU' => $this->_getFormFieldTypesMenu(
-                    'contactFormFieldType['.$realFieldID.']',
-                    $field['type'],
-                    'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
-                    'onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),this.value,\''.$jsActiveLang.'\')"'
-                    ),
-                    'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
-                    'contactFormFieldRequired['.$realFieldID.']',
-                    'contactFormFieldRequired_'.$realFieldID,
-                    //passed the fieldtype to hide/show the mandatory checkbox in edit page
-                    $field['type'],
-                    $field['is_required']
-                    ),
-                    'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
-                    'contactFormFieldCheckType['.$realFieldID.']',
-                    'contactFormFieldCheckType_'.$realFieldID,
-                    $field['type'],
-                    $field['check_type']
-                    ),
-                    'FORM_FIELD_GLOBAL_NAME'		=> $field['lang'][$objInit->userFrontendLangId]['name'],
-                    'CONTACT_FORM_FIELD_GLOBAL_VALUE_FIELD' => $this->_getFormFieldAttribute(
-                    $realFieldID,
-                    $field['type'],
-                    $field['lang'][$objInit->userFrontendLangId]['value'],
-                    0
-                    ),
-                    'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
-                    'TXT_NAME'                  => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
-                    'TXT_VALUES'                => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
-                    'TXT_TYPE'                  => $_ARRAYLANG['TXT_CONTACT_TYPE'],
-                    'TXT_MANDATORY_FIELD'       => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
-                    'TXT_CONTACT_VALIDATION'	=> $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
-                    'TXT_CONTACT_ACTION'	=> $_ARRAYLANG['TXT_CONTACT_ACTION'],
-                    'TXT_ADVANCED_VIEW'		=> $_ARRAYLANG['TXT_ADVANCED_VIEW'],
-                    'TXT_SIMPLIFIED_VIEW'	=> $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
-                    'FORM_FIELD_ID'             => $realFieldID,
-                    'FORM_FIELD_ID'             => $realFieldID,
-                    'FORM_FIELD_TYPE'           => $field['editType'],
-                    'ROW_CLASS_NAME'		=> 'row'.(($counter%2 == 0)?'1':'2')
-                    )
-            );
-
-            $counter++;
-            $this->_objTpl->parse('formField');
-        }
 
         if (empty($recipients)) {
             // make an empty one so there's at least one
@@ -1166,41 +1104,24 @@ class ContactManager extends ContactLib {
     {
         global $_ARRAYLANG;
 
-        /**
-         * Compares the previous type, to increment counter value with staic variables
-         * since select field must be added Only one instance for checkbox type,
-         * for any number of active front languages
-         */
-        static $previd = 0, $count = 0;
-        if($previd != $id || ($previd == $id && $langid == 0)) {
-            $count = 0;
-        }
-        $previd   = $id;
-        $langname = $this->getLangShortName($langid);
-
         switch ($type) {
             case 'text':
             case 'hidden':
             case 'label':
-                return "<input style=\"width:308px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center #FFFFFF; padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
+                return "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
                 break;
 
             case 'checkbox':
-                if($count == 0) {
-                    $count = 1;
-                    return "<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
-			                <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
-			                <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
-			            </select>";
-                } else {
-                    return "";
-                }
+                return "<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."][".$langid."]\">\n
+                                    <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
+                                    <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
+                                </select>";
                 break;
 
             case 'checkboxGroup':
             case 'select':
             case 'radio':
-                return "<input style=\"width:308px;background:url(images/flags/flag_".$langname.".gif) no-repeat 2px center #FFFFFF;padding-left:18px;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
+                return "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
                 break;
 
             default:
@@ -1227,7 +1148,7 @@ class ContactManager extends ContactLib {
 
         if (isset($_POST['saveForm'])) {
             $uniqueFieldNames = null;
-
+            
             $emails         = $this->getPostRecipients();
             $showForm       = (!empty($_POST['contactFormShowForm']) ? 1 : 0);
             $useCaptcha     = (!empty($_POST['contactFormUseCaptcha']) ? 1 : 0);
@@ -1263,43 +1184,44 @@ class ContactManager extends ContactLib {
                 $formName =
                         isset($_POST['contactFormName'][$langID])
                         ? strip_tags(contrexx_addslashes($_POST['contactFormName'][$langID]))
-                        : ''
-                ;
+                        : '';
+
                 $formSubject =
                         isset($_POST['contactFormSubject'][$langID])
                         ? strip_tags(contrexx_addslashes($_POST['contactFormSubject'][$langID]))
-                        : ''
-                ;
+                        : '';
+
+                $isActive =
+                        isset($_POST['contactFormLanguages'][$langID])
+                        ? 1 : 0;
+
                 $formText =
                         isset($_POST['contactFormText'][$langID])
                         ? contrexx_addslashes($_POST['contactFormText'][$langID])
-                        : ''
-                ;
+                        : '';
 
                 $formFeedback =
                         isset($_POST['contactFormFeedback'][$langID])
                         ? contrexx_addslashes($_POST['contactFormFeedback'][$langID])
-                        : ''
-                ;
+                        : '';
 
                 $formMailTemplate =
                         isset($_POST['contactMailTemplate'][$langID])
                         ? preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}', contrexx_addslashes($_POST['contactMailTemplate'][$langID]))
-                        :''
-                ;
-                
+                        :'';
+
                 $this->insertFormLangValues(
                         $formId,
                         $langID,
+                        $isActive,
                         $formName,
                         $formText,
                         $formFeedback,
                         $formMailTemplate,
                         $formSubject
                 );
-
             }
-
+            
             // do the fields
             $fields = $this->_getFormFieldsFromPost($uniqueFieldNames);
             
