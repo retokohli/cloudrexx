@@ -205,6 +205,7 @@ function search_searchQuery($section, $searchTerm)
             $query ="SELECT id AS id,
                             text AS content,
                             title AS title,
+			date,
                             redirect,
                             MATCH (text,title,teaser_text) AGAINST ('%$searchTerm%') AS score
                       FROM ".DBPREFIX."module_news
@@ -492,11 +493,13 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        $score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
 	        //Muss noch ge�ndert werden, sobald das Ranking bei News funktioniert!!!
 	        $score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
+		$date = isset($objResult->fields['date']) ? $objResult->fields['date'] : null;
 	        $searchtitle=!empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];
 	        $arraySearchResults[$i]=array("Score"=>$scorePercent,
 	                                      "Title"=>$searchtitle,
 	                                      "Content"=>$shortcontent,
-	                                      "Link"=>$temp_pagelink);
+	                                      "Link"=>$temp_pagelink,
+						"Date"=>$date);
 			$objResult->MoveNext();
 	    }
     }
@@ -514,10 +517,19 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
  */
 function search_comparison($a,$b)
 {
-    if ($a==$b) {
+    if ($a['Score']==$b['Score']) {
+	if (isset($a['Date'])) {
+		if ($a['Date']==$b['Date']) {
+			return 0;
+		} elseif ($a['Date']>$b['Date']) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
         return 0;
     }
-    elseif ($a>$b){
+    elseif ($a['Score']>$b['Score']){
         return -1;
     } else {
         return 1;
