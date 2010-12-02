@@ -61,14 +61,38 @@ class cmsSession
 	       	$this->status=$status;
 	       	$errorMsg = '';
 	        $this->_objDb = getDatabaseObject($errorMsg, true);
+            if (DBG::getMode() & DBG_ADODB_TRACE) {
+                $this->_objDb->debug=99;
+            } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
+                $this->_objDb->debug=1;
+            } else {
+                $this->_objDb->debug=0;
+            }
 	        $this->compatibelitiyMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
 
-            session_set_cookie_params(0, ASCMS_PATH_OFFSET.'/');
+// TODO: there should be an option to limit the session to the browser's session
+            @ini_set('session.gc_maxlifetime', $this->lifetime);
 	        session_start();
-        } else {
+            $this->cmsSessionExpand();
+	    }
+        else {
         	$this->cmsSessionError();
         }
-	}
+    }
+
+    /**
+     * expands a running session by @link Session::lifetime seconds.
+     * called on pageload.
+     */
+    function cmsSessionExpand()
+    {
+        // Reset the expiration time upon page load
+        $ses = session_name();
+        if (isset($_COOKIE[$ses])) {
+            $expirationTime = ($this->lifetime > 0 ? $this->lifetime + time() : 0);
+            setcookie($ses, $_COOKIE[$ses], $expirationTime, "/");
+        }
+    }
 
 	function cmsSessionOpen($aSavaPath, $aSessionName)
 	{
