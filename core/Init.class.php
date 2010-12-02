@@ -587,12 +587,11 @@ class InitCMS
                     FROM ".DBPREFIX."modules AS m
                    INNER JOIN ".DBPREFIX."content_navigation AS n
                       ON n.module=m.id
-                   WHERE 1
-                   ".(empty($section) ? '' : " AND m.name='$section'")."
-                   ".(empty($section) ? '' : " AND n.cmd ='$command'")."
-                     AND n.lang=".FRONTEND_LANG_ID."
-                   ORDER BY parcat ASC
-            ";
+                   WHERE n.lang=".FRONTEND_LANG_ID.
+                (empty($section)
+                    ? ''
+                    : " AND m.name='$section' AND n.cmd ='$command'")."
+                   ORDER BY parcat ASC";
             $objResult = $objDatabase->SelectLimit($query, 1);
             if ($objResult && !$objResult->EOF) {
                 $page_id = $objResult->fields['catid'];
@@ -638,9 +637,9 @@ class InitCMS
     {
         global $objDatabase;
 
-	$mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
-	//only set customized theme if not in printview AND no mobile device
-	if ($mobileThemeDefinedAndRequested) return;	
+        $mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
+        //only set customized theme if not in printview AND no mobile device
+        if ($mobileThemeDefinedAndRequested) return;
         if (isset($_GET['printview'])) return;
 
         $themesId = intval($themesId);
