@@ -223,7 +223,7 @@ class DBG
     {
         if (self::$enable_trace) return;
 
-        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING TRACE XXXXXXXXXXXXXXXX');
+        //self::_log('--- ENABLING TRACE');
         self::$enable_trace = 1;
     }
 
@@ -269,7 +269,7 @@ class DBG
     {
         if (!self::$enable_trace) return;
 
-        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING TRACE XXXXXXXXXXXXXXX');
+        //self::_log('--- DISABLING TRACE');
         self::$enable_trace = 0;
     }
 
@@ -277,7 +277,7 @@ class DBG
     static function enable_time()
     {
         if (!self::$enable_time) {
-            //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING TIME XXXXXXXXXXXXXXXXX');
+            //self::_log('--- ENABLING TIME');
             self::$enable_time = 1;
             self::$start_time = microtime(true);
             self::$last_time  = microtime(true);
@@ -289,7 +289,7 @@ class DBG
     {
         if (!self::$enable_time) return;
 
-        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING TIME XXXXXXXXXXXXXXXX');
+        //self::_log('--- DISABLING TIME');
         self::$enable_time = 0;
     }
 
@@ -298,7 +298,7 @@ class DBG
     {
         if (self::$enable_dump) return;
 
-        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING DUMP XXXXXXXXXXXXXXXXX');
+        //self::_log('--- ENABLING DUMP');
         self::$enable_dump = 1;
     }
 
@@ -307,7 +307,7 @@ class DBG
     {
         if (!self::$enable_dump) return;
 
-        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING DUMP XXXXXXXXXXXXXXXX');
+        //self::_log('--- DISABLING DUMP');
         self::$enable_dump = 0;
     }
 
@@ -316,7 +316,7 @@ class DBG
     {
         if (self::$enable_msg) return;
 
-        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ENABLING MSG XXXXXXXXXXXXXXXXXX');
+        //self::_log('--- ENABLING MSG');
         self::$enable_msg = 1;
     }
 
@@ -325,7 +325,7 @@ class DBG
     {
         if (!self::$enable_msg) return;
 
-        //self::_log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX DISABLING MSG XXXXXXXXXXXXXXXXX');
+        //self::_log('--- DISABLING MSG');
         self::$enable_msg = 0;
     }
 
