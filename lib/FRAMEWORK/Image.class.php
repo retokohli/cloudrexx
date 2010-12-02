@@ -202,9 +202,9 @@ class ImageManager
                 // GD > 2 check
                 if ($this->newImage) {
                     $this->setTransparency();
-            } else {
-                $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
-            }
+                } else {
+                    $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+                }
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
@@ -213,6 +213,7 @@ class ImageManager
         }
         return false;
     }
+
 
     /**
      * Add transparency to new image
@@ -241,8 +242,6 @@ class ImageManager
                 $colorTransparent = imagecolorallocatealpha($this->newImage, 0, 0, 0, 127);
                 imagefill($this->newImage, 0, 0, $colorTransparent);
                 imagesavealpha($this->newImage, true);
-                break;
-            default:
                 break;
         }
     }
@@ -514,7 +513,9 @@ class ImageManager
 
         if ($potentialRequiredMemory > $memoryLimit) {
             // try to set a higher memory_limit
-            if (!ini_set('memory_limit', $potentialRequiredMemory) || $memoryLimit == $objSystem->_getBytes(ini_get('memory_limit'))) return '';
+            if (   !ini_set('memory_limit', $potentialRequiredMemory)
+                || $memoryLimit == $objSystem->_getBytes(ini_get('memory_limit'))) 
+                return '';
         }
         return $function($file);
     }
@@ -524,7 +525,7 @@ class ImageManager
      * Returns the image type as determined by getimagesize() for the given file.
      *
      * Only accepts web image types (GIF, JPG, or PNG).
-     * If the function imagecreatefromgif () is not available, GIF images aren't
+     * If the function imagecreatefromgif() is not available, GIF images aren't
      * accepted.
      * False is returned for images/files that are not supported.
      * @access    private
