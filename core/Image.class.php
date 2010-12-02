@@ -363,13 +363,6 @@ class Image
 //echo("Image::replace(): Image size: $width/$height<br />");
         }
         $path_parts = pathinfo($path);
-
-// TODO:  Debug stuff, remove in release
-//        $auto_type = $imageSize[2];
-//        if ($auto_type !== strtoupper($path_parts['extension']))
-//echo("Image::replace(image_id $image_id, ord $ord, path $path, imagetype_key $imagetype_key, width $width, height $height): Warning: Image extension (".$path_parts['extension'].") mismatch with type ($auto_type)<br />");
-// /TODO
-
         if ($imagetype_key) $objImage->setTypeKey($imagetype_key);
         $objImage->setPath($path);
         $objImage->setFileTypeKey(Filetype::getTypeIdForExtension($path_parts['extension']));
