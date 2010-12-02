@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Auction
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -262,8 +263,6 @@ class Auction extends auctionLibrary
 
         // set variables
         $this->_objTpl->setVariable(array(
-// TODO: $paging is never set!
-//            'AUCTION_SEARCH_PAGING'            => $paging,
             'AUCTION_CATEGORY_ROW_WIDTH'        => $categorieRowWidth,
             'AUCTION_CATEGORY_ROW1'            => $categorieRows[1]."<br />",
             'AUCTION_CATEGORY_ROW2'            => $categorieRows[2]."<br />",
@@ -284,7 +283,6 @@ class Auction extends auctionLibrary
             'TXT_AUCTION_AUCTIONS'                => $_ARRAYLANG['TXT_AUCTION_AUCTIONS'],
             'TXT_AUCTION_SEARCH_TITLE'            => $_ARRAYLANG['TXT_AUCTION_SEARCH_TITLE'],
         ));
-
     }
 
 
@@ -1293,26 +1291,21 @@ class Auction extends auctionLibrary
 //        }
 
         $objReslut = $objDatabase->Execute("SELECT id, name, value FROM ".DBPREFIX."module_auction_spez_fields WHERE lang_id = '1' AND active='1' ORDER BY id DESC");
-        if ($objReslut !== false) {
+        if ($objResult !== false) {
             $i = 0;
-            while(!$objReslut->EOF) {
+            while(!$objResult->EOF) {
                 $this->_objTpl->setCurrentBlock('spez_fields');
-
-// TODO: Never used
-//                ($i % 2)? $class = "row2" : $class = "row1";
-                $input = '<input type="text" name="spez_'.$objReslut->fields['id'].'" style="width: 300px;" maxlength="100">';
-
+                $input = '<input type="text" name="spez_'.$objResult->fields['id'].'" style="width: 300px;" maxlength="100">';
                 // initialize variables
                 $this->_objTpl->setVariable(array(
-                    'TXT_AUCTION_SPEZ_FIELD_NAME'    => $objReslut->fields['value'],
+                    'TXT_AUCTION_SPEZ_FIELD_NAME'    => $objResult->fields['value'],
                     'AUCTION_SPEZ_FIELD_INPUT'          => $input,
                 ));
-
                 $this->_objTpl->parse('spez_fields');
                 $i++;
-                $objReslut->MoveNext();
+                $objResult->MoveNext();
             }
-          }
+        }
 
         $this->_objTpl->setVariable(array(
             'TXT_AUCTION_PREMIUM_CONDITIONS'            =>    $premium,
@@ -1439,8 +1432,6 @@ class Auction extends auctionLibrary
 
         // set variables
         $this->_objTpl->setVariable(array(
-// TODO: $paging is never set!
-//            'AUCTION_SEARCH_PAGING'            => $paging,
             'TXT_AUCTION_ENDDATE'            => $_CORELANG['TXT_END_DATE'],
             'TXT_AUCTION_TITLE'                => $_ARRAYLANG['TXT_AUCTION_TITLE'],
             'TXT_AUCTION_PRICE'                => $_ARRAYLANG['TXT_AUCTION_PRICE'],
@@ -1455,8 +1446,6 @@ class Auction extends auctionLibrary
             'TXT_AUCTION_DURATION'                => $_ARRAYLANG["TXT_AUCTION_DURATION"],
         ));
 
-// TODO: Never used
-//        $today                 = mktime(0, 0, 0, date("m")  , date("d"), date("Y"));
         $searchTermOrg         = contrexx_addslashes($_GET['term']);
         $searchTerm         = contrexx_addslashes($_GET['term']);
         $array = explode(' ', $searchTerm);
@@ -1769,8 +1758,6 @@ class Auction extends auctionLibrary
                         $this->getCategories();
                         $categories     = '';
                         $checked         = '';
-// TODO: Never used
-//                        $catID            = $objResult->fields['catid'];
                         foreach(array_keys($this->categories) as $catId) {
                             $catId == $objResult->fields['catid'] ? $checked = 'selected' : $checked = '';
                             $categories .= '<option value="'.$catId.'" '.$checked.'>'.$this->categories[$catId]['name'].'</option>';
@@ -1780,25 +1767,16 @@ class Auction extends auctionLibrary
                         $objSpezFields = $objDatabase->Execute("SELECT id, name, value FROM ".DBPREFIX."module_auction_spez_fields WHERE lang_id = '1' AND active='1' ORDER BY id DESC");
                           if ($objSpezFields !== false) {
                             while(!$objSpezFields->EOF) {
-
-// TODO: Never used
-//                                ($i % 2)? $class = "row2" : $class = "row1";
                                 $input = '<input type="text" name="spez_'.$objSpezFields->fields['id'].'" value="'.$objResult->fields[$objSpezFields->fields['name']].'" style="width: 300px;" maxlength="100">';
-
                                 // initialize variables
                                 $this->_objTpl->setVariable(array(
                                     'TXT_AUCTION_SPEZ_FIELD_NAME'        => $objSpezFields->fields['value'],
                                     'AUCTION_SPEZ_FIELD_INPUT'              => $input,
                                 ));
-
                                 $this->_objTpl->parse('spez_fields');
-// TODO: $class is never used
-//                                $i++;
                                 $objSpezFields->MoveNext();
                             }
-                          }
-
-
+                        }
                         $this->_objTpl->setVariable(array(
                             'AUCTION_ENTRY_ID'                    =>    $entryId,
                             'AUCTION_ENTRY_TYPE_OFFER'            =>    $offer,
@@ -1818,13 +1796,12 @@ class Auction extends auctionLibrary
                             'AUCTION_ENTRY_NAME'                    =>    $objResult->fields['name'],
                             'AUCTION_ENTRY_EMAIL'                =>    $objResult->fields['email'],
                         ));
-                           $objResult->MoveNext();
-                       }else{
+                        $objResult->MoveNext();
+                    } else {
                         header('Location: index.php?section=auction&cmd=detail&id='.$_GET['id']);
                         exit;
                     }
                 }
-
                 //get navigatin
                 $this->getNavigation($catID);
             }
@@ -1870,14 +1847,10 @@ class Auction extends auctionLibrary
                         header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
                         exit;
                     }else{
-// TODO: Never used
-//                        $error = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
                         header('Location: index.php?section=auction&cmd=edit&id='.$_POST['id']);
                         exit;
                     }
                 }else{
-// TODO: Never used
-//                    $error = $_CORELANG['TXT_AUCTION_IMAGE_UPLOAD_ERROR'];
                     header('Location: index.php?section=auction&cmd=edit&id='.$_POST['id']);
                     exit;
                 }
@@ -1889,13 +1862,11 @@ class Auction extends auctionLibrary
     }
 
 
-
-    function delEntry() {
-
+    function delEntry()
+    {
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-
         if (!$this->settings['editEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
             header('Location: index.php?section=auction&cmd=detail&id='.$_POST['id']);
             exit;
@@ -1954,14 +1925,11 @@ class Auction extends auctionLibrary
 
 
     /**
-    * Get Auction Latest Entrees
-    *
-    * getContentLatest
-    *
-    * @access    public
-    * @param    string $pageContent
-    * @param     string
-    */
+     * Get latest entries
+     * @access    public
+     * @param    string $pageContent
+     * @param     string
+     */
     function getBlockLatest()
     {
         global $objDatabase, $objTemplate;
@@ -1981,15 +1949,12 @@ class Auction extends auctionLibrary
                 $objTemplate->setVariable('AUCTION_TITLE', $objResult->fields['title']);
                 $objTemplate->setVariable('AUCTION_ID', $objResult->fields['id']);
                 $objTemplate->setVariable('AUCTION_CATID', $objResult->fields['catid']);
-
                 $objTemplate->parse('auctionLatest');
-
-
                 $objResult->MoveNext();
             }
         }
     }
 
-
 }
+
 ?>

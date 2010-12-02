@@ -459,8 +459,6 @@ class auctionLibrary
         $objResult = $objDatabase->Execute("SELECT email, username FROM ".DBPREFIX."access_users WHERE id='".$entryUserid."' LIMIT 1");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-// TODO: Never used
-//                $userMail            = $objResult->fields['email'];
                 $userUsername        = $objResult->fields['username'];
                 $objResult->MoveNext();
             };
@@ -567,10 +565,8 @@ class auctionLibrary
                 $fileName = md5($rand.$fileName).$exte;
 
                 //check file
-// TODO: $x is not defined
-                $x = 0;
                 if(file_exists($this->mediaPath.$path.$fileName)){
-                    $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
+                    $fileName = $rand.$part1 . '_' . (time()) . $exte;
                     $fileName = md5($fileName).$exte;
                 }
 
