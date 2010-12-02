@@ -1,5 +1,13 @@
-var rssFeedNews = new Array()
-rssFeedNews[0] = new Array();
+if (document.body) {
+	document.write('<div id="news_js_rss_feed"></div>');
+}
+fnWinOnload = window.onload;
+window.onload = function() {
+    if (typeof(fnWinOnload) != 'undefined' && fnWinOnload != null) {
+        fnWinOnload();
+    }
+
+    var rssFeedNews = new Array();rssFeedNews[0] = new Array();
 rssFeedNews[0]['title'] = 'Neue Webseite mit modernster Technologie online! ';
 rssFeedNews[0]['link'] = 'http://localhost/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=';
 rssFeedNews[0]['date'] = '05.05.2008';
@@ -37,6 +45,7 @@ if (typeof rssFeedLimit != 'number') {
 if (rssFeedNews.length < rssFeedLimit) {
     rssFeedLimit = rssFeedNews.length;
 }
+
 
 var rssFeedNewsDate = "";
 for (nr = 0; nr < rssFeedLimit; nr++) {
