@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Auction
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -279,7 +278,7 @@ class Auction extends auctionLibrary
             $arrDelete[$i] = $_GET['id'];
         }
 
-           foreach ($arrDelete as $catId) {
+        foreach ($arrDelete as $catId) {
             $objResult = $objDatabase->Execute('SELECT id FROM '.DBPREFIX.'module_auction WHERE catid = '.$catId.'');
             if ($objResult !== false) {
                 if ($objResult->RecordCount() >= 1) {
@@ -291,6 +290,7 @@ class Auction extends auctionLibrary
                     }else{
 // TODO: $_CORELANG is not available here
 //                        $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+                        $this->strErrMessage = $_ARRAYLANG['TXT_AUCTION_CATEGORY_DELETE_ERROR'];
                     }
                 }
             }
@@ -833,18 +833,16 @@ class Auction extends auctionLibrary
             // backup
 //            if ($_FILES['pic']['name'] != "") {
 //                $picture = $this->uploadPicture();
-///* TODO: Never used
+// TODO: Never used
 //                if ($picture != "error") {
 //                    $objFile = new File();
 //                    $status = $objFile->delFile($this->mediaPath, $this->mediaWebPath, "pictures/".$_POST['picOld']);
 //                }
-//*/
-//                        }else{
+//            }else{
 //                $picture = $_POST['picOld'];
 //            }
 
             // get actual data
-            // -------------------------------------------
             $objResultTMP = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_auction WHERE id='.intval($_REQUEST['id']).' LIMIT 1');
             if ($objResultTMP !== false) {
                 $tmpPictures[1] = $objResultTMP->fields['picture_1'];
