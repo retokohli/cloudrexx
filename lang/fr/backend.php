@@ -1267,4 +1267,5 @@ $_ARRAYLANG['TXT_CALENDAR_MANAGE_ENTRIES'] = "Manage Entries";
 $_ARRAYLANG['TXT_CAPTCHA'] = "Captcha";
 $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPING'] = "Domain-Mappings";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
+$_ARRAYLANG['TXT_ELEARNING_ADMINISTRATION'] = "Administration e-Learning";
 ?>
