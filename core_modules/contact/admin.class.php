@@ -672,10 +672,10 @@ class ContactManager extends ContactLib {
 
             $this->_objTpl->setVariable(array(
                     'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
-                    'EDIT_LANGUAGES_1'          =>  $arrLanguages[0],
-                    'EDIT_LANGUAGES_2'          =>  $arrLanguages[1],
-                    'EDIT_LANGUAGES_3'          =>  $arrLanguages[2],
-                    'EDIT_JS_TAB_TO_DIV'        =>  $strJsTabToDiv
+                    'EDIT_LANGUAGES_1'          => $arrLanguages[0],
+                    'EDIT_LANGUAGES_2'          => $arrLanguages[1],
+                    'EDIT_LANGUAGES_3'          => $arrLanguages[2],
+                    'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
                 ));
         }
 
@@ -749,64 +749,6 @@ class ContactManager extends ContactLib {
                                      </table>";
             }
             
-            $counter = 1;
-            foreach ($fields as $fieldID => $field) {
-                $realFieldID = ($formId > 0) ? $fieldID : $counter;
-
-                /**
-                 While copying a template, the edittype of the field must be 'new'
-                 */
-                if($copy) {
-                    $field['editType'] = 'new';
-                }
-                
-                $this->_objTpl->setVariable(
-                        array(
-                        'FORM_FIELD_NAME'               => $field['lang'][$lang['id']]['name'],
-                        'LANG_ID'                       => $lang['id'],
-                        'CONTACT_FORM_FIELD_VALUE'      => $this->_getFormFieldAttribute(
-                                                                $realFieldID,
-                                                                $field['type'],
-                                                                $field['lang'][$lang['id']]['value'],
-                                                                $lang['id']
-                                                                ),
-                        'CONTACT_FORM_FIELD_TYPE_MENU'  => $this->_getFormFieldTypesMenu(
-                                                            'contactFormFieldType['.$realFieldID.']',
-                                                            $field['type'],
-                                                            'id="contactFormFieldType_'.$realFieldID.'_'.$lang['id'].'" style="width:110px;" '.
-                                                            'class="contactFormFieldType contactFormFieldType_'.$realFieldID.'" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),this.value)"'
-                                                            ),
-                        'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
-                                                            'contactFormFieldRequired['.$realFieldID.']',
-                                                            'contactFormFieldRequired_'.$realFieldID,
-                                                            $field['type'],
-                                                            $field['is_required'],
-                                                            $lang['id']
-                                                            ),
-                        'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
-                                                            'contactFormFieldCheckType['.$realFieldID.']',
-                                                            'contactFormFieldCheckType_'.$realFieldID,
-                                                            $field['type'],
-                                                            $field['check_type'],
-                                                            $lang['id']
-                                                            ),
-                        'TXT_NAME'                      => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
-                        'TXT_VALUES'                    => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
-                        'TXT_TYPE'                      => $_ARRAYLANG['TXT_CONTACT_TYPE'],
-                        'TXT_MANDATORY_FIELD'           => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
-                        'TXT_CONTACT_VALIDATION'	=> $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
-                        'TXT_CONTACT_ACTION'            => $_ARRAYLANG['TXT_CONTACT_ACTION'],
-                        'TXT_ADVANCED_VIEW'		=> $_ARRAYLANG['TXT_ADVANCED_VIEW'],
-                        'TXT_SIMPLIFIED_VIEW'           => $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
-                        'FORM_FIELD_ID'                 => $realFieldID,
-                        'FORM_FIELD_TYPE'               => $field['editType'],
-                        'ROW_CLASS_NAME'		=> 'row'.(($counter%2 == 0)?'1':'2')
-                        )
-                );
-                $counter++;
-                $this->_objTpl->parse('formField');
-            }
-            
             $this->_objTpl->setVariable(
                     array(
                     'LANG_ID'                                       => $lang['id'],
@@ -874,12 +816,12 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
                     'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
                     'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
-                    'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', ''),
-                    'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', ''),
-                    'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1, $lang['id']),
-                    'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1, $lang['id']),
-                    'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false, $lang['id']),
-                    'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false, 0),
+                    'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', '', $first, $lang['id']),
+                    'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', '', $first, $lang['id']),
+                    'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
+                    'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
+                    'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
+                    'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
                     'CONTACT_ACTION_TITLE'                          => $actionTitle,
                     'CONTACT_FORM_FIELDS_TITLE'                     => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
                     'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
@@ -900,6 +842,73 @@ class ContactManager extends ContactLib {
             );
             $this->_objTpl->parse('languageForm');
             $first = false;
+        }
+
+        $counter = 1;
+        foreach ($fields as $fieldID => $field) {
+            $realFieldID = ($formId > 0) ? $fieldID : $counter;
+            $first = true;
+            /**
+             While copying a template, the edittype of the field must be 'new'
+             */
+            if($copy) {
+                $field['editType'] = 'new';
+            }
+
+            foreach ($activeLanguages as $lang) {
+                $this->_objTpl->setVariable(array(
+                    'LANG_ID'                       => $lang['id'],
+                    'LANG_NAME_DISPLAY'             => ($first) ? 'block' : 'none',
+                    'LANG_VALUE_DISPLAY'            => ($first) ? 'block' : 'none',
+                    'FORM_FIELD_NAME'               => $field['lang'][$lang['id']]['name'],
+                    'CONTACT_FORM_FIELD_VALUE'      => $this->_getFormFieldAttribute(
+                                                            $realFieldID,
+                                                            $field['type'],
+                                                            $field['lang'][$lang['id']]['value'],
+                                                            $first,
+                                                            $lang['id']
+                                                            )
+                ));
+                $this->_objTpl->parse('formFieldName');
+                $this->_objTpl->parse('formFieldValue');
+                $first = false;
+            }
+            
+            $this->_objTpl->setVariable(
+                    array(
+                    'CONTACT_FORM_FIELD_TYPE_MENU'  => $this->_getFormFieldTypesMenu(
+                                                        'contactFormFieldType['.$realFieldID.']',
+                                                        $field['type'],
+                                                        'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
+                                                        'class="contactFormFieldType" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),this.value)"'
+                                                        ),
+                    'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
+                                                        'contactFormFieldRequired['.$realFieldID.']',
+                                                        'contactFormFieldRequired_'.$realFieldID,
+                                                        $field['type'],
+                                                        $field['is_required']
+                                                        ),
+                    'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
+                                                        'contactFormFieldCheckType['.$realFieldID.']',
+                                                        'contactFormFieldCheckType_'.$realFieldID,
+                                                        $field['type'],
+                                                        $field['check_type']
+                                                        ),
+                    'TXT_NAME'                      => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
+                    'TXT_VALUES'                    => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
+                    'TXT_TYPE'                      => $_ARRAYLANG['TXT_CONTACT_TYPE'],
+                    'TXT_MANDATORY_FIELD'           => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
+                    'TXT_CONTACT_VALIDATION'        => $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
+                    'TXT_CONTACT_ACTION'            => $_ARRAYLANG['TXT_CONTACT_ACTION'],
+                    'TXT_ADVANCED_VIEW'             => $_ARRAYLANG['TXT_ADVANCED_VIEW'],
+                    'TXT_SIMPLIFIED_VIEW'           => $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
+                    'FORM_FIELD_ID'                 => $realFieldID,
+                    'FORM_FIELD_TYPE'               => $field['editType'],
+                    'ROW_CLASS_NAME'                => 'row'.(($counter%2 == 0)?'1':'2')
+                    )
+            );
+            $counter++;
+            $this->_objTpl->parse('formField');
         }
 
         if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
@@ -1081,15 +1090,20 @@ class ContactManager extends ContactLib {
     }
 
     // added langid as new parameter to support multi-lang
-    function _getFormFieldAttribute($id, $type, $attr, $langid = 0)
+    function _getFormFieldAttribute($id, $type, $attr, $first=true, $langid = 0)
     {
         global $_ARRAYLANG;
-
+        $field = "";
+        $display = $first ? "block" : "none";
+        
         switch ($type) {
             case 'text':
             case 'hidden':
             case 'label':
-                return "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
+                $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
+                $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
+                $field .= "</div>";
+                return $field;
                 break;
 
             case 'checkbox':
@@ -1102,7 +1116,10 @@ class ContactManager extends ContactLib {
             case 'checkboxGroup':
             case 'select':
             case 'radio':
-                return "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
+                $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
+                $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
+                $field .= "</div>";
+                return $field;
                 break;
 
             default:
@@ -1703,7 +1720,7 @@ class ContactManager extends ContactLib {
      * @param array $list List with all of the possible types (email, url, text, numbers...)
      * @param int $selected Which option has to be selected
      */
-    function _getFormFieldCheckTypesMenu($name, $id,  $type, $selected, $langId)
+    function _getFormFieldCheckTypesMenu($name, $id,  $type, $selected)
     {
         global $_ARRAYLANG;
 
@@ -1727,7 +1744,7 @@ class ContactManager extends ContactLib {
             case 'password':
             case 'textarea':
             default:
-                $menu = "<select name=\"".$name."\" id=\"".$id."_".$lang['id']."\">\n";
+                $menu = "<select name=\"".$name."\" id=\"".$id."\">\n";
                 foreach ($this->arrCheckTypes as $typeId => $type) {
                     if ($selected == $typeId) {
                         $select = "selected=\"selected\"";
@@ -1744,7 +1761,7 @@ class ContactManager extends ContactLib {
         return  $menu;
     }
 
-    function _getFormFieldRequiredCheckBox($name, $id, $type, $selected, $langId)
+    function _getFormFieldRequiredCheckBox($name, $id, $type, $selected)
     {
         global $_ARRAYLANG;
 
@@ -1758,7 +1775,7 @@ class ContactManager extends ContactLib {
                 break;
 
             default:
-                return '<input type="checkbox" name="'.$name.'" id="'.$id."_".$langId.'" '.($selected ? 'checked="checked"' : '').' />';
+                return '<input type="checkbox" name="'.$name.'" id="'.$id.'" '.($selected ? 'checked="checked"' : '').' />';
                 break;
         }
     }
