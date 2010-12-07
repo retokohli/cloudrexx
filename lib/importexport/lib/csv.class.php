@@ -11,7 +11,6 @@
  */
 class CsvLib
 {
-	var $firstAreNames = true;
 	var $separator = ";";
 	var $enclosure = "\"";
 
@@ -47,6 +46,8 @@ class CsvLib
 	 * Returns the content of a csv file
 	 *
 	 * @param string $file
+     * @param bool $columnNamesInFirstRow should the first row's values be taken as column names?
+     * @param bool $firstRowIsAlsoData if columnNamesInFirstRow is true, are those fields also values?
 	 * @param bool $limit Limit
 	 * @return array
 	 *
@@ -72,7 +73,7 @@ class CsvLib
 
 		)
 	 */
-	function parse($file, $looplimit=-1)
+	function parse($file,$columnNamesInFirstRow=false, $firstRowIsAlsoData=false, $looplimit=-1)
 	{
 
 		// detect newlines correctly. bit slower, but in exchange
@@ -100,7 +101,8 @@ class CsvLib
 			$limit = $looplimit;
 			while (($data = fgetcsv($handle, $len, $this->separator, $this->enclosure)) && $limit != 0) {
 				if (!empty($data[0]) || $looplimit == 1) {
-					if ($firstline && $this->firstAreNames) {
+                    //set field names if they are specified in the first row
+					if ($firstline && $columnNamesInFirstRow) {
 						foreach ($data as $index => $field) {
 							if(empty($field)){
 								$field = "emptyField_$index";
@@ -108,7 +110,9 @@ class CsvLib
 							$retdata['fieldnames'][] = $field;
 						}
 						$firstline = false;
-					} else {
+					}
+                    //add fields to data if it's not the first row and it contains only titles
+                    if(!$firstline || !$columnNamesInFirstRow || $firstRowIsAlsoData) {
 						$retdata['data'][] = $data;
 					}
 				}

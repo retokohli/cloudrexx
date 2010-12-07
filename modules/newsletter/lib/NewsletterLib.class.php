@@ -31,7 +31,7 @@ class NewsletterLib
 {
     public $_arrRecipientTitles = null;
 
-    protected function _getLists($orderBy = '')
+    protected function _getLists($orderBy = '', $excludeDisabledCategories=false)
     {
         global $objDatabase;
 
@@ -43,6 +43,7 @@ class NewsletterLib
             COUNT(tblRel.category) as recipients
             FROM ".DBPREFIX."module_newsletter_category AS tblCategory
             LEFT JOIN ".DBPREFIX."module_newsletter_rel_user_cat AS tblRel ON tblRel.category = tblCategory.id
+            ".($excludeDisabledCategories ? ' WHERE status=1' : '')."
             GROUP BY tblCategory.id".(!empty($orderBy) ? " ORDER BY ".$orderBy : ""));
         if ($objList !== false) {
             while (!$objList->EOF) {

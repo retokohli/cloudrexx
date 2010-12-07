@@ -40,7 +40,8 @@ class Import extends ImportExport
 		$this->parseFile($_POST['importfile']);
 
 		$retval = array();
-
+        var_dump($this->importedData);
+        var_dump($this->pairs);
 		foreach ($this->importedData as $datarow) {
 			foreach ($this->pairs as $key => $value) {
 				$retfields[$key] = $datarow[$value];
@@ -49,6 +50,8 @@ class Import extends ImportExport
 
 			$retval[] = $retfields;
 		}
+        var_dump($retval);
+        echo "----------";
 
 		return $retval;
 
@@ -94,11 +97,10 @@ class Import extends ImportExport
 			$newpath = $path . basename($file) . "." . time() . ".import";
 			move_uploaded_file($file, $newpath);
 			$file = $newpath;
-			$data = $this->dataClass->parse($file, 1);
+			$data = $this->dataClass->parse($file, true, true, 1);
 		} else {
-			$data = $this->dataClass->parse($file);
+          $data = $this->dataClass->parse($file, true, true);
 		}
-
 		if (!empty($data)) {
 			if (isset($data['fieldnames'])) {
 				// Set the fieldnames

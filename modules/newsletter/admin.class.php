@@ -19,6 +19,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'] = "Benachrichtigung bei Abme
  * @ignore
  */
 require_once ASCMS_MODULE_PATH.'/newsletter/lib/NewsletterLib.class.php';
+require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 
 /**
  * Class newsletter
@@ -253,7 +254,7 @@ class newsletter extends NewsletterLib
         if (!empty($_GET["bulkdelete"]) && $_GET["bulkdelete"] == "exe") {
             $error=0;
             if (!empty($_POST['listid'])) {
-                foreach ($_POST['listid'] as $listid) {
+               foreach ($_POST['listid'] as $listid) {
                     $listid=intval($listid);
                     if (    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_category WHERE id=$listid") !== false) {
                         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_cat_news WHERE category=$listid");
@@ -696,7 +697,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->touchBlock('newsletter_mail_text_content');
         }
 
-        $arrLists = &$this->_getLists('tblCategory.name');
+        $arrLists = &$this->_getLists('tblCategory.name',true);
         $listNr = 0;
         foreach ($arrLists as $listId => $arrList) {
             $column = $listNr % 3;
@@ -2871,6 +2872,8 @@ class newsletter extends NewsletterLib
             // Speichern der Daten. Siehe Final weiter unten.
             $arrRecipients = $objImport->getFinalData($arrFields);
 
+            var_dump($arrRecipients);
+
             if ($_POST['category'] == '') {
                 $arrLists = array_keys($this->_getLists());
             } else {
@@ -2889,10 +2892,9 @@ class newsletter extends NewsletterLib
                 if (!strpos($arrRecipient['email'],'@')) {
                     continue;
                 }
-
-                if ($this->check_email($arrRecipient['email']) != 1) {
-                    array_push($arrBadEmails, $arrRecipient['email']);
-                } else {
+                if (!FWValidator::isEmail($arrRecipient['email'])) {
+                    array_push($arrBadEmails, $arrRecipient['email']); 
+               } else {
                     $EmailCount++;
                     $objRecipient = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_newsletter_user` WHERE `email` = '".addslashes($arrRecipient['email'])."'", 1);
                     if ($objRecipient->RecordCount() == 1) {
@@ -2916,7 +2918,7 @@ class newsletter extends NewsletterLib
                     }
                 }
             }
-            $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORT_SUCCESSFUL']."<br/>".$_ARRAYLANG['TXT_CORRECT_EMAILS'].": ".$EmailCount."<br/>".$_ARRAYLANG['TXT_NOT_VALID_EMAILS'].": ".implode(', ', $arrBadEmails)."<br/>".$_ARRAYLANG['TXT_EXISTING_EMAILS'].": ".$ExistEmails."<br/>".$_ARRAYLANG['TXT_NEW_ADDED_EMAILS'].": ".$NewEmails;
+            $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORT_SUCCESSFUL']."<br/>".$_ARRAYLANG['TXT_CORRECT_EMAILS'].": ".$EmailCount."<br/>".$_ARRAYLANG['TXT_NOT_VALID_EMAILS'].": &quot;".implode(', ', $arrBadEmails)."&quot;<br/>".$_ARRAYLANG['TXT_EXISTING_EMAILS'].": ".$ExistEmails."<br/>".$_ARRAYLANG['TXT_NEW_ADDED_EMAILS'].": ".$NewEmails;
 
 
             $objImport->initFileSelectTemplate($objTpl);
@@ -2995,7 +2997,7 @@ class newsletter extends NewsletterLib
                             continue;
                         }
 
-                        if ($this->check_email($email) != 1) {
+                        if (!FWValidator::isEmail($email)) {
                             array_push($arrBadEmails, $email);
                         } else {
                             $EmailCount++;
@@ -3021,7 +3023,7 @@ class newsletter extends NewsletterLib
                             }
                         }
                     }
-                    $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORT_SUCCESSFUL']."<br/>".$_ARRAYLANG['TXT_CORRECT_EMAILS'].": ".$EmailCount."<br/>".$_ARRAYLANG['TXT_NOT_VALID_EMAILS'].": ".implode(', ', $arrBadEmails)."<br/>".$_ARRAYLANG['TXT_EXISTING_EMAILS'].": ".$ExistEmails."<br/>".$_ARRAYLANG['TXT_NEW_ADDED_EMAILS'].": ".$NewEmails;
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_DATA_IMPORT_SUCCESSFUL']."<br/>".$_ARRAYLANG['TXT_CORRECT_EMAILS'].": ".$EmailCount."<br/>".$_ARRAYLANG['TXT_NOT_VALID_EMAILS'].": &quot;".implode(', ', $arrBadEmails)."&quot;<br/>".$_ARRAYLANG['TXT_EXISTING_EMAILS'].": ".$ExistEmails."<br/>".$_ARRAYLANG['TXT_NEW_ADDED_EMAILS'].": ".$NewEmails;
                 }
 
             }
@@ -3092,12 +3094,8 @@ class newsletter extends NewsletterLib
         return true;
     }
 
-    function check_email($email) {
-        return preg_match('#^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]{2,}(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,6}))$#', $email);
-    }
-
     /**
-     * delete all inavtice recipients
+     * delete all inactive recipients
      *
      * @return void
      */
