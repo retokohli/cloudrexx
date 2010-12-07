@@ -625,7 +625,7 @@ CREATE TABLE `contrexx_module_block_categories` (
   `order` int(10) NOT NULL default '0',
   `status` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
