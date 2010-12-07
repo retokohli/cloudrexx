@@ -975,6 +975,7 @@ div#livecam #CALBUTTONDPC_datum {
 }
 
 #guestbook div.entry {
+    width: 100%;
 	padding: 10px 5px 10px 5px;
 	margin: 0px 0px 0px 0px;
 	float:left;
