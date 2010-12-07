@@ -5169,11 +5169,9 @@ class shopmanager extends ShopLibrary
         if (isset($_REQUEST['manufacturerId'])) {
             $manufacturerId = intval($_REQUEST['manufacturerId']);
         }
-// Not applicable in the backend
-//        $flagSpecialoffer = '';
-//        if (isset($_REQUEST['specialoffer'])) {
-//            $flagSpecialoffer = true;
-//        }
+
+        $showOnlySpecialOffers = isset($_REQUEST['specialoffer']) ? intval($_REQUEST['specialoffer']) == 1 : false;
+
         $searchTerm = '';
         if (!empty($_REQUEST['shopSearchTerm'])) {
             $searchTerm = mysql_escape_string(
@@ -5185,7 +5183,7 @@ class shopmanager extends ShopLibrary
         // Mind that $count is handed over by reference.
         $arrProducts = Products::getByShopParams(
             $count, $pos, 0, $catId, $manufacturerId, $searchTerm,
-            false, false,
+            $showOnlySpecialOffers, false,
             self::$arrProductOrder[$this->arrConfig['product_sorting']['value']],
             '', true // Include inactive Products
         );
