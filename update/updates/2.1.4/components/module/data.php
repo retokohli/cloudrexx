@@ -207,7 +207,7 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
         UpdateUtil::table(
             DBPREFIX.'module_data_messages_lang',
             array(
-                'message_id'               => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
+                'message_id'               => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'lang_id'                  => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
                 'is_active'                => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '1'),
                 'subject'                  => array('type' => 'VARCHAR(250)'),

@@ -172,7 +172,7 @@ function _newsletterUpdate()
     try {
         $objResult = UpdateUtil::sql("SELECT id FROM `".DBPREFIX."module_newsletter_confirm_mail` WHERE id='3'");
         if ($objResult->RecordCount() == 0) {
-            DBG::msg("inserting standard confirm mails";)
+            DBG::msg("inserting standard confirm mails");
             UpdateUtil::sql("INSERT INTO `".DBPREFIX."module_newsletter_confirm_mail` (`id` ,`title` ,`content` ,`recipients`) VALUES ('3', '[[url]] - Neue Newsletter Empfänger [[action]]', 'Hallo Admin Eine neue Empfänger [[action]] in ihrem Newsletter System. Automatisch generierte Nachricht [[date]]', '');");
         }
     }

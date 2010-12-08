@@ -40,7 +40,7 @@ function _galleryUpdate()
                 'quality'                => array('type' => 'TINYINT(3)',       'notnull' => true, 'default' => '0')
             ),
             array(
-                'galleryPicturesIndex' => array('type' => 'FULLTEXT', fields => array('path'))
+                'galleryPicturesIndex' => array('type' => 'FULLTEXT', 'fields' => array('path'))
             )
         );
     }
