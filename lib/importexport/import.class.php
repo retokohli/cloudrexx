@@ -40,8 +40,6 @@ class Import extends ImportExport
 		$this->parseFile($_POST['importfile']);
 
 		$retval = array();
-        var_dump($this->importedData);
-        var_dump($this->pairs);
 		foreach ($this->importedData as $datarow) {
 			foreach ($this->pairs as $key => $value) {
 				$retfields[$key] = $datarow[$value];
@@ -50,8 +48,6 @@ class Import extends ImportExport
 
 			$retval[] = $retfields;
 		}
-        var_dump($retval);
-        echo "----------";
 
 		return $retval;
 
