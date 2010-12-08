@@ -222,7 +222,7 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
                 'attachment_description'   => array('type' => 'VARCHAR(255)'),
                 'mode'                     => array('type' => 'SET(\'normal\',\'forward\')', 'default' => 'normal'),
                 'forward_url'              => array('type' => 'VARCHAR(255)'),
-                'forward_target'           => array('type' => 'VARCHAR(40)')
+                'forward_target'           => array('type' => 'VARCHAR(40)', 'notnull' => false)
             )
         );
     }
