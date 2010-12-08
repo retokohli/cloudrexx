@@ -650,7 +650,6 @@ class ContactManager extends ContactLib {
 
         $activeLanguages     = FWLanguage::getActiveFrontendLanguages();
         $this->_arrLanguages = $this->createLanguageArray();
-        $first = true;
         
         if (count($this->_arrLanguages) > 0) {
             $intLanguageCounter = 0;
@@ -666,7 +665,6 @@ class ContactManager extends ContactLib {
                 }
 
                 $arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'addFrom_'.$arrLanguage['long'].'\');" />'.$arrLanguage['long'].' ['.$arrLanguage['short'].']<br />';
-                $strJsTabToDiv .= 'arrTabToDiv["addFrom_'.$arrLanguage['long'].'"] = "langTab_'.$intLanguageId.'";'."\n";
                 ++$intLanguageCounter;
             }
 
@@ -674,8 +672,7 @@ class ContactManager extends ContactLib {
                     'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
                     'EDIT_LANGUAGES_1'          => $arrLanguages[0],
                     'EDIT_LANGUAGES_2'          => $arrLanguages[1],
-                    'EDIT_LANGUAGES_3'          => $arrLanguages[2],
-                    'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
+                    'EDIT_LANGUAGES_3'          => $arrLanguages[2]
                 ));
         }
 
@@ -708,6 +705,7 @@ class ContactManager extends ContactLib {
             }
         }
         
+        $first = true;
         foreach ($activeLanguages as $lang) {
             $langID = $lang['id'];
 
@@ -719,12 +717,13 @@ class ContactManager extends ContactLib {
             $this->_objTpl->setVariable(array(
                     'LANG_ID'                   => $lang['id'],
                     'LANG_NAME'                 => $lang['name'],
-                    'TAB_CLASS_NAME'             => ($first) ? 'active' :'inactive',
+                    'TAB_CLASS_NAME'            => ($first) ? 'active' :'inactive',
                     'CONTACT_LANGTAB_DISPLAY'   => ($boolLanguageIsActive ? 'display:inline;' : 'display:none;')
                     )
             );
             $this->_objTpl->parse('languageTabs');
-             
+            $first = false;
+            
             if (isset($langVars)) {
                 $formText         = $langVars['text'];
                 $formFeedback     = $langVars['feedback'];
@@ -748,134 +747,21 @@ class ContactManager extends ContactLib {
                                      </tbody>
                                      </table>";
             }
-            
-            $this->_objTpl->setVariable(
-                    array(
-                    'LANG_ID'                                       => $lang['id'],
-                    'LANG_NAME'                                     => $lang['name'],
-                    'LANG_FORM_DISPLAY'                             => ($first) ? 'block' : 'none',
-
-                    'TXT_CONTACT_SUBJECT'                           => $_ARRAYLANG['TXT_CONTACT_SUBJECT'],
-                    'CONTACT_FORM_SUBJECT'                          => $formSubject,
-                    'TXT_CONTACT_MAIL_TEMPLATE'                     => $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'],
-                    'CONTACT_MAIL_TEMPLATE'                         => get_wysiwyg_editor('contactMailTemplate['.$langID.']', $formMailTemplate, 'shop', $lang)
-                    )
-            );
-            $this->_objTpl->parse('notificationLanguageForm');
-
-            $this->_objTpl->setVariable(
-                    array(
-                    'LANG_ID'                                       => $lang['id'],
-                    'LANG_NAME'                                     => $lang['name'],
-                    'LANG_FORM_DISPLAY'                             => ($first) ? 'block' : 'none',
-
-                    'TXT_CONTACT_FORM_FIELDS'                       => $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'],
-                    'TXT_CONTACT_DELETE'                            => $_ARRAYLANG['TXT_CONTACT_DELETE'],
-                    'TXT_CONTACT_MOVE_UP'                           => $_ARRAYLANG['TXT_CONTACT_MOVE_UP'],
-                    'TXT_CONTACT_MOVE_DOWN'                         => $_ARRAYLANG['TXT_CONTACT_MOVE_DOWN'],
-                    'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                    'TXT_CONTACT_REGEX_EMAIL'                       => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
-                    'TXT_CONTACT_ADD_OTHER_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'],
-                    'TXT_CONTACT_ADD_RECIPIENT'                     => $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'],
-                    'TXT_FORM_VALUES'                               => $_ARRAYLANG['TXT_FORM_VALUES'],
-                    'TXT_FORM_FIELDS'                               => $_ARRAYLANG['TXT_FORM_FIELDS'],
-                    'TXT_FORM_RECIPIENTS'                           => $_ARRAYLANG['TXT_FORM_RECIPIENTS'],
-                    'TXT_ADVANCED_SETTINGS'                         => $_ARRAYLANG['TXT_ADVANCED_SETTINGS'],
-                    'TXT_FORM_NOTIFICATION'                         => $_ARRAYLANG['TXT_FORM_NOTIFICATION'],
-                    'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
-                    'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                    'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
-                    'TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'      => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
-                    'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
-                    'TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
-                    'TXT_CONTACT_FORM_DATA'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DATA'],
-                    'TXT_CONTACT_FORM_DESC'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DESC'],
-                    'TXT_CONTACT_FEEDBACK'                          => $_ARRAYLANG['TXT_CONTACT_FEEDBACK'],
-                    'TXT_CONTACT_VALUE_S'                           => $_ARRAYLANG['TXT_CONTACT_VALUE_S'],
-                    'TXT_CONTACT_FIELD_NAME'                        => $_ARRAYLANG['TXT_CONTACT_FIELD_NAME'],
-                    'TXT_CONTACT_TYPE'                              => $_ARRAYLANG['TXT_CONTACT_TYPE'],
-                    'TXT_CONTACT_MANDATORY_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
-                    'TXT_CONTACT_FEEDBACK_EXPLANATION'              => $_ARRAYLANG['TXT_CONTACT_FEEDBACK_EXPLANATION'],
-                    'TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'],
-                    'TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'],
-                    'TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'            => $_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'],
-                    'TXT_CONTACT_YES'                               => $_ARRAYLANG['TXT_CONTACT_YES'],
-                    'TXT_CONTACT_NO'                                => $_ARRAYLANG['TXT_CONTACT_NO'],
-                    'TXT_CONTACT_CAPTCHA_PROTECTION'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
-                    'TXT_CONTACT_CAPTCHA'                           => $_ARRAYLANG['TXT_CONTACT_CAPTCHA'],
-                    'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
-                    'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
-                    'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
-                    'TXT_CONTACT_SEND_HTML_MAIL'                    => $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'],
-                    'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'          => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
-                    'TXT_CONTACT_CUSTOM_STYLE'                      => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
-                    'TXT_CONTACT_SET_MANDATORY_FIELD'               => $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'],
-                    'TXT_CONTACT_RECIPIENT_ALREADY_SET'             => $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'],
-
-                    'CONTACT_FORM_NAME'                             => $this->arrForms[$formId]['lang'][$lang['id']]['name'],
-                    'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
-                    'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
-                    'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
-                    'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', '', $first, $lang['id']),
-                    'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', '', $first, $lang['id']),
-                    'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
-                    'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
-                    'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
-                    'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
-                    'CONTACT_ACTION_TITLE'                          => $actionTitle,
-                    'CONTACT_FORM_FIELDS_TITLE'                     => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
-                    'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
-                    'CONTACT_FORM_SETTINGS'                         => $_ARRAYLANG['CONTACT_FORM_SETTINGS'],
-                    'CONTACT_FORM_ID'                               => $formId,
-                    'CONTACT_FORM_TEXT'                             => get_wysiwyg_editor('contactFormText['.$langID.']', $formText, 'shop', $lang),
-                    'CONTACT_FORM_FEEDBACK'                         => get_wysiwyg_editor('contactFormFeedback['.$langID.']', $formFeedback, 'shop', $lang),
-
-                    'CONTACT_FORM_FIELD_TYPE_MENU_TPL'              => $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
-                    'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', ''),
-                    'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
-                    'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', ''),
-                    'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', ''),
-                    'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', ''),
-                    'CONTACT_FORM_FIELD_RADIO_TPL'                  => $this->_getFormFieldAttribute(0, 'radio', ''),
-                    'CONTACT_FORM_FIELD_SELECT_TPL'                 => $this->_getFormFieldAttribute(0, 'select', ''),
-                    )
-            );
-            $this->_objTpl->parse('languageForm');
-            $first = false;
         }
 
         $counter = 1;
         foreach ($fields as $fieldID => $field) {
             $realFieldID = ($formId > 0) ? $fieldID : $counter;
-            $first = true;
+
             /**
              While copying a template, the edittype of the field must be 'new'
              */
             if($copy) {
                 $field['editType'] = 'new';
             }
-
-            foreach ($activeLanguages as $lang) {
-                $this->_objTpl->setVariable(array(
-                    'LANG_ID'                       => $lang['id'],
-                    'LANG_NAME_DISPLAY'             => ($first) ? 'block' : 'none',
-                    'LANG_VALUE_DISPLAY'            => ($first) ? 'block' : 'none',
-                    'FORM_FIELD_NAME'               => $field['lang'][$lang['id']]['name'],
-                    'CONTACT_FORM_FIELD_VALUE'      => $this->_getFormFieldAttribute(
-                                                            $realFieldID,
-                                                            $field['type'],
-                                                            $field['lang'][$lang['id']]['value'],
-                                                            $first,
-                                                            $lang['id']
-                                                            )
-                ));
-                $this->_objTpl->parse('formFieldName');
-                $this->_objTpl->parse('formFieldValue');
-                $first = false;
-            }
             
             $this->_objTpl->setVariable(
-                    array(
+                array(
                     'CONTACT_FORM_FIELD_TYPE_MENU'  => $this->_getFormFieldTypesMenu(
                                                         'contactFormFieldType['.$realFieldID.']',
                                                         $field['type'],
@@ -907,8 +793,8 @@ class ContactManager extends ContactLib {
                     'ROW_CLASS_NAME'                => 'row'.(($counter%2 == 0)?'1':'2')
                     )
             );
-            $counter++;
             $this->_objTpl->parse('formField');
+            $counter++;
         }
 
         if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
@@ -919,6 +805,87 @@ class ContactManager extends ContactLib {
 
         $this->_objTpl->setVariable(
                 array(
+                'TXT_CONTACT_FORM_FIELDS'                       => $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'],
+                'TXT_CONTACT_DELETE'                            => $_ARRAYLANG['TXT_CONTACT_DELETE'],
+                'TXT_CONTACT_MOVE_UP'                           => $_ARRAYLANG['TXT_CONTACT_MOVE_UP'],
+                'TXT_CONTACT_MOVE_DOWN'                         => $_ARRAYLANG['TXT_CONTACT_MOVE_DOWN'],
+                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'TXT_CONTACT_REGEX_EMAIL'                       => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
+                'TXT_CONTACT_ADD_OTHER_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'],
+                'TXT_CONTACT_ADD_RECIPIENT'                     => $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'],
+                'TXT_FORM_VALUES'                               => $_ARRAYLANG['TXT_FORM_VALUES'],
+                'TXT_FORM_FIELDS'                               => $_ARRAYLANG['TXT_FORM_FIELDS'],
+                'TXT_FORM_RECIPIENTS'                           => $_ARRAYLANG['TXT_FORM_RECIPIENTS'],
+                'TXT_ADVANCED_SETTINGS'                         => $_ARRAYLANG['TXT_ADVANCED_SETTINGS'],
+                'TXT_FORM_NOTIFICATION'                         => $_ARRAYLANG['TXT_FORM_NOTIFICATION'],
+                'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
+                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
+                'TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'      => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
+                'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
+                'TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
+                'TXT_CONTACT_FORM_DATA'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DATA'],
+                'TXT_CONTACT_FORM_DESC'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DESC'],
+                'TXT_CONTACT_FEEDBACK'                          => $_ARRAYLANG['TXT_CONTACT_FEEDBACK'],
+                'TXT_CONTACT_VALUE_S'                           => $_ARRAYLANG['TXT_CONTACT_VALUE_S'],
+                'TXT_CONTACT_FIELD_NAME'                        => $_ARRAYLANG['TXT_CONTACT_FIELD_NAME'],
+                'TXT_CONTACT_TYPE'                              => $_ARRAYLANG['TXT_CONTACT_TYPE'],
+                'TXT_CONTACT_MANDATORY_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
+                'TXT_CONTACT_FEEDBACK_EXPLANATION'              => $_ARRAYLANG['TXT_CONTACT_FEEDBACK_EXPLANATION'],
+                'TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'],
+                'TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'],
+                'TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'            => $_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'],
+                'TXT_CONTACT_YES'                               => $_ARRAYLANG['TXT_CONTACT_YES'],
+                'TXT_CONTACT_NO'                                => $_ARRAYLANG['TXT_CONTACT_NO'],
+                'TXT_CONTACT_CAPTCHA_PROTECTION'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
+                'TXT_CONTACT_CAPTCHA'                           => $_ARRAYLANG['TXT_CONTACT_CAPTCHA'],
+                'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
+                'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
+                'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
+                'TXT_CONTACT_SEND_HTML_MAIL'                    => $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'],
+                'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'          => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
+                'TXT_CONTACT_CUSTOM_STYLE'                      => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
+                'TXT_CONTACT_SET_MANDATORY_FIELD'               => $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'],
+                'TXT_CONTACT_RECIPIENT_ALREADY_SET'             => $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'],
+                'TXT_CONTACT_SUBJECT'                           => $_ARRAYLANG['TXT_CONTACT_SUBJECT'],
+                'TXT_CONTACT_MAIL_TEMPLATE'                     => $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'],
+                'TXT_CONTACT_EMAIL'                             => $_ARRAYLANG['TXT_CONTACT_EMAIL'],
+                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'TXT_CONTENT_PLEASE_WAIT'                       => $_CORELANG['TXT_CONTENT_PLEASE_WAIT'],
+                'CONTACT_FORM_FIELDS_TITLE'                     => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
+                'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
+                'CONTACT_FORM_SETTINGS'                         => $_ARRAYLANG['CONTACT_FORM_SETTINGS'],
+
+                'CONTACT_FORM_SUBJECT'                          => $formSubject,
+                'FORM_FIELD_NAME'                               => $field['lang'][$lang['id']]['name'],
+                'CONTACT_FORM_FIELD_VALUE'                      => $this->_getFormFieldAttribute(
+                                                                    $realFieldID,
+                                                                    $field['type'],
+                                                                    $field['lang'][$lang['id']]['value']
+                                                                    ),
+                'CONTACT_FORM_NAME'                             => $this->arrForms[$formId]['lang'][$lang['id']]['name'],
+                'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
+                'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
+                'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
+                'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', ''),
+                'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', ''),
+                'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
+                'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
+                'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
+                'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
+                'CONTACT_ACTION_TITLE'                          => $actionTitle,
+                'CONTACT_FORM_ID'                               => $formId,
+                'CONTACT_FORM_FIELD_TYPE_MENU_TPL'              => $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
+                'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', ''),
+                'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
+                'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', ''),
+                'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', ''),
+                'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', ''),
+                'CONTACT_FORM_FIELD_RADIO_TPL'                  => $this->_getFormFieldAttribute(0, 'radio', ''),
+                'CONTACT_FORM_FIELD_SELECT_TPL'                 => $this->_getFormFieldAttribute(0, 'select', ''),
+                'CONTACT_MAIL_TEMPLATE'                         => get_wysiwyg_editor('contactMailTemplate['.$langID.']', $formMailTemplate, 'shop', $lang),
+                'CONTACT_FORM_TEXT'                             => get_wysiwyg_editor('contactFormText['.$langID.']', $formText, 'shop', $lang),
+                'CONTACT_FORM_FEEDBACK'                         => get_wysiwyg_editor('contactFormFeedback['.$langID.']', $formFeedback, 'shop', $lang),
                 'CONTACT_FORM_SHOW_FORM_YES'                    => $showForm        ? 'checked="checked"' : '',
                 'CONTACT_FORM_SHOW_FORM_NO'                     => $showForm        ? '' : 'checked="checked"',
                 'CONTACT_FORM_USE_CAPTCHA_YES'                  => $useCaptcha      ? 'checked="checked"' : '',
@@ -930,10 +897,7 @@ class ContactManager extends ContactLib {
                 'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
                 'CONTACT_FORM_EMAIL'                            => $this->arrForms[$formId]['emails'],
                 'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
-                'FORM_COPY'                                     => intval($copy),
-
-                'TXT_CONTACT_EMAIL'                             => $_ARRAYLANG['TXT_CONTACT_EMAIL'],
-                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'FORM_COPY'                                     => intval($copy)
                 )
         );
 
@@ -1090,20 +1054,15 @@ class ContactManager extends ContactLib {
     }
 
     // added langid as new parameter to support multi-lang
-    function _getFormFieldAttribute($id, $type, $attr, $first=true, $langid = 0)
+    function _getFormFieldAttribute($id, $type, $attr)
     {
         global $_ARRAYLANG;
-        $field = "";
-        $display = $first ? "block" : "none";
         
         switch ($type) {
             case 'text':
             case 'hidden':
             case 'label':
-                $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
-                $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
-                $field .= "</div>";
-                return $field;
+                return "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
                 break;
 
             case 'checkbox':
@@ -1116,10 +1075,7 @@ class ContactManager extends ContactLib {
             case 'checkboxGroup':
             case 'select':
             case 'radio':
-                $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
-                $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
-                $field .= "</div>";
-                return $field;
+                return "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
                 break;
 
             default:
