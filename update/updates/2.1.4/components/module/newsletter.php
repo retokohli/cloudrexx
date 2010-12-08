@@ -89,17 +89,16 @@ function _newsletterUpdate()
         DBG::msg("Retrieving old unsubscribe value if set.");
         $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notifyOnUnsubscribe'");
         
-        if(!$res->EOF)
-	{
-            $unsubscribeVal = $res->fields['setvalue'];
-	}
-	else //maybe update ran already => preserve new value
-	{
+    if(!$res->EOF){
+        $unsubscribeVal = $res->fields['setvalue'];
+    }
+    else //maybe update ran already => preserve new value
+    {
         DBG::msg("Not found. Retrieving new unsubscribe value if set.");
-	    $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
-	    if(!$res->EOF)
-		$unsubscribeVal = $res->fields['setvalue'];
-	}
+        $res = UpdateUtil::sql("SELECT setvalue FROM ".DBPREFIX."module_newsletter_settings WHERE setname='notificatonUnsubscribe'");
+        if(!$res->EOF)
+        $unsubscribeVal = $res->fields['setvalue'];
+    }
 
     }
     catch (UpdateException $e) {
@@ -126,7 +125,8 @@ function _newsletterUpdate()
         while (!$res->EOF) {
             $field = $res->fields['setname'];
             DBG::msg("...merging $field with default settings");
-            $settings[$field]['setvalue'] = $res->fields['setvalue'];
+            if(is_array($settings[$field])) //do we have another value for this?
+                $settings[$field]['setvalue'] = $res->fields['setvalue'];
             $res->MoveNext();
         }
         DBG::msg("Updating settings");
