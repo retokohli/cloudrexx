@@ -708,7 +708,7 @@ class DataAdmin extends DataLibrary {
         }
     }
 	
-    function parseCategorySelector($categoryTree, $arrCategories, $select, $level, $lang, $parent = true)
+    function parseCategorySelector($categoryTree, $arrCategories, $select, $level, $lang, $parent = true, $stack)
     {
 	// this used to expect an int value, only allowing entries to belong to a single category. this way we
 	// continue to support legacy calls but add support for multiple categories in callers aware of that. -fs
@@ -735,7 +735,7 @@ class DataAdmin extends DataLibrary {
                 "CATEGORY_OPT_LABEL"      => $arrCategories[$key][$lang]['name'],
                 "CATEGORY_OPT_VALUE"      => $key,
                 "CATEGORY_OPT_SELECTED"   => "",
-                "CATEGORY_OPT_INDENT"         =>  str_repeat("...", $level)
+                "CATEGORY_OPT_INDENT"         =>  $stack 
             ));
 			
 			if ($selected) {
@@ -744,10 +744,10 @@ class DataAdmin extends DataLibrary {
 			else {
 				$this->_objTpl->parse("availableCategories");
 			}
-
-
+			
             if (count($value) > 0) {
-                $this->parseCategorySelectors($value, $arrCategories, $select, $level+1, $lang, $parent);
+				$stack .= $arrCategories[$key][$lang]['name'].' &raquo; ';
+                $this->parseCategorySelector($value, $arrCategories, $select, $level+1, $lang, $parent, $stack);
             }
 
         }
