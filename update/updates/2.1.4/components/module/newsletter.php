@@ -125,7 +125,7 @@ function _newsletterUpdate()
         while (!$res->EOF) {
             $field = $res->fields['setname'];
             DBG::msg("...merging $field with default settings");
-            if(is_array($settings[$field])) //do we have another value for this?
+            if(isset($settings[$field])) //do we have another value for this?
                 $settings[$field]['setvalue'] = $res->fields['setvalue'];
             $res->MoveNext();
         }

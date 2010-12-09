@@ -321,6 +321,7 @@ class UpdateUtil {
         $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
         $binary       = (array_key_exists('binary',         $spec)) ? $spec['binary']         : null;
 
+        $after = false;
         if (!$create_tbl_operation) {
             $after    = (array_key_exists('after',          $spec)) ? $spec['after']          : false;
         }
