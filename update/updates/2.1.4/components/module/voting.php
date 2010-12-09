@@ -37,7 +37,7 @@ function _votingUpdate()
                 'email'              => array('type' => 'VARCHAR(80)', 'notnull' => true, 'default' => ''),
                 'comment'            => array('type' => 'TEXT', 'after' => 'email'),
                 'voting_system_id'   => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'renamefrom' => 'voting_sytem_id'),
-                'date_entered'       => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr'=> 'CURRENT_TIMESTAMP'),
+                'date_entered'       => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr'=> 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP'),
                 'forename'           => array('type' => 'VARCHAR(80)', 'notnull' => true, 'default' => '')
             ),
             array(
