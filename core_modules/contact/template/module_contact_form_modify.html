@@ -11,6 +11,8 @@
     var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
     var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
     var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
+    arrTabToDiv = new Object();
+    {EDIT_JS_TAB_TO_DIV}
 
     function switchBoxAndTab(objElement, strTabId) {
         if (countActiveLanguages() == 0) {
@@ -20,6 +22,9 @@
             //There are more active languages, hide the tab
             switchTabVisibility(strTabId);
         }
+
+        //Now make sure that a possible div is shown
+        activateAnyActiveDiv();
     }
 
     function switchTabVisibility(strTabId) {
@@ -44,6 +49,31 @@
             }
         }
         return activeLanguages;
+    }
+
+    function activateAnyActiveDiv() {
+        for (var TabName in arrTabToDiv) {
+            if (document.getElementById(TabName).style.display == 'inline') {
+                updateCKeditorContent(TabName.split('_')[1]);
+                break;
+            }
+        }
+
+        //Deactivate every div first first
+        for (var TabName in arrTabToDiv) {
+            document.getElementById(TabName).className = 'inactive';
+            document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
+        }
+
+        //Activate the first possible div with an acitvated checkbox
+        for (var TabName in arrTabToDiv) {
+            if (document.getElementById(TabName).style.display == 'inline') {
+                document.getElementById(TabName).className = 'active';
+                document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';                
+                break;
+            }
+        }
+        swapHeaderLangName();
     }
 
     function addRecipient()
@@ -213,7 +243,11 @@
         elField.html('');
             
         //Change the value fields dynamically with respect to type field
-        if($J('#formField'+type+'Attribute_0').length > 0){
+        if($J('#formField'+type+'Attribute_0').length > 0 && 'formField'+type+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
+            $J('#contactFormFieldAttributeBox_'+elId).append($J('#formField'+type+'Attribute_0').html());
+            $J('#contactFormFieldAttributeBox_'+elId+' input').attr('name', 'contactFormFieldValue['+elId+'][0]');
+        } else {
+            //For Checkbox only one instance of select box is enough
             $J(elField).html($J('#formField'+type+'Attribute_0').html());
             $J(elField).children(0).attr('name', 'contactFormFieldValue['+elId+']');
         }
@@ -339,6 +373,7 @@
     }
 
     function langTab(ele, id) {
+        updateCKeditorContent(id);
         $J('.langTabs').hide();
         $J('#langTab_' + id).show();
         $J('.notifylangTabs').hide();
@@ -354,8 +389,33 @@
         });
         $J('.tabmenu li a').removeClass('active').addClass('inactive');
         $J(ele).removeClass('inactive').addClass('active');
+        swapHeaderLangName();
     }
 
+    function updateCKeditorContent(CurrentLangId){
+        activeLang = $J('ul.tabmenu a.active').attr('id').split('_')[1];
+        $J('#contactFormText_'+activeLang).val(CKEDITOR.instances.contactFormTextEditor.getData());
+        $J('#contactFormFeedback_'+activeLang).val(CKEDITOR.instances.contactFormFeedbackEditor.getData());
+        $J('#contactFormHiddenMailTemplate_'+activeLang).val(CKEDITOR.instances.contactMailTemplateEditor.getData());
+        
+        form_text = $J('#contactFormText_'+CurrentLangId).val();
+        CKEDITOR.instances.contactFormTextEditor.setData(form_text);
+
+        form_feedback = $J('#contactFormFeedback_'+CurrentLangId).val();
+        CKEDITOR.instances.contactFormFeedbackEditor.setData(form_feedback);
+
+        form_mailTemplate = $J('#contactFormHiddenMailTemplate_'+CurrentLangId).val();
+        CKEDITOR.instances.contactMailTemplateEditor.setData(form_mailTemplate);
+    }
+
+    function swapHeaderLangName(){
+        $J('form[name=formModify] th:first-child').each(
+            function(){
+                $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#contentLanguages li a.active').text()+')')
+            }
+        )
+    }
+    
     $J(document).ready(function() {
         $J('#formFields tbody').sortable({
             placeholder: 'ui-state-highlight',
@@ -411,6 +471,22 @@
         $J('.formValueView select').css('width','93%');
 
         /**
+        Load content in Textarea from hidden field while page load
+        */
+        if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances){
+            activeLang = $J('ul.tabmenu a.active').attr('id').split('_')[1];
+            form_text = $J('#contactFormText_'+activeLang).val();
+            CKEDITOR.instances.contactFormTextEditor.setData(form_text);
+
+            form_feedback = $J('#contactFormFeedback_'+activeLang).val();
+            CKEDITOR.instances.contactFormFeedbackEditor.setData(form_feedback);
+
+            form_mailTemplate = $J('#contactFormHiddenMailTemplate_'+activeLang).val();
+            CKEDITOR.instances.contactMailTemplateEditor.setData(form_mailTemplate);
+        }
+        swapHeaderLangName();
+        
+        /**
         Check for recipent field to hide/show recipient list
         */
         $J('.formField').each(function(e){
@@ -444,423 +520,6 @@
         }
     }
 
-    $J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
-        var availableLanguages = []; //available languages (long names)
-        var $form; //the content form
-        
-        $("#ajaxbusy").css({opacity: 0.75}).show();
-        $('#ajaxwait').show();
-        $form = $('form[name=formModify]');
-        window._CONTREXX_FIRST_ACTIVE_TAB = $('#contentLanguages li a.active').attr('title');
-        $('#contentLanguages li a').each(function(){
-            availableLanguages.push($J(this).text())
-        });
-        window._CONTREXX_FORCE_SWAP = false;
-
-        //add global ajax evenet handlers
-        $("#ajaxbusy")
-        .bind("ajaxStart", function(){
-            window._CONTREXX_REQUEST_ACTIVE = true;
-            $(this)
-             .css({opacity: 0.75})
-             .show();
-            $('#ajaxwait')
-             .show();
-        })
-        .bind("ajaxStop", function(){
-            window._CONTREXX_REQUEST_ACTIVE = false;
-        });
-
-        $('form[name=formModify] th:first-child').each(
-            function(){
-                $(this).text($(this).text().replace(/\s\(.*?\)$/, '')+' ('+$('#contentLanguages li a.active').text()+')')
-            }
-        )
-
-        var submitFormHandler = function(event){
-            /*if(location.href.match(/act=new/) && !window.gotPageId){
-                $J.ajax({
-                    url:'{DIRECTORY_INDEX}?'+$J.param({cmd:"content", act:"edit", {CSRF_KEY}:"{CSRF_CODE}"}),
-                    cache: false,
-                    async: false,
-                    success: function(data){
-                        if(!data.pageId || data.pageId < 1){
-                           return false;
-                        }
-                        window.gotPageId = true;
-                        $J('input[name=pageId]', $form).val(data.pageId);
-                        submitForm(event);
-                    },
-                    error: submitError,
-                    dataType: 'json'
-                });
-            } else {
-                submitForm(event);
-            }*/
-        }
-
-        var submitForm = function(event){
-            $J('#ajaxbusy,#ajaxwait').show();
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            $J('#contentLanguages li a').unbind('click');
-            var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
-            selectTab('content1');
-            _CONTREXX_FORCE_SWAP = true;
-            var $form   = $J('form[name=formContent]');
-            var pageId  = $J('input[name=pageId]', $form).val();
-            var $active = $J('#contentLanguages li a.active', $form);
-            var last = false;
-
-            var content = getFrameContent();
-            $J('textarea[name=html]').data($active.text(), content);
-            $J('textarea[name=html]').val(content);
-
-            $J('#contentLanguages li a').each(function(){
-                var langId   = $J(this).attr('title').replace(/.*?(\d+)$/, '$1');
-                var langName = $J(this).text();
-
-                switchTab(this, langName);
-
-                if($J('form[name=formContent] input[name=newpage]').val() == ''){
-                    $J('form[name=formContent] input[name=newpage]').val('{TXT_CONTENT_NO_TITLE}')
-                }
-                $J('textarea[name=html]', $form).attr('disabled', 'disabled');
-
-                $J('select[name="assignedGroups[]"]', $form).children().attr('selected', 'selected');
-                $J('select[name="assignedBackendGroups[]"]', $form).children().attr('selected', 'selected');
-                //$J('select[name="assignedBlocks[]"]', $form).children().attr('selected', 'selected');
-                var contentData = $J('textarea[name=html]').data(langName);
-                var postData = $form.serialize();
-
-                if($J(this).closest('li').is(':last-child')){
-                    postData += '&'+$J.param({lastUpdate: 1});
-                    if(_CONTREXX_SITEMAP_ENABLED){
-                        $J('#ajaxstatus').text('{TXT_PLEASE_WAIT_SITEMAP}');
-                    }
-                }
-
-                postData += '&'+$J.param({  html:   contentData,
-                                            langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
-                                            langName: $J(this).attr('title').replace(/(.*?)_\d+$/, '$1')});
-                $J('textarea[name=html]', $form).removeAttr('disabled');
-
-                $J.ajax({
-                    async:       false,
-                    cache:       false,
-                    complete:    submitComplete,
-                    data:        postData,
-                    processData: false,
-                    dataType:    'json',
-                    success:     function(data, textStatus){
-                                    submitSuccess(data, textStatus);
-                                    if(typeof data != 'undefined' && data.lastUpdate){
-                                        last = true;
-                                    }
-                                 },
-                    error:       submitError,
-                    type:        'POST',
-                    url:         '{DIRECTORY_INDEX}?cmd=content&act={CONTENT_FORM_ACTION}'
-                });
-
-                $J.ajax({
-                   url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=history',
-                   type: 'POST',
-                   async: true,
-                   cache: false,
-                   data: {page: pageId , lang: langId},
-                   dataType: 'html',
-                   success:
-                       function(data){
-                            $J('#content5').data(langName, data);
-                            $J('#content5').html(data);
-                            if(last){ //only hide if it was the last update request
-                                $J("#ajaxbusy,#ajaxwait").hide();
-                                $J('#ajaxstatus').text('');
-                            }else{
-                                $J("#ajaxbusy,#ajaxwait").show();
-                            }
-                       },
-                   error: setDataFetchError
-                });
-            });
-            _CONTREXX_FORCE_SWAP = false;
-            if(location.href.match(/act=new/) || $J.browser.msie || $J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
-                goToUrlCSRF('{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId);
-                return false;
-            }
-            switchTab($active.get(0), $active.text());
-            selectTab(activeContentTab);
-            $J("#ajaxbusy,#ajaxwait").show();
-            return false;
-        }
-        
-        var getContentData = function(a){
-            var pageId = $J('form[name=formContent] input[name=pageId]').val();
-            var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
-            var langName = $J(a).text();
-
-            if(location.href.match(/act=new/) && (m = location.href.match(/pageId=(\d+)/))){
-                pageId = m[1]; //set lang id to copy from if we're copying
-            }
-
-            $J.ajax({
-               url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputText',
-               type: 'POST',
-               async: true,
-               cache: false,
-               data: {page: pageId , lang: langId, langName: langName},
-               dataType: 'json',
-               success: setInputText,
-               error: setDataFetchError
-            });
-
-            $J.ajax({
-               url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputRadio',
-               type: 'POST',
-               async: true,
-               cache: false,
-               data: {page: pageId , lang: langId, langName: langName},
-               dataType: 'json',
-               success: setInputRadio,
-               error: setDataFetchError
-            });
-
-            $J.ajax({
-               url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputCheckbox',
-               type: 'POST',
-               async: true,
-               cache: false,
-               data: {page: pageId , lang: langId, langName: langName},
-               dataType: 'json',
-               success: setInputCheckbox,
-               error: setDataFetchError
-            });
-
-            $J.ajax({
-               url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=select',
-               type: 'POST',
-               async: true,
-               cache: false,
-               data: {page: pageId , lang: langId, langName: langName},
-               dataType: 'json',
-               success: setSelect,
-               error: setDataFetchError
-            });
-
-
-            $J.ajax({
-               url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=history',
-               type: 'POST',
-               async: true,
-               cache: false,
-               data: {page: pageId , lang: langId},
-               dataType: 'html',
-               success: function(data, textStatus){$J('#content5').data(langName, data)},
-               error: setDataFetchError
-            });
-        }
-
-        var getTabData = function(a){
-            var langName = $J(a).text();
-            if(typeof $J('select[name=category]', $form).data(langName) != 'undefined' || $J(a).attr('title') == _CONTREXX_FIRST_ACTIVE_TAB){        //return if we have already have the data for this language
-                return false;
-            }
-            //getNavMenu(a);
-            if(location.href.match(/formId=\d+/)){//fill contents from DB if we are editing or copying
-             //   getContentData(a);
-            }
-        }
-
-        var makeTabActive = function(aElement){
-            var $a = $J(aElement);
-            $J('#contentLanguages li a').removeClass('active').addClass('inactive');
-            $a.removeClass('inactive').addClass('active');
-            var timeOut = setTimeout(function(){
-                $J('#contentLanguages li a').one('click', function(){
-                    switchTab(this);
-                })
-            }, 800);
-        }
-
-        var filterInputs = function(){
-            return $J(this).attr('id') != 'selectedChangelogId';
-        }
-
-        var swapLanguage = function(aElement, langName){
-            var $a = $J(aElement);
-
-            $J('form[name=formModify] th:first-child').each(
-                function(){
-                    $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$a.text()+')')
-                }
-            )
-
-            $J('form[name=formModify] input').removeAttr('disabled');
-
-            if($a.is('.active') && !_CONTREXX_FORCE_SWAP){
-                return false;
-            }
-
-            //reset undo history
-            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances.html && CKEDITOR.instances.html.resetUndo){
-                CKEDITOR.instances.html.resetUndo()
-            }
-
-            var lastActive = $J('#contentLanguages li a.active').text();
-            var $iFrame    = $form.find('iframe');
-            var $textarea  = $form.find('textarea[name=html]');
-
-            if(typeof langName == 'undefined'){
-                $textarea.data(lastActive, getFrameContent());    //save frame contents for current lang
-                typeof $textarea.data($a.text()) == 'undefined'   //load frame contents for new lang
-                  ?  setFrameContent('', lastActive)
-                  :  setFrameContent($textarea.data($a.text()), lastActive);
-            }
-            getTabData(aElement); //get nav menu dropdown and content data
-
-            if(location.href.match(/act=edit/)){
-                $J('#content5').data(lastActive, $J('#content5').html());
-                $J('#content5').html($J('#content5').data($a.text()));
-            }
-
-            $J('#aliastarget').data(lastActive, $J('#aliastarget').text());
-            typeof $J('#aliastarget').data($a.text()) == 'undefined'
-              ? $J('#aliastarget').text('')
-              : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
-
-            $form.find('input[type=text]').each(function(){ //swap input text contents
-                var that = this;
-                var inputName = $J.trim($J(this).attr('name'));
-                switch(inputName){
-                    case 'command':
-                        //contact module may have different commands
-                        var moduleName = $J.trim($J('[name=selectmodule] option:selected').text());
-                        if(moduleName == 'contact'){
-                                $J(this).data(lastActive, $J(this).val());
-                        } else {
-                            $J(availableLanguages).each(function(index, name){
-                                $J(that).data(name, $J(that).val());
-                            });
-                        }
-                    break;
-                    default:
-                        $J(this).data(lastActive, $J(this).val());
-                }
-                typeof $J(this).data($a.text()) == 'undefined'
-                    ? $J(this).val('')
-                    : $J(this).val($J(this).data($a.text()));
-            });
-
-            $form.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
-                var $radio = $J($form.find('input[name='+$J(this).attr('name')+']:first'));
-                //wtf, if the following line is uncommented then switching the TypeSelection radio buttons doesn't work in FF when in expertmode
-                console.log($form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']'));
-                $radio.data(lastActive, $J(this).val());
-                typeof $radio.data($a.text()) == 'undefined'
-                    ? $radio.click()
-                    : $form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']').click();
-            });
-
-            var $unchecked = $form.find('input[type=checkbox]:not(:checked)');
-            $form.find('input[type=checkbox]:checked').each(function(){ //swap input checkboxes which are checked
-                if($J(this).attr('name') == 'expertmode'){
-                    return;
-                }
-                $J(this).data(lastActive, $J(this).attr('checked'));
-                if(typeof $J(this).data($a.text()) == 'undefined'){
-                    $J(this).attr('checked', 'checked');
-                }else{
-                    if( !(($J(this).data($a.text()) && $J(this).data(lastActive)) || (!$J(this).data($a.text()) && !$J(this).data(lastActive))) ){
-                        $J(this).click();
-                    }
-                }
-            });
-
-            $unchecked.each(function(){ //swap input checkboxes which are not checked
-                if($J(this).attr('name') == 'expertmode'){
-                    return;
-                }
-                $J(this).data(lastActive, $J(this).attr('checked'));
-                if(typeof $J(this).data($a.text()) == 'undefined'){
-                    $J(this).attr('checked', false);
-                }else{
-                    if( !( ($J(this).data($a.text()) && $J(this).data(lastActive)) || (!$J(this).data($a.text()) && !$J(this).data(lastActive)) ) ){
-                        $J(this).click();
-                    }
-                }
-            });
-
-            if($J('#type_useContentFromLang tr.row2').data(langName) == 'warn'){
-                $J('#type_useContentFromLang tr.row2').addClass('warn');
-            } else {
-                $J('#type_useContentFromLang tr.row2').removeClass('warn');
-            }
-
-            $J('input', $form).attr('disabled', 'disabled');
-
-            $form.find('select').each(function(){
-                switch($J(this).attr('name')){
-                    case 'selectmodule': //module is always the same for all languages
-                    case 'formContent_HistoryMultiAction': //do not touch multiaction select
-                        return;
-                }
-                var $options = $J(this).find('option');
-                var value    = $J(this).find('option:selected').val();
-                $J(this).data(lastActive, {options: $options, value: value});
-                if(typeof $J(this).data($a.text()) == 'undefined'){//set default options and value if not yet
-                    $J(this)
-                    .data($a.text(), {
-                                        options : $J(this).data('default').options,
-                                        value   : $J(this).data('default').value
-                                     }
-                    );
-                }
-                $J(this).empty();
-                $J(this).append($J(this).data($a.text()).options);
-                $J(this).val($J(this).data($a.text()).value);
-            });
-
-            setTitle();
-
-            if($J.browser.msie && $J.browser.version.match(/^\d/)[0] == 6 ){ //redraw tabs because of buggy IE shit ("display: none;" bugs)
-                var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
-                var inactiveContentTab = $J('#tabmenu a:not(.active)').attr('id').replace('editorTab_', '');
-                selectTab(inactiveContentTab);
-                selectTab(activeContentTab);
-            }
-        }
-
-        var switchTab = function(aElement, langName){
-            $J('#contentLanguages li a').unbind('click');
-            $J('#ajaxbusy,#ajaxwait').show();
-            var $inputs = $J('input', $form).filter(filterInputs);
-            $inputs.attr('disabled', 'disabled');
-            swapLanguage(aElement, langName);
-            makeTabActive(aElement);
-            $J('form[name=formContent] input').removeAttr('disabled');
-            if(!_CONTREXX_FORCE_SWAP){
-                $J('#ajaxbusy,#ajaxwait').hide();
-            }
-        }
-
-        if(location.href.match(/formId=\d+/)){ //if we're editing or copying get tab data for all tabs except first one, which is already loaded
-            $('#contentLanguages li a.inactive').each(function(){
-                getTabData(this);
-            });
-        }
-
-        $form.submit(submitFormHandler);
-
-        //add click eventhandler to all new tab links
-        $('#contentLanguages li a').one('click', function(){        
-            switchTab(this);
-        });
-
-        if(typeof CKEDITOR != 'undefined'){
-            $('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
-        }
-    });
     // -->
 </script>
 
@@ -895,12 +554,7 @@
     </div>
 </div>
 
-<div id="ajaxbusy"></div>
-<div id="ajaxwait"><img src="../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}<br /><span id="ajaxstatus"> </span> </p></div>
-
-<span class="red" id="errormessagetarget" style="position:fixed; top: 10px;">{CONTENT_STATUS}</span>
-
-<form action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" name="formModify" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
+<form name="formModify" action="index.php?cmd=contact&amp;act=forms&amp;tpl=save&amp;formId={CONTACT_FORM_ID}" method="post" onsubmit="return {CONTACT_JS_SUBMIT_FUNCTION}">
     <input type="hidden" id="contentSiteAction" name="contentSiteAction" value="nothing" />
     <input type="hidden" name="copy" value="{FORM_COPY}" />
 
@@ -922,7 +576,7 @@
         <ul id="contentLanguages" class="tabmenu">
             <!-- BEGIN languageTabs -->
             <li>
-                <a id="addFrom_{LANG_NAME}" class="{TAB_CLASS_NAME}" style="{CONTACT_LANGTAB_DISPLAY}" onclick="langTab(this, {LANG_ID})" title="{LANG_NAME}" >{LANG_NAME}</a>
+                <a id="addFrom_{LANG_ID}" class="{TAB_CLASS_NAME}" style="{CONTACT_LANGTAB_DISPLAY}" onclick="langTab(this, {LANG_ID})" title="{LANG_NAME}" >{LANG_NAME}</a>
             </li>
             <!-- END languageTabs -->
         </ul>
@@ -937,120 +591,126 @@
         </ul>
     </div>
     <div class="tabs" id="tab_values">
-        <table border="0" cellpadding="0" cellspacing="0" class="adminlist" width="100%">
-            <tbody style="vertical-align:top;">
-                <tr>
-                    <th>{TXT_CONTACT_FORM_DATA}</th>
-                </tr>
-                <tr class="row1" style="height:20px;">
-                    <td>
-                        <table>
-                            <tr>
-                                <td width="15%">{TXT_CONTACT_NAME}</td>
-                                <td width="90%"><input style="width:300px;" type="text" name="contactFormName[{LANG_ID}]" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <th>{TXT_CONTACT_FORM_DESC}</th>
-                </tr>
-                <tr class="row2">
-                    <td>{CONTACT_FORM_TEXT}</td>
-                </tr>
-                <tr>
-                    <th>{CONTACT_FORM_FIELDS_TITLE}</th>
-                </tr>
-                <tr>
-                    <td>
-                        <table id="formFields" border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-                            <tr class="row3">
-                                <td width="2%"></td>
-                                <td width="3%"><strong>{TXT_CONTACT_ID}</strong></td>
-                                <td width="25%"><strong>{TXT_CONTACT_FIELD_NAME}</strong></td>
-                                <td width="13%"><strong>{TXT_CONTACT_TYPE}</strong></td>
-                                <td width="42%"><strong>{TXT_CONTACT_VALUE_S}</strong></td>
-                                <td width="17%"><strong>{TXT_CONTACT_VALIDATION}</strong></td>
-                                <td width="10%"><strong>{TXT_CONTACT_MANDATORY_FIELD}</strong></td>
-                                <td width="10%"><strong>{TXT_CONTACT_ACTION}</strong></td>
-                            </tr>
-                            <!-- BEGIN formField -->
-                            <tr id="formField_{FORM_FIELD_ID}" class="formField {ROW_CLASS_NAME}" valign="center">
-                                <td><div class="sort-handle"><input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" /></div></td>
-                                <td class="formFieldId">{FORM_FIELD_ID}</td>
-                                <td>
+        <!-- BEGIN languageForm -->
+        <div style="display: {LANG_FORM_DISPLAY};"  id="langTab_{LANG_ID}" class="langTabs">
+            <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+                <tbody style="vertical-align:top;">
+                    <tr>
+                        <th colspan="2">{TXT_CONTACT_FORM_DATA} ({LANG_NAME})</th>
+                    </tr>
+                    <tr class="row1" style="height:20px;">
+                        <td width="15%">{TXT_CONTACT_NAME}</td>
+                        <td width="90%"><input style="width:300px;" type="text" name="contactFormName[{LANG_ID}]" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
+                    </tr>
+                </tbody>
+            </table>
+            <input id="contactFormText_{LANG_ID}" type="hidden" name="contactFormText[{LANG_ID}]" value="{CONTACT_FORM_TEXT_HIDDEN}" />
+            <input id="contactFormFeedback_{LANG_ID}" type="hidden" name="contactFormFeedback[{LANG_ID}]" value="{CONTACT_FORM_FEEDBACK_HIDDEN}" />
+        </div>
+        <!-- END languageForm -->
+         <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist">
+            <tr>
+                <th>{TXT_CONTACT_FORM_DESC}</th>
+            </tr>
+            <tr class="row2">
+                <td>{CONTACT_FORM_TEXT}</td>
+            </tr>
+            <tr>
+                <th>{CONTACT_FORM_FIELDS_TITLE}</th>
+            </tr>
+            <tr>
+                <td>
+                    <table id="formFields" border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+                        <tr class="row3">
+                            <td width="2%"></td>
+                            <td width="3%"><strong>{TXT_CONTACT_ID}</strong></td>
+                            <td width="25%"><strong>{TXT_CONTACT_FIELD_NAME}</strong></td>
+                            <td width="13%"><strong>{TXT_CONTACT_TYPE}</strong></td>
+                            <td width="42%"><strong>{TXT_CONTACT_VALUE_S}</strong></td>
+                            <td width="17%"><strong>{TXT_CONTACT_VALIDATION}</strong></td>
+                            <td width="10%"><strong>{TXT_CONTACT_MANDATORY_FIELD}</strong></td>
+                            <td width="10%"><strong>{TXT_CONTACT_ACTION}</strong></td>
+                        </tr>
+                        <!-- BEGIN formField -->
+                        <tr id="formField_{FORM_FIELD_ID}" class="formField {ROW_CLASS_NAME}" valign="center">
+                            <td><div class="sort-handle"><input type="hidden" name="contactFormFieldEditType[{FORM_FIELD_ID}]" value="{FORM_FIELD_TYPE}" id="form_field_type_{FORM_FIELD_ID}" /></div></td>
+                            <td class="formFieldId">{FORM_FIELD_ID}</td>
+                            <td>
+                                <!-- BEGIN formFieldName -->
+                                <div style="display: {LANG_NAME_DISPLAY};"  id="fieldNameTab_{FORM_FIELD_ID}_{LANG_ID}" class="fieldNameTabs_{FORM_FIELD_ID}">
                                     <input type="text" name="contactFormFieldName[{FORM_FIELD_ID}][{LANG_ID}]" value="{FORM_FIELD_NAME}" class="formFieldElementsLang" style="width: 200px;"/>
-                                </td>
-                                <td valign="top" style="padding:6px 5px 5px;">{CONTACT_FORM_FIELD_TYPE_MENU}</td>
-                                <td id="contactFormFieldAttributeBox_{FORM_FIELD_ID}" class="formValueView">
-                                    {CONTACT_FORM_FIELD_VALUE}
-                                </td>
-                                <td valign="top" style="padding:6px 5px 5px;" class="contactFormFieldCheckMenu_{FORM_FIELD_ID}" id="contactFormFieldCheckMenu_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_MENU}</td>
-                                <td valign="top" style="padding:6px 62px 5px 5px;" class="contactFormFieldCheckBox_{FORM_FIELD_ID}" id="contactFormFieldCheckBox_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_BOX}</td>
-                                <td valign="top" style="padding:6px 5px 5px;">
-                                    <a id="removeLink_1" href="javascript:void(0);" onclick="removeFormField(this)">
-                                        <img border="0" title="Delete" alt="Delete" src="images/icons/delete.gif">
-                                    </a>
-                                </td>
-                            </tr>
-                            <!-- END formField -->
+                                </div>
+                                <!-- END formFieldName -->
+                            </td>
+                            <td valign="top" style="padding:6px 5px 5px;">{CONTACT_FORM_FIELD_TYPE_MENU}</td>
+                            <td id="contactFormFieldAttributeBox_{FORM_FIELD_ID}" class="formValueView">
+                                <!-- BEGIN formFieldValue -->
+                                {CONTACT_FORM_FIELD_VALUE}
+                                <!-- END formFieldValue -->
+                            </td>
+                            <td valign="top" style="padding:6px 5px 5px;" class="contactFormFieldCheckMenu_{FORM_FIELD_ID}" id="contactFormFieldCheckMenu_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_MENU}</td>
+                            <td valign="top" style="padding:6px 62px 5px 5px;" class="contactFormFieldCheckBox_{FORM_FIELD_ID}" id="contactFormFieldCheckBox_{FORM_FIELD_ID}">{FORM_FIELD_CHECK_BOX}</td>
+                            <td valign="top" style="padding:6px 5px 5px;">
+                                <a id="removeLink_1" href="javascript:void(0);" onclick="removeFormField(this)">
+                                    <img border="0" title="Delete" alt="Delete" src="images/icons/delete.gif">
+                                </a>
+                            </td>
+                        </tr>
+                        <!-- END formField -->
+                    </table>
+                    <br/>
+                    <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" id="addFieldButton"/>
+                    <br/><br/>
+                    <div id="tab_recipient_{LANG_ID}" class="tab_recipients" style="display: none;">
+                        <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
+                            <thead>
+                                <tr>
+                                    <th colspan="4">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
+                                </tr>
+
+                                <tr class="row3">
+                                    <td></td>
+                                    <td style="width: 315px;"><strong>{TXT_CONTACT_EMAIL}</strong></td>
+                                    <td><strong>{TXT_CONTACT_NAME}</strong></td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- BEGIN contact_form_recipient_list -->
+                                <tr class="formRecipient {ROW_CLASS_NAME}">
+                                    <td><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
+                                    <td style="vertical-align: top;padding-top:6px;">
+                                        <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
+                                               value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
+                                    </td>
+                                    <td>
+                                        <input style="width: 300px;" class="globalRecipientName" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
+                                               value="{CONTACT_FORM_RECIPIENT_NAME}" /> <br />
+
+                                        <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
+                                            <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
+                                        </div>
+                                    </td>
+                                    <td style="vertical-align: top;">
+                                        <a href="javascript:void(0);" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
+                                            <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
+                                        </a>
+                                    </td>
+                                </tr>
+                                <!-- END contact_form_recipient_list -->
+                            </tbody>
                         </table>
                         <br/>
-                        <input type="button" onclick="addFormField()" name="addField" value="{TXT_CONTACT_ADD_OTHER_FIELD}" id="addFieldButton"/>
-                        <br/><br/>
-                        <div id="tab_recipient_{LANG_ID}" class="tab_recipients" style="display: none;">
-                            <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%" id="formRecipientContainer">
-                                <thead>
-                                    <tr>
-                                        <th colspan="4">{CONTACT_FORM_RECIPIENTS_TITLE}</th>
-                                    </tr>
-
-                                    <tr class="row3">
-                                        <td></td>
-                                        <td style="width: 315px;"><strong>{TXT_CONTACT_EMAIL}</strong></td>
-                                        <td><strong>{TXT_CONTACT_NAME}</strong></td>
-                                        <td>&nbsp;</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- BEGIN contact_form_recipient_list -->
-                                    <tr class="formRecipient {ROW_CLASS_NAME}">
-                                        <td><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
-                                        <td style="vertical-align: top;padding-top:6px;">
-                                            <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
-                                                   value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
-                                        </td>
-                                        <td>
-                                            <input style="width: 300px;" class="globalRecipientName" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
-                                                   value="{CONTACT_FORM_RECIPIENT_NAME}" /> <br />
-
-                                            <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
-                                                <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
-                                            </div>
-                                        </td>
-                                        <td style="vertical-align: top;">
-                                            <a href="javascript:void(0);" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
-                                                <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <!-- END contact_form_recipient_list -->
-                                  </tbody>
-                                </table>
-                            <br/>
-                            <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_RECIPIENT}" />
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        {TXT_CONTACT_FEEDBACK}
-                    </th>
-                </tr>
-                <tr class="row1">
-                    <td>{CONTACT_FORM_FEEDBACK}</td>
-                </tr>
-            </tbody>
+                        <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_RECIPIENT}" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>{TXT_CONTACT_FEEDBACK}</th>
+            </tr>
+            <tr class="row1">
+                <td>{CONTACT_FORM_FEEDBACK}</td>
+            </tr>
         </table>
     </div>
 
@@ -1066,31 +726,36 @@
                     <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row2" style="height:20px;">
+                <td colspan="2">
+                    <!-- BEGIN notificationLanguageForm -->
+                    <div style="display: {LANG_FORM_DISPLAY};"  id="notifylangTab_{LANG_ID}" class="notifylangTabs">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td style="border:0px;" width="18%">{TXT_CONTACT_SUBJECT} ({LANG_NAME})</td>
+                                    <td style="border:0px;"><input style="width: 300px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <input id="contactFormHiddenMailTemplate_{LANG_ID}" type="hidden" name="contactFormHiddenMailTemplate[{LANG_ID}]" value="{CONTACT_FORM_MAIL_TEMPLATE_HIDDEN}" />
+                    </div>
+                    <!-- END notificationLanguageForm -->
+                </td>
+            </tr>
+            <tr class="row1">
                 <td>{TXT_CONTACT_SEND_COPY}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
                 <td><input type="radio" name="contactFormSendCopy" value="1" id="contactFormSendCopy_1" {CONTACT_FORM_SEND_COPY_YES} /><label for="contactFormSendCopy_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormSendCopy" value="0" id="contactFormSendCopy_0" {CONTACT_FORM_SEND_COPY_NO} /><label for="contactFormSendCopy_0">{TXT_CONTACT_NO}</label></td>
             </tr>
-            <tr class="row1">
+            <tr class="row2">
                 <td>{TXT_CONTACT_SEND_HTML_MAIL}</td>
                 <td><input type="checkbox" name="contactFormHtmlMail" id="contactFormHtmlMail" {CONTACT_FORM_SEND_HTML_MAIL} /></td>
             </tr>
             <tr>
-                <td colspan="2">
-                    <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-                        <tbody style="vertical-align:top;">
-                            <tr class="row1">
-                                <td width="18%">{TXT_CONTACT_SUBJECT}</td>
-                                <td><input style="width: 300px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
-                            </tr>
-                            <tr>
-                                <th colspan="2">{TXT_CONTACT_MAIL_TEMPLATE}</th>
-                            </tr>
-                            <tr class="row2">
-                                <td colspan="2">{CONTACT_MAIL_TEMPLATE}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
+                <th colspan="2">{TXT_CONTACT_MAIL_TEMPLATE}</th>
+            </tr>
+            <tr class="row1">
+                <td colspan="2">{CONTACT_MAIL_TEMPLATE}</td>
             </tr>
         </table>
     </div>
