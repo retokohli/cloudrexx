@@ -261,4 +261,6 @@ $_ARRAYLANG['TXT_ELEARNING_BROWSE'] = "Sélectionnez....";
 $_ARRAYLANG['TXT_ELEARNING_INSERT_MENUICON'] = "Insérez icône de menu";
 $_ARRAYLANG['TXT_ELEARNING_QUESTIONS_COUNT'] = "Nombre de questions ";
 $_ARRAYLANG['TXT_ELEARNING_DOWNLOADS'] = "Téléchargements";
+$_ARRAYLANG['TXT_ELEARNING_SELECT_ROWS'] = "Choississez lignes";
+$_ARRAYLANG['TXT_ELEARNING_SELECT_COLS'] = "Choississez colonnes";
 ?>
