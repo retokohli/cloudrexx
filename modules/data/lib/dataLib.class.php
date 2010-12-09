@@ -1324,6 +1324,3 @@ class DataLibrary
     }
 
 }
-
-?>
-
