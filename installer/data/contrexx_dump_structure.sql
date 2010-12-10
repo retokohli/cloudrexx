@@ -1611,7 +1611,7 @@ CREATE TABLE `contrexx_module_forum_rating` (
   `time` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `user_id` (`user_id`,`post_id`)
-) TYPE=MyISAM;
+) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
