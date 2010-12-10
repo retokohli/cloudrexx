@@ -152,7 +152,7 @@
         $J(copy).toggleClass('row1 row2');
 
         $J('#formFields').append(copy);
-        $J(copy).find('input, select').each(function(key, elem) {
+        $J(copy).find('input, select, a').each(function(key, elem) {
             var name = $J(elem).attr('name');
             var id = $J(elem).attr('id');
 
@@ -163,6 +163,16 @@
 
             // do the id too
             $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+        });
+
+        //Increment the class name of td on add each new fieldform
+        $J(copy).find('div').each(function(key, elem) {
+            var className = $J(elem).attr('class');
+            var id = $J(elem).attr('id');
+            // do the class too
+            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            // do the id too
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)_(\d+)?$/, "$1_" + formFieldNumber + "_$3"));
         });
 
         //Increment the class name of td on add each new fieldform
@@ -378,15 +388,6 @@
         $J('#langTab_' + id).show();
         $J('.notifylangTabs').hide();
         $J('#notifylangTab_' + id).show();
-        $J('#formFields tr').each(function(){
-            if ($J(this).attr('id') != "") {
-                fieldId = $J(this).attr('id').split('_')[1];
-                $J('.fieldNameTabs_'+fieldId).hide();
-                $J('#fieldNameTab_'+fieldId+'_'+id).show();
-                $J('.fieldValueTabs_'+fieldId).hide();
-                $J('#fieldValueTab_'+fieldId+'_'+id).show();
-            }
-        });
         $J('.tabmenu li a').removeClass('active').addClass('inactive');
         $J(ele).removeClass('inactive').addClass('active');
         swapHeaderLangName();
@@ -406,6 +407,16 @@
 
         form_mailTemplate = $J('#contactFormHiddenMailTemplate_'+CurrentLangId).val();
         CKEDITOR.instances.contactMailTemplateEditor.setData(form_mailTemplate);
+
+        $J('#formFields tr').each(function(){
+            if ($J(this).attr('id') != "") {
+                fieldId = $J(this).attr('id').split('_')[1];
+                $J('.fieldNameTabs_'+fieldId).hide();
+                $J('#fieldNameTab_'+fieldId+'_'+CurrentLangId).show();
+                $J('.fieldValueTabs_'+fieldId).hide();
+                $J('#fieldValueTab_'+fieldId+'_'+CurrentLangId).show();
+            }
+        });
     }
 
     function swapHeaderLangName(){
@@ -466,8 +477,7 @@
             }
         });
 
-        $J('.formCollapseView input').css('padding-left','0px');
-        $J('.formValueView input').css('width','93%');
+        $J('.formValueView input').css('width','90%');
         $J('.formValueView select').css('width','93%');
 
         /**
@@ -495,7 +505,7 @@
                 return true;
             }
         });
-        $J('#langTab_').css('display','none');
+        $J('#notifylangTab_').css('display','none');
     });
 
     /**
@@ -591,13 +601,15 @@
         </ul>
     </div>
     <div class="tabs" id="tab_values">
+        <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_CONTACT_FORM_DATA} ({LANG_NAME})</th>
+            </tr>
+        </table>
         <!-- BEGIN languageForm -->
         <div style="display: {LANG_FORM_DISPLAY};"  id="langTab_{LANG_ID}" class="langTabs">
             <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-                <tbody style="vertical-align:top;">
-                    <tr>
-                        <th colspan="2">{TXT_CONTACT_FORM_DATA} ({LANG_NAME})</th>
-                    </tr>
+                <tbody>
                     <tr class="row1" style="height:20px;">
                         <td width="15%">{TXT_CONTACT_NAME}</td>
                         <td width="90%"><input style="width:300px;" type="text" name="contactFormName[{LANG_ID}]" value="{CONTACT_FORM_NAME}" maxlength="255" /></td>
@@ -679,7 +691,7 @@
                                 <!-- BEGIN contact_form_recipient_list -->
                                 <tr class="formRecipient {ROW_CLASS_NAME}">
                                     <td><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
-                                    <td style="vertical-align: top;padding-top:6px;">
+                                    <td>
                                         <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
                                                value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
                                     </td>
@@ -691,9 +703,9 @@
                                             <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
                                         </div>
                                     </td>
-                                    <td style="vertical-align: top;">
+                                    <td>
                                         <a href="javascript:void(0);" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
-                                            <img style="vertical-align:middle;" src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
+                                            <img src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
                                         </a>
                                     </td>
                                 </tr>
@@ -738,7 +750,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <input id="contactFormHiddenMailTemplate_{LANG_ID}" type="hidden" name="contactFormHiddenMailTemplate[{LANG_ID}]" value="{CONTACT_FORM_MAIL_TEMPLATE_HIDDEN}" />
+                        <input id="contactFormHiddenMailTemplate_{LANG_ID}" type="hidden" name="contactMailTemplate[{LANG_ID}]" value="{CONTACT_FORM_MAIL_TEMPLATE_HIDDEN}" />
                     </div>
                     <!-- END notificationLanguageForm -->
                 </td>

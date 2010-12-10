@@ -731,39 +731,44 @@ class ContactLib
         $mailTemplate = contrexx_addslashes($mailTemplate);
         $subject      = contrexx_addslashes($subject);
 
-        $query = "
-            INSERT INTO
-                `".DBPREFIX."module_contact_form_lang`
-            (
-                `formID`,
-                `langID`,
-                `is_active`,
-                `name`,
-                `text`,
-                `feedback`,
-                `mailTemplate`,
-                `subject`
-            )
-            VALUES
-            (
-                ".$formID.",
-                ".$langID.",
-                ".$isActive.",
-                '".$name."',
-                '".$text."',
-                '".$feedback."',
-                '".$mailTemplate."',
-                '".$subject."'
-            )
-            ON DUPLICATE KEY UPDATE
-                `name`         = '".$name."',
-                `is_active`    = '".$isActive."',
-                `text`         = '".$text."',
-                `feedback`     = '".$feedback."',
-                `mailTemplate` = '".$mailTemplate."',
-                `subject`      = '".$subject."'
-        ";
-
+        if ($isActive == 1) {
+            $query = "
+                INSERT INTO
+                    `".DBPREFIX."module_contact_form_lang`
+                (
+                    `formID`,
+                    `langID`,
+                    `is_active`,
+                    `name`,
+                    `text`,
+                    `feedback`,
+                    `mailTemplate`,
+                    `subject`
+                )
+                VALUES
+                (
+                    ".$formID.",
+                    ".$langID.",
+                    ".$isActive.",
+                    '".$name."',
+                    '".$text."',
+                    '".$feedback."',
+                    '".$mailTemplate."',
+                    '".$subject."'
+                )
+                ON DUPLICATE KEY UPDATE
+                    `name`         = '".$name."',
+                    `is_active`    = ".$isActive.",
+                    `text`         = '".$text."',
+                    `feedback`     = '".$feedback."',
+                    `mailTemplate` = '".$mailTemplate."',
+                    `subject`      = '".$subject."'
+            ";
+        } else {
+            $query = "UPDATE `".DBPREFIX."module_contact_form_lang`
+                        SET `is_active` = ".$isActive."
+                        WHERE `formID`  = ".$formID." AND `langID` = ".$langID;
+        }
         $objDatabase->execute($query);
     }
 
@@ -866,6 +871,8 @@ class ContactLib
                 `id` = '.$fieldID;
 
         $objDatabase->execute($query);
+
+        /* if checkmenu is checked for select menu field, 'please select' option is appended */
         foreach ($field['lang'] as $langID => $values) {
             if ($field['type'] == 'select') {
                 $replaceString = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].',';
@@ -916,9 +923,10 @@ class ContactLib
         $objDatabase->execute($query);
         $fieldID = $objDatabase->insert_id();
 
+        /* if checkmenu is checked for select menu field, 'please select' option is appended */
         foreach ($field['lang'] as $langID => $values) {
             if ($field['type'] == 'select' && $field['is_required'] == 1) {
-                    $values['value'] = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].','.$values['value'];
+                $values['value'] = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].','.$values['value'];
             }
             $this->setFormFieldLang($fieldID, $langID, $values);
         }
