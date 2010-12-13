@@ -1,0 +1,24 @@
+<div id="navigation">
+	{NAVBAR_FILE}
+</div><br />
+
+<div id="footer">
+    <form id="search" action="index.php" method="get" style="float:left;">
+        <a href="index.php?setLang=1" class="langLink">DE</a> /
+        <a href="index.php?setLang=2" class="langLink">EN</a><br />
+        <a href="{PRINT_URL}">Druckansicht</a><br />
+        <a href="index.php?section=contact&amp;cmd=4">Kontakt</a><br />
+        
+        Suchen
+        <input value="search" name="section" type="hidden" />
+        <input id="searchterm" name="term" value="" onfocus="this.value=''" maxlength="100" />
+        <input type="submit" value=">>" id="btnSearch" />
+    </form>
+</div>
+
+<div id="metanavigation">
+    &copy; 2010 Your Company |
+	<a href="index.php?section=agb">AGB</a> |
+    <a href="index.php?section=imprint">Impressum</a> |
+	<a href="http://www.contrexx.com">Powered by Contrexx&reg; Software</a>
+</div>

@@ -1,0 +1,70 @@
+#navigation ul, #navigation ul li, #subnavigation ul, #subnavigation ul li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+#navigation ul li.level1 a {
+    display: block;
+    color: #1A6EB7;
+    font-weight: bold;
+    padding: 6px 0 6px 52px;
+    margin: -1px 0 0 0;
+    text-decoration: none;
+    background: #CFCFCF;
+}
+
+#navigation ul li.level2 a {
+    font-size: 1em;
+    display: block;
+    color: #484F56;
+    border-bottom: 1px solid #C8CACC;
+    padding:6px 0px 6px 0px;
+    margin: 0 0 0 52px;
+    text-decoration:none;
+}
+
+#subnavigation ul li {
+    margin: 5px 0 0px 52px;
+}
+
+#subnavigation ul li a {
+    font-size:1em;
+    display:block;
+    color:#767b80;
+    border-bottom:1px solid #BFBFBF;
+    padding:1px 0px 6px 0px;
+    text-decoration:none;
+}
+
+#subnavigation ul li.level2active a {
+    color:#487EAD;
+    font-weight:900;
+}
+
+#subnavigation ul li.level3active a, #subnavigation ul li.level3inactive a{
+    font-size:1em;
+    display:block;
+    color:#767b80;
+    border-bottom:1px solid #BFBFBF;
+    padding:1px 0px 6px 0px;
+    text-decoration:none;
+}
+
+#subnavigation ul li.level3active, #subnavigation ul li.level3inactive {
+    margin: 5px 0 0 62px;
+}
+
+#subnavigation ul li.level3active a {
+    color:#487EAD;
+    font-weight:900;
+}
+
+#subnavigation ul li.level4active, #subnavigation ul li.level4inactive {
+    margin:6px 0 0 72px;
+}
+
+#subnavigation ul li.level4active a {
+    color:#487EAD;
+    font-weight:900;
+}

@@ -1,0 +1,2084 @@
+/***************************************************/
+/* Fix the PNG transparency in IE6                 */
+/***************************************************/
+img,a { behavior: url(themes/contrexx_theme_2_1/iepngfix.htc) }
+
+/***************************************************/
+/* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
+/***************************************************/
+
+form p {
+    width: 180px;
+    clear: left;
+    margin: 0;
+    padding: 2px 0 3px 0;
+    padding-left: 110px;
+    height: 1%;
+}
+
+form p label.description {
+    font-weight: normal;
+    float: left;
+    margin: 0px 0px 0px 10px;
+    padding:  0px 0px 0px 0px;
+    width: 150px;
+}
+
+form p label.noCaption {
+    float: left;
+    width: 150px;
+    margin-left: 2px;
+    margin-top: 2px;
+    font-weight: normal;
+}
+
+form .contactFormGroup {
+    float: left;
+    margin-top: -15px !important;
+}
+
+form img.captcha {
+    padding-right: 150px;
+}
+
+form p label, form  p span {
+    font-weight: bold;
+    float: left;
+    margin-left: -110px;
+    width: 100px;
+}
+
+
+/***************************************************/
+/* CSS GLOBAL DEFINITIONS FOR TABELS IN MODULES    */
+/***************************************************/
+
+table {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+        border-spacing: 0px;
+        width: 100%;
+}
+
+table th {
+	padding: 4px 5px 4px 5px;
+	margin: 0px 0px 0px 0px;
+	font-weight: bold;
+	background-color: #f5f5f5;
+	border: 0px;
+	border-right: 1px solid #ffffff;
+	border-bottom: 1px solid #E6E6E6;
+        text-align: left;
+}
+
+table tr.row2,
+table tr.marketRow3 {
+	background-color: #F9F9F9;
+}
+
+table tr.row1,
+table tr.marketRow2 {
+	background-color: #ffffff;
+}
+
+table tr.row3,
+table tr.marketRow1 {
+	background-color: #FFEE9F;
+}
+
+#shop table tr.row3 {
+	background-color: #f5f5f5;
+}
+
+
+table td {
+	padding: 3px 5px 3px 5px;
+	margin: 0px 0px 0px 0px;
+	border: 0px;
+	border-bottom: 1px solid #E6E6E6;
+	border-right: 1px solid #ffffff;
+	border-spacing: 0px;
+	vertical-align:top;
+}
+
+table td.none {
+	border: 0px solid #000000;
+}
+
+/***************************************************/
+/* CSS GLOBAL DEFINITIONS FOR LAYER RWO CLASS     */
+/***************************************************/
+
+
+div.row_1,
+div.row1 {
+	background-color: #f9f9f9;
+	border-bottom: 1px solid #E6E6E6;
+}
+
+div.row_2,
+div.row2 {
+	background-color: #ffffff;
+	border-bottom: 1px solid #E6E6E6;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR VOTING MODULE               */
+/***************************************************/
+
+#voting {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#voting div.form,
+#voting div.voting,
+#voting div.results,
+#voting div.votes,
+#voting div.archive{
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+	float:left;
+}
+
+#voting div.message{
+	color: #ff0000;
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+}
+
+#voting input[type=radio],
+#voting  input.radio{
+        float: none;
+}
+
+/***************************************************/
+/* CSS DEFINITIONS FOR LIVECAM MODULE              */
+/***************************************************/
+div#livecam #CALBUTTONDPC_datum {
+    display: none;
+}
+
+/***************************************************/
+/* CSS DEFINITIONS FOR GALLERY MODULE              */
+/***************************************************/
+
+#gallery {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+
+#gallery div.category_tree,
+#gallery div.category_comment,
+#gallery div.category_images,
+#gallery div.show_image,
+#gallery div.image_navigation,
+#gallery div.category_paging {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#gallery div.category_image,
+#gallery div.category_informations {
+	float: left;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#gallery div.category_informations h2 {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#gallery div.image_voting,
+#gallery div.image_comment {
+	float: left;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 100%;
+}
+
+#gallery div.category {
+	width: 100%;
+	padding: 10px 0px 10px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#gallery div.category_images div.image {
+	width: 33%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	text-align:left;
+	float: left;
+}
+
+#gallery div.show_image img, #gallery div.category_image img, #gallery div.category_images img{
+	margin: 0px 15px 0px 0px;
+}
+
+#gallery div.show_image, #gallery div.image_navigation {
+	text-align: center;
+}
+/***************************************************/
+/* CSS DEFINITIONS FOR MARKET MODULE               */
+/***************************************************/
+
+#market {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#market div.search,
+#market div.type_selection,
+#market div.title,
+#market div.message,
+#market div.form,
+#market div.data,
+#market div.message_error,
+#market div.categories,
+#market div.entries,
+#market div.no_entries
+{
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#market div.message_error {
+	color:#FF0000;
+}
+
+#market div.image,
+#market div.description {
+        width:50%;
+	float: left;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+}
+
+#market div.image img {
+	margin: 0px 15px 15px 0px;
+}
+
+#market div.insert_entries,
+#market div.functions,
+#market div.paging  {
+	width: 100%;
+	margin: 15px 0px 0px 0px;
+	text-align:center;
+	float:left;
+}
+
+#market div.type_selection input {
+	float:none;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR CALENDAR MODULE             */
+/***************************************************/
+
+#calendar {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#calendar div.back,
+#calendar div.registration,
+#calendar div.categories,
+#calendar div.details,
+#calendar div.search  {
+	float: none;
+	width: 100%;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 15px 0px;
+	height: auto !important;
+	text-align:left;
+}
+
+#calendar div.registration  {
+	text-align:right;
+}
+
+
+#calendar div.note {
+	float: left;
+	width: 100%;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	height: auto !important;
+}
+
+#calendar div.logo {
+	float:left;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#calendar div.logo img {
+	margin: 0px 15px 5px 0px;
+}
+
+#calendar div.description {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	height:auto !important;
+}
+
+#calendar div.export {
+	float:right;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#calendar div.export img {
+	margin: 0px 0px 5px 15px;
+}
+
+#calendar div.adress,
+#calendar div.organizer {
+	float: left;
+	width: 50%;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 15px 0px;
+	height: auto !important;
+}
+
+#calendar div.adress address,
+#calendar div.organizer address {
+	font-style: normal;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR ACCESS MODULE               */
+/***************************************************/
+
+#access {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#access div.message,
+#access div.message_ok,
+#access div.message_error,
+#access div.profile,
+#access div.paging,
+#access div.member_list,
+#access div.letter_index,
+#access div.search,
+#access div.functions {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#access div.message_error {
+	color: #ff0000;
+}
+
+#access div.message_ok {
+	color: #029202;
+}
+
+#access img.member_gender_female {
+	background-color:#f4d7f4;
+	padding:2px;
+}
+
+#access img.member_gender_male {
+	background-color:#a2c0ff;
+	padding:2px;
+}
+
+#access img.member_gender_undefined {
+	background-color:#dddddd;
+	padding:2px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR PODCAST MODULE              */
+/***************************************************/
+
+#podcast {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#podcast div.showMedium, #podcast div.categories, #podcast div.noMedium, #podcast div.player, #podcast div.information, #podcast div#podcast_container {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#podcast div.media {
+	width: 100%;
+	padding: 10px 0px 10px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#podcast div.image {
+	float: left;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#podcast div.image img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 15px 15px 0px;
+}
+
+
+#podcast div.description {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#podcast div.description h2 {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR RECOMMEND MODULE            */
+/***************************************************/
+
+#recommend {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#recommend div.text, #recommend div.status, #recommend div.form  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#recommend div.status {
+	color: #ff0000;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR DIRECTORY MODULE            */
+/***************************************************/
+
+#directory {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#directory div.feeds{
+	width: 100%;
+	padding: 0px 0px 18px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+}
+
+#directory div.feeds div.image{
+	width: 140px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:80px;
+	background-position: center center;
+	background-repeat:no-repeat;
+	cursor:pointer;
+}
+
+#directory div.feeds div.text{
+	width: 150px;
+	padding: 0px 0px 0px 10px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#directory div.feeds div.text h2{
+	margin: 0px 0px 10px 0px;
+}
+
+#directory div.feeds div.text div.link{
+	width: 150px;
+	padding: 10px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#directory div.feed{
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+}
+
+#directory div.feed div.image {
+	width: 300px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:150px;
+	background-position: center center;
+	background-repeat:no-repeat;
+	cursor:pointer;
+}
+
+#directory div.feed div.thumbs {
+	width: 300px;
+	padding: 3px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#directory div.feed div.thumbs a img {
+	padding: 0px 3px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+	border: 0px !important;
+        width: 47px !important;
+}
+
+#directory div.feed div.thumbs a.last_item img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+	border: 0px !important;
+}
+
+#directory div.feed div.text{
+	width: 300px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#directory div.feed div.text h2{
+	margin: 18px 0px 0px 0px;
+}
+
+#directory div.feed div.text div.type {
+	width: 300px;
+	padding: 0px 0px 10px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#directory .selector {
+    clear: left;
+    padding-left: 190px;
+    margin-top: -15px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR LOGIN MODULE                */
+/***************************************************/
+
+#login {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#login a.register{
+	padding-left:18px;
+	background-image:url(../../images/modules/login/register_small.gif);
+	background-position:left center;
+	background-repeat:no-repeat;
+}
+
+#login a.lostpw{
+	padding-left:18px;
+	background-image:url(../../images/modules/login/lost_pw_small.gif);
+	background-position:left center;
+	background-repeat:no-repeat;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR FORUM MODULE                */
+/***************************************************/
+
+#forum {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#forum div.links,
+#forum div.dropdown,
+#forum div.latest,
+#forum div.category,
+#forum div.navtree,
+#forum div.paging,
+#forum div.anchor,
+#forum div.threads,
+#forum div.addthread,
+#forum div.posts,
+#forum div.addpost,
+#forum div.forums,
+#forum div.searchform,
+#forum div.notification,
+#forum div.message_error,
+#forum div.message_ok,
+#forum div.text,
+#forum div.profile,
+#forum div.navtree,
+#forum div.dropdown  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+}
+
+#forum div.links {
+	text-align: right;
+}
+
+#forum div.paging {
+	text-align: left;
+}
+
+
+#forum div.message_error {
+	color: #ff0000;
+}
+
+#forum div.message_ok {
+	color: #029202;
+}
+
+#forum .posts h3 {
+	padding:3px 0px 3px 0px;
+	margin: 0px;
+	font-size:1.2em;
+}
+
+
+#forum .posts div.code{
+	padding: 3px;
+	background-color: #fcfce6;
+	border: 1px solid #7390AF;
+	font-family:"Courier New", Courier, mono;
+	max-height: 150px;
+	overflow:auto;
+}
+
+#forum .posts div.quote{
+	padding: 3px;
+	background-color: #fcfcff;
+	border: 1px solid #7390AF;
+	max-height: 150px;
+	overflow:auto;
+}
+
+#forum div.notification_left, #forum div.notification_right {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	width: 45%;
+	height: 600px;
+}
+
+#forum div.notification_center {
+	padding: 250px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	width: 9%;
+	text-align:center;
+	height: 281px;
+}
+
+.forumTagCloud {
+	padding: 0px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.forumTagCloud li {
+	padding: 0px 3px 0px 3px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.forumTagCloudSmallest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 10px;
+	list-style: none;
+	float: left;
+}
+
+.forumTagCloudSmall {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 12px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.forumTagCloudMedium {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 14px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.forumTagCloudLarge {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 16px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.forumTagCloudLargest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 18px;
+	font-weight: bold;
+	list-style: none;
+	padding: 0px;
+	float: left;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR BLOG MODULE                 */
+/***************************************************/
+
+#blog {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#blog div.categories,
+#blog div.posted_comment,
+#blog div.entries,
+#blog div.content,
+#blog div.message_ok,
+#blog div.message_error,
+#blog div.entry,
+#blog div.voting,
+#blog div.link,
+#blog div.addcomment,
+#blog div.networks,
+#blog div.searchform
+{
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#blog div.comments,
+#blog div.code,
+#blog div.statistics {
+	padding: 7px 7px 7px 7px;
+	margin: 0px 0px 15px 0px;
+	background-color: #f9f9f9;
+	border: 1px dotted #E6E6E6;
+	clear:both;
+}
+
+#blog div.message_error {
+	color: #ff0000;
+}
+
+#blog div.message_ok {
+	color: #029202;
+}
+
+#blog div.posted {
+	font-size: 0.9em;
+	color: #888888;
+	font-style: italic;
+	padding: 0px 0px 20px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#blog div.comment_posted {
+	font-size: 0.9em;
+	color: #888888;
+	font-style: italic;
+}
+
+#blog div.comment_avatar {
+	float:right;
+	padding: 0px 0px 5px 5px;
+	margin: 0px 0px 0px 0px;
+}
+
+#blog div.comment_text {
+	padding: 10px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#blog div.text {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	height:auto !important;
+}
+
+#blog div.image {
+	float:left;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#blog div.image img {
+	margin: 0px 15px 15px 0px;
+}
+
+#blog div.search_date {
+	float:left;
+	width: 200px;
+	padding: 0px 0px 0px 190px;
+	margin: -15px 0px 0px 0px;
+	height:auto !important;
+}
+
+.blogTagCloud {
+	padding: 0px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.blogTagCloud li {
+	padding: 0px 3px 0px 3px;
+	margin: 0px;
+	float:left;
+	height:auto !important;
+}
+
+.blogTagCloudSmallest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 10px;
+	list-style: none;
+	float: left;
+}
+
+.blogTagCloudSmall {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 12px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.blogTagCloudMedium {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 14px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.blogTagCloudLarge {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-weight: bold;
+	font-size: 16px;
+	list-style: none;
+	float: left;
+	padding: 0px;
+}
+
+.blogTagCloudLargest {
+	height: 20px;
+	margin: 0px 2px 0px 2px;
+	font-size: 18px;
+	font-weight: bold;
+	list-style: none;
+	padding: 0px;
+	float: left;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR GUESTBOOK  MODULE           */
+/***************************************************/
+
+#guestbook {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#guestbook div.entries,
+#guestbook div.status,
+#guestbook div.paging,
+#guestbook div.add_entry,
+#guestbook div.error_message,
+#guestbook div.information,
+#guestbook div.form,
+#guestbook div.count_entries
+{
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#guestbook div.entry {
+	width: 100%;
+	padding: 10px 5px 10px 5px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+
+#guestbook div.error_message {
+	color:#FF0000;
+}
+
+#guestbook div.title {
+	float:left;
+	height: 27px;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 60%;
+}
+
+#guestbook div.title h3{
+	padding: 0px 0px 5px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#guestbook div.location {
+	float:left;
+	height: 22px;
+	padding: 5px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 20%;
+	font-style:italic;
+}
+
+#guestbook div.date {
+	float:left;
+	height: 22px;
+	padding: 5px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 20%;
+	text-align:right;
+}
+
+#guestbook div.message,
+#guestbook div.links {
+	padding: 0px 0px 0px 0px;
+	margin: 7px 0px 0px 0px;
+	height:auto !important;
+	float:left;
+	width:100%;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR MEMBERDIR  MODULE           */
+/***************************************************/
+
+#memberdir {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#memberdir div.category_tree,
+#memberdir div.subcategories,
+#memberdir div.char_list,
+#memberdir div.search_form,
+#memberdir div.adress_list,
+#memberdir div.paging,
+#memberdir div.detail_list,
+#memberdir div.back  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+}
+
+/***************************************************/
+/* CSS DEFINITIONS FOR SITEMAP MODULE              */
+/***************************************************/
+
+#sitemap {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#sitemap ul {
+	padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+	list-style: none;
+}
+
+#sitemap ul li{
+	padding: 2px 0px 2px 0px;
+    margin: 0px 0px 0px 0px;
+	list-style: none;
+	border-bottom: 1px dotted #E6E6E6;
+	font-weight: normal;
+}
+
+#sitemap ul li.sitemap_level_1 {
+	font-weight: bold;
+}
+
+#sitemap ul li.sitemap_level_2 {
+    padding-left: 25px;
+}
+#sitemap ul li.sitemap_level_3 {
+    padding-left: 50px;
+}
+#sitemap ul li.sitemap_level_4 {
+    padding-left: 75px;
+}
+#sitemap ul li.sitemap_level_5 {
+    padding-left: 100px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR DOCSYS MODULE               */
+/***************************************************/
+
+#docsys {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#docsys div.categories,
+#docsys div.doc_list,
+#docsys div.paging {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR SHOP MODULE                 */
+/***************************************************/
+
+#shop{
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#shop div.menu,
+#shop div.cart_info,
+#shop div.informations,
+#shop div.payment,
+#shop div.message,
+#shop div.lsv_form,
+#shop div.cart,
+#shop div.cart_links,
+#shop div.message_error,
+#shop div.customer_address,
+#shop div.shipping_address,
+#shop div.account_details,
+#shop div.customer_old,
+#shop div.order,
+#shop div.customer_new {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#shop div.message_error {
+	color:#FF0000;
+}
+
+#shop div.categories {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 25px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#shop div.category {
+	padding: 0px 0px 0px 0px;
+	margin: 15px 45px 0px 0px;
+	float:left;
+	height: auto !important;
+	min-height: 120px;
+	height: 120px;
+	width: 33%;
+}
+
+#shop div.category {
+	padding: 0px 0px 0px 0px;
+	margin: 15px 0px 0px 0px;
+	float:left;
+	height: auto !important;
+	min-height: 120px;
+	height: 120px;
+	width: 33%;
+}
+
+#shop div.discount {
+	padding: 0px 0px 0px 0px;
+	margin: 15px 0px 0px 0px;
+	float:left;
+	height: auto !important;
+	min-height: 120px;
+	height: 120px;
+	width: 50%;
+}
+
+#shop div.paging {
+	text-align:center;
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 15px 0px 15px 0px;
+	float:left;
+}
+
+#shop div.product {
+	width: 100%;
+	padding: 10px 0px 10px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#shop div.images {
+	width: 24%;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	height: auto !important;
+	float:left;
+	text-align:center;
+}
+
+#shop div.description {
+	margin: 0px 0px 15px 0px;
+	padding: 0px 0px 0px 0px;
+	height: auto !important;
+	float:left;
+	width: 75%;
+}
+
+#shop div.description h2,
+#shop div.categories h2,
+#shop div.informations h2,
+#shop div.description h3,
+#shop div.categories h3,
+#shop div.informations h3 {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+}
+
+#shop div.stock,
+#shop div.manufacturer,
+#shop div.detail_link,
+#shop div.shop_options {
+	margin: 0px 0px 3px 0px;
+	padding: 0px 0px 0px 0px;
+	height: auto !important;
+	width: 100%;
+}
+
+#shop div.product_id {
+	margin: 0px 0px 15px 0px;
+	padding: 0px 0px 0px 0px;
+	height: auto !important;
+	width: 100%;
+}
+
+#shop div.price,
+#shop div.functions {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+	height: auto !important;
+	width: 100%;
+	float:left;
+	text-align:right;
+}
+
+#shop input[type=radio],
+#shop input[type=checkbox]{
+        float: none;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR E-CARD MODULE               */
+/***************************************************/
+
+.ecardColumn1 {
+float:left;
+width:33%;
+}
+
+.ecardColumn2 {
+float:left;
+width:33%;
+}
+
+.ecardColumn3 {
+float:left;
+width:33%;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR NEWS MODULE                 */
+/***************************************************/
+
+table.news_meta td {
+    font-size: 11px;
+    border: 0px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR NEWSLETTER MODULE           */
+/***************************************************/
+
+#newsletter {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#newsletter div.errorMessage,
+#newsletter div.okMessage,
+#newsletter div.form  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#newsletter div.errorMessage {
+	color: #ff0000;
+}
+
+#newsletter_home input[type=radio],
+#newsletter_home input[type=checkbox]{
+        float: none;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR EGOV MODULE                 */
+/***************************************************/
+
+#egov {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#egov table tr td  {
+	border: 0px;
+}
+
+
+/***************************************************/
+/* CSS DEFINITIONS FOR U2U MODULE                  */
+/***************************************************/
+
+#u2u {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#u2u div.inbox,
+#u2u div.functions,
+#u2u div.message,
+#u2u div.message_ok,
+#u2u div.message_error,
+#u2u div.preview,
+#u2u div.details,
+#u2u div.outbox,
+#u2u div.paging  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#u2u div.message_error {
+	color:#FF0000;
+}
+
+#u2u div.message_ok {
+	color: #029202;
+}
+
+
+/***************************************************/
+/* NEW CSS DEFINITIONS FOR KNOWLEGE MODULE         */
+/***************************************************/
+#knowledge_new {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#knowledge_new  div.crumbtrail,
+#knowledge_new  div.answer,
+#knowledge_new  div.informations  {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#knowledge_new .tags,
+#knowledge_new .articlelist .tags {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: inline;
+    border: none;
+}
+
+#knowledge_new .tags li,
+#knowledge_new .articlelist .tags li {
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+    list-style: none;
+    border: none;
+}
+
+
+/***************************************************/
+/* OLD CSS DEFINITIONS FOR KNOWLEGE MODULE         */
+/***************************************************/
+
+
+.cloud {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    border: none;
+}
+
+.cloud li {
+    margin: 0px !important;
+    padding: 0px 5px !important;
+    list-style: none !important;
+    /*display: inline;*/
+    float: left !important;
+    vertical-align: bottom !important;
+    border: none !important;
+    line-height: 1em !important;
+}
+
+.cloud li:hover {
+    background-color: #cdcdcd;
+}
+
+.cloud li a{
+    color: #646464;
+}
+
+.knowledge_sidebar {
+    margin: 0px;
+    padding: 0px;
+}
+
+.knowledge_sidebar ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+.knowledge_sidebar li {
+    border-bottom: #03AB3E 1px solid;
+    width: 100%;
+    display: block;
+    margin: 0px;
+}
+
+.knowledge_sidebar li:hover {
+    /*background-color: #CDE9C4;*/
+}
+
+#knowledge #content_search {
+    position: relative;
+}
+
+#knowledge .articlelist a {
+    /*float: left;*/ /* what's it for? */
+}
+
+#knowledge .articlelist li {
+    margin: 0px;
+    padding: 0px;
+    border-bottom: solid 1px #C6C6C6;
+}
+
+#knowledge .articlelist .title_row {
+    /*width: 565px;*/
+    padding: 5px;
+    background-color: #F6F6F6;
+}
+
+#knowledge .articlelist .opener {
+    float: left;
+    width: 40px;
+}
+
+#knowledge .articlelist .question {
+    /*float: right;*/
+    /*width: 525px;*/
+    /*margin-left:  45px;*/
+}
+
+#knowledge .articlelist .question a {
+    /*color: #646464;*/
+}
+
+#knowledge .articlelist .answer {
+    /*float: right;*/
+    /*width: 530px;*/
+    /*padding-top: 10px;*/
+    margin-left: 45px;
+    position: relative;
+}
+
+
+#knowledge .articlelist .question_active {
+    background-color: #F5F5F5;
+    font-weight: bold;
+    border-bottom: solid 1px #C6C6C6;
+}
+
+#knowledge ul {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+#knowledge li {
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+#knowledge dd {
+    margin: 0px;
+    padding: 0px;
+    padding-bottom: 20px;
+    padding-top: 5px;
+}
+
+#knowledge dt {
+    font-weight: bold;
+}
+
+#knowledge_search_results {
+    padding-left: 0px;
+}
+
+#knowledge_search_results ul {
+    margin-left: 0px;
+    padding-left: 0px;
+    list-style-type: none;
+}
+
+#knowledge_search_results ul li {
+    padding: 0px;
+    margin: 0px;
+    margin: 5px 5px;
+    list-style-type: none;
+}
+
+#knowledge #overview div.category {
+    float: left;
+    width: 50%;
+    /*margin-right: 1px;*/
+}
+
+#knowledge #overview div.row {
+    /*background-color: #eeeeee;*/
+}
+
+#knowledge #overview div.row:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    margin-bottom: 1em;
+}
+/* for ie */
+* html #knowledge #overview div.row {
+    height: 1%;
+}
+
+#knowledge #overview div div.title {
+    font-weight: bold;
+    /*padding: 3px;*/
+    /*background-color: #eeeeee;*/
+}
+
+#knowledge #overview div div.title a {
+    display: block;
+}
+
+#knowledge #overview div div.content {
+    /*padding: 3px;*/
+    background-color: white;
+}
+
+#knowledge #overview div div.content a {
+    color: black;
+}
+
+#knowledge #overview div div.content a:hover {
+    color: #C5252F;
+}
+
+#knowledge #overview div div.content a.more {
+    color: #8b9581;
+}
+
+
+#knowledge #overview div div.content a.more:hover {
+    color: #C5252F;
+}
+
+#knowledge h2.category_list_title {
+    /*background-color: #E2EA9F;*/
+    padding: 3px;
+    /*color: #63625e;*/
+    /*background-color: #01A93C;*/
+    /*color: white;*/
+}
+
+#knowledge h2.article_list_title {
+    /*background-color: #DAEDC6;*/
+    /*background-color: #01A93C;*/
+    /*background-color: #EEEEEE;*/
+    padding: 3px;
+}
+
+#knowledge h2.article_list_title a {
+    color: white;
+}
+
+#knowledge h2.category_title {
+   /*background-color: #eeeeee;*/
+   /*padding: 3px;*/
+}
+
+#knowledge .most_read {
+    background-color: #DAEDC6;
+    /*padding: 3px;*/
+    font-weight: bold;
+}
+
+#knowledge .tags, #knowledge .articlelist .tags {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    display: inline;
+    border: none;
+}
+
+#knowledge .tags li, #knowledge .articlelist .tags li {
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+    list-style: none;
+    border: none;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+#knowledge .search_button {
+    padding: 4px;
+}
+
+/* IE */
+* html .clearfix { height: 1%; }
+
+#resultbox {
+    border: 1px solid #858585;
+    position: absolute;
+    /*min-width: 310px;
+    max-width: 700px;*/
+    width: 60%;
+    padding: 5px;
+    overflow: auto;
+    z-index: 10;
+    left: 0px;
+    top: 25px;
+    background-color: white;
+}
+
+#resultbox ul {
+    list-style-type: none;
+    padding: 2px;
+    margin: 0px;
+}
+
+#resultbox li {
+    list-style-type: none;
+    display: block;
+    /*padding: 2px 0 2px 2px;*/
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0px;
+}
+
+#resultbox li a {
+    display: block;
+}
+
+#resultbox li:hover {
+    background-color: #F0F8FA;
+}
+
+.cloud {
+    margin-bottom: 1em;
+}
+
+/***************************************************/
+/* CSS DEFINITIONS FOR DATA MODULE                 */
+/***************************************************/
+div.datalist_block dl dt {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    font-weight: bold;
+    display: block;
+}
+
+div.datalist_block dl dd {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    border-top: 0px solid #cbb354;
+}
+
+div.datalist_block dl dt.cattitle {
+    font-weight: bold;
+    margin: 0px;
+    padding: 2px;
+    display: block;
+    background-color: #EEEEEE;
+    border: 0px #bcbcbc solid;
+    margin-top: 11px;
+}
+
+div.datalist_block dl dd.catcontent {
+    padding: 0px;
+    border: 0px #bcbcbc solid;
+    border-top: none;
+    padding-top:5px;
+}
+
+/************************************/
+/* CSS DEFINITIONS FOR DATA-MODULE  */
+/************************************/
+
+div.datalist_block dl dt {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    font-weight: bold;
+    display: block;
+}
+
+div.datalist_block dl dd {
+    margin: 0px;
+    padding: 0px 0 0px 0;
+    border-top: 0px solid #cbb354;
+}
+
+div.datalist_block dl dt.cattitle {
+    font-weight: bold;
+    margin: 0px;
+    padding: 2px;
+    display: block;
+    background-color: #EEEEEE;
+    border: 0px #bcbcbc solid;
+    margin-top: 11px;
+}
+
+div.datalist_block dl dd.catcontent {
+	padding: 0px;
+    border: 0px #bcbcbc solid;
+    border-top: none;
+	padding-top:5px;
+}
+
+div.datalist_block dl dd.catcontent2 p{
+    padding: 0px;
+}
+
+div.datalist_block dl dd.catcontent2 p{
+    padding: 0px;
+}
+
+div.datalist_block img {
+    margin-right: 5px;
+}
+
+/** overlay stuff **/
+dl.data_module {
+    padding: 10px;
+    color: #EEEEEE;
+    font-family:"Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+    font-size:75%;
+    line-height:1.5;
+    
+}
+
+dl.data_module dt {
+   font-weight: bold; 
+}
+
+dl.data_module dd {
+    margin: 5px 0;
+}
+
+dl.data_module img { 
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+
+/****************************************/
+/* CSS DEFINITIONS FOR DOWNLOADS-MODULE */
+/****************************************/
+
+#downloads {
+	width: 100%;
+}
+
+#downloads div.category {
+}
+
+#downloads div.overview div.row div.category {
+	float: left;
+	width: 50%;
+}
+
+#downloads div.overview div.row div.category div.title {
+	font-weight: bold;
+}
+
+#downloads div.overview div.row div.category div.content a {
+    color: black;
+}
+
+#downloads div.overview div.row div.category div.content a:hover {
+    color: #C5252F;
+}
+
+#downloads div.overview div.row div.category div.content a.more {
+    color: #8b9581;
+}
+
+#downloads div.overview div.row div.category div.content a.more:hover {
+    color: #C5252F;
+}
+
+
+#downloads div.subcategories {
+	padding: 0px 0px 15px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+}
+
+#downloads div.file {
+	width: 100%;
+	padding: 10px 0px 10px 0px;
+	margin: 0px 0px 0px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#downloads div.image {
+	float: right;
+	height:auto !important;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+}
+
+#downloads div.image img {
+	margin: 0px 0px 15px 0px;
+}
+
+#downloads div.file_list .infos {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 84%;
+	float: left;
+}
+
+#downloads div.infos {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+}
+
+
+#downloads div.infos h3 {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+
+}
+
+#downloads div.infos .shortdetail_top {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 5px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+}
+
+#downloads div.infos .shortdetail_top img, #downloads div.infos .shortdetail_bottom img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 10px;
+	height: 10px;
+}
+
+#downloads div.infos .shortdetail_bottom a {
+	color: #808080;
+}
+
+#downloads div.infos .shortdetail_bottom a:hover {
+	color: #000000;
+}
+
+#downloads div.infos .shortdetail_bottom {
+	padding: 0px 0px 0px 0px;
+	margin: 5px 0px 0px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+}
+
+#downloads div.infos .detail_desc {
+	padding: 0px 0px 5px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 84%;
+	float: left;
+}
+
+#downloads div.infos .file_info {
+	padding: 5px 0px 5px 5px;
+	margin: 0px 0px 0px 0px;	
+}
+
+#downloads div.infos .file_info img {
+	padding: 0px 2px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	width: 10px;
+	height: 10px;
+}
+
+#downloads div.download {
+	padding: 0px 0px 10px 0px;
+	margin: 5px 0px 15px 0px;
+	width: 100%;
+    position: relative;
+}
+
+#downloads div.download h3 img {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+    width: 24px;
+    height: 24px;
+    float:left;
+	top: 16px;
+}
+
+#downloads div.infos .file_owner, #downloads div.infos .file_owner a {
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	height:auto !important;
+	color: #808080;
+	font-size: 0.95em;
+	text-align: right;
+}
+
+#downloads div.infos .file_owner a:hover {
+	color: #000000;
+}
+
+
+#downloads div.file_list div.paging {
+	float:left;
+}
+
+
+#downloads div.subcategories div.category {
+	float: left;
+	width: 50%;
+}
+
+#downloads div.message,
+#downloads div.message_ok,
+#downloads div.message_error {
+	width: 100%;
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 15px 0px;
+	float:left;
+	height:auto !important;
+}
+
+#downloads div.message_error {
+	color: #ff0000;
+}
+
+#downloads div.message_ok {
+	color: #029202;
+}
+
+#downloads #download_view_types_wrapper {
+    display: block;
+    padding: 2em 0em 0em 0em;
+    clear:both;
+}
+#downloads #download_view_types {
+    display: block;
+    clear:both;
+    margin: 0px;
+    padding: 0px;
+}
+
+#downloads #download_view_types li{
+    float:left;
+    display: block;
+    padding-right: 1px;
+}
+#downloads #download_view_types li a.active{
+    float:left;
+    display: block;
+    background-color: #6983b6;
+    color:white;
+    padding: 0.4em 1em 0.4em 1em;
+}
+
+#downloads #download_view_types li a{
+    float:left;
+    display: block;
+    background-color: #f0f0f0;
+    padding: 0.4em 1em 0.4em 1em;
+    font-weight: bold;
+}
+
+#downloads #download_tabbar_closer {
+    margin-top: 2.2em;
+    border-top: 1px solid #f0f0f0;
+}
