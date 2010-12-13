@@ -80,7 +80,7 @@
     {
         var number = 0;
         // find the highest number
-        $J('.languageValueDiv').each(function(key, elem){
+        $J('.formRecipient').each(function(key, elem){
             var nr = parseInt($J(elem).attr('id').split('_')[1]);
             if (nr > number) {
                 number = nr;
@@ -91,23 +91,23 @@
         number++;
         var toCopy = $J('.formRecipient:last');
         var copy = $J(toCopy).clone();
+        $J(copy).attr('id', 'formRecipient_'+number)
 
-        $J(copy).find('input, select, .languageValueDiv').each(function(key, elem) {
+        $J(copy).find('input, .recipientNameDiv').each(function(key, elem) {
             var name = $J(elem).attr('name');
             var id = $J(elem).attr('id');
-
+            var className = $J(elem).attr('class');
+            
             if (name != undefined) {
                 // the divs don't have names
                 $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + number + "]$3"));
             }
 
             // do the id too
-            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + number));
-        });
+            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)_(\d+)$/, "$1_" + number+ "_$3"));
 
-        $J(copy).find('.langToggleLink').attr('onclick', '');
-        $J(copy).find('.langToggleLink').unbind('click').bind('click', function() {
-            toggleLanguages(number);
+            // do the class too
+            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + number));
         });
 
         $J(copy).find('input').val('');
@@ -145,7 +145,7 @@
         formFieldNumber++;
 
         var copy = divToCopy.clone();
-        $J(copy).attr('id', 'formField_' +formFieldNumber)
+        $J(copy).attr('id', 'formField_' +formFieldNumber);
         //Increment the Form Feild ID to Display
         $J(copy).find('.formFieldId').html(formFieldNumber);
         //Alter the Row classname to change background color
@@ -377,9 +377,11 @@
     @author  Stefan Heinemann <sh@adfinis.com>
     @param   string name
     */
-    function superTab(name) {
+    function superTab(ele, name) {
         $J('.tabs').hide();
         $J('#tab_' + name).show();
+        $J('#tabmenu li a').removeClass('active');
+        $J(ele).addClass('active');
     }
 
     function langTab(ele, id) {
@@ -415,6 +417,14 @@
                 $J('#fieldNameTab_'+fieldId+'_'+CurrentLangId).show();
                 $J('.fieldValueTabs_'+fieldId).hide();
                 $J('#fieldValueTab_'+fieldId+'_'+CurrentLangId).show();
+            }
+        });
+
+        $J('#formRecipientContainer tr').each(function(){
+            if ($J(this).attr('id') != "") {
+                recipientId = $J(this).attr('id').split('_')[1];
+                $J('.recipientName_'+recipientId).hide();
+                $J('#recipientName_'+recipientId+'_'+CurrentLangId).show();
             }
         });
     }
@@ -505,12 +515,17 @@
                 return true;
             }
         });
-        $J('#notifylangTab_').css('display','none');
+
+        /* This must be removed */
+        $J('#notifylangTab_').remove();
+        $J(".formRecipient").each(function(){
+            $J(this).find('.recipientNameDiv:last').remove();
+        });
     });
 
     /**
     Show the language input fields
-    */
+    
     function toggleLanguages(id) {
         var obj = $J($J('#languageValues_' + id));
         if (obj.is(':visible')) {
@@ -518,7 +533,7 @@
         } else {
             obj.show();
         }
-    }
+    }*/
 
     /*
     Remove a recipient row. Prevent from
@@ -595,9 +610,9 @@
     <div class="tabContainer">
         <br/>
         <ul id="tabmenu">
-            <li><a onclick="superTab('values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
-            <li><a onclick="superTab('notification')" title="{TXT_FORM_NOTIFICATION}">{TXT_FORM_NOTIFICATION}</a></li>
-            <li><a onclick="superTab('settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
+            <li><a class="active" onclick="superTab(this, 'values')" title="{TXT_FORM_VALUE}">{TXT_FORM_VALUES}</a></li>
+            <li><a onclick="superTab(this, 'notification')" title="{TXT_FORM_NOTIFICATION}">{TXT_FORM_NOTIFICATION}</a></li>
+            <li><a onclick="superTab(this, 'settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
         </ul>
     </div>
     <div class="tabs" id="tab_values">
@@ -620,13 +635,15 @@
             <input id="contactFormFeedback_{LANG_ID}" type="hidden" name="contactFormFeedback[{LANG_ID}]" value="{CONTACT_FORM_FEEDBACK_HIDDEN}" />
         </div>
         <!-- END languageForm -->
-         <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist">
+        <br/>
+        <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist">
             <tr>
                 <th>{TXT_CONTACT_FORM_DESC}</th>
             </tr>
             <tr class="row2">
                 <td>{CONTACT_FORM_TEXT}</td>
             </tr>
+            <tr><td><br/></td></tr>
             <tr>
                 <th>{CONTACT_FORM_FIELDS_TITLE}</th>
             </tr>
@@ -689,21 +706,21 @@
                             </thead>
                             <tbody>
                                 <!-- BEGIN contact_form_recipient_list -->
-                                <tr class="formRecipient {ROW_CLASS_NAME}">
-                                    <td><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
+                                <tr id="formRecipient_{CONTACT_FORM_RECIPIENT_ID}" class="formRecipient {ROW_CLASS_NAME}">
+                                    <td width="5%"><div class="sort-handle"><input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="form_field_recipient_{CONTACT_FORM_RECIPIENT_ID}" /></div></td>
                                     <td>
                                         <input style="width:300px;" name="contactFormRecipientEmail[{CONTACT_FORM_RECIPIENT_ID}]"
                                                value="{CONTACT_FROM_RECIPIENT_EMAIL}" />
                                     </td>
                                     <td>
-                                        <input style="width: 300px;" class="globalRecipientName" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
-                                               value="{CONTACT_FORM_RECIPIENT_NAME}" /> <br />
-
-                                        <div id="languageValues_{CONTACT_FORM_RECIPIENT_ID}" style="display: none;" class="languageValueDiv">
-                                            <input type="hidden" name="contactFormRecipientEditType[{CONTACT_FORM_RECIPIENT_ID}]" value="{CONTACT_FORM_RECIPIENT_TYPE}" id="recipient_type_{CONTACT_FORM_RECIPIENT_ID}" />
+                                        <!-- BEGIN recipient_name -->
+                                        <div id="recipientName_{CONTACT_FORM_RECIPIENT_ID}_{CONTACT_FORM_RECIPIENT_LANG_ID}" style="display: {RECIPIENT_NAME_DISPLAY};" class="recipientName_{CONTACT_FORM_RECIPIENT_ID} recipientNameDiv">
+                                            <input style="width: 300px;" name="contactFormRecipientName[{CONTACT_FORM_RECIPIENT_ID}][{CONTACT_FORM_RECIPIENT_LANG_ID}]"
+                                               value="{CONTACT_FORM_RECIPIENT_NAME}" />
                                         </div>
+                                        <!-- END recipient_name -->
                                     </td>
-                                    <td>
+                                    <td width="18">
                                         <a href="javascript:void(0);" onclick="deleteRecipientRow(this)" class="rowDeleteLink">
                                             <img src="images/icons/delete.gif" alt="{TXT_CONTACT_DELETE}" width="17" height="17" border="0" />
                                         </a>
@@ -714,6 +731,7 @@
                         </table>
                         <br/>
                         <input type="button" onclick="addRecipient()" name="addField[{LANG_ID}]" value="{TXT_CONTACT_ADD_RECIPIENT}" />
+                        <br/><br/>
                     </div>
                 </td>
             </tr>
@@ -732,7 +750,7 @@
                 <th colspan="2">{TXT_FORM_NOTIFICATION}</th>
             </tr>
             <tr class="row1" style="height:20px;">
-                <td style="width: 18%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
+                <td style="width: 20%">{TXT_CONTACT_RECEIVER_ADDRESSES}</td>
                 <td>
                     <input style="width: 300px;" type="text" name="contactFormEmail" value="{CONTACT_FORM_EMAIL}" />&nbsp;
                     <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" />
@@ -745,7 +763,7 @@
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                             <tbody>
                                 <tr>
-                                    <td style="border:0px;" width="18%">{TXT_CONTACT_SUBJECT} ({LANG_NAME})</td>
+                                    <td style="border:0px;" width="20%">{TXT_CONTACT_SUBJECT} ({LANG_NAME})</td>
                                     <td style="border:0px;"><input style="width: 300px;" type="text" name="contactFormSubject[{LANG_ID}]" value="{CONTACT_FORM_SUBJECT}" /></td>
                                 </tr>
                             </tbody>
@@ -763,6 +781,7 @@
                 <td>{TXT_CONTACT_SEND_HTML_MAIL}</td>
                 <td><input type="checkbox" name="contactFormHtmlMail" id="contactFormHtmlMail" {CONTACT_FORM_SEND_HTML_MAIL} /></td>
             </tr>
+            <tr><td><br/></td></tr>
             <tr>
                 <th colspan="2">{TXT_CONTACT_MAIL_TEMPLATE}</th>
             </tr>
@@ -778,7 +797,7 @@
                 <th colspan="2">{CONTACT_FORM_SETTINGS}</th>
             </tr>
             <tr class="row1">
-                <td>{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
+                <td width="20%">{TXT_CONTACT_CUSTOM_STYLE}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
                 <td><input type="radio" name="contactFormUseCustomStyle" value="1" id="contactFormUseCustomStyle_1" {CONTACT_FORM_USE_CUSTOM_STYLE_YES} /><label for="contactFormUseCustomStyle_1">{TXT_CONTACT_YES}</label> <input type="radio" name="contactFormUseCustomStyle" value="0" id="contactFormUseCustomStyle_0" {CONTACT_FORM_USE_CUSTOM_STYLE_NO} /><label for="contactFormUseCustomStyle_0">{TXT_CONTACT_NO}</label></td>
             </tr>
             <tr class="row2">

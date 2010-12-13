@@ -550,18 +550,25 @@ class ContactManager extends ContactLib {
     {
         global $_ARRAYLANG;
 
+        $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         $activeLanguages =  FWLanguage::getActiveFrontendLanguages();
         $counter = 1;
+
         foreach ($recipients as $rec) {
+            $first = true;
             foreach ($activeLanguages as $langID => $lang) {
+                $is_active = $this->arrForms[$formId]['lang'][$langID]['is_active'];
                 $this->_objTpl->setVariable(
                         array(
-                        'CONTACT_FORM_RECIPIENT_ID'         => $rec['id'],
                         'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langID,
-                        'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID],
-                        'CONTACT_FORM_LANGUAGE_NAME'        => $lang['name'],
+                        'RECIPIENT_NAME_DISPLAY'            => ($first && $is_active) ? 'block' : 'none',
+                        'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID]
                         )
                 );
+                $this->_objTpl->parse('recipient_name');
+                if ($is_active){
+                    $first = false;
+                }
             }
 
             $this->_objTpl->setVariable(
