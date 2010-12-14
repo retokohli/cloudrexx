@@ -5169,9 +5169,7 @@ class shopmanager extends ShopLibrary
         if (isset($_REQUEST['manufacturerId'])) {
             $manufacturerId = intval($_REQUEST['manufacturerId']);
         }
-
-        $showOnlySpecialOffers = isset($_REQUEST['specialoffer']) ? intval($_REQUEST['specialoffer']) == 1 : false;
-
+        $showOnlySpecialOffers = isset($_REQUEST['specialoffer']);
         $searchTerm = '';
         if (!empty($_REQUEST['shopSearchTerm'])) {
             $searchTerm = mysql_escape_string(
