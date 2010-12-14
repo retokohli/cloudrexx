@@ -254,8 +254,17 @@
             
         //Change the value fields dynamically with respect to type field
         if($J('#formField'+type+'Attribute_0').length > 0 && 'formField'+type+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
-            $J('#contactFormFieldAttributeBox_'+elId).append($J('#formField'+type+'Attribute_0').html());
-            $J('#contactFormFieldAttributeBox_'+elId+' input').attr('name', 'contactFormFieldValue['+elId+'][0]');
+            $J('#contentLanguages li a').each(function(){
+                langId = $J(this).attr('id').split('_')[1];
+                elemToCopy = $J('#formField'+type+'Attribute_0 div').clone();
+                elemToCopy.attr('id', 'fieldValueTab_'+elId+'_'+langId);
+                elemToCopy.attr('class', 'fieldValueTabs_'+elId);
+                elemToCopy.find('input').attr('name', 'contactFormFieldValue['+elId+']['+langId+']');
+                if ($J(this).hasClass('active')) {
+                    elemToCopy.css('display','block');
+                }
+                $J('#contactFormFieldAttributeBox_'+elId).append(elemToCopy);
+            });
         } else {
             //For Checkbox only one instance of select box is enough
             $J(elField).html($J('#formField'+type+'Attribute_0').html());
@@ -436,7 +445,15 @@
             }
         )
     }
-    
+
+    function onSubmit(){
+        activeLang = $J('ul#contentLanguages a.active').attr('id').split('_')[1];
+        $J('#contactFormText_'+activeLang).val(CKEDITOR.instances.contactFormTextEditor.getData());
+        $J('#contactFormFeedback_'+activeLang).val(CKEDITOR.instances.contactFormFeedbackEditor.getData());
+        $J('#contactFormHiddenMailTemplate_'+activeLang).val(CKEDITOR.instances.contactMailTemplateEditor.getData());
+        return true;
+    }
+
     $J(document).ready(function() {
         $J('#formFields tbody').sortable({
             placeholder: 'ui-state-highlight',
@@ -813,6 +830,6 @@
     <br />
     <br />
     <br />
-    <input type="submit" name="saveForm" value="{TXT_CONTACT_SAVE}" />
+    <input type="submit" name="saveForm" onclick="onSubmit()" value="{TXT_CONTACT_SAVE}" />
 
     <!-- END module_contact_form_modify.html -->
