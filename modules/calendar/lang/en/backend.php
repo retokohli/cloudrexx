@@ -422,4 +422,14 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'] = "Veranstaltung";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'] = "Weiterleitung";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Event successfull saved";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'] = "Corrupt save";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_FORMS'] = "Registration Forms";
+$_ARRAYLANG['TXT_CALENDAR_FORM_SUCCESSFULLY_ADDED'] = "Registration Form added successfully";
+$_ARRAYLANG['TXT_CALENDAR_FORM_CORRUPT_ADDED'] = "An error occurred while adding the Registration Form";
+$_ARRAYLANG['TXT_CALENDAR_NO_FORMS_FOUND'] = "No Registration Forms found.";
+$_ARRAYLANG['TXT_CALENDAR_NEW_REGISTRATION_FORM'] = "New Registration Form";
+$_ARRAYLANG['TXT_CALENDAR_FORM_SUCCESSFULLY_DELETED'] = "Registration Form deleted successfully";
+$_ARRAYLANG['TXT_CALENDAR_FORM_CORRUPT_DELETED'] = "An error occurred while deleting the Registration Form";
+$_ARRAYLANG['TXT_CALENDAR_INSERT_REGISTRATION_FORM'] = "Add Registration Form";
+$_ARRAYLANG['TXT_CALENDAR_MAKE_SELECTION'] = "Please select at least one element.         ";
+$_ARRAYLANG['TXT_CALENDAR_COPY'] = "Copy";
 ?>
