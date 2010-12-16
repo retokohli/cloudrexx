@@ -469,8 +469,8 @@ class InitCMS
 		$template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
 		foreach ($template_files as $f) {
 			$match = '';
-			if (preg_match('/^content_([a-zA-Z0-9_]+).html$/', $f, $match)) {
-				$this->templates['custom_content'][$match[1]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
+			if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
+				$this->templates['custom_content'][$match[2]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
 			}
 		}
 
