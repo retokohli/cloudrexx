@@ -274,6 +274,7 @@ CREATE TABLE `contrexx_content_navigation` (
   `backend_access_id` int(11) unsigned NOT NULL default '0',
   `themes_id` int(4) NOT NULL default '0',
   `css_name` varchar(255) NOT NULL default '',
+  `custom_content` varchar(64) NOT NULL,
   PRIMARY KEY  (`catid`),
   KEY `parcat` (`parcat`),
   KEY `module` (`module`),
@@ -305,6 +306,7 @@ CREATE TABLE `contrexx_content_navigation_history` (
   `backend_access_id` int(11) unsigned NOT NULL default '0',
   `themes_id` int(4) NOT NULL default '0',
   `css_name` varchar(255) NOT NULL default '',
+  `custom_content` varchar(64) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `catid` (`catid`)
 ) TYPE=MyISAM;
