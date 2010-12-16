@@ -1269,4 +1269,5 @@ $_ARRAYLANG['TXT_CAPTCHA'] = "Captcha";
 $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPING'] = "Domain-Mappings";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
 $_ARRAYLANG['TXT_ELEARNING_ADMINISTRATION'] = "e-Learning Administration";
+$_ARRAYLANG['TXT_CUSTOM_CONTENT'] = "Custom Content Template";
 ?>
