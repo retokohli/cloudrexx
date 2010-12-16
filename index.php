@@ -391,7 +391,10 @@ $objNavbar  = new Navigation($pageId);
 // Start page or default page for no section
 //-------------------------------------------------------
 if ($is_home){
-    $page_template  = $themesPages['home'];
+    if(!$objInit->hasCustomContent()){
+        $page_template = $themesPages['home'];}
+    else
+        $page_template = $themesPages['content'];
 }
 
 //-------------------------------------------------------
