@@ -35,7 +35,7 @@ class InitCMS
     var $userFrontendLangId;
 
     var $currentThemesId;
-	var $customContentTemplate;
+	var $customContentTemplate = null;
     var $is_home;
     var $arrLang = array();
     var $arrLangNames = array();
@@ -463,14 +463,14 @@ class InitCMS
         @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
 
 		if ($this->customContentTemplate) {
-          	$this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content_'.$this->customContentTemplate.'.html');
+          	$this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate);
 		}
 		
 		$template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
 		foreach ($template_files as $f) {
 			$match = '';
 			if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-				$this->templates['custom_content'][$match[2]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
+				$this->templates['custom_content'][$match[0]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
 			}
 		}
 
@@ -655,27 +655,28 @@ class InitCMS
             }
             $this->_setCustomizedThemesId($objResult->fields['themes_id']);
             define('MODULE_ID', $objResult->fields['module']);
-            return $page_id;
-        }
-        if (empty($history_id)) {
-            $query = "
+
+            if (empty($history_id)) {
+              $query = "
                 SELECT themes_id, custom_content
                   FROM ".DBPREFIX."content_navigation
                  WHERE catid=$page_id
             ";
-        } else {
-            $query = "
+            } else {
+              $query = "
                 SELECT themes_id, custom_content
                   FROM ".DBPREFIX."content_navigation_history
                  WHERE id=$history_id
             ";
-        }
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult !== false) {
-          if (!$objResult->EOF) {
-            $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-            $this->customContentTemplate = $objResult->fields['custom_content'];
-          }
+            }
+            $objResult = $objDatabase->SelectLimit($query, 1);
+            if ($objResult !== false) {
+              if (!$objResult->EOF) {
+                $this->_setCustomizedThemesId($objResult->fields['themes_id']);
+                $this->customContentTemplate = $objResult->fields['custom_content'];
+              }
+            }
+            return $page_id;
         }
 
         define('MODULE_ID', null);
@@ -945,6 +946,14 @@ class InitCMS
         return $isMobile;
     }
 
-
+    /**
+     * Has the user specified custom content for this page?
+     *
+     * @return boolean true if yes
+     */
+    function hasCustomContent()
+    {
+        return !is_null($this->customContentTemplate);
+    }
 }
 ?>
