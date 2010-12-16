@@ -626,7 +626,8 @@ class ContentManager
                     'CONTENT_DISPLAYSTATUS'            => $displaystatus,
                     'CONTENT_TABLE_STYLE'              => $tablestatus,
                     'CONTENT_ROBOTS'                   => $robotstatus,
-                    'CONTENT_THEMES_MENU'              => $this->_getThemesMenu($themesId)
+                    'CONTENT_THEMES_MENU'              => $this->_getThemesMenu($themesId),
+                    'CONTENT_CUSTOM_CONTENT_MENU'        => $this->_getCustomContentMenu()
                 ));
             }
         } else {
@@ -661,12 +662,12 @@ class ContentManager
             'TXT_BASIC_DATA'           => $_CORELANG['TXT_BASIC_DATA'],
             'TXT_FRONTEND_PERMISSION'  => $_CORELANG['TXT_FRONTEND_PERMISSION'],
             'TXT_RELATEDNESS'          => $_CORELANG['TXT_BACKEND_RELATEDNESS'],
-            'TXT_CHANGELOG'               => $_CORELANG['TXT_CHANGELOG'],
+            'TXT_CHANGELOG'            => $_CORELANG['TXT_CHANGELOG'],
             'TXT_PAGE_NAME'            => $_CORELANG['TXT_PAGE_NAME'],
             'TXT_MENU_NAME'            => $_CORELANG['TXT_MENU_NAME'],
             'TXT_NEW_CATEGORY'         => $_CORELANG['TXT_NEW_CATEGORY'],
             'TXT_VISIBLE'              => $_CORELANG['TXT_VISIBLE'],
-            'TXT_CONTENT_TITLE'           => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CONTENT_TITLE'        => $_CORELANG['TXT_PAGETITLE'],
             'TXT_META_INFORMATIONS'    => $_CORELANG['TXT_META_INFORMATIONS'],
             'TXT_META_TITLE'           => $_CORELANG['TXT_META_TITLE'],
             'TXT_META_DESCRIPTION'     => $_CORELANG['TXT_META_DESCRIPTION'],
@@ -681,8 +682,8 @@ class ContentManager
             'TXT_NO_MODULE'            => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'             => $_CORELANG['TXT_REDIRECT'],
             'TXT_BROWSE'               => $_CORELANG['TXT_BROWSE'],
-      		'TXT_CONTENT_ASSIGN_BLOCK' => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
-           	'TXT_NO_REDIRECT'          => '',
+            'TXT_CONTENT_ASSIGN_BLOCK' => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+            'TXT_NO_REDIRECT'          => '',
             'TXT_SOURCE_MODE'          => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'       => $_CORELANG['TXT_CACHING_STATUS'],
             'TXT_THEMES'               => $_CORELANG['TXT_THEMES'],
@@ -713,8 +714,8 @@ class ContentManager
             'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
             'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
             'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-			'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
-			'TXT_BASE_URL'             => self::mkurl('/'),
+            'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
+            'TXT_BASE_URL'             => self::mkurl('/'),
 
         ));
 
@@ -732,6 +733,7 @@ class ContentManager
             'CONTENT_FORM_ACTION'                  => "add",
             'CONTENT_ROBOTS'                       => "checked",
             'CONTENT_THEMES_MENU'                  => $this->_getThemesMenu(),
+            'CONTENT_CUSTOM_CONTENT_MENU'          => $this->_getCustomContentMenu(),
             'CONTENT_EXISTING_GROUPS'              => $existingFrontendGroups,
             'CONTENT_PROTECTION_INACTIVE'          => "checked",
             'CONTENT_PROTECTION_ACTIVE'            => '',
@@ -741,12 +743,12 @@ class ContentManager
             'CONTENT_CONTROL_BACKEND_DISPLAY'      => "none",
             'CONTENT_EXISTING_BACKEND_GROUPS'      => $existingBackendGroups,
             'CONTENT_ASSIGNED_BACKEND_GROUPS'      => '',
-            'CONTENT_EXISTING_BLOCKS'                 => $blocks[1],
-            'CONTENT_ASSIGNED_BLOCK'                 => $blocks[0],
-            'CONTENT_TYPE_CHECKED_CONTENT'        => 'checked="checked"',
+            'CONTENT_EXISTING_BLOCKS'              => $blocks[1],
+            'CONTENT_ASSIGNED_BLOCK'               => $blocks[0],
+            'CONTENT_TYPE_CHECKED_CONTENT'         => 'checked="checked"',
             'CONTENT_TYPE_CHECKED_REDIRECT'        => '',
-            'CONTENT_TYPE_STYLE_CONTENT'        => 'style="display: block;"',
-            'CONTENT_TYPE_STYLE_REDIRECT'        => 'style="display: none;"',
+            'CONTENT_TYPE_STYLE_CONTENT'           => 'style="display: block;"',
+            'CONTENT_TYPE_STYLE_REDIRECT'          => 'style="display: none;"',
         ));
     }
 
@@ -823,21 +825,21 @@ class ContentManager
         }
     }
 
-	/**
-	 * Returns true if alias functionality is enabled.
-	 */
-	function _is_alias_enabled() {
+    /**
+     * Returns true if alias functionality is enabled.
+     */
+    function _is_alias_enabled() {
         global $objDatabase;
-		$query = "
-			SELECT setvalue
-			FROM ".DBPREFIX."settings
-			WHERE setmodule = 41 AND setname = 'aliasStatus'
-		";
-		if ($res = $objDatabase->SelectLimit($query, 1)) {
-			return $res->fields['setvalue'];
-		}
-		return false;
-	}
+        $query = "
+            SELECT setvalue
+            FROM ".DBPREFIX."settings
+            WHERE setmodule = 41 AND setname = 'aliasStatus'
+        ";
+        if ($res = $objDatabase->SelectLimit($query, 1)) {
+            return $res->fields['setvalue'];
+        }
+        return false;
+    }
 
     /**
      * Content editing
@@ -880,10 +882,10 @@ class ContentManager
             'TXT_MENU_NAME'                    => $_CORELANG['TXT_MENU_NAME'],
             'TXT_NEW_CATEGORY'                 => $_CORELANG['TXT_NEW_CATEGORY'],
             'TXT_VISIBLE'                      => $_CORELANG['TXT_VISIBLE'],
-            'TXT_CONTENT_TITLE'                   => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CONTENT_TITLE'                => $_CORELANG['TXT_PAGETITLE'],
             'TXT_META_INFORMATIONS'            => $_CORELANG['TXT_META_INFORMATIONS'],
             'TXT_META_TITLE'                   => $_CORELANG['TXT_META_TITLE'],
-            'TXT_META_DESCRIPTION'            => $_CORELANG['TXT_META_DESCRIPTION'],
+            'TXT_META_DESCRIPTION'             => $_CORELANG['TXT_META_DESCRIPTION'],
             'TXT_META_KEYWORD'                 => $_CORELANG['TXT_META_KEYWORD'],
             'TXT_META_ROBOTS'                  => $_CORELANG['TXT_META_ROBOTS'],
             'TXT_CONTENT'                      => $_CORELANG['TXT_CONTENT'],
@@ -891,11 +893,11 @@ class ContentManager
             'TXT_START_DATE'                   => $_CORELANG['TXT_START_DATE'],
             'TXT_END_DATE'                     => $_CORELANG['TXT_END_DATE'],
             'TXT_EXPERT_MODE'                  => $_CORELANG['TXT_EXPERT_MODE'],
-            'TXT_MODULE'                      => $_CORELANG['TXT_MODULE'],
+            'TXT_MODULE'                       => $_CORELANG['TXT_MODULE'],
             'TXT_NO_MODULE'                    => $_CORELANG['TXT_NO_MODULE'],
             'TXT_REDIRECT'                     => $_CORELANG['TXT_REDIRECT'],
-            'TXT_BROWSE'                    => $_CORELANG['TXT_BROWSE'],
-  			'TXT_CONTENT_ASSIGN_BLOCK'         => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
+            'TXT_BROWSE'                       => $_CORELANG['TXT_BROWSE'],
+              'TXT_CONTENT_ASSIGN_BLOCK'       => $_CORELANG['TXT_CONTENT_ASSIGN_BLOCK'],
             'TXT_NO_REDIRECT'                  => '',
             'TXT_SOURCE_MODE'                  => $_CORELANG['TXT_SOURCE_MODE'],
             'TXT_CACHING_STATUS'               => $_CORELANG['TXT_CACHING_STATUS'],
@@ -920,28 +922,28 @@ class ContentManager
             'TXT_OPTIONAL_CSS_NAME'            => $_CORELANG['TXT_OPTIONAL_CSS_NAME'],
             'TXT_DELETE'                       => $_CORELANG['TXT_DELETE'],
             'TXT_DELETE_MESSAGE'               => $_CORELANG['TXT_DELETE_PAGE_JS'],
-            'TXT_CHANGELOG'                      => $_CORELANG['TXT_CHANGELOG'],
-            'TXT_CHANGELOG_DATE'            => $_CORELANG['TXT_DATE'],
-            'TXT_CHANGELOG_NAME'            => $_CORELANG['TXT_PAGETITLE'],
-            'TXT_CHANGELOG_USER'            => $_CORELANG['TXT_USER'],
-            'TXT_CHANGELOG_FUNCTIONS'        => $_CORELANG['TXT_FUNCTIONS'],
-            'TXT_CHANGELOG_SUBMIT'               => $_CORELANG['TXT_MULTISELECT_SELECT'],
+            'TXT_CHANGELOG'                    => $_CORELANG['TXT_CHANGELOG'],
+            'TXT_CHANGELOG_DATE'               => $_CORELANG['TXT_DATE'],
+            'TXT_CHANGELOG_NAME'               => $_CORELANG['TXT_PAGETITLE'],
+            'TXT_CHANGELOG_USER'               => $_CORELANG['TXT_USER'],
+            'TXT_CHANGELOG_FUNCTIONS'          => $_CORELANG['TXT_FUNCTIONS'],
+            'TXT_CHANGELOG_SUBMIT'             => $_CORELANG['TXT_MULTISELECT_SELECT'],
             'TXT_CHANGELOG_SUBMIT_DEL'         => $_CORELANG['TXT_MULTISELECT_DELETE'],
-            'TXT_CATEGORY'                       => $_CORELANG['TXT_CATEGORY'],
+            'TXT_CATEGORY'                     => $_CORELANG['TXT_CATEGORY'],
             'TXT_DELETE_HISTORY_MSG'           => $_CORELANG['TXT_DELETE_HISTORY'],
-            'TXT_DELETE_HISTORY_MSG_ALL'    => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
+            'TXT_DELETE_HISTORY_MSG_ALL'       => $_CORELANG['TXT_DELETE_HISTORY_ALL'],
             'TXT_ACTIVATE_HISTORY_MSG'         => $_CORELANG['TXT_ACTIVATE_HISTORY_MSG'],
-            'TXT_TYPE_SELECT'                   => $_CORELANG['TXT_CONTENT_TYPE'],
+            'TXT_TYPE_SELECT'                  => $_CORELANG['TXT_CONTENT_TYPE'],
             'TXT_CONTENT_TYPE_DEFAULT'         => $_CORELANG['TXT_CONTENT_TYPE_DEFAULT'],
             'TXT_CONTENT_TYPE_REDIRECT'        => $_CORELANG['TXT_CONTENT_TYPE_REDIRECT'],
-            'TXT_CONTENT_TYPE_HELP'               => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
-            'TXT_NAVIGATION'                => $_CORELANG['TXT_NAVIGATION'],
-            'TXT_ASSIGN_BLOCK'                   => $_CORELANG['TXT_ASSIGN_BLOCK'],
-            'CONTENT_ALIAS_HELPTEXT'        => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
-            'TXT_DEFAULT_ALIAS'        => $_CORELANG['TXT_DEFAULT_ALIAS'],
-            'CONTENT_ALIAS_DISABLE'    => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
-			'TXT_ERROR_NO_TITLE'       => $_CORELANG['TXT_ERROR_NO_TITLE'],
-			'TXT_BASE_URL'             => self::mkurl('/'),
+            'TXT_CONTENT_TYPE_HELP'            => $_CORELANG['TXT_CONTENT_TYPE_HELP'],
+            'TXT_NAVIGATION'                   => $_CORELANG['TXT_NAVIGATION'],
+            'TXT_ASSIGN_BLOCK'                 => $_CORELANG['TXT_ASSIGN_BLOCK'],
+            'CONTENT_ALIAS_HELPTEXT'           => $_CORELANG['CONTENT_ALIAS_HELPTEXT'],
+            'TXT_DEFAULT_ALIAS'                => $_CORELANG['TXT_DEFAULT_ALIAS'],
+            'CONTENT_ALIAS_DISABLE'            => ($this->_is_alias_enabled() ? '' : 'style="display: none;"'),
+            'TXT_ERROR_NO_TITLE'               => $_CORELANG['TXT_ERROR_NO_TITLE'],
+            'TXT_BASE_URL'                     => self::mkurl('/'),
         ));
 
         if (!$this->boolHistoryEnabled) {
@@ -950,13 +952,13 @@ class ContentManager
         }
 
         if (!empty($pageId)) {
-			$objResult = $objDatabase->SelectLimit("SELECT c.*,
-														   a_s.url AS alias_url
+            $objResult = $objDatabase->SelectLimit("SELECT c.*,
+                                                           a_s.url AS alias_url
                                                       FROM ".DBPREFIX."content AS c
-													  LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
-													  LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-														  ON  a_t.id        = a_s.target_id
-														AND a_s.isdefault = 1
+                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_target AS a_t ON a_t.url = c.id
+                                                      LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                                                          ON  a_t.id        = a_s.target_id
+                                                        AND a_s.isdefault = 1
                                                      WHERE c.id =".$pageId, 1);
 
             if ($objResult !== false && $objResult->RecordCount()>0) {
@@ -1002,7 +1004,7 @@ class ContentManager
                     'CONTENT_TOP_TITLE'           => $_CORELANG['TXT_EDIT_PAGE'],
                     'CONTENT_CATID'            => $pageId,
                     'CONTENT_HTML'               => $ed,
-					'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_ALIAS'              => htmlentities($objResult->fields['alias_url'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_TITLE_VAL'           => htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_DESC'               => htmlentities($objResult->fields['metadesc'], ENT_QUOTES, CONTREXX_CHARSET),
                     'CONTENT_META_TITLE'       => htmlentities($objResult->fields['metatitle'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1028,7 +1030,8 @@ class ContentManager
                                cmd,
                                protected,
                                themes_id,
-                               css_name
+                               css_name,
+                               custom_content
                           FROM ".DBPREFIX."content_navigation
                          WHERE catid = ".$pageId, 1);
 
@@ -1041,6 +1044,7 @@ class ContentManager
                 $cmd = $objResult->fields['cmd'];
                 $catname = htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET);
                 $themesId = $objResult->fields['themes_id'];
+                $customContent = $objResult->fields['custom_content'];
 
                 if ($objResult->fields['displaystatus'] == "on" ) {
                     $displaystatus = "checked";
@@ -1063,6 +1067,7 @@ class ContentManager
                     'CONTENT_ENDDATE'          => $endDate,
                     'CONTENT_THEMES_MENU'     => $this->_getThemesMenu($themesId),
                     'NAVIGATION_CSS_NAME'        => htmlentities($objResult->fields['css_name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTENT_CUSTOM_CONTENT_MENU'  => $this->_getCustomContentMenu($customContent),
                 ));
             }
 
@@ -1359,8 +1364,9 @@ class ContentManager
         $currentTime = time();
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
+        $customContent = contrexx_addslashes(strip_tags($_POST['custom_content']));
         $redirect = (!empty($_POST['TypeSelection']) && $_POST['TypeSelection'] == 'redirect') ? contrexx_addslashes(strip_tags($_POST['redirectUrl'])) : '';
-	    if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
+        if(preg_match('/\b(?:mailto:)?([\w\d\._%+-]+@(?:[\w\d-]+\.)+[\w]{2,6})\b/i', $redirect, $match)){
             $redirect = 'mailto:'.$match[1];
             $_POST['redirectTarget'] = '_blank';
         }
@@ -1412,7 +1418,8 @@ class ContentManager
                                                 startdate='".$startdate."',
                                                 enddate='".$enddate."',
                                                 themes_id='".$themesId."',
-                                                css_name='".$cssNameNav."'
+                                                css_name='".$cssNameNav."',
+                                                custom_content='".$customContent."'
                                           WHERE catid=".$pageId);
             }
         } else {
@@ -1431,7 +1438,8 @@ class ContentManager
                                                   startdate='".$startdate."',
                                                   enddate='".$enddate."',
                                                      themes_id='".$themesId."',
-                                                css_name='".$cssNameNav."'
+                                                css_name='".$cssNameNav."',
+                                                custom_content='".$customContent."'
                                         WHERE     catid=".$pageId);
             }
         }
@@ -1439,7 +1447,7 @@ class ContentManager
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
             $this->strErrMessage[] = $err;
-	}
+    }
 
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
@@ -1599,6 +1607,7 @@ class ContentManager
         $redirectTarget = in_array($_POST['redirectTarget'], $this->_arrRedirectTargets) ? $_POST['redirectTarget'] : '';
         $cssName = contrexx_addslashes(strip_tags($_POST['cssName']));
         $cssNameNav = contrexx_addslashes(strip_tags($_POST['cssNameNav']));
+        $customContent = contrexx_addslashes(strip_tags($_POST['custom_content']));
         $modul = intval($_POST['selectmodule']);
         $startdate = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['startdate'])) ? '0000-00-00' : $_POST['startdate'];
         $enddate = (!preg_match('/\d{4}-\d{2}-\d{2}/',$_POST['enddate'])) ? '0000-00-00' : $_POST['enddate'];
@@ -1646,14 +1655,14 @@ class ContentManager
                 username, changelog,
                 cmd, lang, module,
                 startdate, enddate,
-                protected, themes_id, css_name
+                protected, themes_id, css_name, custom_content
             ) VALUES (
                 ".$parcat.", '".$catname."', '".$redirectTarget."', '1',
                 '".$displaystatus."', '".$cachingstatus."',
                 '".$objFWUser->objUser->getUsername()."', '".$currentTime."',
                 '".$command."', '".$this->langId."', '".$modul."',
                 '".$startdate."', '".$enddate."',
-                '".$protected."', '".$themesId."', '".$cssNameNav."'
+                '".$protected."', '".$themesId."', '".$cssNameNav."', '".$customContent."'
             )
         ";
         $objDatabase->Execute($q1);
@@ -2423,6 +2432,20 @@ class ContentManager
         }
         return $return;
     }
+    
+    function _getCustomContentMenu($selected=null) {
+        global $objInit, $_CORELANG;
+        
+        $templates = $objInit->getTemplates();
+        $menu = '<option value="">(Standard)</option>';
+        
+        foreach ($templates['custom_content'] as $name => $value) {
+            $selected = $name == $selected ? ' selected="selected"' : '';
+            $menu .= '<option value="'.$name.'"'.$selected.'>'.$name.'</option>';
+        }
+        
+        return $menu;
+    }
 
 
     /**
@@ -2635,52 +2658,52 @@ class ContentManager
         return $blocks;
     }
 
-	/**
-	 * Returns an alias that has only valid characters.
-	 */
-	function _fix_alias($txt) {
-		// this is kinda of a duplicate of the javascript function aliasText()
-		// in cadmin/template/ascms/content_editor.html
+    /**
+     * Returns an alias that has only valid characters.
+     */
+    function _fix_alias($txt) {
+        // this is kinda of a duplicate of the javascript function aliasText()
+        // in cadmin/template/ascms/content_editor.html
 
-		// Sanitize most latin1 characters.
-		// there's more to come. maybe there's
-		// a generic function for this?
-		$txt = str_replace(
-			array('ä', 'ö', 'ü', 'à','ç','è','é'),
-			array('ae','oe','ue','a','c','e','e'),
-			strtolower($txt)
-		);
+        // Sanitize most latin1 characters.
+        // there's more to come. maybe there's
+        // a generic function for this?
+        $txt = str_replace(
+            array('ä', 'ö', 'ü', 'à','ç','è','é'),
+            array('ae','oe','ue','a','c','e','e'),
+            strtolower($txt)
+        );
 
-		$txt = preg_replace( '/[\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
-		$txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
+        $txt = preg_replace( '/[\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
+        $txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
 
-		// Fallback for everything we didn't catch by now
-		$txt = preg_replace('/[^\sa-z_-]+/i',  '_', $txt);
-		$txt = preg_replace('/[_-]{2,}/',    '_', $txt);
-		$txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
+        // Fallback for everything we didn't catch by now
+        $txt = preg_replace('/[^\sa-z_-]+/i',  '_', $txt);
+        $txt = preg_replace('/[_-]{2,}/',    '_', $txt);
+        $txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
         $txt = str_replace(array(' ', '\\\ '), '\\\\ ', $txt);
-		return $txt;
-	}
+        return $txt;
+    }
 
-	/**
-	 * Sets default alias for a given page id. If an empty alias is given and the
-	 * page already has a default alias, it will be removed.
-	 *
+    /**
+     * Sets default alias for a given page id. If an empty alias is given and the
+     * page already has a default alias, it will be removed.
+     *
      * Returns false on SUCCESS. On failure, returns an appropriate error message.
-	 * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
-	 * @param alias   the alias to install for the page. if it is empty or null,
-	 *                no change will happen.
-	 */
+     * @param pageid  the local URL to the page ("?page=xx" or "?section=..." alike stuff)
+     * @param alias   the alias to install for the page. if it is empty or null,
+     *                no change will happen.
+     */
     function _set_default_alias($pageId, $alias) {
         $alias    = $this->_fix_alias($alias);
 
-		//////////////////////////////////////////////////////////////
-		// aliasLib has some handy stuff for us here..
-		global $objDatabase, $_ARRAYLANG;
-		require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
-		$util = new aliasLib;
+        //////////////////////////////////////////////////////////////
+        // aliasLib has some handy stuff for us here..
+        global $objDatabase, $_ARRAYLANG;
+        require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
+        $util = new aliasLib;
 
-		// check if there is already an alias present for the page
+        // check if there is already an alias present for the page
         $aliasId = intval($this->_has_default_alias($pageId));
         if (($arrAlias = $util->_getAlias($aliasId)) == false) {
             $arrAlias = array(
@@ -2693,7 +2716,7 @@ class ContentManager
         }
 
         if ($alias == '') {
-        	// Remove alias if it's empty.
+            // Remove alias if it's empty.
             $aliasRemoved = false;
             for ($i = 0; $i < count($arrAlias['sources']); $i++) {
                 if ($arrAlias['sources'][$i]['isdefault']) {
@@ -2707,7 +2730,7 @@ class ContentManager
                     // no other alias for this page are left, so let's remove the whole alias
                     $util->_deleteAlias($aliasId);
                 } else {
-					// update the alias with the removed source entry
+                    // update the alias with the removed source entry
                     $util->_updateAlias($aliasId, $arrAlias);
                 }
             }
@@ -2744,28 +2767,28 @@ class ContentManager
                 return $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
             }
         }
-	}
+    }
 
-	/**
-	 * Returns the alias source id if the given pageid
-	 * has a default alias defined. false otherwise.
-	 */
-	function _has_default_alias($pageid) {
-		global $objDatabase;
-		$check_update = "
-			SELECT a_s.url, a_t.id
-			FROM            ".DBPREFIX."module_alias_target AS a_t
-			LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
-				  ON  a_t.id        = a_s.target_id
-				  AND a_s.isdefault = 1
-			WHERE a_t.url = '$pageid'
-		";
-		$check_update_res = $objDatabase->Execute($check_update);
-		if ($check_update_res->RecordCount()){
-			return $check_update_res->fields['id'];
-		}
-		return false;
-	}
+    /**
+     * Returns the alias source id if the given pageid
+     * has a default alias defined. false otherwise.
+     */
+    function _has_default_alias($pageid) {
+        global $objDatabase;
+        $check_update = "
+            SELECT a_s.url, a_t.id
+            FROM            ".DBPREFIX."module_alias_target AS a_t
+            LEFT OUTER JOIN ".DBPREFIX."module_alias_source AS a_s
+                  ON  a_t.id        = a_s.target_id
+                  AND a_s.isdefault = 1
+            WHERE a_t.url = '$pageid'
+        ";
+        $check_update_res = $objDatabase->Execute($check_update);
+        if ($check_update_res->RecordCount()){
+            return $check_update_res->fields['id'];
+        }
+        return false;
+    }
     function modifyBlocks($associatedBlockIds, $pageId)
     {
         global $objDatabase, $_FRONTEND_LANGID;

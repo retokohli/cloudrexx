@@ -35,6 +35,7 @@ class InitCMS
     var $userFrontendLangId;
 
     var $currentThemesId;
+	var $customContentTemplate;
     var $is_home;
     var $arrLang = array();
     var $arrLangNames = array();
@@ -409,6 +410,11 @@ class InitCMS
     function getTemplates()
     {
         global $objDatabase;
+		
+		if (isset($_GET['custom_content']) && preg_match('/^[a-zA-Z0-9_]+$/', $_GET['custom_content'])) {
+			$this->customContentTemplate=$_GET['custom_content'];
+		}
+		
         if(isset($_GET['preview']) && intval($_GET['preview'])){
             $objRS = $objDatabase->SelectLimit("
                 SELECT id
@@ -455,6 +461,18 @@ class InitCMS
         @$this->templates['podcast_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html');
         @$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
         @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
+
+		if ($this->customContentTemplate) {
+          	$this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content_'.$this->customContentTemplate.'.html');
+		}
+		
+		$template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
+		foreach ($template_files as $f) {
+			$match = '';
+			if (preg_match('/^content_([a-zA-Z0-9_]+).html$/', $f, $match)) {
+				$this->templates['custom_content'][$match[1]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
+			}
+		}
 
         return $this->templates;
     }
@@ -641,20 +659,25 @@ class InitCMS
         }
         if (empty($history_id)) {
             $query = "
-                SELECT themes_id
+                SELECT themes_id, custom_content
                   FROM ".DBPREFIX."content_navigation
                  WHERE catid=$page_id
             ";
         } else {
             $query = "
-                SELECT themes_id
+                SELECT themes_id, custom_content
                   FROM ".DBPREFIX."content_navigation_history
                  WHERE id=$history_id
             ";
         }
         $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult && !$objResult->EOF)
+        if ($objResult !== false) {
+          if (!$objResult->EOF) {
             $this->_setCustomizedThemesId($objResult->fields['themes_id']);
+            $this->customContentTemplate = $objResult->fields['custom_content'];
+          }
+        }
+
         define('MODULE_ID', null);
         return $page_id;
     }
@@ -756,11 +779,11 @@ class InitCMS
             return $catID;
         } else {
             if (empty($historyId)) {
-                $query='SELECT themes_id
+                $query='SELECT themes_id, custom_content
                       FROM '.DBPREFIX.'content_navigation
                      WHERE catid = '.$catID;
             } else {
-                $query='SELECT themes_id
+                $query='SELECT themes_id, custom_content
                       FROM '.DBPREFIX.'content_navigation_history
                      WHERE id = '.$historyId;
             }
@@ -769,6 +792,7 @@ class InitCMS
             if ($objResult !== false) {
                 if (!$objResult->EOF) {
                     $this->_setCustomizedThemesId($objResult->fields['themes_id']);
+					$this->customContentTemplate = $objResult->fields['custom_content'];
                 }
             }
             return $catID;
