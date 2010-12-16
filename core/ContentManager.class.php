@@ -2440,8 +2440,8 @@ class ContentManager
         $menu = '<option value="">(Standard)</option>';
         
         foreach ($templates['custom_content'] as $name => $value) {
-            $selected = $name == $selected ? ' selected="selected"' : '';
-            $menu .= '<option value="'.$name.'"'.$selected.'>'.$name.'</option>';
+            $sel = $name == $selected ? ' selected="selected"' : '';
+            $menu .= '<option value="'.$name.'"'.$sel.'>'.$name.'</option>';
         }
         
         return $menu;
