@@ -313,6 +313,42 @@ CREATE TABLE `contrexx_content_navigation_history` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_mail_template` (
+  `key` tinytext NOT NULL,
+  `module_id` int(10) unsigned NOT NULL default '0',
+  `text_name_id` int(10) unsigned default NULL,
+  `text_from_id` int(10) unsigned default NULL,
+  `text_sender_id` int(10) unsigned default NULL,
+  `text_reply_id` int(10) unsigned default NULL,
+  `text_to_id` int(10) unsigned default NULL,
+  `text_cc_id` int(10) unsigned default NULL,
+  `text_bcc_id` int(10) unsigned default NULL,
+  `text_subject_id` int(10) unsigned default NULL,
+  `text_message_id` int(10) unsigned default NULL,
+  `text_message_html_id` int(10) unsigned default NULL,
+  `text_attachments_id` int(10) unsigned default NULL,
+  `text_inline_id` int(10) unsigned default NULL,
+  `html` tinyint(1) unsigned NOT NULL default '0',
+  `protected` tinyint(1) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`key`(32),`module_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_text` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `lang_id` int(10) unsigned NOT NULL default '1',
+  `module_id` int(10) unsigned NOT NULL default '0',
+  `key` tinytext NOT NULL,
+  `text` text NOT NULL,
+  PRIMARY KEY  (`id`,`lang_id`),
+  KEY `module_id` (`module_id`),
+  KEY `key` (`key`(32)),
+  FULLTEXT KEY `text` (`text`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_ids` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `timestamp` int(14) default NULL,
