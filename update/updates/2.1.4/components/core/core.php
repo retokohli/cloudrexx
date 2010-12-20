@@ -73,7 +73,8 @@ function _coreUpdate()
                 'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
-                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'custom_content'         => array('type' => 'VARCHAR(64)', 'after' => 'css_name')
             ),
             array(
                 'parcat'                 => array('fields' => array('parcat')),
@@ -106,7 +107,8 @@ function _coreUpdate()
                 'frontend_access_id'     => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'backend_access_id'      => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'themes_id'              => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0'),
-                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '')
+                'css_name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'custom_content'         => array('type' => 'VARCHAR(64)', 'after' => 'css_name')
             ),
             array(
                 'catid'                  => array('fields' => array('catid'))

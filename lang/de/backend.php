@@ -405,6 +405,7 @@ $_ARRAYLANG['TXT_SETTINGS_DNS_SERVER'] = "DNS-Server";
 $_ARRAYLANG['TXT_SETTINGS_DNS_SERVER_HELP'] = "Ein DNS-Server wird für die Abfrage eines MX-Lookup's bei den Netzwerk Tools benötigt.";
 $_ARRAYLANG['TXT_MAX_FILESIZE'] = "Maximale Dateigrösse";
 $_ARRAYLANG['TXT_OPTIONAL_CSS_NAME'] = "Optionaler CSS Name";
+$_ARRAYLANG['TXT_CUSTOM_CONTENT'] = "Benutzerdefinierte Inhaltsvorlage";
 $_ARRAYLANG['TXT_COMMUNITY'] = "Community";
 $_ARRAYLANG['TXT_SEND_ACTIVATION_USER_EMAIL'] = "Möchten Sie diesem Benutzer ein Informations E-mail schicken?";
 $_ARRAYLANG['TXT_ACCOUNT_ACTIVATION_MAIL'] = "Hallo %USERNAME%\n\nIhr Benutzerkonto auf %HOST% wurde soeben aktiviert und kann von nun an benutzt werden.";

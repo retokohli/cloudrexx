@@ -405,6 +405,7 @@ $_ARRAYLANG['TXT_SETTINGS_DNS_SERVER'] = "DNS Server";
 $_ARRAYLANG['TXT_SETTINGS_DNS_SERVER_HELP'] = "To be able to lookup MX records, a DNS ((domain name server) is needed.";
 $_ARRAYLANG['TXT_MAX_FILESIZE'] = "Maximum file size";
 $_ARRAYLANG['TXT_OPTIONAL_CSS_NAME'] = "Optional CSS name";
+$_ARRAYLANG['TXT_CUSTOM_CONTENT'] = "Custom Content Template";
 $_ARRAYLANG['TXT_COMMUNITY'] = "Community";
 $_ARRAYLANG['TXT_SEND_ACTIVATION_USER_EMAIL'] = "Would you like to send an information email to this user?";
 $_ARRAYLANG['TXT_ACCOUNT_ACTIVATION_MAIL'] = "Hello %USERNAME%\n\nYour user account at %HOST% was just activated and can now be used.";
