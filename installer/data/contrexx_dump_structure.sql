@@ -3764,35 +3764,3 @@ CREATE TABLE `contrexx_voting_system` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
-
-CREATE TABLE IF NOT EXISTS `contrexx_core_mail_template` (
-  `key` tinytext COLLATE utf8_unicode_ci NOT NULL,
-  `module_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `text_name_id` int(10) unsigned DEFAULT NULL,
-  `text_from_id` int(10) unsigned DEFAULT NULL,
-  `text_sender_id` int(10) unsigned DEFAULT NULL,
-  `text_reply_id` int(10) unsigned DEFAULT NULL,
-  `text_to_id` int(10) unsigned DEFAULT NULL,
-  `text_cc_id` int(10) unsigned DEFAULT NULL,
-  `text_bcc_id` int(10) unsigned DEFAULT NULL,
-  `text_subject_id` int(10) unsigned DEFAULT NULL,
-  `text_message_id` int(10) unsigned DEFAULT NULL,
-  `text_message_html_id` int(10) unsigned DEFAULT NULL,
-  `text_attachments_id` int(10) unsigned DEFAULT NULL,
-  `text_inline_id` int(10) unsigned DEFAULT NULL,
-  `html` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `protected` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`key`(32),`module_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `contrexx_core_text` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `lang_id` int(10) unsigned NOT NULL DEFAULT '1',
-  `module_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `key` tinytext COLLATE utf8_unicode_ci NOT NULL,
-  `text` text COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`,`lang_id`),
-  KEY `module_id` (`module_id`),
-  KEY `key` (`key`(32)),
-  FULLTEXT KEY `text` (`text`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
