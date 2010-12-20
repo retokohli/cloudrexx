@@ -4,7 +4,7 @@
 function deleteCurrency(cId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_CURRENCY}\n{TXT_ACTION_IS_IRREVERSIBLE}!'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=currency&currencyId="+cId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=currency&currencyId="+cId);
 }
 
 function updateCurrencyCode(selectElement)

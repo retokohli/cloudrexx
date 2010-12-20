@@ -20,14 +20,20 @@ function deleteGroup(groupId)
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-  <li><a id="groupTab_shopContent1" class="{SHOP_GROUP_LIST_CLASS}"
+  <li>
+    <a id="groupTab_shopContent1" class="{SHOP_GROUP_LIST_CLASS}"
         href="javascript:void(0);"
         onclick="selectTab('shopContent1')" title="{TXT_SHOP_CUSTOMER_GROUPS}">
-      {TXT_SHOP_CUSTOMER_GROUPS}</a></li>
-  <li><a id="groupTab_shopContent2" class="{SHOP_GROUP_EDIT_CLASS}"
+      {TXT_SHOP_CUSTOMER_GROUPS}
+    </a>
+  </li>
+  <li>
+    <a id="groupTab_shopContent2" class="{SHOP_GROUP_EDIT_CLASS}"
         href="javascript:void(0);"
         onclick="selectTab('shopContent2')" title="{TXT_ADD_OR_EDIT}">
-      {TXT_ADD_OR_EDIT}</a></li>
+      {TXT_ADD_OR_EDIT}
+    </a>
+  </li>
 </ul>
 <form name="shopForm" method="post"
     action="index.php?cmd=shop&amp;act=customers&amp;tpl=groups">

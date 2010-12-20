@@ -1045,9 +1045,8 @@ TODO:  For 2.2.0
         }
         // If the thumbnail exists and is newer than the picture,
         // don't create it again.
-        $thumb_name = ImageManager::getThumbnailFilename($imagePath);
-        if (file_exists($thumb_name)
-         && filemtime($thumb_name) > filemtime($imagePath)) {
+        if (file_exists($imagePath.'.thumb')
+         && filemtime($imagePath.'.thumb') > filemtime($imagePath)) {
             return '';
         }
         // Already included by the Shop.

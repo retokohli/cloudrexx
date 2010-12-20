@@ -4,7 +4,7 @@
 function deleteProduct(id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delProduct&id="+id);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delProduct&id="+id);
 }
 
 function shopProductsDoAction(obj,act)

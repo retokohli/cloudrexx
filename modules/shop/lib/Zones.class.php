@@ -64,7 +64,8 @@ class Zones
         if (empty(self::$arrRelation)) {
             $query = "
                 SELECT zone_id, country_id
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries";
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
+            ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
             $arrRelCountries = array();
@@ -114,27 +115,32 @@ class Zones
 //        if (!Text::deleteById($text_id)) return false;
 //        $objResult = $objDatabase->Execute("
 //            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-//             WHERE id=$zone_id");
+//             WHERE id=$zone_id
+//        ");
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         // Delete country relations
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         // Update relations:  Apply zone "All" to those still associated
         // with the deleted one
         $objResult = $objDatabase->Execute("
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
                SET zones_id=1
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment
                SET zones_id=1
-             WHERE zones_id=$zone_id"); // 3.0: zone_id
+             WHERE zones_id=$zone_id
+        "); // 3.0: zone_id
         if (!$objResult) return false;
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
@@ -165,14 +171,16 @@ class Zones
 //            ) VALUES (
 //                ".$objText->getId().",
 //                ".(isset($_POST['zone_active_new']) ? 1 : 0)."
-//            )");
+//            )
+//        ");
         $objResult = $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_zones (
                 zones_name, activation_status
             ) VALUES (
                 '".addslashes($strName)."',
                 ".(empty($_POST['zone_active_new']) ? 0 : 1)."
-            )");
+            )
+        ");
         if (!$objResult) return false;
         $zone_id = $objDatabase->Insert_ID();
         if (isset($_POST['selected_countries'])) {
@@ -182,13 +190,15 @@ class Zones
 //                        zone_id, country_id
 //                    ) VALUES (
 //                        $zone_id, $country_id
-//                    )");
+//                    )
+//                ");
                 $objResult = $objDatabase->Execute("
                     INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
                         zones_id, countries_id
                     ) VALUES (
                         $zone_id, $country_id
-                    )");
+                    )
+                ");
                 if (!$objResult) return false;
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
@@ -221,20 +231,24 @@ class Zones
 //                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones
 //                   SET text_name_id=".$objText->getId().",
 //                       status=".(isset($_POST['zone_active'][$zone_id]) ? 1 : 0)."
-//                 WHERE id=$zone_id");
+//                 WHERE id=$zone_id
+//            ");
             $objResult = $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones
                    SET zones_name='".addslashes($strName)."',
                        activation_status=".(empty($_POST['zone_active'][$zone_id]) ? 0 : 1)."
-                 WHERE zones_id=$zone_id");
+                 WHERE zones_id=$zone_id
+            ");
             if (!$objResult) return false;
 
 //            $objResult = $objDatabase->Execute("
 //                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-//                 WHERE zone_id=$zone_id");
+//                 WHERE zone_id=$zone_id
+//            ");
             $objResult = $objDatabase->Execute("
                 DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
-                 WHERE zones_id=$zone_id");
+                 WHERE zones_id=$zone_id
+            ");
             if (!$objResult) return false;
             if (!empty($_POST['selected_countries'][$zone_id])) {
                 foreach ($_POST['selected_countries'][$zone_id] as $country_id) {
@@ -243,13 +257,15 @@ class Zones
 //                            zone_id, country_id
 //                        ) VALUES (
 //                            $zone_id, $country_id
-//                        )");
+//                        )
+//                    ");
                     $objResult = $objDatabase->Execute("
                         INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (
                             zones_id, countries_id
                         ) VALUES (
                             $zone_id, $country_id
-                        )");
+                        )
+                    ");
                     if (!$objResult) return false;
                 }
             }

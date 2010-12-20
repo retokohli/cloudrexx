@@ -65,14 +65,8 @@ function SetUrl(url, width, height, alt)
   }
   img.style.width = (width/factor)+"px";
   img.style.height = (height/factor)+"px";
-
-  if( navigator.userAgent.indexOf("MSIE") > -1 ){
-      var elName = img.nextSibling;
-  }else{
-      var elName = img.nextSibling.nextSibling.nextSibling;
-  }
-
-  elName.replaceData(0, 999, fileName);
+  var elName = img.nextSibling.nextSibling.nextSibling;
+  elName.replaceData(0, elName.nodeValue.length, fileName);
 }
 
 function cancelEdit()

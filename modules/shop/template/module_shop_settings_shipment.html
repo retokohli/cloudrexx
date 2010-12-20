@@ -4,12 +4,12 @@
 function deleteShipper(sid)
 {
   if (confirm('{TXT_CONFIRM_DELETE_SHIPPER}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=shipment&shipperId="+sid);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=shipment&shipperId="+sid);
 }
 function deleteShipment(cid)
 {
   if (confirm('{TXT_CONFIRM_DELETE_SHIPMENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=shipment&shipmentId="+cid);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=shipment&shipmentId="+cid);
 }
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
 Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];
