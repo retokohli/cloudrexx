@@ -12,6 +12,14 @@ jQuery(function() {
             // hide div with groups
             jQuery(this).siblings('.group_div').hide();
         });
+        jQuery('#mediaManage'+ i +'Group').change(function(){
+            // show div with groups
+            jQuery(this).siblings('.group_div').show();
+        });
+        jQuery('#mediaManage' + i + 'Off, #mediaManage' + i + 'On').change(function(){
+            // hide div with groups
+            jQuery(this).siblings('.group_div').hide();
+        });
     }
 });
 
@@ -65,16 +73,57 @@ function BeforeSubmit() {
     <!-- BEGIN mediaAccessSection -->
 <div id="media{MEDIA_ARCHIVE_NUMBER}" class="messageTab" style="display:{MEDIA_TAB_STYLE}">
 	<table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
-	<!--
-		<tr>
-			<th colspan="2">{TXT_MEDIA_SETTINGS}</th>
-		</tr>
-		-->
+        <tr class="row3" height="20" valign="bottom">
+            <td colspan="2" style="font-weight:bold;">{TXT_MEDIA_ADD}</td>
+        </tr>
         <tr class="row1">
-            <td style="border-top: 1px solid #0A50A1;">
+            <td>
                 <input id="mediaSettings{MEDIA_ARCHIVE_NUMBER}Off" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendChangable" value="off" {MEDIA_ALLOW_USER_CHANGE_OFF} /><label for="mediaSettings{MEDIA_ARCHIVE_NUMBER}Off">{TXT_MEDIA_ADDING_DENIED_FOR_ALL}</label><br />
                 <input id="mediaSettings{MEDIA_ARCHIVE_NUMBER}On" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendChangable" value="on" {MEDIA_ALLOW_USER_CHANGE_ON} /><label for="mediaSettings{MEDIA_ARCHIVE_NUMBER}On">{TXT_MEDIA_ADDING_ALLOWED_FOR_ALL}</label><br />
                 <input id="mediaSettings{MEDIA_ARCHIVE_NUMBER}Group" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendChangable" value="1" {MEDIA_ALLOW_USER_CHANGE_GROUP} /><label for="mediaSettings{MEDIA_ARCHIVE_NUMBER}Group">{TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP}</label><br />
+                <div class="group_div" id="mediaSettings{MEDIA_ARCHIVE_NUMBER}GroupList" style="display:{MEDIA_ACCESS_DISPLAY}">
+                    <br />
+                    <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
+                        <tbody style="vertical-align:top;">
+                            <tr>
+                                <td width="300" style="border-bottom:0px;">{TXT_MEDIA_AVAILABLE_USER_GROUPS}<br />
+                                    <select class='group_list' name="media{MEDIA_ARCHIVE_NUMBER}_access_not_associated_groups[]" id="media{MEDIA_ARCHIVE_NUMBER}_access_not_associated_groups" size="15" style="width:300px;" multiple="multiple">
+                                    {MEDIA_ACCESS_NOT_ASSOCIATED_GROUPS}
+                                    </select>
+                                    <br />
+                                    <a href="#" onclick="return SelectAllGroups(this);" title="{TXT_MEDIA_CHECK_ALL}" style="color:blue;">{TXT_MEDIA_CHECK_ALL}</a>
+                                    <br />
+                                    <a href="#" onclick="return DeselectAllGroups(this);" title="{TXT_MEDIA_UNCHECK_ALL}" style="color:blue;">{TXT_MEDIA_UNCHECK_ALL}</a>
+                                </td>
+                                <td width="45" style="border-bottom:0px; text-align:center;">
+                                    <br />
+                                    <input type="button" value="&gt;&gt;" name="addOption" onclick="return MoveRight(this);" style="margin-bottom:2px;" />
+                                    <br />
+                                    <input type="button" value="&lt;&lt;" name="removeOption" onclick="return MoveLeft(this);" />
+                                </td>
+                               <td width="100%" style="border-bottom:0px;">{TXT_MEDIA_ASSIGNED_USER_GROUPS}<br />
+                                    <select class='group_list' name="media{MEDIA_ARCHIVE_NUMBER}_access_associated_groups[]" id="media{MEDIA_ARCHIVE_NUMBER}_access_associated_groups" size="15" style="width:300px;" multiple="multiple">
+                                    {MEDIA_ACCESS_ASSOCIATED_GROUPS}
+                                    </select>
+                                    <br />
+                                    <a href="#" onclick="return SelectAllGroups(this);" title="{TXT_MEDIA_CHECK_ALL}" style="color:blue;">{TXT_MEDIA_CHECK_ALL}</a>
+                                    <br />
+                                    <a href="#" onclick="return DeselectAllGroups(this);" title="{TXT_MEDIA_UNCHECK_ALL}" style="color:blue;">{TXT_MEDIA_UNCHECK_ALL}</a>
+                                 </td>
+                            </tr>
+                       </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr class="row3" height="20" valign="bottom">
+            <td colspan="2" style="font-weight:bold;">{TXT_MEDIA_MANAGE}</td>
+        </tr>
+        <tr class="row1">
+            <td>
+                <input id="mediaManage{MEDIA_ARCHIVE_NUMBER}Off" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendManagable" value="off" {MEDIA_ALLOW_USER_CHANGE_OFF} /><label for="mediaManage{MEDIA_ARCHIVE_NUMBER}Off">{TXT_MEDIA_ADDING_DENIED_FOR_ALL}</label><br />
+                <input id="mediaManage{MEDIA_ARCHIVE_NUMBER}On" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendManagable" value="on" {MEDIA_ALLOW_USER_CHANGE_ON} /><label for="mediaManage{MEDIA_ARCHIVE_NUMBER}On">{TXT_MEDIA_ADDING_ALLOWED_FOR_ALL}</label><br />
+                <input id="mediaManage{MEDIA_ARCHIVE_NUMBER}Group" type="radio" name="mediaSettings_Media{MEDIA_ARCHIVE_NUMBER}FrontendManagable" value="1" {MEDIA_ALLOW_USER_CHANGE_GROUP} /><label for="mediaManage{MEDIA_ARCHIVE_NUMBER}Group">{TXT_MEDIA_ADDING_ALLOWED_FOR_GROUP}</label><br />
                 <div class="group_div" id="mediaSettings{MEDIA_ARCHIVE_NUMBER}GroupList" style="display:{MEDIA_ACCESS_DISPLAY}">
                     <br />
                     <table cellspacing="0" cellpadding="3" border="0" summary="user group assignements">
