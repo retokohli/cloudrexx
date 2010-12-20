@@ -101,7 +101,7 @@ function selectZone()
 function deleteZone(zId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_ZONE}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=zones&zonesId="+zId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=zones&zonesId="+zId);
 }
 
 function add_zone()

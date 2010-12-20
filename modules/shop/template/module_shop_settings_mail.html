@@ -7,14 +7,14 @@ function delMail(mailId)
     alert("{TXT_CANNOT_DELETE_TEMPLATE_LANGUAGE}");
   } else {
     if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE_LANGUAGE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-      window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&delMailId="+mailId);
+      window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delMailId="+mailId);
   }
 }
 
 function delTpl(tplId)
 {
   if (confirm("{TXT_CONFIRM_DELETE_TEMPLATE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&delTplId="+tplId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&delTplId="+tplId);
 }
 
 function sendMail()
@@ -32,7 +32,7 @@ function sendMail()
 
 function loadTpl(tplId, langId, strTab)
 {
-  var strUri = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab;
+  var strUri = "index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=mail&tplId="+tplId+"&langId="+langId+"&strTab="+strTab+"&{CSRF_PARAM}";
   if (document.getElementById('portMail')) {
     if (document.shopFormEdit.elements['portMail'].checked == true) {
       strUri += "&portLangId="+document.shopFormEdit.elements['loadedLangId'].value;
@@ -88,9 +88,9 @@ function loadTpl(tplId, langId, strTab)
       </div></td>
       <!-- END shopMailLanguagesStatus -->
       <td nowrap="nowrap" width="5%" valign="top"><div style="text-align:right">
-        <a href="javascript:loadTpl({SHOP_TEMPLATE_ID},{SHOP_LANGUAGE_ID},'shopMailSend')" title="{TXT_SEND_TEMPLATE}"><img src="images/icons/email.gif" alt="{TXT_SEND_TEMPLATE}" border="0" /></a>
-        <a href="javascript:loadTpl({SHOP_TEMPLATE_ID},{SHOP_LANGUAGE_ID},'shopMailEdit')" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
-        <a href="javascript:delTpl({SHOP_TEMPLATE_ID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
+        <a href="javascript:loadTpl('{SHOP_TEMPLATE_ID}',{SHOP_LANGUAGE_ID},'shopMailSend')" title="{TXT_SEND_TEMPLATE}"><img src="images/icons/email.gif" alt="{TXT_SEND_TEMPLATE}" border="0" /></a>
+        <a href="javascript:loadTpl('{SHOP_TEMPLATE_ID}',{SHOP_LANGUAGE_ID},'shopMailEdit')" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
+        <a href="javascript:delTpl('{SHOP_TEMPLATE_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
       </div></td>
     </tr>
     <!-- END shopMailTemplates -->
@@ -277,7 +277,7 @@ function loadTpl(tplId, langId, strTab)
       <tr>
         <th colspan="3">{TXT_EDIT}/{TXT_ADD}</th>
       </tr>
-      <tr class="row1">
+      <tr class="row2">
         <td width="15%">{TXT_TEMPLATE}</td>
         <td width="85%">
           <select class="listBox" name="tplId" size="1" onchange="loadTpl(this.value,document.shopFormEdit.elements['langId'].value,'shopMailEdit');">
@@ -290,60 +290,54 @@ function loadTpl(tplId, langId, strTab)
           <a href="javascript:delMail('{SHOP_MAIL_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
         </div></td>
       </tr>
+      <tr class="row1">
+        <td nowrap="nowrap">{TXT_SHOP_TEMPLATE_KEY}</td>
+        <td colspan="2">
+          <input type="text" name="key" size="50" value="{SHOP_TEMPLATE_KEY}"{SHOP_TEMPLATE_KEY_READONLY} />
+        </td>
+      </tr>
       <tr class="row2">
         <td nowrap="nowrap">{TXT_TEMPLATE_NAME}</td>
         <td colspan="2">
-          <input type="text" name="shopMailTemplate" size="50" value="{SHOP_MAIL_TEMPLATE}" />
+          <input type="text" name="name" size="50" value="{SHOP_MAIL_TEMPLATE}" />
         </td>
       </tr>
       <tr class="row1">
         <td nowrap="nowrap">{TXT_SENDER} {TXT_EMAIL}</td>
         <td colspan="2">
-          <input type="text" name="shopMailFromAddress" size="50" value="{SHOP_MAIL_FROM}" />
+          <input type="text" name="from" size="50" value="{SHOP_MAIL_FROM}" />
         </td>
       </tr>
       <tr class="row2">
         <td nowrap="nowrap">{TXT_SENDER} {TXT_NAME}</td>
         <td colspan="2">
-          <input type="text" name="shopMailFromName" size="50" value="{SHOP_MAIL_NAME}" />
+          <input type="text" name="sender" size="50" value="{SHOP_MAIL_NAME}" />
         </td>
       </tr>
       <tr class="row1">
         <td nowrap="nowrap">{TXT_SUBJECT}</td>
         <td colspan="2">
-          <input type="text" name="shopMailSubject" size="50" maxlength="255" value="{SHOP_MAIL_SUBJ}" />
+          <input type="text" name="subject" size="50" maxlength="255" value="{SHOP_MAIL_SUBJ}" />
         </td>
       </tr>
       <tr class="row2">
         <td valign="top" nowrap="nowrap">{TXT_MESSAGE}</td>
         <td colspan="2">
-           <textarea name="shopMailBody" id="shopMailBody" style="width:85%; height:300px; FONT-SIZE: 8pt;" rows="20" cols="5">{SHOP_MAIL_MSG}</textarea>
+           <textarea name="message" id="shopMailBody" style="width:85%; height:300px; FONT-SIZE: 8pt;" rows="20" cols="5">{SHOP_MAIL_MSG}</textarea>
         </td>
-        <!--
-        <td width="5%">
-          <select name="replacement" id="replacement" size="1" onchange="insertReplacement()">
-            <option value="0">Platzhalter</option>
-            <option value="&lt;ORDER_ID&gt;">&lt;ORDER_ID&gt;</option>
-            <option value="&lt;CUSTOMER_ID&gt;">&lt;CUSTOMER_ID&gt;</option>
-            <option value="&lt;CUSTOMER_ADDRESS&gt;">&lt;CUSTOMER_ADDRESS&gt;</option>
-            <option value="&lt;SHIPPING_ADDRESS&gt;">&lt;SHIPPING_ADDRESS&gt;</option>
-            <option value="&lt;ORDER_DATA&gt;">&lt;ORDER_DATA&gt;</option>
-            <option value="&lt;ORDER_SUM&gt;">&lt;ORDER_SUM&gt;</option>
-            <option value="&lt;CUSTOMER_EMAIL&gt;">&lt;CUSTOMER_EMAIL&gt;</option>
-            <option value="&lt;ORDUSERNAME_ID&gt;">&lt;USERNAME&gt;</option>
-            <option value="&lt;PASSWORD&gt;">&lt;PASSWORD&gt;</option>
-            <option value="&lt;DATE&gt;">&lt;DATE&gt;</option>
-          </select>
-        </td>
-        -->
       </tr>
-      <!-- BEGIN saveToOther -->
       <tr class="row1">
-        <td colspan="3" nowrap="nowrap">
-          <input type="checkbox" name="shopMailSaveNew" value="1" />&nbsp;{TXT_STORE_AS_NEW_TEMPLATE}
+        <td colspan="" valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_USE_HTML}</td>
+        <td colspan="2">
+           {SHOP_MAIL_HTML_CHECKBOX}
         </td>
       </tr>
-      <!-- END saveToOther -->
+      <tr class="row2">
+        <td colspan="" valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_HTML}</td>
+        <td colspan="2">
+           {SHOP_MAIL_MSG_HTML}
+        </td>
+      </tr>
     </table>
     <br />
     <input type="submit" name="mails" value="{TXT_STORE}" />
@@ -399,6 +393,14 @@ function loadTpl(tplId, langId, strTab)
            <textarea name="shopMailBody" style="width:85%; height:300px; FONT-SIZE: 8pt;" rows="20" cols="5">{SHOP_MAIL_MSG_SEND}</textarea>
         </td>
       </tr>
+<!-- BEGIN shopMailSendHtml -->
+      <tr class="row2">
+        <td colspan="" valign="top" nowrap="nowrap">{TXT_SHOP_MESSAGE_HTML}</td>
+        <td colspan="2">
+           {SHOP_MAIL_MSG_HTML_SEND}
+        </td>
+      </tr>
+<!-- END shopMailSendHtml -->
     </table>
     <br />
     <input type="submit" name="shopMailSend" value="{TXT_SEND}" />

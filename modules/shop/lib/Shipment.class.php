@@ -271,12 +271,6 @@ class Shipment
 
         if (empty(self::$arrShippers)) self::init();
         $arrId = self::getCountriesRelatedShippingIdArray($countryId);
-
-        if (count($arrId) == 1) {
-            $arrShipper = self::$arrShippers[current($arrId)];
-            return $arrShipper['name'];
-        }
-
         $menu =
             (   intval($selectedId) == 0
              && count($arrId) > 1

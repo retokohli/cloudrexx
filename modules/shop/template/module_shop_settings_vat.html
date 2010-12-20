@@ -4,20 +4,20 @@
 function deleteVat(vatId)
 {
     if (confirm("{TXT_SHOP_VAT_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&vatid=" + vatId);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=vat&vatid=" + vatId);
 }
 function setVatAll()
 {
     if (confirm("{TXT_SHOP_VAT_CONFIRM_SET_ALL}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
         var vatId = document.forms.shopForm.vat_default_id.value;
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&setVatAll=" + vatId);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=vat&setVatAll=" + vatId);
     }
 }
 function setVatUnset()
 {
     if (confirm("{TXT_SHOP_VAT_CONFIRM_SET_UNSET}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
         var vatId = document.forms.shopForm.vat_default_id.value;
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&setVatUnset=" + vatId);
+        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=vat&setVatUnset=" + vatId);
     }
 }
 //Text[0]=["","{}"];

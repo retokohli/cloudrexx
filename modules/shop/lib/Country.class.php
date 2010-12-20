@@ -79,7 +79,10 @@ class Country
              ORDER BY `country`.`countries_name` ASC
         ";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) {
+//DBG::log("initCountries(): Error querying countries");
+            return false;
+        }
         while (!$objResult->EOF) {
             $id = $objResult->fields['countries_id'];
 //            $id = $objResult->fields['id'];
@@ -89,6 +92,7 @@ class Country
 //                $objText = Text::getById($text_name_id, 0);
 //                if ($objText) $strName = $objText->getText();
 //            }
+//DBG::log("initCountries(): Adding ID $id - ".$objResult->fields['countries_name']);
             self::$arrCountries[$id] = array(
                 'id' => $id,
                 'name' => $objResult->fields['countries_name'], //$strName,
@@ -190,7 +194,6 @@ class Country
         static $strMenuoptions = '';
         static $last_selected_id = 0;
 
-        if (empty(self::$arrCountries)) self::initCountries();
         if ($strMenuoptions && $last_selected_id == $selected_id)
             return $strMenuoptions;
         if (empty(self::$arrCountries)) self::initCountries();
@@ -256,14 +259,16 @@ class Country
 //                ON `country`.`id`=`relation`.`country_id`
 //             WHERE `country`.`status`=1
 //               AND `relation`.`zone_id`=$zone_id
-//             ORDER BY ".$arrSqlName['text']." ASC";
+//             ORDER BY ".$arrSqlName['text']." ASC
+//        ";
         $query = "
             SELECT `relation`.`countries_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `relation`
               JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `country`
                 ON `country`.`countries_id`=`relation`.`countries_id`
              WHERE `relation`.`zones_id`=$zone_id
-             ORDER BY `country`.`countries_name`";
+             ORDER BY `country`.`countries_name`
+        ";
 //             WHERE `country`.`activation_status`=1
 //             ORDER BY ".//$arrSqlName['text']."`country`.`countries_name` ASC
         $objResult = $objDatabase->Execute($query);
@@ -272,7 +277,6 @@ class Country
         $arrZoneCountries = array('in' => array(), 'out' => array());
         while (!$objResult->EOF) {
             $id = $objResult->fields['countries_id'];
-            $objResult->MoveNext();
             // Country may only be in the Zone if it exists and is active
             if (   empty(self::$arrCountries[$id])
                 || empty(self::$arrCountries[$id]['status']))
@@ -283,6 +287,7 @@ class Country
 // Probably not needed:
 //                'text_name_id' => $text_name_id,
             );
+            $objResult->MoveNext();
         }
         foreach (self::$arrCountries as $id => $arrCountry) {
             // Country may only be available for the Zone if it is active

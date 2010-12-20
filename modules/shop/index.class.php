@@ -17,7 +17,8 @@
  */
 // post-2.1
 //require_once ASCMS_CORE_PATH.'/Text.class.php';
-require_once ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php';
+require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
+require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 /**
  * Common methods for both frontend and backend of the Shop.
  */
@@ -78,7 +79,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Country.class.php';
  * Manufacturer: Name and URL
  */
 require_once ASCMS_MODULE_PATH.'/shop/lib/Manufacturer.class.php';
-require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
 
 /**
@@ -111,10 +111,12 @@ class Shop extends ShopLibrary
     const usernamePrefix = 'user';
 
     private $pageContent;
+
     private $arrCategoriesTable = array();
     private $arrParentCategoriesTable = array();
+
+    private $statusMessage = '';
     private $arrProductAttributes = array();
-    private static $statusMessage = '';
     private static $inactiveStyleName = 'inactive';
     private static $activeStyleName = 'active';
     private static $defaultImage = '';
@@ -197,9 +199,61 @@ class Shop extends ShopLibrary
 
     function getShopPage()
     {
+//DBG::activate(DBG_ADODB_ERROR | DBG_PHP | DBG_LOG_FIREPHP);
         if (isset($_GET['cmd'])) {
-            $_GET['act'] = $_GET['cmd'];
+            switch($_GET['cmd']) {
+                case 'terms':
+                    $_GET['act'] = 'terms';
+                    break;
+                case 'shipment':
+                    $_GET['act'] = 'shipment';
+                    break;
+                case 'success':
+                    $_GET['act'] = 'success';
+                    break;
+                case 'confirm':
+                    $_GET['act'] = 'confirm';
+                    break;
+                case 'lsv':
+                    $_GET['act'] = 'lsv';
+                    break;
+                case 'einzug':
+                    $_GET['act'] = 'einzug';
+                    break;
+                case 'payment':
+                    $_GET['act'] = 'payment';
+                    break;
+                case 'account':
+                    $_GET['act'] = 'account';
+                    break;
+                case 'cart':
+                    $_GET['act'] = 'cart';
+                    break;
+                case 'products':
+                case 'details': // Redirected to products explicitly
+                    $_GET['act'] = 'products';
+                    break;
+                case 'discounts':
+                    $_GET['act'] = 'discounts';
+                    break;
+                case 'lastFive':
+                    $_GET['act'] = 'lastFive';
+                    break;
+                case 'login':
+                    $_GET['act'] = 'login';
+                    break;
+                case 'sendpass':
+                    $_GET['act'] = 'sendpass';
+                    break;
+                case 'changepass';
+                    $_GET['act'] = 'changepass';
+                    break;
+                default:
+                    $_GET['act'] = 'products';
+                    break;
+            }
         }
+
         if (isset($_GET['act'])) {
             switch($_GET['act']) {
                 case 'shipment':
@@ -264,6 +318,25 @@ class Shop extends ShopLibrary
                 case 'testIpnValidate':
                     require_once ASCMS_MODULE_PATH."/shop/payments/paypal/Paypal.class.php";
                     PayPal::testIpnValidate(); // die()s!
+                // Test mail body generation
+                // *DO NOT* remove this!  Needed for site testing.
+                case 'testMail':
+//MailTemplate::errorHandler();die();
+                    $order_id = (isset($_GET['order_id']) ? $_GET['order_id'] : 10);
+                    $arrSubstitution =
+                        ShopLibrary::getOrderSubstitutionArray($order_id, false);
+                    $arrMailtemplate = array(
+                        'key'          => 1,
+                        'lang_id'      => $arrSubstitution['LANG_ID'],
+                        'substitution' => &$arrSubstitution,
+                        'to' => 'reto.kohli@comvation.com',
+//                            $arrSubstitution['CUSTOMER_EMAIL'].','.
+//                            $this->arrConfig['confirmation_emails']['value'],
+                    );
+//die(nl2br(htmlentities(var_export($this->arrConfig, true), ENT_QUOTES, CONTREXX_CHARSET)));
+                    echo(nl2br(htmlentities(var_export($arrMailtemplate, true), ENT_QUOTES, CONTREXX_CHARSET)));
+                    die(MailTemplate::send($arrMailtemplate));
+
                 default:
                     $this->products();
                     break;
@@ -271,7 +344,8 @@ class Shop extends ShopLibrary
         } else {
             $this->products();
         }
-        $this->objTemplate->setVariable('SHOP_STATUS', self::$statusMessage);
+        $this->objTemplate->setVariable('SHOP_STATUS', $this->statusMessage);
+//DBG::deactivate();
         return $this->objTemplate->get();
     }
 
@@ -555,65 +629,65 @@ class Shop extends ShopLibrary
     }
 
 
+    /**
+     * Send the Customer login data
+     * @param   string   $email     The e-mail address
+     * @return  boolean             True on success, false otherwise
+     */
+    function sendLogin($email, $password)
+    {
+        global $_ARRAYLANG;
+
+        $arrCustomer = Customer::getByWildcard(array('email' => $email, ));
+        if (count($arrCustomer) != 1) {
+            $this->addMessage($_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL']);
+            return false;
+        }
+        $objCustomer = current($arrCustomer);
+        if (!$objCustomer) return false;
+        $arrSubstitution = $objCustomer->getSubstitutionArray();
+        if (!$arrSubstitution) return false;
+        $arrSubstitution['CUSTOMER_PASSWORD'] = $password;
+        // Defaults to FRONTEND_LANG_ID
+        $arrMailtemplate = array(
+            'key'          => 3,
+            'substitution' => &$arrSubstitution,
+            'to'           => $objCustomer->getEmail(),
+        );
+        return MailTemplate::send($arrMailtemplate);
+    }
+
+
+    /**
+     * Shows the form for entering the e-mail address
+     *
+     * After a valid address has been posted back, creates a new password
+     * and sends it to the Customer
+     * @return    boolean                   True on success, false otherwise
+     */
     function _sendpass()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
+        // See block 'shop_sendpass' below
         $this->objTemplate->setVariable(array(
             'SHOP_PASSWORD_ENTER_EMAIL' => $_ARRAYLANG['SHOP_PASSWORD_ENTER_EMAIL'],
             'TXT_NEXT'                  => $_ARRAYLANG['TXT_NEXT'],
         ));
-        $this->objTemplate->parse('shop_sendpass');
-        if (isset($_POST['shopEmail']) && !empty($_POST['shopEmail'])) {
-            $mail = contrexx_addslashes($_POST['shopEmail']);
-            $query = "SELECT customerid,
-                             username,
-                             prefix,
-                             lastname FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers WHERE email='".$mail."'";
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult !== false) {
-                if ($objResult->RecordCount() == 1) {
-                    $chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRESTUVWXYZ+-.,;:_!?$='#%&/()";
-                    $passwordLength = rand(6, 8);
-                    $password = '';
-                    for ($char = 0; $char < $passwordLength; $char++) {
-                        $password .= substr($chars, rand(0, 80), 1);
-                    }
-
-                    if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers SET password='".md5($password)."' WHERE customerid=".$objResult->fields['customerid']) !== false) {
-                        // Select template for sending login data
-                        $arrShopMailtemplate = Mail::getTemplate(3, FRONTEND_LANG_ID);
-                        $shopMailFrom = $arrShopMailtemplate['from'];
-                        $shopMailFromText = $arrShopMailtemplate['sender'];
-                        $shopMailSubject = $arrShopMailtemplate['subject'];
-                        $shopMailBody = $arrShopMailtemplate['message'];
-                        //replace variables from template
-                        $shopMailBody = str_replace("<USERNAME>", $objResult->fields['username'], $shopMailBody);
-                        $shopMailBody = str_replace("<PASSWORD>", $password, $shopMailBody);
-                        $shopMailBody = str_replace("<CUSTOMER_PREFIX>", $objResult->fields['prefix'], $shopMailBody);
-                        $shopMailBody = str_replace("<CUSTOMER_LASTNAME>", $objResult->fields['lastname'], $shopMailBody);
-                        $result = Mail::send($mail, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
-
-                        if ($result) {
-                            $status = $_ARRAYLANG['TXT_SHOP_ACCOUNT_DETAILS_SENT_SUCCESSFULLY'];
-                        } else {
-                            $status = $_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL'];
-                        }
-                    } else {
-                        $status = $_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD'];
-                    }
-                } else {
-                    $status = $_ARRAYLANG['TXT_SHOP_NO_ACCOUNT_WITH_EMAIL'];
-                }
-            } else {
-                $status = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-            }
-
-            $this->objTemplate->setVariable(array(
-                'SHOP_PASSWORD_STATUS'      => $status,
-            ));
-            $this->objTemplate->parse('shop_sendpass_status');
+        if (empty($_POST['shopEmail'])) return true;
+        $email = contrexx_stripslashes($_POST['shopEmail']);
+        $password = User::makePassword();
+        if (!$this->sendLogin($email, $password)) {
+            $this->addMessage($_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL']);
+            return false;
         }
+        if (!Customer::updatePassword($email, $password)) {
+            $this->addMessage($_ARRAYLANG['TXT_SHOP_UNABLE_SET_NEW_PASSWORD']);
+            return false;
+        }
+        $this->addmessage($_ARRAYLANG['TXT_SHOP_ACCOUNT_DETAILS_SENT_SUCCESSFULLY']);
+        $this->objTemplate->hideBlock('shop_sendpass');
+        return true;
     }
 
 
@@ -1654,6 +1728,8 @@ class Shop extends ShopLibrary
      */
     function _calculatePrice($cart)
     {
+//        global $objDatabase;
+
         $price = 0;
         if (!empty($cart['products'])) {
             foreach ($cart['products'] as $arrProduct) {
@@ -1814,8 +1890,6 @@ class Shop extends ShopLibrary
     function getJavascriptCode($flagUpload=false)
     {
         global $_ARRAYLANG, $_CONFIGURATION;
-
-        JS::activate('shadowbox');
 
         $javascriptCode =
 "<script language=\"JavaScript\" type=\"text/javascript\">
@@ -2437,6 +2511,7 @@ sendReq('', 1);
      * and calculates the total amount.
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  array                   Array with all products that are stored in the cart
+     *                                            that are stored in the cart
      */
     function _parseCart()
     {
@@ -2495,15 +2570,7 @@ sendReq('', 1);
                                     '<a href="'.$this->uploadDir.'/'.$arrValue['value'].
                                     '" target="uploadimage">'.$optionValue.'</a>';
                         }
-                        $productOptions .=
-                            ($productOptions ? ', ' : '').
-                            $objProductAttribute->getName().
-                            ': '.$optionValue.
-                            ($arrValue['price'] != 0
-                              ? ' ('.($arrValue['price'] > 0 ? '+' : '-').
-                                $arrValue['price'].' '.
-                                Currency::getActiveCurrencySymbol().')'
-                              : '');
+                        $productOptions .= " [$optionValue]";
                         $productOptionsPrice += $arrValue['price'];
                     }
                 }
@@ -2678,8 +2745,8 @@ sendReq('', 1);
                 // Removed parenthesess for 2.0.2
                 // Add them to the template if desired!
                 'SHOP_TOTAL_TAX_AMOUNT' =>
-                    $_SESSION['shop']['cart']['total_vat_amount'].
-                    '&nbsp;'.Currency::getActiveCurrencySymbol(),
+                    $_SESSION['shop']['cart']['total_vat_amount']
+                    .'&nbsp;'.Currency::getActiveCurrencySymbol(),
             ));
         }
         if ($_SESSION['shop']['shipment']) {
@@ -2742,7 +2809,7 @@ sendReq('', 1);
                 'index.php?section=shop&amp;cmd=login'.
                 (!empty($redirect) ? "&amp;redirect=$redirect" : ''),
             // Should be replaced by the global SHOP_STATUS placeholder.
-            'SHOP_LOGIN_STATUS'                  => self::$statusMessage,
+            'SHOP_LOGIN_STATUS'                  => $this->statusMessage,
         ));
     }
 
@@ -2856,7 +2923,7 @@ sendReq('', 1);
         }
 
         if (!empty($_POST['email']) && !$this->objCustomer) {
-            if (!Mail::isValidAddress($_POST['email'])) {
+            if (!FWValidator::isEmail($_POST['email'])) {
                 $status .= '<br />'.$_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'];
             }
             if (!$this->_checkEmailIntegrity($_POST['email'])) {
@@ -3251,17 +3318,6 @@ die("YYY");
                empty($_SESSION['shop']['countryId2'])
             || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
         );
-/*
-Alternative method that treats Schweiz and Liechtenstein
-as the same country:
-        $home_country_id = intval($this->arrConfig['country_id']['value']);
-        // Switzerland and Liechtenstein are treated as one country
-        $is_home_country =
-            (    $_SESSION['shop']['countryId'] == $home_country_id
-             || (   ($home_country_id == 204 || $home_country_id == 122)
-                 && (   $_SESSION['shop']['countryId'] == 204
-                     || $_SESSION['shop']['countryId'] == 122))
-*/
         // VAT enabled?
         if (Vat::isEnabled()) {
             // VAT included?
@@ -3685,7 +3741,7 @@ right after the customer logs in!
                 $this->objCustomer->setPhone($_SESSION['shop']['phone']);
                 $this->objCustomer->setFax($_SESSION['shop']['fax']);
             }
-/*  TODO:  Move to order class
+/*  Move to order class
             $this->objCustomer->setCcNumber(isset($_SESSION['shop']['ccnumber']) ? $_SESSION['shop']['ccnumber'] : '');
             $this->objCustomer->setCcDate  (isset($_SESSION['shop']['ccdate'])   ? $_SESSION['shop']['ccdate']   : '');
             $this->objCustomer->setCcName  (isset($_SESSION['shop']['ccname'])   ? $_SESSION['shop']['ccname']   : '');
@@ -3742,7 +3798,8 @@ right after the customer logs in!
                     '$customer_lang',
                     '$customer_browser',
                     '{$_SESSION['shop']['customer_note']}'
-                )";
+                )
+            ";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
                 // $order_id is unset!
@@ -3963,19 +4020,12 @@ right after the customer logs in!
                                 //if (!$objProductAttribute) { ... }
                                 $productOptions .=
                                     ($productOptions ? '<br />' : '').'- '.
-                                    $objProductAttribute->getName().': ';
+                                    ProductAttribute::getNameById($optionId).': ';
                                 $productOptionsValues = '';
                                 foreach ($arrValueIds as $value_id) {
                                     if (intval($value_id)) {
-                                        $optionPrice =
-                                            ProductAttribute::getValuePriceById($value_id);
                                         $optionValue =
-                                            ProductAttribute::getValueNameById($value_id).
-                                            ($optionPrice != 0
-                                              ? ' ('.($optionPrice > 0 ? '+' : '-').
-                                                $optionPrice.' '.
-                                                Currency::getActiveCurrencySymbol().')'
-                                              : '');
+                                            ProductAttribute::getValueNameById($value_id);
                                     } else {
                                         $optionValue = ShopLibrary::stripUniqidFromFilename($value_id);
                                         if (   $optionValue != $value_id
@@ -4229,7 +4279,7 @@ right after the customer logs in!
         if (   isset($_REQUEST['result'])
             && $_REQUEST['result'] < 0) die('');
         // Comment this for testing, so you can reuse the same account and cart
-// NOTE: Comment for testing only
+// COMMENT OUT FOR TEST ONLY
         $this->destroyCart();
         // clear backup ID, avoid success() from being run again
         unset($_SESSION['shop']['orderid_checkin']);
@@ -4357,461 +4407,20 @@ right after the customer logs in!
                 || $newOrderStatus == SHOP_ORDER_STATUS_PAID
                 || $newOrderStatus == SHOP_ORDER_STATUS_SHIPPED
                 || $newOrderStatus == SHOP_ORDER_STATUS_COMPLETED) {
-                Shop::_sendProcessedMail($order_id);
+                ShopLibrary::sendConfirmationMail($order_id);
 // Implement a way to show this when the template is available
 //                $this->addMessage('<br />'.$_ARRAYLANG['TXT_SHOP_UNABLE_TO_SEND_EMAIL']);
-                }
-                // The shopping cart *MUST* be flushed right after this method
-                // returns a true value (greater than zero).
-                // If the new order status is zero however, the cart may
-                // be left alone and the payment process can be tried again.
-                return $newOrderStatus;
             }
+            // The shopping cart *MUST* be flushed right after this method
+            // returns a true value (greater than zero).
+            // If the new order status is zero however, the cart may
+            // be left alone and the payment process can be tried again.
+            return $newOrderStatus;
+        }
         // The query failed, but all the data is okay.
         // Don't cancel the order, leave it as it is and let the shop
         // manager handle this.  Return pending status.
         return SHOP_ORDER_STATUS_PENDING;
-    }
-
-
-    /**
-     * Send a confirmation e-mail with the order data
-     * @static
-     * @param   integer   $order_id    The order ID
-     * @return  boolean               True on success, false otherwise
-     * @access  private
-     */
-    static function _sendProcessedMail($order_id)
-    {
-        global $objDatabase;
-
-        // Determine the customer language ID
-        $query = "
-            SELECT email, customer_lang
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-             USING (customerid)
-             WHERE orderid=$order_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->RecordCount() == 0) {
-            // Order not found
-            return false;
-        }
-        $langId = $objResult->fields['customer_lang'];
-        // Compatibility with old behavior of storing the ISO639-1 code
-        if (!intval($langId))
-            $langId = FWLanguage::getLangIdByIso639_1($langId);
-        // Select template for order confirmation
-        $arrShopMailtemplate = Mail::getTemplate(1, $langId);
-        $mailTo = $objResult->fields['email'];
-        $mailFrom = $arrShopMailtemplate['from'];
-        $mailFromText = $arrShopMailtemplate['sender'];
-        $mailSubject = $arrShopMailtemplate['subject'];
-        $mailBody = $arrShopMailtemplate['message'];
-        $today = date('d.m.Y');
-        $mailSubject = str_replace('<DATE>', $today, $mailSubject);
-        $mailBody = Shop::_generateEmailBody($mailBody, $order_id, $langId);
-        $return = true;
-        if (!Mail::send($mailTo, $mailFrom, $mailFromText, $mailSubject, $mailBody)) {
-            $return = false;
-        }
-        // Get mail address(es) for confirmation mails
-        $query = "
-            SELECT value
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE name='confirmation_emails'";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $copies = explode(',', trim($objResult->fields['value']));
-            foreach ($copies as $sendTo) {
-                Mail::send($sendTo, $mailFrom, $mailFromText, $mailSubject, $mailBody);
-            }
-        }
-        return $return;
-    }
-
-
-    /**
-     * Replace all placeholders in the e-mail template with the
-     * respective values from the order specified by the order ID.
-     *
-     * Note that this method is now independent of the current session.
-     * The language of the mail template is determined by the browser
-     * language range stored with the order.
-     * Note: The password is no longer available in the session
-     * if the confirmation is sent after paying with PayPal!
-     * In that case, it is replaced by asterisks in the confirmation mail.
-     * @access  private
-     * @static
-     * @param   string  $body         The e-mail template
-     * @param   integer $order_id      The order ID
-     * @param   integer $langId       The language ID
-     * @return  string                The e-mail body
-     */
-    static function _generateEmailBody($body, $order_id, $langId)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $today     = date(ASCMS_DATE_SHORT_FORMAT);
-        $orderTime = date(ASCMS_DATE_FORMAT);
-        $cartTxt   = '';
-        $vatTxt    = '';
-        $loginData = '';
-/*
-            $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'].":\n".
-            'http://'.$_SERVER['SERVER_NAME'].
-            "/index.php?section=download\n";
-*/
-        $order_idCustom = ShopLibrary::getCustomOrderId($order_id);
-
-        // Pick the order from the database
-        $query = "
-            SELECT c.customerid, username, email, phone, fax,
-                   prefix, company, firstname, lastname,
-                   address, city, zip, country_id,
-                   selected_currency_id,
-                   order_sum, currency_order_sum,
-                   order_date, order_status,
-                   ship_prefix, ship_company, ship_firstname, ship_lastname,
-                   ship_address, ship_city, ship_zip, ship_country_id, ship_phone,
-                   tax_price,
-                   shipping_id, currency_ship_price,
-                   payment_id, currency_payment_price,
-                   customer_note
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o
-             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c
-             USING (customerid)
-             WHERE orderid=$order_id";
-        $objResultOrder = $objDatabase->Execute($query);
-        if (!$objResultOrder || $objResultOrder->RecordCount() == 0) {
-            // Order not found
-            return false;
-        }
-        // Determine the Currency code
-        $strCurrencyCode = Currency::getCodeById(
-            $objResultOrder->fields['selected_currency_id']
-        );
-        if (!$strCurrencyCode) {
-            return false;
-        }
-
-        // Pick names of countries from the database
-        $countryNameCustomer = '';
-        $countryNameShipping = '';
-        $query = "
-            SELECT countries_name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-             WHERE countries_id=".$objResultOrder->fields['country_id'];
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $countryNameCustomer = $objResult->fields['countries_name'];
-        }
-        $query = "
-            SELECT countries_name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
-             WHERE countries_id=".$objResultOrder->fields['ship_country_id'];
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $countryNameShipping = $objResult->fields['countries_name'];
-        }
-
-        // Pick the order items from the database
-        // order items: order_items_id, orderid, productid, product_name,
-        //              price, quantity, vat_percent, weight
-        $query = "
-            SELECT order_items_id, productid, product_name, price, quantity
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
-             WHERE orderid=$order_id";
-        $objResultItem = $objDatabase->Execute($query);
-        if (!$objResultItem || $objResultItem->RecordCount() == 0) {
-            // Order not found
-            return false;
-        }
-
-        $orderItemCount = 0;
-        $priceTotalItems = 0;
-        $username = '';
-        $userpass = '';
-        $arrUsername = array();
-        $arrUserpass = array();
-        while (!$objResultItem->EOF) {
-            $orderItemId = $objResultItem->fields['order_items_id'];
-            $productId = $objResultItem->fields['productid'];
-            $orderItemName = substr($objResultItem->fields['product_name'], 0, 40);
-            $orderItemPrice = $objResultItem->fields['price'];
-            $orderItemQuantity = $objResultItem->fields['quantity'];
-// Add individual VAT rates for Products
-//            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
-
-            // Decrease the Product stock count,
-            // applies to "real", shipped goods only
-            $query = "
-                UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                   SET stock=stock-$orderItemQuantity
-                 WHERE id=$productId
-                   AND handler='delivery'
-            ";
-            $objDatabase->Execute($query);
-
-            // Pick missing Product data
-            $query = "
-               SELECT product_id, handler, usergroups, weight
-                 FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                WHERE id=$productId
-            ";
-            $objResultProduct = $objDatabase->Execute($query);
-            if (!$objResultProduct || $objResultProduct->RecordCount() == 0) {
-                $objResultItem->MoveNext();
-                continue;
-            }
-            $productCode = $objResultProduct->fields['product_id'];
-
-            // Pick the order items attributes from the database
-            $query = "
-                SELECT product_option_name,
-                       product_option_value,
-                       product_option_values_price
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
-                 WHERE order_items_id=$orderItemId
-                 ORDER BY product_option_name ASC
-            ";
-            $objResultAttribute = $objDatabase->Execute($query);
-            $productOptions = '';
-            // Any attributes?
-            if ($objResultAttribute && $objResultAttribute->RecordCount() > 0) {
-                $productOptions = '  '; // '[';
-                $optionNamePrevious = '';
-                while (!$objResultAttribute->EOF) {
-                    $optionName = $objResultAttribute->fields['product_option_name'];
-                    $optionValue = $objResultAttribute->fields['product_option_value'];
-                    $optionPrice = $objResultAttribute->fields['product_option_values_price'];
-                    // Recognize the names of uploaded files,
-                    // verify their presence and use the original name
-                    $optionValueStripped = ShopLibrary::stripUniqidFromFilename($optionValue);
-                    if (   $optionValue != $optionValueStripped
-                        && file_exists(ASCMS_PATH.'/'.self::$uploadDir.'/'.$optionValue)) {
-                            $optionValue = $optionValueStripped;
-                    }
-                    if ($optionPrice != 0) {
-                      $optionValue .=
-                          ' ('.($optionPrice > 0 ? '+' : '-').
-                          $optionPrice.' '.
-                          Currency::getActiveCurrencySymbol().')';
-                    }
-
-                    if ($optionName != $optionNamePrevious) {
-                        if ($optionNamePrevious) {
-                            $productOptions .= '; ';
-                        }
-                        $productOptions .= $optionName.': '.$optionValue;
-                        $optionNamePrevious = $optionName;
-                    } else {
-                        $productOptions .= ', '.$optionValue;
-                    }
-                    $objResultAttribute->MoveNext();
-                }
-//                $productOptions .= ']';
-            }
-
-            // Product details
-            $cartTxt .=
-                $productId.' | '.$productCode.' | '.
-// One of...
-                $orderItemName.$productOptions.' | '.
-//                $orderItemName.' | '.
-                $orderItemPrice.' '.$strCurrencyCode.' | '.
-                $orderItemQuantity.' | '.
-                Currency::formatPrice(
-                    $orderItemPrice*$orderItemQuantity
-                ).' '.
-                $strCurrencyCode."\n".
-//                (empty($productOptions) ? '' : $productOptions."\n");
-            $orderItemCount += $orderItemQuantity;
-            $priceTotalItems += $orderItemPrice*$orderItemQuantity;
-
-            // Add an account for every single instance of every Product
-            for ($instance = 1; $instance <= $orderItemQuantity; ++$instance) {
-                $validity = 0; // Default to unlimited validity
-                // In case there are protected downloads in the cart,
-                // collect the group IDs
-                $arrUsergroupId = array();
-                if ($objResultProduct->fields['handler'] == 'download') {
-                    $usergroupIds = $objResultProduct->fields['usergroups'];
-                    if ($usergroupIds != '') {
-                        $arrUsergroupId = explode(',', $usergroupIds);
-                        $validity = $objResultProduct->fields['weight'];
-                    }
-                }
-                // create an account that belongs to all collected
-                // user groups, if any.
-                if (count($arrUsergroupId) > 0) {
-                    // Replace the mail template body.
-                    // This one includes the <LOGIN_DATA> placeholder for
-                    // the user name and password for the download.
-                    $arrTemplate = Mail::getTemplate(4, $langId);
-                    $body = $arrTemplate['message'];
-                    // The login names are created separately for
-                    // each product instance
-                    $username = self::usernamePrefix."-$order_id-$productId-$instance";
-                    $userpass = uniqid();
-                    $userEmail =
-                        "shop_customer_${order_id}_${productId}_${instance}-".
-                        $objResultOrder->fields['email'];
-
-                    $objUser = new User();
-                    $objUser->setUsername($username);
-                    $objUser->setPassword($userpass);
-                    $objUser->setEmail($userEmail);
-                    $objUser->setAdminStatus(false);
-                    $objUser->setActiveStatus(true);
-                    $objUser->setGroups($arrUsergroupId);
-                    $objUser->setValidityTimePeriod($validity);
-                    $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
-                    $objUser->setBackendLanguage(FRONTEND_LANG_ID);
-                    $objUser->setProfile(array(
-                        'firstname'    => array(0 => $objResultOrder->fields['firstname']),
-                        'lastname'     => array(0 => $objResultOrder->fields['lastname']),
-                        'company'      => array(0 => $objResultOrder->fields['company']),
-                        'address'      => array(0 => $objResultOrder->fields['address']),
-                        'zip'          => array(0 => $objResultOrder->fields['zip']),
-                        'city'         => array(0 => $objResultOrder->fields['city']),
-                        'country'      => array(0 => $objResultOrder->fields['country_id']),
-                        'phone_office' => array(0 => $objResultOrder->fields['phone']),
-                        'phone_fax'    => array(0 => $objResultOrder->fields['fax'])
-                    ));
-
-                    if (!$objUser->store()) {
-                        // TODO: $this can't be used here due that this is a static function. There is so far no way to report an error in case one had occured.
-                        // self::$statusMessage .= implode('<br />', $objUser->getErrorMsg());
-                        return false;
-                    }
-                    $loginData .=
-                        $_ARRAYLANG['TXT_SHOP_LOGINNAME'].' '.htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."\n".
-                        $_ARRAYLANG['TXT_SHOP_PASSWORD']." $userpass".
-                        "\n\n";
-                    $arrUsername[] = $username;
-                    $arrUserpass[] = $userpass;
-                }
-            }
-            $objResultItem->MoveNext();
-        }
-
-        $vatTxt = '';
-        if (Vat::isEnabled()) {
-            // VAT is enabled
-            $vatPrice = Currency::formatPrice($objResultOrder->fields['tax_price']);
-            $vatTxt = (Vat::isIncluded()
-                ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
-                : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
-            ).' '.$vatPrice.' '.$strCurrencyCode."\n";
-        }
-        $priceTotalItems =
-            Currency::formatPrice($priceTotalItems).' '.$strCurrencyCode;
-        $orderSum =
-            $objResultOrder->fields['currency_order_sum'].' '.
-            $strCurrencyCode;
-
-        $shipperId =
-            (isset($_SESSION['shop']['shipperId'])
-                ? $_SESSION['shop']['shipperId'] : 0
-            );
-        $shipperName =
-            ($shipperId > 0 ? Shipment::getShipperName($shipperId) : '');
-        $paymentId =
-            (isset($_SESSION['shop']['paymentId'])
-                ? $_SESSION['shop']['paymentId'] : 0
-            );
-        $paymentName = Payment::getProperty($paymentId, 'name');
-        $orderData =
-            "-----------------------------------------------------------------\n".
-            $_ARRAYLANG['TXT_ORDER_INFOS']."\n".
-            "-----------------------------------------------------------------\n".
-            $_ARRAYLANG['TXT_ID'].' | '.
-            $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'].' | '.
-            $_ARRAYLANG['TXT_PRODUCT'].' | '.
-            $_ARRAYLANG['TXT_UNIT_PRICE'].' | '.
-            $_ARRAYLANG['TXT_QUANTITY'].' | '.
-            $_ARRAYLANG['TXT_TOTAL']."\n".
-            "-----------------------------------------------------------------\n".
-            $cartTxt.
-            "-----------------------------------------------------------------\n".
-            $_ARRAYLANG['TXT_INTER_TOTAL'].': '.$orderItemCount.' '.
-            $_ARRAYLANG['TXT_PRODUCT_S'].' '.
-            Currency::formatPrice($priceTotalItems).' '.
-            $strCurrencyCode."\n".
-            "-----------------------------------------------------------------\n".
-            (!empty($shipperId)
-              ? $_ARRAYLANG['TXT_SHIPPING_METHOD'].': '.$shipperName.' '.
-                Currency::formatPrice($objResultOrder->fields['currency_ship_price']).
-                ' '.$strCurrencyCode."\n"
-              : ''
-            ).
-            (!empty($paymentId)
-              ? $_ARRAYLANG['TXT_PAYMENT_TYPE'].': '.$paymentName.' '.
-                Currency::formatPrice($objResultOrder->fields['currency_payment_price']).
-                ' '.$strCurrencyCode."\n"
-              : ''
-            ).
-            $vatTxt.
-            "-----------------------------------------------------------------\n".
-            $_ARRAYLANG['TXT_TOTAL_PRICE'].': '.$orderSum."\n".
-            "-----------------------------------------------------------------\n";
-
-        $search  = array (
-            '<ORDER_ID>', '<ORDER_ID_CUSTOM>', '<DATE>',
-            '<USERNAME>', '<PASSWORD>',
-            '<ORDER_DATA>', '<ORDER_SUM>', '<ORDER_TIME>', '<REMARKS>',
-            '<CUSTOMER_ID>', '<CUSTOMER_EMAIL>',
-            '<CUSTOMER_COMPANY>', '<CUSTOMER_PREFIX>', '<CUSTOMER_FIRSTNAME>',
-            '<CUSTOMER_LASTNAME>', '<CUSTOMER_ADDRESS>', '<CUSTOMER_ZIP>',
-            '<CUSTOMER_CITY>', '<CUSTOMER_COUNTRY>', '<CUSTOMER_PHONE>',
-            '<CUSTOMER_FAX>',
-            '<SHIPPING_COMPANY>', '<SHIPPING_PREFIX>', '<SHIPPING_FIRSTNAME>',
-            '<SHIPPING_LASTNAME>', '<SHIPPING_ADDRESS>', '<SHIPPING_ZIP>',
-            '<SHIPPING_CITY>', '<SHIPPING_COUNTRY>', '<SHIPPING_PHONE>',
-            '<LOGIN_DATA>',
-        );
-        $replace = array (
-            $order_id, $order_idCustom, $today,
-            $objResultOrder->fields['username'],
-            (isset($_SESSION['shop']['password'])
-                ? $_SESSION['shop']['password'] : '******'),
-            $orderData, $orderSum, $orderTime, $objResultOrder->fields['customer_note'],
-            $objResultOrder->fields['customerid'], $objResultOrder->fields['email'],
-            $objResultOrder->fields['company'], $objResultOrder->fields['prefix'],
-            $objResultOrder->fields['firstname'], $objResultOrder->fields['lastname'],
-            $objResultOrder->fields['address'], $objResultOrder->fields['zip'],
-            $objResultOrder->fields['city'], $countryNameCustomer,
-            $objResultOrder->fields['phone'], $objResultOrder->fields['fax'],
-            $objResultOrder->fields['ship_company'], $objResultOrder->fields['ship_prefix'],
-            $objResultOrder->fields['ship_firstname'], $objResultOrder->fields['ship_lastname'],
-            $objResultOrder->fields['ship_address'], $objResultOrder->fields['ship_zip'],
-            $objResultOrder->fields['ship_city'], $countryNameShipping,
-            $objResultOrder->fields['ship_phone'],
-            ($loginData ? $_ARRAYLANG['TXT_SHOP_LOGINDATA']."\n\n".$loginData : ''),
-        );
-        $body = str_replace($search, $replace, $body);
-
-        // Substitute user names and passwords
-        foreach ($arrUsername as $index => $username) {
-            // Duplicate lines containing placeholders
-            $body = preg_replace(
-                '/^(.*?\<DOWNLOAD_USERNAME\>.*?\n?.*?\<DOWNLOAD_PASSWORD\>.*?$\n?)/m', '$1$1',
-                $body
-            );
-            $userpass = $arrUserpass[$index];
-            $body = preg_replace('/\<DOWNLOAD_USERNAME\>/', $username, $body, 1);
-            $body = preg_replace('/\<DOWNLOAD_PASSWORD\>/', $userpass, $body, 1);
-        }
-        // Remove spare lines with placeholders
-        $body = preg_replace('/^.*\<DOWNLOAD_USERNAME\>.*$\n?/m', '', $body);
-        $body = preg_replace('/^.*\<DOWNLOAD_PASSWORD\>.*$\n?/m', '', $body);
-
-        // Strip CRs
-        $body = str_replace("\r", '', $body);
-// NOTE: Test only
-//die("made mail body:<br />".nl2br(htmlentities($body, ENT_QUOTES, CONTREXX_CHARSET))."<br />");
-        return $body;
     }
 
 
@@ -4825,8 +4434,8 @@ right after the customer logs in!
      */
     function addMessage($strMessage)
     {
-        self::$statusMessage .=
-            (self::$statusMessage ? '<br />' : '').
+        $this->statusMessage .=
+            ($this->statusMessage ? '<br />' : '').
             $strMessage;
     }
 
