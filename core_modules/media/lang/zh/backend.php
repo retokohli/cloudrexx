@@ -89,4 +89,6 @@ $_ARRAYLANG['TXT_MEDIA_CHECK_ALL'] = "Select All";
 $_ARRAYLANG['TXT_MEDIA_UNCHECK_ALL'] = "Deselect All";
 $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'] = "Define which users should be allowed to upload files and create new directories from within the frontend.";
 $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'] = "Frontend File Upload";
+$_ARRAYLANG['TXT_MEDIA_ADD'] = "新增";
+$_ARRAYLANG['TXT_MEDIA_MANAGE'] = "管理";
 ?>

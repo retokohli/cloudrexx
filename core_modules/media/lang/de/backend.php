@@ -89,4 +89,6 @@ $_ARRAYLANG['TXT_MEDIA_CHECK_ALL'] = "Alle auswählen";
 $_ARRAYLANG['TXT_MEDIA_UNCHECK_ALL'] = "Auswahl entfernen";
 $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'] = "Bestimmen Sie hier, für jedes Medienarchiv einzeln, welche Benutzer übers Frontend Dateien hochladen und Verzeichnisse erstellen dürfen.";
 $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'] = "Datei Upload im Frontend";
+$_ARRAYLANG['TXT_MEDIA_ADD'] = "Add";
+$_ARRAYLANG['TXT_MEDIA_MANAGE'] = "Verwalten";
 ?>
