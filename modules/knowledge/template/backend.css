@@ -1,4 +1,4 @@
-@import url(starbox/css/starbox.css);
+117@import url(starbox/css/starbox.css);
 
  
 #knowledge_articles #categories {
@@ -116,7 +116,7 @@
 
 #knowledge_categories #catlist {
     overflow: hidden;
-    width: 95%;
+    width: 100%;
 }
 
 #knowledge_categories #catlist ul {
