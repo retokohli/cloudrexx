@@ -281,6 +281,21 @@ function openWindow(theURL,winName,features){
 	galleryPopup = window.open(theURL,"gallery",features);
 	galleryPopup.focus();
 }
+
+//displays only templates beginning with home_ if home module is set for this page and vice versa.
+function refreshCustomContentTemplates(sender) {
+    var displayHome = $$('[name="selectmodule"] option')[sender.selectedIndex].innerHTML == "home";
+    var options = $$('[name="custom_content"] option');
+    for(var i = 0; i < options.length; i++) {
+        if(options[i].value == "") //standard entry, leave it
+            continue;
+        if(options[i].innerHTML.substr(0,4) == "home") 
+            displayHome ? options[i].removeAttribute('disabled') : options[i].setAttribute('disabled','disabled');
+        else
+            !displayHome ? options[i].removeAttribute('disabled') : options[i].setAttribute('disabled','disabled');
+    }
+}
+document.observe('dom:loaded', function() { refreshCustomContentTemplates($$('[name="selectmodule"]')[0]); });
 // ]]>
 </script>
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
@@ -467,7 +482,7 @@ function openWindow(theURL,winName,features){
 				<td width="15%">{TXT_MODULE} (cmd | section)</td>
 				<td width="85%">
 					<input type="text" name="command" value="{CONTENT_SHOW_CMD}" maxlength="100" size="40" />
-					<select name="selectmodule">
+					<select name="selectmodule" onchange="refreshCustomContentTemplates(this)">
 						<option value="">{TXT_NO_MODULE}</option>
 						{CONTENT_MODULE_MENU}
 					</select>
