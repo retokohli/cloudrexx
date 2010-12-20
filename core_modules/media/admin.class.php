@@ -702,6 +702,8 @@ class MediaManager extends MediaLibrary {
         $this->_objTpl->setGlobalVariable(array(
             'TXT_MEDIA_ARCHIVE'                     => $_ARRAYLANG['TXT_MEDIA_ARCHIVE'],
             'TXT_MEDIA_SETTINGS'                    => $_ARRAYLANG['TXT_MEDIA_SETTINGS'],
+            'TXT_MEDIA_ADD'                         => $_ARRAYLANG['TXT_MEDIA_ADD'],
+            'TXT_MEDIA_MANAGE'                      => $_ARRAYLANG['TXT_MEDIA_MANAGE'],
             'TXT_MEDIA_ACCESS_SETTINGS'             => $_ARRAYLANG['TXT_MEDIA_ACCESS_SETTINGS'],
             'TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'   => $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD_DESC'],
             'TXT_MEDIA_FRONTEND_FILE_UPLOAD'        => $_ARRAYLANG['TXT_MEDIA_FRONTEND_FILE_UPLOAD'],
@@ -769,7 +771,7 @@ class MediaManager extends MediaLibrary {
         global $objDatabase, $_ARRAYLANG;
 
         $this->_arrSettings = $this->createSettingsArray();
-
+        
         for($i = 0; $i <=4; $i++)
         {
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
