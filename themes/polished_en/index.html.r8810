@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+<head>
+<title>{METATITLE} | {GLOBAL_TITLE} - powered by {VERSION}</title>
+<meta name="description" content="{METADESC}"/>
+<meta name="keywords" content="{METAKEYS}"/>
+<meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
+<meta name="robots" content="{METAROBOTS}"/>
+<meta name="generator" content="{VERSION}"/>
+<link rel="SHORTCUT ICON" href="themes/polished/images/favicon.ico" />
+<meta http-equiv="pragma" content="no-cache"/>
+<meta http-equiv="cache-control" content="no-cache"/>
+<link rel="stylesheet" type="text/css" href="themes/polished/style.css" />
+<link rel="alternate" type="application/rss+xml" title="{GLOBAL_TITLE}" href="{BASE_URL}/feed/news_headlines_de.xml" />
+<script language="JavaScript" src="themes/polished/langnavbar.js" type="text/javascript"></script>
+{JAVASCRIPT}
+{STYLE_FILE}
+{LOGIN_INCLUDE}
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="themes/polished/ie.css" /><![endif]-->
+</head>
+
+<body>
+<div id="page">
+<div id="header">
+<div id="logo"><a href="http://www.contrexx.com/" title="Contrexx WCMS">Contrexx Web Contentmanagement System</a></div>
+
+<form action="index.php" method="get" id="form-globalsearch">
+<div>
+<input value="search" name="section" type="hidden"/>
+<input name="term" onfocus="this.value=''" id="term" value="" type="text"/>
+<input type="image" alt="suchen" src="{BLOCK_26}{BLOCK_27}" /></div>
+</form>
+
+<div id="nav-add">
+{BLOCK_20}{BLOCK_21}
+</div>
+</div>
+
+<div id="container" class="group">
+<div id="content-wrap" class="group">
+
+<div id="nav-main" class="group">
+<ul>
+{NAVBAR_FILE}
+</ul>
+</div>	
+
+{CONTENT_FILE}
+
+<div id="footer" class="group">
+<p id="copyright">Copyright &copy; 2010 Your Company</p>
+{BLOCK_22}{BLOCK_23}
+
+<p id="powered"><a href="http://www.contrexx.com/" title="Powered by Contrexx&reg; Software">Powered by Contrexx&reg; Software</a><br />
+Theme by <a href="http://www.actra.ch" title="www.actra.ch">Actra AG</a></p>
+</div>
+
+</div></div></div>
+
+<ul id="lang_navigation" style="display: none;">
+<li><a class="de" href="index.php?setLang=1">Deutsch</a></li>
+<li><a class="en" href="index.php?setLang=2">English</a></li>
+</ul>
+
+{COUNTER}
+{LOGIN_CONTENT}
+</body>
+</html>
