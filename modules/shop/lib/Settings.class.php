@@ -10,11 +10,9 @@
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @package     contrexx
  * @subpackage  module_shop
- * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 
@@ -27,7 +25,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @package     contrexx
  * @subpackage  module_shop
- * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
 class Settings
@@ -82,7 +79,7 @@ class Settings
         $result = Zones::store();
         if ($result !== '') $success &= $result;
 
-        $result = Mailtemplate::storeTemplateFromPost();
+        $result = Mail::store();
         if ($result !== '') $success &= $result;
 
         // new methods - these set $flagChanged accordingly.
@@ -206,12 +203,6 @@ class Settings
                 'product_sorting',
                     (!empty($_POST['product_sorting']) ? $_POST['product_sorting'] : 1)
             );
-            // Order amount upper limit
-            Settings::storeSetting(
-                'orderitems_amount_max',
-                    (!empty($_POST['orderitems_amount_max']) ? $_POST['orderitems_amount_max'] : 0)
-            );
-
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_config");
             return true;
         }
@@ -537,28 +528,24 @@ class Settings
     {
         global $objDatabase;
 
-        if (isset($_POST['countries']) && !empty($_POST['countries'])) {
-            $this->_initCountries();
-            // "list1" contains active countries
+        if (isset($_POST['list1'])) {
+            // "list1" contains the active countries
             $strCountryIdActive = join(',', $_POST['list1']);
-            $strCountryIdInactive = join(',', $_POST['list2']);
+            // Ignore if the list does not contain any countries
             if ($strCountryIdActive) {
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                        SET activation_status=1
-                     WHERE countries_id IN ($strCountryIdActive)
-                ";
+                     WHERE countries_id IN ($strCountryIdActive)";
                 $objDatabase->Execute($query);
-            }
-            if ($strCountryIdInactive) {
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
                        SET activation_status=0
-                     WHERE countries_id IN ($strCountryIdInactive)
-                ";
+                     WHERE countries_id NOT IN ($strCountryIdActive)";
                 $objDatabase->Execute($query);
             }
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
+            $this->_initCountries();
         }
     }
 
@@ -600,7 +587,8 @@ class Settings
                     '".addslashes($name)."',
                     '".addslashes($value)."',
                     '".addslashes($status)."'
-                )");
+                )
+            ");
             if (!$objResult) return false;
         }
         return true;

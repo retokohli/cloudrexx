@@ -1,34 +1,32 @@
 <!-- START module_shop_exchange.html -->
 <script language="javascript" type="text/JavaScript">
 <!--
-function checkObject(objForm,objElement)
+function checkObject(objForm, objElement)
 {
-  getElementsId(objForm,objElement);
-  switch(document.forms[objForm].elements[objElementId].type)
-  {
+  getElementsId(objForm, objElement);
+  switch (document.forms[objForm].elements[objElementId].type) {
     case "select-multiple":
-      if(document.forms[objForm].elements[objElementId].selectedIndex == -1)
-      {
+      if (document.forms[objForm].elements[objElementId].selectedIndex == -1) {
         alert("{TXT_SELECT_CATEGORIES_TO_EXPORT}!");
-      }else{
+      } else {
         return true;
       }
       break;
     case "checkbox":
-      for(i=0;i<document.forms[objForm].elements.length;i++)
-      {
-        if(document.forms[objForm].elements[i].type == "checkbox" && document.forms[objForm].elements[i].name == objElement && document.forms[objForm].elements[i].checked == true)
-        {
+      for (var i = 0; i < document.forms[objForm].elements.length; ++i) {
+        if (   document.forms[objForm].elements[i].type == "checkbox"
+            && document.forms[objForm].elements[i].name == objElement
+            && document.forms[objForm].elements[i].checked == true) {
           return true;
         }
       }
       alert("{TXT_YOU_HAVE_TO_SELECT_AT_LEAST_ONE_COLUMN}");
       break;
     case "radio":
-      for(i=0;i<document.forms[objForm].elements.length;i++)
-      {
-        if(document.forms[objForm].elements[i].type == "radio" && document.forms[objForm].elements[i].name == objElement && document.forms[objForm].elements[i].checked == true)
-        {
+      for (var i = 0; i < document.forms[objForm].elements.length; ++i) {
+        if (   document.forms[objForm].elements[i].type == "radio"
+            && document.forms[objForm].elements[i].name == objElement
+            && document.forms[objForm].elements[i].checked == true) {
           return true;
         }
       }
@@ -38,54 +36,45 @@ function checkObject(objForm,objElement)
   return false;
 }
 
-function getElementsId(objForm,objElement)
+function getElementsId(objForm, objElement)
 {
-  for(var i=0;i<document.forms[objForm].elements.length;i++)
-  {
-    if(document.forms[objForm].elements[i].name == objElement)
-    {
+  for (var i = 0; i < document.forms[objForm].elements.length; ++i) {
+    if (document.forms[objForm].elements[i].name == objElement) {
       objElementId = i;
     }
   }
 }
 
-function selectall(objForm,objElement,step)
+function selectall(objForm, objElement, step)
 {
-  getElementsId(objForm,objElement);
-  if(step)
-  {
-    switch(document.forms[objForm].elements[objElementId].type)
-    {
+  getElementsId(objForm, objElement);
+  if (step) {
+    switch (document.forms[objForm].elements[objElementId].type) {
       case "select-multiple":
-        for(var i=0;i<document.forms[objForm].elements[objElementId].length;i++)
-        {
+        for (var i = 0; i < document.forms[objForm].elements[objElementId].length; ++i) {
           document.forms[objForm].elements[objElementId].options[i].selected = true;
         }
         break;
       case "checkbox":
-        for(i=0;i<document.forms[objForm].elements.length;i++)
-        {
-          if(document.forms[objForm].elements[i].type == "checkbox" && document.forms[objForm].elements[i].name == objElement)
-          {
+        for (var i = 0; i < document.forms[objForm].elements.length; ++i) {
+          if (   document.forms[objForm].elements[i].type == "checkbox"
+              && document.forms[objForm].elements[i].name == objElement) {
             document.forms[objForm].elements[i].checked = true;
           }
         }
         break;
     }
-  }else{
-    switch(document.forms[objForm].elements[objElementId].type)
-    {
+  } else {
+    switch (document.forms[objForm].elements[objElementId].type) {
       case "select-multiple":
-        for(var i=0;i<document.forms[objForm].elements[objElementId].length;i++)
-        {
+        for (var i = 0; i < document.forms[objForm].elements[objElementId].length; ++i) {
           document.forms[objForm].elements[objElementId].options[i].selected = false;
         }
         break;
       case "checkbox":
-        for(i=0;i<document.forms[objForm].elements.length;i++)
-        {
-          if(document.forms[objForm].elements[i].type == "checkbox" && document.forms[objForm].elements[i].name == objElement)
-          {
+        for (var i = 0; i < document.forms[objForm].elements.length; ++i) {
+          if (   document.forms[objForm].elements[i].type == "checkbox"
+              && document.forms[objForm].elements[i].name == objElement) {
             document.forms[objForm].elements[i].checked = false;
           }
         }

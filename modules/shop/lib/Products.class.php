@@ -781,39 +781,6 @@ class Products
         return $strMenuoptions;
     }
 
-
-    /**
-     * Returns an array of Product names from the database
-     *
-     * The array is indexed by the Product ID and ordered by the names
-     * and ID, ascending.
-     * The names array is kept in this method statically between calls.
-     * @static
-     * @return      array                       The array of Product names
-     *                                          on success, false otherwise
-     * @global      ADONewConnection
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function getNameArray()
-    {
-        global $objDatabase;
-        static $arrName = null;
-
-        if (!empty($arrName)) return $arrName;
-        $query = "
-            SELECT `id`, `title`
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-             ORDER BY `title` ASC, `id` ASC";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrName = array();
-        while (!$objResult->EOF) {
-            $arrName[$objResult->fields['id']] = $objResult->fields['title'];
-            $objResult->MoveNext();
-        }
-        return $arrName;
-    }
-
 }
 
 ?>

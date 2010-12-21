@@ -1,4 +1,14 @@
 <?php
+/**
+ * The Shop
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
+ */
+/**
+ * @ignore
+ */
 require_once dirname(__FILE__).'/../../config/configuration.php';
 require_once dirname(__FILE__).'/../../core/API.php';
 

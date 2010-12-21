@@ -378,7 +378,6 @@ class ProductAttribute
         if ($this->id && $this->recordExists()) {
             if (!$this->update()) return false;
         } else {
-            $this->id = 0;
             if (!$this->insert()) return false;
         }
         return $this->storeValues();
@@ -399,8 +398,7 @@ class ProductAttribute
         $query = "
             SELECT 1
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
-             WHERE id=$this->id
-        ";
+             WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->EOF) return false;
         return true;
@@ -423,8 +421,7 @@ class ProductAttribute
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name
                SET name='".addslashes($this->name)."',
                    display_type=$this->type
-             WHERE id=$this->id
-        ";
+             WHERE id=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         return true;
@@ -445,15 +442,17 @@ class ProductAttribute
 
         $query = "
             INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products_attributes_name (
-                name, display_type
+                ".($this->id ? '`id`, ' : '').
+                "name,
+                display_type
             ) VALUES (
-                '".addslashes($this->name)."',
+                ".($this->id ? "$this->id, " : '').
+                "'".addslashes($this->name)."',
                 $this->type
-            )
-        ";
+            )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        $this->id = $objDatabase->Insert_ID();
+        if (empty($this->id)) $this->id = $objDatabase->Insert_ID();
         return true;
     }
 
@@ -481,11 +480,8 @@ class ProductAttribute
 //            );
 //            if (!$objText) return false;
 //            $arrValue['text_value_id'] = $objText->getId();
-            // Note that the array index and the value ID stored
-            // in $arrValue['id'] are only identical to for value
-            // records already present in the database.
-            // If the value was just added to the array, the array index
-            // is just that -- an array index, and its $arrValue['id'] is empty.
+            // Note that the value ID stored in $arrValue['id'] must be
+            // empty for new values.
             $value_id = (empty($arrValue['id']) ? 0 : $arrValue['id']);
             if ($value_id && $this->recordExistsValue($value_id)) {
                 if (!$this->updateValue($arrValue)) return false;
@@ -544,8 +540,7 @@ class ProductAttribute
                 $this->id,
                 '".addslashes($arrValue['value'])."',
                 ".floatval($arrValue['price'])."
-            )
-        ";
+            )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrValue['id'] = $objDatabase->Insert_ID();
@@ -587,8 +582,7 @@ class ProductAttribute
         $arrName = ProductAttributes::getNameArrayByNameId($name_id);
         if ($arrName === false) return false;
         $objProductAttribute = new ProductAttribute(
-            $arrName['name'], $arrName['type'], $name_id
-        );
+            $arrName['name'], $arrName['type'], $name_id);
         return $objProductAttribute;
     }
 

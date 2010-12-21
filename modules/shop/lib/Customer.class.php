@@ -1,9 +1,8 @@
 <?php
 
 /**
- * OBSOLETE - Use Users instead.
- *
  * Shop Customer
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     2.1.0
@@ -11,6 +10,14 @@
  * @subpackage  module_shop
  * @todo        Test!
  */
+
+/*
+
+Changes to the customer table:
+ALTER TABLE `contrexx_module_shop_customers`
+ADD `group_id` INT(10) UNSIGNED NULL DEFAULT NULL;
+
+*/
 
 /**
  * Customer as used in the Shop.
@@ -29,36 +36,32 @@ class Customer
     /**
      * All Customer table field names.
      *
-     * This is used to generate valid queries in {@see getByWildcards()}.
-     * Note that the ID, countryId and password fields are excluded here
-     * and may not be used.
+     * This is used to generate queries in {@see getByWildcards()}.
+     * Note that the ID, countryId and password fields are excluded here!
+     * Use the keys here as the field names in the pattern array argument
+     * for {@see getByWildcards()}, not the real database table field names!
      * @var array   $fieldNames
      */
-    private static $fieldNames = array(
-        'username',
-        'prefix',
-        'firstname',
-        'lastname',
-        'company',
-        'address',
-        'city',
-        'zip',
-        'phone',
-        'fax',
-        'email',
-        'ccnumber',
-        'ccdate',
-        'ccname',
-        'cvc_code',
-        'company_note',
-        'register_date',
+    private $fieldNames = array(
+        'userName'       => 'username',
+        'prefix'         => 'prefix',
+        'firstName'      => 'firstname',
+        'lastName'       => 'lastname',
+        'company'        => 'company',
+        'address'        => 'address',
+        'city'           => 'city',
+        'zip'            => 'zip',
+        'phone'          => 'phone',
+        'fax'            => 'fax',
+        'email'          => 'email',
+        'ccNumber'       => 'ccnumber',
+        'ccDate'         => 'ccdate',
+        'ccName'         => 'ccname',
+        'ccCode'         => 'cvc_code',
+        'companyNote'    => 'company_note',
+        'registerDate'   => 'register_date',
     );
 
-    /**
-     * @var     integer          $id     The customer ID
-     * @access  private
-     */
-    private $id = 0;
     /**
      * @var     string          $prefix     The customers' prefix (Sir, Madam, etc.)
      * @access  private
@@ -200,16 +203,16 @@ class Customer
     {
         // assign & check
         $this->id        = intval($id);
-        $this->prefix    = trim(strip_tags($prefix));
-        $this->firstName = trim(strip_tags($firstName));
-        $this->lastName  = trim(strip_tags($lastName));
-        $this->company   = trim(strip_tags($company));
-        $this->address   = trim(strip_tags($address));
-        $this->city      = trim(strip_tags($city));
-        $this->zip       = trim(strip_tags($zip));
+        $this->prefix    = strip_tags(trim($prefix));
+        $this->firstName = strip_tags(trim($firstName));
+        $this->lastName  = strip_tags(trim($lastName));
+        $this->company   = strip_tags(trim($company));
+        $this->address   = strip_tags(trim($address));
+        $this->city      = strip_tags(trim($city));
+        $this->zip       = strip_tags(trim($zip));
         $this->countryId = intval($countryId);
-        $this->phone     = trim(strip_tags($phone));
-        $this->fax       = trim(strip_tags($fax));
+        $this->phone     = strip_tags(trim($phone));
+        $this->fax       = strip_tags(trim($fax));
         // The remaining fields keep their default values for the time being.
     }
 
@@ -272,7 +275,7 @@ class Customer
      */
     function setPrefix($prefix)
     {
-        $this->prefix = trim(strip_tags($prefix));
+        $this->prefix = strip_tags(trim($prefix, " \t"));
     }
 
     /**
@@ -291,7 +294,7 @@ class Customer
      */
     function setFirstName($firstName)
     {
-        $this->firstName = trim(strip_tags($firstName));
+        $this->firstName = strip_tags(trim($firstName, " \t"));
     }
 
     /**
@@ -310,7 +313,7 @@ class Customer
      */
     function setLastName($lastName)
     {
-        $this->lastName = trim(strip_tags($lastName));
+        $this->lastName = strip_tags(trim($lastName, " \t"));
     }
 
     /**
@@ -329,7 +332,7 @@ class Customer
      */
     function setCompany($company)
     {
-        $this->company = trim(strip_tags($company));
+        $this->company = strip_tags(trim($company, " \t"));
     }
 
     /**
@@ -348,7 +351,7 @@ class Customer
      */
     function setAddress($address)
     {
-        $this->address = trim(strip_tags($address));
+        $this->address = strip_tags(trim($address, " \t"));
     }
 
     /**
@@ -367,7 +370,7 @@ class Customer
      */
     function setCity($city)
     {
-        $this->city = trim(strip_tags($city));
+        $this->city = strip_tags(trim($city, " \t"));
     }
 
     /**
@@ -386,7 +389,7 @@ class Customer
      */
     function setZip($zip)
     {
-        $this->zip = trim(strip_tags($zip));
+        $this->zip = strip_tags(trim($zip, " \t"));
     }
 
     /**
@@ -424,7 +427,7 @@ class Customer
      */
     function setPhone($phone)
     {
-        $this->phone = trim(strip_tags($phone));
+        $this->phone = strip_tags(trim($phone, " \t"));
     }
 
     /**
@@ -443,7 +446,7 @@ class Customer
      */
     function setFax($fax)
     {
-        $this->fax = trim(strip_tags($fax));
+        $this->fax = strip_tags(trim($fax, " \t"));
     }
 
     /**
@@ -462,7 +465,7 @@ class Customer
      */
     function setEmail($email)
     {
-        $this->email = trim(strip_tags($email));
+        $this->email = strip_tags(trim($email, " \t"));
     }
 
     /**
@@ -481,7 +484,7 @@ class Customer
      */
     function setCcNumber($ccNumber)
     {
-        $this->ccNumber = trim(strip_tags($ccNumber));
+        $this->ccNumber = strip_tags(trim($ccNumber, " \t"));
     }
 
     /**
@@ -500,7 +503,7 @@ class Customer
      */
     function setCcDate($ccDate)
     {
-        $this->ccDate = trim(strip_tags($ccDate));
+        $this->ccDate = strip_tags(trim($ccDate, " \t"));
     }
 
     /**
@@ -519,7 +522,7 @@ class Customer
      */
     function setCcName($ccName)
     {
-        $this->ccName = trim(strip_tags($ccName));
+        $this->ccName = strip_tags(trim($ccName, " \t"));
     }
 
     /**
@@ -538,7 +541,7 @@ class Customer
      */
     function setCcCode($ccCode)
     {
-        $this->ccCode = trim(strip_tags($ccCode));
+        $this->ccCode = strip_tags(trim($ccCode, " \t"));
     }
 
     /**
@@ -557,7 +560,7 @@ class Customer
      */
     function setUserName($userName)
     {
-        $this->userName = trim(strip_tags($userName));
+        $this->userName = strip_tags(trim($userName, " \t"));
     }
 
     /**
@@ -595,7 +598,7 @@ class Customer
      */
     function setCompanyNote($companyNote)
     {
-        $this->companyNote = trim(strip_tags($companyNote));
+        $this->companyNote = strip_tags(trim($companyNote, " \t"));
     }
 
     /**
@@ -637,7 +640,7 @@ class Customer
      */
     function setRegisterDate($registerDate)
     {
-        $this->registerDate = trim(strip_tags($registerDate));
+        $this->registerDate = strip_tags(trim($registerDate, " \t"));
     }
 
     /**
@@ -889,85 +892,48 @@ class Customer
 
 
     /**
-     * Returns an array of Customer objects found by wildcards.
+     * Returns an array of Customer objects found by wildcard.
      *
      * Takes an array of patterns as an argument, whose keys represent
-     * customer table fields.
+     * customer fields.  {@see $this->fieldNames} for a list of the valid
+     * names.
      * The customer table is then queried with the values of the respective
      * fields as wildcards, adding appropriate SQL syntax.
      * @static
-     * @param   array   $arrPattern     The pattern array
+     * @param   array   $arrPattern     The pattern array.
      * @return  array                   An array of Customers on success,
      *                                  false otherwise
      */
-    static function getByWildcard($arrPattern)
+    //static
+    function getByWildcard($arrPattern)
     {
         global $objDatabase;
 
-        $query  = "
-            SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-             WHERE 0";
+        $query = '';
         foreach ($arrPattern as $fieldName => $pattern) {
-            if (in_array($fieldName, self::$fieldNames)) {
-                $query .= "
-                    OR `$fieldName` LIKE '%".addslashes($pattern)."%'";
+            if (in_array($fieldName, array_keys($this->fieldNames))) {
+                if ($query) {
+                    $query .= "
+                        OR ".$this->fieldNames[$fieldName]." LIKE '%".
+                        contrexx_addslashes($pattern)."%'";
+                } else {
+                    $query  = "
+                        SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+                        WHERE ".$this->fieldNames[$fieldName]." LIKE '%".
+                        contrexx_addslashes($pattern)."%'";
+                }
             }
         }
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) {
+            return false;
+        }
         $arrCustomer = array();
         while (!$objResult->EOF) {
-            $arrCustomer[] = Customer::getById($objResult->fields['customerid']);
+            $arrCustomer[] = Customer::getById($objResult->fields['id']);
             $objResult->MoveNext();
         }
         return $arrCustomer;
-    }
-
-
-    /**
-     * Returns an array of Customer data for Mailtemplate substitution
-     * @return    array               The Customer data substitution array
-     * @see       Mailtemplate::substitute()
-     */
-    function getSubstitutionArray()
-    {
-        return array(
-            'CUSTOMER_USERNAME'   => $this->userName,
-            'CUSTOMER_PASSWORD'   => (isset($_SESSION['shop']['password'])
-                ? $_SESSION['shop']['password'] : '******'),
-            'CUSTOMER_ID'         => $this->id,
-            'CUSTOMER_EMAIL'      => $this->email,
-            'CUSTOMER_COMPANY'    => $this->company,
-            'CUSTOMER_PREFIX'     => $this->prefix,
-            'CUSTOMER_FIRSTNAME'  => $this->firstName,
-            'CUSTOMER_LASTNAME'   => $this->lastName,
-            'CUSTOMER_ADDRESS'    => $this->address,
-            'CUSTOMER_ZIP'        => $this->zip,
-            'CUSTOMER_CITY'       => $this->city,
-            'CUSTOMER_COUNTRY'    => Country::getNameById($this->countryId),
-            'CUSTOMER_COUNTRY_ID' => $this->countryId,
-            'CUSTOMER_PHONE'      => $this->phone,
-            'CUSTOMER_FAX'        => $this->fax,
-            'CUSTOMER_NOTE'       => $this->companyNote,
-// TODO: There are some more fields...
-        );
-    }
-
-
-    /**
-     * Updates the password of the Customer with the given e-mail address
-     * @param   string    $email        The e-mail address
-     * @param   string    $password     The new password
-     * @return  boolean                 True on success, false otherwise
-     */
-    static function updatePassword($email, $password)
-    {
-        global $objDatabase;
-
-        return (boolean)$objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-               SET password='".md5($password)."'
-             WHERE `email`='".addslashes($email)."'");
     }
 
 

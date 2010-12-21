@@ -166,25 +166,31 @@ class ShopLibrary
     {
         global $objDatabase;
 
-        $onchange = !empty($onchange) ? "onchange=\"".$onchange."\"" : "";
-        $menu = "\n<select name=\"".$menuName."\" ".$onchange.">\n";
-
-        $query = "SELECT countries_id, countries_name ".
-            "FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries ".
-            "WHERE activation_status=1";
+        $query = "
+            SELECT countries_id, countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE activation_status=1";
         $objResult = $objDatabase->Execute($query);
-
         if ($objResult->RecordCount() > 1) {
+            $menu =
+                '<select name="'.$menuName.'"'.
+                (empty($onchange)
+                  ? ''
+                  : ' onchange="'.$onchange.'"').">\n";
             while (!$objResult->EOF) {
-                $selected = (intval($selectedId)==$objResult->fields['countries_id']) ? "selected=\"selected\"" : "";
-                $menu .="<option value=\"".$objResult->fields['countries_id']."\" ".$selected.">".$objResult->fields['countries_name']."</option>\n";
+                $menu .=
+                    '<option value="'.$objResult->fields['countries_id'].'"'.
+                    (intval($selectedId) == $objResult->fields['countries_id']
+                      ? ' selected="selected"' : '').
+                    '>'.$objResult->fields['countries_name']."</option>\n";
                 $objResult->MoveNext();
             }
-            $menu .= "</select>\n";
-        } else {
-            $menu = "\n<input name=\"".$menuName."\" type=\"hidden\" value=\"".$objResult->fields['countries_id']."\">".$objResult->fields['countries_name']."\n";
+            return $menu."</select>\n";
         }
-        return $menu;
+        return
+            '<input name="'.$menuName.'" type="hidden" value="'.
+            $objResult->fields['countries_id'].'" />'.
+            $objResult->fields['countries_name']."\n";
     }
 
 
@@ -284,7 +290,8 @@ class ShopLibrary
 
         $query = "
             SELECT id, name, value, status
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config";
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
+        ";
         $objResult = $objDatabase->Execute($query);
         $this->arrConfig = array();
         if (!$objResult) return false;
@@ -830,380 +837,6 @@ class ShopLibrary
         }
         return $strMenuoptions;
 
-    }
-
-
-    /**
-     * Send a confirmation e-mail with the order data
-     * @static
-     * @param   integer   $order_id   The order ID
-     * @return  boolean               True on success, false otherwise
-     * @access  private
-     */
-    static function sendConfirmationMail($order_id)
-    {
-        global $objDatabase;
-
-        $arrSubstitution = ShopLibrary::getOrderSubstitutionArray($order_id);
-        if (!$arrSubstitution) return false;
-        // Prepared template for order confirmation
-        $arrMailtemplate = array(
-            'key'     => 1,
-            'lang_id' => $arrSubstitution['LANG_ID'],
-            'to'      =>
-                $arrSubstitution['CUSTOMER_EMAIL'].','.
-                Settings::getValueByName('confirmation_emails'),
-            'substitution' => &$arrSubstitution,
-        );
-        return MailTemplate::send($arrMailtemplate);
-    }
-
-
-    /**
-     * Send an e-mail to the customer that the order has been processed
-     * @static
-     * @param   integer   $order_id   The order ID
-     * @return  boolean               True on success, false otherwise
-     * @access  private
-     */
-    static function sendCompletedMail($order_id)
-    {
-        global $objDatabase;
-
-        $arrSubstitution = ShopLibrary::getOrderSubstitutionArray($order_id);
-        if (!$arrSubstitution) return false;
-        // Prepared template for order confirmation
-        $arrMailtemplate = array(
-            'key'     => 2,
-            'lang_id' => $arrSubstitution['LANG_ID'],
-            'to'      =>
-                $arrSubstitution['CUSTOMER_EMAIL'],
-            'substitution' => &$arrSubstitution,
-        );
-        return MailTemplate::send($arrMailtemplate);
-    }
-
-
-    /**
-     * Returns an array with all placeholders and their values to be
-     * replaced in any shop mailtemplate for the given order ID.
-     *
-     * You only have to set the 'substitution' index value of your Mailtemplate
-     * array to the array returned.
-     *
-     * Note that this method is now mostly independent of the current session.
-     * The language of the mail template is determined by the browser
-     * language range stored with the order.
-     * The password is no longer available in the session if the confirmation
-     * is sent after paying with some external PSP that uses some form of
-     * instant payment notification (i.e. PayPal)!
-     * In that case, it is replaced by asterisks in the confirmation mail.
-     * @access  private
-     * @static
-     * @param   integer $order_id         The order ID
-     * @param   boolean $create_accounts  If true, creates User accounts
-     *                                    and Coupon codes.  Defaults to true
-     * @return  array                     The array with placeholders as keys
-     *                                    and values from the order on success,
-     *                                    false otherwise
-     */
-    static function getOrderSubstitutionArray($order_id, $create_accounts=true)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-/*
-            $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'].":\r\n".
-            'http://'.$_SERVER['SERVER_NAME'].
-            "/index.php?section=download\r\n";
-*/
-
-        // Pick the order from the database
-        // Note: order_sum is left out, as this is currently not set!
-        $query = "
-            SELECT customerid, customer_lang,
-                   selected_currency_id,
-                   currency_order_sum,
-                   order_date, order_status,
-                   ship_prefix, ship_company, ship_firstname, ship_lastname,
-                   ship_address, ship_city, ship_zip, ship_country_id, ship_phone,
-                   tax_price,
-                   shipping_id, currency_ship_price,
-                   payment_id, currency_payment_price,
-                   customer_note, last_modified
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             WHERE orderid=$order_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->RecordCount() == 0) {
-            // Order not found
-            return false;
-        }
-        $lang_id = $objResult->fields['customer_lang'];
-        if (!intval($lang_id))
-            $lang_id = FWLanguage::getLangIdByIso639_1($lang_id);
-        $customer_id = $objResult->fields['customerid'];
-        if (!$customer_id) {
-            return false;
-        }
-        $objCustomer = Customer::getById($customer_id);
-        if (!$objCustomer) {
-            return false;
-        }
-        $arrSubstitution = $objCustomer->getSubstitutionArray();
-        if (empty($arrSubstitution)) {
-            return false;
-        }
-        // Pick names of countries from the database
-        $arrSubstitution += array (
-            'LANG_ID'             => $lang_id,
-            'NOW'                 => date(ASCMS_DATE_FORMAT),
-            'TODAY'               => date(ASCMS_DATE_SHORT_FORMAT),
-//            'DATE'                => date(ASCMS_DATE_SHORT_FORMAT, strtotime($objResult->fields['order_date'])),
-            'ORDER_ID'            => $order_id,
-            'ORDER_ID_CUSTOM'     => ShopLibrary::getCustomOrderId($order_id),
-            'ORDER_DATE'          =>
-                date(ASCMS_DATE_SHORT_FORMAT,
-                    strtotime($objResult->fields['order_date'])),
-            'ORDER_TIME'          =>
-                date(ASCMS_DATE_FORMAT,
-                    strtotime($objResult->fields['order_date'])),
-            'ORDER_STATUS'        => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objResult->fields['order_status']],
-            'MODIFIED'            =>
-                date(ASCMS_DATE_FORMAT,
-                    strtotime($objResult->fields['last_modified'])),
-            'REMARKS'             => $objResult->fields['customer_note'],
-//            // Must be present in the Order, so the Customer can be found
-//            'CUSTOMER_ID'         => $customer_id,
-//            'CUSTOMER_EMAIL'      => $objResult->fields['email'],
-//            'CUSTOMER_USERNAME'   => $objResult->fields['username'],
-//            'CUSTOMER_PASSWORD'   => (isset($_SESSION['shop']['password'])
-//                ? $_SESSION['shop']['password'] : '******'),
-//            'CUSTOMER_COMPANY'    => $objResult->fields['company'],
-//            'CUSTOMER_PREFIX'     => $objResult->fields['prefix'],
-//            'CUSTOMER_FIRSTNAME'  => $objResult->fields['firstname'],
-//            'CUSTOMER_LASTNAME'   => $objResult->fields['lastname'],
-//            'CUSTOMER_ADDRESS'    => $objResult->fields['address'],
-//            'CUSTOMER_ZIP'        => $objResult->fields['zip'],
-//            'CUSTOMER_CITY'       => $objResult->fields['city'],
-//            'CUSTOMER_COUNTRY'    => Country::getNameById(
-//                $objResult->fields['country_id']),
-//            'CUSTOMER_COUNTRY_ID' => $objResult->fields['country_id'],
-//            'CUSTOMER_PHONE'      => $objResult->fields['phone'],
-//            'CUSTOMER_FAX'        => $objResult->fields['fax'],
-            'SHIPPING_COMPANY'    => $objResult->fields['ship_company'],
-            'SHIPPING_PREFIX'     => $objResult->fields['ship_prefix'],
-            'SHIPPING_FIRSTNAME'  => $objResult->fields['ship_firstname'],
-            'SHIPPING_LASTNAME'   => $objResult->fields['ship_lastname'],
-            'SHIPPING_ADDRESS'    => $objResult->fields['ship_address'],
-            'SHIPPING_ZIP'        => $objResult->fields['ship_zip'],
-            'SHIPPING_CITY'       => $objResult->fields['ship_city'],
-            'SHIPPING_COUNTRY'    => Country::getNameById(
-                $objResult->fields['ship_country_id']),
-            'SHIPPING_PHONE'      => $objResult->fields['ship_phone'],
-            'SHIPPING_ID'         => $objResult->fields['shipping_id'],
-            'SHIPPING_NAME'       => Shipment::getShipperName($objResult->fields['shipping_id']),
-            'SHIPPING_PRICE'      => Currency::formatPrice($objResult->fields['currency_ship_price']),
-//            'SHIP_PRICE'          => Currency::formatPrice($objResult->fields['currency_ship_price']),
-//            'CURRENCY_SHIP_PRICE' => Currency::formatPrice($objResult->fields['currency_ship_price']),
-            'PAYMENT_ID'          => $objResult->fields['payment_id'],
-            'PAYMENT_NAME'        => Payment::getProperty($objResult->fields['payment_id'], 'name'),
-            'PAYMENT_PRICE'       => Currency::formatPrice($objResult->fields['currency_payment_price']),
-//            'CURRENCY_PAYMENT_PRICE' => Currency::formatPrice($objResult->fields['currency_payment_price']),
-            'TAX_PRICE'           => Currency::formatPrice($objResult->fields['tax_price']),
-            'ORDER_SUM'           => Currency::formatPrice($objResult->fields['currency_order_sum']),
-//            'CURRENCY_ORDER_SUM'  => Currency::formatPrice($objResult->fields['currency_order_sum']),
-            'CURRENCY'            => Currency::getCodeById($objResult->fields['selected_currency_id']),
-        );
-
-        // Pick the order items from the database
-        // order items: order_items_id, orderid, productid, product_name,
-        //              price, quantity, vat_percent, weight
-        $query = "
-            SELECT order_items_id, productid, product_name, price, quantity
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
-             WHERE orderid=$order_id";
-        $objResultItem = $objDatabase->Execute($query);
-        if (!$objResultItem || $objResultItem->EOF) {
-            // Order not found
-die("Order not found");
-//            return false;
-        }
-
-        $orderItemCount = 0;
-        $priceTotalItems = 0;
-        while (!$objResultItem->EOF) {
-            $orderItemId = $objResultItem->fields['order_items_id'];
-            $product_id = $objResultItem->fields['productid'];
-//echo("Item: Product ID $product_id");
-            $product_name = substr($objResultItem->fields['product_name'], 0, 40);
-            $item_price = $objResultItem->fields['price'];
-            $quantity = $objResultItem->fields['quantity'];
-// Add individual VAT rates for Products
-//            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
-
-            $objProduct = Product::getById($product_id);
-            if (!$objProduct) {
-                $objResultItem->MoveNext();
-die("Product ID $product_id not found");
-                continue;
-            }
-            // Decrease the Product stock count,
-            // applies to "real", shipped goods only
-            $objProduct->decreaseStock($quantity);
-            $product_code = $objProduct->getCode();
-
-            // Pick the order items attributes from the database
-            $query = "
-                SELECT product_option_name, product_option_value
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
-                 WHERE order_items_id=$orderItemId
-                 ORDER BY product_option_name ASC";
-            $objResultAttribute = $objDatabase->Execute($query);
-            $str_options = '';
-            // Any attributes?
-            if ($objResultAttribute && $objResultAttribute->RecordCount() > 0) {
-                $str_options = '  '; // '[';
-                $optionNamePrevious = '';
-                while (!$objResultAttribute->EOF) {
-                    $optionName = $objResultAttribute->fields['product_option_name'];
-                    $optionValue = $objResultAttribute->fields['product_option_value'];
-                    // Recognize the names of uploaded files,
-                    // verify their presence and use the original name
-                    $optionValueStripped = ShopLibrary::stripUniqidFromFilename($optionValue);
-                    if (   $optionValue != $optionValueStripped
-                        && file_exists(ASCMS_PATH.'/'.self::$uploadDir.'/'.$optionValue)) {
-                            $optionValue = $optionValueStripped;
-                    }
-
-                    if ($optionName != $optionNamePrevious) {
-                        if ($optionNamePrevious) {
-                            $str_options .= '; ';
-                        }
-                        $str_options .= $optionName.': '.$optionValue;
-                        $optionNamePrevious = $optionName;
-                    } else {
-                        $str_options .= ', '.$optionValue;
-                    }
-                    $objResultAttribute->MoveNext();
-                }
-//                $str_options .= ']';
-            }
-
-            // Product details
-// haar-werk
-/*
-            $cartTxt .=
-//                $product_id."\t".$product_code."\t".
-                $quantity."\t".
-// One of...
-                $product_name.$str_options."\t".
-//                $product_name."\t".
-                $item_price." [CURRENCY]\t".
-                Currency::formatPrice(
-                    $item_price*$quantity
-                )." [CURRENCY]\r\n";
-//                (empty($str_options) ? '' : $str_options."\r\n");
-*/
-            $arrProduct = array(
-                'PRODUCT_ID' => $product_id,
-                'PRODUCT_CODE' => $product_code,
-                'PRODUCT_QUANTITY' => $quantity,
-                'PRODUCT_TITLE' => $product_name,
-                'PRODUCT_OPTIONS' => $str_options,
-                'PRODUCT_ITEM_PRICE' => Currency::formatPrice($item_price),
-                'PRODUCT_TOTAL_PRICE' => Currency::formatPrice($item_price*$quantity),
-            );
-            $orderItemCount += $quantity;
-            $priceTotalItems += $item_price*$quantity;
-
-            if ($create_accounts) {
-                // Add an account for every single instance of every Product
-                for ($instance = 1; $instance <= $quantity; ++$instance) {
-                    $validity = 0; // Default to unlimited validity
-                    // In case there are protected downloads in the cart,
-                    // collect the group IDs
-                    $arrUsergroupId = array();
-                    if ($objProduct->getDistribution() == 'download') {
-                        $usergroupIds = $objProduct->getUsergroups();
-                        if ($usergroupIds != '') {
-                            $arrUsergroupId = explode(',', $usergroupIds);
-                            $validity = $objProduct->getWeight();
-                        }
-                    }
-                    // create an account that belongs to all collected
-                    // user groups, if any.
-                    if (count($arrUsergroupId) > 0) {
-                        // The login names are created separately for
-                        // each product instance
-                        $username = self::usernamePrefix."-$order_id-$product_id-$instance";
-                        $userpass = uniqid();
-                        $userEmail =
-                            "shop_customer_${order_id}_${product_id}_${instance}-".
-                            $arrSubstitution['CUSTOMER_EMAIL'];
-
-                        $objUser = new User();
-                        $objUser->setUsername($username);
-                        $objUser->setPassword($userpass);
-                        $objUser->setEmail($userEmail);
-                        $objUser->setAdminStatus(false);
-                        $objUser->setActiveStatus(true);
-                        $objUser->setGroups($arrUsergroupId);
-                        $objUser->setValidityTimePeriod($validity);
-                        $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
-                        $objUser->setBackendLanguage(FRONTEND_LANG_ID);
-                        $objUser->setProfile(array(
-                            'firstname'    => array(0 => $arrSubstitution['CUSTOMER_FIRSTNAME']),
-                            'lastname'     => array(0 => $arrSubstitution['CUSTOMER_LASTNAME']),
-                            'company'      => array(0 => $arrSubstitution['CUSTOMER_COMPANY']),
-                            'address'      => array(0 => $arrSubstitution['CUSTOMER_ADDRESS']),
-                            'zip'          => array(0 => $arrSubstitution['CUSTOMER_ZIP']),
-                            'city'         => array(0 => $arrSubstitution['CUSTOMER_CITY']),
-                            'country'      => array(0 => $arrSubstitution['CUSTOMER_COUNTRY_ID']),
-                            'phone_office' => array(0 => $arrSubstitution['CUSTOMER_PHONE']),
-                            'phone_fax'    => array(0 => $arrSubstitution['CUSTOMER_FAX']),
-                        ));
-                        if (!$objUser->store()) {
-                            // TODO: $this can't be used here due that this is a static function. There is so far no way to report an error in case one had occured.
-                            // $this->statusMessage .= implode('<br />', $objUser->getErrorMsg());
-                            return false;
-                        }
-                        if (empty($arrProduct['USER_DATA']))
-                            $arrProduct['USER_DATA'] = array();
-                        $arrProduct['USER_DATA'][] = array(
-                            'USER_NAME' => $username,
-                            'USER_PASS' => $userpass,
-                        );
-                    }
-//echo("Instance $instance");
-                    if ($objProduct->getDistribution() == 'coupon') {
-                        if (empty($arrProduct['COUPON_DATA']))
-                            $arrProduct['COUPON_DATA'] = array();
-//DBG::log("Getting code");
-                        $code = Coupon::getNewCode();
-//DBG::log("Got code: $code, calling Coupon::addCode($code, 0, 0, 0, $item_price)");
-                        Coupon::addCode($code, 0, 0, 0, $item_price, 0, 0, 1e10);
-                        $arrProduct['COUPON_DATA'][] = array(
-                            'COUPON_CODE' => $code
-                        );
-                    }
-                }
-            }
-            if (empty($arrSubstitution['ORDER_ITEM']))
-                $arrSubstitution['ORDER_ITEM'] = array();
-            $arrSubstitution['ORDER_ITEM'][] = $arrProduct;
-            $objResultItem->MoveNext();
-        }
-        $arrSubstitution['ORDER_ITEM_SUM'] =
-            Currency::formatPrice($priceTotalItems);
-        $arrSubstitution['ORDER_ITEM_COUNT'] = $orderItemCount;
-
-        if (Vat::isEnabled()) {
-            $arrSubstitution['TAX_TEXT'] =
-                (Vat::isIncluded()
-                    ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
-                    : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
-                );
-        }
-        return $arrSubstitution;
     }
 
 }

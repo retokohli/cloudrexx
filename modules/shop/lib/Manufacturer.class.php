@@ -36,10 +36,10 @@ class Manufacturer
         $query = "
             SELECT `manufacturer`.`id`,
                    `manufacturer`.`name`, `manufacturer`.`url`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer` as `manufacturer`";
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_manufacturer` as `manufacturer`
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-        $arrManufacturer = array();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
 //            $text_name_id = $objResult->fields[$arrSqlName['name']];
@@ -187,7 +187,7 @@ class Manufacturer
         $strMenuoptions = self::getMenuoptions($selected_id);
         if (empty($strMenuoptions)) return '';
         return
-            '<select name="manufacturerId" style="width: 180px;">'.
+            '<select name="manId" style="width: 180px;">'.
             '<option value="0">'.
             $_ARRAYLANG['TXT_ALL_MANUFACTURER'].
             '</option>'.
@@ -208,6 +208,7 @@ class Manufacturer
     static function getMenuoptions($selected_id=0)
     {
         if (empty(self::$arrManufacturer)) self::init();
+        if (empty(self::$arrManufacturer)) return '';
         $strMenu = '';
         foreach (self::$arrManufacturer as $id => $arrManufacturer) {
             $strMenu .=

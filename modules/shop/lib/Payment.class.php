@@ -25,7 +25,7 @@ class Payment
      * @access  private
      * @static
      */
-    private static $arrPayments = array();
+    private static $arrPayment = array();
 
 
     /**
@@ -41,10 +41,11 @@ class Payment
             SELECT id, name, processor_id, costs, costs_free_sum,
                    sort_order, status
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment
-             ORDER BY id";
+          ORDER BY id
+        ";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
-            self::$arrPayments[$objResult->fields['id']] = array(
+            self::$arrPayment[$objResult->fields['id']] = array(
                 'id'             => $objResult->fields['id'],
                 'name'           => $objResult->fields['name'],
                 'processor_id'   => $objResult->fields['processor_id'],
@@ -65,30 +66,10 @@ class Payment
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @since   2.1.0
      */
-    static function getArray()
+    static function getPaymentArray()
     {
-        if (empty(self::$arrPayments)) self::init();
-        return self::$arrPayments;
-    }
-
-
-    /**
-     * Returns the array of available Payment names
-     *
-     * The array is indexed by the Payment IDs.
-     * @see     Payment::init()
-     * @return  array           The array of Payment names
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @since   3.0.0
-     */
-    static function getNameArray()
-    {
-        if (empty(self::$arrPayments)) self::init();
-        $arrPaymentName = array();
-        foreach (self::$arrPayments as $payment_id => $arrPayment) {
-            $arrPaymentName[$payment_id] = $arrPayment['name'];
-        }
-        return $arrPaymentName;
+        if (empty(self::$arrPayment)) self::init();
+        return self::$arrPayment;
     }
 
 
@@ -102,11 +83,11 @@ class Payment
      */
     static function getProperty($payment_id, $property_name)
     {
-        if (empty(self::$arrPayments)) self::init();
+        if (empty(self::$arrPayment)) self::init();
         return
-            (   isset(self::$arrPayments[$payment_id])
-             && isset(self::$arrPayments[$payment_id][$property_name])
-              ? self::$arrPayments[$payment_id][$property_name]
+            (   isset(self::$arrPayment[$payment_id])
+             && isset(self::$arrPayment[$payment_id][$property_name])
+              ? self::$arrPayment[$payment_id][$property_name]
               : false
             );
     }
@@ -118,14 +99,14 @@ class Payment
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @param    integer $countryId         The country ID
      * @param    array   $arrCurrencies     The currencies array
-     * @return   array                      Array of payment IDs, like:
+     * @return   array   $arrPaymentId      Array of payment IDs, like:
      *                                      array( index => paymentId )
      */
     static function getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies)
     {
         global $objDatabase;
 
-        if (empty(self::$arrPayments)) self::init();
+        if (empty(self::$arrPayment)) self::init();
         require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
         $arrAcceptedCurrencyCodes = array();
         $arrPaypalAcceptedCurrencyCodes = PayPal::getAcceptedCurrencyCodeArray();
@@ -147,12 +128,13 @@ class Payment
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `p`
                 ON `z`.`zones_id`=`p`.`zones_id`
              WHERE `c`.`countries_id`=".intval($countryId)."
-               AND `z`.`activation_status`=1";
+               AND `z`.`activation_status`=1
+        ";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
-            if (   isset(self::$arrPayments[$objResult->fields['payment_id']])
-                && self::$arrPayments[$objResult->fields['payment_id']]['status'] == 1
-                && (   self::$arrPayments[$objResult->fields['payment_id']]['processor_id'] != 2
+            if (   isset(self::$arrPayment[$objResult->fields['payment_id']])
+                && self::$arrPayment[$objResult->fields['payment_id']]['status'] == 1
+                && (   self::$arrPayment[$objResult->fields['payment_id']]['processor_id'] != 2
                     || count($arrAcceptedCurrencyCodes) > 0)
             ) {
                 $arrPaymentId[] = $objResult->fields['payment_id'];
@@ -202,14 +184,14 @@ class Payment
         global $_ARRAYLANG;
 
         // Initialize if necessary
-        if (empty(self::$arrPayments)) self::init();
+        if (empty(self::$arrPayment)) self::init();
         // Get Payment IDs available in the selected country, if any, or all.
         $arrPaymentId =
             ($countryId
                 ? self::getCountriesRelatedPaymentIdArray(
                     $countryId, Currency::getCurrencyArray()
                   )
-                : array_keys(self::$arrPayments)
+                : array_keys(self::$arrPayment)
             );
         $strMenuoptions =
             (empty($selectedId)
@@ -222,7 +204,7 @@ class Payment
             $strMenuoptions .=
                 '<option value="'.$id.'"'.
                 ($id == $selectedId ? ' selected="selected"' : '').'>'.
-                self::$arrPayments[$id]['name'].
+                self::$arrPayment[$id]['name'].
                 "</option>\n";
         }
         return $strMenuoptions;
@@ -241,8 +223,8 @@ class Payment
     static function getNameById($paymentId)
     {
         // Initialize if necessary
-        if (empty(self::$arrPayments)) self::init();
-        return self::$arrPayments[$paymentId]['name'];
+        if (empty(self::$arrPayment)) self::init();
+        return self::$arrPayment[$paymentId]['name'];
     }
 
 
@@ -261,7 +243,8 @@ class Payment
         $query = "
             SELECT `processor_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_payment`
-             WHERE `id`=$paymentId";
+             WHERE `id`=$paymentId
+        ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF)
             return $objResult->fields['processor_id'];
