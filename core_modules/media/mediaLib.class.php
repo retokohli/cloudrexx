@@ -926,6 +926,7 @@ class MediaLibrary {
 
     function _getJavaScriptCodePreview()
     {
+        $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
         $code = <<<END
                     <script language="JavaScript" type="text/javascript">
                     /* <![CDATA[ */
@@ -944,6 +945,28 @@ class MediaLibrary {
                             prev.document.close();
                             prev.focus();
                         }
+
+                        function mediaConfirmDelete()
+                        {
+                            if(confirm('$delete_msg')) {
+                                return true;
+                            }
+                            return false;
+                        }
+
+                        \$J(document).ready(function() {
+                            \$J('.rename_btn').click(function(){
+                                file = \$J(this).parent().parent().find('.file_name a').html();
+                                file_name = file.split('.')[0];
+                                file_ext = file.split('.')[1];
+                                \$J(this).parent().parent().find('.file_name a')
+                                .html('<form action="">'+
+                                    '<input type="text" value="'+file_name+'" />'+
+                                    '.'+file_ext+
+                                '</form>');
+                                
+                            });
+                        });
                     /* ]]> */
                     </script>
 END;
