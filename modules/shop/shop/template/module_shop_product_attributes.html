@@ -1,0 +1,333 @@
+<!-- START module_shop_product_attributes_options.html -->
+<script language="javascript" type="text/javascript">
+// <![CDATA[
+// Selected Product Attribute value IDs
+attributeValueId = new Array();
+{SHOP_PRODUCT_ATTRIBUTE_JS_VARS}
+
+// Event handlers
+onChangeHandler = new Array();
+arrElements = new Array();
+arrElements[0] = 'attributeValue';
+arrElements[1] = 'attributePrice';
+
+function storeNewOption()
+{
+  if (document.getElementById('optionName-0').value == "") {
+    alert('{TXT_DEFINE_NAME_FOR_OPTION}');
+    document.getElementById('optionName-0').focus();
+    return false;
+  } else {
+    if (document.getElementById('attributeValueList-0').length == 0) {
+      alert('{TXT_DEFINE_VALUE_FOR_OPTION}');
+      return false;
+    }
+  }
+  document.getElementById('attributeValueList-0').setAttribute('multiple','multiple');
+  document.getElementById('attributeValueList-0').focus();
+  for (valueId=document.getElementById('attributeValueList-0').options.length-1;valueId>=0;valueId--)
+  {
+    document.getElementById('attributeValueList-0').options[valueId].selected = true;
+  }
+  return true;
+}
+
+function storeChanges()
+{
+  for (selectboxNr=0;selectboxNr<document.getElementsByTagName('select').length;selectboxNr++) {
+    strName = document.getElementsByTagName('select')[selectboxNr].getAttribute('id');
+    if (strName) {
+      if (strName.substring(0,18) == "attributeValueList") {
+        document.getElementsByTagName('select')[selectboxNr].setAttribute('multiple','multiple');
+        document.getElementsByTagName('select')[selectboxNr].focus();
+        for (valueId=document.getElementsByTagName('select')[selectboxNr].options.length-1;valueId>=0;valueId--) {
+          document.getElementsByTagName('select')[selectboxNr].options[valueId].selected = true;
+        }
+      }
+    }
+  }
+  document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes";
+}
+
+function deleteOption(id)
+{
+  if (confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=products&tpl=attributes&delId="+id);
+}
+
+function swapEdit(id)
+{
+  if (document.getElementById('attributeValueEdit-'+id).style.display == 'none') {
+    document.getElementById('attributeValueEdit-'+id).style.display = 'block';
+    document.getElementById('attributeValueMenuLink-'+id).style.display = 'block';
+    document.getElementById('attributeValueList-'+id).size = 10;
+  } else {
+    document.getElementById('attributeValueEdit-'+id).style.display = 'none';
+    document.getElementById('attributeValueMenuLink-'+id).style.display = 'none';
+    document.getElementById('attributeValueList-'+id).size = 1;
+  }
+}
+
+function setSelectedValue(id)
+{
+  // update the content of the attributeValueList
+  updateAttributeValueList(id);
+
+  // hide old elements
+//alert("(1) hiding name id "+id+", value id "+attributeValueId[id]);
+  document.getElementById('attributeValue-'+attributeValueId[id]).style.display = "none";
+  document.getElementById('attributePrice-'+attributeValueId[id]).style.display = "none";
+
+  attributeValueId[id] = document.getElementById('attributeValueList-'+id).options[document.getElementById('attributeValueList-'+id).selectedIndex].value;
+
+  // show selected elements
+  document.getElementById('attributeValue-'+attributeValueId[id]).style.display = "inline";
+  document.getElementById('attributePrice-'+attributeValueId[id]).style.display = "inline";
+}
+
+function updateAttributeValueList(id)
+{
+// shirtprint
+  typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
+//alert("typeMenu "+typeMenu[0]+", name "+typeMenu[0].name);
+  type = typeMenu[0].selectedIndex;
+  count = document.getElementById('attributeValueList-'+id).options.length;
+  maxcount = count;
+  if (type > 3) {
+    if (maxcount > 1) maxcount = 1;
+  }
+//alert("type "+type+", count "+count+", maxcount "+maxcount);
+
+  // Remember the selected index
+  selectedindex = document.getElementById('attributeValueList-'+id).selectedIndex;
+  // Select the last value to make sure the right ones are removed, if any.
+  document.getElementById('attributeValueList-'+id).selectedIndex = count-1;
+
+  // update the content of the attributeValueList
+  for (i=0; i < count; ++i) {
+//alert("loop "+i+" of "+count+", max "+maxcount);
+    if (i < maxcount) {
+      valueId = document.getElementById('attributeValueList-'+id).options[i].value;
+      if (type > 3) {
+        // Clear the value name for text and upload fields
+        document.getElementById('attributeValue-'+valueId).value = '';
+        document.getElementById('attributeValue-'+valueId).disabled = true;
+      } else {
+        document.getElementById('attributeValue-'+valueId).disabled = false;
+      }
+      value = document.getElementById('attributeValue-'+valueId).value;
+      price = document.getElementById('attributePrice-'+valueId).value;
+//alert("value "+value+", price "+price);
+      document.getElementById('attributeValueList-'+id).options[i].childNodes[0].nodeValue =
+          value + ' (' + price + ' {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})';
+    }
+  }
+//alert("selectedindex "+selectedindex+", count "+count+", max "+maxcount);
+  if (count > maxcount) {
+    for (i=count-1; i >= maxcount; --i) {
+      document.getElementById('attributeValueList-'+id).selectedIndex = i;
+      removeSelectedValues(id);
+    }
+  }
+  // Restore selection
+  document.getElementById('attributeValueList-'+id).selectedIndex = selectedindex;
+}
+
+function removeSelectedValues(id)
+{
+  selectedindex = document.getElementById('attributeValueList-'+id).selectedIndex;
+  document.getElementById('attributeValueList-'+id).options[selectedindex] = null;
+  if (selectedindex > 0) {
+    --selectedindex;
+  }
+  document.getElementById('attributeValueList-'+id).selectedIndex = selectedindex;
+  setSelectedValue(id);
+}
+
+function addValue(id)
+{
+// shirtprint
+// Cannot add more than one option for text and upload fields
+  typeMenu = document.getElementsByName("attributeDisplayType["+id+"]");
+//alert("typeMenu "+typeMenu[0]+", name "+typeMenu[0].name);
+  type = typeMenu[0].selectedIndex;
+  count = document.getElementById('attributeValueList-'+id).options.length;
+  if (type > 3) {
+//alert("type "+type+", count "+count);
+    if (count > 0) {
+      alert("{TXT_SHOP_PRODUCTATTRIBUTE_CANNOT_ADD_VALUE_FOR_TYPE}");
+      return;
+    }
+  }
+//alert("type "+type+", count "+count+", adding");
+
+  index++;
+
+  // create new inputboxes
+  elValue = document.getElementById('attributeValueTpl').cloneNode(true);
+  elValue.setAttribute('id','attributeValue-'+index);
+  elValue.setAttribute('name','attributeValue['+index+']');
+  elValue.style.display = 'inline';
+
+  elPrice = document.getElementById('attributePriceTpl').cloneNode(true);
+  elPrice.setAttribute('id','attributePrice-'+index);
+  elPrice.setAttribute('name','attributePrice['+index+']');
+  elPrice.style.display = 'inline';
+
+  // hide old elements
+//alert("(2) hiding name id "+id+", value id "+attributeValueId[id]);
+  if (document.getElementById('attributeValue-'+attributeValueId[id])) {
+    document.getElementById('attributeValue-'+attributeValueId[id]).style.display = "none";
+    document.getElementById('attributePrice-'+attributeValueId[id]).style.display = "none";
+  }
+
+  // set new index
+  attributeValueId[id] = index;
+
+  // add new elements
+  document.getElementById('attributeValueInputboxes-'+id).appendChild(elValue);
+  document.getElementById('attributePriceInputboxes-'+id).appendChild(elPrice);
+
+  // update the content of the attributeValueList
+  document.getElementById('attributeValueList-'+id).options[document.getElementById('attributeValueList-'+id).options.length] = new Option('(+0.00 {SHOP_PRODUCT_ATTRIBUTE_CURRENCY})',index,false,false);
+  for (i=0;i<document.getElementById('attributeValueList-'+id).options.length;i++) {
+    if (document.getElementById('attributeValueList-'+id).options[i].value == index) {
+      document.getElementById('attributeValueList-'+id).options[i].selected = true;
+    } else {
+      document.getElementById('attributeValueList-'+id).options[i].selected = false;
+    }
+  }
+  document.getElementById('attributeValue-'+index).focus();
+  document.getElementById('attributeValue-'+index).onchange = "updateAttributeValueList('"+id+"')";
+  document.getElementById('attributePrice-'+index).onchange = "updateAttributeValueList('"+id+"')";
+
+  // set event handlers
+  for (i = 0; i < arrElements.length; ++i) {
+    onChangeHandler[arrElements[i]+'-'+index] =
+      new Function(document.getElementById(arrElements[i]+'-'+index).onchange);
+
+    if (document.getElementById(arrElements[i]+'-'+index).addEventListener) {
+        document.getElementById(arrElements[i]+'-'+index).addEventListener('change', onChangeHandler[arrElements[i]+'-'+index], false);
+    } else if (document.getElementById(arrElements[i]+'-'+index).attachEvent) {
+        document.getElementById(arrElements[i]+'-'+index).attachEvent('onchange', onChangeHandler[arrElements[i]+'-'+index]);
+    }
+  }
+
+  // update the content of the attributeValueList
+  updateAttributeValueList(id);
+
+}
+
+function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
+{
+  if (checkboxIsChecked(strForm,strCheckbox) == true) {
+    switch(strAct) {
+      case 'del':
+        if (confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
+          document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes";
+          document.getElementById('shopSelectOptions').submit();
+        }
+        break;
+    }
+  } else {
+    alert('{TXT_MAKE_SELECTION}');
+  }
+  objSelect.value = 0;
+}
+// ]]>
+</script>
+<ul id="tabmenu">
+<li><a id="attributeTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_OPTIONS}">{TXT_OPTIONS}</a></li>
+<li><a id="attributeTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
+</ul>
+<input name="attributeValueTpl" id="attributeValueTpl" value="" maxlength="32" style="display: none; width: 170px;" type="text" />
+<input name="attributePriceTpl" id="attributePriceTpl" value="0.00" maxlength="9" style="display: none; width: 170px; text-align: right;" type="text" />
+<!-- start shopContent1 div -->
+<div id="shopContent1" class="attributeTab" style="display:block">
+<form name="shopSelectOptions" id="shopSelectOptions" method="post" action="">
+  <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <tr>
+      <th nowrap="nowrap" width="2%" style="text-align:center;">#</th>
+      <th nowrap="nowrap" width="13%">{TXT_NAME}</th>
+      <th nowrap="nowrap" width="200">{TXT_VALUES}</th>
+      <th nowrap="nowrap" width="60%">{TXT_OPTIONS}</th>
+      <th nowrap="nowrap" width="5%" style="text-align:right;">{TXT_FUNCTIONS}</th>
+    </tr>
+    <!-- BEGIN attributeList -->
+      <tr class="{SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS}" style="vertical-align:top;">
+        <td nowrap="nowrap" width="2%"><input name="selectedOptionId[]" value="{SHOP_PRODUCT_ATTRIBUTE_ID}" type="checkbox" /></td>
+        <td nowrap="nowrap" width="13%"><input type="text" name="optionName[{SHOP_PRODUCT_ATTRIBUTE_ID}]" size="20" maxlength="32" value="{SHOP_PRODUCT_ATTRIBUTE_NAME}" /></td>
+        <td nowrap="nowrap" width="20%"><div style="text-align:center;vertical-align:top;">{SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU}</div></td>
+        <td nowrap="nowrap" width="60%">
+          {TXT_DISPLAY_AS}&nbsp;{SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE}
+          <div id="attributeValueEdit-{SHOP_PRODUCT_ATTRIBUTE_ID}" style="display:none;vertical-align:bottom;"><br />
+            <table summary="" border="0" cellpadding="0" cellspacing="4" style="vertical-align:top;">
+              <tr>
+                <td><div style="border-bottom:0px;">{TXT_VALUE}</div></td>
+                <td id="attributeValueInputboxes-{SHOP_PRODUCT_ATTRIBUTE_ID}"><div style="border-bottom:0px;text-align:right;">{SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES}</div></td>
+              </tr>
+              <tr>
+                <td><div style="border-bottom:0px;">{TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})</div></td>
+                <td nowrap="nowrap"><div style="border-bottom:0px;text-align:right;display:inline;" id="attributePriceInputboxes-{SHOP_PRODUCT_ATTRIBUTE_ID}">{SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}</div></td>
+              </tr>
+              <tr>
+                <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" id="newAttributeValue-{SHOP_PRODUCT_ATTRIBUTE_ID}" value="{TXT_ADD_NEW_VALUE}" onclick="addValue({SHOP_PRODUCT_ATTRIBUTE_ID})" /></div></td>
+              </tr>
+            </table>
+          </div>&nbsp;
+        </td>
+        <td nowrap="nowrap" width="5%"><div style="text-align:right;"><a href="javascript:{}" onclick="swapEdit({SHOP_PRODUCT_ATTRIBUTE_ID})" title="{TXT_EDIT_OPTION}"><img src="images/icons/edit.gif" alt="{TXT_EDIT_OPTION}" border="0" /></a><a href="javascript:deleteOption({SHOP_PRODUCT_ATTRIBUTE_ID})" title="{TXT_DELETE_OPTION}"><img src="images/icons/delete.gif" alt="{TXT_DELETE_OPTION}" border="0" /></a></div></td>
+      </tr>
+    <!-- END attributeList -->
+  </table>
+  <img src="images/icons/arrow.gif" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" border="0" height="22" width="38" />
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedOptionId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedOptionId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <select name="selectAction" onchange="shopOptionDoAction('shopSelectOptions','selectedOptionId[]',this,this.value)"><option value="0" selected="selected">{TXT_SELECT_ACTION}:</option><option value="del">{TXT_DELETE}</option></select>
+  <br />
+  <br />
+  <input type="submit" name="updateAttributeOptions" value="{TXT_SAVE_CHANGES}" onclick="storeChanges()" />
+</form>
+<br />
+</div>
+<!-- end shopContent1 div -->
+<!-- start shopContent2 div -->
+<div id="shopContent2" class="attributeTab" style="display:none">
+  <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
+    <table summary="" border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+      <tr>
+        <th nowrap="nowrap" width="15%">&nbsp;{TXT_NAME}</th>
+        <th nowrap="nowrap" width="200">{TXT_VALUES}</th>
+        <th nowrap="nowrap" width="65%">{TXT_OPTIONS}<th>
+      </tr>
+      <tr class="row1" style="vertical-align:top;">
+        <td nowrap="nowrap" width="15%"><input type="text" id="optionName-0" name="optionName[0]" size="20" maxlength="32" value="" /></td>
+        <td nowrap="nowrap" width="200"><div style="text-align:center;vertical-align:top;">
+          <select name="attributeValueList[0][]" id="attributeValueList-0" size="10" onchange="setSelectedValue(0)" style="width:200px;"></select>
+          <br />
+          <a href="javascript:{}" id="attributeValueMenuLink-0" style="display: block;" onclick="removeSelectedValues(0)" title="{TXT_REMOVE_SELECTED_VALUE}">{TXT_REMOVE_SELECTED_VALUE}</a>
+        </div></td>
+        <td nowrap="nowrap" width="65%">
+          {TXT_DISPLAY_AS}&nbsp;{TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU}<br /><br />
+          <table summary="" border="0" cellpadding="0" cellspacing="4" style="vertical-align:top;text-align:right;width:250px;">
+            <tr>
+              <td><div style="border-bottom:0px;">{TXT_VALUE}</div></td>
+              <td id="attributeValueInputboxes-0"><div style="border-bottom:0px;text-align:right;"></div></td>
+            </tr>
+            <tr>
+              <td><div style="border-bottom:0px;">{TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})</div></td>
+              <td nowrap="nowrap"><div style="border-bottom:0px;" id="attributePriceInputboxes-0"></div></td>
+            </tr>
+            <tr>
+              <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" value="{TXT_ADD_NEW_VALUE}" onclick="addValue(0)" /></div></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <br />
+    <input type="submit" name="addAttributeOption" value="{TXT_ADD}" />
+  </form>
+</div>
+<!-- end shopContent1 div -->
+<!-- END module_shop_products_attribute_options.html -->

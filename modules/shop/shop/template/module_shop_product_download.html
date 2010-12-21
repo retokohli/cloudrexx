@@ -1,0 +1,74 @@
+<!-- START module_shop_product_download.html -->
+<script language="javascript" type="text/javascript">
+<!--
+// -->
+</script>
+<ul id="tabmenu">
+<li><a id="attributeTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_OPTIONS}">{TXT_OPTIONS}</a></li>
+<li><a id="attributeTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
+</ul>
+<!-- start shopContent1 div -->
+<div id="shopContent1" class="attributeTab" style="display:block">
+<form name="shopSelectOptions" id="shopSelectOptions" method="post" action="">
+  <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <tr>
+      <th nowrap="nowrap" width="2%" style="text-align:center;">#</th>
+      <th nowrap="nowrap" width="35%"><div align="left">Download Name</div></th>
+      <th nowrap="nowrap" width="45%"><div align="left">Dateiname</div></th>
+      <th nowrap="nowrap" width="8%"><div align="left">Anzahl Tage bis zum Ablauf</div></th>
+      <th nowrap="nowrap" width="5%" style="text-align:right;"><div align="left">Max. Downloads </div></th>
+        <th nowrap="nowrap" width="5%" style="text-align:right;">{TXT_FUNCTIONS}</th>
+    </tr>
+    <!-- BEGIN attributeList -->
+      <tr class="{SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS}" style="vertical-align:top;">
+        <td nowrap="nowrap"><input name="selectedOptionId[]" value="{SHOP_PRODUCT_ATTRIBUTE_ID}" type="checkbox" /></td>
+        <td nowrap="nowrap"><input type="text" name="optionName[{SHOP_PRODUCT_ATTRIBUTE_ID}]" size="20" maxlength="32" /></td>
+        <td nowrap="nowrap"><div style="text-align:center;vertical-align:top;">&nbsp;</div></td>
+        <td nowrap="nowrap"><div id="attributeValueEdit[{SHOP_PRODUCT_ATTRIBUTE_ID}]" style="display:block;vertical-align:bottom;"></div>
+        </td>
+        <td nowrap="nowrap" width="5%"><div style="text-align:right;">&nbsp;</div></td>
+          <td nowrap="nowrap" width="5%"><div style="text-align:right;"><a href="javascript:{}" onclick="swapEdit({SHOP_PRODUCT_ATTRIBUTE_ID})" title="{TXT_EDIT_OPTION}"><img src="images/icons/edit.gif" alt="{TXT_EDIT_OPTION}" border="0"></a><a href="javascript:deleteOption({SHOP_PRODUCT_ATTRIBUTE_ID})" title="{TXT_DELETE_OPTION}"><img src="images/icons/delete.gif" alt="{TXT_DELETE_OPTION}" border="0"></a></div></td>
+      </tr>
+    <!-- END attributeList -->
+  </table>
+  <img src="images/icons/arrow.gif" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" border="0" height="22" width="38">
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedOptionId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOptions','selectedOptionId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <select name="selectAction" onchange="shopOptionDoAction('shopSelectOptions','selectedOptionId[]',this,this.value)"><option value="0" selected="selected">{TXT_SELECT_ACTION}:</option><option value="del">{TXT_DELETE}</option></select>
+  <br />
+  <br />
+  <input type="submit" name="updateAttributeOptions" value="{TXT_SAVE_CHANGES}" onclick="storeChanges()" />
+</form>
+<br>
+</div>
+<!-- end shopContent1 div -->
+<!-- start shopContent2 div -->
+<div id="shopContent2" class="attributeTab" style="display:block">
+  <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" enctype="multipart/form-data" name="shopProductsForm" onsubmit="return storeNewOption()">
+    <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+      <tr>
+        <th colspan="2" nowrap="nowrap">Download Datei hinzuf&uuml;gen </th>
+      </tr>
+      <tr class="row1" style="vertical-align:top;">
+        <td width="10%" nowrap="nowrap">Download Name</td>
+        <td nowrap="nowrap"><input type="text" name="textfield"></td>
+        </tr>
+      <tr class="row1">
+        <td width="10%" nowrap="nowrap">Dateiname ( /modules/shop/download/ ) </td>
+        <td nowrap="nowrap"><input type="file" name="file"></td>
+      </tr>
+      <tr class="row1">
+        <td width="10%" nowrap="nowrap">Anzahl Tage bis zum Ablauf </td>
+        <td nowrap="nowrap"><input type="text" name="textfield"></td>
+      </tr>
+      <tr class="row1">
+        <td width="10%" nowrap="nowrap">Max. Downloads </td>
+        <td nowrap="nowrap"><input type="text" name="textfield"></td>
+      </tr>
+    </table>
+    <br />
+    <input type="submit" name="addAttributeOption" value="{TXT_ADD}" />
+  </form>
+</div>
+<!-- end shopContent1 div -->
+<!-- END module_shop_product_download.html -->
