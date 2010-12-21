@@ -1,0 +1,90 @@
+<!-- START module_shop_settings_payment.html -->
+<script language="javascript" type="text/javascript">
+<!-- //
+function deletePayment(pId)
+{
+  if (confirm('{TXT_CONFIRM_DELETE_PAYMENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=payment&paymentId="+pId);
+}
+
+Text[0]=["","{TXT_FREE_OF_CHARGE_TIP}"];
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
+// -->
+</script>
+<!-- BEGIN statusBar -->
+<span class="red">{CONTENT_STATUS}</span>
+<!-- END statusBar -->
+<ul id="tabmenu">
+<li><a id="paymentTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_PAYMENT_TYPE}">{TXT_PAYMENT_TYPES}</a></li>
+<li><a id="paymentTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
+</ul>
+<form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=payment">
+<!-- start shopContent1 div -->
+<div id="shopContent1" class="paymentTab" style="display:block">
+    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+      <tr>
+        <th colspan="7">{TXT_PAYMENT_TYPES}</th>
+      </tr>
+      <tr class="row1">
+        <td nowrap="nowrap" width="20%"><strong>{TXT_PAYMENT_TYPE}</strong></td>
+        <td nowrap="nowrap" width="10%"><strong>{TXT_FEE}</strong></td>
+        <td nowrap="nowrap" width="12%"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
+        <td nowrap="nowrap" width="38%"><strong>{TXT_HANDLER}</strong></td>
+        <td nowrap="nowrap" width="10%"><strong>{TXT_ZONE}</strong></td>
+        <td nowrap="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
+        <td nowrap="nowrap" width="5%">&nbsp;</td>
+      </tr>
+    <!-- BEGIN shopPayment -->
+      <tr class="{SHOP_PAYMENT_STYLE}">
+        <td nowrap="nowrap"><input name="paymentName[{SHOP_PAYMENT_ID}]" type="text" value="{SHOP_PAYMENT_NAME}" size="30" maxlength="50" /></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCosts[{SHOP_PAYMENT_ID}]" value="{SHOP_PAYMENT_COST}" size="15" maxlength="50" /></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCostsFreeSum[{SHOP_PAYMENT_ID}]" value="{SHOP_PAYMENT_COST_FREE_SUM}" size="15" maxlength="50" /></td>
+        <td nowrap="nowrap">
+          <select name="paymentHandler[{SHOP_PAYMENT_ID}]">
+            {SHOP_PAYMENT_HANDLER_MENUOPTIONS}
+          </select>
+        </td>
+    <td nowrap="nowrap">{SHOP_ZONE_SELECTION}</td>
+        <td nowrap="nowrap"><div align="center"><input type="checkbox" name="paymentActive[{SHOP_PAYMENT_ID}]" value="1" {SHOP_PAYMENT_STATUS} /></div></td>
+        <td nowrap="nowrap"><div style="text-align:right"><a href="javascript:deletePayment('{SHOP_PAYMENT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
+      </tr>
+    <!-- END shopPayment -->
+    </table>
+<br />
+<input type="submit" name="payment" value="{TXT_STORE}" />
+</div>
+<!-- end shopContent1 div -->
+
+<!-- start shopContent2 div -->
+<div id="shopContent2" class="paymentTab" style="display:none">
+<table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+      <tr>
+        <th colspan="6">{TXT_ADD}</th>
+      </tr>
+      <tr class="row1">
+        <td nowrap="nowrap" width="20%"><strong>{TXT_PAYMENT_TYPE}</strong></td>
+        <td nowrap="nowrap" width="10%"><strong>{TXT_FEE}</strong></td>
+        <td nowrap="nowrap" width="12%"><strong class="note" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])">{TXT_FREE_OF_CHARGE}</strong></td>
+        <td nowrap="nowrap" width="53%"><strong>{TXT_HANDLER}</strong></td>
+        <td nowrap="nowrap" width="10%"><strong>{TXT_ZONE}</strong></td>
+        <td nowrap="nowrap" width="5%"><div align="center"><strong>{TXT_ACTIVE}</strong></div></td>
+      </tr>
+      <tr class="row2">
+        <td nowrap="nowrap"><b><input name="paymentName_new" type="text" value="" size="30" maxlength="50" /></b></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCosts_new" value="0.00" size="15" maxlength="50" /></td>
+    <td nowrap="nowrap"><input type="text" name="paymentCostsFreeSumNew" value="0.00" size="15" maxlength="50" /></td>
+        <td nowrap="nowrap">
+          <select name="paymentHandler_new">
+            {SHOP_PAYMENT_HANDLER_MENUOPTIONS_NEW}
+          </select>
+        </td>
+    <td nowrap="nowrap">{SHOP_ZONE_SELECTION_NEW}</td>
+        <td nowrap="nowrap"><div align="center"><input type="checkbox" name="paymentActive_new" value="1" checked="checked" /></div></td>
+      </tr>
+    </table>
+<br />
+<input type="submit" name="payment_add" value="{TXT_ADD}" />
+</div>
+<!-- end shopContent2 div -->
+</form>
+<!-- END module_shop_settings_payment.html -->

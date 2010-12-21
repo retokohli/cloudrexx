@@ -1,0 +1,150 @@
+<!-- START shop_customers.html -->
+<script language="javascript" type="text/javascript">
+<!-- //
+function deleteCustomer(customerId)
+{
+  if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delcustomer&customerId="+customerId);
+}
+
+function sendForm(letter)
+{
+    document.formSearchCustomers.shopListLetter.value = letter;
+    document.formSearchCustomers.submit();
+}
+
+function shopCustomersDoAction(strForm, strCheckbox, objSelect, strAct)
+{
+  if (checkboxIsChecked(strForm, strCheckbox) == true) {
+    switch (strAct) {
+      case 'del':
+        if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}')) {
+          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delcustomer";
+          document.forms[strForm].submit();
+        }
+        break;
+    }
+  } else {
+    alert("{TXT_MAKE_SELECTION}");
+  }
+  objSelect.value = 0;
+}
+// -->
+</script>
+<div id="subnavbar_level2">
+  <ul>
+    <li><a href="index.php?cmd=shop&amp;act=customers&amp;tpl=catalog" title="{TXT_OVERVIEW}">{TXT_OVERVIEW}</a></li>
+    <li><a href="index.php?cmd=shop&amp;act=customers&amp;tpl=discounts" title="{TXT_SHOP_DISCOUNTS_CUSTOMER}">{TXT_SHOP_DISCOUNTS_CUSTOMER}</a></li>
+    <li><a href="index.php?cmd=shop&amp;act=customers&amp;tpl=groups" title="{TXT_SHOP_CUSTOMER_GROUPS}">{TXT_SHOP_CUSTOMER_GROUPS}</a></li>
+  </ul>
+</div>
+<br />
+<form name="formSearchCustomers" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=customers">
+  <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
+    <tr>
+      <th>{TXT_SEARCH}</th>
+    </tr>
+    <tr class="row1">
+      <td>
+        <input type="text" name="shopSearchTerm" value="{SHOP_CUSTOMER_TERM}"
+            size="40" maxlength="255" />
+        <select name="shopCustomer" size="1">
+          {SHOP_CUSTOMER_TYPE_MENUOPTIONS}
+        </select>
+        <select name="shopCustomerStatus" size="1">
+          {SHOP_CUSTOMER_STATUS_MENUOPTIONS}
+        </select>
+        <input type="submit" name="shopSearchCustomers" value="{TXT_SEARCH}" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td>
+        {TXT_SORT_ORDER}
+        <select name="shopListSort" size="1"
+            onchange="forms.formSearchCustomers.submit();">
+          {SHOP_CUSTOMER_SORT_MENUOPTIONS}
+        </select>
+      </td>
+    </tr>
+    <tr class="row1">
+      <td>
+        [ <a href="javascript:sendForm('A')" title="A">A</a> ]
+        [ <a href="javascript:sendForm('B')" title="B">B</a> ]
+        [ <a href="javascript:sendForm('C')" title="C">C</a> ]
+        [ <a href="javascript:sendForm('D')" title="D">D</a> ]
+        [ <a href="javascript:sendForm('E')" title="E">E</a> ]
+        [ <a href="javascript:sendForm('F')" title="F">F</a> ]
+        [ <a href="javascript:sendForm('G')" title="G">G</a> ]
+        [ <a href="javascript:sendForm('H')" title="H">H</a> ]
+        [ <a href="javascript:sendForm('I')" title="I">I</a> ]
+        [ <a href="javascript:sendForm('J')" title="J">J</a> ]
+        [ <a href="javascript:sendForm('K')" title="K">K</a> ]
+        [ <a href="javascript:sendForm('L')" title="L">L</a> ]
+        [ <a href="javascript:sendForm('M')" title="M">M</a> ]
+        [ <a href="javascript:sendForm('N')" title="N">N</a> ]
+        [ <a href="javascript:sendForm('O')" title="O">O</a> ]
+        [ <a href="javascript:sendForm('P')" title="P">P</a> ]
+        [ <a href="javascript:sendForm('Q')" title="Q">Q</a> ]
+        [ <a href="javascript:sendForm('R')" title="R">R</a> ]
+        [ <a href="javascript:sendForm('S')" title="S">S</a> ]
+        [ <a href="javascript:sendForm('T')" title="T">T</a> ]
+        [ <a href="javascript:sendForm('U')" title="U">U</a> ]
+        [ <a href="javascript:sendForm('V')" title="V">V</a> ]
+        [ <a href="javascript:sendForm('W')" title="W">W</a> ]
+        [ <a href="javascript:sendForm('X')" title="X">X</a> ]
+        [ <a href="javascript:sendForm('Y')" title="Y">Y</a> ]
+        [ <a href="javascript:sendForm('Z')" title="Z">Z</a> ]
+        [ <a href="javascript:sendForm('')" title="Alle">Alle</a> ]
+        <input type="hidden" name="shopListLetter" value="{SHOP_CUSTOMER_LISTLETTER}" />
+        <!--{SHOP_LISTLETTER_MENUOPTIONS}-->
+      </td>
+    </tr>
+  </table>
+</form>
+<br />
+<!-- BEGIN shopCustomersOverview -->
+<form name="shopSelectCustomers" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=customers">
+  <table class="adminlist" border="0" width="100%" cellpadding="2" cellspacing="0">
+    <tr>
+      <th nowrap="nowrap" style="text-align:center;">#</th>
+      <th nowrap="nowrap">{TXT_STATUS}</th>
+      <th nowrap="nowrap">{TXT_ID}</th>
+      <th nowrap="nowrap">{TXT_COMPANY}</th>
+      <th nowrap="nowrap">{TXT_NAME}</th>
+      <th nowrap="nowrap">{TXT_ADDRESS}</th>
+      <th nowrap="nowrap">{TXT_ZIP_CITY}</th>
+      <th nowrap="nowrap">{TXT_PHONE}</th>
+      <th nowrap="nowrap">{TXT_EMAIL}</th>
+      <th nowrap="nowrap" style="text-align:right;">{TXT_ACTION}</th>
+    </tr>
+    <!-- BEGIN customersRow -->
+      <tr class="{SHOP_ROWCLASS}">
+        <td nowrap="nowrap"><input type="checkbox" name="selectedCustomerId[]" value="{SHOP_CUSTOMERID}" /></td>
+        <td nowrap="nowrap"><img src="images/icons/{SHOP_CUSTOMER_STATUS_IMAGE}" alt="{TXT_STATUS}" /></td>
+        <td nowrap="nowrap"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}">{SHOP_CUSTOMERID}</a></td>
+        <td nowrap="nowrap">{SHOP_COMPANY}</td>
+        <td nowrap="nowrap"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
+        <td nowrap="nowrap">{SHOP_ADDRESS}</td>
+        <td nowrap="nowrap">{SHOP_ZIP}&nbsp;/&nbsp;{SHOP_CITY}</td>
+        <td nowrap="nowrap">{SHOP_PHONE}</td>
+        <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=mail&amp;strTab=shopMailSend&amp;shopMailTo={SHOP_EMAIL}" title="{TXT_SEND_MAIL_TO_ADDRESS}">{SHOP_EMAIL}</a></td>
+        <td nowrap="nowrap"><div style="text-align:right;"><a href="?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>        <a href="?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteCustomer('{SHOP_CUSTOMERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
+    </tr>
+    <!-- END customersRow -->
+  </table>
+  <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectCustomers','selectedCustomerId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectCustomers','selectedCustomerId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <select name="selectAction" onchange="shopCustomersDoAction('shopSelectCustomers','selectedCustomerId[]',this,this.value)">
+    <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
+    <option value="del">{TXT_DELETE}</option>
+  </select>
+</form>
+<!-- END shopCustomersOverview -->
+<br />
+<br />
+<form name="formNewCustomer" method="post" action="?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer">
+  <input type="submit" name="shopAddNewCustomer" value="{TXT_ADD_NEW_CUSTOMER}" />
+</form>
+<p>{SHOP_CUSTOMER_PAGING}&nbsp;</p>
+<!-- END shop_customers.html -->
