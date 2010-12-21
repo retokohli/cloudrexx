@@ -211,6 +211,16 @@ class MediaManager extends MediaLibrary {
                     {
                         $class .= '" style="background-color: ' . $this->highlightColor . ';';
                     }
+
+                    if (!$this->manageAccessGranted()) {
+                        //if the user is not allowed to delete or rename files -- hide those blocks
+                        if ($this->_objTpl->blockExists('manage_access_option')) {
+                            $this->_objTpl->hideBlock('manage_access_option');
+                        }
+                    } else {
+                        
+                    }
+                    
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
                         'MEDIA_FILE_ICON'     => $this->iconWebPath . $dirTree[$key]['icon'][$x] . '.gif',
@@ -218,12 +228,16 @@ class MediaManager extends MediaLibrary {
                         'MEDIA_FILE_SIZE'     => $this->_formatSize($dirTree[$key]['size'][$x]),
                         'MEDIA_FILE_TYPE'     => $this->_formatType($dirTree[$key]['type'][$x]),
                         'MEDIA_FILE_DATE'     => $this->_formatDate($dirTree[$key]['date'][$x]),
+                        'MEDIA_RENAME_TITLE'  => $_ARRAYLANG['TXT_MEDIA_RENAME'],
+                        'MEDIA_DELETE_TITLE'  => $_ARRAYLANG['TXT_MEDIA_DELETE'],
                     ));
 
                     if ($key == 'dir') {
                         $tmpHref= CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
+                        $delHref= CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . '&amp;cmd=delete&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
                     }
                     elseif ($key == 'file') {
+                        $delHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . '&amp;act=delete&amp;path=' . rawurlencode($this->webPath) . '&amp;file='. rawurlencode($dirTree[$key]['name'][$x]);
                         if ($this->_isImage($this->path . $dirTree[$key]['name'][$x])) {
                             $tmpSize = getimagesize($this->path . $dirTree[$key]['name'][$x]);
                             $tmpHref = 'javascript: preview(\'' . $this->webPath . $dirTree[$key]['name'][$x] . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
@@ -233,7 +247,8 @@ class MediaManager extends MediaLibrary {
                     }
 
                     $this->_objTpl->setVariable(array(
-                        'MEDIA_FILE_NAME_HREF'  => $tmpHref
+                        'MEDIA_FILE_NAME_HREF'  => $tmpHref,
+                        'MEDIA_FILE_DELETE_HREF'=> $delHref
                     ));
 
                     $this->_objTpl->parse('mediaDirectoryTree');
@@ -352,6 +367,26 @@ class MediaManager extends MediaLibrary {
            && Permission::checkAccess(intval($uploadAccessSetting), 'dynamic', true)) { // access group
             return true;
         } else if ($uploadAccessSetting == 'on') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check Rename/Delete permission from settings.
+     * If setting value is number then check access using Permission
+     * If setting value is 'on' then return true
+     * Else return false
+     *
+     * @return     boolean  true if access gented and false if access denied
+     */
+    private function manageAccessGranted()
+    {
+        $manageAccessSetting = $this->_arrSettings[$this->archive . '_frontend_managable'];
+        if (is_numeric($manageAccessSetting)
+           && Permission::checkAccess(intval($manageAccessSetting), 'dynamic', true)) { // access group
+            return true;
+        } else if ($manageAccessSetting == 'on') {
             return true;
         }
         return false;

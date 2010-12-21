@@ -719,9 +719,13 @@ class MediaManager extends MediaLibrary {
 
         for($k = 1; $k <= 4; $k++)
         {
-            $arrAssociatedGroupOptions = array();
-            $arrNotAssociatedGroupOptions = array();
+            $arrAssociatedGroupOptions          = array();
+            $arrNotAssociatedGroupOptions       = array();
+            $arrAssociatedGroupManageOptions    = array();
+            $arrNotAssociatedGroupManageOptions = array();
             $mediaAccessSetting = $this->_arrSettings['media' . $k . '_frontend_changable'];
+            $mediaManageSetting = $this->_arrSettings['media' . $k . '_frontend_managable'];
+            
             if(!is_numeric($mediaAccessSetting))
             {
                 // Get all groups
@@ -747,6 +751,31 @@ class MediaManager extends MediaLibrary {
                 $objGroup->next();
             }
 
+            if(!is_numeric($mediaManageSetting))
+            {
+                // Get all groups
+                $objGroup = $objFWUser->objGroup->getGroups();
+            } else {
+                // Get access groups
+                $objGroup = $objFWUser->objGroup->getGroups(
+                    array('dynamic' => $mediaManageSetting)
+                );
+            }
+            $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
+            
+            $objGroup = $objFWUser->objGroup->getGroups();
+            while (!$objGroup->EOF) {
+                $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+
+                if (in_array($objGroup->getId(), $arrAssociatedGroups)) {
+                    $arrAssociatedGroupManageOptions[] = $option;
+                } else {
+                    $arrNotAssociatedGroupManageOptions[] = $option;
+                }
+
+                $objGroup->next();
+            }
+
             $this->_objTpl->setVariable(array(
                     'MEDIA_ARCHIVE_NUMBER'                  => $k,
                     'MEDIA_TAB_STYLE'                       => ($k == 1) ? 'block' : 'none',
@@ -756,6 +785,12 @@ class MediaManager extends MediaLibrary {
                     'MEDIA_ACCESS_DISPLAY'                  => (is_numeric($this->_arrSettings['media' . $k . '_frontend_changable'])) ? 'block' : 'none',
                     'MEDIA_ACCESS_ASSOCIATED_GROUPS'        => implode("\n", $arrAssociatedGroupOptions),
                     'MEDIA_ACCESS_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupOptions),
+                    'MEDIA_ALLOW_USER_MANAGE_ON'            => ($this->_arrSettings['media' . $k . '_frontend_managable'] == 'on') ? 'checked="checked"' : '',
+                    'MEDIA_ALLOW_USER_MANAGE_OFF'           => ($this->_arrSettings['media' . $k . '_frontend_managable'] == 'off') ? 'checked="checked"' : '',
+                    'MEDIA_ALLOW_USER_MANAGE_GROUP'         => (is_numeric($this->_arrSettings['media' . $k . '_frontend_managable'])) ? 'checked="checked"' : '',
+                    'MEDIA_MANAGE_DISPLAY'                  => (is_numeric($this->_arrSettings['media' . $k . '_frontend_managable'])) ? 'block' : 'none',
+                    'MEDIA_MANAGE_ASSOCIATED_GROUPS'        => implode("\n", $arrAssociatedGroupManageOptions),
+                    'MEDIA_MANAGE_NOT_ASSOCIATED_GROUPS'    => implode("\n", $arrNotAssociatedGroupManageOptions),
                 ));
             $this->_objTpl->parse("mediaAccessSection");
         }
@@ -803,6 +838,37 @@ class MediaManager extends MediaLibrary {
                 $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
                                                 SET `value` = "' . intval($newMediaSetting) . '"
                                                 WHERE `name` = "media' . $i . '_frontend_changable"
+                                            ');
+            }
+
+            $oldManageSetting = $this->_arrSettings['media' . $i . '_frontend_managable'];
+            $newManageSetting = $_POST['mediaSettings_Media' . $i . 'FrontendManagable'];
+            if(!is_numeric($newManageSetting))
+            {
+                if(is_numeric($oldManageSetting))
+                {
+                    // remove AccessId
+                    Permission::removeAccess($oldManageSetting, 'dynamic');
+                }
+                // save new setting
+                $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
+                                                SET `value` = "' . contrexx_addslashes($newManageSetting) . '"
+                                                WHERE `name` = "media' . $i . '_frontend_managable"
+                                            ');
+            } else {
+                $accessGroups = $_POST['media' . $i . '_manage_associated_groups'];
+                // get groups
+                Permission::removeAccess($oldManageSetting, 'dynamic');
+                $accessGroups = $_POST['media' . $i . '_manage_associated_groups'];
+                // add AccessID
+                $newManageSetting = Permission::createNewDynamicAccessId();
+                // save AccessID
+                if(count($accessGroups)) {
+                    Permission::setAccess($newManageSetting, 'dynamic', $accessGroups);
+                }
+                $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
+                                                SET `value` = "' . intval($newManageSetting) . '"
+                                                WHERE `name` = "media' . $i . '_frontend_managable"
                                             ');
             }
         }
