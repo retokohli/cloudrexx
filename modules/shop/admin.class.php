@@ -18,10 +18,9 @@
  */
 // post-2.1
 //require_once ASCMS_CORE_PATH.'/Text.class.php';
-require_once ASCMS_CORE_PATH.'/Html.class.php';
-require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
-require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/shopLib.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/Image.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Exchange.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Settings.class.php';
@@ -159,11 +158,16 @@ class shopmanager extends ShopLibrary
 
         // Settings object
         $this->objSettings = new Settings();
+
+        // Exchange object
+        // OBSOLETE: $this->objExchange = new Exchange();
+
         $this->objCSVimport = new CSVimport();
 
         // initialize array of all countries
         //$this->_initCountries();
         $this->_initConfiguration();
+
     }
 
 
@@ -1857,12 +1861,6 @@ class shopmanager extends ShopLibrary
                     'TXT_SHOP_DOWNLOAD_PASSWORD' => $_ARRAYLANG['TXT_SHOP_DOWNLOAD_PASSWORD'],
                     'TXT_SHOP_LOGIN_DATA' => $_ARRAYLANG['TXT_SHOP_LOGIN_DATA'],
                     'TXT_SHOP_ORDER_ID_CUSTOM' => $_ARRAYLANG['TXT_SHOP_ORDER_ID_CUSTOM'],
-                    'TXT_SHOP_MESSAGE_USE_HTML' => $_ARRAYLANG['TXT_SHOP_MESSAGE_USE_HTML'],
-                    'TXT_SHOP_MESSAGE_HTML' => $_ARRAYLANG['TXT_SHOP_MESSAGE_HTML'],
-                    'TXT_SHOP_TEMPLATE_KEY' => $_ARRAYLANG['TXT_SHOP_TEMPLATE_KEY'],
-                    'SHOP_MAIL_HTML_CHECKBOX' => Html::getCheckbox('html', 1),
-                    'SHOP_MAIL_MSG_HTML' => get_wysiwyg_editor(
-                        'message_html', ''),
                 ));
                 // set config vars
                 self::$objTemplate->setVariable(array(
@@ -1877,61 +1875,51 @@ class shopmanager extends ShopLibrary
                 // send template
                 if (!empty($_POST['shopMailSend'])) {
                     if (!empty($_POST['shopMailTo'])) {
-                        $strMailTos = contrexx_stripslashes($_POST['shopMailTo']);
-                        $message_html = (isset($_POST['shopMailBodyHtml'])
-                            ? contrexx_stripslashes($_POST['shopMailBodyHtml']) : '');
-                        $html = !empty($message_html);
-                        $arrMailtemplate = array(
-                            'from'    => contrexx_stripslashes($_POST['shopMailFromAddress']),
-                            'sender'  => contrexx_stripslashes($_POST['shopMailFromName']),
-                            'subject' => contrexx_stripslashes($_POST['shopMailSubject']),
-                            'message' => contrexx_stripslashes($_POST['shopMailBody']),
-                            'message_html' => $message_html,
-                            'html'    => $html,
-                            'to'      => $strMailTos,
-                        );
-                        if (MailTemplate::send($arrMailtemplate)) {
-                            self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $strMailTos));
-                        } else {
-                            self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                        $arrMailTo        = explode(',', $_POST['shopMailTo']);
+                        $shopMailFrom     = $_POST['shopMailFromAddress'];
+                        $shopMailFromText = $_POST['shopMailFromName'];
+                        $shopMailSubject  = str_replace('<DATE>', date('d.m.Y'), $_POST['shopMailSubject']);
+                        $shopMailBody     = str_replace('<DATE>', date('d.m.Y'), $_POST['shopMailBody']);
+                        foreach ($arrMailTo as $shopMailTo) {
+                            $shopMailTo    = trim($shopMailTo);
+                            $blnMailResult = Mail::send($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody);
+                            if ($blnMailResult) {
+                                self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $shopMailTo));
+                            } else {
+                                self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                            }
                         }
                     } else {
                         self::addError($_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS']);
                     }
                 }
 
-                if (isset($_REQUEST['delTplId'])) {
-                    if (MailTemplate::deleteTemplate(
-                        contrexx_stripslashes($_REQUEST['delTplId']))) {
-                        self::addMessage(MailTemplate::getMessages());
-                    } else {
-                        self::addError(MailTemplate::getErrors());
-                    }
-                }
                 // Generate title row of the template list
-                $defaultLang = FWLanguage::getDefaultLangId();
+                $arrAvailable = array();
                 foreach ($arrLanguage as $lang_id => $langValues) {
-                    if (!$langValues['frontend']) continue;
-                    self::$objTemplate->setVariable(array('SHOP_MAIL_LANGUAGE' => $langValues['name'],));
-                    self::$objTemplate->parse('shopMailLanguages');
-                }
-                // Get a list of all Template keys
-                $count = 0;
-                $arrTemplates = MailTemplate::getTemplateArray(0, '', 0, null, $count);
-                $arrTemplateKeys = array();
-                foreach (array_keys($arrTemplates) as $key) {
-                    $arrTemplateKeys[] = $key;
+                    if ($langValues['frontend']) {
+                        self::$objTemplate->setVariable(array('SHOP_MAIL_LANGUAGE' => $langValues['name'],));
+                        self::$objTemplate->parse('shopMailLanguages');
+                        // Get the availability of all templates
+                        $arrTemplates = Mail::getTemplateArray($lang_id);
+                        foreach ($arrTemplates as $template_id => $arrTemplate) {
+                            $arrAvailable[$template_id][$lang_id] =
+                                $arrTemplate['available'];
+                        }
+                    }
+                    if ($langValues['is_default'] == 'true')
+                        $defaultLang = $langValues['id'];
                 }
                 // Generate rows of the template list with the availability icon
-                foreach ($arrTemplateKeys as $key) {
-                    $template_name = '';
-                    foreach ($arrLanguage as $lang_id => $langValues) {
-                        if (!$langValues['frontend']) continue;
-                        $arrTemplate = MailTemplate::getTemplate($key, $lang_id);
+                foreach ($arrAvailable as $template_id => $arrLangStatus) {
+                    self::$objTemplate->setVariable(
+                        'SHOP_MAIL_CLASS', (++$i % 2 ? 'row1' : 'row2')
+                    );
+                    foreach ($arrLangStatus as $lang_id => $lang_status) {
                         self::$objTemplate->setVariable(
                             'SHOP_MAIL_STATUS',
-                                ($arrTemplate['available']
-                                    ? '<a href="javascript:loadTpl(\''.$key.'\','.
+                                ($lang_status
+                                    ? '<a href="javascript:loadTpl('.$template_id.','.
                                         $lang_id.',\'shopMailEdit\')" title="'.
                                         $_ARRAYLANG['TXT_SHOP_EDIT'].
                                         '"><img src="images/icons/check.gif" width="15" height="15" alt="'.
@@ -1940,34 +1928,38 @@ class shopmanager extends ShopLibrary
                                 )
                         );
                         self::$objTemplate->parse('shopMailLanguagesStatus');
-                        if ($lang_id == FRONTEND_LANG_ID)
-                            $template_name = $arrTemplate['name'];
                     }
+                    $template_name = $arrTemplates[$template_id]['name'];
+                    $template_name =
+                        (substr($template_name, 0, 4) == 'TXT_'
+                          ? $_ARRAYLANG[$template_name] : $template_name
+                        );
                     $template_protected =
-                        ($arrTemplate['protected']
+                        ($arrTemplates[$template_id]['protected']
                           ? '&nbsp;('.$_ARRAYLANG['TXT_SYSTEM_TEMPLATE'].')'
                           : ''
                         );
                     self::$objTemplate->setVariable(array(
-                        'SHOP_TEMPLATE_ID' => $key,
+                        'SHOP_TEMPLATE_ID' => $template_id,
                         'SHOP_LANGUAGE_ID' => $defaultLang,
                         'SHOP_MAIL_TEMPLATE_NAME' => $template_name.$template_protected,
-                        'SHOP_MAIL_CLASS'  => 'row'.(++$i % 2 + 1),
                     ));
                     self::$objTemplate->parse('shopMailTemplates');
                     // generate dropdown template-list
                     $strMailSelectedTemplates .=
-                        '<option value="'.$key.'" '.
-                        (   !empty($_GET['tplId']) && $_GET['tplId'] == $key
-                            ? ' selected="selected"' : '').
-                        '>'.$template_name.$template_protected."</option>\n";
+                        '<option value="'.$template_id.'" '.
+                        (   !empty($_GET['tplId'])
+                         && $_GET['tplId'] == $template_id
+                            ? ' selected="selected"' : ''
+                        ).'>'.
+                        $template_name.$template_protected."</option>\n";
                     $strMailTemplates .=
-                        '<option value="'.$key.'">'.
+                        '<option value="'.$template_id.'">'.
                         $template_name.$template_protected.
                         "</option>\n";
                     // get the name of the loaded template to edit
                     if (!empty($_GET['tplId']) && $_GET['strTab'] == 'shopMailEdit') {
-                        if ($key == $_GET['tplId']) {
+                        if ($template_id == $_GET['tplId']) {
                             self::$objTemplate->setVariable(
                                 'SHOP_MAIL_TEMPLATE', $template_name
                             );
@@ -1978,8 +1970,8 @@ class shopmanager extends ShopLibrary
                 if (!empty($_GET['strTab'])) {
                     switch ($_GET['strTab']) {
                         case 'shopMailEdit':
-                            if ($_GET['tplId']) {
-                                $key = $_GET['tplId'];
+                            if ($_GET['tplId'] != 0) {
+                                $template_id = $_GET['tplId'];
                                 // set the source template to load
                                 if (!empty($_GET['portLangId'])) {
                                     $lang_id = $_GET['portLangId'];
@@ -2004,27 +1996,20 @@ class shopmanager extends ShopLibrary
                                     '&nbsp;<input type="checkbox" id="portMail" name="portMail" value="1" />&nbsp;'.
                                     $_ARRAYLANG['TXT_COPY_TO_NEW_LANGUAGE'];
                                 // Get the content of the template
-                                    $arrTemplate = MailTemplate::getTemplate($key, $lang_id);
+                                    $arrTemplate = Mail::getTemplate(intval($template_id), $lang_id);
                                 self::$objTemplate->setVariable(array(
-                                    'SHOP_MAIL_KEY' => $key,
-                                    'SHOP_MAIL_ID' => (isset($_GET['portLangId']) ? '' : $key),
+                                    'SHOP_MAIL_ID' => (isset($_GET['portLangId']) ? '' : $template_id),
                                     'SHOP_MAIL_NAME' => $arrTemplate['sender'],
                                     'SHOP_MAIL_SUBJ' => $arrTemplate['subject'],
                                     'SHOP_MAIL_MSG' => $arrTemplate['message'],
-                                    'SHOP_MAIL_HTML_CHECKBOX' => Html::getCheckbox(
-                                        'html', 1, false, $arrTemplate['html']),
-                                    'SHOP_MAIL_MSG_HTML' => get_wysiwyg_editor(
-                                        'message_html', $arrTemplate['message_html']),
                                     'SHOP_MAIL_FROM' => $arrTemplate['from'],
+                                    'SHOP_LOADD_TEMPLATE_ID' => $_GET['tplId'],
                                     'SHOP_LOADD_LANGUAGE_ID' => $_GET['langId'],
                                     'TXT_SHOP_ADD_EDIT' => $_ARRAYLANG['TXT_EDIT'],
-                                    'SHOP_TEMPLATE_KEY' => $arrTemplate['key'],
-                                    'SHOP_TEMPLATE_KEY_READONLY' =>
-                                        ($arrTemplate['protected'] ? HTML_ATTRIBUTE_READONLY : ''),
                                 ));
-//                                self::$objTemplate->touchBlock('saveToOther');
+                                self::$objTemplate->touchBlock('saveToOther');
                             } else {
-//                                self::$objTemplate->hideBlock('saveToOther');
+                                self::$objTemplate->hideBlock('saveToOther');
                                 // set the default sender
                                 self::$objTemplate->setVariable(array(
                                     'SHOP_MAIL_FROM' => $this->arrConfig['email']['value'],
@@ -2047,25 +2032,17 @@ class shopmanager extends ShopLibrary
                             }
                             $langMenu .= '</select>';
                             // Get the content of the template
-                            $key = (isset($_GET['tplId']) ? $_GET['tplId'] : '');
+                            $tplId = (isset($_GET['tplId']) ? intval($_GET['tplId']) : '');
                             $lang_id = (isset($_GET['langId']) ? intval($_GET['langId']) : '');
-                            $arrTemplate = MailTemplate::getTemplate($key, $lang_id);
+                            $arrTemplate = Mail::getTemplate($tplId, $lang_id);
                             if ($arrTemplate) {
                                 self::$objTemplate->setVariable(array(
-                                    'SHOP_MAIL_ID_SEND'   => $arrTemplate['key'],
+                                    'SHOP_MAIL_ID_SEND' => $arrTemplate['id'],
                                     'SHOP_MAIL_NAME_SEND' => $arrTemplate['sender'],
                                     'SHOP_MAIL_SUBJ_SEND' => $arrTemplate['subject'],
-                                    'SHOP_MAIL_MSG_SEND'  => $arrTemplate['message'],
+                                    'SHOP_MAIL_MSG_SEND' => $arrTemplate['message'],
                                     'SHOP_MAIL_FROM_SEND' => $arrTemplate['from'],
                                 ));
-                                if ($arrTemplate['html']) {
-                                    self::$objTemplate->setVariable(
-                                        'SHOP_MAIL_MSG_HTML_SEND',
-                                        get_wysiwyg_editor(
-                                            'shopMailBodyHtml',
-                                            $arrTemplate['message_html'])
-                                    );
-                                }
                             } else {
                                 self::$objTemplate->setVariable(
                                     'SHOP_MAIL_FROM_SEND',
@@ -2078,32 +2055,32 @@ class shopmanager extends ShopLibrary
                         'SHOP_MAIL_OVERVIEW_STYLE' => 'display: none;',
                         'SHOP_MAILTAB_OVERVIEW_CLASS' => '',
                         'SHOP_MAIL_EDIT_STYLE' => ($_GET['strTab'] == 'shopMailEdit'
-                            ? 'display: block;' : 'display: none;'),
+                                ? 'display: block;' : 'display: none;'),
                         'SHOP_MAILTAB_EDIT_CLASS' => ($_GET['strTab'] == 'shopMailEdit' ? 'active' : ''),
                         'SHOP_MAIL_EDIT_TEMPLATES' => ($_GET['strTab'] == 'shopMailEdit'
-                            ? $strMailSelectedTemplates : $strMailTemplates),
+                                ? $strMailSelectedTemplates : $strMailTemplates),
                         'SHOP_MAIL_EDIT_LANGS' => ($_GET['strTab'] == 'shopMailEdit'
-                            ? ($_GET['tplId'] != 0
-                                ? $langMenu
+                                ? ($_GET['tplId'] != 0
+                                    ? $langMenu
+                                    : '<input type="hidden" name="langId" value="'.
+                                        $defaultLang.'" />'
+                                  )
                                 : '<input type="hidden" name="langId" value="'.
-                                  $defaultLang.'" />'
-                              )
-                            : '<input type="hidden" name="langId" value="'.
-                              $defaultLang.'" />'),
+                                    $defaultLang.'" />'
+                            ),
                         'SHOP_MAIL_SEND_STYLE' => ($_GET['strTab'] == 'shopMailSend'
-                            ? 'display: block;' : 'display: none;'),
+                                ? 'display: block;' : 'display: none;'),
                         'SHOP_MAILTAB_SEND_CLASS' => ($_GET['strTab'] == 'shopMailSend' ? 'active' : ''),
                         'SHOP_MAIL_SEND_TEMPLATES' => ($_GET['strTab'] == 'shopMailSend'
-                            ? $strMailSelectedTemplates : $strMailTemplates),
+                                ? $strMailSelectedTemplates : $strMailTemplates),
                         'SHOP_MAIL_SEND_LANGS' => ($_GET['strTab'] == 'shopMailSend'
-                            ? (isset($_GET['tplId'])
-                                ? $langMenu
+                                ? (isset($_GET['tplId'])
+                                    ? $langMenu
+                                    : '<input type="hidden" name="langId" value="'.
+                                        $defaultLang.'" />')
                                 : '<input type="hidden" name="langId" value="'.
-                                    $defaultLang.'" />')
-                            : '<input type="hidden" name="langId" value="'.
-                                $defaultLang.'" />'),
-                        'SHOP_MAIL_TO' =>
-                            (   $_GET['strTab'] == 'shopMailSend'
+                                    $defaultLang.'" />'),
+                        'SHOP_MAIL_TO' => (   $_GET['strTab'] == 'shopMailSend'
                              && isset($_GET['shopMailTo'])
                                 ? $_GET['shopMailTo'] : ''),
                     ));
@@ -2280,13 +2257,6 @@ class shopmanager extends ShopLibrary
                             $this->arrConfig['shop_show_products_default']['value']
                         ),
                     'SHOP_PRODUCT_SORTING_MENUOPTIONS' => self::getProductSortingMenuoptions(),
-                    // Order amount upper limit
-                    'TXT_SHOP_ORDERITEMS_AMOUNT_MAX' => $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'],
-                    'TXT_SHOP_ORDERITEMS_AMOUNT_MAX_NOTE' => $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX_NOTE'],
-                    'SHOP_ORDERITEMS_AMOUNT_MAX' => Currency::formatPrice(
-                        $this->arrConfig['orderitems_amount_max']['value']),
-                    'SHOP_CURRENCY_CODE' => Currency::getCurrencyCodeById(
-                        Currency::getDefaultCurrencyId()),
                 ));
                 break;
         }
@@ -3327,8 +3297,8 @@ class shopmanager extends ShopLibrary
         // Send an email to the customer
         if (   !empty($_GET['shopSendMail'])
             && !empty($_GET['orderId'])) {
-            $result = ShopLibrary::sendCompletedMail($_GET['orderId']);
-            if ($result) {
+            $result = shopmanager::sendConfirmationMail($_GET['orderId']);
+            if (!empty($result)) {
                 self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
             } else {
                 self::addError($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
@@ -3571,7 +3541,6 @@ class shopmanager extends ShopLibrary
                     $objResult->MoveNext();
                 }
             }
-            self::$objTemplate->setVariable('SHOP_ORDER_PAGING', $paging);
         }
     }
 
@@ -4249,7 +4218,7 @@ class shopmanager extends ShopLibrary
             self::addMessage($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
             // Send an email to the customer, if requested
             if (!empty($_POST['shopSendMail'])) {
-                $result = ShopLibrary::sendConfirmationMail($shopOrderId);
+                $result = shopmanager::sendConfirmationMail($shopOrderId);
                 if (!empty($result)) {
                     self::addMessage(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'], $result));
                 } else {
@@ -4674,12 +4643,12 @@ class shopmanager extends ShopLibrary
                         }
                         $lang_id = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
                         // Select template for sending login data
-                        $arrMailtemplate = ShopLibrary::shopSetMailtemplate(3, $lang_id);
+                        $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(3, $lang_id);
                         $shopMailTo = $_POST['shopEmail'];
-                        $shopMailFrom = $arrMailtemplate['mail_from'];
-                        $shopMailFromText = $arrMailtemplate['mail_x_sender'];
-                        $shopMailSubject = $arrMailtemplate['mail_subject'];
-                        $shopMailBody = $arrMailtemplate['mail_body'];
+                        $shopMailFrom = $arrShopMailtemplate['mail_from'];
+                        $shopMailFromText = $arrShopMailtemplate['mail_x_sender'];
+                        $shopMailSubject = $arrShopMailtemplate['mail_subject'];
+                        $shopMailBody = $arrShopMailtemplate['mail_body'];
                         // replace variables from template
                         $shopMailBody = str_replace("<USERNAME>", $shopUsername, $shopMailBody);
                         $shopMailBody = str_replace("<PASSWORD>", $shopPassword, $shopMailBody);
@@ -4838,9 +4807,9 @@ class shopmanager extends ShopLibrary
             'TXT_SEND_LOGIN_DATA' => $_ARRAYLANG['TXT_SEND_LOGIN_DATA'],
             'TXT_SHOP_DISCOUNT_GROUP_CUSTOMER' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_CUSTOMER'],
         ));
-        // Set requested customerid
-        $customer_id = (isset($_REQUEST['customerid']) ? intval($_REQUEST['customerid']) : 0);
-        if ($customer_id == 0) { //create a new customer
+        //set requested customerid
+        $customerid = (isset($_REQUEST['customerid']) ? intval($_REQUEST['customerid']) : 0);
+        if ($customerid == 0) { //create a new customer
             self::$pageTitle = $_ARRAYLANG['TXT_ADD_NEW_CUSTOMER'];
             self::$objTemplate->setVariable(array(
             'SHOP_CUSTOMERID' => "&nbsp;",
@@ -4853,7 +4822,7 @@ class shopmanager extends ShopLibrary
             self::$pageTitle = $_ARRAYLANG['TXT_EDIT_CUSTOMER'];
             self::$objTemplate->setVariable(array(
             'SHOP_SEND_LOGING_DATA_STATUS' => "",
-            'SHOP_CUSTOMER_ACT' => "customerdetails&amp;customerid={SHOP_CUSTOMERID}",
+            'SHOP_CUSTOMER_ACT' => "customerdetails&amp;customerid={SHOP_CUSTOMERID}"
             ));
 
         }
@@ -5200,9 +5169,7 @@ class shopmanager extends ShopLibrary
         if (isset($_REQUEST['manufacturerId'])) {
             $manufacturerId = intval($_REQUEST['manufacturerId']);
         }
-
-        $showOnlySpecialOffers = isset($_REQUEST['specialoffer']) ? intval($_REQUEST['specialoffer']) == 1 : false;
-
+        $showOnlySpecialOffers = isset($_REQUEST['specialoffer']);
         $searchTerm = '';
         if (!empty($_REQUEST['shopSearchTerm'])) {
             $searchTerm = mysql_escape_string(
@@ -6301,27 +6268,51 @@ class shopmanager extends ShopLibrary
 
 
     /**
-     * Send an e-mail to the Customer with the confirmation that the Order
-     * with the given Order ID has been processed
-     * @param   integer   $order_id     The order ID
-     * @return  boolean                 True on success, false otherwise
+     * Send a confirmation mail to the Customer for the given Order ID.
+     * @param   integer   $orderId      The order ID
+     * @return  string                  The target e-mail address on success,
+     *                                   the empty string otherwise
      */
-    static function sendProcessedMail($order_id)
+    function sendConfirmationMail($orderId)
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $arrSubstitution = self::getOrderSubstitutionArray($order_id);
-        $lang_id = $arrSubstitution['LANG_ID'];
-        // Select template for: "Your order has been processed"
-        $arrMailtemplate = array(
-            'key'     => 2,
-            'lang_id' => $lang_id,
-            'to'      =>
-                $arrSubstitution['CUSTOMER_EMAIL'].','.
-                $this->arrConfig['confirmation_emails']['value'],
-            'substitution' => &$arrSubstitution,
+        // Determine the customer language ID
+        $query = "
+            SELECT email, last_modified, customer_lang, order_status, order_date
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+             USING (customerid)
+             WHERE orderid=$orderId
+        ";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult || $objResult->RecordCount() == 0) {
+            // Order not found
+            return false;
+        }
+        $langId = $objResult->fields['customer_lang'];
+        // Compatibility with old behavior of storing the ISO639-1 code
+        if (!intval($langId))
+            $langId = FWLanguage::getLangIdByIso639_1($langId);
+        $mailTo = $objResult->fields['email'];
+        $orderStatus = $objResult->fields['order_status'];
+        $lastModified = $objResult->fields['last_modified'];
+        // Select template for order confirmation
+        $arrShopMailtemplate = Mail::getTemplate(2, $langId);
+        $mailFrom = $arrShopMailtemplate['from'];
+        $mailFromText = $arrShopMailtemplate['sender'];
+        $mailSubject = $arrShopMailtemplate['subject'];
+        $mailSubject = str_replace('<DATE>', $lastModified, $mailSubject);
+        $mailSubject = str_replace(
+            '<ORDER_STATUS>',
+            $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$orderStatus],
+            $mailSubject
         );
-        return MailTemplate::send($arrMailtemplate);
+        $mailBody = $arrShopMailtemplate['message'];
+        $mailBody = self::substituteOrderData($mailBody, $orderId);
+        if (!Mail::send($mailTo, $mailFrom, $mailFromText, $mailSubject, $mailBody))
+            return false;
+        return true;
     }
 
 
@@ -6811,6 +6802,106 @@ class shopmanager extends ShopLibrary
                 '>'.$_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING_'.$sorting].'</option>';
         }
         return $strMenuOptions;
+    }
+
+
+    /**
+     * Replace all placeholders in the e-mail template with the
+     * respective values from the order specified by the order ID.
+     * @access  private
+     * @static
+     * @param   string  $body         The e-mail template
+     * @param   integer $orderId      The order ID
+     * @return  string                The e-mail body
+     */
+    static function substituteOrderData($body, $orderId)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $orderIdCustom = ShopLibrary::getCustomOrderId($orderId);
+
+        // Pick the order from the database
+        $query = "
+            SELECT c.customerid, username, email, phone, fax,
+                   prefix, company, firstname, lastname,
+                   address, city, zip, country_id,
+                   selected_currency_id,
+                   order_sum, currency_order_sum,
+                   order_date, order_status,
+                   ship_prefix, ship_company, ship_firstname, ship_lastname,
+                   ship_address, ship_city, ship_zip, ship_country_id, ship_phone,
+                   tax_price,
+                   shipping_id, currency_ship_price,
+                   payment_id, currency_payment_price,
+                   customer_note
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS o
+             INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_customers AS c
+             USING (customerid)
+             WHERE orderid=$orderId
+        ";
+        $objResultOrder = $objDatabase->Execute($query);
+        if (!$objResultOrder || $objResultOrder->RecordCount() == 0) {
+            // Order not found
+            return false;
+        }
+        $order_date = date(ASCMS_DATE_SHORT_FORMAT);
+        $order_time = date(ASCMS_DATE_FORMAT);
+        // Pick names of countries from the database
+        $countryNameCustomer = '';
+        $countryNameShipping = '';
+        $query = "
+            SELECT countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE countries_id=".$objResultOrder->fields['country_id'];
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $countryNameCustomer = $objResult->fields['countries_name'];
+        }
+        $query = "
+            SELECT countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE countries_id=".$objResultOrder->fields['ship_country_id'];
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && !$objResult->EOF) {
+            $countryNameShipping = $objResult->fields['countries_name'];
+        }
+        $search  = array (
+            '<ORDER_ID>', '<ORDER_ID_CUSTOM>', '<DATE>',
+            '<USERNAME>', '<PASSWORD>',
+            '<ORDER_TIME>', '<ORDER_STATUS>', '<REMARKS>',
+            '<CUSTOMER_ID>', '<CUSTOMER_EMAIL>',
+            '<CUSTOMER_COMPANY>', '<CUSTOMER_PREFIX>', '<CUSTOMER_FIRSTNAME>',
+            '<CUSTOMER_LASTNAME>', '<CUSTOMER_ADDRESS>', '<CUSTOMER_ZIP>',
+            '<CUSTOMER_CITY>', '<CUSTOMER_COUNTRY>', '<CUSTOMER_PHONE>',
+            '<CUSTOMER_FAX>',
+            '<SHIPPING_COMPANY>', '<SHIPPING_PREFIX>', '<SHIPPING_FIRSTNAME>',
+            '<SHIPPING_LASTNAME>', '<SHIPPING_ADDRESS>', '<SHIPPING_ZIP>',
+            '<SHIPPING_CITY>', '<SHIPPING_COUNTRY>', '<SHIPPING_PHONE>',
+        );
+        $replace = array (
+            $orderId, $orderIdCustom, $order_date,
+            $objResultOrder->fields['username'],
+            (isset($_SESSION['shop']['password'])
+                ? $_SESSION['shop']['password'] : '******'),
+            $order_time,
+            $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objResultOrder->fields['order_status']],
+            $objResultOrder->fields['customer_note'],
+            $objResultOrder->fields['customerid'], $objResultOrder->fields['email'],
+            $objResultOrder->fields['company'], $objResultOrder->fields['prefix'],
+            $objResultOrder->fields['firstname'], $objResultOrder->fields['lastname'],
+            $objResultOrder->fields['address'], $objResultOrder->fields['zip'],
+            $objResultOrder->fields['city'], $countryNameCustomer,
+            $objResultOrder->fields['phone'], $objResultOrder->fields['fax'],
+            $objResultOrder->fields['ship_company'], $objResultOrder->fields['ship_prefix'],
+            $objResultOrder->fields['ship_firstname'], $objResultOrder->fields['ship_lastname'],
+            $objResultOrder->fields['ship_address'], $objResultOrder->fields['ship_zip'],
+            $objResultOrder->fields['ship_city'], $countryNameShipping,
+            $objResultOrder->fields['ship_phone'],
+        );
+        $body = str_replace($search, $replace, $body);
+        // Strip CRs
+        $body = str_replace("\r", '', $body); //echo("made mail body:<br />".str_replace("\n", '<br />', htmlentities($body))."<br />");
+        return $body;
     }
 
 }

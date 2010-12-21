@@ -1,7 +1,7 @@
 <!-- START module_shop_product_attributes_options.html -->
 <script language="javascript" type="text/javascript">
 // <![CDATA[
-// Selected Product Attribute value IDs 
+// Selected Product Attribute value IDs
 attributeValueId = new Array();
 {SHOP_PRODUCT_ATTRIBUTE_JS_VARS}
 
@@ -25,7 +25,7 @@ function storeNewOption()
   }
   document.getElementById('attributeValueList-0').setAttribute('multiple','multiple');
   document.getElementById('attributeValueList-0').focus();
-  for(valueId=document.getElementById('attributeValueList-0').options.length-1;valueId>=0;valueId--)
+  for (valueId=document.getElementById('attributeValueList-0').options.length-1;valueId>=0;valueId--)
   {
     document.getElementById('attributeValueList-0').options[valueId].selected = true;
   }
@@ -40,7 +40,7 @@ function storeChanges()
       if (strName.substring(0,18) == "attributeValueList") {
         document.getElementsByTagName('select')[selectboxNr].setAttribute('multiple','multiple');
         document.getElementsByTagName('select')[selectboxNr].focus();
-        for(valueId=document.getElementsByTagName('select')[selectboxNr].options.length-1;valueId>=0;valueId--) {
+        for (valueId=document.getElementsByTagName('select')[selectboxNr].options.length-1;valueId>=0;valueId--) {
           document.getElementsByTagName('select')[selectboxNr].options[valueId].selected = true;
         }
       }
@@ -51,7 +51,7 @@ function storeChanges()
 
 function deleteOption(id)
 {
-  if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+  if (confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=products&tpl=attributes&delId="+id);
 }
 
@@ -220,10 +220,10 @@ function addValue(id)
 
 function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 {
-  if(checkboxIsChecked(strForm,strCheckbox) == true){
-    switch(strAct){
+  if (checkboxIsChecked(strForm,strCheckbox) == true) {
+    switch(strAct) {
       case 'del':
-        if(confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
+        if (confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
           document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes";
           document.getElementById('shopSelectOptions').submit();
         }

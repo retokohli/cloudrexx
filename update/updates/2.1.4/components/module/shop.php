@@ -401,76 +401,9 @@ function _shopUpdate()
 
 
 
+
+
     try {
-		UpdateUtil::table(
-			DBPREFIX.'core_mail_template',
-			array(
-				'key'                        => array('type' => 'tinytext'),
-				'module_id'                  => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'key'),
-				'text_name_id'               => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'module_id'),
-				'text_from_id'               => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_name_id'),
-				'text_sender_id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_from_id'),
-				'text_reply_id'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_sender_id'),
-				'text_to_id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_reply_id'),
-				'text_cc_id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_to_id'),
-				'text_bcc_id'                => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_cc_id'),
-				'text_subject_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_bcc_id'),
-				'text_message_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_subject_id'),
-				'text_message_html_id'       => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_message_id'),
-				'text_attachments_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_message_html_id'),
-				'text_inline_id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'after' => 'text_attachments_id'),
-				'html'                       => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'text_inline_id'),
-				'protected'                  => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html')
-			)
-		);
-		
-		UpdateUtil::sql("INSERT INTO `contrexx_core_mail_template` VALUES('1', 16, 1, 2, 3, 0, 0, 0, 0, 4, 5, 21, 0, 0, 1, 1);
-						 INSERT INTO `contrexx_core_mail_template` VALUES('2', 16, 6, 7, 8, 0, 0, 0, 0, 9, 10, 22, 0, 0, 1, 1);
-						 INSERT INTO `contrexx_core_mail_template` VALUES('3', 16, 11, 12, 13, 0, 0, 0, 0, 14, 15, 23, 0, 0, 1, 1);
-						 INSERT INTO `contrexx_core_mail_template` VALUES('4', 16, 16, 17, 18, 0, 0, 0, 0, 19, 20, 0, 0, 0, 0, 1);");
-		
-		UpdateUtil::table(
-			DBPREFIX.'core_text',
-			array(
-				'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true),
-				'lang_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'id'),
-				'module_id'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'lang_id'),
-				'key'            => array('type' => 'tinytext', 'after' => 'module_id'),
-				'text'           => array('type' => 'text', 'after' => 'key')
-			),
-			array(
-				'module_id'      => array('fields' => array('module_id')),
-				'key'            => array('fields' => array('key'(32)),
-				'text'           => array('fields' => array('text'), 'type' => 'FULLTEXT')
-			)
-		);
-		
-		UpdateUtil::sql("INSERT INTO `contrexx_core_text` (`id`, `lang_id`, `module_id`, `key`, `text`) VALUES
-						(1, 1, 16, 'core_mail_template_name', 'Bestellungsbestätigung'),
-						(2, 1, 16, 'core_mail_template_from', 'info@example.org'),
-						(3, 1, 16, 'core_mail_template_sender', 'Contrexx Online Shop'),
-						(4, 1, 16, 'core_mail_template_subject', 'Auftragsbestätigung vom [ORDER_DATE]'),
-						(5, 1, 16, 'core_mail_template_message', 'Sehr geehrte(r) [CUSTOMER_PREFIX] [CUSTOMER_LASTNAME]\r\n\r\nHerzlichen Dank für Ihre Bestellung in unserem Online-Shop.\r\n\r\nIhre Auftrags-Nr. lautet: [ORDER_ID]\r\nIhre Kunden-Nr. lautet: [CUSTOMER_ID]\r\nBestellzeit: [ORDER_TIME]\r\n\r\n------------------------------------------------------------------------\r\nBestellinformationen\r\n------------------------------------------------------------------------[ORDER_ITEM]\r\nMenge:          [PRODUCT_QUANTITY]\r\nBeschreibung:   [PRODUCT_TITLE] [PRODUCT_OPTIONS]\r\nStückpreis:     [PRODUCT_ITEM_PRICE] [CURRENCY]                    Total [PRODUCT_TOTAL_PRICE] [CURRENCY][USER_DATA]\r\nBenutzername: [USER_NAME] Passwort: [USER_PASS][USER_DATA][COUPON_DATA]\r\nGutschein Code: [COUPON_CODE][COUPON_DATA][ORDER_ITEM]\r\n------------------------------------------------------------------------\r\nZwischensumme:  [ORDER_ITEM_COUNT] Artikel   [ORDER_ITEM_SUM] [CURRENCY]\r\n------------------------------------------------------------------------\r\nVersandart:     [SHIPPING_NAME]              [SHIPPING_PRICE] [CURRENCY]\r\nBezahlung:      [PAYMENT_NAME]                [PAYMENT_PRICE] [CURRENCY]\r\n[TAX_TEXT]:     [TAX_PRICE] [CURRENCY]\r\n------------------------------------------------------------------------\r\nGesamtsumme                                       [ORDER_SUM] [CURRENCY]\r\n------------------------------------------------------------------------\r\n\r\nIhre Kundenadresse:\r\n[CUSTOMER_COMPANY]\r\n[CUSTOMER_PREFIX] [CUSTOMER_FIRSTNAME] [CUSTOMER_LASTNAME]\r\n[CUSTOMER_ADDRESS]\r\n[CUSTOMER_ZIP] [CUSTOMER_CITY]\r\n[CUSTOMER_COUNTRY]\r\n\r\n\r\nLieferadresse:\r\n[SHIPPING_COMPANY]\r\n[SHIPPING_PREFIX] [SHIPPING_FIRSTNAME] [SHIPPING_LASTNAME]\r\n[SHIPPING_ADDRESS]\r\n[SHIPPING_ZIP] [SHIPPING_CITY]\r\n[SHIPPING_COUNTRY]\r\n\r\nIhre Zugangsdaten zum Online Shop:\r\nBenutzername: [CUSTOMER_USERNAME]\r\nPasswort: [CUSTOMER_PASSWORD]\r\n\r\nWir freuen uns auf Ihren nächsten Besuch im Online Shop.\r\n\r\nFreundliche Grüsse\r\n\r\n\r\nDiese Auftragsbestätigung wurde gesendet an: [CUSTOMER_EMAIL]\r\n'),
-						(6, 1, 16, 'core_mail_template_name', 'Auftrag abgeschlossen'),
-						(7, 1, 16, 'core_mail_template_from', 'info@example.org'),
-						(8, 1, 16, 'core_mail_template_sender', 'Contrexx Online Shop'),
-						(9, 1, 16, 'core_mail_template_subject', 'Ihre Bestellung wurde am [ORDER_DATE] ausgeführt'),
-						(10, 1, 16, 'core_mail_template_message', 'Sehr geehrte(r) [CUSTOMER_PREFIX] [CUSTOMER_LASTNAME]\r\n\r\nIhre Bestellung wurde ausgeführt. Sie werden in den nächsten Tagen Ihre Lieferung erhalten.\r\n\r\nFreundliche Grüsse\r\n'),
-						(11, 1, 16, 'core_mail_template_name', 'Logindaten'),
-						(12, 1, 16, 'core_mail_template_from', 'info@example.org'),
-						(13, 1, 16, 'core_mail_template_sender', 'Contrexx Online Shop'),
-						(14, 1, 16, 'core_mail_template_subject', 'Logindaten für Contrexx Online Shop'),
-						(15, 1, 16, 'core_mail_template_message', 'Sehr geehrte(r) [CUSTOMER_PREFIX] [CUSTOMER_LASTNAME]\r\n\r\nHier Ihre Zugangsdaten zum Shop:\r\nBenutzername: [CUSTOMER_USERNAME]\r\nPasswort: [CUSTOMER_PASSWORD]\r\n\r\nFreundliche Grüsse\r\n'),
-						(16, 1, 16, 'core_mail_template_name', 'Bestellungsbestätigung mit Zugangsdaten'),
-						(17, 1, 16, 'core_mail_template_from', 'info@example.org'),
-						(18, 1, 16, 'core_mail_template_sender', 'Contrexx Online Shop'),
-						(19, 1, 16, 'core_mail_template_subject', 'Auftragsbestätigung und Zugangsdaten vom <DATE>'),
-						(20, 1, 16, 'core_mail_template_message', 'Sehr geehrte(r) <CUSTOMER_PREFIX> <CUSTOMER_LASTNAME>\r\n\r\nHerzlichen Dank für Ihre Bestellung in unserem Online-Shop.\r\n\r\nIhre Auftrags-Nr. lautet: <ORDER_ID>\r\nIhre Kunden-Nr. lautet: <CUSTOMER_ID>\r\nBestellungszeit: <ORDER_TIME>\r\n\r\n<ORDER_DATA>\r\n<LOGIN_DATA>\r\n\r\nIhre Kundenadresse:\r\n<CUSTOMER_COMPANY>\r\n<CUSTOMER_PREFIX> <CUSTOMER_FIRSTNAME> <CUSTOMER_LASTNAME>\r\n<CUSTOMER_ADDRESS>\r\n<CUSTOMER_ZIP> <CUSTOMER_CITY>\r\n<CUSTOMER_COUNTRY>\r\n\r\nLieferadresse:\r\n<SHIPPING_COMPANY>\r\n<SHIPPING_PREFIX> <SHIPPING_FIRSTNAME> <SHIPPING_LASTNAME>\r\n<SHIPPING_ADDRESS>\r\n<SHIPPING_ZIP> <SHIPPING_CITY>\r\n<SHIPPING_COUNTRY>\r\n\r\n\r\nIhre Zugangsdaten zum Shop:\r\nBenutzername: <USERNAME>\r\nPasswort: <PASSWORD>\r\n\r\nWir freuen uns auf Ihren nächsten Besuch im Online Shop.\r\n\r\nP.S. Diese Auftragsbestätigung wurde gesendet an: <CUSTOMER_EMAIL>\r\n\r\nFreundliche Grüsse'),
-						(24, 1, 16, 'core_mail_template_message_html', '&nbsp;'),
-						(21, 1, 16, 'core_mail_template_message_html', 'Sehr geehrte(r) [CUSTOMER_PREFIX] [CUSTOMER_LASTNAME]<br />\n<br />\n&nbsp; Herzlichen Dank f&uuml;r Ihre Bestellung in unserem Online-Shop.<br />\n<br />\nIhre Auftrags-Nr. lautet: [ORDER_ID]<br />\nIhre Kunden-Nr. lautet: [CUSTOMER_ID]<br />\nBestellungszeit: [ORDER_TIME]<br />\n<br />\n<br />\n<table cellspacing=\"1\" cellpadding=\"1\" style=\"border: 0px none rgb(0, 0, 0);\">\n    <tbody>\n        <tr>\n            <td colspan=\"6\">Bestellinformationen</td>\n        </tr>\n        <tr>\n            <td>\n            <div style=\"text-align: right;\">Menge</div>\n            </td>\n            <td>Beschreibung</td>\n            <td>\n            <div style=\"text-align: right;\">St&uuml;ckpreis</div>\n            </td>\n            <td>\n            <div style=\"text-align: right;\">Total</div>\n            </td>\n        </tr>\n        [ORDER_ITEM]\n        <tr>\n            <td>\n            <div style=\"text-align: right;\">[PRODUCT_QUANTITY]</div>\n            </td>\n            <td>[PRODUCT_TITLE] [PRODUCT_OPTIONS]</td>\n            <td>\n            <div style=\"text-align: right;\">[PRODUCT_ITEM_PRICE] [CURRENCY]</div>\n            </td>\n            <td>\n            <div style=\"text-align: right;\">[PRODUCT_TOTAL_PRICE] [CURRENCY]</div>\n            </td>\n        </tr>\n        [USER_DATA]\n        <tr>\n            <td colspan=\"1\">&nbsp;</td>\n            <td>Benutzername: [USER_NAME]<br />\n            Passwort: [USER_PASS]</td>\n            <td colspan=\"2\">&nbsp;</td>\n        </tr>\n        [USER_DATA][COUPON_DATA]\n        <tr>\n            <td colspan=\"1\">&nbsp;</td>\n            <td>Gutschein Code: [COUPON_CODE]</td>\n            <td colspan=\"2\">&nbsp;</td>\n        </tr>\n        [COUPON_DATA][ORDER_ITEM]\n        <tr style=\"border-top: 4px none;\">\n            <td>\n            <div style=\"text-align: right;\">[ORDER_ITEM_COUNT] Artikel</div>\n            </td>\n            <td colspan=\"2\">Zwischensumme</td>\n            <td>\n            <div style=\"text-align: right;\">[ORDER_ITEM_SUM] [CURRENCY]</div>\n            </td>\n        </tr>\n        <tr style=\"border-top: 2px none;\">\n            <td colspan=\"1\">Versandart</td>\n            <td colspan=\"2\">[SHIPPING_NAME]</td>\n            <td>\n            <div style=\"text-align: right;\">[SHIPPING_PRICE] [CURRENCY]</div>\n            </td>\n        </tr>\n        <tr style=\"border-top: 2px none;\">\n            <td colspan=\"1\">Bezahlung</td>\n            <td colspan=\"2\">[PAYMENT_NAME]</td>\n            <td>\n            <div style=\"text-align: right;\">[PAYMENT_PRICE] [CURRENCY]</div>\n            </td>\n        </tr>\n        <tr style=\"border-top: 4px none;\">\n            <td colspan=\"3\">Gesamtsumme</td>\n            <td>\n            <div style=\"text-align: right;\">[ORDER_SUM] [CURRENCY]</div>\n            </td>\n        </tr>\n    </tbody>\n</table>\n<br />\n<br />\nIhre Kundenadresse:<br />\n[CUSTOMER_COMPANY]<br />\n[CUSTOMER_PREFIX] [CUSTOMER_FIRSTNAME] [CUSTOMER_LASTNAME]<br />\n[CUSTOMER_ADDRESS]<br />\n[CUSTOMER_ZIP] [CUSTOMER_CITY]<br />\n[CUSTOMER_COUNTRY]<br />\n<br />\n<br />\nLieferadresse:<br />\n[SHIPPING_COMPANY]<br />\n[SHIPPING_PREFIX] [SHIPPING_FIRSTNAME] [SHIPPING_LASTNAME]<br />\n[SHIPPING_ADDRESS]<br />\n[SHIPPING_ZIP] [SHIPPING_CITY]<br />\n[SHIPPING_COUNTRY]<br />\n<br />\n<br />\nIhre Zugangsdaten zum Online Shop:<br />\nBenutzername: [CUSTOMER_USERNAME]<br />\nPasswort: [CUSTOMER_PASSWORD]<br />\n<br />\nWir freuen uns auf Ihren n&auml;chsten Besuch im Online Shop.<br />\n<br />\nFreundliche Gr&uuml;sse<br />\n<br />\nDiese Auftragsbest&auml;tigung wurde gesendet an: [CUSTOMER_EMAIL]<br />'),
-						(22, 1, 16, 'core_mail_template_message_html', 'Sehr geehrte(r) [CUSTOMER_PREFIX] [CUSTOMER_LASTNAME]<br />\n<br />\nIhre Bestellung wurde ausgef&uuml;hrt. Sie werden in den n&auml;chsten Tagen Ihre Lieferung erhalten.<br />\n<br />\nFreundliche Gr&uuml;sse<br />\n<br />'),
-						(23, 1, 16, 'core_mail_template_message_html', 'Sehr geehrte(r) [CUSTOMER_PREFIX] [CUSTOMER_LASTNAME]<br />\n<br />\nHier Ihre Zugangsdaten zum Shop:<br />\nBenutzername: [CUSTOMER_USERNAME]<br />\nPasswort: [CUSTOMER_PASSWORD]<br />\n<br />\nFreundliche Gr&uuml;sse<br />\n<br />');");
-	
         UpdateUtil::table(/*{{{module_shop_article_group*/
             DBPREFIX . 'module_shop_article_group',
             array(

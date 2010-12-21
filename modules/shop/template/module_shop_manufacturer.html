@@ -28,7 +28,7 @@ function shopCatDoAction(strForm, strCheckbox, objSelect, strAct)
 
 function deleteManufacturer(manufacturerID) {
   if (confirm('{TXT_SHOP_CONFIRM_DELETE_MANUFACTURER}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=manufacturer&exe=delete&id="+manufacturerID);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=manufacturer&exe=delete&id="+manufacturerID);
   }
 }
 // -->

@@ -27,10 +27,9 @@ class Distribution
      * @var     array
      */
     private static $arrDistributionTypes = array(
-        'delivery',  // Needs shipping, default
-        'download',  // Creates a User account
-        'none',      // Why would you buy this, anyway?
-        'coupon',    // Creates a new Coupon
+        'delivery',
+        'download',
+        'none',
     );
 
     /**
@@ -42,6 +41,22 @@ class Distribution
      * @var     string
      */
     private static $defaultDistributionType = 'delivery';
+
+
+    /**
+     * OBSOLETE -- All is static now.
+     * Set up a Distribution object (PHP5)
+     *
+     * Mind that there is one additional delivery type here, as compared to
+     * the database, called 'undefined' (index 0, zero). This type *MUST NOT* be tried to
+     * be written to the database, but is only used to determine whether
+     * the user actually chose a valid distribution type.
+     * @access      public
+     * @return      Distribution object
+    function __construct()
+    {
+    }
+     */
 
 
     /**

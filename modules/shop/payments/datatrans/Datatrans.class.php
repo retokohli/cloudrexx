@@ -277,7 +277,7 @@ class Datatrans
          * Currency: Conversion, formatting.
          */
         require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
-        self::$arrFieldMandatory['merchantId'] = intval($merchantId);
+        self::$arrFieldMandatory['merchantId'] = trim(strip_tags($merchantId));
         self::$arrFieldMandatory['refno'] = trim(strip_tags($refno));
         self::$arrFieldMandatory['amount'] = Currency::formatCents($amount);
         self::$arrFieldMandatory['currency'] = trim(strip_tags($currency));

@@ -1,15 +1,12 @@
 <!-- START module_shop_config.html -->
 <script language="javascript" type="text/javascript">
 <!-- //
-function swapBlockStatus( div,status )
+function swapBlockStatus(div, status)
 {
-  if(status == 1)
-  {
-      document.getElementById( div ).style.display ='block';
-  }
-  else
-  {
-      document.getElementById( div ).style.display ='none';
+  if (status == 1) {
+    document.getElementById( div ).style.display = 'block';
+  } else {
+    document.getElementById( div ).style.display = 'none';
   }
 }
 
@@ -19,15 +16,12 @@ function swapBlock(div)
   document.getElementById(div).style.display = displayType;
 }
 
-
 function submit_form()
 {
-  for (i=document.shopForm.elements['list1[]'].length-1; i >= 0 ; i--)
-  {
-    document.shopForm.elements['list1[]'].options[i].selected=true;
+  for (i = document.shopForm.elements['list1[]'].length-1; i >= 0; --i) {
+    document.shopForm.elements['list1[]'].options[i].selected = true;
   }
-  for (i=document.shopForm.elements['list2[]'].length-1; i >= 0 ; i--)
-  {
+  for (i = document.shopForm.elements['list2[]'].length-1; i >= 0; --i) {
     document.shopForm.elements['list2[]'].options[i].selected=true;
   }
   document.shopForm.submit();
@@ -36,48 +30,46 @@ function submit_form()
 function sortSelect(obj)
 {
   var o = new Array();
-  if (obj.options==null) { return; }
-  for (var i=0; i<obj.options.length; i++) {
-    o[o.length] = new Option( obj.options[i].text, obj.options[i].value, obj.options[i].defaultSelected, obj.options[i].selected) ;
-    }
-  if (o.length==0) { return; }
+  if (obj.options == null) return;
+  for (var i = 0; i < obj.options.length; ++i) {
+    o[o.length] = new Option(obj.options[i].text, obj.options[i].value, obj.options[i].defaultSelected, obj.options[i].selected);
+  }
+  if (o.length == 0) return;
   o = o.sort(
     function(a,b) {
-      if ((a.text+"") < (b.text+"")) { return -1; }
-      if ((a.text+"") > (b.text+"")) { return 1; }
+      if ((a.text+"") < (b.text+"")) return -1;
+      if ((a.text+"") > (b.text+"")) return 1;
       return 0;
-      }
-      );
-
-  for (var i=0; i<o.length; i++) {
-    obj.options[i] = new Option(o[i].text, o[i].value, o[i].defaultSelected, o[i].selected);
     }
+  );
+  for (var i = 0; i < o.length; ++i) {
+    obj.options[i] = new Option(o[i].text, o[i].value, o[i].defaultSelected, o[i].selected);
+  }
 }
 
 function moveSelectedOptions(from, to)
 {
   // Move them over
-  for (var i=0; i<from.options.length; i++) {
+  for (var i = 0; i < from.options.length; ++i) {
     var o = from.options[i];
     if (o.selected) {
       to.options[to.options.length] = new Option( o.text, o.value, false, false);
-      }
     }
-  // Delete them from original
-  for (var i=(from.options.length-1); i>=0; i--) {
+  }
+  // Delete the original
+  for (var i = from.options.length-1; i >= 0; --i) {
     var o = from.options[i];
     if (o.selected) {
       from.options[i] = null;
-      }
     }
-  if ((arguments.length<3) || (arguments[2]==true)) {
+  }
+  if (arguments.length < 3 || arguments[2] == true) {
     sortSelect(from);
     sortSelect(to);
-    }
+  }
   from.selectedIndex = -1;
   to.selectedIndex = -1;
 }
-
 // -->
 </script>
 <ul id="tabmenu">

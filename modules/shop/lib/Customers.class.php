@@ -112,65 +112,6 @@ class Customers
         return $strMenuoptions;
     }
 
-
-    /**
-     * Returns a string representing the name of a customer
-     *
-     * The format of the string is determined by the optional
-     * $format parameter in sprintf() format:
-     *  - %1$s : First name
-     *  - %2$s : Last name
-     *  - %3$u : ID
-     * Defaults to '%2$s %1$s (%3$u)'
-     * @param   integer   $customer_id    The Customer ID
-     * @param   string    $format         The optional format string
-     * @return  string                    The Customer name
-     */
-    static function getNameById($customer_id, $format=null)
-    {
-        $objCustomer = Customer::getById($customer_id);
-        if (!$objCustomer) return false;
-        if (!isset($format)) $format = '%2$s %1$s (%3$u)';
-        return sprintf(
-            $format,
-            $objCustomer->getFirstName(),
-            $objCustomer->getLastName(),
-            $objCustomer->getId()
-        );
-    }
-
-
-    /**
-     * Returns an array of Customer names, ordered by last names, ascending
-     *
-     * If $inactive is true, inactive Customers are included.
-     * See {@see getNameById()} for details on the $format parameter.
-     * @param   boolean   $inactive     Include inactive Customers if true.
-     *                                  Defaults to false
-     * @param   string    $format       The optional format string
-     * @return  array                   The array of Customer names
-     */
-    static function getNameArray($inactive=false, $format=null)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT `customerid`
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-             WHERE 1".
-            ($inactive ? '' : ' AND `customer_status`=1')."
-             ORDER BY lastname ASC";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrNames = array();
-        while (!$objResult->EOF) {
-            $customer_id = $objResult->fields['customerid'];
-            $arrNames[$customer_id] = self::getNameById($customer_id, $format);
-            $objResult->MoveNext();
-        }
-        return $arrNames;
-    }
-
 }
 
 ?>
