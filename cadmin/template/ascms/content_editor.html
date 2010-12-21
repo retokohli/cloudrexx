@@ -283,18 +283,31 @@ function openWindow(theURL,winName,features){
 }
 
 //displays only templates beginning with home_ if home module is set for this page and vice versa.
+//the removed entries
+disabledOptions = new Array();
+//our logic, onchange handler
 function refreshCustomContentTemplates(sender) {
+    //whether home-module was selected
     var displayHome = $$('[name="selectmodule"] option')[sender.selectedIndex].innerHTML == "home";
+    //all content options
     var options = $$('[name="custom_content"] option');
+    //the custom content dropdown
+    var ccDropdown = $$('[name="custom_content"]')[0];
+    //re-insert options disabled before
+    for(var i = 0; i < disabledOptions.length; i++) {
+        ccDropdown.insert(disabledOptions[i]);
+    }
+    disabledOptions = [];
     for(var i = 0; i < options.length; i++) {
         if(options[i].value == "") //standard entry, leave it
             continue;
-        if(options[i].innerHTML.substr(0,4) == "home") 
-            displayHome ? options[i].removeAttribute('disabled') : options[i].setAttribute('disabled','disabled');
-        else
-            !displayHome ? options[i].removeAttribute('disabled') : options[i].setAttribute('disabled','disabled');
+        var isHomeEntry = options[i].innerHTML.substr(0,4) == "home";
+        if((!displayHome && isHomeEntry) || (displayHome && !isHomeEntry)) { 
+            disabledOptions.push(options[i].remove());
+        }
     }
 }
+//remove options as necessary on page load
 document.observe('dom:loaded', function() { refreshCustomContentTemplates($$('[name="selectmodule"]')[0]); });
 // ]]>
 </script>
