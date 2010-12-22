@@ -189,14 +189,14 @@ class FWUser extends User_Setting
             $objDatabase->Execute("INSERT INTO ".DBPREFIX."log
                                         SET userid=".$objFWUser->objUser->getId().",
                                             datetime = ".$objDatabase->DBTimeStamp(time()).",
-                                            useragent = '".$httpUserAgent."',
-                                            userlanguage = '".$httpAcceptLanguage."',
-                                            remote_addr = '".strip_tags($_SERVER['REMOTE_ADDR'])."',
-                                            remote_host = '".$remote_host."',
-                                            http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']) : '')."',
-                                            http_via = '".(isset($_SERVER['HTTP_VIA']) ? strip_tags($_SERVER['HTTP_VIA']) : '')."',
-                                            http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? strip_tags($_SERVER['HTTP_CLIENT_IP']) : '')."',
-                                            referer ='".$referer."'");
+                                            useragent = '".substr($httpUserAgent, 0, 250)."',
+                                            userlanguage = '".substr($httpAcceptLanguage, 0, 250)."',
+                                            remote_addr = '".substr(strip_tags($_SERVER['REMOTE_ADDR']), 0, 250)."',
+                                            remote_host = '".substr($remote_host, 0, 250)."',
+                                            http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? substr(strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']), 0, 250) : '')."',
+                                            http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
+                                            http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
+                                            referer ='".substr($referer, 0, 250)."'");
             $_SESSION['auth']['log']=true;
         }
     }
