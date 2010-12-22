@@ -918,7 +918,7 @@ class Customer
                         contrexx_addslashes($pattern)."%'";
                 } else {
                     $query  = "
-                        SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
+                        SELECT customerid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
                         WHERE ".$this->fieldNames[$fieldName]." LIKE '%".
                         contrexx_addslashes($pattern)."%'";
                 }
