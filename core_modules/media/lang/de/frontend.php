@@ -37,4 +37,9 @@ $_ARRAYLANG['TXT_MEDIA_FILE_UPLOAD_FAILED'] = "Auf Grund eines Übermittlungsfeh
 $_ARRAYLANG['TXT_MEDIA_FILE_EXTENSION_NOT_ALLOWED'] = "Die Datei %s wurde nicht hochgeladen, da sie einen unerlaubten Dateityp aufweist!";
 $_ARRAYLANG['TXT_MEDIA_NO_FILE'] = "Es wurde keine Datei zum Heraufladen angegeben.";
 $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'] = "Die Datei wurde erfolgreich hochgeladen.";
+$_ARRAYLANG['TXT_MEDIA_RENAME'] = "Umbenennen";
+$_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Wollen Sie diese Datei löschen (n) wirklich? ACHTUNG! Diese Aktion kann nicht rückgängig gemacht werden!";
+$_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'] = "Datei %s wurde erfolgreich gelöscht";
+$_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "Datei % s % s umbenennen zu erfolgreich";
+$_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "Datei mit dem Namen %s ist bereits exsist";
 ?>

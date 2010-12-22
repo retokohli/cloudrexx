@@ -37,4 +37,9 @@ $_ARRAYLANG['TXT_MEDIA_FILE_UPLOAD_FAILED'] = "The file %s couldn't be transmitt
 $_ARRAYLANG['TXT_MEDIA_FILE_EXTENSION_NOT_ALLOWED'] = "The file %s was refused due its file extension which is not allowed!";
 $_ARRAYLANG['TXT_MEDIA_NO_FILE'] = "No files to upload";
 $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'] = "File uploaded successfully";
+$_ARRAYLANG['TXT_MEDIA_RENAME'] = "Yeni ad vermek";
+$_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Do you want to delete this file (s) really? WARNING! This Action cannot be undone!";
+$_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'] = "File %s deleted successfully";
+$_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "File %s rename to %s successfully";
+$_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "File With Name %s already exsist";
 ?>
