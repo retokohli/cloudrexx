@@ -892,9 +892,9 @@ class InitCMS
     function _is_mobile_phone() {
         $isMobile = false;
         $old_er = error_reporting(0);
-        $op = strtolower($_SERVER['HTTP_X_OPERAMINI_PHONE']);
-        $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
-        $ac = strtolower($_SERVER['HTTP_ACCEPT']);
+        $op = isset($_SERVER['HTTP_X_OPERAMINI_PHONE']) ? strtolower($_SERVER['HTTP_X_OPERAMINI_PHONE']) : '';
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
+        $ac = isset($_SERVER['HTTP_ACCEPT']) ? strtolower($_SERVER['HTTP_ACCEPT']) : '';
 
         error_reporting($old_er);
 
