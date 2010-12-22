@@ -193,13 +193,13 @@ class CSVimport
             SELECT catid
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
              WHERE catname='$catName'
-               ".($catParent === false ? '' : "AND parent_id=$catParent");
+               ".($catParent === false ? '' : "AND parentid=".intval($catParent));
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             if ($objResult->RecordCount() > 0) {
-                return $objResult->fields['id'];
+                return $objResult->fields['catid'];
             }
-            return CSVimport::InsertNewCat($catName, $catParent);
+            return CSVimport::InsertNewCat($catName, intval($catParent));
         }
         return 0;
     }
