@@ -626,6 +626,10 @@ class shopmanager extends ShopLibrary
                 $catId = false;
                 for ($cat=0; $cat < count($arrCategoryColumnIndex); $cat++) {
                     $catName = $arrFileContent[$x][$arrCategoryColumnIndex[$cat]];
+                    if (empty($catName) && !empty($catId)) {
+                        break;
+                    }
+
                     if (empty($catName)) {
                         $catId = $this->objCSVimport->GetFirstCat();
                     } else {
@@ -1045,9 +1049,9 @@ class shopmanager extends ShopLibrary
                 ASCMS_SHOP_IMAGES_PATH.'/',
                 ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                 $imageName,
-                $_CONFIG['shop_thumbnail_max_width'],
-                $_CONFIG['shop_thumbnail_max_height'],
-                $_CONFIG['shop_thumbnail_quality']
+                $this->arrConfig['shop_thumbnail_max_width']['value'],
+                $this->arrConfig['shop_thumbnail_max_height']['value'],
+                $this->arrConfig['shop_thumbnail_quality']['value']
             )) {
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
