@@ -314,6 +314,8 @@ Modul: Shop
 - Bei einer Bestellung wird das Land der Lieferadresse gespeichert.
 - Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
 - Bilder mit Sonderzeichen im Dateinamen werden unterstützt.
+- Beim Import werden die Produkte den korrekten Kategorien zugeordnet.
+- Die Thumbnails der Produktbilder werden beim Import generiert.
 
 Modul: User to User Nachrichten
 - Die E-Mail Benachrichtigungen über neue Nachrichten werden versendet.

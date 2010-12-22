@@ -515,6 +515,10 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 $category_id = false;
                 for ($cat=0; $cat < count($arrCategoryColumnIndex); $cat++) {
                     $catName = $arrFileContent[$x][$arrCategoryColumnIndex[$cat]];
+                    if (empty($catName) && !empty($category_id)) {
+                        break;
+                    }
+
                     if (empty($catName)) {
                         $category_id = $this->objCSVimport->GetFirstCat();
                     } else {
@@ -878,9 +882,9 @@ DBG::activate(DBG_ERROR_FIREPHP);
                 ASCMS_SHOP_IMAGES_PATH.'/',
                 ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                 $imageName,
-                $_CONFIG['thumbnail_max_width'],
-                $_CONFIG['thumbnail_max_height'],
-                $_CONFIG['thumbnail_quality']
+                SettingDb::getValue('thumbnail_max_width'),
+                SettingDb::getValue('thumbnail_max_height'),
+                SettingDb::getValue('thumbnail_quality')
             )) {
                 $width = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
