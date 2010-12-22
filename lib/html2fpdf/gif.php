@@ -1,4 +1,4 @@
-<?
+<?php
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // GIF Util - (C) 2003 Yamasoft (S/C)
 // http://www.yamasoft.com
@@ -487,7 +487,7 @@ class CGIFFILEHEADER
 			}
 			$hdrLen += 3 * $this->m_nTableSize;
 		}
-		
+
 
 		return true;
 	}
@@ -608,11 +608,11 @@ class CGIFIMAGE
 
 		while(true) {
 
-			
+
 			$b = ord($data{0});
 
 			$data = substr($data, 1);
-			
+
 			$datLen++;
 
 			switch($b) {
@@ -771,8 +771,8 @@ class CGIF
 
 	function loadFile($lpszFileName, $iIndex)
 	{
-		
-		
+
+
 		if($iIndex < 0) {
 			return false;
 		}
@@ -783,7 +783,7 @@ class CGIF
 		//EDITEI - in order to read remote files (HTTP(s) and FTP protocols)
 		if ( strpos($lpszFileName,"http") !== false or strpos($lpszFileName,"ftp") !== false )
 		{
-			
+
 			$contents = '';
 			while (!feof($fh)) $contents .= @fread($fh, 8192);
 		}
@@ -802,11 +802,11 @@ class CGIF
 		if(!$this->m_gfh->load($this->m_lpData, $len)) {
 			return false;
 		}
-		
+
 		$this->m_lpData = substr($this->m_lpData, $len);
 		do {
 			if(!$this->m_img->load($this->m_lpData, $imgLen)) {
-				
+
 				return false;
 			}
 			$this->m_lpData = substr($this->m_lpData, $imgLen);
