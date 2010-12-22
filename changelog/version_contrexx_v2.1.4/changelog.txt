@@ -58,6 +58,7 @@ Blog:
 Shop:
 - Paging bei der Bestellungsübersicht funktioniert nun auch, wenn Filterkriterien angegeben wurden.
 - Bug beim Hinzufügen eines Bildes einer neuen Kategorie (IE6-8)
+- Import von Kategorien funktioniert.
 
 Content Manager:
 - Fehlermeldung für aufgrund von bereits vorhandenem gleichnamigen Ordner ungültige Aliase hinzugefügt
