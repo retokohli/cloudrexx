@@ -926,6 +926,8 @@ class MediaLibrary {
 
     function _getJavaScriptCodePreview()
     {
+        global $_ARRAYLANG;
+        
         $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
         $code = <<<END
                     <script language="JavaScript" type="text/javascript">
@@ -953,18 +955,35 @@ class MediaLibrary {
                             }
                             return false;
                         }
-
+        
                         \$J(document).ready(function() {
-                            \$J('.rename_btn').click(function(){
-                                file = \$J(this).parent().parent().find('.file_name a').html();
-                                file_name = file.split('.')[0];
-                                file_ext = file.split('.')[1];
-                                \$J(this).parent().parent().find('.file_name a')
-                                .html('<form action="">'+
-                                    '<input type="text" value="'+file_name+'" />'+
-                                    '.'+file_ext+
-                                '</form>');
-                                
+                            \$J('#filename').live('keyup', function(event){
+                                \$J(this).val(\$J(this).val().replace(/[^0-9a-zA-Z_\- ]/g,''));
+                                if(event.keyCode == 13) {
+                                    var newFileName = \$J('#filename').val();
+                                    var actionPath  = \$J('#actionPath').val();
+                                    var fileExt     = \$J('#fileExt').val();
+                                    actionPath += '&newfile='+newFileName+fileExt;
+                                    \$J(location).attr('href',actionPath);
+                                }
+                            });
+
+                            \$J('.rename_btn').one('click', function(){
+                                if (\$J('#filename').length == 0) {
+                                    file = \$J(this).parent().parent().find('.file_name a').html();
+                                    file_name = file.split('.')[0];
+                                    file_ext = file.split('.')[1] != undefined ? "."+file.split('.')[1] : " ";
+                                    actionPath = 'index.php?section=$this->archive&act=rename&path=$this->webPath&file='+file_name;
+
+                                    if (\$J(this).parent().parent().find('.file_size').html() != '&nbsp;-') {
+                                        actionPath += file_ext;
+                                    }
+
+                                    \$J(this).parent().parent().find('.file_name')
+                                    .html('<input type="text" id="filename" name="filename" value="'+file_name+'"/>'+file_ext
+                                            +'<input type="hidden" value="'+actionPath+'" id="actionPath" name="actionPath" />'
+                                            +'<input type="hidden" value="'+file_ext+'" id="fileExt" name="fileExt" />');
+                                }
                             });
                         });
                     /* ]]> */
