@@ -167,6 +167,12 @@ class MediaManager extends MediaLibrary {
             case 'upload':
                 $this->_uploadFiles();
                 break;
+            case 'rename':
+                $this->_renameFiles();
+                break;
+            case 'delete':
+                $this->_deleteFiles();
+                break;
             default:
         }
 
@@ -234,10 +240,10 @@ class MediaManager extends MediaLibrary {
 
                     if ($key == 'dir') {
                         $tmpHref= CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
-                        $delHref= CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . '&amp;cmd=delete&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
+                        $delHref= CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;act=delete&amp;path=' . rawurlencode($this->webPath . $dirTree[$key]['name'][$x] . '/');
                     }
                     elseif ($key == 'file') {
-                        $delHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . '&amp;act=delete&amp;path=' . rawurlencode($this->webPath) . '&amp;file='. rawurlencode($dirTree[$key]['name'][$x]);
+                        $delHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;act=delete&amp;path=' . rawurlencode($this->webPath) . '&amp;file='. rawurlencode($dirTree[$key]['name'][$x]);
                         if ($this->_isImage($this->path . $dirTree[$key]['name'][$x])) {
                             $tmpSize = getimagesize($this->path . $dirTree[$key]['name'][$x]);
                             $tmpHref = 'javascript: preview(\'' . $this->webPath . $dirTree[$key]['name'][$x] . '\', ' . $tmpSize[0] . ', ' . $tmpSize[1] . ');';
@@ -549,6 +555,101 @@ class MediaManager extends MediaLibrary {
         return false;
     }
 
-}
+    /**
+     * Rename files
+     *
+     * @global     array    $_ARRAYLANG
+     * @return     boolean  true if file renamed successfully and false if it failed
+     */
+    function _renameFiles()
+    {
+        global $_ARRAYLANG;
 
+        // check permissions
+        if (!$this->manageAccessGranted()) {
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
+            return false;
+        }
+        
+        if (isset($_GET['newfile']) && file_exists($this->path.$this->getFile)) {
+            if (!file_exists($this->path.$_GET['newfile'])) {
+                rename($this->path.$this->getFile, $this->path.$_GET['newfile']);
+                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET), htmlentities($_GET['newfile'], ENT_QUOTES, CONTREXX_CHARSET));
+            } else {
+                $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'], htmlentities($_GET['newfile'], ENT_QUOTES, CONTREXX_CHARSET));
+            }
+        } else {
+            $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET));
+        }
+    }
+
+    /**
+     * Delete files
+     *
+     * @global     array    $_ARRAYLANG
+     * @return     boolean  true if file deleted successfully and false if it failed
+     */
+    function _deleteFiles()
+    {
+        global $_ARRAYLANG;
+
+        // check permissions
+        if (!$this->manageAccessGranted()) {
+            $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_DIRCREATION_NOT_ALLOWED'];
+            return false;
+        }
+
+        if (isset($_GET['path'])) {
+            if (isset($_GET['file'])){
+                $filePath = $this->path.$this->getFile;
+                if (unlink($filePath)) {
+                    $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET));
+                    return true;
+                } else {
+                    $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET));
+                    return false;
+                }
+            } else {
+                $this->deleteDirectory($this->path);
+            }
+        }
+    }
+
+     /**
+     * Delete Selected Folder and its contents recursively upload form
+     *
+     * @global     array    $_ARRAYLANG
+     * @param      string   $dirName
+     * @return     boolean  true if directory and its contents deleted successfully and false if it failed
+     */
+    private function deleteDirectory($dirName)
+    {
+        global $_ARRAYLANG;
+
+        $dir_handle = is_dir($dirName) ? opendir($dirName) : "";
+        if (!$dir_handle) {
+            return false;
+        }
+
+        while($file = readdir($dir_handle)) {
+            if ($file != "." && $file != "..") {
+                if (!is_dir($dirName."/".$file)) {
+                    unlink($dirName."/".$file);
+                } else {
+                    deleteDirectory($dirName.'/'.$file);
+                }
+            }
+        }
+        closedir($dir_handle);
+        rmdir($dirName);
+        /* Redirect to previous path */
+        $new_path_arr = explode("/", trim($this->webPath, "/"));
+        array_pop($new_path_arr);
+        $newPath = "/".implode("/", $new_path_arr)."/";
+        
+        header("Location: index.php?section=" . $this->archive . $this->getCmd . "&path=". rawurlencode($newPath));
+        return true;
+    }
+
+}
 ?>
