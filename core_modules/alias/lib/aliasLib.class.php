@@ -374,7 +374,7 @@ class aliasLib
             }
 
             foreach ($arrDefinedAlias['sources'] as $arrSource) {
-                $arrRewriteRules[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC]';
+                $arrRewriteRules[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC,QSA]';
             }
         }
 

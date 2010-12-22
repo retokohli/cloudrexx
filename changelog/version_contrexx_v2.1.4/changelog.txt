@@ -24,6 +24,7 @@ File Browser
 ****************************************
 Alias Verwaltung
 - Die automatische Erstellung der .htaccess Datei per FTP funktioniert.
+- Bei Aliase können URL-Modifikatoren verwendet werden.
 
 News Manager
 - Bei der Bearbeitung einer News Meldung wird der Teaser Text mit dem richtigen
