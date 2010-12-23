@@ -929,7 +929,7 @@ class MediaLibrary {
         global $_ARRAYLANG;
         
         $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
-        $code = <<<END
+        $code       = <<<END
                     <script language="JavaScript" type="text/javascript">
                     /* <![CDATA[ */
                         function preview(file, width, height)
@@ -957,33 +957,56 @@ class MediaLibrary {
                         }
         
                         \$J(document).ready(function() {
+
                             \$J('#filename').live('keyup', function(event){
-                                \$J(this).val(\$J(this).val().replace(/[^0-9a-zA-Z_\- ]/g,''));
+                                //submit the input value on hitting Enter key to rename action
                                 if(event.keyCode == 13) {
                                     var newFileName = \$J('#filename').val();
                                     var actionPath  = \$J('#actionPath').val();
                                     var fileExt     = \$J('#fileExt').val();
+                                    /* url gets stripped on seeing ampersend, so replace with _*/
+                                    newFileName     = newFileName.replace(/\&/g,"_");
                                     actionPath += '&newfile='+newFileName+fileExt;
-                                    \$J(location).attr('href',actionPath);
+                                    \$J(location).attr('href', actionPath);
                                 }
                             });
 
-                            \$J('.rename_btn').one('click', function(){
+                            \$J('.rename_btn').click(function(){
                                 if (\$J('#filename').length == 0) {
+                                    \$J(this).parent().parent().find('.file_name a').css('display','none');
+                                    file_name = "";
                                     file = \$J(this).parent().parent().find('.file_name a').html();
-                                    file_name = file.split('.')[0];
-                                    file_ext = file.split('.')[1] != undefined ? "."+file.split('.')[1] : " ";
+                                    fileSplitLength = file.split('.').length;
+                                    //Display Filename in input box without file extension (with multi dots in filename)
+                                    if (fileSplitLength > 1) {
+                                        file_ext = "."+file.split('.')[fileSplitLength-1];
+                                        loop = fileSplitLength - 1;
+                                    } else {
+                                        file_ext = "";
+                                        loop = fileSplitLength;
+                                    }
+                                    for (i=0; i < loop; i++) {
+                                        file_name += i > 0 ? "." : "";
+                                        file_name += file.split('.')[i];
+                                    }
                                     actionPath = 'index.php?section=$this->archive&act=rename&path=$this->webPath&file='+file_name;
 
                                     if (\$J(this).parent().parent().find('.file_size').html() != '&nbsp;-') {
                                         actionPath += file_ext;
                                     }
-
+                                    //Rename Form
                                     \$J(this).parent().parent().find('.file_name')
-                                    .html('<input type="text" id="filename" name="filename" value="'+file_name+'"/>'+file_ext
+                                    .append('<div id="insertform"><input type="text" id="filename" name="filename" value="'+file_name+'"/>'+file_ext
                                             +'<input type="hidden" value="'+actionPath+'" id="actionPath" name="actionPath" />'
-                                            +'<input type="hidden" value="'+file_ext+'" id="fileExt" name="fileExt" />');
+                                            +'<input type="hidden" value="'+file_ext+'" id="fileExt" name="fileExt" /></div>');
+                                    \$J("#filename").focus();
                                 }
+                            });
+
+                            //Hide added form and display file name link on blur
+                            \$J("#filename").live('blur',function(){
+                                \$J(this).parent().parent().find('a').css('display','block');
+                                \$J(this).parent().remove();
                             });
                         });
                     /* ]]> */
@@ -1008,7 +1031,7 @@ END;
                                                     value
                                             FROM    '.DBPREFIX.'module_media_settings
                                         ');
-        if($objResult !== false){
+        if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $arrReturn[$objResult->fields['name']] = stripslashes(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
                 $objResult->MoveNext();
