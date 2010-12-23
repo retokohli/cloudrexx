@@ -72,7 +72,7 @@ class MediaManager extends MediaLibrary {
     {
         MediaLibrary::__construct();
         $this->archive = (intval(substr($archive,-1,1)) == 0) ? 'media1' : $archive;
-
+        
         // directory variables
         $this->iconPath     = ASCMS_MODULE_IMAGE_PATH . '/media/';
         $this->iconWebPath  = ASCMS_MODULE_IMAGE_WEB_PATH . '/media/';
@@ -201,6 +201,9 @@ class MediaManager extends MediaLibrary {
             }
         }
 
+        if (isset($_GET['deletefolder']) && $_GET['deletefolder'] = "success"){
+            $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'];
+        }
         if (!empty($_GET['highlightFiles'])) {
             $this->highlightName = array_merge($this->highlightName, array_map('basename', json_decode(contrexx_stripslashes(urldecode($_GET['highlightFiles'])))));
         }
@@ -571,11 +574,14 @@ class MediaManager extends MediaLibrary {
         }
         
         if (isset($_GET['newfile']) && file_exists($this->path.$this->getFile)) {
-            $newFile = trim(preg_replace('/[^a-z0-9_\-\.]/i', '_', $_GET['newfile']));
+            $newFile = trim(preg_replace('/[^a-z0-9_\-\. ]/i', '_', $_GET['newfile']));
             if ($newFile != "") {
                 if (!file_exists($this->path.$newFile)) {
-                    rename($this->path.$this->getFile, $this->path.$newFile);
-                    $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET), htmlentities($newFile, ENT_QUOTES, CONTREXX_CHARSET));
+                    if (rename($this->path.$this->getFile, $this->path.$newFile)) {
+                        $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET), htmlentities($newFile, ENT_QUOTES, CONTREXX_CHARSET));
+                    } else {
+                        $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_NAME_INVALID'];
+                    }
                 } else {
                     $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'], htmlentities($newFile, ENT_QUOTES, CONTREXX_CHARSET));
                 }
@@ -640,18 +646,19 @@ class MediaManager extends MediaLibrary {
                 if (!is_dir($dirName."/".$file)) {
                     unlink($dirName."/".$file);
                 } else {
-                    deleteDirectory($dirName.'/'.$file);
+                    $this->deleteDirectory($dirName.'/'.$file);
                 }
             }
         }
         closedir($dir_handle);
+        
         rmdir($dirName);
         /* Redirect to previous path */
         $new_path_arr = explode("/", trim($this->webPath, "/"));
         array_pop($new_path_arr);
         $newPath = "/".implode("/", $new_path_arr)."/";
         
-        header("Location: index.php?section=" . $this->archive . $this->getCmd . "&path=". rawurlencode($newPath));
+        header("Location: index.php?section=" . $this->archive . $this->getCmd . "&deletefolder=success&path=". rawurlencode($newPath));
         return true;
     }
 

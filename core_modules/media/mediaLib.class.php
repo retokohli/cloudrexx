@@ -959,15 +959,19 @@ class MediaLibrary {
                         \$J(document).ready(function() {
 
                             \$J('#filename').live('keyup', function(event){
+                                \$J(this).val(\$J(this).val().replace(/[^0-9a-zA-Z_\-\. ]/g,'_'));
                                 //submit the input value on hitting Enter key to rename action
                                 if(event.keyCode == 13) {
                                     var newFileName = \$J('#filename').val();
+                                    var oldFileName = \$J('#oldFilename').val();
                                     var actionPath  = \$J('#actionPath').val();
                                     var fileExt     = \$J('#fileExt').val();
-                                    /* url gets stripped on seeing ampersend, so replace with _*/
-                                    newFileName     = newFileName.replace(/\&/g,"_");
-                                    actionPath += '&newfile='+newFileName+fileExt;
-                                    \$J(location).attr('href', actionPath);
+                                    if (newFileName != oldFileName && \$J.trim(newFileName) != "") {
+                                        actionPath += '&newfile='+newFileName+fileExt;
+                                        \$J(location).attr('href', actionPath);
+                                    } else {
+                                        \$J('#filename').focusout();
+                                    }
                                 }
                             });
 
@@ -977,14 +981,12 @@ class MediaLibrary {
                                     file_name = "";
                                     file = \$J(this).parent().parent().find('.file_name a').html();
                                     fileSplitLength = file.split('.').length;
+                                    isFolder = (\$J(this).parent().parent().find('.file_size').html() != '&nbsp;-') ? 1 : 0;
+        
                                     //Display Filename in input box without file extension (with multi dots in filename)
-                                    if (fileSplitLength > 1) {
-                                        file_ext = "."+file.split('.')[fileSplitLength-1];
-                                        loop = fileSplitLength - 1;
-                                    } else {
-                                        file_ext = "";
-                                        loop = fileSplitLength;
-                                    }
+                                    file_ext = (isFolder == 1) ? "."+file.split('.')[fileSplitLength-1] : "";
+                                    loop     = (isFolder == 1) ? fileSplitLength - 1 : fileSplitLength;
+        
                                     for (i=0; i < loop; i++) {
                                         file_name += i > 0 ? "." : "";
                                         file_name += file.split('.')[i];
@@ -996,8 +998,9 @@ class MediaLibrary {
                                     }
                                     //Rename Form
                                     \$J(this).parent().parent().find('.file_name')
-                                    .append('<div id="insertform"><input type="text" id="filename" name="filename" value="'+file_name+'"/>'+file_ext
+                                    .append('<div id="insertform"><input type="text" id="filename" name="filename" style="padding:0px;" value="'+file_name+'"/>'+file_ext
                                             +'<input type="hidden" value="'+actionPath+'" id="actionPath" name="actionPath" />'
+                                            +'<input type="hidden" value="'+file_name+'" id="oldFilename" name="oldFilename" />'
                                             +'<input type="hidden" value="'+file_ext+'" id="fileExt" name="fileExt" /></div>');
                                     \$J("#filename").focus();
                                 }
