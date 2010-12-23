@@ -696,7 +696,7 @@ class MediaManager extends MediaLibrary {
 
         $objFWUser = FWUser::getFWUserObject();
 
-        $this->_objTpl->loadTemplateFile('module_media_settings.html',true,true);
+        $this->_objTpl->loadTemplateFile('module_media_settings.html', true, true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_SETTINGS'];
 
         $this->_objTpl->setGlobalVariable(array(
@@ -717,16 +717,16 @@ class MediaManager extends MediaLibrary {
             'TXT_BUTTON_SAVE'                       => $_CORELANG['TXT_SAVE'],
         ));
 
-        for($k = 1; $k <= 4; $k++)
+        for ($k = 1; $k <= 4; $k++)
         {
             $arrAssociatedGroupOptions          = array();
             $arrNotAssociatedGroupOptions       = array();
             $arrAssociatedGroupManageOptions    = array();
             $arrNotAssociatedGroupManageOptions = array();
-            $mediaAccessSetting = $this->_arrSettings['media' . $k . '_frontend_changable'];
-            $mediaManageSetting = $this->_arrSettings['media' . $k . '_frontend_managable'];
+            $mediaAccessSetting                 = $this->_arrSettings['media' . $k . '_frontend_changable'];
+            $mediaManageSetting                 = $this->_arrSettings['media' . $k . '_frontend_managable'];
             
-            if(!is_numeric($mediaAccessSetting))
+            if (!is_numeric($mediaAccessSetting))
             {
                 // Get all groups
                 $objGroup = $objFWUser->objGroup->getGroups();
@@ -751,7 +751,7 @@ class MediaManager extends MediaLibrary {
                 $objGroup->next();
             }
 
-            if(!is_numeric($mediaManageSetting))
+            if (!is_numeric($mediaManageSetting))
             {
                 // Get all groups
                 $objGroup = $objFWUser->objGroup->getGroups();
@@ -807,14 +807,14 @@ class MediaManager extends MediaLibrary {
 
         $this->_arrSettings = $this->createSettingsArray();
         
-        for($i = 0; $i <=4; $i++)
+        for ($i = 0; $i <=4; $i++)
         {
             $oldMediaSetting = $this->_arrSettings['media' . $i . '_frontend_changable'];
             $newMediaSetting = $_POST['mediaSettings_Media' . $i . 'FrontendChangable'];
 
-            if(!is_numeric($newMediaSetting))
+            if (!is_numeric($newMediaSetting))
             {
-                if(is_numeric($oldMediaSetting))
+                if (is_numeric($oldMediaSetting))
                 {
                     // remove AccessId
                     Permission::removeAccess($oldMediaSetting, 'dynamic');
@@ -832,7 +832,7 @@ class MediaManager extends MediaLibrary {
                 // add AccessID
                 $newMediaSetting = Permission::createNewDynamicAccessId();
                 // save AccessID
-                if(count($accessGroups)) {
+                if (count($accessGroups)) {
                     Permission::setAccess($newMediaSetting, 'dynamic', $accessGroups);
                 }
                 $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
@@ -843,9 +843,9 @@ class MediaManager extends MediaLibrary {
 
             $oldManageSetting = $this->_arrSettings['media' . $i . '_frontend_managable'];
             $newManageSetting = $_POST['mediaSettings_Media' . $i . 'FrontendManagable'];
-            if(!is_numeric($newManageSetting))
+            if (!is_numeric($newManageSetting))
             {
-                if(is_numeric($oldManageSetting))
+                if (is_numeric($oldManageSetting))
                 {
                     // remove AccessId
                     Permission::removeAccess($oldManageSetting, 'dynamic');
@@ -863,7 +863,7 @@ class MediaManager extends MediaLibrary {
                 // add AccessID
                 $newManageSetting = Permission::createNewDynamicAccessId();
                 // save AccessID
-                if(count($accessGroups)) {
+                if (count($accessGroups)) {
                     Permission::setAccess($newManageSetting, 'dynamic', $accessGroups);
                 }
                 $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
@@ -873,7 +873,7 @@ class MediaManager extends MediaLibrary {
             }
         }
 
-        $this->_arrSettings = $this->createSettingsArray();
+        $this->_arrSettings  = $this->createSettingsArray();
         $this->_strOkMessage = $_ARRAYLANG['TXT_MEDIA_SETTINGS_SAVE_SUCCESSFULL'];
     }
 }
