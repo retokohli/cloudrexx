@@ -42,4 +42,7 @@ $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Wollen Sie diese Datei löschen (n) wirkl
 $_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'] = "Datei %s wurde erfolgreich gelöscht";
 $_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "Datei % s % s umbenennen zu erfolgreich";
 $_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "Datei mit dem Namen %s ist bereits exsist";
+$_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Die angegebene Datei %s nicht gefunden";
+$_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Dateiname kann nicht leer sein!";
+$_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Folder (s) erfolgreich gelöscht!";
 ?>

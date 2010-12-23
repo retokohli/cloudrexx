@@ -42,4 +42,7 @@ $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Do you want to delete this file (s) reall
 $_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'] = "File %s deleted successfully";
 $_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "File %s rename to %s successfully";
 $_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "File With Name %s already exsist";
+$_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified File %s not found";
+$_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Filnavn kan ikke være tom!";
+$_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Mappe (r) slettet med succes!";
 ?>
