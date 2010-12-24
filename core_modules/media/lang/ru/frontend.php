@@ -38,11 +38,11 @@ $_ARRAYLANG['TXT_MEDIA_FILE_EXTENSION_NOT_ALLOWED'] = "The file %s was refused d
 $_ARRAYLANG['TXT_MEDIA_NO_FILE'] = "No files to upload";
 $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'] = "File uploaded successfully";
 $_ARRAYLANG['TXT_MEDIA_RENAME'] = "Переименовать";
-$_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Do you want to delete this file (s) really? WARNING! This Action cannot be undone!";
+$_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Please confirm to delete this file/folder. WARNING! This Action cannot be undone!";
 $_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'] = "File %s deleted successfully";
-$_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "File %s rename to %s successfully";
-$_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "File With Name %s already exsist";
+$_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "File %s renamed successfully to %s";
+$_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "A file with the name %s already exists!";
 $_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Specified File %s not found";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Имя файла не может быть пустым!";
-$_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Папка (ы) успешно удалены!";
+$_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Папка успешно удалены!";
 ?>
