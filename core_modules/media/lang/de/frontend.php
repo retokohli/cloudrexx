@@ -38,11 +38,11 @@ $_ARRAYLANG['TXT_MEDIA_FILE_EXTENSION_NOT_ALLOWED'] = "Die Datei %s wurde nicht 
 $_ARRAYLANG['TXT_MEDIA_NO_FILE'] = "Es wurde keine Datei zum Heraufladen angegeben.";
 $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADED_SUCESSFULLY'] = "Die Datei wurde erfolgreich hochgeladen.";
 $_ARRAYLANG['TXT_MEDIA_RENAME'] = "Umbenennen";
-$_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Wollen Sie diese Datei löschen (n) wirklich? ACHTUNG! Diese Aktion kann nicht rückgängig gemacht werden!";
+$_ARRAYLANG['TXT_MEDIA_DELETE_MSG'] = "Wollen Sie diese(s) Datei/Verzeichnis wirklich löschen? ACHTUNG! Diese Aktion kann nicht rückgängig gemacht werden!";
 $_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'] = "Datei %s wurde erfolgreich gelöscht";
-$_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "Datei % s % s umbenennen zu erfolgreich";
-$_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "Datei mit dem Namen %s ist bereits exsist";
-$_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Die angegebene Datei %s nicht gefunden";
+$_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'] = "Datei %s wurde erfolgreich umbenannt in %s";
+$_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'] = "Eine Datei mit dem Namen %s existiert bereits!";
+$_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'] = "Die angegebene Datei %s wurde nicht gefunden";
 $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'] = "Dateiname kann nicht leer sein!";
-$_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Folder (s) erfolgreich gelöscht!";
+$_ARRAYLANG['TXT_MEDIA_FOLDER_DELETED_SUCESSFULLY'] = "Das Verzeichnis wurde erfolgreich gelöscht!";
 ?>
