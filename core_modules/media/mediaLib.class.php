@@ -233,6 +233,8 @@ class MediaLibrary {
           "contenttype"           => $ctype
         ));
         $dl->send();
+
+        exit;
     }
 
 
