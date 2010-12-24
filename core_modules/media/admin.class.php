@@ -721,8 +721,11 @@ class MediaManager extends MediaLibrary {
         {
             $arrAssociatedGroupOptions          = array();
             $arrNotAssociatedGroupOptions       = array();
+            $arrAssociatedGroups = array();
             $arrAssociatedGroupManageOptions    = array();
             $arrNotAssociatedGroupManageOptions = array();
+            $arrAssociatedManageGroups = array();
+
             $mediaAccessSetting                 = $this->_arrSettings['media' . $k . '_frontend_changable'];
             $mediaManageSetting                 = $this->_arrSettings['media' . $k . '_frontend_managable'];
             
@@ -735,8 +738,9 @@ class MediaManager extends MediaLibrary {
                 $objGroup = $objFWUser->objGroup->getGroups(
                     array('dynamic' => $mediaAccessSetting)
                 );
+                $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
             }
-            $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
+
 
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
@@ -760,14 +764,14 @@ class MediaManager extends MediaLibrary {
                 $objGroup = $objFWUser->objGroup->getGroups(
                     array('dynamic' => $mediaManageSetting)
                 );
+                $arrAssociatedManageGroups = $objGroup->getLoadedGroupIds();
             }
-            $arrAssociatedGroups = $objGroup->getLoadedGroupIds();
             
             $objGroup = $objFWUser->objGroup->getGroups();
             while (!$objGroup->EOF) {
                 $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
 
-                if (in_array($objGroup->getId(), $arrAssociatedGroups)) {
+                if (in_array($objGroup->getId(), $arrAssociatedManageGroups)) {
                     $arrAssociatedGroupManageOptions[] = $option;
                 } else {
                     $arrNotAssociatedGroupManageOptions[] = $option;

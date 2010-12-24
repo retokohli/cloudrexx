@@ -277,7 +277,14 @@ class MediaManager extends MediaLibrary {
         // parse variables
         $tmpHref = CONTREXX_SCRIPT_PATH.'?section=' . $this->archive . $this->getCmd . '&amp;path=' . rawurlencode($this->webPath);
         $tmpIcon = $this->_sortingIcons();
-        $dateCol = $this->manageAccessGranted() ? 'colspan ="2"' : '';
+
+        if ($this->_objTpl->blockExists('manage_access_header')) {
+            if ($this->manageAccessGranted()) {
+                $this->_objTpl->touchBlock('manage_access_header');
+            } else {
+                $this->_objTpl->hideBlock('manage_access_header');
+            }
+        }
         
         $this->_objTpl->setVariable(array(  // parse dir content
             'MEDIA_NAME_HREF'           => $tmpHref . '&amp;sort=name&amp;sort_desc='. ($this->sortBy == 'name' && !$this->sortDesc),
@@ -294,7 +301,6 @@ class MediaManager extends MediaLibrary {
             'MEDIA_SIZE_ICON'           => $tmpIcon['size'],
             'MEDIA_TYPE_ICON'           => $tmpIcon['type'],
             'MEDIA_DATE_ICON'           => $tmpIcon['date'],
-            'MEDIA_DATE_COLSPAN'        => $dateCol,
             'MEDIA_PERM_ICON'           => $tmpIcon['perm'],
             'MEDIA_JAVASCRIPT'          => $this->_getJavaScriptCodePreview()
         ));
@@ -578,12 +584,12 @@ class MediaManager extends MediaLibrary {
             if ($newFile != "") {
                 if (!file_exists($this->path.$newFile)) {
                     if (rename($this->path.$this->getFile, $this->path.$newFile)) {
-                        $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET), htmlentities($newFile, ENT_QUOTES, CONTREXX_CHARSET));
+                        $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_RENAME_SUCESSFULLY'], '<strong>'.htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET).'</strong>', '<strong>'.htmlentities($newFile, ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
                     } else {
                         $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_NAME_INVALID'];
                     }
                 } else {
-                    $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'], htmlentities($newFile, ENT_QUOTES, CONTREXX_CHARSET));
+                    $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_AREALDY_EXSIST'], '<strong>'.htmlentities($newFile, ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
                 }
             } else {
                 $this->_strErrorMessage = $_ARRAYLANG['TXT_MEDIA_FILE_EMPTY_NAME'];
@@ -613,7 +619,7 @@ class MediaManager extends MediaLibrary {
             if (isset($_GET['file'])) {
                 $filePath = $this->path.$this->getFile;
                 if (unlink($filePath)) {
-                    $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET));
+                    $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_DELETED_SUCESSFULLY'], '<strong>'.htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET).'</strong>');
                     return true;
                 } else {
                     $this->_strErrorMessage = sprintf($_ARRAYLANG['TXT_MEDIA_FILE_NOT_FOUND'], htmlentities($this->getFile, ENT_QUOTES, CONTREXX_CHARSET));
