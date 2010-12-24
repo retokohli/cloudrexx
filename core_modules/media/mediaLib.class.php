@@ -929,7 +929,9 @@ class MediaLibrary {
     function _getJavaScriptCodePreview()
     {
         global $_ARRAYLANG;
-        
+
+        JS::activate('jquery');
+
         $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
         $code       = <<<END
                     <script language="JavaScript" type="text/javascript">
