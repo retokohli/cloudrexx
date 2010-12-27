@@ -793,6 +793,7 @@ class ContactManager extends ContactLib {
                     'CONTACT_ACTION_TITLE'                          => $actionTitle,
                     'CONTACT_FORM_FIELD_TYPE_MENU_TPL'              => $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
                     'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', '', false),
+                    'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute(0, 'label', '', false),
                     'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
                     'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', '', false),
                     'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', '', false),
@@ -1839,8 +1840,8 @@ class ContactManager extends ContactLib {
                     'CONTACT_CONTENT_SITE_ACTION'       => $contentSiteExists > 0 ? 'updateContent' : 'newContent',
                     'CONTACT_SOURCECODE_OF'             => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_SOURCECODE_OF_NAME']),
                     'CONTACT_PREVIEW_OF'                => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_PREVIEW_OF_NAME']),
-                    'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, false, true), ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, true),
+                    'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, 0, false, true), ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, 0, true),
                     'FORM_ID'                           => $formId
             ));
         } else {
@@ -1855,7 +1856,7 @@ class ContactManager extends ContactLib {
      * @preview Boolean, generated preview source or raw source
      * @show    Boolean, generated frontend code
      */
-    function _getSourceCode($id, $preview = false, $show = false)
+    function _getSourceCode($id, $lang, $preview = false, $show = false)
     {
         global $_ARRAYLANG, $objInit, $objDatabase;
 
@@ -1928,8 +1929,9 @@ class ContactManager extends ContactLib {
                 break;
 
             case 'checkboxGroup':
+                $selectedLang = $preview ? $frontendLang : $lang;
                 $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
+                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
                 foreach ($options as $index => $option) {
                     $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" {SELECTED_'.$fieldId.'_'.$index.'}/><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label>';
                 }
@@ -1976,8 +1978,9 @@ class ContactManager extends ContactLib {
                 break;
 
             case 'radio':
+                $selectedLang = $preview ? $frontendLang : $lang;
                 $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
+                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
                 foreach ($options as $index => $option) {
                     $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
                 }
@@ -1985,7 +1988,8 @@ class ContactManager extends ContactLib {
                 break;
 
             case 'select':
-                $options      = explode(',', $arrField['lang'][$frontendLang]['value']);
+                $selectedLang = $preview ? $frontendLang : $lang;
+                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
                 $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                 if ($preview) {
                     foreach ($options as $index => $option) {
@@ -2066,7 +2070,7 @@ class ContactManager extends ContactLib {
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
         }
-
+        
         return implode("\n", $sourcecode);
     }
 
@@ -2320,7 +2324,7 @@ class ContactManager extends ContactLib {
                     }
 
                     $currentTime = time();
-                    $content     = addslashes($this->_getSourceCode($formId));
+                    $content     = addslashes($this->_getSourceCode($formId, $langID));
 
                     $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
                                             catid,
@@ -2437,10 +2441,10 @@ class ContactManager extends ContactLib {
                 $objContactForm = $objDatabase->SelectLimit("SELECT name, is_active FROM ".DBPREFIX."module_contact_form_lang WHERE formID=".$formId." AND langID=".$langID, 1);
 
                 if ($objContactForm->fields['is_active'] == 1) {
-                    if ($objContactForm !== false) {
+                    //if ($objContactForm !== false) {
                         $catname = addslashes($objContactForm->fields['name']);
-                    }
-                    $content     = addslashes($this->_getSourceCode($formId));
+                    //}
+                    $content     = addslashes($this->_getSourceCode($formId, $langID));
                     $currentTime = time();
 
                     //make sure the user is allowed to update the content
@@ -2499,6 +2503,9 @@ class ContactManager extends ContactLib {
                             $objDatabase->Execute("UPDATE   ".DBPREFIX."content
                                                    SET      content='".$content."'
                                                    WHERE   id=".$pageId.' AND `lang_id`='.$langID);
+                            $objDatabase->Execute("UPDATE   ".DBPREFIX."content_navigation
+                                                   SET      activestatus='1'
+                                                   WHERE   catid=".$pageId.' AND `lang`='.$langID);
                         }
                     }
 
@@ -2575,6 +2582,11 @@ class ContactManager extends ContactLib {
                                                         is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"
                                             ');
                     }
+                } else {
+                    /* Deactive pages with disabled languages */
+                    $objDatabase->Execute("UPDATE   ".DBPREFIX."content_navigation
+                                                   SET      activestatus='0'
+                                                   WHERE   catid=".$pageId.' AND `lang`='.$langID);
                 }
             }
         }

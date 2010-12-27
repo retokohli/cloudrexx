@@ -960,10 +960,46 @@ class MediaLibrary {
                             return false;
                         }
         
+                        /*
+                           **  Returns the caret (cursor) position of the specified text field.
+                           **  Return value range is 0-oField.length.
+                           */
+                        function doGetCaretPosition (oField) {
+                                var iCaretPos = 0;
+                                // IE Support
+                                if (document.selection) {
+                                        var oSel = document.selection.createRange ();
+                                        oSel.moveStart ('character', -oField.value.length);
+                                        iCaretPos = oSel.text.length;
+                                } else if (oField.selectionStart || oField.selectionStart == '0') {
+                                        // Firefox support
+                                        iCaretPos = oField.selectionStart;
+                                }
+                                return (iCaretPos);
+                        }
+
+                        /*
+                        **  Sets the caret (cursor) position of the specified text field.
+                        **  Valid positions are 0-oField.length.
+                        */
+                        function doSetCaretPosition(oField, pos){
+                                if (oField.setSelectionRange) {
+                                        oField.setSelectionRange(pos,pos);
+                                } else if (oField.createTextRange) {
+                                        var range = oField.createTextRange();
+                                        range.collapse(true);
+                                        range.moveEnd('character', pos);
+                                        range.moveStart('character', pos);
+                                        range.select();
+                                }
+                        }
+
                         \$J(document).ready(function() {
 
                             \$J('#filename').live('keyup', function(event){
+                                pos = doGetCaretPosition(document.getElementById('filename'));
                                 \$J(this).val(\$J(this).val().replace(/[^0-9a-zA-Z_\-\. ]/g,'_'));
+                                doSetCaretPosition(document.getElementById('filename'), pos);
                                 //submit the input value on hitting Enter key to rename action
                                 if(event.keyCode == 13) {
                                     var newFileName = \$J('#filename').val();
@@ -977,6 +1013,7 @@ class MediaLibrary {
                                         \$J('#filename').focusout();
                                     }
                                 }
+                                return true;
                             });
 
                             \$J('.rename_btn').click(function(){
@@ -985,11 +1022,15 @@ class MediaLibrary {
                                     file_name = "";
                                     file = \$J(this).parent().parent().find('.file_name a').html();
                                     fileSplitLength = file.split('.').length;
-                                    isFolder = (\$J(this).parent().parent().find('.file_size').html() != '&nbsp;-') ? 1 : 0;
+                                    isFolder = (\$J(this).parent().parent().find('.file_size').html() == '&nbsp;-') ? 1 : 0;
         
                                     //Display Filename in input box without file extension (with multi dots in filename)
-                                    file_ext = (isFolder == 1) ? "."+file.split('.')[fileSplitLength-1] : "";
-                                    loop     = (isFolder == 1) ? fileSplitLength - 1 : fileSplitLength;
+                                    file_ext = (isFolder != 1 && fileSplitLength > 1) ?
+                                                    ("."+file.split('.')[fileSplitLength-1])
+                                                    : "";
+                                    loop     = (isFolder != 1 && fileSplitLength > 1) ?
+                                                    (fileSplitLength - 1)
+                                                    : fileSplitLength;
         
                                     for (i=0; i < loop; i++) {
                                         file_name += i > 0 ? "." : "";
