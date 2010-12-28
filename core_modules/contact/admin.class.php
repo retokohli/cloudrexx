@@ -31,6 +31,7 @@ class ContactManager extends ContactLib {
     var $_statusMessageErr;
 
     var $_arrFormFieldTypes;
+    var $_arrUserAccountData;
 
     var $boolHistoryEnabled = false;
     var $boolHistoryActivate = false;
@@ -75,6 +76,17 @@ class ContactManager extends ContactLib {
                 'textarea'      => $_ARRAYLANG['TXT_CONTACT_TEXTAREA'],
                 'recipient'     => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
         );
+
+	$this->_arrUserAccountData = array(
+		'firstname'	=> $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
+		'lastname'	=> $_ARRAYLANG['TXT_CONTACT_LAST_NAME'],
+		'company'	=> $_ARRAYLANG['TXT_CONTACT_COMPANY'],
+		'address'	=> $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
+		'city'		=> $_ARRAYLANG['TXT_CONTACT_CITY'],
+		'country'	=> $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
+		'zip'		=> $_ARRAYLANG['TXT_CONTACT_ZIP'],
+		'website'	=> $_ARRAYLANG['TXT_CONTACT_WEBSITE']
+	);
 
         $this->initContactForms(true);
         $this->initCheckTypes();
@@ -889,6 +901,7 @@ class ContactManager extends ContactLib {
                 'CONTACT_FORM_USE_CUSTOM_STYLE_YES'             => $useCustomStyle  ? 'checked="checked"' : '',
                 'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $useCustomStyle  ? '' : 'checked="checked"',
                 'CONTACT_FORM_SEND_HTML_MAIL'                   => $sendHtmlMail    ? 'checked="checked"' : '',
+		'CONTACT_MAIL_TEMPLATE_STYLE'                   => $sendHtmlMail    ? 'table-row' : 'none',
                 'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
                 'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
                 'CONTACT_FORM_EMAIL'                            => $this->arrForms[$formId]['emails'],
@@ -1727,12 +1740,17 @@ class ContactManager extends ContactLib {
      */
     function _getFormFieldTypesMenu($name, $selectedType, $attrs = '')
     {
+	global $_ARRAYLANG;
+
         $menu = "<select name=\"".$name."\" ".$attrs.">\n";
-
+	$menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_FIELDS']."</option>\n";
         foreach ($this->_arrFormFieldTypes as $type => $desc) {
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '').">".$desc."</option>\n";
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">".$desc."</option>\n";
         }
-
+	$menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_USER_DATA']."</option>\n";
+	foreach ($this->_arrUserAccountData as $type => $desc) {
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">".$desc."</option>\n";
+        }
         $menu .= "</select>\n";
         return  $menu;
     }

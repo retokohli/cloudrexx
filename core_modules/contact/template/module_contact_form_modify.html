@@ -419,6 +419,9 @@
         form_mailTemplate = $J('#contactFormHiddenMailTemplate_'+CurrentLangId).val();
         CKEDITOR.instances.contactMailTemplateEditor.setData(form_mailTemplate);
 
+	$J('.notifylangTabs').hide();
+	$J('#notifylangTab_'+CurrentLangId).show();
+
         $J('#formFields tr').each(function(){
             if ($J(this).attr('id') != "") {
                 fieldId = $J(this).attr('id').split('_')[1];
@@ -532,6 +535,11 @@
                 return true;
             }
         });
+
+	/* Hide/show Email Template */
+	$J('#contactFormHtmlMail').change(function(){
+	    $J('.mailTemplateBlock').toggle();
+	});
 
         /* This must be removed */
         $J('#notifylangTab_').remove();
@@ -798,11 +806,11 @@
                 <td>{TXT_CONTACT_SEND_HTML_MAIL}</td>
                 <td><input type="checkbox" name="contactFormHtmlMail" id="contactFormHtmlMail" {CONTACT_FORM_SEND_HTML_MAIL} /></td>
             </tr>
-            <tr><td><br/></td></tr>
-            <tr>
+            <tr class="mailTemplateBlock" style="display:{CONTACT_MAIL_TEMPLATE_STYLE}"><td><br/></td></tr>
+            <tr class="mailTemplateBlock" style="display:{CONTACT_MAIL_TEMPLATE_STYLE}">
                 <th colspan="2">{TXT_CONTACT_MAIL_TEMPLATE}</th>
             </tr>
-            <tr class="row1">
+            <tr class="mailTemplateBlock row1" style="display:{CONTACT_MAIL_TEMPLATE_STYLE}">
                 <td colspan="2">{CONTACT_MAIL_TEMPLATE}</td>
             </tr>
         </table>
