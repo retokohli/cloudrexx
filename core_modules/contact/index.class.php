@@ -331,7 +331,7 @@ class Contact extends ContactLib
                     $value = $objUser->getProfileAttribute($objAttribute->getId());
                 break;
             }
-
+            
             $this->objTemplate->setVariable('ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($objAttribute->getId()), htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET));
             $objUser->objAttribute->next();
         }

@@ -241,7 +241,7 @@
             $J('.formField').each(function(e){
                 if ($J(this).find('.contactFormFieldType').val() == 'recipient') {
                     found = 1;
-                    return true;
+                    return;
                 }
             });
 
@@ -276,24 +276,6 @@
         with respect to change in the fields type select box
         */
         switch(type){
-        case 'text':
-        case 'password':
-        case 'textarea':
-            if($J('#contactFormFieldRequired_'+elId).length == 0){
-                var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
-                $J(requiredCopy).attr('id', 'contactFormFieldRequired_'+elId);
-                $J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
-                $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy);
-            }
-
-            if($J('#contactFormFieldCheckType_'+elId).length == 0){
-                var checkTypeCopy = $J('#contactFormFieldCheckType_0').clone(true);
-                $J(checkTypeCopy).attr('id', 'contactFormFieldCheckType_'+elId);
-                $J(checkTypeCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
-                $J('#contactFormFieldCheckMenu_'+elId).append(checkTypeCopy);
-            }
-        break;
-
         case 'label':
         case 'hidden':
         case 'recipient':
@@ -316,8 +298,23 @@
             ($J('#contactFormFieldRequired_'+elId).length == 0) ? $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy) : '';
             ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
         break;
-
+        /*
+         *Default applies for textbox, password, multiline text and all user profile fields
+         */
         default:
+             if($J('#contactFormFieldRequired_'+elId).length == 0){
+                var requiredCopy = $J('#contactFormFieldRequired_0').clone(true);
+                $J(requiredCopy).attr('id', 'contactFormFieldRequired_'+elId);
+                $J(requiredCopy).attr('name', 'contactFormFieldRequired[' + elId+']');
+                $J('#contactFormFieldCheckBox_'+elId).append(requiredCopy);
+            }
+
+            if($J('#contactFormFieldCheckType_'+elId).length == 0){
+                var checkTypeCopy = $J('#contactFormFieldCheckType_0').clone(true);
+                $J(checkTypeCopy).attr('id', 'contactFormFieldCheckType_'+elId);
+                $J(checkTypeCopy).attr('name', 'contactFormFieldCheckType[' + elId+']');
+                $J('#contactFormFieldCheckMenu_'+elId).append(checkTypeCopy);
+            }
         break;
         }
 

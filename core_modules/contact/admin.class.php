@@ -60,32 +60,43 @@ class ContactManager extends ContactLib {
                                                             <a href='index.php?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS'].">".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
 
         $this->_arrFormFieldTypes = array(
-                'text'          => $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
-                'label'         => $_ARRAYLANG['TXT_CONTACT_TEXT'],
-                'checkbox'      => $_ARRAYLANG['TXT_CONTACT_CHECKBOX'],
-                'checkboxGroup' => $_ARRAYLANG['TXT_CONTACT_CHECKBOX_GROUP'],
-                'country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
-                'date'          => $_ARRAYLANG['TXT_CONTACT_DATE'],
-                'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD'],
-                'fieldset'      => $_ARRAYLANG['TXT_CONTACT_FIELDSET'],
-                'hidden'        => $_ARRAYLANG['TXT_CONTACT_HIDDEN_FIELD'],
-                'horizontalLine'=> $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'],
-                'password'      => $_ARRAYLANG['TXT_CONTACT_PASSWORD_FIELD'],
-                'radio'         => $_ARRAYLANG['TXT_CONTACT_RADIO_BOXES'],
-                'select'        => $_ARRAYLANG['TXT_CONTACT_SELECTBOX'],
-                'textarea'      => $_ARRAYLANG['TXT_CONTACT_TEXTAREA'],
-                'recipient'     => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
+            'text'          => $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
+            'label'         => $_ARRAYLANG['TXT_CONTACT_TEXT'],
+            'checkbox'      => $_ARRAYLANG['TXT_CONTACT_CHECKBOX'],
+            'checkboxGroup' => $_ARRAYLANG['TXT_CONTACT_CHECKBOX_GROUP'],
+            'country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
+            'date'          => $_ARRAYLANG['TXT_CONTACT_DATE'],
+            'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD'],
+            'fieldset'      => $_ARRAYLANG['TXT_CONTACT_FIELDSET'],
+            'hidden'        => $_ARRAYLANG['TXT_CONTACT_HIDDEN_FIELD'],
+            'horizontalLine'=> $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'],
+            'password'      => $_ARRAYLANG['TXT_CONTACT_PASSWORD_FIELD'],
+            'radio'         => $_ARRAYLANG['TXT_CONTACT_RADIO_BOXES'],
+            'select'        => $_ARRAYLANG['TXT_CONTACT_SELECTBOX'],
+            'textarea'      => $_ARRAYLANG['TXT_CONTACT_TEXTAREA'],
+            'recipient'     => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
         );
 
 	$this->_arrUserAccountData = array(
-		'firstname'	=> $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
-		'lastname'	=> $_ARRAYLANG['TXT_CONTACT_LAST_NAME'],
-		'company'	=> $_ARRAYLANG['TXT_CONTACT_COMPANY'],
-		'address'	=> $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
-		'city'		=> $_ARRAYLANG['TXT_CONTACT_CITY'],
-		'country'	=> $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
-		'zip'		=> $_ARRAYLANG['TXT_CONTACT_ZIP'],
-		'website'	=> $_ARRAYLANG['TXT_CONTACT_WEBSITE']
+            'user_picture'       => $_ARRAYLANG['TXT_CONTACT_PICTURE'],
+            'user_gender'        => $_ARRAYLANG['TXT_CONTACT_GENDER'],
+            'user_title'         => $_ARRAYLANG['TXT_CONTACT_TITLE'],
+            'user_firstname'     => $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
+            'user_lastname'      => $_ARRAYLANG['TXT_CONTACT_LAST_NAME'],
+            'user_company'       => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
+            'user_address'       => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
+            'user_city'          => $_ARRAYLANG['TXT_CONTACT_CITY'],
+            'user_zip'           => $_ARRAYLANG['TXT_CONTACT_ZIP'],
+            'user_country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
+            'user_phone_office'  => $_ARRAYLANG['TXT_CONTACT_PHONE_OFFICE'],
+            'user_phone_private' => $_ARRAYLANG['TXT_CONTACT_PHONE_PRIVATE'],
+            'user_phone_mobile'  => $_ARRAYLANG['TXT_CONTACT_PHONE_MOBILE'],
+            'user_phone_fax'     => $_ARRAYLANG['TXT_CONTACT_PHONE_FAX'],
+            'user_birthday'      => $_ARRAYLANG['TXT_CONTACT_BIRTHDAY'],
+            'user_website'       => $_ARRAYLANG['TXT_CONTACT_WEBSITE'],
+            'user_profession'    => $_ARRAYLANG['TXT_CONTACT_PROFESSION'],
+            'user_interests'     => $_ARRAYLANG['TXT_CONTACT_INTERESTS'],
+            'user_signature'     => $_ARRAYLANG['TXT_CONTACT_SIGNATURE']
 	);
 
         $this->initContactForms(true);
@@ -1582,9 +1593,11 @@ class ContactManager extends ContactLib {
                     ? contrexx_stripslashes($fieldTypes[$id])
                     : key($this->_arrFormFieldTypes);
                 */
-
+                
                 $key = contrexx_stripslashes($fieldTypes[$id]);
-                if (isset($fieldTypes[$id]) && array_key_exists($key, $this->_arrFormFieldTypes)) {
+                if (isset($fieldTypes[$id]) && 
+                        (array_key_exists($key, $this->_arrFormFieldTypes) ||
+                         array_key_exists($key, $this->_arrUserAccountData))) {
                     $type = $key;
                 } else {
                     $type = key($this->_arrFormFieldTypes);
@@ -1675,6 +1688,66 @@ class ContactManager extends ContactLib {
                                     ? strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)))
                                     : $fieldValue = $fieldValues[$id];
 
+                    switch ($fieldTypes[$id]) {
+                    case 'user_picture':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PICTURE]]';
+                        break;
+                    case 'user_gender':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_GENDER]]';
+                        break;
+                    case 'user_title':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_TITLE]]';
+                        break;
+                    case 'user_firstname':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME]]';
+                        break;
+                    case 'user_lastname':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_LASTNAME]]';
+                        break;
+                    case 'user_company':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_COMPANY]]';
+                        break;
+                    case 'user_address':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_ADDRESS]]';
+                        break;
+                    case 'user_city':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_CITY]]';
+                        break;
+                    case 'user_zip':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_ZIP]]';
+                        break;
+                    case 'user_country':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_COUNTRY]]';
+                        break;
+                    case 'user_phone_office':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_OFFICE]]';
+                        break;
+                    case 'user_phone_private':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_PRIVATE]]';
+                        break;
+                    case 'user_phone_mobile':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_MOBILE]]';
+                        break;
+                    case 'user_phone_fax':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_FAX]]';
+                        break;
+                    case 'user_birthday':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_BIRTHDAY]]';
+                        break;
+                    case 'user_website':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_WEBSITE]]';
+                        break;
+                    case 'user_profession':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PROFESSION]]';
+                        break;
+                    case 'user_interests':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_INTERESTS]]';
+                        break;
+                    case 'user_signature':
+                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_SIGNATURE]]';
+                        break;
+                    }
+                    
                     $arrFields[intval($id)]['lang'][$lang['id']] = array(
                         'name'	=> $fieldName,
                         'value'	=> $fieldValue
@@ -1934,10 +2007,6 @@ class ContactManager extends ContactLib {
             $arrField['lang'][$frontendLang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$frontendLang]['value']);
          
             switch ($arrField['type']) {
-            case 'text':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
-                break;
-
             case 'label':
                 $sourcecode[] = $preview ? $arrField['lang'][$frontendLang]['value'] : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>';
                 break;
@@ -2036,6 +2105,9 @@ class ContactManager extends ContactLib {
                     $sourcecode[] = "<!-- END field_".$fieldId." -->";
                 }
                 $sourcecode[] = "</select>";
+                break;
+            default:
+                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
                 break;
             }
         }
