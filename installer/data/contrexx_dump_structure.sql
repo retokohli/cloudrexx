@@ -917,7 +917,8 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_contact_form_field` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_form` int(10) unsigned NOT NULL default '0',
-  `type` enum('text','label','checkbox','checkboxGroup','country','date','file','fieldset','hidden','horizontalLine','password','radio','select','textarea','recipient','user_picture','user_gender','user_title','user_firstname','user_lastname','user_company','user_address','user_city','user_zip','user_country','user_phone_office','user_phone_private','user_phone_mobile','user_phone_fax','user_birthday','user_website','user_profession','user_interests','user_signature') NOT NULL default 'text',
+  `type` enum('text','label','checkbox','checkboxGroup','country','date','file','fieldset','hidden','horizontalLine','password','radio','select','textarea','recipient','special') NOT NULL default 'text',
+  `special_type` varchar(20) NOT NULL,
   `is_required` set('0','1') NOT NULL default '0',
   `check_type` int(3) NOT NULL default '1',
   `order_id` smallint(5) unsigned NOT NULL default '0',
