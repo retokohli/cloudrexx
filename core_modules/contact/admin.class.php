@@ -813,8 +813,7 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
                     'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
                     'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
-                    'CONTACT_ACTION_TITLE'                          => $actionTitle,
-                    'CONTACT_FORM_FIELD_TYPE_MENU_TPL'              => $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
+                    'CONTACT_ACTION_TITLE'                          => $actionTitle,                    
                     'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', '', false),
                     'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute(0, 'label', '', false),
                     'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
@@ -834,6 +833,7 @@ class ContactManager extends ContactLib {
         $counter = 1;
         foreach ($fields as $fieldID => $field) {
             $realFieldID = ($formId > 0) ? $fieldID : $counter;
+            $fieldType   = ($field['type'] == 'special') ? $field['special_type'] : $field['type'];
             $first       = true;
             /**
              While copying a template, the edittype of the field must be 'new'
@@ -872,20 +872,20 @@ class ContactManager extends ContactLib {
                     array(
                     'CONTACT_FORM_FIELD_TYPE_MENU'  => $this->_getFormFieldTypesMenu(
                                                         'contactFormFieldType['.$realFieldID.']',
-                                                        $field['type'],
+                                                        $fieldType,
                                                         'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
                                                         'class="contactFormFieldType" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),this.value)"'
                                                         ),
                     'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
                                                         'contactFormFieldRequired['.$realFieldID.']',
                                                         'contactFormFieldRequired_'.$realFieldID,
-                                                        $field['type'],
+                                                        $fieldType,
                                                         $field['is_required']
                                                         ),
                     'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
                                                         'contactFormFieldCheckType['.$realFieldID.']',
                                                         'contactFormFieldCheckType_'.$realFieldID,
-                                                        $field['type'],
+                                                        $fieldType,
                                                         $field['check_type']
                                                         ),
                     'FORM_FIELD_ID'                 => $realFieldID,
@@ -912,7 +912,7 @@ class ContactManager extends ContactLib {
                 'CONTACT_FORM_USE_CUSTOM_STYLE_YES'             => $useCustomStyle  ? 'checked="checked"' : '',
                 'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $useCustomStyle  ? '' : 'checked="checked"',
                 'CONTACT_FORM_SEND_HTML_MAIL'                   => $sendHtmlMail    ? 'checked="checked"' : '',
-		'CONTACT_MAIL_TEMPLATE_STYLE'                   => $sendHtmlMail    ? 'table-row' : 'none',
+                'CONTACT_MAIL_TEMPLATE_STYLE'                   => $sendHtmlMail    ? 'table-row' : 'none',
                 'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
                 'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
                 'CONTACT_FORM_EMAIL'                            => $this->arrForms[$formId]['emails'],
@@ -1145,6 +1145,7 @@ class ContactManager extends ContactLib {
         case 'text':
         case 'hidden':
         case 'label':
+        case 'special':
             $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
             $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
             $field .= "</div>";
@@ -1567,7 +1568,8 @@ class ContactManager extends ContactLib {
                 'radio',
                 'checkboxGroup',
                 'password',
-                'select'
+                'select',
+                'special'
         );
         
         // shorten the variables
@@ -1595,10 +1597,12 @@ class ContactManager extends ContactLib {
                 */
                 
                 $key = contrexx_stripslashes($fieldTypes[$id]);
-                if (isset($fieldTypes[$id]) && 
-                        (array_key_exists($key, $this->_arrFormFieldTypes) ||
-                         array_key_exists($key, $this->_arrUserAccountData))) {
+                $special_type = "";
+                if (isset($fieldTypes[$id]) && array_key_exists($key, $this->_arrFormFieldTypes)) {
                     $type = $key;
+                } elseif (array_key_exists($key, $this->_arrUserAccountData)) {
+                    $type         = 'special';
+                    $special_type = $key;
                 } else {
                     $type = key($this->_arrFormFieldTypes);
                 }
@@ -1669,6 +1673,7 @@ class ContactManager extends ContactLib {
                 $arrFields[intval($id)] = array(
                         'id'            => $id, // in case we're editing this should be the real id
                         'type'          => $type,
+                        'special_type'  => $special_type,
                         'attributes'    => $attributes,
                         'order_id'      => $orderId,
                         'is_required'   => $is_required,
@@ -1688,66 +1693,6 @@ class ContactManager extends ContactLib {
                                     ? strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)))
                                     : $fieldValue = $fieldValues[$id];
 
-                    switch ($fieldTypes[$id]) {
-                    case 'user_picture':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PICTURE]]';
-                        break;
-                    case 'user_gender':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_GENDER]]';
-                        break;
-                    case 'user_title':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_TITLE]]';
-                        break;
-                    case 'user_firstname':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME]]';
-                        break;
-                    case 'user_lastname':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_LASTNAME]]';
-                        break;
-                    case 'user_company':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_COMPANY]]';
-                        break;
-                    case 'user_address':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_ADDRESS]]';
-                        break;
-                    case 'user_city':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_CITY]]';
-                        break;
-                    case 'user_zip':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_ZIP]]';
-                        break;
-                    case 'user_country':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_COUNTRY]]';
-                        break;
-                    case 'user_phone_office':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_OFFICE]]';
-                        break;
-                    case 'user_phone_private':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_PRIVATE]]';
-                        break;
-                    case 'user_phone_mobile':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_MOBILE]]';
-                        break;
-                    case 'user_phone_fax':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_FAX]]';
-                        break;
-                    case 'user_birthday':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_BIRTHDAY]]';
-                        break;
-                    case 'user_website':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_WEBSITE]]';
-                        break;
-                    case 'user_profession':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_PROFESSION]]';
-                        break;
-                    case 'user_interests':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_INTERESTS]]';
-                        break;
-                    case 'user_signature':
-                        $fieldValue = '[[ACCESS_PROFILE_ATTRIBUTE_SIGNATURE]]';
-                        break;
-                    }
-                    
                     $arrFields[intval($id)]['lang'][$lang['id']] = array(
                         'name'	=> $fieldName,
                         'value'	=> $fieldValue
@@ -1813,15 +1758,15 @@ class ContactManager extends ContactLib {
      */
     function _getFormFieldTypesMenu($name, $selectedType, $attrs = '')
     {
-	global $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $menu = "<select name=\"".$name."\" ".$attrs.">\n";
-	$menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_FIELDS']."</option>\n";
+        $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_FIELDS']."</option>\n";
         foreach ($this->_arrFormFieldTypes as $type => $desc) {
             $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">".$desc."</option>\n";
         }
-	$menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_USER_DATA']."</option>\n";
-	foreach ($this->_arrUserAccountData as $type => $desc) {
+        $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_USER_DATA']."</option>\n";
+        foreach ($this->_arrUserAccountData as $type => $desc) {
             $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">".$desc."</option>\n";
         }
         $menu .= "</select>\n";
@@ -2228,6 +2173,7 @@ class ContactManager extends ContactLib {
                 case 'radio':
                 case 'select':
                 case 'textarea':
+                case 'special':
                     $sourcecode .= isset($arrEntry['data'][$key]) ? nl2br(htmlentities($arrEntry['data'][$key], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                     break;
                 }

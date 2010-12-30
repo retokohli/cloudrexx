@@ -94,7 +94,8 @@ class Contact extends ContactLib
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
         $arrFields  = $this->getFormFields($formId);
-
+        $isLoggedin = $this->setProfileData();
+        
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
             'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
@@ -105,6 +106,71 @@ class Contact extends ContactLib
         if ($this->objTemplate->blockExists('contact_form')) {
             $recipients = $this->getRecipients($formId);
             foreach ($arrFields as $fieldId => $arrField) {
+            /*
+             * Set values for special field types if the user is authenticated
+             */
+             if ($isLoggedin) {                
+                switch ($arrField['special_type']) {
+                case 'user_picture':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PICTURE]]';
+                    break;
+                case 'user_gender':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_GENDER]]';
+                    break;
+                case 'user_title':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_TITLE]]';
+                    break;
+                case 'user_firstname':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME]]';
+                    break;
+                case 'user_lastname':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_LASTNAME]]';
+                    break;
+                case 'user_company':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COMPANY]]';
+                    break;
+                case 'user_address':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ADDRESS]]';
+                    break;
+                case 'user_city':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_CITY]]';
+                    break;
+                case 'user_zip':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ZIP]]';
+                    break;
+                case 'user_country':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COUNTRY]]';
+                    break;
+                case 'user_phone_office':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_OFFICE]]';
+                    break;
+                case 'user_phone_private':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_PRIVATE]]';
+                    break;
+                case 'user_phone_mobile':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_MOBILE]]';
+                    break;
+                case 'user_phone_fax':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_FAX]]';
+                    break;
+                case 'user_birthday':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_BIRTHDAY]]';
+                    break;
+                case 'user_website':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_WEBSITE]]';
+                    break;
+                case 'user_profession':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PROFESSION]]';
+                    break;
+                case 'user_interests':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_INTERESTS]]';
+                    break;
+                case 'user_signature':
+                    $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_SIGNATURE]]';
+                    break;
+                }
+             }
+             
              /*
               * Set Default field value through URL Modifiers
               */
@@ -247,7 +313,6 @@ class Contact extends ContactLib
             }
         }
 
-        $isLoggedin = $this->setProfileData();
         if ($isLoggedin) {
             $useCaptcha = false;
         } else {

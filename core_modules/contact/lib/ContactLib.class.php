@@ -295,6 +295,7 @@ class ContactLib
                 SELECT 
                     `f`.`id`,
                     `f`.`type`,
+                    `f`.`special_type`,
                     `f`.`is_required`,
                     `f`.`check_type`,
                     `l`.`name`,
@@ -326,6 +327,7 @@ class ContactLib
 
                         $arrFields[$id] = array(
                             'type'          => $res->fields['type'],
+                            'special_type'  => $res->fields['special_type'],
                             'is_required'   => $res->fields['is_required'],
                             'check_type'    => $res->fields['check_type'],
                             'editType'     => 'edit'
@@ -864,6 +866,7 @@ class ContactLib
                 `'.DBPREFIX.'module_contact_form_field`
             SET
                 `type`          = "'.$field['type'].'",
+                `special_type`  = "'.$field['special_type'].'",
                 `is_required`   = "'.$field['is_required'].'",
                 `check_type`    = "'.$field['check_type'].'",
                 `order_id`      = "'.$field['order_id'].'"
@@ -906,6 +909,7 @@ class ContactLib
             (
                 `id_form`,
                 `type`,
+                `special_type`,
                 `is_required`,
                 `check_type`,
                 `order_id`
@@ -914,6 +918,7 @@ class ContactLib
             (
                 "'.$formID.'",
                 "'.$field['type'].'",
+                "'.$field['special_type'].'",
                 "'.$field['is_required'].'",
                 "'.$field['check_type'].'",
                 "'.$field['order_id'].'"
