@@ -253,10 +253,11 @@
         elField.html('');
             
         //Change the value fields dynamically with respect to type field
-        if($J('#formField'+type+'Attribute_0').length > 0 && 'formField'+type+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
+        fieldType = (type.indexOf('user_') !== -1) ? 'text' : type;
+        if($J('#formField'+fieldType+'Attribute_0').length > 0 && 'formField'+fieldType+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
             $J('#contentLanguages li a').each(function(){
                 langId = $J(this).attr('id').split('_')[1];
-                elemToCopy = $J('#formField'+type+'Attribute_0 div').clone();
+                elemToCopy = $J('#formField'+fieldType+'Attribute_0 div').clone();
                 elemToCopy.attr('id', 'fieldValueTab_'+elId+'_'+langId);
                 elemToCopy.attr('class', 'fieldValueTabs_'+elId);
                 elemToCopy.find('input').attr('name', 'contactFormFieldValue['+elId+']['+langId+']');
@@ -576,7 +577,7 @@
         {CONTACT_FORM_FIELD_TEXT_TPL}
     </div>
     <div style="display:inline;" id="formFieldlabelAttribute_0">
-        {CONTACT_FORM_FIELD_NEXT_TEXT_TPL}
+        {CONTACT_FORM_FIELD_LABEL_TPL}
     </div>
     <div style="display:inline;" id="formFieldcheckboxAttribute_0">
         {CONTACT_FORM_FIELD_CHECKBOX_TPL}
