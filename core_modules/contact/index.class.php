@@ -109,63 +109,63 @@ class Contact extends ContactLib
             /*
              * Set values for special field types if the user is authenticated
              */
-             if ($isLoggedin) {                
+             if ($isLoggedin) {
                 switch ($arrField['special_type']) {
-                case 'user_picture':
+                case 'access_picture':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PICTURE]]';
                     break;
-                case 'user_gender':
+                case 'access_gender':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_GENDER]]';
                     break;
-                case 'user_title':
+                case 'access_title':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_TITLE]]';
                     break;
-                case 'user_firstname':
+                case 'access_firstname':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_FIRSTNAME]]';
                     break;
-                case 'user_lastname':
+                case 'access_lastname':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_LASTNAME]]';
                     break;
-                case 'user_company':
+                case 'access_company':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COMPANY]]';
                     break;
-                case 'user_address':
+                case 'access_address':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ADDRESS]]';
                     break;
-                case 'user_city':
+                case 'access_city':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_CITY]]';
                     break;
-                case 'user_zip':
+                case 'access_zip':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_ZIP]]';
                     break;
-                case 'user_country':
+                case 'access_country':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_COUNTRY]]';
                     break;
-                case 'user_phone_office':
+                case 'access_phone_office':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_OFFICE]]';
                     break;
-                case 'user_phone_private':
+                case 'access_phone_private':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_PRIVATE]]';
                     break;
-                case 'user_phone_mobile':
+                case 'access_phone_mobile':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_MOBILE]]';
                     break;
-                case 'user_phone_fax':
+                case 'access_phone_fax':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PHONE_FAX]]';
                     break;
-                case 'user_birthday':
+                case 'access_birthday':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_BIRTHDAY]]';
                     break;
-                case 'user_website':
+                case 'access_website':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_WEBSITE]]';
                     break;
-                case 'user_profession':
+                case 'access_profession':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_PROFESSION]]';
                     break;
-                case 'user_interests':
+                case 'access_interests':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_INTERESTS]]';
                     break;
-                case 'user_signature':
+                case 'access_signature':
                     $arrField['lang'][$_LANGID]['value'] = '[[ACCESS_PROFILE_ATTRIBUTE_SIGNATURE]]';
                     break;
                 }
