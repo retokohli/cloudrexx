@@ -78,25 +78,25 @@ class ContactManager extends ContactLib {
         );
 
 	$this->_arrUserAccountData = array(
-            'user_picture'       => $_ARRAYLANG['TXT_CONTACT_PICTURE'],
-            'user_gender'        => $_ARRAYLANG['TXT_CONTACT_GENDER'],
-            'user_title'         => $_ARRAYLANG['TXT_CONTACT_TITLE'],
-            'user_firstname'     => $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
-            'user_lastname'      => $_ARRAYLANG['TXT_CONTACT_LAST_NAME'],
-            'user_company'       => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
-            'user_address'       => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
-            'user_city'          => $_ARRAYLANG['TXT_CONTACT_CITY'],
-            'user_zip'           => $_ARRAYLANG['TXT_CONTACT_ZIP'],
-            'user_country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
-            'user_phone_office'  => $_ARRAYLANG['TXT_CONTACT_PHONE_OFFICE'],
-            'user_phone_private' => $_ARRAYLANG['TXT_CONTACT_PHONE_PRIVATE'],
-            'user_phone_mobile'  => $_ARRAYLANG['TXT_CONTACT_PHONE_MOBILE'],
-            'user_phone_fax'     => $_ARRAYLANG['TXT_CONTACT_PHONE_FAX'],
-            'user_birthday'      => $_ARRAYLANG['TXT_CONTACT_BIRTHDAY'],
-            'user_website'       => $_ARRAYLANG['TXT_CONTACT_WEBSITE'],
-            'user_profession'    => $_ARRAYLANG['TXT_CONTACT_PROFESSION'],
-            'user_interests'     => $_ARRAYLANG['TXT_CONTACT_INTERESTS'],
-            'user_signature'     => $_ARRAYLANG['TXT_CONTACT_SIGNATURE']
+            'access_picture'       => $_ARRAYLANG['TXT_CONTACT_PICTURE'],
+            'access_gender'        => $_ARRAYLANG['TXT_CONTACT_GENDER'],
+            'access_title'         => $_ARRAYLANG['TXT_CONTACT_TITLE'],
+            'access_firstname'     => $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
+            'access_lastname'      => $_ARRAYLANG['TXT_CONTACT_LAST_NAME'],
+            'access_company'       => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
+            'access_address'       => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
+            'access_city'          => $_ARRAYLANG['TXT_CONTACT_CITY'],
+            'access_zip'           => $_ARRAYLANG['TXT_CONTACT_ZIP'],
+            'access_country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
+            'access_phone_office'  => $_ARRAYLANG['TXT_CONTACT_PHONE_OFFICE'],
+            'access_phone_private' => $_ARRAYLANG['TXT_CONTACT_PHONE_PRIVATE'],
+            'access_phone_mobile'  => $_ARRAYLANG['TXT_CONTACT_PHONE_MOBILE'],
+            'access_phone_fax'     => $_ARRAYLANG['TXT_CONTACT_PHONE_FAX'],
+            'access_birthday'      => $_ARRAYLANG['TXT_CONTACT_BIRTHDAY'],
+            'access_website'       => $_ARRAYLANG['TXT_CONTACT_WEBSITE'],
+            'access_profession'    => $_ARRAYLANG['TXT_CONTACT_PROFESSION'],
+            'access_interests'     => $_ARRAYLANG['TXT_CONTACT_INTERESTS'],
+            'access_signature'     => $_ARRAYLANG['TXT_CONTACT_SIGNATURE']
 	);
 
         $this->initContactForms(true);
