@@ -1777,7 +1777,6 @@ DBG::log("Coupon::get($code, $order_amount, $customer_id, $product_id, $payment_
 
     static function errorHandler()
     {
-
         $table_name = DBPREFIX.'module_shop_discount_coupon';
         $table_structure = array(
             'code' => array('type' => 'varchar(20)', 'default' => '', 'primary' => true),
