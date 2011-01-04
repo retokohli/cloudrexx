@@ -2715,8 +2715,12 @@ DBG::log("cart(): Got Product: ".var_export($arrProduct, true));
             'TXT_EMPTY_CART'               => $_ARRAYLANG['TXT_EMPTY_CART'],
             'TXT_CONTINUE_SHOPPING'        => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
             'SHOP_PRODUCT_TOTALITEM'       => $_SESSION['shop']['cart']['items'],
+//            'SHOP_PRODUCT_TOTALPRICE'      => $_SESSION['shop']['cart']['total_price'],
+// Add the VAT in the intermediate sum, if active and excluded
             'SHOP_PRODUCT_TOTALPRICE'      => Currency::formatPrice(
-                  $_SESSION['shop']['cart']['total_price']),
+                  $_SESSION['shop']['cart']['total_price']
+                + (Vat::isEnabled() && !Vat::isIncluded()
+                    ? $_SESSION['shop']['cart']['total_vat_amount'] : 0)),
             'SHOP_PRODUCT_TOTALPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTAL_WEIGHT'            => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
             'SHOP_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
