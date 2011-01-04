@@ -649,6 +649,7 @@ class Contact extends ContactLib
             foreach ($arrFields['fields'] as $fieldId => $field) {
                 $source = $field['type'] == 'file' ? 'uploadedFiles' : 'data';
                 $regex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
+                $arrFields[$source][$fieldId] = trim($arrFields[$source][$fieldId]);
                 if ($field['is_required'] && empty($arrFields[$source][$fieldId])) {
                     $error = true;
                 } elseif (empty($arrFields['data'][$fieldId]) && empty($arrFields['uploadedFiles'])) {
