@@ -243,7 +243,7 @@ if (_PAYPAL_DEBUG) DBG::log("PayPal IPN is INVALID");
         // The IPN may be received after the customer has left both
         // the PayPal site and the Shop!
 if (_PAYPAL_DEBUG) DBG::log("Updating Order ID $orderid status, new value $newOrderStatus");
-        Shop::updateOrderStatus($orderid, $newOrderStatus);
+        Shop::updateOrderStatus($orderid, $newOrderStatus, 'PaypalIPN');
     }
 
 

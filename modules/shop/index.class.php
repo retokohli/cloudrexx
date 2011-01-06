@@ -2665,6 +2665,14 @@ sendReq('', 1);
             'TXT_CONTINUE_SHOPPING'        => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
             'SHOP_PRODUCT_TOTALITEM'       => $_SESSION['shop']['cart']['items'],
             'SHOP_PRODUCT_TOTALPRICE'      => $_SESSION['shop']['cart']['total_price'],
+// TODO: Alternatively,
+// add the VAT in the intermediate sum, if active and excluded
+/*
+            'SHOP_PRODUCT_TOTALPRICE'      => Currency::formatPrice(
+                  $_SESSION['shop']['cart']['total_price']
+                + (Vat::isEnabled() && !Vat::isIncluded()
+                    ? $_SESSION['shop']['cart']['total_vat_amount'] : 0)),
+*/
             'SHOP_PRODUCT_TOTALPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTAL_WEIGHT'            => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
         ));
@@ -4250,16 +4258,16 @@ right after the customer logs in!
      * @static
      * @param   integer $order_id    The ID of the current order
      * @param   integer $newOrderStatus The optional new order status.
-     * @param   string  $handler    The Payment type name in use
+     * @param   string  $handler    The optional Payment type name in use
      * @return  integer             The new order status (may be zero)
      *                              if the order status can be changed
      *                              accordingly, zero otherwise
      */
-    static function updateOrderStatus($order_id, $newOrderStatus=0)
-    {
+    static function updateOrderStatus(
+        $order_id, $newOrderStatus=0, $handler=null
+    ) {
         global $objDatabase;
 
-        $handler = (isset($_GET['handler']) ? $_GET['handler'] : '');
         $order_id = intval($order_id);
         if ($order_id == 0) {
             return SHOP_ORDER_STATUS_CANCELLED;
