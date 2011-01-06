@@ -4268,6 +4268,7 @@ right after the customer logs in!
     ) {
         global $objDatabase;
 
+        $handler = (empty($handler) && isset($_GET['handler']) ? $_GET['handler'] : $handler);
         $order_id = intval($order_id);
         if ($order_id == 0) {
             return SHOP_ORDER_STATUS_CANCELLED;
