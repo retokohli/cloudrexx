@@ -676,6 +676,7 @@ class ContactManager extends ContactLib {
             $actionTitle    = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
             $lang           = FRONTEND_LANG_ID;
             $sendHtmlMail   = 1;
+            $useCaptcha     = 1;
         }
 
         $activeLanguages     = FWLanguage::getActiveFrontendLanguages();
@@ -692,7 +693,7 @@ class ContactManager extends ContactLib {
                 if ($formId > 0) {
                     $boolLanguageIsActive = $this->arrForms[$formId]['lang'][$intLanguageId]['is_active'];
                 } else {
-                    $boolLanguageIsActive = true;
+                    $boolLanguageIsActive = ($intLanguageId == $objInit->userFrontendLangId) ? true : false;
                 }
 
                 $arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'addFrom_'.$intLanguageId.'\');" />'.$arrLanguage['long'].' ['.$arrLanguage['short'].']<br />';
@@ -1186,8 +1187,7 @@ class ContactManager extends ContactLib {
      */
     function _saveForm()
     {
-        global $_ARRAYLANG, $_CONFIG;
-        global $objDatabase;
+        global $_ARRAYLANG, $_CONFIG, $objDatabase;
         
         $formId  = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         $adding  = $_POST['copy'] || !$formId;
