@@ -767,8 +767,10 @@ class ContactLib
                     `subject`      = '".$subject."'
             ";
         } else {
-            $query = "UPDATE `".DBPREFIX."module_contact_form_lang`
-                        SET `is_active` = ".$isActive."
+            /*
+             * Remove Form configurations for inactive language
+             */
+            $query = "DELETE FROM `".DBPREFIX."module_contact_form_lang`
                         WHERE `formID`  = ".$formID." AND `langID` = ".$langID;
         }
         $objDatabase->execute($query);
@@ -981,6 +983,23 @@ class ContactLib
                 `id_form` = '.$formID;
 
         $objDatabase->execute($query);
+
+        /*
+         * Empty fields name and value inactive languages
+         */
+        $langId = array();
+        foreach ($_POST['contactFormLanguages'] as $key => $value) {
+            $langId[] = $key;
+        }
+        $activeLang = implode(', ', $langId);
+        foreach ($formFields as $fieldId) {
+            $query = "UPDATE `".DBPREFIX."module_contact_form_field_lang`
+                      SET `name` = '', attributes = ''
+                      WHERE `fieldID` = ".$fieldId."
+                      AND `langID` NOT IN (".$activeLang.")
+                      ";
+            $objDatabase->execute($query);
+        }
     }
 
     /**
@@ -1029,6 +1048,22 @@ class ContactLib
 
         $objDatabase->execute($query);
 
+         /*
+         * Empty fields name and value inactive languages
+         */
+        $langId = array();
+        foreach ($_POST['contactFormLanguages'] as $key => $value) {
+            $langId[] = $key;
+        }
+        $activeLang = implode(', ', $langId);
+        foreach ($recipients as $recipientId) {
+            $query = "UPDATE `".DBPREFIX."module_contact_recipient_lang`
+                      SET `name` = ''
+                      WHERE `recipient_id` = ".$recipientId."
+                      AND `langID` NOT IN (".$activeLang.")
+                      ";
+            $objDatabase->execute($query);
+        }
     }
 
     /**

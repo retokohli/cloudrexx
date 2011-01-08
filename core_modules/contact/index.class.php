@@ -183,8 +183,8 @@ class Contact extends ContactLib
                             'SELECTED_'.$fieldId.'_'.$index => 'checked="checked"'
                         ));
                         break;
-                    case 'select':
                     case 'country':
+                    case 'select':
                     case 'recipient':
                         break;
                     default:
@@ -278,7 +278,7 @@ class Contact extends ContactLib
                             $fieldId.'_VALUE'    => $objResult->fields['name']
                         ));
                         if (!empty($_GET[$fieldId])) {
-                            if ($objResult->fields['name'] == $_GET[$fieldId] ) {
+                            if (strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) {
                                 $this->objTemplate->setVariable(array(
                                     'SELECTED_'.$fieldId => 'selected = "selected"'
                                 ));
