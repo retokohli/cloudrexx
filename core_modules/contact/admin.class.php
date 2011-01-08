@@ -743,9 +743,11 @@ class ContactManager extends ContactLib {
             $langID = $lang['id'];
             
             $langVars = &$this->arrForms[$formId]['lang'][$langID];
-            $boolLanguageIsActive = ($formId > 0)
-                ? $langVars['is_active']
-                : 1;
+            if ($formId > 0) {
+                $boolLanguageIsActive = $langVars['is_active'];
+            } else {
+                $boolLanguageIsActive = ($langID == $objInit->userFrontendLangId) ? 1 : 0;
+            }
             
             $this->_objTpl->setVariable(array(
                     'LANG_ID'                   => $langID,
@@ -809,7 +811,7 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
                     'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
                     'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', '', $first, $lang['id']),
-                    'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', '', $first, $lang['id']),
+                    'CONTACT_FORM_FIELD_LABEL_NEXT_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', '', $first, $lang['id']),
                     'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
                     'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
                     'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
@@ -847,7 +849,11 @@ class ContactManager extends ContactLib {
                 /**
                  * New Forms must have all languages active in language bar
                  */
-                $isActive = ($formId > 0) ? $this->arrForms[$formId]['lang'][$lang['id']]['is_active'] : true;
+                if ($formId > 0) {
+                    $isActive = $this->arrForms[$formId]['lang'][$lang['id']]['is_active'];
+                } else {
+                    $isActive = ($lang['id'] == $objInit->userFrontendLangId) ? true: false;
+                }
                 $show     = ($first && $isActive);
                 
                 $this->_objTpl->setVariable(array(
@@ -1685,27 +1691,20 @@ class ContactManager extends ContactLib {
                 foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
                     $langID = $lang['id'];
 
-                    /**
-                     name and value fields can accept html characters
-                     */
-                    $fieldName  = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][$langID], ENT_QUOTES)));
-                    $fieldValue = ($fieldTypes[$id] != 'checkbox')
-                                    ? strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)))
-                                    : $fieldValue = $fieldValues[$id];
+                    if ($_POST['contactFormLanguages'][$langID] == 1) {
+                        /**
+                         name and value fields can accept html characters
+                         */
+                        $fieldName  = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][$langID], ENT_QUOTES)));
+                        $fieldValue = ($fieldTypes[$id] != 'checkbox')
+                                        ? strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)))
+                                        : $fieldValue = $fieldValues[$id];
 
-                    $arrFields[intval($id)]['lang'][$lang['id']] = array(
-                        'name'	=> $fieldName,
-                        'value'	=> $fieldValue
-                    );
-
-                    /*
-                     Duplicate the values of checkbox for all languages
-                     
-                    if($arrFields[intval($id)]['type'] == 'checkbox') {
-                        $arrFields[intval($id)]['lang'][$lang['id']]['value'] = (isset($fieldValues[intval($id)][0])
-                                                                                ? $fieldValues[intval($id)][0]
-                                                                                : $fieldValues[intval($id)][1]);
-                    }*/
+                        $arrFields[intval($id)]['lang'][$lang['id']] = array(
+                            'name'	=> $fieldName,
+                            'value'	=> $fieldValue
+                        );
+                    }
                 }
                 $orderId++;
             }
@@ -2476,7 +2475,7 @@ class ContactManager extends ContactLib {
 
                 $objContactForm = $objDatabase->SelectLimit("SELECT name, is_active FROM ".DBPREFIX."module_contact_form_lang WHERE formID=".$formId." AND langID=".$langID, 1);
 
-                if ($objContactForm->fields['is_active'] == 1) {
+                if (isset($_POST['contactFormLanguages'][$langID])) {
                     //if ($objContactForm !== false) {
                         $catname = addslashes($objContactForm->fields['name']);
                     //}
@@ -2621,8 +2620,8 @@ class ContactManager extends ContactLib {
                 } else {
                     /* Deactive pages with disabled languages */
                     $objDatabase->Execute("UPDATE   ".DBPREFIX."content_navigation
-                                                   SET      activestatus='0'
-                                                   WHERE   catid=".$pageId.' AND `lang`='.$langID);
+                                           SET activestatus='0'
+                                           WHERE catid=".$pageId.' AND `lang`='.$langID);
                 }
             }
         }
