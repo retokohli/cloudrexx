@@ -2665,14 +2665,12 @@ sendReq('', 1);
             'TXT_CONTINUE_SHOPPING'        => $_ARRAYLANG['TXT_CONTINUE_SHOPPING'],
             'SHOP_PRODUCT_TOTALITEM'       => $_SESSION['shop']['cart']['items'],
             'SHOP_PRODUCT_TOTALPRICE'      => $_SESSION['shop']['cart']['total_price'],
-// TODO: Alternatively,
-// add the VAT in the intermediate sum, if active and excluded
-/*
-            'SHOP_PRODUCT_TOTALPRICE'      => Currency::formatPrice(
+            // Intermediate sum including VAT:
+            // Only differs from total_price if active but excluded.
+            'SHOP_PRODUCT_TOTALPRICE_PLUS_VAT' => Currency::formatPrice(
                   $_SESSION['shop']['cart']['total_price']
                 + (Vat::isEnabled() && !Vat::isIncluded()
                     ? $_SESSION['shop']['cart']['total_vat_amount'] : 0)),
-*/
             'SHOP_PRODUCT_TOTALPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTAL_WEIGHT'            => Weight::getWeightString($_SESSION['shop']['cart']['total_weight']),
         ));
