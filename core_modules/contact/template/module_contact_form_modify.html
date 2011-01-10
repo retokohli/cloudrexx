@@ -37,17 +37,7 @@
 
     function countActiveLanguages() {
         var activeLanguages = 0;
-
-        for (var h=0; h < document.forms.length;h++) {
-            for (var i=0; i < document.forms[h].elements.length;i++) {
-                //read out all form-elements with the loop
-                if(document.forms[h].elements[i].name.search('contactFormLanguages') != -1) {
-                    if(document.forms[h].elements[i].checked) {
-                        activeLanguages++;
-                    }
-                }
-            }
-        }
+		activeLanguages = $J("input[name*=contactFormLanguages]:checked").length;
         return activeLanguages;
     }
 
