@@ -244,7 +244,9 @@
             
         //Change the value fields dynamically with respect to type field
         fieldType = (type.indexOf('access_') !== -1) ? 'text' : type;
-        if($J('#formField'+fieldType+'Attribute_0').length > 0 && 'formField'+fieldType+'Attribute_0' != 'formFieldcheckboxAttribute_0'){
+        if($J('#formField'+fieldType+'Attribute_0').length > 0 &&
+            ('formField'+fieldType+'Attribute_0' != 'formFieldcheckboxAttribute_0' &&
+            'formField'+fieldType+'Attribute_0' != 'formFieldcountryAttribute_0')){
             $J('#contentLanguages li a').each(function(){
                 langId = $J(this).attr('id').split('_')[1];
                 elemToCopy = $J('#formField'+fieldType+'Attribute_0 div').clone();
@@ -568,6 +570,9 @@
     </div>
     <div style="display:inline;" id="formFieldcheckboxAttribute_0">
         {CONTACT_FORM_FIELD_CHECKBOX_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldcountryAttribute_0">
+        {CONTACT_FORM_FIELD_COUNTRY_TPL}
     </div>
     <div style="display:inline;" id="formFieldcheckboxGroupAttribute_0">
         {CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL}
