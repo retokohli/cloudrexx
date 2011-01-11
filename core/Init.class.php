@@ -655,30 +655,29 @@ class InitCMS
             }
             $this->_setCustomizedThemesId($objResult->fields['themes_id']);
             define('MODULE_ID', $objResult->fields['module']);
+		}
 
-            if (empty($history_id)) {
-              $query = "
-                SELECT themes_id, custom_content
-                  FROM ".DBPREFIX."content_navigation
-                 WHERE catid=$page_id
-            ";
-            } else {
-              $query = "
-                SELECT themes_id, custom_content
-                  FROM ".DBPREFIX."content_navigation_history
-                 WHERE id=$history_id
-            ";
-            }
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult !== false) {
-              if (!$objResult->EOF) {
-                $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-                $this->customContentTemplate = $objResult->fields['custom_content'];
-              }
-            }
-            return $page_id;
-        }
-
+		if (empty($history_id)) {
+		  $query = "
+			SELECT themes_id, custom_content
+			  FROM ".DBPREFIX."content_navigation
+			 WHERE catid=$page_id
+		";
+		} else {
+		  $query = "
+			SELECT themes_id, custom_content
+			  FROM ".DBPREFIX."content_navigation_history
+			 WHERE id=$history_id
+		";
+		}
+		$objResult = $objDatabase->SelectLimit($query, 1);
+		if ($objResult !== false) {
+		  if (!$objResult->EOF) {
+			$this->_setCustomizedThemesId($objResult->fields['themes_id']);
+			$this->customContentTemplate = $objResult->fields['custom_content'];
+		  }
+		}
+		
         define('MODULE_ID', null);
         return $page_id;
     }
