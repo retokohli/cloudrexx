@@ -811,7 +811,7 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
                     'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
                     'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', '', $first, $lang['id']),
-                    'CONTACT_FORM_FIELD_LABEL_NEXT_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', '', $first, $lang['id']),
+                    'CONTACT_FORM_FIELD_LABEL_NEXT_TPL'             => $this->_getFormFieldAttribute($lastFieldId+1, 'label', '', $first, $lang['id']),
                     'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
                     'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
                     'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
@@ -820,6 +820,7 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', '', false),
                     'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute(0, 'label', '', false),
                     'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
+                    'CONTACT_FORM_FIELD_COUNTRY_TPL'                => $this->_getFormFieldAttribute(0, 'country', 0),
                     'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', '', false),
                     'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', '', false),
                     'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', '', false),
@@ -1144,7 +1145,7 @@ class ContactManager extends ContactLib {
     // added langid as new parameter to support multi-lang
     function _getFormFieldAttribute($id, $type, $attr, $show=true, $langid = 0)
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $objDatabase;
         $field   = "";
         $display = $show ? "block" : "none";
         
@@ -1168,7 +1169,19 @@ class ContactManager extends ContactLib {
                                 </select>";
             }
             break;
-
+        case 'country':
+            /* Only one instance of country select is allowed for any number of active language */
+            if ($show) {
+                $objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."lib_country");
+                $field ="<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n";
+                while (!$objResult->EOF) {
+                    $field .= "<option value=\"".$objResult->fields['name']."\">".$objResult->fields['name']."</option>\n";
+                    $objResult->MoveNext();
+                }
+                $field .= "</select>";
+                return $field;
+            }
+            break;
         case 'checkboxGroup':
         case 'select':
         case 'radio':
