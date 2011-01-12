@@ -37,7 +37,7 @@
 
     function countActiveLanguages() {
         var activeLanguages = 0;
-		activeLanguages = $J("input[name*=contactFormLanguages]:checked").length;
+	activeLanguages = $J("input[name*=contactFormLanguages]:checked").length;
         return activeLanguages;
     }
 
@@ -243,10 +243,11 @@
         elField.html('');
             
         //Change the value fields dynamically with respect to type field
-        fieldType = (type.indexOf('access_') !== -1) ? 'text' : type;
+        fieldType = (type.indexOf('access_') !== -1 && type != 'access_country') ? 'text' : type;
         if($J('#formField'+fieldType+'Attribute_0').length > 0 &&
             ('formField'+fieldType+'Attribute_0' != 'formFieldcheckboxAttribute_0' &&
-            'formField'+fieldType+'Attribute_0' != 'formFieldcountryAttribute_0')){
+            'formField'+fieldType+'Attribute_0' != 'formFieldcountryAttribute_0' &&
+            'formField'+fieldType+'Attribute_0' != 'formFieldaccess_countryAttribute_0')){
             $J('#contentLanguages li a').each(function(){
                 langId = $J(this).attr('id').split('_')[1];
                 elemToCopy = $J('#formField'+fieldType+'Attribute_0 div').clone();
@@ -268,7 +269,7 @@
         Add or remove the mandatory checkbox and value type select box
         with respect to change in the fields type select box
         */
-        switch(type){
+        switch(fieldType){
         case 'label':
         case 'hidden':
         case 'recipient':
@@ -280,6 +281,7 @@
 
         case 'checkbox':
         case 'checkboxGroup':
+        case 'access_country':
         case 'country':
         case 'date':
         case 'file':
@@ -573,6 +575,9 @@
     </div>
     <div style="display:inline;" id="formFieldcountryAttribute_0">
         {CONTACT_FORM_FIELD_COUNTRY_TPL}
+    </div>
+    <div style="display:inline;" id="formFieldaccess_countryAttribute_0">
+        {CONTACT_FORM_FIELD_ACCESS_COUNTRY_TPL}
     </div>
     <div style="display:inline;" id="formFieldcheckboxGroupAttribute_0">
         {CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL}

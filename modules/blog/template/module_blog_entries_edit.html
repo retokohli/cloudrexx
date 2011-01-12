@@ -28,20 +28,9 @@ function switchTabVisibility(strTabId) {
 
 
 function countActiveLanguages() {
-  var activeLanguages = 0;
-
-  for (var h=0; h < document.forms.length;h++) {
-    for (var i=0; i < document.forms[h].elements.length;i++) {
-      //read out all form-elements with the loop
-      if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
-        if(document.forms[h].elements[i].checked) {
-          activeLanguages++;
-        }
-      }
-    }
-  }
-
-  return activeLanguages;
+    var activeLanguages = 0;
+    activeLanguages = $J("input[name*=frmEditEntry_Languages]:checked").length;
+    return activeLanguages;
 }
 
 function activateAnyActiveDiv() {
