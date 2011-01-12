@@ -820,7 +820,8 @@ class ContactManager extends ContactLib {
                     'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', '', false),
                     'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute(0, 'label', '', false),
                     'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
-                    'CONTACT_FORM_FIELD_COUNTRY_TPL'                => $this->_getFormFieldAttribute(0, 'country', 0),
+                    'CONTACT_FORM_FIELD_COUNTRY_TPL'                => $this->_getFormFieldAttribute(0, 'country','',true, 0),
+                    'CONTACT_FORM_FIELD_ACCESS_COUNTRY_TPL'         => $this->_getFormFieldAttribute(0, 'access_country','',true, 0),
                     'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', '', false),
                     'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', '', false),
                     'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', '', false),
@@ -864,7 +865,7 @@ class ContactManager extends ContactLib {
                     'FORM_FIELD_NAME'               => $field['lang'][$lang['id']]['name'],
                     'CONTACT_FORM_FIELD_VALUE'      => $this->_getFormFieldAttribute(
                                                             $realFieldID,
-                                                            $field['type'],
+                                                            $fieldType,
                                                             $field['lang'][$lang['id']]['value'],
                                                             $show,
                                                             $lang['id']
@@ -1170,12 +1171,14 @@ class ContactManager extends ContactLib {
             }
             break;
         case 'country':
+        case 'access_country':
             /* Only one instance of country select is allowed for any number of active language */
             if ($show) {
                 $objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."lib_country");
                 $field ="<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n";
+                $field .= "<option value=\"".$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']."\" >".$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']."</option>\n";
                 while (!$objResult->EOF) {
-                    $field .= "<option value=\"".$objResult->fields['name']."\">".$objResult->fields['name']."</option>\n";
+                    $field .= "<option value=\"".$objResult->fields['name']."\" ".(($attr == $objResult->fields['name'])?'selected="selected"':'')." >".$objResult->fields['name']."</option>\n";
                     $objResult->MoveNext();
                 }
                 $field .= "</select>";
@@ -1709,7 +1712,9 @@ class ContactManager extends ContactLib {
                          name and value fields can accept html characters
                          */
                         $fieldName  = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][$langID], ENT_QUOTES)));
-                        $fieldValue = ($fieldTypes[$id] != 'checkbox')
+                        $fieldValue = ($fieldTypes[$id] != 'checkbox' && 
+                                       $fieldTypes[$id] != 'country' &&
+                                       $fieldTypes[$id] != 'access_country')
                                         ? strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)))
                                         : $fieldValue = $fieldValues[$id];
 
@@ -1775,11 +1780,11 @@ class ContactManager extends ContactLib {
         $menu = "<select name=\"".$name."\" ".$attrs.">\n";
         $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_FIELDS']."</option>\n";
         foreach ($this->_arrFormFieldTypes as $type => $desc) {
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">".$desc."</option>\n";
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\"><!--[if IE]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->".$desc."</option>\n";
         }
         $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_USER_DATA']."</option>\n";
         foreach ($this->_arrUserAccountData as $type => $desc) {
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\">".$desc."</option>\n";
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\"><!--[if IE]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->".$desc."</option>\n";
         }
         $menu .= "</select>\n";
         return  $menu;
@@ -1799,6 +1804,7 @@ class ContactManager extends ContactLib {
         global $_ARRAYLANG;
 
         switch ($type) {
+        case 'access_country':
         case 'checkbox':
         case 'checkboxGroup':
         case 'country':
@@ -1962,8 +1968,8 @@ class ContactManager extends ContactLib {
             }
 
             $arrField['lang'][$frontendLang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$frontendLang]['value']);
-         
-            switch ($arrField['type']) {
+            $fieldType                                = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
+            switch ($fieldType) {
             case 'label':
                 $sourcecode[] = $preview ? $arrField['lang'][$frontendLang]['value'] : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>';
                 break;
@@ -1983,6 +1989,7 @@ class ContactManager extends ContactLib {
                 break;
 
             case 'country':
+            case 'access_country':
                 $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
                 $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                 if ($arrField['is_required'] == 1) {

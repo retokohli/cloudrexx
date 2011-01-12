@@ -204,7 +204,8 @@ class Contact extends ContactLib
                  * Generate values for dropdown checkbox and radio fields
                  */
                 $userProfileRegExp = '/\{([A-Z_]+)\}/';
-                switch ($arrField['type']) {
+                $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'] ;
+                switch ($fieldType) {
                 case 'checkbox':
                     if ($arrField['lang'][$_LANGID]['value'] == 1) {
                         $this->objTemplate->setVariable(array(
@@ -271,18 +272,19 @@ class Contact extends ContactLib
                         $this->objTemplate->parse('field_'.$fieldId);
                     }
                     break;
+                case 'access_country':
                 case 'country':
                     $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
                     while (!$objResult->EOF) {
                         $this->objTemplate->setVariable(array(
                             $fieldId.'_VALUE'    => $objResult->fields['name']
                         ));
-                        if (!empty($_GET[$fieldId])) {
-                            if (strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) {
+                        if ((!empty($_GET[$fieldId]) &&
+                            strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) ||
+                            ($objResult->fields['name'] == $arrField['lang'][$_LANGID]['value'])) {
                                 $this->objTemplate->setVariable(array(
                                     'SELECTED_'.$fieldId => 'selected = "selected"'
                                 ));
-                            }
                         }
                         $objResult->MoveNext();
                         $this->objTemplate->parse('field_'.$fieldId);

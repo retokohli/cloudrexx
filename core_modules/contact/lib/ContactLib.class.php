@@ -904,7 +904,7 @@ class ContactLib
     protected function addFormField($formID, $field) 
     {
         global $objDatabase, $_ARRAYLANG;
-        
+
         $query = '
             INSERT INTO
                 `'.DBPREFIX.'module_contact_form_field`
@@ -985,7 +985,7 @@ class ContactLib
         $objDatabase->execute($query);
 
         /*
-         * Empty fields name and value inactive languages
+         * Deletes language attributes for fields of inactive languages
          */
         $langId = array();
         foreach ($_POST['contactFormLanguages'] as $key => $value) {
@@ -993,8 +993,7 @@ class ContactLib
         }
         $activeLang = implode(', ', $langId);
         foreach ($formFields as $fieldId) {
-            $query = "UPDATE `".DBPREFIX."module_contact_form_field_lang`
-                      SET `name` = '', attributes = ''
+            $query = "DELETE FROM `".DBPREFIX."module_contact_form_field_lang`
                       WHERE `fieldID` = ".$fieldId."
                       AND `langID` NOT IN (".$activeLang.")
                       ";
@@ -1322,13 +1321,13 @@ class ContactLib
             } else {
                 $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
             }
-            $code .= "\t'".$field['type']."');\n";
+            $code .= "\t'".(($field['type'] != 'special')?$field['type']:$field['special_type'])."');\n";
         }
 
         $code .= <<<JS_checkAllFields
 function checkAllFields() {
     var isOk = true;
-
+    
     for (var field in fields) {
         var type = fields[field][3];
         if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {
@@ -1354,7 +1353,7 @@ function checkAllFields() {
             if (!isRequiredRadio(fields[field][1], field)) {
                 isOk = false;
             }
-        } else if (type == 'select' || type == 'country') {
+        } else if (type == 'select' || type == 'country' || type == 'access_country') {
             if (!isRequiredSelect(fields[field][1], field)) {
                 isOk = false;
             }
