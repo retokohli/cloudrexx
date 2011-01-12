@@ -1176,7 +1176,7 @@ class ContactManager extends ContactLib {
             if ($show) {
                 $objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."lib_country");
                 $field ="<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n";
-                $field .= "<option value=\"".$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']."\" >".$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']."</option>\n";
+                $field .= "<option value=\"".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."\" >".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."</option>\n";
                 while (!$objResult->EOF) {
                     $field .= "<option value=\"".$objResult->fields['name']."\" ".(($attr == $objResult->fields['name'])?'selected="selected"':'')." >".$objResult->fields['name']."</option>\n";
                     $objResult->MoveNext();
@@ -1994,6 +1994,8 @@ class ContactManager extends ContactLib {
                 $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                 if ($arrField['is_required'] == 1) {
                     $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
+                } else {
+                    $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."</option>";
                 }
                 if ($preview) {
                     while (!$objResult->EOF) {

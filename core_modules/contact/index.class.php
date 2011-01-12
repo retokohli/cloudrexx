@@ -290,7 +290,8 @@ class Contact extends ContactLib
                         $this->objTemplate->parse('field_'.$fieldId);
                     }
                     $this->objTemplate->setVariable(array(
-                            'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']
+                            'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'],
+                            'TXT_CONTACT_NOT_SPECIFIED' => $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']
                         ));
                     break;
                 default :
