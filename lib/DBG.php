@@ -511,7 +511,7 @@ function DBG_log_adodb($msg)
                 ? html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET)
                 : $msg, $error
                     ? 'info'
-                    : (preg_match('#\(mysql\):\s(UPDATE|DELETE|INSERT)#', $msg)
+                    : (preg_match('#\(mysql\):\s*(UPDATE|DELETE|INSERT)#', $msg)
                         ? 'info' : 'log'));
     }
     DBG::setSQLQueryCache($msg);
