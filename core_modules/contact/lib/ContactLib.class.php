@@ -1332,7 +1332,7 @@ function checkAllFields() {
         var type = fields[field][3];
         if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {
             value = document.getElementsByName('contactFormField_' + field)[0].value;
-            if (trim(value) == "" && isRequiredNorm(fields[field][1], value)) {
+            if (\$J.trim(value) == "" && isRequiredNorm(fields[field][1], value)) {
                 isOk = false;
                 document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
             } else if (value != "" && !matchType(fields[field][2], value)) {
@@ -1365,20 +1365,6 @@ function checkAllFields() {
     }
     return isOk;
 }
-
-function trim(str, chars) {
-	return ltrim(rtrim(str, chars), chars);
-}
-
-function ltrim(str, chars) {
-	chars = chars || "\\s";
-	return str.replace(new RegExp("^[" + chars + "]+", "g"), "");
-}
-
-function rtrim(str, chars) {
-	chars = chars || "\\s";
-	return str.replace(new RegExp("[" + chars + "]+$", "g"), "");
-}
 JS_checkAllFields;
 
         // This is for checking normal text input field if they are required.
@@ -1386,7 +1372,7 @@ JS_checkAllFields;
         $code .= <<<JS_isRequiredNorm
 function isRequiredNorm(required, value) {
     if (required == 1) {
-        if (trim(value) == "") {
+        if (\$J.trim(value) == "") {
             return true;
         }
     }

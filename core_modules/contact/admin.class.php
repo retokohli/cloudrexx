@@ -286,15 +286,7 @@ class ContactManager extends ContactLib {
                 break;
 
             case 'copy':
-            /*
-            if (isset($_REQUEST['selectLang']) && $_REQUEST['selectLang'] == 'true') {
-                $this->_selectFrontendLang();
-            } else {
-            */
                 $this->_modifyForm(true);
-                /*
-            }
-                */
                 break;
 
             case 'save':
@@ -687,7 +679,7 @@ class ContactManager extends ContactLib {
             $intLanguageCounter = 0;
             $boolFirstLanguage  = true;
             $arrLanguages       = array(0 => '', 1 => '', 2 => '');
-            $strJsTabToDiv = '';
+            $strJsTabToDiv      = '';
 
             foreach($this->_arrLanguages as $intLanguageId => $arrLanguage) {
                 if ($formId > 0) {
@@ -696,18 +688,18 @@ class ContactManager extends ContactLib {
                     $boolLanguageIsActive = ($intLanguageId == $objInit->userFrontendLangId) ? true : false;
                 }
 
-                $arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'addFrom_'.$intLanguageId.'\');" />'.$arrLanguage['long'].' ['.$arrLanguage['short'].']<br />';
+                $arrLanguages[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'addFrom_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['long'].' ['.$arrLanguage['short'].']</label><br />';
                 $strJsTabToDiv .= 'arrTabToDiv["addFrom_'.$intLanguageId.'"] = "langTab_'.$intLanguageId.'";'."\n";
                 ++$intLanguageCounter;
             }
 
             $this->_objTpl->setVariable(array(
-                    'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
-                    'EDIT_LANGUAGES_1'          => $arrLanguages[0],
-                    'EDIT_LANGUAGES_2'          => $arrLanguages[1],
-                    'EDIT_LANGUAGES_3'          => $arrLanguages[2],
-                    'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
-                ));
+                'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
+                'EDIT_LANGUAGES_1'          => $arrLanguages[0],
+                'EDIT_LANGUAGES_2'          => $arrLanguages[1],
+                'EDIT_LANGUAGES_3'          => $arrLanguages[2],
+                'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
+            ));
         }
 
         $lastFieldId = 0;
@@ -725,16 +717,16 @@ class ContactManager extends ContactLib {
         if (empty($fields)) {
             foreach ($activeLanguages as $lang) {
                 $fields[0] = array (
-                        'type'          => 'text',
-                        'attributes'    => '',
-                        'order_id'      => 0,
-                        'is_required'   => false,
-                        'check_type'    => 1,
-                        'editType'     => 'new'
+                    'type'          => 'text',
+                    'attributes'    => '',
+                    'order_id'      => 0,
+                    'is_required'   => false,
+                    'check_type'    => 1,
+                    'editType'     => 'new'
                 );
                 $fields[0]['lang'][$lang['id']] = array(
-                        'name'          => '',
-                        'value'         => ''
+                    'name'          => '',
+                    'value'         => ''
                 );
             }
         }

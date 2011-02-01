@@ -186,6 +186,10 @@
         } else {
             $J("#contactFormFieldType_"+formFieldNumber).val($J("#contactFormFieldType_" +previousFormID).val());
         }
+
+        if ($J(copy).find('.formValueView select').length != 0) {
+            $J(copy).find('.formValueView select option:eq(0)').attr('selected','selected');
+        }
         $J(copy).find('input').val('');
         $J(copy).find('input[type=hidden]').val('new');
         $J(copy).find('input[type=checkbox]').attr("checked", false);
@@ -294,7 +298,7 @@
             ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
         break;
         /*
-         *Default applies for textbox, password, multiline text and all user profile fields
+         *Default applies for textbox, password, multiline text and all user profile fields except access_country field
          */
         default:
              if($J('#contactFormFieldRequired_'+elId).length == 0){

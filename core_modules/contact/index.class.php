@@ -183,7 +183,6 @@ class Contact extends ContactLib
                             'SELECTED_'.$fieldId.'_'.$index => 'checked="checked"'
                         ));
                         break;
-                    case 'country':
                     case 'select':
                     case 'recipient':
                         break;
@@ -204,7 +203,7 @@ class Contact extends ContactLib
                  * Generate values for dropdown checkbox and radio fields
                  */
                 $userProfileRegExp = '/\{([A-Z_]+)\}/';
-                $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'] ;
+                $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
                 switch ($fieldType) {
                 case 'checkbox':
                     if ($arrField['lang'][$_LANGID]['value'] == 1) {
@@ -251,7 +250,7 @@ class Contact extends ContactLib
                 case 'recipient':
                     foreach ($recipients as $index => $recipient) {
                         $recipient['lang'][$_LANGID] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $recipient['lang'][$_LANGID]);
-                        if (preg_match('/\{([A-Z_]+)\}/', $recipient['lang'][$_LANGID])) {
+                        if (preg_match($userProfileRegExp, $recipient['lang'][$_LANGID])) {
                             $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId.'_'.$index;
                             $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, $recipient['lang'][$_LANGID]);
                         } else {
@@ -275,6 +274,9 @@ class Contact extends ContactLib
                 case 'access_country':
                 case 'country':
                     $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
+                    if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
+                        $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_variables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
+                    }
                     while (!$objResult->EOF) {
                         $this->objTemplate->setVariable(array(
                             $fieldId.'_VALUE'    => $objResult->fields['name']
@@ -290,9 +292,9 @@ class Contact extends ContactLib
                         $this->objTemplate->parse('field_'.$fieldId);
                     }
                     $this->objTemplate->setVariable(array(
-                            'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'],
-                            'TXT_CONTACT_NOT_SPECIFIED' => $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']
-                        ));
+                        'TXT_CONTACT_PLEASE_SELECT' => $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'],
+                        'TXT_CONTACT_NOT_SPECIFIED' => $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']
+                    ));
                     break;
                 default :
                     /*
