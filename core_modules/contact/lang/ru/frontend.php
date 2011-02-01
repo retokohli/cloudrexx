@@ -35,4 +35,5 @@ $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Выберите, пожалуйста";
+$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Не определено";
 ?>

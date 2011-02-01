@@ -35,4 +35,5 @@ $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reiniciar";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Seleccionar direcci&oacute;n del destinatario";
 $_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
 $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Seleccione";
+$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "No Especificado";
 ?>
