@@ -1,14 +1,66 @@
 ////////////////////////////////////////
-// CHANGELOG 2.1.4-2.1.5 ///////////////
+// CHANGELOG 2.1.3-2.1.4 ///////////////
 ////////////////////////////////////////
 
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Allgemein
+- Thumbnail-Erstellung von Transparenten Bildern wird nun unterstützt.
+- Das Handy-Template wird nun dem seitenspezifisch gesetzten Template vorgezogen.
+- Wird ein neues Template erstellt und dabei ein bereits vorhandenes Template als Vorlage angegeben, aktualisiert Contrexx nun die Links in den kopierten Templatedateien, damit diese auf das neue Template zeigen. (Bsp: styles.css in index.html)
+
+Media Archive
+- Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
+  File Uploader Moduls (sofern vorhanden) ausgewählt werden.
+
+File Browser
+- Beim Datei-Upload kann zwischen dem normalen Upload oder der Verwendung des
+  File Uploader Moduls (sofern vorhanden) ausgewählt werden.
+
 
 ****************************************
 * Behobene Fehler **********************
 ****************************************
-Internationalisierung
-- Russische Übersetzungen in Blog-Modul repariert
-- Defekte Übersetzungen in Job-Modul repariert
+Alias Verwaltung
+- Die automatische Erstellung der .htaccess Datei per FTP funktioniert.
+- Bei Aliase können URL-Modifikatoren verwendet werden.
+
+News Manager
+- Bei der Bearbeitung einer News Meldung wird der Teaser Text mit dem richtigen
+  Zeichensatz angezeigt.
+- Wird in Home » News Manager » Einstellungen unter "Anzahl Headlines" 0 angegeben, werden auch keine HL angezeigt.
+- Neues verhalten: Einstellung < 1: keine Headlines. Einstellung > 50: 50 Headlines.
+- Neuer Platzhalter HEADLINE_AUTHOR für Headlines.
+- Es können keine Teaserboxen mehr mit leerem Titel (bzw. nur Spaces) erstellt werden.
+- Konsequentere Statusmeldungen
+- Tooltip für Kopieren der News ergänzt
+
+Veranstaltungskalender
+- Das Bearbeiten der Veranstaltungen funktioniert.
+
+Kontaktformular
+- Es werden neu Zeichenfolgen mit HTML Special Chars (z.B. '<' und '>') auch als solche
+  gespeichert und auch ausgeben.
+- Muss-Felder können nicht mehr durch eingeben einer leeren Zeichenfolge umgangen werden.
+- Einige vorgenerierte <br />-Tags, welche sich für Webdesigner als eher störend erwiesen, wurden entfernt.
+- Heraufgeladene Dateien werden nun auch unter UTF8 richtig umbenannt, falls unerlaubte Zeichen im Dateinamen sind
+- Fehler beim Erstellen von Formularen mit mehreren Auswahllisten entfernt
+- HTML-Code der generierten Formulare wurde bereinigt (fieldset nun innerhalb form)
+- Beim Löschen eines Eintrags wird eine Rückmeldung gegeben
+
+Newsletter
+- Newsletter abbestellen via Platzhalter im Mail funktioniert.
+- Kompatiblitätsprobleme zwischen Contrexx-Releases bei Benachrichtigungsverwaltung An-/Abmelden gelöst.
+
+Blog:
+- Fehler wird nicht mehr doppelt angezeigt, wenn beim Kommentieren keine E-Mail-Adresse angegeben wird.
+
+Shop:
+- Paging bei der Bestellungsübersicht funktioniert nun auch, wenn Filterkriterien angegeben wurden.
+- Bug beim Hinzufügen eines Bildes einer neuen Kategorie (IE6-8)
+- Beim Import werden die Produkte den korrekten Kategorien zugeordnet.
+- Die Thumbnails der Produktbilder werden beim Import generiert.
+
+Content Manager:
+- Fehlermeldung für aufgrund von bereits vorhandenem gleichnamigen Ordner ungültige Aliase hinzugefügt
