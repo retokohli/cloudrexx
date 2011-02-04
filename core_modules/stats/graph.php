@@ -19,6 +19,7 @@
  * @subpackage  core_module_stats
  * @todo        Edit PHP DocBlocks!
  */
+ 
 class makeGraph
 {
     public $stats = '';
@@ -394,6 +395,7 @@ error_reporting(0);
  * Includes
  */
 require_once dirname(__FILE__).'/../../config/configuration.php';
+require_once dirname(__FILE__).'/../../lib/DBG.php';
 include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
 
 $adminPage = true;
