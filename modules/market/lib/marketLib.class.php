@@ -448,10 +448,8 @@ class marketLibrary
                 $fileName = md5($rand.$fileName).$exte;
 
                 //check file
-// TODO: $x is not defined
-                $x = 0;
                 if(file_exists($this->mediaPath.$path.$fileName)){
-                    $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
+                    $fileName = $rand.$part1 . '_' . (time()) . $exte;
                     $fileName = md5($fileName).$exte;
                 }
 
@@ -486,10 +484,8 @@ class marketLibrary
             $fileName = md5($rand.$fileName).$exte;
 
             //check file
-            // TODO: $x is not defined
-            $x = 0;
             if(file_exists($this->mediaPath.$path.$fileName)){
-                $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
+                $fileName = $rand.$part1 . '_' . (time()) . $exte;
                 $fileName = md5($fileName).$exte;
             }
 
