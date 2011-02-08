@@ -463,8 +463,6 @@ class galleryManager extends GalleryLibrary
                 $objResult->MoveNext();
             }
             $intRowCounter = 0;
-// TODO: Unused
-//            $objFWUser = FWUser::getFWUserObject();
             foreach (array_keys($arrMaincats) as $intMainKey) {
                 $objResult = $objDatabase->Execute('SELECT     sorting,
                                                             status, backendProtected, backend_access_id
@@ -671,8 +669,6 @@ class galleryManager extends GalleryLibrary
     {
         global $_LANGID;
 
-// TODO: Unused
-//        $objFWuser = FWUser::getFWUserObject();
         $categories = $this->sql->getCategoriesArray($_LANGID, $parent_id);
 
         if ($disabled) {
@@ -2416,8 +2412,6 @@ class galleryManager extends GalleryLibrary
                                                     ');
 
                 $strDetailsActive     = ($objResult->fields['status'] == '1') ? 'checked' : '';
-// TODO: Unused
-//                $intImageCatId         = $objResult->fields['catid'];
                 $arrImageInfos         = getimagesize($this->strImagePath.$objResult->fields['path']);
 
                 $this->_objTpl->setCurrentBlock('showThumbSize');

@@ -415,8 +415,6 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
         } elseif ($listId > 0 && ($arrList = &$this->_getList($listId)) !== false) {
             $listName = $arrList['name'];
             $listStatus = $arrList['status'];
-// TODO: Unused
-//            $listNotificationEmail = $arrList['notification_email'];
         } else {
             $listName = isset($_POST['newsletter_list_name']) ? contrexx_addslashes($_POST['newsletter_list_name']) : '';
             $listStatus = (isset($_POST['newsletter_list_status']) && intval($_POST['newsletter_list_status']) == '1') ? intval($_POST['newsletter_list_status']) : 0;
@@ -3092,9 +3090,7 @@ DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
             $userData['birthday'],
             $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$NewsletterID
         );
-        
-                
-                
+
         // do the replacement
         $content_text       = str_replace($search, $replace, $content_text);
         $TemplateSource     = str_replace($search, $replace, $TemplateSource);
@@ -4311,13 +4307,6 @@ $WhereStatement = '';
         $this->_objTpl->parse('module_newsletter_user_overview');
     }
 
-
-// TODO: Unused
-/*
-    private function removeAccessRecipient($userID) {
-
-    }
-*/
 
 
     /**

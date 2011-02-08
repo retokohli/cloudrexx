@@ -1416,14 +1416,6 @@ $this->arrRows[2] = '';
         $levelId = 0;
         $categories = $this->getCategories($catId, 1);
         $levels = $this->getLevels($levelId, 1);
-// TODO: $osId is not defined
-//$osId = 0;
-// TODO: Never used
-//        $platforms = $this->getPlatforms($osId);
-// TODO: $langId is not defined
-//$langId = 0;
-// TODO: Never used
-//        $languages = $this->getLanguages($langId);
 
         //get inputfields
         $this->getInputfields(
@@ -1636,8 +1628,6 @@ $this->arrRows[2] = '';
         $objResult = $objDatabase->Execute("SELECT spezial, addedby FROM ".DBPREFIX."module_directory_dir WHERE id = '".contrexx_addslashes($id)."'");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-// TODO: Never used
-//                $spezSort = $objResult->fields['spezial'];
                 $author = $objResult->fields['addedby'];
                 $objResult->MoveNext();
             }
@@ -1770,8 +1760,6 @@ $this->arrRows[2] = '';
         }
 
         $pos = intval($_GET['pos']);
-// TODO: Never used
-//        $searchTermOrg = contrexx_addslashes($_GET['term']);
         $searchTerm = contrexx_addslashes($_GET['term']);
         $searchTermGoogle = $searchTerm;
         $array = explode(' ', $searchTerm);
@@ -1884,10 +1872,6 @@ $this->arrRows[2] = '';
                 $i = 0;
                 while (!$objResult->EOF) {
                     //get score
-// TODO: Never used
-//                    $score = $objResult->fields['score'];
-// TODO: Never used
-//                    $scorePercent = ($score >= 1 ? 100 : intval($score*100));
                     //get votes
                     $this->getVotes($objResult->fields['id']);
                     //get voting

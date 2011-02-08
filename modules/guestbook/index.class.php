@@ -247,9 +247,6 @@ class Guestbook extends GuestbookLibrary
 
         $this->_objTpl->setTemplate($this->pageContent);
 
-// TODO: Never used
-//        $objValidator = new FWValidator();
-
         $name     = $_POST['name'];
         $forename     = $_POST['forename'];
         $gender = $_POST['malefemale'];

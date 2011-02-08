@@ -2078,7 +2078,6 @@ WHERE id = $hotelID )";
                                     WHERE field_id=$fieldID")
             !== false)
         {
-//TODO: _strOkMessage
             $this->_strOkMessage = $_ARRAYLANG['TXT_HOTEL_SUCCESSFULLY_DELETED'];
         }else{
             $this->_strErrMessage = $_ARRAYLANG['TXT_HOTEL_DB_ERROR'] ." ".$objDatabase->ErrorMsg();
