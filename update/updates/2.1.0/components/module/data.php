@@ -92,8 +92,6 @@ function _dataUpdate()
         if (!$objDatabase->Execute($query)) {
             return _databaseError($query, $objDatabase->ErrorMsg());
         }
-// TODO: Unused
-//        $installed[] = $name;
     }
 
       ///////////////////////////////////////////////////////////////////
