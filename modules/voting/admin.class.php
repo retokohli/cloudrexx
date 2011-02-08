@@ -266,8 +266,8 @@ class votingmanager
                    `vs`.`votes`,
                    `vl`.`question`
             FROM ".DBPREFIX."voting_system  AS `vs`
-            LEFT JOIN `".DBPREFIX."voting_lang`  AS `vl`
-                ON `vl`.`pollID` = `vs`.`id`
+            LEFT JOIN `".DBPREFIX."voting_lang` AS `vl`
+                ON `vl`.`pollID`=`vs`.`id`
             WHERE ".($votingId > 0 ? "id=".$votingId : "status=1")."
             AND `vl`.`langID`=".$langID;
         $objResult = $objDatabase->SelectLimit($query, 1);
@@ -286,9 +286,9 @@ class votingmanager
             SELECT `vs`.id, `vs`.votes, `va`.`answer`
             FROM `".DBPREFIX."voting_results` AS `vs`
             LEFT JOIN `".DBPREFIX."voting_answer`    AS `va`
-                ON `va`.`resultID` = `vs`.`id`
-            WHERE voting_system_id = '$votingId'
-            AND `va`.`langID` = ".$langID."
+                ON `va`.`resultID`=`vs`.`id`
+            WHERE voting_system_id='$votingId'
+            AND `va`.`langID`=$langID
             ORDER BY `vs`.`id`";
         $answers = new DBIterator($objDatabase->Execute($query));
         $votingResultText = '';
@@ -336,7 +336,7 @@ class votingmanager
             LEFT JOIN `".DBPREFIX."voting_lang` AS `vl`
                 ON `vl`.`pollID`=`vs`.`id`
             WHERE `vl`.`langID`=$langID
-            ORDER BY id DESC ";
+            ORDER BY id DESC";
         $votings = new DBIterator($objDatabase->Execute($query));
         $i = 0;
         foreach ($votings as $voting) {
@@ -420,9 +420,8 @@ class votingmanager
         $query = '
             SELECT `votes`
             FROM `'.DBPREFIX.'voting_results`
-            WHERE `voting_system_id` =
-            ORDER BY `id`
-            '.$poll_id;
+            WHERE `voting_system_id`='.$poll_id.'
+            ORDER BY `id`';
         $res = new DBIterator($objDatabase->execute($query));
         return $res;
     }
@@ -440,15 +439,15 @@ class votingmanager
         // delete the voting_answer table content
         $query = "
             DELETE `va`
-            FROM `".DBPREFIX."voting_answer`   AS `va`
-            LEFT JOIN `".DBPREFIX."voting_results`  AS `vr`
-            ON `va`.`resultID` = `vr`.`id`
-            WHERE `vr`.`voting_system_id` = ".$poll_id;
+            FROM `".DBPREFIX."voting_answer` AS `va`
+            LEFT JOIN `".DBPREFIX."voting_results` AS `vr`
+            ON `va`.`resultID`=`vr`.`id`
+            WHERE `vr`.`voting_system_id`=".$poll_id;
         $objDatabase->execute($query);
         // delete the voting_results table content
         $query = "
             DELETE FROM `".DBPREFIX."voting_results`
-            WHERE `voting_system_id` = ".$poll_id;
+            WHERE `voting_system_id`=".$poll_id;
         $objDatabase->execute($query);
     }
 
@@ -758,12 +757,12 @@ class votingmanager
             if(!$objResult->EOF) {
                $maxid=$objResult->fields["maxid"];
                if (!is_null($maxid)) {
-                       $query = "
-                            UPDATE ".DBPREFIX."voting_system
-                            SET status=1,
-                                date=date
-                            WHERE id=$maxid";
-                       $objDatabase->Execute($query);
+                   $query = "
+                        UPDATE ".DBPREFIX."voting_system
+                        SET status=1,
+                            date=date
+                        WHERE id=$maxid";
+                   $objDatabase->Execute($query);
                }
             }
         }
@@ -836,15 +835,15 @@ class votingmanager
     {
         global $objDatabase;
 
+// TODO: The use of the date field is pointless.
+// Or is it some undocumented magic?
         $query="
             UPDATE ".DBPREFIX."voting_system
-            SET status=0,
-                date=date";
+            SET status=0, date=date";
         $objDatabase->Execute($query);
         $query="
             UPDATE ".DBPREFIX."voting_system
-            SET status=1,
-                date=date
+            SET status=1, date=date
             WHERE id=".intval($_GET['votingid']);
         $objDatabase->Execute($query);
     }
@@ -856,8 +855,7 @@ class votingmanager
 
         $query = "
             UPDATE ".DBPREFIX."voting_system
-            SET status=0,
-                date=date";
+            SET status=0, date=date";
         $objDatabase->Execute($query);
     }
 
@@ -1095,7 +1093,6 @@ class votingmanager
                  AND `vl`.`langID`=".BACKEND_LANG_ID."
             WHERE id=".intval($_GET['votingid']);
         $objResult = $objDatabase->Execute($query);
-// TODO: What if the query fails?
         if (!$objResult || $objResult->EOF) {
             $this->errorHandling();
             return false;

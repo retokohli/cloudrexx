@@ -1,9 +1,9 @@
 <?php
+
 /**
  * Voting Module
  *
  * Functions for the Voting
- *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Leandro Nery <nery@astalavista.net>
  * @author      Ivan Schmid <ivan.schmid@comvation.com>
@@ -16,12 +16,13 @@
 /**
  * Show current voting
  */
-function votingShowCurrent($page_content){
+function votingShowCurrent($page_content)
+{
     global $objDatabase, $_CONFIG, $_ARRAYLANG, $_COOKIE;
 
     $paging = '';
 
-    $objTpl = &new HTML_Template_Sigma('.');
+    $objTpl = new HTML_Template_Sigma('.');
     $objTpl->setErrorHandling(PEAR_ERROR_DIE);
     $objTpl->setTemplate($page_content);
 
@@ -29,12 +30,12 @@ function votingShowCurrent($page_content){
     $msg = '';
     $voted = false;
 
-    if ($_POST["votingoption"]){
+    if ($_POST["votingoption"]) {
         $voteId = intval($_POST["votingoption"]);
 
         $query="SELECT voting_system_id from ".DBPREFIX."voting_results WHERE id=".$voteId;
         $objResult = $objDatabase->SelectLimit($query, 1);
-        if (!$objResult->EOF){
+        if (!$objResult->EOF) {
             $votingId = $objResult->fields["voting_system_id"];
         }
 
@@ -42,7 +43,7 @@ function votingShowCurrent($page_content){
         if ($objVoting !== false && $objVoting->RecordCount() == 1) {
             if ($objVoting->fields['submit_check'] == 'email') {
                 $email = contrexx_addslashes($_POST['votingemail']);
-                $objValidator = &new FWValidator();
+                $objValidator = new FWValidator();
                 if ($objValidator->isEmail($email)) {
                     if (!_alreadyVotedWithEmail($votingId, $email)) {
                         if (($msg = VotingSubmitEmail($votingId, $voteId, $email)) === true) {
@@ -64,7 +65,7 @@ function votingShowCurrent($page_content){
         }
     }
 
-    if ($_GET['vid'] != '' && $_GET['act'] != 'delete'){
+    if ($_GET['vid'] != '' && $_GET['act'] != 'delete') {
         $where = 'id='.intval($_GET['vid']);
     } else {
         $where = 'status = 1';
@@ -87,7 +88,7 @@ function votingShowCurrent($page_content){
                 `vs`.additional_email,
                 `vs`.additional_comment,
                 `vl`.`question`
-        FROM 
+        FROM
                 ".DBPREFIX."voting_system AS `vs`
         LEFT JOIN
                 `".DBPREFIX."voting_lang` AS `vl`
@@ -95,7 +96,7 @@ function votingShowCurrent($page_content){
                 `vl`.`pollID` = `vs`.`id`
             AND
                 `vl`.`langID` = ".FRONTEND_LANG_ID."
-        WHERE 
+        WHERE
             ".$where;
 
     $objResult = $objDatabase->Execute($query);
@@ -118,12 +119,12 @@ function votingShowCurrent($page_content){
 
         /** start paging **/
        $query = "
-            SELECT 
+            SELECT
                     `vs`.id,
                     UNIX_TIMESTAMP(`vs`.date) as datesec,
                     `vs`.votes,
                     `vl`.`title`
-            FROM         
+            FROM
                    ".DBPREFIX."voting_system AS `vs`
             LEFT JOIN
                     `".DBPREFIX."voting_lang` AS `vl`
@@ -131,37 +132,31 @@ function votingShowCurrent($page_content){
                     `vl`.`pollID` = `vs`.`id`
                 AND
                     `vl`.`langID` = ".FRONTEND_LANG_ID."
-            ORDER BY 
-                    id 
+            ORDER BY
+                    id
             DESC";
         $objResult = $objDatabase->SelectLimit($query, 5);
 
         $count = $objResult->RecordCount();
         $pos = intval($_GET[pos]);
-        if ($count > intval($_CONFIG['corePagingLimit'])){
+        if ($count > intval($_CONFIG['corePagingLimit'])) {
             $paging= getPaging($count, $pos, "&section=voting", "<b>".$_ARRAYLANG['TXT_VOTING_ENTRIES']."</b>", true);
         }
         /** end paging **/
 
         $query = "
-            SELECT 
-                    `vs`.id, 
-                    UNIX_TIMESTAMP(`vs`.date) AS datesec, 
-                    `vs`.votes,
-                    `vl`.`title`
-            FROM 
-                    ".DBPREFIX."voting_system AS `vs`
-            LEFT JOIN
-                    `".DBPREFIX."voting_lang` AS `vl`
-                ON
-                    `vl`.`pollID` = `vs`.`id`
-                AND
-                    `vl`.`langID` = ".FRONTEND_LANG_ID."
-            ORDER BY 
-                    id 
-            DESC ";
+            SELECT `vs`.id,
+                   UNIX_TIMESTAMP(`vs`.date) AS datesec,
+                   `vs`.votes,
+                   `vl`.`title`
+            FROM ".DBPREFIX."voting_system AS `vs`
+            LEFT JOIN `".DBPREFIX."voting_lang` AS `vl`
+                ON `vl`.`pollID` = `vs`.`id`
+                AND `vl`.`langID` = ".FRONTEND_LANG_ID."
+            ORDER BY id DESC";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
 
+        $i = 0;
         while (!$objResult->EOF) {
             $votingid=$objResult->fields['id'];
             $votingTitle=stripslashes($objResult->fields['title']);
@@ -174,14 +169,13 @@ function votingShowCurrent($page_content){
                 'VOTING_OLDER_DATE'     => showFormattedDate($votingDate),
                 'VOTING_VOTING_ID'      => $votingid,
                 'VOTING_LIST_CLASS'     => $class,
-                'VOTING_PAGING'         => $paging
+                'VOTING_PAGING'         => $paging,
             ));
             $objTpl->parse("votingRow");
-            $i++;
+            ++$i;
             $objResult->MoveNext();
         }
-    }
-    else {
+    } else {
         if (!$objResult->EOF) {
             $votingId          = $objResult->fields['id'];
             $votingTitle       = stripslashes($objResult->fields['question']);
@@ -195,41 +189,25 @@ function votingShowCurrent($page_content){
             errorHandling();
             return false;
         }
-        $images = 1;
-
         $query = "
-            SELECT 
-                    `vr`.id,
-                    `vr`.votes,
-                    `va`.`answer`
-            FROM 
-                    ".DBPREFIX."voting_results AS `vr`
-            LEFT JOIN
-                    `".DBPREFIX."voting_answer` AS `va`
-                ON
-                    `va`.`resultID` = `vr`.`id`
-                AND
-                    `langID` = ".FRONTEND_LANG_ID."
-            WHERE 
-                    voting_system_id = '$votingId' 
-            ORDER BY 
-                    id
-            ";
+            SELECT `vr`.id, `vr`.votes, `va`.`answer`
+            FROM ".DBPREFIX."voting_results AS `vr`
+            LEFT JOIN `".DBPREFIX."voting_answer` AS `va`
+                ON `va`.`resultID` = `vr`.`id`
+                AND `langID` = ".FRONTEND_LANG_ID."
+            WHERE voting_system_id = '$votingId'
+            ORDER BY id";
         $objResult = $objDatabase->Execute($query);
-
         while (!$objResult->EOF) {
-            if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
+            if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))) {
                 $votingOptionText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
                 $votingOptionText .= stripslashes($objResult->fields['answer'])."<br />";
             }
             $objResult->MoveNext();
         }
-
         $votingResultText = _vote_result_html($votingId);
-
-        if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
+        if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))) {
             $votingVotes        = '';
-
             if ($votingMethod == 'email') {
                 $objTpl->setVariable('VOTING_EMAIL', !empty($_POST['votingemail']) ? htmlentities($_POST['votingemail'], ENT_QUOTES) : '');
                 $objTpl->parse('voting_email_input');
@@ -238,7 +216,6 @@ function votingShowCurrent($page_content){
                     $objTpl->hideBlock('voting_email_input');
                 }
             }
-
             $submitbutton   = '<input type="submit" value="'.$_ARRAYLANG['TXT_SUBMIT'].'" name="Submit" />';
         } else {
             if ($objTpl->blockExists('voting_email_input')) {
@@ -247,30 +224,23 @@ function votingShowCurrent($page_content){
             if ($objTpl->blockExists('additional_fields')) {
                 $objTpl->hideBlock('additional_fields');
             }
-
-
-
             $votingVotes    = $_ARRAYLANG['TXT_VOTING_TOTAL'].":    ".$votingVotes;
             $submitbutton   ='';
         }
-
-
-        if (sizeof($additional_fields)){
+        if (sizeof($additional_fields)) {
             $objTpl->parse('additional_fields');
             foreach ($additional_fields as $field) {
                 list($name, $label, $tag) = $field;
                 $objTpl->setVariable(array(
                     'VOTING_ADDITIONAL_INPUT_LABEL' => $label,
                     'VOTING_ADDITIONAL_INPUT'       => $tag,
-                    'VOTING_ADDITIONAL_NAME'        => $name
+                    'VOTING_ADDITIONAL_NAME'        => $name,
                 ));
                 $objTpl->parse('additional_elements');
             }
-        }
-        else {
+        } else {
             $objTpl->hideBlock('additional_fields');
         }
-
         $objTpl->setVariable(array(
             'VOTING_MSG'                    => $msg,
             'VOTING_TITLE'                  => $votingTitle,
@@ -282,108 +252,101 @@ function votingShowCurrent($page_content){
             'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
             'TXT_VOTES'                     => $_ARRAYLANG['TXT_VOTES'],
-            'TXT_SUBMIT'                    => $submitbutton
+            'TXT_SUBMIT'                    => $submitbutton,
         ));
-
         // show other Poll entries
-
         /** start paging **/
         $query = "
-            SELECT 
-                    `vs`.id,
-                    UNIX_TIMESTAMP(`vs`.date) as datesec,
-                    `vl`.`title`
-            FROM 
-                    ".DBPREFIX."voting_system  AS `vs`
-            LEFT JOIN
-                    `".DBPREFIX."voting_lang`  AS `vl`
-                ON
-                    `vl`.`pollID` = `vs`.`id`
-                AND
-                    `vl`.`langID` = ".FRONTEND_LANG_ID."
-            WHERE 
-                    id<>$votingId 
-            ORDER BY 
-                    id 
-                DESC";
+            SELECT `vs`.id,
+                   UNIX_TIMESTAMP(`vs`.date) as datesec,
+                   `vl`.`title`
+            FROM ".DBPREFIX."voting_system  AS `vs`
+            LEFT JOIN `".DBPREFIX."voting_lang`  AS `vl`
+                ON `vl`.`pollID` = `vs`.`id`
+                AND `vl`.`langID` = ".FRONTEND_LANG_ID."
+            WHERE id!=$votingId
+            ORDER BY id DESC";
         $objResult = $objDatabase->SelectLimit($query, 5);
         $count = $objResult->RecordCount();
         $pos = intval($_GET[pos]);
-        if ($count>intval($_CONFIG['corePagingLimit'])){
+        if ($count>intval($_CONFIG['corePagingLimit'])) {
             $paging= getPaging($count, $pos, "&section=voting", "<b>".$_ARRAYLANG['TXT_VOTING_ENTRIES']."</b>", true);
         }
         /** end paging **/
-
         $query = "
-            SELECT 
-                    `vs`.id,
-                    UNIX_TIMESTAMP(`vs`.date) AS datesec,
-                    `vs`.votes 
-            FROM 
-                    ".DBPREFIX."voting_system AS `vs`
-            LEFT JOIN
-                    `".DBPREFIX."voting_lang` AS `vl`
-                ON
-                    `vl`.`pollID` = `vs`.`id`
-            WHERE 
-                    id<>$votingId order by id desc ";
-
+            SELECT `vs`.id,
+                   UNIX_TIMESTAMP(`vs`.date) AS datesec,
+                   `vs`.votes
+            FROM ".DBPREFIX."voting_system AS `vs`
+            LEFT JOIN `".DBPREFIX."voting_lang` AS `vl`
+                ON `vl`.`pollID` = `vs`.`id`
+            WHERE id!=$votingId order by id desc ";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
-
+// TODO: This looks completely pointless
         $objTpl->setVariable(array(
             'VOTING_OLDER_TEXT'     => '',
             'VOTING_OLDER_DATE'     => '',
             'VOTING_VOTING_ID'      => '',
             'VOTING_PAGING'         => '',
             'TXT_DATE'              => '',
-            'TXT_TITLE'             => ''
+            'TXT_TITLE'             => '',
         ));
-
         while (!$objResult->EOF) {
-            $votingid=$objResult->fields['id'];
-            $votingTitle=stripslashes($objResult->fields['title']);
-            $votingVotes=$objResult->fields['votes'];
-            $votingDate=$objResult->fields['datesec'];
-
+            $votingid = $objResult->fields['id'];
+            $votingTitle = stripslashes($objResult->fields['title']);
+            $votingVotes = $objResult->fields['votes'];
+            $votingDate = $objResult->fields['datesec'];
             if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
             $objTpl->setVariable(array(
                 'VOTING_OLDER_TEXT'     => '<a href="index.php?section=voting&vid='.$votingid.'" title="'.$votingTitle.'">'.$votingTitle.'</a>',
                 'VOTING_OLDER_DATE'     => showFormattedDate($votingDate),
                 'VOTING_VOTING_ID'      => $votingid,
                 'VOTING_LIST_CLASS'     => $class,
-                'VOTING_PAGING'         => $paging
+                'VOTING_PAGING'         => $paging,
             ));
             $objTpl->parse("votingRow");
-            $i++;
+            ++$i;
             $objResult->MoveNext();
         }
     }
     return $objTpl->get();
-
 }
 
-function VotingSubmit(){
+
+function VotingSubmit()
+{
     global $objDatabase, $_COOKIE;
 
     if ($_COOKIE['votingcookie'] != '1') {
         setcookie("votingcookie", '1', time()+3600*24, ASCMS_PATH_OFFSET.'/'); // 1 Day
         $votingOption = intval($_POST["votingoption"]);
-
-        $query="SELECT voting_system_id from ".DBPREFIX."voting_results WHERE id=".$votingOption." ";
+        $query="
+            SELECT voting_system_id
+            FROM ".DBPREFIX."voting_results
+            WHERE id=$votingOption";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult->EOF){
+        if (!$objResult->EOF) {
             $voting_id = $objResult->fields["voting_system_id"];
-            $query="UPDATE ".DBPREFIX."voting_system set votes=votes+1,date=date WHERE id=".$voting_id ." ";
+            $query = "
+                UPDATE ".DBPREFIX."voting_system
+                SET votes=votes+1,
+                    date=date
+                WHERE id=$voting_id";
             $objDatabase->Execute($query);
-            $query="UPDATE ".DBPREFIX."voting_results set votes=votes+1 WHERE id=".$votingOption." ";
+            $query = "
+                UPDATE ".DBPREFIX."voting_results
+                SET votes=votes+1
+                WHERE id=$votingOption";
             $objDatabase->Execute($query);
             _store_additional_data($voting_id);
-    }
+        }
         header("Location: ?section=voting");
     }
 }
 
-function _store_additional_data($id){
+
+function _store_additional_data($id)
+{
     global $objDatabase;
 
     $email = $_POST['additional_email'];
@@ -448,9 +411,8 @@ function VotingSubmitEmail($systemId, $voteId, $email, $emailValidated)
 function setVotingResult($template)
 {
     global $objDatabase, $_CONFIG, $_ARRAYLANG;
-    $paging="";
 
-    $objTpl = &new HTML_Template_Sigma('.');
+    $objTpl = new HTML_Template_Sigma('.');
     $objTpl->setErrorHandling(PEAR_ERROR_DIE);
     $objTpl->setTemplate($template);
 
@@ -495,44 +457,44 @@ function _alreadyVotedWithEmail($voteingId, $email)
     return true;
 }
 
+
 function _verifyEmail($email)
 {
-    if ($arrMxRRs = _getMXHosts($email)) {
+    $arrMxRRs = _getMXHosts($email);
+    if ($arrMxRRs) {
         require_once ASCMS_LIBRARY_PATH.'/PEAR/Net/SMTP.php';
-
         foreach ($arrMxRRs as $arrMxRR) {
-            if (!PEAR::isError($objSMTP = new Net_SMTP($arrMxRR['EXCHANGE'])) && !PEAR::isError($objSMTP->connect(2)) && !PEAR::isError($e = $objSMTP->vrfy($email))) {
+            if (   !PEAR::isError($objSMTP = new Net_SMTP($arrMxRR['EXCHANGE']))
+                && !PEAR::isError($objSMTP->connect(2))
+                && !PEAR::isError($objSMTP->vrfy($email))) {
                 return $objSMTP->getResponse();
             }
         }
-
         return 0;
     }
-
     return false;
 }
+
 
 function _getMXHosts($email)
 {
     require_once ASCMS_FRAMEWORK_PATH.'/MXLookup.class.php';
 
-    $objMXLookup = &new MXLookup();
-
+    $objMXLookup = new MXLookup();
     $host = substr($email, strrpos($email, '@') + 1);
-
     if ($objMXLookup->getMailServers($host)) {
         return $objMXLookup->arrMXRRs;
-    } else {
-        return false;
     }
+    return false;
 }
 
-function _create_additional_input_fields($settings) {
+
+function _create_additional_input_fields($settings)
+{
     global $_ARRAYLANG;
 
     $input_template = '<input name="%name" id="%name" type="%type" />';
     $input_template_textarea = '<textarea name="%name" id="%name" > </textarea>';
-
     $additionals = array(
         'additional_nickname' => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_NICKNAME']),
         'additional_forename' => array('text',     $_ARRAYLANG['TXT_ADDITIONAL_FORENAME']),
@@ -547,9 +509,7 @@ function _create_additional_input_fields($settings) {
     $retval = array();
     foreach ($additionals as $name => $data) {
         if (!$settings->fields[$name]) continue;
-
         list($type, $label) = $data;
-
         $input_tag =
             str_replace('%name',  $name,
             str_replace('%label', $label,
@@ -561,53 +521,43 @@ function _create_additional_input_fields($settings) {
     return $retval;
 }
 
+
 /**
  * Returns HTML to display the vote statistics. Requires as Parameter:
  * @param votingId the ID of the voting system entry.
  */
-function _vote_result_html($votingId) {
+function _vote_result_html($votingId)
+{
     global $objDatabase, $_ARRAYLANG;
-    $images = 1;
 
-    $query     = "SELECT votes FROM ".DBPREFIX."voting_system WHERE id='$votingId'";
+    $images = 1;
+    $query = "
+        SELECT votes
+        FROM ".DBPREFIX."voting_system
+        WHERE id='$votingId'";
     $votes_res = $objDatabase->Execute($query);
     $votingVotes = $votes_res->fields['votes'];
-
-    $query     = "
-        SELECT 
-                `vr`.id,
-                `vr`.votes,
-                `va`.`answer`
-        FROM 
-                ".DBPREFIX."voting_results  AS `vr`
-        LEFT JOIN
-                `".DBPREFIX."voting_answer` AS `va`
-            ON
-                `va`.`resultID` = `vr`.`id`
-            AND
-                `va`.`langID` = ".FRONTEND_LANG_ID."
-        WHERE 
-                voting_system_id = '$votingId'
-        ORDER BY 
-                `id`
-        ";
+    $query = "
+        SELECT `vr`.id, `vr`.votes, `va`.`answer`
+        FROM ".DBPREFIX."voting_results  AS `vr`
+        LEFT JOIN `".DBPREFIX."voting_answer` AS `va`
+            ON `va`.`resultID` = `vr`.`id`
+            AND `va`.`langID` = ".FRONTEND_LANG_ID."
+        WHERE voting_system_id = '$votingId'
+        ORDER BY `id`";
     $objResult = $objDatabase->Execute($query);
-
     $out = '';
-
     while (!$objResult->EOF) {
         $votes=intval($objResult->fields['votes']);
         $percentage = 0;
         $imagewidth = 1; //Mozilla Bug if image width=0
-        if($votes>0){
+        if ($votes>0) {
             $percentage = (round(($votes/$votingVotes)*10000))/100;
             $imagewidth = round($percentage,0);
         }
-
-        if($imagewidth>80){
+        if ($imagewidth>80) {
             $imagewidth = 80;
         }
-
         $out .= "<span class=\"VotingResultTitle\">".stripslashes($objResult->fields['answer'])."</span><br />\n";
         $out .= "<img src='images/modules/voting/$images.gif' width='".$imagewidth."%' height='10' />";
         $out .= "&nbsp;<em>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</em><br />";
