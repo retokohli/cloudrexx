@@ -410,11 +410,11 @@ class InitCMS
     function getTemplates()
     {
         global $objDatabase;
-		
-		if (isset($_GET['custom_content']) && preg_match('/^[a-zA-Z0-9_]+$/', $_GET['custom_content'])) {
-			$this->customContentTemplate=$_GET['custom_content'];
-		}
-		
+        
+        if (isset($_GET['custom_content']) && preg_match('/^[a-zA-Z0-9_]+$/', $_GET['custom_content'])) {
+            $this->customContentTemplate=$_GET['custom_content'];
+        }
+        
         if(isset($_GET['preview']) && intval($_GET['preview'])){
             $objRS = $objDatabase->SelectLimit("
                 SELECT id
@@ -438,12 +438,10 @@ class InitCMS
                 $objResult->MoveNext();
             }
         }
-        #die ("themesid={$this->currentThemesId}, name = $themesPath");
 
         $this->themesPath = $themesPath;
 
         $this->templates['index'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html');
-        $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
         $this->templates['home'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html');
         $this->templates['navbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html');
         $this->templates['subnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html');
@@ -462,10 +460,13 @@ class InitCMS
         @$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
         @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
 
-		if ($this->customContentTemplate) {
-          	$this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate);
+        if (is_null($this->customContentTemplate)) {
+            $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
 		}
-		
+        else {
+          	$this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate);
+        }
+	
 		$template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
 		foreach ($template_files as $f) {
 			$match = '';
@@ -475,6 +476,41 @@ class InitCMS
 		}
 
         return $this->templates;
+    }
+
+    /**
+     * Collects all custom content templates available for the theme specified.
+     * Used by @link ContentManager::ajaxGetCustomContentTemplate()
+     * @param string $themeId the theme's id
+     * @return array ('content_xy.html','home_xy.html' [ ,... ] )
+     */     
+    public function getCustomContentTemplatesForTheme($themeId) {
+        global $objDatabase;
+
+        if($themeId == 0)
+            $themeId = $this->currentThemesId;
+
+        $objResult = $objDatabase->Execute("
+            SELECT foldername
+            FROM ".DBPREFIX."skins 
+            WHERE id=$themeId
+            LIMIT 1"
+        );
+        if (!$objResult) 
+            return array();
+
+        $folder = $objResult->fields['foldername'];        
+        $templateFiles = scandir(ASCMS_THEMES_PATH.'/'.$folder);
+        
+        $result = array();
+        foreach($templateFiles as $f){
+			$match = null;
+			if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
+                array_push($result, $f);
+			}
+        }
+
+        return $result;
     }
 
     /**
@@ -598,6 +634,10 @@ class InitCMS
      *
      * Also define()s the global MODULE_ID constant according to the value of
      * the module ID.
+     *
+     * The old implementation of this function, previously kept as getPageID_old(),
+     * has been deleted on 3.2.2011. Last version containing it is 2.1.4.
+     *
      * @global  ADONewConnection  $objDatabase
      * @param   integer           $page_id      The optional page ID
      * @param   string            $section      The optional section/cmd parameter value
@@ -681,124 +721,6 @@ class InitCMS
         define('MODULE_ID', null);
         return $page_id;
     }
-
-
-    /**
-     * OBSOLETE -- Kept for informational purposes only
-     * Gets the page id
-     *
-     * gets the current pageId
-     * @global   ADONewConnection
-     * @param     integer    $catID
-     * @param     string        $command
-     * @return    integer    $catID
-     */
-    function getPageID_old($catID = 0, $section='', $command='', $historyId=0)
-    {
-        global $objDatabase;
-
-        $langId = $this->getFrontendLangId();
-        switch ($section) {
-            case 'home':
-                $this->is_home = true;
-                break;
-            case 'logout':
-                $section = 'login';
-                break;
-			case 'media':
-                $section .= (MODULE_INDEX == '') ? 1 : intval(MODULE_INDEX);
-                break;
-
-            default:
-        }
-        if (empty($catID)) {
-            if (empty($section) && empty($command)) {
-                $query = 'SELECT n.catid AS catid,
-                               n.module AS module,
-                               n.themes_id AS themes_id
-                          FROM '.DBPREFIX.'modules AS m
-                    INNER JOIN '.DBPREFIX.'content_navigation AS n
-                    ON n.module = m.id
-                         WHERE m.name = \'home\'
-                           AND n.lang='.$langId;
-                $objResult = $objDatabase->SelectLimit($query, 1);
-                if ($objResult !== false) {
-                    $catID=$objResult->fields['catid'];
-                    $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-                    $this->is_home=true;
-                } else {
-                    CSRF::header('Location: index.php?section=error');
-                    exit;
-                }
-            }
-            // section without command is given!
-            elseif (!empty($section) && empty($command)) {
-                $query='SELECT n.catid,
-                               n.themes_id
-                         FROM '.DBPREFIX.'modules AS m
-                   INNER JOIN '.DBPREFIX.'content_navigation AS n
-                           ON n.module = m.id
-                        WHERE m.name = \''.$section.'\'
-                          AND n.cmd = \'\'
-                          AND n.lang='.$langId.'
-                        ORDER BY parcat ASC';
-
-                //$query="SELECT catid FROM ".DBPREFIX."content_navigation WHERE section = '$section' LIMIT 1"
-                $objResult = $objDatabase->SelectLimit($query, 1);
-                if ($objResult !== false) {
-                    if (!$objResult->EOF) {
-                        $catID = $objResult->fields['catid'];
-                        $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-                    }
-                } else {
-                    CSRF::header('Location: index.php?section=error');
-                    exit;
-                }
-            } else {
-                $query='SELECT n.catid,
-                               n.themes_id
-                          FROM '.DBPREFIX.'content_navigation AS n
-                    INNER JOIN '.DBPREFIX.'modules AS m
-                            ON n.module = m.id
-                         WHERE m.name = \''.$section.'\'
-                           AND n.cmd = \''.$command.'\'
-                           AND n.lang='.$langId;
-
-                $objResult = $objDatabase->SelectLimit($query,1);
-                if ($objResult !== false) {
-                    if (!$objResult->EOF) {
-                        $catID = $objResult->fields['catid'];
-                        $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-                    }
-                }
-                if (empty($catID)) {
-                    CSRF::header('Location: index.php?section=error');
-                    exit;
-                }
-            }
-            return $catID;
-        } else {
-            if (empty($historyId)) {
-                $query='SELECT themes_id, custom_content
-                      FROM '.DBPREFIX.'content_navigation
-                     WHERE catid = '.$catID;
-            } else {
-                $query='SELECT themes_id, custom_content
-                      FROM '.DBPREFIX.'content_navigation_history
-                     WHERE id = '.$historyId;
-            }
-
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult !== false) {
-                if (!$objResult->EOF) {
-                    $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-					$this->customContentTemplate = $objResult->fields['custom_content'];
-                }
-            }
-            return $catID;
-        }
-    }
-
 
     /**
     * Sets the customized ThemesId
@@ -950,7 +872,7 @@ class InitCMS
      *
      * @return boolean true if yes
      */
-    function hasCustomContent()
+    public function hasCustomContent()
     {
 		return strlen($this->customContentTemplate) > 0 ? true : false;
     }
