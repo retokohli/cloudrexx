@@ -24,6 +24,15 @@
     2   Use test suite, create log files
 */
 define('_PAYPAL_DEBUG', 0);
+/**
+ * IPN log mode
+ * @internal
+    Log modes:
+    0   No logging
+    1   Logging to file (/dbg.log)
+*/
+// TODO: Disable logging when tests confirm that it works...
+define('_PAYPAL_IPN_LOG', 1);
 
 /**
  * Interface for the PayPal form
@@ -61,13 +70,6 @@ class PayPal
         'USD', // U.S. Dollar
     );
 
-    /**
-     * PHP 5 constructor
-     */
-    function __construct()
-    {
-    }
-
 
     /**
      * Returns the form for PayPal accessing
@@ -90,15 +92,16 @@ class PayPal
         $cancel_return = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;cmd=success&amp;handler=paypal&amp;result=2&amp;orderid='.$orderid;
         $notify_url = $host.'/index.php?section=shop'.MODULE_INDEX.'&amp;act=paypalIpnCheck';
 
-        $retval = "<script language='JavaScript' type='text/javascript'>
-            // <![CDATA[
-                function go()
-                {
-                    document.paypal.submit();
-                }
-                ".(_PAYPAL_DEBUG > 0 ? '' : "window.setTimeout('go()',3000);
-            ")."// ]]>
-            </script>";
+        $retval =
+(_PAYPAL_DEBUG == 0
+? "<script language='JavaScript' type='text/javascript'>
+// <![CDATA[
+function go() { document.paypal.submit(); }
+window.setTimeout('go()', 3000);
+// ]]>
+</script>
+"
+: '');
 
         $retval .=
             (_PAYPAL_DEBUG == 0
@@ -122,6 +125,7 @@ class PayPal
         $retval .= "</form>\n";
         return $retval;
     }
+
 
     /**
      * Generates a hidden input field
@@ -156,41 +160,11 @@ class PayPal
     {
         global $objDatabase;
 
-if (_PAYPAL_DEBUG) $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnCheckLog.txt', 'w');
-
-        // read the post from PayPal system and add 'cmd'
-        $req = 'cmd=_notify-validate';
-        foreach ($_POST as $key => $value) {
-            $value = urlencode($value);
-            $req .= "&$key=$value";
-        }
-//if (_PAYPAL_DEBUG) @fwrite($log, "Made parameters: $req\r\n");
-
-        $errno = '';
-        $errstr = '';
-        $fp =
-            (_PAYPAL_DEBUG == 0
-                ? fsockopen('www.paypal.com', 80, $errno, $errstr, 30)
-                : (_PAYPAL_DEBUG == 1
-                    ? fsockopen('www.sandbox.paypal.com', 80, $errno, $errstr, 30)
-                    // _PAYPAL_DEBUG == 2 or higher
-                    : fsockopen('localhost', 80, $errno, $errstr, 30)
-        ));
-        if (!$fp) {
-if (_PAYPAL_DEBUG) @fwrite($log, "no fp, errno $errno, error $errstr\r\nexiting\r\n");@fclose($log);
-            exit;
-        }
-
-        // post back to PayPal system to validate
-        $header  =
-            (_PAYPAL_DEBUG < 2
-                ? "POST /cgi-bin/webscr HTTP/1.0\r\n"
-                : "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop".MODULE_INDEX."&act=testIpnValidate HTTP/1.0\r\n"
-            ).
-            "Content-Type: application/x-www-form-urlencoded\r\n".
-            "Content-Length: ".strlen($req)."\r\n\r\n";
-        fwrite($fp, $header.$req);
-if (_PAYPAL_DEBUG) @fwrite($log, "sent\r\n$header$req\r\n\r\n");
+if (_PAYPAL_IPN_LOG) {
+    DBG::activate(DBG_PHP|DBG_ADODB_ERROR|DBG_LOG_FILE);
+    DBG::log("-------------------------------------------------------");
+    DBG::log("Paypal::ipnCheck(): Entered on ".date("Y-m-d H:i:s"));
+}
 
         // assign posted variables to local variables
 // The following are unused
@@ -199,33 +173,112 @@ if (_PAYPAL_DEBUG) @fwrite($log, "sent\r\n$header$req\r\n\r\n");
 //        $payment_status = $_POST['payment_status'];
 //        $txn_id = $_POST['txn_id'];
 //        $payer_email = $_POST['payer_email'];
-        $payment_amount = $_POST['mc_gross'];
-        $payment_currency = $_POST['mc_currency'];
-        $receiver_email = $_POST['receiver_email'];
-        $orderid = $_POST['custom'];
+        $payment_amount = (isset($_POST['mc_gross'])
+            ? $_POST['mc_gross'] : null);
+        $payment_currency = (isset($_POST['mc_currency'])
+            ? $_POST['mc_currency'] : null);
+        $receiver_email = (isset($_POST['receiver_email'])
+            ? $_POST['receiver_email'] : null);
+        $orderid = (isset($_POST['custom'])
+            ? $_POST['custom'] : null);
+        if (!(   $payment_amount && $payment_currency
+              && $receiver_email && $orderid)) {
+if (_PAYPAL_IPN_LOG) {
+    DBG::log("Invalid IPN parameter values: amount $payment_amount, currency $payment_currency, e-mail $receiver_email, order ID $orderid");
+    DBG::log("Paypal::ipnCheck(): Aborted on ".date("Y-m-d H:i:s"));
+    DBG::log("-------------------------------------------------------");
+    DBG::deactivate();
+}
+            exit;
+        }
 
-        $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                  WHERE `name`='paypal_account_email'";
+// TODO: Update to use SettingDb!
+        $query = "
+            SELECT `value`
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
+             WHERE `name`='paypal_account_email'";
         $objResult = $objDatabase->Execute($query);
-if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
         $paypalAccountEmail = $objResult->fields['value'];
 
-        $query = "SELECT currency_order_sum, selected_currency_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
+        $query = "
+            SELECT currency_order_sum, selected_currency_id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             WHERE orderid=$orderid";
         $objResult = $objDatabase->Execute($query);
-if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-        $currencyId = $objResult->fields['selected_currency_id'];
-        $amount = $objResult->fields['currency_order_sum'];
+        $currencyId = null;
+        $amount = null;
+        if ($objResult && !$objResult->EOF) {
+            $currencyId = $objResult->fields['selected_currency_id'];
+            $amount = $objResult->fields['currency_order_sum'];
+        }
+        if (empty($currencyId) || empty($amount)) {
+if (_PAYPAL_IPN_LOG) {
+    DBG::log("Error querying amount ($amount) or currency ID ($currencyId) for Order ID $orderid, ignoring");
+    DBG::log("Paypal::ipnCheck(): Finished on ".date("Y-m-d H:i:s"));
+    DBG::log("-------------------------------------------------------");
+    DBG::deactivate();
+}
+            exit();
+        }
 
-        $query = "SELECT code FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies WHERE id=$currencyId";
+        $query = "
+            SELECT code
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
+             WHERE id=$currencyId";
         $objResult = $objDatabase->Execute($query);
-if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-        $currencyCode = $objResult->fields['code'];
+        $currencyCode = null;
+        if ($objResult && !$objResult->EOF) {
+            $currencyCode = $objResult->fields['code'];
+        }
+        if (empty($currencyCode)) {
+if (_PAYPAL_IPN_LOG) {
+    DBG::log("Failed to query currency code for currency ID $currencyId (Order ID $orderid), ignoring");
+    DBG::log("Paypal::ipnCheck(): Finished on ".date("Y-m-d H:i:s"));
+    DBG::log("-------------------------------------------------------");
+    DBG::deactivate();
+}
+            exit();
+        }
+
+        // read the post from PayPal system and add 'cmd'
+        $req = 'cmd=_notify-validate';
+        foreach ($_POST as $key => $value) {
+            $value = urlencode($value);
+            $req .= "&$key=$value";
+        }
+//if (_PAYPAL_IPN_LOG) @fwrite($log, "Made parameters: $req\r\n");
+
+        $errno = '';
+        $errstr = '';
+        $uri =
+            (_PAYPAL_DEBUG == 0
+              ? 'www.paypal.com'
+              : (_PAYPAL_DEBUG == 1
+                ? 'www.sandbox.paypal.com'
+                // _PAYPAL_IPN_LOG == 2 or higher
+                : 'localhost'));
+if (_PAYPAL_IPN_LOG) DBG::log("Sending IPN validation request to $uri");
+        $fp = fsockopen($uri, 80, $errno, $errstr, 30);
+        if (!$fp) {
+if (_PAYPAL_IPN_LOG) DBG::log("Failed to connect Socket with $uri, errno $errno, error $errstr - exiting");
+            exit();
+        }
+
+        // post back to PayPal system to validate
+        $header  =
+            (_PAYPAL_DEBUG < 2
+                ? "POST /cgi-bin/webscr HTTP/1.0\r\n"
+                : "POST ".ASCMS_PATH_OFFSET."/index.php?section=shop".
+                    MODULE_INDEX."&act=testIpnValidate HTTP/1.0\r\n").
+            "Content-Type: application/x-www-form-urlencoded\r\n".
+            "Content-Length: ".strlen($req)."\r\n\r\n";
+        fwrite($fp, $header.$req);
+if (_PAYPAL_IPN_LOG) DBG::log("Sent header and request: $header$req");
 
         $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
         while (!feof($fp)) {
             $res = fgets($fp, 1024);
-//$res = 'VERIFIED';
-//if (_PAYPAL_DEBUG) @fwrite($log, "got $res\r\n");
+if (_PAYPAL_IPN_LOG) DBG::log("PayPal response (part): $res");
             if (preg_match('/^VERIFIED/', $res)) {
                 if (   $paypalAccountEmail == $receiver_email
                     && $payment_amount == $amount
@@ -233,33 +286,35 @@ if (_PAYPAL_DEBUG) @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' 
                     // Update the order status to a value determined
                     // automatically.
                     $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
-if (_PAYPAL_DEBUG) @fwrite($log, "VERIFIED\r\nquery $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n");
+if (_PAYPAL_IPN_LOG) DBG::log("PayPal IPN successfully VERIFIED");
                     break;
                 }
             }
             if (preg_match('/^INVALID/', $res)) {
                 // The payment failed.
                 $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
-if (_PAYPAL_DEBUG) @fwrite($log, "INVALID\r\nquery $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n");
+if (_PAYPAL_IPN_LOG) {
+    DBG::log("PayPal IPN is INVALID, new Order status CANCELLED (POST values: amount $payment_amount, currency $payment_currency, e-mail $receiver_email, order ID $orderid)");
+}
                 break;
             }
+//if (_PAYPAL_IPN_LOG) DBG::log("PayPal's response: $res");
         }
         fclose ($fp);
 
-if (_PAYPAL_DEBUG) {
-  echo "The response from IPN was: <b>".$res."</b><br><br>";
-  $query = "SELECT order_status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE orderid=$orderid";
-  $objResult = $objDatabase->Execute($query);
-  @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-  $order_status = $objResult->fields['order_status'];
-  @fwrite($log, "order status: $order_status\r\n");
-  @fwrite($log, "finished, leaving\r\n");
-  @fclose($log);
-}
         // This method is now called from within here.
         // The IPN may be received after the customer has left both
         // the PayPal site and the Shop!
-        Shop::updateOrderStatus($orderid, $newOrderStatus, 'PaypalIPN');
+if (_PAYPAL_IPN_LOG) DBG::log("Updating Order ID $orderid status, new value $newOrderStatus");
+        $order_status = Shop::updateOrderStatus(
+            $orderid, $newOrderStatus, 'PaypalIPN');
+if (_PAYPAL_IPN_LOG) {
+    DBG::log("Updated Order status to $order_status");
+    DBG::log("Paypal::ipnCheck(): Finished on ".date("Y-m-d H:i:s"));
+    DBG::log("-------------------------------------------------------");
+    DBG::deactivate();
+}
+        exit();
     }
 
 
