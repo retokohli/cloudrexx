@@ -215,7 +215,11 @@ class ContentManager
                 $this->strErrMessage[] = $result;
             }
             $this->contentOverview();
-        break;
+            break;
+
+        case 'ajaxGetCustomContentTemplates':
+            $this->ajaxGetCustomContentTemplates();
+            break;
 
         default:
             Permission::checkAccess(6, 'static');
@@ -2447,6 +2451,16 @@ class ContentManager
         }
         
         return $menu;
+    }
+
+    /**
+     * Called if the user changes a page's template, so we can update the custom content templates in the browser.
+     */
+    function ajaxGetCustomContentTemplates() {
+        global $objInit;
+        $themeId = intval($_GET['theme']);
+        $templates = $objInit->getCustomContentTemplatesForTheme($themeId);
+        die(json_encode($templates));
     }
 
 

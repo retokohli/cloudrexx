@@ -284,9 +284,9 @@ function openWindow(theURL,winName,features){
 
 //displays only templates beginning with home_ if home module is set for this page and vice versa.
 //the removed entries
-disabledOptions = new Array();
+disabledOptions = [];
 //our logic, onchange handler
-function refreshCustomContentTemplates(sender) {
+function onModuleChanged(sender) {
     //whether home-module was selected
     var displayHome = $$('[name="selectmodule"] option')[sender.selectedIndex].innerHTML == "home";
     //all content options
@@ -307,8 +307,36 @@ function refreshCustomContentTemplates(sender) {
         }
     }
 }
+
+//loads the custom content templates for the selected thene
+function onThemeChanged(sender) {
+    var selectedThemeId = $$('[name="themesId"] option')[sender.selectedIndex].value;
+    new Ajax.Request('index.php?cmd=content&act=ajaxGetCustomContentTemplates&theme='+selectedThemeId, {
+        onSuccess: function(response) {
+            disabledOptions = []; //remove disabled options from last set of options
+            var ccDropdown = $$('[name="custom_content"]')[0]; //custom content dropdown
+
+            //remove the old options (except standard)
+            var oldOptions = ccDropdown.childElements();
+            for(var i = 0; i < oldOptions.length; i++) {
+                if(oldOptions[i].value != "") //leave standard element
+                    oldOptions[i].remove();
+            }
+
+            //insert the new options
+            var options = response.responseText.evalJSON();
+            for(var i = 0; i < options.length; i++) {
+                var option = new Element('option', {'value':options[i]}).update(options[i]);
+                ccDropdown.appendChild(option);
+            }
+            //make sure only the applicable options are displayed
+            onModuleChanged($$('[name="selectmodule"]')[0]);
+        }
+    });
+}
+
 //remove options as necessary on page load
-document.observe('dom:loaded', function() { refreshCustomContentTemplates($$('[name="selectmodule"]')[0]); });
+document.observe('dom:loaded', function() { onModuleChanged($$('[name="selectmodule"]')[0]); });
 // ]]>
 </script>
 <span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
@@ -453,7 +481,7 @@ document.observe('dom:loaded', function() { refreshCustomContentTemplates($$('[n
 				<tr class="row2">
 					<td width="15%">{TXT_THEMES}</td>
 					<td width="85%">
-						<select name="themesId" style="margin-right:5px;">
+						<select name="themesId" onchange="onThemeChanged(this)" style="margin-right:5px;">
 							{CONTENT_THEMES_MENU}
 						</select>
 						{TXT_RECURSIVE_CHANGE}
@@ -495,7 +523,7 @@ document.observe('dom:loaded', function() { refreshCustomContentTemplates($$('[n
 				<td width="15%">{TXT_MODULE} (cmd | section)</td>
 				<td width="85%">
 					<input type="text" name="command" value="{CONTENT_SHOW_CMD}" maxlength="100" size="40" />
-					<select name="selectmodule" onchange="refreshCustomContentTemplates(this)">
+					<select name="selectmodule" onchange="onModuleChanged(this)">
 						<option value="">{TXT_NO_MODULE}</option>
 						{CONTENT_MODULE_MENU}
 					</select>
