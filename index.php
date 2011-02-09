@@ -603,10 +603,11 @@ $modulespath = 'core_modules/news/lib/headlines.class.php';
 /** @ignore */
 if (file_exists($modulespath)) include_once($modulespath);
 $newsHeadlinesObj = new newsHeadlines($themesPages['headlines']);
-$page_content = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $page_content);
-$themesPages['index'] = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $themesPages['index']);
-$themesPages['sidebar'] = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $themesPages['sidebar']);
-$page_template = str_replace('{HEADLINES_FILE}', $newsHeadlinesObj->getHomeHeadlines(), $page_template);
+$homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
+$page_content = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_content);
+$themesPages['index'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['index']);
+$themesPages['sidebar'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['sidebar']);
+$page_template = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_template);
 
 
 //-------------------------------------------------------
@@ -617,11 +618,12 @@ if (MODULE_INDEX < 2 && file_exists($modulespath)) {
     /** @ignore */
     include_once($modulespath);
     $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
-    $page_content = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_content);
-    $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['index']);
-    $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['sidebar']);
-    $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $themesPages['home']);
-    $page_template = str_replace('{EVENTS_FILE}', $calHeadlinesObj->getHeadlines(), $page_template);
+    $calHeadlines = $calHeadlinesObj->getHeadlines();
+    $page_content = str_replace('{EVENTS_FILE}', $calHeadlines, $page_content);
+    $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['index']);
+    $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['sidebar']);
+    $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['home']);
+    $page_template = str_replace('{EVENTS_FILE}', $calHeadlines, $page_template);
 }
 
 
@@ -633,11 +635,11 @@ if (file_exists($modulespath)) {
     /** @ignore */
     include_once($modulespath);
     $immoHeadlines = new immoHeadlines($themesPages['immo']);
-
-    $page_content = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $page_content);
-    $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $themesPages['index']);
-    $themesPages['home'] = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $themesPages['home']);
-    $page_template = str_replace('{IMMO_FILE}', $immoHeadlines->getHeadlines(), $page_template);
+    $immoHomeHeadlines = $immoHeadlines->getHeadlines();
+    $page_content = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_content);
+    $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $themesPages['index']);
+    $themesPages['home'] = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $themesPages['home']);
+    $page_template = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_template);
 }
 
 
@@ -729,14 +731,15 @@ if ($_CONFIG['forumHomeContent'] == '1') {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('forum'));
             $objForum = new ForumHomeContent($themesPages['forum_content']);
         }
+        $homeForumContent = $objForum->getContent();
         if ($forumHomeContentInPageContent) {
-            $page_content = str_replace('{FORUM_FILE}', $objForum->getContent(), $page_content);
+            $page_content = str_replace('{FORUM_FILE}', $homeForumContent, $page_content);
         }
         if ($forumHomeContentInPageTemplate) {
-            $page_template = str_replace('{FORUM_FILE}', $objForum->getContent(), $page_template);
+            $page_template = str_replace('{FORUM_FILE}', $homeForumContent, $page_template);
         }
         if ($forumHomeContentInThemesPage) {
-           $themesPages['index'] = str_replace('{FORUM_FILE}', $objForum->getContent(), $themesPages['index']);
+           $themesPages['index'] = str_replace('{FORUM_FILE}', $homeForumContent, $themesPages['index']);
         }
     }
 }
@@ -777,31 +780,33 @@ if (file_exists($modulespath)) {
     require_once($modulespath);
     $objGalleryHome = new GalleryHomeContent();
     if ($objGalleryHome->checkRandom()) {
+    $randomImage = $objGalleryHome->getRandomImage();
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_content, $arrMatches)) {
-            $page_content = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_content);
+            $page_content = str_replace('{GALLERY_RANDOM}', $randomImage, $page_content);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_template, $arrMatches))  {
-            $page_template = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_template);
+            $page_template = str_replace('{GALLERY_RANDOM}', $randomImage, $page_template);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['index'], $arrMatches)) {
-            $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['index']);
+            $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $randomImage, $themesPages['index']);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['sidebar'], $arrMatches)) {
-            $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['sidebar']);
+            $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $randomImage, $themesPages['sidebar']);
         }
     }
+    $latestImage = $objGalleryHome->getLastImage();
     if ($objGalleryHome->checkLatest()) {
         if (preg_match_all('/{GALLERY_LATEST}/ms', $page_content, $arrMatches)) {
-            $page_content = str_replace('{GALLERY_LATEST}', $objGalleryHome->getLastImage(), $page_content);
+            $page_content = str_replace('{GALLERY_LATEST}', $latestImage, $page_content);
         }
         if (preg_match_all('/{GALLERY_LATEST}/ms', $page_template, $arrMatches)) {
-            $page_template = str_replace('{GALLERY_LATEST}', $objGalleryHome->getLastImage(), $page_template);
+            $page_template = str_replace('{GALLERY_LATEST}', $latestImage, $page_template);
         }
         if (preg_match_all('/{GALLERY_LATEST}/ms', $themesPages['index'], $arrMatches)) {
-            $themesPages['index'] = str_replace('{GALLERY_LATEST}', $objGalleryHome->getLastImage(), $themesPages['index']);
+            $themesPages['index'] = str_replace('{GALLERY_LATEST}', $latestImage, $themesPages['index']);
         }
         if (preg_match_all('/{GALLERY_LATEST}/ms', $themesPages['sidebar'], $arrMatches)) {
-            $themesPages['sidebar'] = str_replace('{GALLERY_LATEST}', $objGalleryHome->getLastImage(), $themesPages['sidebar']);
+            $themesPages['sidebar'] = str_replace('{GALLERY_LATEST}', $latestImage, $themesPages['sidebar']);
         }
     }
 }
@@ -832,11 +837,12 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
             $objPodcast = new podcastHomeContent($themesPages['podcast_content']);
         }
+        $podcastContent = $objPodcast->getContent();
         if ($podcastHomeContentInPageContent) {
-            $page_content = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_content);
+            $page_content = str_replace('{PODCAST_FILE}', $podcastContent, $page_content);
         }
         if ($podcastHomeContentInPageTemplate) {
-            $page_template = str_replace('{PODCAST_FILE}', $objPodcast->getContent(), $page_template);
+            $page_template = str_replace('{PODCAST_FILE}', $podcastContent, $page_template);
         }
         if ($podcastHomeContentInThemesPage) {
             $podcastFirstBlock = false;
