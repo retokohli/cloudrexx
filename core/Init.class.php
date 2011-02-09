@@ -446,7 +446,8 @@ class InitCMS
         $this->templates['navbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html');
         $this->templates['subnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html');
         $this->templates['subnavbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') : '';
-        $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') : '';
+        $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subn
+                                                                                                                                                                       avbar3.html') : '';
         $this->templates['sidebar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html');
         $this->templates['shopnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html');
         $this->templates['headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html');
@@ -460,7 +461,7 @@ class InitCMS
         @$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
         @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
 
-        if (is_null($this->customContentTemplate)) {
+        if (!$this->hasCustomContent()) {
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
 		}
         else {
@@ -735,19 +736,14 @@ class InitCMS
     {
         global $objDatabase;
 
-	$mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
-	//only set customized theme if not in printview AND no mobile devic
+        $mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
+        //only set customized theme if not in printview AND no mobile devic
         if(!isset($_GET['printview']) && !$mobileThemeDefinedAndRequested) {
             $themesId=intval($themesId);
             if($themesId>0){
-                $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins");
+                $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE id = $themesId");
                 if ($objResult !== false) {
-                    while(!$objResult->EOF) {
-                        if ($objResult->fields['id']==$themesId) {
-                            $this->currentThemesId=intval($themesId);
-                        }
-                        $objResult->MoveNext();
-                    }
+                    $this->currentThemesId=intval($objResult->fields['id']);
                 }
             }
         }
