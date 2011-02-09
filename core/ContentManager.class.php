@@ -2441,6 +2441,10 @@ class ContentManager
     
     function _getCustomContentMenu($selected=null) {
         global $objInit, $_CORELANG;
+
+        $pageId = intval($_REQUEST['pageId']);
+        if($pageId)
+          $objInit->getPageId($pageId);
         
         $templates = $objInit->getTemplates();
         $menu = '<option value="">(Standard)</option>';

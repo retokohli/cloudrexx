@@ -1,0 +1,17 @@
+////////////////////////////////////////
+// CHANGELOG 2.1.4-2.1.5 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Content Management
+- Fehler in Custom Content Templates behoben
+Internationalisierung
+- Russische Übersetzungen in Blog-Modul repariert
+- Defekte Übersetzungen in Job-Modul repariert
+  
