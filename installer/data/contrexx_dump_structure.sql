@@ -3567,6 +3567,7 @@ CREATE TABLE `contrexx_stats_requests` (
   `page` varchar(255) binary NOT NULL default '',
   `visits` int(9) unsigned NOT NULL default '0',
   `sid` varchar(32) NOT NULL default '',
+  `pageTitle` varchar(250) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `unique` (`page`)
 ) TYPE=MyISAM;
