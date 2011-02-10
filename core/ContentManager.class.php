@@ -15,6 +15,7 @@ require_once ASCMS_CORE_PATH.'/Tree.class.php';
 require_once ASCMS_CORE_PATH.'/XMLSitemap.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
+require_once ASCMS_CORE_MODULE_PATH.'/stats/share/StatsModuleInterface.class.php';
 
 /**
  * ContentManager
@@ -101,6 +102,11 @@ class ContentManager
     var $boolHistoryActivate = false;
 
     /**
+     * @var StatsModuleInterface
+     */
+    protected $statisticsInterface = null;
+
+    /**
     * Constructor
     *
     * @param  string
@@ -110,6 +116,8 @@ class ContentManager
         global $objDatabase,$objInit,$_CORELANG,$objTemplate,$_CONFIG;
 
         $this->langId=$objInit->userFrontendLangId;
+
+        $this->statisticsInterface = StatsModuleInterface::getInstance('Stats');
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
                            "<a href='index.php?cmd=content&amp;act=new'>".$_CORELANG['TXT_NEW_PAGE']."</a>
@@ -134,6 +142,7 @@ class ContentManager
         }
 
         $this->collectLostPages();
+
     }
 
     /**
@@ -1002,8 +1011,6 @@ class ContentManager
                 $blocks = array();
                 $blocks = $this->getBlocks($pageId);
 
-
-
                 $objTemplate->setVariable(array(
                     'CONTENT_FORM_ACTION'      => "update",
                     'CONTENT_TOP_TITLE'           => $_CORELANG['TXT_EDIT_PAGE'],
@@ -1401,16 +1408,16 @@ class ContentManager
                                                metakeys='".$contentkey."',
                                                css_name='".$cssName."',
                                                metarobots='".$robotstatus."',
-                                              redirect='".$redirect."',
+                                               redirect='".$redirect."',
                                                expertmode='".$expertmode."'
-                                     WHERE     id=".$pageId);
+                                   WHERE       id=".$pageId);
         }
 
         if ($parcat!=$pageId) {
             //create copy of parcat (for history)
             $intHistoryParcat = $parcat;
             if ($boolDirectUpdate) {
-                $objDatabase->Execute("    UPDATE     ".DBPREFIX."content_navigation
+                $objDatabase->Execute(" UPDATE ".DBPREFIX."content_navigation
                                         SET     parcat='".$parcat."',
                                                 catname='".$catname."',
                                                 target='".$redirectTarget."',
@@ -1418,7 +1425,7 @@ class ContentManager
                                                 cachingstatus='".$cachingStatus."',
                                                 username='".$objFWUser->objUser->getUsername()."',
                                                 changelog='".$currentTime."',
-                                                    cmd='".$command."',
+                                                cmd='".$command."',
                                                 lang='".$this->langId."',
                                                 module='".$moduleId."',
                                                 startdate='".$startdate."',
@@ -1426,12 +1433,12 @@ class ContentManager
                                                 themes_id='".$themesId."',
                                                 css_name='".$cssNameNav."',
                                                 custom_content='".$customContent."'
-                                          WHERE catid=".$pageId);
+                                        WHERE   catid=".$pageId);
             }
         } else {
             //create copy of parcat (for history)
             if ($boolDirectUpdate) {
-                   $objDatabase->Execute("    UPDATE     ".DBPREFIX."content_navigation
+                   $objDatabase->Execute("UPDATE ".DBPREFIX."content_navigation
                                           SET     catname='".$catname."',
                                                   target='".$redirectTarget."',
                                                   displaystatus='".$displaystatus."',
@@ -1443,17 +1450,17 @@ class ContentManager
                                                   module='".$moduleId."',
                                                   startdate='".$startdate."',
                                                   enddate='".$enddate."',
-                                                     themes_id='".$themesId."',
-                                                css_name='".$cssNameNav."',
-                                                custom_content='".$customContent."'
-                                        WHERE     catid=".$pageId);
+                                                  themes_id='".$themesId."',
+                                                  css_name='".$cssNameNav."',
+                                                  custom_content='".$customContent."'
+                                          WHERE   catid=".$pageId);
             }
         }
 
 
         if($err = $this->_set_default_alias($pageId, $_POST['alias'])) {
             $this->strErrMessage[] = $err;
-    }
+        }
 
         if (isset($_POST['themesRecursive']) && !empty($_POST['themesRecursive'])) {
             $objNavbar = new ContentSitemap(0);
@@ -1566,6 +1573,7 @@ class ContentManager
         }
 
         $this->modifyBlocks($_POST['assignedBlocks'], $pageId);
+        $this->statisticsInterface->updateStatsTitles($pageId,$contenttitle);
     }
 
     static function mkurl($absolute_local_path) {
@@ -1776,6 +1784,7 @@ class ContentManager
         } else {
             $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         }
+
         return $pageId;
     }
 

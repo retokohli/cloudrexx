@@ -1,4 +1,4 @@
-<?PHP
+<?php
 class UpdateException extends Exception {};
 
 class Update_DatabaseException extends UpdateException {

@@ -87,6 +87,8 @@ class counter
 
         $this->_initConfiguration();
 
+
+
         // make statistics only if they were activated
         if ($this->arrConfig['make_statistics']['status']) {
             //set spider and banned words
@@ -106,6 +108,7 @@ class counter
 
                     // if visitor was counted, then make statistics
                     if ($this->isNewVisitor) {
+
                         // generate visitor statistics
                         $this->_makeStatistics(DBPREFIX.'stats_visitors_summary');
 
@@ -626,25 +629,25 @@ class counter
         $query = "UPDATE `".DBPREFIX."stats_requests` SET `visits` = `visits` + 1, `sid` = '".$this->md5Id."', `timestamp` = '".$this->currentTime."' WHERE `page` = '".substr($this->requestedUrl,0,255)."' AND (`sid` != '".$this->md5Id."' OR `timestamp` <= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."')";
         $objDb->Execute($query);
         if ($objDb->Affected_Rows() == 0) {
-            $query = "SELECT `id` FROM `".DBPREFIX."stats_requests` WHERE `page` = '".substr($this->requestedUrl,0,255)."'";
-            $objDb->Execute($query);
-            if ($objDb->Affected_Rows() == 0) {
-                 $query = "INSERT INTO `".DBPREFIX."stats_requests` (
+            $query = "INSERT INTO `".DBPREFIX."stats_requests` (
                                         `sid`,
                                         `pageId`,
                                         `page`,
                                         `timestamp`,
-                                        `visits`
+                                        `visits`,
+                                        `pageTitle`
                                         ) VALUES (
                                         '".$this->md5Id."',
                                         '".$this->pageId."',
                                         '".substr($this->requestedUrl,0,255)."',
                                         '".$this->currentTime."',
-                                        '1'
+                                        '1',
+                                        (
+                                            SELECT title from ".DBPREFIX."content WHERE id=".$this->pageId."
+                                        )
                                         )";
-                $objDb->Execute($query);
-                $this->_makeStatistics(DBPREFIX.'stats_requests_summary');
-            }
+            $objDb->Execute($query);
+            $this->_makeStatistics(DBPREFIX.'stats_requests_summary');               
         } else {
             $this->_makeStatistics(DBPREFIX.'stats_requests_summary');
         }
