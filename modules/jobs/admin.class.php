@@ -697,23 +697,23 @@ class jobsManager extends jobsLibrary
                 $dberr = true;
             }
         }
-        $query = "
-            UPDATE ".DBPREFIX."module_jobs
-               SET title='$title',
-                   date=".$this->_checkDate($_POST['creation_date']).",
-                   author='".$author."',
-                   text='$text',
-                   workloc='$workloc',
-                   workload='$workload',
-                   work_start='$work_start',
-                   catid='$catId',
-                   lang='$this->langId',
-                   userid = '$userId',
-                   status = '$status',
-                   startdate = '$startDate',
-                   enddate = '$endDate',
-                   changelog = '$changelog'
-             WHERE id = '$id'";
+        $query = SQL::update('module_jobs', array(
+            'date' => array('val' => $this->_checkDate($_POST['creation_date']), 'omitEmpty' => true),
+            'title' => $title,
+            'author' => $author,
+            'text' => array('val' => $text, 'omitEmpty' => true),
+            'workloc' => $workloc,
+            'workload' => $workload,
+            'work_start' => array('val' => $work_start, 'omitEmpty' => true),
+            'catid' => array('val' => $cat, 'omitEmpty' => true),
+            'lang' => array('val' => $this->langId, 'omitEmpty' => true),
+            'startdate' => array('val' => $startDate, 'omitEmpty' => true),
+            'enddate' => array('val' => $endDate, 'omitEmpty' => true),
+            'status' => array('val' => $status, 'omitEmpty' => true),
+            'userid' => array('val' => $userid, 'omitEmpty' => true),
+            'changelog' => array('val' => $date, 'omitEmpty' => true),
+        ))." WHERE id = $id;";
+      
         if (!$objDatabase->Execute($query) or $dberr) {
             $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
         } else {
@@ -918,7 +918,6 @@ class jobsManager extends jobsLibrary
 
         $cat = intval($_POST['jobsCat']);
         $userid = $objFWUser->objUser->getId();
-
         $startDate = get_magic_quotes_gpc() ? strip_tags($_POST['startDate']) : addslashes(strip_tags($_POST['startDate']));
         $endDate = get_magic_quotes_gpc() ? strip_tags($_POST['endDate']) : addslashes(strip_tags($_POST['endDate']));
 
@@ -934,18 +933,23 @@ class jobsManager extends jobsLibrary
             $endDate = "";
         }
 
-        $query = "
-            INSERT INTO `".DBPREFIX."module_jobs` (
-                `id`, `date`, `title`, `author`,
-                `text`, `workloc`, `workload`, `work_start`,
-                `catid`, `lang`, `startdate`, `enddate`,
-                `status`, `userid`, `changelog`
-            ) VALUES (
-                '', '$date', '$title', '$author',
-                '$text', '$workloc', '$workload', '$work_start',
-                '$cat', '$this->langId', '$startDate', '$endDate',
-                '$status', '$userid', '$date'
-            )";
+        $query = SQL::insert('module_jobs', array(
+            'date' => array('val' => $date, 'omitEmpty' => true),
+            'title' => $title,
+            'author' => $author,
+            'text' => array('val' => $text, 'omitEmpty' => true),
+            'workloc' => $workloc,
+            'workload' => $workload,
+            'work_start' => array('val' => $work_start, 'omitEmpty' => true),
+            'catid' => array('val' => $cat, 'omitEmpty' => true),
+            'lang' => array('val' => $this->langId, 'omitEmpty' => true),
+            'startdate' => array('val' => $startDate, 'omitEmpty' => true),
+            'enddate' => array('val' => $endDate, 'omitEmpty' => true),
+            'status' => array('val' => $status, 'omitEmpty' => true),
+            'userid' => array('val' => $userid, 'omitEmpty' => true),
+            'changelog' => array('val' => $date, 'omitEmpty' => true),
+        ));
+
         if ($objDatabase->Execute($query)) {
             $id = $objDatabase->Insert_id();
             $rel_loc_jobs = "";

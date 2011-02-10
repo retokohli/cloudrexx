@@ -16,4 +16,6 @@ Content Management
 Internationalisierung
 - Russische Übersetzungen in Blog-Modul repariert
 - Defekte Übersetzungen in Job-Modul repariert
-  
+Job-Modul
+- Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+- Javascript-Fehler beim Löschen von Regionen behoben
