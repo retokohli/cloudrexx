@@ -191,8 +191,6 @@ function _statsUpdate()
 		return false;
 	}
 
-
-
     try {
         UpdateUtil::table(
             DBPREFIX.'stats_search',
@@ -207,6 +205,26 @@ function _statsUpdate()
                 'unique'     => array('fields' => array('name','external'), 'type' => 'UNIQUE')
             )
         );
+
+        //2.1.5: new field contrexx_stats_requests.pageTitle needs to be added and filled
+        UpdateUtil::table(
+            DBPREFIX.'stats_requests',
+            array(
+                  'id'             => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true),
+                  'timestamp'      => array('type' => 'INT(11)', 'default' => '0', 'after' => 'id'),
+                  'pageId'         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'timestamp'),
+                  'page'           => array('type' => 'VARCHAR(255)', 'after' => 'pageId'),
+                  'visits'         => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'page'),
+                  'sid'            => array('type' => 'VARCHAR(32)', 'after' => 'visits'),
+                  'pageTitle'      => array('type' => 'VARCHAR(250)', 'after' => 'sid') //this field is added
+                  ),
+            array(
+                  'unique'         => array('fields' => array('page'), 'type' => 'UNIQUE')
+                  )
+        );
+        //fill pageTitle with current titles
+        UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM contrexx_content WHERE id=pageId );');
+
     }
     catch (UpdateException $e) {
         return UpdateUtil::DefaultActionHandler($e);

@@ -5,6 +5,8 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Statistiken
+- Seitentitel bleibt auch beim Löschen der Seite gespeichert
 
 ****************************************
 * Behobene Fehler **********************
