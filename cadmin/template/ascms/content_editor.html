@@ -657,7 +657,12 @@ var swapLanguage = function(aElement, langName){
     var $textarea  = $form.find('textarea[name=html]');
 
     if(typeof langName == 'undefined'){
-        $textarea.data(lastActive, getFrameContent());    //save frame contents for current lang
+        var content = (typeof CKEDITOR.instances.html == 'undefined')
+            ? $textarea.val()
+            : getFrameContent();
+
+        $textarea.data(lastActive, content);    //save frame contents for current lang
+
         typeof $textarea.data($a.text()) == 'undefined'   //load frame contents for new lang
           ?  setFrameContent('', lastActive)
           :  setFrameContent($textarea.data($a.text()), lastActive);
