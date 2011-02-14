@@ -19,3 +19,7 @@ Internationalisierung
 Job-Modul
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
 - Javascript-Fehler beim Löschen von Regionen behoben
+Kalender-Modul
+- Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+Kontakt-Modul
+- Eingegebene Umlaute werden korrekt dargestellt
