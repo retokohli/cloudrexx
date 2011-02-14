@@ -2407,6 +2407,7 @@ class newsManager extends newsLibrary {
             $templateHtml = "";
         }
         $templateHtml = preg_replace('/\{([A-Za-z0-9_]*?)\}/', '[[\\1]]', $templateHtml);
+        $templateHtml = htmlentities($templateHtml, ENT_QUOTES, CONTREXX_CHARSET);
 
         $this->pageTitle = $templateId != 0 ? $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'] : $_ARRAYLANG['TXT_ADD_BOX_TEMPLATE'];
 
