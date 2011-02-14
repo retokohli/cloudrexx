@@ -208,7 +208,7 @@ class Contact extends ContactLib
                         $value = implode(', ', $value);
                     }
 
-                    $arrFormData['data'][$key] = stripslashes(contrexx_strip_tags(htmlentities($value)));
+                    $arrFormData['data'][$key] = stripslashes(contrexx_strip_tags($value));
                 }
             }
 
