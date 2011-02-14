@@ -984,7 +984,6 @@ class Calendar extends calendarLibrary
         		$seriesPatternType			= 0;
         		$seriesPatternDouranceType	= 0;
         		$seriesPatternEnd			= 0;
-        		$seriesPatternBegin			= 0;
 
         		switch($seriesType) {
         			case 1;
@@ -1004,7 +1003,6 @@ class Calendar extends calendarLibrary
 
         					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
         					$dateparts 					= split("-", $startdate);
-        					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
         					switch($seriesPatternDouranceType) {
         						case 1:
         							$seriesPatternEnd	= 0;
@@ -1040,7 +1038,6 @@ class Calendar extends calendarLibrary
 
         					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
         					$dateparts 					= split("-",$startdate);
-        					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
         					switch($seriesPatternDouranceType) {
         						case 1:
         							$seriesPatternEnd	= 0;
@@ -1073,7 +1070,6 @@ class Calendar extends calendarLibrary
 
         					$seriesPatternDouranceType	= intval($form['inputSeriesDouranceType']);
         					$dateparts 					= split("-", $startdate);
-        					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
         					switch($seriesPatternDouranceType) {
         						case 1:
         							$seriesPatternEnd	= 0;
@@ -1139,7 +1135,6 @@ class Calendar extends calendarLibrary
                     'series_pattern_type'       => $seriesPatternType,
                     'series_pattern_dourance_type' => $seriesPatternDouranceType,
                     'series_pattern_end'        => $seriesPatternEnd,
-                    'series_pattern_begin'      => $seriesPatternBegin
                 );
 
                 // insert the event.. it has to work

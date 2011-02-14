@@ -962,7 +962,6 @@ class calendarManager extends calendarLibrary
 		$seriesPatternType			= 0;
 		$seriesPatternDouranceType	= 0;
 		$seriesPatternEnd			= 0;
-		$seriesPatternBegin			= 0;
 
 		switch($seriesType) {
 			case 1;
@@ -982,7 +981,6 @@ class calendarManager extends calendarLibrary
 
 					$seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
 					$dateparts 					= split("-", $startdate);
-					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
 					switch($seriesPatternDouranceType) {
 						case 1:
 							$seriesPatternEnd	= 0;
@@ -1018,7 +1016,6 @@ class calendarManager extends calendarLibrary
 
 					$seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
 					$dateparts 					= split("-",$startdate);
-					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
 					switch($seriesPatternDouranceType) {
 						case 1:
 							$seriesPatternEnd	= 0;
@@ -1055,7 +1052,6 @@ class calendarManager extends calendarLibrary
 
 					$seriesPatternDouranceType	= intval($_POST['inputSeriesDouranceType']);
 					$dateparts 					= split("-", $startdate);
-					$seriesPatternBegin			= mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
 					switch($seriesPatternDouranceType) {
 						case 1:
 							$seriesPatternEnd	= 0;
@@ -1176,10 +1172,7 @@ class calendarManager extends calendarLibrary
                     'series_pattern_type' => $seriesPatternType,
                     'series_pattern_dourance_type' => $seriesPatternDouranceType,
                     'series_pattern_end' => $seriesPatternEnd,
-                    'series_pattern_begin' => $seriesPatternBegin,
                 ))." WHERE id = $id";
-
-                Logger::getInstance()->log($query);
 
 				$objResult = $objDatabase->Execute($query);
 
@@ -1280,7 +1273,6 @@ class calendarManager extends calendarLibrary
                 'series_pattern_type' => $seriesPatternType,
                 'series_pattern_dourance_type' => $seriesPatternDouranceType,
                 'series_pattern_end' => $seriesPatternEnd,
-                'series_pattern_begin' => $seriesPatternBegin,
                 'series_pattern_exceptions' => '', //provide a default value, no null allowed
             ));
 

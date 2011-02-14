@@ -686,7 +686,7 @@ class calendarLibrary
                    series_pattern_weekday, series_pattern_day,
                    series_pattern_week, series_pattern_month,
                    series_pattern_type, series_pattern_dourance_type,
-                   series_pattern_end, series_pattern_begin
+                   series_pattern_end
               FROM ".DBPREFIX."module_calendar".$this->mandateLink."
              WHERE id='$id'";
         $objResultNote = $objDatabase->SelectLimit($query, 1);
@@ -986,7 +986,6 @@ class calendarLibrary
                     break;
             }
 
-            $seriesPatternDouranceStart = date("Y-m-d", $objResultNote->fields['series_pattern_begin']);
             switch ($objResultNote->fields['series_pattern_dourance_type']) {
                 case 1:
                     $seriesPatternDourance1     = 'checked="checked"';
@@ -1015,7 +1014,6 @@ class calendarLibrary
             $seriesPatternMonthlyMonth1     = 1;
             $seriesPatternMonthlyMonth2     = 1;
             $seriesPatternDouranceEndsAfter = 1;
-            $seriesPatternDouranceStart     = date("Y-m-d");
             $seriesPatternDourance1         = 'checked="checked"';
         }
 
@@ -1125,7 +1123,6 @@ class calendarLibrary
             'CALENDAR_SERIES_PATTERN_MONTHLY_COUNT'    => $count,
             'CALENDAR_SERIES_PATTERN_MONTHLY_WEEKDAY'  => $weekdays,
 
-            'CALENDAR_SERIES_PATTERN_START'            => $seriesPatternDouranceStart,
             'CALENDAR_SERIES_PATTERN_DOURANCE_1'       => $seriesPatternDourance1,
             'CALENDAR_SERIES_PATTERN_DOURANCE_2'       => $seriesPatternDourance2,
             'CALENDAR_SERIES_PATTERN_DOURANCE_3'       => $seriesPatternDourance3,
