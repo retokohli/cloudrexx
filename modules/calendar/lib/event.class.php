@@ -66,7 +66,6 @@ class CalendarEvent {
             'series_pattern_type'       => 0,
             'series_pattern_dourance_type' => '',
             'series_pattern_end'        => 0,
-            'series_pattern_begin'      => 0,
             'series_pattern_exceptions' => '',
         );
     }
@@ -103,8 +102,7 @@ class CalendarEvent {
             series_pattern_weekday, series_pattern_day,
             series_pattern_week, series_pattern_month,
             series_pattern_type, series_pattern_dourance_type,
-            series_pattern_end, series_pattern_begin,
-            series_pattern_exceptions
+            series_pattern_end, series_pattern_exceptions
         ) VALUES (
             '".$v['active']."',  '".$v['catid']."',  '".$v['startdate']."',  '".$v['enddate']."',
             '".$v['priority']."',  '".$v['access']."',  '".$v['name']."',  '".$v['comment']."',
@@ -119,8 +117,7 @@ class CalendarEvent {
             '".$v['series_pattern_weekday']."', '".$v['series_pattern_day']."',
             '".$v['series_pattern_week']."', '".$v['series_pattern_month']."',
             '".$v['series_pattern_type']."', '".$v['series_pattern_dourance_type']."',
-            '".$v['series_pattern_end']."', '".$v['series_pattern_begin']."',
-            '".$v['series_pattern_exceptions']."'
+            '".$v['series_pattern_end']."', '".$v['series_pattern_exceptions']."'
         )";
 
         $objResult = $objDatabase->Execute($query);

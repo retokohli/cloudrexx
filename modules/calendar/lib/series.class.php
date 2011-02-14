@@ -144,11 +144,11 @@ class seriesManager
                    cal.series_pattern_day, cal.series_pattern_week,
                    cal.series_pattern_month, cal.series_pattern_type,
                    cal.series_pattern_dourance_type,
-                   cal.series_pattern_end, cal.series_pattern_begin
-                   $term_where $date_where $auth_where
+                   cal.series_pattern_end $term_where $date_where $auth_where
                    $cat_where $active_where
                    ORDER BY cal.startdate
         ";
+
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             $count = $objResult->RecordCount();
@@ -177,7 +177,6 @@ class seriesManager
                         $tmpArray['series_pattern_type']            = $objResult->fields['series_pattern_type'];
                         $tmpArray['series_pattern_dourance_type']   = $objResult->fields['series_pattern_dourance_type'];
                         $tmpArray['series_pattern_end']             = $objResult->fields['series_pattern_end'];
-                        $tmpArray['series_pattern_begin']           = $objResult->fields['series_pattern_begin'];
                     }
                     $this->eventList[] = $tmpArray;
                     $i++;
@@ -559,7 +558,6 @@ class seriesManager
             $tmpArray['series_pattern_type']            = $this->eventList[$key]['series_pattern_type'];
             $tmpArray['series_pattern_dourance_type']   = $this->eventList[$key]['series_pattern_dourance_type'];
             $tmpArray['series_pattern_end']             = $end;
-            $tmpArray['series_pattern_begin']           = $this->eventList[$key]['series_pattern_begin'];
         }
         $this->eventList[] = $tmpArray;
     }
