@@ -427,10 +427,11 @@ class ContactLib
                 $arrData = array();
                 foreach ($arrKeyValue as $keyValue) {
                     $arrTmp = explode(',', $keyValue);
-                    $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
+                    $decodedKey = base64_decode($arrTmp[0]);
+                    $arrData[$decodedKey] = base64_decode($arrTmp[1]);
 
-                    if (!in_array(base64_decode($arrTmp[0]), $arrCols)) {
-                        array_push($arrCols, base64_decode($arrTmp[0]));
+                    if (!in_array($decodedKey, $arrCols)) {
+                        array_push($arrCols, $decodedKey);
                     }
                 }
 
