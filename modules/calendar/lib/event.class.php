@@ -152,8 +152,6 @@ class CalendarEvent {
         return true;
     }
 
-
-
     function get($id) {
         global $objDatabase;
         $id = intval($id);
@@ -168,14 +166,9 @@ class CalendarEvent {
 
     }
 
-
     function update($values) {
         $this->set($values);
     }
-
-
-
-
 
     function getActive() {
         return $this->values['active'];
