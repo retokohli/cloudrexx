@@ -275,4 +275,5 @@ $_ARRAYLANG['TXT_CALENDAR_FE_DEACTIVATED'] = "deactivated";
 $_ARRAYLANG['TXT_CALENDAR_FE_REGISTEREDONLY'] = "Community only";
 $_ARRAYLANG['TXT_CALENDAR_FE_ALL'] = "All visitors";
 $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is not activated.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING'] = "Really disable registrations? You will loose all registration data for this event if you do this.";
 ?>
