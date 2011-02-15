@@ -197,7 +197,18 @@ function showOrHide(strElement)
 	}
 }
 
-
+//called if registration checkbox changed
+function registrationChanged() {
+    //see if the box was checked on page load - this means registrations were activated before we started editing
+    var ir = $('inputRegistrations');
+    if(ir.getAttribute('checked') == "checked") { 
+        if(!ir.checked) {
+            if(!confirm('{TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING}')) {
+                ir.checked = true;
+            }
+        }
+    } 
+}
 // ]]>
 </script>
 
@@ -435,7 +446,7 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
     <tr class="row1">
       <td valign="middle" width="140">{TXT_CALENDAR_REGISTRATIONS_ACTIVATED}</td>
       <td valign="middle">
-        <input type="checkbox" id="inputRegistrations" name='inputRegistrations' value="1" {CALENDAR_REGISTRATIONS_ACTIVATED}/>
+        <input type="checkbox" id="inputRegistrations" name='inputRegistrations' value="1" {CALENDAR_REGISTRATIONS_ACTIVATED} onchange="registrationChanged()"/>
       </td>
     </tr>
     <tr class="row2">

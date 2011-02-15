@@ -137,4 +137,5 @@ $_ARRAYLANG['TXT_SUBMIT_ACTIVATE'] = "Markierte aktivieren";
 $_ARRAYLANG['TXT_SUBMIT_DEACTIVATE'] = "Markierte deaktivieren";
 $_ARRAYLANG['TXT_CALENDAR_MONTH_ARRAY'] = "Januar,Februar,März,April,Mai,Juni,Juli,August,September,Oktober,November,Dezember";
 $_ARRAYLANG['TXT_CALENDAR_DAY_ARRAY'] = "So,Mo,Di,Mi,Do,Fr,Sa";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING'] = "Really disable registrations? You will loose all registration data for this event if you do this.";
 ?>

@@ -275,4 +275,5 @@ $_ARRAYLANG['TXT_CALENDAR_FE_DEACTIVATED'] = "deaktiviert";
 $_ARRAYLANG['TXT_CALENDAR_FE_REGISTEREDONLY'] = "nur Community";
 $_ARRAYLANG['TXT_CALENDAR_FE_ALL'] = "alle Besucher";
 $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Diese Funktionalität ist nicht aktiviert.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_UNCHECKED_WARNING'] = "Wollen Sie die Anmeldung wirklich deaktivieren? Die Daten aller Anmeldungen an diese Veranstaltung gehen verloren.";
 ?>

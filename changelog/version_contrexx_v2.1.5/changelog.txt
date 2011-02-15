@@ -7,6 +7,8 @@
 ****************************************
 Statistiken
 - Seitentitel bleibt auch beim Löschen der Seite gespeichert
+Kalender
+- Beim Deaktivieren der Anmeldemöglichkeit einer Veranstaltung, welche vorher bereits aktiviert war, wird vor dem möglicherweise entstehenden Datenverlust gewarnt.
 
 ****************************************
 * Behobene Fehler **********************
@@ -25,3 +27,6 @@ Kontakt-Modul
 - Eingegebene Umlaute werden korrekt dargestellt
 Statistiken
 - Der Link "Homepage Vorschau" im Backend generiert keine eigenen Statistikeinträge mehr.
+- Die Grafiken werden wieder korrekt angezeigt.
+News
+- An den Platzhalter TEASER_URL wird kein Anti-CSRF-Tag mehr angehängt
