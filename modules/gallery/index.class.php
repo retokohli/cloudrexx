@@ -968,19 +968,14 @@ class Gallery
                 }
                 //Ends here
 
+                $anyTitlesDisplayed = $this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on';
                 if ($this->arrSettings['enable_popups'] == "on") {
+                    $titlePart = ($anyTitlesDisplayed ? 'title="'.$imageTitleTag.'"' : '');
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
-                        '}"  title="'.$imageTitleTag.'" href="'.
-                        $strImagePath.'"><img title="'.$imageTitleTag.'" src="'.
-                        $imageThumbPath.'" alt="'.$imageTitleTag.'" /></a>';
-                    /*
-                    $strImageOutput =
-                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
-                        '}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="'.
-                        $strImagePath.'"><img title="'.$imageName.'" src="'.
-                        $imageThumbPath.'" alt="'.$imageName.'" /></a>';
-                        */
+                        '}" '.$titlePart.'" href="'.
+                        $strImagePath.'"><img alt="'.$imageTitleTag.'" src="'.
+                        $imageThumbPath.'" '.$titlePart.' /></a>';
                 } else {
                     $strImageOutput =
                         '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
@@ -990,7 +985,7 @@ class Gallery
                         'alt="'.$imageTitleTag.'" /></a>';
                 }
 
-                if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
+                if ($anyTitlesDisplayed) {
                     $imageSizeOutput = $imageName;
                     if ($this->arrSettings['show_file_name'] == 'on' || $imageSizeShow) {
                         $imageData = array();
