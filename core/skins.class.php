@@ -447,7 +447,8 @@ class skins
             if (isset($_FILES['importlocal']['type'])) {
                 if (   !preg_match('/zip$/i', $_FILES['importlocal']['type'])
                    && !(   preg_match('/binary$/', $_FILES['importlocal']['type'])
-                        || preg_match('/application\/octet\-?stream/', $_FILES['importlocal']['type']))) {
+                        || preg_match('/application\/octet\-?stream/', $_FILES['importlocal']['type'])
+                        || preg_match('/application\/x-zip-compressed/', $_FILES['importlocal']['type']))) {
                     $this->strErrMessage =
                         $_FILES['importlocal']['name'].': '.
                         $_CORELANG['TXT_THEME_IMPORT_WRONG_MIMETYPE'].': '.
