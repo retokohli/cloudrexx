@@ -32,3 +32,5 @@ News
 - An den Platzhalter TEASER_URL wird kein Anti-CSRF-Tag mehr angehängt
 Bildergallerie
 - Die Shadowbox zeigt keine Titel mehr an, wenn diese Option im Backend abgewählt wurde.
+Skins
+- Beim Import eines gezippten Designs wird nun auch 'application/x-zip-compressed' als MIME-Typ akzeptiert.
