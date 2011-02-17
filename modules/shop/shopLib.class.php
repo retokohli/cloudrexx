@@ -209,7 +209,6 @@ class ShopLibrary
 
         $menu = "\n<select name=\"".$menuName."\">\n";
         $menu .= ($selectedId==0) ? "<option value=\"0\" selected=\"selected\">All</option>\n" : "<option value=\"0\">All</option>\n";
-
         foreach ($arrLanguage as $id => $data) {
             $selected = (intval($selectedId)==$id) ? "selected=\"selected\"" : "";
             $menu .="<option value=\"".$id."\" $selected>".$data['name']."</option>\n";
@@ -783,6 +782,7 @@ class ShopLibrary
     {
         global $_ARRAYLANG;
 
+        if ($imageFileSource == '') return;
         $arrMatch = array();
         $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
         $imageFileTarget = $imageFileSource;
