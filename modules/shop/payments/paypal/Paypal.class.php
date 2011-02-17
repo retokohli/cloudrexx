@@ -31,8 +31,7 @@ define('_PAYPAL_DEBUG', 0);
     0   No logging
     1   Logging to file (/dbg.log)
 */
-// TODO: Disable logging when tests confirm that it works...
-define('_PAYPAL_IPN_LOG', 1);
+define('_PAYPAL_IPN_LOG', 0);
 
 /**
  * Interface for the PayPal form
@@ -177,8 +176,8 @@ if (_PAYPAL_IPN_LOG) {
             ? $_POST['mc_gross'] : null);
         $payment_currency = (isset($_POST['mc_currency'])
             ? $_POST['mc_currency'] : null);
-        $receiver_email = (isset($_POST['receiver_email'])
-            ? $_POST['receiver_email'] : null);
+        $receiver_email = (isset($_POST['business'])
+            ? urldecode($_POST['business']) : null);
         $orderid = (isset($_POST['custom'])
             ? $_POST['custom'] : null);
         if (!(   $payment_amount && $payment_currency
@@ -278,23 +277,31 @@ if (_PAYPAL_IPN_LOG) DBG::log("Sent header and request: $header$req");
         $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
         while (!feof($fp)) {
             $res = fgets($fp, 1024);
-if (_PAYPAL_IPN_LOG) DBG::log("PayPal response (part): $res");
+if (_PAYPAL_IPN_LOG) DBG::log("PayPal response (part): ".trim($res));
             if (preg_match('/^VERIFIED/', $res)) {
-                if (   $paypalAccountEmail == $receiver_email
+if (_PAYPAL_IPN_LOG) {
+DBG::log("PayPal IPN successfully VERIFIED");
+                if (   $receiver_email == $paypalAccountEmail
                     && $payment_amount == $amount
                     && $payment_currency == $currencyCode) {
-                    // Update the order status to a value determined
-                    // automatically.
-                    $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
-if (_PAYPAL_IPN_LOG) DBG::log("PayPal IPN successfully VERIFIED");
-                    break;
+DBG::log("INFO: Data identical");
+                } else {
+DBG::log("NOTE: Differing data:");
+DBG::log("Account:  Expected /$paypalAccountEmail/, got /$receiver_email/");
+DBG::log("Amount:  Expected /$amount/, got /$payment_amount/");
+DBG::log("Currency:  Expected /$currencyCode/, got /$payment_currency/");
                 }
+}
+                // Update the order status to a value determined
+                // automatically.
+                $newOrderStatus = SHOP_ORDER_STATUS_PENDING;
+                break;
             }
             if (preg_match('/^INVALID/', $res)) {
                 // The payment failed.
                 $newOrderStatus = SHOP_ORDER_STATUS_CANCELLED;
 if (_PAYPAL_IPN_LOG) {
-    DBG::log("PayPal IPN is INVALID, new Order status CANCELLED (POST values: amount $payment_amount, currency $payment_currency, e-mail $receiver_email, order ID $orderid)");
+    DBG::log("PayPal IPN is INVALID, new Order status CANCELLED (POST values: amount /$payment_amount/, currency /$payment_currency/, e-mail /$receiver_email/, order ID /$orderid/)");
 }
                 break;
             }
