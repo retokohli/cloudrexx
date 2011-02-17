@@ -111,7 +111,12 @@ class DBG
         self::disable_firephp();
 
         self::$log_file = true;
-        self::setup('dbg.log', 'w');
+// DO NOT OVERRIDE DEFAULT BEHAVIOR FROM INSIDE THE CLASS!
+// Call a method to do this from the outside, so you *know*
+// you f***ed it up *yourself* if things don't work as expected.
+// (It just cost me a day to find out!)
+//        self::setup('dbg.log', 'w');
+        self::setup('dbg.log');
     }
 
 
@@ -322,6 +327,7 @@ class DBG
 
     static function enable_error_reporting()
     {
+        if (!defined('E_DEPRECATED')) define('E_DEPRECATED', 8192);
         self::$log_php =
             E_ALL
 // Suppress all deprecated warnings
