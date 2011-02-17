@@ -63,14 +63,14 @@ class Zones
 
         if (empty(self::$arrRelation)) {
             $query = "
-                SELECT zone_id, country_id
+                SELECT zones_id, countries_id
                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return false;
             $arrRelCountries = array();
             while (!$objResult->EOF) {
-                $zonesId   = $objResult->fields['zone_id'];
-                $countryId = $objResult->fields['country_id'];
+                $zonesId   = $objResult->fields['zones_id'];
+                $countryId = $objResult->fields['countries_id'];
                 if (empty($arrRelCountries[$zonesId])) {
                     $arrRelCountries[$zonesId] = array();
                 }
@@ -228,7 +228,6 @@ class Zones
                        activation_status=".(empty($_POST['zone_active'][$zone_id]) ? 0 : 1)."
                  WHERE zones_id=$zone_id");
             if (!$objResult) return false;
-
 //            $objResult = $objDatabase->Execute("
 //                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries
 //                 WHERE zone_id=$zone_id");

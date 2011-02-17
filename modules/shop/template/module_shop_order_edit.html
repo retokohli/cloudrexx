@@ -72,9 +72,9 @@ function changeProduct(orderItemId, newProductId)
     // the new product ID is zero, so an item is to be deleted
     if (newProductId == "0") {
 // TODO: What's this condition good for?
-//      if (orderItemId == 0) {
+      if (orderItemId == 0) {
         document.getElementById("shopProductId-"+orderItemId).value = "0";
-//      }
+      }
       document.getElementById("shopProductQuantity-"+orderItemId).value   = 0;
       document.getElementById("shopProductName-"+orderItemId).value       = "";
       document.getElementById("shopProductPrice-"+orderItemId).value      = '0.00';

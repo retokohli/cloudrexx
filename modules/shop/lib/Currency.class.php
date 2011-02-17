@@ -171,6 +171,20 @@ class Currency
 
 
     /**
+     * Returns the default currency code
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @access  public
+     * @static
+     * @return  string      The string representing the default currency code
+     */
+    static function getDefaultCurrencyCode()
+    {
+        if (!is_array(self::$arrCurrency)) self::init();
+        return self::$arrCurrency[self::$defaultCurrencyId]['code'];
+    }
+
+
+    /**
      * Returns the active currency ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @access  public
@@ -200,6 +214,9 @@ class Currency
 
     /**
      * Returns the active currency symbol
+     *
+     * This is a custom Currency name that does not correspond to any
+     * ISO standard, like "sFr.", or "Euro".
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @access  public
      * @static
@@ -214,6 +231,9 @@ class Currency
 
     /**
      * Returns the active currency code
+     *
+     * This usually corresponds to the ISO 4217 code for the Currency,
+     * like CHF, or USD.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @access  public
      * @static
@@ -305,15 +325,23 @@ class Currency
      * Returns the formatted amount in a non-localized notation
      * rounded to two decimal places,
      * using no thousands, and '.' as decimal separator.
+     *
+     * If present, the optional $padding character is inserted into the
+     * sprintf() format string.
+     * Otherwise, the price is formatted using number_format().
      * @todo    Localize!  Create language and country dependant
      *          settings in the database, and make this behave accordingly.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @static
-     * @param   double  $price  The amount
-     * @return  double          The formatted amount
+     * @param   double  $price    The amount
+     * @param   string  $padding  The optional padding
+     * @return  double            The formatted amount
      */
-    static function formatPrice($price)
+    static function formatPrice($price, $padding=null)
     {
+        if (isset($padding)) {
+            return sprintf('%'.$padding.'9.2f', $price);
+        }
         return number_format($price, 2, '.', '');
     }
 
@@ -355,6 +383,8 @@ class Currency
     {
         if (!is_array(self::$arrCurrency)) self::init();
         $strCurNavbar = '';
+        $uri = $_SERVER['REQUEST_URI'];
+        Html::stripUriParam($uri, 'currency');
         foreach (self::$arrCurrency as $id => $arrCurrency) {
             if (!$arrCurrency['status']) continue;
             $strCurNavbar .=
@@ -362,7 +392,7 @@ class Currency
                     ? self::STYLE_NAME_ACTIVE : self::STYLE_NAME_INACTIVE
                 ).
                 '" href="'.htmlspecialchars(
-                    $_SERVER['REQUEST_URI'], ENT_QUOTES, CONTREXX_CHARSET
+                    $uri, ENT_QUOTES, CONTREXX_CHARSET
                 ).
                 '&amp;currency='.$id.'" title="'.$arrCurrency['code'].'">'.
                 $arrCurrency['code'].
@@ -451,8 +481,7 @@ class Currency
 //        if (!Text::deleteById($text_id)) return false;
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
-             WHERE id=$currency_id
-        ");
+             WHERE id=$currency_id");
         if (!$objResult) return false;
         unset(self::$arrCurrency[$currency_id]);
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
