@@ -2279,9 +2279,12 @@ class galleryManager extends GalleryLibrary
             $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
         }
 
+        //the link="" is needed as the column has no default value
+        //and mysql doesn't allow to specify one for text columns.
         $objDatabase->Execute('    INSERT
                                 INTO     '.DBPREFIX.'module_gallery_pictures
-                                SET     path="'.$strImagePath.'",
+                                SET     link="",
+                                        path="'.$strImagePath.'",
                                         lastedit="'.time().'",
                                         quality="'.$this->arrSettings['standard_quality'].'",
                                         size_type="'.$this->arrSettings['standard_size_type'].'",
@@ -2290,21 +2293,12 @@ class galleryManager extends GalleryLibrary
                                         size_abs_w="'.$intNewWidth.'"');
 
         $intPictureId = $objDatabase->insert_id();
-        $objResult = $objDatabase->Execute('    SELECT        id
-                                                FROM        '.DBPREFIX.'languages
-                                                ORDER BY    id ASC
-                                            ');
-        if ($objResult->RecordCount() > 0) {
-            while (!$objResult->EOF) {
-                $objDatabase->Execute('    INSERT
-                                        INTO    '.DBPREFIX.'module_gallery_language_pics
-                                        SET        picture_id='.$intPictureId.',
-                                                lang_id='.$objResult->fields['id'].',
-                                                name="'.$imageName.'"
-                                    ');
-                $objResult->MoveNext();
-            }
-        }
+
+        $objResult = $objDatabase->Execute('INSERT INTO '.DBPREFIX.'module_gallery_language_pics 
+                                                (picture_id, lang_id, name)
+                                            SELECT
+                                                '.$intPictureId.', id, "'.$imageName.'"
+                                                FROM contrexx_languages');
     }
 
 
