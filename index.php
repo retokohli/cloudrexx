@@ -730,8 +730,9 @@ if ($_CONFIG['forumHomeContent'] == '1') {
         if ($forumHomeContentInPageContent || $forumHomeContentInPageTemplate || $forumHomeContentInThemesPage) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('forum'));
             $objForum = new ForumHomeContent($themesPages['forum_content']);
+			$homeForumContent = $objForum->getContent();
         }
-        $homeForumContent = $objForum->getContent();
+        
         if ($forumHomeContentInPageContent) {
             $page_content = str_replace('{FORUM_FILE}', $homeForumContent, $page_content);
         }
@@ -780,22 +781,23 @@ if (file_exists($modulespath)) {
     require_once($modulespath);
     $objGalleryHome = new GalleryHomeContent();
     if ($objGalleryHome->checkRandom()) {
-    $randomImage = $objGalleryHome->getRandomImage();
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_content, $arrMatches)) {
-            $page_content = str_replace('{GALLERY_RANDOM}', $randomImage, $page_content);
+            $page_content = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $page_content);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_template, $arrMatches))  {
-            $page_template = str_replace('{GALLERY_RANDOM}', $randomImage, $page_template);
+            $page_template = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $page_template);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['index'], $arrMatches)) {
-            $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $randomImage, $themesPages['index']);
+            $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $themesPages['index']);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['sidebar'], $arrMatches)) {
-            $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $randomImage, $themesPages['sidebar']);
+            $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $themesPages['sidebar']);
         }
     }
-    $latestImage = $objGalleryHome->getLastImage();
+    
     if ($objGalleryHome->checkLatest()) {
+		$latestImage = $objGalleryHome->getLastImage();
+		
         if (preg_match_all('/{GALLERY_LATEST}/ms', $page_content, $arrMatches)) {
             $page_content = str_replace('{GALLERY_LATEST}', $latestImage, $page_content);
         }
@@ -836,8 +838,9 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
         if ($podcastHomeContentInPageContent || $podcastHomeContentInPageTemplate || $podcastHomeContentInThemesPage) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
             $objPodcast = new podcastHomeContent($themesPages['podcast_content']);
+			$podcastContent = $objPodcast->getContent();
         }
-        $podcastContent = $objPodcast->getContent();
+        
         if ($podcastHomeContentInPageContent) {
             $page_content = str_replace('{PODCAST_FILE}', $podcastContent, $page_content);
         }
