@@ -35,5 +35,6 @@ News
 Bildergallerie
 - Die Shadowbox zeigt keine Titel mehr an, wenn diese Option im Backend abgewählt wurde.
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+- Beim Editieren eines Bildes waren nur Namen mit einer maximalen Länge von 25 Zeichen zugelassen. Nun werden 255 Z. akzeptiert.
 Skins
 - Beim Import eines gezippten Designs wird nun auch 'application/x-zip-compressed' als MIME-Typ akzeptiert.
