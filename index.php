@@ -782,16 +782,16 @@ if (file_exists($modulespath)) {
     $objGalleryHome = new GalleryHomeContent();
     if ($objGalleryHome->checkRandom()) {
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_content, $arrMatches)) {
-            $page_content = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $page_content);
+            $page_content = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_content);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_template, $arrMatches))  {
-            $page_template = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $page_template);
+            $page_template = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_template);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['index'], $arrMatches)) {
-            $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $themesPages['index']);
+            $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['index']);
         }
         if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['sidebar'], $arrMatches)) {
-            $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage();, $themesPages['sidebar']);
+            $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['sidebar']);
         }
     }
     
