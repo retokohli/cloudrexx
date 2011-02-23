@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
  * News manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -409,7 +409,7 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
                         'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                        'NEWS_TITLE'            => stripslashes($objResult->fields['title']),
+                        'NEWS_TITLE'            => contrexx_raw2html($objResult->fields['title']),
                         'NEWS_USER'             => $author,
                         'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
                         'NEWS_LIST_PARSING'     => $paging,
@@ -520,7 +520,7 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
                         'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                        'NEWS_TITLE'            => stripslashes($objResult->fields['title']),
+                        'NEWS_TITLE'            => contrexx_raw2html($objResult->fields['title']),
                         'NEWS_USER'             => $author,
                         'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
                         'NEWS_CLASS'            => $class,
@@ -554,7 +554,7 @@ class newsManager extends newsLibrary {
             return $this->manageCategories();
         }
 
-        $objValidator = &new FWValidator();
+        $objFWValidator = &new FWValidator();
         $objFWUser = FWUser::getFWUserObject();
 
         if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
@@ -562,20 +562,20 @@ class newsManager extends newsLibrary {
         } else {
             $date = time();
         }
-        $newstitle              = contrexx_addslashes(htmlentities($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
+        $newstitle              = contrexx_addslashes($_POST['newsTitle']);
         $newstext               = contrexx_addslashes($_POST['newsText']);
         $newstext               = $this->filterBodyTag($newstext);
         $newsredirect           = contrexx_strip_tags($_POST['newsRedirect']);
-        $newssource             = $objValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
-        $newsurl1               = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
-        $newsurl2               = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
+        $newssource             = $objFWValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
+        $newsurl1               = $objFWValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
+        $newsurl2               = $objFWValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
         $newscat                = intval($_POST['newsCat']);
         $userid                 = $objFWUser->objUser->getId();
         $startDate              = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
         $endDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
-        $newsTeaserText         = contrexx_addslashes(htmlentities($_POST['newsTeaserText']), ENT_QUOTES, CONTREXX_CHARSET);
+        $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
         $newsTeaserImagePath    = contrexx_addslashes($_POST['newsTeaserImagePath']);
         $newsTeaserImageThumbnailPath    = contrexx_addslashes($_POST['newsTeaserImageThumbnailPath']);
         $newsTeaserShowLink     = isset($_POST['newsTeaserShowLink']) ? intval($_POST['newsTeaserShowLink']) : intval(!count($_POST));
@@ -961,7 +961,7 @@ class newsManager extends newsLibrary {
         if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true) || $objResult->fields['userid'] == $objFWUser->objUser->getId())) {
             $newsCat=$objResult->fields['catid'];
             $id = $objResult->fields['id'];
-            $newsText = stripslashes($objResult->fields['text']);
+            $newsText = $objResult->fields['text'];
             $teaserText = $objResult->fields['teaser_text'];
             $teaserShowLink = $objResult->fields['teaser_show_link'];
 
@@ -1012,7 +1012,7 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable(array(
                 'NEWS_ID'                       => (($copy) ? '' : $id),
                 'NEWS_STORED_ID'                => (($copy) ? '' : $id),
-                'NEWS_TITLE'                    => contrexx_stripslashes($objResult->fields['title']),
+                'NEWS_TITLE'                    => contrexx_raw2html($objResult->fields['title']),
                 'NEWS_TEXT'                     => get_wysiwyg_editor('newsText', $newsText),
                 'NEWS_REDIRECT'                 => htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_SOURCE'                   => htmlentities($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1141,7 +1141,7 @@ class newsManager extends newsLibrary {
         }
 
         if (isset($_POST['newsId'])) {
-            $objValidator = &new FWValidator();
+            $objFWValidator = &new FWValidator();
             $objFWUser = FWUser::getFWUserObject();
 
             $id = intval($_POST['newsId']);
@@ -1153,14 +1153,14 @@ class newsManager extends newsLibrary {
             } else {
                 $date = time();
             }            
-            $title      = contrexx_addslashes(htmlentities($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
+            $title      = contrexx_addslashes($_POST['newsTitle']);
             $text       = contrexx_addslashes($_POST['newsText']);
             $text       = $this->filterBodyTag($text);
             $redirect   = contrexx_strip_tags($_POST['newsRedirect']);
 
-            $source     = $objValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
-            $url1       = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
-            $url2       = $objValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
+            $source     = $objFWValidator->getUrl(contrexx_strip_tags($_POST['newsSource']));
+            $url1       = $objFWValidator->getUrl(contrexx_strip_tags($_POST['newsUrl1']));
+            $url2       = $objFWValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
             $catId      = intval($_POST['newsCat']);
 
             $status     = empty($_POST['status']) ? $status = 0 : intval($_POST['status']);
@@ -1640,17 +1640,17 @@ class newsManager extends newsLibrary {
             $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
-                    htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                    contrexx_raw2html($arrNewsItem['title']),
                     (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlspecialchars($arrNewsItem['text'], ENT_QUOTES, CONTREXX_CHARSET),
+                    contrexx_raw2html($arrNewsItem['text']),
                     '',
                     array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
                     '',
                     '',
                     '',
                     $arrNewsItem['date'],
-                    array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET))
-                );
+                    array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2html($arrNewsItem['title']))
+               );
             }
             $status = $objRSSWriter->write();
 
@@ -1659,7 +1659,7 @@ class newsManager extends newsLibrary {
             $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
-                    htmlspecialchars($arrNewsItem['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                    contrexx_raw2html($arrNewsItem['title']),
                     $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : ""),
                     '',
                     '',
