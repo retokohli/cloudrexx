@@ -764,7 +764,6 @@ class news extends newsLibrary {
         ), array(
             'escape' => true
             ));
-        Logger::getInstance()->log($query);
 
         $objResult = $objDatabase->Execute($query);
 
