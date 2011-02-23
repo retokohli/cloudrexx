@@ -150,29 +150,29 @@ class news extends newsLibrary {
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $lastUpdate     = $objResult->fields['changelog'];
-                    $source         = htmlspecialchars($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $url1           = htmlspecialchars($objResult->fields['url1'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $url2           = htmlspecialchars($objResult->fields['url2'], ENT_QUOTES, CONTREXX_CHARSET);
+                    $source         = contrexx_raw2attribute($objResult->fields['source']);
+                    $url1           = contrexx_raw2attribute($objResult->fields['url1']);
+                    $url2           = contrexx_raw2attribute($objResult->fields['url2']);
                     $newsUrl        = '';
                     $newsSource     = '';
                     $newsLastUpdate = '';
 
                     if (!empty($url1)) {
-                        $strUrl1 = $objResult->fields['url1'];
+                      $strUrl1 = contrexx_raw2html($objResult->fields['url1']);
                         if (strlen($strUrl1) > 40) {
                             $strUrl1 = substr($strUrl1,0,26).'...'.substr($strUrl1,(strrpos($strUrl1,'.')));
                         }
                         $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'].'<br /><a target="_blank" href="'.$url1.'" title="'.$url1.'">'.$strUrl1.'</a><br />';
                     }
                     if (!empty($url2)) {
-                        $strUrl2 = $objResult->fields['url2'];
+                      $strUrl2 = contrexx_raw2html($objResult->fields['url2']);
                         if (strlen($strUrl2) > 40) {
                             $strUrl2 = substr($strUrl2,0,26).'...'.substr($strUrl2,(strrpos($strUrl2,'.')));
                         }
                         $newsUrl .= '<a target="_blank" href="'.$url2.'" title="'.$url2.'">'.$strUrl2.'</a><br />';
                     }
                     if (!empty($source)) {
-                        $strSource = $objResult->fields['source'];
+                      $strSource = contrexx_raw2html($objResult->fields['source']);
                         if (strlen($strSource) > 40) {
                             $strSource = substr($strSource,0,26).'...'.substr($strSource,(strrpos($strSource,'.')));
                         }
@@ -194,12 +194,12 @@ class news extends newsLibrary {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
 
-                    $newstitle = stripslashes($objResult->fields['title']);
-		    $newsTeaser = nl2br($objResult->fields['teasertext']);
+                    $newstitle = contrexx_raw2html($objResult->fields['title']);
+		            $newsTeaser = nl2br(contrexx_raw2html($objResult->fields['teasertext']));
                     $this->_objTpl->setVariable(array(
                        'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
                        'NEWS_TITLE'         => $newstitle,
-                       'NEWS_TEXT'          => stripslashes($objResult->fields['text']),
+                       'NEWS_TEXT'          => $objResult->fields['text'],
                        'NEWS_TEASER_TEXT'   => $newsTeaser,
                        'NEWS_LASTUPDATE'    => $newsLastUpdate,
                        'NEWS_SOURCE'        => $newsSource,
@@ -363,15 +363,16 @@ class news extends newsLibrary {
                     $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                 }
 
-                $newstitle = stripslashes($objResult->fields['newstitle']);
+                $newstitle = contrexx_raw2html($objResult->fields['newstitle']);
+                $newstitleAttr = contrexx_raw2attribute($objResult->fields['newstitle']);
                 if (!empty($objResult->fields['newsimagethumbnail'])) {
-                    $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
+                    $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitleAttr.'" />';
                     $imageSrc = $objResult->fields['newsimagethumbnail'];
                 } elseif (!empty($objResult->fields['newsimage']) && file_exists(ASCMS_PATH.ImageManager::getThumbnailFilename($objResult->fields['newsimage']))) {
-                    $image = '<img src="'.ImageManager::getThumbnailFilename($objResult->fields['newsimage']).'" alt="'.$newstitle.'" />';
+                    $image = '<img src="'.ImageManager::getThumbnailFilename($objResult->fields['newsimage']).'" alt="'.$newstitleAttr.'" />';
                     $imageSrc = ImageManager::getThumbnailFilename($objResult->fields['newsimage']);
                 } elseif (!empty($objResult->fields['newsimage'])) {
-                    $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
+                    $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitleAttr.'" />';
                     $imageSrc = $objResult->fields['newsimage'];
                 } else {
                     $image = "";
@@ -379,12 +380,18 @@ class news extends newsLibrary {
 
                 $this->_objTpl->setVariable(array(
                            'NEWS_CSS'           => $class,
-                           'NEWS_TEASER'        => $objResult->fields['teasertext'],
+                           'NEWS_TEASER'        => contrexx_raw2html($objResult->fields['teasertext']),
                            'NEWS_TITLE'         => $newstitle,
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
-                           'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
-                           'NEWS_LINK'             => (empty($objResult->fields['newsredirect'])) ? (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ? '' :'<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
+                           'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ?
+                                                       '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitleAttr.'">'.$newstitle.'</a>'
+                                                       : '<a href="'.contrexx_raw2attribute($objResult->fields['newsredirect']).'" title="'.$newstitleAttr.'">'.$newstitle.'</a>',
+                           'NEWS_LINK'          => (empty($objResult->fields['newsredirect'])) ?
+                                                       (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ?
+                                                           '' 
+                                                           : '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitleAttr.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') 
+                           : '<a href="'.contrexx_raw2attribute($objResult->fields['newsredirect']).'" title="'.$newstitleAttr.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
                            'NEWS_AUTHOR'        => $author
                 ));
@@ -393,8 +400,8 @@ class news extends newsLibrary {
                     $this->_objTpl->setVariable(array(
                         'NEWS_IMAGE'         => $image,
                         'NEWS_IMAGE_SRC'     => $imageSrc,
-                        'NEWS_IMAGE_ALT'     => $newstitle,
-                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$image.'</a>'
+                        'NEWS_IMAGE_ALT'     => $newstitleAttr,
+                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitleAttr.'">'.$image.'</a>' : '<a href="'.contrexx_raw2attribute($objResult->fields['newsredirect']).'" title="'.$newstitleAttr.'">'.$image.'</a>'
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -591,14 +598,14 @@ class news extends newsLibrary {
         if (isset($_POST['submitNews'])) {
             $objValidator = new FWValidator();
 
-            $_POST['newsTitle'] = contrexx_strip_tags(html_entity_decode($_POST['newsTitle']));
-            $_POST['newsTeaserText'] = contrexx_stripslashes($_POST['newsTeaserText']);
-            $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsRedirect'])));
-            $_POST['newsText'] = get_magic_quotes_gpc() ? stripslashes($_POST['newsText']) : $_POST['newsText'];
+            $_POST['newsTitle'] = contrexx_input2raw($_POST['newsTitle']);
+            $_POST['newsTeaserText'] = contrexx_input2raw($_POST['newsTeaserText']);
+            $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsRedirect']));
+            $_POST['newsText'] = contrexx_remove_script_tags(contrexx_input2raw($_POST['newsText']));
             $_POST['newsText'] = $this->filterBodyTag($_POST['newsText']);
-            $_POST['newsSource'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsSource'])));
-            $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsUrl1'])));
-            $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsUrl2'])));
+            $_POST['newsSource'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsSource']));
+            $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsUrl1']));
+            $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsUrl2']));
             $_POST['newsCat'] = intval($_POST['newsCat']);
 
             if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
@@ -652,8 +659,6 @@ class news extends newsLibrary {
             $wysiwygEditor = "FCKeditor";
             $FCKeditorBasePath = "/editor/fckeditor/";
 
-
-
             $this->_objTpl->setVariable(array(
                 'TXT_NEWS_MESSAGE'          => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
                 'TXT_TITLE'                 => $_ARRAYLANG['TXT_TITLE'],
@@ -669,12 +674,12 @@ class news extends newsLibrary {
                 "TXT_CAPTCHA"               => $_ARRAYLANG['TXT_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
                 'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
-                'NEWS_TITLE'                => $newsTitle,
-                'NEWS_SOURCE'               => $newsSource,
-                'NEWS_URL1'                 => $newsUrl1,
-                'NEWS_URL2'                 => $newsUrl2,
-                'NEWS_TEASER_TEXT'          => $newsTeaserText,
-                'NEWS_REDIRECT'             => $newsRedirect,
+                'NEWS_TITLE'                => contrexx_raw2attribute($newsTitle),
+                'NEWS_SOURCE'               => contrexx_raw2attribute($newsSource),
+                'NEWS_URL1'                 => contrexx_raw2attribute($newsUrl1),
+                'NEWS_URL2'                 => contrexx_raw2attribute($newsUrl2),
+                'NEWS_TEASER_TEXT'          => contrexx_raw2html($newsTeaserText),
+                'NEWS_REDIRECT'             => contrexx_raw2attribute($newsRedirect),
                 "CAPTCHA_OFFSET"            => $offset,
                 "IMAGE_URL"                 => $url,
                 "IMAGE_ALT"                 => $alt
@@ -734,30 +739,34 @@ class news extends newsLibrary {
         $newscat        = $_POST['newsCat'];
         $userid         = $objFWUser->objUser->getId();
 
-        $insert_fields = array(
-            'date',       'title',     'text',        'redirect',
-            'source',     'url1',      'url2',        'catid',
-            'lang',     /*  'startdate', 'enddate', */'status',
-            'validated',  'userid',    'teaser_text', 'changelog'
-
-        );
-
         $enable = $this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0";
-        $insert_values = array(
-            $date,          $newstitle, $newstext,        $newsRedirect,
-            $newssource,    $newsurl1,  $newsurl2,        $newscat,
-            $this->langId,/*'',         '',      */       $enable,
-            $enable,        $userid,    $newsTeaserText,  $date
-        );
 
+        $query = SQL::insert('module_news', array(
+            'date' => $date,
+            'title' => $newstitle,
+            'text' => $newstext,
+            'redirect' => $newsRedirect,
+            'source' => $newssource,
+            'url1' => $newsurl1,
+            'url2' => $newsurl2,
+            'catid' => $newscat,
+            'lang' => $this->langId,
+            'status' => $enable,
+            'validated' => $enable,
+            'userid' => $userid,
+            'teaser_text' => $newsTeaserText,
+            'changelog' => $date,
+            //the following are empty defaults for the text fields.
+            //text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
+            'teaser_frames' => '', 
+            'teaser_image_path' => '',
+            'teaser_image_thumbnail_path' => '',
+        ), array(
+            'escape' => true
+            ));
+        Logger::getInstance()->log($query);
 
-        $into   = "`" . join("`, `", $insert_fields) . "`";
-        $values = "'" . join("', '", array_map('contrexx_addslashes', $insert_values)) . "'";
-
-        $objResult = $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_news ( $into)
-            VALUES ( $values )"
-        );
+        $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED']."<br /><br />";

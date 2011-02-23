@@ -64,7 +64,6 @@ function contrexx_stripslashes($string)
     return $string;
 }
 
-
 /**
  * Convenient match-and-replace-in-one function
  *
@@ -110,4 +109,60 @@ function checkForSpider()
     return false;
 }
 
+
+/////////////////////////////////////////////////////////////
+//convinience escaping function layer - use these rather than
+//contrexx_addslashes() and so on please.
+
+/**
+ * Escapes a raw string, e.g. from the db. The resulting string can be safely
+ * written to the HTML response.
+ * @param string $raw
+ * @return the escaped string
+ */
+function contrexx_raw2html($raw) {
+    return htmlentities($raw, ENT_QUOTES, CONTREXX_CHARSET);
+}
+
+/**
+ * Escapes a raw string, e.g. from the db. The resulting string can be safely
+ * written to a HTML attribute (quotes escaped).
+ * @param string $raw
+ * @return the escaped string
+ */
+function contrexx_raw2attribute($raw) {
+    return str_replace('"','&quot;',$raw);
+}
+
+/**
+ * Unescapes an input string (from Get/Post/Cookie) as necessary so you get a raw string.
+ * @param string $input
+ * @return the raw string
+ */
+function contrexx_input2raw($input) {
+    return html_entity_decode(contrexx_stripslashes($input), ENT_QUOTES, CONTREXX_CHARSET);
+}
+
+/**
+ * Adds slashes so you can insert a string into the database
+ * @param string $raw
+ * @return the escaped string
+ */
+function contrexx_raw2db($raw) {
+    global $objDatabase;
+    return $objDatabase->qstr($raw);
+}
+
+/**
+ * Remove script tags and their content from the string given
+ * @param string $raw
+ * @return string scriptless string.
+ */
+function contrexx_remove_script_tags($raw) {
+    //remove closed script tags and content
+    $result = preg_replace('#<\s*script[^>]*>.*?<\s*/script\s*>#is','',$raw);
+    //remove unclosed script tags
+    $result = preg_replace('#<\s*script[^>]*>#is', '',$result);
+    return $result;
+}
 ?>

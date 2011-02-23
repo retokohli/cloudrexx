@@ -15,12 +15,19 @@ class SQL
      *         )
      *     )
      *     [ , ... ]
-     * @param array $options global options. optional. and not implemented yet.
+     * @param array $options global options. optional.
+     *              array(
+     *                  'escape' => boolean #whether strings are escaped automatically
+     *              )
      */
     public static function insert($table, $columns, $options=array()) 
     {
+        $escape = false;
+        if(isset($options['escape']))
+           $escape = $options['escape'];
+        
         $sql  = 'INSERT INTO `'.DBPREFIX."$table` ";
-        $sql .= self::columnPart($columns);
+        $sql .= self::columnPart($columns, $escape);
         return $sql;
     }
 
@@ -35,16 +42,23 @@ class SQL
      *         )
      *     )
      *     [ , ... ]
-     * @param array $options global options. optional. and not implemented yet.
+     * @param array $options global options. optional.
+     *              array(
+     *                  'escape' => boolean #whether strings are escaped automatically
+     *              )
      */
     public static function update($table, $columns, $options=array())
     {
+        $escape = false;
+        if(isset($options['escape']))
+            $escape = $options['escape'];
+
         $sql  = 'UPDATE `'.DBPREFIX."$table` ";
-        $sql .= self::columnPart($columns);
+        $sql .= self::columnPart($columns, $escape);
         return $sql;        
     }
 
-    protected static function columnPart($columns) 
+    protected static function columnPart($columns, $escape) 
     {
         $result = "SET \n";
 
@@ -52,7 +66,7 @@ class SQL
         foreach($columns as $column => $data) {
             $value = '';
             if(!is_array($data)) { //raw data provided
-                $value = self::apostrophizeIfString($data);
+                $value = self::apostrophizeIfString($data, $escape);
             }
             else { //hooray, array.
                 $value = $data['val'];
@@ -61,7 +75,7 @@ class SQL
                         continue;
                     }
                 }
-                $value = self::apostrophizeIfString($value);
+                $value = self::apostrophizeIfString($value, $escape);
             }
             $result .= '    '.($firstCol ? '' : ',') ."`$column` = $value\n";
             $firstCol = false;
@@ -69,10 +83,14 @@ class SQL
         return $result;
     }
 
-    protected static function apostrophizeIfString($value) 
+    protected static function apostrophizeIfString($value, $escape) 
     {
-        if(is_string($value)) //escape strings
-            return "'$value'";
+        if(is_string($value)) { //escape strings
+            if($escape)
+                return contrexx_raw2db($value);
+            else
+                return "'$value'";
+        }
         return $value;
     }
 }

@@ -293,7 +293,7 @@ class Teasers extends newsLibrary
                         $teaserBlockCode = str_replace('{TEASER_CATEGORY}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_DATE}', date(ASCMS_DATE_SHORT_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_LONG_DATE}', date(ASCMS_DATE_FORMAT, $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['date']), $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TITLE}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title'], $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_TITLE}', contrexx_raw2html($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['title']), $teaserBlockCode);
                         if ($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_show_link']) {
                             $teaserBlockCode = str_replace('{TEASER_URL}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'].'&amp;teaserId='.$this->arrTeaserFrames[$id]['id'] : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode);
                             $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);
@@ -303,7 +303,7 @@ class Teasers extends newsLibrary
                             $teaserBlockCode = preg_replace('/<!-- BEGIN teaser_link -->[\S\s]*<!-- END teaser_link -->/', '', $teaserBlockCode);
                         }
                         $teaserBlockCode = str_replace('{TEASER_IMAGE_PATH}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_image_path'], $teaserBlockCode);
-                        $teaserBlockCode = str_replace('{TEASER_TEXT}', nl2br($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text']), $teaserBlockCode);
+                        $teaserBlockCode = str_replace('{TEASER_TEXT}', nl2br(contrexx_raw2html($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_text'])), $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_FULL_TEXT}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['teaser_full_text'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_AUTHOR}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['author'], $teaserBlockCode);
                         $teaserBlockCode = str_replace('{TEASER_EXT_URL}', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['ext_url'], $teaserBlockCode);
