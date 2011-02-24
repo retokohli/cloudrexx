@@ -86,8 +86,6 @@ class news extends newsLibrary {
             $_REQUEST['cmd'] = '';
         }
 
-        Logger::getInstance()->dump($_POST);
-
         switch($_REQUEST['cmd']) {
         case 'details':
             return $this->getDetails();
@@ -599,8 +597,6 @@ class news extends newsLibrary {
         if (isset($_POST['submitNews'])) {
             $objValidator = new FWValidator();
 
-            Logger::getInstance()->dump($_POST);
-
             $_POST['newsTitle'] = contrexx_input2raw(html_entity_decode($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
             $_POST['newsTeaserText'] = contrexx_input2raw(html_entity_decode($_POST['newsTeaserText'], ENT_QUOTES, CONTREXX_CHARSET));
             $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsRedirect'], ENT_QUOTES, CONTREXX_CHARSET)));
@@ -610,8 +606,6 @@ class news extends newsLibrary {
             $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl1'], ENT_QUOTES, CONTREXX_CHARSET)));
             $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl2'], ENT_QUOTES, CONTREXX_CHARSET)));
             $_POST['newsCat'] = intval($_POST['newsCat']);
-
-            Logger::getInstance()->dump($_POST);
 
             if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
                 $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
@@ -770,7 +764,6 @@ class news extends newsLibrary {
             'escape' => true
             ));
 
-        Logger::getInstance()->log($query);
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
