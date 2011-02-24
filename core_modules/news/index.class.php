@@ -86,6 +86,8 @@ class news extends newsLibrary {
             $_REQUEST['cmd'] = '';
         }
 
+        Logger::getInstance()->dump($_POST);
+
         switch($_REQUEST['cmd']) {
         case 'details':
             return $this->getDetails();
@@ -150,9 +152,9 @@ class news extends newsLibrary {
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $lastUpdate     = $objResult->fields['changelog'];
-                    $source         = contrexx_raw2attribute($objResult->fields['source']);
-                    $url1           = contrexx_raw2attribute($objResult->fields['url1']);
-                    $url2           = contrexx_raw2attribute($objResult->fields['url2']);
+                    $source         = contrexx_raw2html($objResult->fields['source']);
+                    $url1           = contrexx_raw2html($objResult->fields['url1']);
+                    $url2           = contrexx_raw2html($objResult->fields['url2']);
                     $newsUrl        = '';
                     $newsSource     = '';
                     $newsLastUpdate = '';
@@ -364,15 +366,14 @@ class news extends newsLibrary {
                 }
 
                 $newstitle = contrexx_raw2html($objResult->fields['newstitle']);
-                $newstitleAttr = contrexx_raw2attribute($objResult->fields['newstitle']);
                 if (!empty($objResult->fields['newsimagethumbnail'])) {
-                    $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitleAttr.'" />';
+                    $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
                     $imageSrc = $objResult->fields['newsimagethumbnail'];
                 } elseif (!empty($objResult->fields['newsimage']) && file_exists(ASCMS_PATH.ImageManager::getThumbnailFilename($objResult->fields['newsimage']))) {
-                    $image = '<img src="'.ImageManager::getThumbnailFilename($objResult->fields['newsimage']).'" alt="'.$newstitleAttr.'" />';
+                    $image = '<img src="'.ImageManager::getThumbnailFilename($objResult->fields['newsimage']).'" alt="'.$newstitle.'" />';
                     $imageSrc = ImageManager::getThumbnailFilename($objResult->fields['newsimage']);
                 } elseif (!empty($objResult->fields['newsimage'])) {
-                    $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitleAttr.'" />';
+                    $image = '<img src="'.$objResult->fields['newsimage'].'" alt="'.$newstitle.'" />';
                     $imageSrc = $objResult->fields['newsimage'];
                 } else {
                     $image = "";
@@ -385,13 +386,13 @@ class news extends newsLibrary {
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
                            'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ?
-                                                       '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitleAttr.'">'.$newstitle.'</a>'
-                                                       : '<a href="'.contrexx_raw2attribute($objResult->fields['newsredirect']).'" title="'.$newstitleAttr.'">'.$newstitle.'</a>',
+                                                       '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>'
+                                                       : '<a href="'.contrexx_raw2html($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$newstitle.'</a>',
                            'NEWS_LINK'          => (empty($objResult->fields['newsredirect'])) ?
                                                        (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ?
                                                            '' 
-                                                           : '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitleAttr.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') 
-                           : '<a href="'.contrexx_raw2attribute($objResult->fields['newsredirect']).'" title="'.$newstitleAttr.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
+                                                           : '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') 
+                           : '<a href="'.contrexx_raw2html($objResult->fields['newsredirect']).'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
                            'NEWS_AUTHOR'        => $author
                 ));
@@ -400,8 +401,8 @@ class news extends newsLibrary {
                     $this->_objTpl->setVariable(array(
                         'NEWS_IMAGE'         => $image,
                         'NEWS_IMAGE_SRC'     => $imageSrc,
-                        'NEWS_IMAGE_ALT'     => $newstitleAttr,
-                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitleAttr.'">'.$image.'</a>' : '<a href="'.contrexx_raw2attribute($objResult->fields['newsredirect']).'" title="'.$newstitleAttr.'">'.$image.'</a>'
+                        'NEWS_IMAGE_ALT'     => $newstitle,
+                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.contrexx_raw2html($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$image.'</a>'
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -598,15 +599,19 @@ class news extends newsLibrary {
         if (isset($_POST['submitNews'])) {
             $objValidator = new FWValidator();
 
-            $_POST['newsTitle'] = contrexx_input2raw($_POST['newsTitle']);
-            $_POST['newsTeaserText'] = contrexx_input2raw($_POST['newsTeaserText']);
-            $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsRedirect']));
-            $_POST['newsText'] = contrexx_remove_script_tags(contrexx_input2raw($_POST['newsText']));
-            $_POST['newsText'] = $this->filterBodyTag($_POST['newsText']);
-            $_POST['newsSource'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsSource']));
-            $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsUrl1']));
-            $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw($_POST['newsUrl2']));
+            Logger::getInstance()->dump($_POST);
+
+            $_POST['newsTitle'] = contrexx_input2raw(html_entity_decode($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
+            $_POST['newsTeaserText'] = contrexx_input2raw(html_entity_decode($_POST['newsTeaserText'], ENT_QUOTES, CONTREXX_CHARSET));
+            $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsRedirect'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsText'] = contrexx_remove_script_tags(contrexx_input2raw(html_entity_decode($_POST['newsText'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsText'] = $this->filterBodyTag(html_entity_decode($_POST['newsText'], ENT_QUOTES, CONTREXX_CHARSET));
+            $_POST['newsSource'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsSource'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl1'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl2'], ENT_QUOTES, CONTREXX_CHARSET)));
             $_POST['newsCat'] = intval($_POST['newsCat']);
+
+            Logger::getInstance()->dump($_POST);
 
             if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
                 $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
@@ -674,12 +679,12 @@ class news extends newsLibrary {
                 "TXT_CAPTCHA"               => $_ARRAYLANG['TXT_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
                 'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
-                'NEWS_TITLE'                => contrexx_raw2attribute($newsTitle),
-                'NEWS_SOURCE'               => contrexx_raw2attribute($newsSource),
-                'NEWS_URL1'                 => contrexx_raw2attribute($newsUrl1),
-                'NEWS_URL2'                 => contrexx_raw2attribute($newsUrl2),
+                'NEWS_TITLE'                => contrexx_raw2html($newsTitle),
+                'NEWS_SOURCE'               => contrexx_raw2html($newsSource),
+                'NEWS_URL1'                 => contrexx_raw2html($newsUrl1),
+                'NEWS_URL2'                 => contrexx_raw2html($newsUrl2),
                 'NEWS_TEASER_TEXT'          => contrexx_raw2html($newsTeaserText),
-                'NEWS_REDIRECT'             => contrexx_raw2attribute($newsRedirect),
+                'NEWS_REDIRECT'             => contrexx_raw2html($newsRedirect),
                 "CAPTCHA_OFFSET"            => $offset,
                 "IMAGE_URL"                 => $url,
                 "IMAGE_ALT"                 => $alt
@@ -765,6 +770,7 @@ class news extends newsLibrary {
             'escape' => true
             ));
 
+        Logger::getInstance()->log($query);
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
