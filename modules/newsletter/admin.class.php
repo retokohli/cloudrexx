@@ -2872,8 +2872,6 @@ class newsletter extends NewsletterLib
             // Speichern der Daten. Siehe Final weiter unten.
             $arrRecipients = $objImport->getFinalData($arrFields);
 
-            var_dump($arrRecipients);
-
             if ($_POST['category'] == '') {
                 $arrLists = array_keys($this->_getLists());
             } else {
@@ -2892,6 +2890,8 @@ class newsletter extends NewsletterLib
                 if (!strpos($arrRecipient['email'],'@')) {
                     continue;
                 }
+                
+                $arrRecipient['email'] = trim($arrRecipient['email']);
                 if (!FWValidator::isEmail($arrRecipient['email'])) {
                     array_push($arrBadEmails, $arrRecipient['email']); 
                } else {

@@ -40,3 +40,6 @@ Bildergallerie
 - Beim Editieren eines Bildes waren nur Namen mit einer maximalen Länge von 25 Zeichen zugelassen. Nun werden 255 Z. akzeptiert.
 Skins
 - Beim Import eines gezippten Designs wird nun auch 'application/x-zip-compressed' als MIME-Typ akzeptiert.
+Newsletter-Import (CSV)
+- Debug-Ausgaben entfernt.
+- Leerzeichen vor und nach E-Mail-Adressen werden entfernt.
