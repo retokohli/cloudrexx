@@ -43,3 +43,4 @@ Skins
 Newsletter-Import (CSV)
 - Debug-Ausgaben entfernt.
 - Leerzeichen vor und nach E-Mail-Adressen werden entfernt.
+- Umlaute von CSV-Dateien mit ISO-8859-Charset werden korrekt erkannt

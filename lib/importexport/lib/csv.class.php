@@ -3,7 +3,7 @@
 /**
  * CSV Library Class
  *
- * Class which handles cvs files
+ * Class which handles csv files
  *
  * @copyright     CONTREXX CMS - 2005 COMVATION AG
  * @author        Comvation Development Team <info@comvation.com>
@@ -80,6 +80,15 @@ class CsvLib
 		// we can import old apple CSV files.
 		ini_set('auto_detect_line_endings', 1);
 
+        //do utf8 conversion if necessary and possible
+        if(function_exists("mb_detect_encoding")) {
+            $content = file_get_contents($file);
+            $encoding = mb_detect_encoding($content, 'UTF-8', true);
+            if($encoding != 'UTF-8') {
+                $content = mb_convert_encoding($content, 'UTF-8');
+                file_put_contents($file, $content);
+            }
+        }
 
 		$handle = fopen($file, "r");
 
