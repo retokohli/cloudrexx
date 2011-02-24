@@ -111,7 +111,7 @@ function checkForSpider()
 
 
 /////////////////////////////////////////////////////////////
-//convinience escaping function layer - use these rather than
+//convenience escaping function layer - use these rather than
 //contrexx_addslashes() and so on please.
 
 /**
@@ -125,22 +125,12 @@ function contrexx_raw2html($raw) {
 }
 
 /**
- * Escapes a raw string, e.g. from the db. The resulting string can be safely
- * written to a HTML attribute (quotes escaped).
- * @param string $raw
- * @return the escaped string
- */
-function contrexx_raw2attribute($raw) {
-    return str_replace('"','&quot;',$raw);
-}
-
-/**
  * Unescapes an input string (from Get/Post/Cookie) as necessary so you get a raw string.
  * @param string $input
  * @return the raw string
  */
 function contrexx_input2raw($input) {
-    return html_entity_decode(contrexx_stripslashes($input), ENT_QUOTES, CONTREXX_CHARSET);
+  return  contrexx_stripslashes($input);
 }
 
 /**
@@ -149,14 +139,14 @@ function contrexx_input2raw($input) {
  * @return the escaped string
  */
 function contrexx_raw2db($raw) {
-    global $objDatabase;
-    return $objDatabase->qstr($raw);
+    return addslashes($raw);
 }
 
 /**
  * Remove script tags and their content from the string given
  * @param string $raw
  * @return string scriptless string.
+ * @todo check for eventhandlers (onclick and the like)
  */
 function contrexx_remove_script_tags($raw) {
     //remove closed script tags and content

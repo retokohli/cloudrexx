@@ -87,9 +87,8 @@ class SQL
     {
         if(is_string($value)) { //escape strings
             if($escape)
-                return contrexx_raw2db($value);
-            else
-                return "'$value'";
+                $value = contrexx_raw2db($value);
+            return "'$value'";
         }
         return $value;
     }

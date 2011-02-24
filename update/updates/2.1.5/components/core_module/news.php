@@ -245,6 +245,29 @@ function _newsUpdate() {
         return UpdateUtil::DefaultActionHandler($e);
     }
 
+    //encoding was a little messy in 2.1.4. convert titles and teasers to their raw representation
+    if($_CONFIG['coreCmsVersion'] == "2.1.4") {
+        try{
+            $res = UpdateUtil::sql('SELECT id, title, teaser_text from '.DBPREFIX.'module_news');
+            while($res->MoveNext()) {
+                $title = $res->fields['title'];
+                $teaserText = $res->fields['teaser_text'];
+                $id = $res->id['title'];
+
+                //title is html entity style
+                $title = html_entity_decode($title, ENT_QUOTES, CONTREXX_CHARSET));
+                //teaserText is html entity style, but no contrexx was specified on encoding
+                $teaserText = html_entity_decode($teaserText);
+
+                UpdateUtil::sql('UPDATE '.DBPREFIX.'module_news SET title="'.addslashes($title).'" teaser_text="'.addslashes($teaserText).'" where id='.$id);
+            }
+        }
+        catch (UpdateException $e) {
+            DBG::trace();
+            return UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
 	return true;
 }
 
