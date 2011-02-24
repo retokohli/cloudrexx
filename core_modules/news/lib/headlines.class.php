@@ -113,7 +113,7 @@ OR startdate = '0000-00-00 00:00:00'
         while (!$objResult->EOF) {
             $url = CONTREXX_SCRIPT_PATH;
         $newsid    = $objResult->fields['id'];
-        $newstitle = contrexx_raw2html($objResult->fields['title']);
+        $newstitle = contrexx_raw2xhtml($objResult->fields['title']);
         $newsparam = 'section=news&amp;cmd=details';
 	$name = htmlspecialchars(stripslashes($objResult->fields['firstname'] . " " . $objResult->fields['lastname']), ENT_QUOTES, CONTREXX_CHARSET);
         $news_link = (empty($objResult->fields['redirect']))
@@ -135,7 +135,7 @@ OR startdate = '0000-00-00 00:00:00'
                 $this->_objTemplate->setVariable("HEADLINE_DATE", date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']));
                 $this->_objTemplate->setVariable("HEADLINE_LINK", $news_link);
                 $this->_objTemplate->setVariable("HEADLINE_IMAGE_PATH", $image);
-                $this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br(contrexx_raw2html($objResult->fields['teaser_text'])));
+                $this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br(contrexx_raw2xhtml($objResult->fields['teaser_text'])));
                 $this->_objTemplate->setVariable("HEADLINE_ID", intval($objResult->fields['id'])); 
                 $this->_objTemplate->setVariable("HEADLINE_AUTHOR", $name);
                 $this->_objTemplate->parseCurrentBlock();
