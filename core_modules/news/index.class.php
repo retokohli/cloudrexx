@@ -150,29 +150,29 @@ class news extends newsLibrary {
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $lastUpdate     = $objResult->fields['changelog'];
-                    $source         = contrexx_raw2html($objResult->fields['source']);
-                    $url1           = contrexx_raw2html($objResult->fields['url1']);
-                    $url2           = contrexx_raw2html($objResult->fields['url2']);
+                    $source         = contrexx_raw2xhtml($objResult->fields['source']);
+                    $url1           = contrexx_raw2xhtml($objResult->fields['url1']);
+                    $url2           = contrexx_raw2xhtml($objResult->fields['url2']);
                     $newsUrl        = '';
                     $newsSource     = '';
                     $newsLastUpdate = '';
 
                     if (!empty($url1)) {
-                      $strUrl1 = contrexx_raw2html($objResult->fields['url1']);
+                      $strUrl1 = contrexx_raw2xhtml($objResult->fields['url1']);
                         if (strlen($strUrl1) > 40) {
                             $strUrl1 = substr($strUrl1,0,26).'...'.substr($strUrl1,(strrpos($strUrl1,'.')));
                         }
                         $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'].'<br /><a target="_blank" href="'.$url1.'" title="'.$url1.'">'.$strUrl1.'</a><br />';
                     }
                     if (!empty($url2)) {
-                      $strUrl2 = contrexx_raw2html($objResult->fields['url2']);
+                      $strUrl2 = contrexx_raw2xhtml($objResult->fields['url2']);
                         if (strlen($strUrl2) > 40) {
                             $strUrl2 = substr($strUrl2,0,26).'...'.substr($strUrl2,(strrpos($strUrl2,'.')));
                         }
                         $newsUrl .= '<a target="_blank" href="'.$url2.'" title="'.$url2.'">'.$strUrl2.'</a><br />';
                     }
                     if (!empty($source)) {
-                      $strSource = contrexx_raw2html($objResult->fields['source']);
+                      $strSource = contrexx_raw2xhtml($objResult->fields['source']);
                         if (strlen($strSource) > 40) {
                             $strSource = substr($strSource,0,26).'...'.substr($strSource,(strrpos($strSource,'.')));
                         }
@@ -194,8 +194,8 @@ class news extends newsLibrary {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
 
-                    $newstitle = contrexx_raw2html($objResult->fields['title']);
-		            $newsTeaser = nl2br(contrexx_raw2html($objResult->fields['teasertext']));
+                    $newstitle = contrexx_raw2xhtml($objResult->fields['title']);
+		            $newsTeaser = nl2br(contrexx_raw2xhtml($objResult->fields['teasertext']));
                     $this->_objTpl->setVariable(array(
                        'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
                        'NEWS_TITLE'         => $newstitle,
@@ -363,7 +363,7 @@ class news extends newsLibrary {
                     $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                 }
 
-                $newstitle = contrexx_raw2html($objResult->fields['newstitle']);
+                $newstitle = contrexx_raw2xhtml($objResult->fields['newstitle']);
                 if (!empty($objResult->fields['newsimagethumbnail'])) {
                     $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
                     $imageSrc = $objResult->fields['newsimagethumbnail'];
@@ -379,18 +379,18 @@ class news extends newsLibrary {
 
                 $this->_objTpl->setVariable(array(
                            'NEWS_CSS'           => $class,
-                           'NEWS_TEASER'        => contrexx_raw2html($objResult->fields['teasertext']),
+                           'NEWS_TEASER'        => contrexx_raw2xhtml($objResult->fields['teasertext']),
                            'NEWS_TITLE'         => $newstitle,
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
                            'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ?
                                                        '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>'
-                                                       : '<a href="'.contrexx_raw2html($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                                                       : '<a href="'.contrexx_raw2xhtml($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$newstitle.'</a>',
                            'NEWS_LINK'          => (empty($objResult->fields['newsredirect'])) ?
                                                        (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ?
                                                            '' 
                                                            : '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') 
-                           : '<a href="'.contrexx_raw2html($objResult->fields['newsredirect']).'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
+                           : '<a href="'.contrexx_raw2xhtml($objResult->fields['newsredirect']).'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
                            'NEWS_AUTHOR'        => $author
                 ));
@@ -400,7 +400,7 @@ class news extends newsLibrary {
                         'NEWS_IMAGE'         => $image,
                         'NEWS_IMAGE_SRC'     => $imageSrc,
                         'NEWS_IMAGE_ALT'     => $newstitle,
-                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.contrexx_raw2html($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$image.'</a>'
+                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.contrexx_raw2xhtml($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$image.'</a>'
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -673,12 +673,12 @@ class news extends newsLibrary {
                 "TXT_CAPTCHA"               => $_ARRAYLANG['TXT_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
                 'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
-                'NEWS_TITLE'                => contrexx_raw2html($newsTitle),
-                'NEWS_SOURCE'               => contrexx_raw2html($newsSource),
-                'NEWS_URL1'                 => contrexx_raw2html($newsUrl1),
-                'NEWS_URL2'                 => contrexx_raw2html($newsUrl2),
-                'NEWS_TEASER_TEXT'          => contrexx_raw2html($newsTeaserText),
-                'NEWS_REDIRECT'             => contrexx_raw2html($newsRedirect),
+                'NEWS_TITLE'                => contrexx_raw2xhtml($newsTitle),
+                'NEWS_SOURCE'               => contrexx_raw2xhtml($newsSource),
+                'NEWS_URL1'                 => contrexx_raw2xhtml($newsUrl1),
+                'NEWS_URL2'                 => contrexx_raw2xhtml($newsUrl2),
+                'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($newsTeaserText),
+                'NEWS_REDIRECT'             => contrexx_raw2xhtml($newsRedirect),
                 "CAPTCHA_OFFSET"            => $offset,
                 "IMAGE_URL"                 => $url,
                 "IMAGE_ALT"                 => $alt

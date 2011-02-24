@@ -409,7 +409,7 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
                         'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                        'NEWS_TITLE'            => contrexx_raw2html($objResult->fields['title']),
+                        'NEWS_TITLE'            => contrexx_raw2xhtml($objResult->fields['title']),
                         'NEWS_USER'             => $author,
                         'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
                         'NEWS_LIST_PARSING'     => $paging,
@@ -520,7 +520,7 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->setVariable(array(
                         'NEWS_ID'               => $objResult->fields['id'],
                         'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                        'NEWS_TITLE'            => contrexx_raw2html($objResult->fields['title']),
+                        'NEWS_TITLE'            => contrexx_raw2xhtml($objResult->fields['title']),
                         'NEWS_USER'             => $author,
                         'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
                         'NEWS_CLASS'            => $class,
@@ -1012,7 +1012,7 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable(array(
                 'NEWS_ID'                       => (($copy) ? '' : $id),
                 'NEWS_STORED_ID'                => (($copy) ? '' : $id),
-                'NEWS_TITLE'                    => contrexx_raw2html($objResult->fields['title']),
+                'NEWS_TITLE'                    => contrexx_raw2xhtml($objResult->fields['title']),
                 'NEWS_TEXT'                     => get_wysiwyg_editor('newsText', $newsText),
                 'NEWS_REDIRECT'                 => htmlentities($objResult->fields['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_SOURCE'                   => htmlentities($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1640,16 +1640,16 @@ class newsManager extends newsLibrary {
             $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
-                    contrexx_raw2html($arrNewsItem['title']),
+                    contrexx_raw2xml($arrNewsItem['title']),
                     (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
-                    contrexx_raw2html($arrNewsItem['text']),
+                    contrexx_raw2xml($arrNewsItem['text']),
                     '',
                     array('domain' => "http://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => $arrNewsItem['category']),
                     '',
                     '',
                     '',
                     $arrNewsItem['date'],
-                    array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2html($arrNewsItem['title']))
+                    array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2xml($arrNewsItem['title']))
                );
             }
             $status = $objRSSWriter->write();
@@ -1659,7 +1659,7 @@ class newsManager extends newsLibrary {
             $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
             foreach ($arrNews as $newsId => $arrNewsItem) {
                 $objRSSWriter->addItem(
-                    contrexx_raw2html($arrNewsItem['title']),
+                    contrexx_raw2xml($arrNewsItem['title']),
                     $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? "&amp;teaserId=".$arrNewsItem['teaser_frames'][0] : ""),
                     '',
                     '',

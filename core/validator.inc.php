@@ -116,11 +116,11 @@ function checkForSpider()
 
 /**
  * Escapes a raw string, e.g. from the db. The resulting string can be safely
- * written to the HTML response.
+ * written to the XHTML response.
  * @param string $raw
  * @return the escaped string
  */
-function contrexx_raw2html($raw) {
+function contrexx_raw2xhtml($raw) {
     return htmlentities($raw, ENT_QUOTES, CONTREXX_CHARSET);
 }
 
@@ -140,6 +140,16 @@ function contrexx_input2raw($input) {
  */
 function contrexx_raw2db($raw) {
     return addslashes($raw);
+}
+
+/**
+ * Escapes a raw string, e.g. from the db. The resulting string can be safely
+ * written to an XML target.
+ * @param string $raw
+ * @return the escaped string
+ */
+function contrexx_raw2xml($raw) {
+    return htmlspecialchars($raw, ENT_QUOTES, CONTREXX_CHARSET);
 }
 
 /**

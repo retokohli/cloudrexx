@@ -33,7 +33,7 @@ $_ARRAYLANG['TXT_NEWS_FONT_SIZE'] = "Schriftgrösse";
 $_ARRAYLANG['TXT_NEWS_FONT'] = "Schriftart";
 $_ARRAYLANG['TXT_NEWS_DISPLAY_LIMIT'] = "Anzahl anzuzeigende Newsmeldungen";
 $_ARRAYLANG['TXT_NEWS_SHOW_NEWS_DATE'] = "Datum der Newsmeldung anzeigen";
-$_ARRAYLANG['TXT_NEWS_REDIRECT'] = "Soll eine externe Newsmeldung eingelesen werden, muss hier die entsprechende URL eingetragen werden
+$_ARRAYLANG['TXT_NEWS_REDIRECT'] = "Soll eine externe Newsmeldung eingelesen werden, muss hier die entsprechende URL eingetragen werden.
 Beim Aufruf der Newsmeldung wird dann automatisch auf die externe Quelle verwiesen.";
 $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'] = "Teaser Text";
 $_ARRAYLANG['TXT_NEWS_TEASER_IMAGE'] = "Teaser Bild";
