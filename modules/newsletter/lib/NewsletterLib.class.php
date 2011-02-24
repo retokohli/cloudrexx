@@ -83,7 +83,7 @@ class NewsletterLib
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_user (
+        $query = "INSERT INTO ".DBPREFIX."module_newsletter_user (
         `code`,
         `email`,
         `uri`,
@@ -104,7 +104,7 @@ class NewsletterLib
         '".$this->_emailCode()."',
         '".contrexx_addslashes($email)."',
         '".contrexx_addslashes($uri)."',
-        '".contrexx_addslashes($sex)."',
+        " . (strlen($sex) ? "'".contrexx_addslashes($sex)."'" : 'NULL') .",
         ".intval($title).",
         '".contrexx_addslashes($lastname)."',
         '".contrexx_addslashes($firstname)."',
@@ -116,7 +116,9 @@ class NewsletterLib
         '".contrexx_addslashes($phone)."',
         '".contrexx_addslashes($birthday)."',
         ".intval($status).",
-        ".time().")") !== false) {
+        ".time().")";
+
+        if ($objDatabase->Execute($query) !== false) {
             if ($this->_setRecipientLists($objDatabase->Insert_ID(), $arrLists)) {
                 return true;
             } else {
