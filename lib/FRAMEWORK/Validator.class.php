@@ -200,19 +200,5 @@ class FWValidator
         );
         return $result;
     }
-
-    /**
-     * Returns a file path url encoded so that it can be used
-     * as a a.href or img.src attribute value.
-     *
-     * @param string
-     * @return string
-     */
-    public static function getEscapedSource($source)
-    {
-        return implode('/', str_replace('+', '%20', array_map('urlencode', explode('/', $source))));
-    }
-
 }
-
 ?>

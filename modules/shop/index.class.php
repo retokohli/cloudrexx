@@ -956,7 +956,7 @@ class Shop extends ShopLibrary
                         ImageManager::getThumbnailFilename($image['img']);
                     if ($image['width'] && $image['height']) {
                         $pictureLink =
-                            FWValidator::getEscapedSource(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img']).
+                            contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img']).
                             // Hack ahead!
                             '" rel="shadowbox[1]';
                             // Thumbnail display size
@@ -968,7 +968,7 @@ class Shop extends ShopLibrary
                     $this->scaleImageSizeToThumbnail($arrSize);
                 }
                 $arrProductImages[] = array(
-                    'THUMBNAIL'       => FWValidator::getEscapedSource($thumbnailPath),
+                    'THUMBNAIL'       => contrexx_raw2encodedUrl($thumbnailPath),
                     'THUMBNAIL_SIZE'  => $arrSize[3],
                     'THUMBNAIL_LINK'  => $pictureLink,
                     'POPUP_LINK'      => $pictureLink,

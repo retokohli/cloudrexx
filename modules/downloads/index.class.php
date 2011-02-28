@@ -1100,13 +1100,13 @@ JS_CODE;
                     $this->defaultCategoryImage['src']);
             }
 
-            $imageSrc = FWValidator::getEscapedSource($imageSrc);
-            $thumbnailSrc = FWValidator::getEscapedSource($thumbnailSrc);
+            $imageSrc = contrexx_raw2encodedUrl($imageSrc);
+            $thumbnailSrc = contrexx_raw2encodedUrl($thumbnailSrc);
             $image = $this->getHtmlImageTag($imageSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
             $thumbnail = $this->getHtmlImageTag($thumbnailSrc, htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));
         } else {
-            $imageSrc = FWValidator::getEscapedSource($this->defaultCategoryImage['src']);
-            $thumbnailSrc = FWValidator::getEscapedSource(
+            $imageSrc = contrexx_raw2encodedUrl($this->defaultCategoryImage['src']);
+            $thumbnailSrc = contrexx_raw2encodedUrl(
                 ImageManager::getThumbnailFilename(
                     $this->defaultCategoryImage['src']));
             $image = $this->getHtmlImageTag($this->defaultCategoryImage['src'], htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET));;
