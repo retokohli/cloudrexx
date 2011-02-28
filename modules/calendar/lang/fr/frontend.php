@@ -6,12 +6,12 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "En arrière ";
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "zurück zum Kalender";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Prochaines manifestations";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "Afficher";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Aucun élément ne correspond...";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS'] = "Manifestations";
-$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Toutes les catégories";
+$_ARRAYLANG['TXT_CALENDAR_ALL_CAT'] = "Alle Kategorien";
 $_ARRAYLANG['TXT_CALENDAR_CAT'] = "Catégorie";
 $_ARRAYLANG['TXT_CALENDAR_NAME'] = "Concerne";
 $_ARRAYLANG['TXT_CALENDAR_PLACE'] = "Lieu";
@@ -93,13 +93,13 @@ $_ARRAYLANG['TXT_CALENDAR_ACTION_NOT_ACTIVATED'] = "Sorry, This functionality is
 $_ARRAYLANG['TXT_CALENDAR_WRONG_FILETYPE'] = "Terminaison de fichier non valable. ";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_PIC'] = "Envoyer une image ";
 $_ARRAYLANG['TXT_CALENDAR_UPLOAD_ERROR_ATTACHMENT'] = "Envoyer une annexe";
-$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUBMIT'] = "Envoyer";
-$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "S'il vous plaît tapez de nouveau le code Captcha.";
-$_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Type";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUBMIT'] = "Absenden";
+$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "Bitte geben sie den Captcha Code erneut ein.";
+$_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT'] = "Exportieren";
 $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'] = "Bitte wählen";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "";
-$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Votre inscription a été correctement enregistrée dans notre système.";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "Die Veranstaltung ist leider ausgebucht. Es können keine weiteren Anmeldungen entgegen genommen werden.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Ihre Anmeldung wurde erfolgreich in unserem System gespeichert.";
 $_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Uhr";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Event successfull saved";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'] = "Corrupt save";

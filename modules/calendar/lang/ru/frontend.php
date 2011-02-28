@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "Zurück";
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "zurück zum Kalender";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Следующее событие:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "Показать";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Не найдено ни одного события...";
@@ -98,8 +98,8 @@ $_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'] = "Bitte geben sie den Captcha 
 $_ARRAYLANG['TXT_CALENDAR_TYPE'] = "Typ";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT'] = "Exportieren";
 $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'] = "Bitte wählen";
-$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "";
-$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'] = "Die Veranstaltung ist leider ausgebucht. Es können keine weiteren Anmeldungen entgegen genommen werden.";
+$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'] = "Ihre Anmeldung wurde erfolgreich in unserem System gespeichert.";
 $_ARRAYLANG['TXT_CALENDAR_OCLOCK'] = "Uhr";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'] = "Event successfull saved";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED'] = "Corrupt save";
