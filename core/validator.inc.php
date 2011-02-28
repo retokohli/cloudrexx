@@ -153,6 +153,23 @@ function contrexx_raw2xml($raw) {
 }
 
 /**
+ * Encode the given url so that it can be used as a a.href or img.src attribute value.
+ * @param string $raw
+ * @param boolean $encodeDash whether to encode dashes ('/') too - defaults to false
+ * @return string
+ */
+function contrexx_raw2encodedUrl($source, $encodeDash = false)
+{
+    $source = array_map('rawurlencode', explode('/', $source));
+
+    if ($encodeDash) {
+        $source = str_replace('-', '%2D', $source);
+    }
+
+    return implode('/', $source);
+}
+
+/**
  * Remove script tags and their content from the string given
  * @param string $raw
  * @return string scriptless string.

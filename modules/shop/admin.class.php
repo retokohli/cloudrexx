@@ -3197,7 +3197,7 @@ class shopmanager extends ShopLibrary
                 (   !empty($arrImages[1]['img'])
                  && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
                         ImageManager::getThumbnailFilename($arrImages[1]['img']))
-                    ? FWValidator::getEscapedSource(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    ? contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
                           ImageManager::getThumbnailFilename($arrImages[1]['img']))
                     : self::$defaultImage
                 ),
@@ -3205,7 +3205,7 @@ class shopmanager extends ShopLibrary
                 (   !empty($arrImages[2]['img'])
                  && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
                         ImageManager::getThumbnailFilename($arrImages[2]['img']))
-                    ? FWValidator::getEscapedSource(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    ? contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
                       ImageManager::getThumbnailFilename($arrImages[2]['img']))
                     : self::$defaultImage
                 ),
@@ -3213,7 +3213,7 @@ class shopmanager extends ShopLibrary
                 (   !empty($arrImages[3]['img'])
                  && is_file(ASCMS_SHOP_IMAGES_PATH.'/'.
                         ImageManager::getThumbnailFilename($arrImages[3]['img']))
-                    ? FWValidator::getEscapedSource(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
+                    ? contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.
                       ImageManager::getThumbnailFilename($arrImages[3]['img']))
                     : self::$defaultImage
                 ),
