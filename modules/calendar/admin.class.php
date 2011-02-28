@@ -1180,7 +1180,6 @@ class calendarManager extends calendarLibrary
 
                 if ($objResult !== false) {
                     if ($registration == 1) {
-
                         $query = "DELETE FROM ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields WHERE note_id='".$id."'";
                         $objResultFields = $objDatabase->Execute($query);
 
@@ -1214,8 +1213,6 @@ class calendarManager extends calendarLibrary
                         if ($registrationAdresser != 0 && $mailSendAgain == 1) {
                             $this->_sendRegistration($id);
                         }
-                    } else {
-                        $this->deleteFormular($id);
                     }
 
                     $this->strOkMessage = $_ARRAYLANG['TXT_CALENDAR_STAT_EDITED']."<br />";
@@ -1277,8 +1274,6 @@ class calendarManager extends calendarLibrary
                 'series_pattern_end' => $seriesPatternEnd,
                 'series_pattern_exceptions' => '', //provide a default value, no null allowed
             ));
-
-
 
 			$objResult = $objDatabase->Execute($query);
 
