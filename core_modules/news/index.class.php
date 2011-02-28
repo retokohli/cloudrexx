@@ -150,9 +150,13 @@ class news extends newsLibrary {
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $lastUpdate     = $objResult->fields['changelog'];
+                    $sourceHref     = contrexx_raw2encodedUrl($objResult->fields['source']);
+                    $url1Href       = contrexx_raw2encodedUrl($objResult->fields['url1']);
+                    $url2Href       = contrexx_raw2encodedUrl($objResult->fields['url2']);
                     $source         = contrexx_raw2xhtml($objResult->fields['source']);
                     $url1           = contrexx_raw2xhtml($objResult->fields['url1']);
                     $url2           = contrexx_raw2xhtml($objResult->fields['url2']);
+
                     $newsUrl        = '';
                     $newsSource     = '';
                     $newsLastUpdate = '';
@@ -162,21 +166,21 @@ class news extends newsLibrary {
                         if (strlen($strUrl1) > 40) {
                             $strUrl1 = substr($strUrl1,0,26).'...'.substr($strUrl1,(strrpos($strUrl1,'.')));
                         }
-                        $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'].'<br /><a target="_blank" href="'.$url1.'" title="'.$url1.'">'.$strUrl1.'</a><br />';
+                        $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'].'<br /><a target="_blank" href="'.$url1Href.'" title="'.$url1.'">'.$strUrl1.'</a><br />';
                     }
                     if (!empty($url2)) {
                       $strUrl2 = contrexx_raw2xhtml($objResult->fields['url2']);
                         if (strlen($strUrl2) > 40) {
                             $strUrl2 = substr($strUrl2,0,26).'...'.substr($strUrl2,(strrpos($strUrl2,'.')));
                         }
-                        $newsUrl .= '<a target="_blank" href="'.$url2.'" title="'.$url2.'">'.$strUrl2.'</a><br />';
+                        $newsUrl .= '<a target="_blank" href="'.$url2Href.'" title="'.$url2.'">'.$strUrl2.'</a><br />';
                     }
                     if (!empty($source)) {
                       $strSource = contrexx_raw2xhtml($objResult->fields['source']);
                         if (strlen($strSource) > 40) {
                             $strSource = substr($strSource,0,26).'...'.substr($strSource,(strrpos($strSource,'.')));
                         }
-                        $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'].'<br /><a target="_blank" href="'.$source.'" title="'.$source.'">'.$strSource.'</a><br />';
+                        $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'].'<br /><a target="_blank" href="'.$sourceHref.'" title="'.$source.'">'.$strSource.'</a><br />';
                     }
                     if (!empty($lastUpdate)) {
                         $newsLastUpdate = $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT,$objResult->fields['changelog']);
