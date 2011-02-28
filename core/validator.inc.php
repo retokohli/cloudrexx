@@ -160,13 +160,24 @@ function contrexx_raw2xml($raw) {
  */
 function contrexx_raw2encodedUrl($source, $encodeDash = false)
 {
+    $cutHttp = false;
+    if(!$encodeDash && substr($source,0,7) == "http://") {
+        $source = substr($source, 7);
+        $cutHttp = true;
+    } 
+
     $source = array_map('rawurlencode', explode('/', $source));
 
     if ($encodeDash) {
         $source = str_replace('-', '%2D', $source);
     }
 
-    return implode('/', $source);
+    $result = implode('/', $source);
+
+    if($cutHttp)
+        $result = "http://".$result;
+
+    return $result;
 }
 
 /**
