@@ -7,8 +7,6 @@
 ****************************************
 Statistiken
 - Seitentitel bleibt auch beim Löschen der Seite gespeichert
-Kalender
-- Beim Deaktivieren der Anmeldemöglichkeit einer Veranstaltung, welche vorher bereits aktiviert war, wird vor dem möglicherweise entstehenden Datenverlust gewarnt.
 Media Manager
 - Falls GD 2.0 installiert ist, werden Vorschaubilder mit erhöhter Qualität generiert
 
@@ -25,6 +23,7 @@ Job-Modul
 - Javascript-Fehler beim Löschen von Regionen behoben
 Kalender-Modul
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+- Bereits vorhandene Anmeldungen gehen nicht mehr verloren, wenn die Anmeldungsfunktion einer Veranstaltung deaktiviert wird.
 Kontakt-Modul
 - Eingegebene Umlaute werden korrekt dargestellt
 Statistiken

@@ -1086,10 +1086,6 @@ class Calendar extends calendarLibrary
         			break;
         		}
 
-
-
-
-
                 // sorry about this.. i didnt like the naming in the DB sheme
                 $eventValues = array(
                     'startdate'     => $form['startdateunix'],
