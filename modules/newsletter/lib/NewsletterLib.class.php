@@ -104,7 +104,7 @@ class NewsletterLib
         '".$this->_emailCode()."',
         '".contrexx_addslashes($email)."',
         '".contrexx_addslashes($uri)."',
-        " . (strlen($sex) ? "'".contrexx_addslashes($sex)."'" : 'NULL') .",
+        ".(empty($sex) ? 'NULL' : "'".contrexx_addslashes($sex)."'").",
         ".intval($title).",
         '".contrexx_addslashes($lastname)."',
         '".contrexx_addslashes($firstname)."',
