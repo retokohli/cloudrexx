@@ -261,6 +261,10 @@ function _newsUpdate() {
 
                 UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_news` SET `title`="'.addslashes($title).'", `teaser_text`="'.addslashes($teaserText).'" where `id`='.$id);
             }
+
+            require_once('news_dependencies/hackyFeedRepublisher.class.php');
+            $hfr = new HackyFeedRepublisher();
+            $hfr->runRepublishing();
         }
         catch (UpdateException $e) {
             DBG::trace();
