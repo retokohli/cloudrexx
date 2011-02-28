@@ -25,7 +25,8 @@ Kalender-Modul
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
 - Bereits vorhandene Anmeldungen gehen nicht mehr verloren, wenn die Anmeldungsfunktion einer Veranstaltung deaktiviert wird.
 Kontakt-Modul
-- Eingegebene Umlaute werden korrekt dargestellt
+- Einrückung in E-Mails verbessert.
+- Eingegebene Umlaute werden korrekt dargestellt.
 Statistiken
 - Der Link "Homepage Vorschau" im Backend generiert keine eigenen Statistikeinträge mehr.
 - Die Grafiken werden wieder korrekt angezeigt.

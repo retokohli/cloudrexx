@@ -490,7 +490,7 @@ class Contact extends ContactLib
      */
     function _sendMail($arrFormData)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
         $body = '';
         $replyAddress = '';
@@ -515,18 +515,31 @@ class Contact extends ContactLib
                 }
             }
 
+            //we need to know all textareas - they're indented differently
+            $query = 'SELECT name FROM contrexx_module_contact_form_field WHERE type=\'textarea\' AND id_form = ' . intval($arrFormData['id']);
+
+            $result = $objDatabase->Execute($query);
+            $textAreaKeys = array();
+            while(!$result->EOF) {
+                $textAreaKeys[] = $result->fields['name'];
+                $result->MoveNext();
+            }
+
             uksort($arrFormData['data'], array($this, '_sortFormData'));
             foreach ($arrFormData['data'] as $key => $value) {
-                $tabCount = ceil((strlen($key)+1) / 6);
-                $tabs = 7 - $tabCount;
-                if((strlen($key)+1) % 6 == 0){
-                    $tabs--;
-                }
                 if($key == 'contactFormField_recipient'){
                     $key    = $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'];
                     $value  = $arrRecipients[$value]['name'];
                 }
-                $body .= $key.":".str_repeat("\t", $tabs).$value."\n";
+
+                if(!in_array($key, $textAreaKeys)) { //it's no textarea, indent normally
+                    $spaces = 30-strlen($key);
+                    $body .= $key.":".str_repeat(" ", $spaces).$value."\n";
+                }
+                else { //we're dealing with a textearea
+                    $body .= $key.":\n".$value."\n";
+                }
+
                 if (empty($replyAddress) && ($mail = $this->_getEmailAdressOfString($value))) {
                     $replyAddress = $mail;
                 }
