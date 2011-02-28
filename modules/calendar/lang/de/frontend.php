@@ -6,7 +6,7 @@
  * @package     contrexx
  * @subpackage  module_calendar
  */
-$_ARRAYLANG['TXT_CALENDAR_BACK'] = "Zurück";
+$_ARRAYLANG['TXT_CALENDAR_BACK'] = "zurück zum Kalender";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Die nächsten Termine:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'] = "Es wurden keine Termine gefunden...";
