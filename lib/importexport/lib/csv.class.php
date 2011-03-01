@@ -80,12 +80,12 @@ class CsvLib
 		// we can import old apple CSV files.
 		ini_set('auto_detect_line_endings', 1);
 
-        //do utf8 conversion if necessary and possible
+        // try to convert the file to the system charset CONTREXX_CHARSET if required
         if(function_exists("mb_detect_encoding")) {
             $content = file_get_contents($file);
-            $encoding = mb_detect_encoding($content, 'UTF-8', true);
-            if($encoding != 'UTF-8') {
-                $content = mb_convert_encoding($content, 'UTF-8');
+            $encoding = mb_detect_encoding($content, CONTREXX_CHARSET, true);
+            if($encoding != CONTREXX_CHARSET) {
+                $content = mb_convert_encoding($content, CONTREXX_CHARSET);
                 file_put_contents($file, $content);
             }
         }
