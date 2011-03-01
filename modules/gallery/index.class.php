@@ -934,12 +934,12 @@ class Gallery
                 $imageFileName = $this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '';
                 $imageName = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : '';
                 $imageTitle = $this->arrSettings['show_names'] == 'on' ? $objSubResult->fields['name'] : ($this->arrSettings['show_file_name'] == 'on' ? $objResult->fields['path'] : '');
-                $imageTitleTag = $objSubResult->fields['name'];
                 $imageLinkName = $objSubResult->fields['desc'];
                 $imageLink = $objResult->fields['link'];
                 $imageSizeShow = $objResult->fields['size_show'];
                 $imageLinkOutput = '';
                 $imageSizeOutput = '';
+                $imageTitleTag = '';
 
                 // chop the file extension if the settings tell us to do so
                 if ($this->arrSettings['show_ext'] == 'off') {
@@ -968,33 +968,22 @@ class Gallery
                 }
                 //Ends here
 
-                $anyTitlesDisplayed = $this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on';
-                if ($this->arrSettings['enable_popups'] == "on") {
-                    $titlePart = ($anyTitlesDisplayed ? 'title="'.$imageTitleTag.'"' : '');
-                    $strImageOutput =
-                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
-                        '}" '.$titlePart.'" href="'.
-                        $strImagePath.'"><img alt="'.$imageTitleTag.'" src="'.
-                        $imageThumbPath.'" '.$titlePart.' /></a>';
-                } else {
-                    $strImageOutput =
-                        '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
-                        $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
-                        $objResult->fields['id'].'">'.'<img  title="'.
-                        $imageTitleTag.'" src="'.$imageThumbPath.'"'.
-                        'alt="'.$imageTitleTag.'" /></a>';
-                }
-
-                if ($anyTitlesDisplayed) {
+                if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
                     $imageSizeOutput = $imageName;
+                    $imageTitleTag   = $imageName;
                     if ($this->arrSettings['show_file_name'] == 'on' || $imageSizeShow) {
                         $imageData = array();
                         if ($this->arrSettings['show_file_name'] == 'on') {
                             if ($this->arrSettings['show_names'] == 'off') {
                                 $imageSizeOutput .= $imageFileName;
+                                $imageTitleTag   .= $imageFileName;
                             } else {
                                 $imageData[] = $imageFileName;
                             }
+                        }
+                        
+                        if (!empty($imageData)) {
+                            $imageTitleTag .= ' ('.join(' ', $imageData).')';
                         }
                         if ($imageSizeShow == '1') {
                             // the size of the file has to be shown
@@ -1004,6 +993,29 @@ class Gallery
                             $imageSizeOutput .= ' ('.join(' ', $imageData).')<br />';
                         }
                     }
+                }
+
+                if ($this->arrSettings['enable_popups'] == "on") {
+
+                        $strImageOutput =
+                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
+                        '}"  title="'.$imageTitleTag.'" href="'.
+                        $strImagePath.'"><img title="'.$imageTitleTag.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageTitleTag.'" /></a>';
+                    /*
+                    $strImageOutput =
+                        '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
+                        '}" description="'.$imageLinkName.'" title="'.$titleLink.'" href="'.
+                        $strImagePath.'"><img title="'.$imageName.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageName.'" /></a>';
+                        */
+                } else {
+                    $strImageOutput =
+                        '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
+                        $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
+                        $objResult->fields['id'].'">'.'<img  title="'.
+                        $imageTitleTag.'" src="'.$imageThumbPath.'"'.
+                        'alt="'.$imageTitleTag.'" /></a>';
                 }
 
                 if ($this->arrSettings['show_comments'] == 'on' && $boolComment) {
