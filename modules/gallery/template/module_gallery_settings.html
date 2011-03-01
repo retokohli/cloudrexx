@@ -34,22 +34,7 @@
 			<label for="header_type">{TXT_SETTINGS_HEADER_FLAT}</label><br />
 	   </td>
 	</tr>
-
-	<tr class="row2">
-		<td nowrap="nowrap" valign="top" width="10%">{TXT_SETTINGS_IMAGENAME_SHOW}</td>
-		<td width="90%">
-			<input type="checkbox" name="show_names" value="on" {SETTINGS_VALUE_SHOW_NAMES} />
-		</td>
-	</tr>
-
-<!-- new -->
-	<tr class="row1">
-		<td nowrap="nowrap" valign="top" width="10%">{TXT_SETTINGS_IMAGENAME_EXT_SHOW}</td>
-		<td width="90%">
-			<input type="checkbox" name="show_ext" value="on" {SETTINGS_VALUE_SHOW_EXT} />
-		</td>
-	</tr>
-
+<!-- new -->	
 	<tr class="row2">
 		<td nowrap="nowrap" valign="top">{TXT_SETTINGS_COMMENTS_SHOW}</td>
 		<td>
@@ -140,9 +125,21 @@
 		</td>
 	</tr>
 	<tr class="row1">
+		<td nowrap="nowrap" valign="top" width="10%">{TXT_SETTINGS_IMAGENAME_SHOW}</td>
+		<td width="90%">
+			<input type="checkbox" name="show_names" value="on" {SETTINGS_VALUE_SHOW_NAMES} />
+		</td>
+	</tr>
+	<tr class="row2">
 		<td nowrap="nowrap" valign="top">{TXT_GALLERY_SHOW_FILE_NAME}</td>
         <td>
 			<input type="checkbox" name="show_file_name" value="on" {SETTINGS_VALUE_SHOW_FILE_NAME} />
+		</td>
+	</tr>
+	<tr class="row1">
+		<td nowrap="nowrap" valign="top" width="10%">{TXT_SETTINGS_IMAGENAME_EXT_SHOW}</td>
+		<td width="90%">
+			<input type="checkbox" name="show_ext" value="on" {SETTINGS_VALUE_SHOW_EXT} />
 		</td>
 	</tr>
 	</table>
