@@ -2,18 +2,23 @@
 
 
 <script language="JavaScript" type="text/JavaScript">
-	function slideSeconds() {
-
+    function slideSeconds() {
         if(document.getElementById('slide_seconds_settings').style.display == "block") {
             document.getElementById('slide_seconds_settings').style.display = "none";
         }
         else {
             document.getElementById('slide_seconds_settings').style.display = "block";
         }
-	}
+    }
 
-
-
+    function fileExtension() {
+        if(document.getElementById('fileExtensionHolder').style.display == "block") {
+            document.getElementById('fileExtensionHolder').style.display = "none";
+        }
+        else {
+            document.getElementById('fileExtensionHolder').style.display = "block";
+        }
+    }
 </script>
 
 <form name="newcat" method="post" action="?cmd=gallery&amp;act=save_settings" >
@@ -131,16 +136,18 @@
 		</td>
 	</tr>
 	<tr class="row2">
-		<td nowrap="nowrap" valign="top">{TXT_GALLERY_SHOW_FILE_NAME}</td>
-        <td>
-			<input type="checkbox" name="show_file_name" value="on" {SETTINGS_VALUE_SHOW_FILE_NAME} />
-		</td>
-	</tr>
-	<tr class="row1">
-		<td nowrap="nowrap" valign="top" width="10%">{TXT_SETTINGS_IMAGENAME_EXT_SHOW}</td>
-		<td width="90%">
-			<input type="checkbox" name="show_ext" value="on" {SETTINGS_VALUE_SHOW_EXT} />
-		</td>
+            <td nowrap="nowrap" valign="top">
+                {TXT_GALLERY_SHOW_FILE_NAME}
+            </td>
+            <td>
+                <input type="checkbox" onchange="if (this.checked) { $('fileExtensionHolder').show(); } else { $('fileExtensionHolder').hide(); }" name="show_file_name" value="on" {SETTINGS_VALUE_SHOW_FILE_NAME} />
+                <div id="fileExtensionHolder" style="{EXTENSION_SHOW_BLOCK};">
+                    <div style="padding-left: 20px;">
+                        <input type="checkbox" name="show_ext" value="on" {SETTINGS_VALUE_SHOW_EXT} />
+                        {TXT_SETTINGS_IMAGENAME_EXT_SHOW}
+                    </div>
+                </div>
+            </td>
 	</tr>
 	</table>
 	<br />

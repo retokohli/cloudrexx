@@ -1874,7 +1874,6 @@ class galleryManager extends GalleryLibrary
                 } else {
                     $strValue = get_magic_quotes_gpc() ? strip_tags($strValue) : addslashes(strip_tags($strValue));
                 }
-
                 $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_language_pics
                                         SET     name="'.$strValue.'"
                                         WHERE     picture_id='.$intPicId.' AND
@@ -2025,10 +2024,15 @@ class galleryManager extends GalleryLibrary
                 case 'show_file_name':
                     if ($objResult->fields['value'] == 'on') {
                         $checked = "checked='checked'";
+                        $display = "display: block";
                     } else {
                         $checked = "";
+                        $display = "display: none";
                     }
-                    $this->_objTpl->setVariable('SETTINGS_VALUE_SHOW_FILE_NAME', $checked);
+                    $this->_objTpl->setVariable(array(
+                        'SETTINGS_VALUE_SHOW_FILE_NAME' => $checked,
+                        'EXTENSION_SHOW_BLOCK'          => $display
+                    ));
                     break;
                 default: //integer value
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$objResult->fields['value']);
@@ -2279,12 +2283,9 @@ class galleryManager extends GalleryLibrary
             $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
         }
 
-        //the link="" is needed as the column has no default value
-        //and mysql doesn't allow to specify one for text columns.
         $objDatabase->Execute('    INSERT
                                 INTO     '.DBPREFIX.'module_gallery_pictures
-                                SET     link="",
-                                        path="'.$strImagePath.'",
+                                SET     path="'.$strImagePath.'",
                                         lastedit="'.time().'",
                                         quality="'.$this->arrSettings['standard_quality'].'",
                                         size_type="'.$this->arrSettings['standard_size_type'].'",
@@ -2293,12 +2294,21 @@ class galleryManager extends GalleryLibrary
                                         size_abs_w="'.$intNewWidth.'"');
 
         $intPictureId = $objDatabase->insert_id();
-
-        $objResult = $objDatabase->Execute('INSERT INTO '.DBPREFIX.'module_gallery_language_pics 
-                                                (picture_id, lang_id, name)
-                                            SELECT
-                                                '.$intPictureId.', id, "'.$imageName.'"
-                                                FROM contrexx_languages');
+        $objResult = $objDatabase->Execute('    SELECT        id
+                                                FROM        '.DBPREFIX.'languages
+                                                ORDER BY    id ASC
+                                            ');
+        if ($objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                $objDatabase->Execute('    INSERT
+                                        INTO    '.DBPREFIX.'module_gallery_language_pics
+                                        SET        picture_id='.$intPictureId.',
+                                                lang_id='.$objResult->fields['id'].',
+                                                name="'.$imageName.'"
+                                    ');
+                $objResult->MoveNext();
+            }
+        }
     }
 
 
