@@ -111,9 +111,9 @@ class CSRF {
      * Only use it for headers in the form "Foo: an_url", for
      * instance "Location: index.php?foo=bar".
      */
-    public static function header($header)
+    public static function header($header, $replace = true, $httpResponseCode = null)
     {
-        header(self::__enhance_header($header));
+        header(self::__enhance_header($header), $replace, $httpResponseCode);
     }
 
 
