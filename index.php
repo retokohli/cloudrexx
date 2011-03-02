@@ -153,6 +153,21 @@ if (DBG::getMode() & DBG_ADODB_TRACE) {
 }
 
 //-------------------------------------------------------
+// Initialize base system
+//-------------------------------------------------------
+$objInit = new InitCMS();
+
+/**
+ * Frontend language ID
+ * @global integer $_LANGID
+ * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
+ */
+$_LANGID = $objInit->getFrontendLangId();
+// Post-2.1
+define('FRONTEND_LANG_ID', $_LANGID);
+define('LANG_ID', $_LANGID);
+
+//-------------------------------------------------------
 // Caching-System
 //-------------------------------------------------------
 /**
@@ -211,20 +226,8 @@ $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
 define('MODULE_INDEX', $moduleIndex);
 
 //-------------------------------------------------------
-// Load settings and configuration
+// Load interface language data
 //-------------------------------------------------------
-
-$objInit = new InitCMS();
-
-/**
- * Frontend language ID
- * @global integer $_LANGID
- * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
- */
-$_LANGID = $objInit->getFrontendLangId();
-// Post-2.1
-define('FRONTEND_LANG_ID', $_LANGID);
-define('LANG_ID', $_LANGID);
 /**
  * Core language data
  * @global array $_CORELANG
