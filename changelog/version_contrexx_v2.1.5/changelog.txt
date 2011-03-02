@@ -27,6 +27,7 @@ Kalender-Modul
 Kontakt-Modul
 - Einrückung in E-Mails verbessert.
 - Eingegebene Umlaute werden korrekt dargestellt.
+- Der Export wurde auf zwei Varianten aufgeteilt. Export als normale CSV-Datei und CSV-Datei für Excel.
 Statistiken
 - Der Link "Homepage Vorschau" im Backend generiert keine eigenen Statistikeinträge mehr.
 - Die Grafiken werden wieder korrekt angezeigt.
