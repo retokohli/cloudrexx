@@ -165,7 +165,7 @@ class InitCMS
             && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])
             && basename($_SERVER['SCRIPT_FILENAME']) != 'frontendEditing.class.php'
         ) {
-            CSRF::header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.CONTREXX_DIRECTORY_INDEX.(empty($_GET) ? '' : '?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))));
+            CSRF::header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.(empty($_GET) ? '' : CONTREXX_DIRECTORY_INDEX.'?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))), true, 301);
             exit;
         }
 
@@ -446,8 +446,7 @@ class InitCMS
         $this->templates['navbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html');
         $this->templates['subnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html');
         $this->templates['subnavbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') : '';
-        $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subn
-                                                                                                                                                                       avbar3.html') : '';
+        $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') : '';
         $this->templates['sidebar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html');
         $this->templates['shopnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html');
         $this->templates['headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html');
