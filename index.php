@@ -1071,7 +1071,7 @@ switch ($plainSection) {
         /** @ignore */
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (empty($sessionObj)) $sessionObj = new cmsSession();
+        if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
         $shopObj = new Shop($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getShopPage());
         $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
@@ -1633,7 +1633,7 @@ if (   MODULE_INDEX < 2
         if (file_exists($modulespath)){
             /** @ignore */
             require_once($modulespath);
-            $sessionObj = new cmsSession();
+            if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
             $_ARRAYSHOPLANG = $objInit->loadLanguageData('shop');
             $_ARRAYLANG = array_merge($_ARRAYLANG, $_ARRAYSHOPLANG);
             $boolShop = true;

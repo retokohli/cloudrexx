@@ -87,7 +87,34 @@ require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
  */
 function shopUseSession()
 {
-    return true;
+// TODO: This method fails on some server configurations. If this is the case, just uncomment the next line and report it to <dev@contrexx.com> so that we can investigate into this issue. Thank you!
+    // return true;
+
+    if (!empty($_COOKIE['PHPSESSID'])) {
+        return true;
+    } elseif (!empty($_REQUEST['currency'])) {
+        return true;
+    } else {
+        $command = '';
+        if (!empty($_GET['cmd'])) {
+            $command = $_GET['cmd'];
+        } elseif (!empty($_GET['act'])) {
+            $command = $_GET['act'];
+        }
+        if (in_array($command, array('', 'discounts', 'details', 'terms', 'cart'))) {
+            if (   $command == 'details'
+                && isset($_REQUEST['referer'])
+                && $_REQUEST['referer'] == 'cart'
+            ) {
+                return true;
+            } elseif ($command == 'cart' && (isset($_REQUEST['productId']) || (isset($_GET['remoteJs']) && $_GET['remoteJs'] == 'addProduct' && !empty($_GET['product'])))) {
+                return true;
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
 
 
