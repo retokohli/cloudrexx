@@ -36,7 +36,10 @@ class ContactManager extends ContactLib
     var $boolHistoryEnabled = false;
     var $boolHistoryActivate = false;
 
-    var $_csvSeparator = ';';
+    var $_csvSeparator = null;
+    var $_csvEnclosure = null;
+    var $_csvCharset = null;
+    var $_csvLFB = null;
 
     var $_pageTitle = '';
 
@@ -430,7 +433,7 @@ class ContactManager extends ContactLib
             'TXT_CONTACT_NAME'                          => $_ARRAYLANG['TXT_CONTACT_NAME'],
             'TXT_CONTACT_FUNCTIONS'                     => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
             'TXT_CONTACT_ADD_NEW_CONTACT_FORM'          => $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'],
-            'TXT_CONTACT_CSV_FILE'                      => $_ARRAYLANG['TXT_CONTACT_CSV_FILE'],
+            //'TXT_CONTACT_CSV_FILE'                      => $_ARRAYLANG['TXT_CONTACT_CSV_FILE'],
             'TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE']
         ));
 
@@ -1449,7 +1452,7 @@ class ContactManager extends ContactLib
                 case 'radio':
                 case 'select':
                 case 'textarea':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br(htmlspecialchars_decode(htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET))) : '&nbsp;';
+                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                     break;
             }
 
@@ -1461,6 +1464,27 @@ class ContactManager extends ContactLib
         $sourcecode .= "</table>\n";
 
         return $sourcecode;
+    }
+
+    function csv_mb_convert_encoding($data)
+    {
+        static $doConvert;
+    
+        if (!isset($doConvert)) {
+            if (function_exists("mb_detect_encoding")
+                && $this->_csvCharset != CONTREXX_CHARSET
+            ) {
+                $doConvert = true;
+            } else {
+                $doConvert = false;
+            }
+        }
+
+        if ($doConvert) {
+            return mb_convert_encoding($data, $this->_csvCharset, CONTREXX_CHARSET);;
+        } else {
+            return $data;
+        }
     }
 
     /**
@@ -1477,17 +1501,51 @@ class ContactManager extends ContactLib
 
         $id = intval($_GET['formId']);
 
+        $format = 'default';
+        $csvFormat = array(
+            'default' => array(
+                'charset'       => CONTREXX_CHARSET,
+                'delimiter'     => ';',
+                'enclosure'     => '"',
+                'content-type'  => 'text/comma-separated-values',
+                'BOM'           => null,
+                'LFB'           => "\r\n"
+            ),
+            'excel' => array(
+                'charset'       => 'UTF-16LE',
+                'delimiter'     => "\t",
+                'enclosure'     => '"',
+                'content-type'  => 'application/vnd.ms-excel',
+                'BOM'           => chr(255).chr(254),
+                'LFB'           => "\r\n"
+            )
+        );
+
+
         if (empty($id)) {
             CSRF::header("Location: index.php?cmd=contact");
             return;
         }
 
+        if (isset($_GET['format']) && isset($csvFormat[$_GET['format']])) {
+            $format = $_GET['format'];
+        }
+
+        // $this->_csvCharset must be set first, because the methode $this->csv_mb_convert_encoding depends on this variable
+        $this->_csvCharset = $csvFormat[$format]['charset'];
+        $this->_csvEnclosure = $this->csv_mb_convert_encoding($csvFormat[$format]['enclosure'], $csvFormat[$format]['charset'], CONTREXX_CHARSET);
+        $this->_csvSeparator = $this->csv_mb_convert_encoding($csvFormat[$format]['delimiter'], $csvFormat[$format]['charset'], CONTREXX_CHARSET);
+        $this->_csvLFB = $this->csv_mb_convert_encoding($csvFormat[$format]['LFB'], $csvFormat[$format]['charset'], CONTREXX_CHARSET);
+
         $filename = $this->_replaceFilename($this->arrForms[$id]['name']. ".csv");
         $arrFormFields = $this->getFormFields($id);
 
         // Because we return a csv, we need to set the correct header
-        header("Content-Type: text/comma-separated-values", true);
+        header("Content-Type: ".$csvFormat[$format]['content-type']."; charset=".$csvFormat[$format]['charset'], true);
         header("Content-Disposition: attachment; filename=\"$filename\"", true);
+
+        // Print BOM
+        print $csvFormat[$format]['BOM'];
 
         foreach ($arrFormFields as $arrField) {
             print $this->_escapeCsvValue($arrField['name']).$this->_csvSeparator;
@@ -1495,11 +1553,11 @@ class ContactManager extends ContactLib
 
         $arrSettings = $this->getSettings();
 
-        print ($arrSettings['fieldMetaDate'] == '1' ? $_ARRAYLANG['TXT_CONTACT_DATE'].$this->_csvSeparator : '')
-                .($arrSettings['fieldMetaHost'] == '1' ? $_ARRAYLANG['TXT_CONTACT_HOSTNAME'].$this->_csvSeparator : '')
-                .($arrSettings['fieldMetaLang'] == '1' ? $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'].$this->_csvSeparator : '')
-                .($arrSettings['fieldMetaIP'] == '1' ? $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] : '')
-                ."\r\n";
+        print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_DATE']).$this->_csvSeparator : '')
+                .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_HOSTNAME']).$this->_csvSeparator : '')
+                .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE']).$this->_csvSeparator : '')
+                .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_IP_ADDRESS']) : '')
+                .$this->_csvLFB;
 
         $query = "SELECT id, `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$id." ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
@@ -1514,11 +1572,11 @@ class ContactManager extends ContactLib
                 foreach ($arrFormFields as $arrField) {
                     switch ($arrField['type']) {
                         case 'checkbox':
-                            print isset($arrData[$arrField['name']]) && $arrData[$arrField['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                            print $this->_escapeCsvValue(isset($arrData[$arrField['name']]) && $arrData[$arrField['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
                             break;
 
                         case 'file':
-                            print isset($arrData[$arrField['name']]) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrData[$arrField['name']] : '';
+                            print $this->_escapeCsvValue(isset($arrData[$arrField['name']]) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrData[$arrField['name']] : '');
                             break;
 
                         case 'text':
@@ -1535,11 +1593,11 @@ class ContactManager extends ContactLib
                     print $this->_csvSeparator;
                 }
 
-                print ($arrSettings['fieldMetaDate'] == '1' ? date(ASCMS_DATE_FORMAT, $objEntry->fields['time']).$this->_csvSeparator : '')
+                print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT, $objEntry->fields['time'])).$this->_csvSeparator : '')
                     .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($objEntry->fields['host']).$this->_csvSeparator : '')
                     .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($objEntry->fields['lang']).$this->_csvSeparator : '')
-                    .($arrSettings['fieldMetaIP'] == '1' ? $objEntry->fields['ipaddress'] : '')
-                    ."\r\n";
+                    .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($objEntry->fields['ipaddress']) : '')
+                    .$this->_csvLFB;
 
                 $objEntry->MoveNext();
             }
@@ -1557,11 +1615,10 @@ class ContactManager extends ContactLib
     function _escapeCsvValue(&$value)
     {
         $value = preg_replace('/\r\n/', "\n", $value);
-        $valueModified = str_replace('"', '""', $value);
+        $value = $this->csv_mb_convert_encoding($value, $this->_csvCharset, CONTREXX_CHARSET);;
+        $valueModified = str_replace($this->_csvEnclosure, $this->_csvEnclosure.$this->_csvEnclosure, $value);
+        $value = $this->_csvEnclosure.$valueModified.$this->_csvEnclosure;
 
-        if ($valueModified != $value || preg_match('/['.$this->_csvSeparator.'\n]+/', $value)) {
-            $value = '"'.$valueModified.'"';
-        }
         return $value;
     }
 

@@ -516,7 +516,7 @@ class Contact extends ContactLib
             }
 
             //we need to know all textareas - they're indented differently
-            $query = 'SELECT name FROM contrexx_module_contact_form_field WHERE type=\'textarea\' AND id_form = ' . intval($arrFormData['id']);
+            $query = 'SELECT name FROM '.DBPREFIX.'module_contact_form_field WHERE type=\'textarea\' AND id_form = ' . intval($arrFormData['id']);
 
             $result = $objDatabase->Execute($query);
             $textAreaKeys = array();
