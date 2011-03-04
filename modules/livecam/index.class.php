@@ -305,9 +305,6 @@ class Livecam extends LivecamLibrary
             $this->_objTpl->parse('livecamArchive');
         } else {
             $this->statusMessage = $_ARRAYLANG['TXT_LIVECAM_NO_PICTURES_OF_SELECTED_DAY'];
-            $this->_objTpl->setVariable(array(
-                'LIVECAM_STATUSMESSAGE' => $this->statusMessage
-            ));
         }
     }
 
