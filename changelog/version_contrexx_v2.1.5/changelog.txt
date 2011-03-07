@@ -5,44 +5,64 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
-Statistiken
-- Seitentitel bleibt auch beim Löschen der Seite gespeichert
+Kontakt Manager
+- Einrückung in E-Mails verbessert.
+- Eingegebene Umlaute werden korrekt dargestellt.
+- Der Export wurde auf zwei Varianten aufgeteilt. Export als normale CSV-Datei und CSV-Datei für Excel.
+
 Media Manager
 - Falls GD 2.0 installiert ist, werden Vorschaubilder mit erhöhter Qualität generiert
+
+Statistiken
+- Seitentitel bleibt auch beim Löschen der Seite gespeichert
 
 ****************************************
 * Behobene Fehler **********************
 ****************************************
 Content Management
 - Fehler in Custom Content Templates behoben
+
 Internationalisierung
 - Russische Übersetzungen in Blog-Modul repariert
 - Defekte Übersetzungen in Job-Modul repariert
-Job-Modul
-- Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
-- Javascript-Fehler beim Löschen von Regionen behoben
-Kalender-Modul
-- Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
-- Bereits vorhandene Anmeldungen gehen nicht mehr verloren, wenn die Anmeldungsfunktion einer Veranstaltung deaktiviert wird.
-Kontakt-Modul
+
+Kontakt Manager
 - Einrückung in E-Mails verbessert.
 - Eingegebene Umlaute werden korrekt dargestellt.
 - Der Export wurde auf zwei Varianten aufgeteilt. Export als normale CSV-Datei und CSV-Datei für Excel.
+
+Layout & Design Manager
+- Beim Import eines gezippten Designs wird nun auch 'application/x-zip-compressed' als MIME-Typ akzeptiert.
+
+News Manager
+- An den Platzhalter TEASER_URL wird kein Anti-CSRF-Tag mehr angehängt
+- Escaping durchgehend sauber gelöst
+- News anmelden Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+
 Statistiken
 - Der Link "Homepage Vorschau" im Backend generiert keine eigenen Statistikeinträge mehr.
 - Die Grafiken werden wieder korrekt angezeigt.
 - Suchbegriffe mit Sonderzeichen werden korrekt erfasst.
-News
-- An den Platzhalter TEASER_URL wird kein Anti-CSRF-Tag mehr angehängt
-- Escaping durchgehend sauber gelöst
-- News anmelden Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+
 Bildergallerie
 - Die Shadowbox zeigt keine Titel mehr an, wenn diese Option im Backend abgewählt wurde.
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
 - Beim Editieren eines Bildes waren nur Namen mit einer maximalen Länge von 25 Zeichen zugelassen. Nun werden 255 Z. akzeptiert.
-Skins
-- Beim Import eines gezippten Designs wird nun auch 'application/x-zip-compressed' als MIME-Typ akzeptiert.
-Newsletter-Import (CSV)
-- Debug-Ausgaben entfernt.
-- Leerzeichen vor und nach E-Mail-Adressen werden entfernt.
-- Umlaute von CSV-Dateien mit ISO-8859-Charset werden korrekt erkannt
+
+Modul: Job
+- Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+- Javascript-Fehler beim Löschen von Regionen behoben
+
+Modul: Kalender
+- Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+- Bereits vorhandene Anmeldungen gehen nicht mehr verloren, wenn die Anmeldungsfunktion einer Veranstaltung deaktiviert wird.
+
+Modul: Newsletter
+- Debug-Ausgaben beim Import entfernt.
+- Leerzeichen vor und nach E-Mail-Adressen werden beim Import entfernt.
+- Umlaute von CSV-Dateien mit ISO-8859-Charset werden korrekt importiert. 
+
+Modul: RSS Feed Verzeichnis
+- Bei der Auflistung der Meldungen eines RSS Feeds stehen zwei neue Platzhalter zur Verfügung.
+  Mit dem Platzhalter [[FEED_DATE]] kann das Erscheinungsdatum der Meldung ausgegeben werden.
+  Zusätzlich kann der Platzhalter [[FEED_ROWCLASS]] zur Gestaltung der Auflistung verwendet werden (mittels CSS). Abwechslungsweise generiert dieser Platzhalter die CSS-Klassen row1 und row2.

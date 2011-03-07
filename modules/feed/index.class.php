@@ -314,8 +314,10 @@ class feed extends feedLibrary
             foreach ($rss->getItems() as $value){
                 if($x < $objResult->fields['articles']){
                     $this->_objTpl->setVariable(array(
-                        'FEED_LINK'   => $value['link'],
-                        'FEED_NAME'   => $value['title'],
+                        'FEED_ROWCLASS' => $x % 2 ? 'row2' : 'row1',
+                        'FEED_DATE'     => date('d.m.Y', strtotime($value['pubdate'])),
+                        'FEED_LINK'     => $value['link'],
+                        'FEED_NAME'     => $value['title'],
                     ));
                     $this->_objTpl->parse('feed_output_news');
                     $x++;
