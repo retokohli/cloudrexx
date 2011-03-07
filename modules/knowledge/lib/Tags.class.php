@@ -26,9 +26,9 @@ class KnowledgeTags
      *
      * @return array
      */
-    public function getAll($lang)
+    public function getAll($lang, $inUseOnly = false)
     {
-        return $this->getAllOrderAlphabetically($lang);
+        return $this->getAllOrderAlphabetically($lang, $inUseOnly);
     }
     
     /**
@@ -40,7 +40,7 @@ class KnowledgeTags
      * @global $objDatabase
      * @return array
      */
-    public function getAllOrderByPopularity($lang)
+    public function getAllOrderByPopularity($lang, $inUseOnly = false)
     {
         if (count($this->tags) != 0) {
             return $this->tags;
@@ -55,7 +55,7 @@ class KnowledgeTags
                         tags.name AS name, 
                         count( tags_articles.id ) AS popularity
                     FROM ".DBPREFIX."module_knowledge_tags AS tags
-                    LEFT OUTER JOIN ".DBPREFIX."module_knowledge_tags_articles AS tags_articles 
+                    ".($inUseOnly ? "INNER JOIN" : "LEFT OUTER JOIN")." ".DBPREFIX."module_knowledge_tags_articles AS tags_articles
                     ON tags.id = tags_articles.tag
                     WHERE tags.lang = ".$lang."
                     GROUP BY tags.id
@@ -87,7 +87,7 @@ class KnowledgeTags
      * @global $objDatabase
      * @return array
      */
-    public function getAllOrderAlphabetically($lang)
+    public function getAllOrderAlphabetically($lang, $inUseOnly = false)
     {
         if (count($this->tags) != 0) {
             return $this->tags;
@@ -100,7 +100,7 @@ class KnowledgeTags
                             tags.name AS name,
                             count( tags_articles.id ) AS popularity
                     FROM ".DBPREFIX."module_knowledge_tags AS tags
-                    LEFT OUTER JOIN ".DBPREFIX."module_knowledge_tags_articles AS tags_articles
+                    ".($inUseOnly ? "INNER JOIN" : "LEFT OUTER JOIN")." ".DBPREFIX."module_knowledge_tags_articles AS tags_articles
                     ON tags.id = tags_articles.tag
                     WHERE tags.lang = ".$lang."
                     GROUP BY tags.id
@@ -304,20 +304,18 @@ class KnowledgeTags
     }
     
     /**
-     * Remove all relations from an article to tags
+     * Remove all tag relations from removed articles
      *
-     * @param int $article_id
      * @global $objDatabase
      * @throws DatabaseError
      */
-    public function clearTags($article_id)
+    public function clearTags()
     {
         global $objDatabase;
-        
-        $article_id = intval($article_id);
-        
-        $query = "  DELETE FROM ".DBPREFIX."module_knowledge_tags_articles
-                    WHERE article = ".$article_id;
+
+        $query = "  DELETE tags FROM ".DBPREFIX."module_knowledge_tags_articles AS tags
+                    LEFT JOIN ".DBPREFIX."module_knowledge_articles AS articles ON articles.id = tags.article
+                    WHERE ISNULL(articles.id)";
         if ($objDatabase->Execute($query) === false) {
             throw new DatabaseError("error deleting all references of an article");
         }

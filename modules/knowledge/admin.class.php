@@ -354,6 +354,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             foreach ($deletedCategories as $cat) {
                 $this->articles->deleteArticlesByCategory($cat);
             }
+            $this->tags->clearTags();
         } catch (DatabaseError $e) {
             $this->sendAjaxError($e->formatted());
         }
@@ -370,7 +371,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         try {
             $this->articles->deleteOneArticle($id);
-            $this->tags->clearTags($id);
+            $this->tags->clearTags();
         } catch (DatabaseError $e) {
             $this->sendAjaxError($e->formatted());
         }
@@ -901,7 +902,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
             foreach ($articles as $key => $article) {
                 $tpl->setVariable(array(
                     "ARTICLEID"             => $key,
-                    "QUESTION"              => utf8_encode($article['content'][$_LANGID]['question']),
+                    "QUESTION"              => contrexx_raw2xhtml($article['content'][$_LANGID]['question']),
                     "ACTIVE_STATE"          => abs($article['active']-1),
                     "CATEGORY_ACTIVE_LED"   => ($article['active']) ? "green" : "red",
                     "HITS"                  => $article['hits'],
@@ -1071,7 +1072,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
     	       "DISPLAY"           => ($first) ? "block" : "none",
     	       "ID"                => $lang['long'],
                "QUESTION"          => (isset($article['content'][$langId]) ?
-                                       $article['content'][$langId]['question']
+                                       contrexx_raw2xhtml($article['content'][$langId]['question'])
                                        : ''),
                "ANSWER"            => isset($article['content'][$langId]) ?
                                        htmlentities($article['content'][$langId]['answer'], ENT_QUOTES, CONTREXX_CHARSET)
@@ -1164,7 +1165,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         try {
             $this->articles->update($id, $category, $state);
-            $this->tags->clearTags($id);
+            $this->tags->clearTags();
             foreach ($tags as $lang => $tag) {
                 $this->tags->insertFromString($id, $tag, $lang);
             }
