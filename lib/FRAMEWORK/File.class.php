@@ -450,6 +450,24 @@ class File
         return true;
     }
 
+    /**
+     * Determines the file size of a given file by $file and returns its size in bytes.
+     *
+     * @param   string The relative path to a file
+     * @return  integer Filesize of $file in bytes
+     */
+    function getFileSizeInBytes($file)
+    {
+        $size = sprintf('%u', filesize(ASCMS_DOCUMENT_ROOT.'/'.$file));
+        if ((!$size || $size > PHP_INT_MAX) && $this->ftp_is_activated) {
+            $result = ftp_raw($this->conn_id, 'SIZE '.$this->ftpDirectory.ASCMS_PATH_OFFSET.'/'.$file);
+            if (preg_match('/^213\s(.*)$/', $result[0], $match)) {
+                $size = $match[1];
+            }
+        }
+
+        return $size;
+    }
 }
 
 ?>
