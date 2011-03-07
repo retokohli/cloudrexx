@@ -2489,7 +2489,7 @@ CREATE TABLE `contrexx_module_newsletter_category` (
   `id` int(11) NOT NULL auto_increment,
   `status` tinyint(1) NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
-  `notification_email` varchar(250) NOT NULL,
+  `notification_email` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 ) TYPE=MyISAM ;
