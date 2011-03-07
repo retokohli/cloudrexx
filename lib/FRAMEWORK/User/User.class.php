@@ -793,7 +793,8 @@ class User extends User_Profile
             .($arrQuery['tables']['group'] ? ' INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`' : '')
             .($arrQuery['tables']['group'] && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id` = tblG.`group_id`' : '')
             .(count($arrQuery['joins']) ? ' '.implode(' ',$arrQuery['joins']) : '')
-            .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
+// TODO: some conditions are not well enclosed, so there might be a more proper solution than adding more brackes at this point
+            .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
             .($arrQuery['group_tables'] ? ' GROUP BY tblU.`id`' : '')
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
 
@@ -955,6 +956,8 @@ class User extends User_Profile
             .($joinGroupTbl && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id` = tblG.`group_id`' : '')
             .(count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
+// TODO: some conditions are not well enclosed, so there might be a more proper solution that adding more brackes at this point
+            .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
         if (empty($limit)) {
