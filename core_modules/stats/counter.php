@@ -28,6 +28,9 @@ require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
 
 $objDb = ADONewConnection($_DBCONFIG['dbType']); # eg 'mysql' or 'postgres'
 $objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
+
+if(!empty($_DBCONFIG['charset']))
+  $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']);
 $counter = new counter($arrRobots, $arrBannedWords);
 
 /**
@@ -209,7 +212,7 @@ class counter
             }
         }
         if (isset($_GET['searchTerm']) && !empty($_GET['searchTerm'])) {
-            $this->searchTerm = addslashes(urldecode($_GET['searchTerm']));
+            $this->searchTerm = urldecode($_GET['searchTerm']);
         }
     }
 
@@ -394,7 +397,7 @@ class counter
         $arrMatches = array();
         foreach ($arrReferers as $refererRegExp) {
             if (preg_match($refererRegExp, $referer, $arrMatches)) {
-                $this->externalSearchTerm = addslashes(urldecode($arrMatches[1]));
+                $this->externalSearchTerm = urldecode($arrMatches[1]);
             }
         }
     }
@@ -752,14 +755,14 @@ class counter
 
     function _countSearchquery($searchTerm, $external) {
         global $objDb;
-        $searchTerm = urldecode(utf8_decode($searchTerm));
-        $query = "UPDATE `".DBPREFIX."stats_search` SET `count` = `count` + 1, `sid` = '".$this->md5Id."' WHERE `name` = '".substr($searchTerm,0,100)."' AND `sid` != '".$this->md5Id."' AND `external` = '".$external."'";
+        $searchTerm = addslashes(substr($searchTerm,0,100));
+        $query = "UPDATE `".DBPREFIX."stats_search` SET `count` = `count` + 1, `sid` = '".$this->md5Id."' WHERE `name` = '".$searchTerm."' AND `sid` != '".$this->md5Id."' AND `external` = '".$external."'";
         $objDb->Execute($query);
         if ($objDb->Affected_Rows() == 0) {
-            $query = "SELECT `id` FROM `".DBPREFIX."stats_search` WHERE `name` = '".substr($searchTerm,0,100)."' AND `external` = '".$external."'";
+            $query = "SELECT `id` FROM `".DBPREFIX."stats_search` WHERE `name` = '".$searchTerm."' AND `external` = '".$external."'";
             $objDb->Execute($query);
             if ($objDb->Affected_Rows() == 0) {
-                $query = "INSERT INTO `".DBPREFIX."stats_search` (`name`, `count`, `sid`, `external`) VALUES ('".substr($searchTerm,0,100)."', 1, '".$this->md5Id."', '".$external."')";
+                $query = "INSERT INTO `".DBPREFIX."stats_search` (`name`, `count`, `sid`, `external`) VALUES ('".$searchTerm."', 1, '".$this->md5Id."', '".$external."')";
                 $objDb->Execute($query);
             }
         }

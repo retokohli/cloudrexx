@@ -31,6 +31,7 @@ Kontakt-Modul
 Statistiken
 - Der Link "Homepage Vorschau" im Backend generiert keine eigenen Statistikeinträge mehr.
 - Die Grafiken werden wieder korrekt angezeigt.
+- Suchbegriffe mit Sonderzeichen werden korrekt erfasst.
 News
 - An den Platzhalter TEASER_URL wird kein Anti-CSRF-Tag mehr angehängt
 - Escaping durchgehend sauber gelöst
