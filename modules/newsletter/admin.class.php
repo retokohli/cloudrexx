@@ -478,8 +478,9 @@ class newsletter extends NewsletterLib
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_newsletter_category (`name`, `status`)
-                                    VALUES ('".$listName."', ".$listStatus.")") !== false) {
+        $query = "INSERT INTO ".DBPREFIX."module_newsletter_category (`name`, `status`)
+                                    VALUES ('".$listName."', ".$listStatus.")";
+        if ($objDatabase->Execute($query) !== false) {
             return true;
         } else {
             return false;
@@ -697,7 +698,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->touchBlock('newsletter_mail_text_content');
         }
 
-        $arrLists = &$this->_getLists('tblCategory.name',true);
+        $arrLists = &$this->_getLists('tblCategory.name');
         $listNr = 0;
         foreach ($arrLists as $listId => $arrList) {
             $column = $listNr % 3;

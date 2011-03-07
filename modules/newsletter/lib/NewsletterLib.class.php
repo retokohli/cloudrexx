@@ -133,22 +133,24 @@ class NewsletterLib
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_user SET
-        `email`='".contrexx_addslashes($email)."',
-        `uri`='".contrexx_addslashes($uri)."',
-        `sex`='".contrexx_addslashes($sex)."',
-        `title`=".intval($title).",
-        `lastname`='".contrexx_addslashes($lastname)."',
-        `firstname`='".contrexx_addslashes($firstname)."',
-        `company`='".contrexx_addslashes($company)."',
-        `street`='".contrexx_addslashes($street)."',
-        `zip`='".contrexx_addslashes($zip)."',
-        `city`='".contrexx_addslashes($city)."',
-        `country`='".contrexx_addslashes($country)."',
-        `phone`='".contrexx_addslashes($phone)."',
-        `birthday`='".contrexx_addslashes($birthday)."',
-        `status`=".intval($status)."
-        WHERE id=".$id) !== false) {
+        $query = SQL::update('module_newsletter_user', array(
+            'email' => contrexx_addslashes($email),
+            'uri' => contrexx_addslashes($uri),
+            'sex' => array('value' => contrexx_addslashes($sex), 'omitEmpty' => true),
+            'title' => intval($title),
+            'lastname' => contrexx_addslashes($lastname),
+            'firstname' => contrexx_addslashes($firstname),
+            'company' => contrexx_addslashes($company),
+            'street' => contrexx_addslashes($street),
+            'zip' => contrexx_addslashes($zip),
+            'city' => contrexx_addslashes($city),
+            'country' => contrexx_addslashes($country),
+            'phone' => contrexx_addslashes($phone),
+            'birthday' => contrexx_addslashes($birthday),
+            'status' => intval($status)
+        ))."WHERE id=".$id;
+
+        if ($objDatabase->Execute($query) !== false) {
             if ($this->_setRecipientLists($id, $arrLists)) {
                 return true;
             } else {
