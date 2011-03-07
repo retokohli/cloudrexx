@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Auction-Counter
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -11,21 +11,21 @@
 
 
 class AuctionCounter{
-	
+
 	var $mode 		= '';
 	var $auction_id = 0;
 	var $content 	= '';
-	
+
 	function AuctionCounter()
     {
         $this->__construct();
     }
-	
+
 	function __construct(){
 
 		$this->mode 		= $_REQUEST["mode"];
 		$this->auction_id 	= intval($_REQUEST["id"]);
-		
+
 		if($this->auction_id>0){
 			if($this->mode == 'countdown'){
 				$this->content = $this->GetCountdown($this->auction_id);
@@ -34,7 +34,7 @@ class AuctionCounter{
 		echo($this->content);
 
 	}
-	
+
 	function GetCountdown($id){
 		include_once('../../../config/configuration.php');
 		$content = '';
@@ -63,7 +63,7 @@ class AuctionCounter{
 		mysql_close();
 		return $content;
 	}
-    	
+
 }
 
 $Ajax = new AuctionCounter();
