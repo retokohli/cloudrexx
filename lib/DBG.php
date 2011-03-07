@@ -380,7 +380,7 @@ class DBG
             self::trace($level);
             $sf = self::_cleanfile($callers[$level]['file']);
             $sl = $callers[$level]['line'];
-            self::_log("        ".(empty($c) ? $c : "$c::$f")." FROM $sf : $sl");
+            self::_log("        ".(empty($c) ? $f : "$c::$f")." FROM $sf : $sl");
         }
     }
 
