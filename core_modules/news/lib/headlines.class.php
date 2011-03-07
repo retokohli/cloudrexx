@@ -135,7 +135,7 @@ OR startdate = '0000-00-00 00:00:00'
                 $this->_objTemplate->setVariable("HEADLINE_DATE", date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['date']));
                 $this->_objTemplate->setVariable("HEADLINE_LINK", $news_link);
                 $this->_objTemplate->setVariable("HEADLINE_IMAGE_PATH", $image);
-                $this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br(contrexx_raw2xhtml($objResult->fields['teaser_text'])));
+                $this->_objTemplate->setVariable("HEADLINE_TEXT", nl2br($objResult->fields['teaser_text']));
                 $this->_objTemplate->setVariable("HEADLINE_ID", intval($objResult->fields['id'])); 
                 $this->_objTemplate->setVariable("HEADLINE_AUTHOR", $name);
                 $this->_objTemplate->parseCurrentBlock();
