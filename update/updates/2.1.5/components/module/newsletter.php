@@ -10,7 +10,7 @@ function _newsletterUpdate()
                 'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'status'                 => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0'),
                 'name'                   => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'notification_email'     => array('type' => 'VARCHAR(250)')
+                'notification_email'     => array('type' => 'VARCHAR(250)', 'default' => '')
             ),
             array(
                 'name'                   => array('fields' => array('name'))
