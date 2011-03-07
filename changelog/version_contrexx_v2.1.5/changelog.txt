@@ -79,3 +79,7 @@ Modul: RSS Feed Verzeichnis
 - Bei der Auflistung der Meldungen eines RSS Feeds stehen zwei neue Platzhalter zur Verfügung.
   Mit dem Platzhalter [[FEED_DATE]] kann das Erscheinungsdatum der Meldung ausgegeben werden.
   Zusätzlich kann der Platzhalter [[FEED_ROWCLASS]] zur Gestaltung der Auflistung verwendet werden (mittels CSS). Abwechslungsweise generiert dieser Platzhalter die CSS-Klassen row1 und row2.
+
+Modul: Wissensdatenbank
+- Nicht mehr eingesetzte Tags werden automatisch aus der Tag-Liste entfernt.
+- Die Tag-Liste enthält nur Tags von aktiven Artikel der Wissensdatenbank.
