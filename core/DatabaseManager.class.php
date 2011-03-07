@@ -372,17 +372,18 @@ class DatabaseManager
 
         //Iterate through tables
         while (!$objResult->EOF) {
+            $isInnoDbEngine = $objResult->fields['Engine'] == 'InnoDB';
             $objTemplate->setGlobalVariable(array(
                 'TXT_MAINTENANCE_SHOW_TABLE' => $_CORELANG['TXT_DBM_SHOW_TABLE_TITLE'],
                 'MAINTENANCE_TABLES_NAME' => $objResult->fields['Name']
             ));
 
             $objTemplate->setVariable(array(
-                'MAINTENANCE_TABLES_ROW' => ($objResult->fields['Data_free'] != 0) ? 'Warn' : (($intRowCounter % 2 == 0) ? 2 : 1),
+                'MAINTENANCE_TABLES_ROW' => (!$isInnoDbEngine && $objResult->fields['Data_free'] != 0) ? 'Warn' : (($intRowCounter % 2 == 0) ? 2 : 1),
                 'MAINTENANCE_TABLES_ROWS' => $objResult->fields['Rows'],
                 'MAINTENANCE_TABLES_DATA' => $this->convertBytesToKBytes($objResult->fields['Data_length']),
                 'MAINTENANCE_TABLES_INDEXES' => $this->convertBytesToKBytes($objResult->fields['Index_length']),
-                'MAINTENANCE_TABLES_BACKLOG' => $this->convertBytesToKBytes($objResult->fields['Data_free']),
+                'MAINTENANCE_TABLES_BACKLOG' => $isInnoDbEngine ? '0' : $this->convertBytesToKBytes($objResult->fields['Data_free']),
             ));
 
             if (Permission::hasAllAccess()) {

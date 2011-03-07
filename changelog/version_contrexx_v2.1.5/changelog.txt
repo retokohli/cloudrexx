@@ -5,6 +5,9 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Datenbank Manager
+- Der Index bei InnoDB Tabellen wird nicht als Überhang gezählt.
+
 Kontakt Manager
 - Einrückung in E-Mails verbessert.
 - Eingegebene Umlaute werden korrekt dargestellt.
