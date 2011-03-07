@@ -223,7 +223,9 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
                 'mode'                     => array('type' => 'SET(\'normal\',\'forward\')', 'default' => 'normal'),
                 'forward_url'              => array('type' => 'VARCHAR(255)'),
                 'forward_target'           => array('type' => 'VARCHAR(40)', 'notnull' => false)
-            )
+            ),
+            array(),
+            'InnoDB'
         );
     }
     catch (UpdateException $e) {
