@@ -45,6 +45,7 @@ News Manager
 - An den Platzhalter TEASER_URL wird kein Anti-CSRF-Tag mehr angehängt
 - Escaping durchgehend sauber gelöst
 - News anmelden Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
+- Die Einbindung der Javascript RSS Feeds ist kompatibel mit und ohne Contrexx basierten Systeme.
 
 Statistiken
 - Der Link "Homepage Vorschau" im Backend generiert keine eigenen Statistikeinträge mehr.

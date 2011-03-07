@@ -239,7 +239,7 @@ class RSSWriter {
     {
         $this->xmlDocument = <<<XMLJSOUTPUT
 if (document.body) {
-	document.write('<div id="news_js_rss_feed"></div>');
+	document.write('<div id="news_rss_feeds"></div>');
 }
 fnWinOnload = window.onload;
 window.onload = function() {
@@ -299,7 +299,7 @@ if (rssFeedNews.length < rssFeedLimit) {
     rssFeedLimit = rssFeedNews.length;
 }
 
-    rssFeedContainer = document.getElementById('news_js_rss_feed');
+    rssFeedContainer = document.getElementById('news_rss_feeds');
     rssFeedContainer.innerHTML = '';
 
 var rssFeedNewsDate = "";
