@@ -22,11 +22,12 @@ Statistiken
 ****************************************
 * Behobene Fehler **********************
 ****************************************
-Allgemein
-- Die XML-Sitemap-Generierung ist kompatibel mit benutzerdefinierten 'cmd'-Url-Modifikatoren.
+Benutzerverwaltung
+- Die Anzahl gefundener Benutzerkonten unter Verwendung von benutzerspezifischen Eigenschaften ist korrekt. 
 
 Content Management
 - Fehler in Custom Content Templates behoben
+- Die XML-Sitemap-Generierung ist kompatibel mit benutzerdefinierten 'cmd'-Url-Modifikatoren.
 
 Internationalisierung
 - Russische Übersetzungen in Blog-Modul repariert
