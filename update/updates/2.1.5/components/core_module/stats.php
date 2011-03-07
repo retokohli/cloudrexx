@@ -210,12 +210,12 @@ function _statsUpdate()
         UpdateUtil::table(
             DBPREFIX.'stats_requests',
             array(
-                  'id'             => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true),
-                  'timestamp'      => array('type' => 'INT(11)', 'default' => '0', 'after' => 'id'),
+                  'id'             => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                  'timestamp'      => array('type' => 'INT(11)', 'default' => '0', 'notnull' => false, 'after' => 'id'),
                   'pageId'         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'timestamp'),
-                  'page'           => array('type' => 'VARCHAR(255)', 'after' => 'pageId'),
+                  'page'           => array('type' => 'VARCHAR(255)', 'after' => 'pageId', 'default' => '', 'binary' => true),
                   'visits'         => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'page'),
-                  'sid'            => array('type' => 'VARCHAR(32)', 'after' => 'visits'),
+                  'sid'            => array('type' => 'VARCHAR(32)', 'after' => 'visits', 'default' => ''),
                   'pageTitle'      => array('type' => 'VARCHAR(250)', 'after' => 'sid') //this field is added
                   ),
             array(
@@ -223,7 +223,7 @@ function _statsUpdate()
                   )
         );
         //fill pageTitle with current titles
-        UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM contrexx_content WHERE id=pageId );');
+        UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId )');
 
     }
     catch (UpdateException $e) {
