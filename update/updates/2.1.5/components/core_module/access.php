@@ -30,7 +30,8 @@ function _accessUpdate()
             ),
             array(
                 'mail'           => array('fields' => array('type','lang_id'), 'type' => 'UNIQUE')
-            )
+            ),
+            'InnoDB'
         );
     }
     catch (UpdateException $e) {
@@ -238,7 +239,8 @@ function _accessUpdate()
             ),
             array(
                 'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
-            )
+            ),
+            'InnoDB'
         );
     }
     catch (UpdateException $e) {
@@ -316,7 +318,9 @@ function _accessUpdate()
             DBPREFIX.'access_user_validity',
             array(
                 'validity'   => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true)
-            )
+            ),
+            array(),
+            'InnoDB'
         );
     }
     catch (UpdateException $e) {
