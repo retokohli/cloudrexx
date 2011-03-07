@@ -718,7 +718,7 @@ class downloads extends DownloadsLibrary
             return;
         }
 
-        $objGroup = Group::getGroups(array('category_id' => $objCategory->getId()));
+        $objGroup = Group::getGroups(array('category_id' => $objCategory->getId(), 'is_active' => true));
 
         if (!$objGroup->EOF) {
             while (!$objGroup->EOF) {

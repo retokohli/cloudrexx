@@ -55,6 +55,9 @@ Modul: Bildergalerie
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
 - Beim Editieren eines Bildes waren nur Namen mit einer maximalen Länge von 25 Zeichen zugelassen. Nun werden 255 Z. akzeptiert.
 
+Modul: Digital Asset Management
+- Nur aktive Gruppen werden im Frontend aufgelistet.
+
 Modul: Job
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)
 - Javascript-Fehler beim Löschen von Regionen behoben
