@@ -51,6 +51,9 @@ Statistiken
 - Die Grafiken werden wieder korrekt angezeigt.
 - Suchbegriffe mit Sonderzeichen werden korrekt erfasst.
 
+Webinstaller
+- Verbesserte Unterstützung von FTP-Server.
+
 Modul: Bildergalerie
 - Die Shadowbox zeigt keine Titel mehr an, wenn diese Option im Backend abgewählt wurde.
 - Funktioniert mit SQL-Modus STRICT_TRANS_TABLES (Standard auf Windows-Servern)

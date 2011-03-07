@@ -28,8 +28,8 @@ class CommonFunctions
 	var $ftpTimeout;
 	var $ftpPort;
 	var $newestVersion;
-	var $_ftpFileWinPCRE = '#^(?:[0-9\-]+)\s+(?:[0-9]{2}:[0-9]{2}(?:AM|PM|))\s+(?:\<DIR\>|[0-9]+|)\s+(.*)$#';
-	var $_ftpFileUnixPCRE = '#^(?:[bcdlsp-][rwxtTsS-]{9})\s+(?:[0-9]+)\s+(?:\S+)\s+(?:\S+)\s+(?:[0-9]+)\s+(?:[A-Z][a-z]+\s+[0-9]{1,2}\s+(?:[0-9]{4}|[0-9]{2}:[0-9]{2}|))\s+(.*)$#';
+	var $_ftpFileWinPCRE = '#^()(?:[0-9\-]+)\s+(?:[0-9]{2}:[0-9]{2}(?:AM|PM|))\s+(?:\<DIR\>|[0-9]+|)\s+(.*)$#';
+	var $_ftpFileUnixPCRE = '#^(?:([bcdlsp-])[rwxtTsS-]{9})\s+(?:[0-9]+)\s+(?:\S+)\s+(?:\S+)\s+(?:[0-9]+)\s+(?:[A-Z][a-z]+\s+[0-9]{1,2}\s+(?:[0-9]{4}|[0-9]{2}:[0-9]{2}|))\s+(.*)$#';
 
 	function CommonFunctions()
 	{
@@ -567,9 +567,14 @@ class CommonFunctions
 
 				foreach ($fileList as $fileDescription) {
 					if (preg_match($pcre, $fileDescription, $arrFile)) {
-						if ($arrFile[1] != '.' && $arrFile[1] != '..') {
-							array_push($arrDirectories, $arrFile[1]);
-						}
+                        if ($arrFile[1] == 'l') {
+                            $file = substr($arrFile[2], strpos($arrFile[2], '-> ') + 3);
+                        } else {
+                            $file = $arrFile[2];
+                        }
+                        if ($file != '.' && $file != '..') {
+                            array_push($arrDirectories, $file);
+                        }
 					}
 				}
 			}
