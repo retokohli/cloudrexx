@@ -5,12 +5,13 @@
 /*
     this was c&ped together from news/admin.class.php and news/lib/newsLib.class.php 
 */
+
 class HackyFeedRepublisher {
 
     protected $arrSettings = array();
 
     public function runRepublishing() {
-        initRepublishing();
+        $this->initRepublishing();
     
         FWLanguage::init();
 
@@ -24,6 +25,9 @@ class HackyFeedRepublisher {
     protected function initRepublishing()
     {
         global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
+
+        require_once(ASCMS_CORE_PATH.'/validator.inc.php');
+        require_once(ASCMS_FRAMEWORK_PATH.'/Language.class.php');
 
         //getSettings
         global $objDatabase;
@@ -42,6 +46,7 @@ class HackyFeedRepublisher {
 
         if (intval($this->arrSettings['news_feed_status']) == 1) {
             $arrNews = array();
+            require_once(ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php');
             $objRSSWriter = new RSSWriter();
 
             $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
