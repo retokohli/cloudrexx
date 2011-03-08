@@ -12,7 +12,6 @@ class HackyFeedRepublisher {
     public function runRepublishing() {
         initRepublishing();
     
-        require_once 'Language.class.php';
         FWLanguage::init();
 
         $langIds = array_keys(FWLanguage::getLanguageArray());
@@ -40,8 +39,6 @@ class HackyFeedRepublisher {
         global $_CONFIG, $objDatabase; 
         $_FRONTEND_LANGID = $langId;
 
-        require_once 'validator.inc.php';
-        require_once 'RSSWriter.class.php';
 
         if (intval($this->arrSettings['news_feed_status']) == 1) {
             $arrNews = array();
@@ -423,7 +420,6 @@ function _newsUpdate() {
                 UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_news` SET `title`="'.addslashes($title).'", `teaser_text`="'.addslashes($teaserText).'" where `id`='.$id);
             }
 
-            require_once('news_dependencies/hackyFeedRepublisher.class.php');
             $hfr = new HackyFeedRepublisher();
             $hfr->runRepublishing();
         }
