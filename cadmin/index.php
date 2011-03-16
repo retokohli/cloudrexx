@@ -27,7 +27,6 @@
  */
 include_once('../lib/DBG.php');
 DBG::deactivate();
-//DBG::activate(DBG_ERROR_FIREPHP);
 
 $startTime = explode(' ', microtime());
 $adminPage = true;
@@ -58,8 +57,7 @@ $incVersionStatus = include_once('../config/version.php');
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header("Location: ../installer/index.php");
     exit;
-}
-if ($incSettingsStatus === false || $incVersionStatus === false) {
+} elseif ($incSettingsStatus === false || $incVersionStatus === false) {
     die('System halted: Unable to load basic configuration!');
 }
 
@@ -85,9 +83,6 @@ if (DBG::getMode() & DBG_ADODB_TRACE) {
     DBG::disable_adodb_debug();
 }
 
-//uncomment if users should be imported from shop, system and voting tables on every page request. (careful, slows down your website)
-//include_once(dirname(__FILE__).'/nlimport.inc.php');
-
 //-------------------------------------------------------
 // Load settings and configuration
 //-------------------------------------------------------
@@ -97,44 +92,16 @@ $objInit = new InitCMS('backend');
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
 
-// CSRF code needs to be even in the login form. otherwise, we
-// could not do a super-generic check later.. NOTE: do NOT move
-// this above the "new cmsSession" line!
-CSRF::add_code();
 
 $objInit->_initBackendLanguage();
 $objInit->getUserFrontendLangId();
 
-/**
- * Language constants
- *
- * Defined as follows:
- * - BACKEND_LANG_ID is set to the visible backend language
- *   in the backend *only*.  In the frontend, it is *NOT* defined!
- *   It indicates a backend user and her currently selected language.
- *   Use this in methods that are intended *for backend use only*.
- *   It *MUST NOT* be used to determine the language for any kind of content!
- * - FRONTEND_LANG_ID is set to the selected frontend or content language
- *   both in the back- and frontend.
- *   It *always* represents the language of content being viewed or edited.
- *   Use FRONTEND_LANG_ID for that purpose *only*!
- * - LANG_ID is set to the same value as BACKEND_LANG_ID in the backend,
- *   and to the same value as FRONTEND_LANG_ID in the frontend.
- *   It *always* represents the current users' selected language.
- *   It *MUST NOT* be used to determine the language for any kind of content!
- * @since 2.2.0
- */
-define('FRONTEND_LANG_ID', $objInit->userFrontendLangId);
-define('BACKEND_LANG_ID',  $objInit->getBackendLangId());
-define('LANG_ID',          BACKEND_LANG_ID);
-
-/**
- * Obsolete
- *
- * @todo   Replace globally with language constants
- */
 $_LANGID = $objInit->getBackendLangId();
 $_FRONTEND_LANGID = $objInit->userFrontendLangId;
+// Post-2.1
+define('FRONTEND_LANG_ID', $_FRONTEND_LANGID);
+define('BACKEND_LANG_ID', $_LANGID);
+define('LANG_ID', $_LANGID);
 
 //-------------------------------------------------------
 // language array for the core system
@@ -196,6 +163,7 @@ $_ARRAYLANG = $objInit->loadLanguageData($plainCmd);
 $_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
 
 $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+CSRF::add_placeholder($objTemplate);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 // Module object
@@ -207,7 +175,7 @@ $objFWUser = FWUser::getFWUserObject();
 // Authentification start
 //-------------------------------------------------------
 if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
-    $modulespath = ASCMS_CORE_PATH.'/imagecreator.php';
+    $modulespath = ASCMS_CORE_PATH . "/imagecreator.php";
     if (file_exists($modulespath)) require_once($modulespath);
     else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
 
@@ -223,9 +191,9 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
 
             // set language variables
             $objTemplate->setVariable(array(
-                'TXT_LOST_PASSWORD_TEXT' => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
-                'TXT_EMAIL'              => $_CORELANG['TXT_EMAIL'],
-                'TXT_RESET_PASSWORD'     => $_CORELANG['TXT_RESET_PASSWORD'],
+                'TXT_LOST_PASSWORD_TEXT'    => $_CORELANG['TXT_LOST_PASSWORD_TEXT'],
+                'TXT_EMAIL'                    => $_CORELANG['TXT_EMAIL'],
+                'TXT_RESET_PASSWORD'        => $_CORELANG['TXT_RESET_PASSWORD']
             ));
 
             if (isset($_POST['email'])) {
@@ -241,7 +209,7 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
                 }
 
                 $objTemplate->setVariable(array(
-                    'LOGIN_STATUS_MESSAGE' => $statusMessage,
+                    'LOGIN_STATUS_MESSAGE'        => $statusMessage
                 ));
             }
             $objTemplate->show();
@@ -271,12 +239,12 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
                         $statusMessage = $objFWUser->getErrorMsg();
 
                         $objTemplate->setVariable(array(
-                            'TXT_USERNAME'                    => $_CORELANG['TXT_USERNAME'],
-                            'TXT_PASSWORD'                    => $_CORELANG['TXT_PASSWORD'],
-                            'TXT_VERIFY_PASSWORD'             => $_CORELANG['TXT_VERIFY_PASSWORD'],
-                            'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                            'TXT_SET_PASSWORD_TEXT'           => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                            'TXT_SET_NEW_PASSWORD'            => $_CORELANG['TXT_SET_NEW_PASSWORD'],
+                            'TXT_USERNAME'                        => $_CORELANG['TXT_USERNAME'],
+                            'TXT_PASSWORD'                        => $_CORELANG['TXT_PASSWORD'],
+                            'TXT_VERIFY_PASSWORD'                => $_CORELANG['TXT_VERIFY_PASSWORD'],
+                            'TXT_PASSWORD_MINIMAL_CHARACTERS'    => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+                            'TXT_SET_PASSWORD_TEXT'                => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+                            'TXT_SET_NEW_PASSWORD'                => $_CORELANG['TXT_SET_NEW_PASSWORD'],
                         ));
 
                         $objTemplate->parse('login_reset_password');
@@ -288,21 +256,21 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
                     }
                 } else {
                     $objTemplate->setVariable(array(
-                        'TXT_USERNAME'                    => $_CORELANG['TXT_USERNAME'],
-                        'TXT_PASSWORD'                    => $_CORELANG['TXT_PASSWORD'],
-                        'TXT_VERIFY_PASSWORD'             => $_CORELANG['TXT_VERIFY_PASSWORD'],
-                        'TXT_PASSWORD_MINIMAL_CHARACTERS' => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
-                        'TXT_SET_PASSWORD_TEXT'           => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
-                        'TXT_SET_NEW_PASSWORD'            => $_CORELANG['TXT_SET_NEW_PASSWORD'],
+                        'TXT_USERNAME'                        => $_CORELANG['TXT_USERNAME'],
+                        'TXT_PASSWORD'                        => $_CORELANG['TXT_PASSWORD'],
+                        'TXT_VERIFY_PASSWORD'                => $_CORELANG['TXT_VERIFY_PASSWORD'],
+                        'TXT_PASSWORD_MINIMAL_CHARACTERS'    => $_CORELANG['TXT_PASSWORD_MINIMAL_CHARACTERS'],
+                        'TXT_SET_PASSWORD_TEXT'                => $_CORELANG['TXT_SET_PASSWORD_TEXT'],
+                        'TXT_SET_NEW_PASSWORD'                => $_CORELANG['TXT_SET_NEW_PASSWORD'],
                     ));
 
                     $objTemplate->parse('login_reset_password');
                 }
 
                 $objTemplate->setVariable(array(
-                    'LOGIN_STATUS_MESSAGE' => $statusMessage,
-                    'LOGIN_USERNAME'       => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
-                    'LOGIN_RESTORE_KEY'    => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET),
+                    'LOGIN_STATUS_MESSAGE'    => $statusMessage,
+                    'LOGIN_USERNAME'        => htmlentities($username, ENT_QUOTES, CONTREXX_CHARSET),
+                    'LOGIN_RESTORE_KEY'        => htmlentities($restoreKey, ENT_QUOTES, CONTREXX_CHARSET)
                 ));
             }
 
@@ -310,7 +278,7 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
             $objTemplate->show();
             exit;
         default:
-            if (checkGDExtension()) {
+            if(checkGDExtension()) {
                 $loginSecurityCode = '<img src="index.php?cmd=secure" alt="Security Code" title="Security Code"/>';
             } else {
                 $_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
@@ -326,40 +294,42 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
                 'TXT_USER_NAME'           => $_CORELANG['TXT_USER_NAME'],
                 'TXT_PASSWORD'            => $_CORELANG['TXT_PASSWORD'],
                 'TXT_LOGIN'               => $_CORELANG['TXT_LOGIN'],
-                'TXT_PASSWORD_LOST'       => $_CORELANG['TXT_PASSWORD_LOST'],
+                'TXT_PASSWORD_LOST'            => $_CORELANG['TXT_PASSWORD_LOST'],
                 'UID'                     => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
                 'TITLE'                   => $_CORELANG['TXT_LOGIN'],
                 'LOGIN_IMAGE'             => $loginSecurityCode,
-                'LOGIN_ERROR_MESSAGE'     => $objFWUser->getErrorMsg(),
+                'LOGIN_ERROR_MESSAGE'     => $objFWUser->getErrorMsg()
             ));
             $objTemplate->show();
             exit;
     }
 }
+
+// CSRF code needs to be even in the login form. otherwise, we
+// could not do a super-generic check later.. NOTE: do NOT move
+// this above the "new cmsSession" line!
+CSRF::add_code();
+
 if (isset($_POST['redirect']) && preg_match('/\.php/',($_POST['redirect']))) {
     $redirect = $_POST['redirect'];
-    header("Location: $redirect");
+    CSRF::header("Location: $redirect");
 }
 
 //-------------------------------------------------------
 // Site start
 //-------------------------------------------------------
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
-    $standAlone = false;
     $objTemplate->loadTemplateFile('index.html');
     if (Permission::checkAccess(35, 'static', true)) {
     $objTemplate->addBlockfile('QUICKLINKS_CONTENT', 'quicklinks', 'quicklinks.html');
     }
     $objTemplate->setVariable(
         array(
-            'TXT_PAGE_ID'      => $_CORELANG['TXT_PAGE_ID'],
-            'CONTREXX_CHARSET' => CONTREXX_CHARSET,
+            'TXT_PAGE_ID'        => $_CORELANG['TXT_PAGE_ID'],
+            'CONTREXX_CHARSET'    => CONTREXX_CHARSET
         )
     );
     $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
-} else {
-    $standAlone = true;
-    $objTemplate->loadTemplateFile('content_master.html');
 }
 
 // CSRF protection. From this point on, we can assume that
@@ -367,7 +337,10 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // Note that we only do the check as long as there's no
 // cmd given; this is so we can reload the main screen if
 // the check has failed somehow.
-if (!empty($plainCmd)) {
+// fileBrowser is an exception, as it eats CSRF codes like
+// candy. We're doing CSRF::check_code() in the relevant
+// parts in the module instead.
+if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'fileUploader'))) {
     CSRF::check_code();
 }
 
@@ -497,7 +470,7 @@ switch ($plainCmd) {
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_SHOP_ADMINISTRATION'];
         $objShopManager = new shopmanager();
-        $objShopManager->getPage();
+        $objShopManager->getShopPage();
         break;
 
     //-------------------------------------------------------
@@ -785,13 +758,13 @@ switch ($plainCmd) {
         break;
 
     //-------------------------------------------------------
-    // E-Card
+	// E-Card
     //-------------------------------------------------------
     case 'ecard':
         $modulespath = ASCMS_MODULE_PATH.'/ecard/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-          $subMenuTitle = $_CORELANG['TXT_ECARD_TITLE'];
+      	$subMenuTitle = $_CORELANG['TXT_ECARD_TITLE'];
         $objEcard = new ecard();
         $objEcard->getPage();
         break;
@@ -843,9 +816,6 @@ switch ($plainCmd) {
         $objCalendar->getCalendarPage();
         break;
 
-    //-------------------------------------------------------
-    // Reservation
-    //-------------------------------------------------------
     case 'reservation':
         $modulespath = ASCMS_MODULE_PATH.'/reservation/admin.class.php';
         if (file_exists($modulespath)) require_once($modulespath);
@@ -1031,7 +1001,7 @@ switch ($plainCmd) {
      * @version 1.0
      */
     case 'u2u':
-        Permission::checkAccess(141, 'static');
+    	Permission::checkAccess(141, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/u2u/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1047,7 +1017,7 @@ switch ($plainCmd) {
      * @version 1.0
      */
     case 'partners':
-        Permission::checkAccess(140, 'static');
+    	Permission::checkAccess(140, 'static');
         $modulespath = ASCMS_MODULE_PATH.'/partners/admin.class.php';
         if (file_exists($modulespath)) include($modulespath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1087,22 +1057,6 @@ switch ($plainCmd) {
         }
         break;
 
-    /**
-     * Mediadir Module
-     * @author  Janik Tschanz <jt@comvation.com>
-     * @since   3.0.0
-     * @version 1.0
-     */
-    case 'mediadir':
-        Permission::checkAccess(155, 'static');
-        $modulespath = ASCMS_MODULE_PATH.'/mediadir/admin.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_MEDIADIR_MODULE'];
-        $objMediaDirectory = new mediaDirectoryManager();
-        $objMediaDirectory->getPage();
-        break;
-
     //-------------------------------------------------------
     // access denied
     //-------------------------------------------------------
@@ -1110,9 +1064,9 @@ switch ($plainCmd) {
         //Temporary no-acces-file and comment
         $subMenuTitle=$_CORELANG['TXT_ACCESS_DENIED'];
         $objTemplate->setVariable(array(
-        'CONTENT_TITLE'          => $_CORELANG['TXT_ACCESS_DENIED'],
-        'CONTENT_NAVIGATION'     => htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET),
-        'CONTENT_STATUS_MESSAGE' => '',
+        'CONTENT_TITLE'                => $_CORELANG['TXT_ACCESS_DENIED'],
+        'CONTENT_NAVIGATION'        => htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET),
+        'CONTENT_STATUS_MESSAGE'    => '',
         'ADMIN_CONTENT'          =>
             '<img src="images/stop_hand.gif" alt="" /><br /><br />'.
             $_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']
@@ -1140,36 +1094,6 @@ switch ($plainCmd) {
     break;
 
     //-------------------------------------------------------
-    // printshop
-    //-------------------------------------------------------
-    case 'printshop':
-        $modulespath = ASCMS_MODULE_PATH.'/printshop/admin.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $subMenuTitle = $_CORELANG['TXT_PRINTSHOP_MODULE'];
-        $objPrintshopModule = new PrintshopAdmin();
-        $objPrintshopModule->getPage();
-    break;
-
-    /**
-     * View and edit Country settings
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @since   2.2.0
-     * @version 2.2.0
-     */
-    case 'country':
-// TODO: Move this define() somewhere else, allocate the IDs
-        define('PERMISSION_COUNTRY_VIEW', 145);
-        define('PERMISSION_COUNTRY_EDIT', 146);
-        Permission::checkAccess(PERMISSION_COUNTRY_VIEW, 'static');
-        if (file_exists(ASCMS_CORE_PATH.'/Country.class.php')) {
-            require_once(ASCMS_CORE_PATH.'/Country.class.php');
-            $subMenuTitle = $_CORELANG['TXT_CORE_COUNTRY'];
-            Country::getPage();
-        }
-        break;
-
-    //-------------------------------------------------------
     // show default admin page
     //-------------------------------------------------------
     default:
@@ -1188,30 +1112,26 @@ switch ($plainCmd) {
 $finishTime = explode(' ', microtime());
 $parsingTime = round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$startTime[0] + (float)$startTime[1]), 5);
 
-if (!$standAlone) {
-    $objAdminNav = new adminMenu();
-    $objAdminNav->getAdminNavbar();
-}
-$objTemplate->setGlobalVariable(array(
-    'SUB_MENU_TITLE' => $subMenuTitle,
-    'FRONTEND_LANG_MENU' => $objInit->getUserFrontendLangMenu(),
-    'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
-    'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
-    'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
-    'PARSING_TIME'=> $parsingTime,
-    'LOGGED_NAME' => htmlentities($objFWUser->objUser->getProfileAttribute('firstname').' '.$objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
-    'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
-    'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
-// TODO: This function call returns the empty string -- always!  What's the use?
+$objAdminNav = new adminMenu();
+$objAdminNav->getAdminNavbar();
+$objTemplate->setVariable(array(
+'SUB_MENU_TITLE' => $subMenuTitle,
+'FRONTEND_LANG_MENU' => $objInit->getUserFrontendLangMenu(),
+'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
+'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
+'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
+'PARSING_TIME'=> $parsingTime,
+'LOGGED_NAME' => htmlentities($objFWUser->objUser->getProfileAttribute('firstname').' '.$objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
+'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
+'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
     'CONTENT_WYSIWYG_CODE' => get_wysiwyg_code(),
     // Mind: The module index is not used in any non-module template
     // for the time being, but is provided for future use and convenience.
-    'MODULE_INDEX' => MODULE_INDEX,
-    'JAVASCRIPT'   => JS::getCode(),
-    'DIRECTORY_INDEX' => CONTREXX_DIRECTORY_INDEX,
+    'MODULE_INDEX'         => MODULE_INDEX,
+    'JAVASCRIPT'            => JS::getCode()
 ));
 
-if (!empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
+if (isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE']) && !empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
     $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] =
         '<div id="alertbox" style="overflow:auto">'.
         $objTemplate->_variables['CONTENT_STATUS_MESSAGE'].'</div><br />';
@@ -1248,6 +1168,8 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
 } else {
     $objTemplate->hideBlock('additional_style');
 }
+
+CSRF::add_placeholder($objTemplate);
 
 $objTemplate->show();
 

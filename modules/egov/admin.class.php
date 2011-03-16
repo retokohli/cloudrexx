@@ -105,6 +105,7 @@ class eGov extends eGovLibrary
         $this->initContactForms();
 
         $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/egov/template');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
@@ -898,7 +899,7 @@ class eGov extends eGovLibrary
              WHERE order_id=".intval($_REQUEST['id']);
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() != 1) {
-            header('Location: index.php?cmd=egov&err=Wrong Order ID');
+            CSRF::header('Location: index.php?cmd=egov&err=Wrong Order ID');
             exit;
         }
 

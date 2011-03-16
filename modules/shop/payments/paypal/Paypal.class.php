@@ -143,7 +143,7 @@ window.setTimeout('go()', 3000);
      */
     static function getBusiness()
     {
-        return SettingDb::getValue('paypal_account_email');
+        return Settings::getValueByName('paypal_account_email');
     }
 
 
@@ -191,7 +191,6 @@ if (_PAYPAL_IPN_LOG) {
             exit;
         }
 
-// TODO: Update to use SettingDb!
         $query = "
             SELECT `value`
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config

@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+  <head>
+    <title>Contrexx - {TXT_CSRF_TITLE}</title>
+    <meta name="description" content="Contrexx Sicherheitshinwesi"/>
+    <meta name="keywords" content="contrexx"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="robots" content="index"/>
+    <meta name="generator" content="Contrexx   Web Content Management System"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+  </head>
+  <body>
+    <style type="text/css">
+      body {
+        font-family: sans-serif;
+        background-color: #DDE4FF; 
+      }
+      .messagebox {
+        padding: 10px;
+        background-image: url('{IMAGES_PATH}/box_bg.jpg');
+        margin: 100px auto 0 auto;
+        width: 681px; /*+padding*/ 
+        height: 251px; /*+padding*/
+      }
+      .titlebar {
+        background-color: #ffd1d1;
+        border: 1px #f8acac solid;
+        height: 54px;
+        padding-left: 15px;
+        position: relative;
+      }
+      .message {
+        background-color: #fff1f1;
+        border: 1px #fddcdc solid;
+        border-top: 0;
+        height: 110px;
+        margin-bottom: 10px;
+        padding: 10px;
+        padding-left: 15px;
+        font-size: 0.9em;
+      }
+      .bluebg {
+        background-image: url('{IMAGES_PATH}/button_blue.jpg');
+        margin-left: 2px;
+      }
+      .greenbg {
+        background-image: url('{IMAGES_PATH}/button_green.jpg');
+        margin-left: 15px;
+      }
+      .button {
+        color: #ffffff;
+        width: 331px;
+        height: 35px; /*+padding-height*/
+        float: left;
+        padding-top: 17px;
+        position:relative;
+        text-align: center;
+      }
+
+      .title {
+        font-size: 2em;
+        margin-top: 10px; 
+      }
+
+      .exclamationmark {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+
+      a {
+        text-decoration: none;
+      }
+      
+    </style>
+    <div class="messagebox">
+      <div class="titlebar">
+	<img src="{IMAGES_PATH}/exclamation_mark.png" class="exclamationmark" />
+	<div class="title"><strong>{TXT_CSRF_TITLE}</strong></div>
+      </div>  
+      <div class="message">{TXT_CSRF_DESCR}</div>
+      <div class="buttons">
+	<a href="{SAFE_CMD}">
+	  <div class="button bluebg""><span><strong>{TXT_CSRF_ABORT}</strong></span></div>
+	</a>
+	<a href="javascript:sendData()">
+          <div class="button greenbg"><span><strong>{TXT_CSRF_CONTINUE}</strong></span></div>
+	</a>
+	<div style="clear:both"></div>
+      </div>
+    </div>
+        
+    <form method="{REQUEST_METHOD}" id="theForm">
+      {FORM_ELEMENTS}
+    </form>
+
+    <script type="text/javascript">
+      function sendData()
+      {
+        document.forms['theForm'].submit();
+      }
+    </script>
+  </body>
+</html>
+

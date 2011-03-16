@@ -338,7 +338,3 @@ input.radio{
 	background-color:#ffffdd;
 	border:1px solid #173A8B;
 }
-
-#lang li a.selected {
-       font-weight: bold;
-}

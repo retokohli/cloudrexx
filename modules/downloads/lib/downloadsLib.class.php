@@ -24,10 +24,6 @@ require_once dirname(__FILE__).'/Download.class.php';
 /**
  * @ignore
  */
-require_once dirname(__FILE__).'/Mail.class.php';
-/**
- * @ignore
- */
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 
@@ -58,7 +54,6 @@ class DownloadsLibrary
         'use_attr_license'              => 1,
         'use_attr_version'              => 1,
         'use_attr_author'               => 1,
-        'use_attr_origin'               => 1,
         'use_attr_website'              => 1,
         'most_viewed_file_count'        => 5,
         'most_downloaded_file_count'    => 5,
@@ -289,34 +284,11 @@ class DownloadsLibrary
     }
 
 
-    protected function getGroupDropDownMenu($selectedGroupId)
+    protected function getUserDropDownMenu($selectedUserId, $userId)
     {
-        global $_ARRAYLANG;
-
-        $menu = '<select name="downloads_filter_group_id" id="downloads_filter_group_id" onchange="document.getElementById(\'downloads_filter_user_id\').value=0;this.form.submit()" style="width:300px;">';
+        $menu = '<select name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$userId.' ? \'none\' : \'\'" style="width:300px;">';
         $objFWUser = FWUser::getFWUserObject();
-        $objGroup = $objFWUser->objGroup->getGroups();
-        $menu .= '<option value="0"'.($selectedGroupId ? '' : ' selected="selected"').' style="border-bottom:1px solid #000;">'.$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER_GROUP'].'</option>';
-        while (!$objGroup->EOF) {
-            $menu .= '<option value="'.$objGroup->getId().'"'.($objGroup->getId() == $selectedGroupId ? ' selected="selected"' : '').'>'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).'</option>';
-            $objGroup->next();
-        }
-        $menu .= '</select>';
-
-        return $menu;
-    }
-
-
-    protected function getUserDropDownMenu($selectedUserId, $params, $header = false)
-    {
-        global $_ARRAYLANG;
-
-        $menu = "<select $params>";
-        $objFWUser = FWUser::getFWUserObject();
-        $objUser = $objFWUser->objUser->getUsers(null, null, array('firstname' => 'asc', 'lastname' => 'asc', 'username' => 'asc'), array('id', 'username', 'firstname', 'lastname'));
-        if ($header) {
-            $menu .= '<option value="0"'.($selectedUserId ? '' : ' selected="selected"').' style="border-bottom:1px solid #000;">'.$_ARRAYLANG['TXT_DOWNLOADS_SELECT_USER'].'</option>';
-        }
+        $objUser = $objFWUser->objUser->getUsers(null, null, null, array('id', 'username', 'firstname', 'lastname'));
         while (!$objUser->EOF) {
             $menu .= '<option value="'.$objUser->getId().'"'.($objUser->getId() == $selectedUserId ? ' selected="selected"' : '').'>'.$this->getParsedUsername($objUser->getId()).'</option>';
             $objUser->next();
@@ -360,7 +332,7 @@ class DownloadsLibrary
 
         while (!$objGroup->EOF) {
             $output = "<ul>\n";
-            $objCategory = Category::getCategories(array('group_id' => $objGroup->getId()), null, array( 'order' => 'asc', 'name' => 'asc'));
+            $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, array( 'order' => 'asc', 'name' => 'asc'));
             while (!$objCategory->EOF) {
                 $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=downloads&amp;cmd='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 $objCategory->next();
@@ -372,201 +344,6 @@ class DownloadsLibrary
         }
     }
 
-    public static function sendNotificationEmails($objDownload, $objCategory)
-    {
-        global $_CONFIG;
-
-        $objDownloadsMail = new Downloads_Setting_Mail();
-        $mail2load = 'new_entry';
-        if (
-            (
-                $objDownloadsMail->load($mail2load, LANG_ID) ||
-                $objDownloadsMail->load($mail2load)
-            ) &&
-            (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
-            ($objMail = new PHPMailer()) !== false
-        ) {
-            if ($_CONFIG['coreSmtpServer'] > 0 && include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                    $objMail->IsSMTP();
-                    $objMail->Host = $arrSmtp['hostname'];
-                    $objMail->Port = $arrSmtp['port'];
-                    $objMail->SMTPAuth = true;
-                    $objMail->Username = $arrSmtp['username'];
-                    $objMail->Password = $arrSmtp['password'];
-                }
-            }
-
-            $objMail->CharSet = CONTREXX_CHARSET;
-            $objMail->From = $objDownloadsMail->getSenderMail();
-            $objMail->FromName = $objDownloadsMail->getSenderName();
-            $objMail->AddReplyTo($objDownloadsMail->getSenderMail());
-            $objMail->Subject = $objDownloadsMail->getSubject();
-
-            // add a is active status check fo objCategory->getNotificationGroupIds()
-            $objPublisher = FWUser::getFWUserObject()->objUser->getUser($objDownload->getOwnerId());
-            $arrGroupIds = $objCategory->getNotificationGroupIds();
-            if (!empty($arrGroupIds)) {
-                $objUser = FWUser::getFWUserObject()->objUser->getUsers(array('group_id' => $arrGroupIds, 'is_active' => true));
-                if ($objUser) {
-                    while (!$objUser->EOF) {
-                        $objMail = self::parseNotificationEmailBody($objDownloadsMail, $objMail, $objDownload, $objCategory, $objPublisher, $objUser);
-                        $objMail->AddAddress($objUser->getEmail());
-                        $objMail->Send();
-                        $objMail->ClearAllRecipients();
-                        $objUser->next();
-                    }
-                }
-            }
-        }
-    }
-
-    private static function parseNotificationEmailBody($objDownloadsMail, $objMail, $objDownload, $objCategory, $objPublisher, $objRecipient)
-    {
-        global $_CONFIG;
-
-        $category = $objCategory->getName($objRecipient->getFrontendLanguage());
-        $downloadName = $objDownload->getName($objRecipient->getFrontendLanguage());
-        $downloadDescription = $objDownload->getDescription($objRecipient->getFrontendLanguage());
-        $image = 'http://'.$_CONFIG['domainUrl'].FWValidator::getEscapedSource($objDownload->getImage());
-        $thumbnail= 'http://'.$_CONFIG['domainUrl'].FWValidator::getEscapedSource(ImageManager::getThumbnailFilename($objDownload->getImage()));
-
-        if ($objPublisher) {
-            $publisherUsername = $objPublisher->getUsername();
-            $publisherGender = $objPublisher->getProfileAttribute('gender');
-            $publisherFirstname = $objPublisher->getProfileAttribute('firstname');
-            $publisherLastname = $objPublisher->getProfileAttribute('lastname');
-        } else {
-            // cry
-        }
-
-        $recipientUsername = $objRecipient->getUsername();
-        $recipientTitle = $objRecipient->getProfileAttribute('title');
-        $recipientGender = $objRecipient->getProfileAttribute('gender');
-        $recipientFirstname = $objRecipient->getProfileAttribute('firstname');
-        $recipientLastname = $objRecipient->getProfileAttribute('lastname');
-
-        // get recipient's title
-        $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById('title');
-        foreach ($objAttribute->getChildren() as $childAttributeId) {
-            $objChildAtrribute = $objAttribute->getById($childAttributeId);
-            if ($objChildAtrribute->getMenuOptionValue() == $objRecipient->getProfileAttribute($objAttribute->getId())) {
-                $recipientTitle = $objChildAtrribute->getName();
-                break;
-            }
-        }
-
-        // get publisher & recipient's gender
-        $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById('gender');
-        foreach ($objAttribute->getChildren() as $childAttributeId) {
-            $objChildAtrribute = $objAttribute->getById($childAttributeId);
-            if ($objChildAtrribute->getMenuOptionValue() == $objPublisher->getProfileAttribute($objAttribute->getId())) {
-                $publisherGender = $objChildAtrribute->getName();
-            }
-            if ($objChildAtrribute->getMenuOptionValue() == $objRecipient->getProfileAttribute($objAttribute->getId())) {
-                $recipientGender = $objChildAtrribute->getName();
-            }
-        }
-
-        if (in_array($objDownloadsMail->getFormat(), array('multipart', 'text'))) {
-            $objDownloadsMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-            $objMail->{($objDownloadsMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-                array(
-                    '[[ID]]',
-                    '[[IMAGE]]',
-                    '[[THUMBNAIL]]',
-                    '[[HOST]]',
-                    '[[HOST_LINK]]',
-                    '[[SENDER]]',
-                    '[[LINK]]',
-                    '[[CATEGORY]]',
-                    '[[NAME]]',
-                    '[[DESCRIPTION]]',
-                    '[[PUBLISHER_GENDER]]',
-                    '[[PUBLISHER_USERNAME]]',
-                    '[[PUBLISHER_FIRSTNAME]]',
-                    '[[PUBLISHER_LASTNAME]]',
-                    '[[RECIPIENT_TITLE]]',
-                    '[[RECIPIENT_GENDER]]',
-                    '[[RECIPIENT_USERNAME]]',
-                    '[[RECIPIENT_FIRSTNAME]]',
-                    '[[RECIPIENT_LASTNAME]]',
-                ),
-                array(
-                    $objDownload->getId(),
-                    $image,
-                    $thumbnail,
-                    $_CONFIG['domainUrl'],
-                    'http://'.$_CONFIG['domainUrl'],
-                    $objDownloadsMail->getSenderName(),
-                    'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=downloads&category='.$objCategory->getId().'&id='.$objDownload->getId(),
-                    $category,
-                    $downloadName,
-                    $downloadDescription,
-                    $publisherGender,
-                    $publisherUsername,
-                    $publisherFirstname,
-                    $publisherLastname,
-                    $recipientTitle,
-                    $recipientGender,
-                    $recipientUsername,
-                    $recipientFirstname,
-                    $recipientLastname,
-                ),
-                $objDownloadsMail->getBodyText()
-            );
-        }
-        if (in_array($objDownloadsMail->getFormat(), array('multipart', 'html'))) {
-            $objDownloadsMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
-            $objMail->Body = str_replace(
-                array(
-                    '[[ID]]',
-                    '[[IMAGE]]',
-                    '[[THUMBNAIL]]',
-                    '[[HOST]]',
-                    '[[HOST_LINK]]',
-                    '[[SENDER]]',
-                    '[[LINK]]',
-                    '[[CATEGORY]]',
-                    '[[NAME]]',
-                    '[[DESCRIPTION]]',
-                    '[[PUBLISHER_GENDER]]',
-                    '[[PUBLISHER_USERNAME]]',
-                    '[[PUBLISHER_FIRSTNAME]]',
-                    '[[PUBLISHER_LASTNAME]]',
-                    '[[RECIPIENT_TITLE]]',
-                    '[[RECIPIENT_GENDER]]',
-                    '[[RECIPIENT_USERNAME]]',
-                    '[[RECIPIENT_FIRSTNAME]]',
-                    '[[RECIPIENT_LASTNAME]]',
-                ),
-                array(
-                    $objDownload->getId(),
-                    $image,
-                    $thumbnail,
-                    $_CONFIG['domainUrl'],
-                    'http://'.$_CONFIG['domainUrl'],
-                    htmlentities($objDownloadsMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'http://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=downloads&amp;category='.$objCategory->getId().'&amp;id='.$objDownload->getId(),
-                    htmlentities($category, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($downloadName, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($downloadDescription, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($publisherGender, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($publisherUsername, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($publisherFirstname, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($publisherLastname, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($recipientTitle, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($recipientGender, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($recipientUsername, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($recipientFirstname, ENT_QUOTES, CONTREXX_CHARSET),
-                    htmlentities($recipientLastname, ENT_QUOTES, CONTREXX_CHARSET),
-                ),
-                $objDownloadsMail->getBodyHtml()
-            );
-        }
-
-        return $objMail;
-    }
 }
 
 ?>

@@ -1,149 +1,70 @@
 <!-- START module_news_settings.html -->
 <script type="text/javascript">
 // <[![CDATA
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_NEWS_COMMENTS_ALLOW_HELP}"];
-Text[1]=["","{TXT_NEWS_COMMENTS_ALLOW_ANONYMOUS_HELP}"];
-Text[2]=["","{TXT_NEWS_COMMENTS_AUTO_ACTIVATE_HELP}"];
-Text[3]=["","{TXT_NEWS_COMMENTS_NOTIFICATION_HELP}"];
-Text[4]=["","{TXT_NEWS_COMMENTS_TIMEOUT_HELP}"];
-Text[5]=["","{TXT_NEWS_COMMENTS_HEADLINES_LIMIT}"];
-
 function SetUrl(url, width, height, alt) {
-  document.getElementById('newsFeedImage').value = url;
+	document.getElementById('newsFeedImage').value = url;
 }
-
-function  toggleLangFields(link)
-{
-  $J(link).next('div.news_feed_lang_div').toggle();
-}
-
-function updateLangName(input)
-{
-  $J(input).siblings('div.news_feed_lang_div').find('input').attr('value', $J(input).attr('value'));
-}
-
 // ]]>
 </script>
 <form action="index.php?cmd=news&amp;act=settings" method="post" name="settings">
-  <table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_NEWS_SETTINGS}</th>
-    </tr>
-    <tr class="row1">
-      <td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_STATUS}</td>
-      <td width="85%" nowrap="nowrap"><input name="newsFeedStatus" type="checkbox" id="newsFeed" value="1" {NEWS_FEED_STATUS} />{NEWS_FEED_ICON}</td>
-    </tr>
-    <tr class="row2">
-      <td width="15%" nowrap="nowrap" valign="top">{TXT_NEWS_FEED_TITLE}</td>
-      <td width="85%" nowrap="nowrap">
-        <input type="text" value="{NEWS_FEED_TITLE}" style="width:400px;" maxlength="250" onchange="updateLangName(this);" /> <a href="#" onclick="toggleLangFields(this);" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a>
-        <div class="news_feed_lang_div" style="display:none;">
-<!-- BEGIN news_feed_title_list -->
-          <input type="text" name="newsFeedTitle[{NEWS_FEED_TITLE_LANG_ID}]" id="newsFeedTitle[{NEWS_FEED_TITLE_LANG_ID}]" value="{NEWS_FEED_TITLE_VALUE}" maxlength="250" style="width:400px;margin-top:1px;" /> {NEWS_FEED_LANG_NAME}<br />
-<!-- END news_feed_title_list -->
-                </div>
-      </td>
-    </tr>
-    <tr class="row1">
-      <td width="15%" nowrap="nowrap" valign="top">{TXT_NEWS_FEED_DESCRIPTION}</td>
-      <td width="85%" nowrap="nowrap">
-      <input type="text" value="{NEWS_FEED_DESCRIPTION}" style="width:400px;" maxlength="250" onchange="updateLangName(this);" /> <a href="#" onclick="toggleLangFields(this);" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a>
-        <div class="news_feed_lang_div" style="display:none;">
-<!-- BEGIN news_feed_description_list -->
-          <input type="text" name="newsFeedDescription[{NEWS_FEED_DESCRIPTION_LANG_ID}]" id="newsFeedDescription[{NEWS_FEED_DESCRIPTION_LANG_ID}]" value="{NEWS_FEED_DESCRIPTION_VALUE}" maxlength="250" style="width:400px;margin-top:1px;" /> {NEWS_FEED_LANG_NAME}<br />
-<!-- END news_feed_description_list -->
-        </div>
-      </td>
-    </tr>
-    <tr class="row2">
-      <td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_IMAGE}</td>
-      <td width="85%" nowrap="nowrap"><input name="newsFeedImage" id="newsFeedImage" type="text" value="{NEWS_FEED_IMAGE}" style="width:287px;" /> <input type="button" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" value="{TXT_BROWSE}" style="width:110px;" /></td>
-    </tr>
-    <tr class="row1">
-      <td width="15%" nowrap="nowrap">{TXT_NEWS_HEADLINES_LIMIT}</td>
-      <td width="85%" nowrap="nowrap">
-      	<input name="headlinesLimit" type="text" id="headlinesLimit" value="{NEWS_HEADLINES_LIMIT}" style="width:400px;" maxlength="2" />
-      	<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" /></td>
-      </td>
-    </tr>
-    <tr class="row2">
-      <td width="15%" style="vertical-align: top;">{TXT_SUBMIT_NEWS}</td>
-      <td>
-        <input type="checkbox" name="newsSubmitNews" {NEWS_SUBMIT_NEWS} id="newsSubmitNews" value="1" />
-        <label for="newsSubmitNews">&nbsp;{TXT_ALLOW_USERS_SUBMIT_NEWS}</label><br />
-        <input type="checkbox" name="newsSubmitOnlyCommunity" {NEWS_SUBMIT_ONLY_COMMUNITY} id="newsSubmitOnlyCommunity" value="1" />
-        <label for="newsSubmitOnlyCommunity">&nbsp;{TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS}</label><br />
-        <input type="checkbox" name="newsActivateSubmittedNews" {NEWS_ACTIVATE_SUBMITTED_NEWS} id="newsActivateSubmittedNews" value="1" />
-        <label for="newsActivateSubmittedNews">&nbsp;{TXT_AUTO_ACTIVATE_SUBMITTED_NEWS}</label><br />
-        <label for="newsNotifySelectedGroup">&nbsp;{TXT_NOTIFY_GROUP}</label>
-        <select name="newsNotifySelectedGroup" {NEWS_NOTIFY_SELECTED_GROUP} id="newsNotifySelectedGroup">
-          {NEWS_NOTIFY_GROUP_LIST}
-        </select><br />
-        <label for="newsNotifySelectedUser">&nbsp;{TXT_NOTIFY_USER}</label>
-        <select name="newsNotifySelectedUser" {NEWS_NOTIFY_SELECTED_GROUP} id="newsNotifySelectedUser">
-          {NEWS_NOTIFY_USER_LIST}
-        </select><br />
-      </td>
-    </tr>
-    <tr class="row1">
-      <td width="15%" nowrap="nowrap">{TXT_USE_TEASERS}</td>
-      <td width="85%" nowrap="nowrap"><input type="checkbox" name="newsUseTeasers" {NEWS_USE_TEASERS_CHECKED} value="1" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" style="vertical-align:top;">{TXT_NEWS_PROTECTION}</td>
-      <td nowrap="nowrap">
-        <input type="checkbox" name="newsMessageProtection" id="newsMessageProtection" {NEWS_MESSAGE_PROTECTION_CHECKED} value="1" onchange="document.getElementById('newsMessageProtectionRestrictedConfig').style.display=this.checked?'':'none';" /><label for="newsMessageProtection">{TXT_NEWS_ACTIVE}</label><br >
-        <div id="newsMessageProtectionRestrictedConfig" style="display:{NEWS_MESSAGE_PROTECTION_RESTRICTED_DISPLAY};"><input type="checkbox" name="newsMessageProtectionRestricted" id="newsMessageProtectionRestricted" {NEWS_MESSAGE_PROTECTION_RESTRICTED_CHECKED} value="1" /><label for="newsMessageProtectionRestricted">{TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED}</label></div>
-      </td>
-    </tr>
-  </table>
-  <br />
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_NEWS_COMMENTS_TITLE}</th>
-    </tr>
-    <tr class="row2">
-      <td width="15%">{TXT_NEWS_COMMENTS_ALLOW}</td>
-      <td width="85%"><input type="radio" name="newsCommentsAllow" value="1" {NEWS_SETTINGS_COMMENTS_ALLOW_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsAllow" value="0" {NEWS_SETTINGS_COMMENTS_ALLOW_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
-        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-    </tr>
-    <tr class="row1">
-      <td>{TXT_NEWS_COMMENTS_ALLOW_ANONYMOUS}</td>
-      <td><input type="radio" name="newsCommentsAllowAnonymous" value="1" {NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsAllowAnonymous" value="0" {NEWS_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
-        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
-    </tr>
-    <tr class="row2">
-      <td>{TXT_NEWS_COMMENTS_AUTO_ACTIVATE}</td>
-      <td><input type="radio" name="newsCommentsAutoActivate" value="1" {NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsAutoActivate" value="0" {NEWS_SETTINGS_COMMENTS_AUTO_ACTIVATE_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
-        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
-    </tr>
-    <tr class="row1">
-      <td>{TXT_NEWS_COMMENTS_NOTIFICATION}</td>
-      <td><input type="radio" name="newsCommentsNotification" value="1" {NEWS_SETTINGS_COMMENTS_NOTIFICATION_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="newsCommentsNotification" value="0" {NEWS_SETTINGS_COMMENTS_NOTIFICATION_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;
-        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" /></td>
-    </tr>
-    <tr class="row2">
-      <td>{TXT_NEWS_COMMENTS_TIMEOUT}</td>
-      <td><input type="text" name="newsCommentsTimeout" value="{NEWS_SETTINGS_COMMENTS_TIMEOUT}"  maxlength="50" style="width:30%;"  />&nbsp;
-        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" /></td>
-    </tr>
-  </table>
-  <br />
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_NEWS_TEASERS_SETTINGS_TITLE}</th>
-    </tr>
-    <!-- BEGIN defaultTeasers -->
-    <tr class="row{NEWS_TEASER_COUNT}">
-      <td width="15%">{NEWS_TEASER_NAME}</td>
-      <td width="85%">
-        <input type="radio" name="newsDefaultTeaserSelected[{NEWS_TEASER_ID}]" value="1" {NEWS_TEASER_ON} />&nbsp;{TXT_ACTIVATED}&nbsp;
-        <input type="radio" name="newsDefaultTeaserSelected[{NEWS_TEASER_ID}]" value="0" {NEWS_TEASER_OFF} />&nbsp;{TXT_DEACTIVATED}&nbsp;</td>
-    </tr>
-    <!-- END defaultTeasers -->
-  </table>
-  <br />
-  <input type="submit" name="store" value="{TXT_STORE}" />
+	<table cellspacing="0" cellpadding="2" width="100%" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_NEWS_SETTINGS}</th>
+		</tr>
+		<tr class="row1">
+			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_STATUS}</td>
+			<td width="85%" nowrap="nowrap"><input name="newsFeedStatus" type="checkbox" id="newsFeed" value="1" {NEWS_FEED_STATUS} />{NEWS_FEED_ICON}</td>
+		</tr>
+		<tr class="row2">
+			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_TITLE}</td>
+			<td width="85%" nowrap="nowrap"><input name="newsFeedTitle" type="text" id="newsFeedTitle" value="{NEWS_FEED_TITLE}" style="width:400px;" maxlength="250" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_DESCRIPTION}</td>
+			<td width="85%" nowrap="nowrap"><input name="newsFeedDescription" type="text" id="newsFeedDescription" value="{NEWS_FEED_DESCRIPTION}" style="width:400px;" maxlength="250" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="15%" nowrap="nowrap">{TXT_NEWS_FEED_IMAGE}</td>
+			<td width="85%" nowrap="nowrap"><input name="newsFeedImage" id="newsFeedImage" type="text" value="{NEWS_FEED_IMAGE}" style="width:287px;" /> <input type="button" onclick="fileBrowserPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');fileBrowserPopup.focus()" value="{TXT_BROWSE}" style="width:110px;" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="15%" nowrap="nowrap">{TXT_NEWS_HEADLINES_LIMIT}</td>
+			<td width="85%" nowrap="nowrap"><input name="headlinesLimit" type="text" id="headlinesLimit" value="{NEWS_HEADLINES_LIMIT}" style="width:400px;" maxlength="2" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="15%" style="vertical-align: top;">{TXT_SUBMIT_NEWS}</td>
+			<td>
+				<input type="checkbox" name="newsSubmitNews" {NEWS_SUBMIT_NEWS} id="newsSubmitNews" value="1" />
+					<label for="newsSubmitNews">&nbsp;{TXT_ALLOW_USERS_SUBMIT_NEWS}</label><br />
+				<input type="checkbox" name="newsSubmitOnlyCommunity" {NEWS_SUBMIT_ONLY_COMMUNITY} id="newsSubmitOnlyCommunity" value="1" />
+					<label for="newsSubmitOnlyCommunity">&nbsp;{TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS}</label><br />
+				<input type="checkbox" name="newsActivateSubmittedNews" {NEWS_ACTIVATE_SUBMITTED_NEWS} id="newsActivateSubmittedNews" value="1" />
+					<label for="newsActivateSubmittedNews">&nbsp;{TXT_AUTO_ACTIVATE_SUBMITTED_NEWS}</label><br />
+
+				<label for="newsNotifySelectedGroup">&nbsp;{TXT_NOTIFY_GROUP}</label>
+					<select name="newsNotifySelectedGroup" {NEWS_NOTIFY_SELECTED_GROUP} id="newsNotifySelectedGroup">
+						{NEWS_NOTIFY_GROUP_LIST}
+					</select><br />
+				<label for="newsNotifySelectedUser">&nbsp;{TXT_NOTIFY_USER}</label>
+					<select name="newsNotifySelectedUser" {NEWS_NOTIFY_SELECTED_GROUP} id="newsNotifySelectedUser">
+						{NEWS_NOTIFY_USER_LIST}
+					</select><br />
+
+			</td>
+		</tr>
+		<tr class="row1">
+			<td width="15%" nowrap="nowrap">{TXT_USE_TEASERS}</td>
+			<td width="85%" nowrap="nowrap"><input type="checkbox" name="newsUseTeasers" {NEWS_USE_TEASERS_CHECKED} value="1" /></td>
+		</tr>
+        <tr class="row2">
+            <td nowrap="nowrap" style="vertical-align:top;">{TXT_NEWS_PROTECTION}</td>
+            <td nowrap="nowrap">
+                <input type="checkbox" name="newsMessageProtection" id="newsMessageProtection" {NEWS_MESSAGE_PROTECTION_CHECKED} value="1" onchange="document.getElementById('newsMessageProtectionRestrictedConfig').style.display=this.checked?'':'none';" /><label for="newsMessageProtection">{TXT_NEWS_ACTIVE}</label><br >
+                <div id="newsMessageProtectionRestrictedConfig" style="display:{NEWS_MESSAGE_PROTECTION_RESTRICTED_DISPLAY};"><input type="checkbox" name="newsMessageProtectionRestricted" id="newsMessageProtectionRestricted" {NEWS_MESSAGE_PROTECTION_RESTRICTED_CHECKED} value="1" /><label for="newsMessageProtectionRestricted">{TXT_NEWS_MESSAGE_PROTECTION_RESTRICTED}</label></div>
+            </td>
+        </tr>
+	</table>
+	<br />
+	<input type="submit" name="store" value="{TXT_STORE}" />
 </form>
 <!-- END module_news_settings.html -->

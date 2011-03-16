@@ -45,6 +45,7 @@ class reservations extends reservationLib
         $this->pageContent = $pageContent;
 
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         parent::__construct();
@@ -188,7 +189,7 @@ class reservations extends reservationLib
         $unit = $_GET['unit'];
 
         if (empty($day) || empty($unit)) {
-            header("Location: index.php?section=reservation");
+            CSRF::header("Location: index.php?section=reservation");
         }
 
         $outDay = strftime("%A, %d.%m.%Y", mktime(1, 1, 1, substr($day, 5, 2), substr($day, 8, 2), substr($day, 0, 4)));
@@ -294,7 +295,7 @@ class reservations extends reservationLib
 
            } else {
                // Invalid
-               header("Location: index.php?section=recommend");
+               CSRF::header("Location: index.php?section=recommend");
            }
         }
 

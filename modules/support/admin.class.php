@@ -289,6 +289,7 @@ class Support
         }
 
         $this->objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->loadTemplateFile('module_support_main.html');
         $objTemplate->setVariable(
@@ -873,6 +874,7 @@ if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_CATEGORIES_EDIT'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_category_edit.html', true, true);
 
@@ -912,7 +914,8 @@ if (MY_DEBUG) { echo("Support::categoriesDelete(): ERROR: Failed to get Suppoprt
                 $this->objLanguage->getMenu(
                     $this->supportLanguageId,
                     'supportLanguageId',
-                    "window.location.replace('index.php?cmd=support".
+                    "window.location.replace('index.php?cmd=support&".
+                    CSRF::param() .
                     "&amp;act=categoriesEdit".
                     "&amp;supportCategoryId=$this->supportCategoryId".
                     "&amp;supportCategoryLanguageId=$this->supportCategoryLanguageId".
@@ -1034,6 +1037,7 @@ if (MY_DEBUG) echo("failed to get Support Category tree<br />");
         global $moduloRow, $_ARRAYLANG;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_category_row.html', true, true);
 
@@ -1259,6 +1263,7 @@ if (MY_DEBUG) echo("Support::categoriesStore(): ERROR: Failed to get Support Cat
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_TICKET'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_ticket_data.html', true, true);
 
@@ -1389,6 +1394,7 @@ if (MY_DEBUG) echo("Support::ticketData(): ERROR: Could not get the Ticket with 
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_TICKET_OVERVIEW'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_ticket_table.html', true, true);
 
@@ -1490,7 +1496,7 @@ if (MY_DEBUG) echo("ticketTable(): sorting order: ".$objSorting->getOrder()."<br
             'SUPPORT_PAGING'                    =>
                 getPaging(
                     $ticketCount, $this->supportTicketOffset,
-                    $baseUri.$objSorting->getOrderUriEncoded(), '', true
+                    $baseUri.'&amp'.$objSorting->getOrderUriEncoded(), '', true
                 ),
         ));
 
@@ -1542,6 +1548,7 @@ if (MY_DEBUG) echo("ticketTable(): sorting order: ".$objSorting->getOrder()."<br
         global $_ARRAYLANG, $objInit;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_ticket_row.html', true, true);
 
@@ -1581,7 +1588,7 @@ if (MY_DEBUG) echo("Support::ticketRow(): ERROR: Could not get the Ticket with I
             'SUPPORT_TICKET_ID'             => $supportTicketId,
             'SUPPORT_TICKET_EMAIL'          => $objTicket->getEmail(),
             'SUPPORT_TICKET_OWNER_ID'       => $ownerId,
-            'SUPPORT_TICKET_OWNER'          => htmlentities($ownerName, ENT_QUOTES, CONTREXX_CHARSET),
+            'SUPPORT_TICKET_OWNER'          => htmlentities($ownerNamem, ENT_QUOTES, CONTREXX_CHARSET),
             'SUPPORT_TICKET_DATE'           => $objTicket->getTimestamp(),
             'SUPPORT_TICKET_LANGUAGE_ID'    => $languageId,
             'SUPPORT_TICKET_LANGUAGE'       =>
@@ -1657,6 +1664,7 @@ if (MY_DEBUG) echo("REACHED<br />");exit;
         global $_ARRAYLANG;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_table.html', true, true);
 
@@ -1747,6 +1755,7 @@ if (MY_DEBUG) echo("Support::messageTable(ticketId=$supportTicketId, flagShowSel
         global $_ARRAYLANG;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_data.html', true, true);
 
@@ -1833,6 +1842,7 @@ if (MY_DEBUG) echo("Support::messageData(supportMessageId=$supportMessageId): ER
         global $_ARRAYLANG;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_row.html', true, true);
 
@@ -1901,6 +1911,7 @@ if (MY_DEBUG) echo("Support::messageRow(): ERROR: Could not get Message with ID 
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_MESSAGE_EDIT'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_message_edit.html', true, true);
 
@@ -2166,6 +2177,7 @@ if (MY_DEBUG) { echo("infoFields(): ERROR: Failed to get InfoField with ID $id!<
 
         $this->pageTitle = $_ARRAYLANG['TXT_SUPPORT_INFO_FIELDS_EDIT'];
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_info_field_edit.html', true, true);
 
@@ -2196,7 +2208,8 @@ if (MY_DEBUG) { echo("infoFields(): ERROR: Failed to get InfoField with ID $id!<
                 $this->objLanguage->getMenu(
                     $this->supportLanguageId,
                     'supportLanguageId',
-                    "window.location.replace('index.php?cmd=support".
+                    "window.location.replace('index.php?cmd=support&".
+                    CSRF::param() .
                     "&amp;act=infoFieldsEdit".
                     "&amp;supportInfoFieldId=$this->supportInfoFieldId".
                     "&amp;supportInfoFieldLanguageId=$this->supportInfoFieldLanguageId".
@@ -2312,6 +2325,7 @@ if (MY_DEBUG) { echo("infoFieldsEdit(): id is ");var_export($this->supportInfoFi
         global $moduloRow;
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/support/template');
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->loadTemplateFile('module_support_info_field_row.html', true, true);
 

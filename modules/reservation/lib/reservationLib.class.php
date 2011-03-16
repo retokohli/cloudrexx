@@ -27,7 +27,7 @@ class reservationLib
         $this->tidy();
 
         /* FIXME */
-        setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu');
+	    setlocale(LC_ALL, 'de_DE@euro', 'de_DE', 'deu_deu');
     }
 
     /**

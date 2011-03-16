@@ -487,7 +487,7 @@ function mkLinkedMonthTitle(){
 	if (!$this->monthNav){
 		// Modified!!
 		// Added a link for the monthname
-		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\" nowrap=\"nowrap\">";
+		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\"  nowrap=\"nowrap\">";
 		$out.=$this->mkUrl($this->actyear, $this->actmonth);
 		$out.=$this->getMonthName().$this->monthYearDivider."&nbsp;".$this->actyear;
 		$out.="</a></td></tr>\n";
@@ -500,7 +500,7 @@ function mkLinkedMonthTitle(){
 		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth-1);
 
 		$out.=$this->monthNavBack."</a></td>";
-		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"5\" nowrap=\"nowrap\">";
+		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"5\"  nowrap=\"nowrap\">";
 		$out.=$this->mkUrl($this->actyear, $this->actmonth);
 		$out.=htmlentities($this->getMonthName().$this->monthYearDivider.$this->actyear, ENT_QUOTES, CONTREXX_CHARSET)."</a></td>";
 		$out.="<td class=\"".$this->cssMonthNav."\" colspan=\"1\">";
@@ -517,7 +517,7 @@ function mkMonthTitleLinked(){
     if (!$this->monthNav){
 		// Modified!!
 		// Added a link for the monthname
-		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\" nowrap=\"nowrap\">";
+		$out="<tr><td class=\"".$this->cssMonthTitle."\" colspan=\"7\"  nowrap=\"nowrap\">";
 		$out.=$this->mkUrl($this->actyear, $this->actmonth);
 		$out.=$this->getMonthName().$this->monthYearDivider."&nbsp;".$this->actyear;
 		$out.="</a></td></tr>\n";
@@ -530,7 +530,7 @@ function mkMonthTitleLinked(){
 		else $out.=$this->mkMonthNavUrl($this->actyear,$this->actmonth-1);
 
 		$out.=$this->monthNavBack."</a></td>";
-		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"5\" nowrap=\"nowrap\">";
+		$out.="<td class=\"".$this->cssMonthTitle."\" colspan=\"5\"  nowrap=\"nowrap\">";
 		$out.=$this->mkUrl($this->actyear, $this->actmonth);
 		$out.=htmlentities($this->getMonthName().$this->monthYearDivider.$this->actyear, ENT_QUOTES, CONTREXX_CHARSET)."</a></td>";
 		$out.="<td class=\"".$this->cssMonthNav."\" colspan=\"1\">";

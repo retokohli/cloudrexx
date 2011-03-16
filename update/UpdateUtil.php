@@ -1,4 +1,4 @@
-<?PHP
+<?php
 class UpdateException extends Exception {};
 
 class Update_DatabaseException extends UpdateException {
@@ -25,6 +25,8 @@ class UpdateUtil {
      *           'default_expr'    => expression, # use this instead of 'default' to use NOW(), CURRENT_TIMESTAMP etc
      *           'primary'         => true/false, # optional, defaults to false
      *           'renamefrom'      => 'a_name'    # optional. Use this if the column existed previously with another name
+     *           'on_update'       => value for ON UPDATE #optional, defaults to none
+     *           'on_delete'       => value for ON DELETE #optional, defaults to none
      *       )
      * @param array idx - optional. Additional index specification. This is an associative array
      *     where the keys are index names and the values are arrays with the following
@@ -36,7 +38,7 @@ class UpdateUtil {
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
-    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM') {
+    public static function table($name, array $struc, array $idx = array(), $engine = 'MyISAM') {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
@@ -91,7 +93,7 @@ class UpdateUtil {
         self::sql("ALTER TABLE `$name` ENGINE=$engine");
     }
 
-    private static function create_table($name, $struc, $idx, $engine) {
+    private static function create_table($name, array $struc, $idx, $engine) {
         global $objDatabase, $_ARRAYLANG;
 
         // create table statement
@@ -213,6 +215,8 @@ class UpdateUtil {
                 || $col_spec->has_default <> (isset($spec['default']) || isset($spec['default_expr']))
                 || $col_spec->has_default && ($col_spec->default_value <> $default)
                 || $col_spec->auto_increment <> (isset($spec['auto_increment']) && $spec['auto_increment'])
+                || isset($spec['on_update'])
+                || isset($spec['on_delete'])
             ) {
                 $colspec = self::_colspec($spec);
                 $query = "ALTER TABLE `$name` CHANGE `$col` `$col` $colspec";
@@ -320,7 +324,10 @@ class UpdateUtil {
         $default_expr = (array_key_exists('default_expr',   $spec)) ? $spec['default_expr']   : '';
         $default      = (array_key_exists('default',        $spec)) ? $spec['default']        : null;
         $binary       = (array_key_exists('binary',         $spec)) ? $spec['binary']         : null;
+        $on_update    = (array_key_exists('on_update',      $spec)) ? $spec['on_update']      : null;
+        $on_delete    = (array_key_exists('on_delete',      $spec)) ? $spec['on_delete']      : null;
 
+        $after = false;
         if (!$create_tbl_operation) {
             $after    = (array_key_exists('after',          $spec)) ? $spec['after']          : false;
         }
@@ -342,6 +349,8 @@ class UpdateUtil {
         $descr .= $notnull ? " NOT NULL"       : '';
         $descr .= $autoinc ? " auto_increment" : '';
         $descr .= $default_st;
+        $descr .= $on_update ? " ON UPDATE ".$on_update : '';
+        $descr .= $on_delete ? " ON DELETE ".$on_delete : '';
         $descr .= $after ? " AFTER `".$after."`" : '';
         return $descr;
     }

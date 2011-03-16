@@ -7,7 +7,7 @@
  * @subpackage  module_directory
  */
 $_ARRAYLANG['TXT_NEW_DIRECTORY'] = "Nouveau modèle";
-$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "L'entrée a été confirmée avec succés. ";
+$_ARRAYLANG['TXT_FEED_SUCCESSFULL_CONFIRM'] = "Der Eintrag wurde erfolgreich bestätigt.";
 $_ARRAYLANG['TXT_DIR_FILETYP'] = "Extension";
 $_ARRAYLANG['TXT_DIR_CATEGORIE'] = "Catégorie";
 $_ARRAYLANG['TXT_DIR_EMPTY_DIR'] = "Le répertoire est vide.";
@@ -110,6 +110,7 @@ $_ARRAYLANG['TXT_MAP'] = "Carte";
 $_ARRAYLANG['TXT_DIR_MOST_POPULAR'] = "Inscriptions préférées";
 $_ARRAYLANG['TXT_DIR_LAST_ENTREES'] = "Nouvelles inscriptions";
 $_ARRAYLANG['TXT_DIR_DIRECTORY'] = "Répertoire des liens";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Dernières inscriptions";
 $_ARRAYLANG['TXT_DIR_USER_SUCCESSFULL_ACTIVATE'] = "Votre compte utilisateur est activé";
 $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'] = "Aucune inscription";
 $_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'] = "Recherche étendue";

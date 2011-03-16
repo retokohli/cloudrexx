@@ -1,419 +1,434 @@
 <?php
-
 /**
- * Partners Module - Frontend code
- * @copyright   COMVATION AG
- * @author      David Vogt
+ * Partners
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Sureshkumar.C
+ * @version     v 1.01
+ * @package     contrexx
  * @subpackage  module_partners
  */
 
-require_once ASCMS_CORE_PATH . '/wysiwyg.class.php';
-require_once ASCMS_MODULE_PATH.'/partners/lib/translation.php';
-require_once ASCMS_MODULE_PATH.'/partners/lib/NGView.php';
-require_once ASCMS_MODULE_PATH.'/partners/lib/Request.php';
-require_once ASCMS_MODULE_PATH.'/partners/lib/NGMessaging.php';
-require_once ASCMS_MODULE_PATH.'/partners/PartnersBase.php';
-require_once ASCMS_MODULE_PATH.'/partners/model/Partner.php';
-require_once ASCMS_MODULE_PATH.'/partners/model/AssignableLabel.php';
-require_once ASCMS_MODULE_PATH.'/partners/model/Settings.php';
-require_once ASCMS_MODULE_PATH.'/partners/views/LabelDropdownView.php';
-require_once ASCMS_MODULE_PATH.'/partners/views/LabelBrowserView.php';
-
 /**
- * Partners Module - Frontend code
- * @copyright   COMVATION AG
- * @author      David Vogt
- * @subpackage  module_partners
+ * Includes
  */
-class PartnersFrontend extends PartnersBase  {
+require_once ASCMS_MODULE_PATH.'/partners/lib/partnersLib.class.php';
 
-    public $_objTpl;
 
-    // gets set in detail action, so the partner's name
-    // can be retreived after getPage() using getTitle().
-    private $current_partner = null;
 
-    private $save_errors = array();
+class Partners extends PartnersLibrary  {
+
+    var $_objTpl;
+    var $_strStatusMessage = '';
+    var $_strErrorMessage = '';
+
 
 
     /**
-    * Constructor   -> Create the module-menu and an internal template-object
-    * @global   object      $objInit
-    * @global   object      $objTemplate
-    * @global   array       $_ARRAYLANG
+    * Constructor   -> Call parent-constructor, set language id and create local template-object
+    *
+    * @global   integer     $_LANGID
     */
-    function __construct($content)
+    function __construct($strPageContent)
     {
-        global $objInit, $objTemplate, $_ARRAYLANG;
+        global $_LANGID;
 
-        $this->settings = new PartnerSettings;
-        JS::registerJS('modules/partners/js/dropdown.js');
-        JS::registerJS('modules/partners/js/labels.js');
-        JS::registerJS('modules/partners/js/labelbrowser.js');
-        JS::registerJS('modules/partners/js/labelfrontend.js');
-        JS::activate('prototype');
-        JS::activate('scriptaculous');
-        $this->_objTpl = new NGView('.');
+        PartnersLibrary::__construct();
+
+        $this->_intLanguageId = intval($_LANGID);
+
+        $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-        $this->_objTpl->setTemplate($content);
-        $this->_intLanguageId = $objInit->userFrontendLangId;
-        $objFWUser = FWUser::getFWUserObject();
-        $this->_intCurrentUserId = $objFWUser->objUser->getId();
+        $this->_objTpl->setTemplate($strPageContent);
     }
 
 
     /**
-     * Perform the right operation depending on the $_GET-params
-     * @global   object      $objTemplate
-     */
+    * Reads $_GET['cmd'] and selects (depending on the value) an action
+    *
+    */
     function getPage()
     {
-        if(!isset($_GET['act'])) {
-            $_GET['act']='default';
+        if(!isset($_GET['cmd'])) {
+            $_GET['cmd'] = '';
         }
-        $act = $_GET['cmd'] ? $_GET['cmd'] : 'default';
-        if (isset($_GET['ajax'])) {
-            $act = $_GET['ajax'];
+
+
+        switch ($_GET['cmd']) {
+            case 'detail':
+                $this->showDetails($_GET['id']);
+                break;
+            default:
+                $this->showEntries();
+                break;
         }
-        // get the NGMessaging data and put it where it belongs
-        $this->get_messages();
-        $this->add_default_vars();
-        $func = $act . '_action';
-        // TODO: error handling, access control
-        $this->$func();
+
         return $this->_objTpl->get();
     }
 
 
-    function getTitle($orig_title)
-    {
-        if ($this->current_partner) {
-            return $this->current_partner->name;
-        }
-        return $orig_title;
-    }
+
+     /**
+     * Shows all existing entries of the blog in descending order.
+     *
+     * @global  array       $_ARRAYLANG
+     * @global  object      $objDatabase
+     */
+   function showEntries() {
+        global $_ARRAYLANG,$objDatabase;
+
+        $recipientTitle_Level    = trim($_REQUEST['level']);
+        $recipientTitle_Profile  = trim($_REQUEST['profile']);
+        $recipientTitle_Country  = trim($_REQUEST['country']);
+        $recipientTitle_Vertical = trim($_REQUEST['vertical']);
+        $titleName_level         = "level";
+        $titleName_profile       = "profile";
+        $titleName_country       = "country";
+        $titleName_vertical      = "vertical";
+
+        $this->_objTpl->setVariable(array(
+            'TXT_HELLO_WORLD'           => $_ARRAYLANG['TXT_HELLO_WORLD'],
+            'TXT_PARTNERS_LEVEL'        => $_ARRAYLANG['TXT_PARTNERS_LEVEL'],
+            'TXT_PARTNERS_PROFILE'      => $_ARRAYLANG['TXT_PARTNERS_PROFILE'],
+            'TXT_PARTNERS_COUNTRY'      => $_ARRAYLANG['TXT_PARTNERS_COUNTRY'],
+            'PARTNERS_LEVEL'    		=> $this->_getListLevelMenu($recipientTitle_Level,$titleName_level,'name="level" size="1" style="width:90px;"','All'),
+            'PARTNERS_PROFILE'    		=> $this->_getListLevelMenu($recipientTitle_Profile,$titleName_profile,'name="profile" size="1"','All'),
+            'PARTNERS_COUNTRY'    		=> $this->_getListLevelMenu($recipientTitle_Country,$titleName_country,'name="country" size="1"','All'),
+            'PARTNERS_VERTICAL'    		=> $this->_getListLevelMenu($recipientTitle_Vertical,$titleName_vertical,'name="vertical" size="1"','All'),
+            'TXT_PARTNERS_VERTICAL'     => $_ARRAYLANG['TXT_PARTNERS_VERTICAL']
+        ));
+
+        $intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
+   		$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+
+        /**Array of result returned from the Partnerlib.class...
+          *It contains the ordered form of level...
+          */
+
+   		$arrEntries = $this->createEntryArrayFrontEnd(0, $intPagingPosition, $this->getPagingLimit());
+
+        $cert_catid =  $this->_getcertificateId();
+        foreach($cert_catid as $iicertKey => $iicertValue){
+              $this->_objTpl->setVariable(array(
+                                          'PARTNERS_CERTIFICATE_ALL'     => $this->_getcertificateText($iicertValue),
+                                          'PARTNERS_CERTIFICATE_IMG'     => $this->_getcertificateImage($iicertValue),
+                                          'PARTNERS_IMAGE_WIDTH_CERT'    => $this->_getImageWidth('cert'),
+                                          'PARTNERS_IMAGE_HEIGHT_CERT'   => $this->_getImageHeight('cert')
+                 ));
+                 $this->_objTpl->parse('partnersCertificate');
+         }
+   		 if (count($arrEntries) > 0) {
+
+           	 $intRowClass = 0;
 
 
-    function signup_action()
-    {
-        $partner = new Partner();
-        $to_assign = array();
-        foreach (AssignableLabel::all($this->langid())->rs() as $label) {
-            if (!$label->active) continue;
-            DBG::msg("checking for label browser block " . 'PARTNER_'.$label->label_placeholder);
-            if (!$this->_objTpl->blockExists('PARTNER_'.$label->label_placeholder)) continue;
-            DBG::msg("...ok, found");
-            $dropdown = new LabelBrowserView(
-                ASCMS_MODULE_PATH.'/partners/template',
-                $label,
-                $this->langid()
-            );
-            if ($this->settings->hide_empty_labels) {
-                $dropdown->hide_empty();
-            }
-            $this->_objTpl->PARTNERS_LABEL_NAME            = $label->name($this->langid());
-            $this->_objTpl->TXT_PARTNERS_LABEL_NAME        = $dropdown->dropdown_name();
-            $this->_objTpl->LABEL_ID                       = $label->id;
-            $this->_objTpl->PARTNER_ID                     = $partner ? $partner->id : 0;
-            $this->_objTpl->setVariable('TXT_PARTNERS_LABEL_SEARCHFIELD', $dropdown);
-            $this->_objTpl->parse('PARTNER_'.$label->label_placeholder);
-            if(Request::is_post()) {
-                #$assigned = Request::POST($dropdown->dropdown_name() . '_list');
-                #if ($assigned) {
-                #    $to_assign[] = intval($assigned);
-                #}
-                foreach ($_SESSION['newpartner_labels'][$label->id] as $entry) {
-                    $to_assign[] = $entry;
+         /**$intEntryId => is the variable of the Message ID of the Partners...
+           *$LevelMsgID => is the Particular level of the Message ID.....
+           */
+
+        foreach ($arrEntries as $intEntryId => $newarrEntryValues) {
+
+            foreach($newarrEntryValues as $LevelMsgID=>$arrEntryValues) {
+
+                  if(!empty($arrEntryValues['subject'])) {
+
+	   			                 $this->_objTpl->setVariable(array(
+	   				                                        'TXT_IMGALT_EDIT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_TITLE'],
+	   				                                        'TXT_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_DELETE_TITLE']
+                                 ));
+
+               	        //Check active languages
+                      $strActiveLanguages = '';
+	   			      foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
+	   			        $this->_objTpl->setVariable(array('ENTRY_STATUS' =>  $this->_getStatus($arrEntryTranslations['status'])));
+	   				    if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
+	   					   $strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
+
+	   				    }
+	   			     }
+
+
+                     /**Checking with the Active State of the Message ID....
+                       */
+
+	   			     $is_active = $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['status'];
+
+	   			     if($is_active!=0)  {
+
+     			        $strActiveLanguages = substr($strActiveLanguages,0,-12);
+
+                        $level_id = $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['level'];
+
+                         /**Selecting the Display Properties of the Particular Message Id form the Table...
+                           */
+
+                        $objDisplayResult = $objDatabase->Execute('SELECT display_title,display_content,display_contactname,display_country,display_phone,display_address1,display_address2,display_city,display_zipcode,display_certificate_logo,display_logo,display_level_logo,display_level_text,display_quote
+                                                      FROM '.DBPREFIX.'module_partners_display WHERE `display_level_id` = "'.$LevelMsgID.'" ');
+                        while(!$objDisplayResult->EOF) {
+
+                            $Displaytitle           = $objDisplayResult->fields['display_title'];
+                            $Displaycontent         = $objDisplayResult->fields['display_content'];
+                            $Displaycontactname     = $objDisplayResult->fields['display_contactname'];
+                            $Displaycountry         = $objDisplayResult->fields['display_country'];
+                            $Displayphone           = $objDisplayResult->fields['display_phone'];
+                            $Displayaddress1        = $objDisplayResult->fields['display_address1'];
+                            $Displayaddress2        = $objDisplayResult->fields['display_address2'];
+                            $Displaycity            = $objDisplayResult->fields['display_city'];
+                            $Displayzipcode         = $objDisplayResult->fields['display_zipcode'];
+                            $Displayclogo           = $objDisplayResult->fields['display_certificate_logo'];
+                            $Displaylogo            = $objDisplayResult->fields['display_logo'];
+                            $Displayllogo           = $objDisplayResult->fields['display_level_logo'];
+                            $Displaylevel           = $objDisplayResult->fields['display_level_text'];
+                            $Displayquote           = $objDisplayResult->fields['display_quote'];
+                            $objDisplayResult->MoveNext();
+                        }
+
+                        if($Displaytitle!=0) {
+
+                            $this->_objTpl->setVariable(array(
+                	                  'PARTNERS_TITLE'  => $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['subject']
+                            ));
+                        }
+                        if($Displaycontent!=0) {
+
+                            $this->_objTpl->setVariable(array(
+                                      'PARTNERS_CONTENT'=> $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['content']
+                            ));
+                        }
+
+                        if($Displaycontactname!=0) {
+
+                            $this->_objTpl->setVariable(array(
+                                     'PARTNERS_CONTACTNAME' =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['contactname']
+                            ));
+                        }
+
+                        if($Displaycountry!=0) {
+
+                            $this->_objTpl->setVariable(array(
+                                    'PARTNERS_COUNTRY_TXT'  =>  $this->_getText('country',$arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['country'])
+                           ));
+                        }
+
+                        if($Displayphone!=0) {
+                            if($arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['phone']!= ""){
+                            $this->_objTpl->setVariable(array(
+                                    'TXT_PARTNERS_PHONE'    => $_ARRAYLANG['TXT_PARTNERS_PHONES'],
+                                    'PARTNERS_PHONE'        =>  $_ARRAYLANG['TXT_PARTNERS_PHONES_PLUS'].$arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['phone']
+                            ));
+                            }
+                        }
+
+                        if($Displayaddress1!=0) {
+
+                            $this->_objTpl->setVariable(array(
+                                    'PARTNERS_ADDRESS1'    =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['address1']
+                            ));
+                        }
+
+                        if($Displayaddress2!=0)  {
+
+                            $this->_objTpl->setVariable(array(
+                                     'PARTNERS_ADDRESS2'    =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['address2'],
+                            ));
+                        }
+
+                        if($Displaycity!=0)  {
+
+                            $this->_objTpl->setVariable(array(
+                                    'PARTNERS_CITY'         =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['city']
+                            ));
+                        }
+
+                        if($Displayzipcode!=0)  {
+
+                            $this->_objTpl->setVariable(array(
+                                   'PARTNERS_ZIPCODE'        =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['zipcode']
+                           ));
+                        }
+
+
+                        if($Displaylogo!=0)  {
+
+                            $this->_objTpl->setVariable(array(
+                                   'PARTNERS_LOGO_PATH' =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['image']
+                           ));
+                           $this->_objTpl->parse('showLogo');
+                        }
+
+
+                        if($Displayllogo!=0)  {
+
+                            $this->_objTpl->setVariable(array(
+                                  'PARTNERS_LEVEL_IMAGE'          =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['level_image']
+                            ));
+                        }
+
+
+                        if($Displaylevel!=0)  {
+
+
+                            $this->_objTpl->setVariable(array(
+                                 'PARTNERS_LEVEL_TXT'  =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['level']."&nbsp;Partner"
+                            ));
+                           $this->_objTpl->parse('showLogo');
+                        }
+
+
+                        if($Displayquote!=0)   {
+
+                            $this->_objTpl->setVariable(array(
+                                  'PARTNERS_QUOTE'       =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['quote']
+                            ));
+                        }
+
+                        $this->_objTpl->setVariable(array(
+                        'ENTRY_ROWCLASS'		        =>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
+	   				    'PARTNERS_ID'				    =>	$intEntryId,
+                        'PARTNERS_IMAGE_WIDTH'          =>  $this->_getImageWidth(),
+                        'PARTNERS_IMAGE_HEIGHT'         =>  $this->_getImageHeight(),
+                        'PARTNERS_IMAGE_WIDTH_LEVEL'    =>  $this->_getImageWidth('level'),
+                        'PARTNERS_IMAGE_HEIGHT_LEVEL'   =>  $this->_getImageHeight('level'),
+                        'PARTNERS_VERTICAL_TXT'         =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['vertical'],
+                        'PARTNERS_PROFILE_TXT'          =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['profile'],
+                        'PARTNERS_EMAIL'                =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['email'],
+                        'PARTNERS_WEBSITE'              =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['website'],
+                        'PARTNERS_FAX'                  =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['fax'],
+                        'PARTNERS_REFERENCE'            =>  $arrEntries[$intEntryId][$LevelMsgID]['translation'][$intLangId]['reference'],
+	   				    'ENTRY_LANGUAGES'		        =>	$strActiveLanguages,
+                        'ENTRY_USER'			        =>	$arrEntryValues['user_name']
+	   			        ));
+
+
+                        if($Displayclogo!=0)  {
+
+                            $cert_ind  = $this->_getCertIndImage('certificate_image',$intEntryId,$intLangId);
+
+                            foreach($cert_ind as $cert_indKey => $cert_indValue) {
+
+
+                                   $this->_objTpl->setVariable(array(
+                                                                     'PARTNERS_CERTIFICATE_IMAGE' =>  $cert_indValue,
+                                                                     'PARTNERS_IMAGE_WIDTH_CERT'    => $this->_getImageWidth('cert'),
+                                                                     'PARTNERS_IMAGE_HEIGHT_CERT'    => $this->_getImageHeight('cert')
+                                   ));
+                                   $this->_objTpl->parse('partnersIndCertificate');
+                            }
+                        }
+
+                        $this->_objTpl->parse('showEntries');
+                        $intRowClass++;
+	   			    }
                 }
             }
         }
-        DBG::dump($to_assign);
 
-        if (Request::is_post()) {
-            $partner->active              = 0;
-            $partner->name                = Request::POST('name');
-            $partner->first_contact_name  = Request::POST('contact');
-            $partner->first_contact_email = Request::POST('email');
-            $partner->web_url             = Request::POST('web_url');
-            $partner->address             = Request::POST('address');
-            $partner->city                = Request::POST('city');
-            $partner->zip_code            = Request::POST('zipcode');
-            $partner->phone_nr            = Request::POST('phone_nr');
-            $partner->fax_nr              = Request::POST('fax_nr');
-            $partner->customer_quote      = '';
-            $partner->creation_date       = date('Y-m-d');
-            $partner->num_installations   = 0;
-            $partner->description         = Request::POST('description');
-            $this->_objTpl->setVariable(
-                'PARTNER_CUSTOMER_DESCRIPTION',
-                get_wysiwyg_editor('description', $partner->description, 'news')
-            );
-            if ($this->_intCurrentUserId) {
-                $partner->user_id = $this->_intCurrentUserId;
-            }
-            if ($partner->validate(array($this, 'add_errormessage'))) {
-                $partner->save();
-                foreach ($to_assign as $entry_id) {
-                    $entry = LabelEntry::get($entry_id);
-                    $partner->assign_entry($entry);
-                }
-                $this->_objTpl->hideBlock('partner_signup_form');
-                $this->_objTpl->touchBlock('partner_signup_success');
-            } else {
-                $this->_objTpl->PARTNER_NAME     = Request::POST('name');
-                $this->_objTpl->PARTNER_CONTACT  = Request::POST('contact');
-                $this->_objTpl->PARTNER_EMAIL    = Request::POST('email');
-                $this->_objTpl->PARTNER_WEB_URL  = Request::POST('web_url');
-                $this->_objTpl->PARTNER_ADDRESS  = Request::POST('address');
-                $this->_objTpl->PARTNER_CITY     = Request::POST('city');
-                $this->_objTpl->PARTNER_ZIPCODE  = Request::POST('zipcode');
-                $this->_objTpl->PARTNER_PHONE_NR = Request::POST('phone_nr');
-                $this->_objTpl->PARTNER_FAX_NR   = Request::POST('fax_nr');
-                $this->_objTpl->hideBlock('partner_signup_success');
-                $this->_objTpl->touchBlock('partner_signup_error');
-                $this->_objTpl->ERROR_MESSAGE = join('<p/>', $this->save_errors);
-            }
-        } else {
-            $this->_objTpl->setVariable(
-                'PARTNER_CUSTOMER_DESCRIPTION',
-                get_wysiwyg_editor('description', $partner->description, 'news')
-            );
+
+        if($intRowClass>1) {
+
+            $this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT']."&nbsp;".$intRowClass."&nbsp;".$_ARRAYLANG['PARTNERS_NAME']));
+
         }
+        else if($intRowClass==1) {
+
+  		    $this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT']."&nbsp;".$intRowClass."&nbsp;".$_ARRAYLANG['PARTNERS_NAME']));
+       	}
+        else {
+  		    $this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT_ERROR']));
+        }
+
+	   	//	Show paging if needed
+   		if ($this->PaginactionCount > $this->getPagingLimit()) {
+		  		$strPaging = getPaging( $this->PaginactionCount, $intPagingPosition, '&amp;section=partners', '<strong>'.$_ARRAYLANG['TXT_PARTNERS_ENTRY_MANAGE_PAGING'].'</strong>', true, $this->getPagingLimit());
+		   		$this->_objTpl->setVariable('ENTRIES_PAGING', $strPaging);
+   		}
+    }
+    else {
+           		    $this->_objTpl->setVariable(array('PARTNERS_COUNT' => $_ARRAYLANG['PARTNERS_COUNT_ERROR']));
     }
 
 
-    function assignentry_action()
-    {
-        $this->force_ajax();
-        // TODO: check if user is entitled to change this partner
-        $entry   = LabelEntry::get(Request::POST('entry_id'));
-        $label   = $entry->label();
-        $partner = null;
-        if(Request::POST('partner_id')) {
-            $partner = Partner::get(Request::POST('partner_id'));
-            $partner->assign_entry($entry);
-        } else {
-            if (!$label->multiple_assignable || !isset($_SESSION['newpartner_labels'][$label->id])) {
-                $_SESSION['newpartner_labels'][$label->id] = array(Request::POST('entry_id'));
-            } else {
-                $a = $_SESSION['newpartner_labels'][$label->id];
-                $a[] = Request::POST('entry_id');
-                $_SESSION['newpartner_labels'][$label->id] = $a;
-            }
-        }
-        die($this->list_labels($partner, $label));
+   }
+
+
+    /**
+     * Shows detail-page (content, voting & comments) for a single message. It checks also for new comments (POST) or votings (GET).
+     *
+     * @global  array       $_ARRAYLANG
+     * @global  object      $objDatabase
+     * @global  array       $_CONFIG
+     * @param   integer     $intMessageId: The details of this page will be shown
+     */
+     function showDetails($id) {
+        global $_ARRAYLANG, $objDatabase, $_CONFIG;
+
+        $intDetailid = (isset($_GET['detId'])) ? intval($_GET['detId']) : 0;
+        $intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
+   		$intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
+        $arrEntries = $this->createDetailArray(0, $intPagingPosition, $this->getPagingLimit(),$intDetailid);
+
+   		if (count($arrEntries) > 0) {
+
+             $this->_objTpl->setVariable(array(
+                 'PARTNERS_DETAIL_TITLE'         => $_ARRAYLANG['PARTNERS_DETAIL_TITLE'],
+                 'PARTNERS_DETAIL_CONTACT_TXT'   => $_ARRAYLANG['PARTNERS_DETAIL_CONTACT_TXT'],
+                 'PARTNERS_DETAIL_PHONE_TXT'     => $_ARRAYLANG['PARTNERS_DETAIL_PHONE_TXT'],
+                 'PARTNERS_DETAIL_FAX_TXT'       => $_ARRAYLANG['PARTNERS_DETAIL_FAX_TXT'],
+                 'PARTNERS_DETAIL_WEBSITE_TXT'   => $_ARRAYLANG['PARTNERS_DETAIL_WEBSITE_TXT'],
+                 ));
+   		     $intRowClass = 1;
+
+   			 foreach ($arrEntries as $intEntryId => $arrEntryValues) {
+
+                if(!empty($arrEntryValues['subject']))
+                {
+	   			 $this->_objTpl->setVariable(array(
+	   				'TXT_IMGALT_EDIT'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_TITLE'],
+	   				'TXT_IMGALT_DELETE'		=>	$_ARRAYLANG['TXT_BLOG_ENTRY_DELETE_TITLE']
+	   			 ));
+
+	   			 //Check active languages
+	   			 $strActiveLanguages = '';
+	   			 foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
+	   			 $this->_objTpl->setVariable(array('ENTRY_STATUS' =>  $this->_getStatus($arrEntryTranslations['is_active'])));
+	   				if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
+	   					$strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
+	   				}
+	   			 }
+	   			 $strActiveLanguages = substr($strActiveLanguages,0,-12);
+                 $this->_objTpl->setVariable(array(
+                    'ENTRY_ROWCLASS'		     =>	($intRowClass % 2 == 0) ? 'row1' : 'row2',
+	   				'ENTRY_ID'				     =>	 $intEntryId,
+	   				'PARTNERS_TITLE'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['subject'],
+                    'PARTNERS_LEVEL_TXT'         =>  $this->_getText('level',$arrEntries[$intEntryId]['translation'][$intLangId]['level']),
+                    'PARTNERS_COUNTRY_TXT'       =>  $this->_getText('country',$arrEntries[$intEntryId]['translation'][$intLangId]['country']),
+                    'PARTNERS_LEVEL_IMAGE'       =>  $this->_getText('level_image',$arrEntries[$intEntryId]['translation'][$intLangId]['level']),
+                    'PARTNERS_CERTIFICATE_IMAGE' =>  $this->_getText('certificate_image',$intEntryId),
+                    'PARTNERS_VERTICAL_TXT'      =>  $arrEntries[$intEntryId]['translation'][$intLangId]['vertical'],
+                    'PARTNERS_PROFILE_TXT'       =>  $arrEntries[$intEntryId]['translation'][$intLangId]['profile'],
+                    'PARTNERS_CONTACTNAME'       =>  $arrEntries[$intEntryId]['translation'][$intLangId]['contactname'],
+                    'PARTNERS_EMAIL'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['email'],
+                    'PARTNERS_WEBSITE'           =>  $arrEntries[$intEntryId]['translation'][$intLangId]['website'],
+                    'PARTNERS_ADDRESS1'          =>  $arrEntries[$intEntryId]['translation'][$intLangId]['address1'],
+                    'PARTNERS_ADDRESS2'          =>  $arrEntries[$intEntryId]['translation'][$intLangId]['address2'],
+                    'PARTNERS_CITY'              =>  $arrEntries[$intEntryId]['translation'][$intLangId]['city'],
+                    'PARTNERS_ZIPCODE'           =>  $arrEntries[$intEntryId]['translation'][$intLangId]['zipcode'],
+                    'PARTNERS_PHONE'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['phone'],
+                    'PARTNERS_FAX'               =>  $arrEntries[$intEntryId]['translation'][$intLangId]['fax'],
+                    'PARTNERS_REFERENCE'         =>  $arrEntries[$intEntryId]['translation'][$intLangId]['reference'],
+                    'PARTNERS_QUOTE'             =>  $arrEntries[$intEntryId]['translation'][$intLangId]['quote'],
+                    'PARTNERS_LOGO_PATH'         =>  $arrEntries[$intEntryId]['translation'][$intLangId]['image'],
+                    'PARTNERS_CONTENT'			 =>	 $arrEntries[$intEntryId]['translation'][$intLangId]['content'],
+	   				'ENTRY_LANGUAGES'		     =>	 $strActiveLanguages,
+                 	'ENTRY_USER'			     =>	 $arrEntryValues['user_name']
+	   			));
+
+
+	   			$intRowClass++;
+	   				}
+
+	   		}
+
+	   		}
     }
-
-
-    function dropentry_action()
-    {
-        $this->force_ajax();
-        // TODO: check if user is entitled to change this partner
-        $entry   = LabelEntry::get(Request::POST('entry_id'));
-        $label   = $entry->label();
-        $partner = null;
-        if(Request::POST('partner_id')) {
-            $partner = Partner::get(Request::POST('partner_id'));
-            $partner->drop_entry($entry);
-        } else {
-            if (!isset($_SESSION['newpartner_labels'][$label->id])) {
-                $_SESSION['newpartner_labels'][$label->id] = array();
-            } elseif(($idx = array_search(Request::POST('entry_id'), $_SESSION['newpartner_labels'][$label->id])) !== false) {
-                $a = array();
-                foreach($_SESSION['newpartner_labels'][$label->id] as $e) {
-                    if ($e != Request::POST('entry_id'))
-                        $a[] = $e;
-                }
-                $_SESSION['newpartner_labels'][$label->id] = $a;
-            }
-        }
-        die($this->list_labels($partner, $label));
-    }
-
-
-    function add_errormessage($msg)
-    {
-        $this->save_errors[] = $msg;
-    }
-
-
-    function default_action()
-    {
-        global $_CORELANG;
-
-        $fulltext     = Request::GET('search');
-        $label_search = array();
-        $this->_objTpl->add_tr('TXT_SEARCH');
-        // Show AssignableLabel in template and also add search values to
-        // $label_search so we can filter partners.
-        $dd_searchstring = '';
-        foreach (AssignableLabel::all($this->langid())->rs() as $label) {
-            if (!$label->active) continue;
-            $dropdown = new LabelBrowserView(
-                ASCMS_MODULE_PATH.'/partners/template',
-                $label,
-                $this->langid()
-            );
-            if ($this->settings->hide_empty_labels) {
-                $dropdown->hide_empty();
-            }
-            $this->_objTpl->PARTNERS_LABEL_NAME            = $label->name($this->langid());
-            $this->_objTpl->TXT_PARTNERS_LABEL_NAME        = $dropdown->dropdown_name();
-            $this->_objTpl->LABEL_ID                       = $label->id;
-            $this->_objTpl->PARTNER_ID                     = $partner ? $partner->id : 0;
-            $this->_objTpl->setVariable('TXT_PARTNERS_LABEL_SEARCHFIELD', $dropdown);
-            $this->_objTpl->parse('label_searchbox');
-            $searched = Request::GET($dropdown->dropdown_name());
-            if ($searched) {
-                $dd_searchstring .= '&' . $dropdown->dropdown_name() . '=' . $searched;
-                $label_search[] = intval($searched);
-            }
-        }
-        $this->_objTpl->add_tr('TXT_SEARCH');
-        $this->_objTpl->global_TXT_SEARCH_VALUE = $fulltext;
-        // Search for label and fulltext data
-        $data = Partner::search($fulltext, $label_search, 'frontend');
-        if ($data->count() == 0) {
-            if ($this->_objTpl->blockExists('no_results')) {
-                $this->_objTpl->touchBlock("no_results");
-            }
-            return;
-        }
-        $url_template = "index.php?section=partners"
-            ."&search=" . htmlspecialchars($fulltext)
-            .$dd_searchstring
-            .'&p=%p';
-        $this->_objTpl->setGlobalVariable('ROW_CLASS', new NGView_Cycle('row2', 'row1'));
-        $pager = new NGView_Pager($data, Request::GET('p', 0));
-        if ($this->_objTpl->blockExists('no_results')) {
-            $this->_objTpl->hideBlock("no_results");
-        }
-        foreach ($pager->current()->rs() as $partner) {
-            $this->show_partner($partner);
-            $this->_objTpl->parse('partner_entry');
-        }
-        $this->_objTpl->PARTNERS_ROW_COUNT = $data->count();
-        $pager->put_placeholders($this->_objTpl, $url_template);
-        $this->_objTpl->global_TXT_SEARCH = $_CORELANG['TXT_SEARCH'];
-    }
-
-
-    private function put_partner_vars($partner)
-    {
-        $this->_objTpl->PARTNER_ID            = $partner->id;
-        $this->_objTpl->PARTNER_NAME          = $partner->name;
-        $this->_objTpl->PARTNER_CONTACT_NAME  = $partner->first_contact_name;
-        $this->_objTpl->PARTNER_CONTACT_EMAIL = $partner->first_contact_email;
-        $this->_objTpl->PARTNER_WEB_URL       = $partner->web_url;
-        $this->_objTpl->PARTNER_CITY          = $partner->city;
-        $this->_objTpl->PARTNER_ADDRESS       = $partner->address;
-        $this->_objTpl->PARTNER_ZIP_CODE      = $partner->zip_code;
-        $this->_objTpl->PARTNER_PHONE_NR      = $partner->phone_nr;
-        $this->_objTpl->PARTNER_FAX_NR        = $partner->fax_nr;
-        $this->_objTpl->PARTNER_LOGO_URL      = ($partner->logo_url == "" ? "http://open.thumbshots.org/image.aspx?url=".$partner->web_url : ASCMS_IMAGE_PATH . $partner->logo_url);
-        $this->_objTpl->PARTNER_QUOTE         = $partner->customer_quote;
-        $this->_objTpl->setVariable('PARTNER_DESCRIPTION', $partner->description);
-    }
-
-
-    function show_partner($partner)
-    {
-//DBG::msg("showing partner... {$partner->name}");
-        // parse labels separately (using the block name from the label AssignableLabel)
-        foreach (AssignableLabel::all($this->langid())->rs() as $label) {
-            $block = 'PARTNER_'.$label->label_placeholder;
-            if ($this->_objTpl->blockExists($block)) {
-                DBG::msg("parsing block '$block' START");
-                $this->_objTpl->setCurrentBlock($block);
-                $entries = $partner->assigned_entries($this->langid(), $label->id);
-                foreach ($entries->rs() as $entry) {
-                    $this->_objTpl->setCurrentBlock($block.'_ENTRY');
-                    DBG::msg("parsing block '{$block}_ENTRY' START");
-                    DBG::msg("parsing block '{$block}_ENTRY': e_id = " . $entry->id);
-                    DBG::msg("parsing block '{$block}_ENTRY': text = " . $entry->hierarchic_name($this->langid()));
-                    $this->_objTpl->ENTRY_ID   = $entry->id;
-                    $this->_objTpl->LABEL_ID   = $entry->label_id;
-                    $this->_objTpl->ENTRY_TEXT = $entry->hierarchic_name($this->langid());
-                    $this->_objTpl->PARTNER_ID = $partner->id;
-                    $this->_objTpl->parse($block.'_ENTRY');
-                    $this->_objTpl->_variables = array();
-                    DBG::msg("parsing block '{$block}_ENTRY' END");
-                }
-                $this->_objTpl->LABEL_ID   = $entry->label_id;
-                $this->_objTpl->LABEL_NAME = $label->name($this->langid());
-                $this->_objTpl->parse($block);
-                $this->_objTpl->_variables = array();
-                DBG::msg("parsing block '$block' END");
-            }
-        }
-        $this->put_partner_vars($partner);
-        // parse label list, if present
-        if ($this->_objTpl->blockExists('label_list')) {
-            foreach (AssignableLabel::all($this->langid())->rs() as $label) {
-                $new_entries = $partner->assigned_entries($this->langid(), $label->id);
-                foreach ($new_entries->rs() as $entry) {
-                    $this->_objTpl->ENTRY_ID   = $entry->id;
-                    $this->_objTpl->LABEL_ID   = $entry->label_id;
-                    $this->_objTpl->ENTRY_TEXT = $entry->hierarchic_name($this->langid());
-                    $this->_objTpl->PARTNER_ID = $partner->id;
-                    $this->_objTpl->parse('label_entry');
-                    $this->_objTpl->_variables = array();
-                    $this->put_partner_vars($partner);
-                }
-                $this->_objTpl->LABEL_NAME = $label->name($this->langid());
-                $this->_objTpl->parse('label_list');
-                $this->_objTpl->_variables = array();
-                $this->put_partner_vars($partner);
-            }
-        }
-        // label dependent blocks....
-        $blocks = array();
-        // find all blocks that there are...
-        foreach ($this->labels_with_blocks()->rs() as $b_label) {
-            $blocks[$b_label->parse_custom_block] = "hideBlock";
-        }
-        // then figure out which of them to show.
-        foreach ($partner->all_labels()->rs() as $p_label) {
-            if ($p_label->parse_custom_block) {
-                $blocks[$p_label->parse_custom_block] = "touchBlock";
-            }
-        }
-        // now go about all the blocks and touch/hide them.
-        foreach ($blocks as $b => $action) {
-            $dbg_msg = "Looking for block '$b'...";
-            if (!$this->_objTpl->blockExists($b)) {
-                DBG::msg("$dbg_msg n/a");
-                continue;
-            }
-            DBG::msg("$dbg_msg $action");
-            $this->put_partner_vars($partner);
-            $this->_objTpl->$action($b);
-        }
-        $this->put_partner_vars($partner);
-    }
-
-
-    function detail_action()
-    {
-        $partner = Partner::get(Request::GET('id'));
-        $this->current_partner = $partner;
-        $this->show_partner($partner);
-    }
-
-
-    function labels_with_blocks()
-    {
-        $q = LabelEntry::all($this->langid());
-        $tbl = LabelEntry::typeinfo('table');
-        return new NGDb_Query("
-            SELECT * FROM ($q) AS _q
-            WHERE _q.parse_custom_block IS NOT NULL
-              AND _q.parse_custom_block <> ''
-              ",
-              'LabelEntry'
-        );
-    }
-
 }
-
-?>

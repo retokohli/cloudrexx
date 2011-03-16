@@ -3,7 +3,7 @@
 function deleteLog(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=log&act=del&logId="+id);
+        window.location.replace("index.php?cmd=log&{CSRF_PARAM}&act=del&logId="+id);
 }
 </script>
 <form name="form1" method="post" action="?cmd=log">

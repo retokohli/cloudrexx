@@ -45,125 +45,91 @@ class podcastHomeContent extends podcastLib {
            parent::__construct();
     }
 
+
     /**
      * Fetch latest entries and parse forumtemplate
      *
      * @return string parsed latest entries
      */
-    function getContent()
+    function getContent($blockFirst = false)
     {
         $this->_objTpl->setTemplate($this->_pageContent, true, true);
         if(empty($this->_latestMedia)){
             $this->_latestMedia = &$this->_getLastestMedia();
         }
-        $this->_showLatestMedia($this->_latestMedia);
+        $this->_showLatestMedia($this->_latestMedia, $blockFirst);
         return $this->_objTpl->get();
     }
 
-	public function getVideoContent()
+    /**
+     * show the latest media
+     *
+     * @param array $arrMedia
+     */
+    function _showLatestMedia($arrMedia, $blockFirst = false)
     {
-		$this->_objTpl->setTemplate($this->_pageContent, true, true);
-		if ($this->showVideo()) {
-			return $this->_objTpl->get();
-		} else {
-			return '';
-                }
-            }
+        global $_ARRAYLANG;
 
-	public function showVideo()
-	{
-		$mediumId = isset($_GET['podcastId']) ? intval($_GET['podcastId']) : 0;
-		if (empty($mediumId)) {
-			switch ($this->_arrSettings['default_medium']) {
-			case 'selected':
-				$mediumId = $this->_arrSettings['default_medium_id'];
-				break;
+        $tmpOnload = (!$blockFirst) ? 'try{tmp();}catch(e){}' : '';
+        $setSizeFunction = $this->_getSetSizeJS();
+        $maxSize = $this->_arrSettings['thumb_max_size_homecontent'];
+        $thumbailJS = <<< EOF
+<script type="text/javascript">
+//<![CDATA[
+    var thumbSizeMaxBlock = $maxSize;
 
-			case 'newest':
-				$mediumId = key($this->_getMedia(false, true, 1));
-				break;
-
-			case 'none':
-			default:
-				return false;
-				break;
-        }
+    if(typeof(setSize == 'undefined')){
+        $setSizeFunction
     }
 
-		$categoryId = isset($_GET['categoryId']) ? intval($_GET['categoryId']) : 0;
-		$arrMedium = $this->_getMedium($mediumId, true);
-		if ($arrMedium) {
-			$podcastJavascript = $this->_getSetSizeJS();
+    tmp = window.onload;
+    if(tmp == null){
+        tmp = function(){};
+    }
+    window.onload = function(){
+        bThumbnails = document.getElementsByName("podcast_thumbnails_block");
+        for(i=0;i<bThumbnails.length;i++){
+            try{
+                setSize(bThumbnails[i], thumbSizeMaxBlock);
+            }catch(e){}
+        }
+        $tmpOnload
+    }
+//]]>
+</script>
+EOF;
 
-			$arrTemplate = &$this->_getTemplate($arrMedium['template_id']);
-			$mediumCode = $this->_getHtmlTag($arrMedium, $arrTemplate['template'], $arrTemplate['player_offset_width'], $arrTemplate['player_offset_height']);
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_PODCAST_PLAY'             => $_ARRAYLANG['TXT_PODCAST_PLAY'],
+            'TXT_PODCAST_MEDIA_VIEWS'     => $_ARRAYLANG['TXT_PODCAST_MEDIA_VIEWS'],
+            'PODCAST_LATEST_JAVASCRIPT' => $thumbailJS,
+        ));
 
-			if ($arrTemplate['js_embed']) {
-				$embedCode = $this->getJSEmbedCode($mediumCode);
-			} else {
-				$embedCode = $mediumCode;
-			}
-			$this->_objTpl->setVariable(array(
-				'PODCAST_MEDIUM_ID'             => $mediumId,
-				'PODCAST_MEDIUM_CATEGORY_ID'    => $categoryId,
-				'PODCAST_MEDIUM_TITLE'          => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
-				'PODCAST_MEDIUM_DESCRIPTION'    => $arrMedium['description'],
-				'PODCAST_MEDIUM_CODE'           => $embedCode,
-				'PODCAST_MEDIUM_DATE'           => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
-				'PODCAST_MEDIUM_SHORT_DATE'     => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
-				'PODCAST_MEDIUM_THUMBNAIL'      => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
-				'PODCAST_MEDIUM_URL'            => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
-				'PODCAST_MEDIUM_WIDTH'       	=> $arrMedium['width'] + $arrTemplate['player_offset_width'],
-				'PODCAST_MEDIUM_HEIGHT'       	=> $arrMedium['height'] + $arrTemplate['player_offset_height'],
-				'PODCAST_JAVASCRIPT' 			=> $podcastJavascript
-			));
-
-			// parse author
-			$this->_objTpl->setVariable('PODCAST_MEDIUM_AUTHOR', empty($arrMedium['author']) ? '-' : htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET));
-			if ($this->_objTpl->blockExists('podcast_medium_author')) {
-				if (empty($arrMedium['author'])) {
-					$this->_objTpl->hideBlock('podcast_medium_author');
-				} else {
-					$this->_objTpl->parse('podcast_medium_author');
-				}
-			}
-			// parse playlength
-			$this->_objTpl->setVariable(array(
-				'PODCAST_MEDIUM_PLAYLENGHT' 		=> $this->_getPlaylengthFormatOfTimestamp($arrMedium['playlength']),
-				'PODCAST_MEDIUM_SHORT_PLAYLENGHT'    => $this->_getShortPlaylengthFormatOfTimestamp($arrMedium['playlength'])
-			));
-			if ($this->_objTpl->blockExists('podcast_medium_playlength')) {
-				if (empty($arrMedium['playlength'])) {
-					$this->_objTpl->hideBlock('podcast_medium_playlength');
-				} else {
-					$this->_objTpl->parse('podcast_medium_playlength');
-				}
-			}
-			// parse views
-			$this->_objTpl->setVariable('PODCAST_MEDIUM_VIEWS', $this->_getViews($mediumId));
-			if ($this->_objTpl->blockExists('podcast_medium_views')) {
-				if (empty($arrMedium['views'])) {
-					$this->_objTpl->hideBlock('podcast_medium_views');
-				} else {
-					$this->_objTpl->parse('podcast_medium_views');
-				}
-			}
-			// parse filesize
-			$this->_objTpl->setVariable('PODCAST_MEDIUM_FILESIZE', $this->_formatFileSize($arrMedium['size']));
-			if ($this->_objTpl->blockExists('podcast_medium_filesize')) {
-				if (empty($arrMedium['filesize'])) {
-					$this->_objTpl->hideBlock('podcast_medium_filesize');
-				} else {
-					$this->_objTpl->parse('podcast_medium_filesize');
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
+        if (count($arrMedia) > 0) {
+            if ($this->_objTpl->blockExists('podcast_latest')) {
+                foreach ($arrMedia as $mediumId => $arrMedium) {
+                    $this->_objTpl->setVariable(array(
+                        'PODCAST_MEDIA_ID'                    => $mediumId,
+                        'PODCAST_MEDIA_TITLE'                => htmlentities($arrMedium['title'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_AUTHOR'                => htmlentities($arrMedium['author'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_DESCRIPTION'            => empty($arrMedium['description']) ? '-' : htmlentities($arrMedium['description'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_DATE'                => date(ASCMS_DATE_FORMAT, $arrMedium['date_added']),
+                        'PODCAST_MEDIA_SHORT_DATE'            => date(ASCMS_DATE_SHORT_FORMAT, $arrMedium['date_added']),
+                        'PODCAST_MEDIA_URL'                    => htmlentities($arrMedium['source'], ENT_QUOTES, CONTREXX_CHARSET),
+                        'PODCAST_MEDIA_THUMBNAIL'            => htmlentities($arrMedium['thumbnail'], ENT_QUOTES, CONTREXX_CHARSET),
+// TODO: Spelling error. Fix the template as well and remove this
+                        'PODCAST_MEDIA_PLAYLENGHT'            => $this->_getPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+                        'PODCAST_MEDIA_PLAYLENGTH'            => $this->_getPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+// TODO: Spelling error. Fix the template as well and remove this
+                        'PODCAST_MEDIA_SHORT_PLAYLENGHT'    => $this->_getShortPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+                        'PODCAST_MEDIA_SHORT_PLAYLENGTH'    => $this->_getShortPlaylengthFormatOfTimestamp($arrMedium['playlength']),
+                        'PODCAST_MEDIA_VIEWS'                => $this->_getViews($mediumId),
+                    ));
+                    $this->_objTpl->parse('podcast_latest');
+                }
+            }
+        }
+    }
 
     /**
      * get the latest media
@@ -177,4 +143,7 @@ class podcastHomeContent extends podcastLib {
         }
         return $this->_getMedia($homeContentCategories, true, $this->_arrSettings['latest_media_count']);
     }
+
 }
+
+?>

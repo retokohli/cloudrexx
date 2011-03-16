@@ -1,0 +1,844 @@
+<!-- START module_partners_create.html -->
+<script language="JavaScript" type="text/javascript">
+//<![CDATA[
+arrTabToDiv = new Array();
+{EDIT_JS_TAB_TO_DIV}
+windows.onload
+//{EDIT_JS_TAB_TO_DIV_EXTENDS}
+ function checkValidations(validate){
+  var v = new RegExp("^(http:\/\/www.|https:\/\/www.|ftp:\/\/www.|www.){1}([0-9A-Za-z]+\.)");
+ // v.compile("^[A-Za-z]+://[A-Za-z0-9-_]+\\.[A-Za-z0-9-_%&\?\/.=]+$");
+  var word = validate.split("-");
+//alert(word);
+    for(i=0;i<=word[i];i++){
+      var words_email = "email_"+word[i];
+      var words_website = "website_"+word[i];
+      var languages = "EditEntry_languages_"+word[i];
+      if(document.getElementById(languages).checked == true){
+        if(document.getElementById(words_email).value==""){
+        alert("Please Enter the Email Address for Language"+word[i]);
+        document.getElementById(words_email).focus();
+        return false;
+        }
+        else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(document.getElementById(words_email).value)){
+        alert("Invalid E-mail Address! Please re-enter for Language"+word[i]);
+        document.getElementById(words_email).focus();
+        return false;
+        }
+        else if(document.getElementById(words_website).value=="")
+        {
+        alert("Please Enter the Website for Language"+word[i]);
+        document.getElementById(words_website).focus();
+        return false;
+        }
+        else if (!(v).test(document.getElementById(words_website).value)) {
+        alert("You must supply a valid URL for Language"+word[i]+" For Ex: http://www.contrexx.com or https://www.contrexx.com.");
+        document.getElementById(words_website).focus();
+        return false;
+        }
+      }
+    }
+  }
+
+
+
+
+function chgcheckAllLang(cate,chkval,chklan,chkchk){
+    var idtext=cate+"1[]";
+    var itext_new = cate;
+    var word=chklan.split("-");
+    var privs = document.getElementsByName(idtext);
+        for(i=0;i<word[i];i++){
+            title_cert=itext_new+word[i]+"[]";
+            privs_text = document.getElementsByName(title_cert);
+            for(j=0;j<privs.length;j++){
+                if(chkval == privs_text[j].value){
+                    if(chkchk){
+                        privs_text[j].checked = true;
+                    }else if(chkchk!= true){
+                        privs_text[j].checked = false;
+                    }
+                }else{
+                    //do nothing
+                }
+            }
+        }
+
+}
+
+
+
+
+
+
+function chgRadioInAllLang(nam,val,lang,stat){
+    var idText = nam+"1[]";
+    var nam_rad= nam;
+    var word   = lang.split("-");
+    var privs  = document.getElementsByName(idText);
+    for(i=0;i<word[i];i++){
+        title= nam_rad+word[i]+"[]";
+        privs_text = document.getElementsByName(title);
+        for(j=0;j<privs.length;j++){
+            if(val == privs_text[j].value){
+                if(stat){
+                    privs_text[j].checked = true;
+                }else if(stat!= true){
+                    privs_text[j].checked = false;
+                }
+            }else{
+                //do nothing
+            }
+        }
+    }
+}
+
+
+function showOrHide(strElement) {
+
+	if (document.getElementById(strElement).style.display == 'none') {
+		document.getElementById(strElement).style.display = 'block';
+	} else {
+		document.getElementById(strElement).style.display = 'none';
+	}
+}
+
+
+function switchBoxAndTab(objElement, strTabId) {
+
+	if (countActiveLanguages() == 0) {
+		//We just "unchecked" the last language, disallow this
+		objElement.checked = true;
+	} else {
+		//There are more active languages, hide the tab
+		switchTabVisibility(strTabId);
+	}
+
+	//Now make sure that a possible div is shown
+	activateAnyActiveDiv();
+}
+
+function switchTabVisibility(strTabId) {
+	if (document.getElementById(strTabId).style.display == 'none') {
+  document.getElementById(strTabId).style.display = 'inline';
+	} else {
+		document.getElementById(strTabId).style.display = 'none';
+	}
+}
+
+
+function countActiveLanguages() {
+	var activeLanguages = 0;
+
+	for (var h=0; h < document.forms.length;h++) {
+		for (var i=0; i < document.forms[h].elements.length;i++) {
+			//read out all form-elements with the loop
+			if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
+				if(document.forms[h].elements[i].checked) {
+					activeLanguages++;
+				}
+			}
+		}
+	}
+
+	return activeLanguages;
+}
+
+function activateAnyActiveDiv() {
+	//Deactivate every div first first
+	for (var TabName in arrTabToDiv) {
+		document.getElementById(TabName).className = 'inactive';
+		document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
+	}
+
+	//Activate the first possible div with an acitvated checkbox
+	for (var TabName in arrTabToDiv) {
+		if (document.getElementById(TabName).style.display == 'inline') {
+			document.getElementById(TabName).className = 'active';
+			document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
+			break;
+		}
+	}
+}
+
+
+
+
+//function EditAllRegions(){
+//alert("test");
+//}
+
+
+
+
+
+
+//function PopulateRegions(from,idofText,valu,langu,sel1,sel2,oriFrom,lang,sel_id,e){
+function PopulateRegions(regid,curvalue,lang,otherLang,idText){
+var word=otherLang.split("-");
+
+var curvalue = curvalue;
+var language = parseInt(lang);
+var regid = parseInt(regid);
+   new Ajax.Request('index.php',
+  {
+
+    method:'get', parameters: {cmd: 'partners', act: 'ajaxRequest',ajax: curvalue,lang:language,regval: regid},
+
+    onSuccess: function(transport){
+ //   var data = transport.responseText.evalJSON();
+      var ajaxRequest = "ajaxRequest_"+regid+"_"+language;
+      var response = transport.responseText || "no response text";
+      document.getElementById(ajaxRequest).innerHTML = response;
+
+  // $(this.ajaxRequest).insert(response.content);
+   //   alert(response);
+//      j++;
+    },
+    onFailure: function(){ alert('Something went wrong...') }
+  });
+      var g = 0;
+     // var k = 0;
+  	  for(k=0;k<=word[k];k++){
+  	  var combined_title = idText+word[k];
+//alert(combined_title);
+      document.getElementById(combined_title).value = curvalue;
+      // while(k<=word[k]){
+  	   //alert(ajaxRequest);
+  	   //alert(word[k])
+  	   
+  	   new Ajax.Request('index.php',
+       {
+
+        method:'get', parameters: {cmd: 'partners', act: 'ajaxRequest',ajax: curvalue,lang:word[k],regval: regid},
+
+        onSuccess: function(transport){
+ //   var data = transport.responseText.evalJSON();
+//        alert(word[g]);
+        var ajaxRequest = "ajaxRequest_"+regid+"_"+word[g];
+        var response = transport.responseText || "no response text";
+      //alert(ajaxRequest);
+//      alert(response);
+        document.getElementById(ajaxRequest).innerHTML = response;
+
+  // $(this.ajaxRequest).insert(response.content);
+      //alert(response);
+            g++;
+        },
+        onFailure: function(){ alert('Something went wrong...') }
+      });
+	 // alert(word[k]);
+	  }
+
+   }
+   
+function PopulateRegions1(regid,curvalue,lang,otherLang,idText){
+var word=otherLang.split("-");
+
+var curvalue = curvalue;
+var language = parseInt(lang);
+   new Ajax.Request('index.php',
+  {
+
+    method:'get', parameters: {cmd: 'partners', act: 'ajaxRequest',ajax: curvalue,lang:language},
+
+    onSuccess: function(transport){
+ //   var data = transport.responseText.evalJSON();
+      var ajaxRequest = "ajaxRequest_"+regid+"_"+language;
+      var response = transport.responseText || "no response text";
+      document.getElementById(ajaxRequest).innerHTML = response;
+
+  // $(this.ajaxRequest).insert(response.content);
+      //alert(response);
+//      j++;
+    },
+    onFailure: function(){ alert('Something went wrong...') }
+  });
+
+   }
+
+function AddToTheList(from,dest,add,remove,fromId,destId,chklang) {
+
+
+var word=chklang.split("-");
+
+
+ var checkLength = 3 - dest.length;
+
+  if(dest.options.length < 3) {
+
+        if (from.selectedIndex < 0){
+
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+
+        from.focus();
+		return false;
+	}else{
+
+
+
+           count_sel = 0;
+		for (var i=0; i<from.length; i++) {
+		   var fromVals  = parseInt(from.options[i].value);
+            if (from.options[i].selected)
+			{
+               if(fromVals > 0){
+			   if(count_sel < checkLength){
+       	     	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, true);
+		    	  for(k=0;k<=word[k];k++){
+//		    	  alert(word[k]);
+                  var combined_title     = destId+word[k]+"[]";
+                  var combined_title_ori = fromId+word[k]+"[]";
+                  fromOri =  document.frmEditEntry.elements[combined_title_ori];
+                 // alert("from"+fromOri);
+                    for (j=0;j<fromOri.length;j++){
+                    fromOriValue = fromOri.options[j].value;
+                    if(fromOriValue == from.options[i].value){
+                    destin = document.frmEditEntry.elements[combined_title];
+                    if(destin.length <= fromOri.length){
+                    destin.options[destin.length] = new Option( from.options[i].text, from.options[i].value, false, true);
+                    fromOri.options[j] = null;
+                    }
+
+                      }
+                    }
+                  }
+                }else{
+                from.options[i].selected = false;
+                }
+                }
+		    	count_sel++;
+
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--) {
+        if (from.options[i].selected)
+			{
+			var fromVals  = parseInt(from.options[i].value);
+            //	alert(from.options[i].value);
+            if(fromVals > 0){
+		       from.options[i] = null;
+		       }
+		       //alert("test");
+
+   			}
+		}
+	}
+    disapleButtons(from,dest,add,remove);
+    }
+}
+function AddToTheList1(from,dest,add,remove,fromId,destId,chklang) {
+
+var word=chklang.split("-");
+
+
+ var checkLength = 3 - dest.length;
+  if(dest.options.length < 3) {
+        if ( from.selectedIndex < 0){
+
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+
+        from.focus();
+		return false;
+	}else{
+
+         count_sel = 0;
+		for (var i=0; i<from.length; i++) {
+
+            if (from.options[i].selected)
+			{
+			   if(count_sel < checkLength){
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, true);
+ //	    	  for(k=0;k<=word[k];k++){
+////		    	  alert(word[k]);
+//                  var combined_title     = destId+word[k]+"[]";
+//                  var combined_title_ori = fromId+word[k]+"[]";
+//                  fromOri =  document.frmEditEntry.elements[combined_title_ori];
+//                    for (j=0;j<fromOri.length;j++){
+//                    fromOriValue = fromOri.options[j].value;
+//                    if(fromOriValue == from.options[i].value){
+//                    destin = document.frmEditEntry.elements[combined_title];
+//                    if(destin.length <= fromOri.length){
+//                    destin.options[destin.length] = new Option( from.options[i].text, from.options[i].value, false, true);
+//                    fromOri.options[j] = null;
+//                    }
+//
+//                      }
+//                    }
+//                  }
+                }else{
+                from.options[i].selected = false;
+                }
+
+		    	count_sel++;
+
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--) {
+        if (from.options[i].selected)
+			{
+//	alert(from.options[i].value);
+		       from.options[i] = null;
+		       //alert("test");
+
+   			}
+		}
+	}
+    disapleButtons(from,dest,add,remove);
+    }
+}
+
+function RemoveFromTheList(from,dest,add,remove,fromId,destId,chklang) {
+var word=chklang.split("-");
+	if ( dest.selectedIndex < 0){
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+
+        dest.focus();
+		return false;
+	}
+	else{
+
+		for (var i=0; i<dest.options.length; i++)
+		{
+  	if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+		    	  for(k=0;k<=word[k];k++){
+	//	    	  alert(word[k]);
+                  var combined_title     = destId+word[k]+"[]";
+                  var combined_title_ori = fromId+word[k]+"[]";
+                  //alert(combined_title);
+                  fromOri =  document.frmEditEntry.elements[combined_title_ori];
+                  destin = document.frmEditEntry.elements[combined_title];
+                    for (j=0;j<destin.length;j++){
+                  //  fromOriValue = parseInt(fromOri.options[j].value);
+                    destinValue  = parseInt(destin.options[j].value);
+                    destiValue  = parseInt(dest.options[i].value);
+
+  //                  alert(destiValue);
+                    if(destinValue == destiValue){
+                   // if(fromOri.length < destin.length){
+                    fromOri.options[fromOri.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+                   // }
+                    destin.options[j] = null;
+                      }
+                    }
+                  }
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+//		alert("test");
+			if (dest.options[i].selected)
+			{
+                //alert("hai");
+                //alert(i);
+		       dest.options[i] = null;
+
+   			}
+		}
+	}
+	disapleButtons(from,dest,add,remove);
+}
+
+function RemoveFromTheList1(from,dest,add,remove,fromId,destId,chklang) {
+var word=chklang.split("-");
+	if ( dest.selectedIndex < 0){
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+
+        dest.focus();
+		return false;
+	}
+	else{
+
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+ //	    			    	  for(k=0;k<=word[k];k++){
+//	//	    	  alert(word[k]);
+//                  var combined_title     = destId+word[k]+"[]";
+//                  var combined_title_ori = fromId+word[k]+"[]";
+//                  fromOri =  document.frmEditEntry.elements[combined_title_ori];
+//                  destin = document.frmEditEntry.elements[combined_title];
+//                    for (j=0;j<destin.length;j++){
+//                    fromOriValue = fromOri.options[j].value;
+//                    destinValue  = destin.options[j].value;
+//                    if(destinValue == dest.options[i].value){
+//                   // if(fromOri.length < destin.length){
+//                    fromOri.options[fromOri.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+//                   // }
+//                    destin.options[j] = null;
+//                      }
+//                    }
+//                  }
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+         //       alert(i);
+		       dest.options[i] = null;
+
+   			}
+		}
+	}
+	disapleButtons(from,dest,add,remove);
+}
+
+
+function disapleButtons(from,dest,add,remove) {
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
+
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
+}
+
+function SelectAllList(CONTROL) {
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = true;
+	}
+}
+
+function DeselectAllList(CONTROL) {
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
+}
+
+
+function changeInAllLang(idofText,valu,langu){
+var idText = idofText;
+var word = langu.split("-");
+
+
+//alert(word);
+    for(i=0;i<=word[i];i++){
+var combined_title = idText+word[i]
+//alert(combined_title);
+document.getElementById(combined_title).value = valu;
+}
+}
+
+function changeInAllLang_ListBox(from,idofText,valu,langu,sel1,sel2,oriFrom){
+//alert("hi");
+sel = sel1[sel2];
+
+ // alert(oriFrom);
+//var txt_cur = document.getElementById()
+//alert(txt_cur);
+var idText = idofText;
+var word = langu.split("-");
+//document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]']
+
+//alert(word);
+for(i=0;i<=word[i];i++){
+var combined_title     = idText+word[i]+"[]";
+var combined_title_ori = oriFrom+word[i]+"[]";
+fromOri =  document.frmEditEntry.elements[combined_title_ori];
+for (j=0;j<fromOri.length;j++){
+fromOriValue = fromOri.options[j].value;
+if(fromOriValue == valu){
+//dest = document.frmEditEntry.elements[combined_title];
+
+//dest.options[j].selected = true;
+//dest.options[dest.length].selected = true;
+
+//fromOri.options[j] = null;
+}
+//dest = document.frmEditEntry.elements[combined_title];
+// alert(dest.options[j].value)
+//dest.options[j].selected = true;
+//alert(combined_title);
+//document.getElementById(combined_title).value = valu;
+}
+dest = document.frmEditEntry.elements[combined_title];
+for (l=0;l<dest.length;l++){
+//alert(dest.options[l].value);
+//alert(valu);
+if(from.options[l].selected){
+dest.options[l].selected = true;
+}else{
+dest.options[l].selected = false;
+}
+}
+
+}
+}
+
+
+//Following Functions are needed for Picture-Selection -------------------------------------------------------------
+function SetUrl(url, width, height, alt) {
+	document.getElementById(newsElInsertBox).value = url;
+}
+
+function newsGetFileBrowser(elInsertBox) {
+	newsElInsertBox = elInsertBox;
+	openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+}
+
+function openWindow(theURL,winName,features){
+	partnersPopup = window.open(theURL,"partners",features);
+	partnersPopup.focus();
+}
+//]]>
+</script>
+{JAVASRIPT_REGION}
+<form name="frmEditEntry" method="post" action="index.php?cmd=partners&act={PARTNERS_FORM_ACTION}">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="4">{TXT_EDIT_LANGUAGES}</th>  <!-- Languages -->
+		</tr>
+		<tr class="row1">
+			<td width="10%">{TXT_EDIT_LANGUAGES}</td>
+			<td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
+			<td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
+			<td width="50%" valign="top">{EDIT_LANGUAGES_3}</td>
+		</tr>
+
+	</table>
+	<br />
+     <table><tr><td>
+	<ul id="tabmenu">
+		<!-- BEGIN showLanguageTabs -->
+		<li><a id="{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:{}" onclick="selectTab('{TABS_DIV_ID}')" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
+		<!-- END showLanguageTabs -->
+     </ul></td><!--<td><a href="javascript:showOrHide('ShowOverview');">{TXT_ADD_EXTENDED}</a></td>-->
+     </tr></table>
+
+
+
+		<!-- BEGIN showLanguageDivs -->
+<div id="{DIV_ID}" class="addEntry" style="{DIV_DISPLAY_STYLE}">
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th valign="top" colspan="4">
+        <div align="left">{TXT_PARTNERS_MESSAGE}
+                 </div>
+      </th>
+    </tr>
+    <tr class="row1">
+      <td width="12%" nowrap="nowrap" colspan="1">{TXT_TITLE}</TD>
+      <td colspan="3">
+        <input type="text" name="partnersTitle_{DIV_LANGUAGE_ID}" id="partnersTitle_{DIV_LANGUAGE_ID}" style="width:400px;" value="{PARTNERS_TITLE}"  onChange="changeInAllLang{FUNCTION_ID}('partnersTitle_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+      </td>
+    </tr>
+     <tr class="row2">
+      <td width="12%" colspan="1" nowrap="nowrap">{TXT_STATUS}</td>
+      <td colspan="3">
+{PARTNERS_IS_ACTIVE}
+</td>
+</tr>
+<tr class="row1">
+    <td width="10%" valign="top">{TXT_CATEGORIES}</td>
+	<td width="20%" valign="top">{DIV_CATEGORIES_1}</td>
+	<td width="20%" valign="top">{DIV_CATEGORIES_2}</td>
+	<td width="40%" valign="top">{DIV_CATEGORIES_3}</td>
+
+</tr>
+    <tr class="row2" style="{PARTNERS_DISPLAY_LEVEL}">
+    <td colspan="4">
+<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
+    <tr class="row2">
+    <td width="13%"  nowrap="nowrap">{TXT_LCATEGORY}</td>
+    <td width="210">
+    {PARTNERS_LEVEL}
+    </td>
+    <td width="50">
+        &nbsp;<input type="button" value="&gt;&gt;" name="adduser"  onclick="AddToTheList{FUNCTION_ID}(document.frmEditEntry.elements['level_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]'],adduser,removeuser,'level_','assignedLevel_','{PASS_LANG_MULTIPLE}');" style="margin-bottom:1px;" />&nbsp;<br />
+		&nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['level_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]'],adduser,removeuser,'level_','assignedLevel_','{PASS_LANG_MULTIPLE}');" />&nbsp;
+    </td>
+    <td>
+        <select name="assignedLevel_{DIV_LANGUAGE_ID}[]"  id="assignedLevel_{DIV_LANGUAGE_ID}[]" size="10" style="width:200px;"  multiple="multiple" onChange="changeInAllLang_ListBox{FUNCTION_ID}(document.frmEditEntry.elements['assignedLevel_{DIV_LANGUAGE_ID}[]'],'assignedLevel_',this.value,'{PASS_LANG_MULTIPLE}',this.options,selectedIndex,'level_');">
+         {PARTNERS_LEVEL_MULTI}
+		</select>
+    </td>
+    </tr>
+</table>
+</td>
+</tr>
+ <tr class="{PARTNERS_CLASS_PROFILE}" style="{PARTNERS_DISPLAY_PROFILE}">
+            <td colspan="4">
+<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
+<tr class="{PARTNERS_CLASS_PROFILE_ONE}">
+<td width="13%" colspan="1" nowrap="nowrap">{TXT_PCATEGORY}</td>
+        <td width="210">
+            {PARTNERS_PROFILE}
+        </td>
+        <td width="50">
+            &nbsp;<input type="button" value="&gt;&gt;" name="addprofile" onclick="AddToTheList{FUNCTION_ID}(document.frmEditEntry.elements['profile_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedProfile_{DIV_LANGUAGE_ID}[]'],addprofile,removeprofile,'profile_','assignedProfile_','{PASS_LANG_MULTIPLE}');" style="margin-bottom:1px;" />&nbsp;<br />
+			&nbsp;<input type="button" value="&lt;&lt;" name="removeprofile" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['profile_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedProfile_{DIV_LANGUAGE_ID}[]'],addprofile,removeprofile,'profile_','assignedProfile_','{PASS_LANG_MULTIPLE}');" />&nbsp;
+        </td>
+        <td>
+            <select name="assignedProfile_{DIV_LANGUAGE_ID}[]" id="assignedProfile_{DIV_LANGUAGE_ID}[]" size="10" style="width:200px;" multiple="multiple" onChange="changeInAllLang_ListBox{FUNCTION_ID}(document.frmEditEntry.elements['assignedProfile_{DIV_LANGUAGE_ID}[]'],'assignedProfile_',this.value,'{PASS_LANG_MULTIPLE}',this.options,selectedIndex,'profile_');">
+                {PARTNERS_PROFILE_MULTI}
+		     </select>
+        </td>
+        </tr>
+</table>
+</td>
+</tr>
+
+ <tr class="{PARTNERS_CLASS_COUNTRY}" style="{PARTNERS_DISPLAY_COUNTRY}">
+        <td width="12%" colspan="1" nowrap="nowrap">{TXT_CCATEGORY}</td>
+        <td width="20">
+            {PARTNERS_COUNTRY}
+        </td>
+        <td width="20">
+            {PARTNERS_COUNTRY1}
+        </td>
+        <td width="20">
+           {PARTNERS_COUNTRY2}
+        </td>
+   </tr>
+ <tr class="{PARTNERS_CLASS_REGION}" style="{PARTNERS_DISPLAY_COUNTRY}">
+      <td width="12%" colspan="1" nowrap="nowrap">{TXT_REGION}</td>
+      <td  width="20">
+      <div style="float:left;display:block;" id="ajaxRequest_0_{DIV_LANGUAGE_ID}">{REGION_MULTI_1}&nbsp;</div></td>
+      <td  width="20">
+      <div style="float:left;display:block;" id="ajaxRequest_1_{DIV_LANGUAGE_ID}">{REGION_MULTI_2}&nbsp;</div></td>
+      <td  width="20">
+      <div style="float:left;display:block;" id="ajaxRequest_2_{DIV_LANGUAGE_ID}">{REGION_MULTI_3}&nbsp;</div>
+      </td>
+</tr>
+
+ <tr class="{PARTNERS_CLASS_VERTICAL}" style="{PARTNERS_DISPLAY_VERTICAL}">
+            <td colspan="4">
+
+<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
+<tr class="{PARTNERS_CLASS_VERTICAL_ONE}">
+<td width="13%" colspan="1" nowrap="nowrap">{TXT_VCATEGORY}</td>
+        <td width="210">
+            {PARTNERS_VERTICAL}
+        </td>
+        <td width="50">
+            &nbsp;<input type="button" value="&gt;&gt;" name="addvertical" onclick="AddToTheList{FUNCTION_ID}(document.frmEditEntry.elements['vertical_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedVertical_{DIV_LANGUAGE_ID}[]'],addvertical,removevertical,'vertical_','assignedVertical_','{PASS_LANG_MULTIPLE}');" style="margin-bottom:1px;" />&nbsp;<br />
+			&nbsp;<input type="button" value="&lt;&lt;" name="removevertical" onclick="RemoveFromTheList{FUNCTION_ID}(document.frmEditEntry.elements['vertical_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedVertical_{DIV_LANGUAGE_ID}[]'],addvertical,removevertical,'vertical_','assignedVertical_','{PASS_LANG_MULTIPLE}');" />&nbsp;
+        </td>
+        <td>
+            <select name="assignedVertical_{DIV_LANGUAGE_ID}[]" id="assignedVertical_{DIV_LANGUAGE_ID}[]" size="10" style="width:200px;" multiple="multiple" onChange="changeInAllLang_ListBox{FUNCTION_ID}(document.frmEditEntry.elements['assignedVertical_{DIV_LANGUAGE_ID}[]'],'assignedVertical_',this.value,'{PASS_LANG_MULTIPLE}',this.options,selectedIndex,'vertical_');">
+                {PARTNERS_VERTICAL_MULTI}
+		    </select>
+        </td>
+        </tr>
+   </table>
+</td>
+</tr>
+<tr class="{PARTNERS_CLASS_ONE}">
+<td nowrap="nowrap" colspan="1">{TXT_CONTACTNAME}</TD>
+<td colspan="3">
+<input name="contactname_{DIV_LANGUAGE_ID}" type="text" id="contactname_{DIV_LANGUAGE_ID}" value="{PARTNERS_CONTACTNAME}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}{FUNCTION_ID}('contactname_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+
+<tr class="{PARTNERS_CLASS_TWO}">
+<td nowrap="nowrap" colspan="1">{TXT_EMAIL}</TD>
+<td colspan="3">
+<input name="email_{DIV_LANGUAGE_ID}" type="text" id="email_{DIV_LANGUAGE_ID}" value="{PARTNERS_EMAIL}" style="width:400px;"  onChange="changeInAllLang{FUNCTION_ID}('email_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+<tr class="{PARTNERS_CLASS_ONE}">
+<td nowrap="nowrap" colspan="1">{TXT_WEBSITE}</TD>
+<td colspan="3">
+<input name="website_{DIV_LANGUAGE_ID}" type="text" id="website_{DIV_LANGUAGE_ID}" value="{PARTNERS_WEBSITE}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('website_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+<tr class="{PARTNERS_CLASS_TWO}">
+<td nowrap="nowrap" colspan="1">{TXT_ADDRESS1}</TD>
+<td colspan="3">
+<input name="address1_{DIV_LANGUAGE_ID}" type="text" id="address1_{DIV_LANGUAGE_ID}" value="{PARTNERS_ADDRESS1}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('address1_',this.value,'{PASS_LANG_MULTIPLE}');" />
+</td>
+
+</tr>
+<tr class="{PARTNERS_CLASS_ONE}">
+<td nowrap="nowrap" colspan="1">{TXT_ADDRESS2}</TD>
+<td colspan="3">
+<input name="address2_{DIV_LANGUAGE_ID}" type="text" id="address2_{DIV_LANGUAGE_ID}" value="{PARTNERS_ADDRESS2}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('address2_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+
+<tr class="{PARTNERS_CLASS_TWO}">
+<td nowrap="nowrap" colspan="1">{TXT_CITY}</TD>
+<td colspan="3">
+<input name="city_{DIV_LANGUAGE_ID}" type="text" id="city_{DIV_LANGUAGE_ID}" value="{PARTNERS_CITY}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('city_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+
+<tr class="{PARTNERS_CLASS_ONE}">
+<td nowrap="nowrap" colspan="1">{TXT_ZIPCODE}</TD>
+<td colspan="3">
+<input name="zipcode_{DIV_LANGUAGE_ID}" type="text" id="zipcode_{DIV_LANGUAGE_ID}" value="{PARTNERS_ZIPCODE}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('zipcode_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+
+<tr class="{PARTNERS_CLASS_TWO}">
+<td nowrap="nowrap" colspan="1">{TXT_PHONE}</TD>
+<td colspan="3">
+<input name="phone_{DIV_LANGUAGE_ID}" type="text" id="phone_{DIV_LANGUAGE_ID}" value="{PARTNERS_PHONE}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('phone_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+
+<tr class="{PARTNERS_CLASS_ONE}">
+<td nowrap="nowrap" colspan="1">{TXT_FAX}</TD>
+<td colspan="3">
+<input name="fax_{DIV_LANGUAGE_ID}" type="text" id="Fax_{DIV_LANGUAGE_ID}" value="{PARTNERS_FAX}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('Fax_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+
+<tr class="{PARTNERS_CLASS_TWO}">
+<td nowrap="nowrap" colspan="1">{TXT_REFERENCE}</TD>
+<td colspan="3">
+<input name="reference_{DIV_LANGUAGE_ID}" type="text" id="reference_{DIV_LANGUAGE_ID}" value="{PARTNERS_REFERENCE}" style="width:400px;" onChange="changeInAllLang{FUNCTION_ID}('reference_',this.value,'{PASS_LANG_MULTIPLE}');"/>
+</td>
+</tr>
+<tr class="{PARTNERS_CLASS_ONE}">
+<td nowrap="nowrap" colspan="1">{TXT_QUOTE}</TD>
+<td colspan="3">
+<textarea name="quote_{DIV_LANGUAGE_ID}" type="text" id="quote_{DIV_LANGUAGE_ID}" rows="10" cols="55" onChange="changeInAllLang{FUNCTION_ID}('quote_',this.value,'{PASS_LANG_MULTIPLE}');">{PARTNERS_QUOTE}</textarea>
+</td>
+</tr>
+
+<tr class="{PARTNERS_CLASS_TWO}">
+			<td>{TXT_DIV_LOGO}</td>
+			<td colspan="3"><input type="text" name="frmEditEntry_Image_{DIV_LANGUAGE_ID}" id="frmEditEntry_Image_{DIV_LANGUAGE_ID}" style="width:400px;" value="{DIV_IMAGE}" onChange="changeInAllLang{FUNCTION_ID}('frmEditEntry_Image_',this.value,'{PASS_LANG_MULTIPLE}');"/>&nbsp;<input type="button" value="{TXT_DIV_IMAGE_BROWSE}" onclick="newsGetFileBrowser('frmEditEntry_Image_{DIV_LANGUAGE_ID}', 'image')" /></td>
+		</tr>
+  </table>
+
+  <br />
+  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+    <tr>
+      <th valign="top">{TXT_PARTNERS_CONTENT}</th>
+    </tr>
+    <tr class="{PARTNERS_CLASS_ONE}">
+      <td valign="top">{PARTNERS_TEXT}</td>
+    </tr>
+  </table>
+</div>
+  <!-- END showLanguageDivs -->
+  <br />
+
+  <input type="hidden" name="frmEditCategory_MessageId" value="{EDIT_MESSAGE_ID}" />
+  <input type="submit" name="Submit" value="{TXT_STORE}" onClick="return checkValidations('{PASS_JAVA_LANGUAGE}');" />
+
+
+  <br />
+  <br />
+
+</form>
+<br />
+<!-- END module_partners_create.html -->

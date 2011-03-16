@@ -10,7 +10,6 @@ var fe_containerDivName 		= 'fe_Container';
 var fe_backgroundDivName		= 'fe_Background';
 
 var fe_loginDivName				= 'fe_Login';
-var fe_loginLinkId				= 'fe_LoginLink';
 var fe_loginUsername			= 'fe_LoginUsername';
 var fe_loginPassword			= 'fe_LoginPassword';
 var fe_loginSecurityKey			= 'fe_LoginSecurityKey';
@@ -46,19 +45,20 @@ var fe_previewSaveIcon			= 'fe_saveIcon';
 var fe_previewSaveIconIsVisible	= false;
 
 function fe_checkForLogin() {
-	if(typeof fe_userIsLoggedIn != 'undefined' && fe_userIsLoggedIn) {
+	if(fe_userIsLoggedIn) {
 		fe_loadToolbar(false);
 	}
 }
+var oldOnLoad = window.onload;
+window.onload = function() { if (oldOnLoad) { oldOnLoad(); } fe_checkForLogin(); };
 
 function fe_loadToolbar(showEditorAfterLoading) {
 	if (!fe_toolbarIsLoaded) {
 	    fe_startLoading();
-		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing,
+		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 							{	method: 'get',
-								parameters: {	act: 'getToolbar',
+								parameters: {	act: 'getToolbar', 
 												page: fe_pageId,
-												lang: fe_langId,
 												section: fe_pageSection,
 												cmd: fe_pageCommand
 											},
@@ -67,7 +67,7 @@ function fe_loadToolbar(showEditorAfterLoading) {
 		  						},
 		  						onComplete : fe_stopLoading
 							}
-						);
+						);				
 	} else {
 		fe_showToolbar();
 	}
@@ -78,23 +78,23 @@ function fe_loadToolbarResponse(responseText, showEditorAfterLoading) {
 
 	$(fe_containerDivName).update(arrResponse[1]);
 	$(fe_containerDivName).show();
-
+						
 	switch (arrResponse[0]) {
 		case 'login':
 			fe_showLogin();
 			break;
 		case 'admin':
 			$(fe_containerDivName).hide();
-			window.location.href = fe_pathToBackend;
+			window.location = fe_pathToBackend;
 		break;
 		default:
 			fe_showToolbar();
-
+			
 			if (showEditorAfterLoading) {
 				fe_loadEditor(true)
 			}
 	}
-
+	
 	return;
 }
 
@@ -110,16 +110,16 @@ function fe_closeLogin() {
 
 function fe_doLogin() {
 	fe_closeLogin();
-
+		
 	pageId 	= $F(fe_loginPageId);
 	section = $F(fe_loginPageSection);
 	cmd 	= $F(fe_loginPageCmd);
-
+	
 	var loginType = ($(fe_loginTypeFrontend).checked == true) ? 'frontend' : 'backend';
 
 	if (loginType == 'frontend') {
 	    fe_startLoading();
-		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing,
+		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 							{	method: 'post',
 								parameters: {	act: 'getToolbar',
 												page: pageId,
@@ -139,7 +139,7 @@ function fe_doLogin() {
 						);
 	} else {
 	    fe_startLoading();
-		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing,
+		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 							{	method: 'post',
 								parameters: {	act: 'getAdmin',
 												doLogin: 'true',
@@ -169,31 +169,29 @@ function fe_showToolbar() {
 		new Insertion.Top(body, toolbarDiv);
 		fe_toolbarIsLoaded = true;
 	}
-
-	if (!fe_toolbarIsVisible && fe_userWantsToolbar) {
+	
+	if (!fe_toolbarIsVisible && fe_userWantsToolbar) {	
 		Effect.Appear(fe_toolbarDivName, {duration: fe_appearanceDuration, from: 0.0, to: 1.0});
 		fe_toolbarIsVisible = true;
-        $J('body,html').animate({paddingTop: '20px'}, 1400);
 	}
 }
 
 function fe_closeToolbar() {
 	Effect.Fade(fe_toolbarDivName, {duration: fe_appearanceDuration, to: 0.0});
 	fe_toolbarIsVisible = false;
-
+	
 	if (fe_editorIsVisible) {
 		fe_makeEditorInvisible();
 	}
+	
 	fe_setToolbarVisibility(false);
 }
 
 function fe_setToolbarVisibility(newStatus) {
 	fe_userWantsToolbar = newStatus;
-	if(fe_userWantsToolbar == false){
-        $J('body,html').animate({paddingTop: '0px'}, 1400);
-	}
+		
 	fe_startLoading();
-	new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing,
+	new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 					{	method: 'get',
 						parameters: {	act: 'setToolbarVisibility',
 										status: ((fe_userWantsToolbar == true) ? '1' : '0')
@@ -208,16 +206,16 @@ function fe_doLogout() {
 	if (fe_editorIsVisible) {
 		fe_makeEditorInvisible();
 	}
-
+	
 	fe_startLoading();
-	new Ajax.Request(	fe_fileForIndex,
+	new Ajax.Request(	fe_fileForIndex, 
 					{	method: 'get',
 						parameters: {	section: 'logout' },
   						onSuccess: function(transport) {
   							fe_toolbarIsLoaded 	= false;
   							fe_toolbarIsVisible = false;
   							$(fe_toolbarDivName).remove();
-
+  							
   							fe_editorIsLoaded	= false;
   							fe_editorIsVisible	= false;
   							$(fe_containerDivName).update();
@@ -225,7 +223,6 @@ function fe_doLogout() {
   						onComplete: fe_stopLoading()
 					}
 				);
-    $J('body,html').animate({paddingTop: '0px'}, 1400);
 }
 
 function fe_closeSelection() {
@@ -241,14 +238,12 @@ function fe_showSelection() {
 function fe_loadEditor(showSelectionIfNeeded) {
 	if (!fe_editorIsLoaded) {
 	    fe_startLoading();
-		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing,
+		new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing, 
 						{	method: 'get',
-							parameters: {	act: 'getEditor',
+							parameters: {	act: 'getEditor', 
 											page: fe_pageId,
-											lang: fe_langId,
 											section: fe_pageSection,
 											cmd: fe_pageCommand,
-    										frontPreview: location.href.match(/frontPreview=1/) ? '1' : '0',
 											selection: showSelectionIfNeeded
 										},
 	  						onSuccess: function(transport) {
@@ -256,7 +251,7 @@ function fe_loadEditor(showSelectionIfNeeded) {
 	  						},
 	  						onComplete: fe_stopLoading()
 						}
-					);
+					);		
 	} else {
 		fe_showEditor();
 	}
@@ -264,10 +259,10 @@ function fe_loadEditor(showSelectionIfNeeded) {
 
 function fe_loadEditorResponse(responseText) {
 	var arrResponse = responseText.split(';;;', 2);
-
+	  							  									  					  							  							
 	$(fe_containerDivName).update(arrResponse[1]);
 	$(fe_containerDivName).show();
-
+						
 	switch (arrResponse[0]) {
 		case 'login':
 			fe_showLogin();
@@ -281,7 +276,7 @@ function fe_loadEditorResponse(responseText) {
 		default:
 			fe_showEditor();
 	}
-
+	
 	return;
 }
 
@@ -289,13 +284,13 @@ function fe_showEditor() {
 	if (!fe_editorIsLoaded) {
 		editorDiv = $(fe_editorDivName).remove();
 		editorBackgroundDiv = $(fe_backgroundDivName).remove();
-
+		
 		new Insertion.After(toolbarDiv, editorDiv);
 		new Insertion.After(editorDiv, editorBackgroundDiv);
-
+		
 		fe_editorIsLoaded = true;
 	}
-
+	
 	fe_switchEditorVisibility();
 	fe_hideSaveIcon();
 }
@@ -322,11 +317,10 @@ function fe_makeEditorInvisible() {
 
 function fe_loadDefault() {
     fe_startLoading();
-	new Ajax.Request(	fe_fileForIndex,
+	new Ajax.Request(	fe_fileForIndex, 
 						{	method: 'get',
-							parameters: {	frontEditing: '1',
+							parameters: {	frontEditing: '1', 
 											page: fe_pageId,
-											lang: fe_langId,
 											section: fe_pageSection,
 											cmd: fe_pageCommand
 										},
@@ -335,14 +329,14 @@ function fe_loadDefault() {
 	  						},
 	  						onComplete: fe_stopLoading()
 						}
-					);
+					);	
 }
 
 function fe_restoreDefault(defaultContent) {
 	var fe_title = $(fe_previewTitleName);
 	if (fe_title) {
 		fe_title.update($F(fe_editorFormTitleName + fe_editorFormOldSuffix));
-		new Effect.Highlight(fe_previewTitleName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration});
+		new Effect.Highlight(fe_previewTitleName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration});	
 	}
 	$(fe_previewContentName).update(defaultContent);
 	new Effect.Highlight(fe_previewContentName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration});
@@ -350,27 +344,26 @@ function fe_restoreDefault(defaultContent) {
 
 function fe_loadPreview(previewMode) {
 	fe_makeEditorInvisible();
-	var editorContent = FCKeditorAPI.GetInstance(fe_editorFormContentName).GetData();
+	var editorContent = FCKeditorAPI.GetInstance(fe_editorFormContentName).GetData();	
 	fe_startLoading();
-	new Ajax.Request(	fe_fileForIndex,
-						{	method: 'post',
+	new Ajax.Request(	fe_fileForIndex, 
+						{	method: 'get',
 							parameters: {	frontEditing: '1',
 											page: fe_pageId,
-											lang: fe_langId,
 											section: fe_pageSection,
 											cmd: fe_pageCommand,
 											previewContent: editorContent
 										},
 	  						onSuccess: function(transport) {
 	  							fe_showPreview(transport.responseText);
-
+	  							
 	  							if (previewMode) {
 	  								fe_showSaveIcon();
 	  							}
 	  						},
 	  						onComplete: fe_stopLoading()
 						}
-					);
+					);	
 }
 
 function fe_showPreview(previewContent) {
@@ -380,7 +373,7 @@ function fe_showPreview(previewContent) {
 		new Effect.Highlight(fe_previewTitleName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration, delay: 0.2});
 	}
 
- 	$(fe_previewContentName).update(previewContent);
+ 	$(fe_previewContentName).update(previewContent);	 	
  	new Effect.Highlight(fe_previewContentName, {startcolor: fe_editorHighlightColor, duration: fe_appearanceDuration, delay: 0.2});
 }
 
@@ -401,9 +394,8 @@ function fe_updatePage() {
 	fe_startLoading();
 	new Ajax.Request(	fe_pathToFrontEditing + fe_fileForFrontEditing,
 						{	method: 'post',
-							parameters: {	act: 'doUpdate',
+							parameters: {	act: 'doUpdate', 
 											page: fe_pageId,
-											lang: fe_langId,
 											section: fe_pageSection,
 											cmd: fe_pageCommand,
 											title: $F(fe_editorFormTitleName),
@@ -412,11 +404,10 @@ function fe_updatePage() {
 	  						onSuccess: function(transport) {
 	  							fe_loadPreview(false);
 	  							fe_hideSaveIcon();
-	  							location.href=location.href.replace(/frontPreview=1&?/, '');
 	  						},
 	  						onComplete: fe_stopLoading()
 						}
-					);
+					);	
 }
 
 function fe_startLoading() {

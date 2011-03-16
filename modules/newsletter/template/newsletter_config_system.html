@@ -16,17 +16,17 @@
 </div>
 <br />
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
-  <tr>
-    <th>{TXT_TITLE}</th>
-  </tr>
+	<tr>
+		<th>{TXT_TITLE}</th>
+	</tr>
 </table>
 <form name="adduser" action="index.php?cmd=newsletter&amp;act=system" method="post">
-<input type="hidden" name="update" value="1" />
+<input type="hidden" name="update" value="exe" />
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
-  <tr class="row1">
-    <td width="200">{TXT_DEF_UNSUBSCRIBE}</td>
-    <td><input id="id_def_unsubscribe_on" type="radio" name="def_unsubscribe" value="1" {UNSUBSCRIBE_DELETE_ON} />  <label for="id_def_unsubscribe_on">{UNSUBSCRIBE_DELETE} &nbsp;  </label> <input id="id_def_unsubscribe_off" type="radio" name="def_unsubscribe" value="0" {UNSUBSCRIBE_DEACTIVATE_ON} />  <label for="id_def_unsubscribe_off"> {UNSUBSCRIBE_DEACTIVATE} &nbsp;  </label> </td>
-  </tr>
+	<tr class="row1">
+		<td width="200">{TXT_DEF_UNSUBSCRIBE}</td>
+		<td><input id="id_def_unsubscribe_on" type="radio" name="def_unsubscribe" value="1" {UNSUBSCRIBE_DELETE_ON} />  <label for="id_def_unsubscribe_on">{UNSUBSCRIBE_DELETE} &nbsp;  </label> <input id="id_def_unsubscribe_off" type="radio" name="def_unsubscribe" value="0" {UNSUBSCRIBE_DEACTIVATE_ON} />  <label for="id_def_unsubscribe_off"> {UNSUBSCRIBE_DEACTIVATE} &nbsp;  </label> </td>
+	</tr>
 </table>
 <br />
 <input type="submit" value="{TXT_SAVE}" />

@@ -15,7 +15,7 @@
 @ini_set('display_errors', 0);
 $php = phpversion();
 if ($php < "5.2") {
-    errorBox("Das Contrexx CMS benötigt mindestens PHP in der Version 5.2.<br>Auf Ihrem System läuft PHP ".$php);
+	errorBox("Das Contrexx CMS benötigt mindestens PHP in der Version 5.2.<br>Auf Ihrem System läuft PHP ".$php);
 }
 
 /**
@@ -42,17 +42,17 @@ $basePath = realpath(dirname(__FILE__));
 define('ASCMS_LIBRARY_PATH', realpath(dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'lib'));
 
 if (!@include_once($basePath.'/config/config.php')) {
-    die('Unable to load file '.$basePath.'/config/config.php');
+	die('Unable to load file '.$basePath.'/config/config.php');
 }
 
 @header('content-type: text/html; charset='.($useUtf8 ? 'UTF-8' : 'ISO-8859-1'));
 
 if (!@include_once(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php')) {
-    die('Unable to load file '.ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
+	die('Unable to load file '.ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
 } elseif (!@include_once($basePath.'/common.class.php')) {
-    die('Unable to load file '.$basePath.'/common.class.php');
+	die('Unable to load file '.$basePath.'/common.class.php');
 } elseif (!@include_once($basePath.'/installer.class.php')) {
-    die('Unable to load file '.$basePath.'/installer.class.php');
+	die('Unable to load file '.$basePath.'/installer.class.php');
 }
 
 $objCommon = new CommonFunctions;

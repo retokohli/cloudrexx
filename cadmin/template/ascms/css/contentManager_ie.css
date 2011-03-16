@@ -6,7 +6,7 @@
 	height: 100%;
 	background-color: #000000;
 	alpha(opacity=50);
-	-moz-opacity:0.5;
+	-moz-opacity:0.5; 
 	opacity: 0.5;
 	z-index: 400;
 }
@@ -18,21 +18,21 @@
 	width: 0px;
 	width: 100%;
 	height: 100%;
-	z-index: 500;
+	z-index: 500; 
 }
 
 #editMode_Frame {
-	position: absolute;
-	top: 35%;
-	left: 50%;
+	position: absolute; 
+	top: 35%; 
+	left: 50%; 
 	width: 400px;
 	height: 164px;
 	padding: 10px;
-	margin-top: -92px;
-	margin-left: -211px;
+	margin-top: -92px; 
+	margin-left: -211px; 
 	font-size: 13px;
 	text-align: center;
-	border: 1px solid #c3dff9;
+	border: 1px solid #c3dff9; 
 	background-color: #82b1ec;
 	background-image: url('images/content_manager/editmode_Background.gif');
 	background-repeat: repeat-x;
@@ -48,8 +48,8 @@
 	color: #ffffff;
 }
 
-#editMode_Title a,
-#editMode_Title a:visited,
+#editMode_Title a, 
+#editMode_Title a:visited, 
 #editMode_Title a:active {
 	text-decoration: none;
 	color: #ffffff;
@@ -73,7 +73,7 @@
 #editMode_Content {
 	height: 126px;
 	padding: 10px 10px 10px 10px;
-	border: 1px solid #4978ae;
+	border: 1px solid #4978ae; 
 	background-color: #ffffff;
 }
 
@@ -82,11 +82,11 @@
 }
 
 #editMode_Content .left {
-	width: 180px;
+	width: 180px; 
 	float: left;
 }
 
 #editMode_Content .right {
-	width: 180px;
+	width: 180px; 
 	float: right;
 }

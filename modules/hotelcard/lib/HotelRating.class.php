@@ -36,23 +36,17 @@ class HotelRating
      */
     const INCLUDE_NOT_RATED = true;
     /**
-     * OBSOLETE -- Replaced by language variable
-     * $_ARRAYLANG['TXT_HOTELCARD_RATING_STAR']
-     *
      * Symbol to use for the rating, is multiplied according to the value
      */
-    //const STAR        = '*';
+    const STAR        = '*';
     /**
-     * OBSOLETE -- Replaced by language variable
-     * $_ARRAYLANG['TXT_HOTELCARD_RATING_TEMPLATE']
-     *
      * Template to use for the rating options in the dropdown menu
      *
      * Uses sprintf() to replace the following, all optional:
      * %1$s is replaced by the rating value
      * %2$s is replaced by a string of value times the star symbol
      */
-    //const TEMPLATE    = '%1$s - %2$s';
+    const TEMPLATE    = '%1$s - %2$s';
 
 
     /**
@@ -73,7 +67,7 @@ class HotelRating
                       && $index <= self::RATING_TO)
                   || $index >= self::RATING_TO);
                 $index += (self::RATING_FROM < self::RATING_TO ? 1 : -1)) {
-                $rating = self::getString_edit($index);
+                $rating = self::getString($index);
 //echo("HotelRating::getArray(): Adding index $index => $rating<br />");
                 $arrRating[$index] = $rating;
             }
@@ -93,86 +87,14 @@ class HotelRating
      */
     public static function getString($rating)
     {
-        global $_ARRAYLANG;
-
 //echo("HotelRating::getString($rating):  Entered<br />");
-//        if (    self::RATING_FROM < self::RATING_TO
-//            && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
-//            ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
-//            return '';
-//        }
-        // In the backend, show empty ratings, too
-        $rating = intval($rating);
-        if (defined('BACKEND_LANG_ID')) {
-            if (    self::RATING_FROM < self::RATING_TO
-                && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
-                ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
-                return '0'; //$_ARRAYLANG['TXT_HOTELCARD_RATING_NONE'];
-            }
-            return sprintf(
-                $_ARRAYLANG['TXT_HOTELCARD_RATING_TEMPLATE_VIEW'],
-                $rating,
-                str_repeat(
-                    $_ARRAYLANG['TXT_HOTELCARD_RATING_STAR_VIEW'], $rating));
-        }
-        // Skip empty or invalid ratings in the frontend
         if (    self::RATING_FROM < self::RATING_TO
             && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
             ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
-            return $_ARRAYLANG['TXT_HOTELCARD_RATING_NONE'];
+//echo("HotelRating::getString($rating):  Invalid rating<br />");
+            return '';
         }
-
-        return sprintf(
-            $_ARRAYLANG['TXT_HOTELCARD_RATING_TEMPLATE_VIEW'],
-            $rating,
-            str_repeat(
-                $_ARRAYLANG['TXT_HOTELCARD_RATING_STAR_VIEW'], $rating));
-    }
-
-
-    /**
-     * Returns a pretty string representing the given numerical rating
-     *
-     * If the $rating value is outside the limits defined by the
-     * RATING_FROM and RATING_TO class constants, returns the empty string.
-     * @param   string      $rating     The numerical rating value
-     * @return  string                  The string representation of the rating
-     */
-    public static function getString_edit($rating)
-    {
-        global $_ARRAYLANG;
-
-//echo("HotelRating::getString($rating):  Entered<br />");
-//        if (    self::RATING_FROM < self::RATING_TO
-//            && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
-//            ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
-//            return '';
-//        }
-        // In the backend, show empty ratings, too
-        $rating = intval($rating);
-        if (defined('BACKEND_LANG_ID')) {
-            if (    self::RATING_FROM < self::RATING_TO
-                && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
-                ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
-                return '0'; //$_ARRAYLANG['TXT_HOTELCARD_RATING_NONE'];
-            }
-            return sprintf(
-                $_ARRAYLANG['TXT_HOTELCARD_RATING_TEMPLATE_EDIT'],
-                $rating,
-                str_repeat(
-                    $_ARRAYLANG['TXT_HOTELCARD_RATING_STAR_EDIT'], $rating));
-        }
-        // Skip empty or invalid ratings in the frontend
-        if (    self::RATING_FROM < self::RATING_TO
-            && ($rating < self::RATING_FROM || $rating > self::RATING_TO)
-            ||  $rating > self::RATING_FROM || $rating < self::RATING_TO) {
-            return $_ARRAYLANG['TXT_HOTELCARD_RATING_NONE'];
-        }
-        return sprintf(
-            $_ARRAYLANG['TXT_HOTELCARD_RATING_TEMPLATE_EDIT'],
-            $rating,
-            str_repeat(
-                $_ARRAYLANG['TXT_HOTELCARD_RATING_STAR_EDIT'], $rating));
+        return sprintf(self::TEMPLATE, $rating, str_repeat(self::STAR, $rating));
     }
 
 }

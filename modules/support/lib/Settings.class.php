@@ -19,7 +19,7 @@
  * @subpackage  module_shop
  * @todo        Edit PHP DocBlocks!
  */
-class SupportSettings
+class Settings
 {
     /**
      * This flag is set to true as soon as any changed setting is
@@ -31,7 +31,18 @@ class SupportSettings
 
 
     /**
+     * Constructor (PHP4)
+     *
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    function Settings()
+    {
+        $this->__construct();
+    }
+
+    /**
      * Constructor (PHP5)
+     *
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct()

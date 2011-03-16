@@ -1,0 +1,87 @@
+<h1>OBSOLETE</h1>
+
+<!-- start overview.html -->
+<table class="adminlist" border="0" cellspacing="0" cellpadding="2" width="100%" summary="">
+  <thead>
+    <tr>
+      <th colspan="2">
+        <b>{TXT_HOTELCARD_OVERVIEW}</b>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+<!-- BEGIN hotelcard_section -->
+    <tr class="row3">
+      <td width="25%">
+        <b>{TXT_HOTELCARD_NAME}</b>
+      </td>
+      <td width="75%">
+        <b>{TXT_HOTELCARD_VALUE}</b>
+      </td>
+    </tr>
+<!-- BEGIN hotelcard_row -->
+    <tr class="row{HOTELCARD_ROWCLASS}">
+      <td valign="top">
+        {HOTELCARD_NAME}
+      </td>
+      <td valign="top">
+        {HOTELCARD_VALUE}
+      </td>
+    </tr>
+<!-- END hotelcard_row -->
+<!-- END hotelcard_section -->
+  </tbody>
+</table>
+
+<!-- BEGIN hotelcard_filter_and_search -->
+<br />
+<br />
+{HOTELCARD_HOTEL_FILTER_AND_SEARCH}
+<!-- END hotelcard_filter_and_search -->
+
+<!-- BEGIN hotelcard_hotel_list -->
+<br />
+<br />
+<table class="adminlist" border="0" cellspacing="0" cellpadding="2" width="100%" summary="">
+  <thead>
+    <tr>
+      <th colspan="4">
+        <b>{TXT_HOTELCARD_HOTELS_RECENT}</b>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="row3">
+      <td width="05%">
+        <b>{TXT_HOTELCARD_HOTEL_ID}</b>
+      </td>
+      <td width="25%">
+        <b>{TXT_HOTELCARD_HOTEL_NAME}</b>
+      </td>
+      <td width="60%">
+        <b>{TXT_HOTELCARD_HOTEL_INFO}</b>
+      </td>
+      <td width="10%">
+        <b>{TXT_HOTELCARD_HOTEL_STATUS}</b>
+      </td>
+    </tr>
+<!-- BEGIN hotelcard_hotel_row -->
+    <tr class="row{HOTELCARD_ROWCLASS}">
+      <td>
+        {HOTELCARD_HOTEL_ID}
+      </td>
+      <td>
+        {HOTELCARD_HOTEL_NAME}
+      </td>
+      <td>
+        {HOTELCARD_HOTEL_INFO}
+      </td>
+      <td>
+        {HOTELCARD_HOTEL_STATUS}
+      </td>
+     </tr>
+<!-- END hotelcard_hotel_row -->
+   </tbody>
+ </table>
+<!-- END hotelcard_hotel_list -->
+<!-- end overview.html -->

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * User Profile
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -8,7 +7,6 @@
  * @package     contrexx
  * @subpackage  lib_framework
  */
-
 /**
  * User Profile
  *
@@ -25,43 +23,23 @@ class User_Profile
     /**
      * @var User_Profile_Attribute
      */
-    public $objAttribute;
-    public $arrAttributeHistories;
-    public $arrUpdatedAttributeHistories;
+    var $objAttribute;
 
-    /**
-     * @access private
-     * @var array
-     */
-    public static $arrNoAvatar = array(
-        'src'        => '0_noavatar.gif',
-        'width'        => 121,
-        'height'    => 160
-    );
-
-    public static $arrNoPicture = array(
-        'src'        => '0_no_picture.gif',
-        'width'        => 80,
-        'height'    => 84
-    );
-
+    var $arrAttributeHistories;
+    var $arrUpdatedAttributeHistories;
 
     public function __construct()
     {
         $this->initAttributes();
     }
 
-
     private function initAttributes()
     {
         $this->objAttribute = new User_Profile_Attribute();
     }
 
-
     public function setProfile($arrProfile)
     {
-        $arrDate = array();
-        $arrDateFormat = array();
         foreach ($arrProfile as $attributeId => $arrValue) {
             $objAttribute = $this->objAttribute->getById($attributeId);
             if (in_array($objAttribute->getType(), array('menu_option', 'group', 'frame', 'history'))) {
@@ -143,7 +121,6 @@ class User_Profile
         return true;
     }
 
-
     public function checkMandatoryCompliance()
     {
         global $_CORELANG;
@@ -158,13 +135,7 @@ class User_Profile
             }
 
             foreach ($arrHistoryIds as $historyId) {
-                if (
-                    empty($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])
-                    || $this->objAttribute->isCoreAttribute($attributeId)
-                       && ($objAttribute = $this->objAttribute->getById($attributeId))
-                       && $objAttribute->getType() == 'menu'
-                       && $objAttribute->isUnknownOption($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])
-                ) {
+                if (empty($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])) {
                     $this->error_msg[] = $_CORELANG['TXT_ACCESS_FILL_OUT_ALL_REQUIRED_FIELDS'];
                     return false;
                 }
@@ -173,6 +144,7 @@ class User_Profile
 
         return true;
     }
+
 
 
     protected function storeProfile()
@@ -215,7 +187,6 @@ class User_Profile
         return !$error;
     }
 
-
     /**
      * Create a profile for the loaded user
      *
@@ -237,7 +208,6 @@ class User_Profile
             return false;
         }
     }
-
 
     /**
      * Load custom attribute profile data
@@ -283,7 +253,6 @@ class User_Profile
         }
     }
 
-
     /**
      * Parse core attribute filter conditions
      *
@@ -304,7 +273,7 @@ class User_Profile
         }
 
         $arrConditions = array();
-        $pattern = array();
+
         foreach ($arrFilter as $attribute => $condition) {
             /**
              * $attribute is the account attribute like 'firstname' or 'username'
@@ -384,7 +353,6 @@ class User_Profile
         return $arrConditions;
     }
 
-
     /**
      * Parse custom attribute filter conditions
      *
@@ -394,17 +362,9 @@ class User_Profile
      * The condition could either be a integer or string depending on the attributes type, or it could be
      * a collection of integers or strings represented in an array.
      *
-     * Matches single (scalar) or multiple (array) search terms against a
-     * number of fields.  Generally, the term(s) are enclosed in percent
-     * signs ("%term%"), so any fields that contain them will match.
-     * However, if the search parameter is a string and does contain a percent
-     * sign already, none will be added to the query.
-     * This allows searches using custom patterns, like "fields beginning
-     * with "a" ("a%").
-     * (You might even want to extend this to work with arrays, too.
-     * Currently, only the shop module uses this feature.) -- RK 20100910
-     * @param   mixed     $arrFilter    The term or array of terms
-     * @return  array                   The array of SQL snippets
+     *
+     * @param array $arrFilter
+     * @return array
      */
     protected function parseCustomAttributeFilterConditions($arrFilter)
     {
@@ -417,20 +377,13 @@ class User_Profile
             if ($this->objAttribute->load($attribute) && !$this->objAttribute->isCoreAttribute($attribute)) {
                 switch ($this->objAttribute->getDataType()) {
                     case 'string':
-                        $percent = '%';
-                        if (   !is_array($condition)
-                            && strpos('%', $condition) !== false) $percent = '';
-                        $arrConditions[] =
-                            "tblA.`attribute_id` = ".$attribute.
-                            " AND (tblA.`value` LIKE '$percent".
-                            (is_array($condition)
-                              ? implode("$percent' OR tblA.`value` LIKE '$percent",
-                                    array_map('addslashes', $condition))
-                              : addslashes($condition))."$percent')";
+                        $arrConditions[] = "tblA.`attribute_id` = ".$attribute." AND (tblA.`value` LIKE '%".(is_array($condition) ? implode("%' OR tblA.`value` LIKE '%", array_map('addslashes', $condition)) : addslashes($condition))."%')";
                         break;
+
                     case 'int':
                         $arrConditions[] = "tblA.`attribute_id` = ".$attribute." AND (tblA.`value` = '".(is_array($condition) ? implode("' OR tblA.`value` = '", array_map('intval', $condition)) : intval($condition))."')";
                         break;
+
                     case 'array':
                         if (count($this->objAttribute->getChildren())) {
                             foreach ($this->objAttribute->getChildren() as $childAttributeId) {
@@ -442,32 +395,14 @@ class User_Profile
                 }
             }
         }
+
         return $arrConditions;
     }
 
-
-    /**
-     * Enter description here...
-     *
-
-     * Matches single (scalar) or multiple (array) search terms against a
-     * number of fields.  Generally, the term(s) are enclosed in percent
-     * signs ("%term%"), so any fields that contain them will match.
-     * However, if the search parameter is a string and does contain a percent
-     * sign already, none will be added to the query.
-     * This allows searches using custom patterns, like "fields beginning
-     * with "a" ("a%").
-     * (You might even want to extend this to work with arrays, too.
-     * Currently, only the shop module uses this feature.) -- RK 20100910
-     * @param   mixed     $search       The term or array of terms
-     * @param unknown_type $core
-     * @param unknown_type $attributeId
-     * @return  array                   The array of SQL snippets
-     */
     protected function parseAttributeSearchConditions($search, $core = false, $attributeId = 0)
     {
         $arrConditions = array();
-        $pattern = array();
+
         if (empty($this->objAttribute)) {
             $this->initAttributes();
         }
@@ -501,15 +436,7 @@ class User_Profile
                             break;
 
                         case 'string':
-                            $percent = '%';
-                            if (   !is_array($search)
-                                && strpos('%', $search) !== false) $percent = '';
-                            $arrConditions[] =
-                                $attributeKeyClausePrefix."(".$attributeValueColumn." LIKE '$percent".
-                                (is_array($search)
-                                    ? implode("$percent' OR ".$attributeValueColumn." LIKE '$percent",
-                                          array_map('addslashes', $search))
-                                    : addslashes($search))."$percent')".$attributeKeyClauseSuffix;
+                            $arrConditions[] = $attributeKeyClausePrefix."(".$attributeValueColumn." LIKE '%".(is_array($search) ? implode("%' OR ".$attributeValueColumn." LIKE '%", array_map('addslashes', $search)) : addslashes($search))."%')".$attributeKeyClauseSuffix;
                             break;
 
                         default:
@@ -551,12 +478,12 @@ class User_Profile
                     break;*/
 
                 default:
-                    continue 2;
+                    continue;
+                    break;
             }
         }
+
         return $arrConditions;
     }
-
 }
-
 ?>

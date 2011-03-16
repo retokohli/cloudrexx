@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Calendar Class Event
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -8,29 +7,18 @@
  * @package     contrexx
  * @subpackage  module_calendar
  * @todo        Edit PHP DocBlocks!
- */
-
-/**
- * Calendar Class Event
  *
  * This Class was built in addition to module expansion..
  * its not used all over the module..
  * but if someone has to rewrite the module it might be quite useful
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
  */
-class CalendarEvent
-{
-    public $values = array();
-    public $mandateLink;
 
-    function __construct($mandate = '')
-    {
-        $this->mandateLink = $mandate;
+
+class CalendarEvent {
+    var $values = array();
+    var $mandateLink;
+    function __construct($mandate = '') {
+    	$this->mandateLink = $mandate;
         $this->values = array(
             'id'            => 0,
             'catid'         => 0,
@@ -64,10 +52,10 @@ class CalendarEvent
             'groups'        => '',
             'all_groups'    => 0,
             'notification'  => 0,
-            'notificationAddress'         => '',
-            'registrationSubscriber'     => '',
+            'notificationAddress' 		=> '',
+            'registrationSubscriber' 	=> '',
             'public '       => '',
-
+            
             'series_status' => 0,
             'series_type'   => 0,
             'series_pattern_count'      => 0,
@@ -78,30 +66,25 @@ class CalendarEvent
             'series_pattern_type'       => 0,
             'series_pattern_dourance_type' => '',
             'series_pattern_end'        => 0,
-            'series_pattern_begin'      => 0,
             'series_pattern_exceptions' => '',
         );
     }
 
-
-    function set($values)
-    {
-        if (!$values) {
+    function set($values) {
+        if(!$values) {
             return false;
         }
         foreach ($values as $key => $value) {
-            if (isset($this->values[$key])) {
+            if(isset($this->values[$key])) {
                 $this->values[$key] = $value;
             }
         }
         return true;
     }
 
-
-    function insert($values)
-    {
+    function insert($values) {
         global $objDatabase;
-        if (!$this->set($values)) {
+        if(!$this->set($values)) {
             throw new Exception("could not insert event because of invalid arguments");
         }
 
@@ -119,8 +102,7 @@ class CalendarEvent
             series_pattern_weekday, series_pattern_day,
             series_pattern_week, series_pattern_month,
             series_pattern_type, series_pattern_dourance_type,
-            series_pattern_end, series_pattern_begin,
-            series_pattern_exceptions
+            series_pattern_end, series_pattern_exceptions
         ) VALUES (
             '".$v['active']."',  '".$v['catid']."',  '".$v['startdate']."',  '".$v['enddate']."',
             '".$v['priority']."',  '".$v['access']."',  '".$v['name']."',  '".$v['comment']."',
@@ -135,17 +117,17 @@ class CalendarEvent
             '".$v['series_pattern_weekday']."', '".$v['series_pattern_day']."',
             '".$v['series_pattern_week']."', '".$v['series_pattern_month']."',
             '".$v['series_pattern_type']."', '".$v['series_pattern_dourance_type']."',
-            '".$v['series_pattern_end']."', '".$v['series_pattern_begin']."',
-            '".$v['series_pattern_exceptions']."'
+            '".$v['series_pattern_end']."', '".$v['series_pattern_exceptions']."'
         )";
 
         $objResult = $objDatabase->Execute($query);
-        if ($objResult === false) {
+        if($objResult === false) {
             throw  new Exception("error inserting new event with $query");
         }
-        return $objDatabase->Insert_ID();
-    }
 
+        return $objDatabase->Insert_ID();
+
+    }
 
     /**
      * Sets a new Active state for an event
@@ -154,43 +136,41 @@ class CalendarEvent
      * @param integer $eventid
      * @return true on success, false otherwise
      */
-    function setActive($active, $eventid)
-    {
+    function setActive($active, $eventid) {
         global $objDatabase;
         $active = intval($active);
         $eventid = intval($eventid);
 
         $query = "UPDATE ".DBPREFIX."module_calendar".$this->mandateLink." SET active=$active WHERE id=$eventid";
         $objRs = $objDatabase->Execute($query);
-        if (!$objRs) {
+        if(!$objRs) {
             return false;
         }
         return true;
     }
-
 
     function get($id) {
         global $objDatabase;
         $id = intval($id);
         $query = "SELECT * FROM ".DBPREFIX."module_calendar".$this->mandateLink." WHERE id=$id";
         $objRs = $objDatabase->Execute($query);
-        if (!$objRs) {
-            echo $query."<br>";
+        if(!$objRs) {
+        	echo $query."<br>";
             return false;
         }
-        return $this->set($objRs->fields);
-    }
 
+        return $this->set($objRs->fields);
+
+    }
 
     function update($values) {
         $this->set($values);
     }
 
-
     function getActive() {
         return $this->values['active'];
     }
 
-}
 
+}
 ?>

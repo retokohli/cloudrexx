@@ -1,32 +1,33 @@
 <?php
-
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
+ * Admin CP navigation
+ *
  * Class for the Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @access      public
- * @version     1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @access        public
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 class adminMenu
 {
-    public $arrMenuItems = array();
-    public $arrMenuGroups = array();
-    public $statusMessage;
-    public $arrUserRights = array();
-    public $arrUserGroups = array();
+    var $arrMenuItems = array();
+    var $arrMenuGroups = array();
+    var $statusMessage;
+    var $arrUserRights = array();
+    var $arrUserGroups = array();
 
 
     /**
@@ -37,7 +38,6 @@ class adminMenu
         $this->init();
     }
 
-
     function getAdminNavbar()
     {
         global $objTemplate;
@@ -45,7 +45,6 @@ class adminMenu
         $this->getMenu();
         $objTemplate->setVariable('STATUS_MESSAGE',trim($this->statusMessage));
     }
-
 
     function init()
     {
@@ -95,11 +94,11 @@ class adminMenu
     }
 
     /**
-     * Creates the administration navigation
+     * gets the administration menu by user rights
      *
-     * Considers the users' rights and only shows what he's
-     * allowed to see
-     * @global array  $_CORELANG
+     * creates the navigation by userright
+     *
+     * @global array $_CORELANG
      * @global object $objTemplate
      * @global object $objModules
      */
@@ -112,8 +111,6 @@ class adminMenu
 
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
-// TODO:
-// $objModules->existsModuleFolders is bollocks.  Should be ignored.
             if ($group_id==2 && !$objModules->existsModuleFolders) {
                 continue;
             }
@@ -143,17 +140,14 @@ class adminMenu
         $objTemplate->parse('navigation_output');
     }
 
-
     function moduleExists($moduleFolderName)
     {
         global $objModules;
-
         if (empty($moduleFolderName)) {
             return true;
+        } else {
+            return $objModules->getModuleStatusByName($moduleFolderName);
         }
-        return $objModules->getModuleStatusByName($moduleFolderName);
     }
-
 }
-
 ?>

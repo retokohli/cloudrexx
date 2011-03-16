@@ -201,6 +201,7 @@ class DataLibrary
                             lang_id='.$intLanguageId.'
                     LIMIT
                             1';
+
                 $objResult = $objDatabase->Execute($query);
 
                 if ($objResult->RecordCount() > 0) {
@@ -1323,5 +1324,3 @@ class DataLibrary
     }
 
 }
-
-?>

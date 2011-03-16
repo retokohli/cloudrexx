@@ -1,5 +1,4 @@
 <?php
-
 /**
  * File Uploader
  * @copyright   CONTREXX CMS - COMVATION AG

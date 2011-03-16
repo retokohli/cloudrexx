@@ -1,45 +1,45 @@
 <!-- START reservation_overview -->
 <script language="JavaScript" type="text/javascript">
 /* <![CDATA[ */
-  function reservationDelete(pageId){
-      if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-          window.location.replace("?cmd=reservation&act=delete&id="+pageId);
-  }
+	function reservationDelete(pageId){
+	    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+	        window.location.replace("?cmd=reservation&{CSRF_PARAM}&act=delete&id="+pageId);
+	}
 
 /* ]]> */
 </script>
 
 <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist" style="empty-cells: show;">
     <!-- BEGIN day -->
-  <tr>
-    <th colspan="7">
-      <div align="left">{CURRENT_DAY}</div>
-    </th>
-  </tr>
-  <tr class="row3">
-     <td style="width: 25px;"><strong>#</strong></td>
-     <td style="width: 50px;"><strong>{TXT_STATUS}</strong></td>
-     <td style="width: 50px;"><strong>{TXT_TIME}</strong></td>
-     <td style="width: auto;"><strong>{TXT_NAME}</strong></td>
-     <td style="width: auto;"><strong>{TXT_EMAIL}</strong></td>
-     <td style="width: auto;"><strong>{TXT_PHONE}</strong></td>
-     <td style="width: 50px;"><strong>{TXT_ACTION}</strong></td>
-  </tr>
-  <!-- BEGIN row -->
-  <tr class="row{RESERVATION_ROW}">
-     <td><input type="checkbox" name="selectedId[]" id="selectedId" value="{RESERVATION_ID}"></td>
-     <td><a href="index.php?cmd=reservation&amp;act=confirm&amp;id={RESERVATION_ID}" title=""><img src="images/icons/led_{RESERVATION_STATUS}.gif" alt="" border="0"/></a></td>
-     <td>{RESERVATION_TIME}</td>
-     <td><a href="index.php?cmd=reservation&amp;act=details&amp;id={RESERVATION_ID}" title="">{RESERVATION_NAME}</a></td>
-     <td>{RESERVATION_EMAIL}</td>
-     <td>{RESERVATION_PHONE}</td>
-     <td style="text-align: right;"><a href="index.php?cmd=reservation&amp;act=edit&amp;id={RESERVATION_ID}"><img src="images/icons/edit.gif" border="0" alt="Eintrag editieren" width="15" height="15" /></a> <a href="javascript:reservationDelete({RESERVATION_ID})"><img src="images/icons/delete.gif" border="0" alt="Eintrag l&ouml;schen"  width="17" height="17" /></a> </td>
-  </tr>
-  <!-- END row -->
-  <tr>
-     <td style="height: 2em; border: none;"></td>
-  </tr>
-  <!-- END day -->
+	<tr>
+		<th colspan="7">
+			<div align="left">{CURRENT_DAY}</div>
+		</th>
+	</tr>
+	<tr class="row3">
+	   <td style="width: 25px;"><strong>#</strong></td>
+	   <td style="width: 50px;"><strong>{TXT_STATUS}</strong></td>
+	   <td style="width: 50px;"><strong>{TXT_TIME}</strong></td>
+	   <td style="width: auto;"><strong>{TXT_NAME}</strong></td>
+	   <td style="width: auto;"><strong>{TXT_EMAIL}</strong></td>
+	   <td style="width: auto;"><strong>{TXT_PHONE}</strong></td>
+	   <td style="width: 50px;"><strong>{TXT_ACTION}</strong></td>
+	</tr>
+	<!-- BEGIN row -->
+	<tr class="row{RESERVATION_ROW}">
+	   <td><input type="checkbox" name="selectedId[]" id="selectedId" value="{RESERVATION_ID}"></td>
+	   <td><a href="index.php?cmd=reservation&amp;act=confirm&amp;id={RESERVATION_ID}" title=""><img src="images/icons/led_{RESERVATION_STATUS}.gif" alt="" border="0"/></a></td>
+	   <td>{RESERVATION_TIME}</td>
+	   <td><a href="index.php?cmd=reservation&amp;act=details&amp;id={RESERVATION_ID}" title="">{RESERVATION_NAME}</a></td>
+	   <td>{RESERVATION_EMAIL}</td>
+	   <td>{RESERVATION_PHONE}</td>
+	   <td style="text-align: right;"><a href="index.php?cmd=reservation&amp;act=edit&amp;id={RESERVATION_ID}"><img src="images/icons/edit.gif" border="0" alt="Eintrag editieren" width="15" height="15" /></a> <a href="javascript:reservationDelete({RESERVATION_ID})"><img src="images/icons/delete.gif" border="0" alt="Eintrag l&ouml;schen"  width="17" height="17" /></a> </td>
+	</tr>
+	<!-- END row -->
+	<tr>
+	   <td style="height: 2em; border: none;"></td>
+	</tr>
+	<!-- END day -->
 </table>
 
 

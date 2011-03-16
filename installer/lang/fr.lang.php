@@ -55,11 +55,11 @@ $_ARRLANG['TXT_MYSQL_SERVER_VERSION'] = "La version du serveur MySQL est: %s";
 $_ARRLANG['TXT_PHP_EXTENSIONS'] = "Extensions PHP";
 $_ARRLANG['TXT_PHP_CONFIGURATION'] = "Configuration PHP";
 $_ARRLANG['TXT_ALLOW_URL_FOPEN'] = "allow_url_fopen";
-$_ARRLANG['TXT_GD_VERSION']    = "GD (Graphics Draw) Version";
+$_ARRLANG['TXT_GD_VERSION']	= "GD (Graphics Draw) Version";
 $_ARRLANG['TXT_FTP_SUPPORT'] = "Support FTP";
 $_ARRLANG['TXT_YES'] = "Oui";
 $_ARRLANG['TXT_NO'] = "Non";
-$_ARRLANG['TXT_ON']    = "On";
+$_ARRLANG['TXT_ON']	= "On";
 $_ARRLANG['TXT_OFF'] = "Off";
 $_ARRLANG['TXT_PHP_VERSION_REQUIRED'] = "L'installation requière au minimum la version [VERSION] de PHP!";
 $_ARRLANG['TXT_MYSQL_SUPPORT'] = "Support MySQL";
@@ -102,7 +102,6 @@ $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "Le préfixe des tables ne peut être
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "Impossible d'afficher la structure des dossiers sur ce serveur, car la Direktive PHP open_basedir est active, mais ne contient pas le chemin du dossier temporaire Temp (/tmp)!";
 $_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Jeu de caractères";
 $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "Le jeu de caractères de la connexion MySQL, utile pour l'ordre de tri et les recherches.<br  /><br />Si vous désirez publier votre site en plusieurs langues, il est conseillé d'utiliser soit <strong>utf8_unicode_ci</strong>, soit <strong>utf8_general_ci</strong>, le premier supportant les extensions, tandis que le deuxième est plus rapide.<br /><br />Si votre site est publié dans une seule langue, vous pouvez utiliser un jeu de caractères spécifique.";
-$_ARRLANG['TXT_REGISTER_GLOBALS_ON'] = "La directive <a href=\"http://www.php.net/manual/fr/ini.core.php#ini.register-globals\" title=\"register_globals PHP documentation\">register_globals</a> est activée. Il est conseill� de désactiver cette PHP directive.";
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Impossible de désactiver les langues inutilisées!";

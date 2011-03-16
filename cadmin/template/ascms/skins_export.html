@@ -4,13 +4,13 @@
 function deleteLanguage(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALLY_AT_RISK}'))
-        window.location.replace("index.php?cmd=language&act=dellang&languageId="+id);
+        window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&languageId="+id);
 }
 
 function reloadThemesPage()
 {
-  document.themesFormActivate.action = 'index.php?cmd=skins&act=activate';
-  document.themesFormActivate.submit();
+	document.themesFormActivate.action = 'index.php?cmd=skins&act=activate';
+	document.themesFormActivate.submit();
 }
 // -->
 </script>
@@ -38,11 +38,11 @@ function reloadThemesPage()
       </td>
       <td nowrap="nowrap">{THEMES_NAME}</td>
       <td nowrap="nowrap">
-        <!-- <input type="hidden" name="folderName" value={THEMES_FOLDERNAME} />-->
+      	<!-- <input type="hidden" name="folderName" value={THEMES_FOLDERNAME} />-->
         <div align="center"><a href="{THEMES_DOWNLOAD_LINK}"><img src="../images/modules/media/zip.gif" border="0"></a></div>
       </td>
       <td>
-        &nbsp;
+      	&nbsp;
       </td>
     </tr>
     <!-- END themesRow -->
@@ -50,3 +50,4 @@ function reloadThemesPage()
   <br />
 <!--</form>-->
 <!-- END themes_activate.html -->
+

@@ -1,42 +1,28 @@
 <!-- start module_podcast_modify_template.html -->
 <form action="index.php?cmd=podcast&amp;act=modifyTemplate&amp;id={PODCAST_TEMPLATE_ID}" method="post">
-  <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
-    <thead>
-      <tr>
-        <th colspan="2">{PODCAST_TEMPLATE_MODIFY_TITLE}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="row1">
-        <td width="15%">{TXT_PODCAST_DESCRIPTION}</td>
-        <td width="85%"><input type="text" value="{PODCAST_TEMPLATE_DESCRIPTION}" name="podcast_template_description" maxlength="255" style="width:450px;" /></td>
-      </tr>
-      <tr class="row2" style="vertical-align:top;">
-        <td>{TXT_PODCAST_TEMPLATE}</td>
-				<td><textarea name="podcast_template_template" cols="100" rows="15" style="width:100%; height:300px;">{PODCAST_TEMPLATE_TEMPLATE}</textarea></td>
-      </tr>
-      <tr class="row1">
-        <td>{TXT_PODCAST_FILE_EXTENSIONS}</td>
-        <td><input type="text" name="podcast_template_file_extensions" value="{PODCAST_TEMPLATE_FILE_EXTENSIONS}" maxlength="255" style="width:450px;" /></td>
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<thead>
+			<tr>
+				<th colspan="2">{PODCAST_TEMPLATE_MODIFY_TITLE}</th>
 			</tr>
-			<tr class="row2">
-				<td>{TXT_PODCAST_EMBED_WITH_JS}</td>
-				<td>
-					<input type="checkbox" name="podcast_template_js_embed" id="podcast_template_js_embed" value="1" {PODCAST_TEMPLATE_JS_EMBED} />
-					<label for="podcast_template_js_embed">{TXT_PODCAST_EMBED_WITH_JS_DESC}</label>	
-				</td>
+		</thead>
+		<tbody>
+			<tr class="row1">
+				<td width="15%">{TXT_PODCAST_DESCRIPTION}</td>
+				<td width="85%"><input type="text" value="{PODCAST_TEMPLATE_DESCRIPTION}" name="podcast_template_description" maxlength="255" style="width:450px;" /></td>
+			</tr>
+			<tr class="row2" style="vertical-align:top;">
+				<td>{TXT_PODCAST_TEMPLATE}</td>
+				<td><textarea name="podcast_template_template" cols="100" rows="15" style="width:690px; height:300px;">{PODCAST_TEMPLATE_TEMPLATE}</textarea></td>
 			</tr>
 			<tr class="row1">
-				<td>{TXT_PODCAST_OFFSET}</td>
-				<td>
-					{TXT_PODCAST_WIDTH}: <input type="text" name="podcast_template_player_offset_width" value="{PODCAST_TEMPLATE_PLAYER_OFFSET_WIDTH}" />
-					{TXT_PODCAST_HEIGHT}: <input type="text" name="podcast_template_player_offset_height" value="{PODCAST_TEMPLATE_PLAYER_OFFSET_HEIGHT}" />
-				</td>
-      </tr>
-    </tbody>
-  </table>
-  <br />
+				<td>{TXT_PODCAST_FILE_EXTENSIONS}</td>
+				<td><input type="text" name="podcast_template_file_extensions" value="{PODCAST_TEMPLATE_FILE_EXTENSIONS}" maxlength="255" style="width:450px;" /></td>
+			</tr>
+		</tbody>
+	</table>
+	<br />
 	<input type="button" onclick="window.location.href='index.php?cmd=podcast&{CSRF_PARAM}&amp;act=templates'" value="{TXT_PODCAST_BACK}" />
-  <input type="submit" name="podcast_template_save" value="{TXT_PODCAST_SAVE}" />
+	<input type="submit" name="podcast_template_save" value="{TXT_PODCAST_SAVE}" />
 </form>
 <!-- end module_podcast_modify_template.html -->

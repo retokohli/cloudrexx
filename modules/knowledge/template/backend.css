@@ -1,4 +1,4 @@
-@import url(starbox/css/starbox.css);
+117@import url(starbox/css/starbox.css);
 
  
 #knowledge_articles #categories {
@@ -28,7 +28,6 @@
    margin-top: 100px;
 }
 
-/*
 #knowledge_articles #overlay {
     background-image: url(overlay_grey.png);
     width: 100%;
@@ -37,7 +36,6 @@
     top:0px;
     left: 0px;
 }
-*/
 
 .article_row {
 	/*position: static !important;*/
@@ -154,7 +152,6 @@
     display: inline;
     margin: 0px;
     padding: 0px;
-    margin-left: 3px;
 }
 
 .knowledge_taglist ul li.tag_1 a {
@@ -172,32 +169,3 @@
 .knowledge_taglist ul li.typing {
     background-color: #C8D7EE;
 }
-
-.adminComment
-{
-    margin:5px;
-    width:100%;
-    border: 1px solid #aaa;
-}
-
-.adminComment .adminCommentDelete
-{
-    color: #ff0000;
-}
-
-.adminComment .adminCommentDescription
-{
-    width:80px;
-}
-
-resizable: false,
-			height:140,
-			modal: true,
-			buttons: {
-				"Delete all items": function() {
-					$( this ).dialog( "close" );
-				},
-				Cancel: function() {
-					$( this ).dialog( "close" );
-				}
-			}

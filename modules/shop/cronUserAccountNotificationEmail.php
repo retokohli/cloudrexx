@@ -66,7 +66,7 @@ while (!$objResult->EOF) {
         $email = $compatibleEmail[1];
     }
     // END: COMPATIBELITY MODE FOR SHOP ACCOUNT SELLING
-
+    
     $firstname = $objResult->fields['firstname'];
     $lastname = $objResult->fields['lastname'];
     $subject = "Your account on www.noser.com will expire in seven days";

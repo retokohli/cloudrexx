@@ -12,7 +12,7 @@
 
 //Security-Check
 if (eregi("admin.class.php",$_SERVER['PHP_SELF'])){
-    Header("Location: index.php");
+    CSRF::header("Location: index.php");
     die();
 }
 
@@ -63,6 +63,7 @@ class stats extends statsLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/stats/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='index.php?cmd=stats&amp;stat=visitorDetails'>".$_ARRAYLANG['TXT_VISITOR_DETAILS']."</a>

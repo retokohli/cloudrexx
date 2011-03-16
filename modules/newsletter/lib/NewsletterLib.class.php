@@ -31,16 +31,7 @@ class NewsletterLib
 {
     public $_arrRecipientTitles = null;
 
-    /**
-     * List of present Lists
-     * @see     getListIdByName()
-     * @var     array
-     * @static
-     */
-    private static $arrLists = null;
-
-
-    static protected function _getLists($orderBy='')
+    protected function _getLists($orderBy = '', $excludeDisabledCategories=false)
     {
         global $objDatabase;
 
@@ -48,9 +39,11 @@ class NewsletterLib
         $objList = $objDatabase->Execute("SELECT tblCategory.id,
             tblCategory.status,
             tblCategory.name,
-            tblCategory.notification_email
+            tblCategory.notification_email,
+            COUNT(tblRel.category) as recipients
             FROM ".DBPREFIX."module_newsletter_category AS tblCategory
             LEFT JOIN ".DBPREFIX."module_newsletter_rel_user_cat AS tblRel ON tblRel.category = tblCategory.id
+            ".($excludeDisabledCategories ? ' WHERE status=1' : '')."
             GROUP BY tblCategory.id".(!empty($orderBy) ? " ORDER BY ".$orderBy : ""));
         if ($objList !== false) {
             while (!$objList->EOF) {
@@ -74,7 +67,7 @@ class NewsletterLib
                 $arrLists[$objList->fields['id']] = array(
                     'status'     => $objList->fields['status'],
                     'name'       => $objList->fields['name'],
-                    'recipients' => self::getListRecipientCount($objList->fields['id']),
+                    'recipients' => $objList->fields['recipients'],
                     'mail_sent'  => $mailSend,
                     'mail_name'  => $mailName,
                     'mail_id'    => ($mailSend > 0 ? $mailId : 0),
@@ -86,136 +79,87 @@ class NewsletterLib
         return $arrLists;
     }
 
-
-    /**
-     * Return the count of recipients of a list
-     *
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       int $id
-     * @return      int
-     */
-    static protected function getListRecipientCount($id)
+    function _addRecipient($email, $uri, $sex, $title, $lastname, $firstname, $company, $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists)
     {
         global $objDatabase;
 
-        // Ignore the code analyzer warning.  There's plenty of arguments
-        $query = sprintf('
-            SELECT COUNT(*) AS `recipientCount`
-              FROM (
-                SELECT `email`
-                  FROM `%1$smodule_newsletter_user` AS `nu`
-                  LEFT JOIN `%1$smodule_newsletter_rel_user_cat` AS `rc`
-                    ON `rc`.`user` = `nu`.`id`
-                 WHERE `rc`.`category`=%2$s
-                 UNION DISTINCT
-                SELECT `email`
-                  FROM `%1$saccess_users` AS `cu`
-                  LEFT JOIN `%1$smodule_newsletter_access_user` AS `cnu`
-                    ON `cnu`.`accessUserID`=`cu`.`id`
-                  LEFT JOIN `%1$smodule_newsletter_rel_cat_news` AS `crn`
-                    ON `cnu`.`newsletterCategoryID`=`crn`.`category`
-                 WHERE `cnu`.`newsletterCategoryID`=%2$s
-              ) AS `subquery`',
-            DBPREFIX, $id
-        );
-        $data = $objDatabase->Execute($query);
-        return $data->fields['recipientCount'];
+        $query = "INSERT INTO ".DBPREFIX."module_newsletter_user (
+        `code`,
+        `email`,
+        `uri`,
+        `sex`,
+        `title`,
+        `lastname`,
+        `firstname`,
+        `company`,
+        `street`,
+        `zip`,
+        `city`,
+        `country`,
+        `phone`,
+        `birthday`,
+        `status`,
+        `emaildate`
+        ) VALUES (
+        '".$this->_emailCode()."',
+        '".contrexx_addslashes($email)."',
+        '".contrexx_addslashes($uri)."',
+        ".(empty($sex) ? 'NULL' : "'".contrexx_addslashes($sex)."'").",
+        ".intval($title).",
+        '".contrexx_addslashes($lastname)."',
+        '".contrexx_addslashes($firstname)."',
+        '".contrexx_addslashes($company)."',
+        '".contrexx_addslashes($street)."',
+        '".contrexx_addslashes($zip)."',
+        '".contrexx_addslashes($city)."',
+        '".contrexx_addslashes($country)."',
+        '".contrexx_addslashes($phone)."',
+        '".contrexx_addslashes($birthday)."',
+        ".intval($status).",
+        ".time().")";
+
+        if ($objDatabase->Execute($query) !== false) {
+            if ($this->_setRecipientLists($objDatabase->Insert_ID(), $arrLists)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
-
-    /**
-     * Return the access user groups
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       string $orderBy
-     * @return      array
-     */
-    protected function _getGroups($orderBy="`group_name`")
+    function _updateRecipient($id, $email, $uri, $sex, $title, $lastname, $firstname, $company, $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists)
     {
         global $objDatabase;
 
-        $query = sprintf('
-            SELECT `group_id`   AS `id`,
-                   `group_name` AS `name`
-              FROM `%1$saccess_user_groups`
-             WHERE `is_active`=1
-             ORDER BY %2$s',
-            DBPREFIX, $orderBy
-        );
-        $list = $objDatabase->Execute($query);
-        $groups = array();
-        while ($list !== false && !$list->EOF) {
-            $groups[$list->fields['id']] = $list->fields['name'];
-            $list->moveNext();
-        }
-        return $groups;
-    }
+        $query = SQL::update('module_newsletter_user', array(
+            'email' => contrexx_addslashes($email),
+            'uri' => contrexx_addslashes($uri),
+            'sex' => array('value' => contrexx_addslashes($sex), 'omitEmpty' => true),
+            'title' => intval($title),
+            'lastname' => contrexx_addslashes($lastname),
+            'firstname' => contrexx_addslashes($firstname),
+            'company' => contrexx_addslashes($company),
+            'street' => contrexx_addslashes($street),
+            'zip' => contrexx_addslashes($zip),
+            'city' => contrexx_addslashes($city),
+            'country' => contrexx_addslashes($country),
+            'phone' => contrexx_addslashes($phone),
+            'birthday' => contrexx_addslashes($birthday),
+            'status' => intval($status)
+        ))."WHERE id=".$id;
 
-
-    function _addRecipient(
-        $email, $uri, $sex, $title, $lastname, $firstname, $company,
-        $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists
-    ) {
-        global $objDatabase;
-
-        if (!$objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_newsletter_user (
-                `code`, `email`, `uri`,
-                `sex`, `title`, `lastname`, `firstname`,
-                `company`, `street`, `zip`, `city`,
-                `country_id`, `phone`,
-                `birthday`, `status`, `emaildate`
-            ) VALUES (
-                '".$this->_emailCode()."',
-                '".contrexx_addslashes($email)."',
-                '".contrexx_addslashes($uri)."',
-                ".(empty($sex) ? 'NULL' : "'".contrexx_addslashes($sex)."'").",
-                ".intval($title).",
-                '".contrexx_addslashes($lastname)."',
-                '".contrexx_addslashes($firstname)."',
-                '".contrexx_addslashes($company)."',
-                '".contrexx_addslashes($street)."',
-                '".contrexx_addslashes($zip)."',
-                '".contrexx_addslashes($city)."',
-                '".intval($country)."',
-                '".contrexx_addslashes($phone)."',
-                '".contrexx_addslashes($birthday)."',
-                ".intval($status).",
-                ".time()."
-            )")) {
+        if ($objDatabase->Execute($query) !== false) {
+            if ($this->_setRecipientLists($id, $arrLists)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
             return false;
         }
-        return $this->_setRecipientLists($objDatabase->Insert_ID(), $arrLists);
     }
-
-
-    function _updateRecipient(
-        $id, $email, $uri, $sex, $title, $lastname, $firstname, $company,
-        $street, $zip, $city, $country, $phone, $birthday, $status, $arrLists
-    ) {
-        global $objDatabase;
-
-        if (!$objDatabase->Execute(
-            "UPDATE ".DBPREFIX."module_newsletter_user
-                SET `email`='".contrexx_addslashes($email)."',
-                    `uri`='".contrexx_addslashes($uri)."',
-                    `sex`='".contrexx_addslashes($sex)."',
-                    `title`=".intval($title).",
-                    `lastname`='".contrexx_addslashes($lastname)."',
-                    `firstname`='".contrexx_addslashes($firstname)."',
-                    `company`='".contrexx_addslashes($company)."',
-                    `street`='".contrexx_addslashes($street)."',
-                    `zip`='".contrexx_addslashes($zip)."',
-                    `city`='".contrexx_addslashes($city)."',
-                    `country_id`='".intval($country)."',
-                    `phone`='".contrexx_addslashes($phone)."',
-                    `birthday`='".contrexx_addslashes($birthday)."',
-                    `status`=".intval($status)."
-              WHERE id=".$id)) {
-            return false;
-        }
-        return $this->_setRecipientLists($id, $arrLists);
-    }
-
 
     function _setRecipientLists($recipientId, $arrLists)
     {
@@ -244,7 +188,6 @@ class NewsletterLib
         return false;
     }
 
-
     function _addRecipient2List($recipientId, $listId)
     {
         global $objDatabase;
@@ -262,7 +205,6 @@ class NewsletterLib
         return false;
     }
 
-
     function _emailCode()
     {
         $ReturnVar = '';
@@ -276,7 +218,6 @@ class NewsletterLib
         return $ReturnVar;
     }
 
-
     function _isUniqueRecipientEmail($email, $recipientId)
     {
         global $objDatabase;
@@ -284,54 +225,36 @@ class NewsletterLib
         $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($email)."' AND id!=".$recipientId, 1);
         if ($objRecipient !== false && $objRecipient->RecordCount() == 0) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
-
 
     function _getSettings()
     {
         global $objDatabase;
 
         static $arrSettings = array();
+
         if (count($arrSettings) == 0) {
             $objSettings = $objDatabase->Execute("SELECT setid, setname, setvalue, status FROM ".DBPREFIX."module_newsletter_settings");
             if ($objSettings !== false) {
                 while (!$objSettings->EOF) {
                     $arrSettings[$objSettings->fields['setname']] = array(
-                        'setid'         => $objSettings->fields['setid'],
-                        'setvalue'      => $objSettings->fields['setvalue'],
-                        'status'        => $objSettings->fields['status']
+                        'setid'        => $objSettings->fields['setid'],
+                        'setvalue'    => $objSettings->fields['setvalue'],
+                        'status'    => $objSettings->fields['status']
                     );
 
                     $objSettings->MoveNext();
                 }
             }
         }
+
         return $arrSettings;
     }
 
-
-    /**
-     * Return a setting from the settings table
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       string $name
-     * @return      string | bool
-     */
-    protected function getSetting($name)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT setvalue
-              FROM ".DBPREFIX."module_newsletter_settings
-             WHERE setvalue='".$name."'";
-        $result = $objDatabase->Execute($query);
-        return $result !== false ? $result->fields['setvalue'] : false;
-    }
-
-
-    function _getHTML($onlyId=false)
+    function _getHTML($onlyId = false)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -366,7 +289,6 @@ class NewsletterLib
         return $html;
     }
 
-
     function _getAssociatedListsOfRecipient($recipientId, $onlyActiveLists = true)
     {
         global $objDatabase;
@@ -383,7 +305,6 @@ class NewsletterLib
 
         return $arrLists;
     }
-
 
     function _getRecipientTitleMenu($selected = 0, $attrs)
     {
@@ -402,7 +323,6 @@ class NewsletterLib
         return $menu;
     }
 
-
     function _getRecipientTitles()
     {
         global $objDatabase;
@@ -413,7 +333,6 @@ class NewsletterLib
 
         return $this->_arrRecipientTitles;
     }
-
 
     function _addRecipientTitle($title)
     {
@@ -426,7 +345,6 @@ class NewsletterLib
         $this->_initRecipientTitles();
         return $recipientTitleId;
     }
-
 
     function _initRecipientTitles()
     {
@@ -442,7 +360,6 @@ class NewsletterLib
             }
         }
     }
-
 
     function _deleteRecipient($id)
     {
@@ -461,73 +378,6 @@ class NewsletterLib
             return false;
         }
     }
-
-
-    protected function getCountryMenu($selectedCountry = 0)
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT `id`, `name`
-              FROM ".DBPREFIX."lib_country
-             ORDER BY `name`");
-        $menu ='<select name="newsletter_country_id" size="1">';
-        while (!$objResult->EOF) {
-            $menu .= '<option value="'.$objResult->fields['id'].'"'.($objResult->fields['id'] == $selectedCountry ? ' selected="selected"' : '').'>'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
-            $objResult->MoveNext();
-        }
-        $menu .= '</select>';
-        return $menu;
-    }
-
-
-    /**
-     * Returns the ID of the list specified by its name
-     *
-     * Used for importing/setting up User-List relations
-     * @param   string  $list_name  The List name
-     * @return  integer             The matching list ID if found,
-     *                              null otherwise
-     */
-    static function getListIdByName($list_name)
-    {
-        if (!isset(self::$arrLists)) {
-            self::$arrLists = self::_getLists();
-        }
-        foreach (self::$arrLists as $id => $arrList) {
-            if ($list_name == $arrList['name']) return $id;
-        }
-        return null;
-    }
-
-
-    /**
-     * Add a list with the given name and status
-     *
-     * Upon successfully adding a new list, resets the $arrLists class
-     * variable to null.
-     * @param   string    $listName     The new list name
-     * @param   boolean   $listStatus   The new list status,
-     *                                  defaults to false for inactive
-     * @return  boolean                 True on success, false otherwise
-     */
-    static function _addList($listName, $listStatus=false)
-    {
-        global $objDatabase;
-
-        if ($objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_newsletter_category (
-                `name`, `status`
-            ) VALUES (
-                '$listName', ".($listStatus ? 1 : 0)."
-            )")
-        ) {
-            self::$arrLists = null;
-            return $objDatabase->Insert_ID();
-        }
-        return false;
-    }
-
 }
 
 ?>

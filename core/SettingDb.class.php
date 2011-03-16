@@ -27,28 +27,6 @@ require_once ASCMS_CORE_PATH.'/Html.class.php';
 class SettingDb
 {
     /**
-     * Upload path for documents
-     * Used externally only, see hotelcard module for an example.
-     */
-    const FILEUPLOAD_FOLDER_PATH = 'media';
-
-    /**
-     * Setting types
-     * See {@see show()} for examples on how to extend these.
-     */
-    const TYPE_DROPDOWN = 'dropdown';
-    const TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE = 'dropdown_user_custom_attribute';
-    const TYPE_DROPDOWN_USERGROUP = 'dropdown_usergroup';
-    const TYPE_WYSIWYG = 'wysiwyg';
-    const TYPE_FILEUPLOAD = 'fileupload';
-    const TYPE_TEXT = 'text';
-    const TYPE_EMAIL = 'email';
-    const TYPE_BUTTON = 'button';
-// Not implemented
-//    const TYPE_SUBMIT = 'submit';
-
-
-    /**
      * The array of currently loaded settings settings, like
      *  array(
      *    'name' => array(
@@ -86,46 +64,6 @@ class SettingDb
      * @access  private
      */
     private static $flagChanged = false;
-
-    /**
-     * Tab counter for the {@see show()} and {@see show_external()}
-     * @var     integer
-     * @access  private
-     */
-    private static $tab_index = 1;
-
-    /**
-     * Internal error message
-     *
-     * See {@see getErrorString()}.
-     * @var   string
-     */
-    private static $error_message = '';
-
-
-    /**
-     * Returns the current error message
-     *
-     * The message is cleared when read, so you *SHOULD* read it once.
-     * @return  string                  The error message, if any,
-     *                                  or the empty string
-     */
-    static function getErrorString()
-    {
-        $error_message = self::$error_message;
-        self::$error_message = '';
-        return $error_message;
-    }
-
-
-    /**
-     * Returns the current value of the tab index
-     * @return  integer             The current tab index
-     */
-    static function getTabIndex()
-    {
-        return self::$tab_index;
-    }
 
 
     /**
@@ -228,22 +166,24 @@ class SettingDb
      * is returned.
      * @param   string    $name       The settings name
      * @return  mixed                 The settings value, if present,
-     *                                null otherwise
+     *                                false otherwise
      */
     function getValue($name)
     {
 //echo("SettingDb::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
         return (isset(self::$arrSettings[$name]['value'])
-            ? self::$arrSettings[$name]['value'] : null
+            ? self::$arrSettings[$name]['value'] : false
         );
     }
 
 
     /**
-     * Updates a setting
+     * Updates or adds a setting
      *
-     * If the setting name exists and the new value is not equal to
-     * the old one, it is updated, and $flagChanged set to true.
+     * If the name does not exist yet, it is added, and $flagChanged
+     * is set to true.
+     * If the new value is not equal to the old one, it is updated,
+     * and $flagChanged set to true.
      * Otherwise, nothing happens, and false is returned
      * @see init(), updateAll()
      * @param   string    $name       The settings name
@@ -316,14 +256,8 @@ class SettingDb
         // Fail if the name is invalid
         // or the setting does not exist already
 // TODO: Add error messages for individual errors
-        if (empty($name)) {
-//echo("Empty setting name: $name<br />");
-            return false;
-        }
-        if (!isset(self::$arrSettings[$name])) {
-//echo("Unknown setting: $name<br />");
-            return false;
-        }
+        if (empty($name)) return false;
+        if (!isset(self::$arrSettings[$name])) return false;
 
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_setting`
@@ -372,10 +306,8 @@ class SettingDb
         if (self::$arrSettings === false || self::$key != $key)
             self::init($key);
 
-        // Such an entry exists already, fail.
-        // Note that getValue() returns null if the entry is not present
-        $old_value = self::getValue($name);
-        if (isset($old_value)) return false;
+        // Such an entry exists already, fail
+        if (self::getValue($name)) return false;
 
         // Not present, insert it
         $objResult = $objDatabase->Execute("
@@ -402,30 +334,7 @@ class SettingDb
 
 
     /**
-     * Delete a record from the settings table
-     *
-     * For maintenance/update purposes only.
-     * @param   string    $name     The setting name
-     * @param   string    $key      The optional key
-     * @return  boolean             True on success, false otherwise
-     */
-    static function delete($name, $key=null)
-    {
-        global $objDatabase;
-
-        // Fail if the name is invalid
-        if (empty($name)) return false;
-        $objResult = $objDatabase->Execute("
-            DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `name`='".addslashes($name)."'".
-            (isset($key) ? " AND `key`='".addslashes($key)."'" : ''));
-        if (!$objResult) return self::errorHandler();
-        return true;
-    }
-
-
-    /**
-     * Display the settings present in the $arrSettings class array
+     * Display the settings stored in the given array
      *
      * Uses the indices as the names for any parameter, the values
      * as themselves, and adds language variables for the settings' name
@@ -436,9 +345,9 @@ class SettingDb
      *    Prefix:   'TXT_'
      *  Results in placeholders to be set as follows:
      *    Placeholder         Value
-     *    SETTINGDB_NAME      The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
-     *    SETTINGDB_VALUE     The HTML element for the setting type with
-     *                        a name attribute of 'shop_dummy'
+     *    SETTINGDB_NAME        The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
+     *    SETTINGDB_VALUE       The HTML element for the setting type with
+     *                          a name attribute of 'shop_dummy'
      *
      * Placeholders:
      * The settings' name is to SETTINGDB_NAME, and the input element to
@@ -456,18 +365,17 @@ class SettingDb
      * The template object is given by reference, and if the block
      * 'core_settingdb_row' is not present, is replaced by the default backend
      * template.
-     * $uriBase *SHOULD* be the URI for the current module page.
-     * If you want your settings to be stored, you *MUST* handle the post
-     * request, check for the 'bsubmit' index in the $_POST array, and call
-     * {@see SettingDb::store()}.
+     * $uriBase *SHOULD* be the URI for the current module start page, without
+     * any 'act' parameter, i.e. 'index.php?section=mymodule'.
+     * If you want your settings to be stored, you *MUST* handle the parameter
+     * 'act=settings' in your modules' getPage() method, check for the 'bsubmit'
+     * index in the $_POST array, and call {@see SettingDb::store()}.
      * @param   HTML_Template_Sigma $objTemplateLocal   Template object
      * @param   string              $uriBase      The base URI for the module.
-     * @param   string              $section      The optional section header
-     *                                            text to add
-     * @param   string              $tab_name     The optional tab name to add
-     * @param   string              $prefix       The optional prefix for
-     *                                            language variables.
-     *                                            Defaults to 'TXT_'
+     * @param   string              $section      The section header text to add
+     * @param   string              $tabName      The tab name to add
+     * @param   string              $prefix       The prefix for language variables,
+     *                                            defaults to 'TXT_'
      * @return  boolean                           True on success, false otherwise
      * @todo    Add functionality to handle arrays within arrays
      * @todo    Add functionality to handle special form elements
@@ -475,26 +383,29 @@ class SettingDb
      *          that store them, like add(), update(), and updateAll()
      */
     static function show(
-        &$objTemplateLocal, $uriBase,
-        $section='', $tab_name='', $prefix='TXT_'
+        &$objTemplateLocal, $uriBase, $section='', $tabName='', $prefix='TXT_'
     ) {
         global $objTemplate, $_CORELANG, $_ARRAYLANG;
+        static $tab_index = 0;
 
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
-        if (   !is_a($objTemplateLocal, 'HTML_Template_Sigma')
-            || !$objTemplateLocal->blockExists('core_settingdb_row')) {
+        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
             $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
             if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
                 die("Failed to load template settingDb.html");
         }
-        Html::replaceUriParameter($uriBase, 'active_tab='.self::$tab_index);
+        if (!preg_match('/[&;]act\=/', $uriBase))
+            $uriBase .= '&amp;act=settings';
+        $objTemplateLocal->setGlobalVariable('URI_BASE', $uriBase);
+
         // Default headings and elements
-        $objTemplateLocal->setGlobalVariable(
-            $_CORELANG
-          + array(
-            'URI_BASE' => $uriBase,
+        $objTemplateLocal->setGlobalVariable(array(
+            'TXT_CORE_SETTINGDB'       => $_CORELANG['TXT_CORE_SETTINGDB'],
+            'TXT_CORE_SETTINGDB_STORE' => $_CORELANG['TXT_CORE_SETTINGDB_STORE'],
+            'TXT_CORE_SETTINGDB_NAME'  => $_CORELANG['TXT_CORE_SETTINGDB_NAME'],
+            'TXT_CORE_SETTINGDB_VALUE' => $_CORELANG['TXT_CORE_SETTINGDB_VALUE'],
         ));
 
         if ($objTemplateLocal->blockExists('core_settingdb_row'))
@@ -512,23 +423,19 @@ class SettingDb
                 'CONTENT_STATUS_MESSAGE',
                 sprintf(
                     $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
-                    $tab_name, $section
+                    $tabName, $section
                 )
             );
             return true;
         }
 
-        // This is set to multipart if necessary
-        $enctype = '';
         $i = 0;
         foreach (self::$arrSettings as $name => $arrSetting) {
             // Determine HTML element for type and apply values and selected
             $element = '';
             $value = $arrSetting['value'];
-            $type = $arrSetting['type'];
-            // Not implemented yet:
-            // Warn if some mandatory value is empty
-            if (empty($value) && preg_match('/_mandatory$/', $type)) {
+
+            if (empty($value)) {
                 $objTemplate->setVariable(
                     'CONTENT_STATUS_MESSAGE',
                     sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
@@ -536,7 +443,6 @@ class SettingDb
                         $name)
                 );
             }
-            // Warn if some language variable is not defined
             if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
                 $objTemplate->setVariable(
                     'CONTENT_STATUS_MESSAGE',
@@ -546,25 +452,23 @@ class SettingDb
                 );
             }
             $value_align = (is_numeric($value) ? 'text-align: right;' : '');
-//DBG::log("Value: $value -> align $value_align");
-            switch ($type) {
+            switch ($arrSetting['type']) {
               // Dropdown menu
-              case self::TYPE_DROPDOWN:
-                $arrValues = self::splitValues($arrSetting['values']);
-//DBG::log("Values: ".var_export($arrValues, true));
+              case 'dropdown':
                 $element = Html::getSelect(
-                    $name, $arrValues, $value,
+                    $name, self::splitValues($arrSetting['values']), $value,
                     '', '',
                     'style="width: 220px;'.$value_align.'"');
                 break;
-              case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
+              case 'dropdown_user_custom_attribute':
+                $objFWUser = FWUser::getFWUserObject();
                 $element = Html::getSelect(
                     $name,
-                    User_Profile_Attribute::getCustomAttributeNameArray(),
+                    $objFWUser->objUser->objAttribute->getCustomAttributeNameArray(),
                     $arrSetting['value'], '', '', 'style="width: 220px;"'
                 );
                 break;
-              case self::TYPE_DROPDOWN_USERGROUP:
+              case 'dropdown_usergroup':
                 $element = Html::getSelect(
                     $name,
                     UserGroup::getNameArray(),
@@ -572,7 +476,7 @@ class SettingDb
                     '', '', 'style="width: 220px;"'
                 );
                 break;
-              case self::TYPE_WYSIWYG:
+              case 'wysiwyg':
                 // These must be treated differently, as wysiwyg editors
                 // claim the full width
                 $element = get_wysiwyg_editor($name, $value);
@@ -586,79 +490,30 @@ class SettingDb
                     'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
                 ));
                 $objTemplateLocal->parseCurrentBlock();
-                // Skip the part below, all is done already
                 continue 2;
 
-              case self::TYPE_FILEUPLOAD:
-//echo("Setting up upload for $name, $value<br />");
-                $element =
-                    Html::getInputFileupload(
-                        // Set the ID only if the $value is non-empty.
-                        // This toggles the file name and delete icon on or off
-                        $name, ($value ? $name : false),
-                        Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
-                        // "values" defines the MIME types allowed
-                        $arrSetting['values'],
-                        'style="width: 220px;"', true,
-                        ($value
-                          ? $value
-                          : 'media/'.
-                            (isset($_REQUEST['cmd'])
-                                ? $_REQUEST['cmd'] : 'other'))
-                    );
-                // File uploads must be multipart encoded
-                $enctype = 'enctype="multipart/form-data"';
-                break;
-
-              case self::TYPE_BUTTON:
-                // The button is only available to trigger some event.
-                $event =
-                    'onclick=\''.
-                      'if (confirm("'.$_ARRAYLANG[$prefix.strtoupper($name).'_CONFIRM'].'")) {'.
-                        'document.getElementById("'.$name.'").value=1;'.
-                        'document.formSettings_'.self::$tab_index.'.submit();'.
-                      '}\'';
-//DBG::log("SettingDb::show(): Event: $event");
-                $element =
-                    Html::getInputButton(
-                        // The button itself gets a dummy name attribute value
-                        '__'.$name,
-                        $_ARRAYLANG[strtoupper($prefix.$name).'_LABEL'],
-                        'button', false,
-                        $event
-                    ).
-                    // The posted value is set to 1 when confirmed,
-                    // before the form is posted
-                    Html::getHidden($name, 0, '');
-//DBG::log("SettingDb::show(): Element: $element");
-                break;
-
 // More...
-//              case self::TYPE_:
+//              case '':
 //                break;
 
               // Default to text input fields
-              case self::TYPE_TEXT:
-              case self::TYPE_EMAIL:
+              case 'text':
+              case 'email':
               default:
                 $element =
                     Html::getInputText(
-                        $name, $value, false,
+                        $name, $value, '',
                         'style="width: 220px;'.$value_align.'"');
             }
 
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_NAME'      => $_ARRAYLANG[$prefix.strtoupper($name)],
-                'CORE_SETTINGDB_VALUE'     => $element,
-                'CORE_SETTINGDB_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
+                'CORE_SETTINGDB_NAME'        => $_ARRAYLANG[$prefix.strtoupper($name)],
+                'CORE_SETTINGDB_VALUE'       => $element,
+                'CORE_SETTINGDB_ROWCLASS2'    => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
 //echo("SettingDb::show(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
-
-        // Set form encoding to multipart if necessary
-        if (!empty($enctype))
-            $objTemplateLocal->setVariable('CORE_SETTINGDB_ENCTYPE', $enctype);
 
         if (   !empty($section)
             && $objTemplateLocal->blockExists('core_settingdb_section')) {
@@ -669,17 +524,13 @@ class SettingDb
             $objTemplateLocal->parse('core_settingdb_section');
         }
 
-        // The tabindex must be set in the form name in any case
-        $objTemplateLocal->setGlobalVariable(
-            'CORE_SETTINGDB_TAB_INDEX', self::$tab_index);
         // Set up tab, if any
-        if (!empty($tab_name)) {
-            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
+        if (!empty($tabName)) {
             $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
-//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
-                'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
+                'CORE_SETTINGDB_TAB_NAME'  => $tabName,
+                'CORE_SETTINGDB_TAB_INDEX' => ++$tab_index,
+                'CORE_SETTINGDB_TAB_CLASS' => ($tab_index == 1 ? 'active' : ''),
+                'CORE_SETTINGDB_TAB_DISPLAY' => ($tab_index == 1 ? 'block' : 'none'),
             ));
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
             $objTemplateLocal->parse('core_settingdb_tab_row');
@@ -691,138 +542,24 @@ class SettingDb
 
 
     /**
-     * Adds an external settings view to the current template
-     *
-     * The content must contain the full view, including the surrounding form
-     * tags and submit button.
-     * Note that these are always appended on the right end of the tab list.
-     * @param   HTML_Template_Sigma $objTemplateLocal   Template object
-     * @param   string              $tab_name           The tab name to add
-     * @param   string              $content            The external content
-     */
-    static function show_external(
-        &$objTemplateLocal, $tab_name, $content
-    ) {
-        global $objTemplate, $_CORELANG, $_ARRAYLANG;
-
-//$objTemplate->setCurrentBlock();
-//echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
-
-        if (   empty($objTemplateLocal)
-            || !$objTemplateLocal->blockExists('core_settingdb_row')) {
-            $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
-            if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
-                die("Failed to load template settingDb.html");
-        }
-
-        $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
-        // The tabindex must be set in the form name in any case
-        $objTemplateLocal->setGlobalVariable(array(
-            'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
-            'CORE_SETTINGDB_EXTERNAL' => $content,
-        ));
-        // Set up the tab, if any
-        if (!empty($tab_name)) {
-            $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
-//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
-                'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
-            ));
-            $objTemplateLocal->touchBlock('core_settingdb_tab_row');
-            $objTemplateLocal->parse('core_settingdb_tab_row');
-            $objTemplateLocal->touchBlock('core_settingdb_tab_div_external');
-            $objTemplateLocal->parse('core_settingdb_tab_div_external');
-        }
-        return true;
-    }
-
-
-    /**
      * Update and store all settings found in the $_POST array
-     *
-     * Sets up an error message in the $error_message class variable
-     * on failure.  See {@see getErrorString()}.
      * @return  boolean                 True on success,
      *                                  the empty string if none was changed,
      *                                  or false on failure
      */
     static function storeFromPost()
     {
-        global $_CORELANG;
-
-//echo("SettingDb::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
-//echo("SettingDb::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
+//echo("SettingDb::storeFromPost(): Entered<br />");
         // Compare POST with current settings.
         // Only store what was changed.
         self::init(false);
-        unset($_POST['bsubmit']);
-        $result = true;
+        unset($_POST['store']);
+//        unset($_POST['csrf']);
         foreach ($_POST as $name => $value) {
-//            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
-//                continue;
-            if (empty(self::$arrSettings[$name])) {
-// Silently ignore unknown settings for the time being
-//                self::$error_message = sprintf(
-//                    $_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING_UNKNOWN_SETTING'],
-//                    $name);
-//                $result = false;
-                continue;
-            }
-            if (self::$arrSettings[$name]['type'] == 'fileupload') {
-                // An empty folder path has been posted, indicating that the
-                // current file should be removed
-                if (empty($value)) {
-//echo("Empty value, deleting file...<br />");
-                    if (self::$arrSettings[$name]['value']) {
-                        if (File::delete_file(self::$arrSettings[$name]['value'])) {
-//echo("File deleted<br />");
-                            $value = '';
-                        } else {
-//echo("Failed to delete file<br />");
-                            self::$error_message = File::getErrorString();
-                            $result = false;
-                        }
-                    }
-                } else {
-                    // No file uploaded.  Skip.
-                    if (empty($_FILES[$name]['name'])) continue;
-                    // $value is the target folder path
-                    $target_path = $value.'/'.$_FILES[$name]['name'];
-// TODO: Test if this works in all browsers:
-                    // The path input field name is the same as the
-                    // file upload input field name!
-                    $result_upload = File::upload_file_http(
-                        $name, $target_path,
-                        Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
-                        // The allowed file types
-                        self::$arrSettings[$name]['values']
-                    );
-                    // If no file has been uploaded at all, ignore the no-change
-                    if ($result_upload === '') continue;
-                    if ($result_upload === true) {
-                        $value = $target_path;
-                    } else {
-//echo("SettingDb::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
-                        self::$error_message = File::getErrorString();
-                        $result = false;
-                    }
-                }
-            } else {
-                // Regular value of any other type
-                $value = contrexx_stripslashes($value);
-            }
+            $value = contrexx_stripslashes($value);
             SettingDb::set($name, $value);
         }
-//echo("SettingDb::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
-        $result_update = self::updateAll();
-        if ($result_update === false)
-            self::$error_message = $_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING'];
-        // If nothig bad happened above, return the result of updateAll(),
-        // which may be true, false, or the empty string
-        if ($result === true) return $result_update;
-        // There has been an error anyway
-        return false;
+        return self::updateAll();
     }
 
 
@@ -846,76 +583,6 @@ class SettingDb
 
 
     /**
-     * Splits the string value at commas and returns an array of strings
-     *
-     * Commas escaped by a backslash (\) are ignored and replaced by a
-     * single comma.
-     * The values themselves may be composed of pairs of key and value,
-     * separated by a colon.  Colons escaped by a backslash (\) are ignored
-     * and replaced by a single colon.
-     * Leading and trailing whitespace is removed from both keys and values.
-     * Note that keys *MUST NOT* contain either commas or colons!
-     * @param   string    $strValues    The string to be split
-     * @return  array                   The array of strings
-     */
-    static function splitValues($strValues)
-    {
-/*
-Example:
-postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
-*/
-        $arrValues = array();
-        $match = array();
-        foreach (
-            preg_split(
-                '/\s*(?<!\\\\),\s*/', $strValues,
-                null, PREG_SPLIT_NO_EMPTY) as $value
-        ) {
-            $key = null;
-            if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
-                $key = $match[1];
-                $value = $match[2];
-//DBG::log("Split $key and $value");
-            }
-            str_replace(array('\\,', '\\:'), array(',', ':'), $value);
-            if (isset($key)) {
-                $arrValues[$key] = $value;
-            } else {
-                $arrValues[] = $value;
-            }
-//DBG::log("Split $key and $value");
-        }
-//DBG::log("Array: ".var_export($arrValues, true));
-        return $arrValues;
-    }
-
-
-    /**
-     * Joins the strings in the array with commas into a single values string
-     *
-     * Commas within the strings are escaped by a backslash (\).
-     * The array keys are prepended to the values, separated by a colon.
-     * Colons within the strings are escaped by a backslash (\).
-     * Note that keys *MUST NOT* contain either commas or colons!
-     * @param   array     $arrValues    The array of strings
-     * @return  string                  The concatenated values string
-     * @todo    Untested!  May or may not work as described.
-     */
-    static function joinValues($arrValues)
-    {
-        $strValues = '';
-        foreach ($arrValues as $key => $value) {
-            $value = str_replace(
-                array(',', ':'), array('\\,', '\\:'), $value);
-            $strValues .=
-                ($strValues ? ',' : '').
-                "$key:$value";
-        }
-        return $strValues;
-    }
-
-
-    /**
      * Should be called whenever there's a problem with the settings table
      *
      * Tries to fix or recreate the settings table.
@@ -925,7 +592,7 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     {
         global $objDatabase;
 
-//die("SettingDb::errorHandler(): Disabled!<br />");
+die("SettingDb::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (!in_array(DBPREFIX."core_setting", $arrTables)) {
@@ -946,9 +613,7 @@ echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
         }
 
         // Use SettingDb::add(); in your module code to add missing and
-        // new settings.  Example:
-//        SettingDb::init('country');
-//        SettingDb::add('core_country_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
+        // new settings.
 
         // More to come...
 

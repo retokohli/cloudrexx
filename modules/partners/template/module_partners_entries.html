@@ -1,0 +1,205 @@
+<!-- START module_blog_entries.html -->
+<script language="JavaScript" type="text/javascript">
+//<![CDATA[
+
+function deleteEntry(entryId){ 
+    if(confirm('{TXT_ENTRIES_DELETE_ENTRY_JS}')) 
+        window.location.replace("?cmd=partners&{CSRF_PARAM}&act=deletePartners&id="+entryId);
+}
+
+function selectMultiAction() {
+
+	with (document.frmShowPartnersEntries) {
+		switch (frmShowEntries_MultiAction.value) {
+			case 'delete':
+				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+					action='?cmd=partners&act=multiactionEntry';
+					submit();
+				}
+				else{
+                frmShowEntries_MultiAction.value=0;
+                }
+			break;
+			default: //do nothing
+		}
+	}
+}
+
+function showList(id) {
+
+    document.getElementById(id).style.display="block";
+    return false;
+}
+
+
+//]]>
+</script>
+<ul id="tabmenu">
+	<li><a id="Entries_ShowPartnersEntries" class="active" href="javascript:{}" onclick="selectTab('ShowPartnersEntries')" title="{TXT_ENTRIES_TITLE}">{TXT_ENTRIES_TITLE}</a></li>
+	<li><a id="Entries_ExportPartners" class="inactive" href="javascript:{}" onclick="selectTab('ExportPartners')" title="{TXT_PARTNERS_CSV_FILE_ALL}">{TXT_PARTNERS_CSV_FILE_ALL}</a></li>
+	<!--<li><a id="Entries_ImportPartners" class="inactive" href="javascript:{}" onclick="selectTab('ImportPartners')" title="{TXT_IMPORT}">{TXT_IMPORT}</a></li>-->
+    <li><a id="Entries_ShowEntries" class="inactive" href="javascript:{}" onclick="selectTab('ShowEntries')" title="{TXT_ENTRIES_SEARCH}">{TXT_ENTRIES_SEARCH}</a></li>
+</ul>
+<div id="ShowPartnersEntries" class="Entries" style="display: block;">
+   <form name="frmShowPartnersEntries" method="post" action="">
+ 	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="4">{TXT_ENTRIES_TITLE}</th><th colspan="4">&nbsp;</th>
+		</tr>
+
+    	<tr class="row3">
+			<td nowrap="nowrap" width="2%"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_DATE}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_SUBJECT}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_STATUS}</span></td>
+   			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_USER}</span></td>
+   			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_EXCEL}</span></td>
+			<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_EDITED}</span></td>
+			<td nowrap="nowrap" width="3%"><span style="font-weight:bold;">{TXT_ENTRIES_SUBTITLE_ACTIONS}</span></td>
+		</tr>
+		<!-- BEGIN showEntries -->
+		<tr class="{ENTRY_ROWCLASS}">
+			<td><input type="checkbox" name="selectedEntriesId[]" value="{ENTRY_ID}" /></td>
+			<td>{ENTRY_DATE}</td>
+			<td><a href="?cmd=partners&amp;act=editPartners&amp;id={ENTRY_ID}&amp;pos={ENTRY_PAGING}&test={ENTRY_USERNO}" target="_self" title="{ENTRY_SUBJECT}">{ENTRY_SUBJECT}</a></td>
+			<td>{ENTRY_STATUS}</td>
+   			<td>{ENTRY_USER}</td>
+   			<td><a href="?cmd=partners&amp;act=getCSV&amp;id={ENTRY_ID}&amp;sub={ENTRY_SUBJECT}"><img src="images/icons/xls.gif" alt="{TXT_PARTNERS_CSV_FILE}" title="{TXT_PARTNERS_CSV_FILE}" border="0"/></a></td>
+			<td>{ENTRY_EDITED}</td>
+			<td nowrap="nowrap">
+				<div align="right">
+					<a href="?cmd=partners&amp;act=editPartners&amp;id={ENTRY_ID}&amp;pos={ENTRY_PAGING}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+					<a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
+				</div>
+			</td>
+		</tr>
+		<!-- END showEntries -->
+		<!-- BEGIN noEntries -->
+		<tr class="row2">
+			<td colspan="10"><div align="center"><br />{TXT_ENTRIES_NO_ENTRIES_FOUND}<br /><br /></div></td>
+		</tr>
+		<!-- END noEntries -->
+  	</table>
+	<br />
+	<table cellpadding="2" cellspacing="0" border="0">
+		<tr>
+			<td>
+				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+				<a href="#" onclick="changeCheckboxes('frmShowPartnersEntries','selectedEntriesId[]',true); return false;">{TXT_ENTRIES_SELECT_ALL}</a> /
+				<a href="#" onclick="changeCheckboxes('frmShowPartnersEntries','selectedEntriesId[]',false); return false;">{TXT_ENTRIES_DESELECT_ALL}</a>
+				<img src="images/icons/strike.gif" alt="" />
+				<select name="frmShowEntries_MultiAction" onchange="selectMultiAction();">
+					<option value="0">{TXT_ENTRIES_SUBMIT_SELECT}</option>
+					<option value="delete">{TXT_ENTRIES_SUBMIT_DELETE}</option>
+				</select>
+			</td>
+   		</tr>
+	</table>
+   </form>
+<br />
+<div align="center">{ENTRIES_PAGING}</div>
+</div>
+
+
+<div id="ShowEntries" class="Entries" style="display: none;">
+<form name="frmShowEntries" method="post" action="?cmd=partners">
+<table width="100%" cellpadding="2" cellspacing="0" border="0" class="adminlist">
+<tr>
+		<th colspan="8">{TXT_ENTRIES_SEARCH}</th>
+</tr>
+<tr class="row2">
+    	<td>{TXT_ENTRIES_SUBJECT}</td><td><input type="text" name="subject" style="width:116px;"></td>
+		{TXT_ENTRIES_LEVEL}{PARTNERS_LEVEL}
+		{TXT_ENTRIES_PROFILE}{PARTNERS_PROFILE}
+		{TXT_ENTRIES_COUNTRY}{PARTNERS_COUNTRY}
+</tr>
+			<tr class="row1" style="{ROW_DISPLAY}">
+    		<td>{TXT_ENTRIES_VERTICAL}</td><td>{PARTNERS_VERTICAL}</td>
+    		<td></td><td></td>
+		    <td></td><td></td>
+		    <td></td><td></td>
+		    </tr>
+		    <tr class="row2">
+			<td colspan="8" width="100%" ><input type="submit" name="Submit_overview" value="{TXT_SHOW}" /></td>
+		   </tr>
+   	      </table>
+   	      </form>
+          </div>
+             
+
+<div id="ExportPartners" class="Entries" style="display: none;">
+   	      <form name="frmExportPartners" method="post" action="?cmd=partners&act=getMultiplecsv">
+          <table width="100%" cellpadding="2" cellspacing="0" border="0" class="adminlist">
+              <tr>
+        	<th colspan="8">{TXT_PARTNERS_CSV_FILE_ALL}</th>
+            </tr>
+
+            <tr class="row2">
+           <td colspan="8" width="100%" >
+              <select name="frmExportpartners_MultiAction[]" id="langSelect[]"  multiple style="height:50px;width:200px;" >
+            <option value="0" selected>{EDIT_LANGUAGES_ALL}</option>
+					{EDIT_LANGUAGES_1}
+                    {EDIT_LANGUAGES_2}
+					{EDIT_LANGUAGES_3}
+                </select>
+           </td>
+           </tr>
+
+		   <tr class="row1">
+           <td colspan="8" width="100%"><input type="submit" name="Submit_MultiExport" value="{TXT_EXPORT}" /></td>
+           <!--<td colspan="8" width="100%" ><input type="submit" name="Submit_overview" value="{TXT_EXPORT}" /></td></tr>-->
+           </table>
+          </form>
+          </div>
+          
+          
+          <div id="ImportPartners" class="Entries" style="display: none;">
+   	      <form name="frmImportPartners" method="post" action="?cmd=partners&act=ImportCsv" enctype="multipart/form-data">
+          <table width="100%" cellpadding="2" cellspacing="0" border="0" class="adminlist">
+              <tr>
+        	<th colspan="8">{TXT_PARTNERS_IMPORT}</th>
+            </tr>
+
+            <!--<tr class="row2">
+           <td colspan="8" width="100%" >
+              <select name="frmExportpartners_MultiAction[]" id="langSelect[]"  multiple style="height:50px;width:200px;" >
+            <option value="0" selected>{EDIT_LANGUAGES_ALL}</option>
+					{EDIT_LANGUAGES_1}
+                    {EDIT_LANGUAGES_2}
+					{EDIT_LANGUAGES_3}
+                </select>
+           </td>
+           </tr> -->
+
+		   <tr class="row1" align="center">
+           <td colspan="8" width="100%" align="center"><input type="file" name="Browse_MultiImport" /></td>
+           </tr>
+           <tr class="row2" align="center">
+           <td colspan="8" width="100%" align="center"><input type="submit" name="Submit_MultiImport" value="{TXT_IMPORT}" onclick="return showList('Importlist');" /></td>
+           </tr>
+             <!--<td colspan="8" width="100%" ><input type="submit" name="Submit_overview" value="{TXT_EXPORT}" /></td></tr>-->
+           </table>
+           <br />
+            <div id="Importlist" class="Entries" style="display: none;" >
+           	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+           <tr class="row2" align="center">
+           {IMPORT_PARTNERS_LIST}&nbsp;&nbsp;{IMPORT_PARTNERS_LIST_FIELDS}
+           </tr>
+           <tr class="row2" align="center">
+           <td width="100%">
+             <select multiple="multiple" width="200px" name="importval" size="10">
+             <option value="">select all</option>
+             </select>
+
+             <select multiple="multiple" width="200px" name="importfld" size="10">
+             <option value="">select all</option>
+             </select>
+             </td>
+           </tr>
+        	</table>
+          </div>
+          </form>
+          </div>
+ <!-- END module_partners_entries.html -->
+ 
+

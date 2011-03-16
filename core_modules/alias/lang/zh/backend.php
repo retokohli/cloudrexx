@@ -6,8 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_alias
  */
-$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "SEO URL Aliases";
-$_ARRAYLANG['TXT_ALIAS_ALIAS'] = "SEO URL Alias";
+$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliases";
+$_ARRAYLANG['TXT_ALIAS_ALIAS'] = "Alias";
 $_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_ALIAS_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_ALIAS_MODIFY'] = "Edit";
@@ -53,22 +53,4 @@ $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, be
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "An alias for the page %s has already been defined!";
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "This alias isn't active anymore!<br />Click on this icon to reactive it.";
 $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Use as default:";
-$_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'] = "Open alias in a new window";
-$_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS'] = "Domainmappings";
-$_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS_ADD'] = "Neues Domainmapping hinzufügen";
-$_ARRAYLANG['TXT_ALIAS_NO_MAPPINGS_MSG'] = "Keine Domain-Mappings vorhanden";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_DOMAIN'] = "Domain Name";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_TARGET'] = "Zielseite";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_DELETE'] = "Mapping entfernen";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_ADD'] = "Mapping hinzufügen";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_MODIFY'] = "Mapping bearbeiten";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_SAVED_SUCCESSFULLY'] = "Mapping erfolgreich gespeichert.";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_DOMAIN'] = "Bitte geben Sie eine Domain an.";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_TARGET'] = "Bitte geben Sie eine Zielseite an.";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_SUCCESSFULLY_REMOVED'] = "Mapping wurde entfernt.";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_REMOVE_FAILED'] = "Mapping konnte nicht entfernt werden.";
-$_ARRAYLANG['TXT_ALIAS_CONFIRM_DELETE_MAPPING'] = "Soll dieses Mapping wirklich gelöscht werden?";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_DOMAIN_HELP'] = "Geben Sie hier die Domain (z.B. www.example.com) an, welche auf die unten angebene Seite weiterleitet, falls ein Besucher diese Domain im Browser eingibt.";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_DOMAIN_CANNOT_BE_SAME_AS_DEFAULT'] = "Der Wert der Domain darf nicht der selbe sein wie für Ihre Standard-Domain Ihrer Homepage.";
-$_ARRAYLANG['TXT_ALIAS_MAPPING_INVALID_DOMAIN_NAME'] = "Ungültiger Wert für die Domain. Der Name darf keine Sonderzeichen enthalten.";
 ?>

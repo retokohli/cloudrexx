@@ -46,6 +46,7 @@ class docSysManager extends docSysLibrary
         global  $_ARRAYLANG, $objInit, $objTemplate;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/docsys/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=docsys".MODULE_INDEX."'>".$_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW']."</a>
@@ -380,8 +381,8 @@ class docSysManager extends docSysLibrary
                 'DOCSYS_SOURCE'         => $objResult->fields['source'],
                 'DOCSYS_URL1'           => $objResult->fields['url1'],
                 'DOCSYS_URL2'           => $objResult->fields['url2'],
-                'DOCSYS_STARTDATE'    => !empty($objResult->fields['startdate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['startdate']) : '',
-                'DOCSYS_ENDDATE'    => !empty($objResult->fields['enddate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['enddate']) : '',
+				'DOCSYS_STARTDATE'	=> !empty($objResult->fields['startdate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['startdate']) : '',
+				'DOCSYS_ENDDATE'	=> !empty($objResult->fields['enddate']) ? date(ASCMS_DATE_FORMAT, $objResult->fields['enddate']) : '',
                 'DOCSYS_STATUS'         => $status,
                 'DOCSYS_DATE'           => date(ASCMS_DATE_FORMAT, $objResult->fields['date'])
             ));

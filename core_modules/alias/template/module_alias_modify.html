@@ -3,96 +3,96 @@
 //<![CDATA[
 function alias_change_source()
 {
-  if (document.getElementById('alias_source_url').checked == true) {
-    document.getElementById('alias_local_source_box').style.display = 'none';
-    document.getElementById('alias_url_source_box').style.display = 'block';
-  } else {
-    document.getElementById('alias_url_source_box').style.display = 'none';
-    document.getElementById('alias_local_source_box').style.display = 'block';
-  }
+	if (document.getElementById('alias_source_url').checked == true) {
+		document.getElementById('alias_local_source_box').style.display = 'none';
+		document.getElementById('alias_url_source_box').style.display = 'block';
+	} else {
+		document.getElementById('alias_url_source_box').style.display = 'none';
+		document.getElementById('alias_local_source_box').style.display = 'block';
+	}
 }
 
 function alias_get_fileBrowser()
 {
-  aliasPopup = window.open('?cmd=fileBrowser&standalone=true&noAliases=1&absoluteURIs=true&getPageId=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-  aliasPopup.focus();
+	aliasPopup = window.open('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&absoluteURIs=true&getPageId=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	aliasPopup.focus();
 }
 
 function SetUrl(url, pageId)
 {
-  document.getElementById('alias_local_page_url').value = url;
-  document.getElementById('alias_local_page_url_box').innerHTML = url;
-  document.getElementById('alias_local_source').value = pageId;
+	document.getElementById('alias_local_page_url').value = url;
+	document.getElementById('alias_local_page_url_box').innerHTML = url;
+	document.getElementById('alias_local_source').value = pageId;
 }
 
 function alias_delete_alias(id, alias)
 {
-  strMsg = '{TXT_ALIAS_CONFIRM_REMOVE_ALIAS}';
-  if (confirm(strMsg.replace('%s', alias))) {
-    document.getElementById(id).parentNode.removeChild(document.getElementById(id));
-  }
+	strMsg = '{TXT_ALIAS_CONFIRM_REMOVE_ALIAS}';
+	if (confirm(strMsg.replace('%s', alias))) {
+		document.getElementById(id).parentNode.removeChild(document.getElementById(id));
+	}
 }
 
 newAliasNr = 0;
 function alias_add_alias()
 {
-  elBox = document.getElementById('alias_box_new').cloneNode(true);
-  elBox.setAttribute('id', 'alias_box_new_'+newAliasNr);
-  elBox.style.display = 'block';
-  elBox.childNodes[3].setAttribute('value', 'newalias_'+newAliasNr);
-  elBox.childNodes[3].setAttribute('name', 'alias_use_default');
-  document.getElementById('alias_main_box').appendChild(elBox);
-  newAliasNr++;
+	elBox = document.getElementById('alias_box_new').cloneNode(true);
+	elBox.setAttribute('id', 'alias_box_new_'+newAliasNr);
+	elBox.style.display = 'block';
+	elBox.childNodes[3].setAttribute('value', 'newalias_'+newAliasNr);
+	elBox.childNodes[3].setAttribute('name', 'alias_use_default');
+	document.getElementById('alias_main_box').appendChild(elBox);
+	newAliasNr++;
 }
 
 //]]>
 </script>
 <form action="?cmd=alias&amp;act=modify&amp;id={ALIAS_ID}" method="post">
 <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-  <tbody style="vertical-align:top;">
-    <tr>
-      <th colspan="2">{ALIAS_TITLE_TXT}</th>
-    </tr>
-    <tr class="row1">
-      <td width="15%">{TXT_ALIAS_TARGET_PAGE}</td>
-      <td width="85%">
-        <input type="radio" name="alias_source_type" id="alias_source_local" value="local" onchange="alias_change_source()" {ALIAS_SELECT_LOCAL_PAGE} /><label for="alias_source_local">{TXT_ALIAS_LOCAL}</label>
-        <input type="radio" name="alias_source_type" id="alias_source_url" value="url" onchange="alias_change_source()" {ALIAS_SELECT_URL_PAGE} /><label for="alias_source_url">{TXT_ALIAS_URL}</label>
-        <br /><br />
-        <div id="alias_local_source_box" style="display:{ALIAS_SELECT_LOCAL_BOX};"><input type="hidden" value="{ALIAS_LOCAL_PAGE_URL}" name="alias_local_page_url" id="alias_local_page_url" /> <input type="button" value="{TXT_ALIAS_BROWSE}" onclick="alias_get_fileBrowser()" />
-          <div id="alias_local_page_url_box">{ALIAS_LOCAL_PAGE_URL}</div>
-        </div>
-        <input type="hidden" value="{ALIAS_LOCAL_SOURCE}" name="alias_local_source" id="alias_local_source" />
-        <div id="alias_url_source_box" style="display:{ALIAS_SELECT_URL_BOX};"><input type="text" value="{ALIAS_URL_SOURCE}" name="alias_url_source" style="width:690px;" /></div>
-      </td>
-    </tr>
-    <tr class="row2">
-      <td width="15%">{TXT_ALIAS_ALIAS_ES}</td>
-      <td width="85%">
-        <div id="alias_main_box">
-        <!-- BEGIN alias_list -->
-          <div id="alias_box_{ALIAS_ALIAS_NR}" style="margin:0px 0px 1px 0px;">
-            {ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases{ALIAS_ALIAS_PREFIX}[{ALIAS_ALIAS_ID}]" id="alias_aliases_{ALIAS_ALIAS_NR}" value="{ALIAS_ALIAS_URL}" style="width:200px;" />
-            {TXT_ALIAS_STANDARD_RADIOBUTTON}
-            <input type="radio" name="alias_use_default" {ALIAS_IS_DEFAULT} value="{ALIAS_ALIAS_ID}" />
-            <a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+document.getElementById('alias_aliases_{ALIAS_ALIAS_NR}').value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" align="absmiddle" /></a>
-          </div>
-        <!-- END alias_list -->
-        </div>
-        <br />
-        <div id="alias_box_new" style="display:none;margin:0px 0px 1px 0px;">
-          {ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases_new[]" value="" style="width:200px;" />
-          {TXT_ALIAS_STANDARD_RADIOBUTTON}
-          <input type="radio" name="alias_use_default_tmpl" value="" />
-          <a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+this.previousSibling.previousSibling.previousSibling.previousSibling.value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" /></a>
-        </div>
-        <input type="button" value="{TXT_ALIAS_ADD_ANOTHER_ALIAS}" onclick="alias_add_alias()" />
-      </td>
-    </tr>
-  </tbody>
+	<tbody style="vertical-align:top;">
+		<tr>
+			<th colspan="2">{ALIAS_TITLE_TXT}</th>
+		</tr>
+		<tr class="row1">
+			<td width="15%">{TXT_ALIAS_TARGET_PAGE}</td>
+			<td width="85%">
+				<input type="radio" name="alias_source_type" id="alias_source_local" value="local" onchange="alias_change_source()" {ALIAS_SELECT_LOCAL_PAGE} /><label for="alias_source_local">{TXT_ALIAS_LOCAL}</label>
+				<input type="radio" name="alias_source_type" id="alias_source_url" value="url" onchange="alias_change_source()" {ALIAS_SELECT_URL_PAGE} /><label for="alias_source_url">{TXT_ALIAS_URL}</label>
+				<br /><br />
+				<div id="alias_local_source_box" style="display:{ALIAS_SELECT_LOCAL_BOX};"><input type="hidden" value="{ALIAS_LOCAL_PAGE_URL}" name="alias_local_page_url" id="alias_local_page_url" /> <input type="button" value="{TXT_ALIAS_BROWSE}" onclick="alias_get_fileBrowser()" />
+					<div id="alias_local_page_url_box">{ALIAS_LOCAL_PAGE_URL}</div>
+				</div>
+				<input type="hidden" value="{ALIAS_LOCAL_SOURCE}" name="alias_local_source" id="alias_local_source" />
+				<div id="alias_url_source_box" style="display:{ALIAS_SELECT_URL_BOX};"><input type="text" value="{ALIAS_URL_SOURCE}" name="alias_url_source" style="width:690px;" /></div>
+			</td>
+		</tr>
+		<tr class="row2">
+			<td width="15%">{TXT_ALIAS_ALIAS_ES}</td>
+			<td width="85%">
+				<div id="alias_main_box">
+				<!-- BEGIN alias_list -->
+					<div id="alias_box_{ALIAS_ALIAS_NR}" style="margin:0px 0px 1px 0px;">
+						{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases{ALIAS_ALIAS_PREFIX}[{ALIAS_ALIAS_ID}]" id="alias_aliases_{ALIAS_ALIAS_NR}" value="{ALIAS_ALIAS_URL}" style="width:200px;" />
+						{TXT_ALIAS_STANDARD_RADIOBUTTON}
+						<input type="radio" name="alias_use_default" {ALIAS_IS_DEFAULT} value="{ALIAS_ALIAS_ID}" />
+						<a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+document.getElementById('alias_aliases_{ALIAS_ALIAS_NR}').value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" align="absmiddle" /></a>
+					</div>
+				<!-- END alias_list -->
+				</div>
+				<br />
+				<div id="alias_box_new" style="display:none;margin:0px 0px 1px 0px;">
+					{ALIAS_DOMAIN_URL}<input type="text" name="alias_aliases_new[]" value="" style="width:200px;" />
+					{TXT_ALIAS_STANDARD_RADIOBUTTON}
+					<input type="radio" name="alias_use_default_tmpl" value="" />
+					<a href="javascript:void(0);" onclick="alias_delete_alias(this.parentNode.id,'{ALIAS_DOMAIN_URL}'+this.previousSibling.value)" title="{TXT_ALIAS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_ALIAS_DELETE}" /></a>
+				</div>
+				<input type="button" value="{TXT_ALIAS_ADD_ANOTHER_ALIAS}" onclick="alias_add_alias()" />
+			</td>
+		</tr>
+	</tbody>
 </table>
 <br />
-<input type="button" value="{TXT_ALIAS_CANCEL}" onclick="window.location.href = '?cmd=alias'" />
+<input type="button" value="{TXT_ALIAS_CANCEL}" onclick="window.location.href = '?cmd=alias&{CSRF_PARAM}'" />
 <input type="submit" name="alias_save" value="{TXT_ALIAS_SAVE}" />
 </form>
 <!-- END module_alias_modify.html -->

@@ -87,11 +87,11 @@ function moveAllOptions(from, to)
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-<li><a id="countriesTab_content1" class="active" href="#" onclick="selectTab('content1')" title="{TXT_DELIVERY_COUNTRIES}">{TXT_DELIVERY_COUNTRIES}</a></li>
+<li><a id="countriesTab_shopContent1" class="active" href="#" onclick="selectTab('shopContent1')" title="{TXT_DELIVERY_COUNTRIES}">{TXT_DELIVERY_COUNTRIES}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=countries">
-<!-- start content1 div -->
-<div id="content1" class="countriesTab" style="display:block">
+<!-- start shopContent1 div -->
+<div id="shopContent1" class="countriesTab" style="display:block">
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
   <tr>
     <th colspan="3">{TXT_COUNTRY_LIST}</th>
@@ -125,7 +125,7 @@ function moveAllOptions(from, to)
 </table>
 <br />
 </div>
-<!-- end content1 div -->
+<!-- end shopContent1 div -->
 <input type="submit" name="countries" value="{TXT_STORE}" onclick="submit_form();" />
 <br />
 </form>

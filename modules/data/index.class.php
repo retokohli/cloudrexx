@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -9,7 +10,6 @@
  */
 
 $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] = "Anhang herunterladen";
-
 
 /**
  * Includes
@@ -25,45 +25,40 @@ require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
  * @package     contrexx
  * @subpackage  module_data
  */
-class Data extends DataLibrary  {
-
-    var $_objTpl;
-    var $_strStatusMessage = '';
-    var $_strErrorMessage = '';
-    var $curCmd;
-
+class Data extends DataLibrary
+{
     /**
-    * Constructor-Fix for non PHP5-Servers
-    *
-    */
-    function Data($strPageContent) {
-        $this->__construct($strPageContent);
-    }
+     * @var   HTML_Template_Sigma
+     */
+    public $_objTpl;
+    public $_strStatusMessage = '';
+    public $_strErrorMessage = '';
+    public $curCmd;
 
 
-    /**
-    * Constructor    -> Call parent-construct, set language id and create local template-object
+   /**
+    * Constructor
     *
+    * Call parent constructor, set language id and create local template object
     * @global    integer
     */
-    function __construct($strPageContent) {
+    function __construct($strPageContent)
+    {
         global $_LANGID;
 
         DataLibrary::__construct();
-
         $this->_intLanguageId = intval($_LANGID);
         $this->_intCurrentUserId = (isset($_SESSION['auth']['userid'])) ? intval($_SESSION['auth']['userid']) : 0;
-
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
     }
 
 
     /**
-    * Reads $_GET['cmd'] and selects (depending on the value) an action
-    *
-    */
+     * Reads $_GET['cmd'] and selects (depending on the value) an action
+     */
     function getPage()
     {
         if (isset($_GET['act'])) {
@@ -71,13 +66,11 @@ class Data extends DataLibrary  {
                 $this->shadowbox();
             }
         }
-
-        if(!isset($_GET['cmd'])) {
+        if (!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         } else {
             $this->curCmd = $_GET['cmd'];
         }
-
         if (isset($_GET['cid'])) {
             $this->showCategory($_GET['cid']);
         } elseif (isset($_GET['id'])) {
@@ -85,60 +78,60 @@ class Data extends DataLibrary  {
         } elseif ($this->curCmd == 'search') {
             $this->showSearch(isset($_POST['term']) ? contrexx_stripslashes($_POST['term']) : '');
         } else {
-           $this->showCategoryOverview();
+            $this->showCategoryOverview();
         }
-
         return $this->_objTpl->get();
     }
+
 
     function showSearch($keyword)
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
 
-    if (!empty($keyword) &&
-        ($objResult = $objDatabase->Execute("Select
-            tblM.message_id,
-            tblL.subject,
-            tblL.content,
-            tblL.image,
-            tblL.thumbnail,
-            tblL.mode,
-            tblL.forward_url,
-            tblL.forward_target
-            FROM `".DBPREFIX."module_data_messages` AS tblM
-            INNER JOIN `".DBPREFIX."module_data_messages_lang` AS tblL
-            USING (message_id)
-            WHERE tblM.active = '1'
-            AND   (tblM.release_time = 0 or tblM.release_time <= ".time().")
-            AND   (tblM.release_time_end = 0 or tblM.release_time_end >= ".time().")
-            AND   tblL.is_active = '1'
-            AND   tblL.lang_id = ".$_LANGID."
-            AND   (tblL.subject LIKE '%".addslashes($keyword)."%'
-            OR    tblL.content LIKE '%".addslashes($keyword)."%'
-            OR    tblL.tags LIKE '%".addslashes($keyword)."%')"))
-        && $objResult != false && $objResult->RecordCount() > 0) {
+        if (   !empty($keyword)
+            && ($objResult = $objDatabase->Execute("
+                SELECT tblM.message_id, tblL.subject, tblL.content,
+                       tblL.image, tblL.thumbnail, tblL.mode,
+                       tblL.forward_url, tblL.forward_target
+                  FROM `".DBPREFIX."module_data_messages` AS tblM
+                 INNER JOIN `".DBPREFIX."module_data_messages_lang` AS tblL
+                 USING (message_id)
+                 WHERE tblM.active = '1'
+                   AND (tblM.release_time = 0 or tblM.release_time <= ".time().")
+                   AND (tblM.release_time_end = 0 or tblM.release_time_end >= ".time().")
+                   AND tblL.is_active = '1'
+                   AND tblL.lang_id = ".$_LANGID."
+                   AND (tblL.subject LIKE '%".addslashes($keyword)."%'
+                    OR tblL.content LIKE '%".addslashes($keyword)."%'
+                    OR tblL.tags LIKE '%".addslashes($keyword)."%')"))
+            && $objResult
+            && $objResult->RecordCount()) {
             while (!$objResult->EOF) {
-
-
+                $image = "";
                 if ($objResult->fields['image']) {
                     if ($objResult->fields['thumbnail']) {
-                        if (file_exists(ASCMS_PATH.$objResult->fields['thumbnail'].".thumb")) {
-                            $image = "<img src=\"".$objResult->fields['thumbnail'].".thumb\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
+                        $thumb_name = ImageManager::getThumbnailFilename(
+                            $objResult->fields['thumbnail']);
+                        if (file_exists(ASCMS_PATH.$thumb_name)) {
+                            $image = "<img src=\"".$thumb_name."\" alt=\"\" border=\"1\" style=\"float: left; width:100px;\"/>";
                         } else {
-                            $image = "<img src=\"".$objResult->fields['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left;  width: 80px;\" />";
+                            $image = "<img src=\"".$objResult->fields['thumbnail']."\" alt=\"\" border=\"1\" style=\"float: left; width: 80px;\" />";
                         }
                     } elseif (file_exists(ASCMS_DATA_IMAGES_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image']))) {
-                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
-                    } elseif (file_exists(ASCMS_PATH.$objResult->fields['image'].".thumb")) {
-                        $image = "<img src=\"".$objResult->fields['image'].".thumb\" alt=\"\" border=\"1\" style=\"float: left;  width:100px;\"/>";
+                        $image = "<img src=\"".ASCMS_DATA_IMAGES_WEB_PATH.'/'.$objResult->fields['message_id'].'_'.$_LANGID.'_'.basename($objResult->fields['image'])."\" alt=\"\" border=\"1\" style=\"float: left; width:100px;\"/>";
+                    } elseif (file_exists(
+                        ASCMS_PATH.
+                        ImageManager::getThumbnailFilename(
+                            $objResult->fields['image']))) {
+                        $image =
+                            "<img src=\"".
+                            ImageManager::getThumbnailFilename(
+                                $objResult->fields['image']).
+                                "\" alt=\"\" border=\"1\" style=\"float: left; width:100px;\"/>";
                     } else {
-                        $image = "<img src=\"".$objResult->fields['image']."\" alt=\"\" border=\"1\" style=\"float: left;  width: 80px;\" />";
+                        $image = "<img src=\"".$objResult->fields['image']."\" alt=\"\" border=\"1\" style=\"float: left; width: 80px;\" />";
                     }
-                } else {
-                    $image = "";
                 }
-
-
                 $lang = $_LANGID;
                 $width = $this->_arrSettings['data_shadowbox_width'];
                 $height = $this->_arrSettings['data_shadowbox_height'];
@@ -152,12 +145,11 @@ class Data extends DataLibrary  {
                 } else {
                     $url = $objResult->fields['forward_url'];
                 }
-
                 $this->_objTpl->setVariable(array(
-                    'ENTRY_HREF'      => $url."&amp;id=".$objResult->fields['message_id'],
-                    'ENTRY_IMAGE'     => $image,
-                    'ENTRY_TITLE'     => $objResult->fields['subject'],
-                    'TXT_MORE'  => $this->langVars['TXT_DATA_MORE']
+                    'ENTRY_HREF'  => $url."&amp;id=".$objResult->fields['message_id'],
+                    'ENTRY_IMAGE' => $image,
+                    'ENTRY_TITLE' => $objResult->fields['subject'],
+                    'TXT_MORE'    => $this->langVars['TXT_DATA_MORE'],
                 ));
                 $this->_objTpl->parse('single_entry');
                 $objResult->MoveNext();
@@ -166,33 +158,29 @@ class Data extends DataLibrary  {
         } else {
             $this->_objTpl->hideBlock('datalist_single_category');
         }
-
-
         $this->_objTpl->setVariable(array(
-            'DATA_SEARCH_TERM'  => htmlentities($keyword, ENT_QUOTES, CONTREXX_CHARSET),
-            'TXT_DATA_SEARCH'   => $_ARRAYLANG['TXT_DATA_SEARCH']
+            'DATA_SEARCH_TERM' => htmlentities($keyword, ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DATA_SEARCH'  => $_ARRAYLANG['TXT_DATA_SEARCH'],
         ));
     }
 
+
     /**
      * Show the list of categories
-     *
      */
     function showCategoryOverview()
     {
         $arrCategories = $this->createCategoryArray();
-
         $catTree = $this->buildCatTree($arrCategories);
-
         $catList = $this->parseCategoryView($catTree, $arrCategories);
         $this->_objTpl->setVariable("CATEGORIES", $catList);
-
-        $this->_objTpl->parse("showDataCategories");
+        if ($this->_objTpl->blockExists("showDataCategories"))
+            $this->_objTpl->parse("showDataCategories");
     }
+
 
     /**
      * Generate the category tree recursively
-     *
      * @param array $catTree The categories sorted as tree
      * @param array $arrCategories
      * @param int $level
@@ -218,15 +206,14 @@ class Data extends DataLibrary  {
         }
         $catList .= str_repeat("\t", $level)."</ul>\n";
         if ($parsed) {
-           return $catList;
-        } else {
-            return "";
+            return $catList;
         }
+        return "";
     }
+
 
     /**
      * Show one category
-     *
      * @param unknown_type $id
      */
     function showCategory($id)
@@ -234,8 +221,7 @@ class Data extends DataLibrary  {
         global $_ARRAYLANG;
 
         $arrEntries = $this->createEntryArray($this->_intLanguageId);
-        $settings = $this->createSettingsArray();
-
+        $this->createSettingsArray();
         foreach ($arrEntries as $key => $value) {
             if ($value['active']) {
                 // check date
@@ -244,7 +230,6 @@ class Data extends DataLibrary  {
                        // too old
                        continue;
                    }
-
                    // if it is not endless (0), check if 'now' is past the given date
                    if ($value['release_time_end'] !=0 && time() > $value['release_time_end']) {
                        continue;
@@ -252,11 +237,11 @@ class Data extends DataLibrary  {
                 }
                 if ($this->categoryMatches($id, $value['categories'][$this->_intLanguageId])) {
                     $this->_objTpl->setVariable(array(
-                       "ENTRY_TITLE"       => $value['translation'][$this->_intLanguageId]['subject'],
-                       "ENTRY_CONTENT"     => $this->getIntroductionText($value['translation'][$this->_intLanguageId]['content']),
-                       "ENTRY_ID"          => $key,
-                       "TXT_MORE"          => $_ARRAYLANG['TXT_DATA_MORE'],
-                       "CMD"               => $this->curCmd,
+                       "ENTRY_TITLE"   => $value['translation'][$this->_intLanguageId]['subject'],
+                       "ENTRY_CONTENT" => $this->getIntroductionText($value['translation'][$this->_intLanguageId]['content']),
+                       "ENTRY_ID"      => $key,
+                       "TXT_MORE"      => $_ARRAYLANG['TXT_DATA_MORE'],
+                       "CMD"           => $this->curCmd,
                     ));
                     $this->_objTpl->parse("entry");
                 }
@@ -265,56 +250,52 @@ class Data extends DataLibrary  {
         $this->_objTpl->parse("showDataCategory");
     }
 
+
     /**
      * Shows all existing entries of the data in descending order.
-     *
      * @global     array
      */
-    function showEntries() {
+    function showEntries()
+    {
         global $_ARRAYLANG;
 
         $arrEntries = $this->createEntryArray($this->_intLanguageId);
-
         foreach ($arrEntries as $intEntryId => $arrEntryValues) {
-
             $this->_objTpl->setVariable(array(
-                'TXT_DATA_CATEGORIES'    =>    $_ARRAYLANG['TXT_DATA_FRONTEND_SEARCH_RESULTS_CATEGORIES'],
-                'TXT_DATA_TAGS'            =>    $_ARRAYLANG['TXT_DATA_FRONTEND_SEARCH_RESULTS_KEYWORDS'],
-                'TXT_DATA_VOTING'        =>    $_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_VOTING'],
-                'TXT_DATA_VOTING_DO'    =>    $_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_VOTING_DO'],
-                'TXT_DATA_COMMENTS'        =>    $_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_COMMENTS'],
+                'TXT_DATA_CATEGORIES' => $_ARRAYLANG['TXT_DATA_FRONTEND_SEARCH_RESULTS_CATEGORIES'],
+                'TXT_DATA_TAGS'       => $_ARRAYLANG['TXT_DATA_FRONTEND_SEARCH_RESULTS_KEYWORDS'],
+                'TXT_DATA_VOTING'     => $_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_VOTING'],
+                'TXT_DATA_VOTING_DO'  => $_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_VOTING_DO'],
+                'TXT_DATA_COMMENTS'   => $_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_COMMENTS'],
             ));
 
             $this->_objTpl->setVariable(array(
-                'DATA_ENTRIES_ID'            =>    $intEntryId,
-                'DATA_ENTRIES_TITLE'        =>    $arrEntryValues['subject'],
-                //'DATA_ENTRIES_POSTED'        =>    $this->getPostedByString($arrEntryValues['user_name'],$arrEntryValues['time_created']),
-                'DATA_ENTRIES_CONTENT'        =>    $arrEntryValues['translation'][$this->_intLanguageId]['content'],
-                'DATA_ENTRIES_INTRODUCTION'    =>    $this->getIntroductionText($arrEntryValues['translation'][$this->_intLanguageId]['content']),
-                'DATA_ENTRIES_IMAGE'        =>    ($arrEntryValues['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : '',
-                'DATA_ENTRIES_VOTING'        =>    '&#216;&nbsp;'.$arrEntryValues['votes_avg'],
-//                'DATA_ENTRIES_VOTING_STARS'    =>    $this->getRatingBar($intEntryId),
-                'DATA_ENTRIES_COMMENTS'        =>    $arrEntryValues['comments_active'].' '.$_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_COMMENTS'].'&nbsp;',
-                'DATA_ENTRIES_CATEGORIES'    =>    $this->getCategoryString($arrEntryValues['categories'][$this->_intLanguageId], true),
-                'DATA_ENTRIES_TAGS'            =>    $this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
-                'DATA_ENTRIES_SPACER'        =>    ($this->_arrSettings['data_voting_activated'] && $this->_arrSettings['data_comments_activated']) ? '&nbsp;&nbsp;|&nbsp;&nbsp;' : ''
+                'DATA_ENTRIES_ID'           => $intEntryId,
+                'DATA_ENTRIES_TITLE'        => $arrEntryValues['subject'],
+                //'DATA_ENTRIES_POSTED'       => $this->getPostedByString($arrEntryValues['user_name'],$arrEntryValues['time_created']),
+                'DATA_ENTRIES_CONTENT'      => $arrEntryValues['translation'][$this->_intLanguageId]['content'],
+                'DATA_ENTRIES_INTRODUCTION' => $this->getIntroductionText($arrEntryValues['translation'][$this->_intLanguageId]['content']),
+                'DATA_ENTRIES_IMAGE'        => ($arrEntryValues['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : '',
+                'DATA_ENTRIES_VOTING'       => '&#216;&nbsp;'.$arrEntryValues['votes_avg'],
+                //'DATA_ENTRIES_VOTING_STARS' => $this->getRatingBar($intEntryId),
+                'DATA_ENTRIES_COMMENTS'     => $arrEntryValues['comments_active'].' '.$_ARRAYLANG['TXT_DATA_FRONTEND_OVERVIEW_COMMENTS'].'&nbsp;',
+                'DATA_ENTRIES_CATEGORIES'   => $this->getCategoryString($arrEntryValues['categories'][$this->_intLanguageId], true),
+                'DATA_ENTRIES_TAGS'         => $this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
+                'DATA_ENTRIES_SPACER'       => ($this->_arrSettings['data_voting_activated'] && $this->_arrSettings['data_comments_activated']) ? '&nbsp;&nbsp;|&nbsp;&nbsp;' : '',
             ));
-
             if (!$this->_arrSettings['data_voting_activated']) {
                 $this->_objTpl->hideBlock('showVotingPart');
             }
-
             if (!$this->_arrSettings['data_comments_activated']) {
                 $this->_objTpl->hideBlock('showCommentPart');
             }
-
             $this->_objTpl->parse('showDataEntries');
         }
     }
 
+
     /**
      * Show a single entry
-     *
      * @param unknown_type $intMessageId
      */
     function showDetails($intMessageId)
@@ -324,63 +305,60 @@ class Data extends DataLibrary  {
         $arrEntries = $this->createEntryArray();
         $entry = $arrEntries[$intMessageId];
 
+        $image = "";
         if ($entry['translation'][$this->_intLanguageId]['image']) {
-                $image = "<img src=\"".$entry['translation'][$this->_intLanguageId]['image']."\" alt=\"\" style=\"float: left; \"/>";
-        } else {
-            $image = "";
+            $image = "<img src=\"".$entry['translation'][$this->_intLanguageId]['image']."\" alt=\"\" style=\"float: left; \"/>";
         }
-
         if ($entry['translation'][$this->_intLanguageId]['attachment']) {
             $this->_objTpl->setVariable(array(
                 "HREF"          => $entry['translation'][$this->_intLanguageId]['attachment'],
-                "TXT_DOWNLOAD"  => empty($entry['translation'][$this->_intLanguageId]['attachment_desc']) ? $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT'] : $entry['translation'][$this->_intLanguageId]['attachment_desc']
+                "TXT_DOWNLOAD"  =>
+                    (empty($entry['translation'][$this->_intLanguageId]['attachment_desc'])
+                        ? $_ARRAYLANG['TXT_DATA_DOWNLOAD_ATTACHMENT']
+                        : $entry['translation'][$this->_intLanguageId]['attachment_desc']),
             ));
             $this->_objTpl->parse("attachment");
         }
 
         $this->_objTpl->setVariable(array(
-           "ENTRY_SUBJECT"         => $entry['translation'][$this->_intLanguageId]['subject'],
-           "ENTRY_CONTENT"         => $entry['translation'][$this->_intLanguageId]['content'],
-           "IMAGE"                 => $image
+           "ENTRY_SUBJECT" => $entry['translation'][$this->_intLanguageId]['subject'],
+           "ENTRY_CONTENT" => $entry['translation'][$this->_intLanguageId]['content'],
+           "IMAGE"         => $image,
         ));
-
         $this->_objTpl->parse("showDataDetails");
     }
 
+
     /**
      * Show the shadowbox
-     *
      */
     function shadowbox()
     {
         global $objDatabase, $_ARRAYLANG, $objInit;
 
-       // var_dump($themesPages['buildin_style']);
-
         $id = intval($_GET['id']);
         $lang = intval($_GET['lang']);
-
         $entries = $this->createEntryArray();
         $entry  = $entries[$id];
         $settings = $this->createSettingsArray();
-
         $title = $entry['translation'][$lang]['subject'];
         $content = $entry['translation'][$lang]['content'];
         $picture = (!empty($entry['translation'][$lang]['image'])) ? $entry['translation'][$lang]['image'] : "none";
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setCurrentBlock("shadowbox");
 
-        $objResult = $objDatabase->SelectLimit(" SELECT foldername
-                               FROM ".DBPREFIX."skins
-                              WHERE id = '$objInit->currentThemesId'", 1);
+        $objResult = $objDatabase->SelectLimit("
+            SELECT foldername
+              FROM ".DBPREFIX."skins
+             WHERE id='$objInit->currentThemesId'", 1);
         if ($objResult !== false) {
             $themesPath = $objResult->fields['foldername'];
         }
 
-        $template = preg_replace("/\[\[([A-Z_]+)\]\]/", '{$1}', $settings['data_template_shadowbox']);
+        $template = preg_replace('/\[\[([A-Z_]+)\]\]/', '{$1}', $settings['data_template_shadowbox']);
         $this->_objTpl->setTemplate($template);
-
 
         if ($entry['translation'][$lang]['attachment']) {
             $this->_objTpl->setVariable(array(
@@ -394,7 +372,7 @@ class Data extends DataLibrary  {
             "TITLE"         => $title,
             "CONTENT"       => $content,
             "PICTURE"       => $picture,
-            "THEMES_PATH"   => $themesPath
+            "THEMES_PATH"   => $themesPath,
         ));
         if ($picture != "none") {
             $this->_objTpl->parse("image");
@@ -405,4 +383,7 @@ class Data extends DataLibrary  {
         $this->_objTpl->show();
         die();
     }
+
 }
+
+?>

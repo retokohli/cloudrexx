@@ -8,9 +8,10 @@
  * @subpackage  core
  */
 //Security-Check
-if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
-    Header("Location: ../index.php");
-    die();
+if (eregi('wysiwyg.class.php',$_SERVER['PHP_SELF']))
+{
+    header('Location: index.php');
+    exit;
 }
 
 // set wysiwyg editor
@@ -19,9 +20,9 @@ $wysiwygEditor = 'FCKeditor';
 
 // initialize variables
 switch ($wysiwygEditor) {
-    case 'FCKeditor':
-        $FCKeditorBasePath = '/editor/fckeditor/';
-        break;
+	case 'FCKeditor':
+		$FCKeditorBasePath = '/editor/fckeditor/';
+		break;
 }
 
 /**
@@ -33,18 +34,18 @@ switch ($wysiwygEditor) {
  */
 function get_wysiwyg_code()
 {
-    global $wysiwygEditor;
+	global $wysiwygEditor;
 
-    $return = '';
+	$return = '';
 
-    switch ($wysiwygEditor) {
-        case 'FCKeditor':
-            global $FCKeditorBasePath;
+	switch ($wysiwygEditor) {
+		case 'FCKeditor':
+			global $FCKeditorBasePath;
 
-            $return = '';
-            break;
-    }
-    return $return;
+			$return = '';
+			break;
+	}
+	return $return;
 }
 
 
@@ -60,93 +61,66 @@ function get_wysiwyg_code()
  */
 function get_wysiwyg_editor($name, $value = '', $mode = '', $languageId = null, $absoluteURIs = false)
 {
-    global $wysiwygEditor;
-//            $objFCKeditor->BasePath    =  ASCMS_PATH_OFFSET.$FCKeditorBasePath;
-//            $objFCKeditor->Config['CustomConfigurationsPath'] = ASCMS_PATH_OFFSET.'/editor/FCKeditorConfig.php?langId='.$languageId.'&absoluteURIs='.$absoluteURIs;
-//            $objFCKeditor->Value = empty($value) ? '' : $value;
+	global $wysiwygEditor;
 
-    switch ($wysiwygEditor) {
-        case 'FCKeditor':
-            global $FCKeditorBasePath;
-            if ($mode != 'html') {
-                JS::activate('ckeditor');
-                JS::activate('jquery');
-                $arrCKEditorOptions = array(
-                    "customConfig: CKEDITOR.getUrl('config.contrexx.js.php?langId=".$languageId."&absoluteURIs=".$absoluteURIs."')",
-                );
-                $onReady = array("
-                    CKEDITOR.replace('".$name."', {
-                        %s
-                    });
-                ");
+	switch ($wysiwygEditor) {
+		case 'FCKeditor':
+			global $FCKeditorBasePath;
 
+			$include_path = ASCMS_DOCUMENT_ROOT.$FCKeditorBasePath;
+			require_once($include_path.'fckeditor.php');
 
-                switch ($mode) {
-                    case 'forum':
-                        $arrCKEditorOptions[] = "width: '96%'";
-                        $arrCKEditorOptions[] = "height: 200";
-                        $arrCKEditorOptions[] = "extraPlugins: 'bbcode'";
-                        $arrCKEditorOptions[] = "toolbar: 'BBCode'";
-                        $arrCKEditorOptions[] = "resize_minWidth: '96%'";
-                        $arrCKEditorOptions[] = "resize_maxWidth: '96%'";
-                        $onReady[] = '
-                            CKEDITOR.on("instanceReady", function(event){
-                                $J("#cke_message").css({marginLeft:"0px"});
-                            });
-                        ';
-                        $objFCKeditor->Config['CustomConfigurationsPath'] = ASCMS_PATH_OFFSET.'/editor/FCKeditorConfig.php?bbcode=1&langId='.$languageId.'&absoluteURIs='.$absoluteURIs;
-                        break;
+			$objFCKeditor = new FCKeditor($name) ;
+			$objFCKeditor->BasePath	=  ASCMS_PATH_OFFSET.$FCKeditorBasePath;
+			$objFCKeditor->Config['CustomConfigurationsPath'] = ASCMS_PATH_OFFSET.'/editor/FCKeditorConfig.php?langId='.$languageId.'&absoluteURIs='.$absoluteURIs;
+			$objFCKeditor->Value = empty($value) ? '' : $value;
 
-                    case 'shop':
-                        $arrCKEditorOptions[] = "width: '100%'";
-                        $arrCKEditorOptions[] = "height: 200";
-                        $arrCKEditorOptions[] = "toolbar: 'Default'";
-                        break;
+			if ($mode != 'html') {
+				switch ($mode) {
+				case 'forum':
+					$objFCKeditor->ToolbarSet = 'BBCode';
+					$objFCKeditor->Config['CustomConfigurationsPath'] = ASCMS_PATH_OFFSET.'/editor/FCKeditorConfig.php?bbcode=1&langId='.$languageId.'&absoluteURIs='.$absoluteURIs;
+					break;
+					
+				case 'shop':
+					$objFCKeditor->Width = '100%';
+					$objFCKeditor->Height = '200';
+					break;
 
-                    case 'news':
-                        $arrCKEditorOptions[] = "width: '100%'";
-                        $arrCKEditorOptions[] = "height: 350";
-                        $arrCKEditorOptions[] = "toolbar: 'News'";
-                        break;
+				case 'news':
+					$objFCKeditor->Width = '100%';
+					$objFCKeditor->Height = '350';
+					$objFCKeditor->ToolbarSet = 'News';
+					break;
 
-                    case 'teaser':
-                        $arrCKEditorOptions[] = "width: '100%'";
-                        $arrCKEditorOptions[] = "height: 100";
-                        $arrCKEditorOptions[] = "toolbar: 'News'";
-                        break;
+				case 'teaser':
+					$objFCKeditor->Width = '100%';
+					$objFCKeditor->Height = '100';
+					$objFCKeditor->ToolbarSet = 'News';
+					break;
 
-                    case 'fullpage':
-                        $arrCKEditorOptions[] = "width: '100%'";
-                        $arrCKEditorOptions[] = "height: 450";
-                        $arrCKEditorOptions[] = "toolbar: 'Default'";
-                        $arrCKEditorOptions[] = "fullPage: true";
-                        break;
+				case 'fullpage':
+					$objFCKeditor->Width = '100%';
+					$objFCKeditor->Height = '450';
+					$objFCKeditor->Config['FullPage'] = true;
+					break;
+					
+                case 'frontendEditing':
+                	$objFCKeditor->Width = '100%';
+                    $objFCKeditor->Height = '400';
+                    break;					
 
-                    case 'frontendEditing':
-                        $arrCKEditorOptions[] = "width: '100%'";
-                        $arrCKEditorOptions[] = "height: 400";
-                        $arrCKEditorOptions[] = "toolbar: 'Default'";
-                        break;
-
-                    default:
-                        $arrCKEditorOptions[] = "width: '100%'";
-                        $arrCKEditorOptions[] = "height: 450";
-                        $arrCKEditorOptions[] = "toolbar: 'Default'";
-                        break;
-                }
-
-                $onReady[0] = sprintf($onReady[0], implode(",\n", $arrCKEditorOptions));
-
-
-                JS::registerCode('
-                    $J(function(){
-                        '.implode("\n", $onReady).'
-                    });
-                ');
-            }
-            $editor = '<textarea name="'.$name.'" style="width:100%; height:450px;">'.$value.'</textarea>';
-            return $editor;
-        break;
-    }
+				default:
+					$objFCKeditor->Width = '100%';
+					$objFCKeditor->Height = '450';
+					break;
+				}
+				$editor = $objFCKeditor->CreateHtml();
+			} else {
+			    $editor = '<textarea name="'.$name.'" style="width:100%; height:450px;">'.$value.'</textarea>';
+			}
+			return $editor;
+			break;
+	}
 }
 ?>

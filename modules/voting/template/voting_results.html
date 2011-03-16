@@ -4,7 +4,7 @@
 function deleteVoting(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("?cmd=voting&act=delete&votingid="+id);
+        window.location.replace("?cmd=voting&{CSRF_PARAM}&act=delete&votingid="+id);
 }
 // ]]>
 </script>
@@ -50,7 +50,7 @@ function deleteVoting(id)
     <td nowrap="nowrap" width="45%">{VOTING_OLDER_TEXT}</td>
     <td nowrap="nowrap"            >{VOTING_OLDER_VOTES}</td>
     <td nowrap="nowrap"            >{VOTING_RADIO}</td>
-  <td nowrap="nowrap"            ><a href="?cmd=voting&amp;act=additionalexport&amp;votingid={VOTING_ID}">{TXT_EXPORT_CSV}</a></td>
+	<td nowrap="nowrap"            ><a href="?cmd=voting&amp;act=additionalexport&amp;votingid={VOTING_ID}">{TXT_EXPORT_CSV}</a></td>
     <td nowrap="nowrap"            ><a href="?cmd=voting&amp;act=code&amp;votingid={VOTING_ID}">{TXT_HTML_CODE}</a></td>
     <td nowrap="nowrap"            >
       <div align="right"><a href="?cmd=voting&amp;act=edit&amp;votingid={VOTING_ID}"><img src="images/icons/edit.gif" border="0" title="Edit Voting" alt="Edit Voting" />

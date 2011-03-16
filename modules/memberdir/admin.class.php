@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Member directory manager
  * @copyright   CONTREXX CMS - 2005 COMVATION AG
@@ -1074,7 +1073,11 @@ class MemberDirManager extends MemberDirLibrary
         $this->_objTpl->loadTemplateFile('module_memberdir_modify.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_NEW_MEMBER'];
 
+        //TODO
+// TODO: Unused
+//        $defaultdir = 1;
         $dirid = (empty($_GET['dirid'])) ? $this->firstDir : $_GET['dirid'];
+
         $this->_objTpl->setGlobalVariable(array(
             "MEMBERDIR_ACTION"      => "?cmd=memberdir&amp;act=saveNew",
             "TXT_NEW_MEMBER"        => $_ARRAYLANG['TXT_NEW_MEMBER'],
@@ -1896,5 +1899,4 @@ class MemberDirManager extends MemberDirLibrary
     }
 
 }
-
 ?>

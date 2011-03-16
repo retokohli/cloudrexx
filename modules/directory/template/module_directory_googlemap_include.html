@@ -5,45 +5,45 @@
 var isBackend = {IS_BACKEND}
 
 var addEvent = function( obj, type, fn ) {
-  if (obj.addEventListener) {
-    obj.addEventListener( type, fn, false );
-    EventCache.add(obj, type, fn);
-  }
-  else if (obj.attachEvent) {
-    obj["e"+type+fn] = fn;
-    obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
-    obj.attachEvent( "on"+type, obj[type+fn] );
-    EventCache.add(obj, type, fn);
-  }
-  else {
-    obj["on"+type] = obj["e"+type+fn];
-  }
+	if (obj.addEventListener) {
+		obj.addEventListener( type, fn, false );
+		EventCache.add(obj, type, fn);
+	}
+	else if (obj.attachEvent) {
+		obj["e"+type+fn] = fn;
+		obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
+		obj.attachEvent( "on"+type, obj[type+fn] );
+		EventCache.add(obj, type, fn);
+	}
+	else {
+		obj["on"+type] = obj["e"+type+fn];
+	}
 }
 
 var EventCache = function(){
-  var listEvents = [];
-  return {
-    listEvents : listEvents,
-    add : function(node, sEventName, fHandler){
-      listEvents.push(arguments);
-    },
-    flush : function(){
-      var i, item;
-      for(i = listEvents.length - 1; i >= 0; i = i - 1){
-        item = listEvents[i];
-        if(item[0].removeEventListener){
-          item[0].removeEventListener(item[1], item[2], item[3]);
-        };
-        if(item[1].substring(0, 2) != "on"){
-          item[1] = "on" + item[1];
-        };
-        if(item[0].detachEvent){
-          item[0].detachEvent(item[1], item[2]);
-        };
-        item[0][item[1]] = null;
-      };
-    }
-  };
+	var listEvents = [];
+	return {
+		listEvents : listEvents,
+		add : function(node, sEventName, fHandler){
+			listEvents.push(arguments);
+		},
+		flush : function(){
+			var i, item;
+			for(i = listEvents.length - 1; i >= 0; i = i - 1){
+				item = listEvents[i];
+				if(item[0].removeEventListener){
+					item[0].removeEventListener(item[1], item[2], item[3]);
+				};
+				if(item[1].substring(0, 2) != "on"){
+					item[1] = "on" + item[1];
+				};
+				if(item[0].detachEvent){
+					item[0].detachEvent(item[1], item[2]);
+				};
+				item[0][item[1]] = null;
+			};
+		}
+	};
 }();
 addEvent(window,'unload',EventCache.flush);
 
@@ -75,107 +75,107 @@ var elCountry = document.getElementsByName("inputValue[country]")[0];
 
 //addEvent(elStreet, 'blur', function(){getAddress();})
 
-var elLat     = document.getElementsByName("inputValue[lon]")[0];
-var elLatFrac   = document.getElementsByName("inputValue[lon_fraction]")[0];
-var elLon     = document.getElementsByName("inputValue[lat]")[0];
-var elLonFrac   = document.getElementsByName("inputValue[lat_fraction]")[0];
-var elZoom     = document.getElementsByName("inputValue[zoom]")[0];
+var elLat 		= document.getElementsByName("inputValue[lon]")[0];
+var elLatFrac 	= document.getElementsByName("inputValue[lon_fraction]")[0];
+var elLon 		= document.getElementsByName("inputValue[lat]")[0];
+var elLonFrac 	= document.getElementsByName("inputValue[lat_fraction]")[0];
+var elZoom 		= document.getElementsByName("inputValue[zoom]")[0];
 
 var updateAddress = function(){
-//  name   = {DIRECTORY_ENTRY_NAME};
-//  company = {DIRECTORY_ENTRY_COMPANY};
-  street   = elStreet.value;
-  zip   = elZip.value;
-  city  = elCity.value;
-  country  = elCountry.options[elCountry.selectedIndex].value;
-  return street+', '+zip+' '+city+', '+country;
+//	name 	= {DIRECTORY_ENTRY_NAME};
+//	company = {DIRECTORY_ENTRY_COMPANY};
+	street 	= elStreet.value;
+	zip 	= elZip.value;
+	city	= elCity.value;
+	country	= elCountry.options[elCountry.selectedIndex].value;
+	return street+', '+zip+' '+city+', '+country;
 }
 
 var load = function() {
     if (GBrowserIsCompatible()) {
-       map = new GMap2(document.getElementById("gmap"));
-      map.addControl(new GLargeMapControl());
-      map.addControl(new GMapTypeControl());
-      map.addControl(new GOverviewMapControl(new GSize(95,95)));
-      if( (elLon.value != '' && elLon.value != 0 && elLat.value != '' && elLat.value != 0) &&
-        (elLonFrac.value != '' && elLonFrac.value != 0 && elLatFrac.value != '' && elLatFrac.value != 0)){
-        lon = elLon.value;
-        lonf = elLonFrac.value;
-        lat = elLat.value;
-        latf = elLatFrac.value;
-        zoom = parseInt((elZoom.value != '') ? elZoom.value : 13);
-        map.setCenter(new GLatLng(lon+'.'+lonf, lat+'.'+latf), zoom);
-        point = map.getCenter();
-        if(isBackend){
-          document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString());
-        }
-      }else{
-        map.setCenter(new GLatLng({DIRECTORY_MAP_LAT_BACKEND}, {DIRECTORY_MAP_LON_BACKEND}), {DIRECTORY_MAP_ZOOM_BACKEND});
-        point = map.getCenter();
-        if(!location.href.match(/cmd=add/) && !location.href.match(/act=new/)){
-        x = setTimeout('getAddress()', 0);
-        }
-      }
+     	map = new GMap2(document.getElementById("gmap"));
+    	map.addControl(new GLargeMapControl());
+    	map.addControl(new GMapTypeControl());
+    	map.addControl(new GOverviewMapControl(new GSize(95,95)));
+    	if( (elLon.value != '' && elLon.value != 0 && elLat.value != '' && elLat.value != 0) &&
+    		(elLonFrac.value != '' && elLonFrac.value != 0 && elLatFrac.value != '' && elLatFrac.value != 0)){
+    		lon = elLon.value;
+    		lonf = elLonFrac.value;
+    		lat = elLat.value;
+    		latf = elLatFrac.value;
+    		zoom = parseInt((elZoom.value != '') ? elZoom.value : 13);
+    		map.setCenter(new GLatLng(lon+'.'+lonf, lat+'.'+latf), zoom);
+    		point = map.getCenter();
+    		if(isBackend){
+    			document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString());
+    		}
+    	}else{
+    		map.setCenter(new GLatLng({DIRECTORY_MAP_LAT_BACKEND}, {DIRECTORY_MAP_LON_BACKEND}), {DIRECTORY_MAP_ZOOM_BACKEND});
+    		point = map.getCenter();
+    		if(!location.href.match(/cmd=add/) && !location.href.match(/act=new/)){
+				x = setTimeout('getAddress()', 0);
+    		}
+    	}
 
-      point = map.getCenter();
-      map.addOverlay(new GMarker(point));
+    	point = map.getCenter();
+    	map.addOverlay(new GMarker(point));
 
-      GEvent.addListener(map, "moveend", function() {
-      if(isBackend){
-          point = map.getCenter();
-          passValues();
-          map.clearOverlays();
-          marker = new GMarker(point);
-             map.addOverlay(marker);
-        document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString())
-      }
-      });
+    	GEvent.addListener(map, "moveend", function() {
+			if(isBackend){
+    			point = map.getCenter();
+    			passValues();
+    			map.clearOverlays();
+    			marker = new GMarker(point);
+	       		map.addOverlay(marker);
+				document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString())
+			}
+    	});
         geocoder = new GClientGeocoder();
     }
 }
 
 var getStatusString = function(X, Y){
-  return '<span class="red">lat: </span>'+Y+'<br /><span class="red">lon: </span>'+X+'<span class="red"><br /> zoom: </span>'+map.getZoom();
+	return '<span class="red">lat: </span>'+Y+'<br /><span class="red">lon: </span>'+X+'<span class="red"><br /> zoom: </span>'+map.getZoom();
 }
 
 var passValues = function(){
-  lon   = point.y.toString().split('.')[0];
-  lonfac   = point.y.toString().split('.')[1];
-  lat   = point.x.toString().split('.')[0];
-  latfac   = point.x.toString().split('.')[1];
-  elLon.value = lon;
-  elLonFrac.value = lonfac;
-  elLat.value = lat;
-  elLatFrac.value = latfac;
-  elZoom.value = map.getZoom();
+	lon 	= point.y.toString().split('.')[0];
+	lonfac 	= point.y.toString().split('.')[1];
+	lat 	= point.x.toString().split('.')[0];
+	latfac 	= point.x.toString().split('.')[1];
+	elLon.value = lon;
+	elLonFrac.value = lonfac;
+	elLat.value = lat;
+	elLatFrac.value = latfac;
+	elZoom.value = map.getZoom();
 }
 
 var getAddress = function() {
-  address = updateAddress();
-  if(address.match(/^,  ,/)){
-      try{
-          document.getElementById("geostatus").innerHTML = "{TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY}";
-      }catch(e){}
-      return false;
-  }
-     if (geocoder) {
-       geocoder.getLocations(address, getGeoCodeData);
+	address = updateAddress();
+	if(address.match(/^,  ,/)){
+	    try{
+	        document.getElementById("geostatus").innerHTML = "{TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY}";
+	    }catch(e){}
+	    return false;
+	}
+   	if (geocoder) {
+   		geocoder.getLocations(address, getGeoCodeData);
     }
 }
 
 var getGeoCodeData = function(data){
-  try{
-    if(data.Status.code == G_GEO_SUCCESS){
-      try{
-        point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
-        suggestions = /\s([^,\ ])+/.exec(data.Placemark[0].address)[1];
-        map.setCenter(point, 14);
-      }catch(e){}
-    }
-    if(!location.href.match(/cmd=detail/)){
-      document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
-    }
-  }catch(e){}
+	try{
+		if(data.Status.code == G_GEO_SUCCESS){
+			try{
+				point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
+				suggestions = /\s([^,\ ])+/.exec(data.Placemark[0].address)[1];
+				map.setCenter(point, 14);
+			}catch(e){}
+		}
+		if(!location.href.match(/cmd=detail/)){
+			document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
+		}
+	}catch(e){}
 }
 
 addEvent(window, 'load', load);

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Global file including
  *
@@ -30,8 +29,8 @@
  */
 
 //Security-Check
-if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
-    Header("Location: ../index.php");
+if (eregi("API.php",$_SERVER['PHP_SELF'])) {
+    Header("Location: index.php");
     die();
 }
 
@@ -124,12 +123,10 @@ if (isset($adminPage) && $adminPage ) {
  * The returned date has the form "Weekday, Day. Month Year".
  * @param   int     $unixtimestamp  Unix timestamp
  * @return  string                  Formatted date
- * @todo    The function is inappropriately named "showFormattedDate"
- *          as the date is returned, and not "shown" in any way.
- * @todo    The formatting is not localized.
- *          Use a date format constant and/or language variable template.
+ * @todo    The function is inappropriately named "showFormattedDate",
+ *          although the date is returned, and not "shown" in any way.
  */
-function showFormattedDate($unixtimestamp='')
+function showFormattedDate($unixtimestamp = "")
 {
     global $_CORELANG;
     $months = explode(",",$_CORELANG['TXT_MONTH_ARRAY']);
@@ -140,7 +137,8 @@ function showFormattedDate($unixtimestamp='')
     } else {
         $date = date("w j n Y", $unixtimestamp);
     }
-    list ($wday, $mday, $month, $year) = explode(' ', $date);
+
+    list($wday,$mday,$month,$year) = split("( )",$date);
     $month -= 1;
     $formattedDate = "$weekday[$wday], $mday. $months[$month] $year";
     return $formattedDate;
@@ -160,78 +158,20 @@ function showFormattedDate($unixtimestamp='')
  * @todo    The function is inappropriately named "strcheck",
  *          although the string isn't just "checked", but also "cleaned" or
  *          "fixed".
- * @todo    Replace the non-ASCII characters by their octal (\xxx)
- *          representation!
  */
 function strcheck(&$string)
 {
-// TODO: Like this, but make it consider CONTREXX_CHARSET:
-/*
-    static $arrReplace = array(
-        ' ' => '_',
-        '$' => 'S',
-        "\303\240" => 'a',
-        "\303\241" => 'a',
-        "\303\242" => 'a',
-        "\303\243" => 'a',
-        "\303\245" => 'a',
-        "\303\247" => 'c',
-        "\303\250" => 'e',
-        "\303\251" => 'e',
-        "\303\252" => 'e',
-        "\303\253" => 'e',
-        "\303\254" => 'i',
-        "\303\255" => 'i',
-        "\303\256" => 'i',
-        "\303\257" => 'i',
-        "\303\261" => 'n',
-        "\303\262" => 'o',
-        "\303\263" => 'o',
-        "\303\264" => 'o',
-        "\303\265" => 'o',
-        "\303\270" => 'o',
-        "\305\241" => 's',
-        "\303\271" => 'u',
-        "\303\272" => 'u',
-        "\303\273" => 'u',
-        "\302\265" => 'u',
-        "\303\275" => 'y',
-        "\303\277" => 'y',
-        "\302\245" => 'Y',
-        "\305\276" => 'z',
-        "\303\244" => 'ae',
-        "\303\206" => 'ae',
-        "\303\246" => 'ae',
-        "\303\266" => 'oe',
-        "\305\222" => 'oe',
-        "\305\223" => 'oe',
-        "\303\274" => 'ue',
-        "\303\220" => 'dh',
-        "\303\260" => 'dh',
-        "\303\236" => 'th',
-        "\303\276" => 'th',
-        "\303\237" => 'ss',
-    );
-
-    $clean_string = strtolower($string);
-    $clean_string = rawurldecode($clean_string);
-    $clean_string = html_entity_decode($clean_string);
-    $clean_string = str_replace(
-        array_keys($arrReplace), $arrReplace,
-        $clean_string);
-    $clean_string = preg_replace('/[^a-z0-9_\.]/i', '', $clean_string);
-*/
     $clean_string = strtolower($string);
     $clean_string = rawurldecode($clean_string);
     $clean_string = html_entity_decode($clean_string);
 
-    $from = 'Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¸Å¡Ã¹ÃºÃ»Ã¼ÂµÃ½Ã¿Â¥Å¾ ';
+    $from = 'àáâãäåçèéêëìíîïñòóôõöøšùúûüµýÿ¥ž ';
     $to   = 'aaaaaaceeeeiiiinoooooosuuuuuyyyz_';
     $clean_string = strtr($clean_string, $from, $to);
 
-    $replace = array('Ãž' => 'th', 'Ã¾' => 'th', 'Ã' => 'dh', 'Ã°' => 'dh',
-                    'ÃŸ' => 'ss', 'Å’' => 'oe', 'Å“' => 'oe', 'Ã†' => 'ae',
-                    'Ã¦' => 'ae', '$' => 's',  'Â¥' => 'y');
+    $replace = array('Þ' => 'th', 'þ' => 'th', 'Ð' => 'dh', 'ð' => 'dh',
+                    'ß' => 'ss', 'Œ' => 'oe', 'œ' => 'oe', 'Æ' => 'ae',
+                    'æ' => 'ae', '$' => 's',  '¥' => 'y');
     $clean_string = strtr($clean_string, $replace);
 
     $clean_string = ereg_replace("[^a-z0-9._]", "", $clean_string);
@@ -252,8 +192,7 @@ function strcheck(&$string)
  *          (Mind the newlines!)
  * @todo    This function should have a more elaborate name as well.
  */
-function evalJS($string)
-{
+function evalJS($string){
     echo '<script type="text/javascript">'.$string.'</script>';
 }
 

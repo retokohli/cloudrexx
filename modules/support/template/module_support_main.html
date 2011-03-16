@@ -17,7 +17,7 @@ function categoryDelete(id)
 {
   if (confirm('{TXT_SUPPORT_CATEGORY_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}'))
     window.location.replace(
-        "index.php?cmd=support&act=categoryDelete&supportCategoryId="+id+
+        "index.php?cmd=support&{CSRF_PARAM}&act=categoryDelete&supportCategoryId="+id+
 //        "&supportCategoryOffset={SUPPORT_CATEGORY_OFFSET}"+
         "&supportLanguageId="+document.getElementById('supportLanguageId').value
     );
@@ -25,10 +25,10 @@ function categoryDelete(id)
 
 function supportCategoryDoAction(strAction, strForm, strCheckbox, objSelect)
 {
-  if (checkboxIsChecked(strForm, strCheckbox) == true){
+  if (checkboxIsChecked(strForm, strCheckbox) == true) {
     switch (strAction) {
       case 'delete':
-        if (confirm('{TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')){
+        if (confirm('{TXT_SUPPORT_CATEGORIES_DELETE_CONFIRM}\n{TXT_SUPPORT_ACTION_IS_IRREVERSIBLE}')) {
           document.forms[strForm].action =
             "index.php?cmd=support&act=categoriesDelete"+
 //            "&supportCategoryOffset={SUPPORT_CATEGORY_OFFSET}"+

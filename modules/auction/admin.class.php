@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * Auction
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -62,6 +63,7 @@ class Auction extends auctionLibrary
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/auction/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_AUCTION_UPLOAD_PATH . '/';
         $this->mediaWebPath = ASCMS_AUCTION_UPLOAD_WEB_PATH . '/';
@@ -278,7 +280,7 @@ class Auction extends auctionLibrary
             $arrDelete[$i] = $_GET['id'];
         }
 
-        foreach ($arrDelete as $catId) {
+           foreach ($arrDelete as $catId) {
             $objResult = $objDatabase->Execute('SELECT id FROM '.DBPREFIX.'module_auction WHERE catid = '.$catId.'');
             if ($objResult !== false) {
                 if ($objResult->RecordCount() >= 1) {
@@ -290,7 +292,6 @@ class Auction extends auctionLibrary
                     }else{
 // TODO: $_CORELANG is not available here
 //                        $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-                        $this->strErrMessage = $_ARRAYLANG['TXT_AUCTION_CATEGORY_DELETE_ERROR'];
                     }
                 }
             }
@@ -530,11 +531,11 @@ class Auction extends auctionLibrary
                     $addedby = $objResult->fields['username'];
                 }
 
-                $objAuthorUser     = FWUser::getFWUserObject();
-                $objAuthor        = $objAuthorUser->objUser->getUsers($filter = array('id' => $this->entries[$entryId]['userid']));
-                if ($objAuthor) {
-                    $addedby     = $objAuthor->getUsername();
-                }
+                $objAuthorUser 	= FWUser::getFWUserObject();
+                $objAuthor		= $objAuthorUser->objUser->getUsers($filter = array('id' => $this->entries[$entryId]['userid']));
+		        if ($objAuthor) {
+		            $addedby 	= $objAuthor->getUsername();
+		        }
 
                 $this->entries[$entryId]['regdate'] == '' ? $date = 'KEY: '.$this->entries[$entryId]['regkey'] : $date = date("d.m.Y", $this->entries[$entryId]['regdate']);
 
@@ -601,28 +602,28 @@ class Auction extends auctionLibrary
         }
 
         for($x=date("Y"); $x<=date("Y")+5; $x++){
-            $SelectedText = ($x==date("Y")) ? 'selected' : '';
-            $Options['auctionend']['year'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+        	$SelectedText = ($x==date("Y")) ? 'selected' : '';
+        	$Options['auctionend']['year'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
 
         for($x=1; $x<=12; $x++){
-            $SelectedText = ($x==intval(date("m"))) ? 'selected' : '';
-            $Options['auctionend']['month'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+        	$SelectedText = ($x==intval(date("m"))) ? 'selected' : '';
+        	$Options['auctionend']['month'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
 
         for($x=1; $x<=31; $x++){
-            $SelectedText = ($x==intval(date("d"))) ? 'selected' : '';
-            $Options['auctionend']['day'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+        	$SelectedText = ($x==intval(date("d"))) ? 'selected' : '';
+        	$Options['auctionend']['day'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
 
         for($x=1; $x<=23; $x++){
-            $SelectedText = ($x==intval(date("H"))) ? 'selected' : '';
-            $Options['auctionend']['hour'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+        	$SelectedText = ($x==intval(date("H"))) ? 'selected' : '';
+        	$Options['auctionend']['hour'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
 
         for($x=0; $x<=59; $x++){
-            $SelectedText = ($x==intval(date("i"))) ? 'selected' : '';
-            $Options['auctionend']['minutes'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+        	$SelectedText = ($x==intval(date("i"))) ? 'selected' : '';
+        	$Options['auctionend']['minutes'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
         }
 
         $this->_objTpl->setVariable(array(
@@ -649,24 +650,24 @@ class Auction extends auctionLibrary
             'TXT_DETAIL_SHOW'                =>    $_ARRAYLANG['TXT_AUCTION_SHOW_IN_ADVERTISEMENT'],
             'TXT_DETAIL_HIDE'                =>    $_ARRAYLANG['TXT_AUCTION_NO_SHOW_IN_ADVERTISEMENT'],
             'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_AUCTION_MARK_ADVERTISEMENT'],
-            'TXT_AUCTION_STARTPRICE'             =>    $_ARRAYLANG['TXT_AUCTION_STARTPRICE'],
-            'TXT_AUCTION_INCR_STEPS'              =>    $_ARRAYLANG['TXT_AUCTION_INCR_STEPS'],
-            'TXT_AUCTION'                          =>    $_ARRAYLANG['TXT_AUCTION'],
-            'TXT_SETTINGS'                      =>    $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_IMAGES'                          =>    $_ARRAYLANG['TXT_IMAGES'],
-            'TXT_AUCTION_TITLE'                  =>    $_ARRAYLANG['TXT_AUCTION_TITEL2'],
-            'TXT_AUCTION_SHOWING_UP'              =>    $_ARRAYLANG['TXT_AUCTION_SHOWING_UP'],
-            'TXT_AUCTION_CONDITIONS'              =>    $_ARRAYLANG['TXT_AUCTION_CONDITIONS'],
-            'TXT_AUCTION_OTHER_SETTINGS'          =>    $_ARRAYLANG['TXT_AUCTION_OTHER_SETTINGS'],
-            'TXT_AUCTION_DELETE_IMAGE'          =>    $_ARRAYLANG['TXT_AUCTION_DELETE_IMAGE'],
-            'TXT_AUCTION_SHIPPING'              =>    $_ARRAYLANG['TXT_AUCTION_SHIPPING'],
-            'TXT_AUCTION_PAYMENT'                  =>    $_ARRAYLANG['TXT_AUCTION_PAYMENT'],
-            'ENTRY_DESC'                    => get_wysiwyg_editor('description', ''),
-            'ENTRY_END_YEAR'                => $Options['auctionend']['year'],
-            'ENTRY_END_MONTH'                => $Options['auctionend']['month'],
-            'ENTRY_END_DAY'                    => $Options['auctionend']['day'],
-            'ENTRY_END_HOUR'                => $Options['auctionend']['hour'],
-            'ENTRY_END_MINUTES'                => $Options['auctionend']['minutes'],
+            'TXT_AUCTION_STARTPRICE'         	=>    $_ARRAYLANG['TXT_AUCTION_STARTPRICE'],
+            'TXT_AUCTION_INCR_STEPS'          	=>    $_ARRAYLANG['TXT_AUCTION_INCR_STEPS'],
+            'TXT_AUCTION'          				=>    $_ARRAYLANG['TXT_AUCTION'],
+            'TXT_SETTINGS'          			=>    $_ARRAYLANG['TXT_SETTINGS'],
+            'TXT_IMAGES'          				=>    $_ARRAYLANG['TXT_IMAGES'],
+            'TXT_AUCTION_TITLE'      			=>    $_ARRAYLANG['TXT_AUCTION_TITEL2'],
+            'TXT_AUCTION_SHOWING_UP'      		=>    $_ARRAYLANG['TXT_AUCTION_SHOWING_UP'],
+            'TXT_AUCTION_CONDITIONS'      		=>    $_ARRAYLANG['TXT_AUCTION_CONDITIONS'],
+            'TXT_AUCTION_OTHER_SETTINGS'      	=>    $_ARRAYLANG['TXT_AUCTION_OTHER_SETTINGS'],
+            'TXT_AUCTION_DELETE_IMAGE'      	=>    $_ARRAYLANG['TXT_AUCTION_DELETE_IMAGE'],
+            'TXT_AUCTION_SHIPPING'      		=>    $_ARRAYLANG['TXT_AUCTION_SHIPPING'],
+            'TXT_AUCTION_PAYMENT'      			=>    $_ARRAYLANG['TXT_AUCTION_PAYMENT'],
+            'ENTRY_DESC'					=> get_wysiwyg_editor('description', ''),
+            'ENTRY_END_YEAR'				=> $Options['auctionend']['year'],
+            'ENTRY_END_MONTH'				=> $Options['auctionend']['month'],
+            'ENTRY_END_DAY'					=> $Options['auctionend']['day'],
+            'ENTRY_END_HOUR'				=> $Options['auctionend']['hour'],
+            'ENTRY_END_MINUTES'				=> $Options['auctionend']['minutes'],
         ));
 
 
@@ -821,29 +822,31 @@ class Auction extends auctionLibrary
 
         if (isset($_POST['submitEntry']) || $_REQUEST['image_for_delete']!='') {
 
-            if(!file_exists(ASCMS_AUCTION_UPLOAD_PATH)){
-                mkdir (ASCMS_AUCTION_UPLOAD_PATH);
-            }
+        	if(!file_exists(ASCMS_AUCTION_UPLOAD_PATH)){
+				mkdir (ASCMS_AUCTION_UPLOAD_PATH);
+			}
 
-            $tmb_width = 80;
-            if($this->settings['thumbnails_width']>0){
-                $tmb_width = $this->settings['thumbnails_width'];
-            }
+			$tmb_width = 80;
+			if($this->settings['thumbnails_width']>0){
+				$tmb_width = $this->settings['thumbnails_width'];
+			}
 
-            // backup
+        	// backup
 //            if ($_FILES['pic']['name'] != "") {
 //                $picture = $this->uploadPicture();
-// TODO: Never used
+///* TODO: Never used
 //                if ($picture != "error") {
 //                    $objFile = new File();
 //                    $status = $objFile->delFile($this->mediaPath, $this->mediaWebPath, "pictures/".$_POST['picOld']);
 //                }
-//            }else{
+//*/
+//                        }else{
 //                $picture = $_POST['picOld'];
 //            }
 
-            // get actual data
-            $objResultTMP = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_auction WHERE id='.intval($_REQUEST['id']).' LIMIT 1');
+			// get actual data
+			// -------------------------------------------
+			$objResultTMP = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_auction WHERE id='.intval($_REQUEST['id']).' LIMIT 1');
             if ($objResultTMP !== false) {
                 $tmpPictures[1] = $objResultTMP->fields['picture_1'];
                 $tmpPictures[2] = $objResultTMP->fields['picture_2'];
@@ -855,76 +858,76 @@ class Auction extends auctionLibrary
             // images
             // --------------------------------------------
             if($_REQUEST['image_for_delete']!=''){
-                @unlink (ASCMS_AUCTION_UPLOAD_PATH.'/'.$tmpPictures[intval($_REQUEST['image_for_delete'])]);
-                @unlink (ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$tmpPictures[intval($_REQUEST['image_for_delete'])]);
-                $objDatabase->Execute('UPDATE '.DBPREFIX.'module_auction SET picture_'.intval($_REQUEST['image_for_delete']).'="" WHERE id='.intval($_REQUEST['id']).'');
+            	@unlink (ASCMS_AUCTION_UPLOAD_PATH.'/'.$tmpPictures[intval($_REQUEST['image_for_delete'])]);
+            	@unlink (ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$tmpPictures[intval($_REQUEST['image_for_delete'])]);
+            	$objDatabase->Execute('UPDATE '.DBPREFIX.'module_auction SET picture_'.intval($_REQUEST['image_for_delete']).'="" WHERE id='.intval($_REQUEST['id']).'');
             }
 
             for($x=1; $x<6; $x++){
-                if($_FILES['pic_'.$x]['name']!=''){
-                    @unlink (ASCMS_AUCTION_UPLOAD_PATH.'/'.$tmpPictures[$x]);
-                    @unlink (ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$tmpPictures[$x]);
+            	if($_FILES['pic_'.$x]['name']!=''){
+            		@unlink (ASCMS_AUCTION_UPLOAD_PATH.'/'.$tmpPictures[$x]);
+            		@unlink (ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$tmpPictures[$x]);
 
-                    $HashCode = $this->GetHash();
+            		$HashCode = $this->GetHash();
 
-                    $objDatabase->Execute('UPDATE '.DBPREFIX.'module_auction SET picture_'.$x.'="'.$HashCode.'_'.$_FILES['pic_'.$x]['name'].'" WHERE id='.intval($_REQUEST['id']).'');
+            		$objDatabase->Execute('UPDATE '.DBPREFIX.'module_auction SET picture_'.$x.'="'.$HashCode.'_'.$_FILES['pic_'.$x]['name'].'" WHERE id='.intval($_REQUEST['id']).'');
 
-                    if(@move_uploaded_file($_FILES['pic_'.$x]['tmp_name'], ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])) {
+            		if(@move_uploaded_file($_FILES['pic_'.$x]['tmp_name'], ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])) {
 
-                        chmod(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0777);
+            			chmod(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0777);
 
-                        // thumb
-                        // ------------------------------------------
-                        $LegalType = false;
-                        if($_FILES['pic_'.$x]['type']=='image/jpeg'){
-                            $image         = @imagecreatefromjpeg (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
-                                        or die ("GD-Image-Stream error");
-                            $LegalType     = true;
-                        }
-                        if($_FILES['pic_'.$x]['type']=='image/gif'){
-                            $image         = @imagecreatefromgif (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
-                                        or die ("GD-Image-Stream error");
-                            $LegalType     = true;
-                        }
-                        if($_FILES['pic_'.$x]['type']=='image/png'){
-                            $image         = @imagecreatefrompng (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
-                                        or die ("GD-Image-Stream error");
-                            $LegalType     = true;
-                        }
+	                    // thumb
+	            		// ------------------------------------------
+	            		$LegalType = false;
+	            		if($_FILES['pic_'.$x]['type']=='image/jpeg'){
+	            			$image 		= @imagecreatefromjpeg (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
+										or die ("GD-Image-Stream error");
+							$LegalType 	= true;
+	            		}
+	            		if($_FILES['pic_'.$x]['type']=='image/gif'){
+	            			$image 		= @imagecreatefromgif (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
+										or die ("GD-Image-Stream error");
+							$LegalType 	= true;
+	            		}
+	            		if($_FILES['pic_'.$x]['type']=='image/png'){
+	            			$image 		= @imagecreatefrompng (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
+										or die ("GD-Image-Stream error");
+							$LegalType 	= true;
+	            		}
 
-                        $sourceFile = ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'];
+	            		$sourceFile = ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'];
 
 
-                        if($LegalType){
-                            $imageInfos     = @getimagesize($sourceFile);
-                            $width             = $imageInfos[0];
-                            $height         = $imageInfos[1];
-                            $prozent        = ($tmb_width * 100) / $width;
-                            $new_width        = $tmb_width;
-                            $new_height        = ($height * $prozent) / 100;
+	            		if($LegalType){
+							$imageInfos 	= @getimagesize($sourceFile);
+							$width 			= $imageInfos[0];
+							$height 		= $imageInfos[1];
+							$prozent		= ($tmb_width * 100) / $width;
+							$new_width		= $tmb_width;
+							$new_height		= ($height * $prozent) / 100;
 
-                            $thumb             = imagecreatetruecolor($new_width, $new_height);
+							$thumb 			= imagecreatetruecolor($new_width, $new_height);
 
-                            @imagecopyresampled($thumb, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+							@imagecopyresampled($thumb, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 
-                            if($imageInfos['mime']=='image/jpeg'){
-                                imagejpeg($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
-                            }
-                            if($imageInfos['mime']=='image/gif'){
-                                imagegif($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
-                            }
-                            if($imageInfos['mime']=='image/png'){
-                                imagepng($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
-                            }
+							if($imageInfos['mime']=='image/jpeg'){
+								imagejpeg($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
+							}
+							if($imageInfos['mime']=='image/gif'){
+								imagegif($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
+							}
+							if($imageInfos['mime']=='image/png'){
+								imagepng($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
+							}
 
-                            chmod(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0755);
+							chmod(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0755);
 
-//                            $objFile     = new File();
-//                            $objFile->setChmod(ASCMS_AUCTION_PATH, ASCMS_AUCTION_PATH, '/tmb_'.$_FILES['pic_'.$x]['name']);
-                        }
-                    }
+//					        $objFile 	= new File();
+//		                    $objFile->setChmod(ASCMS_AUCTION_PATH, ASCMS_AUCTION_PATH, '/tmb_'.$_FILES['pic_'.$x]['name']);
+	            		}
+            		}
 
-                }
+            	}
             }
 
 
@@ -945,10 +948,10 @@ class Auction extends auctionLibrary
 
                 $auctionsEnd = mktime($_REQUEST["end_hour"], $_REQUEST["end_minutes"], 0, $_REQUEST["end_month"], $_REQUEST["end_day"], $_REQUEST["end_year"]);
 
-                $objFWUser             = FWUser::getFWUserObject();
-                if ($objFWUser->objUser->login()) {
-                    $FromUser = $objFWUser->objUser->getId();
-                }
+                $objFWUser 			= FWUser::getFWUserObject();
+				if ($objFWUser->objUser->login()) {
+					$FromUser = $objFWUser->objUser->getId();
+				}
 
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_auction SET
                                     type='".contrexx_addslashes($_POST['type'])."',
@@ -1016,18 +1019,18 @@ class Auction extends auctionLibrary
             'TXT_PREMIUM'                    =>    $_ARRAYLANG['TXT_AUCTION_MARK_ADVERTISEMENT'],
             'FORM_ACTION'                    =>    "editEntry",
             'TXT_DAYS'                        =>    $_ARRAYLANG['TXT_AUCTION_DAYS'],
-            'TXT_AUCTION_STARTPRICE'             =>    $_ARRAYLANG['TXT_AUCTION_STARTPRICE'],
-            'TXT_AUCTION_INCR_STEPS'              =>    $_ARRAYLANG['TXT_AUCTION_INCR_STEPS'],
-            'TXT_AUCTION'                          =>    $_ARRAYLANG['TXT_AUCTION'],
-            'TXT_SETTINGS'                      =>    $_ARRAYLANG['TXT_SETTINGS'],
-            'TXT_IMAGES'                          =>    $_ARRAYLANG['TXT_IMAGES'],
-            'TXT_AUCTION_TITLE'                  =>    $_ARRAYLANG['TXT_AUCTION_TITEL2'],
-            'TXT_AUCTION_SHOWING_UP'              =>    $_ARRAYLANG['TXT_AUCTION_SHOWING_UP'],
-            'TXT_AUCTION_CONDITIONS'              =>    $_ARRAYLANG['TXT_AUCTION_CONDITIONS'],
-            'TXT_AUCTION_OTHER_SETTINGS'          =>    $_ARRAYLANG['TXT_AUCTION_OTHER_SETTINGS'],
-            'TXT_AUCTION_DELETE_IMAGE'          =>    $_ARRAYLANG['TXT_AUCTION_DELETE_IMAGE'],
-            'TXT_AUCTION_SHIPPING'              =>    $_ARRAYLANG['TXT_AUCTION_SHIPPING'],
-            'TXT_AUCTION_PAYMENT'                  =>    $_ARRAYLANG['TXT_AUCTION_PAYMENT'],
+            'TXT_AUCTION_STARTPRICE'         	=>    $_ARRAYLANG['TXT_AUCTION_STARTPRICE'],
+            'TXT_AUCTION_INCR_STEPS'          	=>    $_ARRAYLANG['TXT_AUCTION_INCR_STEPS'],
+            'TXT_AUCTION'          				=>    $_ARRAYLANG['TXT_AUCTION'],
+            'TXT_SETTINGS'          			=>    $_ARRAYLANG['TXT_SETTINGS'],
+            'TXT_IMAGES'          				=>    $_ARRAYLANG['TXT_IMAGES'],
+            'TXT_AUCTION_TITLE'      			=>    $_ARRAYLANG['TXT_AUCTION_TITEL2'],
+            'TXT_AUCTION_SHOWING_UP'      		=>    $_ARRAYLANG['TXT_AUCTION_SHOWING_UP'],
+            'TXT_AUCTION_CONDITIONS'      		=>    $_ARRAYLANG['TXT_AUCTION_CONDITIONS'],
+            'TXT_AUCTION_OTHER_SETTINGS'      	=>    $_ARRAYLANG['TXT_AUCTION_OTHER_SETTINGS'],
+            'TXT_AUCTION_DELETE_IMAGE'      	=>    $_ARRAYLANG['TXT_AUCTION_DELETE_IMAGE'],
+            'TXT_AUCTION_SHIPPING'      		=>    $_ARRAYLANG['TXT_AUCTION_SHIPPING'],
+            'TXT_AUCTION_PAYMENT'      			=>    $_ARRAYLANG['TXT_AUCTION_PAYMENT'],
         ));
 
 
@@ -1087,15 +1090,15 @@ class Auction extends auctionLibrary
 //                        $picture         = '<img src="'.$this->mediaWebPath.'pictures/no_picture.gif" border="0" alt="" /><br /><br />';
 //                    }
 
-                    // pictures
-                    $PicturesValue = array();
-                    for($x=1;$x<6;$x++){
-                        if($objResult->fields['picture_'.$x]!=''){
-                            $PicturesValue[$x] = '<a href="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/'.$objResult->fields['picture_'.$x].'" target="_blank">'.$objResult->fields['picture_'.$x].'</a> &nbsp;&nbsp;&nbsp;<a href="javascript: DeleteImage('.$x.');">['.$_ARRAYLANG['TXT_DELETE'].']</a>';
-                        }else{
-                            $PicturesValue[$x] = '';
-                        }
-                    }
+					// pictures
+					$PicturesValue = array();
+					for($x=1;$x<6;$x++){
+						if($objResult->fields['picture_'.$x]!=''){
+							$PicturesValue[$x] = '<a href="'.ASCMS_AUCTION_UPLOAD_WEB_PATH.'/'.$objResult->fields['picture_'.$x].'" target="_blank">'.$objResult->fields['picture_'.$x].'</a> &nbsp;&nbsp;&nbsp;<a href="javascript: DeleteImage('.$x.');">['.$_ARRAYLANG['TXT_DELETE'].']</a>';
+						}else{
+							$PicturesValue[$x] = '';
+						}
+					}
 
                     //entry category
                     $this->getCategories();
@@ -1128,38 +1131,38 @@ class Auction extends auctionLibrary
 
                     // Auktionsende
                     // --------------------------------------------
-                    $Options                 = array();
-                    $AuctionEnd                = array();
-                    $AuctionEndTimestamp    = $objResult->fields['enddate'];
-                    $AuctionEnd['year']        = date('Y', $AuctionEndTimestamp);
-                    $AuctionEnd['month']    = date('m', $AuctionEndTimestamp);
-                    $AuctionEnd['day']        = date('d', $AuctionEndTimestamp);
-                    $AuctionEnd['hour']        = date('H', $AuctionEndTimestamp);
-                    $AuctionEnd['minutes']    = date('i', $AuctionEndTimestamp);
+                    $Options 				= array();
+                    $AuctionEnd				= array();
+                    $AuctionEndTimestamp	= $objResult->fields['enddate'];
+                    $AuctionEnd['year']		= date('Y', $AuctionEndTimestamp);
+                    $AuctionEnd['month']	= date('m', $AuctionEndTimestamp);
+                    $AuctionEnd['day']		= date('d', $AuctionEndTimestamp);
+                    $AuctionEnd['hour']		= date('H', $AuctionEndTimestamp);
+                    $AuctionEnd['minutes']	= date('i', $AuctionEndTimestamp);
 
                     for($x=date("Y"); $x<=date("Y")+5; $x++){
-                        $SelectedText = ($x==$AuctionEnd['year']) ? 'selected' : '';
-                        $Options['auctionend']['year'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+                    	$SelectedText = ($x==$AuctionEnd['year']) ? 'selected' : '';
+                    	$Options['auctionend']['year'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
                     }
 
                     for($x=1; $x<=12; $x++){
-                        $SelectedText = ($x==intval($AuctionEnd['month'])) ? 'selected' : '';
-                        $Options['auctionend']['month'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+                    	$SelectedText = ($x==intval($AuctionEnd['month'])) ? 'selected' : '';
+                    	$Options['auctionend']['month'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
                     }
 
                     for($x=1; $x<=31; $x++){
-                        $SelectedText = ($x==intval($AuctionEnd['day'])) ? 'selected' : '';
-                        $Options['auctionend']['day'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+                    	$SelectedText = ($x==intval($AuctionEnd['day'])) ? 'selected' : '';
+                    	$Options['auctionend']['day'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
                     }
 
                     for($x=1; $x<=23; $x++){
-                        $SelectedText = ($x==intval($AuctionEnd['hour'])) ? 'selected' : '';
-                        $Options['auctionend']['hour'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+                    	$SelectedText = ($x==intval($AuctionEnd['hour'])) ? 'selected' : '';
+                    	$Options['auctionend']['hour'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
                     }
 
                     for($x=0; $x<=59; $x++){
-                        $SelectedText = ($x==intval($AuctionEnd['minutes'])) ? 'selected' : '';
-                        $Options['auctionend']['minutes'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
+                    	$SelectedText = ($x==intval($AuctionEnd['minutes'])) ? 'selected' : '';
+                    	$Options['auctionend']['minutes'] .= '<option value="'.$x.'" '.$SelectedText.'>'.$x.'</option>';
                     }
 
 
@@ -1184,39 +1187,39 @@ class Auction extends auctionLibrary
 
 
                     $this->_objTpl->setVariable(array(
-                        'ENTRY_ID'                        =>    $entryId,
-                        'ENTRY_TYPE_OFFER'                =>    $offer,
-                        'ENTRY_TYPE_SEARCH'                =>    $search,
-                        'ENTRY_TITLE'                    =>    $objResult->fields['title'],
-                        'ENTRY_DESCRIPTION'                =>    $objResult->fields['description'],
-                        'ENTRY_PICTURE_OLD'                =>    $objResult->fields['picture'],
-                        'CATEGORIES'                    =>    $categories,
-                        'ENTRY_PRICE'                    =>    $price,
-                        'ENTRY_FOR_FREE'                =>    $forfree,
-                        'ENTRY_AGREEMENT'                =>    $agreement,
-                        'ENTRY_PREMIUM'                    =>    $premium,
-                        'ENTRY_ADDEDBY'                    =>    $addedby,
-                        'ENTRY_ADDEDBY_ID'                =>    $objResult->fields['userid'],
-                        'ENTRY_USERDETAILS_ON'            =>    $userdetailsOn,
-                        'ENTRY_USERDETAILS_OFF'            =>    $userdetailsOff,
-                        'DAYS_ONLINE'                    =>    $daysOnline,
-                        'ENTRY_NAME'                    =>    $objResult->fields['name'],
-                        'ENTRY_E-MAIL'                    =>    $objResult->fields['email'],
-                        'ENTRY_STARTPRICE'                => $objResult->fields['startprice'],
-                        'ENTRY_INCR_STEPS'                => $objResult->fields['incr_step'],
-                        'ENTRY_DESC'                    => get_wysiwyg_editor('description', $objResult->fields['description']),
-                        'ENTRY_END_YEAR'                => $Options['auctionend']['year'],
-                        'ENTRY_END_MONTH'                => $Options['auctionend']['month'],
-                        'ENTRY_END_DAY'                    => $Options['auctionend']['day'],
-                        'ENTRY_END_HOUR'                => $Options['auctionend']['hour'],
-                        'ENTRY_END_MINUTES'                => $Options['auctionend']['minutes'],
-                        'ENTRY_PICTURE_1'                => $PicturesValue[1],
-                        'ENTRY_PICTURE_2'                => $PicturesValue[2],
-                        'ENTRY_PICTURE_3'                => $PicturesValue[3],
-                        'ENTRY_PICTURE_4'                => $PicturesValue[4],
-                        'ENTRY_PICTURE_5'                => $PicturesValue[5],
-                        'ENTRY_SHIPPING'                => $objResult->fields['shipping'],
-                        'ENTRY_PAYMENT'                    => $objResult->fields['payment'],
+                        'ENTRY_ID'                    	=>    $entryId,
+                        'ENTRY_TYPE_OFFER'            	=>    $offer,
+                        'ENTRY_TYPE_SEARCH'            	=>    $search,
+                        'ENTRY_TITLE'                	=>    $objResult->fields['title'],
+                        'ENTRY_DESCRIPTION'            	=>    $objResult->fields['description'],
+                        'ENTRY_PICTURE_OLD'            	=>    $objResult->fields['picture'],
+                        'CATEGORIES'                	=>    $categories,
+                        'ENTRY_PRICE'                	=>    $price,
+                        'ENTRY_FOR_FREE'            	=>    $forfree,
+                        'ENTRY_AGREEMENT'            	=>    $agreement,
+                        'ENTRY_PREMIUM'                	=>    $premium,
+                        'ENTRY_ADDEDBY'                	=>    $addedby,
+                        'ENTRY_ADDEDBY_ID'            	=>    $objResult->fields['userid'],
+                        'ENTRY_USERDETAILS_ON'        	=>    $userdetailsOn,
+                        'ENTRY_USERDETAILS_OFF'        	=>    $userdetailsOff,
+                        'DAYS_ONLINE'                	=>    $daysOnline,
+                        'ENTRY_NAME'                	=>    $objResult->fields['name'],
+                        'ENTRY_E-MAIL'                	=>    $objResult->fields['email'],
+                        'ENTRY_STARTPRICE'				=> $objResult->fields['startprice'],
+                        'ENTRY_INCR_STEPS'				=> $objResult->fields['incr_step'],
+                        'ENTRY_DESC'					=> get_wysiwyg_editor('description', $objResult->fields['description']),
+                        'ENTRY_END_YEAR'				=> $Options['auctionend']['year'],
+                        'ENTRY_END_MONTH'				=> $Options['auctionend']['month'],
+                        'ENTRY_END_DAY'					=> $Options['auctionend']['day'],
+                        'ENTRY_END_HOUR'				=> $Options['auctionend']['hour'],
+                        'ENTRY_END_MINUTES'				=> $Options['auctionend']['minutes'],
+                        'ENTRY_PICTURE_1'				=> $PicturesValue[1],
+                        'ENTRY_PICTURE_2'				=> $PicturesValue[2],
+                        'ENTRY_PICTURE_3'				=> $PicturesValue[3],
+                        'ENTRY_PICTURE_4'				=> $PicturesValue[4],
+                        'ENTRY_PICTURE_5'				=> $PicturesValue[5],
+                        'ENTRY_SHIPPING'				=> $objResult->fields['shipping'],
+                        'ENTRY_PAYMENT'					=> $objResult->fields['payment'],
                     ));
                        $objResult->MoveNext();
                    }
@@ -1282,28 +1285,28 @@ class Auction extends auctionLibrary
     }
 
     function placeholderSettings(){
-        global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
+    	global $objDatabase, $objTemplate, $_ARRAYLANG, $_CORELANG;
 
         // initialize variables
         $this->_objTpl->addBlockfile('SYSTEM_REQUESTS_CONTENT', 'requests_block', 'module_auction_settings_placeholders.html');
 
         $this->_objTpl->setVariable(array(
-            'TXT_AUCTION_PLACEHOLDER'           => $_ARRAYLANG['TXT_AUCTION_PLACEHOLDER'],
-            'TXT_AUCTION_SEARCH_TITLE'           => $_ARRAYLANG['TXT_AUCTION_SEARCH_TITLE'],
-            'TXT_AUCTION_SEARCH_TITLE_DESC'       => $_ARRAYLANG['TXT_AUCTION_SEARCH_TITLE_DESC'],
-            'TXT_AUCTION_SEARCH_DESC'           => $_ARRAYLANG['TXT_AUCTION_SEARCH_DESC'],
-            'TXT_AUCTION_CATEGORIES_DESC'       => $_ARRAYLANG['TXT_AUCTION_CATEGORIES_DESC'],
+            'TXT_AUCTION_PLACEHOLDER'       	=> $_ARRAYLANG['TXT_AUCTION_PLACEHOLDER'],
+            'TXT_AUCTION_SEARCH_TITLE'       	=> $_ARRAYLANG['TXT_AUCTION_SEARCH_TITLE'],
+            'TXT_AUCTION_SEARCH_TITLE_DESC'   	=> $_ARRAYLANG['TXT_AUCTION_SEARCH_TITLE_DESC'],
+            'TXT_AUCTION_SEARCH_DESC'   		=> $_ARRAYLANG['TXT_AUCTION_SEARCH_DESC'],
+            'TXT_AUCTION_CATEGORIES_DESC'   	=> $_ARRAYLANG['TXT_AUCTION_CATEGORIES_DESC'],
             'AUCTION_CATEGORY_DESCRIPTION_DESC' => $_ARRAYLANG['AUCTION_CATEGORY_DESCRIPTION_DESC'],
-            'TXT_AUCTION_TITLE_DESC'             => $_ARRAYLANG['TXT_AUCTION_TITLE_DESC'],
-            'AUCTION_ENDDATE_DESC'                 => $_ARRAYLANG['AUCTION_ENDDATE_DESC'],
-            'AUCTION_BIDS_DESC'                 => $_ARRAYLANG['AUCTION_BIDS_DESC'],
-            'AUCTION_PRICE_DESC'                 => $_ARRAYLANG['AUCTION_PRICE_DESC'],
-            'AUCTION_STARTPRICE_DESC'             => $_ARRAYLANG['AUCTION_STARTPRICE_DESC'],
-            'AUCTION_INCREASE_STEP_DESC'         => $_ARRAYLANG['AUCTION_INCREASE_STEP_DESC'],
-            'AUCTION_NEXT_BID_DESC'             => $_ARRAYLANG['AUCTION_NEXT_BID_DESC'],
-            'AUCTION_DESCRIPTION_DESC'             => $_ARRAYLANG['AUCTION_DESCRIPTION_DESC'],
-            'AUCTION_SHIPPING_DESC'             => $_ARRAYLANG['AUCTION_SHIPPING_DESC'],
-            'AUCTION_PAYMENT_DESC'                 => $_ARRAYLANG['AUCTION_PAYMENT_DESC'],
+            'TXT_AUCTION_TITLE_DESC' 			=> $_ARRAYLANG['TXT_AUCTION_TITLE_DESC'],
+            'AUCTION_ENDDATE_DESC' 				=> $_ARRAYLANG['AUCTION_ENDDATE_DESC'],
+            'AUCTION_BIDS_DESC' 				=> $_ARRAYLANG['AUCTION_BIDS_DESC'],
+            'AUCTION_PRICE_DESC' 				=> $_ARRAYLANG['AUCTION_PRICE_DESC'],
+            'AUCTION_STARTPRICE_DESC' 			=> $_ARRAYLANG['AUCTION_STARTPRICE_DESC'],
+            'AUCTION_INCREASE_STEP_DESC' 		=> $_ARRAYLANG['AUCTION_INCREASE_STEP_DESC'],
+            'AUCTION_NEXT_BID_DESC' 			=> $_ARRAYLANG['AUCTION_NEXT_BID_DESC'],
+            'AUCTION_DESCRIPTION_DESC' 			=> $_ARRAYLANG['AUCTION_DESCRIPTION_DESC'],
+            'AUCTION_SHIPPING_DESC' 			=> $_ARRAYLANG['AUCTION_SHIPPING_DESC'],
+            'AUCTION_PAYMENT_DESC' 				=> $_ARRAYLANG['AUCTION_PAYMENT_DESC'],
         ));
     }
 
@@ -1373,7 +1376,7 @@ class Auction extends auctionLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings&tpl=spez_fields');
+                CSRF::header('Location: ?cmd=auction&act=settings&tpl=spez_fields');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1455,7 +1458,7 @@ class Auction extends auctionLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings');
+                CSRF::header('Location: ?cmd=auction&act=settings');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1529,7 +1532,7 @@ class Auction extends auctionLibrary
         if (isset($_POST['submitSettings'])) {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_auction_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='".$_POST['mailOn']."' WHERE id='1'");
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings&tpl=email');
+                CSRF::header('Location: ?cmd=auction&act=settings&tpl=email');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1607,7 +1610,7 @@ class Auction extends auctionLibrary
             }
 
             if ($objResult !== false) {
-                header('Location: ?cmd=auction&act=settings&tpl=email_code');
+                CSRF::header('Location: ?cmd=auction&act=settings&tpl=email_code');
                 $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];

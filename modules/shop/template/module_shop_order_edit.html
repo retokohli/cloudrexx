@@ -72,9 +72,9 @@ function changeProduct(orderItemId, newProductId)
     // the new product ID is zero, so an item is to be deleted
     if (newProductId == "0") {
 // TODO: What's this condition good for?
-//      if (orderItemId == 0) {
+      if (orderItemId == 0) {
         document.getElementById("shopProductId-"+orderItemId).value = "0";
-//      }
+      }
       document.getElementById("shopProductQuantity-"+orderItemId).value   = 0;
       document.getElementById("shopProductName-"+orderItemId).value       = "";
       document.getElementById("shopProductPrice-"+orderItemId).value      = '0.00';
@@ -332,7 +332,7 @@ function swapSendToStatus(orderId)
 // -->
 </script>
 <br />
-<form id="shopOrderEdit" name="shopOrderEdit" method="post" action="index.php?cmd=shop&amp;act=editorder">
+<form id="shopOrderEdit" name="shopOrderEdit" method="post" action="?cmd=shop&amp;act=editorder">
   <table width="100%" border="0" class="adminlist" cellpadding="2" cellspacing="0">
     <colgroup><col width="15%" /><col width="35%" /><col width="15%" /><col width="35%" /></colgroup>
     <tr>
@@ -355,7 +355,7 @@ function swapSendToStatus(orderId)
       <td nowrap="nowrap">
         {SHOP_ORDER_STATUS}
         <div id="shopSendMailDiv" style="{SHOP_SEND_MAIL_STYLE}">
-          {SHOP_SEND_TEMPLATE_TO_CUSTOMER}&nbsp;
+          {TXT_SEND_TEMPLATE_TO_CUSTOMER}&nbsp;
           <input type="checkbox" name="shopSendMail" value="1" {SHOP_SEND_MAIL_STATUS}/>
         </div>
       </td>
@@ -381,10 +381,10 @@ function swapSendToStatus(orderId)
       <td nowrap="nowrap"><input type="text" name="shopShipCompany" value="{SHOP_SHIP_COMPANY}" /></td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_TITLE}</td>
-      <td nowrap="nowrap">{SHOP_TITLE}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_TITLE}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipPrefix" value="{SHOP_SHIP_TITLE}" /></td>
+      <td nowrap="nowrap">{TXT_PREFIX}</td>
+      <td nowrap="nowrap">{SHOP_PREFIX}&nbsp;</td>
+      <td nowrap="nowrap">{TXT_PREFIX}</td>
+      <td nowrap="nowrap"><input type="text" name="shopShipPrefix" value="{SHOP_SHIP_PREFIX}" /></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_LAST_NAME}</td>

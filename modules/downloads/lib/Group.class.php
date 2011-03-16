@@ -53,8 +53,7 @@ class Group
             'id'                                => 'int',
             'is_active'                         => 'int',
             'info_page'                         => 'string',
-            'type'                              => 'string',
-            'sort_method'                       => 'string'
+            'type'                              => 'string'
            ),
         'locale' => array(
             'name'                              => 'string'
@@ -63,10 +62,6 @@ class Group
             'category_id'                       => 'int'
         )
     );
-
-    private $sort_method;
-    private $arrSortMethods = array('alphabetically', 'custom');
-    private $defaultSortMethod = 'alphabetically';
 
     private $placeholder = 'DOWNLOADS_GROUP_%s';
 
@@ -121,7 +116,6 @@ class Group
         $this->names = array();
         $this->categories = null;
         $this->categories_count = null;
-        $this->sort_method = $this->defaultSortMethod;
         $this->EOF = true;
     }
 
@@ -182,11 +176,6 @@ class Group
     public function getInfoPage()
     {
         return $this->info_page;
-    }
-
-    public function getSortMethod()
-    {
-        return $this->sort_method;
     }
 
     public function getAssociatedCategoriesCount()
@@ -254,7 +243,7 @@ class Group
         global $objDatabase;
 
         $this->categories= array();
-        $objResult = $objDatabase->Execute('SELECT `category_id` FROM `'.DBPREFIX.'module_downloads_rel_group_category` WHERE `group_id` = '.$this->id.' ORDER BY `order`');
+        $objResult = $objDatabase->Execute('SELECT `category_id` FROM `'.DBPREFIX.'module_downloads_rel_group_category` WHERE `group_id` = '.$this->id);
         if ($objResult) {
             while (!$objResult->EOF) {
                 $this->categories[] = $objResult->fields['category_id'];
@@ -342,7 +331,6 @@ class Group
                 $this->names = isset($this->arrLoadedGroups[$id]['names']) ? $this->arrLoadedGroups[$id]['names'] : null;
                 $this->categories = isset($this->arrLoadedGroups[$id]['categories']) ? $this->arrLoadedGroups[$id]['categories'] : null;
                 $this->categories_count = isset($this->arrLoadedGroups[$id]['categories_count']) ? $this->arrLoadedGroups[$id]['categories_count'] : null;
-                $this->sort_method = isset($this->arrLoadedGroups[$id]['sort_method']) ? $this->arrLoadedGroups[$id]['sort_method'] : null;
                 $this->EOF = false;
                 return true;
             }
@@ -728,8 +716,7 @@ class Group
                 SET
                     `is_active` = ".intval($this->is_active).",
                     `type` = '".$this->type."',
-                    `info_page` = '".addslashes($this->info_page)."',
-                    `sort_method` = '".$this->sort_method."'
+                    `info_page` = '".addslashes($this->info_page)."'
                 WHERE `id` = ".$this->id
             ) === false) {
                 $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_FAILED_UPDATE_GROUP'];
@@ -740,13 +727,11 @@ class Group
                 INSERT INTO `".DBPREFIX."module_downloads_group` (
                     `is_active`,
                     `type`,
-                    `info_page`,
-                    `sort_method`
+                    `info_page`
                 ) VALUES (
                     ".intval($this->is_active).",
                     '".$this->type."',
-                    '".addslashes($this->info_page)."',
-                    '".$this->sort_method."'
+                    '".addslashes($this->info_page)."'
                 )") !== false) {
                 $this->id = $objDatabase->Insert_ID();
             } else {
@@ -830,7 +815,7 @@ class Group
         }
         $arrCategories = $this->categories;
 
-        $objOldCategories = $objDatabase->Execute('SELECT `category_id` FROM `'.DBPREFIX.'module_downloads_rel_group_category` WHERE `group_id` = '.$this->id.' ORDER BY `order`');
+        $objOldCategories = $objDatabase->Execute('SELECT `category_id` FROM `'.DBPREFIX.'module_downloads_rel_group_category` WHERE `group_id` = '.$this->id);
         if ($objOldCategories !== false) {
             while (!$objOldCategories->EOF) {
                 $arrOldCategories[] = $objOldCategories->fields['category_id'];
@@ -841,18 +826,12 @@ class Group
             return false;
         }
 
-        $arrNewCategories = array_diff_assoc($arrCategories, $arrOldCategories);
+        $arrNewCategories = array_diff($arrCategories, $arrOldCategories);
         $arrRemovedCategories = array_diff($arrOldCategories, $arrCategories);
 
-        foreach ($arrNewCategories as $order => $categoryId) {
-            if (in_array($categoryId, $arrOldCategories)) {
-                if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_rel_group_category` SET `order` = $order WHERE `group_id` = ".$this->id." AND `category_id` = $categoryId") === false) {
-                    $status = false;
-                }
-            } else {
-                if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_group_category` (`group_id`, `category_id`, `order`) VALUES (".$this->id.", ".$categoryId.", ".$order.")") === false) {
-                    $status = false;
-                }
+        foreach ($arrNewCategories as $categoryId) {
+            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_rel_group_category` (`group_id`, `category_id`) VALUES (".$this->id.", ".$categoryId.")") === false) {
+                $status = false;
             }
         }
 
@@ -861,11 +840,6 @@ class Group
                 $status = false;
             }
         }
-
-        if ($this->sort_method == 'alphabetically') {
-            $objDatabase->Execute("UPDATE `".DBPREFIX."module_downloads_rel_group_category` SET `order` = 0 WHERE `group_id` = ".$this->id);
-        }
-
         if (!$status) {
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_CATEGORY_ASSOCIATIONS'];
         }
@@ -912,11 +886,6 @@ class Group
     public function setInfoPage($infoPage)
     {
         $this->info_page = $infoPage;
-    }
-
-    public function setSortMethod($method)
-    {
-        $this->sort_method = in_array($method, $this->arrSortMethods) ? $method : $this->defaultSortMethod;
     }
 
     public function setType($type)

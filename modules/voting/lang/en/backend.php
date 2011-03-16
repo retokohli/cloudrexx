@@ -10,7 +10,7 @@ $_ARRAYLANG['TXT_VOTING_MANAGER'] = "Votings";
 $_ARRAYLANG['TXT_VOTING_RESULTS'] = "See Poll Results";
 $_ARRAYLANG['TXT_VOTING_ADD'] = "Add Poll";
 $_ARRAYLANG['TXT_VOTING_QUESTION'] = "Poll Question";
-$_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'] = "Possible Replies (one reply per line)";
+$_ARRAYLANG['TXT_VOTING_ADD_OPTIONS'] = "Possible Replyies (one reply per line)";
 $_ARRAYLANG['TXT_VOTING_EDIT'] = "Voting Edit";
 $_ARRAYLANG['TXT_VOTING_DISABLE'] = "Deactivate All";
 $_ARRAYLANG['TXT_STORE'] = "Save";
@@ -51,5 +51,4 @@ $_ARRAYLANG['TXT_ADDITIONAL_CITY'] = "City";
 $_ARRAYLANG['TXT_EXPORT_ADDITIONAL'] = "Export additional fields";
 $_ARRAYLANG['TXT_EXPORT_CSV'] = "CSV";
 $_ARRAYLANG['TXT_ADDITIONAL_COMMENT'] = "Comment";
-$_ARRAYLANG['TXT_VOTING_EXTENDED'] = "";
 ?>

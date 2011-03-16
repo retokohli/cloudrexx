@@ -1,4 +1,4 @@
-<!-- START module_data_entries_add.html -->
+﻿<!-- START module_data_entries_add.html -->
 <script language="JavaScript" type="text/javascript">
 //<![CDATA[
 arrTabToDiv = new Array();
@@ -31,37 +31,37 @@ function switchTabVisibility(strTabId) {
 
 
 function countActiveLanguages() {
-  var activeLanguages = 0;
+    var activeLanguages = 0;
 
-  for (var h=0; h < document.forms.length;h++) {
-    for (var i=0; i < document.forms[h].elements.length;i++) {
-      //read out all form-elements with the loop
-      if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
-        if(document.forms[h].elements[i].checked) {
-          activeLanguages++;
+    for (var h=0; h < document.forms.length;h++) {
+        for (var i=0; i < document.forms[h].elements.length;i++) {
+            //read out all form-elements with the loop
+            if(document.forms[h].elements[i].name.search('frmEditEntry_Languages') != -1) {
+                if(document.forms[h].elements[i].checked) {
+                    activeLanguages++;
+                }
+            }
         }
-      }
     }
-  }
 
-  return activeLanguages;
+    return activeLanguages;
 }
 
 function activateAnyActiveDiv() {
-  //Deactivate every div first first
-  for (var TabName in arrTabToDiv) {
-    document.getElementById(TabName).className = 'inactive';
-    document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
-  }
-
-  //Activate the first possible div with an acitvated checkbox
-  for (var TabName in arrTabToDiv) {
-    if (document.getElementById(TabName).style.display == 'inline') {
-      document.getElementById(TabName).className = 'active';
-      document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
-      break;
+    //Deactivate every div first first
+    for (var TabName in arrTabToDiv) {
+        document.getElementById(TabName).className = 'inactive';
+        document.getElementById(arrTabToDiv[TabName]).style.display = 'none';
     }
-  }
+
+    //Activate the first possible div with an acitvated checkbox
+    for (var TabName in arrTabToDiv) {
+        if (document.getElementById(TabName).style.display == 'inline') {
+            document.getElementById(TabName).className = 'active';
+            document.getElementById(arrTabToDiv[TabName]).style.display = 'inline';
+            break;
+        }
+    }
 }
 
 function showSelectedThumbnailMethod(method, langId) {
@@ -176,10 +176,97 @@ var updateEndDate = function(obj)
     }
 }
 
+function AddToTheList(from,dest,add,remove) {
+    if ( from.selectedIndex < 0){
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}else{
+		for (var i=0; i<from.length; i++) {
+			if (from.options[i].selected)
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--) {
+			if (from.options[i].selected)
+			{
+		       from.options[i] = null;
+   			}
+		}
+	}
+    disapleButtons(from,dest,add,remove);
+}
+
+function RemoveFromTheList(from,dest,add,remove) {
+	if ( dest.selectedIndex < 0){
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+		       dest.options[i] = null;
+   			}
+		}
+	}
+	disapleButtons(from,dest,add,remove);
+}
+
+function disapleButtons(from,dest,add,remove) {
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
+
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
+}
+
+function SelectAllList(CONTROL) {
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = true;
+	}
+}
+
+function DeselectAllList(CONTROL) {
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
+}
+
+var selectsToFill = [];
+
+function fillSelects() {
+	for (var i = 0; i < selectsToFill.length; i++) {
+		if(typeof(selectsToFill[i]) == "object") {
+			SelectAllList(selectsToFill[i]);
+		}
+	}
+}
+
 //]]>
 </script>
 
-<form name="frmEditEntry" method="post" action="{EDIT_POST_ACTION}">
+<form name="frmEditEntry" method="post" action="{EDIT_POST_ACTION}" onsubmit="fillSelects();">
     <ul id="tabmenu">
         <!-- BEGIN showLanguageTabs -->
         <li>
@@ -290,16 +377,53 @@ var updateEndDate = function(obj)
                 </td>
             </tr>
 
-            <tr class="row1">
-                <td>{TXT_DIV_CATEGORIES}</td>
-                <td colspan="3">
-                    <select name="frmcategory_{DIV_LANGUAGE_ID}" style="width: 30%;">
-                        <!-- BEGIN addCategoryDropDown -->
-                            <option value="{CATEGORY_OPT_VALUE}" {CATEGORY_OPT_SELECTED}>{CATEGORY_OPT_INDENT}{CATEGORY_OPT_LABEL}</option>
-                        <!-- END addCategoryDropDown -->
-                    </select>
-                </td>
-            </tr>
+			<tr class="row1">
+				<td>{TXT_DIV_CATEGORIES}</td>
+				<td colspan="2">
+					<table
+						<tr>
+							<td>Vorhandene Kategorien</td>
+							<td> </td>
+							<td>Zugewiesene Kategorien</td>
+						</tr>
+						<tr>
+							<td>
+								<select name="existingBlocks_{DIV_LANGUAGE_ID}[]" size="10" style="width: 300px;" multiple="multiple">
+									<!-- BEGIN availableCategories -->
+									<option value="{CATEGORY_OPT_VALUE}" {CATEGORY_OPT_SELECTED}>{CATEGORY_OPT_INDENT}{CATEGORY_OPT_LABEL}</option>
+									<!-- END availableCategories -->
+								</select>
+								<br />
+								<font size="1">
+									<a href="javascript:void(0);" onclick="SelectAllList(document.frmEditEntry.elements['existingBlocks_{DIV_LANGUAGE_ID}[]'])" style="color:blue;">Alles markieren</a><br />
+									<a href="javascript:void(0);" onclick="DeselectAllList(document.frmEditEntry.elements['existingBlocks_{DIV_LANGUAGE_ID}[]'])" style="color:blue;">Markierung löschen</a>
+								</font>
+							</td>
+							<td>
+								&nbsp;<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.frmEditEntry.elements['existingBlocks_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedBlocks_{DIV_LANGUAGE_ID}[]'],adduser,removeuser);" style="margin-bottom:1px;" />&nbsp;<br />
+								&nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.frmEditEntry.elements['existingBlocks_{DIV_LANGUAGE_ID}[]'],document.frmEditEntry.elements['assignedBlocks_{DIV_LANGUAGE_ID}[]'],adduser,removeuser);" />&nbsp;
+							</td>
+							<td>
+								<select name="assignedBlocks_{DIV_LANGUAGE_ID}[]" size="10" style="width:300px;" multiple="multiple">
+									<!-- BEGIN assignedCategories -->
+									<option value="{CATEGORY_OPT_VALUE}" {CATEGORY_OPT_SELECTED}>{CATEGORY_OPT_INDENT}{CATEGORY_OPT_LABEL}</option>
+									<!-- END assignedCategories -->
+								</select>
+								<script type="text/javascript">
+									selectsToFill[{DIV_LANGUAGE_ID}] = document.frmEditEntry.elements['assignedBlocks_{DIV_LANGUAGE_ID}[]'];
+								</script>
+								
+								<br />
+								<font size="1">
+									<a href="javascript:void(0);" onclick="SelectAllList(document.frmEditEntry.elements['assignedBlocks_{DIV_LANGUAGE_ID}[]'])" style="color:blue;">Alles markieren</a> <br />
+									<a href="javascript:void(0);" onclick="DeselectAllList(document.frmEditEntry.elements['assignedBlocks_{DIV_LANGUAGE_ID}[]'])" style="color:blue;">Markierung löschen</a>
+								</font>
+							</td>
+							
+						</tr>
+					</table>
+				</td>
+			</tr>
 
             <tr style="display: {DISPLAY_FORWARD_URL}" class="forwardUrl">
                 <td>{TXT_FORWARD_URL}</td>
@@ -364,7 +488,7 @@ var updateEndDate = function(obj)
                 <input type="text" name="release_date_end" id="DPC_dateend_YYYY-MM-DD" value="{RELEASE_DATE_END}" style="width: 8em; color: {RELEASE_COLOR};" {RELEASE_DISPLAY} />
                 <select id="release_hour_end" name="release_hour_end" style=" color: {RELEASE_COLOR};" {RELEASE_DISPLAY}>{RELEASE_HOUR_OPTIONS_END}</select> : <select style=" color: {RELEASE_COLOR};" id="release_minute_end" name="release_minute_end" {RELEASE_DISPLAY}>{RELEASE_MINUTES_OPTIONS_END}</select>
                 <input type="checkbox" name="endless" id="endless" {ENDLESS_CHECKED} onclick="updateEndDate(this)" /> <label for="endless">{TXT_ENDDATE_ENDLESS}</label>
-
+                
             </td>
         </tr>
     </table>

@@ -8,21 +8,21 @@ Text[1]=["","{TXT_ANONYMOUS_HELP}"];
 </script>
 
 <form name="frmSettings" method="post" action="?cmd=survey&amp;act=settings_update">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-    <tr>
-      <th colspan="2">Einstellungen</th>
-    </tr>
-    <tr class="row2">
-      <td width="20%" nowrap="nowrap">{TXT_LOGFILE}</td>
-      <td width="80%"><input type="radio" name="setValue[1]" value="1" {SETTINGS_LOGFILE_ON_CHECKED} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="setValue[1]" value="0" {SETTINGS_LOGFILE_OFF_CHECKED} />&nbsp;{TXT_DEACTIVATED}&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_ANONYMOUS}</td>
-      <td><input type="radio" name="setValue[2]" value="1" {SETTINGS_ANONYMOUS_ON_CHECKED} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="setValue[2]" value="0" {SETTINGS_ANONYMOUS_OFF_CHECKED} />&nbsp;{TXT_DEACTIVATED}&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
-    </tr>
-  </table>
-  <br />
-  <input type="submit" value="{TXT_BUTTON_SAVE}" />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<tr>
+			<th colspan="2">Einstellungen</th>
+		</tr>
+		<tr class="row2">
+			<td width="20%" nowrap="nowrap">{TXT_LOGFILE}</td>
+			<td width="80%"><input type="radio" name="setValue[1]" value="1" {SETTINGS_LOGFILE_ON_CHECKED} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="setValue[1]" value="0" {SETTINGS_LOGFILE_OFF_CHECKED} />&nbsp;{TXT_DEACTIVATED}&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap">{TXT_ANONYMOUS}</td>
+			<td><input type="radio" name="setValue[2]" value="1" {SETTINGS_ANONYMOUS_ON_CHECKED} />&nbsp;{TXT_ACTIVATED}&nbsp;<input type="radio" name="setValue[2]" value="0" {SETTINGS_ANONYMOUS_OFF_CHECKED} />&nbsp;{TXT_DEACTIVATED}&nbsp;<img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" /></td>
+		</tr>
+	</table>
+	<br />
+	<input type="submit" value="{TXT_BUTTON_SAVE}" />
 </form>
 
 <!-- END settings.html -->

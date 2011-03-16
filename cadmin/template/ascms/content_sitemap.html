@@ -1,843 +1,118 @@
 <!-- START content_sitemap.html -->
 <script language="JavaScript" type="text/javascript">
-/* <![CDATA[ */
-
-__CSRF__ = {key:"{CSRF_KEY}", code:"{CSRF_CODE}"};
-__CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
-
-var blnExpandAll = {SITEMAP_EXPAND_ALL};
-var intExpandCatId = {SITEMAP_EXPAND_CAT_ID};
-
-function AddToTheList(from,dest,add,remove) {
-    if ( from.selectedIndex < 0){
-    if (from.options[0] != null)
-      from.options[0].selected = true;
-    from.focus();
-    return false;
-  }else{
-    for (var i=0; i<from.length; i++) {
-      if (from.options[i].selected)
-      {
-          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-         }
-    }
-      for (var i=from.length-1; i>=0; i--) {
-      if (from.options[i].selected)
-      {
-           from.options[i] = null;
-         }
-    }
-  }
-    disapleButtons(from,dest,add,remove);
-}
-
-function RemoveFromTheList(from,dest,add,remove) {
-  if ( dest.selectedIndex < 0){
-    if (dest.options[0] != null)
-      dest.options[0].selected = true;
-    dest.focus();
-    return false;
-  }
-  else{
-    for (var i=0; i<dest.options.length; i++)
-    {
-      if (dest.options[i].selected)
-      {
-          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-         }
-    }
-      for (var i=dest.options.length-1; i>=0; i--)
-    {
-      if (dest.options[i].selected)
-      {
-           dest.options[i] = null;
-         }
-    }
-  }
-  disapleButtons(from,dest,add,remove);
-}
-
-function disapleButtons(from,dest,add,remove) {
-  if (from.options.length > 0 )
-  {
-    add.disabled = 0;
-  }
-  else
-    add.disabled = 1;
-
-  if (dest.options.length > 0)
-    remove.disabled = 0;
-  else
-    remove.disabled = 1;
-}
-
-function SelectAllList(CONTROL) {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = true;
-  }
-}
-
-function DeselectAllList(CONTROL) {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
-}
-
+<!-- // confirm delete page
 function deletePage(pageId)
 {
-    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&act=delete&pageId="+pageId+'&'+__CSRF__QSTR);
+  if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=delete&pageId="+pageId);
+}
+
+function deleteContent(contentId)
+{
+  if(confirm('{TXT_CONFIRM_DELETE_CONTENT}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=deleteAll&contentId="+contentId);
 }
 
 function repositoryPage(pageId)
 {
-    if(confirm('{TXT_CONFIRM_REPOSITORY}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("index.php?cmd=content&act=addrepository&pageid="+pageId+'&'+__CSRF__QSTR);
+  if(confirm('{TXT_CONFIRM_REPOSITORY}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=addrepository&pageid="+pageId);
 }
 
 function changeStatus(pageId)
 {
-    if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
-        window.location.replace("index.php?cmd=content&act=changestatus&pageId="+pageId+'&'+__CSRF__QSTR);
+  if(confirm('{TXT_CONFIRM_CHANGESTATUS}'))
+    window.location.replace("index.php?cmd=content&{CSRF_PARAM}&act=changestatus&pageId="+pageId);
 }
-
 function selectMultiAction()
 {
-    with (document.form)
-    {
-      switch (frmContentSitemap_MultiAction.value) {
-        case 'activate':
+  with (document.form)
+  {
+    switch (frmContentSitemap_MultiAction.value) {
+      case 'activate':
+        submit();
+      break;
+      case 'deactivate':
+        submit();
+       break;
+      case 'delete':
+        if (confirm('{TXT_DELETE_ALL}')) {
           submit();
-        break;
-        case 'deactivate':
-          submit();
-        break;
-        case 'delete':
-          if (confirm('{TXT_DELETE_ALL}')) {
-            submit();
-          }
-    	  else {
-    		frmContentSitemap_MultiAction.selectedIndex = 0;
-    	  }
-        break;
-        default: //do nothing
-      }
+        } else {
+          frmContentSitemap_MultiAction.selectedIndex = 0;
+        }
+      break;
+      default: //do nothing
     }
+  }
 }
-
-(function(){ //wrap in anonyomous function to avoid polluting the global namespace
-
-    var rootUlId = 'sortableNavigation';
-    var $tabs;
-    var $containers;
-
-    $J(function(){
-        //set top border for first page entry
-    	$J('#sortableNavigation > li > div:first').css({borderTop:'1px solid #DCE4FF'});
-    	
-        $J('#tabmenu li a').click(function(){ //change language via upper right form with dropdown if tabmenu item gets clicked
-                $J('form[name=userFrontendLangIdForm] :selected').val($J(this).attr('id').replace(/.*?(\d+)$/, '$1'));
-                $J('form[name=userFrontendLangIdForm]').submit();
-        });
-
-        $J('#'+rootUlId+' li div.sort-handle').mousedown(function(){
-            collapseNode.apply($J('a.hasChildren,a.hasNoChildren', $J(this).closest('li')));
-        });
-        
-        $tabs = $J('#tab_system,#tab_sitesettings,#tab_frontend,#tab_backend');
-        $containers = $J('#container_system,#container_sitesettings,#container_frontend,#container_backend');
-        $tabs.one('click', toggleGlobalSiteConfigTab);
-        
-        $J('#setGlobalPageTitle').one('click', updateGlobalPageTitle);
-        $J('#setThemesId').one('click', updateThemesId);
-        $J('#setCssName').one('click', updateCssName);
-        $J('#setCssNameNav').one('click', updateCssNameNav);
-        $J('#setRedirectTarget').one('click', updateRedirectTarget);
-        $J('#setCachingstatus').one('click', updateCachingstatus);
-        $J('#setRobots').one('click', updateRobots);
-        $J('#setFrontendPermissions').one('click', updateFrontendPermissions);
-        $J('#setBackendPermissions').one('click', updateBackendPermissions);
-        
-        initSortable();
-
-        $J('.hasChildren').live('click', function(){
-            nodeHandler.apply(this);
-            return false;
-        });
-
-        $J('.hasNoChildren').live('click', function(){
-            return false;
-        });
-
-        $J('#expandAllLink').click(expandAll);
-        $J('#collapseAllLink').click(collapseAll);
-
-        expandCats();
-        resetRowClasses();
-        var $globPropContainer = $J('#globalProperties');
-        $J('#rootLink').toggle(function(){        	
-        	$globPropContainer.stop().slideDown('fast');
-        },
-        function(){
-        	$globPropContainer.stop().slideUp('fast');
-        });        
-    });
-
-    var toggleGlobalSiteConfigTab = function(){
-        if($J(this).hasClass('inactive')){
-            var that = this;
-            $containers.filter(function(){return $J(this).is(':visible')}).slideUp('fast', function(){
-                $J('#container_'+$J(that).attr('id').replace(/tab_/, '')).slideDown('fast', function(){
-                    $tabs.one('click', toggleGlobalSiteConfigTab);                                
-                });
-            });
-        }       
-        $tabs.removeClass().addClass('inactive');
-        $J(this).removeClass().addClass('active');
-    }
-    
-    var updateFrontendPermissions = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_FRONTEND_PERMISSION}'.replace(/%s/, lang))){
-            $J(that).one('click', updateFrontendPermissions);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-	    $J('[name=assignedGroups[]] option').attr('selected','selected');
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=frontendpermission&'+__CSRF__QSTR,
-	        data: $J('[name=assignedGroups[]]').serialize()+'&'+$J('[name=protection]').serialize(),
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setFrontendPermissionsMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateFrontendPermissions);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateBackendPermissions = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_BACKEND_PERMISSION}'.replace(/%s/, lang))){
-            $J(that).one('click', updateBackendPermissions);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-        $J('[name=assignedBackendGroups[]] option').attr('selected','selected');
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=backendpermission&'+__CSRF__QSTR,
-	        data: $J('[name=assignedBackendGroups[]]').serialize()+'&'+$J('[name=backendPermission]').serialize(),
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setBackendPermissionsMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateBackendPermissions);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateCachingstatus = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_CACHINGSTATUS}'.replace(/%s/, lang))){
-            $J(that).one('click', updateCachingstatus);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=cachingstatus&'+__CSRF__QSTR,
-	        data: {cachingstatus: $J('input[name=cachingstatus]').is(':checked') ? '0' : '1'},
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setCachingstatusMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateCachingstatus);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateRobots = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_ROBOTS}'.replace(/%s/, lang))){
-            $J(that).one('click', updateRobots);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=robots&'+__CSRF__QSTR,
-	        data: {robots: $J('input[name=robots]').is(':checked') ? 'index' : 'noindex'},
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setRobotsMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateRobots);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateRedirectTarget = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_REDIRECT_TARGET}'.replace(/%s/, lang))){
-            $J(that).one('click', updateRedirectTarget);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=redirecttarget&'+__CSRF__QSTR,
-	        data: {redirectTarget: $J('input[name=redirectTarget]').val()},
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setRedirectTargetMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateRedirectTarget);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateCssNameNav = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-	    var cssname = $J('input[name=cssNameNav]').val();
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_CSSNAME_NAV}'.replace(/%s/, cssname).replace(/%s/, lang))){
-            $J(that).one('click', updateCssNameNav);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=cssnamenav&'+__CSRF__QSTR,
-	        data: {cssNameNav: $J('input[name=cssNameNav]').val()},
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setCssNameNavMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateCssNameNav);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateCssName = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-	    var cssname = $J('input[name=cssName]').val();
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_CSSNAME}'.replace(/%s/, cssname).replace(/%s/, lang))){
-            $J(that).one('click', updateCssName);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=cssname&'+__CSRF__QSTR,
-	        data: {cssName: $J('input[name=cssName]').val()},
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setCssNameMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateCssName);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateThemesId = function(){
-        $J(this).attr('disabled', 'disabled');
-	    var that = this;
-	    var theme = $J('select[name=themesId] option:selected').text();
-        var lang = $J('#tabmenu a.active').text();
-	    if(!confirm('{TXT_CONFIRM_SET_GLOBAL_THEMES_ID}'.replace(/%s/, theme).replace(/%s/, lang))){
-            $J(that).one('click', updateThemesId);
-            $J(that).removeAttr('disabled');
-	        return false;
-	    }
-	    $J.ajax({
-	        url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=themesid&'+__CSRF__QSTR,
-	        data: {themesId: $J('select[name=themesId] option:selected').val()},
-	        type: 'POST',
-	        dataType: 'json',
-	        success: function(data){
-	            if(data.ok){
-	                $J('#setThemesIdMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-	                    $J(this).fadeOut('slow', function(){
-	                        $J(this).empty();
-	                    })
-	                });
-	                $J(that).one('click', updateThemesId);
-	                $J(that).removeAttr('disabled');
-	            }
-	        }
-	    }); 
-    }
-    
-    var updateGlobalPageTitle = function(){
-        $J(this).attr('disabled', 'disabled');
-        var that = this;
-        $J.ajax({
-            url: '{DIRECTORY_INDEX}?cmd=content&act=siteconfig&data=globalpagetitle&'+__CSRF__QSTR,
-            data: {globalPageTitle: $J('input[name=globalPageTitle]').val()},
-            type: 'POST',
-            dataType: 'json',
-            success: function(data){
-                if(data.ok){
-                    $J('#setGlobalPageTitleMsg').css({display:'inline'}).html(data.ok).fadeIn('slow', function(){
-                        $J(this).fadeOut('slow', function(){
-                            $J(this).empty();
-                        })
-                    });
-                    $J(that).one('click', updateGlobalPageTitle);
-                    $J(that).removeAttr('disabled');
-                }
-            }
-        });
-    }
-   
-    var expandCats = function(){
-    	if(blnExpandAll){
-            expandAll(false);
-        } else {
-            collapseAll(false);            
-            if(intExpandCatId > 0){
-                expandNode.apply($J('#pageId-'+intExpandCatId).get(0));
-            }
-        }
-    }
-    
-    var nodeHandler = function(){
-        if($J(this).is('.nodeExpanded')){
-            collapseNode.apply(this);
-            resetRowClasses();
-        } else {
-            expandNode.apply(this);
-            var pageId = $J(this).closest('li').attr('id').replace(/.*?(\d+)$/, '$1');
-            $J.get('{DIRECTORY_INDEX}?standalone=1&cmd=content&act=expand&catId='+pageId+'&'+__CSRF__QSTR);
-            resetRowClasses();
-        }
-    }
-
-    var initSortable = function(){
-        //turn the nested lists into draggable and sortable objects
-        $J('#'+rootUlId).NestedSortable({
-            accept: 'sortablePage',
-            ghosting: true,
-            opacity: 0.5,
-            fx: 200,
-            revert: true,
-            currentNestingClass: 'nestedHighlight',
-            nestingPxSpace: 16,
-            activeclass: 'nsactive',
-            hoverclass: 'nshover',
-            helperclass: 'nshelper',
-            handle: '.sort-handle',
-            autoScroll: true,
-            onStart: function(){},
-            onHover: function(){},
-            onOut: function(){},
-            onStop: function(){
-                i=0;
-                $J('#'+rootUlId+' li').each(function(){
-                    var node    =  $J('a.hasChildren, a.hasNoChildren', this);
-                    node.removeClass('hasChildren hasNoChildren nodeExpanded nodeCollapsed');
-                    var visible = 0;
-                    var total   = 0;
-                    $J('> ul', this).each(function(){
-                        if($J('li', this).length == 0){
-                            return;
-                        }
-                        total++;
-                        if(this.style.display != 'none'){
-                            visible++;
-                        }
-                    });
-                    if(total > 0){
-                        if(visible > 0){
-                            node.addClass('hasChildren nodeExpanded');
-                        }else{
-                            node.addClass('hasChildren nodeCollapsed');
-                        }
-                    }else{
-                        node.addClass('hasNoChildren');
-                    }
-                });
-                resetRowClasses();
-            },
-            onChange: function(serialized) {
-                var hash = serialized[0].hash;
-                $J.ajax({
-                    type: 'POST',
-                    url: '{DIRECTORY_INDEX}?cmd=content&act=updateSorting',
-                    data: hash,
-                    dataType: 'json',
-                    success: function(data){
-                        if(!data.success){
-                            alert('{TXT_DATABASE_QUERY_ERROR}');
-                        }
-                    }
-                });
-                resetRowClasses();
-            }
-        });
-    }
-
-    var collapseNode = function(){
-        if($J(this).closest('li').children('ul').length == 0){
-            return;
-        }
-        $J(this).closest('li').children('ul').hide();
-        if(this.tagName == 'LI'){            
-            $J('a.hasChildren:first', $(this)).removeClass('nodeExpanded').addClass('nodeCollapsed');
-        } else {
-            $J(this).removeClass('nodeExpanded').addClass('nodeCollapsed');
-        }
-        //traverse up all nodes
-        //collapseNode.apply($J(this).closest('li').parent().closest('li'));
-    }
-
-    var expandNode = function(){
-        if($J(this).closest('li').children('ul').length == 0){
-            return;
-        }
-        $J(this).closest('li').children('ul').show();
-        if(this.tagName == 'LI'){     
-            $J('a.hasChildren:first', $(this)).removeClass('nodeCollapsed').addClass('nodeExpanded');
-        } else {
-            $J(this).removeClass('nodeCollapsed').addClass('nodeExpanded');
-        }
-        //traverse up all nodes
-        expandNode.apply($J(this).closest('li').parent().closest('li').get(0));
-    }
-
-    var collapseAll = function(update){
-        $J('a.hasChildren').closest('li').children('ul').hide();
-        $J('a.hasChildren').removeClass('nodeExpanded').addClass('nodeCollapsed');
-        resetRowClasses();
-        if(update){
-            $J.get('{DIRECTORY_INDEX}?standalone=1&cmd=content&act=collaps&'+__CSRF__QSTR);
-        }
-        return false;
-    }
-
-    var expandAll = function(update){
-        $J('a.hasChildren').closest('li').children('ul').show();
-        $J('a.hasChildren').removeClass('nodeCollapsed').addClass('nodeExpanded');
-        resetRowClasses();
-        if(update){
-            $J.get('{DIRECTORY_INDEX}?standalone=1&cmd=content&act=expandAll&'+__CSRF__QSTR);
-        }
-        return false;
-    }
-
-
-    var resetRowClasses = function(){
-        var i=0;
-        $J('#sortableNavigation li > div').each(function(){
-            $J(this).removeClass('row1 row2');
-            if($J(this).closest('ul')[0].style.display == 'none'){
-                return;
-            }
-            $J(this).addClass('row' + (i++ % 2 == 0 ? 1 : 2));
-        });
-    }
-
-})();//execute anonymous function
-
-/* ]]> */
+// -->
 </script>
 <form name="form" action="index.php?cmd=content&amp;act=mod" method="post">
-<ul id="tabmenu">
-<!-- BEGIN languages_tab -->
-    <li><a class="{TAB_CLASS}" title="{LANGUAGE_TITLE}" id="langTab_{LANGUAGE_ID}">{LANGUAGE_NAME}</a></li>
-<!-- END languages_tab -->
-</ul>
-<div class="adminHeader">
-    <div class="siteMapFunctions siteMapHeader">
-        <b>{TXT_FUNCTIONS}</b>
-    </div>
-    <div class="siteMapUser siteMapHeader">
-        <b>{TXT_USER}</b>
-    </div>
-    <div class="siteMapLastEdited siteMapHeader">
-        <b>{TXT_LAST_EDIT}</b>
-    </div>
-    <div class="siteMapModule siteMapHeader">
-        <b>{TXT_MODULE}</b>
-    </div>
-    <div class="siteMapPage">
-        <b>{TXT_PAGE}</b>&nbsp;&nbsp;&nbsp;
-        [ <a id="expandAllLink" href="?cmd=content&amp;act=expandAll">{TXT_EXPAND_LINK}</a>
-        | <a id="collapseAllLink" href="?cmd=content&amp;act=collaps">{TXT_COLLAPS_LINK}</a>
-        ]
+<table summary="" class="adminlist" width="100%" cellspacing="0" cellpadding="3" border="0">
+<tr>
+<th width="50%">
+<div align="left"><b>{TXT_PAGE}</b>&nbsp;&nbsp;&nbsp;[ <a href="index.php?cmd=content&amp;act=expandAll">{TXT_EXPAND_LINK}</a>
+| <a href="index.php?cmd=content&amp;act=collaps">{TXT_COLLAPS_LINK}</a>
+]</div>
+</th>
+<th nowrap="nowrap" width="20%">
+<div align="left"><b>{TXT_MODULE}</b></div>
+</th>
+<th nowrap="nowrap" width="15%">
+<div align="left"><b>{TXT_LAST_EDIT}</b></div>
+</th>
+<th nowrap="nowrap" width="10%">
+<div align="left"><b>{TXT_USER}</b></div>
+</th>
+<th nowrap="nowrap" >
+<div align="left"><b>{TXT_FUNCTIONS}</b></div>
+</th>
+</tr>
+<!-- BEGIN siteRow -->
+<tr class="row2">
+<td colspan="2"><div style="padding-left: 0px">
+<img src='images/icons/pixel.gif' alt="" width="1" height="1" />
+<img src="images/icons/root_active.gif" alt="" border="0" align="middle" />&nbsp;&nbsp;&nbsp;Frontend [<b>{CONTENT_NAME}</b>]</div></td>
+<td><div style="padding-left: 0px">&nbsp;</div></td>
+<td><div style="padding-left: 0px">&nbsp;</div></td>
+<td nowrap="nowrap">
+<img src='images/icons/pixel.gif' alt="" width="16" height="16" />
+<a href="index.php?cmd=content&amp;act=copyAll"><img src="images/icons/copy.gif" alt="{TXT_COPY_CONTENT}" title="{TXT_COPY_CONTENT}" border="0" /></a>
+<img src='images/icons/pixel.gif' alt="" width="16" height="16" />
+<a href="javascript:deleteContent('{CONTENT_ID}');"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" title="{TXT_DELETE}" border="0" /></a>
+</td>
+</tr>
+<!-- END siteRow -->
 
-    </div>
-</div>
-<!-- BEGIN header -->
-<div>
-    <div class="siteMapFunctions siteMapColumn row2" style="border: 0px;">
-        <a href="index.php?cmd=content&amp;act=copyAll"><img src="images/icons/copy.gif" alt="{TXT_COPY_CONTENT}" title="{TXT_COPY_CONTENT}" border="0" /></a>
-        <img class="icon" src='images/icons/pixel.gif' alt="" title="" />&nbsp;
-        <img class="icon" src='images/icons/pixel.gif' alt="" title="" />
-    </div>
-    <div class="siteMapPage row2" style="border: 0px;">
-       <img class="icon" src="images/icons/root_active.gif" alt="" border="0" align="middle" />&nbsp;&nbsp;&nbsp;
-           <a href="#" id="rootLink"> Frontend [<b>{CONTENT_NAME}</b>] </a>
-    </div>    
-</div>
-<!-- END header -->
-<div style="display: none;" id="globalProperties">
-	<ul class="tabmenu" style="border-bottom: 1px solid #DCE4FF; margin-top: 2px;">
-	    <li><a class="active" title="{TXT_SYSTEM_SETTINGS}" id="tab_system">{TXT_SYSTEM_SETTINGS}</a></li>
-	    <li><a class="inactive" title="{TXT_UPDATE_ALL_SITES}" id="tab_sitesettings">{TXT_UPDATE_ALL_SITES}</a></li>
-	    <li><a class="inactive" title="{TXT_FRONTEND_PERMISSION}" id="tab_frontend">{TXT_FRONTEND_PERMISSION}</a></li>
-	    <li><a class="inactive" title="{TXT_RELATEDNESS}" id="tab_backend">{TXT_RELATEDNESS}</a></li>
-	</ul>
-	<div id="container_system">
-	    <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
-	        <tbody>
-	           <tr class="row1">
-	                <td width="200">{TXT_SETTINGS_GLOBAL_TITLE}</td>
-	                <td>
-	                    <input size="40" type="text" name="globalPageTitle" value="{SETTINGS_GLOBAL_TITLE}" />
-	                    <input type="button" id="setGlobalPageTitle" value="{TXT_SAVE}" />
-	                    <span id="setGlobalPageTitleMsg"></span>
-	                </td>
-	            </tr>
-	        </tbody>
-	    </table>     
-    </div>
-    <div id="container_sitesettings" style="display:none;">       
-	    <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
-	        <tbody>
-	           <tr class="row1">
-		          <td width="15%">{TXT_THEMES}</td>
-		          <td width="85%">
-		            <select style="width: 302px;" name="themesId">
-		              {CONTENT_THEMES_MENU}
-		            </select>
-	                <input type="button" id="setThemesId" value="{TXT_SAVE}" />
-	                <span id="setThemesIdMsg"></span>
-		          </td>
-		        </tr>
-		        <tr class="row2">
-		          <td>{TXT_OPTIONAL_CSS_NAME}</td>
-		          <td>
-		            <input name="cssName" type="text" id="cssName" style="width: 300px;"  maxlength="50" />
-		            <input type="button" id="setCssName" value="{TXT_SAVE}" />
-	                <span id="setCssNameMsg"></span>
-		          </td>
-		        </tr>
-	            <tr class="row1">
-	              <td width="15%">{TXT_OPTIONAL_CSS_NAME} {TXT_NAVIGATION}</td>
-	              <td width="85%">
-	                <input name="cssNameNav" type="text" id="cssNameNav" size="40" style="width: 300px;" maxlength="50" />
-	                <input type="button" id="setCssNameNav" value="{TXT_SAVE}" />
-	                <span id="setCssNameNavMsg"></span>                
-	              </td>
-	            </tr>
-	            <tr class="row2">
-	              <td>{TXT_TARGET}</td>
-	              <td>
-		              <select style="width: 302px;" name="redirectTarget">
-		                  <option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
-		                  <option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
-		                  <option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
-		                  <option value="_self">{TXT_TARGET_SELF} (_self)</option>
-		                  <option value="_top">{TXT_TARGET_TOP} (_top)</option>
-		              </select>
-		              <input type="button" id="setRedirectTarget" value="{TXT_SAVE}" />
-                      <span id="setRedirectTargetMsg"></span>             		              
-		          </td>
-	            </tr>
-	            <tr class="row1">
-		          <td>{TXT_CACHING_STATUS}</td>
-		          <td>
-		              <input type="checkbox" name="cachingstatus" value="1" />
-		              <input type="button" id="setCachingstatus" value="{TXT_SAVE}" />
-                      <span id="setCachingstatusMsg"></span>       
-		          </td>
-		        </tr>
-		        <tr class="row2">
-		          <td>{TXT_META_ROBOTS}</td>
-		          <td>
-		              <input type="checkbox" name="robots" value="index" />
-		              <input type="button" id="setRobots" value="{TXT_SAVE}" />
-                      <span id="setRobotsMsg"></span>       
-		          </td>
-		        </tr>       
-		   </tbody>
-	   </table>
-   </div>
-   <div id="container_frontend" style="display:none;">
-     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
-        <tbody>
-           <tr class="row1">	         
-	          <td style="width: 300px; vertical-align: top;">
-	            <input value="0" id="noFrontendProtection" name="protection" type="radio" /><label for="noFrontendProtection">&nbsp;{TXT_PUBLIC_PAGE}</label><br />
-	            <input value="1" id="yesFrontendProtection" name="protection" type="radio" /><label for="yesFrontendProtection">&nbsp;{TXT_PROTECTION}</label>
-	          </td>
-              <td>
-                <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="frontendGroups" style="display:{CONTENT_PROTECTION_DISPLAY};">
-			      <tbody style="vertical-align:top;">
-			        <tr class="row1">
-			          <td width="15%">{TXT_GROUPS}</td>
-			          <td width="1%">&nbsp;</td>
-			          <td>{TXT_GROUPS_DEST}</td>
-			        </tr>
-			        <tr class="row1">
-			          <td>
-			            <select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
-			            {CONTENT_EXISTING_GROUPS}
-			            </select>
-			            <br />
-			            <font size="1">
-			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=existingGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=existingGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
-			            </font>
-			          </td>
-			          <td>
-			            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList($J('[name=existingGroups[]]').get(0),$J('[name=assignedGroups[]]').get(0),adduser,removeuser);" style="margin-bottom:1px;" /><br />
-			            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList($J('[name=existingGroups[]]').get(0),$J('[name=assignedGroups[]]').get(0),adduser,removeuser);" />
-			          </td>
-			          <td>
-			            <select name="assignedGroups[]" size="10" style="width:300px;" multiple="multiple">
-			            {CONTENT_ASSIGNED_GROUPS}
-			            </select>
-			            <input style="vertical-align: top;" type="button" id="setFrontendPermissions" value="{TXT_SAVE}" />
-                        <span style="vertical-align: top;" id="setFrontendPermissionsMsg"></span>       
-			            <br />
-			            <font size="1">
-			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=assignedGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=assignedGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
-			            </font>
-			          </td>
-			        </tr>
-			      </tbody>
-			    </table>
-              </td>
-            </tr>
-        </tbody>
-     </table>
-  </div>
-  <div id="container_backend" style="display:none;">
-     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center" class="adminlist">
-        <tbody>
-            <tr class="row1">
-               <td style="width: 300px; vertical-align: top;">
-	            <input value="0" name="backendPermission" id="noBackendPermission" type="radio" /><label for="noBackendPermission">&nbsp;{TXT_BACKEND_RELEASE}</label><br />
-	            <input value="1" name="backendPermission" id="yesBackendPermission" type="radio" /><label for="yesBackendPermission">&nbsp;{TXT_LIMIT_GROUP_RIGHTS}</label>
-	          </td>
-              <td> 
-			    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="backendGroups" style="display:{CONTENT_CONTROL_BACKEND_DISPLAY};">
-			      <tbody>
-			        <tr class="row1">
-			          <td width="15%">{TXT_GROUPS}</td>
-			          <td width="1%">&nbsp;</td>
-			          <td>{TXT_GROUPS_DEST}</td>
-			        </tr>
-			        <tr class="row1">
-			          <td>
-			            <select name="existingBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
-			            {CONTENT_EXISTING_BACKEND_GROUPS}
-			            </select>
-			            <br />
-			            <font size="1">
-			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=existingBackendGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=existingBackendGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
-			            </font>
-			          </td>
-			          <td width="1%">
-			            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList($J('[name=existingBackendGroups[]]').get(0),$J('[name=assignedBackendGroups[]]').get(0),adduser,removeuser);" style="margin-bottom:1px;" /><br />
-			            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList($J('[name=existingBackendGroups[]]').get(0),$J('[name=assignedBackendGroups[]]').get(0),adduser,removeuser);" />
-			          </td>
-			          <td>
-			            <select name="assignedBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
-			            {CONTENT_ASSIGNED_BACKEND_GROUPS}
-			            </select>
-                        <input style="vertical-align: top;" type="button" id="setBackendPermissions" value="{TXT_SAVE}" />
-                        <span style="vertical-align: top;" id="setBackendPermissionsMsg"></span>       
-    		            <br />
-			            <font size="1">
-			              <a href="javascript:void(0);" onclick="SelectAllList($J('[name=assignedBackendGroups[]]').get(0))" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
-			              <a href="javascript:void(0);" onclick="DeselectAllList($J('[name=assignedBackendGroups[]]').get(0))" style="color:blue;">{TXT_DESELECT_ALL}</a>
-			            </font>
-			          </td>
-			        </tr>
-			      </tbody>
-			    </table>
-	          </td>
-	        </tr>
-        </tbody>
-      </table>
-   </div>
-</div>
-
-{SITEMAP_NESTED_PAGES}
-
+<!-- BEGIN pageRow -->
+<tr class="{SITEMAP_ROWCLASS}">
+<td><div style="padding-left: {SITEMAP_ROW_PADDING}px">
+<input type="checkbox" name="selectedPages[]" value="{SITEMAP_PAGE_ID}" />
+{SITEMAP_PAGE_LEVEL}
+<input {SITEMAP_DISPLAYORDER_DISABLED} class="tree_input" maxlength="5" size="3" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_new[{SITEMAP_PAGE_ID}]" />
+<input type="hidden" value="{SITEMAP_PAGE_DISPLAYORDER}" name="displayorder_old[{SITEMAP_PAGE_ID}]" />
+<input type="hidden" value="{SITEMAP_PAGE_ID}" name="catid[{SITEMAP_PAGE_ID}]" />
+<a href="{SITEMAP_PAGE_LINK}"><b>{SITEMAP_PAGE_NAME}</b></a></div></td>
+<td nowrap="nowrap"><i>{SITEMAP_PAGE_MODULE}&nbsp;{SITEMAP_PAGE_CMD}</i></td>
+<td nowrap="nowrap">{SITEMAP_PAGE_CHANGELOG}&nbsp;</td>
+<td nowrap="nowrap"><img src="images/icons/creator.gif" alt="" border="0" align="middle" />&nbsp;{SITEMAP_PAGE_USERNAME}</td>
+<td nowrap="nowrap">{SITEMAP_REPOSITORY}
+<a href="index.php?cmd=content&amp;act=new&amp;pageId={SITEMAP_PAGE_ID}"><img src="images/icons/copy.gif" alt="{TXT_TEMPLATE}" title="{TXT_TEMPLATE}" border="0" /></a>
+<a href="index.php?cmd=content&amp;act=edit&amp;pageId={SITEMAP_PAGE_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" title="{TXT_EDIT}" border="0" /></a>
+<a href="javascript:deletePage('{SITEMAP_PAGE_ID}');" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" title="{TXT_DELETE}" border="0" /></a></td>
+</tr>
+<!-- END pageRow -->
+</table>
 <br />
-<!--<input type="submit" value="{TXT_SAVE_CHANGES}" name="Submit" style="margin-left:30px;" />-->
+<input type="submit" value="{TXT_SAVE_CHANGES}" name="Submit" style="margin-left:30px;" />
 <table summary="" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td>
-      <img style="margin-left: 43px;" src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+      <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
       <a href="#" onclick="changeCheckboxes('form','selectedPages[]',true); return false;">{TXT_SELECT_ALL}</a> /
       <a href="#" onclick="changeCheckboxes('form','selectedPages[]',false); return false;">{TXT_DESELECT_ALL}</a>
-      <img alt="-" title="-" src="images/icons/strike.gif" />
+      <img src="images/icons/strike.gif" />
       <select name="frmContentSitemap_MultiAction" onchange="selectMultiAction();">
         <option value="0">{TXT_SUBMIT_SELECT}</option>
         <option value="delete">{TXT_SUBMIT_DELETE}</option>
@@ -850,55 +125,52 @@ function selectMultiAction()
 <br />
 <br />
 </form>
-
 <style type="text/css">@import url('template/ascms/css/contentManager.css') all;</style>
 <!--[if lte IE 7]>
 <style type="text/css">@import url('template/ascms/css/contentManager_ie.css');</style>
 <![endif]-->
-
 <script src="../lib/javascript/scriptaculous/scriptaculous.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
-/* <![CDATA[ */
 function moveDivsToEndOfBodyTag() {
-  $J('#editMode_Background').appendTo('body');
-  $J('#editMode_Window').appendTo('body')
+	backgroundDiv = $('editMode_Background').remove();
+	windowDiv = $('editMode_Window').remove();
+
+	body = document.getElementsByTagName("body")[0];
+	new Insertion.Bottom(body, backgroundDiv);
+	new Insertion.Bottom(body, windowDiv);
 }
-
-
-$J(moveDivsToEndOfBodyTag);
+window.onload = moveDivsToEndOfBodyTag;
 
 function showEditModeWindow(cmdName, pageId) {
-  $J('#editMode_Background').css({opacity: 0.5});
-  $J('#editMode_Code_Link1').attr('href', '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId=' + pageId + "&" + __CSRF__QSTR);
-  $J('#editMode_Code_Link2').attr('href', '{DIRECTORY_INDEX}?cmd=content&act=edit&pageId=' + pageId + "&" + __CSRF__QSTR);
-  $J('#editMode_Content_Link1').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&" + __CSRF__QSTR);
-  $J('#editMode_Content_Link2').attr('href', '{DIRECTORY_INDEX}?cmd=' + cmdName + "&" + __CSRF__QSTR);
-  $J('#editMode_Background').fadeIn('slow');
-  $J('#editMode_Window').fadeIn('slow');
+	$('editMode_Code_Link1').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId + '&{CSRF_PARAM}';
+	$('editMode_Code_Link2').href 		= 'index.php?cmd=content&act=edit&pageId=' + pageId + '&{CSRF_PARAM}';
+	$('editMode_Content_Link1').href 	= 'index.php?cmd=' + cmdName + '&{CSRF_PARAM}';
+	$('editMode_Content_Link2').href 	= 'index.php?cmd=' + cmdName + '&{CSRF_PARAM}';
+
+	Effect.Appear('editMode_Background', {duration: 0.5, to: 0.5});
+	Effect.Appear('editMode_Window', {duration: 0.5});
 }
 
 function closeEditModeWindow() {
-  $J('#editMode_Background').fadeOut('slow');
-  $J('#editMode_Window').fadeOut('slow');
+	Effect.Fade('editMode_Background', {duration: 0.5, from: 0.5});
+	Effect.Fade('editMode_Window', {duration: 0.5, queue:{scope:'myscope', position:'end'}});
 }
-
-/* ]]> */
 </script>
 <div id="editMode_Background" style="display: none;"></div>
 <div id="editMode_Window" style="display: none;">
-  <div id="editMode_Frame">
-    <div id="editMode_Title">
-      <div class="left">{TXT_EDITMODE_TITLE}</div>
-      <div class="right"><a href="javascript:void(0)" onclick="closeEditModeWindow();">X</a></div>
-    </div>
-    <div id="editMode_Content">
-      <p style="text-align: left;">{TXT_EDITMODE_TEXT}</p>
-      <div class="left"><a href="" title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link1"><img src="images/content_manager/editmode_Code.gif" alt="{TXT_EDITMODE_CODE}" title="{TXT_EDITMODE_CODE}" /></a></div>
-      <div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link1"><img src="images/content_manager/editmode_Content.gif" alt="{TXT_EDITMODE_CONTENT}" title="{TXT_EDITMODE_CONTENT}" /></a></div>
-      <br />
-      <div class="left"><a href="" title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link2">{TXT_EDITMODE_CODE}</a></div>
-      <div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link2">{TXT_EDITMODE_CONTENT}</a></div>
-    </div>
-  </div>
+	<div id="editMode_Frame">
+		<div id="editMode_Title">
+			<div class="left">{TXT_EDITMODE_TITLE}</div>
+			<div class="right"><a href="javascript:void(0)" onclick="closeEditModeWindow();">X</a></div>
+		</div>
+		<div id="editMode_Content">
+			<p style="text-align: left;">{TXT_EDITMODE_TEXT}</p>
+			<div class="left"><a href="" title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link1"><img src="images/content_manager/editmode_Code.gif" alt="{TXT_EDITMODE_CODE}" title="{TXT_EDITMODE_CODE}" /></a></div>
+			<div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link1"><img src="images/content_manager/editmode_Content.gif" alt="{TXT_EDITMODE_CONTENT}" title="{TXT_EDITMODE_CONTENT}" /></a></div>
+			<br />
+			<div class="left"><a href="" title="{TXT_EDITMODE_CODE}" id="editMode_Code_Link2">{TXT_EDITMODE_CODE}</a></div>
+			<div class="right"><a href="" title="{TXT_EDITMODE_CONTENT}" id="editMode_Content_Link2">{TXT_EDITMODE_CONTENT}</a></div>
+		</div>
+	</div>
 </div>
 <!-- END content_sitemap.html -->

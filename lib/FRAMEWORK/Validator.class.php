@@ -39,7 +39,7 @@ define('VALIDATOR_REGEX_URI_PROTO',
  */
 define('VALIDATOR_REGEX_URI',
       VALIDATOR_REGEX_URI_PROTO.
-      '?((([\w\d-]{2,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)){4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
+      '?((([\w\d-]{2,}\.)+[a-z]{2,})|((?:(?:25[0-5]|2[0-4]\d|[01]\d\d|\d?\d)(?:(\.?\d)\.)) {4}))(?:[\w\d]+)?(\/[\w\d\-\.\?\,\'\/\\\+\&\%\$\#\=\~]*)?'
 //    '(https?|ftp)\:\/\/([-a-z0-9.]+)(\/[-a-z0-9+&@#\/%=~_|!:,.;]*)?(\?[-a-z0-9+&@#\/%=~_|!:,.;]*)?'
 );
 
@@ -200,102 +200,5 @@ class FWValidator
         );
         return $result;
     }
-
-
-    /**
-     * Returns a file path url encoded so that it can be used
-     * as a a.href or img.src attribute value.
-     *
-     * @param string
-     * @return string
-     */
-    public static function getEscapedSource($source)
-    {
-        return implode('/', str_replace('+', '%20', array_map('urlencode', explode('/', $source))));
-    }
-
-
-    /**
-     * Returns true if the value is part of the comma separated list
-     * @param  string    $value    The value
-     * @param   string    $list     The comma separated list
-     * @return  boolean             True or false
-     */
-    static function is_value_in_comma_separated_list($value, $list)
-    {
-        $regex = '/(?:,|^)'.preg_quote($value).'(?:,|$)/';
-        return (boolean)preg_match($regex, $list);
-    }
-
-
-    /**
-     * Removes the value from the comma separated list
-     *
-     * If the value is not present, no change is made.
-     * @param   string    $value    The value
-     * @param   string    $list     The comma separated list
-     * @return  string              The list without the value
-     */
-    static function remove_value_from_comma_separated_list($value, $list)
-    {
-        $regex = '/(?:,|^)'.preg_quote($value).'(?:,|$)/';
-        return preg_replace('/^,|,$/', '', preg_replace($regex, ',', $list));
-    }
-
-
-    /**
-     * Appends the value to the comma separated list
-     *
-     * If the same value is already present, no change is made.
-     * @param   string    $value    The value
-     * @param   string    $list     The comma separated list
-     * @return  string              The list with the new value appended
-     */
-    static function append_value_to_comma_separated_list($value, $list)
-    {
-        if (!self::is_value_in_comma_separated_list($value, $list)) {
-            $list .= ($list ? ',' : '').$value;
-        }
-        return $list;
-    }
-
-    /**
-     * Prepends the value to the comma separated list
-     *
-     * If the same value is already present, no change is made.
-     * @param   string    $value    The value
-     * @param   string    $list     The comma separated list
-     * @return  string              The list with the new value prepended
-     */
-    static function prepend_value_to_comma_separated_list($value, $list)
-    {
-        if (!self::is_value_in_comma_separated_list($value, $list)) {
-            $list = $value.($list ? ',' : '').$list;
-        }
-        return $list;
-    }
-
-    /**
-     * Returns the values from a comma separated list as an array
-     * @param   string    $list     The comma separated list
-     * @return  array               The value array
-     */
-    static function get_array_from_comma_separated_list($list)
-    {
-        return preg_split('/,+/', $list); //, PREG_SPLIT_NO_EMPTY);
-    }
-
-
-    /**
-     * Returns the comma separated list of the values in an array
-     * @param   array     $array    The value array
-     * @return  string              The comma separated list
-     */
-    static function get_comma_separated_list_from_array($array)
-    {
-        return join(',', $array);
-    }
-
 }
-
 ?>

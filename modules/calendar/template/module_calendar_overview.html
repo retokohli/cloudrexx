@@ -3,172 +3,172 @@
 // <![CDATA[
 function deleteNote(Id)
 {
-  if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-    window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=delete&id="+Id);
+	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=delete&id="+Id);
 }
 function category()
 {
-  window.location.href = "{CALENDAR_REQUEST_URI}&catid="+document.selectCat.inputCat.value;
+	window.location.href = "{CALENDAR_REQUEST_URI}&{CSRF_PARAM}&catid="+document.selectCat.inputCat.value;
 }
 
 
 function selectMultiAction()
 {
-  with (document.frmEventList) {
-    switch (frmEventList_MultiAction.value) {
-      case 'delete':
-        if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-          submit();
-        }
-      break;
-      case 'activate':
-        action='?cmd=calendar{CALENDAR_MANDATE}&act=activate';
-        submit();
-      break;
-      case 'deactivate':
-        action='?cmd=calendar{CALENDAR_MANDATE}&act=deactivate';
-        submit();
-      break;
-      default: //do nothing
-    }
-  }
+	with (document.frmEventList){
+		switch (frmEventList_MultiAction.value) {
+			case 'delete':
+				if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+					submit();
+				}
+			break;
+			case 'activate':
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=activate';
+				submit();
+			break;
+			case 'deactivate':
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=deactivate';
+				submit();
+			break;
+			default: //do nothing
+		}
+	}
 }
 // ]]>
 </script>
 
 <table style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="0">
-  <tr>
-    <th nowrap="nowrap">
-      <div align="left">{TXT_CALENDAR_OVERVIEW}</div>
-    </th>
-    <th>
-      {TXT_EVENTS}
-    </th>
-  </tr>
-  <tr>
-    <td style="width: 200px; padding-left: 5px; border: 0px; vertical-align: top;  background-color: white;">
-      {CALENDAR}
+	<tr>
+		<th nowrap="nowrap">
+		  <div align="left">{TXT_CALENDAR_OVERVIEW}</div>
+		</th>
+		<th>
+			{TXT_EVENTS}
+		</th>
+	</tr>
+	<tr>
+		<td style="width: 200px; padding-left: 5px; border: 0px; vertical-align: top;  background-color: white;">
+			{CALENDAR}
 
-        <form action="index.php" method="get">
-        <select name="monthID" >
-        <!-- BEGIN calendar_monthlist -->
-          <option value="{CALENDAR_MONTHLIST_VALUE}"{CALENDAR_MONTHLIST_SELECTED}>{CALENDAR_MONTHLIST_NAME}</option>
-        <!-- END calendar_monthlist -->
-        </select>
-        <select name="yearID" >
-        <!-- BEGIN calendar_yearlist -->
-          <option value="{CALENDAR_YEARLIST_VALUE}"{CALENDAR_YEARLIST_SELECTED}>{CALENDAR_YEARLIST_VALUE}</option>
-        <!-- END calendar_yearlist -->
-        </select>
-        <input type="submit" value="{TXT_SEARCH}" />
-        <input type="hidden" name="cmd" value="calendar" />
-      </form>
-    </td>
-    <td style="vertical-align: top;">
-      <table style="width: 100%; margin-top: 0px;">
-        <tr class="row1">
-          <td>
-            <table>
-              <tr>
-                <td style="border: 0px;">
-                  {TXT_CALENDAR_CAT}:
-                </td>
-                <td style="border: 0px;">
-                  <form name="selectCat" action="#">
-                    <select name="inputCat" onchange="category()" >
-                      <option value="0" selected="selected">- {TXT_CALENDAR_ALL_CAT}</option>
-                      <!-- BEGIN calendar_cat -->
-                      <option value="{CALENDAR_CAT_ID}"{CALENDAR_CAT_SELECT}>[{CALENDAR_CAT_LANG}]&nbsp;&nbsp;{CALENDAR_CAT_NAME}</option>
-                      <!-- END calendar_cat -->
-                    </select>
-                  </form>
-                </td>
-              </tr>
+				<form action="index.php" method="get">
+				<select name="monthID" >
+				<!-- BEGIN calendar_monthlist -->
+					<option value="{CALENDAR_MONTHLIST_VALUE}"{CALENDAR_MONTHLIST_SELECTED}>{CALENDAR_MONTHLIST_NAME}</option>
+				<!-- END calendar_monthlist -->
+				</select>
+				<select name="yearID" >
+				<!-- BEGIN calendar_yearlist -->
+					<option value="{CALENDAR_YEARLIST_VALUE}"{CALENDAR_YEARLIST_SELECTED}>{CALENDAR_YEARLIST_VALUE}</option>
+				<!-- END calendar_yearlist -->
+				</select>
+				<input type="submit" value="{TXT_SEARCH}" />
+				<input type="hidden" name="cmd" value="calendar" />
+			</form>
+		</td>
+		<td style="vertical-align: top;">
+			<table style="width: 100%; margin-top: 0px;">
+				<tr class="row1">
+					<td>
+						<table>
+							<tr>
+								<td style="border: 0px;">
+									{TXT_CALENDAR_CAT}:
+								</td>
+								<td style="border: 0px;">
+									<form name="selectCat" action="#">
+										<select name="inputCat" onchange="category()" >
+											<option value="0" selected="selected">- {TXT_CALENDAR_ALL_CAT}</option>
+											<!-- BEGIN calendar_cat -->
+											<option value="{CALENDAR_CAT_ID}"{CALENDAR_CAT_SELECT}>[{CALENDAR_CAT_LANG}]&nbsp;&nbsp;{CALENDAR_CAT_NAME}</option>
+											<!-- END calendar_cat -->
+										</select>
+									</form>
+								</td>
+							</tr>
 
-              <tr>
-                <td style="border: 0px;">
-                  {TXT_CALENDAR_SEARCH}:
-                </td>
-                <td style="border: 0px;">
-                  <form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=overview&amp;catid={CALENDAR_CATID}" method="post" name="newCalendarNote">
-                     <input type="text" name="inputKeyword" id="searchInputKeyword" value="{TXT_CALENDAR_KEYWORD}" style="width: 200px" onclick="this.value=''" />
-                    <input type="submit" value="{TXT_SEARCH}" name="search" />
-                  </form>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="border: 0px;">&nbsp;</td>
-        </tr>
-        <tr>
-          <td style="border: 0px;">
-            <form name="frmEventList" method="post" action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=event_actions">
-            <table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
-              <tr>
-                <th colspan="11">
-                  {TXT_EVENTS}
-                </th>
-              </tr>
-              <tr class="row3">
-                <td><span style="font-weight:bold;">#</span></td>
-                <td><span style="font-weight:bold;">Status</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_START}</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_END}</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_TITLE}</span></td>
-                <td><span style="font-weight:bold;">{TXT_SERIES}</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_REGISTRATIONS}</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_SUBSCRIBER}</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_CSV_FILE}</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_CAT}</span></td>
-                <td><span style="font-weight:bold;">{TXT_CALENDAR_ACTION}</span></td>
-              </tr>
-              <!-- BEGIN event -->
-              <tr class="{CALENDAR_ROW}">
-                <td style="width: 20px">
-                  <input type="checkbox" name="selectedEventId[]" id="selectedEventId" value="{CALENDAR_EVENT_ID}" />
-                </td>
-                <td style="width: 40px; text-align: center;"><a href="index.php?cmd=calendar{MODULE_INDEX}&amp;act=toggle_event&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/led_{CALENDAR_ACTIVE_ICON}.gif" border="0" alt="{CALENDAR_EVENT_LED}" title="{CALENDAR_EVENT_LED}" /></a></td>
-                <td style="width: 110px">{CALENDAR_EVENT_STARTDATE}</td>
-                <td style="width: 110px">{CALENDAR_EVENT_ENDDATE}</td>
-                <td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
-                <td>{CALENDAR_SERIES}</td>
-                <td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
-                <td style="width: 150px">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
-                <td style="width: 150px"><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=getCSV&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/xls.gif" alt="{TXT_CALENDAR_CSV_FILE}" title="{TXT_CALENDAR_CSV_FILE}" border="0"/></a></td>
-                <td style="width: 150px">{CALENDAR_EVENT_CAT}</td>
-                <td style="width: 40px; text-align: right;">
-                  <a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=edit&amp;id={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EDIT}">
-                    <img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" />
-                  </a><a href="javascript:deleteNote({CALENDAR_EVENT_ID})" title="{TXT_CALENADR_DELETE}">
-                    <img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CALENDAR_DELETE}" />
-                  </a>
-                </td>
-              </tr>
-              <!-- END event -->
-            </table>
+							<tr>
+								<td style="border: 0px;">
+									{TXT_CALENDAR_SEARCH}:
+								</td>
+								<td style="border: 0px;">
+									<form action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=overview&amp;catid={CALENDAR_CATID}" method="post" name="newCalendarNote">
+										 <input type="text" name="inputKeyword" id="searchInputKeyword" value="{TXT_CALENDAR_KEYWORD}" style="width: 200px" onclick="this.value=''" />
+										<input type="submit" value="{TXT_SEARCH}" name="search" />
+									</form>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td style="border: 0px;">&nbsp;</td>
+				</tr>
+				<tr>
+					<td style="border: 0px;">
+						<form name="frmEventList" method="post" action="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=event_actions">
+						<table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
+							<tr>
+								<th colspan="11">
+									{TXT_EVENTS}
+								</th>
+							</tr>
+							<tr class="row3">
+								<td><span style="font-weight:bold;">#</span></td>
+								<td><span style="font-weight:bold;">Status</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_START}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_END}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_TITLE}</span></td>
+								<td><span style="font-weight:bold;">{TXT_SERIES}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_REGISTRATIONS}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_SUBSCRIBER}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_CSV_FILE}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_CAT}</span></td>
+								<td><span style="font-weight:bold;">{TXT_CALENDAR_ACTION}</span></td>
+							</tr>
+							<!-- BEGIN event -->
+							<tr class="{CALENDAR_ROW}">
+								<td style="width: 20px">
+									<input type="checkbox" name="selectedEventId[]" id="selectedEventId" value="{CALENDAR_EVENT_ID}" />
+								</td>
+								<td style="width: 40px; text-align: center;"><a href="index.php?cmd=calendar{MODULE_INDEX}&amp;act=toggle_event&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/led_{CALENDAR_ACTIVE_ICON}.gif" border="0" alt="{CALENDAR_EVENT_LED}" title="{CALENDAR_EVENT_LED}" /></a></td>
+								<td style="width: 110px">{CALENDAR_EVENT_STARTDATE}</td>
+								<td style="width: 110px">{CALENDAR_EVENT_ENDDATE}</td>
+								<td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
+								<td>{CALENDAR_SERIES}</td>
+								<td><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
+								<td style="width: 150px">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
+								<td style="width: 150px"><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=getCSV&amp;id={CALENDAR_EVENT_ID}"><img src="images/icons/xls.gif" alt="{TXT_CALENDAR_CSV_FILE}" title="{TXT_CALENDAR_CSV_FILE}" border="0"/></a></td>
+								<td style="width: 150px">{CALENDAR_EVENT_CAT}</td>
+								<td style="width: 40px; text-align: right;">
+									<a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=edit&amp;id={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EDIT}">
+										<img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" />
+									</a><a href="javascript:deleteNote({CALENDAR_EVENT_ID})" title="{TXT_CALENADR_DELETE}">
+										<img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CALENDAR_DELETE}" />
+									</a>
+								</td>
+							</tr>
+							<!-- END event -->
+						</table>
 
-            <table cellpadding="2" cellspacing="0" border="0">
-              <tr>
-                <td style="border: 0px;">
-                  <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-                  <a href="#" onclick="changeCheckboxes('frmEventList','selectedEventId',true); return false;">{TXT_SELECT_ALL}</a> /
-                  <a href="#" onclick="changeCheckboxes('frmEventList','selectedEventId',false); return false;">{TXT_DESELECT_ALL}</a>
-                  <img src="images/icons/strike.gif" alt="space" />
+						<table cellpadding="2" cellspacing="0" border="0">
+							<tr>
+								<td style="border: 0px;">
+									<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+									<a href="#" onclick="changeCheckboxes('frmEventList','selectedEventId',true); return false;">{TXT_SELECT_ALL}</a> /
+									<a href="#" onclick="changeCheckboxes('frmEventList','selectedEventId',false); return false;">{TXT_DESELECT_ALL}</a>
+									<img src="images/icons/strike.gif" alt="space" />
                                     <select name="frmEventList_MultiAction" onchange="selectMultiAction();">
                                       <option value="0">{TXT_SUBMIT_SELECT}</option>
                                       <option value="activate">{TXT_SUBMIT_ACTIVATE}</option>
                                       <option value="deactivate">{TXT_SUBMIT_DEACTIVATE}</option>
                                     </select>
-                </td>
-              </tr>
-            </table>
-            </form>
-          </td>
-        </tr>
-      </table>
+								</td>
+							</tr>
+						</table>
+						</form>
+					</td>
+				</tr>
+			</table>
 
-    </td>
-  </tr>
+		</td>
+	</tr>
 </table>

@@ -1,29 +1,29 @@
 <!-- start module_alias_settings.html -->
 <form action="?cmd=alias&amp;act=settings" method="post">
-  <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
-    <thead>
-      <tr>
-        <th colspan="2">{TXT_ALIAS_SETTINGS}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="row1">
-        <td width="620" valign="top">
-          <strong><label for="alias_status">{TXT_ALIAS_USE_ALIAS_ADMINISTRATION}</label></strong><br />
-          {TXT_ALIAS_REQUIREMENTS_DESC}
-          <br />
-          <br />
-          {ALIAS_REQUIREMENTS_STATUS_MSG}
-        </td>
-        <!-- BEGIN alias_status_form -->
-        <td valign="top"><input type="checkbox" name="alias_status" id="alias_status" value="1" {ALIAS_STATUS_CHECKED} /></td>
-        <!-- END alias_status_form -->
-      </tr>
-    </tbody>
-  </table>
-  <!-- BEGIN alias_status_form_submit -->
-  <br />
-  <input type="submit" name="alias_save" value="{TXT_ALIAS_SAVE}" />
-  <!-- END alias_status_form_submit -->
+	<table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+		<thead>
+			<tr>
+				<th colspan="2">{TXT_ALIAS_SETTINGS}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="row1">
+				<td width="620" valign="top">
+					<strong><label for="alias_status">{TXT_ALIAS_USE_ALIAS_ADMINISTRATION}</label></strong><br />
+					{TXT_ALIAS_REQUIREMENTS_DESC}
+					<br />
+					<br />
+					{ALIAS_REQUIREMENTS_STATUS_MSG}
+				</td>
+				<!-- BEGIN alias_status_form -->
+				<td valign="top"><input type="checkbox" name="alias_status" id="alias_status" value="1" {ALIAS_STATUS_CHECKED} /></td>
+				<!-- END alias_status_form -->
+			</tr>
+		</tbody>
+	</table>
+	<!-- BEGIN alias_status_form_submit -->
+	<br />
+	<input type="submit" name="alias_save" value="{TXT_ALIAS_SAVE}" />
+	<!-- END alias_status_form_submit -->
 </form>
 <!-- end module_alias_settings.html -->

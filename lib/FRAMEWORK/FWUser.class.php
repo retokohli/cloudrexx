@@ -189,14 +189,14 @@ class FWUser extends User_Setting
             $objDatabase->Execute("INSERT INTO ".DBPREFIX."log
                                         SET userid=".$objFWUser->objUser->getId().",
                                             datetime = ".$objDatabase->DBTimeStamp(time()).",
-                                            useragent = '".$httpUserAgent."',
-                                            userlanguage = '".$httpAcceptLanguage."',
-                                            remote_addr = '".strip_tags($_SERVER['REMOTE_ADDR'])."',
-                                            remote_host = '".$remote_host."',
-                                            http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']) : '')."',
-                                            http_via = '".(isset($_SERVER['HTTP_VIA']) ? strip_tags($_SERVER['HTTP_VIA']) : '')."',
-                                            http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? strip_tags($_SERVER['HTTP_CLIENT_IP']) : '')."',
-                                            referer ='".$referer."'");
+                                            useragent = '".substr($httpUserAgent, 0, 250)."',
+                                            userlanguage = '".substr($httpAcceptLanguage, 0, 250)."',
+                                            remote_addr = '".substr(strip_tags($_SERVER['REMOTE_ADDR']), 0, 250)."',
+                                            remote_host = '".substr($remote_host, 0, 250)."',
+                                            http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? substr(strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']), 0, 250) : '')."',
+                                            http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
+                                            http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
+                                            referer ='".substr($referer, 0, 250)."'");
             $_SESSION['auth']['log']=true;
         }
     }
@@ -454,26 +454,6 @@ class FWUser extends User_Setting
 
 
     /**
-     * Return the number of registered users.
-     * Only users with an active and valid account are counted.
-     * global ADONewConnection
-     * Return integer
-     */
-    public static function getUserCount()
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute('
-            SELECT COUNT(`id`) AS user_count FROM `'.DBPREFIX.'access_users` WHERE `active` = 1');
-        if ($objResult !== false) {
-            return $objResult->fields['user_count'];
-        }
-
-        return 0;
-    }
-
-
-    /**
      * Returns the HTML dropdown menu string for the User account
      * validity period.
      * @param   integer   $selectedValidity   The selected validity period
@@ -512,7 +492,7 @@ class FWUser extends User_Setting
         $unit = 'DAY';
         if ($validity == 0) {
             $validity = '';
-            $unit = $_CORELANG['TXT_CORE_UNLIMITED'];
+            $unit = $_CORELANG['TXT_USERS_UNLIMITED'];
         } else {
             if ($validity >= 30) {
                 $unit = 'MONTH';
@@ -523,12 +503,11 @@ class FWUser extends User_Setting
                 }
             }
             $unit =
-                $_CORELANG['TXT_CORE_'.$unit.
+                $_CORELANG['TXT_USERS_'.$unit.
                 ($validity > 1 ? 'S' : '')];
         }
         return "$validity $unit";
     }
-
 
     /**
      * Returns a SECID for logging in (Backend, Frontend editing)
@@ -539,12 +518,12 @@ class FWUser extends User_Setting
         $chars = 'ACDEFGHJKLMNPRTUWXZ345679';
         $max   = strlen($chars) -1;
         $ret = '';
-        for ($i = 0; $i < 4; ++$i) {
-            $ret .= $chars{rand(0, $max)};
+        for ($i=0;$i<4;$i++) {
+
+            $ret .= $chars{rand(0,$max)};
         }
         return $ret;
     }
-
 }
 
 ?>

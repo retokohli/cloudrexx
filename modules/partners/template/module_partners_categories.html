@@ -1,0 +1,314 @@
+<!-- START module_partners_categories.html -->
+<script language="JavaScript" type="text/javascript">
+//<![CDATA[
+function showOrHide(strElement) {
+
+	if (document.getElementById(strElement).style.display == 'none') {
+		document.getElementById(strElement).style.display = 'block';
+	} else {
+		document.getElementById(strElement).style.display = 'none';
+	}
+}
+
+function copyText(strField) {
+	for (var h=0; h < document.forms.length;h++) {
+		for (var i=0; i < document.forms[h].elements.length;i++) {
+			//read out all form-elements with the loop
+			if(document.forms[h].elements[i].name.search(strField) != -1) {
+				switch (strField) {
+					case 'frmAddCategory_Name_':
+						document.forms[h].elements[i].value = document.frmAddCategory.frmAddCategory_Name.value;
+					break;
+				}
+			}
+		}
+	}	
+}
+
+function deleteCategory(catId,cat_Id){
+  var catName = document.getElementById('cat_name_del').value;
+  if(catName=="level")
+  {
+    if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=level&id="+catId);
+            }
+  else if(catName=="profile")
+  {
+    if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=profile&id="+catId);
+            }
+  else if(catName=="country")
+  {
+    if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=country&id="+catId);
+            }
+  else if(catName=="vertical")
+  {
+    if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=vertical&id="+catId);
+            }
+  else if(catName=="Regions")
+  {
+    if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
+            }
+  else if(catName=="category")
+            {
+            if(confirm('{TXT_OVERVIEW_DELETE_CATEGORY_JS}'))
+            window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=deleteCategory&id="+catId);
+            }
+}
+
+function editCategory(catId,cat_Id){
+  var catName = document.getElementById('cat_name_del').value;
+  if(catName=="level")
+  {
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=level&id="+catId);
+  }
+  else if(catName=="profile")
+  {
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=profile&id="+catId);
+  }
+  else if(catName=="country")
+  {
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=country&id="+catId);
+  }
+  else if(catName=="vertical")
+  {
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=vertical&id="+catId);
+  }
+  else if(catName=="Regions")
+  {
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&catnames=Regions&id="+catId+"&cat_id="+cat_Id);
+  }
+  else if(catName=="category")
+  {
+             window.location.replace("index.php?cmd=partners&{CSRF_PARAM}&act=editCategory&id="+catId);
+  }
+}
+
+function selectMultiAction() {
+	with (document.frmShowCategories) {
+		switch (frmShowCategories_MultiAction.value) {
+			case 'delete':
+				if (confirm('{TXT_OVERVIEW_SUBMIT_DELETE_JS}')) {
+					action='index.php?cmd=partners&act=multiactionCategory';
+					submit();
+				}
+				else{
+				frmShowCategories_MultiAction.value = 0;
+                }
+			break;
+			default: //do nothing			
+		}
+	}
+}
+//Following Functions are needed for Picture-Selection -------------------------------------------------------------
+function SetUrl(url, width, height, alt) {
+	document.getElementById(newsElInsertBox).value = url;
+}
+
+function newsGetFileBrowser(elInsertBox) {
+
+	newsElInsertBox = elInsertBox;
+	openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+}
+
+function openWindow(theURL,winName,features){
+
+	partnersPopup = window.open(theURL,"partners",features);
+	partnersPopup.focus();
+}
+
+function checkCheckboxes(){
+changeCheckboxes('frmAddCategory','frmLevel_title',true);
+changeCheckboxes('frmAddCategory','frmLevel_content',true);
+changeCheckboxes('frmAddCategory','frmLevel_cname',true);
+changeCheckboxes('frmAddCategory','frmLevel_country',true);
+changeCheckboxes('frmAddCategory','frmLevel_phone',true);
+changeCheckboxes('frmAddCategory','frmLevel_address1',true);
+changeCheckboxes('frmAddCategory','frmLevel_address2',true);
+changeCheckboxes('frmAddCategory','frmLevel_city',true);
+changeCheckboxes('frmAddCategory','frmLevel_zipcode',true);
+changeCheckboxes('frmAddCategory','frmLevel_logo',true);
+changeCheckboxes('frmAddCategory','frmLevel_clogo',true);
+changeCheckboxes('frmAddCategory','frmLevel_llogo',true);
+changeCheckboxes('frmAddCategory','frmLevel_level',true);
+changeCheckboxes('frmAddCategory','frmLevel_quote',true);
+return false;
+}
+
+function uncheckCheckboxes(){
+changeCheckboxes('frmAddCategory','frmLevel_title',false);
+changeCheckboxes('frmAddCategory','frmLevel_content',false);
+changeCheckboxes('frmAddCategory','frmLevel_cname',false);
+changeCheckboxes('frmAddCategory','frmLevel_country',false);
+changeCheckboxes('frmAddCategory','frmLevel_phone',false);
+changeCheckboxes('frmAddCategory','frmLevel_address1',false);
+changeCheckboxes('frmAddCategory','frmLevel_address2',false);
+changeCheckboxes('frmAddCategory','frmLevel_city',false);
+changeCheckboxes('frmAddCategory','frmLevel_zipcode',false);
+changeCheckboxes('frmAddCategory','frmLevel_logo',false);
+changeCheckboxes('frmAddCategory','frmLevel_clogo',false);
+changeCheckboxes('frmAddCategory','frmLevel_llogo',false);
+changeCheckboxes('frmAddCategory','frmLevel_level',false);
+changeCheckboxes('frmAddCategory','frmLevel_quote',false);
+return false;
+}
+
+//]]>
+</script>
+<ul id="tabmenu">
+	<li><a id="categories_Overview" class="active" href="javascript:{}" onclick="selectTab('Overview')" title="{TXT_OVERVIEW_TITLE}">{TXT_OVERVIEW_TITLE}</a></li>
+	<li><a id="categories_AddCategory" class="inactive" href="javascript:{}" onclick="selectTab('AddCategory')" title="{TXT_ADD_TITLE}">{TXT_ADD_TITLE}</a></li>
+	<li><a id="categories_RenameCategory" class="inactive" href="javascript:{}" onclick="selectTab('RenameCategory')" title="{TXT_RENAME_TITLE}">{TXT_RENAME_TITLE}</a></li>
+</ul>
+
+<div id="Overview" class="categories" style="display: block;">
+	<form name="frmShowCategories" method="post" action="?cmd=partners&amp;act=insertSort">
+	<input type="hidden"  id="cat_name_del" name="cat_name_del" value="{PARTNERS_CAT_NAME_DEL}">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+			<tr>
+				<th colspan="7">{TXT_OVERVIEW_TITLE}</th>
+			</tr>
+			<tr class="row3">
+				<td nowrap="nowrap" width="2%"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
+				<td nowrap="nowrap" width="10%"><span style="font-weight:bold;">{TXT_OVERVIEW_SUBTITLE_ID}</span></td>
+				<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_OVERVIEW_SORT}</span></td>
+				<td nowrap="nowrap" width="20%"><span style="font-weight:bold;">{TXT_OVERVIEW_SUBTITLE_NAME}</span></td>
+				<td nowrap="nowrap" width="30%"><span style="font-weight:bold;">{TXT_OVERVIEW_SUBTITLE_ACTIVE}</span></td>
+				<td nowrap="nowrap" width="17%"><span style="font-weight:bold;">{TXT_OVERVIEW_SUBTITLE_ADD_REGIONS}</span></td>
+				<td nowrap="nowrap" width="1%"><div align="right"><span style="font-weight:bold;">{TXT_OVERVIEW_SUBTITLE_ACTIONS}</span></div></td>
+			</tr>
+			<!-- BEGIN showCategories -->
+			<tr class="{OVERVIEW_CATEGORY_ROWCLASS}">
+				<td><input type="checkbox" name="selectedCategoryId[]" value="{OVERVIEW_CATEGORY_ID}" /></td>
+				<td>{OVERVIEW_CATEGORY_ID}</td>
+				<td><input type="text" name="selectedSortvalue{OVERVIEW_CATEGORY_ID}" align="center" value="{OVERVIEW_SORT_VALUE}" size="2"/></td>
+				<td><a href="javascript:editCategory({OVERVIEW_CATEGORY_ID});" target="_self" title="{TXT_OVERVIEW_IMGALT_EDIT}">{OVERVIEW_CATEGORY_NAME}</a></td>
+				<td>{OVERVIEW_CATEGORY_LANGUAGES}</td>
+                <td><a href="index.php?cmd=partners&act=addRegions&id={OVERVIEW_CATEGORY_ID}&category=Regions">{OVERVIEW_CATEGORY_REGIONS}</a></td>
+    			<td nowrap="nowrap">
+					<div align="right">
+						<a href="index.php?cmd=partners&amp;{PARTNERS_CAT_SEARCH}={OVERVIEW_CATEGORY_ID}" target="_self" title="{TXT_OVERVIEW_IMGALT_MESSAGES}"><img src="images/icons/details.gif" border="0" alt="{TXT_OVERVIEW_IMGALT_MESSAGES}" title="{TXT_OVERVIEW_IMGALT_MESSAGES}" /></a>
+						<a href="javascript:editCategory({OVERVIEW_CATEGORY_ID});" target="_self" title="{TXT_OVERVIEW_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_OVERVIEW_IMGALT_EDIT}" title="{TXT_OVERVIEW_IMGALT_EDIT}" /></a>
+						<a href="javascript:deleteCategory({OVERVIEW_CATEGORY_ID});" target="_self" title="{TXT_OVERVIEW_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_OVERVIEW_IMGALT_DELETE}" title="{TXT_OVERVIEW_IMGALT_DELETE}" /></a>
+					</div>
+				</td>
+			</tr>
+			<!-- END showCategories -->
+			<!-- BEGIN noCategories -->
+			<tr class="row2">
+				<td colspan="7"><div align="center"><br />{TXT_OVERVIEW_NO_CATEGORIES_FOUND}<br /><br /></div></td>
+			</tr>
+			<!-- END noCategories -->
+		</table>
+		<br />
+		<table cellpadding="2" cellspacing="0" border="0">
+			<tr>
+				<td>
+					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_OVERVIEW_MARKED}:" />
+					<a href="#" onclick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',true); return false;">{TXT_OVERVIEW_SELECT_ALL}</a> / 
+					<a href="#" onclick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',false); return false;">{TXT_OVERVIEW_DESELECT_ALL}</a>
+					<img src="images/icons/strike.gif" alt="" />
+					<select name="frmShowCategories_MultiAction" onchange="selectMultiAction();">
+						<option value="0">{TXT_OVERVIEW_SUBMIT_SELECT}</option>
+						<option value="delete">{TXT_OVERVIEW_SUBMIT_DELETE}</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+			<br />
+		<input type="submit" value="{TXT_OVERVIEW_CHANGES}" name="frmAddCategory_Submit" />
+	</form>
+	<br />
+	<div align="center">{OVERVIEW_PAGING}</div>	
+ </div>
+
+<div id="AddCategory" class="categories" style="display: none;">
+	<form name="frmAddCategory" method="post" action="?cmd=partners&amp;act=insertCategory">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+			<tr>
+				<th colspan="4">{TXT_ADD_TITLE}</th>
+			</tr>
+			<tr class="row1">
+				<td valign="top">{TXT_ADD_NAME}</td>
+				<td colspan="3">
+					<input type="text" name="frmAddCategory_Name" value="" maxlength="100" onchange="copyText('frmAddCategory_Name_');" style="width:30%;" />&nbsp;<a href="javascript:showOrHide('divAddCategoryLang_Name');">{TXT_ADD_EXTENDED}</a>
+					<div id="divAddCategoryLang_Name" style="display: none;">
+						<!-- BEGIN addCategoryNameFields -->
+						<input type="text" name="frmAddCategory_Name_{ADD_NAME_LANGID}" value="" maxlength="100" style="width:30%; margin-top:1px;" />&nbsp;<label for="frmAddCategory_Name_{ADD_NAME_LANGID}">{ADD_NAME_LANG}</label><br />
+						<!-- END addCategoryNameFields -->
+     	<input type="hidden" name="cat_id" value="{CAT_ID}" />
+					</div>
+				</td>
+   </tr>
+
+
+            <!-- BEGIN Display_browse -->
+            <tr class="row2">
+            <td>{PARTNERS_LEVEL_IMG}</td>
+            <td colspan="3"><input type="text" id ="frmLevel_Image" name="frmLevel_Image" id="frmLevel_Image" style="width:230px;">&nbsp;<input type="button" value="Browse" onclick="javascript:newsGetFileBrowser('frmLevel_Image','images')"></td>
+            </tr>
+             <!-- END Display_browse -->
+            
+            <!-- BEGIN Display_level -->
+             <tr  class="row1" width="100%"><td colspan="4" align="center">
+             <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+             <th>{TXT_ADD_DISPLAY}</th><th><a href="#" onclick="checkCheckboxes();">{TXT_ADD_ALL}</a>&nbsp;/&nbsp;<a href="#" onclick="uncheckCheckboxes();">{TXT_ADD_DALL}</a></th>
+             <tr class="row1"><td><input type="checkbox" id="frmLevel_title" name="frmLevel_title" value="1"/>{TXT_ADD_TITLES}</td><td><input type="checkbox" id="frmLevel_content" name="frmLevel_content" value="1"/>{TXT_ADD_CONTENT}</td></tr>
+             <tr class="row2"><td><input type="checkbox" id="frmLevel_cname" name="frmLevel_cname" value="1"/>{TXT_ADD_CONTACT}</td><td><input type="checkbox" id="frmLevel_country" name="frmLevel_country" value="1"/>{TXT_ADD_COUNTRY}</td></tr>
+             <tr class="row1"><td><input type="checkbox" id="frmLevel_phone" name="frmLevel_phone" value="1"/>{TXT_ADD_PHONE}</td><td><input type="checkbox" id="frmLevel_address1" name="frmLevel_address1" value="1"/>{TXT_ADD_ADDRESS1}</td></tr>
+             <tr class="row2"><td><input type="checkbox" id="frmLevel_address2" name="frmLevel_address2" value="1"/>{TXT_ADD_ADDRESS2}</td><td><input type="checkbox" id="frmLevel_city" name="frmLevel_city" value="1"/>{TXT_ADD_CITY}</td></tr>
+             <tr class="row1"><td><input type="checkbox" id="frmLevel_zipcode" name="frmLevel_zipcode" value="1"/>{TXT_ADD_ZIPCODE}</td><td><input type="checkbox" id="frmLevel_level" name="frmLevel_level" value="1"/>{TXT_ADD_LEVEL}</td></tr>
+             <tr class="row2"><td><input type="checkbox" id="frmLevel_logo" name="frmLevel_logo" value="1"/>{TXT_ADD_LOGO}</td><td><input type="checkbox" id="frmLevel_llogo" name="frmLevel_llogo" value="1"/>{TXT_ADD_LLOGO}</td></tr>
+             <tr class="row1"><td><input type="checkbox" id="frmLevel_clogo" name="frmLevel_clogo" value="1"/>{TXT_ADD_CLOGO}</td><td><input type="checkbox" id="frmLevel_quote" name="frmLevel_quote" value="1"/>{TXT_ADD_QUOTE}</td></tr>
+             </table>
+              </td>
+            </tr>
+            <!-- END Display_level -->
+            <th colspan="4">{TXT_ADD_LANGUAGES}</th>
+          <tr class="row1">
+				<td width="10%">{TXT_ADD_LANGUAGES}</td>
+				<td width="10%" valign="top">{ADD_LANGUAGES_1}</td>
+				<td width="10%" valign="top">{ADD_LANGUAGES_2}</td>
+				<td width="70%" valign="top">{ADD_LANGUAGES_3}</td>
+			</tr>
+
+		</table>
+		<br />
+		<input type="hidden"  name="cat_name" value="{PARTNERS_CAT_NAME}">
+		<input type="submit" value="{TXT_ADD_SUBMIT}" name="frmAddCategory_Submit" />
+	</form>
+</div>
+ <div id="RenameCategory" class="categories" style="display: none;">
+	<form name="frmRenameCategory" method="post" action="?cmd=partners&amp;act=insertCategory">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+			<tr>
+				<th colspan="4">{TXT_RENAME_TITLE}</th>
+			</tr>
+			<tr class="row1">
+				<td valign="top">{TXT_ADD_NAME}</td>
+				<td colspan="3">
+     			<input type="text" name="RenameCategory_Rename" value="{PARTNERS_OLD_NAME}" maxlength="100" onchange="copyText('RenameCategory_Rename_');" style="width:30%;" />&nbsp;<a href="javascript:showOrHide('divRenameCategoryLang_Name');"></a>
+					<div id="divRenameCategoryLang_Name" style="display: none;">
+						<!-- BEGIN reCategoryNameFields -->
+                        <input type="text" name="RenameCategory_Rename_{RE_NAME_LANGID}" value="" maxlength="100" style="width:30%; margin-top:1px;" />&nbsp;<label for="RenameCategory_Rename_{RE_NAME_LANGID}">{RE_NAME_LANG}</label><br />
+						<!-- END reCategoryNameFields -->
+						</div>
+						     			</td>
+            </tr>
+              <th colspan="4">{TXT_ADD_LANGUAGES}</th>
+                <tr class="row1">
+				<td width="10%">{TXT_ADD_LANGUAGES}</td>
+				<td width="20%" valign="top">{RENAME_LANGUAGES_1}</td>
+				<td width="20%" valign="top">{RENAME_LANGUAGES_2}</td>
+				<td width="50%" valign="top">{RENAME_LANGUAGES_3}</td>
+			</tr>
+		</table>
+		<br />
+		<input type="hidden"  name="cat_name" value="{PARTNERS_CAT_NAME}">
+		<input type="submit" value="{TXT_ADD_SUBMIT}" name="RenameCategory_name_submit" />
+	</form>
+</div>
+<!-- END module_partners_categories.html -->

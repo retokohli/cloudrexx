@@ -291,8 +291,6 @@ class Text
      *
      * Either updates or inserts the object, depending on the outcome
      * of the call to {@link recordExists()}.
-     * Calling {@link recordExists()} is necessary, as there may be
-     * no record in the current language, although the Text ID is valid.
      * @return      boolean     True on success, false otherwise
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
@@ -420,9 +418,8 @@ class Text
      * If no record is found for the given ID, creates a new object
      * with a warning message and returns it.
      * Note that in the last case, neither the module nor the key
-     * are set and remain at their default (null) value.  You *MUST*
-     * set them to the desired values before storing the object,
-     * or you may never find that record again!
+     * are set and remain at their default (null) value.  You should
+     * set them to the desired values before storing the object.
      * @static
      * @param       integer     $id             The object ID
      * @param       integer     $lang_id        The language ID
@@ -433,7 +430,7 @@ class Text
      */
     static function getById($text_id, $lang_id)
     {
-        global $objDatabase; //, $_CORELANG;
+        global $objDatabase, $_CORELANG;
 
         $objText = false;
         if (intval($text_id)) {
@@ -452,14 +449,11 @@ class Text
                     $objResult->fields['key'],
                     $objResult->fields['id']
                 );
-                // Optionally mark replacement Texts
-//                if (!$lang_id) {
-//                    $objText->markDifferentLanguage();
-//                }
             } else {
                 if ($lang_id) {
                     $objText = self::getById($text_id, 0);
                     if ($objText) {
+//echo("Text::getById($text_id, $lang_id): Missing language ID $lang_id, using ".$objResult->fields['lang_id']."<br />");
                         $objText->lang_id = $lang_id;
 //                        return $objText;
                     }
@@ -469,7 +463,7 @@ class Text
         if (!$objText) {
 //echo("Text::getById($text_id, $lang_id): Missing text ID $text_id, returning new<br />");
             $objText = new Text(
-                '', //$_CORELANG['TXT_CORE_TEXT_MISSING'],
+                $_CORELANG['TXT_CORE_TEXT_MISSING'],
                 $lang_id, null, null, $text_id
             );
         }
@@ -525,10 +519,6 @@ class Text
                     return $objText;
                 }
             }
-            // Return "* Text missing *".
-            // In order to avoid this being shown, check either
-            // the id of the object returned, which is non-empty
-            // for any valid Text.
             return new Text(
                 $_CORELANG['TXT_CORE_TEXT_MISSING'],
                 $lang_id, null, $key, null
@@ -554,8 +544,6 @@ class Text
      * given language, or any other language if that is not found.
      * If the Text ID is false, but the key is valid, looks for a record
      * with the same key.
-     * Set $text_id to null or 0 (zero) to force the record to be inserted,
-     * *NOT* false!
      * If no record is found this way, a new object is created.
      * The parameters are applied, and the Text is then stored.
      * The optional arguments $module_id and $key are ignored if empty.
@@ -567,9 +555,8 @@ class Text
      * @return  integer                     The Text ID on success,
      *                                      false otherwise
      */
-    static function replace(
-        $text_id=false, $lang_id, $strText, $module_id=null, $key=null
-    ) {
+    static function replace($text_id=false, $lang_id, $strText, $module_id=0, $key='')
+    {
         if ($text_id === false) {
             $objText = self::getByKey($key, $lang_id);
 //echo("replace($text_id, $lang_id, $strText, $module_id, $key): got by key: ".$objText->getText()."<br />");
@@ -583,13 +570,9 @@ class Text
         ) $objText = new Text('', 0, 0, '', $text_id);
         $objText->setText($strText);
         $objText->setLanguageId($lang_id);
-        if (isset($module_id)) $objText->module_id = intval($module_id);
-        if (isset($key)) $objText->key = $key;
-//echo("Storing Text: ".var_export($objText, true)."<br />");
-        if (!$objText->store()) {
-//die("Text::replace($text_id, $lang_id, $strText, $module_id, $key): Error: failed to store Text<br />");
-            return false;
-        }
+        if ($module_id) $objText->module_id = $module_id;
+        if ($key) $objText->key = $key;
+        if (!$objText->store()) return false;
         return $objText->id;
     }
 
@@ -667,11 +650,6 @@ class Text
      * Note that the $lang_id parameter is mandatory and *MUST NOT* be
      * emtpy.  Any of $module_id, $key, $alias, or $text_ids may be false,
      * in which case they are ignored.
-     * IMPORTANT NOTE: For the time being, the $module_id is ignored entirely
-     * and thus not present in the resulting SQL at all!
-     * This allows the use of content from different modules to be shown
-     * on the same page, as this value is usually determined by the global
-     * MODULE_ID constant.  A proper solution is desired, though.
      * @static
      * @param       string      $field_id_name  The name of the text ID
      *                                          foreign key field
@@ -703,14 +681,12 @@ class Text
             ' LEFT JOIN `'.DBPREFIX.'core_text` as `'.$table_alias.'`'.
             ' ON `'.$table_alias.'`.`id`='.$field_id_name.
             ' AND `'.$table_alias.'`.`lang_id`='.$lang_id.
-//            ($module_id !== false ? " AND `$table_alias`.`module_id`=$module_id"       : '').
-//            ($module_id ? " AND `$table_alias`.`module_id`=$module_id"       : '').
+            ($module_id !== false ? " AND `$table_alias`.`module_id`=$module_id"       : '').
             ($key       !== false ? " AND `$table_alias`.`key`='".addslashes($key)."'" : '').
             ($text_ids  !== false ? " AND `$table_alias`.`id` IN ($text_ids)"          : '');
 //echo("Text::getSqlSnippets(): got name /$field_id_name/, made ");
             // Remove table name, dot and backticks, if any
-            $field_id_name = preg_replace(
-                '/(?:\`?\w*\`\.)?\`?(\w+)\`?/', '$1', $field_id_name);
+            $field_id_name = preg_replace('/`?\w*`?\.?`?(\w+)`?/', '$1', $field_id_name);
 //echo("/$field_id_name/<br />");
         return array(
             'id'    => $field_id,
@@ -826,25 +802,18 @@ class Text
 
     /**
      * If the language ID given is different from the language of this
-     * Text object, the content may be marked here.
-     *
-     * Customize as desired.
+     * Text object, the content is marked using HTML.
      * @param   integer   $lang_id         The desired language ID
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function markDifferentLanguage() //$lang_id
+    function markDifferentLanguage($lang_id)
     {
+        if ($lang_id != $this->lang_id) {
+            $this->text = '['.$this->text.']';
 // Different formatting -- up to you.
-// None
-        return;
-//        if ($lang_id != $this->lang_id) {
-// or
-//            $this->text = '['.$this->text.']';
-// or
-//            $this->text = $this->text.' *';
-// or (not suitable for form element contents)
 //            $this->text = '<font color="red">'.$this->text.'</font>';
-//        }
+//            $this->text = $this->text.' *';
+        }
     }
 
 
@@ -860,7 +829,7 @@ class Text
     {
         global $objDatabase;
 
-//die("Text::errorHandler(): Disabled!<br />");
+ die("Text::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (!in_array(DBPREFIX."core_text", $arrTables)) {

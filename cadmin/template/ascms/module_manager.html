@@ -4,7 +4,7 @@
 function deleteVariable(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
-        window.location.replace("index.php?cmd=modulemanager&act=del&maduleId="+id);
+        window.location.replace("index.php?cmd=modulemanager&{CSRF_PARAM}&act=del&maduleId="+id);
 }
 // -->
 </script>

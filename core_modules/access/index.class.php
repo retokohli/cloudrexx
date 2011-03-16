@@ -1,5 +1,4 @@
 <?php
-
 /**
 * User Management
 * @copyright    CONTREXX CMS - COMVATION AG
@@ -13,8 +12,6 @@
  * @ignore
  */
 require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
-require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-
 /**
  * @ignore
  */
@@ -32,7 +29,6 @@ class Access extends AccessLib
 {
     private $arrStatusMsg = array('ok' => array(), 'error' => array());
 
-
     public function __construct($pageContent)
     {
         parent::__construct();
@@ -43,37 +39,41 @@ class Access extends AccessLib
         $this->_objTpl->setTemplate($pageContent);
     }
 
-
     public function getPage(&$metaPageTitle, &$pageTitle)
     {
         $cmd = isset($_REQUEST['cmd']) ? explode('_', $_REQUEST['cmd']) : array(0 => null);
+
 
         CSRF::add_code();
         switch ($cmd[0]) {
             case 'signup':
                 $this->signUp();
                 break;
+
             case 'settings':
                 $this->settings();
                 break;
+
             case 'members':
                 $this->members();
                 break;
+
             case 'user':
                 $this->user($metaPageTitle, $pageTitle);
                 break;
+
             default:
                 $this->dashboard();
                 break;
         }
+
         return $this->_objTpl->get();
     }
 
-
     public function dashboard()
     {
-    }
 
+    }
 
     private function user(&$metaPageTitle, &$pageTitle)
     {
@@ -101,15 +101,17 @@ class Access extends AccessLib
             $metaPageTitle = $objUser->getUsername()."'s Profil";
             $pageTitle = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)."'s Profil";
             $this->_objTpl->setGlobalVariable(array(
-                'ACCESS_USER_ID'            => $objUser->getId(),
-                'ACCESS_USER_USERNAME'      => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                'ACCESS_USER_PRIMARY_GROUP' => htmlentities($objUser->getPrimaryGroupName(), ENT_QUOTES, CONTREXX_CHARSET),
+                'ACCESS_USER_ID'        => $objUser->getId(),
+                'ACCESS_USER_USERNAME'  => htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
             ));
+
             if ($objUser->getEmailAccess() == 'everyone' ||
-                   $objFWUser->objUser->login()
-                && ($objUser->getId() == $objFWUser->objUser->getId() ||
+                $objFWUser->objUser->login() &&
+                (
+                    $objUser->getId() == $objFWUser->objUser->getId() ||
                     $objUser->getEmailAccess() == 'members_only' ||
-                    $objFWUser->objUser->getAdminStatus())
+                    $objFWUser->objUser->getAdminStatus()
+                )
             ) {
                 $this->parseAccountAttribute($objUser, 'email');
             } elseif ($this->_objTpl->blockExists('access_user_email')) {
@@ -122,6 +124,7 @@ class Access extends AccessLib
                 $this->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, true, array('_CLASS' => $nr % 2 + 1)) ? $nr++ : false;
                 $objUser->objAttribute->next();
             }
+
             $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
         } else {
             // or would it be better to redirect to the home page?
@@ -129,7 +132,6 @@ class Access extends AccessLib
             exit;
         }
     }
-
 
     private function members()
     {
@@ -206,7 +208,6 @@ class Access extends AccessLib
             $this->_objTpl->hideBlock('access_members');
         }
     }
-
 
     private function settings()
     {
@@ -303,26 +304,21 @@ class Access extends AccessLib
                 $msg = implode('<br />', $result);
             }
             $this->_objTpl->setVariable('ACCESS_SETTINGS_MESSAGE', $msg);
-        } elseif (isset($_POST['access_set_newsletters'])) {
-            if (empty($_POST['newsletter_categories'])) {
-                $_POST['newsletter_categories'] = array();
-            }
-            $objFWUser->objUser->setNewsletterCategories($_POST['newsletter_categories']);
-            $objFWUser->objUser->store();
         }
         $this->parseAccountAttributes($objFWUser->objUser, true);
-        if ($_GET['cmd'] == 'settings_newsletter') {
-            $this->parseNewsletters($objFWUser->objUser->getId());
-        }
 
         while (!$objFWUser->objUser->objAttribute->EOF) {
             $objAttribute = $objFWUser->objUser->objAttribute->getById($objFWUser->objUser->objAttribute->getId());
-            if (   !$objAttribute->isProtected()
-                || (Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true)
-                    || $objAttribute->checkModifyPermission())
+
+            if (!$objAttribute->isProtected() ||
+                (
+                    Permission::checkAccess($objAttribute->getAccessId(), 'dynamic', true) ||
+                    $objAttribute->checkModifyPermission()
+                )
             ) {
                 $this->parseAttribute($objFWUser->objUser, $objAttribute->getId(), 0, true);
             }
+
             $objFWUser->objUser->objAttribute->next();
         }
 
@@ -334,8 +330,7 @@ class Access extends AccessLib
             'ACCESS_USER_PASSWORD_INPUT'    => '<input type="password" name="access_user_password" />',
             'ACCESS_STORE_BUTTON'           => '<input type="submit" name="access_store" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'].'" />',
             'ACCESS_CHANGE_PASSWORD_BUTTON' => '<input type="submit" name="access_change_password" value="'.$_ARRAYLANG['TXT_ACCESS_CHANGE_PASSWORD'].'" />',
-            'ACCESS_SET_NEWSLETTER_BUTTON'  => '<input type="submit" name="access_set_newsletters" value="'.$_ARRAYLANG['TXT_ACCESS_SAVE'] .'" />',
-            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
+            'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode()
         ));
 
         if ($this->_objTpl->blockExists('access_settings')) {
@@ -346,32 +341,6 @@ class Access extends AccessLib
         }
     }
 
-
-    /**
-     * Parse the newsletter to the frontend
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       int $userID
-     */
-    private function parseNewsletters($userID)
-    {
-        global $_ARRAYLANG;
-
-        $res = $this->getNewsletters($userID);
-        while (!$res->EOF) {
-            $selected = $res->fields['selected'] ? 'checked="checked"' : '';
-            $this->_objTpl->setVariable(array(
-                'ACCESS_NEWSLETTER_ID'  => $res->fields['id'],
-                'ACCESS_NEWSLETTER_SELECTED' => $selected,
-                'ACCESS_NEWSLETTER_NAME' => htmlentities(
-                    $res->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
-            ));
-            $this->_objTpl->parse('newsletter_row');
-            $res->MoveNext();
-        }
-        $this->_objTpl->setGlobalVariable($_ARRAYLANG);
-    }
-
-
     private function setLanguageCookie($currentLangId, $newLangId)
     {
         global $objInit;
@@ -379,14 +348,12 @@ class Access extends AccessLib
         // set a new cookie if the language id had been changed
         if ($currentLangId != $newLangId) {
             // check if the desired language is active at all. otherwise set default language
-            $objInit->arrLang[$newLangId]['frontend'];
-            if (   $objInit->arrLang[$newLangId]['frontend']
-                || ($newLangId = $objInit->defaultFrontendLangId)) {
+    $objInit->arrLang[$newLangId]['frontend'];
+            if ($objInit->arrLang[$newLangId]['frontend'] || ($newLangId = $objInit->defaultFrontendLangId)) {
                 setcookie("langId", $newLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
             }
         }
     }
-
 
     private function confirmSignUp($userId, $restoreKey)
     {
@@ -398,8 +365,9 @@ class Access extends AccessLib
             if (!$arrSettings['user_activation_timeout']['status'] || $objUser->getRestoreKeyTime() >= time()) {
                 if ($objUser->finishSignUp()) {
                     return true;
+                } else {
+                    $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
                 }
-                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objUser->getErrorMsg());
             } else {
                 $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_ACTIVATION_TIME_EXPIRED'];
                 $this->arrStatusMsg['error'][] = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=access&amp;cmd=signup" title="'.$_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'].'">'.$_ARRAYLANG['TXT_ACCESS_REGISTER_NEW_ACCOUNT'].'</a>';
@@ -409,9 +377,9 @@ class Access extends AccessLib
             $adminEmail = '<a href="mailto:'.$_CONFIG['coreAdminEmail'].'?subject='.$mailSubject.'" title="'.$_CONFIG['coreAdminEmail'].'">'.$_CONFIG['coreAdminEmail'].'</a>';
             $this->arrStatusMsg['error'][] = str_replace('%EMAIL%', $adminEmail, $_ARRAYLANG['TXT_ACCESS_INVALID_USERNAME_OR_ACTIVATION_KEY']);
         }
+
         return false;
     }
-
 
     private function signUp()
     {
@@ -440,12 +408,14 @@ class Access extends AccessLib
         }
 
         $objUser = new User();
-        $arrSettings = User_Setting::getSettings();
 
         if (isset($_POST['access_signup'])) {
+            $arrSettings = User_Setting::getSettings();
+
             $objUser->setUsername(isset($_POST['access_user_username']) ? trim(contrexx_stripslashes($_POST['access_user_username'])) : '');
             $objUser->setEmail(isset($_POST['access_user_email']) ? trim(contrexx_stripslashes($_POST['access_user_email'])) : '');
             $objUser->setFrontendLanguage(isset($_POST['access_user_frontend_language']) ? intval($_POST['access_user_frontend_language']) : 0);
+
             $objUser->setGroups(explode(',', $arrSettings['assigne_to_groups']['value']));
 
             if (
@@ -475,12 +445,11 @@ class Access extends AccessLib
                     :    ''
                 )
                 && $objUser->checkMandatoryCompliance()
-                && $this->checkCaptcha()
-                && $this->checkToS()
                 && $objUser->signUp()
             ) {
                 if ($this->handleSignUp($objUser)) {
                     $this->_objTpl->setVariable('ACCESS_SIGNUP_MESSAGE', implode('<br />', $this->arrStatusMsg['ok']));
+                    $this->_objTpl->parse('access_signup_store_success');
                     $this->_objTpl->touchBlock('access_signup_store_success');
                     $this->_objTpl->hideBlock('access_signup_store_error');
                 } else {
@@ -530,71 +499,8 @@ class Access extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'   => $this->getJavaScriptCode(),
             'ACCESS_SIGNUP_MESSAGE'         => implode("<br />\n", $this->arrStatusMsg['error'])
         ));
-
-        // set captcha
-        if ($this->_objTpl->blockExists('access_captcha')) {
-            if ($arrSettings['user_captcha']['status']) {
-                $objCaptcha = new Captcha();
-                $this->_objTpl->setVariable(array(
-                    'ACCESS_CAPTCHA_OFFSET'         => $objCaptcha->getOffset(),
-                    'ACCESS_CAPTCHA_URL'            => $objCaptcha->getUrl(),
-                    'ACCESS_CAPTCHA_ALT'            => $objCaptcha->getAlt(),
-                    'TXT_ACCESS_CAPTCHA'            => $_ARRAYLANG['TXT_ACCESS_CAPTCHA'],
-                    'TXT_ACCESS_CAPTCHA_DESCRIPTION'=> $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION']
-                ));
-                $this->_objTpl->parse('access_captcha');
-            } else {
-                $this->_objTpl->hideBlock('access_captcha');
-            }
-        }
-
-        // set terms and conditions
-        if ($this->_objTpl->blockExists('access_tos')) {
-            if ($arrSettings['user_accept_tos_on_signup']['status']) {
-                $uriTos = CONTREXX_SCRIPT_PATH.'?section=agb';
-                $this->_objTpl->setVariable(array(
-                    'TXT_ACCESS_TOS'    => $_ARRAYLANG['TXT_ACCESS_TOS'],
-                    'ACCESS_TOS'    => '<input type="checkbox" name="access_user_tos" id="access_user_tos"'.(!empty($_POST['access_user_tos']) ? ' checked="checked"' : '').' /><label for="access_user_tos">'.sprintf($_ARRAYLANG['TXT_ACCESS_ACCEPT_TOS'], $uriTos).'</label>'
-                ));
-                $this->_objTpl->parse('access_tos');
-            } else {
-                $this->_objTpl->hideBlock('access_tos');
-            }
-        }
-
         $this->_objTpl->parse('access_signup_form');
     }
-
-
-    private function checkCaptcha()
-    {
-        global $_ARRAYLANG;
-
-        $arrSettings = User_Setting::getSettings();
-        $objCaptcha = new Captcha();
-
-        if(!$arrSettings['user_captcha']['status'] || $objCaptcha->compare($_POST['accessSignUpCaptcha'], $_POST['accessSignUpCaptchaOffset'])) {
-            return true;
-        }
-
-        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'];
-        return false;
-    }
-
-
-    private function checkTos()
-    {
-        global $_ARRAYLANG;
-
-        $arrSettings = User_Setting::getSettings();
-        if (!$arrSettings['user_accept_tos_on_signup']['status'] || !empty($_POST['access_user_tos'])) {
-            return true;
-        }
-
-        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_TOS_NOT_CHECKED'];
-        return false;
-    }
-
 
     function handleSignUp($objUser)
     {
@@ -710,7 +616,5 @@ class Access extends AccessLib
         $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $adminEmail, $_ARRAYLANG['TXT_ACCESS_COULD_NOT_SEND_EMAIL']);
         return false;
     }
-
 }
-
 ?>

@@ -1,4 +1,4 @@
-<?
+<?php
 
 /**
  * Info Fields
@@ -414,7 +414,7 @@ if (MY_DEBUG) echo("InfoFields::getTypeMenu(select=$selectedType, name=$menuName
     /**
      * Converts php.ini memory settings strings to their integer equivalent.
      *
-     * This should be placed in some static tool class in the core.
+     * This should be placed in some Settings class in the core.
      * @param   string  $strMemory      The setting string
      * @return  integer                 The integer value
      */

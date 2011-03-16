@@ -119,6 +119,8 @@ class HotelCheckInOut
         return $arrTime;
     }
 
+
+
 }
 
 ?>

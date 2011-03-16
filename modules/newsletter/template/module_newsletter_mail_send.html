@@ -2,43 +2,43 @@
 <form name="NewsletterTest" action="index.php?cmd=newsletter&amp;act=sendMail&amp;id={NEWSLETTER_MAIL_ID}{NEWSLETTER_TESTMAIL_SENT}" method="post">
 <p>{TXT_NEWSLETTER_SEND_TESTMAIL_FIRST}</p>
 <div class="infobox_head">
-  <strong>{TXT_NEWSLETTER_NOTICE}</strong>
+	<strong>{TXT_NEWSLETTER_NOTICE}</strong>
 </div>
 
 <div class="infobox_body">
-  {TXT_NEWSLETTER_NOTICE_TESTMAIL}
+	{TXT_NEWSLETTER_NOTICE_TESTMAIL}
 </div>
 <br />
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
-  <tr>
-    <th colspan="2">{TXT_SEND_TEST_EMAIL}</th>
-  </tr>
-  <tr class="row1">
-    <td width="15%">{TXT_NEWSLETTER_EMAIL_ADDRESS}</td>
-    <td width="85%"><input type="text" name="newsletter_test_mail" value="{NEWSLETTER_MAIL_TEST_EMAIL}" size="40" maxlength="200" style="width: 300px;" /> </td>
-  </tr>
+	<tr>
+		<th colspan="2">{TXT_SEND_TEST_EMAIL}</th>
+	</tr>
+	<tr class="row1">
+		<td width="15%">{TXT_NEWSLETTER_EMAIL_ADDRESS}</td>
+		<td width="85%"><input type="text" name="newsletter_test_mail" value="{NEWSLETTER_MAIL_TEST_EMAIL}" size="40" maxlength="200" style="width: 300px;" /> </td>
+	</tr>
 </table>
 <br />
 <input type="submit" name="newsletter_mail_send_test" value="{TXT_NEWSLETTER_SEND}" />
 <br /><br />
 <!-- BEGIN bulkSend -->
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
-  <tr>
-    <th>{TXT_NEWSLETTER_SEND_EMAIL}</th>
-  </tr>
-  <!-- BEGIN newsletter_mail_list_required -->
-  <tr class="row1">
-    <td>
-      {TXT_NEWSLETTER_MAIL_LIST_REQUIRED_TXT}<br />
-      <br />
-      <input type="submit" name="newsletter_mail_edit" value="{TXT_NEWSLETTER_MODIFY_EMAIL}" />
-    </td>
-  </tr>
-  <!-- END newsletter_mail_list_required -->
+	<tr>
+		<th>{TXT_NEWSLETTER_SEND_EMAIL}</th>
+	</tr>
+	<!-- BEGIN newsletter_mail_list_required -->
+	<tr class="row1">
+		<td>
+			{TXT_NEWSLETTER_MAIL_LIST_REQUIRED_TXT}<br />
+			<br />
+			<input type="submit" name="newsletter_mail_edit" value="{TXT_NEWSLETTER_MODIFY_EMAIL}" />
+		</td>
+	</tr>
+	<!-- END newsletter_mail_list_required -->
 </table>
 <!-- BEGIN newsletter_mail_send_status -->
-  <!--<iframe frameborder="0" id="NewsletterSending" width="200" height="50" src="../modules/newsletter/template/newsletter_reload.html">-->
-  <iframe style="margin:5px;" name="NewsletterIframe" scrolling="no" width="100%" height="120" frameborder="0" src="index.php?cmd=newsletter&amp;act=send&amp;standalone=true&amp;id={NEWSLETTER_MAIL_ID}"></iframe>
+	<!--<iframe frameborder="0" id="NewsletterSending" width="200" height="50" src="../modules/newsletter/template/newsletter_reload.html">-->
+	<iframe style="margin:5px;" name="NewsletterIframe" scrolling="no" width="100%" height="120" frameborder="0" src="index.php?cmd=newsletter&amp;act=send&amp;standalone=true&amp;id={NEWSLETTER_MAIL_ID}"></iframe>
 <!-- END newsletter_mail_send_status -->
 <!-- END bulkSend -->
 <input type="hidden" name="{NEWSLETTER_TESTMAIL_SENT2}" value="1" />

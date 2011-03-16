@@ -90,8 +90,6 @@ class Category
     private $downloads;
     private $downloads_count;
 
-    private $notification_group_ids;
-
     private $arrAttributes = array(
         'core' => array(
             'id'                                => 'int',
@@ -190,7 +188,6 @@ class Category
         $this->descriptions = array();
         $this->downloads = null;
         $this->downloads_count = null;
-        $this->notification_group_ids = null;
         $this->permission_set = false;
         $this->EOF = true;
     }
@@ -398,28 +395,6 @@ class Category
         }
     }
 
-    public function getNotificationGroupIds()
-    {
-        if (!isset($this->notification_group_ids)) {
-            $this->loadNotificationGroupIds();
-        }
-        return $this->notification_group_ids;
-    }
-
-    private function loadNotificationGroupIds()
-    {
-        global $objDatabase;
-
-        $this->notification_group_ids = array();
-        $objResult = $objDatabase->Execute('SELECT `user_group_id` FROM `'.DBPREFIX.'module_downloads_notification_rel_category_user_group` WHERE `category_id` = '.$this->id);
-        if ($objResult) {
-            while (!$objResult->EOF) {
-                $this->notification_group_ids[] = $objResult->fields['user_group_id'];
-                $objResult->MoveNext();
-            }
-        }
-    }
-
     public function hasSubcategories()
     {
         global $objDatabase;
@@ -542,7 +517,6 @@ class Category
                 $this->descriptions = isset($this->arrLoadedCategories[$id]['descriptions']) ? $this->arrLoadedCategories[$id]['descriptions'] : null;
                 $this->downloads = isset($this->arrLoadedCategories[$id]['downloads']) ? $this->arrLoadedCategories[$id]['downloads'] : null;
                 $this->downloads_count = isset($this->arrLoadedCategories[$id]['downloads_count']) ? $this->arrLoadedCategories[$id]['downloads_count'] : null;
-                $this->notification_group_ids = null;
                 $this->permission_set = false;
                 $this->EOF = false;
                 return true;
@@ -605,7 +579,6 @@ class Category
             .'FROM `'.DBPREFIX.'module_downloads_category` AS tblC'
             .(/*count($arrSelectLocaleExpressions) || */$arrQuery['tables']['locale'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblL ON tblL.`category_id` = tblC.`id`' : '')
             .($arrQuery['tables']['localeSort'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblLS ON tblLS.`category_id` = tblC.`id`' : '')
-            .($arrQuery['tables']['group'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_group_category` AS tblR ON tblR.`category_id` = tblC.`id`' : '')
             .(count($arrQuery['conditions']) ? ' WHERE '.implode(' AND ', $arrQuery['conditions']) : '')
             .' GROUP BY tblC.`id`'
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
@@ -638,18 +611,12 @@ class Category
         $arrConditions = array();
         $arrSearchConditions = array();
         $tblLocales = false;
-        $tblGroup = false;
 
         // parse filter
         if (isset($arrFilter) && is_array($arrFilter)) {
             if (count($arrFilterConditions = $this->parseFilterConditions($arrFilter))) {
                 $arrConditions[] = implode(' AND ', $arrFilterConditions['conditions']);
                 $tblLocales = isset($arrFilterConditions['tables']['locale']);
-            }
-
-            if (in_array('group_id', array_keys($arrFilter)) && !empty($arrFilter['group_id'])) {
-                $arrConditions[] = 'tblR.`group_id` = '.intval($arrFilter['group_id']);
-                $tblGroup = true;
             }
         }
 
@@ -677,9 +644,6 @@ class Category
         $arrTables = array();
         if ($tblLocales) {
             $arrTables[] = 'locale';
-        }
-        if ($tblGroup) {
-            $arrTables[] = 'group';
         }
 
         return array(
@@ -829,7 +793,6 @@ class Category
         $arrCustomSelection = array();
         $joinLocaleTbl = false;
         $joinLocaleSortTbl = false;
-        $joinGroupTbl = false;
         $arrCategoryIds = array();
         $arrSortExpressions = array();
         $nr = 0;
@@ -838,9 +801,6 @@ class Category
             if (isset($sqlCondition['tables'])) {
                 if (in_array('locale', $sqlCondition['tables'])) {
                     $joinLocaleTbl = true;
-                }
-                if (in_array('group', $sqlCondition['tables'])) {
-                    $joinGroupTbl = true;
                 }
             }
 
@@ -853,11 +813,7 @@ class Category
             foreach ($arrSort as $attribute => $direction) {
                 if (in_array(strtolower($direction), array('asc', 'desc'))) {
                     if (isset($this->arrAttributes['core'][$attribute])) {
-                        if ($attribute == 'order' && $joinGroupTbl) {
-                            $arrSortExpressions[] = 'tblR.`'.$attribute.'` '.$direction;
-                        } else {
-                            $arrSortExpressions[] = 'tblC.`'.$attribute.'` '.$direction;
-                        }
+                        $arrSortExpressions[] = 'tblC.`'.$attribute.'` '.$direction;
                     } elseif (isset($this->arrAttributes['locale'][$attribute])) {
                         $arrSortExpressions[] = 'tblLS.`'.$attribute.'` '.$direction;
                         $arrCustomSelection[] = 'tblLS.`lang_id` = '.$_LANGID ;
@@ -873,7 +829,6 @@ class Category
             FROM `'.DBPREFIX.'module_downloads_category` AS tblC'
             .($joinLocaleTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblL ON tblL.`category_id` = tblC.`id`' : '')
             .($joinLocaleSortTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category_locale` AS tblLS ON tblLS.`category_id` = tblC.`id`' : '')
-            .($joinGroupTbl ? ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_group_category` AS tblR ON tblR.`category_id` = tblC.`id`' : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
@@ -902,8 +857,7 @@ class Category
         return array(
             'tables' => array(
                 'locale'    => $joinLocaleTbl,
-                'localeSort'=> $joinLocaleSortTbl,
-                'group'     => $joinGroupTbl
+                'localeSort'=> $joinLocaleSortTbl
             ),
             'conditions'    => $arrCustomSelection,
             'sort'          => $arrSortExpressions
@@ -1039,11 +993,6 @@ class Category
 
         if (!$this->storePermissions()) {
             $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_PERMISSIONS'];
-            return false;
-        }
-
-        if (!$this->storeNotificationGroups()) {
-            $this->error_msg[] = $_ARRAYLANG['TXT_DOWNLOADS_COULD_NOT_STORE_NOTIFICATIONS'];
             return false;
         }
 
@@ -1238,40 +1187,6 @@ class Category
         }
     }
 
-    private function storeNotificationGroups()
-    {
-        global $objDatabase;
-
-        if (!isset($this->notification_group_ids)) {
-            return true;
-        }
-
-        $status = true;
-        $new = $this->notification_group_ids;
-        $this->loadNotificationGroupIds();
-        $old = $this->notification_group_ids;
-
-        // reset the current association
-        $this->notification_group_ids = $new;
-
-        $arrNew = array_diff($new, $old);
-        $arrRemoved = array_diff($old, $new);
-
-        foreach ($arrNew as $groupId) {
-            if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_downloads_notification_rel_category_user_group` (`category_id`, `user_group_id`) VALUES (".$this->id.", ".intval($groupId).")") === false) {
-                $status = false;
-            }
-        }
-
-        foreach ($arrRemoved as $groupId) {
-            if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_downloads_notification_rel_category_user_group` WHERE `category_id` = ".$this->id." AND `user_group_id` = ".intval($groupId)) === false) {
-                $status = false;
-            }
-        }
-
-        return $status;
-    }
-
     private function validateName()
     {
         global $_ARRAYLANG;
@@ -1403,11 +1318,6 @@ class Category
     public function setDownloads($arrDownloads)
     {
         $this->downloads = count($arrDownloads) ? array_combine($arrDownloads, array_pad(array(), count($arrDownloads), 0)) : array();
-    }
-
-    public function setNotificationGroups($arrGroups)
-    {
-        $this->notification_group_ids = $arrGroups;
     }
 
     public function getErrorMsg()

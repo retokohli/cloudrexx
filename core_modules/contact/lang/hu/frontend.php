@@ -33,7 +33,4 @@ $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Tippen Sie bitte die Zeichenfo
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "Die eingegebene Zeichenfolge war falsch!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Auswahlliste";
-$_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
-$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Kérem válasszon";
-$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Nincs megadva";
 ?>

@@ -1,4 +1,5 @@
 <?php
+$_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "Thumbnail des Bildes verwenden";
 /**
  * Data
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -433,65 +434,57 @@ class DataAdmin extends DataLibrary {
 
         if (isset($_POST['frmAddCategory_Languages']) && is_array($_POST['frmAddCategory_Languages'])) {
             //Get next category-id
-            $query = '
-                SELECT        
-                    MAX(category_id) AS currentId
-                FROM        
-                    '.DBPREFIX.'module_data_categories
-                ORDER BY 
-                   category_id DESC
-            ';
-
-            $objResult = $objDatabase->Execute($query);
+            $objResult = $objDatabase->Execute('SELECT        MAX(category_id) AS currentId
+                                                FROM        '.DBPREFIX.'module_data_categories
+                                                ORDER BY    category_id DESC
+                                            ');
             $intNextCategoryId = ($objResult->RecordCount() == 1) ? $objResult->fields['currentId'] + 1 : 1;
 
             //Collect data
             $arrValues = array();
             foreach ($_POST as $strKey => $strValue) {
+                /*
+                echo "------------------------------------ BEGIN ------------------------------------\n";
+                echo "$strKey :" .($strValue, true);
+                echo "\n------------------------------------ END ------------------------------------\n\n\n\n";
+                 */
                 // what the fuck is this for?
                 if (substr($strKey,0,strlen('frmAddCategory_Name_')) == 'frmAddCategory_Name_') {
                     $intLanguageId = intval(substr($strKey,strlen('frmAddCategory_Name_')));
-                    $arrValues[$intLanguageId] = array(    
-                        'name'         => contrexx_addslashes(strip_tags($strValue)),
-                        'is_active'    => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
-                        'parent_id'    => intval($_POST['frmParentcategory']),
-                        'cmd'          => intval($_POST['frmFrontendPage']),
-                        'action'       => $_POST['frmSettings_action'],
-                        'box_width'    => $_POST['frmBoxwidth'],
-                        'box_height'   => $_POST['frmBoxheight'],
-                        'template'     => contrexx_addslashes($_POST['frmTemplate'])
-                    );
+                    $arrValues[$intLanguageId] = array(    'name'            => contrexx_addslashes(strip_tags($strValue)),
+                                                        'is_active'       => intval(in_array($intLanguageId,$_POST['frmAddCategory_Languages'])),
+                                                        'parent_id'    => intval($_POST['frmParentcategory']),
+                                                        'cmd'          => intval($_POST['frmFrontendPage']),
+                                                        'action'       => $_POST['frmSettings_action'],
+                                                        'box_width'    => $_POST['frmBoxwidth'],
+                                                        'box_height'   => $_POST['frmBoxheight'],
+                                                        'template'     => contrexx_addslashes($_POST['frmTemplate'])
+                                                    );
                 }
             }
 
             foreach ($arrValues as $intLanguageId => $arrCategoryValues) {
-                $query = '    
-                    INSERT INTO 
-                        `'.DBPREFIX.'module_data_categories`
-                    SET    
-                        `category_id`   = '.$intNextCategoryId.',
-                        `lang_id`       = '.$intLanguageId.',
-                        `is_active`     = "'.$arrCategoryValues['is_active'].'",
-                        `parent_id`     = "'.$arrCategoryValues['parent_id'].'",
-                        `name`          = "'.$arrCategoryValues['name'].'",
-                        `cmd`           = "'.$arrCategoryValues['cmd'].'",
-                        `action`        = "'.$arrCategoryValues['action'].'",
-                        `box_width`     = "'.$arrCategoryValues['box_width'].'",
-                        `box_height`    = "'.$arrCategoryValues['box_height'].'",
-                        `template`      = "'.$arrCategoryValues['template'].'"
-                ';
-                $objDatabase->Execute($query);
+                $objDatabase->Execute('    INSERT INTO `'.DBPREFIX.'module_data_categories`
+                                        SET    `category_id` = '.$intNextCategoryId.',
+                                            `lang_id` = '.$intLanguageId.',
+                                            `is_active` = "'.$arrCategoryValues['is_active'].'",
+                                            `parent_id` = "'.$arrCategoryValues['parent_id'].'",
+                                            `name` = "'.$arrCategoryValues['name'].'",
+                                            `cmd` = "'.$arrCategoryValues['cmd'].'",
+                                            `action` = "'.$arrCategoryValues['action'].'",
+                                            `box_width` = "'.$arrCategoryValues['box_width'].'",
+                                            `box_height` = "'.$arrCategoryValues['box_height'].'",
+                                            `template` = "'.$arrCategoryValues['template'].'"
+                                    ');
             }
 
             // insert placeholder
             if (isset($_POST['frmPlaceholder'])) {
                 $placeholder = $this->_formatPlaceholder($_POST['frmPlaceholder']);
-                $query = "
-                    INSERT INTO 
-                        ".DBPREFIX."module_data_placeholders
-                        (type, ref_id, placeholder)
-                    VALUES
-                      ('cat', ".$intNextCategoryId.", '".$placeholder."')";
+                $query = "INSERT INTO ".DBPREFIX."module_data_placeholders
+                          (type, ref_id, placeholder)
+                          VALUES
+                          ('cat', ".$intNextCategoryId.", '".$placeholder."')";
                 $objDatabase->Execute($query);
             }
 
@@ -671,11 +664,17 @@ class DataAdmin extends DataLibrary {
      */
     function parseCategoryDropdown($categoryTree, $arrCategories, $select, $level, $lang, $parent = true)
     {
+	// this used to expect an int value, only allowing entries to belong to a single category. this way we
+	// continue to support legacy calls but add support for multiple categories in callers aware of that. -fs
+	if (intval($select) == $select) {
+		$select = array($select);
+	}
+
         foreach ($categoryTree as $key => $value) {
             $selected = false;
             if ($select > 0) {
                 if ($parent) {
-                    if ($key == $arrCategories[$select]['parent_id']) {
+                	if ($key == $arrCategories[$select[0]]['parent_id']) {
                         $selected = true;
                     }
                 } else {
@@ -691,7 +690,7 @@ class DataAdmin extends DataLibrary {
             // having a loop.
             if ($this->current_cat_id and $key == $this->current_cat_id)
                 continue;
-
+				
             $this->_objTpl->setVariable(array(
                 "CATEGORY_OPT_LABEL"      => $arrCategories[$key][$lang]['name'],
                 "CATEGORY_OPT_VALUE"      => $key,
@@ -701,8 +700,54 @@ class DataAdmin extends DataLibrary {
 
             $this->_objTpl->parse("addCategoryDropDown");
 
+
             if (count($value) > 0) {
                 $this->parseCategoryDropdown($value, $arrCategories, $select, $level+1, $lang, $parent);
+            }
+
+        }
+    }
+	
+    function parseCategorySelector($categoryTree, $arrCategories, $select, $level, $lang, $parent = true, $stack)
+    {
+	// this used to expect an int value, only allowing entries to belong to a single category. this way we
+	// continue to support legacy calls but add support for multiple categories in callers aware of that. -fs
+	if (intval($select) == $select) {
+		$select = array($select);
+	}
+
+        foreach ($categoryTree as $key => $value) {
+            $selected = false;
+            if ($select > 0) {
+				if (in_array($key, $select)) {
+					$selected = true;
+				}
+            }
+
+            // Don't show our own id as selectable parent. This just causes trouble.
+            // also, we don't want sub-categories of our's to be shown.
+            // this would require reordering of the categories to avoid
+            // having a loop.
+            if (($this->current_cat_id and $key == $this->current_cat_id) OR strlen($arrCategories[$key][$lang]['name']) < 1)
+                continue;
+
+            $this->_objTpl->setVariable(array(
+                "CATEGORY_OPT_LABEL"      => $arrCategories[$key][$lang]['name'],
+                "CATEGORY_OPT_VALUE"      => $key,
+                "CATEGORY_OPT_SELECTED"   => "",
+                "CATEGORY_OPT_INDENT"         =>  $stack 
+            ));
+			
+			if ($selected) {
+				$this->_objTpl->parse("assignedCategories");
+			}
+			else {
+				$this->_objTpl->parse("availableCategories");
+			}
+			
+            if (count($value) > 0) {
+				$stack .= $arrCategories[$key][$lang]['name'].' &raquo; ';
+                $this->parseCategorySelector($value, $arrCategories, $select, $level+1, $lang, $parent, $stack);
             }
 
         }
@@ -785,10 +830,10 @@ class DataAdmin extends DataLibrary {
                 $err = $objDatabase->ErrorNo();
                 if ($err == 1062) {
                     $placeholder .= rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9); // not very beautiful...
-                    $objDatabase->Execute(" INSERT IGNORE INTO ".DBPREFIX."module_data_placeholders
+                    $objDatabase->Execute(" INSERT INTO ".DBPREFIX."module_data_placeholders
                                             (`type`, `ref_id`, `placeholder`)
                                             VALUES
-                                            ('cat', ".$intCategoryId.",
+                                            ('entry', ".$intCategoryId.",
                                             '".$placeholder."')");
                 }
             }
@@ -895,6 +940,26 @@ class DataAdmin extends DataLibrary {
                 } else {
                     $mode = $_ARRAYLANG['TXT_DATA_ENTRY_MODE_FORWARD'];
                 }
+				
+				// List multiple categories -fs
+				$catList = '';
+				$separator = ', ';
+				foreach ($category_keys as $k) {
+					$catName = $arrCategories[$k][$this->_intLanguageId]['name'];
+					
+					// if a catId is set, we'll want to highlight that particular category (and have it
+					// displayed first)
+					if ($k == $_GET['catId']) {
+						$catList = '<strong>'.$catName.'</strong>'.$separator.$catList;
+					}
+					else {
+						$catList .= $catName.$separator;
+					}
+				}
+				// cut off the last ", ".
+				$catList = substr($catList, 0, -2);
+				
+				
                    $this->_objTpl->setVariable(array(
                        'ENTRY_ROWCLASS'        =>    ($intRowClass % 2 == 0) ? 'row1' : 'row2',
                        'ENTRY_ID'                =>    $intEntryId,
@@ -909,7 +974,7 @@ class DataAdmin extends DataLibrary {
                        //'ENTRY_USER'            =>    $arrEntryValues['user_name'],
                        'ACTIVE_LED'            =>  ($arrEntryValues['active']) ? "green" : "red",
                        'ACTIVE_STATE'          =>  ($arrEntryValues['active']) ? 0 : 1,
-                       'ENTRY_CATEGORY'        =>  $arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
+                       'ENTRY_CATEGORY'        =>  $catList, //$arrCategories[$category_keys[0]][$this->_intLanguageId]['name'],
                        'ENTRY_MODE'            =>  $mode
                    ));
 
@@ -1068,7 +1133,7 @@ class DataAdmin extends DataLibrary {
                $strJsTabToDiv = '';
 
             foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-                $this->parseCategoryDropdown($catTree, $arrCategories, 0, 0, $intLanguageId);
+                $this->parseCategorySelector($catTree, $arrCategories, 0, 0, $intLanguageId);
                    $arrLanguages[$intLanguageCounter%3] .= '<input checked="checked" type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
 
                 $strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
@@ -1253,7 +1318,7 @@ class DataAdmin extends DataLibrary {
                     'content'           => contrexx_addslashes($_POST['frmEditEntry_Content_'.$intLanguageId]),
                     'is_active'         => intval(in_array($intLanguageId, $_POST['frmEditEntry_Languages'])),
                     //'categories'      => (isset($_POST['frmEditEntry_Categories_'.$intLanguageId])) ? $_POST['frmEditEntry_Categories_'.$intLanguageId] : array(),
-                    'categories'        => (isset($_POST['frmcategory_'.$intLanguageId])) ? array($_POST['frmcategory_'.$intLanguageId]) : array(),
+                    'categories'        => (isset($_POST['assignedBlocks_'.$intLanguageId])) ? array($_POST['assignedBlocks_'.$intLanguageId]) : array(),
                     'image'             => contrexx_addslashes(strip_tags($_POST['frmEditEntry_Image_'.$intLanguageId])),
                     'thumbnail'         => isset($_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Method_'.$intLanguageId] == 'different' ? contrexx_addslashes(strip_tags($_POST['frmEditEntry_Thumbnail_'.$intLanguageId])) : '',
                     'thumbnail_type'    => isset($_POST['frmEditEntry_Thumbnail_Type_'.$intLanguageId]) && $_POST['frmEditEntry_Thumbnail_Type_'.$intLanguageId] == '1' ? 'thumbnail' : 'original',
@@ -1308,7 +1373,7 @@ class DataAdmin extends DataLibrary {
 
             //Assign message to categories
             if (is_array($arrEntryValues['categories'])) {
-                foreach ($arrEntryValues['categories'] as $intKey => $intCategoryId) {
+                foreach ($arrEntryValues['categories'][0] as $intKey => $intCategoryId) {
                     $objDatabase->Execute('    INSERT INTO '.DBPREFIX.'module_data_message_to_category
                                             SET `message_id` = '.$intMessageId.',
                                                 `category_id` = '.$intCategoryId.',
@@ -1366,7 +1431,7 @@ class DataAdmin extends DataLibrary {
 
         $catTree = $this->buildCatTree($arrCategories);
         $catKeys = array_keys($arrEntries[$intEntryId]['categories'][$this->_intLanguageId]);
-        $firstCat = $catKeys[0];
+        $categories = $catKeys;
         $ie = (preg_match("/MSIE (6|7)/", $_SERVER['HTTP_USER_AGENT'])) ? true : false;
 
 
@@ -1396,7 +1461,7 @@ class DataAdmin extends DataLibrary {
                    $strJsTabToDiv = '';
 
                 foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
-                    $this->parseCategoryDropdown($catTree, $arrCategories, $firstCat, 0, $intLanguageId, false);
+                    $this->parseCategorySelector($catTree, $arrCategories, $categories, 0, $intLanguageId, false);
 
                     $boolLanguageIsActive = $arrEntries[$intEntryId]['translation'][$intLanguageId]['is_active'];
 

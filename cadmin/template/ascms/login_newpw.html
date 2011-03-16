@@ -2,19 +2,19 @@
 <script language="JavaScript" type="text/javascript">
 function checkPw()
 {
-  if(document.new_form.NEWPASSWORD.value.length < 6){
-    alert('{TXT_PW_TO_SHORT}');
-    document.new_form.NEWPASSWORD.value = "";
-    document.new_form.CONFIRM_NEWPASSWORD.value = ""
-  }else{
-    if(document.new_form.NEWPASSWORD.value != document.new_form.CONFIRM_NEWPASSWORD.value){
-      alert('{TXT_PW_DONOT_MATCH}');
-      document.new_form.NEWPASSWORD.value = "";
-      document.new_form.CONFIRM_NEWPASSWORD.value = "";
-    }else{
-      document.new_form.submit();
-    }
-  }
+	if(document.new_form.NEWPASSWORD.value.length < 6){
+		alert('{TXT_PW_TO_SHORT}');
+		document.new_form.NEWPASSWORD.value = "";
+		document.new_form.CONFIRM_NEWPASSWORD.value = ""
+	}else{
+		if(document.new_form.NEWPASSWORD.value != document.new_form.CONFIRM_NEWPASSWORD.value){
+			alert('{TXT_PW_DONOT_MATCH}');
+			document.new_form.NEWPASSWORD.value = "";
+			document.new_form.CONFIRM_NEWPASSWORD.value = "";
+		}else{
+			document.new_form.submit();
+		}
+	}
 }
 </script>
 <table summary="" cellspacing="0" cellpadding="4" width="100%" border="0">

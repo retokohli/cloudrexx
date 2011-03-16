@@ -4,7 +4,7 @@
 function deleteCategorie(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
-        window.location.replace("index.php?cmd=docsys{MODULE_INDEX}&act=delcat&catId="+id);
+        window.location.replace("index.php?cmd=docsys{MODULE_INDEX}&{CSRF_PARAM}&act=delcat&catId="+id);
 }
 // -->
 </script>
@@ -51,7 +51,7 @@ function deleteCategorie(id)
         <input type="text" name="catName[{DOCSYS_CAT_ID}]" value="{DOCSYS_CAT_NAME}" size="40" maxlength="250" />
       </td>
       <td>
-        {DOCSYS_SORTING_DROPDOWN}
+      	{DOCSYS_SORTING_DROPDOWN}
       </td>
       <td>
         <div align="right"><a href="javascript:deleteCategorie('{DOCSYS_CAT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div>

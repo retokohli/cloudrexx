@@ -4,12 +4,12 @@
 function deleteDiscount(discountId)
 {
   if (confirm('{TXT_SHOP_CONFIRM_DELETE_DISCOUNT_GROUP}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.href="index.php?cmd=shop&act=products&tpl=discounts&deleteDiscount=1&id="+discountId;
+    window.location.href="index.php?cmd=shop&{CSRF_PARAM}&act=products&tpl=discounts&deleteDiscount=1&id="+discountId;
 }
 function deleteDiscountRate(discountRateId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_DISCOUNT_RATE}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.href="index.php?cmd=shop&act=products&tpl=discounts&deleteDiscountRate=1&id="+discountRateId;
+    window.location.href="index.php?cmd=shop&{CSRF_PARAM}&act=products&tpl=discounts&deleteDiscountRate=1&id="+discountRateId;
 }
 Text[0]=["","{TXT_SHOP_DISCOUNT_COUNT_TIP}"];
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
@@ -19,20 +19,20 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 <span class="red">{CONTENT_STATUS}</span>
 <!-- END statusBar -->
 <ul id="tabmenu">
-  <li><a id="discountTab_content1" class="{SHOP_DISCOUNT_LIST_CLASS}"
+  <li><a id="discountTab_shopContent1" class="{SHOP_DISCOUNT_LIST_CLASS}"
         href="javascript:void(0);"
-        onclick="selectTab('content1')" title="{TXT_SHOP_DISCOUNT_GROUPS}">
+        onclick="selectTab('shopContent1')" title="{TXT_SHOP_DISCOUNT_GROUPS}">
       {TXT_SHOP_DISCOUNT_GROUPS}</a></li>
   <li>
-    <a id="discountTab_content2" class="{SHOP_DISCOUNT_EDIT_CLASS}"
+    <a id="discountTab_shopContent2" class="{SHOP_DISCOUNT_EDIT_CLASS}"
         href="javascript:void(0);"
-        onclick="selectTab('content2')" title="{TXT_ADD_OR_EDIT}">
+        onclick="selectTab('shopContent2')" title="{TXT_ADD_OR_EDIT}">
       {TXT_ADD_OR_EDIT}</a></li>
 </ul>
 <form name="shopForm" method="post"
     action="index.php?cmd=shop&amp;act=products&amp;tpl=discounts">
-  <!-- start content1 div -->
-  <div id="content1" class="discountTab" style="display:{SHOP_DISCOUNT_LIST_DISPLAY};">
+  <!-- start shopContent1 div -->
+  <div id="shopContent1" class="discountTab" style="display:{SHOP_DISCOUNT_LIST_DISPLAY};">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th width="49%"><b>{TXT_SHOP_DISCOUNT_GROUP_NAME}</b></th>
@@ -68,10 +68,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <!-- END shopDiscount -->
     </table>
   </div>
-  <!-- end content1 div -->
+  <!-- end shopContent1 div -->
 
-  <!-- start content2 div -->
-  <div id="content2" class="discountTab" style="display:{SHOP_DISCOUNT_EDIT_DISPLAY}">
+  <!-- start shopContent2 div -->
+  <div id="shopContent2" class="discountTab" style="display:{SHOP_DISCOUNT_EDIT_DISPLAY}">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th colspan="4"><b>{TXT_SHOP_EDIT_DISCOUNT_GROUP}</b></th>
@@ -117,9 +117,9 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <br />
     <input type="submit" name="discountStore" value="{TXT_STORE}" />
     <input type="button" name="discountCancel" value="{TXT_SHOP_CANCEL}"
-        onclick="javascript:window.location.href='index.php?cmd=shop&act=products&tpl=discounts';"
+        onclick="javascript:window.location.href='index.php?cmd=shop&{CSRF_PARAM}&act=products&tpl=discounts';"
     />
   </div>
-  <!-- end content2 div -->
+  <!-- end shopContent2 div -->
 </form>
 <!-- END module_shop_discount_groups_count.html -->

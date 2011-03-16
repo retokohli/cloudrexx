@@ -31,7 +31,7 @@ class ForumAdmin extends ForumLibrary {
 
     /**
      * Constructor    -> Create the module-menu and an internal template-object
-     * @global    InitCMS
+     * @global    InitCMS 
      * @global    HTML_Template_Sigma
      * @global    array
      */
@@ -40,6 +40,7 @@ class ForumAdmin extends ForumLibrary {
         global $objInit, $objTemplate, $_ARRAYLANG;
         ForumLibrary::__construct();
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_intLangId = $objInit->userFrontendLangId;
         $objTemplate->setVariable(
@@ -640,7 +641,7 @@ class ForumAdmin extends ForumLibrary {
 
         } else {
             //no category with this id, redirect
-            header("location: index.php?cmd=forum");
+            CSRF::header("location: index.php?cmd=forum");
         }
 
     }
@@ -771,7 +772,7 @@ class ForumAdmin extends ForumLibrary {
     /**
      * Show "access rights"-form for a selected category.
      *
-     * @global    ADONewConnection
+     * @global    ADONewConnection 
      * @global     array
      * @param    integer        $intCategoryId: The category / forum with this id should be edited
      */
@@ -843,7 +844,7 @@ class ForumAdmin extends ForumLibrary {
                }
            } else {
                //wrong id, redirect
-               header("location: index.php?cmd=forum");
+               CSRF::header("location: index.php?cmd=forum");
            }
     }
 

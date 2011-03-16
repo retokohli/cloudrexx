@@ -28,6 +28,9 @@ require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php';
 
 $objDb = ADONewConnection($_DBCONFIG['dbType']); # eg 'mysql' or 'postgres'
 $objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
+
+if(!empty($_DBCONFIG['charset']))
+  $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']);
 $counter = new counter($arrRobots, $arrBannedWords);
 
 /**
@@ -87,6 +90,8 @@ class counter
 
         $this->_initConfiguration();
 
+
+
         // make statistics only if they were activated
         if ($this->arrConfig['make_statistics']['status']) {
             //set spider and banned words
@@ -106,6 +111,7 @@ class counter
 
                     // if visitor was counted, then make statistics
                     if ($this->isNewVisitor) {
+
                         // generate visitor statistics
                         $this->_makeStatistics(DBPREFIX.'stats_visitors_summary');
 
@@ -206,7 +212,7 @@ class counter
             }
         }
         if (isset($_GET['searchTerm']) && !empty($_GET['searchTerm'])) {
-            $this->searchTerm = addslashes(urldecode($_GET['searchTerm']));
+            $this->searchTerm = urldecode($_GET['searchTerm']);
         }
     }
 
@@ -226,16 +232,18 @@ class counter
                 $completeUriString = substr(strrchr($_SERVER['HTTP_REFERER'], "/"),1);
                 $isAlias = true;
             } else {
-            //check domain and return GET-String after ?
-            $completeUriString = substr(strstr($_SERVER['HTTP_REFERER'], "?"),1);
+                //check domain and return GET-String after ?
+                $completeUriString = substr(strstr($_SERVER['HTTP_REFERER'], "?"),1);
             }
 
             //creates an array for each GET-pair
             $arrUriGets = explode("&", $completeUriString);
 
             foreach ($arrUriGets AS $elem) {
+                //avoid multiple entries for same request:
                 //check if Session-ID is traced by url (cookies are disabled)
-                if (!preg_match("/PHPSESSID/",$elem)) {
+                //also skip the csrf and caching parameter (they are appended by the backend's preview link) 
+                if (!preg_match("/(PHPSESSID|csrf|caching)/",$elem)) {
                     if ($elem != "") {
                         $uriString .="&".$elem;
                     }
@@ -389,7 +397,7 @@ class counter
         $arrMatches = array();
         foreach ($arrReferers as $refererRegExp) {
             if (preg_match($refererRegExp, $referer, $arrMatches)) {
-                $this->externalSearchTerm = addslashes(urldecode($arrMatches[1]));
+                $this->externalSearchTerm = urldecode($arrMatches[1]);
             }
         }
     }
@@ -479,8 +487,8 @@ class counter
         // check for mobilephone
         $fp = fopen('lib/mobile-useragents.inc',"r");
         while (true) {
-            $line = fgets($fp);
-            if ($line === false) break;
+        	$line = fgets($fp);
+        	if ($line === false) break;
             $arrUserAgent = explode("\t",$line);
             if (!strcasecmp(trim($this->arrClient['useragent']),trim($arrUserAgent[2]))) {
                 $this->mobilePhone = $arrUserAgent[0].' '.$arrUserAgent[1];
@@ -520,9 +528,9 @@ class counter
     function _getBrowser()
     {
         $userAgent = $this->arrClient['useragent'];
-        $arrBrowserRegExps = array();
-        $arrBrowserNames = array();
-        $arrBrowser = array();
+		$arrBrowserRegExps = array();
+		$arrBrowserNames = array();
+		$arrBrowser = array();
         include('lib/useragents.inc.php');
         if (!empty($arrBrowserRegExps)) {
             foreach ($arrBrowserRegExps as $browserRegExp) {
@@ -626,25 +634,25 @@ class counter
         $query = "UPDATE `".DBPREFIX."stats_requests` SET `visits` = `visits` + 1, `sid` = '".$this->md5Id."', `timestamp` = '".$this->currentTime."' WHERE `page` = '".substr($this->requestedUrl,0,255)."' AND (`sid` != '".$this->md5Id."' OR `timestamp` <= '".($this->currentTime - $this->arrConfig['reload_block_time']['value'])."')";
         $objDb->Execute($query);
         if ($objDb->Affected_Rows() == 0) {
-            $query = "SELECT `id` FROM `".DBPREFIX."stats_requests` WHERE `page` = '".substr($this->requestedUrl,0,255)."'";
-            $objDb->Execute($query);
-            if ($objDb->Affected_Rows() == 0) {
-                 $query = "INSERT INTO `".DBPREFIX."stats_requests` (
+            $query = "INSERT INTO `".DBPREFIX."stats_requests` (
                                         `sid`,
                                         `pageId`,
                                         `page`,
                                         `timestamp`,
-                                        `visits`
+                                        `visits`,
+                                        `pageTitle`
                                         ) VALUES (
                                         '".$this->md5Id."',
                                         '".$this->pageId."',
                                         '".substr($this->requestedUrl,0,255)."',
                                         '".$this->currentTime."',
-                                        '1'
+                                        '1',
+                                        (
+                                            SELECT title from ".DBPREFIX."content WHERE id=".$this->pageId."
+                                        )
                                         )";
-                $objDb->Execute($query);
-                $this->_makeStatistics(DBPREFIX.'stats_requests_summary');
-            }
+            $objDb->Execute($query);
+            $this->_makeStatistics(DBPREFIX.'stats_requests_summary');               
         } else {
             $this->_makeStatistics(DBPREFIX.'stats_requests_summary');
         }
@@ -700,8 +708,8 @@ class counter
         $result = $objDb->Execute($query);
         if ($result) {
             while (true) {
-                $arrResult = $result->FetchRow();
-                if (empty($arrResult)) break;
+            	$arrResult = $result->FetchRow();
+            	if (empty($arrResult)) break;
                 $arrStats[$arrResult['type']]['id'] = $arrResult['id'];
             }
         }
@@ -747,14 +755,14 @@ class counter
 
     function _countSearchquery($searchTerm, $external) {
         global $objDb;
-        $searchTerm = urldecode(utf8_decode($searchTerm));
-        $query = "UPDATE `".DBPREFIX."stats_search` SET `count` = `count` + 1, `sid` = '".$this->md5Id."' WHERE `name` = '".substr($searchTerm,0,100)."' AND `sid` != '".$this->md5Id."' AND `external` = '".$external."'";
+        $searchTerm = addslashes(substr($searchTerm,0,100));
+        $query = "UPDATE `".DBPREFIX."stats_search` SET `count` = `count` + 1, `sid` = '".$this->md5Id."' WHERE `name` = '".$searchTerm."' AND `sid` != '".$this->md5Id."' AND `external` = '".$external."'";
         $objDb->Execute($query);
         if ($objDb->Affected_Rows() == 0) {
-            $query = "SELECT `id` FROM `".DBPREFIX."stats_search` WHERE `name` = '".substr($searchTerm,0,100)."' AND `external` = '".$external."'";
+            $query = "SELECT `id` FROM `".DBPREFIX."stats_search` WHERE `name` = '".$searchTerm."' AND `external` = '".$external."'";
             $objDb->Execute($query);
             if ($objDb->Affected_Rows() == 0) {
-                $query = "INSERT INTO `".DBPREFIX."stats_search` (`name`, `count`, `sid`, `external`) VALUES ('".substr($searchTerm,0,100)."', 1, '".$this->md5Id."', '".$external."')";
+                $query = "INSERT INTO `".DBPREFIX."stats_search` (`name`, `count`, `sid`, `external`) VALUES ('".$searchTerm."', 1, '".$this->md5Id."', '".$external."')";
                 $objDb->Execute($query);
             }
         }
@@ -775,5 +783,4 @@ class counter
         }
     }
 }
-
 ?>

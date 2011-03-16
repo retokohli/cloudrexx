@@ -25,30 +25,30 @@
  */
 class Navigation
 {
-    public $langId;
-    public $data = array();
-    public $table = array();
-    public $tree = array();
-    public $parents = array();
-    public $pageId;
-    public $styleNameActive = "active";
-    public $styleNameNormal = "inactive";
-    public $separator = " > ";
-    public $spacer = "&nbsp;";
-    public $levelInfo = "down";
-    public $subNavSign = "&nbsp;&raquo;";
-    public $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
-    public $_cssPrefix = "menu_level_";
-    public $_objTpl;
-    public $topLevelPageId;
-    public $_menuIndex = 0;
-
+    var $langId;
+    var $data = array();
+    var $table = array();
+    var $tree = array();
+    var $parents = array();
+    var $pageId;
+    var $styleNameActive = "active";
+    var $styleNameNormal = "inactive";
+    var $separator = " > ";
+    var $spacer = "&nbsp;";
+    var $levelInfo = "down";
+    var $subNavSign = "&nbsp;&raquo;";
+    var $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
+    var $_cssPrefix = "menu_level_";
+    var $_objTpl;
+    var $topLevelPageId;
+    var $_menuIndex = 0;
 
     /**
-     * Constructor
-     * @global  integer
-     * @param   integer  $pageId
-     */
+    * Constructor
+    *
+    * @global   integer
+    * @param     integer  $pageId
+    */
     function __construct($pageId)
     {
         global $_LANGID;
@@ -63,12 +63,14 @@ class Navigation
     }
 
 
+
     /**
-     * Initialize the data hash from the database
-     * @global ADONewConnection
-     * @global Array
-     * @access private
-     */
+    * Initialize the data hash from the database
+    *
+    * @global ADONewConnection
+    * @global Array
+    * @access private
+    */
     function _initialize()
     {
         global $objDatabase, $_CONFIG;
@@ -78,14 +80,14 @@ class Navigation
         //check for preview and if theme exists in database
         $currentThemesId='';
         if (!empty($_GET['preview'])) {
-            $objRS = $objDatabase->SelectLimit("
-                SELECT id
-                  FROM ".DBPREFIX."skins
-                 WHERE id=".intval($_GET['preview']), 1);
+            $objRS=$objDatabase->SelectLimit("SELECT id
+                                        FROM ".DBPREFIX."skins
+                                        WHERE id = ".intval($_GET['preview']), 1);
             if ($objRS->RecordCount() == 1) {
                 $currentThemesId = intval($_GET['preview']);
             }
         }
+
         $query = "SELECT n.cmd,
                          n.catid,
                          n.catname,
@@ -97,14 +99,14 @@ class Navigation
                          m.name AS section,
                          a_s.url AS alias_url
                     FROM ".DBPREFIX."content_navigation     AS n
-              INNER JOIN ".DBPREFIX."content                AS c    ON (c.id = n.catid AND c.lang_id = n.lang)
+              INNER JOIN ".DBPREFIX."content                AS c    ON c.id = n.catid
               INNER JOIN ".DBPREFIX."modules                AS m    ON m.id = n.module
          LEFT OUTER JOIN ".DBPREFIX."module_alias_target    AS a_t  ON a_t.url = n.catid
-         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s  ON (a_s.target_id = a_t.id AND a_s.lang_id=n.lang AND a_s.isdefault = 1)
+         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s  ON a_s.target_id = a_t.id AND a_s.isdefault = 1
                    WHERE (n.displaystatus = 'on' OR n.catid='".$this->pageId."')
-                     AND n.lang='".$this->langId."'
                      AND n.activestatus='1'
                      AND n.is_validated='1'
+                     AND n.lang='".$this->langId."'
                          ".(
                             $objFWUser->objUser->login() ?
                                 // user is authenticated
@@ -166,17 +168,15 @@ class Navigation
                     $link = (!empty($s)) ? "?section=".$s.$cmd : "?page=".$objResult->fields['catid'].$section.$cmd;
                     $menu_url = CONTREXX_SCRIPT_PATH
                         .$link
-// TODO: $id is not defined
-//                        .(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');
-                        .(($currentThemesId) ? '&amp;preview='.$currentThemesId : '');
+                        .(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');
                 }
 
 
                 $this->data[$objResult->fields['catid']]= array(
-                    'catid' => $objResult->fields['catid'],
-                    'url' => $menu_url,
-                    'catname' => stripslashes($objResult->fields['catname']),
-                    'target' => $objResult->fields['target'],
+                    'catid'    => $objResult->fields['catid'],
+                    'url'      => $menu_url,
+                    'catname'  => stripslashes($objResult->fields['catname']),
+                    'target'   => $objResult->fields['target'],
                     'css_name' => $objResult->fields['css_name'],
                     'status' => $objResult->fields['displaystatus']
                 );
@@ -228,46 +228,46 @@ class Navigation
         }
     }
 
-
     /**
-     * builds the navigation tree sorted by parents
-     * @access  private
-     * @param   integer   $parentId (Optional)
-     * @param   integer   $maxlevel (Optional)
-     * @param   integer   $level    (Optional)
-     */
-    function _buildTree($parentId=0, $maxlevel=0, $level=0)
+    * builds the navigation tree sorted by parents
+    *
+    * @access private
+    * @param int $parentId (Optional)
+    * @param int $maxlevel (Optional)
+    * @param int $level (Optional)
+    */
+    function _buildTree($parentId=0,$maxlevel=0,$level=0)
     {
         if (!empty($this->table[$parentId])) {
-            foreach (array_keys($this->table[$parentId]) as $id) {
-                $this->tree[$id] = $level + 1;
-                if (   isset($this->table[$id])
-                    && (   $maxlevel >= $level+1
-                        || $maxlevel == 0)) {
-                  $this->_buildTree($id, $maxlevel, $level+1);
+            foreach($this->table[$parentId] AS $id => $data ){
+                $this->tree[$id]=$level+1;
+                if ((isset($this->table[$id])) AND (($maxlevel>=$level+1) OR ($maxlevel==0))){
+                  $this->_buildTree($id,$maxlevel,$level+1);
                 }
             }
         }
     }
 
 
+
     /**
-     * Gets the parsed navigation
-     * @access  private
-     * @param   string  $templateContent
-     * @param   boolean $boolShop         If "true", parse the shop navigation
-     *                                    into {SHOPNAVBAR_FILE}
-     * @return  mixed                     parsed navigation
-     */
-    function getNavigation($templateContent, $boolShop=false)
+    * Gets the parsed navigation
+    *
+    * @access private
+    * @param string  $templateContent
+    * @param boolean $boolShop: Is there a shop on this page? If "true", fill the navigation into {SHOPNAVBAR_FILE}
+    * @return mixed parsed navigation
+    */
+    function getNavigation($templateContent,$boolShop=false)
     {
-        $this->_objTpl = new HTML_Template_Sigma('.');
+        $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($templateContent);
 
         if ($boolShop) {
             global $shopObj, $themesPages;
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', $shopObj->getNavbar($themesPages['shopnavbar']));
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
         }
 
         if (isset($this->_objTpl->_blocks['navigation_dropdown'])) {
@@ -290,9 +290,9 @@ class Navigation
         return $this->_objTpl->get();
     }
 
-
     /**
      * Build navigation menu with a continuous list (default)
+     *
      * @return   string   $result
      */
     function _buildNavigation()
@@ -304,8 +304,8 @@ class Navigation
         $navigationId[] = 0; // CSS styling ID's
 
         $array_ids = array_keys( $this->tree );
-        // foreach ($this->tree as $id => $level)
-        foreach ( $array_ids as $key => $id ) {
+        // foreach($this->tree as $id => $level)
+        foreach( $array_ids as $key => $id ) {
             $level = $this->tree[$id];
 
             if (!isset($navigationId[$level])) {
@@ -323,11 +323,11 @@ class Navigation
             $hideLevel=false;
 
             // checks if the page is in the current tree
-            if (in_array($this->parentId[$id], $this->parents)) {
+            if(in_array($this->parentId[$id], $this->parents)){
                 // checks for customized blocks. e.g. "level_1"
-                if ($this->_objTpl->blockExists('level_'.$level)) {
+                if($this->_objTpl->blockExists('level_'.$level)){
                     // gets the top level block name from the template
-                    if (!isset($topLevelBlockName)) {
+                    if(!isset($topLevelBlockName)){
                         $topLevelBlockName='level_'.$level;
                     }
                     $blockName = 'level_'.$level;
@@ -335,18 +335,18 @@ class Navigation
                 // no customized blocks for this level
                 else {
                     // we already had customized blocks
-                    if (isset($topLevelBlockName)) {
+                    if(isset($topLevelBlockName)){
                         // checks for the standard block e.g. "level"
-                        if ($this->_objTpl->blockExists('level')) {
+                        if($this->_objTpl->blockExists('level')){
                             $blockName = 'level';
-                        } else {
+                        }else {
                             $hideLevel=true;
                         }
                     }
                 }
 
-                if (isset($topLevelBlockName)) {
-                    if (!$hideLevel) {
+                if(isset($topLevelBlockName)){
+                    if(!$hideLevel){
                         // checks if we are in the active tree
                         $activeTree = (in_array($id, $this->parents)) ? true : false;
                         if ($this->data[$id]['status'] == 'on') {
@@ -375,13 +375,13 @@ class Navigation
         }
         unset($navigationId);
 
-        if (isset($topLevelBlockName)) {
+        if(isset($topLevelBlockName)){
             // replaces the top level block with the complete parsed navigation
             // this is because the Sigma Template system don't support nested blocks
             // with difference object based orders
             $this->_objTpl->replaceBlock($topLevelBlockName, $htmlOutput, true);
             $this->_objTpl->touchBlock($topLevelBlockName);
-            if ($this->_objTpl->blockExists('navigation')) {
+            if($this->_objTpl->blockExists('navigation')){
                 $this->_objTpl->parse('navigation');
             }
         }
@@ -411,7 +411,6 @@ class Navigation
         $navigationBlock = "";
 
         // Checks which levels to use
-        $match = array();
         if (!preg_match('/levels_([1-9])([1-9\+]*)/', trim($this->_objTpl->_blocks['nested_navigation']), $match)) {
             $match[1] = 1;
             $match[2] = '+';
@@ -420,10 +419,10 @@ class Navigation
         $array_ids = array_keys( $this->tree );
 
         // Make an array with visible items only
-        foreach ($array_ids as $key => $id ) {
+        foreach($array_ids as $key => $id ) {
             $level = $this->tree[$id];
             // Checks if the menu item is in the current tree
-             if (in_array($this->parentId[$id], $this->parents)) {
+             if(in_array($this->parentId[$id], $this->parents)) {
                 // Checks if the menu item level is visible
                 if (($level>=$match[1] && $level<=$match[2]) || ($level>=$match[1] && $match[2] == "+")) {
                     if ($this->data[$id]['status'] == 'on') {
@@ -434,10 +433,11 @@ class Navigation
         }
 
         // Build nested menu list
-        $navigationId = array();
-        foreach ($array_visible_ids as $key => $id) {
+        foreach( $array_visible_ids as $key => $id ) {
+
             $level = $this->tree[$id];
             $nextLevel = $this->tree[$array_visible_ids[$key+1]];
+
             if (!isset($navigationId[$level])) {
                 $navigationId[$level] = 0;
             }
@@ -482,30 +482,31 @@ class Navigation
             // Return nested menu
             return "<ul id='".$this->_cssPrefix.$match[1]."'>\n".$navigationBlock."</ul>";
         }
-        return '';
     }
 
 
     /**
-     * Build a drop down navigation menu
-     * @access private
-     * @param mixed $arrPage
-     * @param integer $level
-     * @param boolean $mainPage
-     * @return string $navigation
-     */
-    function _buildDropDownNavigation($arrPage, $level, $mainPage=false)
-    {
+    * Build drop down navigation menu
+    *
+    * Build a drop down navigation menu
+    *
+    * @access private
+    * @param mixed $arrPage
+    * @param integer $level
+    * @param boolean $mainPage
+    * @return string $navigation
+    */
+    function _buildDropDownNavigation($arrPage, $level, $mainPage = false) {
         $navigation = "";
         $tmpNavigation = "";
         $mainCat = 1;
-        $navigationId = array();
         foreach ($arrPage as $page) {
             // prevent undefined variable notice
             if (!isset($navigationId[$level])) {
                 $navigationId[$level] = 0;
             }
-            ++$navigationId[$level];
+            $navigationId[$level]++;
+
             // page has childs
             if (is_array($page)) {
                 // get page id
@@ -560,14 +561,15 @@ class Navigation
 
 
     /**
-     * Get an array with all parentids
-     * @access  private
-     */
+    * Get an array with all parentids
+    *
+    * @access  private
+    */
     function _getParents()
     {
         $parentId = !empty($this->parentId[$this->pageId]) ? $this->parentId[$this->pageId] : 0;
         while($parentId!=0) {
-            if (is_array($this->table[$parentId])) {
+            if(is_array($this->table[$parentId])) {
                 array_push($this->parents, $parentId);
                 if (!empty($this->parentId[$parentId])) {
                     $parentId = $this->parentId[$parentId];
@@ -581,18 +583,20 @@ class Navigation
     }
 
 
+
     /**
-     * Get trail
-     * @return    string     The trail with links
-     */
-    function getTrail()
+    * Get trail
+    *
+    * @param     integer  $currentid
+    * @return    integer  $allparents
+    */
+    function getTrail($catname='')
     {
-        $return = '';
-        $parentId = (isset($this->parentId[$this->pageId])
-            ? $this->parentId[$this->pageId] : 0);
-        while ($parentId != 0) {
+        $return ="";
+        $parentId = $this->parentId[$this->pageId];
+        while ($parentId!=0) {
             if (!empty($this->data[$parentId])) {
-                if (!is_array($this->table[$parentId])) {
+                if(!is_array($this->table[$parentId])) {
                     return $return;
                 }
                 $n = $this->data[$parentId]['catname'];
@@ -609,187 +613,47 @@ class Navigation
     }
 
 
+
     /**
-     * getFrontendLangNavigation()
-     * @access public
-     * @global InitCMS
-     * @global ADONewConnection
-     * @global integer
-     * @global array
-     */
+    * getFrontendLangNavigation()
+    *
+    * @access public
+    * @global InitCMS
+	* @global array
+    */
+
     function getFrontendLangNavigation()
     {
-        global $objInit, $objDatabase, $_LANGID, $_CONFIG;
+        global $objInit, $_CONFIG;
+
         $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = "";
-
-        $URLquery = $_SERVER['QUERY_STRING'];
-        $URLbase = $_SERVER['PHP_SELF'];
-        // Workaround contact
-        $tmpCID = 0;
-        if (isset($_REQUEST['section'])) {
-            if ($_REQUEST['section']=='contact') {
-// TODO: Unused
-//                $cmd = $_REQUEST['cmd'];
-                $query = "SELECT catid FROM ".DBPREFIX."content_navigation WHERE cmd=".intval($_REQUEST['cmd'])." AND lang=".$_LANGID." ";
-                $objResult = $objDatabase->SelectLimit($query, 1);
-                if ($objResult === true || !$objResult->EOF) {
-                    $tmpCID = $objResult->fields["catid"];
-                } else {
-                    $URLquery = preg_replace('/&?section\=[a-zA-Z]+/', '', $URLquery);
-                    $URLquery = preg_replace('/&?cmd\=[0-9]+/', '', $URLquery);
-                }
-            }
-        }
-
-        if (count($this->arrLang)>1) {
-            foreach ($this->arrLang as $id => $value) {
-                if ($this->arrLang[$id]['frontend']==1) {
-                    $GETquery = '';
-                    $URLquery = preg_replace('/&?fromLang\=[0-9]+/', '', $URLquery);
-                    $URLquery = preg_replace('/&?langId\=[0-9]+/', '', $URLquery);
-                    $URLquery = preg_replace('/&?setLang\=[0-9]+/', '', $URLquery);
-                    $FromQuery = 'fromLang='.$_LANGID;
-
-                    // workaround contact
-                    if ($tmpCID!=0) {
-                        $URLquery = preg_replace('/&?cmd\=[0-9]/', '', $URLquery);
-                        $tmpCMD = 0;
-                        $query = "SELECT cmd FROM ".DBPREFIX."content_navigation WHERE catid=".$tmpCID." AND lang=".$value['id']." ";
-                        $objResult = $objDatabase->SelectLimit($query, 1);
-                        if ($objResult === true || !$objResult->EOF) {
-                            $tmpCMD = $objResult->fields["cmd"];
-                        }
-                        if ($tmpCMD!=0) {
-                            $URLquery .= ($URLquery!='') ? '&cmd='.$tmpCMD : '?section='.$_REQUEST['section'].'&cmd='.$tmpCMD;
-                        }
-                    }
-
-                    if ($_CONFIG['useVirtualLanguagePath']=='on') {
-                        if ($URLquery!='') {
-                            $LangURL = '/'.$value['lang'].$URLbase.'?'.$FromQuery;
+          if(count($this->arrLang)>1) {
+                foreach($this->arrLang as $id=>$value) {
+                    if($this->arrLang[$id]['frontend']==1) {
+                        if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                            $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
                         } else {
-                            $LangURL = '/'.$value['lang'].$URLbase.'?'.$FromQuery;
+                            $uri = CONTREXX_SCRIPT_PATH."?setLang=".$id;
                         }
-                    } else {
-                        if ($URLquery!='') {
-                            $URLquery = 'setLang='.$value['id'];
-                        } else {
-                            $URLquery = 'setLang='.$value['id'];
-                        }
-                        $LangURL = $URLbase.'?'.$URLquery.'&'.$FromQuery;
+
+                        $langNavigation .= " [ <a href='".$uri."' title='".$value['name']."' >".$value['name']."</a> ] ";
                     }
-                    foreach ($_GET as $k => $v) {
-                        if (in_array($k, array('fromLang', 'setLang', 'langId'))) continue;
-                        $GETquery .= '&amp;'.$k.'='.$v;
-                    }
-                    $langNavigation .= ' [ <a href="'.$LangURL.$GETquery.'" title="'.$value['name'].'" >'.$value['name'].'</a> ] ';
                 }
-            }
-        }
+          }
         return $langNavigation;
     }
 
-
-    /**
-     * Get a list of language change url placeholders
-     *
-     * Parses the language change placeholders which can be used to switch
-     * to the corresponding pages of the current page in an other language.
-     * Returns a two dimensional  array of which the key represents the placeholder
-     * in the form LANG_CHANGE_EN (EN is the ISO 639-1 language code of the language)
-     * and its value contains the actual url that links to the corresponding page
-     * in the according language.
-     * @global ADONewConnection
-     * @global array
-     * @return array
-     */
-    public function getParsedLanguageChangePlaceholders($pageId)
-    {
-        global $objDatabase, $_CONFIG;
-
-        $arrLanguageChangePlaceholders = array();
-        $arrLangPages = array();
-        $arrLanguages = FWLanguage::getLanguageArray();
-        $URLquery = preg_replace(
-            array(
-                '#\&?langId\=[0-9]+#',
-                '#\&?setLang\=[0-9]+#',
-                '#\&?section\=[a-z0-9-_]+#i',
-                '#\&?cmd\=[a-z0-9_-]+#i'
-            ), '', $_SERVER['QUERY_STRING']);
-        $URLquery = htmlspecialchars($URLquery, ENT_QUOTES, CONTREXX_CHARSET);
-
-        $objResult = $objDatabase->Execute(
-            "SELECT tblN.`lang`,
-                    tblN.`cmd`,
-                    tblM.`name`
-            FROM `".DBPREFIX."content_navigation` AS tblN
-            INNER JOIN `".DBPREFIX."modules` AS tblM ON tblM.`id` = tblN.`module`
-            WHERE tblN.`catid` = ".$pageId
-        );
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $arrLangPages[$objResult->fields['lang']] = array(
-                    'section' => $objResult->fields['name'],
-                    'cmd' => $objResult->fields['cmd']
-                );
-                $objResult->MoveNext();
-            }
-        }
-
-        foreach ($arrLanguages as $arrLanguage) {
-            // only parse frontend languages
-            if ($arrLanguage['frontend']) {
-                $arrParams = array();
-
-                // get section url modifier
-                if (!empty($arrLangPages[$arrLanguage['id']]['section'])) {
-                    $arrParams[] = 'section='.$arrLangPages[$arrLanguage['id']]['section'];
-                }
-
-                // get cmd url modifier
-                if (!empty($arrLangPages[$arrLanguage['id']]['cmd'])) {
-                    $arrParams[] = 'cmd='.$arrLangPages[$arrLanguage['id']]['cmd'];
-                }
-
-                if ($_CONFIG['useVirtualLanguagePath'] != 'on') {
-                    $arrParams[] = 'setLang='.$arrLanguage['id'];
-                }
-
-                if (substr($URLquery, 0, 5) == '&amp;') {
-                    $URLquery = substr($URLquery, 5);
-                }
-
-                $arrParams[] = $URLquery;
-                $LangURL = CONTREXX_DIRECTORY_INDEX.'?'.implode('&amp;', $arrParams);
-
-                if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                    $LangURL = ASCMS_PATH_OFFSET.'/'.$arrLanguage['lang'].'/'.$LangURL;
-                }
-
-                $arrLanguageChangePlaceholders['LANG_CHANGE_'.strtoupper($arrLanguage['lang'])] =
-                    $LangURL;
-                 $arrLanguageChangePlaceholders['LANG_SELECTED_'.strtoupper($arrLanguage['lang'])] =
-                    $arrLanguage['id'] == FRONTEND_LANG_ID ? 'selected' : '';
-            }
-        }
-        return $arrLanguageChangePlaceholders;
-    }
-
-
-    static function is_local_url($url)
-    {
+    static function is_local_url($url) {
         $url = strtolower($url);
         if (strpos($url, 'http://' ) === 0) return false;
         if (strpos($url, 'https://') === 0) return false;
         if (strpos($url, '/'       ) === 0) return false;
+
         return true;
     }
 
-
-    static function mkurl($absolute_local_path)
-    {
+    static function mkurl($absolute_local_path) {
         global $_CONFIG;
         return ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
             ? ""
@@ -797,14 +661,11 @@ class Navigation
         ).ASCMS_PATH_OFFSET.stripslashes($absolute_local_path);
     }
 
-
-    function _debug($obj)
-    {
-        echo "<pre>";
-        print_r($obj);
-        echo "</pre>";
+    function _debug($obj){
+          echo "<pre>";
+          print_r($obj);
+          echo "</pre>";
     }
-
 }
 
 ?>

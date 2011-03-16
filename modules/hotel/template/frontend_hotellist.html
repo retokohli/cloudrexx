@@ -4,67 +4,67 @@
 
 <!-- BEGIN objectRow -->
 <div class="box_header">
-  <table style="width:100%;">
-    <tr>
-      <td style="text-align:left;"><h3><a href="index.php?section=hotel&amp;cmd=showObj&amp;id={HOTEL_ID}" title="{HOTEL_HEADER_NOBR}">{HOTEL_HEADER_BR}</a></h3></td>
-      <td style="text-align:right; vertical-align:middle; width:169px;">{TXT_HOTEL_FLIGHT_WITH}&nbsp;<a href="{HOTEL_LINK_FLIGHT_INFOS}"><img src="/images/modules/hotel/{HOTEL_LINK_FLIGHT_INFOS_LOGO}" style="width:100px; border:0px; vertical-align:middle;" alt="{TXT_HOTEL_FLIGHT_WITH}" /></a></td>
-    </tr>
-  </table>
+	<table style="width:100%;">
+		<tr>
+			<td style="text-align:left;"><h3><a href="index.php?section=hotel&amp;cmd=showObj&amp;id={HOTEL_ID}" title="{HOTEL_HEADER_NOBR}">{HOTEL_HEADER_BR}</a></h3></td>
+			<td style="text-align:right; vertical-align:middle; width:169px;">{TXT_HOTEL_FLIGHT_WITH}&nbsp;<a href="{HOTEL_LINK_FLIGHT_INFOS}"><img src="/images/modules/hotel/{HOTEL_LINK_FLIGHT_INFOS_LOGO}" style="width:100px; border:0px; vertical-align:middle;" alt="{TXT_HOTEL_FLIGHT_WITH}" /></a></td>
+		</tr>
+	</table>
 </div>
 <div class="box_body">
-  <div class="pic">
-    <!-- BEGIN previewImage -->
-    <a href="index.php?section=hotel&amp;cmd=showObj&amp;id={HOTEL_ID}" title="{HOTEL_HEADER_NOBR}"><img width="175" height="135" title="{HOTEL_IMG_PREVIEW_SRC}" alt="{HOTEL_HEADER_NOBR}" src="{HOTEL_IMG_PREVIEW_SRC}" /></a>
+	<div class="pic">
+		<!-- BEGIN previewImage -->
+		<a href="index.php?section=hotel&amp;cmd=showObj&amp;id={HOTEL_ID}" title="{HOTEL_HEADER_NOBR}"><img width="175" height="135" title="{HOTEL_IMG_PREVIEW_SRC}" alt="{HOTEL_HEADER_NOBR}" src="{HOTEL_IMG_PREVIEW_SRC}" /></a>
         <!-- END previewImage -->
-  </div>
-  <div class="middle">
-    <div class="desc">{HOTEL_HIGHLIGHT}</div>
-    <div class="go">
-      <img src="themes/isis_2007/images/go.gif" width="49" height="18" alt="details" onclick="location.replace('index.php?section=hotel&amp;cmd=showObj&amp;id={HOTEL_ID}');" />
-    </div>
-  </div>
+	</div>
+	<div class="middle">
+		<div class="desc">{HOTEL_HIGHLIGHT}</div>
+		<div class="go">
+			<img src="themes/isis_2007/images/go.gif" width="49" height="18" alt="details" onclick="location.replace('index.php?section=hotel&{CSRF_PARAM}&amp;cmd=showObj&amp;id={HOTEL_ID}');" />
+		</div>
+	</div>
 
-  <div class="right">
-    <div class="stars">
-      <table style="width:100%;">
-        <!-- BEGIN categories -->
-          <tr>
-            <td>
-              <span style="float:left;">{HOTEL_CATEGORY}</span>
-            </td>
-            <td>
-                    <div style="position: relative; right: {HOTEL_STARS_MARGIN}px;float: right; overflow: hidden; width:{HOTEL_STARS_WIDTH}px;">
-                      <img alt="{HOTEL_CATEGORY}" title="{HOTEL_CATEGORY}" src="images/content/5stars.gif" height="12" />
-                    </div>
-                  </td>
-                </tr>
-              <!-- END categories -->
+	<div class="right">
+		<div class="stars">
+			<table style="width:100%;">
+				<!-- BEGIN categories -->
+					<tr>
+						<td>
+							<span style="float:left;">{HOTEL_CATEGORY}</span>
+						</td>
+						<td>
+				            <div style="position: relative; right: {HOTEL_STARS_MARGIN}px;float: right; overflow: hidden; width:{HOTEL_STARS_WIDTH}px;">
+				            	<img alt="{HOTEL_CATEGORY}" title="{HOTEL_CATEGORY}" src="images/content/5stars.gif" height="12" />
+				            </div>
+			            </td>
+		            </tr>
+	            <!-- END categories -->
             </table>
-    </div>
-  </div>
+		</div>
+	</div>
 
-  <div class="price">
-    <table style="width: 100%; margin-top: -3px;">
-      <tr>
-        <td width="342">
-          <b>{TXT_HOTEL_PRICE_FROM} {TXT_HOTEL_CURRENCY_PREFIX} {HOTEL_PRICE}{TXT_HOTEL_CURRENCY_SUFFIX}
-              ({TXT_HOTEL_CURRENCY_PREFIX_EURO} {HOTEL_PRICE_EURO}{TXT_HOTEL_CURRENCY_SUFFIX_EURO}), {HOTEL_MEAL}</b><br />
-              {TXT_HOTEL_PRICE_ADDITION}
-        </td>
-        <td>
-          {TXT_HOTEL_NEXT_DEPARTURE_DATE}:<br />
-          {HOTEL_NEXT_DEPARTURE_DATE}
-        </td>
-      </tr>
-    </table>
-  </div>
+	<div class="price">
+		<table style="width: 100%; margin-top: -3px;">
+			<tr>
+				<td width="342">
+					<b>{TXT_HOTEL_PRICE_FROM} {TXT_HOTEL_CURRENCY_PREFIX} {HOTEL_PRICE}{TXT_HOTEL_CURRENCY_SUFFIX}
+			        ({TXT_HOTEL_CURRENCY_PREFIX_EURO} {HOTEL_PRICE_EURO}{TXT_HOTEL_CURRENCY_SUFFIX_EURO}), {HOTEL_MEAL}</b><br />
+			        {TXT_HOTEL_PRICE_ADDITION}
+				</td>
+				<td>
+					{TXT_HOTEL_NEXT_DEPARTURE_DATE}:<br />
+					{HOTEL_NEXT_DEPARTURE_DATE}
+				</td>
+			</tr>
+		</table>
+	</div>
 </div>
 
 <!-- END objectRow -->
 
 <!-- BEGIN nomatches -->
 <div style="color:#ff0000;text-align:center;font-size:14px;">
-  <img src="/images/modules/hotel/NoMatches.gif" alt="{TXT_NO_MATCHES}" title="{TXT_NO_MATCHES}" /> &nbsp;&nbsp; {TXT_NO_MATCHES}
+	<img src="/images/modules/hotel/NoMatches.gif" alt="{TXT_NO_MATCHES}" title="{TXT_NO_MATCHES}" /> &nbsp;&nbsp; {TXT_NO_MATCHES}
 </div>
 <!-- END nomatches -->
 

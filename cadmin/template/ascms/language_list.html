@@ -5,7 +5,7 @@
 function deleteVariable(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
-        window.location.replace("index.php?cmd=language&act=del&id="+id);
+        window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=del&id="+id);
 }
 // -->
 </script>

@@ -175,7 +175,7 @@ class marketLibrary
             $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_market SET
                                 type='".contrexx_addslashes($_POST['type'])."',
                                   title='".contrexx_addslashes($_POST['title'])."',
-                                  color='".contrexx_addslashes($_POST['color'])."',
+								  color='".contrexx_addslashes($_POST['color'])."',
                                   description='".contrexx_addslashes($_POST['description'])."',
                                 premium='".contrexx_addslashes($_POST['premium'])."',
                                   picture='".contrexx_addslashes($picture)."',
@@ -243,7 +243,7 @@ class marketLibrary
                 $mailTitle            = $objResult->fields['title'];
                 $mailContent        = $objResult->fields['content'];
                 $mailCC                = $objResult->fields['mailcc'];
-                $mailTo                = $objResult->fields['mailto'];
+                $mailTo                = $objResult->fields['mailcc'];
                 $mailOn                = $objResult->fields['active'];
                 $objResult->MoveNext();
             };
@@ -448,8 +448,10 @@ class marketLibrary
                 $fileName = md5($rand.$fileName).$exte;
 
                 //check file
+// TODO: $x is not defined
+                $x = 0;
                 if(file_exists($this->mediaPath.$path.$fileName)){
-                    $fileName = $rand.$part1 . '_' . (time()) . $exte;
+                    $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
                     $fileName = md5($fileName).$exte;
                 }
 
@@ -484,8 +486,10 @@ class marketLibrary
             $fileName = md5($rand.$fileName).$exte;
 
             //check file
+            // TODO: $x is not defined
+            $x = 0;
             if(file_exists($this->mediaPath.$path.$fileName)){
-                $fileName = $rand.$part1 . '_' . (time()) . $exte;
+                $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
                 $fileName = md5($fileName).$exte;
             }
 

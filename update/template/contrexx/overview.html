@@ -5,16 +5,16 @@
 {TXT_UPDATE_SELECT_VERSION_MSG}
 <div style="border:1px solid #ECF2FA; background-color:#ECF2FA; margin-top:30px;">{TXT_UPDATE_AVAILABLE_VERSIONS}</div>
 <div style="padding:10px; border:1px solid #ECF2FA;">
-  <!-- BEGIN updateNoVersionSelected -->
-    <div style="height:20px; clear:both; width:100%; margin:0px 0px 10px 0px;" class="status_message">
-      <div class="success">
-      {UPDATE_ERROR_MSG}
-      </div>
-    </div>
-  <!-- END updateNoVersionSelected -->
-  <!-- BEGIN updateVersionList -->
-  <input type="radio" name="updateVersion" value="{UPDATE_VERSION_PATH}" id="updateVersion{UPDATE_VERSION_PATH}" {UPDATE_VERSION_CHECKED} /> <label for="updateVersion{UPDATE_VERSION_PATH}">{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}</label><br />
-  <!-- END updateVersionList -->
+	<!-- BEGIN updateNoVersionSelected -->
+		<div style="height:20px; clear:both; width:100%; margin:0px 0px 10px 0px;" class="status_message">
+			<div class="success">
+			{UPDATE_ERROR_MSG}
+			</div>
+		</div>
+	<!-- END updateNoVersionSelected -->
+	<!-- BEGIN updateVersionList -->
+	<input type="radio" name="updateVersion" value="{UPDATE_VERSION_PATH}" id="updateVersion{UPDATE_VERSION_PATH}" {UPDATE_VERSION_CHECKED} /> <label for="updateVersion{UPDATE_VERSION_PATH}">{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}</label><br />
+	<!-- END updateVersionList -->
 </div>
 <!-- END updateVersions -->
 <!-- BEGIN updateIncompatibleVersions -->
@@ -22,14 +22,14 @@
 <div style="padding:10px; border:1px solid #ECF2FA;">
 {TXT_UPDATE_INCOMPATIBLE_VERSIONS_MSG}
     <ul>
-  <!-- BEGIN updateIncompatibleVersionList -->
-      <li>
-      <p>
-              {UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}<br />
-              <em>{UPDATE_VERSION_INCOMPATIBLE_REASON}</em>
-      </p>
+	<!-- BEGIN updateIncompatibleVersionList -->
+	    <li>
+			<p>
+            	{UPDATE_VERSION_NAME} {UPDATE_VERSION_EDITION} {UPDATE_VERSION}<br />
+            	<em>{UPDATE_VERSION_INCOMPATIBLE_REASON}</em>
+			</p>
         </li>
-  <!-- END updateIncompatibleVersionList -->
+	<!-- END updateIncompatibleVersionList -->
     </ul>
 </div>
 <!-- END updateIncompatibleVersions -->

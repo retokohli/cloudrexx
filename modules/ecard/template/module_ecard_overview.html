@@ -13,8 +13,8 @@ path = "";
 function ecardGetFileBrowser(motive_id) {
   path = motive_id;
   openWindow(
-    "index.php?cmd=fileBrowser&amp;standalone=true",
-    "",
+    "index.php?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true", 
+    "", 
     "width=800,height=600,resizable=yes,status=no,scrollbars=yes"
   );
 }
@@ -29,7 +29,7 @@ function SetUrl(url, width, height, alt) {
   document.getElementById("motive_id_"+path).value = url;
 //  document.getElementById("motive_img_"+path).src = url;
 //  document.getElementById("motive_img_"+path).alt = url;
-}
+}  
 
 function openWindow(theURL, features) {
   dataPopup = window.open(theURL, features);
@@ -52,16 +52,16 @@ function openWindow(theURL, features) {
     <tr>
       <td align="left" valign="top" nowrap="nowrap">
         <a rel="shadowbox" href="{MOTIVE_PATH}">
-          <img id="motive_img_{MOTIVE_ID}" style="border:1px solid #0A50A1;" src="{MOTIVE_THUMB_PATH}" alt="{MOTIVE_PATH}" />
+          <img id="motive_img_{MOTIVE_ID}" style="border:1px solid #0A50A1;" src="{MOTIVE_THUMB_PATH}" alt="{MOTIVE_PATH}" title="{MOTIVE_PATH}" />
         </a>
       </td>
       <td nowrap="nowrap" valign="top">
-        <input type="text" id="motive_id_{MOTIVE_ID}" readonly="readonly"
+        <input type="text" id="motive_id_{MOTIVE_ID}" readonly="readonly" 
             name="motiveInputArray[]" value="{MOTIVE_PATH}" style="width:250px;" /></td>
       <td valign="top" nowrap="nowrap">
-        <input type="button" onclick="ecardGetFileBrowser({MOTIVE_ID})"
+        <input type="button" onclick="ecardGetFileBrowser({MOTIVE_ID})" 
             value="{TXT_BROWSE}" />
-        <input type="button" onclick="ecardClearImage({MOTIVE_ID});"
+        <input type="button" onclick="ecardClearImage({MOTIVE_ID});" 
             value="{TXT_DELETE}" />
       </td>
     </tr>

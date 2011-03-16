@@ -1,43 +1,43 @@
 <!-- START module_market_overview.html -->
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
-function deleteEntry(entryId){
-    if(confirm('{TXT_DELETE_ENTRY}'))
-        window.location.replace("?cmd=market&act=deleteEntry&id="+entryId);
+function deleteEntry(entryId){ 
+    if(confirm('{TXT_DELETE_ENTRY}')) 
+        window.location.replace("?cmd=market&{CSRF_PARAM}&act=deleteEntry&id="+entryId);
 }
 
 function selectMultiAction()
 {
-  with (document.frmShowEntries) {
-    switch (frmShowEntries_MultiAction.value) {
-      case 'activate':
-        action='?cmd=market&act=statusEntry';
-        submit();
-      break;
-      case 'deactivate':
-        action='?cmd=market&act=statusEntry';
-        submit();
-      break;
-      case 'delete':
-        if (confirm('{TXT_DELETE_ENTRY}')) {
-          action='?cmd=market&act=deleteEntry';
-          submit();
-        }
-      break;
-      default: //do nothing
-    }
-  }
+	with (document.frmShowEntries) {
+		switch (frmShowEntries_MultiAction.value) {
+			case 'activate':
+				action='?cmd=market&act=statusEntry';
+				submit();
+			break;
+			case 'deactivate':
+				action='?cmd=market&act=statusEntry';
+				submit();
+			break;
+			case 'delete':
+				if (confirm('{TXT_DELETE_ENTRY}')) {
+					action='?cmd=market&act=deleteEntry';
+					submit();
+				}
+			break;
+			default: //do nothing			
+		}
+	}
 }
 // ]]>
 </script>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="adminlist">
-  <tr>
+  <tr> 
     <th nowrap>{TXT_OPTIONS}</th>
   </tr>
-  <tr class="row1">
-    <td nowrap>
+  <tr class="row1"> 
+    <td nowrap> 
       <form method=post action='?cmd=market&act=entries'>
-        {TXT_SEARCH}:
+        {TXT_SEARCH}: 
         <input type="text" name="term">
         <input type="submit" name="Submit" value="{TXT_SEARCH}">
       </form>
@@ -47,54 +47,54 @@ function selectMultiAction()
 <br>
 <form name="frmShowEntries" method="post">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-  <tr>
-     <th width="1%"><div align="left">#</div></th>
-    <th width="1%"><div align="left"><a href="?cmd=market&amp;act=entries&amp;sort=status{ENTRY_SORT_ID}" target="_self">{TXT_STATUS}</a></div></th>
-    <th width="3%"><div align="center"><a href="?cmd=market&amp;act=entries&amp;sort=id{ENTRY_SORT_ID}" target="_self">ID</a></div></th>
-    <th width="17%"><div align="left"><a href="?cmd=market&amp;act=entries&amp;sort=title{ENTRY_SORT_ID}" target="_self">{TXT_TITLE}</a></div></th>
-    <th width="20%"><div align="left">{TXT_DESC}</div></th>
-    <th width="10%" nowrap="nowrap"><a href="?cmd=market&amp;act=entries&amp;sort=type{ENTRY_SORT_ID}" target="_self"><div align="left">{TXT_TYP}</a></div></th>
-    <th width="10%" nowrap="nowrap"><a href="?cmd=market&amp;act=entries&amp;sort=regdate{ENTRY_SORT_ID}" target="_self"><div align="left">{TXT_DATE}</a></div></th>
-    <th width="18%" nowrap="nowrap"><a href="?cmd=market&amp;act=entries&amp;sort=addedby{ENTRY_SORT_ID}" target="_self"><div align="left">{TXT_ADDEDBY}</a></div></th>
-    <th width="10%" nowrap="nowrap"><div align="right">{TXT_ACTION}&nbsp;</div></th>
-  </tr>
-  <!-- BEGIN showEntries -->
-  <tr class="row{ENTRY_ROWCLASS}">
-      <td width="1%" valign="top"><input type="checkbox" name="selectedEntryId[]" id="selectedEntryId" value="{ENTRY_ID}"></td>
-    <td valign="top"><div align="center"><a href="?cmd=market&amp;act=statusEntry&amp;id={ENTRY_ID},{ENTRY_STATUS}{ENTRY_SORT_ID_STATUS}" target="_self"><img src="images/icons/{ENTRY_ICON}.gif" border="0" alt="" /></a></div></td>
-    <td valign="top" nowrap="nowrap"><div align="center">&nbsp;{ENTRY_ID}&nbsp;</div></td>
-    <td valign="top" nowrap="nowrap">&nbsp;<input type="text" name="entrySortNr[{ENTRY_ID}]" value="{ENTRY_SORT_ORDER}" style="width:20px;" /> {ENTRY_TITLE}&nbsp;</td>
-    <td align="justify">{ENTRY_DESCRIPTION}&nbsp;</td>
-    <td valign="top">&nbsp;{ENTRY_TYPE}&nbsp;</td>
-    <td valign="top">&nbsp;{ENTRY_DATE}&nbsp;</td>
-    <td valign="top">&nbsp;{ENTRY_ADDEDBY}&nbsp;</td>
-    <td valign="top" align="right" nowrap="nowrap">
-      <div align="right">
-        <a href="?cmd=market&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self"><img alt="{TXT_IMG_EDIT}" title="{TXT_IMG_EDIT}" src="images/icons/edit.gif" border="0" /></a>
-        <a href="?cmd=market&amp;act=copyEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMG_COPY}"><img alt="{TXT_IMG_COPY}" src="images/icons/copy.gif" border="0" /></a>
-        <a href="javascript:deleteEntry({ENTRY_ID});" target="_self"><img alt="{TXT_IMG_DEL}" src="images/icons/delete.gif" border="0" title="{TXT_IMG_DEL}" /></a>
-      </div>
-    </td>
-  </tr>
-  <!-- END showEntries -->
+	<tr>
+	 	<th width="1%"><div align="left">#</div></th>
+		<th width="1%"><div align="left"><a href="?cmd=market&amp;act=entries&amp;sort=status{ENTRY_SORT_ID}" target="_self">{TXT_STATUS}</a></div></th>
+		<th width="3%"><div align="center"><a href="?cmd=market&amp;act=entries&amp;sort=id{ENTRY_SORT_ID}" target="_self">ID</a></div></th>
+		<th width="17%"><div align="left"><a href="?cmd=market&amp;act=entries&amp;sort=title{ENTRY_SORT_ID}" target="_self">{TXT_TITLE}</a></div></th>
+		<th width="20%"><div align="left">{TXT_DESC}</div></th>
+		<th width="10%" nowrap="nowrap"><a href="?cmd=market&amp;act=entries&amp;sort=type{ENTRY_SORT_ID}" target="_self"><div align="left">{TXT_TYP}</a></div></th>
+		<th width="10%" nowrap="nowrap"><a href="?cmd=market&amp;act=entries&amp;sort=regdate{ENTRY_SORT_ID}" target="_self"><div align="left">{TXT_DATE}</a></div></th>
+		<th width="18%" nowrap="nowrap"><a href="?cmd=market&amp;act=entries&amp;sort=addedby{ENTRY_SORT_ID}" target="_self"><div align="left">{TXT_ADDEDBY}</a></div></th>
+		<th width="10%" nowrap="nowrap"><div align="right">{TXT_ACTION}&nbsp;</div></th>
+	</tr>
+	<!-- BEGIN showEntries -->
+	<tr class="row{ENTRY_ROWCLASS}">
+	    <td width="1%" valign="top"><input type="checkbox" name="selectedEntryId[]" id="selectedEntryId" value="{ENTRY_ID}"></td>
+		<td valign="top"><div align="center"><a href="?cmd=market&amp;act=statusEntry&amp;id={ENTRY_ID},{ENTRY_STATUS}{ENTRY_SORT_ID_STATUS}" target="_self"><img src="images/icons/{ENTRY_ICON}.gif" border="0" alt="" /></a></div></td>
+		<td valign="top" nowrap="nowrap"><div align="center">&nbsp;{ENTRY_ID}&nbsp;</div></td>
+		<td valign="top" nowrap="nowrap">&nbsp;<input type="text" name="entrySortNr[{ENTRY_ID}]" value="{ENTRY_SORT_ORDER}" style="width:20px;" /> {ENTRY_TITLE}&nbsp;</td>
+		<td align="justify">{ENTRY_DESCRIPTION}&nbsp;</td>
+		<td valign="top">&nbsp;{ENTRY_TYPE}&nbsp;</td>
+		<td valign="top">&nbsp;{ENTRY_DATE}&nbsp;</td>
+		<td valign="top">&nbsp;{ENTRY_ADDEDBY}&nbsp;</td>
+		<td valign="top" align="right" nowrap="nowrap">
+			<div align="right">
+				<a href="?cmd=market&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self"><img alt="{TXT_IMG_EDIT}" title="{TXT_IMG_EDIT}" src="images/icons/edit.gif" border="0" /></a> 
+				<a href="?cmd=market&amp;act=copyEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMG_COPY}"><img alt="{TXT_IMG_COPY}" src="images/icons/copy.gif" border="0" /></a>
+				<a href="javascript:deleteEntry({ENTRY_ID});" target="_self"><img alt="{TXT_IMG_DEL}" src="images/icons/delete.gif" border="0" title="{TXT_IMG_DEL}" /></a> 
+			</div>
+		</td>
+	</tr>
+	<!-- END showEntries -->
 </table>
 <br />
 <input type="submit" name="market_store_order" value="{TXT_SAVE_ORDER}" style="margin-left:100px;" />
 <table cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td>
-      <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-      <a href="#" onClick="changeCheckboxes('frmShowEntries','selectedEntryId[]',true); return false;">{TXT_SELECT_ALL}</a> /
-      <a href="#" onClick="changeCheckboxes('frmShowEntries','selectedEntryId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-      <img src="images/icons/strike.gif">
-      <select name="frmShowEntries_MultiAction" onChange="selectMultiAction();">
-        <option value="0">{TXT_SELECT_ACTION}</option>
-        <option value="delete">{TXT_DELETE}</option>
-        <option value="activate">{TXT_ACTIVATE}</option>
-        <option value="deactivate">{TXT_DEACTIVATE}</option>
-      </select>
-    </td>
-  </tr>
+	<tr>
+		<td>
+			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+			<a href="#" onClick="changeCheckboxes('frmShowEntries','selectedEntryId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
+			<a href="#" onClick="changeCheckboxes('frmShowEntries','selectedEntryId[]',false); return false;">{TXT_DESELECT_ALL}</a>
+			<img src="images/icons/strike.gif">
+			<select name="frmShowEntries_MultiAction" onChange="selectMultiAction();">
+				<option value="0">{TXT_SELECT_ACTION}</option>
+				<option value="delete">{TXT_DELETE}</option>
+				<option value="activate">{TXT_ACTIVATE}</option>
+				<option value="deactivate">{TXT_DEACTIVATE}</option>
+			</select>
+		</td>
+	</tr>
 </table>
 </form>
 <!-- END module_market_overview.html -->

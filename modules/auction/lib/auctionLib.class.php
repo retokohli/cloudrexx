@@ -107,7 +107,7 @@ class auctionLibrary
     function countEntries($catId) {
 
         global $objDatabase;
-
+        
         $today = mktime(date("H"), date("i"), date("s"), date("m")  , date("d"), date("Y"));
 
         $objResultCount = $objDatabase->Execute('SELECT id FROM '.DBPREFIX.'module_auction WHERE catid = '.contrexx_addslashes($catId).' AND status =1 AND enddate >= "'.$today.'"');
@@ -135,89 +135,89 @@ class auctionLibrary
         return $settings;
     }
 
-    function insertAuction($backend=1){
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
-
-        $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_auction SET title='".contrexx_addslashes($_POST['title'])."'");
-        $_REQUEST['id'] = $objDatabase->Insert_ID();
-
-        $this->settings = $this->getSettings();
-        $tmb_width = 80;
-        if($this->settings['thumbnails_width']>0){
-            $tmb_width = $this->settings['thumbnails_width'];
-        }
-
-
-         for($x=1; $x<6; $x++){
-            if($_FILES['pic_'.$x]['name']!=''){
-
-
-                $HashCode = $this->GetHash();
-
-                $objDatabase->Execute('UPDATE '.DBPREFIX.'module_auction SET picture_'.$x.'="'.$HashCode.'_'.$_FILES['pic_'.$x]['name'].'" WHERE id='.intval($_REQUEST['id']).'');
-
-                if(@move_uploaded_file($_FILES['pic_'.$x]['tmp_name'], ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])) {
-
-                    chmod(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0777);
-
+	function insertAuction($backend=1){
+		global $objDatabase, $_ARRAYLANG, $_CORELANG;
+		
+		$objDatabase->Execute("INSERT INTO ".DBPREFIX."module_auction SET title='".contrexx_addslashes($_POST['title'])."'");
+		$_REQUEST['id'] = $objDatabase->Insert_ID();
+		
+		$this->settings = $this->getSettings();
+		$tmb_width = 80;
+		if($this->settings['thumbnails_width']>0){
+			$tmb_width = $this->settings['thumbnails_width'];
+		}
+		
+		
+		 for($x=1; $x<6; $x++){
+        	if($_FILES['pic_'.$x]['name']!=''){
+        		
+        		
+        		$HashCode = $this->GetHash();
+        		
+        		$objDatabase->Execute('UPDATE '.DBPREFIX.'module_auction SET picture_'.$x.'="'.$HashCode.'_'.$_FILES['pic_'.$x]['name'].'" WHERE id='.intval($_REQUEST['id']).'');
+        		
+        		if(@move_uploaded_file($_FILES['pic_'.$x]['tmp_name'], ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])) {
+                    
+        			chmod(ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0777);
+                    
                     // thumb
-                    // ------------------------------------------
-                    $LegalType = false;
-                    if($_FILES['pic_'.$x]['type']=='image/jpeg'){
-                        $image         = @imagecreatefromjpeg (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
-                                    or die ("GD-Image-Stream error");
-                        $LegalType     = true;
-                    }
-                    if($_FILES['pic_'.$x]['type']=='image/gif'){
-                        $image         = @imagecreatefromgif (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
-                                    or die ("GD-Image-Stream error");
-                        $LegalType     = true;
-                    }
-                    if($_FILES['pic_'.$x]['type']=='image/png'){
-                        $image         = @imagecreatefrompng (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
-                                    or die ("GD-Image-Stream error");
-                        $LegalType     = true;
-                    }
-
-                    $sourceFile = ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'];
-
-                    if($LegalType){
-                        $imageInfos     = @getimagesize($sourceFile);
-                        $width             = $imageInfos[0];
-                        $height         = $imageInfos[1];
-                        $prozent        = ($tmb_width * 100) / $width;
-                        $new_width        = $tmb_width;
-                        $new_height        = ($height * $prozent) / 100;
-
-                        $thumb             = imagecreatetruecolor($new_width, $new_height);
-
-                        @imagecopyresampled($thumb, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-
-                        if($imageInfos['mime']=='image/jpeg'){
-                            imagejpeg($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
-                        }
-                        if($imageInfos['mime']=='image/gif'){
-                            imagegif($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
-                        }
-                        if($imageInfos['mime']=='image/png'){
-                            imagepng($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
-                        }
-
-                        chmod(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0755);
-
-                    }
-                }
-
-            }
+            		// ------------------------------------------
+            		$LegalType = false;
+            		if($_FILES['pic_'.$x]['type']=='image/jpeg'){
+            			$image 		= @imagecreatefromjpeg (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
+									or die ("GD-Image-Stream error");
+						$LegalType 	= true;
+            		}
+            		if($_FILES['pic_'.$x]['type']=='image/gif'){
+            			$image 		= @imagecreatefromgif (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
+									or die ("GD-Image-Stream error");
+						$LegalType 	= true;
+            		}
+            		if($_FILES['pic_'.$x]['type']=='image/png'){
+            			$image 		= @imagecreatefrompng (ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'])
+									or die ("GD-Image-Stream error");
+						$LegalType 	= true;
+            		}
+            		
+            		$sourceFile = ASCMS_AUCTION_UPLOAD_PATH.'/'.$HashCode.'_'.$_FILES['pic_'.$x]['name'];
+            		
+            		if($LegalType){
+						$imageInfos 	= @getimagesize($sourceFile);
+						$width 			= $imageInfos[0];
+						$height 		= $imageInfos[1];
+						$prozent		= ($tmb_width * 100) / $width;
+						$new_width		= $tmb_width;
+						$new_height		= ($height * $prozent) / 100;
+						
+						$thumb 			= imagecreatetruecolor($new_width, $new_height);
+						
+						@imagecopyresampled($thumb, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+				        
+						if($imageInfos['mime']=='image/jpeg'){
+							imagejpeg($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
+						}
+						if($imageInfos['mime']=='image/gif'){
+							imagegif($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
+						}
+						if($imageInfos['mime']=='image/png'){
+							imagepng($thumb, ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name']);
+						}
+				        
+						chmod(ASCMS_AUCTION_UPLOAD_PATH.'/tmb_'.$HashCode.'_'.$_FILES['pic_'.$x]['name'], 0755);
+						
+            		}
+        		}
+        		
+        	}
         }
+		
+		$auctionsEnd = mktime($_REQUEST["end_hour"], $_REQUEST["end_minutes"], 0, $_REQUEST["end_month"], $_REQUEST["end_day"], $_REQUEST["end_year"]);
 
-        $auctionsEnd = mktime($_REQUEST["end_hour"], $_REQUEST["end_minutes"], 0, $_REQUEST["end_month"], $_REQUEST["end_day"], $_REQUEST["end_year"]);
-
-        $objFWUser             = FWUser::getFWUserObject();
-        if ($objFWUser->objUser->login()) {
-            $FromUser = $objFWUser->objUser->getId();
-        }
-
+		$objFWUser 			= FWUser::getFWUserObject();
+		if ($objFWUser->objUser->login()) {
+			$FromUser = $objFWUser->objUser->getId();
+		}
+		
         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_auction SET
                                     type='".contrexx_addslashes($_POST['type'])."',
                                       title='".contrexx_addslashes($_POST['title'])."',
@@ -242,16 +242,16 @@ class auctionLibrary
                                       WHERE id='".intval($_REQUEST['id'])."'");
 
         if($backend==1){
-            if ($objResult !== false) {
-                $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_ADD_SUCCESS'];
-                $this->entries();
-            }else{
-                $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-            }
+	        if ($objResult !== false) {
+	            $this->strOkMessage = $_ARRAYLANG['TXT_AUCTION_ADD_SUCCESS'];
+	            $this->entries();
+	        }else{
+	            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
+	        }
         }
-
-
-    }
+		
+		
+	}
 
     function insertEntry($backend){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
@@ -459,6 +459,8 @@ class auctionLibrary
         $objResult = $objDatabase->Execute("SELECT email, username FROM ".DBPREFIX."access_users WHERE id='".$entryUserid."' LIMIT 1");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+// TODO: Never used
+//                $userMail            = $objResult->fields['email'];
                 $userUsername        = $objResult->fields['username'];
                 $objResult->MoveNext();
             };
@@ -565,8 +567,10 @@ class auctionLibrary
                 $fileName = md5($rand.$fileName).$exte;
 
                 //check file
+// TODO: $x is not defined
+                $x = 0;
                 if(file_exists($this->mediaPath.$path.$fileName)){
-                    $fileName = $rand.$part1 . '_' . (time()) . $exte;
+                    $fileName = $rand.$part1 . '_' . (time() + $x) . $exte;
                     $fileName = md5($fileName).$exte;
                 }
 
@@ -615,12 +619,12 @@ class auctionLibrary
             }
         }
     }
-
+    
     function GetAuctionBids($auction_id){
-        global $objDatabase;
-        $returnArray = array();
-        $counter = 0;
-        $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_auction_bids WHERE bid_auction='".$auction_id."' ORDER BY bid_id");
+    	global $objDatabase;
+    	$returnArray = array();
+    	$counter = 0;
+    	$objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."module_auction_bids WHERE bid_auction='".$auction_id."' ORDER BY bid_id");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $returnArray[$counter]['bid_id']            = $objResult->fields['bid_id'];
@@ -635,17 +639,17 @@ class auctionLibrary
         }
         return $returnArray;
     }
-
+    
     function GetHash($length=10){
-        $act_id = '';
-        $pool = "qwertzupasdfghkyxcvbnm";
-        $pool .= "23456789";
-        $pool .= "WERTZUPLKJHGFDSAYXCVBNM";
-        srand ((double)microtime()*1000000);
-        for($index = 0; $index < $length; $index++){
-            $act_id .= substr($pool,(rand()%(strlen ($pool))), 1);
-        }
-        return $act_id;
+    	$act_id = '';		
+		$pool = "qwertzupasdfghkyxcvbnm";
+		$pool .= "23456789";
+		$pool .= "WERTZUPLKJHGFDSAYXCVBNM";
+		srand ((double)microtime()*1000000);
+		for($index = 0; $index < $length; $index++){
+			$act_id .= substr($pool,(rand()%(strlen ($pool))), 1);
+		}
+		return $act_id;
     }
 }
 

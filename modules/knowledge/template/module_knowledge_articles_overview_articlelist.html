@@ -6,21 +6,25 @@ Text[0]=["","{TXT_SORT}"];
 
 
 var hoverIn = function(obj) {
-  if (navigator.appName.indexOf("Explorer") == -1) {
-    obj.style.background = '#ffffcc';
-  }
+	if (navigator.appName.indexOf("Explorer") == -1) {
+		obj.style.background = '#ffffcc';
+	}
 }
 
 var hoverOut = function(obj) {
-  if (navigator.appName.indexOf("Explorer") == -1) {
-    obj.style.background = 'transparent';
-  }
+	if (navigator.appName.indexOf("Explorer") == -1) {
+		obj.style.background = 'transparent';
+	}
 }
 
+if (navigator.appName.indexOf("Explorer") == -1) {
+	$('not_ie').style.width = "100%";
+}
 
 /* ]]> */
 </script>
-<div style="min-height: 1%; height: 1%; float:left; " class="not_ie">
+
+<div style="min-height: 1%; height: 1%; float:left; " id="not_ie">
     <table style="width: 100%; font-weight: bold;" class="adminlist" cellspacing="0" cellpadding="3">
         <tr>
             <th colspan="6">
@@ -28,69 +32,77 @@ var hoverOut = function(obj) {
             </th>
         </tr>
         <tr class="row3">
-            <!-- BEGIN sort-th -->
-            <td style="width: 20px;">
-                <img src="images/icons/note.gif" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
-            </td>
-            <!-- END sort-th -->
+            <td style="width: 75px;">{TXT_SORT}</td>
             <td style="width: 50px;">{TXT_STATE}</td>
             <td>{TXT_QUESTION}</td>
             <td style="width: 50px;">{TXT_HITS}</td>
-            <td style="width: 150px;">{TXT_RATING}</td>
+            <td style="width: 120px;">{TXT_RATING}</td>
             <td style="width: 50px;">{TXT_ACTIONS}</td>
         </tr>
     </table>
     <div>
-      <ul id="articlelist"  >
-    <!-- BEGIN row -->
-      <li id="article_{ARTICLEID}" style=" z-index: 1000;">
-              <table style="width: 100%">
+	    <ul id="articlelist"  >
+		<!-- BEGIN row -->
+			<li id="article_{ARTICLEID}" style=" z-index: 1000;">
+	            <table style="width: 100%">
                 <tr>
-                    <!-- BEGIN sort-td -->
-                    <td class="drag_handle" style="width: 20px; vertical-align: top;" onmousedown="lastDragged={ARTICLEID_DRAG}; handlerEvent();">
+                    <td class="drag_handle" style="width: 75px;" onmousedown="lastDragged={ARTICLEID}; handlerEvent();">
                         <img src="../images/modules/knowledge/sort.gif" style="boder: none;" />
                     </td>
-                    <!-- END sort-td -->
-                    <td style="width: 50px; vertical-align: top; padding-top: 6px;">
+                    <td style="width: 50px;">
                         <a href="javascript: void(0);" onclick="switchActive({ARTICLEID}, this, {ACTIVE_STATE})">
                            <img src="images/icons/led_{CATEGORY_ACTIVE_LED}.gif"  alt="switch active state" style="border: none;" />
                         </a>
                     </td>
                     <td style="padding-right: 15px; vertical-align: top;">
-                        <span onclick="location.href='index.php?cmd=knowledge{MODULE_INDEX}&amp;{CSRF_PARAM}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}'"
-              onmouseover="hoverIn(this)" onmouseout="hoverOut(this)" style="cursor: pointer; color: #000099;">{QUESTION}</span>
+                        <span onclick="location.href='index.php?cmd=knowledge{MODULE_INDEX}&amp;{CSRF_PARAM}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}'" 
+							onmouseover="hoverIn(this)" onmouseout="hoverOut(this)" style="cursor: pointer; color: #000099;">{QUESTION}</span>
                     </td>
                     <td style="width: 50px; vertical-align: top;">
                         {HITS}
                     </td>
-                    <td style="width: 150px; vertical-align: top;">
-                        &Oslash; {VOTEVALUE} {TXT_BY} {VOTECOUNT} {TXT_VOTINGS}
+                    <td style="width: 120px; vertical-align: top;">
+                    {VOTEVALUE} {TXT_BY} {VOTECOUNT} {TXT_VOTINGS}
+                    <!--!
+                       <div id="rating{ARTICLEID}"> </div>
+                        <script type="text/javascript">
+                            /* <![CDATA[ */
+                            
+                            var rating{ARTICLEID} = new Rating({ARTICLEID}, {VOTEVALUE}, {
+                                stars : {MAX_RATING},
+                                locked : true,
+                                starPath : '../images/modules/knowledge/'
+                            });
+                            
+                            /* ]]> */
+                        </script> -->
                     </td>
-                    <td style="width: 50px; text-align: right; vertical-align: top;">
+                    <td style="width: 50px; text-align: right;">
                         <a href="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act=edit&amp;id={ARTICLEID}" title="{TXT_IMGALT_EDIT}">
                             <img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" />
                         </a>
-
-              <a href="javascript:deleteArticle({ARTICLEID});" title="{TXT_DELETE_CATEGORY}">
-                 <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
-                </a>
+                        
+    					<a href="javascript:deleteArticle({ARTICLEID});" title="{TXT_DELETE_CATEGORY}">
+    					   <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
+    				    </a> 
                     </td>
                 </tr>
             </table>
-          </li>
-          <!-- END row -->
-
-          <!-- BEGIN no_articles -->
-          <li>
-              {TXT_NO_ARTICLES}
-          </li>
-          <!-- END no_articles -->
-      </ul>
-        <br  style="clear: both;"/>
+	        </li>
+	        <!-- END row -->
+	        
+	        <!-- BEGIN no_articles -->
+	        <li>
+	            {TXT_NO_ARTICLES}
+	        </li>   
+	        <!-- END no_articles -->
+	    </ul>
     </div>
+    <br />
     <br />
     {PAGING}
 </div>
+
 <!-- BEGIN jsinit -->
 <!-- parsed only when neede because the content is not given through ajax -->
 
@@ -102,9 +114,8 @@ setRows();
 /* ]]> */
 </script>
 
-<!-- END jsinit -->
-
-<!--<br style="clear: both;"/>-->
+ <!-- END jsinit -->
+ <br style="clear: both;"/>
 
 <!-- END content -->
 

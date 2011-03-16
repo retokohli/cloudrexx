@@ -30,15 +30,19 @@ require_once(ASCMS_FRAMEWORK_PATH.DIRECTORY_SEPARATOR.'Image.class.php');
  * @subpackage  core_module_news
  */
 class news extends newsLibrary {
-    public $newsTitle;
-    public $langId;
-    public $arrSettings = array();
-    public $_objTpl;
-    public $_submitMessage;
-    public $_commentErrorMessage = '';
-    public $_commentTitle = '';
-    public $_commentMessage = '';
-    public $_commentAuthor = '';
+    var $newsTitle;
+    var $langId;
+    var $arrSettings = array();
+    var $_objTpl;
+    var $_submitMessage;
+    
+    /**
+     * Holds the teaser text when displaying details.
+     * Accessed via news::getTeaser().
+     * @var String $_teaser
+     * @access private
+     */
+    var $_teaser = null;
 
     /**
     * Constructor
@@ -82,22 +86,18 @@ class news extends newsLibrary {
             $_REQUEST['cmd'] = '';
         }
 
-        switch ($_REQUEST['cmd']) {
+        switch($_REQUEST['cmd']) {
         case 'details':
-            if (isset($_REQUEST['comment']) && $_REQUEST['comment'] == 'add') {
-                $this->addComment();
-            }
             return $this->getDetails();
             break;
+
         case 'submit':
             return $this->_submit();
             break;
         case 'feed':
             return $this->_showFeed();
             break;
-        case 'archive':
-            return $this->_getArchive();
-            break;
+
         default:
             return $this->getHeadlines();
             break;
@@ -114,15 +114,7 @@ class news extends newsLibrary {
     */
     function getDetails()
     {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
-
-        $paging     = '';
-        $pos        = 0;
-        $i          = 0;
-
-        if (isset($_GET['pos'])) {
-            $pos = intval($_GET['pos']);
-        }
+        global $objDatabase, $_ARRAYLANG;
 
         $this->_objTpl->setTemplate($this->pageContent);
         $newsid = intval($_GET['newsid']);
@@ -134,21 +126,18 @@ class news extends newsLibrary {
                                                             news.changelog          AS changelog,
                                                             news.url1               AS url1,
                                                             news.url2               AS url2,
-                                                            locale.text             AS text,
+                                                            news.text               AS text,
                                                             news.date               AS date,
                                                             news.changelog          AS changelog,
-                                                            locale.title            AS title,
+                                                            news.title              AS title,
                                                             news.teaser_image_path  AS newsimage,
-                                                            locale.teaser_text      AS teasertext,
-                                                            catl.name                AS catname
+                                                            news.teaser_text        AS teasertext,
+                                                            cat.name                AS catname
                                                     FROM    '.DBPREFIX.'module_news AS news
                                                       INNER JOIN '.DBPREFIX.'module_news_categories AS cat ON cat.catid = news.catid
-                                                      INNER JOIN '.DBPREFIX.'module_news_categories_locale AS catl ON catl.category_id = news.catid
-                                                      INNER JOIN '.DBPREFIX.'module_news_locale AS locale ON news.id = locale.news_id
                                                     WHERE   news.status = 1 AND
                                                             news.id = '.$newsid.' AND
-                                                            locale.lang_id ='.$this->langId.' AND
-                                                            catl.lang_id ='.$this->langId.' AND
+                                                            news.lang ='.$this->langId.' AND
                                                             (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
                                                             (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")'
                                                            .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
@@ -161,33 +150,37 @@ class news extends newsLibrary {
             if ($objResult !== false) {
                 while (!$objResult->EOF) {
                     $lastUpdate     = $objResult->fields['changelog'];
-                    $source         = htmlspecialchars($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $url1           = htmlspecialchars($objResult->fields['url1'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $url2           = htmlspecialchars($objResult->fields['url2'], ENT_QUOTES, CONTREXX_CHARSET);
+                    $sourceHref     = contrexx_raw2encodedUrl($objResult->fields['source']);
+                    $url1Href       = contrexx_raw2encodedUrl($objResult->fields['url1']);
+                    $url2Href       = contrexx_raw2encodedUrl($objResult->fields['url2']);
+                    $source         = contrexx_raw2xhtml($objResult->fields['source']);
+                    $url1           = contrexx_raw2xhtml($objResult->fields['url1']);
+                    $url2           = contrexx_raw2xhtml($objResult->fields['url2']);
+
                     $newsUrl        = '';
                     $newsSource     = '';
                     $newsLastUpdate = '';
 
                     if (!empty($url1)) {
-                        $strUrl1 = $objResult->fields['url1'];
+                      $strUrl1 = contrexx_raw2xhtml($objResult->fields['url1']);
                         if (strlen($strUrl1) > 40) {
                             $strUrl1 = substr($strUrl1,0,26).'...'.substr($strUrl1,(strrpos($strUrl1,'.')));
                         }
-                        $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'].'<br /><a target="_blank" href="'.$url1.'" title="'.$url1.'">'.$strUrl1.'</a><br />';
+                        $newsUrl = $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'].'<br /><a target="_blank" href="'.$url1Href.'" title="'.$url1.'">'.$strUrl1.'</a><br />';
                     }
                     if (!empty($url2)) {
-                        $strUrl2 = $objResult->fields['url2'];
+                      $strUrl2 = contrexx_raw2xhtml($objResult->fields['url2']);
                         if (strlen($strUrl2) > 40) {
                             $strUrl2 = substr($strUrl2,0,26).'...'.substr($strUrl2,(strrpos($strUrl2,'.')));
                         }
-                        $newsUrl .= '<a target="_blank" href="'.$url2.'" title="'.$url2.'">'.$strUrl2.'</a><br />';
+                        $newsUrl .= '<a target="_blank" href="'.$url2Href.'" title="'.$url2.'">'.$strUrl2.'</a><br />';
                     }
                     if (!empty($source)) {
-                        $strSource = $objResult->fields['source'];
+                      $strSource = contrexx_raw2xhtml($objResult->fields['source']);
                         if (strlen($strSource) > 40) {
                             $strSource = substr($strSource,0,26).'...'.substr($strSource,(strrpos($strSource,'.')));
                         }
-                        $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'].'<br /><a target="_blank" href="'.$source.'" title="'.$source.'">'.$strSource.'</a><br />';
+                        $newsSource = $_ARRAYLANG['TXT_NEWS_SOURCE'].'<br /><a target="_blank" href="'.$sourceHref.'" title="'.$source.'">'.$strSource.'</a><br />';
                     }
                     if (!empty($lastUpdate)) {
                         $newsLastUpdate = $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT,$objResult->fields['changelog']);
@@ -204,112 +197,26 @@ class news extends newsLibrary {
                     } else {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }
-                    $newstitle = htmlspecialchars(stripslashes($objResult->fields['title']), ENT_QUOTES, CONTREXX_CHARSET);
-                    //Show comment-part
-                    if ($this->arrSettings['news_comments_activated']) {
-                        //comments are activated
-                        // get comments list
-                        $query = '  SELECT      title            AS commentstitle,
-                                                date             AS commentsdate,
-                                                poster_name      AS commentsauthor,
-                                                userid           AS userid,
-                                                text             AS commentscontent
-                                    FROM        '.DBPREFIX.'module_news_comments
-                                    WHERE       newsid = '.$newsid.' AND is_active = "1"
-                                    ORDER BY    date DESC';
-                        /***start paging ****/
-                        $comResult = $objDatabase->Execute($query);
-                        $count = $comResult->RecordCount();
-                        if ($count > intval($_CONFIG['corePagingLimit'])) {
-                            $paging = getPaging($count, $pos, "&amp;section=news&amp;cmd=details&amp;newsid=".$newsid, $_ARRAYLANG['TXT_NEWS_COMMENTS'], true);
-                        }
-                        $this->_objTpl->setVariable("COMMENTS_PAGING", $paging);
-                        $comResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
-                        /*** end paging ***/
-                        if ($count >= 1) {
-                            while (!$comResult->EOF) {
-                                ($i % 2) ? $class  = 'row2' : $class  = 'row1';
-                                $strUserName     = '';
-                                $strUserAvatar    = '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.User_Profile::$arrNoAvatar['src'].'" alt="'.$strUserName.'" />';
-                                $objUser = $objFWUser->objUser->getUser($comResult->fields['userid']);
-                                if ($comResult->fields['userid'] == 0 || $objUser === false) {
-                                    $strUserName = htmlentities($comResult->fields['commentsauthor'], ENT_QUOTES, CONTREXX_CHARSET);
-                                } else {
-                                    $strUserName = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-                                    if ($objUser->getProfileAttribute('picture') != '') {
-                                        $strUserAvatar    = '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
-                                    }
-                                }
-                                $commentstitle = htmlentities(stripslashes($comResult->fields['commentstitle']), ENT_QUOTES, CONTREXX_CHARSET);
-                                $commentsbody = contrexx_stripslashes(nl2br($comResult->fields['commentscontent']));
-                                $this->_objTpl->setVariable(array(
-                                           'NEWS_COMMENTS_CSS'          => $class,
-                                           'NEWS_COMMENTS_TITLE'        => $commentstitle,
-                                           'NEWS_COMMENTS_BODY'            => $commentsbody,
-                                           'NEWS_COMMENTS_DATE'         => $this->getPostedByString($strUserName, date(ASCMS_DATE_FORMAT,$comResult->fields['commentsdate'])),
-                                           'NEWS_COMMENTS_AVATAR'        => $strUserAvatar
-                                ));
-                                $this->_objTpl->parse('commentsrow');
-                                $i++;
-                                $comResult->MoveNext();
-                            }
-                        } else {
-                            $this->_objTpl->setVariable('TXT_NEWS_COMMENTS_NONE_EXISTING', $_ARRAYLANG['TXT_NEWS_COMMENTS_NONE_EXISTING']);
-                            $this->_objTpl->parse('showNoComment');
-                        }
-                        $objFWUser = FWUser::getFWUserObject();
-                        $userid = $objFWUser->objUser->getId();
-                        if ($this->arrSettings['news_comments_anonymous'] == '1' || $userid) {
-                            //Anonymous comments allowed or user is logged in
-                            // generate form for adding comments
-                            // generate captcha code for comments
-                            $captcha = "";
-                            $authorInput = '<input type="text" name="cAuthor" id="cAuthor" value="' . htmlentities($this->_commentAuthor, ENT_QUOTES, CONTREXX_CHARSET) . '" />';
-                            if (!$userid) { // need captcha
-                                require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-                                $objCaptcha = new Captcha();
-                                $captcha = "<p><label>" . $_ARRAYLANG['TXT_SPAM_PREVENT'] . "</label>
-                                <img src='" . $objCaptcha->getUrl() . "'
-                                    alt='" . $objCaptcha->getAlt() . "'
-                                    title='" . $objCaptcha->getAlt() . "' /><br/>
-                                <input type='hidden' name='cOffset' value='" . $objCaptcha->getOffset() . "' />
-                                <input type='text' name='cCaptcha'/></p>";
-                            } else {
-                                $this->_commentAuthor = htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-                                $authorInput = $this->_commentAuthor . '<input type="hidden" name="cAuthor" id="cAuthor" value="' . $this->_commentAuthor . '" /><input type="hidden" name="cAuthorID" value="' . $userid . '" />';
-                            }
-                            $this->_objTpl->setVariable(array(
-                                'COMMENT_ERROR_MESSAGE' => $this->_commentErrorMessage,
-                                'COMMENT_TITLE'         => htmlentities($this->_commentTitle, ENT_QUOTES, CONTREXX_CHARSET),
-                                'COMMENT_MESSAGE'     => htmlentities($this->_commentMessage, ENT_QUOTES, CONTREXX_CHARSET),
-                                'AUTHOR_INPUT'         => $authorInput,
-                                'COMMENT_CAPTCHA'    => $captcha,
-                                'TARGET_NEWS_ID'     => $newsid,
-                                   'TXT_NEWS_COMMENTS'             => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
-                                   'TXT_NEWS_COMMENTS_ADD_COMMENT' => $_ARRAYLANG['TXT_NEWS_COMMENTS_ADD_COMMENT'],
-                                   'TXT_NEWS_COMMENTS_AUTHOR'         => $_ARRAYLANG['TXT_NEWS_COMMENTS_AUTHOR'],
-                                   'TXT_NEWS_COMMENTS_TITLE'         => $_ARRAYLANG['TXT_NEWS_COMMENTS_TITLE'],
-                                   'TXT_NEWS_COMMENTS_MESSAGE'     => $_ARRAYLANG['TXT_NEWS_COMMENTS_MESSAGE'],
-                                   'TXT_NEWS_COMMENTS_ADD'         => $_ARRAYLANG['TXT_NEWS_COMMENTS_ADD']
-                            ));
-                        } else {
-                            // hide add comment form
-                            $this->_objTpl->hideBlock('addComment');
-                        }
-                    } else {
-                        $this->_objTpl->hideBlock('showComments');
-                    }
+
+                    $newstitle = contrexx_raw2xhtml($objResult->fields['title']);
+		            $newsTeaser = nl2br(contrexx_raw2xhtml($objResult->fields['teasertext']));
                     $this->_objTpl->setVariable(array(
                        'NEWS_DATE'          => date(ASCMS_DATE_FORMAT,$objResult->fields['date']),
                        'NEWS_TITLE'         => $newstitle,
-                       'NEWS_TEXT'          => stripslashes($objResult->fields['text']),
-                       'NEWS_TEASER_TEXT'   => nl2br($objResult->fields['teasertext']),
+                       'NEWS_TEXT'          => $objResult->fields['text'],
+                       'NEWS_TEASER_TEXT'   => $newsTeaser,
                        'NEWS_LASTUPDATE'    => $newsLastUpdate,
                        'NEWS_SOURCE'        => $newsSource,
                        'NEWS_URL'           => $newsUrl,
                        'NEWS_AUTHOR'        => $author,
                        'NEWS_CATEGORY_NAME' => htmlentities($objResult->fields['catname'], ENT_QUOTES, CONTREXX_CHARSET)
                     ));
+
+		    /*
+		     * save the teaser text.
+		     * purpose of this: @link news::getTeaser()
+		     */
+		    $this->_teaser = $newsTeaser;
 
                     if (!empty($objResult->fields['newsimage'])) {
                         $this->_objTpl->setVariable(array(
@@ -399,20 +306,18 @@ class news extends newsLibrary {
         $query = '  SELECT      n.id                AS newsid,
                                 n.userid            AS newsuid,
                                 n.date              AS newsdate,
-                                nl.title            AS newstitle,
-                                nl.text             AS newscontent,
+                                n.title             AS newstitle,
+                                n.text              AS newscontent,
                                 n.teaser_image_path AS newsimage,
                                 n.teaser_image_thumbnail_path AS newsimagethumbnail,
                                 n.redirect          AS newsredirect,
-                                nl.teaser_text      AS teasertext,
-                                ncl.name             AS name
+                                n.teaser_text       AS teasertext,
+                                nc.name             AS name
                     FROM        '.DBPREFIX.'module_news AS n
-                        LEFT JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
-                        INNER JOIN  '.DBPREFIX.'module_news_categories AS nc ON n.catid=nc.catid
-                        INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS ncl ON ncl.category_id=nc.catid
+                    INNER JOIN  '.DBPREFIX.'module_news_categories AS nc
+                    ON          n.catid=nc.catid
                     WHERE       status = 1
-                                AND nl.lang_id='.$this->langId.'
-                                AND ncl.lang_id='.$this->langId.'
+                                AND n.lang='.$this->langId.'
                                 AND (n.startdate<=\''.date('Y-m-d H:i:s').'\' OR n.startdate="0000-00-00 00:00:00")
                                 AND (n.enddate>=\''.date('Y-m-d H:i:s').'\' OR n.enddate="0000-00-00 00:00:00")
                                 '.$newsfilter
@@ -462,7 +367,7 @@ class news extends newsLibrary {
                     $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                 }
 
-                $newstitle = htmlspecialchars(stripslashes($objResult->fields['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
+                $newstitle = contrexx_raw2xhtml($objResult->fields['newstitle']);
                 if (!empty($objResult->fields['newsimagethumbnail'])) {
                     $image = '<img src="'.$objResult->fields['newsimagethumbnail'].'" alt="'.$newstitle.'" />';
                     $imageSrc = $objResult->fields['newsimagethumbnail'];
@@ -478,12 +383,18 @@ class news extends newsLibrary {
 
                 $this->_objTpl->setVariable(array(
                            'NEWS_CSS'           => $class,
-                           'NEWS_TEASER'        => $objResult->fields['teasertext'],
+                           'NEWS_TEASER'        => contrexx_raw2xhtml($objResult->fields['teasertext']),
                            'NEWS_TITLE'         => $newstitle,
                            'NEWS_LONG_DATE'     => date(ASCMS_DATE_FORMAT,$objResult->fields['newsdate']),
                            'NEWS_DATE'          => date(ASCMS_DATE_SHORT_FORMAT, $objResult->fields['newsdate']),
-                           'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
-                           'NEWS_LINK'             => (empty($objResult->fields['newsredirect'])) ? (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ? '' :'<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
+                           'NEWS_LINK_TITLE'    => (empty($objResult->fields['newsredirect'])) ?
+                                                       '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$newstitle.'</a>'
+                                                       : '<a href="'.contrexx_raw2xhtml($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$newstitle.'</a>',
+                           'NEWS_LINK'          => (empty($objResult->fields['newsredirect'])) ?
+                                                       (empty($objResult->fields['newscontent']) || $objResult->fields['newscontent'] == '<br type="_moz" />' ?
+                                                           '' 
+                                                           : '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>') 
+                           : '<a href="'.contrexx_raw2xhtml($objResult->fields['newsredirect']).'" title="'.$newstitle.'">['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]</a>',
                            'NEWS_CATEGORY'      => stripslashes($objResult->fields['name']),
                            'NEWS_AUTHOR'        => $author
                 ));
@@ -493,7 +404,7 @@ class news extends newsLibrary {
                         'NEWS_IMAGE'         => $image,
                         'NEWS_IMAGE_SRC'     => $imageSrc,
                         'NEWS_IMAGE_ALT'     => $newstitle,
-                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.$objResult->fields['newsredirect'].'" title="'.$newstitle.'">'.$image.'</a>'
+                        'NEWS_IMAGE_LINK'    => empty($objResult->fields['newsredirect']) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$objResult->fields['newsid'].'" title="'.$newstitle.'">'.$image.'</a>' : '<a href="'.contrexx_raw2xhtml($objResult->fields['newsredirect']).'" title="'.$newstitle.'">'.$image.'</a>'
                     ));
 
                     if ($this->_objTpl->blockExists('news_image')) {
@@ -690,21 +601,22 @@ class news extends newsLibrary {
         if (isset($_POST['submitNews'])) {
             $objValidator = new FWValidator();
 
-            $_POST['newsTitle'] = contrexx_strip_tags(html_entity_decode($_POST['newsTitle']));
-            $_POST['newsTeaserText'] = contrexx_stripslashes($_POST['newsTeaserText']);
-            $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsRedirect'])));
-            $_POST['newsText'] = get_magic_quotes_gpc() ? stripslashes($_POST['newsText']) : $_POST['newsText'];
-            $_POST['newsText'] = $this->filterBodyTag($_POST['newsText']);
-            $_POST['newsSource'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsSource'])));
-            $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsUrl1'])));
-            $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_strip_tags(html_entity_decode($_POST['newsUrl2'])));
+            $_POST['newsTitle'] = contrexx_input2raw(html_entity_decode($_POST['newsTitle'], ENT_QUOTES, CONTREXX_CHARSET));
+            $_POST['newsTeaserText'] = contrexx_input2raw(html_entity_decode($_POST['newsTeaserText'], ENT_QUOTES, CONTREXX_CHARSET));
+            $_POST['newsRedirect'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsRedirect'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsText'] = contrexx_remove_script_tags(contrexx_input2raw(html_entity_decode($_POST['newsText'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsText'] = $this->filterBodyTag(html_entity_decode($_POST['newsText'], ENT_QUOTES, CONTREXX_CHARSET));
+            $_POST['newsSource'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsSource'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsUrl1'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl1'], ENT_QUOTES, CONTREXX_CHARSET)));
+            $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl2'], ENT_QUOTES, CONTREXX_CHARSET)));
             $_POST['newsCat'] = intval($_POST['newsCat']);
 
             if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
                 $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
 
-            if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
+            if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && 
+               (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
                     $insertStatus = $this->_insert();
                     if (!$insertStatus) {
                         $newsTitle = $_POST['newsTitle'];
@@ -719,21 +631,22 @@ class news extends newsLibrary {
                     else {
                         $this->_notify_by_email($insertStatus);
                     }
-                } else {
-                    $newsTitle = $_POST['newsTitle'];
-                    $newsTeaserText = $_POST['newsTeaserText'];
-                    $newsRedirect = $_POST['newsRedirect'];
-                    $newsSource = $_POST['newsSource'];
-                    $newsUrl1 = $_POST['newsUrl1'];
-                    $newsUrl2 = $_POST['newsUrl2'];
-                    $newsCat = $_POST['newsCat'];
-                    $newsText = $_POST['newsText'];
+            } else {
+                $newsTitle = $_POST['newsTitle'];
+                $newsTeaserText = $_POST['newsTeaserText'];
+                $newsRedirect = $_POST['newsRedirect'];
+                $newsSource = $_POST['newsSource'];
+                $newsUrl1 = $_POST['newsUrl1'];
+                $newsUrl2 = $_POST['newsUrl2'];
+                $newsCat = $_POST['newsCat'];
+                $newsText = $_POST['newsText'];
 
-                    if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) &&
-                         (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {
-                        $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
-                    }
+                if ( (empty($_POST['newsTitle']) || (empty($_POST['newsText']) || $_POST['newsText'] == '&nbsp;' || $_POST['newsText'] == '<br />' )) && 
+                     (empty($_POST['newsRedirect']) || $_POST['newsRedirect'] == 'http://') ) {                            
+                             
+                    $this->_submitMessage .= $_ARRAYLANG['TXT_SET_NEWS_TITLE_AND_TEXT_OR_REDIRECT']."<br /><br />";
                 }
+            }
         }
 
         if ($insertStatus) {
@@ -764,19 +677,19 @@ class news extends newsLibrary {
                 "TXT_CAPTCHA"               => $_ARRAYLANG['TXT_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
                 'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->langId, $newsCat),
-                'NEWS_TITLE'                => $newsTitle,
-                'NEWS_SOURCE'               => $newsSource,
-                'NEWS_URL1'                 => $newsUrl1,
-                'NEWS_URL2'                 => $newsUrl2,
-                'NEWS_TEASER_TEXT'          => $newsTeaserText,
-                'NEWS_REDIRECT'             => $newsRedirect,
+                'NEWS_TITLE'                => contrexx_raw2xhtml($newsTitle),
+                'NEWS_SOURCE'               => contrexx_raw2xhtml($newsSource),
+                'NEWS_URL1'                 => contrexx_raw2xhtml($newsUrl1),
+                'NEWS_URL2'                 => contrexx_raw2xhtml($newsUrl2),
+                'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($newsTeaserText),
+                'NEWS_REDIRECT'             => contrexx_raw2xhtml($newsRedirect),
                 "CAPTCHA_OFFSET"            => $offset,
                 "IMAGE_URL"                 => $url,
                 "IMAGE_ALT"                 => $alt
             ));
 
             if ($this->_objTpl->blockExists('news_category_menu')) {
-                $objResult = $objDatabase->Execute('SELECT category_id as catid, name FROM '.DBPREFIX.'module_news_categories_locale WHERE lang_id='.$this->langId.' ORDER BY category_id asc');
+                $objResult = $objDatabase->Execute('SELECT catid, name FROM '.DBPREFIX.'module_news_categories WHERE lang='.$this->langId.' ORDER BY catid asc');
 
                 if ($objResult !== false) {
                     while (!$objResult->EOF) {
@@ -800,8 +713,10 @@ class news extends newsLibrary {
     }
 
 
+
     /**
     * Insert a new news message
+    *
     * @access private
     * @global ADONewConnection
     * @global array
@@ -827,33 +742,37 @@ class news extends newsLibrary {
         $newscat        = $_POST['newsCat'];
         $userid         = $objFWUser->objUser->getId();
 
-        $insert_fields = array(
-            'date',     /* 'title',     'text', */    'redirect',
-            'source',     'url1',      'url2',        'catid',
-            /*'lang',       'startdate', 'enddate', */'status',
-            'validated',  'userid',    /*'teaser_text',*/ 'changelog'
-
-        );
-
         $enable = $this->arrSettings['news_activate_submitted_news'] == '1' ? "1" : "0";
-        $insert_values = array(
-            $date,       /*   $newstitle, $newstext, */   $newsRedirect,
-            $newssource,    $newsurl1,  $newsurl2,        $newscat,
-            /*$this->langId, '',         '',      */       $enable,
-            $enable,        $userid,    /*$newsTeaserText,*/  $date
-        );
-        // title, text and teasertext stored in locale table
-        $into   = "`" . join("`, `", $insert_fields) . "`";
-        $values = "'" . join("', '", array_map('contrexx_addslashes', $insert_values)) . "'";
 
-        $objResult = $objDatabase->Execute("
-            INSERT INTO ".DBPREFIX."module_news ( $into)
-            VALUES ( $values )"
-        );
+        $query = SQL::insert('module_news', array(
+            'date' => $date,
+            'title' => $newstitle,
+            'text' => $newstext,
+            'redirect' => $newsRedirect,
+            'source' => $newssource,
+            'url1' => $newsurl1,
+            'url2' => $newsurl2,
+            'catid' => $newscat,
+            'lang' => $this->langId,
+            'status' => $enable,
+            'validated' => $enable,
+            'userid' => $userid,
+            'teaser_text' => $newsTeaserText,
+            'changelog' => $date,
+            //the following are empty defaults for the text fields.
+            //text fields can't have a default and we need one in SQL_STRICT_TRANS_MODE
+            'teaser_frames' => '', 
+            'teaser_image_path' => '',
+            'teaser_image_thumbnail_path' => '',
+        ), array(
+            'escape' => true
+            ));
+
+        $objResult = $objDatabase->Execute($query);
+
         if ($objResult !== false) {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUCCESSFULLY_SUBMITED']."<br /><br />";
             $ins_id = $objDatabase->Insert_ID();
-            $this->submitLocales($ins_id, $newstitle, $newstext, $newsTeaserText);
             return $ins_id;
         } else {
             $this->_submitMessage = $_ARRAYLANG['TXT_NEWS_SUBMIT_ERROR']."<br /><br />";
@@ -861,9 +780,9 @@ class news extends newsLibrary {
         }
     }
 
-
     /**
     * Show feed page
+    *
     * @access private
     * @global array
     * @global integer
@@ -908,256 +827,15 @@ RSS2JSCODE;
         return $this->_objTpl->get();
     }
 
-
     /**
-     * Validate comment before saving
-     * (check all fields to be not null & captcha)
-     * @global    ADONewConnection
-     *
-     * @return boolean
+     * Returns Teaser Text if displaying a detail page.
+     * Used in index.php to overwrite the meta description.
+     * @access public
+     * @return String Teaser if displaying detail page, else null
      */
-    function _validateComment()
+    public function getTeaser()
     {
-        global $_ARRAYLANG;
-        if (!isset($_REQUEST['cAuthorID']) && (!isset($_REQUEST['cAuthor']) || $_REQUEST['cAuthor'] == "")) {
-            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_AUTHOR'];
-        } elseif (!isset($_REQUEST['cTitle']) || $_REQUEST['cTitle'] == "") {
-            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_TITLE'];
-        } elseif (!isset($_REQUEST['cMessage']) || $_REQUEST['cMessage'] == "") {
-            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_MESSAGE'];
-        } elseif (isset($_REQUEST['cOffset'])) {
-            require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
-            $captcha = new Captcha();
-
-            $offset = $captcha->getOffset();
-            if (!$captcha->compare($_POST['cCaptcha'], $_POST['cOffset'])) {
-                $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_NOT_VALID_CAPTCHA'];
-            }
-        }
-        if ("" == $this->_commentErrorMessage) {
-            return true;
-        } else {
-            $this->_commentTitle = $_POST['cTitle'];
-            $this->_commentMessage = $_POST['cMessage'];
-            $this->_commentAuthor = $_POST['cAuthor'];
-            return false;
-        }
-    }
-
-
-    /**
-     * Insert comment into database
-     * @global    ADONewConnection
-     * @global    array langData
-     *
-     */
-    function _addComment()
-    {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
-
-        $date = time();
-        $comment_title = contrexx_addslashes(contrexx_strip_tags($_POST['cTitle']));
-        $comment_message = contrexx_addslashes(contrexx_strip_tags($_POST['cMessage']));
-        $comment_author = contrexx_addslashes(contrexx_strip_tags($_POST['cAuthor']));
-        $news_id = intval($_REQUEST['newsid']);
-        $user_id = (isset($_POST['cAuthorID'])) ? intval($_POST['cAuthorID']) : 0;
-        $intIsActive = intval($this->arrSettings['news_comments_autoactivate']);
-        $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_comments (
-            title,
-            text,
-            newsid,
-            date,
-            poster_name,
-            userid,
-            ip_address,
-            is_active
-            ) VALUES (
-            '$comment_title',
-            '$comment_message',
-            $news_id,
-            $date,
-            '$comment_author',
-            $user_id,
-            '" . $_SERVER['REMOTE_ADDR'] . "',
-            '$intIsActive')"
-        );
-        if ($objResult === false) {
-            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_COMMENTS_SAVING_ERROR'];
-            return false;
-        }
-        //Set a cookie with the current timestamp. Avoids flooding.
-        setcookie('NewsCommentLast', $date, 0, ASCMS_PATH_OFFSET.'/');
-        $intIsNotification = intval($this->arrSettings['news_comments_notification']);
-        if ($intIsNotification) {
-            //Send notification to administrator
-            if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                $objMail = new phpmailer();
-
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
-                }
-                if ($user_id > 0) {
-                    $objFWUser = FWUser::getFWUserObject();
-                    $strName = htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
-                }
-                $strMailSubject = str_replace('[SUBJECT]', $comment_title, $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_SUBJECT']);
-                $strMailBody    = str_replace('[USERNAME]', $strName, $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_BODY']);
-                $strMailBody    = str_replace('[SUBJECT]', $comment_title, $strMailBody);
-                $strMailBody    = str_replace('[COMMENT]', $comment_message, $strMailBody);
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $_CONFIG['coreAdminEmail'];
-                $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
-                $objMail->AddAddress($_CONFIG['coreAdminEmail']);
-                $objMail->Subject   = $strMailSubject;
-                $objMail->IsHTML(false);
-                $objMail->Body      = $strMailBody;
-                $objMail->Send();
-            }
-        }
-    }
-
-
-    function addComment()
-    {
-        global $_ARRAYLANG;
-        //Check for activated function
-        if (!$this->arrSettings['news_comments_activated']) {
-            $this->_commentErrorMessage = $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_ERROR_ACTIVATED'];
-            return;
-        }
-        // just comment
-        if ($this->hasUserJustCommented()) {
-            $this->_commentErrorMessage = str_replace('[SECONDS]', intval($this->arrSettings['news_comments_timeout']), $_ARRAYLANG['TXT_NEWS_FRONTEND_DETAILS_COMMENT_INSERT_ERROR_TIMEOUT']);
-            return;
-        }
-        if ($this->_validateComment()) {
-            $this->_addComment();
-        }
-    }
-
-
-    /**
-     * Check if the current user has already written a comment within the definied timeout-time (settings-value).
-     * @return  boolean     true, if the user hast just written a comment before.
-     */
-    function hasUserJustCommented()
-    {
-        global $objDatabase;
-
-        //Check cookie first
-        if (isset($_COOKIE['NewsCommentLast'])) {
-            $intLastCommentTime = intval($_COOKIE['NewsCommentLast']);
-            if (time() < $intLastCommentTime + intval($this->arrSettings['news_comments_timeout'])) {
-                //The current system-time is smaller than the time in the cookie plus timeout-time, so the user just wrote a comment
-                return true;
-            }
-        }
-        //Now check database (make sure the user didn't delete the cookie
-        $objCommentResult = $objDatabase->Execute(' SELECT  id
-                                                    FROM    '.DBPREFIX.'module_news_comments
-                                                    WHERE   ip_address="'.$_SERVER['REMOTE_ADDR'].'" AND
-                                                            date > '.(time() - intval($this->arrSettings['news_comments_timeout'])).'
-                                                    LIMIT   1
-                                                ');
-        if ($objCommentResult->RecordCount() == 1) {
-            return true;
-        }
-        //Nothing found, i guess the user didn't comment within within the timeout-period.
-        return false;
-    }
-
-
-    function _getArchive()
-    {
-        global $_CONFIG, $objDatabase, $_ARRAYLANG;
-
-        $dateFilterName = 'date';
-        $monthColumn = 3;
-        $objFWUser = FWUser::getFWUserObject();
-        $this->_objTpl->setTemplate($this->pageContent);
-        // month filter
-        // archive list
-        $monthCountQuery = "SELECT n.id             AS id,
-                                   n.date           AS date,
-                                   n.changelog      AS changelog,
-                                   n.redirect       AS newsredirect,
-                                   nl.title         AS newstitle
-                            FROM   ".DBPREFIX."module_news AS n
-                                LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
-                            WHERE  n.validated='1'
-                                   AND nl.lang_id=".$this->langId."
-                                   AND n.status = 1
-                                   " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
-                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
-                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
-                                        :   " AND frontend_access_id=0 ")
-                                    :   '')
-                            ."ORDER BY date ASC";
-        $objResult = $objDatabase->Execute($monthCountQuery);
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $filterDate = $objResult->fields[$dateFilterName];
-                $newsYear = date("Y", $filterDate);
-                $newsMonth = date("m", $filterDate);
-                if (!isset($monthlyStats[$newsYear . "_" . $newsMonth])) {
-                    $monthlyStats[$newsYear . "_" . $newsMonth] = array();
-                    $monthlyStats[$newsYear . "_" . $newsMonth]["name"] = $_ARRAYLANG['TXT_NEWS_MONTH_' . date("n", $filterDate)] . " " . $newsYear;
-                }
-                $monthlyStats[$newsYear . "_" . $newsMonth]["news"][] = $objResult->fields;
-                $monthlyStats[$newsYear . "_" . $newsMonth]["archive"]++;
-                $objResult->MoveNext();
-            }
-        }
-        if (count($monthlyStats) == 0) {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWS_NOT_FOUND' => $_ARRAYLANG['TXT_NEWS_NOT_FOUND'],
-            ));
-            $this->_objTpl->parse("news_not_found");
-            $this->_objTpl->hideBlock("month_news_list");
-        } else {
-            $this->_objTpl->hideBlock("news_not_found");
-            // create columns
-            $columnCount = 0;
-            $currentColumn = 1;
-            $totalCount = count($monthlyStats);
-            $columnSize = ceil($totalCount / $monthColumn);
-            $this->_objTpl->setCurrentBlock('month_navigation_column');
-            foreach ($monthlyStats as $key => $value) {
-                $columnCount++;
-                if ($columnCount > $currentColumn * $columnSize) {
-                    $currentColumn++;
-                    $this->_objTpl->parseCurrentBlock();
-                    $this->_objTpl->setCurrentBlock('month_navigation_column');
-                }
-                $this->_objTpl->setVariable(array(
-                    'NEWS_MONTH_NAME' => $value['name'],
-                    'NEWS_MONTH_ARCHIVE' => count($value['news']),
-                    'NEWS_MONTH_KEY' => $key,
-                ));
-                $this->_objTpl->parse("month_navigation_item");
-                foreach ($value['news'] as $news) {
-                    $newstitle = htmlspecialchars(stripslashes($news['newstitle']), ENT_QUOTES, CONTREXX_CHARSET);
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_LINK_TITLE'    => (empty($news['newsredirect'])) ? '<a href="'.CONTREXX_SCRIPT_PATH.'?section=news&amp;cmd=details&amp;newsid='.$news['id'].'" title="'.$newstitle.'">'.$newstitle.'</a>' : '<a href="'.$news['newsredirect'].'" title="'.$newstitle.'">'.$newstitle.'</a>',
-                    ));
-                    $this->_objTpl->parse("month_news_list_item");
-                }
-                $this->_objTpl->setVariable(array(
-                    'NEWS_LIST_MONTH_NAME' => $value['name'],
-                    'NEWS_MONTH_KEY' => $key,
-                ));
-                $this->_objTpl->parse('month_news_list');
-            }
-            $this->_objTpl->parseCurrentBlock();
-        }
-        return $this->_objTpl->get();
+	return $this->_teaser;
     }
 }
 ?>

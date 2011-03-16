@@ -3,88 +3,88 @@
 function AddToTheList(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
-  {
-    if (from.options[0] != null)
-      from.options[0].selected = true;
-    from.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<from.length; i++)
-    {
-      if (from.options[i].selected)
-      {
-          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-         }
-    }
-      for (var i=from.length-1; i>=0; i--)
-    {
-      if (from.options[i].selected)
-      {
-           from.options[i] = null;
-         }
-    }
-  }
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<from.length; i++)
+		{
+			if (from.options[i].selected)
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--)
+		{
+			if (from.options[i].selected)
+			{
+		       from.options[i] = null;
+   			}
+		}
+	}
     disapleButtons(from,dest,add,remove);
 }
 function RemoveFromTheList(from,dest,add,remove)
 {
-  if ( dest.selectedIndex < 0)
-  {
-    if (dest.options[0] != null)
-      dest.options[0].selected = true;
-    dest.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<dest.options.length; i++)
-    {
-      if (dest.options[i].selected)
-      {
-          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-         }
-    }
-      for (var i=dest.options.length-1; i>=0; i--)
-    {
-      if (dest.options[i].selected)
-      {
-           dest.options[i] = null;
-         }
-    }
-  }
-  disapleButtons(from,dest,add,remove);
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+		       dest.options[i] = null;
+   			}
+		}
+	}
+	disapleButtons(from,dest,add,remove);
 }
 function disapleButtons(from,dest,add,remove)
 {
-  if (from.options.length > 0 )
-  {
-    add.disabled = 0;
-  }
-  else
-    add.disabled = 1;
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
 
-  if (dest.options.length > 0)
-    remove.disabled = 0;
-  else
-    remove.disabled = 1;
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
 }
 
 function SelectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
+	for(var i = 0;i < CONTROL.length;i++)
 {
-    CONTROL.options[i].selected = true;
-  }
+		CONTROL.options[i].selected = true;
+	}
 }
 
 function DeselectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
 }
 </script>
 
@@ -129,7 +129,7 @@ function DeselectAllList(CONTROL)
               <td width="1%">
                 <div align="left">
                   <select name="destuser[]" size="10" style="width:125px;" multiple="multiple">
-        {GROUPS_EDIT_DESTUSER}
+				{GROUPS_EDIT_DESTUSER}
                   </select>
                 </div>
               </td>

@@ -1,5 +1,6 @@
 <?php
-
+$_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE_NOTIFICATION_TEMPLATE'] = "Der Empfänger %s hat sich vom Newsletter abgemeldet.";
+$_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'] = "Abmeldung";
 /**
  * Newsletter Modul
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -61,25 +62,26 @@ class newsletter extends NewsletterLib
             case 'profile':
                 $this->_profile();
                 break;
+
             case 'unsubscribe':
                 $this->_unsubscribe();
                 break;
+
              case 'subscribe':
                 $this->_profile();
                 break;
+
             case 'confirm':
                 $this->_confirm();
                 break;
-			case 'displayInBrowser':
-                $this->displayInBrowser();
-                break;
+
             default:
                 $this->_profile();
                 break;
         }
+
         return $this->_objTpl->get();
     }
-
 
     function _confirm(){
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
@@ -361,8 +363,8 @@ class newsletter extends NewsletterLib
             if (isset($_POST['city'])) {
                 $recipientCity = $_POST['city'];
             }
-            if (isset($_POST['newsletter_country_id'])) {
-                $recipientCountry = $_POST['newsletter_country_id'];
+            if (isset($_POST['country'])) {
+                $recipientCountry = $_POST['country'];
             }
             if (isset($_POST['phone'])) {
                 $recipientPhone = $_POST['phone'];
@@ -416,7 +418,7 @@ class newsletter extends NewsletterLib
                 array_push($arrStatusMessage['error'], $_ARRAYLANG['TXT_NOT_VALID_EMAIL']);
             }
         } elseif ($recipientId > 0) {
-            $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, title, lastname, firstname, company, street, zip, city, country_id, phone, birthday FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
+            $objRecipient = $objDatabase->SelectLimit("SELECT uri, sex, title, lastname, firstname, company, street, zip, city, country, phone, birthday FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false && $objRecipient->RecordCount() == 1) {
                 $recipientEmail = urldecode($_REQUEST['mail']);
                 $recipientUri = $objRecipient->fields['uri'];
@@ -428,7 +430,7 @@ class newsletter extends NewsletterLib
                 $recipientStreet = $objRecipient->fields['street'];
                 $recipientZip = $objRecipient->fields['zip'];
                 $recipientCity = $objRecipient->fields['city'];
-                $recipientCountry = $objRecipient->fields['country_id'];
+                $recipientCountry = $objRecipient->fields['country'];
                 $recipientPhone = $objRecipient->fields['phone'];
                 $recipientBirthday = $objRecipient->fields['birthday'];
 
@@ -492,7 +494,7 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_STREET'        => htmlentities($recipientStreet, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_ZIP'        => htmlentities($recipientZip, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_CITY'        => htmlentities($recipientCity, ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWSLETTER_COUNTRY'    => $this->getCountryMenu($recipientCountry),
+                'NEWSLETTER_COUNTRY'    => htmlentities($recipientCountry, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_PHONE'        => htmlentities($recipientPhone, ENT_QUOTES, CONTREXX_CHARSET)
             ));
 
@@ -606,6 +608,7 @@ class newsletter extends NewsletterLib
             if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
                 return false;
             }
+
             $objRecipient = $objDatabase->SelectLimit("SELECT sex, title, lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
             if ($objRecipient !== false) {
                 $arrRecipient['sex'] = $objRecipient->fields['sex'];
@@ -672,142 +675,10 @@ class newsletter extends NewsletterLib
         }
     }
 
-
-
     function setBlock(&$code)
     {
         $html = $this->_getHTML();
         $code = str_replace("{NEWSLETTER_BLOCK}", $html, $code);
     }
-    
-    
-        /**
-     * displays newsletter contentn in browser
-     *
-     */
-	function displayInBrowser() {
-    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
-        
-        $id    = !empty($_GET['id']) ? $_GET['id'] : "";
-    	$email = !empty($_GET['email']) ? $_GET['email'] : "";
-    	$code  = !empty($_GET['code']) ? $_GET['code'] : "";
-    	
-    	if (!$this->checkCode($email, $code)) {
-    		header("location: index.php");
-    		exit();
-    	}
-    	
-    	//get newsletter content and template
-		$query = "  SELECT
-						newsletter.content,
-						template.html	
-					FROM
-						".DBPREFIX."module_newsletter as newsletter
-					LEFT JOIN
-						".DBPREFIX."module_newsletter_template as template
-					ON
-						template.id = newsletter.template
-					WHERE
-						newsletter.id = '".contrexx_addslashes($id)."';";
-		
-        $objResult = $objDatabase->Execute($query);
-		
-        if ($objResult->RecordCount()) {
-        	$html 	 = $objResult->fields['html'];
-			$content = $objResult->fields['content'];
-		} else {
-			header("location: index.php");
-    		exit();
-		}
-		
-		if (empty($content)) {
-			header("location: index.php");
-    		exit();
-		}
-		
-		
-		//get user details
-		$query = "select id, code, sex, email, uri, title, lastname, firstname, street, zip, city, phone, birthday, status, emaildate from ".DBPREFIX."module_newsletter_user where email = '".$email."';";
-        $objResult = $objDatabase->Execute($query);
-
-        if ($objResult->RecordCount()) {
-            $code   	= $objResult->fields['code'];
-			$lastname  	= $objResult->fields['lastname'];
-            $firstname  = $objResult->fields['firstname'];
-            $street  	= $objResult->fields['street'];
-            $zip   		= $objResult->fields['zip'];
-            $city   	= $objResult->fields['city'];
-            $birthday  	= $objResult->fields['birthday'];
-            $email   	= $objResult->fields['email'];
-            $uri       	= $objResult->fields['uri'];
-            $phone   	= $objResult->fields['phone'];
-            $date  	 	= date("d.m.Y", $objResult->fields['emaildate']);
-
-            switch($objResult->fields['sex']) {
-                case 'm':
-                    $sex = $_ARRAYLANG['TXT_NEWSLETTER_MALE'];
-                    break;
-                case 'f':
-                    $sex = $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'];
-                    break;
-                default:
-                    $sex = '';
-                    break;
-             }
-
-            $arrRecipientTitles = &$this->_getRecipientTitles();
-            $title = $arrRecipientTitles[$objResult->fields['title']];
-
-            //replace placeholders
-            $array_1 = array(
-                '[[email]]', '[[uri]]', '[[sex]]', '[[title]]', '[[lastname]]', '[[firstname]]',
-                '[[street]]', '[[zip]]', '[[city]]', '[[phone]]', '[[birthday]]', '[[date]]',
-                '[[unsubscribe]]', '[[profile_setup]]', '[[display_in_browser_url]]'
-            );
-            
-            $array_2 = array(
-                $email, $uri, $sex, $title, $lastname, $firstname,
-                $street, $zip, $city, $phone, $birthday, $date,
-                '<a href="index.php?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.$email.'">Abmelden</a>',
-                '<a href="index.php?section=newsletter&cmd=profile&code='.$code.'&mail='.$email.'">Profil bearbeiten</a>',
-                $_CONFIG['domainUrl'].'/index.php?section=newsletter&cmd=displayInBrowser&standalone=true&code='.$code.'&email='.$email.'&id='.$id
-            );
-            
-            //in content and template
-            $content = str_replace($array_1, $array_2, $content);
-            $html 	 = str_replace($array_1, $array_2, $html);
-        }
-		
-        //finally replace content placeholder in template
-		$html = str_replace("[[content]]", $content, $html);
-		
-		//output
-		die($html);
-    }
-    
-    
-    /**
-     * checks if given code matches given email adress
-     *
-     * @param  string $email
-     * @param  string $code
-     * @return boolean
-     */
-    function checkCode($email, $code){
-    	global $objDatabase;
-
-        $query = "SELECT code FROM ".DBPREFIX."module_newsletter_user WHERE email = '".$email."';";
-        $objResult = $objDatabase->Execute($query);
-
-        if ($objResult !== false) {
-			if($objResult->fields['code'] == $code) {
-				return true;
-			}
-		}
-		
-		return false;
-    }
-
 }
-
 ?>

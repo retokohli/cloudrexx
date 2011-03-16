@@ -31,34 +31,19 @@ class Imagetype
     const TEXT_IMAGETYPE = "core_imagetype";
 
     /**
-     * Default height used when the type is unknown
+     * Default thumbnail height used when the type is unknown
      */
-    const DEFAULT_WIDTH  = 320;
+    const DEFAULT_THUMBNAIL_WIDTH  = 160;
 
     /**
-     * Default height used when the type is unknown
+     * Default thumbnail height used when the type is unknown
      */
-    const DEFAULT_HEIGHT = 240;
+    const DEFAULT_THUMBNAIL_HEIGHT = 120;
 
     /**
-     * Default quality used when the type is unknown
+     * Default thumbnail quality used when the type is unknown
      */
-    const DEFAULT_QUALITY = 95;
-
-    /**
-     * Default height used when the type is unknown
-     */
-    const DEFAULT_WIDTH_THUMB = 160;
-
-    /**
-     * Default height used when the type is unknown
-     */
-    const DEFAULT_HEIGHT_THUMB = 120;
-
-    /**
-     * Default quality used when the type is unknown
-     */
-    const DEFAULT_QUALITY_THUMB = 95;
+    const DEFAULT_THUMBNAIL_QUALITY = 90;
 
     /**
      * The key last used when {@see getArray()} was called, or false
@@ -80,14 +65,12 @@ class Imagetype
      * The array returned looks like
      *  array(
      *    key => array(
-     *      'width' => width,
-     *      'height' => height,
-     *      'quality' => quality,
-     *      'width_thumb' => thumbnail width,
-     *      'height_thumb' => thumbnail height,
-     *      'quality_thumb' => thumbnail quality,
+     *      'key' => Image type key,
      *      'text_id' => Image type Text ID,
      *      'name' => Image type name,
+     *      'width' => thumbnail width,
+     *      'height' => thumbnail height,
+     *      'quality' => thumbnail quality,
      *    ),
      *    ... more ...
      *  )
@@ -100,11 +83,10 @@ class Imagetype
      * @global  mixed       $objDatabase    Database object
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getArray($key=false)
+    static function getArray($key='')
     {
         global $objDatabase;
 
-//echo("Imagetype::getArray($key): Entered<br />");
         if (   self::$last_key !== ''
             && self::$last_key !== $key)
             self::reset();
@@ -118,19 +100,15 @@ class Imagetype
                 SELECT `imagetype`.`key`,
                        `imagetype`.`width`,
                        `imagetype`.`height`,
-                       `imagetype`.`quality`,
-                       `imagetype`.`width_thumb`,
-                       `imagetype`.`height_thumb`,
-                       `imagetype`.`quality_thumb`
+                       `imagetype`.`quality`
                        ".$arrSqlName['field']."
                   FROM `".DBPREFIX."core_imagetype` AS `imagetype`".
                        $arrSqlName['join']."
-                 WHERE 1".
-                  (MODULE_ID ? ' AND `imagetype`.`module_id`='.MODULE_ID : '').
+                 WHERE `imagetype`.`module_id`=".MODULE_ID.
                   ($key
                     ? ' AND `imagetype`.`key`'.
                       (is_array($key)
-                        ? " IN ('".join("','", array_map('addslashes', $key))."')"
+                        ? " IN ('".join("','", addslashes($key)).')'
                         : "='".addslashes($key)."'")
                     : '')."
                  ORDER BY `imagetype`.`key` ASC";
@@ -148,22 +126,18 @@ class Imagetype
                 }
                 $key = $objResult->fields['key'];
                 self::$arrImagetypes[$key] = array(
+                    'key' => $key,
+                    'text_id' => $objResult->fields[$arrSqlName['id']],
+                    'name' => $strName,
                     'width' => $objResult->fields['width'],
                     'height' => $objResult->fields['height'],
                     'quality' => $objResult->fields['quality'],
-                    'width_thumb' => $objResult->fields['width_thumb'],
-                    'height_thumb' => $objResult->fields['height_thumb'],
-                    'quality_thumb' => $objResult->fields['quality_thumb'],
-                    'text_id' => $objResult->fields[$arrSqlName['id']],
-                    'name' => $strName,
-//                    'key' => $key,
                 );
                 $objResult->MoveNext();
             }
             self::$last_key = $key;
 //die("Imagetype::getArray($key): got ".var_export(self::$arrImagetypes, true)."<hr />");
         }
-//echo("Imagetype::getArray(): Array ".var_export(self::$arrImagetypes, true)."<br />");
         return self::$arrImagetypes;
     }
 
@@ -190,15 +164,15 @@ class Imagetype
     {
         global $objDatabase;
 
-//echo("Imagetype::getNameArray($key): Entered<br />");
+//echo("Imagetype::getNameArray(): Entered<br />");
         $arrImagetypes = self::getArray($key);
         if ($arrImagetypes === false) return false;
-        $arrName = array();
-        foreach ($arrImagetypes as $key => $arrImagetype) {
-            $arrName[$key] = $arrImagetype['name'];
+        $arrImagetype = array();
+        foreach ($arrImagetypes as $arrImagetype) {
+            $arrImagetype[$key] = $arrImagetype['name'];
         }
 //die("Imagetype::getNameArray($key): got ".var_export($arrImagetype, true)."<hr />");
-        return $arrName;
+        return $arrImagetype;
     }
 
 
@@ -210,159 +184,29 @@ class Imagetype
 
 
     /**
-     * Returns an array with the width, height and quality for both the
-     * original and thumbnail image for the given Imagetype key
+     * Returns an array with the thumbnail width and height for the
+     * Imagetype key
      *
      * If the key is not found, the default sizes are returned in the array.
      * The returned array looks like
      *  array(
-     *    'width'         => image width,
-     *    'height'        => image height,
-     *    'quality        => image quality,
-     *    'width_thumb'   => thumbnail width,
-     *    'height_thumb'  => thumbnail height,
-     *    'quality_thumb' => thumbnail quality,
+     *    0 => width,
+     *    1 => height,
      *  )
      * @param   string    $key        The Imagetype key
-     * @return  array                 The Imagetype info array
+     * @return  array                 The thumbnail size array
      */
-    static function getInfoArray($key=false)
-    {
-        $arrImagetype = false;
-        if ($key) {
-            $arrImagetype = self::getArray($key);
-        }
-        if (!is_array($arrImagetype) || empty($arrImagetype[$key])) {
-            return array(
-                'width'         => self::DEFAULT_WIDTH,
-                'height'        => self::DEFAULT_HEIGHT,
-                'quality'       => self::DEFAULT_QUALITY,
-                'width_thumb'   => self::DEFAULT_WIDTH_THUMB,
-                'height_thumb'  => self::DEFAULT_HEIGHT_THUMB,
-                'quality_thumb' => self::DEFAULT_QUALITY_THUMB,
-            );
-        }
-        return $arrImagetype[$key];
-    }
-
-
-    /**
-     * Returns the width for the given Imagetype key
-     *
-     * If the Imagetype info cannot be retrieved, returns the default value.
-     * @param   string    $key              The Imagetype key
-     * @return  integer                     The Imagetype width
-     */
-    static function getWidth($key)
+    static function getThumbnailOptions($key)
     {
         $arrImagetype = self::getArray($key);
-        if (!is_array($arrImagetype) || empty($arrImagetype[$key])) {
-            return self::DEFAULT_WIDTH;
-        }
-        return $arrImagetype[$key]['width'];
-
-    }
-
-    /**
-     * Returns the height for the given Imagetype key
-     *
-     * If the Imagetype info cannot be retrieved, returns the default value.
-     * @param   string    $key              The Imagetype key
-     * @return  integer                     The Imagetype height
-     */
-    static function getHeight($key)
-    {
-        $arrImagetype = self::getArray($key);
-        if (!is_array($arrImagetype) || empty($arrImagetype[$key])) {
-            return self::DEFAULT_HEIGHT;
-        }
-        return $arrImagetype[$key]['height'];
-
-    }
-
-    /**
-     * Returns the quality for the given Imagetype key
-     *
-     * If the Imagetype info cannot be retrieved, returns the default value.
-     * @param   string    $key              The Imagetype key
-     * @return  integer                     The Imagetype quality
-     */
-    static function getQuality($key)
-    {
-        $arrImagetype = self::getArray($key);
-        if (!is_array($arrImagetype) || empty($arrImagetype[$key])) {
-            return self::DEFAULT_QUALITY;
-        }
-        return $arrImagetype[$key]['quality'];
-
-    }
-
-    /**
-     * Returns the thumbnail width for the given Imagetype key
-     *
-     * If the Imagetype info cannot be found, returns the default value.
-     * This is the case if the $key is empty or an array, if the Imagetype
-     * is unknown, or if the array of Imagetypes cannot be retrieved.
-     * @param   string    $key              The Imagetype key
-     * @return  integer                     The Imagetype thumbnail width
-     */
-    static function getWidthThumbnail($key)
-    {
-//echo("Imagetype::getWidthThumbnail($key): Entered<br />");
-        $arrImagetype = self::getArray($key);
-        if (   empty($key)
-            || is_array($key)
-            || !is_array($arrImagetype)
-            || empty($arrImagetype[$key])) {
-            return self::DEFAULT_WIDTH_THUMB;
-        }
-        return $arrImagetype[$key]['width_thumb'];
-
-    }
-
-    /**
-     * Returns the thumbnail height for the given Imagetype key
-     *
-     * If the Imagetype info cannot be found, returns the default value.
-     * This is the case if the $key is empty or an array, if the Imagetype
-     * is unknown, or if the array of Imagetypes cannot be retrieved.
-     * @param   string    $key              The Imagetype key
-     * @return  integer                     The Imagetype thumbnail height
-     */
-    static function getHeightThumbnail($key)
-    {
-//echo("Imagetype::getHeightThumbnail($key): Entered<br />");
-        $arrImagetype = self::getArray();
-        if (   empty($key)
-            || is_array($key)
-            || !is_array($arrImagetype)
-            || empty($arrImagetype[$key])) {
-            return self::DEFAULT_HEIGHT_THUMB;
-        }
-        return $arrImagetype[$key]['height_thumb'];
-
-    }
-
-    /**
-     * Returns the thumbnail quality for the given Imagetype key
-     *
-     * If the Imagetype info cannot be found, returns the default value.
-     * This is the case if the $key is empty or an array, if the Imagetype
-     * is unknown, or if the array of Imagetypes cannot be retrieved.
-     * @param   string    $key              The Imagetype key
-     * @return  integer                     The Imagetype thumbnail quality
-     */
-    static function getQualityThumbnail($key)
-    {
-        $arrImagetype = self::getArray();
-        if (   empty($key)
-            || is_array($key)
-            || !is_array($arrImagetype)
-            || empty($arrImagetype[$key])) {
-            return self::DEFAULT_QUALITY_THUMB;
-        }
-        return $arrImagetype[$key]['quality_thumb'];
-
+        if ($arrImagetype === false) return array(
+            0 => self::DEFAULT_THUMBNAIL_WIDTH,
+            1 => self::DEFAULT_THUMBNAIL_HEIGHT,
+        );
+        return array(
+            0 => $arrImagetype[$key]['width'],
+            1 => $arrImagetype[$key]['height'],
+        );
     }
 
 
@@ -461,22 +305,18 @@ class Imagetype
      * updated, otherwise it is inserted.
      * Also adds or updates the Text entry.  Only the language selected in
      * FRONTEND_LANG_ID is affected.
-     * @param       string      $key            The type key
-     * @param       string      $imagetype      The type description
-     * @param       integer     $width          The width
-     * @param       integer     $height         The height
-     * @param       integer     $quality        The quality
-     * @param       integer     $width_thumb    The thumbnail width
-     * @param       integer     $height_thumb   The thumbnail height
-     * @param       integer     $quality_thumb  The thumbnail quality
-     * @return      boolean                     True on success,
-     *                                          false otherwise
+     * @param       string      $key          The type key
+     * @param       string      $imagetype    The type description
+     * @param       integer     $width        The thumbnail width
+     * @param       integer     $height       The thumbnail height
+     * @param       integer     $quality      The thumbnail quality
+     * @return      boolean                   True on success,
+     *                                        false otherwise
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function store(
         $key, $imagetype,
-        $width='NULL', $height='NULL', $quality='NULL',
-        $width_thumb='NULL', $height_thumb='NULL', $quality_thumb='NULL'
+        $width='NULL', $height='NULL', $quality='NULL'
     ) {
         $text_id_old = self::getTextIdByKey($key);
         $text_id = Text::replace(
@@ -485,12 +325,10 @@ class Imagetype
             MODULE_ID, self::TEXT_IMAGETYPE);
         if ($text_id_old === false)
             return self::insert(
-                $key, $text_id, $width, $height, $quality,
-                $width_thumb, $height_thumb, $quality_thumb
+                $key, $text_id, $width, $height, $quality
             );
         return self::update(
-            $key, $text_id, $width, $height, $quality,
-            $width_thumb, $height_thumb, $quality_thumb
+            $key, $text_id, $width, $height, $quality
         );
     }
 
@@ -501,23 +339,19 @@ class Imagetype
      * Note that associations to module ID and key can *NOT* be modified.
      * If you need to change an image type this way, you have to delete()
      * and re-insert() it.
-     * @param       string      $key            The type key
-     * @param       integer     $text_id        The type description Text ID
-     * @param       integer     $width          The width
-     * @param       integer     $height         The height
-     * @param       integer     $quality        The quality
-     * @param       integer     $width_thumb    The thumbnail width
-     * @param       integer     $height_thumb   The thumbnail height
-     * @param       integer     $quality_thumb  The thumbnail quality
-     * @return      boolean                     True on success,
-     *                                          false otherwise
+     * @param       string      $key          The type key
+     * @param       integer     $text_id      The type description Text ID
+     * @param       integer     $width        The thumbnail width
+     * @param       integer     $height       The thumbnail height
+     * @param       integer     $quality      The thumbnail quality
+     * @return      boolean                   True on success,
+     *                                        false otherwise
      * @global      mixed       $objDatabase  Database object
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function update(
         $key, $text_id,
-        $width='NULL', $height='NULL', $quality='NULL',
-        $width_thumb='NULL', $height_thumb='NULL', $quality_thumb='NULL'
+        $width='NULL', $height='NULL', $quality='NULL'
     ) {
         global $objDatabase;
 
@@ -526,10 +360,7 @@ class Imagetype
                SET `text_id`=$text_id,
                    `width`=$width,
                    `height`=$height,
-                   `quality`=$quality,
-                   `width_thumb`=$width_thumb,
-                   `height_thumb`=$height_thumb,
-                   `quality_thumb`=$quality_thumb
+                   `quality`=$quality
              WHERE `module_id`=".MODULE_ID."
                AND `key`='".addslashes($key)."'");
         if (!$objResult) return self::errorHandler();
@@ -543,9 +374,9 @@ class Imagetype
      * Uses the current language ID found in the FRONTEND_LANG_ID constant.
      * @param       string      $key          The type key
      * @param       integer     $text_id      The type description Text ID
-     * @param       integer     $width        The width
-     * @param       integer     $height       The height
-     * @param       integer     $quality      The quality
+     * @param       integer     $width        The thumbnail width
+     * @param       integer     $height       The thumbnail height
+     * @param       integer     $quality      The thumbnail quality
      * @return      boolean                   True on success,
      *                                        false otherwise
      * @global      mixed       $objDatabase  Database object
@@ -553,20 +384,17 @@ class Imagetype
      */
     function insert(
         $key, $text_id,
-        $width='NULL', $height='NULL', $quality='NULL',
-        $width_thumb='NULL', $height_thumb='NULL', $quality_thumb='NULL'
+        $width='NULL', $height='NULL', $quality='NULL'
     ) {
         global $objDatabase;
 
         $objResult = $objDatabase->Execute("
             INSERT INTO ".DBPREFIX."core_imagetype (
                 `module_id`, `key`, `text_id`,
-                `width`, `height`, `quality`,
-                `width_thumb`, `height_thumb`, `quality_thumb`
+                `width`, `height`, `quality`
             ) VALUES (
                 ".MODULE_ID.", '".addslashes($key)."', $text_id,
-                $width, $height, $quality,
-                $width_thumb, $height_thumb, $quality_thumb
+                $width, $height, $quality
             )");
         if (!$objResult) return self::errorHandler();
         return true;
@@ -617,23 +445,17 @@ class Imagetype
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
         $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
-// TODO: Needed?
-//        CSRF::add_placeholder($objTemplateLocal);
+        CSRF::add_placeholder($objTemplateLocal);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplateLocal->loadTemplateFile('imagetypes.html'))
             die("Failed to load template imagetypes.html");
-        $uri = Html::getRelativeUri_entities();
-        $active_tab = SettingDb::getTabIndex();
-        Html::replaceUriParameter($uri, 'active_tab='.$active_tab);
-        Html::stripUriParam($uri, 'imagetype_delete_key');
-        Html::stripUriParam($uri, 'key');
-        Html::stripUriParam($uri, 'act');
+        $uri = htmlentities(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+        Html::replaceUriParameter($uri, 'act=imagetypes_edit');
         $objTemplateLocal->setGlobalVariable(
 // TODO: Add sorting
             $_CORELANG
           + array(
                 'URI_BASE' => $uri,
-//                'CORE_IMAGETYPE_ACTIVE_TAB' => $active_tab,
         ));
 
         $arrImagetypes = self::getArray();
@@ -658,13 +480,11 @@ class Imagetype
 
         $i = 0;
         foreach ($arrImagetypes as $key => $arrImagetype) {
+            $key     = $arrImagetype['key'];
             $name    = $arrImagetype['name'];
             $width   = $arrImagetype['width'];
             $height  = $arrImagetype['height'];
             $quality = $arrImagetype['quality'];
-            $width_thumb   = $arrImagetype['width_thumb'];
-            $height_thumb  = $arrImagetype['height_thumb'];
-            $quality_thumb = $arrImagetype['quality_thumb'];
             $objTemplateLocal->setVariable(array(
                 'CORE_IMAGETYPE_ROWCLASS'  => ++$i % 2 + 1,
                 'CORE_IMAGETYPE_KEY'       =>
@@ -678,42 +498,20 @@ class Imagetype
                 'CORE_IMAGETYPE_WIDTH'     =>
                     Html::getInputText(
                         'imagetype_width['.$key.']', $width, false,
-                        'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                        'style="width: 120px; text-align: right;"'),
                 'CORE_IMAGETYPE_HEIGHT'    =>
                     Html::getInputText(
                         'imagetype_height['.$key.']', $height, false,
-                        'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                        'style="width: 120px; text-align: right;"'),
                 'CORE_IMAGETYPE_QUALITY'   =>
                     Html::getInputText(
                         'imagetype_quality['.$key.']', $quality, false,
-                        'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
-                'CORE_IMAGETYPE_WIDTH_THUMB'     =>
-                    Html::getInputText(
-                        'imagetype_width_thumb['.$key.']', $width_thumb, false,
-                        'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
-                'CORE_IMAGETYPE_HEIGHT_THUMB'    =>
-                    Html::getInputText(
-                        'imagetype_height_thumb['.$key.']', $height_thumb, false,
-                        'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
-                'CORE_IMAGETYPE_QUALITY_THUMB'   =>
-                    Html::getInputText(
-                        'imagetype_quality_thumb['.$key.']', $quality_thumb, false,
-                        'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
-// Disabled by popular demand
-//                'CORE_IMAGETYPE_FUNCTIONS' =>
-//                    Html::getBackendFunctions(array(
-//                            'delete' => $uri.'&amp;imagetype_delete_key='.urlencode($key),
-//                        ),
-//                        array(
-//                            'delete' => $_CORELANG['TXT_CORE_IMAGETYPE_DELETE_CONFIRM'],
-//                        )
-//                    ),
+                        'style="width: 120px; text-align: right;"'),
+                'CORE_IMAGETYPE_FUNCTIONS' =>
+                    Html::getBackendFunctions(array(
+                        'delete' =>
+                            'javascript:delete_imagetype(\''.$key.'\');',
+                    )),
             ));
             $objTemplateLocal->parse('core_imagetype_data');
         }
@@ -731,37 +529,20 @@ class Imagetype
                     'style="width: 220px;"'),
             'CORE_IMAGETYPE_WIDTH'     =>
                 Html::getInputText(
-                    'imagetype_width[new]', self::DEFAULT_WIDTH, false,
-                    'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                    'imagetype_width[new]', self::DEFAULT_THUMBNAIL_WIDTH, false,
+                    'style="width: 120px; text-align: right;"'),
             'CORE_IMAGETYPE_HEIGHT'    =>
                 Html::getInputText(
-                    'imagetype_height[new]', self::DEFAULT_HEIGHT, false,
-                    'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
+                    'imagetype_height[new]', self::DEFAULT_THUMBNAIL_HEIGHT, false,
+                    'style="width: 120px; text-align: right;"'),
             'CORE_IMAGETYPE_QUALITY'   =>
                 Html::getInputText(
-                    'imagetype_quality[new]', self::DEFAULT_QUALITY, false,
-                    'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
-            'CORE_IMAGETYPE_WIDTH_THUMB'     =>
-                Html::getInputText(
-                    'imagetype_width_thumb[new]', self::DEFAULT_WIDTH_THUMB, false,
-                    'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
-            'CORE_IMAGETYPE_HEIGHT_THUMB'    =>
-                Html::getInputText(
-                    'imagetype_height_thumb[new]', self::DEFAULT_HEIGHT_THUMB, false,
-                    'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
-            'CORE_IMAGETYPE_QUALITY_THUMB'   =>
-                Html::getInputText(
-                    'imagetype_quality_thumb[new]', self::DEFAULT_QUALITY_THUMB, false,
-                    'style="width: 30px; text-align: right;"').
-                    $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
+                    'imagetype_quality[new]', self::DEFAULT_THUMBNAIL_QUALITY, false,
+                    'style="width: 120px; text-align: right;"'),
             'CORE_IMAGETYPE_FUNCTIONS' => '',
         ));
         $objTemplateLocal->parse('core_imagetype_data');
+        JS::registerCode(self::getJavascript());
         return $objTemplateLocal;
     }
 
@@ -775,7 +556,7 @@ class Imagetype
     static function storeFromPost()
     {
 //echo("Imagetype::storeFromPost(): Entered<br />");
-        if (!isset($_POST['imagetype_key'])) return '';
+        if (empty($_POST['bsubmit'])) return '';
         // Compare POST with current imagetypes.
         // Only store what was changed.
         $arrImagetypes = self::getArray();
@@ -783,8 +564,6 @@ class Imagetype
         // The keys don't really change, but we can recognize added
         // entries easily like this
         foreach ($_POST['imagetype_key'] as $key_old => $key_new) {
-            // Strip crap characters from the key
-            $key_new = preg_replace('/[^_a-z\d]/i', '', $key_new);
             // No new Imagetype is to be added if the new key is empty
             if (empty($key_new)) {
                 continue;
@@ -796,23 +575,15 @@ class Imagetype
             $width   = contrexx_stripslashes($_POST['imagetype_width'][$key_old]);
             $height  = contrexx_stripslashes($_POST['imagetype_height'][$key_old]);
             $quality = contrexx_stripslashes($_POST['imagetype_quality'][$key_old]);
-            $width_thumb   = contrexx_stripslashes($_POST['imagetype_width_thumb'][$key_old]);
-            $height_thumb  = contrexx_stripslashes($_POST['imagetype_height_thumb'][$key_old]);
-            $quality_thumb = contrexx_stripslashes($_POST['imagetype_quality_thumb'][$key_old]);
             if (   empty($arrImagetypes[$key_old])
                 || $name != $arrImagetypes[$key_old]['name']
                 || $width != $arrImagetypes[$key_old]['width']
                 || $height != $arrImagetypes[$key_old]['height']
                 || $quality != $arrImagetypes[$key_old]['quality']
-                || $width_thumb != $arrImagetypes[$key_old]['width_thumb']
-                || $height_thumb != $arrImagetypes[$key_old]['height_thumb']
-                || $quality_thumb != $arrImagetypes[$key_old]['quality_thumb']
             ) {
 //echo("Changed or new<br />");
                 if ($result === '') $result = true;
-                if (!self::store(
-                    $key_new, $name, $width, $height, $quality,
-                    $width_thumb, $height_thumb, $quality_thumb))
+                if (!self::store($key_new, $name, $width, $height, $quality))
                     $result = false;
             }
         }
@@ -820,56 +591,21 @@ class Imagetype
     }
 
 
-    /**
-     * Returns either a dropdown menu for the imagetypes available or
-     * a hidden element and text for a single imagetype
-     *
-     * The $name parameter *SHOULD* be the same as the name attribute used for
-     * a corresponding element created by {@see Html::getImageChooserUpload()}.
-     * The string '_type' will be appended to the element name.
-     * If the optional $imagetype_key is empty or not an array,
-     * no image type can be selected.  If it's false, the image type field is
-     * omitted altogether.  If it's empty but not false, the selected
-     * Image type is used.  If it's a string, the type is set to
-     * that value, overriding the selected type.  If it's an array,
-     * the Image type can be selected from its values, and the selected
-     * key is preselected.  The array keys *SHOULD* contain the Imagetype key,
-     * its values the Imagetype names in the current language.
-     * See {@see Image::updatePostImages()} and {@see Image::uploadAndStore()}
-     * for more information and examples.
-     * @param   string  $name           The base name for the element
-     * @param   string  $selected       The optional preselected key
-     * @param   mixed   $imagetype_key  The optional Image type key or
-     *                                  Imagetype array.  Defaults to the
-     *                                  empty string
-     * @return  string                  The image type dropdown menu HTML code,
-     *                                  The image type name and hidden element,
-     *                                  or the empty string
-     */
-    static function getMenu($name, $selected='', $imagetype_key='')
+    static function getJavascript()
     {
-//        global $_CORELANG;
+        global $_CORELANG;
 
-//echo("Imagetype::getMenu($name, $selected, $imagetype_key): Entered<br />");
-        if ($imagetype_key === false) return '';
-        $menu = '';
-        if (is_array($imagetype_key)) {
-            $menu = Html::getSelect(
-                $name.'_type', $imagetype_key, $selected, false, '',
-                (defined('BACKEND_LANG_ID')
-                    ? 'style="width: '.DEFAULT_INPUT_WIDTH_BACKEND.'px;"'
-                    : ''));
-        } else {
-            $arrName = self::getNameArray($imagetype_key);
-            $menu =
-                Html::getHidden($name.'_type', $imagetype_key).
-                current($arrName);
-        }
-//        $menu = sprintf(
-//            $_CORELANG['TXT_CORE_HTML_IMAGETYPE_NAME'], $menu
-//        );
-//echo("*** Imagetype::getMenu($name, $selected, $imagetype_key): Made menu<br />".nl2br(htmlentities(var_export($menu, true)))."<br />");
-        return $menu;
+        return '
+function delete_imagetype(key)
+{
+  name = document.getElementById("imagetype_name-"+key).value;
+  if (confirm(name+" ("+key+")\\n\\n'.
+      $_CORELANG['TXT_CORE_IMAGETYPE_CONFIRM_DELETE_IMAGETYPE'].'\\n\\n'.
+      $_CORELANG['TXT_CORE_IMAGETYPE_ACTION_IS_IRREVERSIBLE'].'"))
+    window.location.href = "index.php?'.CSRF::param().
+        '&cmd=hotelcard&act=imagetypes_edit&imagetype_delete_key="+key;
+}
+';
     }
 
 
@@ -885,7 +621,7 @@ class Imagetype
     {
         global $objDatabase;
 
-//die("Imagetype::errorHandler(): Disabled!<br />");
+die("Imagetype::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."core_imagetype", $arrTables)) {
@@ -894,22 +630,21 @@ class Imagetype
             if (!$objResult) return false;
 echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
         }
-        $objResult = $objDatabase->Execute("
-            CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_imagetype` (
-              `module_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'The ID of the module this image type occurs in',
-              `key` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'The key unique for each module ID that identifies the image type',
-              `text_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Relates to core_text.id',
-              `width` INT UNSIGNED NULL DEFAULT NULL,
-              `height` INT UNSIGNED NULL DEFAULT NULL,
-              `quality` INT UNSIGNED NULL DEFAULT NULL,
-              `width_thumb` INT UNSIGNED NULL DEFAULT NULL,
-              `height_thumb` INT UNSIGNED NULL DEFAULT NULL,
-              `quality_thumb` INT UNSIGNED NULL DEFAULT NULL,
-              PRIMARY KEY (`module_id`, `key`),
-              UNIQUE (`text_id`)
-            ) ENGINE=MYISAM");
-        if (!$objResult) return false;
+        if (!in_array(DBPREFIX."core_imagetype", $arrTables)) {
+            $objResult = $objDatabase->Execute("
+                CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_imagetype` (
+                  `module_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'The ID of the module this image type occurs in',
+                  `key` VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'The key unique for each module ID that identifies the image type',
+                  `text_id` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Relates to core_text.id',
+                  `width` INT UNSIGNED NULL DEFAULT NULL,
+                  `height` INT UNSIGNED NULL DEFAULT NULL,
+                  `quality` INT UNSIGNED NULL DEFAULT NULL,
+                  PRIMARY KEY (`module_id`, `key`),
+                  UNIQUE (`text_id`)
+                ) ENGINE=MYISAM");
+            if (!$objResult) return false;
 echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
+        }
 
         $arrImagetypes = array(
             // hotelcard image type entries
@@ -922,12 +657,9 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
                   3 => 'Title',     // fr
                   4 => 'Title',     // it
               ),
-              'width'     => 320,
-              'height'    => 240,
-              'quality'   => 90,
-              'width_thumb'   => 160,
-              'height_thumb'  => 120,
-              'quality_thumb' => 90,
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
             array(
               'module_id' => 10013,
@@ -938,12 +670,9 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
                   3 => 'Room',
                   4 => 'Room',
               ),
-              'width'     => 320,
-              'height'    => 240,
-              'quality'   => 90,
-              'width_thumb'   => 160,
-              'height_thumb'  => 120,
-              'quality_thumb' => 90,
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
             array(
               'module_id' => 10013,
@@ -954,12 +683,9 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
                   3 => 'Vicinity',
                   4 => 'Vicinity',
               ),
-              'width'     => 320,
-              'height'    => 240,
-              'quality'   => 90,
-              'width_thumb'   => 160,
-              'height_thumb'  => 120,
-              'quality_thumb' => 90,
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
             array(
               'module_id' => 10013,
@@ -970,12 +696,9 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
                   3 => 'Lobby',
                   4 => 'Lobby',
               ),
-              'width'     => 320,
-              'height'    => 240,
-              'quality'   => 90,
-              'width_thumb'   => 160,
-              'height_thumb'  => 120,
-              'quality_thumb' => 90,
+              'width'     => 120,
+              'height'    => 80,
+              'quality'   => 95,
             ),
         );
 
@@ -993,18 +716,14 @@ die("Imagetype::errorHandler(): Error storing Text");
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_imagetype` (
                   `module_id`, `key`, `text_id`,
-                  `width`, `height`, `quality`,
-                  `width_thumb`, `height_thumb`, `quality_thumb`
+                  `width`, `height`, `quality`
                 ) VALUES (
                   ".$arrImagetype['module_id'].",
                   '".addslashes($arrImagetype['key'])."',
                   $text_id,
                   ".$arrImagetype['width'].",
                   ".$arrImagetype['height'].",
-                  ".$arrImagetype['quality'].",
-                  ".$arrImagetype['width_thumb'].",
-                  ".$arrImagetype['height_thumb'].",
-                  ".$arrImagetype['quality_thumb']."
+                  ".$arrImagetype['quality']."
                 )");
             if (!$objResult)
 die("Imagetype::errorHandler(): Error adding Imagetype");

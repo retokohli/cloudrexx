@@ -1,63 +1,24 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 	<channel>
 		<title>Contrexx WCMS</title>
-		<link>http://velok.ch.magellan.sui-inter.net/index.php?section=news</link>
-		<description>Informationen rund um das Contrexx® Open Source CMS</description>
+		<link>http://localhost/index.php?section=news</link>
+		<description>Informationen rund um das Contrexx Open Source CMS</description>
 		<language>de</language>
-		<copyright>Copyright 2007, http://velok.ch.magellan.sui-inter.net</copyright>
-		<webMaster>mail@homm.ch</webMaster>
-		<lastBuildDate>Thu, 03 May 2007 10:41:27 +0200</lastBuildDate>
-		<generator>Contrexx® Web Content Management System</generator>
+		<copyright>Copyright 2009, http://localhost</copyright>
+		<webMaster>info@example.com</webMaster>
+		<lastBuildDate>Mon, 05 May 2008 18:49:22 +0200</lastBuildDate>
+		<generator>ContrexxÂ® Web Content Management System</generator>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
-		<image>
-			<url>http://velok.ch.magellan.sui-inter.net/images/content/gnulinux.jpg</url>
-			<title>Contrexx WCMS</title>
-			<link>http://velok.ch.magellan.sui-inter.net/index.php?section=news</link>
-		</image>
 		<item>
-			<title>Neue Website für Velok.ch</title>
-			<link>http://velok.ch.magellan.sui-inter.net/index.php?section=news&amp;cmd=details&amp;newsid=12&amp;teaserId=0</link>
-			<description>&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; width=&quot;636&quot; border=&quot;0&quot;&gt;
-    &lt;tbody&gt;
-        &lt;tr&gt;
-            &lt;td&gt;&lt;img height=&quot;151&quot; alt=&quot;&quot; width=&quot;202&quot; src=&quot;/images/content/news/website_01.jpg&quot; /&gt;&lt;/td&gt;
-            &lt;td width=&quot;15&quot;&gt;&amp;nbsp;&lt;/td&gt;
-            &lt;td&gt;&lt;img height=&quot;151&quot; alt=&quot;&quot; width=&quot;202&quot; src=&quot;/images/content/news/website_02.jpg&quot; /&gt;&lt;/td&gt;
-            &lt;td width=&quot;15&quot;&gt;&amp;nbsp;&lt;/td&gt;
-            &lt;td&gt;&lt;img height=&quot;151&quot; alt=&quot;&quot; width=&quot;202&quot; src=&quot;/images/content/news/website_03.jpg&quot; /&gt;&lt;/td&gt;
-        &lt;/tr&gt;
-    &lt;/tbody&gt;
-&lt;/table&gt;
+			<title>Neue Webseite mit modernster Technologie online! </title>
+			<link>http://localhost/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
+			<description>Unsere neue Webseite ist online! Erstellt wurde das neue Portal mit &lt;a href=&quot;http://www.contrexx.com/&quot; title=&quot;Contrexx WCMS&quot;&gt;Contrexx WCMS&lt;/a&gt;.&lt;br /&gt;&lt;br /&gt;Heute ist es elementar sich seinen Kunden im Internet nicht nur zu pr&amp;auml;sentieren, sondern auch relevante Zusatznutzen zu bieten. Ein Schlagwort ist beispielsweise das &amp;quot;Mitmach-Web&amp;quot; Web 2.0 mit welchem der Kunde interaktiv in einen Dialog eingebunden wird.&lt;br /&gt;
 &lt;br /&gt;
-&lt;p&gt;&lt;font face=&quot;Arial&quot;&gt;&lt;br /&gt;
-&lt;strong&gt;Die Velok AG hat eine neue Website!&lt;/strong&gt;&amp;nbsp;&lt;br /&gt;
-Rechtzeitig zu den Bike Days 07 haben wir die neue Website aufgeschaltet. Die Website besticht durch ein modernes und aufger&amp;auml;umtes Design und grossformatige wechselnde Bilder sorgen f&amp;uuml;r Abwechslung.&amp;nbsp;&lt;br /&gt;
-&lt;br /&gt;
-&lt;strong&gt;Shop-L&amp;ouml;sung&lt;/strong&gt;&lt;br /&gt;
-Zur Zeit arbeiten wir noch an der Shop-L&amp;ouml;sung. &amp;Ouml;ffentliche Benutzer k&amp;ouml;nnen sich das gesamte Sortiment der Velok AG anschauen, H&amp;auml;ndler und Partner werden aber auch in der Lage sein, die Produkte direkt zu bestellen. M&amp;ouml;glich ist dies durch ein Login, das jeder Partner von uns erh&amp;auml;lt. Wann es soweit ist, werden wir Sie informieren, damit Sie in Zukunft direkt online bestellen k&amp;ouml;nnen.&lt;br /&gt;
-&lt;/font&gt;&lt;/p&gt;</description>
-			<category domain="http://velok.ch.magellan.sui-inter.net/index.php?section=news&amp;category=3">News</category>
-			<pubDate>Thu, 03 May 2007 10:41:27 +0200</pubDate>
-		</item>
-		<item>
-			<title>Velok AG an den Bike Days 07</title>
-			<link>http://velok.ch.magellan.sui-inter.net/index.php?section=news&amp;cmd=details&amp;newsid=13&amp;teaserId=4</link>
-			<description>&lt;p&gt;&lt;font face=&quot;Arial&quot;&gt;&lt;strong&gt;Neuheiten und Highlights&lt;/strong&gt;&lt;br /&gt;
-Erleben Sie innovative Produkteneuheiten namhafter Hersteller&lt;br /&gt;
-&lt;/font&gt;&lt;font face=&quot;Arial&quot;&gt;&lt;strong&gt;&lt;br /&gt;
-Autogrammstunde mit Franco Marvulli&lt;/strong&gt;&lt;br /&gt;
-Der mehrfache Bahnweltmeister zu Besuch am Velok AG-Stand&lt;br /&gt;
-&lt;/font&gt;&lt;font face=&quot;Arial&quot;&gt;&lt;strong&gt;&lt;br /&gt;
-Grosser Wettbewerb mit tollen Preisen&lt;/strong&gt;&lt;br /&gt;
-Besuchen Sie uns und gewinnen Sie einen von vielen Preisen &lt;br /&gt;
-im Gesamtwert von &amp;uuml;ber CHF 1450.&amp;ndash;&lt;br /&gt;
-&lt;br /&gt;
-&lt;img style=&quot;WIDTH: 196px; HEIGHT: 244px&quot; height=&quot;530&quot; alt=&quot;&quot; width=&quot;452&quot; src=&quot;http://www.bikedays.ch/img/pics/home/03.jpg&quot; /&gt;&lt;br /&gt;
-&lt;br /&gt;
-Weitere Infos erhalten Sie unter: &lt;font face=&quot;Arial&quot;&gt;&lt;a target=&quot;_blank&quot; href=&quot;http://www.bikedays.ch&quot;&gt;www.bikedays.ch&lt;/a&gt;&lt;/font&gt;&lt;/font&gt;&lt;/p&gt;</description>
-			<category domain="http://velok.ch.magellan.sui-inter.net/index.php?section=news&amp;category=3">News</category>
-			<pubDate>Sun, 11 Mar 2007 11:00:58 +0100</pubDate>
+Dieses Webprojekt ist nun mit modernster Technologie ausger&amp;uuml;stet und trotzdem sehr einfach zu pflegen. Damit verf&amp;uuml;gt dieser Auftritt &amp;uuml;ber alle wesentlichen Funktionen, um den wachsenden Anforderungen auch k&amp;uuml;nftig zu entsprechen. Nun k&amp;ouml;nnen die Inhalte und Funktionalit&amp;auml;ten mit einem kleinen Aufwand stets aktuell gehalten werden. Abonnieren Sie noch heute unseren Newsletter, RSS-Feeder oder besuchen Sie wieder unsere Webseite.&lt;br /&gt;
+&lt;br /&gt;</description>
+			<category domain="http://localhost/index.php?section=news&amp;category=1">Presse</category>
+			<pubDate>Mon, 05 May 2008 18:49:22 +0200</pubDate>
 		</item>
 	</channel>
 </rss>

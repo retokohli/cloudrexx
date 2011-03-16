@@ -48,9 +48,9 @@ if ($pos   !== false) {
 /* only for phpversion 5.x, date management, default timezone setting */
 if( substr( phpversion(), 0, 1) >= '5' ) {
   if(function_exists('date_default_timezone_set')){
-      date_default_timezone_set( 'Europe/Zurich' );
+	  date_default_timezone_set( 'Europe/Zurich' );
   }else{
-      ini_set('date.timezone', 'Europe/Zurich');
+  	ini_set('date.timezone', 'Europe/Zurich');
   }
 }
 

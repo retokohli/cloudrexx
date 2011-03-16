@@ -497,7 +497,6 @@ class directoryLibrary
             $fileType = $_FILES[$name]['type'];
             $this->fileSize = $_FILES[$name]['size'];
 
-            $arrMatch = array();
             if ($fileName != "" && FWValidator::is_file_ending_harmless($fileName)) {
 
                 //check extension
@@ -548,7 +547,7 @@ class directoryLibrary
                 }
 
                 //make thumb
-                if (($fileType == "image/pjpeg" || $fileType == "image/gif" || $fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") && $path != "uploads/") {
+                if (($fileType == "image/gif" || $fileType == "image/jpeg" || $fileType == "image/jpg" || $fileType == "image/png") && $path != "uploads/") {
                     $this->createThumb($fileName, $path);
                 }
             } else {

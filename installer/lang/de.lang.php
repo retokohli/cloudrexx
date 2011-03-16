@@ -55,11 +55,11 @@ $_ARRLANG['TXT_MYSQL_SERVER_VERSION'] = "Version des angegebenen MySQL Servers: 
 $_ARRLANG['TXT_PHP_EXTENSIONS'] = "PHP Erweiterungen";
 $_ARRLANG['TXT_PHP_CONFIGURATION'] = "PHP Konfiguration";
 $_ARRLANG['TXT_ALLOW_URL_FOPEN'] = "allow_url_fopen";
-$_ARRLANG['TXT_GD_VERSION']    = "GD (Graphics Draw) Version";
+$_ARRLANG['TXT_GD_VERSION']	= "GD (Graphics Draw) Version";
 $_ARRLANG['TXT_FTP_SUPPORT'] = "FTP Unterstützung";
 $_ARRLANG['TXT_YES'] = "Ja";
 $_ARRLANG['TXT_NO'] = "Nein";
-$_ARRLANG['TXT_ON']    = "An";
+$_ARRLANG['TXT_ON']	= "An";
 $_ARRLANG['TXT_OFF'] = "Aus";
 $_ARRLANG['TXT_PHP_VERSION_REQUIRED'] = "Für den einwandfreien Betrieb des System ist mindestens die Version [VERSION] von PHP erforderlich!";
 $_ARRLANG['TXT_MYSQL_SUPPORT'] = "MySQL Unterstützung";
@@ -102,7 +102,6 @@ $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "Das Tabellen Präfix (Vorsilbe) darf
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "Die Ordnerstruktur kann auf diesem Server nicht angezeigt werden, da die PHP-Direktive open_basedir gesetzt ist, wobei diese aber den notwendigen Temp-Pfad (/tmp) nicht enthält!";
 $_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Zeichensatz der Verbindung";
 $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "Der Zeichensatz für die MySQL Verbindung wird für die Sortierreihenfolge, sowie für Suchoperationen verwendet.<br  /><br />Wenn Sie vor haben diese Webseite in mehreren Sprachen anzubieten, wird empfohlen, entweder <strong>utf8_unicode_ci</strong> oder <strong>utf8_general_ci</strong> zu verwenden. Wobei <strong>utf8_unicode_ci</strong> Erweiterungen unterstützt, was bedeutet, dass es z.B. die Gleichsetzung im Deutschen von `ß´ = `ss´ kennt, im Gegensatz zu <strong>utf8_general_ci</strong>, welches zwar keine Erweiterungen unterstützt, deshalb aber wesentlich schneller ist.<br /><br />Verwenden Sie andernfalls, wenn Sie die Webseite nur in einer Sprache anbieten wollen, einen entsprechend spezifischen Zeichensatz.";
-$_ARRLANG['TXT_REGISTER_GLOBALS_ON'] = "<a href=\"http://www.php.net/manual/de/ini.core.php#ini.register-globals\" title=\"register_globals PHP Dokumentation\">register_globals</a> ist aktiviert. Es wird empfohlen diese PHP Einstellung zu deaktivieren.";
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Konnte die überflüssigen Sprachen nicht deaktivieren!";

@@ -33,6 +33,7 @@ class u2uAdmin extends u2uLibrary {
         global $objInit, $objTemplate, $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/u2u/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_intLanguageId = $objInit->userFrontendLangId;
@@ -55,19 +56,19 @@ class u2uAdmin extends u2uLibrary {
             $_GET['act']='';
         }
         switch($_GET['act'])  {
-            case 'saveSettings':
-                Permission::checkAccess(121, 'static');
-                $this->saveSettings();
-                 $this->settings();
-                break;
+    		case 'saveSettings':
+    			Permission::checkAccess(121, 'static');
+    			$this->saveSettings();
+    			 $this->settings();
+    		    break;
 
-            default:
+    		default:
                 Permission::checkAccess(121, 'static');
-                $this->settings();
-                break;
-        }
+    			$this->settings();
+    		    break;
+    	}
 
-        $objTemplate->setVariable(array(
+    	$objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->_strPageTitle,
             'CONTENT_OK_MESSAGE'        => $this->_strOkMessage,
             'CONTENT_STATUS_MESSAGE'    => $this->_strErrMessage,
@@ -81,28 +82,28 @@ class u2uAdmin extends u2uLibrary {
      * The maximum postings chars of the users..
      * @global   $_ARRAYLANG $objTemplate $_CORELANG
      */
-    function settings() {
+	function settings() {
 
         global $_ARRAYLANG,$objTemplate,$_CORELANG,$FCKeditorBasePath;
 
         $this->_objTpl->loadTemplatefile('module_u2u_settings.html',true,true);
-        $this->_pageTitle = $_ARRAYLANG['TXT_U2U_SETTINGS'];
+		$this->_pageTitle = $_ARRAYLANG['TXT_U2U_SETTINGS'];
 
-        $settingMaxPosting   = $this->_getMaxPostingDetails();
-        $settingMaxChars     = $this->_getMaxCharDetails();
-        $settingEmailSubject = $this->_getEmailSubjectDetails();
-        $settingEmailFrom    = $this->_getEmailFromDetails();
-        $settingEmailMessage = $this->_getEmailMessageDetails();
-        $this->strMessages   = contrexx_stripslashes($settingEmailMessage['email_message']);
-        $strEmailInputHTML   = get_wysiwyg_editor('private_message',$this->strMessages,'default ');
+		$settingMaxPosting   = $this->_getMaxPostingDetails();
+		$settingMaxChars     = $this->_getMaxCharDetails();
+		$settingEmailSubject = $this->_getEmailSubjectDetails();
+		$settingEmailFrom    = $this->_getEmailFromDetails();
+		$settingEmailMessage = $this->_getEmailMessageDetails();
+		$this->strMessages   = contrexx_stripslashes($settingEmailMessage['email_message']);
+		$strEmailInputHTML   = get_wysiwyg_editor('private_message',$this->strMessages,'default ');
 
-        $this->_objTpl->setVariable(array(
-            'TXT_U2U_MAX_POSTING_SIZE'                 => $settingMaxPosting['max_posting_size'],
-            'TXT_U2U_MAX_POSTING_CHARS'              => $settingMaxChars['max_posting_chars'],
-            'TXT_U2U_SETTINGS_MAIL_SUBJECT'          => $settingEmailSubject['subject'],
-            'TXT_U2U_SETTINGS_MAIL_FROM'             => $settingEmailFrom['from'],
-            'TXT_U2U_ENTER_THE_SUBJECT_OF_THE_MAIL'  => $_ARRAYLANG['TXT_U2U_ENTER_THE_SUBJECT_OF_THE_MAIL'],
-            'TXT_U2U_ENTER_THE_FROM_ADDRESS'         => $_ARRAYLANG['TXT_U2U_ENTER_THE_FROM_ADDRESS'],
+		$this->_objTpl->setVariable(array(
+			'TXT_U2U_MAX_POSTING_SIZE'	             => $settingMaxPosting['max_posting_size'],
+			'TXT_U2U_MAX_POSTING_CHARS'              => $settingMaxChars['max_posting_chars'],
+			'TXT_U2U_SETTINGS_MAIL_SUBJECT'          => $settingEmailSubject['subject'],
+			'TXT_U2U_SETTINGS_MAIL_FROM'             => $settingEmailFrom['from'],
+			'TXT_U2U_ENTER_THE_SUBJECT_OF_THE_MAIL'  => $_ARRAYLANG['TXT_U2U_ENTER_THE_SUBJECT_OF_THE_MAIL'],
+			'TXT_U2U_ENTER_THE_FROM_ADDRESS'         => $_ARRAYLANG['TXT_U2U_ENTER_THE_FROM_ADDRESS'],
             'TXT_U2U_NOTIFICATIION_EMAILS'           => $_ARRAYLANG['TXT_U2U_NOTIFICATIION_EMAILS'],
             'TXT_U2U_SUBJECT'                        => $_ARRAYLANG['TXT_U2U_SUBJECT'],
             'TXT_U2U_FROM_LINE'                      => $_ARRAYLANG['TXT_U2U_FROM_LINE'],
@@ -111,15 +112,15 @@ class u2uAdmin extends u2uLibrary {
             'TXT_U2U_SENDER_NAME_CONTENT'            => $_ARRAYLANG['TXT_U2U_SENDER_NAME_CONTENT'],
             'TXT_U2U_DOMAIN_NAME_CONTENT'            => $_ARRAYLANG['TXT_U2U_DOMAIN_NAME_CONTENT'],
             'TXT_U2U_RECEIVER_NAME_CONTENT'          => $_ARRAYLANG['TXT_U2U_RECEIVER_NAME_CONTENT'],
-            'TXT_U2U_EMAIL_CONTENT'                  => $strEmailInputHTML,
-            'TXT_U2U_MAX_POSTING_SIZE_INBOX'         => $_ARRAYLANG['TXT_U2U_MAX_POSTING_SIZE_INBOX'],
+			'TXT_U2U_EMAIL_CONTENT'                  => $strEmailInputHTML,
+			'TXT_U2U_MAX_POSTING_SIZE_INBOX'         => $_ARRAYLANG['TXT_U2U_MAX_POSTING_SIZE_INBOX'],
             'TXT_U2U_MAX_CHARS_PER_MSG'              => $_ARRAYLANG['TXT_U2U_MAX_CHARS_PER_MSG'],
             'TXT_U2U_VALUE'                          => $_ARRAYLANG['TXT_U2U_VALUE'],
-            'TXT_SAVE'                               => $_CORELANG['TXT_SAVE']
-        ));
-    }
+		    'TXT_SAVE'                               => $_CORELANG['TXT_SAVE']
+		));
+	}
 
-    /**
+	/**
      * When the admin changed the settings,this function will be called..
      * The maximum postings chars of the users..
      * @global   $_CORELANG $_ARRAYLANG $objDatabase;
@@ -130,10 +131,10 @@ class u2uAdmin extends u2uLibrary {
        if($_POST['frmSettings_submit']) {
             $settings =  array();
             $settings =  array('max_inbox'      => contrexx_addslashes(strip_tags($_POST['frmSettings_max_inbox'])),
-                                   'max_chars'         => contrexx_addslashes(strip_tags($_POST['frmSettings_max_chars'])),
-                                   'mail_subject'     => contrexx_addslashes(strip_tags($_POST['frmSettings_subject'])),
-                                   'mail_from'         => contrexx_addslashes(strip_tags($_POST['frmSettings_from'])),
-                                   'mail_message'     => contrexx_addslashes($_POST['private_message']),
+            	                   'max_chars' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_max_chars'])),
+            	                   'mail_subject' 	=> contrexx_addslashes(strip_tags($_POST['frmSettings_subject'])),
+            	                   'mail_from' 	    => contrexx_addslashes(strip_tags($_POST['frmSettings_from'])),
+            	                   'mail_message' 	=> contrexx_addslashes($_POST['private_message']),
                                );
             $updateMaxPostings=' UPDATE '.DBPREFIX.'module_u2u_settings
                                 SET `value`      = "'.$settings['max_inbox'].'"
@@ -141,8 +142,8 @@ class u2uAdmin extends u2uLibrary {
             $objDatabase->Execute($updateMaxPostings);
 
             $updateMaxPostingChars=' UPDATE '.DBPREFIX.'module_u2u_settings
-                                    SET `value`      = "'.$settings['max_chars'].'"
-                                         WHERE `name` = "max_posting_chars"';
+            						SET `value`      = "'.$settings['max_chars'].'"
+            							 WHERE `name` = "max_posting_chars"';
             $objDatabase->Execute($updateMaxPostingChars);
 
             $updateMailSubject=' UPDATE '.DBPREFIX.'module_u2u_settings
@@ -161,8 +162,8 @@ class u2uAdmin extends u2uLibrary {
             $objDatabase->Execute($updateMailMessage);
             $this->_strOkMessage = "Success";
         } else {
-            $this->_strErrMessage = "Not success";
-        }
+    		$this->_strErrMessage = "Not success";
+    	}
 
     }
 }

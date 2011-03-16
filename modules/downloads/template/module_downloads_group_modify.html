@@ -76,43 +76,6 @@
         }
     }
 
-    function downloadsMoveOption(selectId,moveUp)
-    {
-        if(moveUp){
-            $J(selectId+' :selected').each(function(){
-                $J(this).insertBefore($J(this).prev());
-            });
-        } else {
-            $J.fn.reverse = Array.reverse; //add array reverse to jQuery functions
-            $J(selectId+' :selected').reverse().each(function(){
-                $J(this).insertAfter($J(this).next());
-            });
-        }
-    }
-
-    function downloadsSetSortMethod(method, sortMethodBoxId, sortSelectId)
-    {
-        $J('#'+sortMethodBoxId)[0].style.display = method == 'custom' ? '' : 'none';
-
-        if (method != 'custom') {
-            downloadsSortOptionsAlphabetically(sortSelectId);
-        }
-    }
-
-    function downloadsSortOptionsAlphabetically(selectId)
-    {
-        var options=[];
-        $J($J.makeArray(
-            $J('#'+selectId+' option')
-           )
-           .sort(function(a,b){
-                return a.value > b.value
-           })
-        ).each(function(){options.push(this);});
-
-        $J('#'+selectId).empty().append(options);
-    }
-
     function downloadsAdjustSourceConfig()
     {
         if (document.getElementById('downloads_group_type_file').checked) {
@@ -125,11 +88,11 @@
     }
 
 
-  function downloadsOpenWindow(theURL,winName,features)
-  {
-      downloadsPopup = window.open(theURL,"Downloads",features);
-      downloadsPopup.focus();
-  }
+	function downloadsOpenWindow(theURL,winName,features)
+	{
+	    downloadsPopup = window.open(theURL,"Downloads",features);
+	    downloadsPopup.focus();
+	}
 
     function downloadsGetFileBrowser(elInsertBox,elImagePreview,elRemoveButton,elMimeType)
     {
@@ -196,11 +159,11 @@
                                 </td>
                                 <td width="45" style="border-bottom:0px; text-align:center;">
                                     <br />
-                                    <input type="button" value="&rArr;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_group_not_associated_categories'), document.getElementById('downloads_group_associated_categories'))" style="margin-bottom:2px;" />
+                                    <input type="button" value="&gt;&gt;" name="addOption" onclick="downloadsAddOptionToList(document.getElementById('downloads_group_not_associated_categories'), document.getElementById('downloads_group_associated_categories'))" style="margin-bottom:2px;" />
                                     <br />
-                                    <input type="button" value="&lArr;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_group_not_associated_categories'), document.getElementById('downloads_group_associated_categories'))" />
+                                    <input type="button" value="&lt;&lt;" name="removeOption" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_group_not_associated_categories'), document.getElementById('downloads_group_associated_categories'))" />
                                 </td>
-                                <td width="300" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_CATEGORIES}<br />
+                               <td width="100%" style="border-bottom:0px;">{TXT_DOWNLOADS_ASSIGNED_CATEGORIES}<br />
                                     <select name="downloads_group_associated_categories[]" id="downloads_group_associated_categories" size="15" style="width:300px;" multiple="multiple">
                                     {DOWNLOADS_GROUP_ASSOCIATED_CATEGORIES}
                                     </select>
@@ -208,20 +171,7 @@
                                     <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_group_associated_categories'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
                                     <br />
                                     <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_group_associated_categories'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
-                                </td>
-                                <td width="100%" style="border-bottom:0px;">
-                                    <br />
-                                    <select name="downloads_group_sort" id="downloads_group_sort" onchange="downloadsSetSortMethod(this.value, 'downloads_group_sort_custom_box', 'downloads_group_associated_categories')">
-                                        <option value="alphabetically" {DOWNLOADS_GROUP_SORT_ALPHABETICALLY}>{TXT_DOWNLOADS_ALPHABETICALLY_SORTED}</option>
-                                        <option value="custom" {DOWNLOADS_GROUP_SORT_CUSTOM}>{TXT_DOWNLOADS_CUSTOM}</option>
-                                    </select>
-                                    <br />
-                                    <div id="downloads_group_sort_custom_box" style="display:{DOWNLOADS_GROUP_SORT_CUSTOM_BOX};">
-                                        <input type="button" value="&uArr;" name="upOption" onclick="downloadsMoveOption('#downloads_group_associated_categories', true)" style="margin-bottom:2px;" />
-                                        <br />
-                                        <input type="button" value="&dArr;" name="downOption" onclick="downloadsMoveOption('#downloads_group_associated_categories', false)" />
-                                    </div>
-                                </td>
+                                 </td>
                             </tr>
                        </tbody>
                     </table>

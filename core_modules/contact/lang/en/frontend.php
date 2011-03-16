@@ -33,7 +33,4 @@ $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'] = "Please type in the characters 
 $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'] = "The specified character string was wrong!";
 $_ARRAYLANG['TXT_CONTACT_RESET'] = "Reset";
 $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Receiver address selection";
-$_ARRAYLANG['TXT_CONTACT_CAPTCHA'] = "Captcha";
-$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] = "Please Select";
-$_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Not Specified";
 ?>

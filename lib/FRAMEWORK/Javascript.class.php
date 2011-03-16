@@ -78,44 +78,11 @@ class JS
      * @var array
      */
     private static $available = array(
-        'frontendediting' => array(
-            'jsfiles' =>    array(
-                'core_modules/frontendEditing/js/frontEditing.js'
-            )
-        ),
         'prototype'     => array(
             'jsfiles'       => array(
                 'lib/javascript/prototype.js'
             ),
         ),
-        'jquery'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/jquery-1.4.1.min.js'
-            ),
-            'specialcode'  => 'var $J = jQuery.noConflict();',
-        ),
-        'jquery-ui'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/jquery-ui-1.8.2.js'
-            ),
-            'dependencies'  => array(
-                'jquery'
-            )
-        ),
-        'nestedsortable'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/inestedsortable.js'
-            ),
-            'dependencies'  => array(
-                'interface'
-            ),
-        ),
-        'interface'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/interface.js'
-            ),
-        ),
-
         'scriptaculous' => array(
             'jsfiles'       => array(
                 'lib/javascript/scriptaculous/scriptaculous.js'
@@ -143,17 +110,7 @@ class JS
             'specialcode'  => 'var tmpOnLoad = window.onload; window.onload = function() { if(tmpOnLoad){tmpOnLoad();} Shadowbox.init(); }',
             'loadcallback' => 'parseShadowBoxOptions',
             'makecallback' => 'makeShadowBoxOptions'
-        ),
-        'excanvas'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/excanvas.compiled.js'
-            ),
-        ),
-        'ckeditor'     => array(
-            'jsfiles'       => array(
-                'editor/ckeditor/ckeditor.js'
-            ),
-        ),
+        )
     );
 
     /**
@@ -223,12 +180,11 @@ class JS
      * the options to be used.
      * @param string $name
      * @param array $options
-     * @param bool $dependencies
      * @access public
      * @static
      * @return bool
      */
-    public static function activate($name, $options = null, $dependencies = true)
+    public static function activate($name, $options = null)
     {
         $name = strtolower($name);
         if (array_key_exists($name, self::$available) === false) {
@@ -238,7 +194,7 @@ class JS
         }
 
         $data = self::$available[$name];
-        if (!empty($data['dependencies']) && $dependencies) {
+        if (!empty($data['dependencies'])) {
             foreach ($data['dependencies'] as $dep) {
                 self::activate($dep);
             }
@@ -266,7 +222,7 @@ class JS
     public static function deactivate($name)
     {
         $name = strtolower($name);
-        $searchResult = array_search($name, self::$active);
+	$searchResult = array_search($name, self::$active);
         if ($searchResult === false)
         {
             self::$error = $name.' is not a valid name for

@@ -9,7 +9,7 @@
 $_ARRAYLANG['TXT_MARKET_MODULE_DESCRIPTION'] = "Advertisements";
 $_ARRAYLANG['TXT_ENTRIES'] = "Advertisements";
 $_ARRAYLANG['TXT_NEW_ENTRY'] = "new Advertisement";
-$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'] = "Please fill out all necessary fields";
+$_ARRAYLANG['TXT_MARKET_CATEGORY_ADD_FILL_FIELDS'] = "Please fill out all necessary fields.";
 $_ARRAYLANG['TXT_MARKET_TITLE'] = "Subject";
 $_ARRAYLANG['TXT_MARKET_ADDEDBY'] = "Added by";
 $_ARRAYLANG['TXT_MARKET_NO_ENTRIES_FOUND'] = "No advertisements have been found.";
@@ -40,7 +40,7 @@ $_ARRAYLANG['TXT_MARKET_CONTACT'] = "Contact";
 $_ARRAYLANG['TXT_MARKET_PLACE'] = "Place of article";
 $_ARRAYLANG['TXT_MARKET_DELETE_ADVERTISEMENT'] = "Remove advertisement";
 $_ARRAYLANG['TXT_MARKET_SEND_MESSAGE'] = "Message to Seller";
-$_ARRAYLANG['TXT_MARKTE_MESSAGE_ABOUT'] = "Request on";
+$_ARRAYLANG['TXT_MARKTE_MESSAGE_ABOUT'] = "Question about";
 $_ARRAYLANG['TXT_MARKET_MESSAGE'] = "Message";
 $_ARRAYLANG['TXT_MARKET_SEND'] = "Send";
 $_ARRAYLANG['TXT_MARKET_ADVERTISEMENT_ONLINE'] = "Advertisement is online until";

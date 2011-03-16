@@ -14,14 +14,14 @@ Text[4]=["", "{TXT_SETTINGS_MAILTEXT_DESCRIPTION}"];
 
 <form action="?cmd=reservation&amp;act=saveSettings" method="post" >
 <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-  <tr>
-    <th colspan="2">
-      <div align="left">{TXT_SETTINGS}</div>
-    </th>
-  </tr>
-  <tr class="row1">
-    <td nowrap="nowrap" valign="top" width="25%">{TXT_SETTINGS_UNIT}:</td>
-    <td width="75%">
+	<tr>
+		<th colspan="2">
+			<div align="left">{TXT_SETTINGS}</div>
+		</th>
+	</tr>
+	<tr class="row1">
+		<td nowrap="nowrap" valign="top" width="25%">{TXT_SETTINGS_UNIT}:</td>
+		<td width="75%">
             <select name="unit_hour">
                 {UNIT_HOUR_LIST}
             </select>
@@ -30,11 +30,11 @@ Text[4]=["", "{TXT_SETTINGS_MAILTEXT_DESCRIPTION}"];
                 {UNIT_MINUTE_LIST}
             </select>
             <img src="images/icons/note.gif" alt="" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
-    </td>
-  </tr>
-  <tr class="row2">
-     <td valign="top">{TXT_SETTINGS_FRAMESTART}:</td>
-     <td>
+		</td>
+	</tr>
+	<tr class="row2">
+	   <td valign="top">{TXT_SETTINGS_FRAMESTART}:</td>
+	   <td>
             <select name="framestart_hour">
                 {FRAMESTART_HOUR_LIST}
             </select>
@@ -43,22 +43,22 @@ Text[4]=["", "{TXT_SETTINGS_MAILTEXT_DESCRIPTION}"];
                 {FRAMESTART_MINUTE_LIST}
             </select>
             <img src="images/icons/note.gif" alt="" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
-     </td>
-  </tr>
-  <tr class="row1">
-     <td valign="top">{TXT_SETTINGS_FRAMEEND}:</td>
-     <td>
-         <select name="frameend_hour">
-             {FRAMEEND_HOUR_LIST}
-         </select>
-         :
-         <select name="frameend_minute">
-             {FRAMEEND_MINUTE_LIST}
-         </select>
-         <img src="images/icons/note.gif" alt="" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
-     </td>
-  </tr>
-  <tr class="row2">
+	   </td>
+	</tr>
+	<tr class="row1">
+	   <td valign="top">{TXT_SETTINGS_FRAMEEND}:</td>
+	   <td>
+	       <select name="frameend_hour">
+	           {FRAMEEND_HOUR_LIST}
+	       </select>
+	       :
+	       <select name="frameend_minute">
+	           {FRAMEEND_MINUTE_LIST}
+	       </select>
+	       <img src="images/icons/note.gif" alt="" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
+	   </td>
+	</tr>
+	<tr class="row2">
         <td valign="top">
             {TXT_SETTINGS_CONFIRMATION}
         </td>
@@ -69,20 +69,20 @@ Text[4]=["", "{TXT_SETTINGS_MAILTEXT_DESCRIPTION}"];
             </select>
             <img src="images/icons/note.gif" alt="" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" />
         </td>
-  </tr>
-  <tr class="row1">
-     <td valign="top">{TXT_SETTINGS_DESCRIPTION}:</td>
-     <td>
-         <textarea name="description" rows="15" cols="5" style="width: 300px;">{SETTINGS_DESC}</textarea>
-     </td>
-  </tr>
-  <tr class="row2">
-     <td valign="top">{TXT_SETTINGS_MAILTEXT}:</td>
-     <td>
-         <textarea name="mailtext" rows="15" cols="5" style="width: 300px; float: left;">{SETTINGS_MAILTEXT}</textarea>
-         <img src="images/icons/note.gif" alt="" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" style="margin-left: 1em;"/>
-     </td>
-  </tr>
+	</tr>
+	<tr class="row1">
+	   <td valign="top">{TXT_SETTINGS_DESCRIPTION}:</td>
+	   <td>
+	       <textarea name="description" rows="15" cols="5" style="width: 300px;">{SETTINGS_DESC}</textarea>
+	   </td>
+	</tr>
+	<tr class="row2">
+	   <td valign="top">{TXT_SETTINGS_MAILTEXT}:</td>
+	   <td>
+	       <textarea name="mailtext" rows="15" cols="5" style="width: 300px; float: left;">{SETTINGS_MAILTEXT}</textarea>
+	       <img src="images/icons/note.gif" alt="" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" style="margin-left: 1em;"/>
+	   </td>
+	</tr>
 </table>
 <br /><br />
 <input type="submit" name="save" value="{TXT_CONTACT_SAVE}" />
