@@ -93,11 +93,11 @@ class statsLibrary
     {
         global $pageId;
 
-        $searchTerm = "";
-        $counterTag = "";
-        $searchTermPlain = "";
+        $counterTag = '';
 
         if ($this->arrConfig['make_statistics']['status']) {
+            $searchTerm = '';
+            $searchTermPlain = '';
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {
                 $searchTerm = "&amp;searchTerm=".urlencode($_REQUEST['term'])."' + '";
                 $searchTermPlain = contrexx_addslashes($_REQUEST['term']);
@@ -500,16 +500,15 @@ class statsLibrary
     function _initMostViewedPages() {
         global $objDatabase;
 
-        $query = "SELECT `content`.`title`, `stats`.`page`, `stats`.`visits`, FROM_UNIXTIME(`stats`.`timestamp`,'%d-%m-%Y %H:%i:%s') AS `last_request`
-                    FROM `".DBPREFIX."stats_requests` AS `stats`
-         LEFT OUTER JOIN `".DBPREFIX."content` AS `content`
-                      ON `stats`.`pageId` = `content`.`id`
-                ORDER BY `visits` DESC, `last_request` DESC
-                        ".$this->pagingLimit;
+        $query = "SELECT pageTitle, page, visits, FROM_UNIXTIME(timestamp,'%d-%m-%Y %H:%i:%s') AS last_request
+                    FROM ".DBPREFIX."stats_requests
+                ORDER BY visits DESC, last_request DESC
+                         ".$this->pagingLimit;
+
         if (($objResult = $objDatabase->Execute($query))) {
             while (!$objResult->EOF) {
                 $arrPage = array(
-                    'title' => strlen($objResult->fields['title'])>0 ? $objResult->fields['title'] : "No title",
+                    'title' => $objResult->fields['pageTitle'],
                     'page' => $objResult->fields['page'],
                     'requests' => $objResult->fields['visits'],
                     'last_request' => $objResult->fields['last_request']

@@ -2,38 +2,38 @@
 <script language="JavaScript" type="text/javascript">
 <!--
 function setLanguage(langId) {
-  window.location = 'index.php?langId='+langId;
+	window.location = 'index.php?langId='+langId;
 }
 // -->
 </script>
 <table summary="navigation" border="0" cellpadding="0" cellspacing="0" width="100%" align="center">
-  <tr>
-    <td>
-      <div class="navigation">
-        <ul>
-          <!-- BEGIN navtree -->
-            <li class="{CLASS}">{STEP}</li>
-          <!-- END navtree -->
-        </ul>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <th>{TXT_LANGUAGE}</th>
-  </tr>
-  <tr>
-    <td>
-      <div class="navigation">
-      <ul>
-        <li class="language">
-          <select name="langId" size="1" onchange="setLanguage(this.value);" style="width: 170px;">
-            <!-- BEGIN languageOptions -->
-              <option value="{LANGID}" {SELECTED} >{LANGUAGE}</option>
-            <!-- END languageOptions -->
-          </select>
-        </li>
-      </ul></div><br />
-    </td>
-  </tr>
+	<tr>
+		<td>
+			<div class="navigation">
+				<ul>
+					<!-- BEGIN navtree -->
+						<li class="{CLASS}">{STEP}</li>
+					<!-- END navtree -->
+				</ul>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<th>{TXT_LANGUAGE}</th>
+	</tr>
+	<tr>
+		<td>
+			<div class="navigation">
+			<ul>
+				<li class="language">
+					<select name="langId" size="1" onchange="setLanguage(this.value);" style="width: 170px;">
+						<!-- BEGIN languageOptions -->
+							<option value="{LANGID}" {SELECTED} >{LANGUAGE}</option>
+						<!-- END languageOptions -->
+					</select>
+				</li>
+			</ul></div><br />
+		</td>
+	</tr>
 </table>
 <!-- end navigation.html -->

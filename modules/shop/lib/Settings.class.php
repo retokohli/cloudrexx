@@ -10,11 +10,9 @@
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @package     contrexx
  * @subpackage  module_shop
- * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
 
-require_once ASCMS_CORE_PATH.'/MailTemplate.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Currency.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 
@@ -27,26 +25,31 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @package     contrexx
  * @subpackage  module_shop
- * @version     3.0.0
  * @todo        Edit PHP DocBlocks!
  */
-class ShopSettings
+class Settings
 {
+    /**
+     * Array of all countries
+     * @var   array   $arrCountries   Array of all countries
+     * @see   _initCountries()
+     */
+    private $arrCountries = array();
+
     /**
      * This flag is set to true as soon as any changed setting is
      * detected and stored.  Only used by new methods that support it.
-     * @var     boolean
+     * @var     boolean     $flagChanged
      * @access  private
      */
-    private static $changed = null;
+    private $flagChanged = false;
 
     /**
-     * This flag is set to false as soon as storing any setting fails.
-     * Only used by new methods that support it.
-     * @var     boolean
-     * @access  private
+     * Constructor
      */
-    private static $success = null;
+    function __construct()
+    {
+    }
 
 
     /**
@@ -59,21 +62,84 @@ class ShopSettings
      */
     function storeSettings()
     {
-        self::$success = true;
-        self::$changed = false;
+        $success = true;
 
-        SettingDb::init();
-        self::storeGeneral();
-        self::storeCurrencies();
-        self::storePayments();
-        self::storeCountries();
-        Zones::store();
-        Mailtemplate::storeTemplateFromPost();
-        self::storeShipping();
-        self::storeVat();
-        if (SettingDb::updateAll() === false) return false;
-        if (self::$changed) return self::$success;
-        return null;
+        // sets $flagChanged accordingly.
+        $success &= $this->storeGeneral();
+
+        $result = Currency::store();
+        if ($result !== '') $success &= $result;
+
+        $this->_deletePayment();
+        $this->_storeNewPayments();
+        $this->_storePayments();
+
+        $this->_storeCountries();
+
+        $result = Zones::store();
+        if ($result !== '') $success &= $result;
+
+        $result = Mail::store();
+        if ($result !== '') $success &= $result;
+
+        // new methods - these set $flagChanged accordingly.
+        $success &= $this->_deleteShipper();
+        $success &= $this->_deleteShipment();
+        $success &= $this->_storeNewShipper();
+        $success &= $this->_storeNewShipments();
+        $success &= $this->_updateShipment();
+        $success &= $this->storeVat();
+
+        if ($this->flagChanged === true) {
+            return $success;
+        }
+        return '';
+    }
+
+
+    function _initCountries()
+    {
+        global $objDatabase;
+// post-2.1//        $arrSqlName = Text::getSqlSnippets(
+//            '`country`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_COUNTRY_NAME
+//        );
+//        $query = "
+//            SELECT `country`.`id`, `country`.`status`,
+//                   `country`.`iso_code_2`, .`country`.`iso_code_3`".
+//                   $arrSqlName['field']."
+//              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries as `country`
+//             ORDER BY `country`.`id`
+//        ";
+//        $objResult = $objDatabase->Execute($query);
+//        while (!$objResult->EOF) {
+//            $this->arrCountries[$objResult->fields['id']] = array(
+//                'id' => $objResult->fields['id'],
+//                'name' => $objResult->fields[$arrSqlName['name']],
+//                'iso_code_2' => $objResult->fields['iso_code_2'],
+//                'iso_code_3' => $objResult->fields['iso_code_3'],
+//                'status' => $objResult->fields['status']
+//            );
+//            $objResult->MoveNext();
+//        }
+        $query = "
+            SELECT countries_id, countries_name,
+                   countries_iso_code_2, countries_iso_code_3,
+                   activation_status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             ORDER BY countries_id
+        ";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $this->arrCountries[$objResult->fields['countries_id']] = array(
+                'countries_id' => $objResult->fields['countries_id'],
+                'countries_name' => $objResult->fields['countries_name'],
+                'countries_iso_code_2' => $objResult->fields['countries_iso_code_2'],
+                'countries_iso_code_3' => $objResult->fields['countries_iso_code_3'],
+                'activation_status' => $objResult->fields['activation_status']
+            );
+            $objResult->MoveNext();
+        }
     }
 
 
@@ -84,143 +150,69 @@ class ShopSettings
      */
     function storeGeneral()
     {
-        if (empty($_POST['general'])) return;
+        global $objDatabase;
 
-        SettingDb::set('email', $_POST['email']);
-        SettingDb::set('email_confirmation', $_POST['email_confirmation']);
-        // added: shop company name and address
-        SettingDb::set('company', $_POST['company']);
-        SettingDb::set('address', $_POST['address']);
-        SettingDb::set('telephone', $_POST['telephone']);
-        SettingDb::set('fax', $_POST['fax']);
-        SettingDb::set('country_id', $_POST['country_id']);
+        if (isset($_POST['general'])) {
+            $strYellowpayAcceptedPM = (isset($_POST['yellowpay_accepted_payment_methods'])
+                ? addslashes(join(',', $_POST['yellowpay_accepted_payment_methods']))
+                : ''
+            );
 
-        // Postfinance (FKA yellowpay)
-        $strYellowpayAcceptedPM = (isset($_POST['postfinance_accepted_payment_methods'])
-            ? addslashes(join(',', $_POST['postfinance_accepted_payment_methods']))
-            : ''
-        );
-        SettingDb::set('postfinance_shop_id', $_POST['postfinance_shop_id']);
-        SettingDb::set('postfinance_active', empty($_POST['postfinance_active']) ? 0 : 1);
-        //SettingDb::set('postfinance_hash_seed', $_POST['postfinance_hash_seed']);
-        // Replaced by
-        SettingDb::set('postfinance_hash_signature_in', $_POST['postfinance_hash_signature_in']);
-        SettingDb::set('postfinance_hash_signature_out', $_POST['postfinance_hash_signature_out']);
-        SettingDb::set('postfinance_authorization_type', $_POST['postfinance_authorization_type']);
-        SettingDb::set('postfinance_accepted_payment_methods', $strYellowpayAcceptedPM);
-        SettingDb::set('postfinance_use_testserver', $_POST['postfinance_use_testserver']);
+            Settings::storeSetting('email', $_POST['email']);
+            Settings::storeSetting('confirmation_emails', $_POST['confirmation_emails']);
+            // added: shop company name and address
+            Settings::storeSetting('shop_company', $_POST['shop_company']);
+            Settings::storeSetting('shop_address', $_POST['shop_address']);
+            Settings::storeSetting('telephone', $_POST['telephone']);
+            Settings::storeSetting('fax', $_POST['fax']);
+            Settings::storeSetting('yellowpay_shop_id', $_POST['yellowpay_shop_id'], (!empty($_POST['yellowpay_status']) ? 1 : 0));
+//            Settings::storeSetting('yellowpay_hash_seed', $_POST['yellowpay_hash_seed']);
+// Replaced by
+            Settings::storeSetting('yellowpay_hash_signature_in', $_POST['yellowpay_hash_signature_in']);
+            Settings::storeSetting('yellowpay_hash_signature_out', $_POST['yellowpay_hash_signature_out']);
 
-        // Postfinance Mobile
-        SettingDb::set('postfinance_mobile_webuser', $_POST['postfinance_mobile_webuser']);
-        SettingDb::set('postfinance_mobile_sign', $_POST['postfinance_mobile_sign']);
-        SettingDb::set('postfinance_mobile_ijustwanttotest', isset($_POST['postfinance_mobile_ijustwanttotest']));
-        SettingDb::set('postfinance_mobile_status', isset($_POST['postfinance_mobile_status']));
+            Settings::storeSetting('yellowpay_authorization_type', $_POST['yellowpay_authorization_type']);
+            Settings::storeSetting('yellowpay_accepted_payment_methods', $strYellowpayAcceptedPM);
+            Settings::storeSetting('yellowpay_use_testserver', $_POST['yellowpay_use_testserver']);
+            Settings::storeSetting('saferpay_id', $_POST['saferpay_id'], (!empty($_POST['saferpay_status']) ? 1 : 0));
+            Settings::storeSetting('saferpay_finalize_payment', (!empty($_POST['saferpay_finalize_payment']) ? 1 : 0));
+            Settings::storeSetting('saferpay_use_test_account', 0, (!empty($_POST['saferpay_use_test_account']) ? 1 : 0));
+            Settings::storeSetting('saferpay_window_option', $_POST['saferpay_window_option']);
+            Settings::storeSetting('paypal_account_email', $_POST['paypal_account_email'], (!empty($_POST['paypal_status']) ? 1 : 0));
 
-        // Saferpay
-        SettingDb::set('saferpay_id', $_POST['saferpay_id']);
-        SettingDb::set('saferpay_active', empty($_POST['saferpay_active']) ? 0 : 1);
-        SettingDb::set('saferpay_finalize_payment', empty($_POST['saferpay_finalize_payment']) ? 0 : 1);
-        SettingDb::set('saferpay_use_test_account', empty($_POST['saferpay_use_test_account']) ? 0 : 1);
-        SettingDb::set('saferpay_window_option', $_POST['saferpay_window_option']);
+            // Datatrans
+            Settings::storeSetting('datatrans_merchant_id', trim(contrexx_strip_tags($_POST['datatrans_merchant_id'])));
+            Settings::storeSetting('datatrans_status', (isset($_POST['datatrans_status']) ? 1 : 0));
+            Settings::storeSetting('datatrans_request_type', $_POST['datatrans_request_type']);
+            Settings::storeSetting('datatrans_use_testserver', ($_POST['datatrans_use_testserver'] ? 1 : 0));
 
-        // Paypal
-        SettingDb::set('paypal_account_email', $_POST['paypal_account_email']);
-        SettingDb::set('paypal_active', empty($_POST['paypal_active']) ? 0 : 1);
-        SettingDb::set('paypal_default_currency', $_POST['paypal_default_currency']);
-
-        // Datatrans
-        SettingDb::set('datatrans_merchant_id', trim(contrexx_strip_tags($_POST['datatrans_merchant_id'])));
-        SettingDb::set('datatrans_active', empty($_POST['datatrans_active']) ? 0 : 1);
-        SettingDb::set('datatrans_request_type', $_POST['datatrans_request_type']);
-        SettingDb::set('datatrans_use_testserver', empty($_POST['datatrans_use_testserver']) ? 0 : 1);
-
-        // LSV
-        SettingDb::set('payment_lsv_active', empty($_POST['payment_lsv_active']) ? 0 : 1);
-
-        // Thumbnail settings
-        SettingDb::set('thumbnail_max_width', $_POST['thumbnail_max_width']);
-        SettingDb::set('thumbnail_max_height', $_POST['thumbnail_max_height']);
-        SettingDb::set('thumbnail_quality', $_POST['thumbnail_quality']);
-
-        // Various settings
-        SettingDb::set('weight_enable', empty($_POST['weight_enable']) ? 0 : 1);
-        SettingDb::set('show_products_default',
-            empty($_POST['show_products_default'])
-              ? 0 : $_POST['show_products_default']);
-        // Mind that this defaults to 1, zero is not a valid value
-        SettingDb::set('product_sorting',
-            empty($_POST['product_sorting'])
-              ? 1 : $_POST['product_sorting']);
-        // Order amount upper limit (applicable when using Saferpay)
-        SettingDb::set('orderitems_amount_max',
-            empty($_POST['orderitems_amount_max'])
-                ? 0 : $_POST['orderitems_amount_max']);
+            Settings::storeSetting('country_id', $_POST['country_id']);
+            Settings::storeSetting('paypal_default_currency', $_POST['paypal_default_currency']);
+            Settings::storeSetting('payment_lsv_status', '', (!empty($_POST['payment_lsv_status']) ? 1 : 0));
+            Settings::storeSetting('shop_thumbnail_max_width', $_POST['shop_thumbnail_max_width']);
+            Settings::storeSetting('shop_thumbnail_max_height', $_POST['shop_thumbnail_max_height']);
+            Settings::storeSetting('shop_thumbnail_quality', $_POST['shop_thumbnail_quality']);
+            Settings::storeSetting('shop_weight_enable', (!empty($_POST['shop_weight_enable']) ? 1 : 0));
+            Settings::storeSetting(
+                'shop_show_products_default',
+                    (!empty($_POST['shop_show_products_default'])
+                        ? $_POST['shop_show_products_default'] : 0)
+            );
+            // Mind that this defaults to 1.
+            Settings::storeSetting(
+                'product_sorting',
+                    (!empty($_POST['product_sorting']) ? $_POST['product_sorting'] : 1)
+            );
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_config");
+            return true;
+        }
+        return false;
     }
 
 
     /**
-     * Stores the Currencies as present in the POST request
-     *
-     * See {@see Currency::delete()},
-     * {@see Currency::add()}, and
-     * {@see Currency::update()}.
-     */
-    static function storeCurrencies()
-    {
-        $result = Currency::delete();
-        if (isset($result)) {
-            self::$changed = true;
-            self::$success &= $result;
-        }
-        $result = Currency::add();
-        if (isset($result)) {
-            self::$changed = true;
-            self::$success &= $result;
-        }
-        $result = Currency::update();
-        if (isset($result)) {
-            self::$changed = true;
-            self::$success &= $result;
-        }
-        if (self::$changed) {
-            // Remember to reinit the Currencies, or the User
-            // won't see changes instantly
-            Currency::reset();
-        }
-    }
-
-
-    /**
-     * Stores the Payments as present in the POST request
-     *
-     * See {@see Payment::delete()},
-     * {@see Payment::add()}, and
-     * {@see Payment::update()}.
-     */
-    static function storePayments()
-    {
-        $result = Payment::delete();
-        if (isset($result)) {
-            self::$changed = true;
-            self::$success &= $result;
-        }
-        $result = Payment::add();
-        if (isset($result)) {
-            self::$changed = true;
-            self::$success &= $result;
-        }
-        $result = Payment::update();
-        if (isset($result)) {
-            self::$changed = true;
-            self::$success &= $result;
-        }
-        Payment::reset();
-    }
-
-
-    /**
-     * OBSOLETE
      * Delete currency
+     */
     function _deleteCurrency()
     {
         global $objDatabase;
@@ -230,67 +222,204 @@ class ShopSettings
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
         }
     }
+
+
+    /**
+     * Store new currency
      */
-
-
-    static function storeShipping()
+    function _storeNewCurrency()
     {
-        // new methods - these set $flagChanged accordingly.
-        self::_deleteShipper();
-        self::_deleteShipment();
-        self::_storeNewShipper();
-        self::_storeNewShipments();
-        self::_updateShipment();
-        Shipment::reset();
+        global $objDatabase;
+        if (isset($_POST['currency_add']) && !empty($_POST['currency_add'])) {
+            $_POST['currencyActiveNew'] = isset($_POST['currencyActiveNew']) ? 1 : 0;
+            $_POST['currencyDefaultNew'] = isset($_POST['currencyDefaultNew']) ? 1 : 0;
+
+            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
+                                        (code, symbol, name, rate, status, is_default)
+                                 VALUES ('".addslashes($_POST['currencyCodeNew'])."',
+                                         '".addslashes($_POST['currencySymbolNew'])."',
+                                         '".addslashes($_POST['currencyNameNew'])."',
+                                         '".addslashes($_POST['currencyRateNew'])."',
+                                         ".intval($_POST['currencyActiveNew']).",
+                                         ".intval($_POST['currencyDefaultNew']).")";
+
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                return false;
+            }
+            $cId = $objDatabase->Insert_Id();
+            if ($_POST['currencyDefaultNew']) {
+                $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies Set is_default=0 WHERE id!=".intval($cId));
+            }
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
+            return true;
+        }
+        return false;
     }
 
 
     /**
-     * Delete the Shipper with its ID present in $_GET['shipperId'], if any
+     * Store currency settings
+     */
+    function _storeCurrencies()
+    {
+        global $objDatabase;
+        if (isset($_POST['currency']) && !empty($_POST['currency'])) {
+             foreach ($_POST['currencyCode'] as $cId => $value) {
+                 $is_default=($_POST['currencyDefault']==$cId)?1:0;
+                 $status = isset($_POST['currencyActive'][$cId])?1:0;
+
+                 // default currency must be activated
+                 $is_active = ($is_default==1 && $status==0)?1:$status;
+
+                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies
+                                       SET code='".addslashes($value)."',
+                                           symbol='".addslashes($_POST['currencySymbol'][$cId])."',
+                                           name='".addslashes($_POST['currencyName'][$cId])."',
+                                           rate='".addslashes($_POST['currencyRate'][$cId])."',
+                                           status=".intval($is_active).",
+                                           is_default=".intval($is_default)."
+                                 WHERE id =".intval($cId);
+
+                $objDatabase->Execute($query);
+            } // end foreach
+
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_currencies");
+        }
+    }
+
+
+    /**
+     * Delete payment method
+     */
+    function _deletePayment()
+    {
+        global $objDatabase;
+        if (isset($_GET['paymentId']) && !empty($_GET['paymentId'])) {
+            $objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment", 2, 0);
+            if ($objResult->RecordCount() == 2) {
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment WHERE id=".intval($_GET['paymentId']));
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment WHERE payment_id=".intval($_GET['paymentId']));
+
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
+            }
+        }
+    }
+
+
+    /**
+     * Store new payment method
+     */
+    function _storeNewPayments()
+    {
+        global $objDatabase;
+        if (isset($_POST['payment_add']) && !empty($_POST['payment_add'])) {
+            $_POST['paymentActive_new'] = isset($_POST['paymentActive_new']) ? 1 : 0;
+
+            $query = "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_payment (".
+                "name, processor_id, costs, costs_free_sum, status) VALUES ('".
+                addslashes($_POST['paymentName_new'])."', '".
+                intval($_POST['paymentHandler_new'])."', '".
+                addslashes($_POST['paymentCosts_new'])."', '".
+                addslashes($_POST['paymentCostsFreeSumNew'])."', ".
+                intval($_POST['paymentActive_new']).")";
+            $objDatabase->Execute($query);
+            $pId = $objDatabase->Insert_ID();
+            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment (zones_id, payment_id) VALUES (".intval($_POST['paymentZone_new']).",".intval($pId).")");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
+        }
+    }
+
+
+    /**
+     * Store payment settings
+     */
+    function _storePayments()
+    {
+        global $objDatabase;
+        if (isset($_POST['payment']) && !empty($_POST['payment'])) {
+            foreach ($_POST['paymentName'] as $pId => $value) {
+                $_POST['paymentActive'][$pId] = isset($_POST['paymentActive'][$pId]) ? 1 : 0;
+
+                $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_payment ".
+                    "SET name='".addslashes($value).
+                    "', processor_id='".intval($_POST['paymentHandler'][$pId]).
+                    "', costs='".addslashes($_POST['paymentCosts'][$pId]).
+                    "', costs_free_sum='".addslashes($_POST['paymentCostsFreeSum'][$pId]).
+                    "', status='".intval($_POST['paymentActive'][$pId]).
+                    "' WHERE id=".intval($pId);
+                $objDatabase->Execute($query);
+                if ($_POST['old_paymentZone'][$pId] != $_POST['paymentZone'][$pId]) {
+                    $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment Set zones_id='".intval($_POST['paymentZone'][$pId])."' WHERE payment_id=".intval($pId));
+                    if (!$objDatabase->Affected_Rows()) {
+                        $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment
+                                              (zones_id, payment_id) VALUES (".intval($_POST['paymentZone'][$pId]).", ".intval($pId).")");
+                    }
+                }
+            }
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_payment");
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
+        }
+    }
+
+
+    /**
+     * Delete shipper
+     * @return  boolean                     True on success, false otherwise.
      */
     function _deleteShipper()
     {
-        if (empty($_GET['shipperId'])) return;
-        self::$changed = true;
-        self::$success &= Shipment::deleteShipper(intval($_GET['shipperId']));
+        if (isset($_GET['shipperId']) && !empty($_GET['shipperId'])) {
+            $this->flagChanged = true;
+            return Shipment::deleteShipper(intval($_GET['shipperId']));
+        }
+        return true;
     }
 
 
     /**
-     * Delete the Shipment with its ID present in $_GET['shipmentId'], if any
+     * Delete shipment
+     * @return  boolean                     True on success, false otherwise.
      */
     function _deleteShipment()
     {
-        if (empty($_GET['shipmentId'])) return;
-        self::$changed = true;
-        self::$success &= Shipment::deleteShipment(intval($_GET['shipmentId']));
+        if (isset($_GET['shipmentId']) && !empty($_GET['shipmentId'])) {
+            $this->flagChanged = true;
+            return Shipment::deleteShipment(intval($_GET['shipmentId']));
+        }
+        return true;
     }
 
 
     /**
      * Add new shipper
      * @return  boolean                     True on success, false otherwise.
-     * @todo    Move to Shipment class
      */
     function _storeNewShipper()
     {
+        global $objDatabase; // remove this if you move the INSERT below!
         if (empty($_POST['shipperNameNew'])) return true;
-        self::$changed = true;
-        $shipper_id = Shipment::addShipper(
+        $this->flagChanged = true;
+        if (!Shipment::addShipper(
             $_POST['shipperNameNew'],
             (isset($_POST['shipperActiveNew']) ? 1 : 0),
             intval($_POST['shipmentZoneNew'])
-        );
-        if (!$shipper_id) return false;
-        return Zones::storeShipmentRelation(
-            $_POST['shipmentZoneNew'], $shipper_id);
+        )) return false;
+
+        // This may belong both to the Zones or Shipment class
+        $sid = intval($objDatabase->Insert_ID());
+        $objResult = $objDatabase->Execute(
+            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment (zones_id, shipment_id) ".
+            "VALUES (".intval($_POST['shipmentZoneNew']).", $sid)");
+        return ($objResult ? true : false);
     }
 
 
     /**
      * Add new shipment conditions
      * @return  boolean                     True on success, false otherwise.
-     * @todo    Move to Shipment class
      */
     function _storeNewShipments()
     {
@@ -298,18 +427,21 @@ class ShopSettings
         if (isset($_POST['shipment']) && !empty($_POST['shipment'])) {
             // check whether form fields contain valid new values
             // at least one of them must be non-zero!
-            foreach ($_POST['shipmentMaxWeightNew'] as $shipper_id => $value) {
-                if (   (isset($value) && $value > 0)
-                    || (   isset($_POST['shipmentCostNew'][$shipper_id])
-                        && $_POST['shipmentCostNew'][$shipper_id] > 0)
-                    || (   isset($_POST['shipmentPriceFreeNew'][$shipper_id])
-                        && $_POST['shipmentPriceFreeNew'][$shipper_id] > 0)
+            foreach ($_POST['shipmentMaxWeightNew'] as $id => $value) {
+                if ( (isset($value) && $value > 0) ||
+                     (isset($_POST['shipmentCostNew'][$id]) && $_POST['shipmentCostNew'][$id] > 0) ||
+                     (isset($_POST['shipmentPriceFreeNew'][$id]) && $_POST['shipmentPriceFreeNew'][$id] > 0)
                 ) {
-                    self::$changed = true;
+                    $this->flagChanged = true;
+                    // note: the old shipper id which belonged to this row may have been
+                    // changed using the dropdown menu.
+                    // that's why we *MUST* use the current value from the menu's value
+                    // as foreign key!
+                    $sid = intval($_POST['shipperId'][$id]);
                     $success &= Shipment::addShipment(
-                        $shipper_id,
-                        floatval($_POST['shipmentCostNew'][$shipper_id]),
-                        floatval($_POST['shipmentPriceFreeNew'][$shipper_id]),
+                        $sid,
+                        floatval($_POST['shipmentCostNew'][$id]),
+                        floatval($_POST['shipmentPriceFreeNew'][$id]),
                         Weight::getWeight($value)
                     );
                 }
@@ -322,45 +454,65 @@ class ShopSettings
     /**
      * Update shippers and shipments that possibly have been changed in the form
      * @return  boolean                     True on success, false otherwise.
-     * @todo    Move to Shipment class
      */
     function _updateShipment()
     {
+        global $objDatabase;
         $success = true;
         if (isset($_POST['shipment']) && !empty($_POST['shipment'])) {
-            self::$changed = true;
+            $this->flagChanged = true;
             // Update all shipment conditions
             if (!empty($_POST['shipmentMaxWeight'])) {
-                foreach ($_POST['shipmentMaxWeight'] as $shipment_id => $cvalue) {
-                    $shipper_id = $_POST['sid'][$shipment_id];
+                // Note: $cid is the shipment ID.
+                foreach ($_POST['shipmentMaxWeight'] as $cid => $cvalue) {
+                    // Note: we must use the (possibly changed) shipper id from $svalue as ID here!
+                    // the old value is stored in the sid[$cid] field, use that to find the current
+                    // $svalue from the shipperId array.
+                    $svalue = $_POST['shipperId'][$_POST['sid'][$cid]];
                     $success &= Shipment::updateShipment(
-                        $shipment_id,
-                        $shipper_id,
-                        $_POST['shipmentCost'][$shipment_id],
-                        $_POST['shipmentPriceFree'][$shipment_id],
+                        $cid,
+                        $svalue,
+                        $_POST['shipmentCost'][$cid],
+                        $_POST['shipmentPriceFree'][$cid],
                         Weight::getWeight($cvalue)
                     );
                 }
             }
 
-            foreach ($_POST['shipper_name'] as $shipper_id => $shipper_name) {
+            // may be that $sid == $svalue, but may also have changed
+            // if the user assigned a whole bunch of shipment conditions
+            // to another shipper.
+            // in the latter case, $sid is the original shipper ID, and
+            // $svalue is the changed one.
+            foreach ($_POST['shipperId'] as $sid => $svalue) {
                 // update the status field in the Shipper
                 $shipperActive =
-                    (empty($_POST['shipperActive'][$shipper_id]) ? false : true);
+                    (isset($_POST['shipperActive'][$sid]) ? true : false);
+                // note: we must use the (possibly changed) shipper id from $svalue as ID here!
                 $success &= Shipment::updateShipper(
-                    $shipper_id,intval($shipperActive));
-                $success &= Shipment::renameShipper(
-                    $shipper_id, $shipper_name);
+                    $svalue,
+                    intval($shipperActive)
+                );
 
                 // lastly, update the zones
-                if ($_POST['old_shipmentZone'][$shipper_id] != $_POST['shipmentZone'][$shipper_id]) {
+                if ($_POST['old_shipmentZone'][$sid] != $_POST['shipmentZone'][$sid]) {
                     // zone has been changed.
                     // also use the (possibly changed) svalue where necessary.
                     // note that shipment_id here actually refers to a shipper!
-                    if (!Zones::storeShipmentRelation(
-                        $_POST['shipmentZone'][$shipper_id], $shipper_id)
-                    ) {
-                        $success = false;
+                    $query =
+                        "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment ".
+                        "SET zones_id=".intval($_POST['shipmentZone'][$sid]).
+                        " WHERE shipment_id=$svalue";
+                        $objResult = $objDatabase->Execute($query);
+                    // no such record yet? insert a new one
+                    if (!$objDatabase->Affected_Rows()) {
+                        $query =
+                            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment (zones_id, shipment_id) ".
+                            "VALUES (".intval($_POST['shipmentZone'][$sid]).", $svalue)";   //
+                        $objResult = $objDatabase->Execute($query);
+                        if (!$objResult) {
+                            $success = false;
+                        }
                     }
                 }
             }
@@ -371,19 +523,30 @@ class ShopSettings
 
     /**
      * Store countries settings
-     *
-     * Returns null if nothing is changed.
-     * @return    boolean         True on success, false on failure, or null.
      */
-    private static function storeCountries()
+    function _storeCountries()
     {
-        // Skip if not submitted or if the list is empty.
-        // At least one Country needs to be active.
-        // "list1" contains the active Country IDs
-        if (   empty($_POST['countries'])
-            || empty($_POST['list1'])) return null;
-        $strCountryIdActive = join(',', $_POST['list1']);
-        return Country::activate($strCountryIdActive);
+        global $objDatabase;
+
+        if (isset($_POST['list1'])) {
+            // "list1" contains the active countries
+            $strCountryIdActive = join(',', $_POST['list1']);
+            // Ignore if the list does not contain any countries
+            if ($strCountryIdActive) {
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+                       SET activation_status=1
+                     WHERE countries_id IN ($strCountryIdActive)";
+                $objDatabase->Execute($query);
+                $query = "
+                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+                       SET activation_status=0
+                     WHERE countries_id NOT IN ($strCountryIdActive)";
+                $objDatabase->Execute($query);
+            }
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_countries");
+            $this->_initCountries();
+        }
     }
 
 
@@ -414,7 +577,7 @@ class ShopSettings
                    SET value='".addslashes($value)."',
                        status='".addslashes($status)."'
                  WHERE name='".addslashes($name)."'");
-            if ($objDatabase->Affected_Rows()) { self::$changed = true; }
+            if ($objDatabase->Affected_Rows()) { $this->flagChanged = true; }
         } else {
             // Not present, insert it
             $objResult = $objDatabase->Execute("
@@ -424,60 +587,220 @@ class ShopSettings
                     '".addslashes($name)."',
                     '".addslashes($value)."',
                     '".addslashes($status)."'
-                )");
+                )
+            ");
             if (!$objResult) return false;
         }
         return true;
     }
 
 
-    function storeVat()
+    /**
+     * Delete Zone
+     */
+    function _deleteZone()
     {
-        if (empty($_POST['vat'])) {
-            self::deleteVat();
-            self::setProductsVat();
-            return;
-        }
+        global $objDatabase;
+        if (isset($_GET['zonesId']) && !empty($_GET['zonesId'])) {
+            // Delete zone
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
 
-        self::$changed = true;
-        self::$success &= SettingDb::set('vat_number', $_POST['vat_number']);
-        self::$success &= SettingDb::set('vat_default_id', $_POST['vat_default_id']);
-        self::$success &= SettingDb::set('vat_other_id', $_POST['vat_other_id']);
-        $vat_enabled_home_customer = (empty($_POST['vat_enabled_home_customer']) ? 0 : 1);
-        self::$success &= SettingDb::set('vat_enabled_home_customer', $vat_enabled_home_customer);
-        if ($vat_enabled_home_customer)
-            self::$success &= SettingDb::set('vat_included_home_customer',
-                (empty($_POST['vat_included_home_customer']) ? 0 : 1));
-        $vat_enabled_home_reseller = (empty($_POST['vat_enabled_home_reseller']) ? 0 : 1);
-        self::$success &= SettingDb::set('vat_enabled_home_reseller', $vat_enabled_home_reseller);
-        if ($vat_enabled_home_reseller)
-            self::$success &= SettingDb::set('vat_included_home_reseller',
-                (empty($_POST['vat_included_home_reseller']) ? 0 : 1));
-        $vat_enabled_foreign_customer = (empty($_POST['vat_enabled_foreign_customer']) ? 0 : 1);
-        self::$success &= SettingDb::set('vat_enabled_foreign_customer', $vat_enabled_foreign_customer);
-        if ($vat_enabled_foreign_customer)
-            self::$success &= SettingDb::set('vat_included_foreign_customer',
-                (empty($_POST['vat_included_foreign_customer']) ? 0 : 1));
-        $vat_enabled_foreign_reseller = (empty($_POST['vat_enabled_foreign_reseller']) ? 0 : 1);
-        self::$success &= SettingDb::set('vat_enabled_foreign_reseller', $vat_enabled_foreign_reseller);
-        if ($vat_enabled_foreign_reseller)
-            self::$success &= SettingDb::set('vat_included_foreign_reseller',
-                (empty($_POST['vat_included_foreign_reseller']) ? 0 : 1));
-        self::$success &= $this->_updateVat();
+            // Delete country relations
+            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
+
+            // Update relations
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment Set zones_id=1 WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment Set zones_id=1 WHERE zones_id=".intval($_GET['zonesId']));
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
+        }
     }
 
 
     /**
-     * Delete VAT entry
-     *
-     * Takes the ID of the record to be deleted from $_GET['vatid']
-     * and passes it on the {@link Vat::deleteVat()} static method.
+     * Store new zone
      */
-    function deleteVat()
+    function _storeNewZone()
     {
-        if (empty($_GET['vatid'])) return;
-        self::$changed = true;
-        self::$success &= Vat::deleteVat($_GET['vatid']);
+        global $objDatabase;
+        if (isset($_POST['zones_new']) && !empty($_POST['zones_new'])) {
+            $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_zones (zones_name, activation_status) VALUES ('".addslashes($_POST['zone_name_new'])."',".(isset($_POST['zone_active_new']) ? 1 : 0).")");
+            $zId = $objDatabase->Insert_ID();
+
+            if (isset($_POST['selected_countries'])) {
+                foreach ($_POST['selected_countries'] as $cId) {
+                    $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries (zones_id, countries_id) VALUES (".intval($zId).",".intval($cId).")");
+                }
+                $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
+            }
+            $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
+        }
+    }
+
+
+    /**
+     * Store zone settings
+     */
+    function _storeZones()
+    {
+        global $objDatabase;
+        if (isset($_POST['zones']) && !empty($_POST['zones'])) {
+            $query= "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult !== false) {
+                $arrRelCountries = array();
+                while (!$objResult->EOF) {
+                    $zonesId   = $objResult->fields['zones_id'];
+                    $countryId = $objResult->fields['countries_id'];
+                    if (!is_array($arrRelCountries[$zonesId])) {
+                        $arrRelCountries[$zonesId] = array();
+                    }
+                    $arrRelCountries[$zonesId][] = $countryId;
+                    $objResult->MoveNext();
+                }
+
+                if (isset($_POST['zone_list']) && !empty($_POST['zone_list'])) {
+                    foreach ($_POST['zone_list'] as $zId) {
+                        $query = "UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_zones SET ".
+                            "zones_name='".addslashes($_POST['zone_name'][$zId])."', ".
+                            "activation_status=".(isset($_POST['zone_active'][$zId]) ? 1 : 0).
+                            "WHERE zones_id=".intval($zId);
+                        $objDatabase->Execute($query);
+
+                        if (isset($arrRelCountries[$zId])) {
+                            foreach ($arrRelCountries[$zId] as $cId) {
+                                if (!in_array($cId, $_POST['selected_countries'][$zId])) {
+                                    $objDatabase->Execute(
+                                        "DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries ".
+                                        "WHERE zones_id=$zId AND countries_id=$cId");
+                                } else {
+                                    unset($_POST['selected_countries'][$zId][array_search($cId, $_POST['selected_countries'][$zId])]);
+                                }
+                            }
+                        }
+                        if (isset($_POST['selected_countries'][$zId])) {
+                            foreach ($_POST['selected_countries'][$zId] as $cId) {
+                                $objDatabase->Execute(
+                                    "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries ".
+                                    "(zones_id, countries_id) VALUES ".
+                                    "($zId, $cId)");
+                            }
+                        }
+                    }
+                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
+                    $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Return any single Shop Setting value from the database
+     * @param   string  $name     The name of the setting
+     * @return  string            The Setting value on success, false otherwise
+     * @global  ADONewConnection  $objDatabase
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     * @version 0.9
+     * @todo    Test!
+     */
+    static function getValueByName($name)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT `value`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_config`
+             WHERE `name`='$name'
+        ");
+        if (!$objResult || $objResult->EOF) return false;
+        return $objResult->fields['value'];
+    }
+
+    /**
+     * Return any single Shop Setting status from the database
+     * @param   string  $name     The name of the setting
+     * @return  string            The Setting status on success, false otherwise
+     * @global  ADONewConnection  $objDatabase
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.1.0
+     * @version 0.9
+     * @todo    Test!
+     */
+    static function getStatusByName($name)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            SELECT `status`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_config`
+             WHERE `name`='$name'
+        ");
+        if (!$objResult || $objResult->EOF) return false;
+        return $objResult->fields['status'];
+    }
+
+
+    function storeVat()
+    {
+        $success = true;
+        if (isset($_POST['vat'])) {
+            $success &= Settings::storeSetting('vat_number', $_POST['vat_number']);
+            $success &= Settings::storeSetting('vat_default_id', $_POST['vat_default_id']);
+            $success &= Settings::storeSetting('vat_other_id', $_POST['vat_other_id']);
+
+            $vat_enabled_home_customer = (empty($_POST['vat_enabled_home_customer']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_home_customer', $vat_enabled_home_customer);
+            if ($vat_enabled_home_customer)
+                $success &= Settings::storeSetting('vat_included_home_customer',
+                    (empty($_POST['vat_included_home_customer']) ? 0 : 1));
+
+            $vat_enabled_home_reseller = (empty($_POST['vat_enabled_home_reseller']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_home_reseller', $vat_enabled_home_reseller);
+            if ($vat_enabled_home_reseller)
+                $success &= Settings::storeSetting('vat_included_home_reseller',
+                    (empty($_POST['vat_included_home_reseller']) ? 0 : 1));
+
+            $vat_enabled_foreign_customer = (empty($_POST['vat_enabled_foreign_customer']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_foreign_customer', $vat_enabled_foreign_customer);
+            if ($vat_enabled_foreign_customer)
+                $success &= Settings::storeSetting('vat_included_foreign_customer',
+                    (empty($_POST['vat_included_foreign_customer']) ? 0 : 1));
+
+            $vat_enabled_foreign_reseller = (empty($_POST['vat_enabled_foreign_reseller']) ? 0 : 1);
+            $success &= Settings::storeSetting('vat_enabled_foreign_reseller', $vat_enabled_foreign_reseller);
+            if ($vat_enabled_foreign_reseller)
+                $success &= Settings::storeSetting('vat_included_foreign_reseller',
+                    (empty($_POST['vat_included_foreign_reseller']) ? 0 : 1));
+
+            $success &= $this->_updateVat();
+        } else {
+            $success &= $this->_deleteVat();
+            $success &= $this->_setProductsVat();
+        }
+        return $success;
+    }
+
+
+    /**
+     * delete VAT entry
+     *
+     * Takes the ID of the record to be deleted from $_GET['vatId']
+     * and passes it on the {@link Vat::deleteVat()} static method.
+     * @return  boolean                     True on success, false otherwise.
+     */
+    function _deleteVat()
+    {
+        if (isset($_GET['vatid'])) {
+            $this->flagChanged = true;
+            return Vat::deleteVat($_GET['vatid']);
+        }
+        return true;
     }
 
 
@@ -488,17 +811,20 @@ class ShopSettings
      * variable and passes them on to {@link addVat()}.
      * Takes the IDs, classes and rates of the records to be updated from the
      * $_POST array variable and passes them on to {@link updateVat()}.
+     * @return  boolean                     True on success, false otherwise.
      */
     function _updateVat()
     {
+        $success = true;
         if (!empty($_POST['vatratenew'])) {
-            self::$changed = true;
-            self::$success &= Vat::addVat($_POST['vatclassnew'], $_POST['vatratenew']);
+            $this->flagChanged = true;
+            $success &= Vat::addVat($_POST['vatclassnew'], $_POST['vatratenew']);
         }
         if (isset($_POST['vatclass'])) {
-            self::$changed = true;
-            self::$success &= Vat::updateVat($_POST['vatclass'], $_POST['vatrate']);
+            $this->flagChanged = true;
+            $success &= Vat::updateVat($_POST['vatclass'], $_POST['vatrate']);
         }
+        return $success;
     }
 
 
@@ -511,166 +837,32 @@ class ShopSettings
      * to the ID found therein for all products having a zero or NULL VAT ID.
      * @todo    Add possibility to choose some products to change,
      *          and add a parameter for this list of IDs
+     * @return  boolean                     True on success, false otherwise.
      * @global  ADONewConnection
      */
-    function setProductsVat()
+    function _setProductsVat()
     {
         global $objDatabase;
 
-        $vatId = 0;
-        $query_where = '';
+        $vatId = '';
+        $query = '';
         if (isset($_GET['setVatAll'])) {
             $vatId = intval($_GET['setVatAll']);
         }
         if (isset($_GET['setVatUnset'])) {
             $vatId = intval($_GET['setVatUnset']);
-            $query_where = ' WHERE vat_id IS NULL OR vat_id=0';
+            $query = ' WHERE vat_id IS NULL OR vat_id=0';
         }
-        if ($vatId) {
-            self::$changed = true;
-            self::$success &= $objDatabase->Execute("
+        if ($vatId !== '') {
+            $this->flagChanged = true;
+            $objResult = $objDatabase->Execute("
                 UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                   SET vat_id=$vatId".$query_where
+                   SET vat_id=$vatId".$query
             );
+            if ($objResult) return true;
+            return false;
         }
-    }
-
-
-    static function errorHandler()
-    {
-        require_once(ASCMS_CORE_PATH.'/DbTool.class.php');
-
-DBG::activate(DBG_DB_FIREPHP);
-
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_config';
-
-        if (DbTool::table_exists($table_name)) {
-            // Migrate all entries using the SettingDb class
-            $objResult = DbTool::sql("
-                SELECT `name`, `value`, `status`
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                 ORDER BY `id` ASC");
-            if (!$objResult) {
-die("ShopSettings::errorHandler(): Error: failed to query config, code rstjaer57z");
-            }
-            SettingDb::init('config');
-            $i = 0;
-            while (!$objResult->EOF) {
-                $name = $objResult->fields['name'];
-                $value = $objResult->fields['value'];
-                $status = $objResult->fields['status'];
-                $name_status = null;
-                switch ($name) {
-                  // OBSOLETE
-                  case 'tax_default_id':
-                  case 'tax_enabled':
-                  case 'tax_included':
-                  case 'tax_number':
-                    // Ignore, do not migrate!
-                    $name = null;
-                    break;
-
-                  // VALUE ONLY (RE: arrConfig\[.*?\]\[.value.\])
-                  case 'confirmation_emails':
-                    $name = 'email_confirmation';
-                    break;
-                  case 'country_id':
-                  case 'datatrans_merchant_id':
-                  case 'datatrans_request_type':
-                    break;
-                  case 'datatrans_status':
-                    $name = 'datatrans_active';
-                    break;
-                  case 'datatrans_use_testserver':
-                  case 'email':
-                  case 'fax':
-                  case 'orderitems_amount_max':
-                  case 'paypal_default_currency':
-                  case 'postfinance_mobile_ijustwanttotest':
-                  case 'postfinance_mobile_sign':
-                  case 'postfinance_mobile_status':
-                  case 'postfinance_mobile_webuser':
-                  case 'product_sorting':
-                  case 'saferpay_finalize_payment':
-                  case 'saferpay_window_option':
-                    break;
-                  case 'shop_address':
-                  case 'shop_company':
-                  case 'shop_show_products_default':
-                  case 'shop_thumbnail_max_height':
-                  case 'shop_thumbnail_max_width':
-                  case 'shop_thumbnail_quality':
-                  case 'shop_weight_enable':
-                    $name = preg_replace('/^shop_/', '', $name);
-                    break;
-                  case 'telephone':
-                  case 'vat_default_id':
-                  case 'vat_enabled_foreign_customer':
-                  case 'vat_enabled_foreign_reseller':
-                  case 'vat_enabled_home_customer':
-                  case 'vat_enabled_home_reseller':
-                  case 'vat_included_foreign_customer':
-                  case 'vat_included_foreign_reseller':
-                  case 'vat_included_home_customer':
-                  case 'vat_included_home_reseller':
-                  case 'vat_number':
-                  case 'vat_other_id':
-                    break;
-                  case 'yellowpay_accepted_payment_methods':
-                  case 'yellowpay_authorization_type':
-                  case 'yellowpay_hash_seed':
-                  case 'yellowpay_hash_signature_in':
-                  case 'yellowpay_hash_signature_out':
-                  case 'yellowpay_use_testserver':
-                    $name = preg_replace('/^yellowpay(.*)$/', 'postfinance$1', $name);
-                    break;
-                  case 'yellowpay_id':
-                    // Obsolete
-                    $name = null;
-                    break;
-
-                  // VALUE & STATUS
-                  case 'paypal_account_email':
-                    $name_status = 'paypal_active';
-                    break;
-                  case 'saferpay_id':
-                    $name_status = 'saferpay_active';
-                    break;
-                  case 'yellowpay_shop_id':
-                    $name = 'postfinance_shop_id';
-                    $name_status = 'postfinance_active';
-                    break;
-
-                  // STATUS ONLY (RE: arrConfig\[.*?\]\[.status.\])
-                  case 'payment_lsv_status':
-                    $name_status = 'payment_lsv_active';
-                    $name = null;
-                    break;
-                  case 'saferpay_use_test_account':
-                    $name_status = $name;
-                    $name = null;
-                    break;
-                }
-                if ($name && !SettingDb::add($name, $value, ++$i)) {
-DBG::log("ShopSettings::errorHandler(): Warning: failed to add SettingDb entry for value $name, assuming it already exists");
-                }
-                if ($name_status && !SettingDb::add($name_status, $status, ++$i)) {
-DBG::log("ShopSettings::errorHandler(): Warning: failed to add SettingDb entry for status $name_status, assuming it already exists");
-                }
-                $objResult->MoveNext();
-            }
-        }
-
-        // Add new/missing settings, e.g.
-//        SettingDb::add('product_sorting', 1, ++$i);
-        // more?
-
-        if (!DbTool::drop_table($table_name)) {
-die("ShopSettings::errorHandler(): Error: failed to drop table $table_name, code aw47ane");
-        }
-
-        // Always
-        return false;
+        return true;
     }
 
 }

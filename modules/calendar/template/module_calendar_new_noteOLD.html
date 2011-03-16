@@ -4,69 +4,69 @@
 
 function newNote()
 {
-  if (document.newCalendarNote.inputCategory.value == 0)
-  {
-    alert("{TXT_CALENDAR_ERROR_CATEGORY}");
-    document.newCalendarNote.inputCategory.focus();
-    return false;
-  }
-  if (document.newCalendarNote.inputName.value == "")
-  {
-    alert("{TXT_CALENDAR_ERROR_NAME}");
-    document.newCalendarNote.inputName.focus();
-    return false;
-  }
-  if (document.newCalendarNote.inputPlace.value == "")
-  {
-    alert("{TXT_CALENDAR_ERROR_PLACE}");
-    document.newCalendarNote.inputPlace.focus();
-    return false;
-  }
-  if (document.newCalendarNote.inputEndYear.value < document.newCalendarNote.inputYear.value)
-  {
-    alert("{TXT_CALENDAR_ERROR_DATE}");
-    document.newCalendarNote.inputEndYear.focus();
-    return false;
-  }
-  if (document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value < document.newCalendarNote.inputMonth.value)
-  {
-    alert("{TXT_CALENDAR_ERROR_DATE}");
-    document.newCalendarNote.inputEndMonth.focus();
-    return false;
-  }
-  if (document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value < document.newCalendarNote.inputDay.value)
-  {
-    alert("{TXT_CALENDAR_ERROR_DATE}");
-    document.newCalendarNote.inputEndDay.focus();
-    return false;
-  }
-  if (document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value == document.newCalendarNote.inputDay.value && document.newCalendarNote.inputEndTime.value <= document.newCalendarNote.inputTime.value)
-  {
-    alert("{TXT_CALENDAR_ERROR_DATE}");
-    document.newCalendarNote.inputEndTime.focus();
-    return false;
-  }
-  if (document.newCalendarNote.inputComment.value == "")
-  {
-    alert("{TXT_CALENDAR_ERROR_COMMENT}");
-    document.newCalendarNote.inputComment.focus();
-    return false;
-  }
+	if(document.newCalendarNote.inputCategory.value == 0)
+	{
+		alert("{TXT_CALENDAR_ERROR_CATEGORY}");
+		document.newCalendarNote.inputCategory.focus();
+		return false;
+	}
+	if(document.newCalendarNote.inputName.value == "")
+	{
+		alert("{TXT_CALENDAR_ERROR_NAME}");
+		document.newCalendarNote.inputName.focus();
+		return false;
+	}
+	if(document.newCalendarNote.inputPlace.value == "")
+	{
+		alert("{TXT_CALENDAR_ERROR_PLACE}");
+		document.newCalendarNote.inputPlace.focus();
+		return false;
+	}
+	if(document.newCalendarNote.inputEndYear.value < document.newCalendarNote.inputYear.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.newCalendarNote.inputEndYear.focus();
+		return false;
+	}
+	if(document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value < document.newCalendarNote.inputMonth.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.newCalendarNote.inputEndMonth.focus();
+		return false;
+	}
+	if(document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value < document.newCalendarNote.inputDay.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.newCalendarNote.inputEndDay.focus();
+		return false;
+	}
+	if(document.newCalendarNote.inputEndYear.value == document.newCalendarNote.inputYear.value && document.newCalendarNote.inputEndMonth.value == document.newCalendarNote.inputMonth.value && document.newCalendarNote.inputEndDay.value == document.newCalendarNote.inputDay.value && document.newCalendarNote.inputEndTime.value <= document.newCalendarNote.inputTime.value)
+	{
+		alert("{TXT_CALENDAR_ERROR_DATE}");
+		document.newCalendarNote.inputEndTime.focus();
+		return false;
+	}
+	if(document.newCalendarNote.inputComment.value == "")
+	{
+		alert("{TXT_CALENDAR_ERROR_COMMENT}");
+		document.newCalendarNote.inputComment.focus();
+		return false;
+	}
 }
 
 /*function update()
 {
-  var value = document.getElementById("DPC_edit1_YYYY-MM-DD").value;
-  alert(value);
+	var value = document.getElementById("DPC_edit1_YYYY-MM-DD").value;
+	alert(value);
 }*/
 // -->
 
 function whole_day()
 {
-  document.getElementById('newCalendarNote').inputHour.value = "00";
-  document.getElementById('newCalendarNote').inputMinutes.value = "00";
-  document.getElementById('newCalendarNote').inputEndHour.value = "23";
-  document.getElementById('newCalendarNote').inputEndMinutes.value = "59";
+	document.getElementById('newCalendarNote').inputHour.value = "00";
+	document.getElementById('newCalendarNote').inputMinutes.value = "00";
+	document.getElementById('newCalendarNote').inputEndHour.value = "23";
+	document.getElementById('newCalendarNote').inputEndMinutes.value = "59";
 }
 // ]]>
 </script>
@@ -82,8 +82,8 @@ function whole_day()
     var enddate = document.getElementById("newCalendarNote").inputEndDate.value.replace(/-/g, "");
 
     if (startdate > enddate) {
-      var date = document.getElementById("newCalendarNote").inputStartDate.value;
-      document.getElementById("newCalendarNote").inputEndDate.value = date;
+    	var date = document.getElementById("newCalendarNote").inputStartDate.value;
+    	document.getElementById("newCalendarNote").inputEndDate.value = date;
     }
   }
   // -->
@@ -95,10 +95,10 @@ function whole_day()
         <div align="left">{TXT_CALENDAR_NEW}</div>
       </th>
     </tr>
-  <tr class="row1">
+	<tr class="row1">
       <td valign="middle">{TXT_CALENDAR_CAT}:</td>
       <td valign="middle">
-    <select name="inputCategory" style="width: 25%; ">
+	  <select name="inputCategory" style="width: 25%; ">
         <option value="0" selected="selected">- {TXT_CALENDAR_CAT}</option>
         <!-- BEGIN calendar_cat -->
         <option value="{CALENDAR_CAT_ID}">[{CALENDAR_CAT_LANG}]&nbsp;&nbsp;{CALENDAR_CAT_NAME}</option>
@@ -110,7 +110,7 @@ function whole_day()
       <td valign="middle">
         <input type="text" name='inputName' style="width: 25%; padding: 2px;" />
 
-    <input type="checkbox" name="inputActive" style="margin-left: 15px;" checked="checked" /> {TXT_CALENDAR_ACTIVE}
+		<input type="checkbox" name="inputActive" style="margin-left: 15px;" checked="checked" /> {TXT_CALENDAR_ACTIVE}
       </td>
     </tr>
     <tr class="row1">
@@ -119,51 +119,51 @@ function whole_day()
         <input type="text" name='inputPlace' style="width: 25%; padding: 2px;" />
       </td>
     </tr>
-  <tr class="row2">
-      <td> {TXT_CALENDAR_INFO}: </td>
-      <td>
-        <input type="text" name='inputInfo' style="width: 25%; padding:2px;" />
-      </td>
-  </tr>
+	<tr class="row2">
+    	<td> {TXT_CALENDAR_INFO}: </td>
+    	<td>
+    		<input type="text" name='inputInfo' style="width: 25%; padding:2px;" />
+    	</td>
+	</tr>
     <tr class="row1">
       <td valign="middle" width="80"> {TXT_CALENDAR_START}: </td>
       <td valign="middle">
-    <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_TODAY}" style="width: 8em; padding: 2px;" />
-    <select name="inputHour" style="margin-left: 10px">
-      <!-- BEGIN hour -->
-      <option value="{CALENDAR_HOUR}"{CALENDAR_HOUR_SELECT}>{CALENDAR_HOUR}</option>
-      <!-- END hour -->
-    </select>
-    :
-    <select name="inputMinutes">
-      <!-- BEGIN minutes -->
-      <option value="{CALENDAR_MINUTES}"{CALENDAR_MINUTES_SELECT}>{CALENDAR_MINUTES}</option>
-      <!-- END minutes -->
-    </select>
+		<input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_TODAY}" style="width: 8em; padding: 2px;" />
+		<select name="inputHour" style="margin-left: 10px">
+			<!-- BEGIN hour -->
+			<option value="{CALENDAR_HOUR}"{CALENDAR_HOUR_SELECT}>{CALENDAR_HOUR}</option>
+			<!-- END hour -->
+		</select>
+		:
+		<select name="inputMinutes">
+			<!-- BEGIN minutes -->
+			<option value="{CALENDAR_MINUTES}"{CALENDAR_MINUTES_SELECT}>{CALENDAR_MINUTES}</option>
+			<!-- END minutes -->
+		</select>
 
-     <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_CALENDAR_WHOLE_DAY}</a>
-  </td>
+		 <a style="margin-left: 15px;" href="#" onclick="whole_day()">{TXT_CALENDAR_WHOLE_DAY}</a>
+	</td>
     </tr>
     <tr class="row2">
       <td valign="middle" width="80"> {TXT_CALENDAR_END}: </td>
       <td valign="middle">
-      <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_TODAY}" style="width:8em; padding: 2px;" />
-    <select name="inputEndHour" style="margin-left: 10px">
-      <!-- BEGIN endhour -->
-      <option value="{CALENDAR_END_HOUR}"{CALENDAR_END_HOUR_SELECT}>{CALENDAR_END_HOUR}</option>
-      <!-- END endhour -->
-    </select>
-    :
-    <select name="inputEndMinutes">
-      <!-- BEGIN endminutes -->
-      <option value="{CALENDAR_END_MINUTES}"{CALENDAR_END_MINUTES_SELECT}>{CALENDAR_END_MINUTES}</option>
-      <!-- END endminutes -->
-    </select>
+	  	<input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_TODAY}" style="width:8em; padding: 2px;" />
+		<select name="inputEndHour" style="margin-left: 10px">
+			<!-- BEGIN endhour -->
+			<option value="{CALENDAR_END_HOUR}"{CALENDAR_END_HOUR_SELECT}>{CALENDAR_END_HOUR}</option>
+			<!-- END endhour -->
+		</select>
+		:
+		<select name="inputEndMinutes">
+			<!-- BEGIN endminutes -->
+			<option value="{CALENDAR_END_MINUTES}"{CALENDAR_END_MINUTES_SELECT}>{CALENDAR_END_MINUTES}</option>
+			<!-- END endminutes -->
+		</select>
       </td>
     </tr>
-  </table>
-  <br />
-  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+	</table>
+	<br />
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
     <tr>
       <th colspan="2" nowrap="nowrap">
         <div align="left">{TXT_CALENDAR_COMMENT}</div>

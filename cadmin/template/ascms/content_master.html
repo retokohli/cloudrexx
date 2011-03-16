@@ -2,10 +2,10 @@
 <script language="JavaScript" type="text/javascript">
 <!-- //
 function logout() {
-  Check = confirm("{TXT_LOGOUT_WARNING}")
-  if(Check == true) {
-    location.href = "index.php?cmd=logout";
-  }
+	Check = confirm("{TXT_LOGOUT_WARNING}")
+	if(Check == true) {
+		location.href = "index.php?cmd=logout&{CSRF_PARAM}";
+	}
 }
 // -->
 </script>
@@ -23,14 +23,6 @@ function logout() {
 </td>
 </tr>
 </table>
-<!-- BEGIN subnavbar_level2 -->
-<table summary="" class="subnavbar_level2" cellspacing="0" cellpadding="3" width="100%" border="0">
-<tr>
-<td width="100%">&nbsp;{CONTENT_SUBNAVIGATION}</td>
-</td>
-</tr>
-</table>
-<!-- END subnavbar_level2 -->
 <table summary="" cellspacing="0" cellpadding="0" width="100%" border="0">
 <tr>
 <td height="10"><img src="images/icons/pixel.gif" height="1" alt="" width="1" /></td>

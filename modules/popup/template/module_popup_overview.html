@@ -3,90 +3,90 @@
 // <![CDATA[
 function selectMultiAction()
 {
-  with (document.frmPopups) {
-    switch (frmPopupsMultiAction.value) {
-      case 'activate':
-        action='?cmd=popup&act=activate';
-        submit();
-        break;
-
-      case 'deactivate':
-        action='?cmd=popup&act=deactivate';
-        submit();
-        break;
-
-      case 'delete':
-        if (confirm('{TXT_POPUP_DELETE_SELECTED_POPUP}\n{TXT_POPUP_OPERATION_IRREVERSIBLE}')) {
-          action='?cmd=popup&act=del';
-          submit();
-        }
-        break;
-
-      default: //do nothing
-    }
-  }
+	with (document.frmPopups) {
+		switch (frmPopupsMultiAction.value) {
+			case 'activate':
+				action='?cmd=popup&act=activate';
+				submit();
+				break;
+				
+			case 'deactivate':
+				action='?cmd=popup&act=deactivate';
+				submit();
+				break;
+				
+			case 'delete':
+				if (confirm('{TXT_POPUP_DELETE_SELECTED_POPUP}\n{TXT_POPUP_OPERATION_IRREVERSIBLE}')) {
+					action='?cmd=popup&act=del';
+					submit();
+				}
+				break;
+				
+			default: //do nothing			
+		}
+	}
 }
 
 function popupDeletePopup(popupId, popupName)
 {
-  strConfirmMsg = '{TXT_POPUP_CONFIRM_DELETE_POPUP}';
-  if (confirm(strConfirmMsg.replace('%s', popupName)+'\n{TXT_POPUP_OPERATION_IRREVERSIBLE}')) {
-    window.location.href = 'index.php?cmd=popup&act=del&popupId='+popupId;
-  }
+	strConfirmMsg = '{TXT_POPUP_CONFIRM_DELETE_POPUP}';
+	if (confirm(strConfirmMsg.replace('%s', popupName)+'\n{TXT_POPUP_OPERATION_IRREVERSIBLE}')) {
+		window.location.href = 'index.php?cmd=popup&{CSRF_PARAM}&act=del&popupId='+popupId;
+	}
 }
 
 // ]]>
 </script>
 <form name="frmPopups" method="post" action="?cmd=popup">
-  <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-    <tbody>
-      <tr>
-        <th colspan="7">{TXT_POPUP_POPUPS}</th>
-      </tr>
-      <tr class="row3">
-          <td width="1%" style="text-align:left; font-weight:bold;">#</td>
-          <td width="3%" style="text-align:left; font-weight:bold;">Status</td>
-        <td width="23%" style="font-weight:bold;">{TXT_POPUP_NAME}</td>
-        <td width="20%" style="font-weight:bold;">{TXT_POPUP_DATE}</td>
-        <td width="48%" style="font-weight:bold;">{TXT_POPUP_TYPE}</td>
-        <td width="5%" style="text-align:right; font-weight:bold;">{TXT_POPUP_FUNCTIONS}</td>
-      </tr>
-      <!-- BEGIN popupList -->
-        <tr class="{POPUP_ROW_CLASS}" style="height:20px;">
-          <td width="1%" style="text-align:right; font-weight:bold;"><input type="checkbox" name="selectedPopupId[]" id="selectedPopupId" value="{POPUP_ID}" /></td>
-          <td style="text-align:center; font-weight:bold;">{POPUP_STATUS}</td>
-          <td><a href="index.php?cmd=popup&amp;act=modify&amp;popupId={POPUP_ID}" title="{POPUP_MODIFY}">{POPUP_NAME}</a></td>
-          <td style="text-align:left;">{POPUP_DATE}</td>
-          <td style="text-align:left;">{POPUP_TYPE}</td>
-          <td style="text-align:right;">
-            <a href="index.php?cmd=popup&amp;act=modify&amp;popupId={POPUP_ID}" title="{POPUP_MODIFY}"><img src="images/icons/edit.gif" width="16" height="16" alt="{POPUP_MODIFY}" border="0" /></a>
-            <a href="javascript:{void(0)};" onclick="popupDeletePopup({POPUP_ID}, '{POPUP_NAME}')" title="{POPUP_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="{POPUP_DELETE}" border="0" /></a>
-            </td>
-        </tr>
-      <!-- END popupList -->
-      <!-- BEGIN noPopup -->
-        <tr class="row2" style="height:20px;">
-          <td colspan="6">{TXT_NO_POPUP_FOUND}</td>
-        </tr>
-      <!-- END noPopup -->
-    </tbody>
-  </table>
-  <br />
-  <table cellpadding="2" cellspacing="0" border="0">
-    <tr>
-      <td>
-        <img src="images/icons/arrow.gif" border="0" width="38" height="22"/>
-        <a href="javascript:{void(0)};" onclick="changeCheckboxes('frmPopups','selectedPopupId[]',true); return false;">{TXT_POPUP_SELECT_ALL}</a> /
-        <a href="javascript:{void(0)};" onclick="changeCheckboxes('frmPopups','selectedPopupId[]',false); return false;">{TXT_POPUP_DESELECT_ALL}</a>
-        <img src="images/icons/strike.gif" width="34" height="22" alt="strike" />
-        <select name="frmPopupsMultiAction" onChange="selectMultiAction();">
-          <option value="0">{TXT_POPUP_SUBMIT_SELECT}</option>
-          <option value="delete">{TXT_POPUP_SUBMIT_DELETE}</option>
-          <option value="activate">{TXT_POPUP_SUBMIT_ACTIVATE}</option>
-          <option value="deactivate">{TXT_POPUP_SUBMIT_DEACTIVATE}</option>
-        </select>
-      </td>
-    </tr>
-  </table>
+	<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+		<tbody>
+			<tr>
+				<th colspan="7">{TXT_POPUP_POPUPS}</th>
+			</tr>
+			<tr class="row3">
+			    <td width="1%" style="text-align:left; font-weight:bold;">#</td>
+			    <td width="3%" style="text-align:left; font-weight:bold;">Status</td>
+				<td width="23%" style="font-weight:bold;">{TXT_POPUP_NAME}</td>
+				<td width="20%" style="font-weight:bold;">{TXT_POPUP_DATE}</td>
+				<td width="48%" style="font-weight:bold;">{TXT_POPUP_TYPE}</td>
+				<td width="5%" style="text-align:right; font-weight:bold;">{TXT_POPUP_FUNCTIONS}</td>
+			</tr>
+			<!-- BEGIN popupList -->
+				<tr class="{POPUP_ROW_CLASS}" style="height:20px;">
+					<td width="1%" style="text-align:right; font-weight:bold;"><input type="checkbox" name="selectedPopupId[]" id="selectedPopupId" value="{POPUP_ID}" /></td>
+					<td style="text-align:center; font-weight:bold;">{POPUP_STATUS}</td>
+					<td><a href="index.php?cmd=popup&amp;act=modify&amp;popupId={POPUP_ID}" title="{POPUP_MODIFY}">{POPUP_NAME}</a></td>
+					<td style="text-align:left;">{POPUP_DATE}</td>
+					<td style="text-align:left;">{POPUP_TYPE}</td>
+					<td style="text-align:right;">
+						<a href="index.php?cmd=popup&amp;act=modify&amp;popupId={POPUP_ID}" title="{POPUP_MODIFY}"><img src="images/icons/edit.gif" width="16" height="16" alt="{POPUP_MODIFY}" border="0" /></a>
+						<a href="javascript:{void(0)};" onclick="popupDeletePopup({POPUP_ID}, '{POPUP_NAME}')" title="{POPUP_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="{POPUP_DELETE}" border="0" /></a>
+						</td>
+				</tr>
+			<!-- END popupList -->
+			<!-- BEGIN noPopup -->
+				<tr class="row2" style="height:20px;">
+					<td colspan="6">{TXT_NO_POPUP_FOUND}</td>
+				</tr>
+			<!-- END noPopup -->
+		</tbody>
+	</table>
+	<br />
+	<table cellpadding="2" cellspacing="0" border="0">
+		<tr>
+			<td>
+				<img src="images/icons/arrow.gif" border="0" width="38" height="22"/>
+				<a href="javascript:{void(0)};" onclick="changeCheckboxes('frmPopups','selectedPopupId[]',true); return false;">{TXT_POPUP_SELECT_ALL}</a> / 
+				<a href="javascript:{void(0)};" onclick="changeCheckboxes('frmPopups','selectedPopupId[]',false); return false;">{TXT_POPUP_DESELECT_ALL}</a>
+				<img src="images/icons/strike.gif" width="34" height="22" alt="strike" />
+				<select name="frmPopupsMultiAction" onChange="selectMultiAction();">
+					<option value="0">{TXT_POPUP_SUBMIT_SELECT}</option>
+					<option value="delete">{TXT_POPUP_SUBMIT_DELETE}</option>
+					<option value="activate">{TXT_POPUP_SUBMIT_ACTIVATE}</option>
+					<option value="deactivate">{TXT_POPUP_SUBMIT_DEACTIVATE}</option>
+				</select>
+			</td>
+		</tr>
+	</table>
 </form>
 <!-- END module_block_overview.html -->

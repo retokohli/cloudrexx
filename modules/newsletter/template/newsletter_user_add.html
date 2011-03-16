@@ -17,7 +17,7 @@
 </table>
 
 <form name="adduser" action="index.php?cmd=newsletter&act=adduser" method="POST">
-  <input type="hidden" name="insert" value="1" />
+  <input type="hidden" name="insert" value="exe" />
   <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
     <tr class="row1">
       <td width="12%"><b>{TXT_EMAIL_ADDRESS}</b></td>
@@ -26,9 +26,9 @@
     <tr class="row2">
       <td width="12%">{TXT_USER_TITLE}</td>
       <td width="88%">
-        <input type="radio" name="title" value="f" /> {TXT_NEWSLETTER_FEMALE}
+        <input type="radio" name="title" value="f" /> {TXT_NEWSLETTER_FEMALE} 
         <input type="radio" name="title" value="m" checked="checked" /> {TXT_NEWSLETTER_MALE}
-      </td>
+      </td>        
     </tr>
     <tr class="row1">
       <td width="12%">{TXT_LASTNAME}</td>

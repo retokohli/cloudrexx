@@ -83,7 +83,7 @@ class rssFeed
         if(is_writeable($this->filePath) AND is_dir($this->filePath)){
             return true;
         }
-        else{
+        else{  
             return false;
         }
     }
@@ -126,7 +126,7 @@ class rssFeed
 //                             ".DBPREFIX."access_users AS u
 //                        WHERE n.userid = u.id AND n.lang = ".$_LANGID."
 //                        ORDER BY n.id DESC";
-
+            
             $query = "SELECT n.id AS docId,
                                n.date,
                                n.title,

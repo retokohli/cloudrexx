@@ -220,7 +220,7 @@ class XMLSitemap {
                                 .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.$code : null)
                                 .'/'.CONTREXX_DIRECTORY_INDEX
                                 .'?section='.$arrModules[$objResult->fields['module']]
-                                .(!empty($objResult->fields['cmd']) ? '&amp;cmd='.$objResult->fields['cmd'] : '')
+                                .(!empty($objResult->fields['cmd']) ? '&amp;cmd='.contrexx_raw2xml($objResult->fields['cmd']) : '')
                                 .($_CONFIG['useVirtualLanguagePath'] == 'off' ? '&amp;langId='.$objResult->fields['langid'] : '');
                         }
                     }

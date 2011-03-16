@@ -8,7 +8,7 @@
  * @todo        Test!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     3.0.0
+ * @version     2.1.0
  */
 
 /**
@@ -39,22 +39,6 @@ define('SHOP_PRODUCT_DEFAULT_VIEW_COUNT',     4);
  */
 class Products
 {
-    /**
-     * Sorting order strings according to the corresponding setting
-     *
-     * Order 1: By order field value ascending, ID descending
-     * Order 2: By name ascending, Product ID ascending
-     * Order 3: By Product ID ascending, name ascending
-     * @var     array
-     * @see     Products::getByShopParam()
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    public static $arrProductOrder = array(
-        1 => '`product`.`ord` ASC, `product`.`id` DESC',
-        2 => '`name` ASC, `code` ASC',
-        3 => '`code` ASC, `name` ASC',
-    );
-
     /**
      * Returns an array of Product objects sharing the same Product code.
      * @param   string      $customId   The Product code
@@ -92,9 +76,9 @@ class Products
      * @param   integer     $count          The desired number of Products,
      *                                      by reference
      * @param   integer     $offset         The Product offset
-     * @param   integer     $product_id     The Product ID
-     * @param   integer     $category_id    The ShopCategory ID
-     * @param   integer     $manufacturer_id  The Manufacturer ID
+     * @param   integer     $productId      The Product ID
+     * @param   integer     $shopCategoryId The ShopCategory ID
+     * @param   integer     $manufacturerId The Manufacturer ID
      * @param   string      $pattern        A search pattern
      * @param   boolean     $flagSpecialoffer Limit results to special offers
      *                                      if true.  Disabled if either
@@ -121,28 +105,26 @@ class Products
      */
     static function getByShopParams(
         &$count, $offset=0,
-        $product_id=0, $category_id=0, $manufacturer_id=0, $pattern='',
+        $productId=0, $shopCategoryId=0, $manufacturerId=0, $pattern='',
         $flagSpecialoffer=false, $flagLastFive=false,
         $orderSetting='',
-        $flagIsReseller=null,
+        $flagIsReseller='',
         $flagShowInactive=false
     ) {
         global $objDatabase, $_CONFIG;
 
         // Do not show any Products if no selection is made at all
-        if (   empty($product_id)
-            && empty($category_id)
-            && empty($manufacturer_id)
+        if (   empty($productId)
+            && empty($shopCategoryId)
+            && empty($manufacturerId)
             && empty($pattern)
             && empty($flagSpecialoffer)
             && empty($flagLastFive)
             && empty($flagShowInactive) // Backend only!
         ) return array();
-// NOTE:
-// This is an optimization, but does not (yet) consider the other parameters.
-        if ($product_id) {
+        if ($productId) {
             // select single Product by ID
-            $objProduct = Product::getById($product_id);
+            $objProduct = Product::getById($productId);
             if ($objProduct) {
                 $count = 1;
                 return array($objProduct);
@@ -150,124 +132,97 @@ class Products
             $count = 0;
             return false;
         }
-
-        // The name and code fields may be used for sorting.
-        // Include them in the field list in order to introduce the alias
-        $arrSqlName = Text::getSqlSnippets(
-            '`product`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, Product::TEXT_NAME, 'name'
-        );
-        $arrSqlCode = Text::getSqlSnippets(
-            '`product`.`text_code_id`', FRONTEND_LANG_ID,
-            MODULE_ID, Product::TEXT_CODE, 'code'
-        );
-        $querySelect = "
-            SELECT `product`.`id`".
-                   $arrSqlName['field'].
-                   $arrSqlCode['field'];
-        $queryCount = "SELECT COUNT(*) AS `numof_products`";
-
-        $queryJoin = '
-            FROM `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_products` AS `product`
-            LEFT JOIN `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories` AS `category`
-              ON `category`.`id`=`product`.`category_id`'.
-              $arrSqlName['join'].
-              $arrSqlCode['join'];
-
-        $queryWhere = ' WHERE 1'.
-            // Limit Products to available and active in the frontend
-            ($flagShowInactive
-                ? ''
-                : ' AND `product`.`active`=1
-                    AND `product`.`stock`>0
-                    AND `category`.`active`=1').
-            // Limit Products visible to resellers or non-resellers
-            ($flagIsReseller === true
-              ? ' AND `b2b`=1'
-              : ($flagIsReseller === false ? ' AND `b2c`=1' : ''));
-
-        if (   is_numeric($orderSetting)
-            && isset(self::$arrProductOrder[$orderSetting]))
-            $orderSetting = self::$arrProductOrder[$orderSetting];
         if (empty($orderSetting))
-            $orderSetting = self::$arrProductOrder[1];
-        $queryOrder = ' ORDER BY '.$orderSetting;
+            $orderSetting = 'p.sort_order ASC, p.id DESC';
 
-        $limit = ($count > 0
-            ? $count
-            : (!empty($_CONFIG['corePagingLimit'])
-                ? $_CONFIG['corePagingLimit'] : 10));
+        // Limit Products visible to resellers or non-resellers.
+        $queryReseller =
+            ($flagIsReseller === true
+              ? 'AND b2b=1'
+              : ($flagIsReseller === false
+                  ? 'AND b2c=1' : ''
+                )
+            );
 
+        $queryCount = "SELECT COUNT(*) as numof_products";
         if (   $flagLastFive
             || $flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_LASTFIVE) {
-            // Select last five (or so) products added to the database
-// TODO: This could (and maybe should) be extended so the Customer can
-// ask for the last modified Products as well
-            $limit = ($flagLastFive === true ? 5 : $flagLastFive);
-            $queryOrder = ' ORDER BY `id` DESC';
-            $queryCount = "SELECT $limit AS `numof_products`";
+            // select last five products added to the database
+            $querySelect = "SELECT id";
+            $queryTail = "
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
+                 WHERE 1
+                   ".($flagShowInactive ? '' : 'AND p.status=1 ')."
+                   $queryReseller
+                 ORDER BY product_id DESC
+            ";
+            $count = ($flagLastFive !== true ? $flagLastFive : 5);
         } else {
             // Build standard full featured query
-            $querySpecialOffer =
+            $q_special_offer =
                 (   $flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_DISCOUNTS
                  || $flagSpecialoffer === true // Old behavior!
-                  ? ' AND `product`.`is_special_offer`=1'
+                  ? 'AND is_special_offer=1'
                   : ($flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_MARKED
-                      ? " AND `product`.`flags` LIKE '%__SHOWONSTARTPAGE__%'" : '')
+                     ? "AND flags LIKE '%__SHOWONSTARTPAGE__%'" : ''
+                    )
                 );
-            // Limit Products by Manufacturer ID, if any
-            if ($manufacturer_id > 0) {
-                $queryJoin .= '
-                    INNER JOIN `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer` AS `m`
-                       ON `m`.`id`=`product`.`manufacturer`';
-                $queryWhere .= ' AND `product`.`manufacturer`='.$manufacturer_id;
+            $q1_category     = '';
+            $q2_category     = '';
+            $q1_manufacturer = '';
+            $q2_manufacturer = '';
+            $q_search        = '';
+            if ($shopCategoryId > 0) {
+                // select Products by ShopCategory ID
+                $q_special_offer = '';
+                $q1_category = 'INNER JOIN '.DBPREFIX.'module_shop'.MODULE_INDEX.'_categories AS c ON c.catid=p.catid';
+                $q2_category =
+                    "AND p.catid=$shopCategoryId".
+                    ($flagShowInactive ? '' : ' AND c.catstatus=1');
             }
-            // Limit Products by ShopCategory ID, if any
-            if ($category_id > 0) {
-                $queryWhere .= ' AND `product`.`category_id`='.$category_id;
+            if ($manufacturerId > 0) {
+                // select Products by Manufacturer ID
+                $q_special_offer = '';
+                $q1_manufacturer = 'INNER JOIN '.DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer AS m ON m.id=p.manufacturer';
+                $q2_manufacturer = "AND p.manufacturer=$manufacturerId";
             }
-            // Limit Products by search pattern, if any
-            if ($pattern != '') {
-                $arrSqlShort = Text::getSqlSnippets(
-                    '`product`.`text_short_id`', FRONTEND_LANG_ID,
-                    MODULE_ID, Product::TEXT_SHORT, 'short'
-                );
-                $arrSqlLong = Text::getSqlSnippets(
-                    '`product`.`text_long_id`', FRONTEND_LANG_ID,
-                    MODULE_ID, Product::TEXT_LONG, 'long'
-                );
-                $arrSqlKeys = Text::getSqlSnippets(
-                    '`product`.`text_keys_id`', FRONTEND_LANG_ID,
-                    MODULE_ID, Product::TEXT_KEYS, 'keys'
-                );
-                $arrSqlUri = Text::getSqlSnippets(
-                    '`product`.`text_uri_id`', FRONTEND_LANG_ID,
-                    MODULE_ID, Product::TEXT_URI, 'uri'
-                );
-                $queryJoin .=
-                    $arrSqlCode['join'].
-                    $arrSqlShort['join'].
-                    $arrSqlLong['join'].
-                    $arrSqlKeys['join'].
-                    $arrSqlUri['join'];
-                $pattern = addslashes($pattern);
-                $queryWhere .= "
-                    AND (   `id` LIKE '%$pattern%'
-                         OR `name` LIKE '%$pattern%'
-                         OR `code` LIKE '%$pattern%'
-                         OR `long` LIKE '%$pattern%'
-                         OR `short` LIKE '%$pattern%'
-                         OR `keys` LIKE '%$pattern%')";
+            if (!empty($pattern)) {
+                // select Products by search pattern
+                $q_special_offer = '';
+                $q_search = "
+                    AND (p.title LIKE '%$pattern%'
+                        OR p.description LIKE '%$pattern%'
+                        OR p.shortdesc LIKE '%$pattern%'
+                        OR p.product_id LIKE '%$pattern%'
+                        OR p.id LIKE '%$pattern%')
+                        OR p.keywords LIKE '%$pattern%'
+                ";
             }
+            $querySelect = "SELECT p.id";
+            $queryCount = "SELECT COUNT(*) as numof_products";
+            $queryTail = "
+                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products AS p
+                       $q1_category $q1_manufacturer
+                 WHERE ".($flagShowInactive ? '1' : 'p.status=1')."
+                   $queryReseller $q_special_offer
+                   $q2_category $q2_manufacturer $q_search
+              ".($orderSetting ? "ORDER BY $orderSetting" : '');
         }
-        $queryTail =
-            $queryJoin.
-            $queryWhere.
-            $querySpecialOffer;
+        $limit =
+            ($count > 0
+                ? $count
+                : (!empty($_CONFIG['corePagingLimit'])
+                    ? $_CONFIG['corePagingLimit']
+                    : 10
+                  )
+            );
         $count = 0;
-        $objResult = $objDatabase->SelectLimit(
-            $querySelect.$queryTail.$queryOrder, $limit, $offset);
-        if (!$objResult) return Product::errorHandler();
+//        if ($limit) {
+        $objResult = $objDatabase->SelectLimit($querySelect.$queryTail, $limit, $offset);
+//        } else {
+//            $objResult = $objDatabase->Execute($querySelect.$queryTail);
+//        }
+        if (!$objResult) return false;
         $arrProduct = array();
         while (!$objResult->EOF) {
             $product_id = $objResult->fields['id'];
@@ -290,74 +245,52 @@ class Products
      * immediately without trying to delete the remaining Products.
      * Deleting the ShopCategory after this method failed will most
      * likely result in Product bodies in the database!
-     * @param   integer   $category_id    The ShopCategory ID
-     * @return  boolean                   True on success, false otherwise
+     * @param       integer     $catid          The ShopCategory ID
+     * @return      boolean                     True on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function deleteByShopCategory($category_id, $flagDeleteImages=false)
+    static function deleteByShopCategory($catId, $flagDeleteImages=false)
     {
-        // Verify that the Category still exists
-        $objShopCategory = ShopCategory::getById($category_id);
-        if (!$objShopCategory) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Info: Category ID $category_id does not exist");
-            return null;
-        }
-
-        $arrProductId = Products::getIdArrayByShopCategory($category_id);
-        if (!is_array($arrProductId)) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs in that Category");
-            return false;
-        }
+        $arrProductId = Products::getIdArrayByShopCategory($catId);
+        if (!is_array($arrProductId)) return false;
         // Look whether this is within a virtual ShopCategory
         $virtualContainer = '';
-        $parent_id = $category_id;
+        $parentId = $catId;
         do {
-            $objShopCategory = ShopCategory::getById($parent_id);
-            if (!$objShopCategory) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get parent Category");
-                return false;
-            }
+            $objShopCategory = ShopCategory::getById($parentId);
+            if (!$objShopCategory) return false;
             if ($objShopCategory->isVirtual()) {
                 // The name of any virtual ShopCategory is used to mark
                 // Products within
                 $virtualContainer = $objShopCategory->getName();
                 break;
             }
-            $parent_id = $objShopCategory->getParentId();
-        } while ($parent_id != 0);
+            $parentId = $objShopCategory->getParentId();
+        } while ($parentId != 0);
 
         // Remove the Products in one way or another
-        foreach ($arrProductId as $product_id) {
-            $objProduct = Product::getById($product_id);
-            if (!$objProduct) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs $product_id");
-                return false;
-            }
+        foreach ($arrProductId as $productId) {
+            $objProduct = Product::getById($productId);
+            if (!$objProduct) return false;
             if ($virtualContainer != ''
-             && $objProduct->flags() != '') {
+             && $objProduct->getFlags() != '') {
                 // Virtual ShopCategories and their content depends on
                 // the Product objects' flags.
                 foreach ($arrProductId as $objProduct) {
                     $objProduct->removeFlag($virtualContainer);
                     if (!Products::changeFlagsByProductCode(
-                        $objProduct->code(),
-                        $objProduct->flags()
-                    )) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to update Product flags for ID ".$objProduct->id());
-                        return false;
-                    }
+                        $objProduct->getCode(),
+                        $objProduct->getFlags()
+                    )) return false;
                 }
             } else {
                 // Normal, non-virtual ShopCategory.
                 // Remove all Products having the same Product code.
                 if (!Products::deleteByCode(
-                    $objProduct->code(),
+                    $objProduct->getCode(),
                     $flagDeleteImages)
-                ) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to delete Products by code ".$objProduct->code());
-                    return false;
-                }
+                ) return false;
             }
         }
         return true;
@@ -390,23 +323,22 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
     /**
      * Returns an array of Product IDs contained by the given
      * ShopCategory ID.
-     *
-     * Orders the array by ascending ordinal field value
-     * @param   integer   $category_id  The ShopCategory ID
+     * @param   integer     $catId      The ShopCategory ID
      * @return  mixed                   The array of Product IDs on success,
      *                                  false otherwise.
      * @static
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getIdArrayByShopCategory($category_id)
+    static function getIdArrayByShopCategory($catId)
     {
         global $objDatabase;
 
         $query = "
-            SELECT `id`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products`
-             WHERE `category_id`=$category_id
-          ORDER BY `ord` ASC";
+            SELECT id
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
+             WHERE catid=$catId
+          ORDER BY sort_order ASC
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrProductId = array();
@@ -428,16 +360,17 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
      * @author  Reto Kohli <reto.kohli@comvation.com>
      * @todo    Apply the order setting!
      */
-    static function getPictureByCategoryId($category_id)
+    static function getPictureByCategoryId($catId)
     {
         global $objDatabase;
 
         $query = "
-            SELECT `picture`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products`
-             WHERE `category_id`=$category_id
-               AND `picture`!=''
-          ORDER BY `ord` ASC";
+            SELECT picture
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
+             WHERE catid=$catId
+               AND picture!=''
+          ORDER BY sort_order ASC
+        ";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture
@@ -466,15 +399,16 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
         global $objDatabase;
 
         $query = "
-            SELECT DISTINCT category_id
+            SELECT DISTINCT catId
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE flags LIKE '%$strName%'
-          ORDER BY category_id ASC";
+          ORDER BY catId ASC
+        ";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrShopCategoryId = array();
         while (!$objResult->EOF) {
-            $arrShopCategoryId[] = $objResult->fields['category_id'];
+            $arrShopCategoryId[] = $objResult->Fields['catid'];
             $objResult->MoveNext();
         }
         return $arrShopCategoryId;
@@ -536,7 +470,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                     sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $id);
                 continue;
             }
-            $imageName = $objProduct->pictures();
+            $imageName = $objProduct->getPictures();
             $imagePath = PRODUCT_IMAGE_PATH.'/'.$imageName;
             // only try to create thumbs from entries that contain a
             // plain text file name (i.e. from an import)
@@ -574,9 +508,9 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                     PRODUCT_IMAGE_PATH,
                     PRODUCT_IMAGE_WEB_PATH,
                     $imageName,
-                    SettingDb::getValue('thumbnail_max_width'),
-                    SettingDb::getValue('thumbnail_max_height'),
-                    SettingDb::getValue('thumbnail_quality')
+                    $this->arrConfig['shop_thumbnail_max_width']['value'],
+                    $this->arrConfig['shop_thumbnail_max_height']['value'],
+                    $this->arrConfig['shop_thumbnail_quality']['value']
                 );
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
@@ -589,7 +523,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                     '?'.base64_encode($width).
                     '?'.base64_encode($height).
                     ':??:??';
-                $objProduct->pictures($shopPicture);
+                $objProduct->setPictures($shopPicture);
                 $objProduct->store();
             } else {
                 $arrFailedCreatingThumb[] = $id;
@@ -658,8 +592,8 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
         // ShopCategories, and all sibling Products within them.
         foreach ($arrProduct as $objProduct) {
             // Get the containing article ShopCategory.
-            $category_id = $objProduct->category_id();
-            $objArticleCategory = ShopCategory::getById($category_id);
+            $catId = $objProduct->getShopCategoryId();
+            $objArticleCategory = ShopCategory::getById($catId);
             if (!$objArticleCategory) continue;
 
             // Get parent (subgroup)
@@ -687,7 +621,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
             // Set the new flag set for all Products within the Article
             // ShopCategory.
             foreach ($arrSiblingProducts as $objProduct) {
-                $objProduct->flags($strNewFlags);
+                $objProduct->setFlags($strNewFlags);
                 $objProduct->store();
             }
 
@@ -731,12 +665,13 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                 // That is a new flag for which we have to clone the Article.
                 // Get the affected grandparent (group, root ShopCategory)
                 $objTargetRootCategory =
-                    ShopCategories::getChildNamed($strFlag, 0, false);
+                    ShopCategories::getChildNamed(0, $strFlag, false);
                 if (!$objTargetRootCategory) continue;
                 // Check whether the subgroup exists already
                 $objTargetSubGroupCategory =
                     ShopCategories::getChildNamed(
-                        $subgroupName, $objTargetRootCategory->getId(), false);
+                        $objTargetRootCategory->getId(), $subgroupName, false
+                    );
                 if (!$objTargetSubGroupCategory) {
                     // Nope, add the subgroup.
                     $objSubGroupCategory->makeClone();
@@ -748,8 +683,8 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                 // Check whether the Article ShopCategory exists already
                 $objTargetArticleCategory =
                     ShopCategories::getChildNamed(
-                        $objArticleCategory->getName(),
                         $objTargetSubGroupCategory->getId(),
+                        $objArticleCategory->getName(),
                         false
                     );
                 if ($objTargetArticleCategory) {
@@ -844,174 +779,6 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                 "</option>\n";
         }
         return $strMenuoptions;
-    }
-
-
-
-    static function getJavascriptArray($groupCustomerId=0, $isReseller=false)
-    {
-        global $objDatabase;
-
-        // create javascript array containing all products;
-        // used to update the display when changing the product ID.
-        // we need the VAT rate in there as well in order to be able to correctly change the products,
-        // and the flag indicating whether the VAT is included in the prices already.
-        $strJsArrProduct =
-            'var vat_included = '.Vat::isIncluded().
-            ";\nvar arrProducts = new Array();\n";
-        // set products menu and javascript array
-        $query = '
-            SELECT id, product_id, name,
-                resellerprice, normalprice, discountprice, discount_active,
-                weight, vat_id, handler,
-                group_id, article_id
-            FROM '.DBPREFIX.'module_shop'.MODULE_INDEX.'_products
-            WHERE active=1';
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $distribution = $objResult->fields['handler'];
-            $strJsArrProduct .=
-                'arrProducts['.$id.'] = {'.
-                'id:'.$objResult->fields['product_id'].
-                ',code:'.$objResult->fields['product_id'].
-                ',title:'.addslashes($objResult->fields['title']).
-                ',percent:'.
-                    // Store VAT as percentage, not ID, as we will only update the order items
-                    Vat::getRate($objResult->fields['vat_id']).
-                ',weight:'.($distribution == 'delivery'
-                    ? Weight::getWeightString($objResult->fields['weight']) : '0' ).
-                ',group_id:'.$objResult->fields['group_id'].
-                ',article_id:'.$objResult->fields['article_id'].
-                ',price:[';
-            $price = $objResult->fields['normalprice'];
-            if ($objResult->fields['is_special_offer']) {
-                $price = $objResult->fields['discountprice'];
-            } elseif ($isReseller) {
-                $price = $objResult->fields['resellerprice'];
-            }
-            // Determine discounted price from customer and article group matrix
-            $discountCustomerRate = Discount::getDiscountRateCustomer(
-                $groupCustomerId, $objResult->fields['article_id']
-            );
-            $price -= $price * $discountCustomerRate * 0.01;
-            // Determine prices for various count discounts, if any
-            $arrDiscountCountRate = Discount::getDiscountCountRateArray(
-                $objResult->fields['group_id']);
-            // Order the counts in reverse, from highest to lowest
-            $strJsArrPrice = '';
-            foreach (array_reverse($arrDiscountCountRate, true) as $count => $rate) {
-                // Deduct the customer type discount right away
-                $discountPrice = $price - ($price * $rate * 0.01);
-                $strJsArrProduct .=
-                    ($strJsArrPrice ? ',' : '').
-                    // Count followed by price
-                    $count.','.Currency::getCurrencyPrice($discountPrice);
-            }
-            $strJsArrProduct .= $strJsArrPrice.']};';
-            $objResult->MoveNext();
-        }
-        return $strJsArrProduct;
-    }
-
-
-    /**
-     * @todo  Use getNameArray() to get the names
-     * @todo  Document!
-     */
-    static function getMenuoptions()
-    {
-        global $objDatabase;
-
-        // The menu options for a new product - no preselected value
-        $menuoptions = '';
-        $query = "
-            SELECT id, title,
-            FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-            WHERE active=1";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $menuoptions .=
-                '<option value="'.$id.'">'.
-                $objResult->fields['title'].' ('.$id.")</option>\n";
-            $objResult->MoveNext();
-        }
-        return $menuoptions;
-    }
-
-
-    /**
-     * Returns an array of Product names from the database
-     *
-     * The array is indexed by the Product ID and ordered by the names
-     * and ID, ascending.
-     * The names array is kept in this method statically between calls.
-     * @static
-     * @return      array                       The array of Product names
-     *                                          on success, false otherwise
-     * @global      ADONewConnection
-     * @author      Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function getNameArray($activeonly=false, $format='%2$s')
-    {
-        global $objDatabase;
-        static $arrName = null;
-
-        if (!empty($arrName)) return $arrName;
-        $query = "
-            SELECT `id`, `title`
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products".
-            ($activeonly ? " AND `active`=1" : '')."
-             ORDER BY `title` ASC, `id` ASC";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrName = array();
-        while (!$objResult->EOF) {
-            $arrName[$objResult->fields['id']] =
-                sprintf($format,
-                    $objResult->fields['id'], $objResult->fields['title']);
-            $objResult->MoveNext();
-        }
-        return $arrName;
-    }
-
-
-    /**
-     * Returns -1, 0, or 1 if the first Product title is smaller, equal to,
-     * or greater than the second, respectively
-     * @param   Product   $objProduct1    Product #1
-     * @param   Product   $objProduct2    Product #2
-     * @return  integer                   -1, 0, or 1
-     */
-    static function cmpTitle($objProduct1, $objProduct2)
-    {
-        return
-            ($objProduct1->getName() == $objProduct2->getName()
-              ? 0
-              : ($objProduct1->getName() < $objProduct2->getName()
-                  ? -1
-                  :  1));
-    }
-
-
-    /**
-     * Returns -1, 0, or 1 if the first Product title is smaller, equal to,
-     * or greater than the second, respectively
-     * @param   Product   $objProduct1    Product #1
-     * @param   Product   $objProduct2    Product #2
-     * @return  integer                   -1, 0, or 1
-     */
-    static function cmpPrice($objProduct1, $objProduct2)
-    {
-        return
-            ($objProduct1->getPrice() == $objProduct2->getPrice()
-              ? 0
-              : ($objProduct1->getPrice() < $objProduct2->getPrice()
-                  ? -1
-                  :  1));
     }
 
 }

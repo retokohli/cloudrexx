@@ -3,12 +3,12 @@
 <!--
 
 var createNewsletter = function(text){
-  if(document.getElementById("newsContent").value != ''){
-    document.getElementById("newsLetterNews").action = "?cmd=newsletter&act=editMail";
-    return true;
-  }else{
-    return false;
-  }
+	if(document.getElementById("newsContent").value != ''){
+		document.getElementById("newsLetterNews").action = "?cmd=newsletter&act=editMail";
+		return true;
+	}else{
+		return false;
+	}
 }
 
 
@@ -16,22 +16,22 @@ var createNewsletter = function(text){
 </script>
 
 <table width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
-  <tr>
-    <th>{TXT_TITLE}</th>
-  </tr>
+	<tr>
+		<th>{TXT_TITLE}</th>
+	</tr>
 </table>
 <form id="newsLetterNews" name="form" method="post" action="?cmd=newsletter&amp;act=news">
 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
 <tr class="row3">
-  <td valign="top"><b>{TXT_COUNT}</b></td>
+	<td valign="top"><b>{TXT_COUNT}</b></td>
 </tr>
 <tr class="row2">
 <td valign="top">
-  <input type="text" name="newslimit" size="5" maxlength="5" value="20" />
-  <input type="submit" name="Submit" value="{TXT_SHOW_NEWS}" /><br /><br />
+	<input type="text" name="newslimit" size="5" maxlength="5" value="20" />
+	<input type="submit" name="Submit" value="{TXT_SHOW_NEWS}" /><br /><br />
 </td>
 <tr class="row3">
-  <td><b>{TXT_PREVIEW}</b></td>
+	<td><b>{TXT_PREVIEW}</b></td>
 </tr>
 <tr class="row2">
 <td valign="top">
@@ -51,7 +51,7 @@ var createNewsletter = function(text){
 
 ====================================
 <!-- END detailrow -->
-</textarea>
+</textarea> 
 <input style="position: relative; top: 80%;" onclick='javascript:this.form.textfield.focus();this.form.textfield.select();' type="button" value="{TXT_SELECT_ALL}" />
 </td>
 </tr>

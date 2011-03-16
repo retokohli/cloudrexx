@@ -9,46 +9,46 @@ Text[2]=["","{TXT_JS_HELP_HOMEBOX}"];
 function dezInt(num,size,prefix) { prefix=(prefix)?prefix:"0"; var minus=(num<0)?"-":"", result=(prefix=="0")?minus:""; num=Math.abs(parseInt(num,10)); size-=(""+num).length; for(var i=1;i<=size;i++) { result+=""+prefix; } result+=((prefix!="0")?minus:"")+num; return result; }
 
 function showOrHide(strElement) {
-  if (document.getElementById(strElement).style.display == 'none') {
-    document.getElementById(strElement).style.display = 'block';
-  } else {
-    document.getElementById(strElement).style.display = 'none';
-  }
+	if (document.getElementById(strElement).style.display == 'none') {
+		document.getElementById(strElement).style.display = 'block';
+	} else {
+		document.getElementById(strElement).style.display = 'none';
+	}
 }
 
 function selectType(strShow) {
-  if (strShow == 'idType_Voting') {
-    document.getElementById('idType_Voting').style.display = 'block';
-    document.getElementById('idType_Survey').style.display = 'none';
-  } else {
-    document.getElementById('idType_Voting').style.display = 'none';
-    document.getElementById('idType_Survey').style.display = 'block';
-  }
+	if (strShow == 'idType_Voting') {
+		document.getElementById('idType_Voting').style.display = 'block';
+		document.getElementById('idType_Survey').style.display = 'none';
+	} else {
+		document.getElementById('idType_Voting').style.display = 'none';
+		document.getElementById('idType_Survey').style.display = 'block';
+	}
 }
 
 function switchHomeboxActivation(strType) {
-  if (strType == 'Voting') {
-    document.getElementById('idHomebox_Activate').disabled = false;
-    document.getElementById('idHomebox_Inactivate').disabled = false;
-    document.getElementById('idCommentable_Activate').disabled = true;
-    document.getElementById('idCommentable_Inactivate').disabled = true;
-  } else {
-    document.getElementById('idHomebox_Activate').disabled = true;
-    document.getElementById('idHomebox_Inactivate').disabled = true;
-    document.getElementById('idCommentable_Activate').disabled = false;
-    document.getElementById('idCommentable_Inactivate').disabled = false;
-  }
+	if (strType == 'Voting') {
+		document.getElementById('idHomebox_Activate').disabled = false;
+		document.getElementById('idHomebox_Inactivate').disabled = false;
+		document.getElementById('idCommentable_Activate').disabled = true;
+		document.getElementById('idCommentable_Inactivate').disabled = true;
+	} else {
+		document.getElementById('idHomebox_Activate').disabled = true;
+		document.getElementById('idHomebox_Inactivate').disabled = true;
+		document.getElementById('idCommentable_Activate').disabled = false;
+		document.getElementById('idCommentable_Inactivate').disabled = false;
+	}
 }
 
 function copyText(strType) {
-  for (var h=0; h < document.forms.length;h++) {
-    for (var i=0; i < document.forms[h].elements.length;i++) {
-      //read out all form-elements with the loop
-      if(document.forms[h].elements[i].name.search(strType + '_') != -1) {
-        document.forms[h].elements[i].value = document.getElementById(strType).value;
-      }
-    }
-  }
+	for (var h=0; h < document.forms.length;h++) {
+		for (var i=0; i < document.forms[h].elements.length;i++) {
+			//read out all form-elements with the loop
+			if(document.forms[h].elements[i].name.search(strType + '_') != -1) {
+				document.forms[h].elements[i].value = document.getElementById(strType).value;
+			}
+		}
+	}
 }
 
 //Node-Tree Functions ------------------------------------------------------------------------------
@@ -59,305 +59,305 @@ var arrSurvey_Questions = new Array();
 {SURVEY_JS_ARRAY}
 
 function addQuestion(Type, intAnswers) {
-  if (Type == 'Voting') {
-    intActualQuestion = arrVote_Questions.length;
-    arrVote_Questions[intActualQuestion] = 0;
-  } else {
-    intActualQuestion = arrSurvey_Questions.length;
-    arrSurvey_Questions[intActualQuestion] = 0;
-  }
+	if (Type == 'Voting') {
+		intActualQuestion = arrVote_Questions.length;
+		arrVote_Questions[intActualQuestion] = 0;
+	} else {
+		intActualQuestion = arrSurvey_Questions.length;
+		arrSurvey_Questions[intActualQuestion] = 0;
+	}
 
-  var newQuestion = document.getElementById('QuestionBlock').cloneNode(true);
-  document.getElementById('id_' + Type + '_Questions').appendChild(newQuestion);
-  document.getElementById('id_' + Type + '_Questions').lastChild.id = 'id_' + Type + '_Question_' + intActualQuestion;
+	var newQuestion = document.getElementById('QuestionBlock').cloneNode(true);
+	document.getElementById('id_' + Type + '_Questions').appendChild(newQuestion);
+	document.getElementById('id_' + Type + '_Questions').lastChild.id = 'id_' + Type + '_Question_' + intActualQuestion;
 
-  if (Type == 'Voting') {
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[0].childNodes[0].replaceData(0, 1, '{TXT_JS_QUESTION}');
-  } else {
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[0].childNodes[0].replaceData(0, 1, dezInt(intActualQuestion + 1) + '. {TXT_JS_QUESTION}');
-  }
+	if (Type == 'Voting') {
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[0].childNodes[0].replaceData(0, 1, '{TXT_JS_QUESTION}');
+	} else {
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[0].childNodes[0].replaceData(0, 1, dezInt(intActualQuestion + 1) + '. {TXT_JS_QUESTION}');
+	}
 
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[0].id     = 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion;
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[0].name   = 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion;
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[0].onchange = new Function('fx', 'copyText(\'frmModifySurvey_' + Type + '_Question_' + intActualQuestion + '\');');
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[2].href   = 'javascript:showOrHide(\'divAddSurvey_' + Type + '_Question_' + intActualQuestion + '\');';
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[1].childNodes[1].childNodes[0].id     = 'id_' + Type + '_Answers_' + intActualQuestion;
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[1].childNodes[1].childNodes[1].name   = 'frmModifySurvey_' + Type + '_Answer_Add_' + intActualQuestion;
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[1].childNodes[1].childNodes[1].onclick   = new Function('fx', 'addAnswer(\'' + Type + '\',' + intActualQuestion + ');' );
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[0].id 		= 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion;
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[0].name 	= 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion;
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[0].onchange = new Function('fx', 'copyText(\'frmModifySurvey_' + Type + '_Question_' + intActualQuestion + '\');');
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].childNodes[2].href 	= 'javascript:showOrHide(\'divAddSurvey_' + Type + '_Question_' + intActualQuestion + '\');';
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[1].childNodes[1].childNodes[0].id 		= 'id_' + Type + '_Answers_' + intActualQuestion;
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[1].childNodes[1].childNodes[1].name 	= 'frmModifySurvey_' + Type + '_Answer_Add_' + intActualQuestion;
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[1].childNodes[1].childNodes[1].onclick 	= new Function('fx', 'addAnswer(\'' + Type + '\',' + intActualQuestion + ');' );
 
-  var newLangBlock = document.getElementById('QuestionLangBlock').cloneNode(true);
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].appendChild(newLangBlock);
-  document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.id = 'divAddSurvey_' + Type + '_Question_' + intActualQuestion;
+	var newLangBlock = document.getElementById('QuestionLangBlock').cloneNode(true);
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].appendChild(newLangBlock);
+	document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.id = 'divAddSurvey_' + Type + '_Question_' + intActualQuestion;
 
-  for (var i = 0; i < arrLanguages.length; i++) {
-    var newRow = document.getElementById('QuestionLangRow').cloneNode(true);
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.appendChild(newRow);
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.id       = '';
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.style.display   = 'block';
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.childNodes[0].name   = 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion + '_' + arrLanguages[i]['id'];
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.childNodes[2].htmlFor   = 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion + '_' + arrLanguages[i]['id'];
-    document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.childNodes[2].childNodes[0].replaceData(0,1,arrLanguages[i]['name']);
-  }
+	for (var i = 0; i < arrLanguages.length; i++) {
+		var newRow = document.getElementById('QuestionLangRow').cloneNode(true);
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.appendChild(newRow);
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.id 			= '';
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.style.display 	= 'block';
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.childNodes[0].name 	= 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion + '_' + arrLanguages[i]['id'];
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.childNodes[2].htmlFor 	= 'frmModifySurvey_' + Type + '_Question_' + intActualQuestion + '_' + arrLanguages[i]['id'];
+		document.getElementById('id_' + Type + '_Questions').lastChild.childNodes[0].childNodes[0].childNodes[1].lastChild.lastChild.childNodes[2].childNodes[0].replaceData(0,1,arrLanguages[i]['name']);
+	}
 
-  for (var i = 0; i < intAnswers; ++i) {
-    addAnswer(Type, intActualQuestion);
-  }
+	for (var i = 0; i < intAnswers; ++i) {
+		addAnswer(Type, intActualQuestion);
+	}
 }
 
 function addAnswer(Type, intActualQuestion) {
-  var newAnswer = document.getElementById('AnswerBlock').cloneNode(true);
+	var newAnswer = document.getElementById('AnswerBlock').cloneNode(true);
 
-  intActualQuestion   = intActualQuestion;
-  if (Type == 'Voting') {
-    arrVote_Questions[intActualQuestion] = parseInt(arrVote_Questions[intActualQuestion]) + 1;
-    intActualAnswer = arrVote_Questions[intActualQuestion]
-  } else {
-    arrSurvey_Questions[intActualQuestion] = parseInt(arrSurvey_Questions[intActualQuestion]) + 1;
-    intActualAnswer = arrSurvey_Questions[intActualQuestion];
-  }
+	intActualQuestion 	= intActualQuestion;
+	if (Type == 'Voting') {
+		arrVote_Questions[intActualQuestion] = parseInt(arrVote_Questions[intActualQuestion]) + 1;
+		intActualAnswer = arrVote_Questions[intActualQuestion]
+	} else {
+		arrSurvey_Questions[intActualQuestion] = parseInt(arrSurvey_Questions[intActualQuestion]) + 1;
+		intActualAnswer = arrSurvey_Questions[intActualQuestion];
+	}
 
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).appendChild(newAnswer);
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.id       = 'id_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.style.display = 'block';
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[0].htmlFor   = 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[0].childNodes[0].replaceData(0,2,dezInt(intActualAnswer,2) + ':');
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[2].href     = 'javascript:moveUpAnswer(\'' + Type + '\', ' + intActualQuestion + ', ' + intActualAnswer + ');';
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[4].href     = 'javascript:moveDownAnswer(\'' + Type + '\', ' + intActualQuestion + ', ' + intActualAnswer + ');';
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[6].href     = 'javascript:removeAnswer(\'' + Type + '\', ' + intActualQuestion + ', ' + intActualAnswer + ');';
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[8].name     = 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[8].id       = 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[8].onchange   = new Function('fx', 'copyText(\'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '\');');
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[10].href     = 'javascript:showOrHide(\'divAddSurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '\');';
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).appendChild(newAnswer);
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.id 			= 'id_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.style.display = 'block';
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[0].htmlFor 	= 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[0].childNodes[0].replaceData(0,2,dezInt(intActualAnswer,2) + ':');
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[2].href 		= 'javascript:moveUpAnswer(\'' + Type + '\', ' + intActualQuestion + ', ' + intActualAnswer + ');';
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[4].href 		= 'javascript:moveDownAnswer(\'' + Type + '\', ' + intActualQuestion + ', ' + intActualAnswer + ');';
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[6].href 		= 'javascript:removeAnswer(\'' + Type + '\', ' + intActualQuestion + ', ' + intActualAnswer + ');';
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[8].name 		= 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[8].id 			= 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[8].onchange 	= new Function('fx', 'copyText(\'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '\');');
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.childNodes[10].href 		= 'javascript:showOrHide(\'divAddSurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '\');';
 
-  var newLangBlock = document.getElementById('AnswerLangBlock').cloneNode(true);
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).appendChild(newLangBlock);
-  document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.id ='divAddSurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
+	var newLangBlock = document.getElementById('AnswerLangBlock').cloneNode(true);
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).appendChild(newLangBlock);
+	document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.id ='divAddSurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer;
 
-  for (var i = 0; i < arrLanguages.length; i++) {
-    var newRow = document.getElementById('AnswerLangRow').cloneNode(true);
-    document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.appendChild(newRow);
-    document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.id         = '';
-    document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.style.display   = 'block';
-    document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.childNodes[0].name     = 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '_' + arrLanguages[i]['id'];
-    document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.childNodes[2].htmlFor   = 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '_' + arrLanguages[i]['id'];
-    document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.childNodes[2].childNodes[0].replaceData(0,1,arrLanguages[i]['name']);
-  }
+	for (var i = 0; i < arrLanguages.length; i++) {
+		var newRow = document.getElementById('AnswerLangRow').cloneNode(true);
+		document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.appendChild(newRow);
+		document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.id 				= '';
+		document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.style.display 	= 'block';
+		document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.childNodes[0].name 		= 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '_' + arrLanguages[i]['id'];
+		document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.childNodes[2].htmlFor 	= 'frmModifySurvey_' + Type + '_Answer_' + intActualQuestion + '_' + intActualAnswer + '_' + arrLanguages[i]['id'];
+		document.getElementById('id_' + Type + '_Answers_' + intActualQuestion).lastChild.lastChild.childNodes[2].childNodes[0].replaceData(0,1,arrLanguages[i]['name']);
+	}
 }
 
 function removeQuestion() {
-  if(confirm('{TXT_JS_QUESTION_REMOVE}')) {
+	if(confirm('{TXT_JS_QUESTION_REMOVE}')) {
 
-    //Recopy the Survey-Array
-    var arrTemp = new Array();
-    for (var i = 0; i < arrSurvey_Questions.length - 1; ++i) {
-      arrTemp[i] = arrSurvey_Questions[i];
-    }
+		//Recopy the Survey-Array
+		var arrTemp = new Array();
+		for (var i = 0; i < arrSurvey_Questions.length - 1; ++i) {
+			arrTemp[i] = arrSurvey_Questions[i];
+		}
 
-    arrSurvey_Questions = new Array();
-    for (var i = 0; i < arrTemp.length; ++i) {
-      arrSurvey_Questions[i] = arrTemp[i];
-    }
+		arrSurvey_Questions = new Array();
+		for (var i = 0; i < arrTemp.length; ++i) {
+			arrSurvey_Questions[i] = arrTemp[i];
+		}
 
-    //Remove last Question
-    var nodeRemove = document.getElementById('id_Survey_Questions').lastChild;
-    document.getElementById('id_Survey_Questions').removeChild(nodeRemove);
-  }
+		//Remove last Question
+		var nodeRemove = document.getElementById('id_Survey_Questions').lastChild;
+		document.getElementById('id_Survey_Questions').removeChild(nodeRemove);
+	}
 }
 
 function removeAnswer(Type, Question, Answer) {
-  if (confirm('{TXT_JS_ANSWER_REMOVE}')) {
-    var nodeSuper = document.getElementById('id_' + Type + '_Answers_' + Question);
-    var j = 0;
-    var arrQuestions = new Array();
-    var arrQuestionsTrans = new Array();
+	if (confirm('{TXT_JS_ANSWER_REMOVE}')) {
+		var nodeSuper = document.getElementById('id_' + Type + '_Answers_' + Question);
+		var j = 0;
+		var arrQuestions = new Array();
+		var arrQuestionsTrans = new Array();
 
-    //Save all current fields to an array
-    for (var i = 0; i < nodeSuper.childNodes.length; ++i) {
-      if ( ((Answer * 2 - 1) != i) && ((Answer * 2 - 2) != i)) {
-        //Filter out blocks to delete
-        if (i % 2 == 0) {
-          arrQuestions[j] = nodeSuper.childNodes[i].childNodes[9].value;
-        } else {
-          arrQuestionsTrans[j] = new Object();
-          for (var k = 0; k < arrLanguages.length; k++) {
-            //Loop through languages
-            arrQuestionsTrans[j][k] = nodeSuper.childNodes[i].childNodes[k].childNodes[0].value;
-          }
-          ++j;
-        }
-      }
-    }
+		//Save all current fields to an array
+		for (var i = 0; i < nodeSuper.childNodes.length; ++i) {
+			if ( ((Answer * 2 - 1) != i) && ((Answer * 2 - 2) != i)) {
+				//Filter out blocks to delete
+				if (i % 2 == 0) {
+					arrQuestions[j] = nodeSuper.childNodes[i].childNodes[9].value;
+				} else {
+					arrQuestionsTrans[j] = new Object();
+					for (var k = 0; k < arrLanguages.length; k++) {
+						//Loop through languages
+						arrQuestionsTrans[j][k] = nodeSuper.childNodes[i].childNodes[k].childNodes[0].value;
+					}
+					++j;
+				}
+			}
+		}
 
-    //Remove Nodes
-    var NodeAnswer     = document.getElementById('id_' + Type + '_Answers_' + Question).lastChild;
-    document.getElementById('id_' + Type + '_Answers_' + Question).removeChild(NodeAnswer);
-    var NodeLanguage   = document.getElementById('id_' + Type + '_Answers_' + Question).lastChild;
-    document.getElementById('id_' + Type + '_Answers_' + Question).removeChild(NodeLanguage);
+		//Remove Nodes
+		var NodeAnswer 		= document.getElementById('id_' + Type + '_Answers_' + Question).lastChild;
+		document.getElementById('id_' + Type + '_Answers_' + Question).removeChild(NodeAnswer);
+		var NodeLanguage 	= document.getElementById('id_' + Type + '_Answers_' + Question).lastChild;
+		document.getElementById('id_' + Type + '_Answers_' + Question).removeChild(NodeLanguage);
 
-    //Decrement Answer-Counter
-    if (Type == 'Voting') {
-      arrVote_Questions[Question] = parseInt(arrVote_Questions[Question]) - 1;
-    } else {
-      arrSurvey_Questions[Question] = parseInt(arrSurvey_Questions[Question]) - 1;
-    }
+		//Decrement Answer-Counter
+		if (Type == 'Voting') {
+			arrVote_Questions[Question] = parseInt(arrVote_Questions[Question]) - 1;
+		} else {
+			arrSurvey_Questions[Question] = parseInt(arrSurvey_Questions[Question]) - 1;
+		}
 
-    //Write fields
-    j = 0;
-    for (var i = 0; i < nodeSuper.childNodes.length; ++i) {
-      if (i % 2 == 0) {
-        nodeSuper.childNodes[i].childNodes[9].value = arrQuestions[j];
-      } else {
-        for (var k = 0; k < arrLanguages.length; k++) {
-          //Loop through languages
-          nodeSuper.childNodes[i].childNodes[k].childNodes[0].value = arrQuestionsTrans[j][k];
-        }
-        ++j;
-      }
-    }
-  }
+		//Write fields
+		j = 0;
+		for (var i = 0; i < nodeSuper.childNodes.length; ++i) {
+			if (i % 2 == 0) {
+				nodeSuper.childNodes[i].childNodes[9].value = arrQuestions[j];
+			} else {
+				for (var k = 0; k < arrLanguages.length; k++) {
+					//Loop through languages
+					nodeSuper.childNodes[i].childNodes[k].childNodes[0].value = arrQuestionsTrans[j][k];
+				}
+				++j;
+			}
+		}
+	}
 }
 
 function moveUpAnswer(Type, Question, Answer) {
-  var nodeSuper = document.getElementById('id_' + Type + '_Answers_' + Question);
-  var j = 0;
-  var arrQuestions = new Array();
-  var arrQuestionsTrans = new Array();
+	var nodeSuper = document.getElementById('id_' + Type + '_Answers_' + Question);
+	var j = 0;
+	var arrQuestions = new Array();
+	var arrQuestionsTrans = new Array();
 
-  if (Answer == 1) { return ;}
+	if (Answer == 1) { return ;}
 
-  //Save all current fields to an array
-  for (var i = ((Answer - 1)*2)-2; i <= ((Answer - 1)*2)+1; ++i) {
-    if (i % 2 == 0) {
-      arrQuestions[j] = nodeSuper.childNodes[i].childNodes[8].value;
-    } else {
-      arrQuestionsTrans[j] = new Object();
-      for (var k = 0; k < arrLanguages.length; k++) {
-        //Loop through languages
-        arrQuestionsTrans[j][k] = nodeSuper.childNodes[i].childNodes[k].childNodes[0].value;
-      }
-      ++j;
-    }
-  }
-  --j;
+	//Save all current fields to an array
+	for (var i = ((Answer - 1)*2)-2; i <= ((Answer - 1)*2)+1; ++i) {
+		if (i % 2 == 0) {
+			arrQuestions[j] = nodeSuper.childNodes[i].childNodes[8].value;
+		} else {
+			arrQuestionsTrans[j] = new Object();
+			for (var k = 0; k < arrLanguages.length; k++) {
+				//Loop through languages
+				arrQuestionsTrans[j][k] = nodeSuper.childNodes[i].childNodes[k].childNodes[0].value;
+			}
+			++j;
+		}
+	}
+	--j;
 
-  //Write values
-  for (var i = ((Answer - 1)*2)-2; i <= ((Answer - 1)*2)+1; ++i) {
-    if (i % 2 == 0) {
-      nodeSuper.childNodes[i].childNodes[8].value = arrQuestions[j];
-    } else {
-      for (var k = 0; k < arrLanguages.length; k++) {
-        //Loop through languages
-        nodeSuper.childNodes[i].childNodes[k].childNodes[0].value = arrQuestionsTrans[j][k];
-      }
-      --j;
-    }
-  }
+	//Write values
+	for (var i = ((Answer - 1)*2)-2; i <= ((Answer - 1)*2)+1; ++i) {
+		if (i % 2 == 0) {
+			nodeSuper.childNodes[i].childNodes[8].value = arrQuestions[j];
+		} else {
+			for (var k = 0; k < arrLanguages.length; k++) {
+				//Loop through languages
+				nodeSuper.childNodes[i].childNodes[k].childNodes[0].value = arrQuestionsTrans[j][k];
+			}
+			--j;
+		}
+	}
 }
 
 function moveDownAnswer(Type, Question, Answer) {
-  var nodeSuper = document.getElementById('id_' + Type + '_Answers_' + Question);
-  var j = 0;
-  var arrQuestions = new Array();
-  var arrQuestionsTrans = new Array();
+	var nodeSuper = document.getElementById('id_' + Type + '_Answers_' + Question);
+	var j = 0;
+	var arrQuestions = new Array();
+	var arrQuestionsTrans = new Array();
 
-  if (Answer == nodeSuper.childNodes.length / 2) { return ;}
+	if (Answer == nodeSuper.childNodes.length / 2) { return ;}
 
-  //Save all current fields to an array
-  for (var i = (Answer - 1)*2; i <= ((Answer - 1)*2)+3; ++i) {
-    if (i % 2 == 0) {
-      arrQuestions[j] = nodeSuper.childNodes[i].childNodes[8].value;
-    } else {
-      arrQuestionsTrans[j] = new Object();
-      for (var k = 0; k < arrLanguages.length; k++) {
-        //Loop through languages
-        arrQuestionsTrans[j][k] = nodeSuper.childNodes[i].childNodes[k].childNodes[0].value;
-      }
-      ++j;
-    }
-  }
+	//Save all current fields to an array
+	for (var i = (Answer - 1)*2; i <= ((Answer - 1)*2)+3; ++i) {
+		if (i % 2 == 0) {
+			arrQuestions[j] = nodeSuper.childNodes[i].childNodes[8].value;
+		} else {
+			arrQuestionsTrans[j] = new Object();
+			for (var k = 0; k < arrLanguages.length; k++) {
+				//Loop through languages
+				arrQuestionsTrans[j][k] = nodeSuper.childNodes[i].childNodes[k].childNodes[0].value;
+			}
+			++j;
+		}
+	}
 
-  j = 0;
-  //Write values
-  for (var i = ((Answer - 1)*2)+3; i >= (Answer - 1)*2; --i) {
-    if (i % 2 == 0) {
-      nodeSuper.childNodes[i].childNodes[8].value = arrQuestions[j];
-      ++j;
-    } else {
-      for (var k = 0; k < arrLanguages.length; k++) {
-        //Loop through languages
-        nodeSuper.childNodes[i].childNodes[k].childNodes[0].value = arrQuestionsTrans[j][k];
-      }
-    }
-  }
+	j = 0;
+	//Write values
+	for (var i = ((Answer - 1)*2)+3; i >= (Answer - 1)*2; --i) {
+		if (i % 2 == 0) {
+			nodeSuper.childNodes[i].childNodes[8].value = arrQuestions[j];
+			++j;
+		} else {
+			for (var k = 0; k < arrLanguages.length; k++) {
+				//Loop through languages
+				nodeSuper.childNodes[i].childNodes[k].childNodes[0].value = arrQuestionsTrans[j][k];
+			}
+		}
+	}
 }
 
 //Redirect-Window ------------------------------------------------------------------------------
 function SetUrl(url, width, height, alt) {
-  switch (surveyElType) {
-    case 'image':
-    case 'webpages':
-    document.getElementById(surveyElInsertBox).value = url;
-    break
-    case 'link':
-    newsInsertLink(document.getElementById(surveyElInsertBox), '<a href="'+url+'">'+surveyElLinkText+'</a>');
-    break;
-  }
+	switch (surveyElType) {
+		case 'image':
+		case 'webpages':
+		document.getElementById(surveyElInsertBox).value = url;
+		break
+		case 'link':
+		newsInsertLink(document.getElementById(surveyElInsertBox), '<a href="'+url+'">'+surveyElLinkText+'</a>');
+		break;
+	}
 }
 
 function newsGetFileBrowser(elInsertBox, sType) {
-  surveyElInsertBox = elInsertBox;
-  surveyElType = sType;
+	surveyElInsertBox = elInsertBox;
+	surveyElType = sType;
 
-  if (sType == 'link') {
-    surveyElLinkText = prompt('Geben Sie einen Text für den Link ein:', '');
-  }
+	if (sType == 'link') {
+		surveyElLinkText = prompt('Geben Sie einen Text für den Link ein:', '');
+	}
 
-  if (sType == 'webpages') {
-    openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-  } else {
-    openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-  }
+	if (sType == 'webpages') {
+		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	} else {
+		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	}
 }
 
 function newsInsertLink(elInsertBox, sLink) {
-  elInsertBox.focus();
+	elInsertBox.focus();
 
-  /* für Internet Explorer */
-  if (typeof document.selection != 'undefined') {
-    /* Einfügen des Formatierungscodes */
-    var range = document.selection.createRange();
-    var insText = range.text;
-    range.text = sLink;
-  }
+	/* für Internet Explorer */
+	if (typeof document.selection != 'undefined') {
+		/* Einfügen des Formatierungscodes */
+		var range = document.selection.createRange();
+		var insText = range.text;
+		range.text = sLink;
+	}
 
-  /* für neuere auf Gecko basierende Browser */
-  else if (typeof elInsertBox.selectionStart != 'undefined') {
-    /* Einfügen des Formatierungscodes */
-    var start = elInsertBox.selectionStart;
-    var end = elInsertBox.selectionEnd;
+	/* für neuere auf Gecko basierende Browser */
+	else if (typeof elInsertBox.selectionStart != 'undefined') {
+		/* Einfügen des Formatierungscodes */
+		var start = elInsertBox.selectionStart;
+		var end = elInsertBox.selectionEnd;
 
-    elInsertBox.value = elInsertBox.value.substr(0, start) + sLink + elInsertBox.value.substr(end);
-  }
+		elInsertBox.value = elInsertBox.value.substr(0, start) + sLink + elInsertBox.value.substr(end);
+	}
 
-  /* für die übrigen Browser */
-  else {
-    /* Abfrage der Einfügeposition */
-    var pos;
-    var re = new RegExp('^[0-9]{0,3}$');
-    while(!re.test(pos)) {
-      pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
-    }
-    if (pos > elInsertBox.value.length) {
-      pos = elInsertBox.value.length;
-    }
-    /* Einfügen des Formatierungscodes */
-    elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
-  }
+	/* für die übrigen Browser */
+	else {
+		/* Abfrage der Einfügeposition */
+		var pos;
+		var re = new RegExp('^[0-9]{0,3}$');
+		while(!re.test(pos)) {
+			pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
+		}
+		if (pos > elInsertBox.value.length) {
+			pos = elInsertBox.value.length;
+		}
+		/* Einfügen des Formatierungscodes */
+		elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
+	}
 }
 
 function openWindow(theURL,winName,features){
-  galleryPopup = window.open(theURL,"gallery",features);
-  galleryPopup.focus();
+	galleryPopup = window.open(theURL,"gallery",features);
+	galleryPopup.focus();
 }
 </script>
 
@@ -374,88 +374,88 @@ function openWindow(theURL,winName,features){
 <!-- END OF BLOCKS -->
 
 <form name="frmModifySurvey" method="post" action="{GENERAL_FORM_ACTION}">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-    <tr>
-      <th colspan="4">{TXT_TITLE_ADD_SURVEY}</th>
-    </tr>
-    <tr class="row2">
-      <td valign="top" nowrap="nowrap">{TXT_NAME}:</td>
-      <td colspan="3">
-        <input type="text" id="frmModifySurvey_Name" name="frmModifySurvey_Name" maxlength="100" style="width:200px;" value="{GENERAL_NAME}" onChange="copyText('frmModifySurvey_Name');" />&nbsp;<a href="javascript:showOrHide('divAddSurvey_Name');">{TXT_EXTENDED}</a>
-        <div id="divAddSurvey_Name" style="display: none;">
-          <!-- BEGIN nameFields -->
-          <input type="text" name="frmModifySurvey_Name_{MODIFY_NAME_LANGID}" value="{MODIFY_NAME_VALUE}" style="width:200px; margin-top:1px;" />&nbsp;<label for="frmModifySurvey_Name_{MODIFY_NAME_LANGID}">{MODIFY_NAME_LANG}</label><br />
-          <!-- END nameFields -->
-        </div>
-      </td>
-    </tr>
-    <tr class="row1">
-      <td width="10%" valign="top" nowrap="nowrap">{TXT_ACTIVATED_IN}:</td>
-      <td width="10%" valign="top" nowrap="nowrap">{MODIFY_LANGUAGES_1}</td>
-      <td width="10%" valign="top" nowrap="nowrap">{MODIFY_LANGUAGES_2}</td>
-      <td width="70%" valign="top">{MODIFY_LANGUAGES_3}</td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_STATUS}:</td>
-      <td colspan="3">
-        <input type="radio" name="frmModifySurvey_Status" value="1" {GENERAL_STATUS_ACTIVATED_CHECKED} /><label for="frmModifySurvey_Status">{TXT_ACTIVE}</label>
-        <input type="radio" name="frmModifySurvey_Status" value="0" {GENERAL_STATUS_INACTIVATED_CHECKED} /><label for="frmModifySurvey_Status">{TXT_INACTIVE}</label>
-      </td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_REDIRECT}:</td>
-      <td colspan="3"><input type="text" name="frmModifySurvey_Redirect" id="surveyRedirectLink" value="{GENERAL_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('surveyRedirectLink', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-    </tr>
-  </table>
-  <br />
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_TITLE_TYPE}</th>
-    </tr>
-    <tr class="row2">
-      <td width="10%" nowrap="nowrap">{TXT_TYPE}:</td>
-      <td width="90%">
-        <input type="radio" name="frmModifySurvey_Type" value="Voting" onclick="selectType('idType_Voting'); switchHomeboxActivation('Voting');" {GENERAL_TYPE_VOTING_CHECKED} /><label for="frmModifySurvey_Type">{TXT_VOTING}</label>
-        <input type="radio" name="frmModifySurvey_Type" value="Survey" onclick="selectType('idType_Survey'); switchHomeboxActivation('Survey');" {GENERAL_TYPE_SURVEY_CHECKED} /><label for="frmModifySurvey_Type">{TXT_SURVEY}</label>
-      </td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_PLACEHOLDER}:</td>
-      <td colspan="3">
-        <input type="radio" id="idHomebox_Activate" name="frmModifySurvey_Homebox" value="1" {GENERAL_HOMEBOX_ACTIVATED_CHECKED} {GENERAL_HOMEBOX_ACTIVATED_DISABLED} /><label for="frmModifySurvey_Homebox">{TXT_ACTIVE}</label>
-        <input type="radio" id="idHomebox_Inactivate" name="frmModifySurvey_Homebox" value="0" {GENERAL_HOMEBOX_INACTIVATED_CHECKED} {GENERAL_HOMEBOX_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Homebox">{TXT_INACTIVE}</label>
-        &nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
-      </td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_COMMENTABLE}:</td>
-      <td colspan="3">
-        <input type="radio" id="idCommentable_Activate" name="frmModifySurvey_Commentable" value="1" {GENERAL_COMMENTABLE_ACTIVATED_CHECKED} {GENERAL_COMMENTABLE_ACTIVATED_DISABLED} /><label for="frmModifySurvey_Commentable">{TXT_ACTIVE}</label>
-        <input type="radio" id="idCommentable_Inactivate" name="frmModifySurvey_Commentable" value="0" {GENERAL_COMMENTABLE_INACTIVATED_CHECKED} {GENERAL_COMMENTABLE_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Commentable">{TXT_INACTIVE}</label>
-        &nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
-      </td>
-    </tr>
-  </table>
-  <br />
-  <div id="idType_Voting" style="{GENERAL_TYPE_VOTING_DIV}">
-    <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-      <tr><th>{TXT_TITLE_VOTING}</th></tr>
-    </table>
-    <div id="id_Voting_Questions">{VOTING_QUESTIONS}</div>
-  </div>
-
-  <div id="idType_Survey" style="{GENERAL_TYPE_SURVEY_DIV}">
-    <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-      <tr><th>{TXT_TITLE_SURVEY}</th></tr>
-    </table>
-    <div id="id_Survey_Questions">{SURVEY_QUESTIONS}</div>
-    <br />
-    <input type="button" name="frmModifySurvey_Survey_Question_Add" onclick="addQuestion('Survey', 3);" value="{TXT_BUTTON_QUESTION_ADD}" />
-    <input type="button" name="frmModifySurvey_Survey_Question_Remove" onclick="removeQuestion();" value="{TXT_BUTTON_QUESTION_REMOVE}" />
-  </div>
-
-  <br />
-  <input type="submit" name="frmModifySurvey_Submit" value="{TXT_BUTTON_SUBMIT}" />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<tr>
+			<th colspan="4">{TXT_TITLE_ADD_SURVEY}</th>
+		</tr>
+		<tr class="row2">
+			<td valign="top" nowrap="nowrap">{TXT_NAME}:</td>
+			<td colspan="3">
+				<input type="text" id="frmModifySurvey_Name" name="frmModifySurvey_Name" maxlength="100" style="width:200px;" value="{GENERAL_NAME}" onChange="copyText('frmModifySurvey_Name');" />&nbsp;<a href="javascript:showOrHide('divAddSurvey_Name');">{TXT_EXTENDED}</a>
+				<div id="divAddSurvey_Name" style="display: none;">
+					<!-- BEGIN nameFields -->
+					<input type="text" name="frmModifySurvey_Name_{MODIFY_NAME_LANGID}" value="{MODIFY_NAME_VALUE}" style="width:200px; margin-top:1px;" />&nbsp;<label for="frmModifySurvey_Name_{MODIFY_NAME_LANGID}">{MODIFY_NAME_LANG}</label><br />
+					<!-- END nameFields -->
+				</div>					
+			</td>
+		</tr>
+		<tr class="row1">
+			<td width="10%" valign="top" nowrap="nowrap">{TXT_ACTIVATED_IN}:</td>
+			<td width="10%" valign="top" nowrap="nowrap">{MODIFY_LANGUAGES_1}</td>
+			<td width="10%" valign="top" nowrap="nowrap">{MODIFY_LANGUAGES_2}</td>
+			<td width="70%" valign="top">{MODIFY_LANGUAGES_3}</td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap">{TXT_STATUS}:</td>
+			<td colspan="3">
+				<input type="radio" name="frmModifySurvey_Status" value="1" {GENERAL_STATUS_ACTIVATED_CHECKED} /><label for="frmModifySurvey_Status">{TXT_ACTIVE}</label>
+				<input type="radio" name="frmModifySurvey_Status" value="0" {GENERAL_STATUS_INACTIVATED_CHECKED} /><label for="frmModifySurvey_Status">{TXT_INACTIVE}</label>
+			</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap">{TXT_REDIRECT}:</td>
+			<td colspan="3"><input type="text" name="frmModifySurvey_Redirect" id="surveyRedirectLink" value="{GENERAL_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('surveyRedirectLink', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+		</tr>
+	</table>
+	<br />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_TITLE_TYPE}</th>
+		</tr>
+		<tr class="row2">
+			<td width="10%" nowrap="nowrap">{TXT_TYPE}:</td>
+			<td width="90%">
+				<input type="radio" name="frmModifySurvey_Type" value="Voting" onclick="selectType('idType_Voting'); switchHomeboxActivation('Voting');" {GENERAL_TYPE_VOTING_CHECKED} /><label for="frmModifySurvey_Type">{TXT_VOTING}</label>
+				<input type="radio" name="frmModifySurvey_Type" value="Survey" onclick="selectType('idType_Survey'); switchHomeboxActivation('Survey');" {GENERAL_TYPE_SURVEY_CHECKED} /><label for="frmModifySurvey_Type">{TXT_SURVEY}</label>
+			</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap">{TXT_PLACEHOLDER}:</td>
+			<td colspan="3">
+				<input type="radio" id="idHomebox_Activate" name="frmModifySurvey_Homebox" value="1" {GENERAL_HOMEBOX_ACTIVATED_CHECKED} {GENERAL_HOMEBOX_ACTIVATED_DISABLED} /><label for="frmModifySurvey_Homebox">{TXT_ACTIVE}</label>
+				<input type="radio" id="idHomebox_Inactivate" name="frmModifySurvey_Homebox" value="0" {GENERAL_HOMEBOX_INACTIVATED_CHECKED} {GENERAL_HOMEBOX_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Homebox">{TXT_INACTIVE}</label>
+				&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" />
+			</td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap">{TXT_COMMENTABLE}:</td>
+			<td colspan="3">
+				<input type="radio" id="idCommentable_Activate" name="frmModifySurvey_Commentable" value="1" {GENERAL_COMMENTABLE_ACTIVATED_CHECKED} {GENERAL_COMMENTABLE_ACTIVATED_DISABLED} /><label for="frmModifySurvey_Commentable">{TXT_ACTIVE}</label>
+				<input type="radio" id="idCommentable_Inactivate" name="frmModifySurvey_Commentable" value="0" {GENERAL_COMMENTABLE_INACTIVATED_CHECKED} {GENERAL_COMMENTABLE_INACTIVATED_DISABLED} /><label for="frmModifySurvey_Commentable">{TXT_INACTIVE}</label>
+				&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+			</td>
+		</tr>
+	</table>
+	<br />
+	<div id="idType_Voting" style="{GENERAL_TYPE_VOTING_DIV}">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+			<tr><th>{TXT_TITLE_VOTING}</th></tr>
+		</table>
+		<div id="id_Voting_Questions">{VOTING_QUESTIONS}</div>
+	</div>
+	
+	<div id="idType_Survey" style="{GENERAL_TYPE_SURVEY_DIV}">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+			<tr><th>{TXT_TITLE_SURVEY}</th></tr>
+		</table>
+		<div id="id_Survey_Questions">{SURVEY_QUESTIONS}</div>
+		<br />
+		<input type="button" name="frmModifySurvey_Survey_Question_Add" onclick="addQuestion('Survey', 3);" value="{TXT_BUTTON_QUESTION_ADD}" />
+		<input type="button" name="frmModifySurvey_Survey_Question_Remove" onclick="removeQuestion();" value="{TXT_BUTTON_QUESTION_REMOVE}" />
+	</div>
+	
+	<br />
+	<input type="submit" name="frmModifySurvey_Submit" value="{TXT_BUTTON_SUBMIT}" />
 </form>
 {GENERAL_JS_ONLOAD}
 <!-- END module_survey_add.html -->

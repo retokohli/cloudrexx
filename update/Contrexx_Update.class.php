@@ -433,10 +433,10 @@ class Contrexx_Update
      * Check for newer version
      *
      * Returns TRUE if $newVersion has a higher version number than $installedVersion.
-     *
-     * @param string $installedVersion
-     * @param string $newVersion
-     * @return boolean
+	 *
+	 * @param string $installedVersion
+	 * @param string $newVersion
+	 * @return boolean
      */
     function _isNewerVersion($installedVersion, $newVersion)
     {
@@ -741,11 +741,12 @@ function checkMemoryLimit()
 
     if (!isset($memoryLimit)) {
         @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
-        if (!class_exists('FWSystem')) {
+        $objSystem = new FWSystem();
+        if ($objSystem === false) {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_API_LOAD_FAILED'], ASCMS_FRAMEWORK_PATH.'/System.class.php'));
             return false;
         }
-        $memoryLimit = FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
+        $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
         if (empty($memoryLimit)) {
             // set default php memory limit of 8MBytes
             $memoryLimit = 8*pow(1024, 2);

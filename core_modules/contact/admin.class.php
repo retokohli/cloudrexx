@@ -24,19 +24,22 @@ require_once ASCMS_CORE_MODULE_PATH.'/contact/lib/ContactLib.class.php';
  * @package     contrexx
  * @subpackage  core_module_contact
  */
-class ContactManager extends ContactLib {
+class ContactManager extends ContactLib
+{
     var $_objTpl;
 
     var $_statusMessageOk;
     var $_statusMessageErr;
 
     var $_arrFormFieldTypes;
-    var $_arrUserAccountData;
 
     var $boolHistoryEnabled = false;
     var $boolHistoryActivate = false;
 
-    var $_csvSeparator = ';';
+    var $_csvSeparator = null;
+    var $_csvEnclosure = null;
+    var $_csvCharset = null;
+    var $_csvLFB = null;
 
     var $_pageTitle = '';
 
@@ -44,16 +47,17 @@ class ContactManager extends ContactLib {
 
 
     /**
-     * PHP5 constructor
-     * @global HTML_Template_Sigma
-     * @global array
-     * @global array
-     */
+    * PHP5 constructor
+    * @global HTML_Template_Sigma
+    * @global array
+    * @global array
+    */
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "   <a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].">".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
@@ -64,40 +68,15 @@ class ContactManager extends ContactLib {
             'label'         => $_ARRAYLANG['TXT_CONTACT_TEXT'],
             'checkbox'      => $_ARRAYLANG['TXT_CONTACT_CHECKBOX'],
             'checkboxGroup' => $_ARRAYLANG['TXT_CONTACT_CHECKBOX_GROUP'],
-            'country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
             'date'          => $_ARRAYLANG['TXT_CONTACT_DATE'],
             'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD'],
-            'fieldset'      => $_ARRAYLANG['TXT_CONTACT_FIELDSET'],
             'hidden'        => $_ARRAYLANG['TXT_CONTACT_HIDDEN_FIELD'],
-            'horizontalLine'=> $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'],
             'password'      => $_ARRAYLANG['TXT_CONTACT_PASSWORD_FIELD'],
             'radio'         => $_ARRAYLANG['TXT_CONTACT_RADIO_BOXES'],
             'select'        => $_ARRAYLANG['TXT_CONTACT_SELECTBOX'],
             'textarea'      => $_ARRAYLANG['TXT_CONTACT_TEXTAREA'],
             'recipient'     => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
         );
-
-	$this->_arrUserAccountData = array(
-            'access_picture'       => $_ARRAYLANG['TXT_CONTACT_PICTURE'],
-            'access_gender'        => $_ARRAYLANG['TXT_CONTACT_GENDER'],
-            'access_title'         => $_ARRAYLANG['TXT_CONTACT_TITLE'],
-            'access_firstname'     => $_ARRAYLANG['TXT_CONTACT_FIRST_NAME'],
-            'access_lastname'      => $_ARRAYLANG['TXT_CONTACT_LAST_NAME'],
-            'access_company'       => $_ARRAYLANG['TXT_CONTACT_COMPANY'],
-            'access_address'       => $_ARRAYLANG['TXT_CONTACT_ADDRESS'],
-            'access_city'          => $_ARRAYLANG['TXT_CONTACT_CITY'],
-            'access_zip'           => $_ARRAYLANG['TXT_CONTACT_ZIP'],
-            'access_country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
-            'access_phone_office'  => $_ARRAYLANG['TXT_CONTACT_PHONE_OFFICE'],
-            'access_phone_private' => $_ARRAYLANG['TXT_CONTACT_PHONE_PRIVATE'],
-            'access_phone_mobile'  => $_ARRAYLANG['TXT_CONTACT_PHONE_MOBILE'],
-            'access_phone_fax'     => $_ARRAYLANG['TXT_CONTACT_PHONE_FAX'],
-            'access_birthday'      => $_ARRAYLANG['TXT_CONTACT_BIRTHDAY'],
-            'access_website'       => $_ARRAYLANG['TXT_CONTACT_WEBSITE'],
-            'access_profession'    => $_ARRAYLANG['TXT_CONTACT_PROFESSION'],
-            'access_interests'     => $_ARRAYLANG['TXT_CONTACT_INTERESTS'],
-            'access_signature'     => $_ARRAYLANG['TXT_CONTACT_SIGNATURE']
-	);
 
         $this->initContactForms(true);
         $this->initCheckTypes();
@@ -110,13 +89,13 @@ class ContactManager extends ContactLib {
     }
 
     /**
-     * Get page
-     *
-     * Get the development page
-     *
-     * @access public
-     * @global HTML_Template_Sigma
-     */
+    * Get page
+    *
+    * Get the development page
+    *
+    * @access public
+    * @global HTML_Template_Sigma
+    */
     function getPage()
     {
         global $objTemplate;
@@ -130,25 +109,25 @@ class ContactManager extends ContactLib {
         }
 
         switch ($_REQUEST['act']) {
-            case 'settings':
-                Permission::checkAccess(85, 'static');
-                $this->_getSettingsPage();
-                break;
+        case 'settings':
+            Permission::checkAccess(85, 'static');
+            $this->_getSettingsPage();
+            break;
 
-            case 'entries':
-                $this->_getEntriesPage();
-                break;
+        case 'entries':
+            $this->_getEntriesPage();
+            break;
 
-            default:
-                $this->_getContactFormPage();
-                break;
+        default:
+            $this->_getContactFormPage();
+            break;
         }
 
         $objTemplate->setVariable(array(
-                'CONTENT_TITLE'             => $this->_pageTitle,
-                'CONTENT_OK_MESSAGE'        => $this->_statusMessageOk,
-                'CONTENT_STATUS_MESSAGE'    => $this->_statusMessageErr,
-                'ADMIN_CONTENT'             => $this->_objTpl->get()
+            'CONTENT_TITLE'             => $this->_pageTitle,
+            'CONTENT_OK_MESSAGE'        => $this->_statusMessageOk,
+            'CONTENT_STATUS_MESSAGE'    => $this->_statusMessageErr,
+            'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
     }
 
@@ -159,25 +138,26 @@ class ContactManager extends ContactLib {
         $entryId = isset($_REQUEST['entryId']) ? intval($_REQUEST['entryId']) : 0;
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
 
-        $arrEntry = &$this->getFormEntry($entryId);
+        $arrEntry = &$this->getFormEtry($entryId);
+
         if (is_array($arrEntry)) {
 
             $this->_objTpl->loadTemplateFile('module_contact_entries_details.html');
             $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_ENTRIE_DETAILS'];
 
             $this->_objTpl->setVariable(array(
-                    'CONTACT_FORM_ENTRY_ID'                 => $entryId,
-                    'CONTACT_ENTRY_TITLE'                   => str_replace('%DATE%', date(ASCMS_DATE_FORMAT, $arrEntry['time']), $_ARRAYLANG['TXT_CONTACT_ENTRY_OF_DATE']),
-                    'CONTACT_ENTRY'                         => $this->_getEntryDetails($arrEntry, $formId),
-                    'CONTACT_FORM_ID'                       => $formId
+                'CONTACT_FORM_ENTRY_ID'                 => $entryId,
+                'CONTACT_ENTRY_TITLE'                   => str_replace('%DATE%', date(ASCMS_DATE_FORMAT, $arrEntry['time']), $_ARRAYLANG['TXT_CONTACT_ENTRY_OF_DATE']),
+                'CONTACT_ENTRY'                         => $this->_getEntryDetails($arrEntry, $formId),
+                'CONTACT_FORM_ID'                       => $formId
             ));
 
             $this->_objTpl->setVariable(array(
-                    'TXT_CONTACT_BACK'                      => $_ARRAYLANG['TXT_CONTACT_BACK'],
-                    'TXT_CONTACT_DELETE'                    => $_ARRAYLANG['TXT_CONTACT_DELETE'],
-                    'TXT_CONTACT_CONFIRM_DELETE_ENTRY'      => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_ENTRY'],
-                    'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
-                    'TXT_CONTACT_CONFIRM_DELETE_ENTRIES'    => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_ENTRIES']
+                'TXT_CONTACT_BACK'                      => $_ARRAYLANG['TXT_CONTACT_BACK'],
+                'TXT_CONTACT_DELETE'                    => $_ARRAYLANG['TXT_CONTACT_DELETE'],
+                'TXT_CONTACT_CONFIRM_DELETE_ENTRY'      => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_ENTRY'],
+                'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
+                'TXT_CONTACT_CONFIRM_DELETE_ENTRIES'    => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_ENTRIES']
             ));
         } else {
             $this->_contactFormEntries();
@@ -187,12 +167,12 @@ class ContactManager extends ContactLib {
     function _getSettingsPage()
     {
         switch ($_REQUEST['tpl']) {
-            case 'save':
-                $this->_saveSettings();
+        case 'save':
+            $this->_saveSettings();
 
-            default:
-                $this->_settings();
-                break;
+        default:
+            $this->_settings();
+            break;
         }
     }
 
@@ -206,25 +186,25 @@ class ContactManager extends ContactLib {
         $arrSettings = &$this->getSettings();
 
         $this->_objTpl->setVariable(array(
-                'TXT_CONTACT_SETTINGS'                          => $_ARRAYLANG['TXT_CONTACT_SETTINGS'],
-                'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
-                'TXT_CONTACT_FILE_UPLOAD_DEPOSITION_PATH'       => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_DEPOSITION_PATH'],
-                'TXT_CONTACT_SPAM_PROTECTION_WORD_LIST'         => $_ARRAYLANG['TXT_CONTACT_SPAM_PROTECTION_WORD_LIST'],
-                'TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION'    => $_ARRAYLANG['TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION'],
-                'TXT_CONTACT_DATE'                              => $_ARRAYLANG['TXT_CONTACT_DATE'],
-                'TXT_CONTACT_HOSTNAME'                          => $_ARRAYLANG['TXT_CONTACT_HOSTNAME'],
-                'TXT_CONTACT_BROWSER_LANGUAGE'                  => $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'],
-                'TXT_CONTACT_IP_ADDRESS'                        => $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'],
-                'TXT_CONTACT_META_DATE_BY_EXPORT'               => $_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT']
+            'TXT_CONTACT_SETTINGS'                          => $_ARRAYLANG['TXT_CONTACT_SETTINGS'],
+            'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
+            'TXT_CONTACT_FILE_UPLOAD_DEPOSITION_PATH'       => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_DEPOSITION_PATH'],
+            'TXT_CONTACT_SPAM_PROTECTION_WORD_LIST'         => $_ARRAYLANG['TXT_CONTACT_SPAM_PROTECTION_WORD_LIST'],
+            'TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION'    => $_ARRAYLANG['TXT_CONTACT_SPAM_PROTECTION_WW_DESCRIPTION'],
+            'TXT_CONTACT_DATE'                              => $_ARRAYLANG['TXT_CONTACT_DATE'],
+            'TXT_CONTACT_HOSTNAME'                          => $_ARRAYLANG['TXT_CONTACT_HOSTNAME'],
+            'TXT_CONTACT_BROWSER_LANGUAGE'                  => $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'],
+            'TXT_CONTACT_IP_ADDRESS'                        => $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'],
+            'TXT_CONTACT_META_DATE_BY_EXPORT'               => $_ARRAYLANG['TXT_CONTACT_META_DATE_BY_EXPORT']
         ));
 
         $this->_objTpl->setVariable(array(
-                'CONTACT_FILE_UPLOAD_DEPOSITION_PATH'   => $arrSettings['fileUploadDepositionPath'],
-                'CONTACT_SPAM_PROTECTION_WORD_LIST'     => $arrSettings['spamProtectionWordList'],
-                'CONTACT_FIELD_META_DATE'               => $arrSettings['fieldMetaDate'] == '1' ? 'checked="checked"' : '',
-                'CONTACT_FIELD_META_LANG'               => $arrSettings['fieldMetaLang'] == '1' ? 'checked="checked"' : '',
-                'CONTACT_FIELD_META_HOST'               => $arrSettings['fieldMetaHost'] == '1' ? 'checked="checked"' : '',
-                'CONTACT_FIELD_META_IP'                 => $arrSettings['fieldMetaIP'] == '1' ? 'checked="checked"' : '',
+            'CONTACT_FILE_UPLOAD_DEPOSITION_PATH'   => $arrSettings['fileUploadDepositionPath'],
+            'CONTACT_SPAM_PROTECTION_WORD_LIST'     => $arrSettings['spamProtectionWordList'],
+            'CONTACT_FIELD_META_DATE'               => $arrSettings['fieldMetaDate'] == '1' ? 'checked="checked"' : '',
+            'CONTACT_FIELD_META_LANG'               => $arrSettings['fieldMetaLang'] == '1' ? 'checked="checked"' : '',
+            'CONTACT_FIELD_META_HOST'               => $arrSettings['fieldMetaHost'] == '1' ? 'checked="checked"' : '',
+            'CONTACT_FIELD_META_IP'                 => $arrSettings['fieldMetaIP'] == '1' ? 'checked="checked"' : '',
         ));
     }
 
@@ -238,12 +218,12 @@ class ContactManager extends ContactLib {
             $arrSettings = &$this->getSettings();
 
             $arrNewSettings = array(
-                    'fileUploadDepositionPath'  => isset($_POST['contactFileUploadDepositionPath']) ? trim(contrexx_stripslashes($_POST['contactFileUploadDepositionPath'])) : '',
-                    'spamProtectionWordList'    => isset($_POST['contactSpamProtectionWordList']) ? explode(',', $_POST['contactSpamProtectionWordList']) : '',
-                    'fieldMetaDate'             => isset($_POST['contactFieldMetaDate']) ? intval($_POST['contactFieldMetaDate']) : 0,
-                    'fieldMetaHost'             => isset($_POST['contactFieldMetaHost']) ? intval($_POST['contactFieldMetaHost']) : 0,
-                    'fieldMetaLang'             => isset($_POST['contactFieldMetaLang']) ? intval($_POST['contactFieldMetaLang']) : 0,
-                    'fieldMetaIP'               => isset($_POST['contactFieldMetaIP']) ? intval($_POST['contactFieldMetaIP']) : 0
+                'fileUploadDepositionPath'  => isset($_POST['contactFileUploadDepositionPath']) ? trim(contrexx_stripslashes($_POST['contactFileUploadDepositionPath'])) : '',
+                'spamProtectionWordList'    => isset($_POST['contactSpamProtectionWordList']) ? explode(',', $_POST['contactSpamProtectionWordList']) : '',
+                'fieldMetaDate'             => isset($_POST['contactFieldMetaDate']) ? intval($_POST['contactFieldMetaDate']) : 0,
+                'fieldMetaHost'             => isset($_POST['contactFieldMetaHost']) ? intval($_POST['contactFieldMetaHost']) : 0,
+                'fieldMetaLang'             => isset($_POST['contactFieldMetaLang']) ? intval($_POST['contactFieldMetaLang']) : 0,
+                'fieldMetaIP'               => isset($_POST['contactFieldMetaIP']) ? intval($_POST['contactFieldMetaIP']) : 0
             );
 
             if (strpos($arrNewSettings['fileUploadDepositionPath'], '..') || empty($arrNewSettings['fileUploadDepositionPath'])) {
@@ -281,50 +261,54 @@ class ContactManager extends ContactLib {
     function _getContactFormPage()
     {
         switch ($_REQUEST['tpl']) {
-            case 'edit':
-                $this->_modifyForm();
-                break;
+        case 'edit':
+            $this->_modifyForm();
+            break;
 
-            case 'copy':
+        case 'copy':
+            if (isset($_REQUEST['selectLang']) && $_REQUEST['selectLang'] == 'true') {
+                $this->_selectFrontendLang();
+            } else {
                 $this->_modifyForm(true);
-                break;
+            }
+            break;
 
-            case 'save':
-                $this->_saveForm();
-                break;
+        case 'save':
+            $this->_saveForm();
+            break;
 
-            case 'deleteForm':
-                $this->_deleteForm();
-                break;
+        case 'deleteForm':
+            $this->_deleteForm();
+            break;
 
-            case 'deleteEntry':
-                $this->_deleteFormEntry();
-                break;
+        case 'deleteEntry':
+            $this->_deleteFormEntry();
+            break;
 
-            case 'code':
-                $this->_sourceCode();
-                break;
+        case 'code':
+            $this->_sourceCode();
+            break;
 
-            case 'entries':
-                $this->_contactFormEntries();
-                break;
+        case 'entries':
+            $this->_contactFormEntries();
+            break;
 
-            case 'csv':
-                $this->_getCsv();
-                break;
+        case 'csv':
+            $this->_getCsv();
+            break;
 
-            case 'newContent':
-                $this->_createContentPage();
-                break;
+        case 'newContent':
+            $this->_createContentPage();
+            break;
 
-            case 'updateContent':
-                $this->_updateContentSite();
-                $this->_contactForms();
-                break;
+        case 'updateContent':
+            $this->_updateContentSite();
+            $this->_contactForms();
+            break;
 
-            default:
-                $this->_contactForms();
-                break;
+        default:
+            $this->_contactForms();
+            break;
         }
     }
 
@@ -351,34 +335,34 @@ class ContactManager extends ContactLib {
             if (count($arrEntries) > 0) {
                 $arrFormFields = &$this->getFormFields($formId);
                 $arrFormFieldNames = &$this->getFormFieldNames($formId);
-                
+
                 $this->_objTpl->setGlobalVariable(array(
-                        'TXT_CONTACT_DELETE_ENTRY'              => $_ARRAYLANG['TXT_CONTACT_DELETE_ENTRY'],
-                        'TXT_CONTACT_DETAILS'                   => $_ARRAYLANG['TXT_CONTACT_DETAILS'],
-                        'CONTACT_FORM_ID'                       => $formId
+                    'TXT_CONTACT_DELETE_ENTRY'              => $_ARRAYLANG['TXT_CONTACT_DELETE_ENTRY'],
+                    'TXT_CONTACT_DETAILS'                   => $_ARRAYLANG['TXT_CONTACT_DETAILS'],
+                    'CONTACT_FORM_ID'                       => $formId
                 ));
 
                 $this->_objTpl->setVariable(array(
-                        'TXT_CONTACT_BACK'                      => $_ARRAYLANG['TXT_CONTACT_BACK'],
-                        'TXT_CONTACT_CONFIRM_DELETE_ENTRY'      => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_ENTRY'],
-                        'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
-                        'TXT_CONTACT_DATE'                      => $_ARRAYLANG['TXT_CONTACT_DATE'],
-                        'TXT_CONTACT_FUNCTIONS'                 => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
-                        'TXT_CONTACT_SELECT_ALL'                => $_ARRAYLANG['TXT_CONTACT_SELECT_ALL'],
-                        'TXT_CONTACT_DESELECT_ALL'              => $_ARRAYLANG['TXT_CONTACT_DESELECT_ALL'],
-                        'TXT_CONTACT_SUBMIT_SELECT'             => $_ARRAYLANG['TXT_CONTACT_SUBMIT_SELECT'],
-                        'TXT_CONTACT_SUBMIT_DELETE'             => $_ARRAYLANG['TXT_CONTACT_SUBMIT_DELETE'],
-                        'CONTACT_FORM_COL_NUMBER'               => (count($arrCols) > $maxFields ? $maxFields+1 : count($arrCols)) + 3,
-                        'CONTACT_FORM_ENTRIES_TITLE'            => str_replace('%NAME%', htmlentities($this->arrForms[$formId]['name'], ENT_QUOTES, CONTREXX_CHARSET), $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME']),
-                        'CONTACT_FORM_PAGING'                   => $paging
+                    'TXT_CONTACT_BACK'                      => $_ARRAYLANG['TXT_CONTACT_BACK'],
+                    'TXT_CONTACT_CONFIRM_DELETE_ENTRY'      => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_ENTRY'],
+                    'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'    => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
+                    'TXT_CONTACT_DATE'                      => $_ARRAYLANG['TXT_CONTACT_DATE'],
+                    'TXT_CONTACT_FUNCTIONS'                 => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
+                    'TXT_CONTACT_SELECT_ALL'                => $_ARRAYLANG['TXT_CONTACT_SELECT_ALL'],
+                    'TXT_CONTACT_DESELECT_ALL'              => $_ARRAYLANG['TXT_CONTACT_DESELECT_ALL'],
+                    'TXT_CONTACT_SUBMIT_SELECT'             => $_ARRAYLANG['TXT_CONTACT_SUBMIT_SELECT'],
+                    'TXT_CONTACT_SUBMIT_DELETE'             => $_ARRAYLANG['TXT_CONTACT_SUBMIT_DELETE'],
+                    'CONTACT_FORM_COL_NUMBER'               => (count($arrCols) > $maxFields ? $maxFields+1 : count($arrCols)) + 3,
+                    'CONTACT_FORM_ENTRIES_TITLE'            => str_replace('%NAME%', htmlentities($this->arrForms[$formId]['name'], ENT_QUOTES, CONTREXX_CHARSET), $_ARRAYLANG['TXT_CONTACT_ENTRIES_OF_NAME']),
+                    'CONTACT_FORM_PAGING'                   => $paging
                 ));
-                
+
                 $colNr = 0;
                 foreach ($arrCols as $col) {
                     if ($colNr == $maxFields) {
                         break;
                     }
-                    $this->_objTpl->setVariable('CONTACT_COL_NAME', $arrFormFields[$col]['lang'][FRONTEND_LANG_ID]['name']);
+                    $this->_objTpl->setVariable('CONTACT_COL_NAME', $col);
                     $this->_objTpl->parse('contact_col_names');
                     $colNr++;
                 }
@@ -388,43 +372,21 @@ class ContactManager extends ContactLib {
                     $this->_objTpl->setVariable('CONTACT_FORM_ENTRIES_ROW_CLASS', $rowNr % 2 == 0 ? 'row2' : 'row1');
 
                     $this->_objTpl->setVariable(array(
-                            'CONTACT_FORM_DATE'     => '<a href="index.php?cmd=contact&amp;act=entries&amp;formId='.$formId.'&amp;entryId='.$entryId.'" title="'.$_ARRAYLANG['TXT_CONTACT_DETAILS'].'">'.date(ASCMS_DATE_FORMAT, $arrEntry['time']).'</a>',
-                            'CONTACT_FORM_ENTRY_ID' => $entryId
+                        'CONTACT_FORM_DATE'     => '<a href="index.php?cmd=contact&amp;act=entries&amp;formId='.$formId.'&amp;entryId='.$entryId.'" title="'.$_ARRAYLANG['TXT_CONTACT_DETAILS'].'">'.date(ASCMS_DATE_FORMAT, $arrEntry['time']).'</a>',
+                        'CONTACT_FORM_ENTRY_ID' => $entryId
                     ));
 
                     $this->_objTpl->parse('contact_form_entry_data');
 
-                    $colNr  = 0;
-                    $langId = $arrEntry['langId'];                    
+                    $colNr = 0;
                     foreach ($arrCols as $col) {
                         if ($colNr == $maxFields) {
                             break;
                         }
-                        
+
                         if (isset($arrEntry['data'][$col])) {
-                            if (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'file') {
-                                $file = $arrEntry['data'][$col];
-                                if (isset($file)) {
-                                    if (preg_match('/^a:2:{/', $file)) {
-                                        $file = unserialize($file);
-                                    } else {
-                                        $file = array(
-                                                'path' => $file,
-                                                'name' => basename($file)
-                                        );
-                                    }
-                                    $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
-                                    $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
-                                    $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                                    $value = '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
-                                } else {
-                                    $value = '&nbsp;';
-                                }
-                            } elseif (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'recipient') {
-                                $recipient = $this->getRecipients($formId, false);
-                                $value = htmlentities($recipient[$arrEntry['data'][$col]]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET);
-                            } elseif ($arrFormFields[$col]['type'] == 'checkbox') {
-                                $value = $_ARRAYLANG['TXT_CONTACT_YES'];
+                            if (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'file') {
+                                $value = '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
                             } else {
                                 $value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
                             }
@@ -433,13 +395,6 @@ class ContactManager extends ContactLib {
                         }
                         if (empty($value)) {
                             $value = '&nbsp;';
-                        }
-
-                        /*
-                         * Sets value if checkbox is not selected
-                         */
-                        if ($arrFormFields[$arrFormFieldNames[$col]]['type'] == 'checkbox' && $arrEntry['data'][$col] == null) {
-                            $value = $_ARRAYLANG['TXT_CONTACT_NO'];
                         }
 
                         $this->_objTpl->setVariable('CONTACT_FORM_ENTRIES_CELL_CONTENT', $value);
@@ -467,51 +422,45 @@ class ContactManager extends ContactLib {
         $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'];
 
         $this->_objTpl->setVariable(array(
-                'TXT_CONTACT_CONFIRM_DELETE_FORM'           => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_FORM'],
-                'TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'  => $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'],
-                'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'        => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
-                'TXT_CONTACT_LATEST_ENTRY'                  => $_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'],
-                'TXT_CONTACT_NUMBER_OF_ENTRIES'             => $_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'],
-                'TXT_CONTACT_CONTACT_FORMS'                 => $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'],
-                'TXT_CONTACT_ID'                            => $_ARRAYLANG['TXT_CONTACT_ID'],
-                //'TXT_CONTACT_LANG'                          => $_ARRAYLANG['TXT_CONTACT_LANG'],
-                'TXT_CONTACT_NAME'                          => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                'TXT_CONTACT_FUNCTIONS'                     => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
-                'TXT_CONTACT_ADD_NEW_CONTACT_FORM'          => $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'],
-                'TXT_CONTACT_CSV_FILE'                      => $_ARRAYLANG['TXT_CONTACT_CSV_FILE'],
-                'TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE']
+            'TXT_CONTACT_CONFIRM_DELETE_FORM'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_FORM'],
+            'TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'  => $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'],
+            'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'        => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
+            'TXT_CONTACT_LATEST_ENTRY'                  => $_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'],
+            'TXT_CONTACT_NUMBER_OF_ENTRIES'             => $_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'],
+            'TXT_CONTACT_CONTACT_FORMS'                 => $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'],
+            'TXT_CONTACT_ID'                            => $_ARRAYLANG['TXT_CONTACT_ID'],
+            'TXT_CONTACT_LANG'                          => $_ARRAYLANG['TXT_CONTACT_LANG'],
+            'TXT_CONTACT_NAME'                          => $_ARRAYLANG['TXT_CONTACT_NAME'],
+            'TXT_CONTACT_FUNCTIONS'                     => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
+            'TXT_CONTACT_ADD_NEW_CONTACT_FORM'          => $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'],
+            //'TXT_CONTACT_CSV_FILE'                      => $_ARRAYLANG['TXT_CONTACT_CSV_FILE'],
+            'TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE']
         ));
 
         $this->_objTpl->setGlobalVariable(array(
-                'TXT_CONTACT_MODIFY'                        => $_ARRAYLANG['TXT_CONTACT_MODIFY'],
-                'TXT_CONTACT_DELETE'                        => $_ARRAYLANG['TXT_CONTACT_DELETE'],
-                'TXT_CONTACT_SHOW_SOURCECODE'               => $_ARRAYLANG['TXT_CONTACT_SHOW_SOURCECODE'],
-                'TXT_CONTACT_USE_AS_TEMPLATE'               => $_ARRAYLANG['TXT_CONTACT_USE_AS_TEMPLATE']
+            'TXT_CONTACT_SHOW_ENTRIES'                  => $_ARRAYLANG['TXT_CONTACT_SHOW_ENTRIES'],
+            'TXT_CONTACT_MODIFY'                        => $_ARRAYLANG['TXT_CONTACT_MODIFY'],
+            'TXT_CONTACT_DELETE'                        => $_ARRAYLANG['TXT_CONTACT_DELETE'],
+            'TXT_CONTACT_SHOW_SOURCECODE'               => $_ARRAYLANG['TXT_CONTACT_SHOW_SOURCECODE'],
+            'TXT_CONTACT_USE_AS_TEMPLATE'               => $_ARRAYLANG['TXT_CONTACT_USE_AS_TEMPLATE'],
+            'TXT_CONTACT_GET_CSV'                       => $_ARRAYLANG['TXT_CONTACT_GET_CSV'],
+            'TXT_CONTACT_DOWNLOAD'                      => $_ARRAYLANG['TXT_CONTACT_DOWNLOAD']
         ));
 
         $rowNr = 0;
         if (is_array($this->arrForms)) {
             foreach ($this->arrForms as $formId => $arrForm) {
                 $pageId = $this->_getContentSiteId($formId);
-                
-                $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
-                $arrForm['lang'][FRONTEND_LANG_ID]['name'] = ($arrForm['lang'][FRONTEND_LANG_ID]['name'] == "") ? $_ARRAYLANG['TXT_CONTACT_UNTITLED_FORM'] : $arrForm['lang'][FRONTEND_LANG_ID]['name'];
 
-                if ($arrForm['number'] > 0) {
-                    $formName = "<a href='index.php?cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId."' title='".$_ARRAYLANG['TXT_CONTACT_SHOW_ENTRIES']."'>".htmlentities($arrForm['lang'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET)."</a>";
-                    $getCSVLink = "<a href='index.php?cmd=contact&amp;act=forms&amp;tpl=csv&amp;formId=".$formId."' title='".$_ARRAYLANG['TXT_CONTACT_GET_CSV']."'>".$_ARRAYLANG['TXT_CONTACT_DOWNLOAD']."</a>";
-                } else {
-                    $formName = htmlentities($arrForm['lang'][FRONTEND_LANG_ID]['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                    $getCSVLink = ' - ';
-                }
+                $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
 
                 $this->_objTpl->setVariable(array(
-                        'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
-                        'CONTACT_FORM_NAME'                 => $formName,
-                        'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : ' - ',
-                        'CONTACT_FORM_NUMBER_OF_ENTRIES'    => ($arrForm['number'] > 0) ? $arrForm['number'] : ' - ',
-                        'CONATCT_FORM_CSV_DOWNLOAD'         => $getCSVLink,
-                        'CONTACT_DELETE_CONTENT'            => $pageId > 0 ? 'true' : 'false'
+                    'CONTACT_FORM_ROW_CLASS'            => $rowNr % 2 == 1 ? 'row1' : 'row2',
+                    'CONTACT_FORM_NAME'                 => htmlentities($arrForm['name'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '&nbsp;',
+                    'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $arrForm['number'],
+                    'CONTACT_FORM_LANG'                 => FWLanguage::getLanguageParameter($arrForm['lang'], 'name'),
+                    'CONTACT_DELETE_CONTENT'            => $pageId > 0 ? 'true' : 'false'
                 ));
 
                 $this->_objTpl->parse('contact_contact_forms');
@@ -523,7 +472,7 @@ class ContactManager extends ContactLib {
 
     function _selectFrontendLang()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_FRONTEND_LANGID;
 
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
         if ($formId > 0) {
@@ -535,21 +484,21 @@ class ContactManager extends ContactLib {
             $arrLanguages = FWLanguage::getLanguageArray();
             foreach ($arrLanguages as $langId => $arrLanguage) {
                 if (intval($arrLanguage['frontend']) == 1) {
-                    $menu .= "<option value=\"".$langId."\"".(FRONTEND_LANG_ID == $langId ? "selected=\"selected\"" : "").">".$arrLanguage['name']."</option>\n";
+                    $menu .= "<option value=\"".$langId."\"".($_FRONTEND_LANGID == $langId ? "selected=\"selected\"" : "").">".$arrLanguage['name']."</option>\n";
                 }
             }
             $menu .= "</select>\n";
 
             $this->_objTpl->setVariable(array(
-                    'TXT_CONTACT_BACK'                      => $_ARRAYLANG['TXT_CONTACT_BACK'],
-                    'TXT_CONTACT_PROCEED'                   => $_ARRAYLANG['TXT_CONTACT_PROCEED'],
-                    'TXT_CONTACT_COPY_FORM'                 => $_ARRAYLANG['TXT_CONTACT_COPY_FORM'],
-                    'TXT_CONTACT_SELECT_FRONTEND_LANG_TXT'  => $_ARRAYLANG['TXT_CONTACT_SELECT_FRONTEND_LANG_TXT']
+                'TXT_CONTACT_BACK'                      => $_ARRAYLANG['TXT_CONTACT_BACK'],
+                'TXT_CONTACT_PROCEED'                   => $_ARRAYLANG['TXT_CONTACT_PROCEED'],
+                'TXT_CONTACT_COPY_FORM'                 => $_ARRAYLANG['TXT_CONTACT_COPY_FORM'],
+                'TXT_CONTACT_SELECT_FRONTEND_LANG_TXT'  => $_ARRAYLANG['TXT_CONTACT_SELECT_FRONTEND_LANG_TXT']
             ));
 
             $this->_objTpl->setVariable(array(
-                    'CONTACT_LANG_MENU' => $menu,
-                    'CONTACT_FORM_ID'   => $formId
+                'CONTACT_LANG_MENU' => $menu,
+                'CONTACT_FORM_ID'   => $formId
             ));
         } else {
             $this->_contactForms();
@@ -557,57 +506,38 @@ class ContactManager extends ContactLib {
     }
 
     /**
-     * Display recipients in backend
+     * display recipients in backend
      *
      * @param array $arrRecipients
      */
-    function _showRecipients($recipients = array())
-    {
-        global $_ARRAYLANG;
+    function _showRecipients($arrRecipients = null){
+    	global $_ARRAYLANG;
+		if(!is_array($arrRecipients) || count($arrRecipients) < 1){
+			$arrRecipients[$this->getLastRecipientId()+1] = array(
+				'name' 	=> $_ARRAYLANG['TXT_CONTACT_NAME'],
+				'email' => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
+				'sort' => 1,
+			);
+		}
+		foreach ($arrRecipients as $id => $arrRecipient) {
+			$this->_objTpl->setVariable(array(
+				'CONTACT_FORM_RECIPIENT_ID'		=> $id,
+				'CONTACT_FORM_RECIPIENT_NAME'   => $arrRecipient['name'],
+				'CONTACT_FORM_RECIPIENT_EMAIL'  => $arrRecipient['email'],
+				'CONTACT_FORM_RECIPIENT_SORT'   => $arrRecipient['sort'],
+			));
+			$this->_objTpl->parse("contact_form_recipient_list");
+		}
+	}
 
-        $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-        $activeLanguages =  FWLanguage::getActiveFrontendLanguages();
-        $counter = 1;
 
-        foreach ($recipients as $rec) {
-            $first = true;
-            foreach ($activeLanguages as $langID => $lang) {
-                $is_active = $this->arrForms[$formId]['lang'][$langID]['is_active'];
-                $this->_objTpl->setVariable(
-                        array(
-                        'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langID,
-                        'RECIPIENT_NAME_DISPLAY'            => ($first && $is_active) ? 'block' : 'none',
-                        'CONTACT_FORM_RECIPIENT_NAME'       => $rec['lang'][$langID]
-                        )
-                );
-                $this->_objTpl->parse('recipient_name');
-                if ($is_active){
-                    $first = false;
-                }
-            }
-
-            $this->_objTpl->setVariable(
-                    array(
-                    'ROW_CLASS_NAME'                => 'row'.(($counter%2 == 0)?'1':'2'),
-                    'CONTACT_FORM_RECIPIENT_ID'     => $rec['id'],
-                    'CONTACT_FROM_RECIPIENT_EMAIL'  => $rec['email'],
-                    'CONTACT_FORM_RECIPIENT_NAME'   => $rec['lang'][FRONTEND_LANG_ID], // take the active frontend language
-                    'CONTACT_FORM_RECIPIENT_TYPE'   => $rec['editType'],
-                    'TXT_CONTACT_EXTEND'            => $_ARRAYLANG['TXT_CONTACT_EXTEND']
-                    )
-            );
-            $counter++;
-            $this->_objTpl->parse('contact_form_recipient_list');
-        }
-    }
-
-    /**
-     * update recipient list
-     *
-     * @param integer $formId
-     * @param boolean $refresh
-     * @return array
-     */
+	/**
+	* update recipient list
+	*
+	* @param integer $formId
+	* @param boolean $refresh
+	* @return array
+	*/
     public function setRecipients($arrRecipients)
     {
         global $objDatabase;
@@ -619,13 +549,13 @@ class ContactManager extends ContactLib {
 
         foreach ($arrRecipients as $id => $arrRecipient) {
             // this is a bit radical, but it works.
-            $objDatabase->Execute("
-                INSERT INTO `".DBPREFIX."module_contact_recipient`
-                SET `id`  = $id,
-                `id_form` = ".$arrRecipient['id_form'].",
-                `name`      = '".$arrRecipient['name']."',
-                `email`      = '".$arrRecipient['email']."',
-                `sort`      = ".$arrRecipient['sort']);
+			$objDatabase->Execute("
+	            INSERT INTO `".DBPREFIX."module_contact_recipient`
+	            SET `id`  = $id,
+	            `id_form` = ".$arrRecipient['id_form'].",
+	            `name`	  = '".$arrRecipient['name']."',
+	            `email`	  = '".$arrRecipient['email']."',
+	            `sort`	  = ".$arrRecipient['sort']);
         }
     }
 
@@ -638,265 +568,54 @@ class ContactManager extends ContactLib {
      */
     function _modifyForm($copy = false)
     {
-        global $_ARRAYLANG, $_CONFIG, $objDatabase, $objInit;
-
-        JS::activate('jquery-ui');
+        global $_ARRAYLANG, $_CONFIG, $objDatabase, $_FRONTEND_LANGID;
 
         if ($copy) {
             $this->initContactForms(true);
         }
-
         $this->_objTpl->loadTemplateFile('module_contact_form_modify.html');
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
 
-        $this->_pageTitle = (!$copy && $formId != 0)
-                ? $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM']
-                : $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM']
-        ;
+        $this->_pageTitle = (!$copy && $formId != 0) ? $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'] : $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
 
-        if (isset($this->arrForms[$formId])) {
-            // editing
-            $actionTitle = $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'];
-            $lang = $this->arrForms[$formId]['lang'];
+        $this->_objTpl->setVariable(array(
+            'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
+            'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+            'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
+            'TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'      => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
+            'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
+            'TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
+            'TXT_CONTACT_SUBJECT'                           => $_ARRAYLANG['TXT_CONTACT_SUBJECT'],
+            'TXT_CONTACT_FORM_DESC'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DESC'],
+            'TXT_CONTACT_FEEDBACK'                          => $_ARRAYLANG['TXT_CONTACT_FEEDBACK'],
+            'TXT_CONTACT_VALUE_S'                           => $_ARRAYLANG['TXT_CONTACT_VALUE_S'],
+            'TXT_CONTACT_FIELD_NAME'                        => $_ARRAYLANG['TXT_CONTACT_FIELD_NAME'],
+            'TXT_CONTACT_TYPE'                              => $_ARRAYLANG['TXT_CONTACT_TYPE'],
+            'TXT_CONTACT_MANDATORY_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
+            'TXT_CONTACT_FEEDBACK_EXPLANATION'              => $_ARRAYLANG['TXT_CONTACT_FEEDBACK_EXPLANATION'],
+            'TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'],
+            'TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'],
+            'TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'            => $_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'],
+            'TXT_CONTACT_YES'                               => $_ARRAYLANG['TXT_CONTACT_YES'],
+            'TXT_CONTACT_NO'                                => $_ARRAYLANG['TXT_CONTACT_NO'],
+            'TXT_CONTACT_CAPTCHA_PROTECTION'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
+            'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
+            'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
+            'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
+            'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'          => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
+            'TXT_CONTACT_CUSTOM_STYLE'                      => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
+            'TXT_CONTACT_SET_MANDATORY_FIELD'               => $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'],
+        ));
 
-            $showForm       = $this->arrForms[$formId]['showForm'];
-            $useCaptcha     = $this->arrForms[$formId]['useCaptcha'];
-            $useCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
-            $sendCopy       = $this->arrForms[$formId]['sendCopy'];
-            $sendHtmlMail   = $this->arrForms[$formId]['htmlMail'];
-        } else {
-            $actionTitle    = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
-            $lang           = FRONTEND_LANG_ID;
-            $sendHtmlMail   = 1;
-            $useCaptcha     = 1;
-        }
-
-        $activeLanguages     = FWLanguage::getActiveFrontendLanguages();
-        $this->_arrLanguages = $this->createLanguageArray();
-        $first = true;
-        
-        if (count($this->_arrLanguages) > 0) {
-            $intLanguageCounter = 0;
-            $boolFirstLanguage  = true;
-            $arrLanguages       = array(0 => '', 1 => '', 2 => '');
-            $strJsTabToDiv      = '';
-
-            foreach($this->_arrLanguages as $intLanguageId => $arrLanguage) {
-                if ($formId > 0) {
-                    $boolLanguageIsActive = $this->arrForms[$formId]['lang'][$intLanguageId]['is_active'];
-                } else {
-                    $boolLanguageIsActive = ($intLanguageId == $objInit->userFrontendLangId) ? true : false;
-                }
-
-                $arrLanguages[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'addFrom_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['long'].' ['.$arrLanguage['short'].']</label><br />';
-                $strJsTabToDiv .= 'arrTabToDiv["addFrom_'.$intLanguageId.'"] = "langTab_'.$intLanguageId.'";'."\n";
-                ++$intLanguageCounter;
-            }
-
-            $this->_objTpl->setVariable(array(
-                'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_LANGUAGE'],
-                'EDIT_LANGUAGES_1'          => $arrLanguages[0],
-                'EDIT_LANGUAGES_2'          => $arrLanguages[1],
-                'EDIT_LANGUAGES_3'          => $arrLanguages[2],
-                'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
-            ));
-        }
-
-        $lastFieldId = 0;
-        $param = ($formId > 0) ? $formId : $null;
-        if (isset($_POST['saveForm'])) {
-            $fields = $this->_getFormFieldsFromPost($param);
-            $recipients = $this->getRecipientsFromPost();
-        } else {
-            // get the saved fields
-            $fields = $this->getFormFields($param);
-            $recipients = $this->getRecipients($param);
-        }
-
-        // make an empty one so at least one is parsed
-        if (empty($fields)) {
-            foreach ($activeLanguages as $lang) {
-                $fields[0] = array (
-                    'type'          => 'text',
-                    'attributes'    => '',
-                    'order_id'      => 0,
-                    'is_required'   => false,
-                    'check_type'    => 1,
-                    'editType'     => 'new'
-                );
-                $fields[0]['lang'][$lang['id']] = array(
-                    'name'          => '',
-                    'value'         => ''
-                );
-            }
-        }
-
-        foreach ($activeLanguages as $lang) {
-            $langID = $lang['id'];
-            
-            $langVars = &$this->arrForms[$formId]['lang'][$langID];
-            if ($formId > 0) {
-                $boolLanguageIsActive = $langVars['is_active'];
-            } else {
-                $boolLanguageIsActive = ($langID == $objInit->userFrontendLangId) ? 1 : 0;
-            }
-            
-            $this->_objTpl->setVariable(array(
-                    'LANG_ID'                   => $langID,
-                    'LANG_NAME'                 => $lang['name'],
-                    'TAB_CLASS_NAME'            => ($first && $boolLanguageIsActive) ? 'active' :'inactive',
-                    'CONTACT_LANGTAB_DISPLAY'   => ($boolLanguageIsActive ? 'display:inline;' : 'display:none;')
-                    )
-            );
-            $this->_objTpl->parse('languageTabs');
-             
-            if (isset($langVars)) {
-                $formText         = $langVars['text'];
-                $formFeedback     = $langVars['feedback'];
-                $formName         = $langVars['name'];
-                $formMailTemplate = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $langVars['mailTemplate']);
-                $formSubject      = $langVars['subject'];
-            } else {
-                $formText = $formFeedback = $formName = $formSubject = '';
-                $formMailTemplate = "<table>
-                                     <tbody>
-                                     <!-- BEGIN form_field -->
-                                        <tr>
-                                            <td>
-                                                [[FIELD_LABEL]]
-                                            </td>
-                                            <td>
-                                                [[FIELD_VALUE]]
-                                            </td>
-                                        </tr>
-                                     <!-- END form_field -->
-                                     </tbody>
-                                     </table>";
-            }
-            
-            $this->_objTpl->setVariable(
-                    array(
-                    'LANG_ID'                                       => $lang['id'],
-                    'LANG_NAME'                                     => $lang['name'],
-                    'LANG_FORM_DISPLAY'                             => ($first && $boolLanguageIsActive) ? 'block' : 'none',
-
-                    'CONTACT_FORM_MAIL_TEMPLATE_HIDDEN'             => htmlentities($formMailTemplate, ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_SUBJECT'                          => $formSubject,
-                    )
-            );
-            $this->_objTpl->parse('notificationLanguageForm');
-
-            $this->_objTpl->setVariable(
-                    array(
-                    'CONTACT_FORM_ID'                               => $formId,
-                    'LANG_ID'                                       => $lang['id'],
-                    'LANG_NAME'                                     => $lang['name'],
-                    'LANG_FORM_DISPLAY'                             => ($first && $boolLanguageIsActive) ? 'block' : 'none',
-
-                    'CONTACT_FORM_MAIL_TEMPLATE_HIDDEN'             => htmlentities($formMailTemplate, ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_SUBJECT'                          => $formSubject,
-
-                    'CONTACT_FORM_NAME'                             => $this->arrForms[$formId]['lang'][$lang['id']]['name'],
-                    'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
-                    'CONTACT_FORM_TEXT_HIDDEN'                      => htmlentities($formText, ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_FEEDBACK_HIDDEN'                  => htmlentities($formFeedback, ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
-                    'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
-                    'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', '', $first, $lang['id']),
-                    'CONTACT_FORM_FIELD_LABEL_NEXT_TPL'             => $this->_getFormFieldAttribute($lastFieldId+1, 'label', '', $first, $lang['id']),
-                    'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
-                    'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
-                    'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
-                    'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
-                    'CONTACT_ACTION_TITLE'                          => $actionTitle,                    
-                    'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', '', false),
-                    'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute(0, 'label', '', false),
-                    'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
-                    'CONTACT_FORM_FIELD_COUNTRY_TPL'                => $this->_getFormFieldAttribute(0, 'country','',true, 0),
-                    'CONTACT_FORM_FIELD_ACCESS_COUNTRY_TPL'         => $this->_getFormFieldAttribute(0, 'access_country','',true, 0),
-                    'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', '', false),
-                    'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', '', false),
-                    'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', '', false),
-                    'CONTACT_FORM_FIELD_RADIO_TPL'                  => $this->_getFormFieldAttribute(0, 'radio', '', false),
-                    'CONTACT_FORM_FIELD_SELECT_TPL'                 => $this->_getFormFieldAttribute(0, 'select', '', false)));
-            
-            $this->_objTpl->parse('languageForm');
-            
-            if ($boolLanguageIsActive) {
-                $first = false;
-            }
-        }
-
-        $counter = 1;
-        foreach ($fields as $fieldID => $field) {
-            $realFieldID = ($formId > 0) ? $fieldID : $counter;
-            $fieldType   = ($field['type'] == 'special') ? $field['special_type'] : $field['type'];
-            $first       = true;
-            /**
-             While copying a template, the edittype of the field must be 'new'
-             */
-            if ($copy) {
-                $field['editType'] = 'new';
-            }
-
-            foreach ($activeLanguages as $lang) {
-                /**
-                 * New Forms must have all languages active in language bar
-                 */
-                if ($formId > 0) {
-                    $isActive = $this->arrForms[$formId]['lang'][$lang['id']]['is_active'];
-                } else {
-                    $isActive = ($lang['id'] == $objInit->userFrontendLangId) ? true: false;
-                }
-                $show     = ($first && $isActive);
-                
-                $this->_objTpl->setVariable(array(
-                    'LANG_ID'                       => $lang['id'],
-                    'LANG_NAME_DISPLAY'             => ($show) ? 'block' : 'none',
-                    'LANG_VALUE_DISPLAY'            => ($show) ? 'block' : 'none',
-                    'FORM_FIELD_NAME'               => $field['lang'][$lang['id']]['name'],
-                    'CONTACT_FORM_FIELD_VALUE'      => $this->_getFormFieldAttribute(
-                                                            $realFieldID,
-                                                            $fieldType,
-                                                            $field['lang'][$lang['id']]['value'],
-                                                            $show,
-                                                            $lang['id']
-                                                            )));
-                $this->_objTpl->parse('formFieldName');
-                $this->_objTpl->parse('formFieldValue');
-                if ($isActive) {
-                    $first = false;
-                }
-            }
-            
-            $this->_objTpl->setVariable(
-                    array(
-                    'CONTACT_FORM_FIELD_TYPE_MENU'  => $this->_getFormFieldTypesMenu(
-                                                        'contactFormFieldType['.$realFieldID.']',
-                                                        $fieldType,
-                                                        'id="contactFormFieldType_'.$realFieldID.'" style="width:110px;" '.
-                                                        'class="contactFormFieldType" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'),this.value)"'
-                                                        ),
-                    'FORM_FIELD_CHECK_BOX'          => $this->_getFormFieldRequiredCheckBox(
-                                                        'contactFormFieldRequired['.$realFieldID.']',
-                                                        'contactFormFieldRequired_'.$realFieldID,
-                                                        $fieldType,
-                                                        $field['is_required']
-                                                        ),
-                    'FORM_FIELD_CHECK_MENU'         => $this->_getFormFieldCheckTypesMenu(
-                                                        'contactFormFieldCheckType['.$realFieldID.']',
-                                                        'contactFormFieldCheckType_'.$realFieldID,
-                                                        $fieldType,
-                                                        $field['check_type']
-                                                        ),
-                    'FORM_FIELD_ID'                 => $realFieldID,
-                    'FORM_FIELD_TYPE'               => $field['editType'],
-                    'ROW_CLASS_NAME'                => 'row'.(($counter%2 == 0)?'1':'2')
-                    )
-            );
-            $counter++;
-            $this->_objTpl->parse('formField');
-        }
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_CONTACT_FORM_FIELDS'                       => $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'],
+            'TXT_CONTACT_DELETE'                            => $_ARRAYLANG['TXT_CONTACT_DELETE'],
+            'TXT_CONTACT_MOVE_UP'                           => $_ARRAYLANG['TXT_CONTACT_MOVE_UP'],
+            'TXT_CONTACT_MOVE_DOWN'                         => $_ARRAYLANG['TXT_CONTACT_MOVE_DOWN'],
+            'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
+            'TXT_CONTACT_REGEX_EMAIL'                       => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
+            'TXT_CONTACT_ADD_OTHER_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'],
+        ));
 
         if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
             $jsSubmitFunction = "updateContentSite()";
@@ -904,154 +623,48 @@ class ContactManager extends ContactLib {
             $jsSubmitFunction = "createContentSite()";
         }
 
-        $this->_objTpl->setVariable(
-                array(
-                'CONTACT_FORM_SHOW_FORM_YES'                    => $showForm        ? 'checked="checked"' : '',
-                'CONTACT_FORM_SHOW_FORM_NO'                     => $showForm        ? '' : 'checked="checked"',
-                'CONTACT_FORM_USE_CAPTCHA_YES'                  => $useCaptcha      ? 'checked="checked"' : '',
-                'CONTACT_FORM_USE_CAPTCHA_NO'                   => $useCaptcha      ? '' : 'checked="checked"',
-                'CONTACT_FORM_USE_CUSTOM_STYLE_YES'             => $useCustomStyle  ? 'checked="checked"' : '',
-                'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $useCustomStyle  ? '' : 'checked="checked"',
-                'CONTACT_FORM_SEND_HTML_MAIL'                   => $sendHtmlMail    ? 'checked="checked"' : '',
-                'CONTACT_MAIL_TEMPLATE_STYLE'                   => $sendHtmlMail    ? 'table-row' : 'none',
-                'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
-                'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
-                'CONTACT_FORM_EMAIL'                            => $this->arrForms[$formId]['emails'],
-                'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
-                'FORM_COPY'                                     => intval($copy),
-                'CONTACT_FORM_TEXT'                             => get_wysiwyg_editor('contactFormTextEditor', '', 'shop'),
-                'CONTACT_FORM_FEEDBACK'                         => get_wysiwyg_editor('contactFormFeedbackEditor', '', 'shop'),
-                'CONTACT_MAIL_TEMPLATE'                         => get_wysiwyg_editor('contactMailTemplateEditor', '', 'shop'),
+        $lastFieldId = 0;
 
-                'TXT_CONTACT_FORM_FIELDS'                       => $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'],
-                'TXT_CONTACT_DELETE'                            => $_ARRAYLANG['TXT_CONTACT_DELETE'],
-                'TXT_CONTACT_MOVE_UP'                           => $_ARRAYLANG['TXT_CONTACT_MOVE_UP'],
-                'TXT_CONTACT_MOVE_DOWN'                         => $_ARRAYLANG['TXT_CONTACT_MOVE_DOWN'],
-                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                'TXT_CONTACT_REGEX_EMAIL'                       => $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL'],
-                'TXT_CONTACT_ADD_OTHER_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_ADD_OTHER_FIELD'],
-                'TXT_CONTACT_ADD_RECIPIENT'                     => $_ARRAYLANG['TXT_CONTACT_ADD_RECIPIENT'],
-                'TXT_FORM_VALUES'                               => $_ARRAYLANG['TXT_FORM_VALUES'],
-                'TXT_FORM_FIELDS'                               => $_ARRAYLANG['TXT_FORM_FIELDS'],
-                'TXT_FORM_RECIPIENTS'                           => $_ARRAYLANG['TXT_FORM_RECIPIENTS'],
-                'TXT_ADVANCED_SETTINGS'                         => $_ARRAYLANG['TXT_ADVANCED_SETTINGS'],
-                'TXT_FORM_NOTIFICATION'                         => $_ARRAYLANG['TXT_FORM_NOTIFICATION'],
-                'TXT_CONTACT_ID'                                => $_ARRAYLANG['TXT_CONTACT_ID'],
-                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                'TXT_CONTACT_RECEIVER_ADDRESSES'                => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES'],
-                'TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'      => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
-                'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
-                'TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
-                'TXT_CONTACT_FORM_DATA'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DATA'],
-                'TXT_CONTACT_FORM_DESC'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DESC'],
-                'TXT_CONTACT_FEEDBACK'                          => $_ARRAYLANG['TXT_CONTACT_FEEDBACK'],
-                'TXT_CONTACT_VALUE_S'                           => $_ARRAYLANG['TXT_CONTACT_VALUE_S'],
-                'TXT_CONTACT_FIELD_NAME'                        => $_ARRAYLANG['TXT_CONTACT_FIELD_NAME'],
-                'TXT_CONTACT_TYPE'                              => $_ARRAYLANG['TXT_CONTACT_TYPE'],
-                'TXT_CONTACT_MANDATORY_FIELD'                   => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
-                'TXT_CONTACT_FEEDBACK_EXPLANATION'              => $_ARRAYLANG['TXT_CONTACT_FEEDBACK_EXPLANATION'],
-                'TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_CREATE_CONTENT_SITE'],
-                'TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'       => $_ARRAYLANG['TXT_CONTACT_CONFIRM_UPDATE_CONTENT_SITE'],
-                'TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'            => $_ARRAYLANG['TXT_CONTACT_SHOW_FORM_AFTER_SUBMIT'],
-                'TXT_CONTACT_YES'                               => $_ARRAYLANG['TXT_CONTACT_YES'],
-                'TXT_CONTACT_NO'                                => $_ARRAYLANG['TXT_CONTACT_NO'],
-                'TXT_CONTACT_CAPTCHA_PROTECTION'                => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_PROTECTION'],
-                'TXT_CONTACT_CAPTCHA'                           => $_ARRAYLANG['TXT_CONTACT_CAPTCHA'],
-                'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
-                'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
-                'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
-                'TXT_CONTACT_SEND_HTML_MAIL'                    => $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'],
-                'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'          => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
-                'TXT_CONTACT_CUSTOM_STYLE'                      => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
-                'TXT_CONTACT_SET_MANDATORY_FIELD'               => $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'],
-                'TXT_CONTACT_RECIPIENT_ALREADY_SET'             => $_ARRAYLANG['TXT_CONTACT_RECIPIENT_ALREADY_SET'],
-                'TXT_CONTACT_EMAIL'                             => $_ARRAYLANG['TXT_CONTACT_EMAIL'],
-                'TXT_CONTACT_NAME'                              => $_ARRAYLANG['TXT_CONTACT_NAME'],
-                'TXT_CONTACT_SUBJECT'                           => $_ARRAYLANG['TXT_CONTACT_SUBJECT'],
-                'TXT_CONTACT_MAIL_TEMPLATE'                     => $_ARRAYLANG['TXT_CONTACT_MAIL_TEMPLATE'],
-                'TXT_NAME'                                      => $_ARRAYLANG['TXT_CONTACT_FORM_NAME'],
-                'TXT_VALUES'                                    => $_ARRAYLANG['TXT_CONTACT_FORM_VALUES'],
-                'TXT_TYPE'                                      => $_ARRAYLANG['TXT_CONTACT_TYPE'],
-                'TXT_MANDATORY_FIELD'                           => $_ARRAYLANG['TXT_CONTACT_MANDATORY_FIELD'],
-                'TXT_CONTACT_VALIDATION'                        => $_ARRAYLANG['TXT_CONTACT_VALIDATION'],
-                'TXT_CONTACT_ACTION'                            => $_ARRAYLANG['TXT_CONTACT_ACTION'],
-                'TXT_ADVANCED_VIEW'                             => $_ARRAYLANG['TXT_ADVANCED_VIEW'],
-                'TXT_SIMPLIFIED_VIEW'                           => $_ARRAYLANG['TXT_SIMPLIFIED_VIEW'],
-                'CONTACT_FORM_FIELDS_TITLE'                     => $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_TITLE'],
-                'CONTACT_FORM_RECIPIENTS_TITLE'                 => $_ARRAYLANG['CONTACT_FORM_RECIPIENTS_TITLE'],
-                'CONTACT_FORM_SETTINGS'                         => $_ARRAYLANG['CONTACT_FORM_SETTINGS'],
-                )
-        );
-
-        if (empty($recipients)) {
-            // make an empty one so there's at least one
-            $recipients[0] = array(
-                    'id'    => 1,
-                    'email' => '',
-                    'editType' => 'new'
-            );
-
-            foreach ($activeLanguages as $langID => $lang) {
-                $recipients[0]['lang'][$langID] = '';
-            }
-        }
-
-        foreach ($recipients as $recipientID => $recipientField) {
-            if ($copy) {
-                $recipients[$recipientID]['editType'] = 'new';
-            }
-        }
-
-        // parse the recipients
-        $this->_showRecipients($recipients);
-
-        /*
-            if (isset($_POST['saveForm'])) {
-            $null           = null;
-            $arrFields      = $this->_getFormFieldsFromPost($null);
-            $arrRecipients  = $this->_getRecipientsFromPost(false);
-            $this->_showRecipients($arrRecipients);
-            $formName       = isset($_POST['contactFormName'])
-                ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET)
-                : ''
-            ;
-            $formEmails = isset($_POST['contactFormEmail'])
-                ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET)
-                : ''
-            ;
+        if (isset($_POST['saveForm'])) {
+            $null = null;
+            $arrFields = $this->_getFormFieldsFromPost($null);
+            $arrRecipients = $this->_getRecipientsFromPost(false);
+			$this->_showRecipients($arrRecipients);
+            $formName = isset($_POST['contactFormName']) ? htmlentities(strip_tags(contrexx_stripslashes($_POST['contactFormName'])), ENT_QUOTES, CONTREXX_CHARSET) : '';
+            $formEmails = isset($_POST['contactFormEmail']) ? htmlentities(strip_tags(contrexx_stripslashes(trim($_POST['contactFormEmail']))), ENT_QUOTES, CONTREXX_CHARSET) : '';
             if (empty($formEmails)) {
                 $formEmails = $_CONFIG['contactFormEmail'];
             }
-            $formSubject    = $_POST['contactFormSubject'];
-            $formText       = contrexx_stripslashes($_POST['contactFormText']);
-            $formFeedback   = contrexx_stripslashes($_POST['contactFormFeedback']);
-            $formShowForm   = intval($_POST['contactFormShowForm']);
+            $formSubject = $_POST['contactFormSubject'];
+            $formText = contrexx_stripslashes($_POST['contactFormText']);
+            $formFeedback = contrexx_stripslashes($_POST['contactFormFeedback']);
+            $formShowForm = intval($_POST['contactFormShowForm']);
             $formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
             $formUseCustomStyle = intval($_POST['contactFormUseCustomStyle']);
-            $formSendCopy   = intval($_POST['contactFormSendCopy']);
+            $formSendCopy = intval($_POST['contactFormSendCopy']);
         } elseif (isset($this->arrForms[$formId])) {
-            $arrFields      = &$this->getFormFields($formId);
-            $formName       = $this->arrForms[$formId]['name'];
-            $formEmails     = $this->arrForms[$formId]['emails'];
-            $formSubject    = $this->arrForms[$formId]['subject'];
-            $formText       = $this->arrForms[$formId]['text'];
-            $formFeedback   = stripslashes($this->arrForms[$formId]['feedback']);
-            $formShowForm   = $this->arrForms[$formId]['showForm'];
+            $arrFields = &$this->getFormFields($formId);
+            $formName = $this->arrForms[$formId]['name'];
+            $formEmails = $this->arrForms[$formId]['emails'];
+            $formSubject = $this->arrForms[$formId]['subject'];
+            $formText = $this->arrForms[$formId]['text'];
+            $formFeedback = stripslashes($this->arrForms[$formId]['feedback']);
+            $formShowForm = $this->arrForms[$formId]['showForm'];
             $formUseCaptcha = $this->arrForms[$formId]['useCaptcha'];
             $formUseCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
-            $formSendCopy   = $this->arrForms[$formId]['sendCopy'];
-            $this->_showRecipients($this->arrForms[$formId]['recipients']);
+            $formSendCopy = $this->arrForms[$formId]['sendCopy'];
+			$this->_showRecipients($this->arrForms[$formId]['recipients']);
         } else {
-            $formName       = '';
-            $formEmails     = $_CONFIG['contactFormEmail'];
-            $formSubject    = '';
-            $formText       = '';
-            $formShowForm   = 0;
-            $formFeedback   = $_ARRAYLANG['TXT_CONTACT_DEFAULT_FEEDBACK_TXT'];
+            $formName = '';
+            $formEmails = $_CONFIG['contactFormEmail'];
+            $formSubject = '';
+            $formText = '';
+            $formShowForm = 0;
+            $formFeedback = $_ARRAYLANG['TXT_CONTACT_DEFAULT_FEEDBACK_TXT'];
             $formUseCaptcha = 1;
             $formUseCustomStyle = 0;
-            $formSendCopy   = 0;
-            $this->_showRecipients();
+            $formSendCopy = 0;
+			$this->_showRecipients();
             $this->_objTpl->setVariable(array(
                 'CONTACT_FORM_FIELD_NAME'               => '',
                 'CONTACT_FORM_FIELD_ID'                 => 1,
@@ -1069,8 +682,7 @@ class ContactManager extends ContactLib {
             $formId = 0;
         }
 
-        /*
-         * Parse the form fields
+
         if (isset($arrFields) && is_array($arrFields)) {
             foreach ($arrFields as $fieldId => $arrField) {
                 if ($arrField['is_required'] == 1 ) {
@@ -1092,21 +704,50 @@ class ContactManager extends ContactLib {
                 $lastFieldId = $fieldId > $lastFieldId ? $fieldId : $lastFieldId;
             }
         }
-        */
 
-    }
-
-    function _getContentSiteLang($formId)
-    {
-        global $objDatabase;
-
-        $objContentSite = $objDatabase->SelectLimit("SELECT `lang` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
-        if ($objContentSite !== false) {
-            if ($objContentSite->RecordCount() == 1) {
-                return $objContentSite->fields['lang'];
-            }
+        if (isset($this->arrForms[$formId])) {
+            $actionTitle = $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'];
+            $lang = $this->arrForms[$formId]['lang'];
+        } else {
+            $actionTitle = $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'];
+            $lang = $_FRONTEND_LANGID;
         }
-        return false;
+
+        $this->_objTpl->setVariable(array(
+            'CONTACT_FORM_NAME'                             => $formName,
+            'CONTACT_FORM_EMAIL'                            => $formEmails,
+            'CONTACT_FORM_SUBJECT'                          => $formSubject,
+            'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
+            'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
+            'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
+            'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', ''),
+            'CONTACT_FORM_FIELD_LABEL_TPL'                  => $this->_getFormFieldAttribute($lastFieldId+1, 'label', ''),
+            'CONTACT_FORM_FIELD_CHECK_MENU_NEXT_TPL'        => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType['.($lastFieldId+1).']', 'contactFormFieldCheckType_'.($lastFieldId+1), 'text', 1),
+            'CONTACT_FORM_FIELD_CHECK_MENU_TPL'             => $this->_getFormFieldCheckTypesMenu('contactFormFieldCheckType[0]', 'contactFormFieldCheckType_0', 'text', 1),
+            'CONTACT_FORM_FIELD_CHECK_BOX_NEXT_TPL'         => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired['.($lastFieldId+1).']', 'contactFormFieldRequired_'.($lastFieldId+1), 'text', false),
+            'CONTACT_FORM_FIELD_CHECK_BOX_TPL'              => $this->_getFormFieldRequiredCheckBox('contactFormFieldRequired[0]', 'contactFormFieldRequired_0', 'text', false),
+            'CONTACT_ACTION_TITLE'                          => $actionTitle,
+            'CONTACT_FORM_ID'                               => $formId,
+            'CONTACT_FORM_TEXT'                             => get_wysiwyg_editor('contactFormText', $formText, 'shop', $lang),
+            'CONTACT_FORM_FEEDBACK'                         => get_wysiwyg_editor('contactFormFeedback', $formFeedback, 'shop', $lang),
+            'CONTACT_FORM_SHOW_FORM_YES'                    => $formShowForm ? 'checked="checked"' : '',
+            'CONTACT_FORM_SHOW_FORM_NO'                     => $formShowForm ? '' : 'checked="checked"',
+            'CONTACT_FORM_USE_CAPTCHA_YES'                  => $formUseCaptcha ? 'checked="checked"' : '',
+            'CONTACT_FORM_USE_CAPTCHA_NO'                   => $formUseCaptcha ? '' : 'checked="checked"',
+            'CONTACT_FORM_USE_CUSTOM_STYLE_YES'             => $formUseCustomStyle ? 'checked="checked"' : '',
+            'CONTACT_FORM_USE_CUSTOM_STYLE_NO'              => $formUseCustomStyle ? '' : 'checked="checked"',
+            'CONTACT_FORM_FIELD_TYPE_MENU_TPL'              => $this->_getFormFieldTypesMenu('contactFormFieldType['.($lastFieldId+1).']', key($this->_arrFormFieldTypes), 'id="contactFormFieldType_'.($lastFieldId+1).'" style="width:110px;" onchange="setFormFieldAttributeBox(this.getAttribute(\'id\'), this.value)"'),
+            'CONTACT_FORM_FIELD_TEXT_TPL'                   => $this->_getFormFieldAttribute(0, 'text', ''),
+            'CONTACT_FORM_FIELD_CHECKBOX_TPL'               => $this->_getFormFieldAttribute(0, 'checkbox', 0),
+            'CONTACT_FORM_FIELD_CHECKBOX_GROUP_TPL'         => $this->_getFormFieldAttribute(0, 'checkboxGroup', ''),
+            'CONTACT_FORM_FIELD_DATE_TPL'                   => $this->_getFormFieldAttribute(0, 'date', ''),
+            'CONTACT_FORM_FIELD_HIDDEN_TPL'                 => $this->_getFormFieldAttribute(0, 'hidden', ''),
+            'CONTACT_FORM_FIELD_RADIO_TPL'                  => $this->_getFormFieldAttribute(0, 'radio', ''),
+            'CONTACT_FORM_FIELD_SELECT_TPL'                 => $this->_getFormFieldAttribute(0, 'select', ''),
+            'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
+            'CONTACT_FORM_SEND_COPY_YES'                    => $formSendCopy ? 'checked="checked"' : '',
+            'CONTACT_FORM_SEND_COPY_NO'                     => $formSendCopy ? '' : 'checked="checked"',
+        ));
     }
 
     function _getContentSiteId($formId)
@@ -1135,55 +776,37 @@ class ContactManager extends ContactLib {
         return false;
     }
 
-    // added langid as new parameter to support multi-lang
-    function _getFormFieldAttribute($id, $type, $attr, $show=true, $langid = 0)
+    function _getFormFieldAttribute($id, $type, $attr)
     {
-        global $_ARRAYLANG, $objDatabase;
-        $field   = "";
-        $display = $show ? "block" : "none";
-        
+        global $_ARRAYLANG;
+
         switch ($type) {
         case 'text':
-        case 'hidden':
+            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
+            break;
+
         case 'label':
-        case 'special':
-            $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
-            $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" />\n";
-            $field .= "</div>";
-            return $field;
+            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
             break;
 
         case 'checkbox':
-            /* Only one instance of checkbox is allowed for any number of active language */
-            if ($show) {
-                return "<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n
-                                    <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
-                                    <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
-                                </select>";
-            }
+            return "<select style=\"width:228px;\" name=\"contactFormFieldAttribute[".$id."]\">\n
+                        <option value=\"0\"".($attr == 0 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_NOT_SELECTED']."</option>\n
+                        <option value=\"1\"".($attr == 1 ? ' selected="selected"' : '').">".$_ARRAYLANG['TXT_CONTACT_SELECTED']."</option>\n
+                    </select>";
             break;
-        case 'country':
-        case 'access_country':
-            /* Only one instance of country select is allowed for any number of active language */
-            if ($show) {
-                $objResult = $objDatabase->Execute("SELECT `name` FROM ".DBPREFIX."lib_country");
-                $field ="<select style=\"width:331px;\" name=\"contactFormFieldValue[".$id."]\">\n";
-                $field .= "<option value=\"".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."\" >".$_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']."</option>\n";
-                while (!$objResult->EOF) {
-                    $field .= "<option value=\"".$objResult->fields['name']."\" ".(($attr == $objResult->fields['name'])?'selected="selected"':'')." >".$objResult->fields['name']."</option>\n";
-                    $objResult->MoveNext();
-                }
-                $field .= "</select>";
-                return $field;
-            }
-            break;
+
         case 'checkboxGroup':
+            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" /> *\n";
+            break;
+
+        case 'hidden':
+            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" />\n";
+            break;
+
         case 'select':
         case 'radio':
-            $field .= "<div style=\"display: ".$display.";\"  id=\"fieldValueTab_".$id."_".$langid."\" class=\"fieldValueTabs_".$id."\">";
-            $field .= "<input style=\"width:308px;background: #FFFFFF;\" type=\"text\" name=\"contactFormFieldValue[".$id."][".$langid."]\" value=\"".$attr."\" /> &nbsp;<img src=\"images/icons/note.gif\" width=\"12\" height=\"12\" onmouseout=\"htm()\" onmouseover=\"stm(Text[4],Style[0])\" />\n";
-            $field .= "</div>";
-            return $field;
+            return "<input style=\"width:228px;\" type=\"text\" name=\"contactFormFieldAttribute[".$id."]\" value=\"".$attr."\" /> *\n";
             break;
 
         default:
@@ -1201,175 +824,100 @@ class ContactManager extends ContactLib {
      */
     function _saveForm()
     {
-        global $_ARRAYLANG, $_CONFIG, $objDatabase;
-        
-        $formId  = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
-        $adding  = $_POST['copy'] || !$formId;
-        $content = $_POST['contentSiteAction'];
+        global $_ARRAYLANG, $_CONFIG;
 
         if (isset($_POST['saveForm'])) {
-            $uniqueFieldNames = null;
-            
-            $emails         = $this->getPostRecipients();
-            $showForm       = (!empty($_POST['contactFormShowForm']) ? 1 : 0);
-            $useCaptcha     = (!empty($_POST['contactFormUseCaptcha']) ? 1 : 0);
-            $useCustomStyle = (!empty($_POST['contactFormUseCustomStyle']) ? 1 : 0);
-            $sendCopy       = (!empty($_POST['contactFormSendCopy']) ? 1 : 0);
-            $sendHtmlMail   = (!empty($_POST['contactFormHtmlMail']) ? 1 : 0);
-            
-            if (!$adding) {
-                // This updates the database
-                $this->updateForm(
-                        $formId,
-                        $emails,
-                        $showForm,
-                        $useCaptcha,
-                        $useCustomStyle,
-                        $sendCopy,
-                        $sendHtmlMail
-                );
+            $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
+            $formName = isset($_POST['contactFormName']) ? strip_tags(contrexx_addslashes($_POST['contactFormName'])) : '';
+            $formSubject = isset($_POST['contactFormSubject']) ? strip_tags(contrexx_addslashes($_POST['contactFormSubject'])) : '';
+            $formText = isset($_POST['contactFormText']) ? contrexx_addslashes($_POST['contactFormText']) : '';
+            $formFeedback = isset($_POST['contactFormFeedback']) ? contrexx_addslashes($_POST['contactFormFeedback']) : '';
+            $formShowForm = intval($_POST['contactFormShowForm']);
+            $formUseCaptcha = intval($_POST['contactFormUseCaptcha']);
+            $formUseCustomStyle = intval($_POST['contactFormUseCustomStyle']);
+            $formSendCopy = intval($_POST['contactFormSendCopy']);
+            if (!empty($formName)) {
+                if ($this->isUniqueFormName($formName, $formId)) {
+                    $uniqueFieldNames = null;
+                    $arrFields = $this->_getFormFieldsFromPost($uniqueFieldNames);
+                    if ($uniqueFieldNames) {
+                        $formEmailsTmp = isset($_POST['contactFormEmail']) ? explode(',', strip_tags(contrexx_stripslashes($_POST['contactFormEmail']))) : '';
+
+                        if (is_array($formEmailsTmp)) {
+                            $formEmails = array();
+                            foreach ($formEmailsTmp as $email) {
+                                $email = trim(contrexx_strip_tags($email));
+                                if (!empty($email)) {
+                                    array_push($formEmails, $email);
+                                }
+                            }
+                            $formEmails = implode(',', $formEmails);
+                        } else {
+                            $formEmails = '';
+                        }
+                        if (empty($formEmails)) {
+                            $formEmails = $_CONFIG['contactFormEmail'];
+                        }
+
+                        $boolUsesRecipientField = false;
+                        foreach ($arrFields as $arrField) {
+                        	if($arrField['type'] == 'recipient'){
+                        	    $boolUsesRecipientField = true;
+                            }
+                        }                       
+
+                        if ($formId > 0) {
+                            // This updates the database
+                            $this->updateForm($formId, $formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
+                        } else {
+                            $this->addForm($formName, $formEmails, $formSubject, $formText, $formFeedback, $formShowForm, $formUseCaptcha, $formUseCustomStyle, $arrFields, $formSendCopy);
+                        }
+                        
+                        $arrRecipients = $this->_getRecipientsFromPost($boolUsesRecipientField);
+                        if($this->_invalidRecipients && $boolUsesRecipientField){
+                            return $this->_modifyForm();
+                        }else{
+                            $this->setRecipients($arrRecipients);
+                        }
+
+                        $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_FORM_SUCCESSFULLY_SAVED']."<br />";
+
+                        if (isset($_POST['contentSiteAction'])) {
+                            switch ($_POST['contentSiteAction']) {
+                                case 'create':
+                                    $this->_createContentPage();
+                                    break;
+
+                                case 'update':
+                                    $this->_updateContentSite();
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                        }
+
+                        $this->_contactForms();
+                    } else {
+                        $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_FIELD_UNIQUE_MSG'];
+                        $this->_modifyForm();
+                    }
+                } else {
+                    $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_NAME_IS_NOT_UNIQUE_MSG'];
+                    $this->_modifyForm();
+                }
             } else {
-                $formId = $this->addForm(
-                        $emails,
-                        $showForm,
-                        $useCaptcha,
-                        $useCustomStyle,
-                        $sendCopy,
-                        $sendHtmlMail
-                );
+                $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_NAME_REQUIRED_MSG'];
+                $this->_modifyForm();
             }
-
-            foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
-                $langID = $lang['id'];
-
-                $formName =
-                        isset($_POST['contactFormName'][$langID])
-                        ? strip_tags(contrexx_addslashes($_POST['contactFormName'][$langID]))
-                        : '';
-
-                $formSubject =
-                        isset($_POST['contactFormSubject'][$langID])
-                        ? strip_tags(contrexx_addslashes($_POST['contactFormSubject'][$langID]))
-                        : '';
-
-                $isActive =
-                        isset($_POST['contactFormLanguages'][$langID])
-                        ? 1 : 0;
-
-                $formText =
-                        isset($_POST['contactFormText'][$langID])
-                        ? contrexx_addslashes($_POST['contactFormText'][$langID])
-                        : '';
-
-                $formFeedback =
-                        isset($_POST['contactFormFeedback'][$langID])
-                        ? contrexx_addslashes($_POST['contactFormFeedback'][$langID])
-                        : '';
-
-                $formMailTemplate =
-                        isset($_POST['contactMailTemplate'][$langID])
-                        ? preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}', contrexx_addslashes($_POST['contactMailTemplate'][$langID]))
-                        :'';
-
-                $this->insertFormLangValues(
-                        $formId,
-                        $langID,
-                        $isActive,
-                        $formName,
-                        $formText,
-                        $formFeedback,
-                        $formMailTemplate,
-                        $formSubject
-                );
-            }
-            
-            // do the fields
-            $fields = $this->_getFormFieldsFromPost($uniqueFieldNames);
-            
-            $formFieldIDs = array();
-            foreach ($fields as $field) {
-                if ($field['editType'] == 'new') {
-                    $formFieldIDs[] = $this->addFormField($formId, $field);
-                } else {
-                    $this->updateFormField($field);
-                    $formFieldIDs[] = $field['id'];
-                }
-            }
-
-            if (!$adding) {
-                $this->cleanFormFields($formId, $formFieldIDs);
-            }
-
-            $recipients = $this->getRecipientsFromPost();
-            foreach ($recipients as $recipient) {
-                if ($recipient['editType'] == 'new') {
-                    $recipientIDs[] = $this->addRecipient($formId, $recipient);
-                } else {
-                    $this->updateRecipient($recipient);
-                    $recipientIDs[] = $recipient['id'];
-                }
-            }
-
-            if (!$adding) {
-                $this->cleanRecipients($formId, $recipientIDs);
-            }
-
-        }
-
-        //$this->_modifyForm();
-        $this->initContactForms(true);
-
-        /*
-         * Update/Create Frontend Form
-         */
-        if ($content == 'create') {
-            $this->_createContentPage();
-        } else if ($content == 'update') {
-            $this->_updateContentSite();
-        }
-
-        $this->_contactForms();
-    }
-
-    /**
-     * Get the recipient addresses from the post
-     *
-     * @author      Comvation AG <info@comvation.com>
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @return      string
-     */
-    private function getPostRecipients()
-    {
-        $formEmailsTmp = isset($_POST['contactFormEmail'])
-                ? explode(
-                ',',
-                strip_tags(contrexx_stripslashes($_POST['contactFormEmail']))
-                )
-                : '';
-
-        if (empty($formEmails)) {
-            $formEmails = $_CONFIG['contactFormEmail'];
-        }
-        if (is_array($formEmailsTmp)) {
-            $formEmails = array();
-            foreach ($formEmailsTmp as $email) {
-                $email = trim(contrexx_strip_tags($email));
-                if (!empty($email)) {
-                    array_push($formEmails, $email);
-                }
-            }
-            $formEmails = implode(',', $formEmails);
         } else {
-            $formEmails = '';
+            $this->_modifyForm();
         }
-
-        return $formEmails;
     }
-
 
     function _deleteFormEntry()
     {
-        global $_ARRAYLANG;
+	global $_ARRAYLANG;
 
         if (isset($_GET['entryId'])) {
             $entryId = intval($_GET['entryId']);
@@ -1379,18 +927,14 @@ class ContactManager extends ContactLib {
                 $this->deleteFormEntry(intval($entryId));
             }
         }
+	
         $this->_statusMessageOk = $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'];
 
         $this->initContactForms(true);
         $this->_contactFormEntries();
     }
 
-    /**
-     * Delete a form
-     *
-     * @author      Comvation AG <info@comvation.com>
-     */
-    private function _deleteForm()
+    function _deleteForm()
     {
         global $_ARRAYLANG;
 
@@ -1412,9 +956,6 @@ class ContactManager extends ContactLib {
         $this->_contactForms();
     }
 
-    /*
-     * Delete Site content for all languages even though language is not active
-     */
     function _deleteContentSite($formId)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1423,32 +964,27 @@ class ContactManager extends ContactLib {
 
         $formId = intval($_REQUEST['formId']);
         $pageId = $this->_getContentSiteId($formId);
-        $langId = $this->_getContentSiteLang($formId);
 
         if ($pageId != 0) {
             if ($this->boolHistoryEnabled) {
-                $objResult = $objDatabase->Execute('SELECT  id, lang
+                $objResult = $objDatabase->Execute('SELECT  id
                                                     FROM    '.DBPREFIX.'content_navigation_history
                                                     WHERE   is_active="1" AND
-                                                            catid='.$pageId
-                                                    );
-                while (!$objResult->EOF) {
-                    $objDatabase->Execute(' INSERT
-                                            INTO    '.DBPREFIX.'content_logfile
-                                            SET     action="delete",
-                                                    history_id='.$objResult->fields['id'].',
-                                                    is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
-                                        ');
-                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                                            catid='.$pageId.'
+                                                    LIMIT   1
+                                                ');
+                $objDatabase->Execute(' INSERT
+                                        INTO    '.DBPREFIX.'content_logfile
+                                        SET     action="delete",
+                                                history_id='.$objResult->fields['id'].',
+                                                is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
+                                    ');
+                $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
                                         SET     changelog='.time().'
                                         WHERE   catid='.$pageId.' AND
-                                                is_active="1" AND
-                                                `lang`='.$objResult->fields['lang'].'
+                                                is_active="1"
                                         LIMIT   1
                                     ');
-
-                    $objResult->MoveNext();
-                }
             }
 
             if ($this->boolHistoryEnabled) {
@@ -1468,7 +1004,7 @@ class ContactManager extends ContactLib {
                 if ($objDatabase->Execute($q1) === false || $objDatabase->Execute($q2) === false) {
                     $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
                 } else {
-                    $this->_statusMessageOk .= '<br />'.$_ARRAYLANG['TXT_CONTACT_DATA_RECORD_DELETED_SUCCESSFUL'];
+                     $this->_statusMessageOk .= '<br />'.$_ARRAYLANG['TXT_CONTACT_DATA_RECORD_DELETED_SUCCESSFUL'];
                 }
             }
 
@@ -1477,12 +1013,11 @@ class ContactManager extends ContactLib {
     }
 
     /**
-     * The function collects all categories without an existing parcat and assigns it to "lost and found"
-     *
-     * @global    ADONewConnection
-     */
-    function _collectLostPages()
-    {
+    * The function collects all categories without an existing parcat and assigns it to "lost and found"
+    *
+    * @global    ADONewConnection
+    */
+    function _collectLostPages() {
         global $objDatabase;
 
         $objResult = $objDatabase->Execute('    SELECT  catid,
@@ -1496,7 +1031,7 @@ class ContactManager extends ContactLib {
             while ($row = $objResult->FetchRow()) {
                 $objSubResult = $objDatabase->Execute(' SELECT  catid
                                                         FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE   catid='.$row['parcat'].' AND `lang`='.$row['lang'].'
+                                                        WHERE   catid='.$row['parcat'].'
                                                         LIMIT   1
                                                     ');
                 if ($objSubResult->RecordCount() != 1) {
@@ -1511,7 +1046,7 @@ class ContactManager extends ContactLib {
                     $subSubRow = $objSubSubResult->FetchRow();
                     $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
                                             SET     parcat='.$subSubRow['catid'].'
-                                            WHERE   catid='.$row['catid'].' AND `lang`='.$row['lang'].'
+                                            WHERE   catid='.$row['catid'].'
                                             LIMIT   1
                                         ');
                 }
@@ -1519,15 +1054,13 @@ class ContactManager extends ContactLib {
         }
     }
 
-    /*
-         * this is the old one
     function _getRecipientsFromPost($logErrors = true)
     {
         global $_ARRAYLANG;
         $arrErrors = $arrRecipients = array();
-        if(isset($_POST['contactFormRecipientName']) && is_array($_POST['contactFormRecipientName'])){
-            $formId = intval($_REQUEST['formId']);
-            foreach ($_POST['contactFormRecipientName'] as $id => $recipientName) {
+		if(isset($_POST['contactFormRecipientName']) && is_array($_POST['contactFormRecipientName'])){
+			$formId = intval($_REQUEST['formId']);
+			foreach ($_POST['contactFormRecipientName'] as $id => $recipientName) {
                 $recipientName  = strip_tags(contrexx_stripslashes($recipientName));
                 $recipientEmail = strip_tags(contrexx_stripslashes($_POST['contactFormRecipientEmail'][$id]));
                 if(strpos($recipientEmail, ',')){
@@ -1542,123 +1075,36 @@ class ContactManager extends ContactLib {
 
                 $recipientSort  = intval($_POST['contactFormRecipientSort'][$id]);
                 if($recipientEmail != $_ARRAYLANG['TXT_CONTACT_REGEX_EMAIL']){
-                      $arrRecipients[$id] = array(
-                          'name'         =>    $recipientName,
-                          'email'     =>    $recipientEmail,
-                          'sort'        =>     $recipientSort,
-                          'id_form'    =>  $formId
-                      );
+              		$arrRecipients[$id] = array(
+              			'name' 		=>	$recipientName,
+              			'email' 	=>	$recipientEmail,
+              			'sort'		=> 	$recipientSort,
+              			'id_form'	=>  $formId
+              		);
                 }
-            }
-        }
-        if(!empty($arrErrors)){
-            $this->_invalidRecipients = true;
+			}
+		}
+    	if(!empty($arrErrors)){
+    	    $this->_invalidRecipients = true;
             $this->_statusMessageErr .= implode("<br />", $arrErrors);
-        }
-        return $arrRecipients;
-    }
-    */
+    	}
+		return $arrRecipients;
+	}
 
-    /**
-     * Get the form fields from the post variables
-     *
-     * This is only used when an error on saving occurs, to
-     * reparse the form fields.
-     */
-    private function _getFormFieldsFromPost(&$uniqueFieldNames)
+    function _getFormFieldsFromPost(&$uniqueFieldNames)
     {
-        global $objInit;
-
         $uniqueFieldNames = true;
         $arrFields = array();
         $arrFieldNames = array();
         $orderId = 0;
-        $types = array(
-                'text',
-                'label',
-                'file',
-                'textarea',
-                'hidden',
-                'radio',
-                'checkboxGroup',
-                'password',
-                'select',
-                'special'
-        );
-        
-        // shorten the variables
-        $fieldNames      = $_POST['contactFormFieldName'];
-        $fieldValues     = $_POST['contactFormFieldValue'];
-        $fieldTypes      = $_POST['contactFormFieldType'];
-        $fieldRequireds  = $_POST['contactFormFieldRequired'];
-        $fieldCheckTypes = $_POST['contactFormFieldCheckType'];
-        $fieldAttributes = $_POST['contactFormFieldAttributes'];
-        $fieldEditType   = $_POST['contactFormFieldEditType'];
 
-        if (isset($fieldNames) && is_array($fieldNames)) {
-            foreach ($fieldNames as $id => $fieldName) {
-
-                /*
-                 * ternary is ugly here
-                 *
-                $type = isset($fieldTypes[$id])
-                    && array_key_exists(contrexx_stripslashes(
-                        $fieldTypes[$id]),
-                        $this->_arrFormFieldTypes
-                    )
-                    ? contrexx_stripslashes($fieldTypes[$id])
-                    : key($this->_arrFormFieldTypes);
-                */
-                
-                $key = contrexx_stripslashes($fieldTypes[$id]);
-                $special_type = "";
-                if (isset($fieldTypes[$id]) && array_key_exists($key, $this->_arrFormFieldTypes)) {
-                    $type = $key;
-                } elseif (array_key_exists($key, $this->_arrUserAccountData)) {
-                    $type         = 'special';
-                    $special_type = $key;
-                } else {
-                    $type = key($this->_arrFormFieldTypes);
-                }
-
-                // i have no idea why this...
-                // update: ah now i get it... it's probably the values?
-                if (isset($fieldAttributes) && !empty($fieldAttributes)) {
-                    if (array_search($type, $types) !== false) {
-                        $attributes = strip_tags(
-                                contrexx_stripslashes($fieldAttributes[$id]));
-                    } else {
-                        $attributes = intval($fieldAttributes[$id]);
-                    }
-                } else {
-                    $attributes = '';
-                }
-
-                /*
-                 * my ass... where's the guidelines to prevent from such code
-                 *
-                $attributes =
-                    isset($_POST['contactFormFieldAttribute'][$id])
-                    && !empty($_POST['contactFormFieldAttribute'][$id])
-                    ? (
-                        $type == 'text'
-                        || $type == 'label'
-                        || $type == 'file'
-                        || $type == 'textarea'
-                        || $type == 'hidden'
-                        || $type == 'radio'
-                        || $type == 'checkboxGroup'
-                        || $type == 'password'
-                        || $type == 'select'
-                            ? strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id]))
-                    : intval($_POST['contactFormFieldAttribute'][$id])) : '';
-                */
-
-                $is_required = isset($fieldRequireds[$id]) ? 1 : 0;
-
-                $checkType = isset($fieldCheckTypes[$id])
-                        ? intval($fieldCheckTypes[$id])
-                        : 1;
+        if (isset($_POST['contactFormFieldName']) && is_array($_POST['contactFormFieldName'])) {
+            foreach ($_POST['contactFormFieldName'] as $id => $fieldName) {
+                $fieldName = strip_tags(contrexx_stripslashes($fieldName));
+                $type = isset($_POST['contactFormFieldType'][$id]) && array_key_exists(contrexx_stripslashes($_POST['contactFormFieldType'][$id]), $this->_arrFormFieldTypes) ? contrexx_stripslashes($_POST['contactFormFieldType'][$id]) : key($this->_arrFormFieldTypes);
+                $attributes = isset($_POST['contactFormFieldAttribute'][$id]) && !empty($_POST['contactFormFieldAttribute'][$id]) ? ($type == 'text' || $type == 'label' || $type == 'file' || $type == 'textarea' || $type == 'hidden' || $type == 'radio' || $type == 'checkboxGroup' || $type == 'password' || $type == 'select' ? strip_tags(contrexx_stripslashes($_POST['contactFormFieldAttribute'][$id])) : intval($_POST['contactFormFieldAttribute'][$id])) : '';
+                $is_required = isset($_POST['contactFormFieldRequired'][$id]) ? 1 : 0;
+                $checkType = isset($_POST['contactFormFieldCheckType'][$id]) ? intval($_POST['contactFormFieldCheckType'][$id]) : 1;
 
                 if (!in_array($fieldName, $arrFieldNames)) {
                     array_push($arrFieldNames, $fieldName);
@@ -1667,96 +1113,34 @@ class ContactManager extends ContactLib {
                 }
 
                 switch ($type) {
-                case 'checkboxGroup':
-                case 'radio':
-                case 'select':
-                    $arrAttributes    = explode(',', $attributes);
-                    $arrNewAttributes = array();
-                    foreach ($arrAttributes as $strAttribute) {
-                        array_push($arrNewAttributes, trim($strAttribute));
-                    }
-                    $attributes = implode(',', $arrNewAttributes);
-                    break;
+                    case 'checkboxGroup':
+                    case 'radio':
+                    case 'select':
+                        $arrAttributes = explode(',', $attributes);
+                        $arrNewAttributes = array();
+                        foreach ($arrAttributes as $strAttribute) {
+                            array_push($arrNewAttributes, trim($strAttribute));
+                        }
+                        $attributes = implode(',', $arrNewAttributes);
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
-
-                $editType = $fieldEditType[$id];
 
                 $arrFields[intval($id)] = array(
-                        'id'            => $id, // in case we're editing this should be the real id
-                        'type'          => $type,
-                        'special_type'  => $special_type,
-                        'attributes'    => $attributes,
-                        'order_id'      => $orderId,
-                        'is_required'   => $is_required,
-                        'check_type'    => $checkType,
-                        'editType'     => $editType
+                    'name'          => $fieldName,
+                    'type'          => $type,
+                    'attributes'    => $attributes,
+                    'order_id'      => $orderId,
+                    'is_required'   => $is_required,
+                    'check_type'    => $checkType
                 );
-                
-                // hope the langs never change between editing and saving xD
-                foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
-                    $langID = $lang['id'];
 
-                    if ($_POST['contactFormLanguages'][$langID] == 1) {
-                        /**
-                         name and value fields can accept html characters
-                         */
-                        $fieldName  = strip_tags(contrexx_stripslashes(htmlspecialchars($fieldNames[$id][$langID], ENT_QUOTES)));
-                        $fieldValue = ($fieldTypes[$id] != 'checkbox' && 
-                                       $fieldTypes[$id] != 'country' &&
-                                       $fieldTypes[$id] != 'access_country')
-                                        ? strip_tags(contrexx_stripslashes(htmlspecialchars($fieldValues[$id][$langID], ENT_QUOTES)))
-                                        : $fieldValue = $fieldValues[$id];
-
-                        $arrFields[intval($id)]['lang'][$lang['id']] = array(
-                            'name'	=> $fieldName,
-                            'value'	=> $fieldValue
-                        );
-                    }
-                }
                 $orderId++;
             }
         }
         return $arrFields;
-    }
-
-    /**
-     * Parse the post values and return a list of recipients
-     *
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @return      array
-     */
-    private function getRecipientsFromPost()
-    {
-        $mails      = $_POST['contactFormRecipientEmail'];
-        $names      = $_POST['contactFormRecipientName'];
-        $editTypes  = $_POST['contactFormRecipientEditType'];
-        $recipients = array();
-
-        if (count($mails) == 0) {
-            return $recipients;
-        }
-
-        $sortCounter = 0;
-        foreach ($mails as $key => $mail) {
-            $recipients[$key] = array(
-                    'id'    => $key,
-                    'email' => $mail,
-                    'sort'  => $sortCounter++,
-                    'editType' => $editTypes[$key]
-            );
-            foreach (FWLanguage::getActiveFrontendLanguages() as $langID => $lang) {
-                $name = ($names[$key][$langID])
-                        ? $names[$key][$langID]
-                        : $names[$key][0]
-                ;
-                $recipients[$key]['lang'][$langID] = $name;
-            }
-        }
-
-        return $recipients;
     }
 
     /**
@@ -1767,17 +1151,13 @@ class ContactManager extends ContactLib {
      */
     function _getFormFieldTypesMenu($name, $selectedType, $attrs = '')
     {
-        global $_ARRAYLANG;
 
         $menu = "<select name=\"".$name."\" ".$attrs.">\n";
-        $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_FIELDS']."</option>\n";
+
         foreach ($this->_arrFormFieldTypes as $type => $desc) {
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\"><!--[if IE]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->".$desc."</option>\n";
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '').">".$desc."</option>\n";
         }
-        $menu .= "<option disabled=\"disabled\" style=\"color:#000;font-weight:bold;\">".$_ARRAYLANG['TXT_CONTACT_USER_DATA']."</option>\n";
-        foreach ($this->_arrUserAccountData as $type => $desc) {
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? 'selected="selected"' : '')."  style=\"padding-left:10px;\"><!--[if IE]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->".$desc."</option>\n";
-        }
+
         $menu .= "</select>\n";
         return  $menu;
     }
@@ -1796,38 +1176,34 @@ class ContactManager extends ContactLib {
         global $_ARRAYLANG;
 
         switch ($type) {
-        case 'access_country':
-        case 'checkbox':
-        case 'checkboxGroup':
-        case 'country':
-        case 'date':
-        case 'fieldset':
-        case 'hidden':
-        case 'radio':
-        case 'select':
-        case 'label':
-        case 'recipient':
-        case 'horizontalLine':
-            $menu = '';
-            break;
+            case 'checkbox':
+            case 'checkboxGroup':
+            case 'date':
+            case 'hidden':
+            case 'radio':
+            case 'select':
+            case 'label':
+            case 'recipient':
+                $menu = '';
+                break;
 
-        case 'text':
-        case 'file':
-        case 'password':
-        case 'textarea':
-        default:
-            $menu = "<select name=\"".$name."\" id=\"".$id."\">\n";
-            foreach ($this->arrCheckTypes as $typeId => $type) {
-                if ($selected == $typeId) {
-                    $select = "selected=\"selected\"";
-                } else {
-                    $select = "";
+            case 'text':
+            case 'file':
+            case 'password':
+            case 'textarea':
+            default:
+                $menu = "<select name=\"".$name."\" id=\"".$id."\">\n";
+                foreach ($this->arrCheckTypes as $typeId => $type) {
+                    if ($selected == $typeId) {
+                        $select = "selected=\"selected\"";
+                    } else {
+                        $select = "";
+                    }
+
+                    $menu .= "<option value=\"".$typeId."\" $select>".$_ARRAYLANG[$type['name']]."</option>\n";
                 }
 
-                $menu .= "<option value=\"".$typeId."\" $select>".$_ARRAYLANG[$type['name']]."</option>\n";
-            }
-
-            $menu .= "</select>\n";
+                $menu .= "</select>\n";
             break;
         }
         return  $menu;
@@ -1838,17 +1214,16 @@ class ContactManager extends ContactLib {
         global $_ARRAYLANG;
 
         switch ($type) {
-        case 'hidden':
-        case 'label':
-        case 'recipient':
-        case 'fieldset':
-        case 'horizontalLine':
-            return '';
-            break;
+            case 'hidden':
+            case 'select':
+            case 'label':
+            case 'recipient':
+                return '';
+                break;
 
-        default:
-            return '<input type="checkbox" name="'.$name.'" id="'.$id.'" '.($selected ? 'checked="checked"' : '').' />';
-            break;
+            default:
+                return '<input type="checkbox" name="'.$name.'" id="'.$id.'" '.($selected ? 'checked="checked"' : '').' />';
+                break;
         }
     }
 
@@ -1859,7 +1234,7 @@ class ContactManager extends ContactLib {
      * @access public
      * @global array
      */
-    function _sourceCode($formId = null)
+    function _sourceCode($formId = NULL)
     {
         global $_ARRAYLANG;
 
@@ -1872,47 +1247,38 @@ class ContactManager extends ContactLib {
             $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_SOURCECODE'];
 
             $this->_objTpl->setVariable(array(
-                    'TXT_CONTACT_SOURCECODE'            => $_ARRAYLANG['TXT_CONTACT_SOURCECODE'],
-                    'TXT_CONTACT_PREVIEW'               => $_ARRAYLANG['TXT_CONTACT_PREVIEW'],
-                    'TXT_CONTACT_COPY_SOURCECODE_MSG'   => $_ARRAYLANG['TXT_CONTACT_COPY_SOURCECODE_MSG'],
-                    'TXT_CONTACT_SELECT_ALL'            => $_ARRAYLANG['TXT_CONTACT_SELECT_ALL'],
-                    'TXT_CONTACT_BACK'                  => $_ARRAYLANG['TXT_CONTACT_BACK']
+                'TXT_CONTACT_SOURCECODE'            => $_ARRAYLANG['TXT_CONTACT_SOURCECODE'],
+                'TXT_CONTACT_PREVIEW'               => $_ARRAYLANG['TXT_CONTACT_PREVIEW'],
+                'TXT_CONTACT_COPY_SOURCECODE_MSG'   => $_ARRAYLANG['TXT_CONTACT_COPY_SOURCECODE_MSG'],
+                'TXT_CONTACT_SELECT_ALL'            => $_ARRAYLANG['TXT_CONTACT_SELECT_ALL'],
+                'TXT_CONTACT_BACK'                  => $_ARRAYLANG['TXT_CONTACT_BACK']
             ));
 
             $contentSiteExists = $this->_getContentSiteId($formId);
 
             $this->_objTpl->setVariable(array(
-                    'CONTACT_CONTENT_SITE_ACTION_TXT'   => $contentSiteExists > 0 ? $_ARRAYLANG['TXT_CONTACT_UPDATE_CONTENT_SITE'] : $_ARRAYLANG['TXT_CONTACT_NEW_PAGE'],
-                    'CONTACT_CONTENT_SITE_ACTION'       => $contentSiteExists > 0 ? 'updateContent' : 'newContent',
-                    'CONTACT_SOURCECODE_OF'             => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_SOURCECODE_OF_NAME']),
-                    'CONTACT_PREVIEW_OF'                => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_PREVIEW_OF_NAME']),
-                    'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, 0, false, true), ENT_QUOTES, CONTREXX_CHARSET),
-                    'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, 0, true),
-                    'FORM_ID'                           => $formId
+                'CONTACT_CONTENT_SITE_ACTION_TXT'   => $contentSiteExists > 0 ? $_ARRAYLANG['TXT_CONTACT_UPDATE_CONTENT_SITE'] : $_ARRAYLANG['TXT_CONTACT_NEW_PAGE'],
+                'CONTACT_CONTENT_SITE_ACTION'       => $contentSiteExists > 0 ? 'updateContent' : 'newContent',
+                'CONTACT_SOURCECODE_OF'             => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_SOURCECODE_OF_NAME']),
+                'CONTACT_PREVIEW_OF'                => str_replace('%NAME%', $this->arrForms[$formId]['name'], $_ARRAYLANG['TXT_CONTACT_PREVIEW_OF_NAME']),
+                'CONTACT_FORM_SOURCECODE'           => htmlentities($this->_getSourceCode($formId, false, true), ENT_QUOTES, CONTREXX_CHARSET),
+                'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, true),
+                'FORM_ID'                           => $formId
             ));
         } else {
             $this->_contactForms();
         }
     }
 
-    /*
-     * Generates the HTML Source code of the Submission form designed in backend
-     * @id      Submission form id
-     * @lang    Language for which source code to be generated
-     * @preview Boolean, generated preview source or raw source
-     * @show    Boolean, generated frontend code
-     */
-    function _getSourceCode($id, $lang, $preview = false, $show = false)
+    function _getSourceCode($id, $preview = false, $show = false)
     {
         global $_ARRAYLANG, $objInit, $objDatabase;
 
         $arrFields = $this->getFormFields($id);
         $sourcecode = array();
         $this->initContactForms(true);
-        $frontendLang = $objInit->userFrontendLangId;
-
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
-        $sourcecode[] = "<!-- BEGIN formText -->". ($preview ? $this->arrForms[$id]['lang'][$frontendLang]['text'] : "{".$id."_FORM_TEXT}") ."<!-- END formText -->";
+        $sourcecode[] = "<!-- BEGIN formText -->".$this->arrForms[$id]['text'] . "<!-- END formText -->";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
         $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
@@ -1920,8 +1286,8 @@ class ContactManager extends ContactLib {
         $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
         $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
         $sourcecode[] = '<fieldset id="contactFrame">';
-        $sourcecode[] = "<legend>". ($preview ? $this->arrForms[$id]['lang'][$frontendLang]['name'] : "{".$id."_FORM_NAME}")."</legend>";
-       
+        $sourcecode[] = "<legend>".$this->arrForms[$id]['name']."</legend>";
+
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
                 $required = '<strong class="is_required">*</strong>';
@@ -1929,196 +1295,129 @@ class ContactManager extends ContactLib {
                 $required = "";
             }
 
+            $sourcecode[] = '<p> <label for="contactFormFieldId_'.$fieldId.'">'.(($arrField['type'] != 'hidden' && $arrField['type'] != 'label') ? $arrField['name'] : '&nbsp;')." ".$required.'</label>';
+
             switch ($arrField['type']) {
-            case 'hidden':
-            case 'horizontalLine':
-                $sourcecode[] = '&nbsp;';
-                break;
-            case 'label':
-                $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">&nbsp;</label>';
-                break;
-            case 'fieldset':
-                $sourcecode[] = '</fieldset>';
-                $sourcecode[] = '<fieldset id="contactFormFieldId_'.$fieldId.'">';
-                $sourcecode[] = "<legend>".($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")."</legend>";
-                break;
-            case 'checkboxGroup':
-            case 'radio':
-                $sourcecode[] = '<label>'.
-                                ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")
-                                .$required.'</label>';
-                break;
-            case 'date':
-                $sourcecode[] = '<label for="DPC_date'.$fieldId.'_YYYY-MM-DD">'.
-                                ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")
-                                .$required.'</label>';
-                break;
-            default:
-                $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
-                                ($preview ? $arrField['lang'][$frontendLang]['name'] : "{".$fieldId."_LABEL}")
-                                .$required.'</label>';
-            }
+                case 'text':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes']).'" />';
+                    break;
 
-            $arrField['lang'][$frontendLang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$frontendLang]['value']);
-            $fieldType                                = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
-            switch ($fieldType) {
-            case 'label':
-                $sourcecode[] = $preview ? $arrField['lang'][$frontendLang]['value'] : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>';
-                break;
+                case 'label':
+                    $sourcecode[] = $arrField['attributes'] == '' ? '{'.$fieldId.'_VALUE}' : $arrField['attributes'];
+                    break;
 
-            case 'checkbox':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1" {SELECTED_'.$fieldId.'} />';
-                break;
+                case 'checkbox':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1"'.($arrField['attributes'] == '1' ? ' checked="checked"' : '').' />';
+                    break;
 
-            case 'checkboxGroup':
-                $selectedLang = $preview ? $frontendLang : $lang;
-                $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
-                foreach ($options as $index => $option) {
-                    $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" {SELECTED_'.$fieldId.'_'.$index.'}/><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label>';
-                }
-                $sourcecode[] = '</div>';
-                break;
-
-            case 'country':
-            case 'access_country':
-                $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
-                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                if ($arrField['is_required'] == 1) {
-                    $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
-                } else {
-                    $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."</option>";
-                }
-                if ($preview) {
-                    while (!$objResult->EOF) {
-                        $sourcecode[] = "<option value=\"".$objResult->fields['name']."\" >".$objResult->fields['name']."</option>";
-                        $objResult->MoveNext();
-                    }
-                } else {
-                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value=\"{".$fieldId."_VALUE}\" {SELECTED_".$fieldId."} >{".$fieldId."_VALUE}</option>";
-                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
-                }
-                $sourcecode[] = "</select>";
-                break;
-
-            case 'date':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
-                break;
-
-            case 'file':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
-                break;
-            
-            case 'hidden':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : "{".$fieldId."_VALUE}").'" />';
-                break;
-
-            case 'horizontalLine':
-                $sourcecode[] = '<hr />';
-                break;
-            
-            case 'password':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
-                break;
-
-            case 'radio':
-                $selectedLang = $preview ? $frontendLang : $lang;
-                $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
-                foreach ($options as $index => $option) {
-                    $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? $option : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
-                }
-                $sourcecode[] = '</div>';
-                break;
-
-            case 'select':
-                $selectedLang = $preview ? $frontendLang : $lang;
-                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
-                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                if ($preview) {
+                case 'checkboxGroup':
+                    $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                    $options = explode(',', $arrField['attributes']);
                     foreach ($options as $index => $option) {
-                        $sourcecode[] = "<option value='".$option."'>". $option ."</option>";
+                        $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
                     }
-                } else {
-                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value='{".$fieldId."_VALUE}' {SELECTED_".$fieldId."}>". '{'.$fieldId.'_VALUE}'."</option>";
-                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
-                }
-                $sourcecode[] = "</select>";
-                break;
+                    $sourcecode[] = '</p>';
+                    break;
 
-            case 'textarea':
-                $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
-                break;
-            case 'recipient':
-                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                if ($preview) {
-                    foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
-                        $sourcecode[] = "<option value='".$index."'>". $arrRecipient['lang'][FRONTEND_LANG_ID] ."</option>";
+                case 'date':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
+                    break;
+
+                case 'file':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
+                    break;
+
+                case 'hidden':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($arrField['attributes'] == "" ? "{".$fieldId."_VALUE}" : $arrField['attributes']).'" />';
+                    break;
+
+                case 'password':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
+                    break;
+
+                case 'radio':
+                    $sourcecode[] = '<p class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                    $options = explode(',', $arrField['attributes']);
+                    foreach ($options as $index => $option) {
+                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.$option.'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.$option.'</label><br />';
                     }
-                } else {
-                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value='{".$fieldId."_VALUE_ID}' {SELECTED_".$fieldId."} >". '{'.$fieldId.'_VALUE}'."</option>";
-                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
-                }
-                $sourcecode[] = "</select>";
-                break;
-            default:
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? $arrField['lang'][$frontendLang]['value'] : '{'.$fieldId.'_VALUE}').'" />';
-                break;
+                    $sourcecode[] = '</p>';
+                    break;
+
+                case 'select':
+                    $options = explode(',', $arrField['attributes']);
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                    foreach ($options as $index => $option) {
+                        $sourcecode[] = "<option {SELECTED_".$fieldId."_".$index."}>".$option."</option>";
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
+
+                case 'textarea':
+                    $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
+                    break;
+                case 'recipient':
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_recipient" id=contactFormField_'.$fieldId.'">';
+                    foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
+                    	$sourcecode[] = '<option value="'.$index.'" {SELECTED_'.$fieldId.'_'.$index.'}>'.$arrRecipient['name'].'</option>';
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
             }
+            $sourcecode[] = "</p>";
         }
 
         if ($preview) {
-            $themeId = $objInit->arrLang[$frontendLang]['themesid'];
-            if (($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false) {
-                $themePath = $objRS->fields['foldername'];
-            }
-            $sourcecode[] = '<link href="../core_modules/contact/css/form.css" rel="stylesheet" type="text/css" />';
-
             if ($this->arrForms[$id]['useCaptcha']) {
                 include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
                 $captcha = new Captcha();
-                $offset  = $captcha->getOffset();
-                $alt     = $captcha->getAlt();
-                $url     = $captcha->getUrl();
 
+                $offset = $captcha->getOffset();
+                $alt = $captcha->getAlt();
+                $url = $captcha->getUrl();
+
+                $frontendLang = $objInit->userFrontendLangId;
+                $themeId = $objInit->arrLang[$frontendLang]['themesid'];
+
+                if(($objRS = $objDatabase->SelectLimit("SELECT `foldername` FROM `".DBPREFIX."skins` WHERE `id` = ".$themeId, 1)) !== false){
+                    $themePath = $objRS->fields['foldername'];
+                }
+
+                $sourcecode[] = '<link href="../themes/'.$themePath.'/buildin_style.css" rel="stylesheet" type="text/css" />';
+                $sourcecode[] = '<p><span>'.$_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION']."</span><br />";
+                $sourcecode[] = '<img class="captcha" src="'.$url.'" alt="'.$alt.'" /></p>';
                 $sourcecode[] = '<div style="color: red;"></div>';
-                $sourcecode[] = '<label>&nbsp;</label>';
-                $sourcecode[] = '<label class="noCaption">';
-                $sourcecode[] = $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'];
-                $sourcecode[] = '</label>';
-                $sourcecode[] = '<span>'.$_ARRAYLANG["TXT_CONTACT_CAPTCHA"].'</span><img class="captcha" src="'.$url.'" alt="'.$alt.'" />';
-                $sourcecode[] = '<label>&nbsp;</label>';
-                $sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
+                $sourcecode[] = "<p>";
+                $sourcecode[] = '<label for="contactFormCaptcha"> CAPTCHA </label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
                 $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="'.$offset.'" />';
+                $sourcecode[] = "</p>";
             }
         } else {
             $sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
             $sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
-            $sourcecode[] = '<label>&nbsp;</label>';
-            $sourcecode[] = '<label class="noCaption">';
+            $sourcecode[] = "<p>";
             $sourcecode[] = "{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />";
-            $sourcecode[] = '</label>';
-            $sourcecode[] = '<span>{TXT_CONTACT_CAPTCHA}</span><img class="captcha" src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
-            $sourcecode[] = '<label>&nbsp;</label>';
+            $sourcecode[] = '</p>';
+            $sourcecode[] = '<p><span>CAPTCHA</span><img class="captcha" src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
             $sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
             $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
+            $sourcecode[] = "</p>";
             $sourcecode[] = "<!-- END contact_form_captcha -->";
         }
 
-        $sourcecode[] = '<label>&nbsp;</label><input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
+        $sourcecode[] = "<p>";
+        $sourcecode[] = '<input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
+        $sourcecode[] = "</p>";
         $sourcecode[] = "</fieldset>";
         $sourcecode[] = "</form>";
         $sourcecode[] = "<!-- END contact_form -->";
 
-        $sourcecode[] = $preview ? $this->_getJsSourceCode($id, $arrFields, $preview, $show) : "{CONTACT_JAVASCRIPT}";
+        $sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
 
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
         }
-        
+
         return implode("\n", $sourcecode);
     }
 
@@ -2126,80 +1425,66 @@ class ContactManager extends ContactLib {
     function _getEntryDetails($arrEntry, $formId)
     {
         global $_ARRAYLANG;
-        
+
         $arrFormFields = $this->getFormFields($formId);
-        $recipient     = $this->getRecipients($formId);
-        $rowNr         = 0;
-        $langId        = $arrEntry['langId'];
-        
+        $rowNr = 0;
+
         $sourcecode .= "<table border=\"0\" class=\"adminlist\" cellpadding=\"3\" cellspacing=\"0\" width=\"100%\">\n";
-        foreach ($arrFormFields as $key => $arrField) {
-            /*
-             * Fieldset and Horizontal Field Type need not be displayed in the details page
-             */
-            if ($arrField['type'] != 'horizontalLine' && $arrField['type'] != 'fieldset') {
-                $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
-                $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
-                                $arrField['lang'][FRONTEND_LANG_ID]['name'].
-                                ($arrField['type'] == 'hidden' ? ' (hidden)' : '').
-                                ($arrField['type'] == 'label' ? ' (label)' : '').
-                                "</td>\n";
-                $sourcecode .= "<td width=\"85%\">";
-                
-                switch ($arrField['type']) {
+        foreach ($arrFormFields as $arrField) {
+            $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
+            $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".$arrField['name'].($arrField['type'] == 'hidden' ? ' (hidden)' : '')."</td>\n";
+            $sourcecode .= "<td width=\"85%\">";
+
+            switch ($arrField['type']) {
                 case 'checkbox':
-                    $sourcecode .= isset($arrEntry['data'][$key]) && $arrEntry['data'][$key] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
+                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) && $arrEntry['data'][$arrField['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
                     break;
 
                 case 'file':
-                    $file = $arrEntry['data'][$key];
-                    if (isset($file)) {
-                        if (preg_match('/^a:2:{/', $file)) {
-                            $file = unserialize($file);
-                        } else {
-                            $file = array(
-                                    'path' => $file,
-                                    'name' => basename($file)
-                            );
-                        }
-                        $fileHref    = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
-                        $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
-                        $fileValue   = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                        $sourcecode .= '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
-                    } else {
-                        $sourcecode .= '&nbsp;';
-                    }
+                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'</a>' : '&nbsp;';
                     break;
-                case 'label':
-                    $sourcecode .= isset($arrField['lang'][$langId]['name']) ? nl2br(htmlentities($arrField['lang'][$langId]['value'], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
-                    break;
-                case 'recipient':
-                    $recipientId = $arrEntry['data'][$key];
-                    $sourcecode .= isset($recipient[$recipientId]['lang'][$langId]) ? htmlentities($recipient[$recipientId]['lang'][$langId], ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;';
-                    break;
+
                 case 'text':
                 case 'checkboxGroup':
-                case 'country':
                 case 'date':
                 case 'hidden':
                 case 'password':
                 case 'radio':
                 case 'select':
                 case 'textarea':
-                case 'special':
-                    $sourcecode .= isset($arrEntry['data'][$key]) ? nl2br(htmlentities($arrEntry['data'][$key], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
+                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? nl2br(htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET)) : '&nbsp;';
                     break;
-                }
-
-                $sourcecode .= "</td>\n";
-                $sourcecode .= "</tr>\n";
-
-                $rowNr++;
             }
+
+            $sourcecode .= "</td>\n";
+            $sourcecode .= "</tr>\n";
+
+            $rowNr++;
         }
         $sourcecode .= "</table>\n";
 
         return $sourcecode;
+    }
+
+    function csv_mb_convert_encoding($data)
+    {
+        static $doConvert;
+    
+        if (!isset($doConvert)) {
+            if (function_exists("mb_detect_encoding")
+                && $this->_csvCharset != CONTREXX_CHARSET
+            ) {
+                $doConvert = true;
+            } else {
+                $doConvert = false;
+            }
+        }
+
+        if ($doConvert) {
+            return mb_convert_encoding($data, $this->_csvCharset, CONTREXX_CHARSET);;
+        } else {
+            return $data;
+        }
     }
 
     /**
@@ -2216,70 +1501,103 @@ class ContactManager extends ContactLib {
 
         $id = intval($_GET['formId']);
 
+        $format = 'default';
+        $csvFormat = array(
+            'default' => array(
+                'charset'       => CONTREXX_CHARSET,
+                'delimiter'     => ';',
+                'enclosure'     => '"',
+                'content-type'  => 'text/comma-separated-values',
+                'BOM'           => null,
+                'LFB'           => "\r\n"
+            ),
+            'excel' => array(
+                'charset'       => 'UTF-16LE',
+                'delimiter'     => "\t",
+                'enclosure'     => '"',
+                'content-type'  => 'application/vnd.ms-excel',
+                'BOM'           => chr(255).chr(254),
+                'LFB'           => "\r\n"
+            )
+        );
+
+
         if (empty($id)) {
-            header("Location: index.php?cmd=contact");
+            CSRF::header("Location: index.php?cmd=contact");
             return;
         }
+
+        if (isset($_GET['format']) && isset($csvFormat[$_GET['format']])) {
+            $format = $_GET['format'];
+        }
+
+        // $this->_csvCharset must be set first, because the methode $this->csv_mb_convert_encoding depends on this variable
+        $this->_csvCharset = $csvFormat[$format]['charset'];
+        $this->_csvEnclosure = $this->csv_mb_convert_encoding($csvFormat[$format]['enclosure'], $csvFormat[$format]['charset'], CONTREXX_CHARSET);
+        $this->_csvSeparator = $this->csv_mb_convert_encoding($csvFormat[$format]['delimiter'], $csvFormat[$format]['charset'], CONTREXX_CHARSET);
+        $this->_csvLFB = $this->csv_mb_convert_encoding($csvFormat[$format]['LFB'], $csvFormat[$format]['charset'], CONTREXX_CHARSET);
 
         $filename = $this->_replaceFilename($this->arrForms[$id]['name']. ".csv");
         $arrFormFields = $this->getFormFields($id);
 
         // Because we return a csv, we need to set the correct header
-        header("Content-Type: text/comma-separated-values", true);
+        header("Content-Type: ".$csvFormat[$format]['content-type']."; charset=".$csvFormat[$format]['charset'], true);
         header("Content-Disposition: attachment; filename=\"$filename\"", true);
 
-        $value = '';
+        // Print BOM
+        print $csvFormat[$format]['BOM'];
+
         foreach ($arrFormFields as $arrField) {
             print $this->_escapeCsvValue($arrField['name']).$this->_csvSeparator;
         }
 
         $arrSettings = $this->getSettings();
 
-        print ($arrSettings['fieldMetaDate'] == '1' ? $_ARRAYLANG['TXT_CONTACT_DATE'].$this->_csvSeparator : '')
-                .($arrSettings['fieldMetaHost'] == '1' ? $_ARRAYLANG['TXT_CONTACT_HOSTNAME'].$this->_csvSeparator : '')
-                .($arrSettings['fieldMetaLang'] == '1' ? $_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE'].$this->_csvSeparator : '')
-                .($arrSettings['fieldMetaIP'] == '1' ? $_ARRAYLANG['TXT_CONTACT_IP_ADDRESS'] : '')
-                ."\r\n";
+        print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_DATE']).$this->_csvSeparator : '')
+                .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_HOSTNAME']).$this->_csvSeparator : '')
+                .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_BROWSER_LANGUAGE']).$this->_csvSeparator : '')
+                .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_IP_ADDRESS']) : '')
+                .$this->_csvLFB;
 
-        $query    = "SELECT id, `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$id." ORDER BY `time` DESC";
+        $query = "SELECT id, `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$id." ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
         if ($objEntry !== false) {
             while (!$objEntry->EOF) {
                 $arrData = array();
                 foreach (explode(';', $objEntry->fields['data']) as $keyValue) {
-                    $arrTmp                             = explode(',', $keyValue);
+                    $arrTmp = explode(',', $keyValue);
                     $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
                 }
 
                 foreach ($arrFormFields as $arrField) {
                     switch ($arrField['type']) {
-                    case 'checkbox':
-                        print isset($arrData[$arrField['name']]) && $arrData[$arrField['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
-                        break;
+                        case 'checkbox':
+                            print $this->_escapeCsvValue(isset($arrData[$arrField['name']]) && $arrData[$arrField['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
+                            break;
 
-                    case 'file':
-                        print isset($arrData[$arrField['name']]) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrData[$arrField['name']] : '';
-                        break;
+                        case 'file':
+                            print $this->_escapeCsvValue(isset($arrData[$arrField['name']]) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrData[$arrField['name']] : '');
+                            break;
 
-                    case 'text':
-                    case 'checkboxGroup':
-                    case 'hidden':
-                    case 'password':
-                    case 'radio':
-                    case 'select':
-                    case 'textarea':
-                        print isset($arrData[$arrField['name']]) ? $this->_escapeCsvValue($arrData[$arrField['name']]) : '';
-                        break;
+                        case 'text':
+                        case 'checkboxGroup':
+                        case 'hidden':
+                        case 'password':
+                        case 'radio':
+                        case 'select':
+                        case 'textarea':
+                            print isset($arrData[$arrField['name']]) ? $this->_escapeCsvValue($arrData[$arrField['name']]) : '';
+                            break;
                     }
 
                     print $this->_csvSeparator;
                 }
 
-                print ($arrSettings['fieldMetaDate'] == '1' ? date(ASCMS_DATE_FORMAT, $objEntry->fields['time']).$this->_csvSeparator : '')
-                        .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($objEntry->fields['host']).$this->_csvSeparator : '')
-                        .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($objEntry->fields['lang']).$this->_csvSeparator : '')
-                        .($arrSettings['fieldMetaIP'] == '1' ? $objEntry->fields['ipaddress'] : '')
-                        ."\r\n";
+                print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT, $objEntry->fields['time'])).$this->_csvSeparator : '')
+                    .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($objEntry->fields['host']).$this->_csvSeparator : '')
+                    .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($objEntry->fields['lang']).$this->_csvSeparator : '')
+                    .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($objEntry->fields['ipaddress']) : '')
+                    .$this->_csvLFB;
 
                 $objEntry->MoveNext();
             }
@@ -2297,11 +1615,10 @@ class ContactManager extends ContactLib {
     function _escapeCsvValue(&$value)
     {
         $value = preg_replace('/\r\n/', "\n", $value);
-        $valueModified = str_replace('"', '""', $value);
+        $value = $this->csv_mb_convert_encoding($value, $this->_csvCharset, CONTREXX_CHARSET);;
+        $valueModified = str_replace($this->_csvEnclosure, $this->_csvEnclosure.$this->_csvEnclosure, $value);
+        $value = $this->_csvEnclosure.$valueModified.$this->_csvEnclosure;
 
-        if ($valueModified != $value || preg_match('/['.$this->_csvSeparator.'\n]+/', $value)) {
-            $value = '"'.$valueModified.'"';
-        }
         return $value;
     }
 
@@ -2323,7 +1640,7 @@ class ContactManager extends ContactLib {
         $filename = preg_replace('/\s/', '_', $filename);
 
         // replace umlauts
-        // TODO: Use octal notation for special characters in regexes!
+// TODO: Use octal notation for special characters in regexes!
         $filename = preg_replace('%�%', 'oe', $filename);
         $filename = preg_replace('%�%', 'ue', $filename);
         $filename = preg_replace('%�%', 'ae', $filename);
@@ -2345,298 +1662,218 @@ class ContactManager extends ContactLib {
      */
     function _createContentPage()
     {
-        global $_ARRAYLANG, $objDatabase, $_CONFIG;
+        global $_ARRAYLANG, $objDatabase, $_FRONTEND_LANGID, $_CONFIG;
 
         Permission::checkAccess(5, 'static');
 
         $formId = intval($_REQUEST['formId']);
         if ($formId > 0) {
-            $activeLanguages = FWLanguage::getActiveFrontendLanguages();
-            $objFWUser       = FWUser::getFWUserObject();
-
-            if (!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
-                $pageId = intval($_REQUEST['pageId']);
-            } else {
-                $objRS  = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId`
-                                                    FROM `'.DBPREFIX.'content_navigation`');
-                $pageId = $objRS->fields['nextId'];
+            $objFWUser = FWUser::getFWUserObject();
+            $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form WHERE id=".$formId, 1);
+            if ($objContactForm !== false) {
+                $catname = addslashes($objContactForm->fields['name']);
             }
 
-            foreach ($activeLanguages as $lang) {
-                $langID = $lang['id'];
+            $currentTime = time();
+            $content = addslashes($this->_getSourceCode($formId));
 
-                $objContactForm = $objDatabase->SelectLimit("SELECT name, is_active FROM ".DBPREFIX."module_contact_form_lang
-                                                            WHERE formID=".$formId." AND langID=".$langID, 1);
-                if ($objContactForm->fields['is_active'] == 1) {
-                    if ($objContactForm !== false) {
-                        $catname = addslashes($objContactForm->fields['name']);
-                    }
+            $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
+                                        catname,
+                                        displayorder,
+                                        displaystatus,
+                                        username,
+                                        changelog,
+                                        cmd,
+                                        lang,
+                                        module
+                                        ) VALUES(
+                                        '".$catname."',
+                                        '1',
+                                        'on',
+                                        '".$objFWUser->objUser->getUsername()."',
+                                        '".$currentTime."',
+                                        '".$formId."',
+                                        '".$_FRONTEND_LANGID."',
+                                        '6')";
+            $objDatabase->Execute($q1);
+            $pageId = $objDatabase->Insert_ID();
 
-                    $currentTime = time();
-                    $content     = addslashes($this->_getSourceCode($formId, $langID));
-
-                    $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
-                                            catid,
-                                            catname,
-                                            displayorder,
-                                            displaystatus,
-                                            username,
-                                            changelog,
-                                            cmd,
-                                            lang,
-                                            module
-                                            ) VALUES(
-                                            '".$pageId."',
-                                            '".$catname."',
-                                            '1',
-                                            'on',
-                                            '".$objFWUser->objUser->getUsername()."',
-                                            '".$currentTime."',
-                                            '".$formId."',
-                                            '".$langID."',
-                                            '6')";
-                    $objDatabase->Execute($q1);
-
-                    $q2 ="INSERT INTO ".DBPREFIX."content (id,
-                                                    lang_id,
+            $q2 ="INSERT INTO ".DBPREFIX."content (id,
                                                     content,
                                                     title,
                                                     metatitle,
                                                     metadesc,
                                                     metakeys)
                                             VALUES (".$pageId.",
-                                                    ".$langID.",
                                                     '".$content."',
                                                     '".$catname."',
                                                     '".$catname."',
                                                     '".$catname."',
                                                     '".$catname."')";
 
-                    if ($objDatabase->Execute($q2) !== false) {
-                        //create backup for history
-                        if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
-                            //user is not allowed to validated, so set if "off"
-                            $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
-                                                    SET     is_validated="0",
-                                                            activestatus="0"
-                                                    WHERE   catid='.$pageId.' AND `lang`='.$langID.'
-                                                    LIMIT   1
-                                                ');
-                        }
-
-                        if ($this->boolHistoryEnabled) {
-                            $objDatabase->Execute('SELECT  protected,
-                                                                        frontend_access_id,
-                                                                        backend_access_id
-                                                                FROM    '.DBPREFIX.'content_navigation
-                                                                WHERE   catid='.$pageId.' AND `lang`='.$langID.'
-                                                                LIMIT   1
-                                                            ');
-                            $objDatabase->Execute(' INSERT
-                                                    INTO    '.DBPREFIX.'content_navigation_history
-                                                    SET     is_active="1",
-                                                            catid='.$pageId.',
-                                                            catname="'.$catname.'",
-                                                            displayorder=1,
-                                                            displaystatus="off",
-                                                            username="'.$objFWUser->objUser->getUsername().'",
-                                                            changelog="'.$currentTime.'",
-                                                            cmd="'.$formId.'",
-                                                            lang="'.$langID.'",
-                                                            module="6"');
-                            $intHistoryId = $objDatabase->insert_id();
-                            $objDatabase->Execute(' INSERT
-                                                    INTO    '.DBPREFIX.'content_history
-                                                    SET     id='.$intHistoryId.',
-                                                            page_id='.$pageId.',
-                                                            lang_id="'.$langID.'",
-                                                            content="'.$content.'",
-                                                            title="'.$catname.'",
-                                                            metatitle="'.$catname.'",
-                                                            metadesc="'.$catname.'",
-                                                            metakeys="'.$catname.'"');
-                            $objDatabase->Execute(' INSERT
-                                                    INTO    '.DBPREFIX.'content_logfile
-                                                    SET     action="new",
-                                                            history_id='.$intHistoryId.',
-                                                            is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
-                                                ');
-                        }
-                    } else {
-                        $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
-                    }
+            if ($objDatabase->Execute($q2) !== false) {
+                //create backup for history
+                if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
+                    //user is not allowed to validated, so set if "off"
+                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
+                                            SET     is_validated="0",
+                                                    activestatus="0"
+                                            WHERE   catid='.$pageId.'
+                                            LIMIT   1
+                                        ');
                 }
+
+                if ($this->boolHistoryEnabled) {
+                    $objDatabase->Execute('SELECT  protected,
+                                                                frontend_access_id,
+                                                                backend_access_id
+                                                        FROM    '.DBPREFIX.'content_navigation
+                                                        WHERE   catid='.$pageId.'
+                                                        LIMIT   1
+                                                    ');
+                    $objDatabase->Execute(' INSERT
+                                            INTO    '.DBPREFIX.'content_navigation_history
+                                            SET     is_active="1",
+                                                    catid='.$pageId.',
+                                                    catname="'.$catname.'",
+                                                    displayorder=1,
+                                                    displaystatus="off",
+                                                    username="'.$objFWUser->objUser->getUsername().'",
+                                                    changelog="'.$currentTime.'",
+                                                    cmd="'.$formId.'",
+                                                    lang="'.$_FRONTEND_LANGID.'",
+                                                    module="6"');
+                    $intHistoryId = $objDatabase->insert_id();
+                    $objDatabase->Execute(' INSERT
+                                            INTO    '.DBPREFIX.'content_history
+                                            SET     id='.$intHistoryId.',
+                                                    page_id='.$pageId.',
+                                                    content="'.$content.'",
+                                                    title="'.$catname.'",
+                                                    metatitle="'.$catname.'",
+                                                    metadesc="'.$catname.'",
+                                                    metakeys="'.$catname.'"');
+                    $objDatabase->Execute(' INSERT
+                                            INTO    '.DBPREFIX.'content_logfile
+                                            SET     action="new",
+                                                    history_id='.$intHistoryId.',
+                                                    is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
+                                        ');
+                }
+
+                CSRF::header("Location: ".ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId);
+                exit;
+            } else {
+                $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
             }
-            header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
-            exit;
         }
     }
 
     function _updateContentSite()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_FRONTEND_LANGID, $_ARRAYLANG;
 
         Permission::checkAccess(35, 'static');
         $formId = intval($_REQUEST['formId']);
         $pageId = $this->_getContentSiteId($formId);
         $parcat = $this->_getContentSiteParCat($formId);
         if ($pageId > 0) {
-            $activeLanguages = FWLanguage::getActiveFrontendLanguages();
-            $objFWUser       = FWUser::getFWUserObject();
+            $objFWUser = FWUser::getFWUserObject();
+            $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form WHERE id=".$formId, 1);
+            if ($objContactForm !== false) {
+                $catname = addslashes($objContactForm->fields['name']);
+            }
+            $content = addslashes($this->_getSourceCode($formId));
+            $currentTime = time();
 
-            foreach ($activeLanguages as $lang) {
-                $langID = $lang['id'];
-
-                $objContactForm = $objDatabase->SelectLimit("SELECT name, is_active FROM ".DBPREFIX."module_contact_form_lang WHERE formID=".$formId." AND langID=".$langID, 1);
-
-                if (isset($_POST['contactFormLanguages'][$langID])) {
-                    //if ($objContactForm !== false) {
-                        $catname = addslashes($objContactForm->fields['name']);
-                    //}
-                    $content     = addslashes($this->_getSourceCode($formId, $langID));
-                    $currentTime = time();
-
-                    //make sure the user is allowed to update the content
-                    if ($this->boolHistoryEnabled) {
-                        if ($this->boolHistoryActivate) {
-                            $boolDirectUpdate = true;
-                        } else {
-                            $boolDirectUpdate = false;
-                        }
-                    } else {
-                        $boolDirectUpdate = true;
-                    }
-
-                    if ($boolDirectUpdate) {
-                        $objResult = $objDatabase->Execute("SELECT COUNT(id) As count FROM ".DBPREFIX."content
-                                                WHERE   id=".$pageId.' AND `lang_id`='.$langID);
-                        if ($objResult->fields['count'] == 0) {
-                            $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
-                                            catid,
-                                            catname,
-                                            displayorder,
-                                            displaystatus,
-                                            username,
-                                            changelog,
-                                            cmd,
-                                            lang,
-                                            module
-                                            ) VALUES(
-                                            '".$pageId."',
-                                            '".$catname."',
-                                            '1',
-                                            'on',
-                                            '".$objFWUser->objUser->getUsername()."',
-                                            '".$currentTime."',
-                                            '".$formId."',
-                                            '".$langID."',
-                                            '6')";
-                            $objDatabase->Execute($q1);
-
-                            $q2 ="INSERT INTO ".DBPREFIX."content (id,
-                                                        lang_id,
-                                                        content,
-                                                        title,
-                                                        metatitle,
-                                                        metadesc,
-                                                        metakeys)
-                                                VALUES (".$pageId.",
-                                                        ".$langID.",
-                                                        '".$content."',
-                                                        '".$catname."',
-                                                        '".$catname."',
-                                                        '".$catname."',
-                                                        '".$catname."')";
-                            $objDatabase->Execute($q2);
-                        } else {
-                            $objDatabase->Execute("UPDATE   ".DBPREFIX."content
-                                                   SET      content='".$content."'
-                                                   WHERE   id=".$pageId.' AND `lang_id`='.$langID);
-                            $objDatabase->Execute("UPDATE   ".DBPREFIX."content_navigation
-                                                   SET      activestatus='1'
-                                                   WHERE   catid=".$pageId.' AND `lang`='.$langID);
-                        }
-                    }
-
-                    if ($parcat!=$pageId) {
-                        //create copy of parcat (for history)
-                        $intHistoryParcat = $parcat;
-                        if ($boolDirectUpdate) {
-                            $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
-                                                    SET     username='".$objFWUser->objUser->getUsername()."',
-                                                            changelog='".$currentTime."'
-                                                    WHERE catid=".$pageId.' AND `lang`='.$langID);
-                        }
-                    } else {
-                        //create copy of parcat (for history)
-                        $intHistoryParcat = 0;
-                        if ($boolDirectUpdate) {
-                            $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
-                                                    SET     username='".$objFWUser->objUser->getUsername()."',
-                                                            changelog='".$currentTime."'
-                                                    WHERE   catid=".$pageId.' AND `lang`='.$langID);
-                        }
-                    }
-
-                    if ($boolDirectUpdate) {
-                        $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_CONTENT_PAGE_SUCCESSFULLY_UPDATED']."<br />";
-                    } else {
-                        $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE']."<br />";
-                    }
-
-                    //create backup for history
-                    if ($this->boolHistoryEnabled) {
-                        $objDatabase->Execute('SELECT  displayorder,
-                                                                    protected,
-                                                                    frontend_access_id,
-                                                                    backend_access_id
-                                                            FROM    '.DBPREFIX.'content_navigation
-                                                            WHERE   catid='.$pageId.' AND `lang`='.$langID.'
-                                                            LIMIT   1
-                                                        ');
-                        if ($boolDirectUpdate) {
-                            $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
-                                                    SET     is_active="0"
-                                                    WHERE   catid='.$pageId.' AND `lang`='.$langID);
-                        }
-
-                        $objDatabase->Execute(' INSERT
-                                                INTO    '.DBPREFIX.'content_navigation_history
-                                                SET     is_active="'.(($boolDirectUpdate) ? 1 : 0).'",
-                                                        catid='.$pageId.',
-                                                        parcat="'.$intHistoryParcat.'",
-                                                        catname="'.$catname.'",
-                                                        username="'.$objFWUser->objUser->getUsername().'",
-                                                        changelog="'.$currentTime.'",
-                                                        lang="'.$langID.'",
-                                                        cmd="'.$formId.'",
-                                                        module="6"
-                                                   ');
-                        $intHistoryId = $objDatabase->insert_id();
-                        $objDatabase->Execute(' INSERT
-                                                INTO    '.DBPREFIX.'content_history
-                                                SET     id='.$intHistoryId.',
-                                                        page_id='.$pageId.',
-                                                        lang_id='.$langID.',
-                                                        content="'.$content.'",
-                                                        title="'.$catname.'",
-                                                        metatitle="'.$catname.'",
-                                                        metadesc="'.$catname.'",
-                                                        metakeys="'.$catname.'"'
-                        );
-                        $objDatabase->Execute(' INSERT
-                                                INTO    '.DBPREFIX.'content_logfile
-                                                SET     action="update",
-                                                        history_id='.$intHistoryId.',
-                                                        is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"
-                                            ');
-                    }
+            //make sure the user is allowed to update the content
+            if ($this->boolHistoryEnabled) {
+                if ($this->boolHistoryActivate) {
+                    $boolDirectUpdate = true;
                 } else {
-                    /* Deactive pages with disabled languages */
-                    $objDatabase->Execute("UPDATE   ".DBPREFIX."content_navigation
-                                           SET activestatus='0'
-                                           WHERE catid=".$pageId.' AND `lang`='.$langID);
+                    $boolDirectUpdate = false;
                 }
+            } else {
+                $boolDirectUpdate = true;
+            }
+
+            if ($boolDirectUpdate) {
+                $objDatabase->Execute("UPDATE   ".DBPREFIX."content
+                                       SET      content='".$content."'
+                                        WHERE   id=".$pageId);
+            }
+
+            if ($parcat!=$pageId) {
+                //create copy of parcat (for history)
+                $intHistoryParcat = $parcat;
+                if ($boolDirectUpdate) {
+                    $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
+                                            SET     username='".$objFWUser->objUser->getUsername()."',
+                                                    changelog='".$currentTime."'
+                                            WHERE catid=".$pageId);
+                }
+            } else {
+                //create copy of parcat (for history)
+                $intHistoryParcat = 0;
+                if ($boolDirectUpdate) {
+                    $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
+                                            SET     username='".$objFWUser->objUser->getUsername()."',
+                                                    changelog='".$currentTime."'
+                                            WHERE   catid=".$pageId);
+                }
+            }
+
+            if ($boolDirectUpdate) {
+                $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_CONTENT_PAGE_SUCCESSFULLY_UPDATED']."<br />";
+            } else {
+                $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE']."<br />";
+            }
+
+            //create backup for history
+            if ($this->boolHistoryEnabled) {
+                $objDatabase->Execute('SELECT  displayorder,
+                                                            protected,
+                                                            frontend_access_id,
+                                                            backend_access_id
+                                                    FROM    '.DBPREFIX.'content_navigation
+                                                    WHERE   catid='.$pageId.'
+                                                    LIMIT   1
+                                                ');
+                if ($boolDirectUpdate) {
+                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
+                                            SET     is_active="0"
+                                            WHERE   catid='.$pageId);
+                }
+
+                $objDatabase->Execute(' INSERT
+                                        INTO    '.DBPREFIX.'content_navigation_history
+                                        SET     is_active="'.(($boolDirectUpdate) ? 1 : 0).'",
+                                                catid='.$pageId.',
+                                                parcat="'.$intHistoryParcat.'",
+                                                catname="'.$catname.'",
+                                                username="'.$objFWUser->objUser->getUsername().'",
+                                                changelog="'.$currentTime.'",
+                                                lang="'.$_FRONTEND_LANGID.'",
+                                                cmd="'.$formId.'",
+                                                module="6"
+                                           ');
+                $intHistoryId = $objDatabase->insert_id();
+                $objDatabase->Execute(' INSERT
+                                        INTO    '.DBPREFIX.'content_history
+                                        SET     id='.$intHistoryId.',
+                                                page_id='.$pageId.',
+                                                content="'.$content.'",
+                                                title="'.$catname.'",
+                                                metatitle="'.$catname.'",
+                                                metadesc="'.$catname.'",
+                                                metakeys="'.$catname.'"'
+                                        );
+                $objDatabase->Execute(' INSERT
+                                        INTO    '.DBPREFIX.'content_logfile
+                                        SET     action="update",
+                                                history_id='.$intHistoryId.',
+                                                is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"
+                                    ');
             }
         }
     }
@@ -2646,13 +1883,13 @@ class ContactManager extends ContactLib {
         global $objDatabase;
 
         // Check if the thanks page is already active
-        $thxQuery  = "SELECT catid FROM ".DBPREFIX."content_navigation
+        $thxQuery = "SELECT catid FROM ".DBPREFIX."content_navigation
                      WHERE module=6 AND lang=".FRONTEND_LANG_ID;
         $objResult = $objDatabase->SelectLimit($thxQuery, 1);
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 0) {
                 // The thanks page doesn't exist, let's change that
-                $thxQuery  = "SELECT `content`,
+                $thxQuery = "SELECT `content`,
                                     `title`, `cmd`, `expertmode`, `parid`,
                                     `displaystatus`, `displayorder`, `username`,
                                     `displayorder`
@@ -2660,14 +1897,14 @@ class ContactManager extends ContactLib {
                              WHERE `moduleid` = 6 AND `lang`=".FRONTEND_LANG_ID;
                 $objResult = $objDatabase->Execute($thxQuery);
                 if ($objResult !== false) {
-                    $content       = $objResult->fields['content'];
-                    $title         = $objResult->fields['title'];
-                    $cmd           = $objResult->fields['cmd'];
-                    $expertmode    = $objResult->fields['expertmode'];
+                    $content = $objResult->fields['content'];
+                    $title = $objResult->fields['title'];
+                    $cmd = $objResult->fields['cmd'];
+                    $expertmode = $objResult->fields['expertmode'];
                     $displaystatus = $objResult->fields['displaystatus'];
-                    // TODO: Never used
-                    // $displayorder = $objResult->fields['displayorder'];
-                    $username  = $objResult->fields['username'];
+// TODO: Never used
+//                    $displayorder = $objResult->fields['displayorder'];
+                    $username = $objResult->fields['username'];
                     $changelog = time();
 
                     $thxQuery = "INSERT INTO ".DBPREFIX."content_navigation
@@ -2685,15 +1922,198 @@ class ContactManager extends ContactLib {
                     $thxId = $objDatabase->Insert_ID();
 
                     $thxQuery = "INSERT INTO ".DBPREFIX."content
-                                 (id, lang_id, content, title, metatitle, metadesc, metakeys, expertmode)
+                                 (id, content, title, metatitle, metadesc, metakeys, expertmode)
                                  VALUES
-                                 (".$thxId.", ".FRONTEND_LANG_ID.", '".$content."', '".$title."', '".$title."', '".$title."', '".$title."',
+                                 (".$thxId.", '".$content."', '".$title."', '".$title."', '".$title."', '".$title."',
                                   '".$expertmode."')";
 
                     $objDatabase->Execute($thxQuery);
                 }
             }
         }
+    }
+
+    /**
+     * Get Javascript Source
+     *
+     * Makes the sourcecode for the javascript based
+     * field checking
+     */
+    function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
+    {
+        $code = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
+        $code .= "<script type=\"text/javascript\">\n";
+        $code .= "/* <![CDATA[ */\n";
+
+        $code .= "fields = new Array();\n";
+
+        foreach ($formFields as $key => $field) {
+            $code .= "fields[$key] = Array(\n";
+            $code .= "\t'".addslashes($field['name'])."',\n";
+            $code .= "\t{$field['is_required']},\n";
+            if ($preview) {
+                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
+            } elseif ($show) {
+                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
+            } else {
+                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
+            }
+            $code .= "\t'".$field['type']."');\n";
+        }
+
+        $code .= <<<JS_checkAllFields
+function checkAllFields() {
+    var isOk = true;
+
+    for (var field in fields) {
+        var type = fields[field][3];
+        if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {
+            value = document.getElementsByName('contactFormField_' + field)[0].value;
+            if (value == "" && isRequiredNorm(fields[field][1], value)) {
+                isOk = false;
+                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            } else if (value != "" && !matchType(fields[field][2], value)) {
+                isOk = false;
+                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            } else {
+                document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+            }
+        } else if (type == 'checkbox') {
+            if (!isRequiredCheckbox(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'checkboxGroup') {
+            if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'radio') {
+            if (!isRequiredRadio(fields[field][1], field)) {
+                isOk = false;
+            }
+        }
+    }
+
+    if (!isOk) {
+        document.getElementById('contactFormError').style.display = "block";
+    }
+    return isOk;
+}
+
+JS_checkAllFields;
+
+        // This is for checking normal text input field if they are required.
+        // If yes, it also checks if the field is set. If it is not set, it returns true.
+        $code .= <<<JS_isRequiredNorm
+function isRequiredNorm(required, value) {
+    if (required == 1) {
+        if (value == "") {
+            return true;
+        }
+    }
+    return false;
+}
+
+JS_isRequiredNorm;
+
+        // Matches the type of the value and pattern. Returns true if it matched, false if not.
+        $code .= <<<JS_matchType
+function matchType(pattern, value) {
+    var reg = new RegExp(pattern);
+    if (value.match(reg)) {
+        return true;
+    }
+    return false;
+}
+
+JS_matchType;
+
+        // Checks if a checkbox is required but not set. Returns false when finding an error.
+        $code .= <<<JS_isRequiredCheckbox
+function isRequiredCheckbox(required, field) {
+    if (required == 1) {
+        if (!document.getElementsByName('contactFormField_' + field)[0].checked) {
+            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            return false;
+        }
+    }
+    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+
+    return true;
+}
+
+JS_isRequiredCheckbox;
+
+        // Checks if a multile checkbox is required but not set. Returns false when finding an error.
+        $code .= <<<JS_isRequiredCheckBoxGroup
+function isRequiredCheckBoxGroup(required, field) {
+    if (required == true) {
+        var boxes = document.getElementsByName('contactFormField_' + field + '[]');
+        var checked = false;
+        for (var i = 0; i < boxes.length; i++) {
+            if (boxes[i].checked) {
+                checked = true;
+            }
+        }
+        if (checked) {
+            setListBorder('contactFormField_' + field + '[]', false);
+            return true;
+        } else {
+            setListBorder('contactFormField_' + field + '[]', '1px red solid');
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+
+JS_isRequiredCheckBoxGroup;
+
+        // Checks if some radio button need to be checked. Returns false if it finds an error
+        $code .= <<<JS_isRequiredRadio
+function isRequiredRadio(required, field) {
+    if (required == 1) {
+        var buttons = document.getElementsByName('contactFormField_' + field);
+        var checked = false;
+        for (var i = 0; i < buttons.length; i++) {
+            if (buttons[i].checked) {
+                checked = true;
+            }
+        }
+        if (checked) {
+            setListBorder('contactFormField_' + field, false);
+            return true;
+        } else {
+            setListBorder('contactFormField_' + field, '1px red solid');
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+
+JS_isRequiredRadio;
+
+        // Sets the border attribute of a group of checkboxes or radiobuttons
+        $code .= <<<JS_setListBorder
+function setListBorder(field, borderColor) {
+    var boxes = document.getElementsByName(field);
+    for (var i = 0; i < boxes.length; i++) {
+        if (borderColor) {
+            boxes[i].style.border = borderColor;
+        } else {
+            boxes[i].style.borderColor = '';
+        }
+    }
+}
+
+JS_setListBorder;
+
+        $code .= <<<JS_misc
+/* ]]> */
+</script>
+
+JS_misc;
+        return $code;
     }
 }
 ?>

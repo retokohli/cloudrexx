@@ -30,8 +30,8 @@ class PayPal
      * @see getForm()
      */
     var $PayPalAcc;
-
-
+    
+    
     /**
      * PHP 5 constructor
      *
@@ -41,7 +41,7 @@ class PayPal
     {
 
     }
-
+    
     /**
      * PHP 4.3 constructor
      *
@@ -49,9 +49,9 @@ class PayPal
      */
     function PayPal()
     {
-        $this->__construct();
+        $this->__construct();    
     }
-
+    
     /**
      * Returns the form for PayPal accessing
      *
@@ -60,7 +60,7 @@ class PayPal
     function getForm($orderId)
     {
         global $_ARRAYLANG;
-
+        
         $business = $this->getBusiness();
         $currency_code = "EUR";
         $amount = $this->getPrice($orderId);
@@ -72,9 +72,9 @@ class PayPal
         $notify_url = $host."/index.php?section=auction&amp;act=paypalIpnCheck";
         $item_name = "Insarat";
 
-
-        $retval .= "\n<form name=\"paypal\" action=\"https://www.sandbox.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";
-        //$retval .= "\n<form name=\"paypal\" action=\"https://www.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";
+        
+        $retval .= "\n<form name=\"paypal\" action=\"https://www.sandbox.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";        
+        //$retval .= "\n<form name=\"paypal\" action=\"https://www.paypal.com/ch/cgi-bin/webscr\" method=\"post\">\n";        
         $retval .= $this->getInput("cmd", "_xclick");
         $retval .= $this->getInput("business", $business);
         $retval .= $this->getInput("item_name", $item_name);
@@ -87,12 +87,12 @@ class PayPal
         $retval .= "{$_ARRAYLANG['TXT_PAYPAL_SUBMIT']}Text<br /><br />";
         $retval .= "<input id=\"submit\" type=\"submit\" name=\"submit\" value=\"Button{$_ARRAYLANG['TXT_PAYPAL_SUBMIT_BUTTON']}\">\n";
         $retval .= "</form>\n";
-
+        
         return $retval;
     }
-
+    
     /**
-     * Generates an hidden input field
+     * Generates an hidden input field 
      *
      * @param $field Array containing the name and the value of the field
      */
@@ -100,8 +100,8 @@ class PayPal
     {
         return "<input type=\"hidden\" name=\"$name\" value=\"$value\">\n";
     }
-
-
+    
+    
     /**
      * reads the paypal email address out of the database
      */
@@ -116,18 +116,18 @@ class PayPal
                 $objReslut->MoveNext();
             }
           }
-
+          
           return $paypalProfile;
     }
-
-
+    
+    
     /**
      * reads the price out of the database
      */
     function getPrice($orderId)
     {
         global $objDatabase;
-
+        
         $objReslut = $objDatabase->Execute("SELECT premium FROM ".DBPREFIX."module_auction WHERE id = '".$orderId."'");
           if($objReslut !== false){
             while(!$objReslut->EOF){
@@ -135,7 +135,7 @@ class PayPal
                 $objReslut->MoveNext();
             }
           }
-
+        
         $objReslut = $objDatabase->Execute("SELECT price, price_premium FROM ".DBPREFIX."module_auction_paypal WHERE id = '1'");
           if($objReslut !== false){
             while(!$objReslut->EOF){
@@ -144,24 +144,24 @@ class PayPal
                 $objReslut->MoveNext();
             }
           }
-
+          
           if($premium == '1'){
               $paypalTotal = $paypalPrice+$paypalPremium;
           }else{
               $paypalTotal = $paypalPrice;
           }
-
+          
           return $paypalTotal;
     }
-
-
+    
+    
     /**
      * confirms the payment
      */
     function payConfirm()
     {
         global $objDatabase;
-
+        
         if (!empty($_GET['orderid'])) {
                 $orderid = intval($_GET['orderid']);
         }
@@ -169,36 +169,36 @@ class PayPal
         if (!$objResult = $objDatabase->Execute($query)) {
             return false;
         }
-
+        
         if ($objResult->fields['order_status'] == 1) {
-            return $orderid;
+            return $orderid;    
         } else {
             return NULL;
         }
     }
 
-
+    
     /**
      * Communicates with paypal
      */
     function ipnCheck()
     {
         global $objDatabase;
-
+        
         // read the post from PayPal system and add 'cmd'
         $req = 'cmd=_notify-validate';
         foreach ($_POST as $key => $value) {
             $value = urlencode(stripslashes($value));
             $req .= "&$key=$value";
         }
-
+                
         // post back to PayPal system to validate
         $header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
         $header .= "Content-Type: application/x-www-form-urlencoded\r\n";
         $header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
         $fp = fsockopen ('www.sandbox.paypal.com', 80, $errno, $errstr, 30);
 //        $fp = fsockopen ('www.paypal.com', 80, $errno, $errstr, 30);
-
+        
         // assign posted variables to local variables
         $item_name = $_POST['item_name'];
         $item_number = $_POST['item_number'];
@@ -209,7 +209,7 @@ class PayPal
         $receiver_email = $_POST['receiver_email'];
         $payer_email = $_POST['payer_email'];
         $orderId = $_POST['custom'];
-
+        
         if (!$fp) {
             exit;
         } else {
@@ -218,9 +218,9 @@ class PayPal
                 $res = fgets ($fp, 1024);
                 if (strcmp ($res, "VERIFIED") == 0) {
                     //wenn bezahlung ok, mach...
-
+                    
                     //$amount = $this->getPrice($orderId);
-
+                    
                     //if ($payment_amount == $amount && $payment_currency == "EUR") {
                         $query = "UPDATE ".DBPREFIX."module_auction SET paypal='1' WHERE id ='175' ";
                         $objResult = $objDatabase->Execute($query);

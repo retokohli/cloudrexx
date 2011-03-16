@@ -1,20 +1,20 @@
 <div id="fe_Background" style="display: none;"></div>
 <div id="fe_Editor" style="display: none;">
-  <div id="fe_EditorBoxFrame">
-    <div id="fe_BoxTitle">
-      <div class="left">{TXT_EDIT_TITLE}</div>
-      <div class="right"><a href="javascript:void(0)" onclick="fe_switchEditorVisibility();">X</a></div>
-    </div>
-    <div id="fe_EditorBoxContent">
-      <form name="fe_Form" action="" method="post">
-        <input type="hidden" id="fe_FormTitle_Old" name="fe_FormTitle_Old" value="{EDIT_TITLE}" />
-        <div class="fe_EditorBoxLabel">{TXT_EDIT_PAGETITLE}</div>
-        <div class="fe_EditorBoxValue"><input type="text" id="fe_FormTitle" name="fe_FormTitle" class="fe_EditorTitle" value="{EDIT_TITLE}" /></div>
-        <div class="fe_EditorBoxLabel">{TXT_EDIT_CONTENT}</div>
-        <div class="fe_EditorBoxValue">{EDIT_WYSIWYG}</div>
-        <input type="Button" value="{TXT_EDIT_PREVIEW}" onclick="fe_loadPreview(true);" class="fe_EditorBoxButton" />
-        <input type="Button" value="{TXT_EDIT_SUBMIT}" onclick="fe_updatePage();" class="fe_EditorBoxButton" />
-      </form>
-    </div>
-  </div>
+	<div id="fe_EditorBoxFrame">
+		<div id="fe_BoxTitle">
+			<div class="left">{TXT_EDIT_TITLE}</div>
+			<div class="right"><a href="javascript:void(0)" onclick="fe_switchEditorVisibility();">X</a></div>
+		</div>
+		<div id="fe_EditorBoxContent">
+			<form name="fe_Form" action="" method="post">	
+				<input type="hidden" id="fe_FormTitle_Old" name="fe_FormTitle_Old" value="{EDIT_TITLE}" />
+				<div class="fe_EditorBoxLabel">{TXT_EDIT_PAGETITLE}</div>
+				<div class="fe_EditorBoxValue"><input type="text" id="fe_FormTitle" name="fe_FormTitle" class="fe_EditorTitle" value="{EDIT_TITLE}" /></div>
+				<div class="fe_EditorBoxLabel">{TXT_EDIT_CONTENT}</div>
+				<div class="fe_EditorBoxValue">{EDIT_WYSIWYG}</div>
+				<input type="Button" value="{TXT_EDIT_PREVIEW}" onclick="fe_loadPreview(true);" class="fe_EditorBoxButton" />
+				<input type="Button" value="{TXT_EDIT_SUBMIT}" onclick="fe_updatePage();" class="fe_EditorBoxButton" />
+			</form>
+		</div>
+	</div>
 </div>

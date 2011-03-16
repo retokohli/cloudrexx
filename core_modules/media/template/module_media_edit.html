@@ -1,219 +1,205 @@
 <!-- START module_media_action.html -->
 <script language="JavaScript" type="text/JavaScript">
+// <![CDATA[
+function mediaFormCheck()
+{
+  if (document.mediaEdit.renName.value == "") {
+    alert("{TXT_MEDIA_RENAME_NAME}");
+    document.mediaEdit.renName.focus();
+    return false;
+  }
 
-    function mediaFormCheck()
-    {
-        if(document.mediaEdit.renName.value == "")
-        {
-            alert("{TXT_MEDIA_RENAME_NAME}");
-            document.mediaEdit.renName.focus();
-            return false;
-        }
-
-        if(document.mediaEdit.renExt.value != document.mediaEdit.oldExt.value)
-        {
-            if(!confirm("{TXT_MEDIA_RENAME_EXT}"))
-            {
-                document.mediaEdit.renExt.value = document.mediaEdit.oldExt.value
-          }
-        }
+  if (document.mediaEdit.renExt.value != document.mediaEdit.oldExt.value) {
+    if (!confirm("{TXT_MEDIA_RENAME_EXT}")) {
+      document.mediaEdit.renExt.value = document.mediaEdit.oldExt.value
     }
+  }
+}
 
-    function mediaResize(x)
-    {
-        if(x == 'w')
-        {
-            document.mediaEdit.imgWidthPx.value = parseInt(document.mediaEdit.imgWidthPx.value);
-            if(document.mediaEdit.imgWidthPx.value == 0 || document.mediaEdit.imgWidthPx.value == "NaN")
-            {
-                document.mediaEdit.imgWidthPx.value = 1;
-            }
-            if(document.mediaEdit.imgWidthPx.value > 2000)
-            {
-                document.mediaEdit.imgWidthPx.value = 2000;
-            }
-
-            var multiPx  = document.mediaEdit.imgWidthPx.value / document.mediaEdit.imgWidthPxUnround.value;
-            document.mediaEdit.imgWidthPxUnround.value       = document.mediaEdit.imgWidthPx.value;
-
-            if(document.mediaEdit.mediaImgBalance.checked == true)
-            {
-                document.mediaEdit.imgHeightPx.value         = Math.round(document.mediaEdit.imgHeightPxUnround.value * multiPx);
-                document.mediaEdit.imgHeightPxUnround.value  = document.mediaEdit.imgHeightPxUnround.value * multiPx;
-
-                if(document.mediaEdit.imgHeightPxUnround.value > 2000)
-                {
-                    document.mediaEdit.imgHeightPx.value      = 2000;
-                    mediaResize('h');
-                }
-            }
-        }
-
-        if(x == 'h')
-        {
-            document.mediaEdit.imgHeightPx.value = parseInt(document.mediaEdit.imgHeightPx.value);
-            if(document.mediaEdit.imgHeightPx.value == 0 || document.mediaEdit.imgHeightPx.value == "NaN")
-            {
-                document.mediaEdit.imgHeightPx.value = 1;
-            }
-            if(document.mediaEdit.imgHeightPx.value > 2000)
-            {
-                document.mediaEdit.imgHeightPx.value = 2000;
-            }
-
-            var multiPx = document.mediaEdit.imgHeightPx.value / document.mediaEdit.imgHeightPxUnround.value;
-            document.mediaEdit.imgHeightPxUnround.value      = document.mediaEdit.imgHeightPx.value;
-
-            if(document.mediaEdit.mediaImgBalance.checked == true)
-            {
-                document.mediaEdit.imgWidthPx.value          = Math.round(document.mediaEdit.imgWidthPxUnround.value * multiPx);
-                document.mediaEdit.imgWidthPxUnround.value   = document.mediaEdit.imgWidthPxUnround.value * multiPx;
-
-                if(document.mediaEdit.imgWidthPxUnround.value > 2000)
-                {
-                    document.mediaEdit.imgWidthPx.value      = 2000;
-                    mediaResize('w');
-                }
-            }
-        }
-
-        if(x == 'q')
-        {
-            document.mediaEdit.imgQuality.value = parseInt(document.mediaEdit.imgQuality.value);
-            if(document.mediaEdit.imgQuality.value == 0 || document.mediaEdit.imgQuality.value == "NaN")
-            {
-                document.mediaEdit.imgQuality.value = 1;
-            }
-            if(document.mediaEdit.imgQuality.value > 100)
-            {
-                document.mediaEdit.imgQuality.value = 100;
-            }
-        }
+function mediaResize(x)
+{
+  if (x == 'w') {
+    document.mediaEdit.imgWidthPx.value = parseInt(document.mediaEdit.imgWidthPx.value);
+    if (document.mediaEdit.imgWidthPx.value == 0 || document.mediaEdit.imgWidthPx.value == "NaN") {
+      document.mediaEdit.imgWidthPx.value = 1;
     }
-
-    function mediaImagePreview()
-    {
-        var data = new Array(document.mediaEdit.imgWidthPx.value, document.mediaEdit.imgHeightPx.value, document.mediaEdit.imgQuality.value);
-        var f = '{MEDIA_EDIT_ACTION_PREVIEW}&data=' + data;
-        var s = '{MEDIA_EDIT_ACTION_PREVIEW_S}&data= ' + data;
-        var w = Math.round(document.mediaEdit.imgWidthPx.value) + 10;
-        var h = Math.round(document.mediaEdit.imgHeightPx.value) + 30;
-        var l = (screen.availWidth - document.mediaEdit.imgWidthPx.value) / 2;
-        var t = (screen.availHeight - 50 - document.mediaEdit.imgHeightPx.value) / 2;
-        prev  = window.open('', '', "width="+w+", height="+h+", left="+l+", top="+t+", scrollbars=no, toolbars=no, status=no, resizable=no");
-        prev.document.open();
-        prev.document.write('<html><title>'+f+'</title><body style="margin: 5px; padding: 0px;" onclick="self.close()" onblur="self.close()">');
-        prev.document.write('<img src=\"'+f+'\" width=\"'+document.mediaEdit.imgWidthPx.value+'\" height=\"'+document.mediaEdit.imgHeightPx.value+'\" alt=\"'+f+'\"><br />');
-        prev.document.write('<img src=\"'+s+'\" height=\"20\" alt="">');
-        prev.document.write('</body></html>');
-        prev.document.close();
-        prev.focus();
+    if (document.mediaEdit.imgWidthPx.value > 2000) {
+      document.mediaEdit.imgWidthPx.value = 2000;
     }
+    var multiPx  = document.mediaEdit.imgWidthPx.value / document.mediaEdit.imgWidthPxUnround.value;
+    document.mediaEdit.imgWidthPxUnround.value     = document.mediaEdit.imgWidthPx.value;
+    if (document.mediaEdit.mediaImgBalance.checked == true) {
+      document.mediaEdit.imgHeightPx.value     = Math.round(document.mediaEdit.imgHeightPxUnround.value * multiPx);
+      document.mediaEdit.imgHeightPxUnround.value  = document.mediaEdit.imgHeightPxUnround.value * multiPx;
 
+      if (document.mediaEdit.imgHeightPxUnround.value > 2000) {
+        document.mediaEdit.imgHeightPx.value    = 2000;
+        mediaResize('h');
+      }
+    }
+  }
+
+  if (x == 'h') {
+    document.mediaEdit.imgHeightPx.value = parseInt(document.mediaEdit.imgHeightPx.value);
+    if (document.mediaEdit.imgHeightPx.value == 0 || document.mediaEdit.imgHeightPx.value == "NaN") {
+      document.mediaEdit.imgHeightPx.value = 1;
+    }
+    if (document.mediaEdit.imgHeightPx.value > 2000) {
+      document.mediaEdit.imgHeightPx.value = 2000;
+    }
+    var multiPx = document.mediaEdit.imgHeightPx.value / document.mediaEdit.imgHeightPxUnround.value;
+    document.mediaEdit.imgHeightPxUnround.value    = document.mediaEdit.imgHeightPx.value;
+    if (document.mediaEdit.mediaImgBalance.checked == true) {
+      document.mediaEdit.imgWidthPx.value      = Math.round(document.mediaEdit.imgWidthPxUnround.value * multiPx);
+      document.mediaEdit.imgWidthPxUnround.value   = document.mediaEdit.imgWidthPxUnround.value * multiPx;
+      if (document.mediaEdit.imgWidthPxUnround.value > 2000) {
+        document.mediaEdit.imgWidthPx.value    = 2000;
+        mediaResize('w');
+      }
+    }
+  }
+
+  if (x == 'q') {
+    document.mediaEdit.imgQuality.value = parseInt(document.mediaEdit.imgQuality.value);
+    if (document.mediaEdit.imgQuality.value == 0 || document.mediaEdit.imgQuality.value == "NaN") {
+      document.mediaEdit.imgQuality.value = 1;
+    }
+    if (document.mediaEdit.imgQuality.value > 100) {
+      document.mediaEdit.imgQuality.value = 100;
+    }
+  }
+}
+
+function mediaImagePreview()
+{
+  var data = new Array(document.mediaEdit.imgWidthPx.value, document.mediaEdit.imgHeightPx.value, document.mediaEdit.imgQuality.value);
+  var f = '{MEDIA_EDIT_ACTION_PREVIEW}&data=' + data;
+  var s = '{MEDIA_EDIT_ACTION_PREVIEW_S}&data= ' + data;
+  var w = Math.round(document.mediaEdit.imgWidthPx.value) + 10;
+  var h = Math.round(document.mediaEdit.imgHeightPx.value) + 30;
+  var l = (screen.availWidth - document.mediaEdit.imgWidthPx.value) / 2;
+  var t = (screen.availHeight - 50 - document.mediaEdit.imgHeightPx.value) / 2;
+  prev  = window.open('', '', "width="+w+", height="+h+", left="+l+", top="+t+", scrollbars=no, toolbars=no, status=no, resizable=no");
+  prev.document.open();
+  prev.document.write('<html><title>'+f+'<\/title><body style="margin: 5px; padding: 0px;" onclick="self.close()" onblur="self.close()">');
+  prev.document.write('<img src=\"'+f+'\" width=\"'+document.mediaEdit.imgWidthPx.value+'\" height=\"'+document.mediaEdit.imgHeightPx.value+'\" alt=\"'+f+'\"><br />');
+  prev.document.write('<img src=\"'+s+'\" height=\"20\" alt="">');
+  prev.document.write('<\/body><\/html>');
+  prev.document.close();
+  prev.focus();
+}
+// --!>
 </script>
 
 <a title="{TXT_MEDIA_BACK}"></a>
 <!-- BEGIN mediaErrorFile -->
-    <table width="100%" cellspacing="0" cellpadding="5" border="0" align="middle" class="adminlist">
-      <tr>
-          <th>{TXT_MEDIA_ERROR_OCCURED}</th>
-      </tr>
-      <tr class="row1">
-          <td>
-              {TXT_MEDIA_FILE_DONT_EXISTS}
-        </td>
-      </tr>
-    </table>
+<table width="100%" cellspacing="0" cellpadding="5" border="0" align="middle" class="adminlist">
+  <tr>
+    <th>{TXT_MEDIA_ERROR_OCCURED}</th>
+  </tr>
+  <tr class="row1">
+    <td>
+      {TXT_MEDIA_FILE_DONT_EXISTS}
+    </td>
+  </tr>
+</table>
 <!-- END mediaErrorFile -->
 
 <!-- BEGIN mediaFile -->
-    <form name="mediaEdit" action="{MEDIA_EDIT_ACTION}" method="post" onSubmit="return mediaFormCheck();">
-        <table width="100%" cellspacing="0" cellpadding="5" border="0" align="middle" class="adminlist">
-          <tr>
-              <th>
-                  {TXT_MEDIA_EDIT_FILE}: {MEDIA_DIR} {MEDIA_FILE}
-             </th>
-          </tr>
-          <tr class="row1">
-              <td>
-                  <img src="{MEDIA_FILE_ICON}" width="16" height="16" alt="icon" align="top">&nbsp;&nbsp;
-                  <input type="text" name="renName" value="{MEDIA_ORGFILE_NAME}" size="50" style="padding-left: 3px; padding-right: 3px;" />
-                  <input type="hidden" name="oldName" value="{MEDIA_ORGFILE_NAME}" />
-                  <!-- BEGIN mediaFileExt -->
-                      . <input type="text" name="renExt" value="{MEDIA_ORGFILE_EXT}" size="3" style="padding-left: 3px; padding-right: 3px;" readonly />
-                      <input type="hidden" name="oldExt" value="{MEDIA_ORGFILE_EXT}" />
-                  <!-- END mediaFileExt -->
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="mediaInputAsCopy" value="1" /> {TXT_MEDIA_INSERT_AS_COPY}
-            </td>
-          </tr>
-          <!-- BEGIN mediaShowImage -->
-              <tr class="row2">
-                  <td>
-                        {TXT_MEDIA_EDIT_IMAGE}:
-                        &nbsp;&nbsp;&nbsp;
-                        <input type="radio" name="editImage" value="0" onclick="javascript: document.getElementById('editimagemedia').style.display='none';" checked /> {TXT_MEDIA_NO}
-                        &nbsp;&nbsp;&nbsp;
-                        <input type="radio" name="editImage" value="1" onclick="javascript: document.getElementById('editimagemedia').style.display='block';" /> {TXT_MEDIA_YES}
-                  </td>
-              </tr>
-          <!-- END mediaShowImage -->
-        </table>
-        <br />
-        <input type="button" name="back" onclick="javascript:history.back()" value="{TXT_MEDIA_BACK}">&nbsp;&nbsp;&nbsp;<input type="reset" name="mediaImgReset" onclick="javascript: document.getElementById('editimagemedia').style.display='none';" value="{TXT_MEDIA_RESET}" />&nbsp;&nbsp;&nbsp;<input type="submit" name="submit" value="{TXT_MEDIA_SAVE}" />
-        <br />
-        <!-- BEGIN mediaFileImage -->
-        <br />
-        <br />
-        <div id="editimagemedia" class="switchcontent">
-            <table width="100%" cellspacing="0" cellpadding="5" border="0" class="adminlist">
-              <tr>
-                  <th colspan="3">
-                  {TXT_MEDIA_EDIT_IMAGE}
-                 </th>
-              </tr>
-              <tr class="row1">
-                  <td width="70">{TXT_MEDIA_FILE_SIZE}:</td>
-                  <td width="70">{MEDIA_FILE_SIZE}</td>
-                  <td>&nbsp;</td>
-              </tr>
-              <tr class="row2">
-                  <td width="70">{TXT_MEDIA_WIDTH}:</td>
-                  <td width="70" valign="middle">
-                      <input type="text" name="imgWidthPx" size="2" value="{MEDIA_IMG_WIDTH}" onkeyup="mediaResize('w');" style="padding-left: 3px; padding-right: 3px; text-align: right;" /> px
-                      <input type="hidden" name="imgWidthPxUnround" value="{MEDIA_IMG_WIDTH}" />
-                      <input type="hidden" name="imgWidthPxStandard" value="{MEDIA_IMG_WIDTH}" />
-                  </td>
-                  <td valign="middle">
-                      <input type="checkbox" name="mediaImgBalance" checked /> {TXT_MEDIA_BALANCE}
-                  </td>
-              </tr>
-              <tr class="row1">
-                  <td width="70">{TXT_MEDIA_HEIGHT}:</td>
-                  <td width="70" valign="middle">
-                      <input type="text" name="imgHeightPx" size="2" value="{MEDIA_IMG_HEIGHT}" onkeyup="mediaResize('h');" style="padding-left: 3px; padding-right: 3px; text-align: right;" /> px
-                      <input type="hidden" name="imgHeightPxUnround" value="{MEDIA_IMG_HEIGHT}" />
-                      <input type="hidden" name="imgHeightPxStandard" value="{MEDIA_IMG_HEIGHT}" />
-                  </td>
-                  <td valign="middle">
-                      &nbsp;
-                  </td>
-              </tr>
-              <tr class="row2">
-                  <td width="70">{TXT_MEDIA_QUALITY}:</td>
-                  <td width="70" valign="middle">
-                      <input type="text" name="imgQuality" size="2" value="95" onkeyup="mediaResize('q');" style="padding-left: 3px; padding-right: 3px; text-align: right;" /> %
-                  </td>
-                  <td valign="middle">
-                      <input type="button" name="previewImage" onclick="mediaImagePreview();" value="{TXT_PREVIEW}">
-                  </td>
-              </tr>
-              <tr class="row1">
-                  <td colspan="3"><img src="{MEDIA_FILE_IMAGE_IMG}" id="mediaImageResizable" style="width: {MEDIA_IMG_WIDTH}px; height: {MEDIA_IMG_HEIGHT}px;" /></td>
-              </tr>
-            </table>
-        </div>
-        <!-- END mediaFileImage -->
-    </form>
+<form name="mediaEdit" action="{MEDIA_EDIT_ACTION}" method="post" onSubmit="return mediaFormCheck();">
+  <table width="100%" cellspacing="0" cellpadding="5" border="0" class="adminlist">
+    <tr>
+      <th>
+        {TXT_MEDIA_EDIT_FILE}: {MEDIA_DIR} {MEDIA_FILE}
+       </th>
+    </tr>
+    <tr class="row1">
+      <td>
+        <img src="{MEDIA_FILE_ICON}" width="16" height="16" alt="icon" align="top" />&nbsp;&nbsp;
+        <input type="text" name="renName" value="{MEDIA_ORGFILE_NAME}" size="50" style="padding-left: 3px; padding-right: 3px;" />
+        <input type="hidden" name="oldName" value="{MEDIA_ORGFILE_NAME}" />
+        <!-- BEGIN mediaFileExt -->
+          . <input type="text" name="renExt" value="{MEDIA_ORGFILE_EXT}" size="3" style="padding-left: 3px; padding-right: 3px;" readonly />
+          <input type="hidden" name="oldExt" value="{MEDIA_ORGFILE_EXT}" />
+        <!-- END mediaFileExt -->
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="mediaInputAsCopy" value="1" /> {TXT_MEDIA_INSERT_AS_COPY}
+      </td>
+    </tr>
+    <!-- BEGIN mediaShowImage -->
+      <tr class="row2">
+        <td>
+          {TXT_MEDIA_EDIT_IMAGE}:
+          &nbsp;&nbsp;&nbsp;
+          <input type="radio" name="editImage" value="0" onclick="javascript: document.getElementById('editimagemedia').style.display='none';" checked /> {TXT_MEDIA_NO}
+          &nbsp;&nbsp;&nbsp;
+          <input type="radio" name="editImage" value="1" onclick="javascript: document.getElementById('editimagemedia').style.display='block';" /> {TXT_MEDIA_YES}
+        </td>
+      </tr>
+    <!-- END mediaShowImage -->
+  </table>
+  <br />
+  <input type="button" name="back" onclick="javascript:history.back()"
+    value="{TXT_MEDIA_BACK}" />
+  &nbsp;&nbsp;&nbsp;
+  <input type="reset" name="mediaImgReset"
+    onclick="javascript:document.getElementById('editimagemedia').style.display='none';"
+    value="{TXT_MEDIA_RESET}" />
+  &nbsp;&nbsp;&nbsp;
+  <input type="submit" name="submit" value="{TXT_MEDIA_SAVE}" />
+  <br />
+  <!-- BEGIN mediaFileImage -->
+  <br />
+  <br />
+  <div id="editimagemedia" class="switchcontent">
+    <table width="100%" cellspacing="0" cellpadding="5" border="0" class="adminlist">
+      <tr>
+        <th colspan="3">
+        {TXT_MEDIA_EDIT_IMAGE}
+         </th>
+      </tr>
+      <tr class="row1">
+        <td width="70">{TXT_MEDIA_FILE_SIZE}:</td>
+        <td width="70">{MEDIA_FILE_SIZE}</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr class="row2">
+        <td width="70">{TXT_MEDIA_WIDTH}:</td>
+        <td width="70" valign="middle">
+          <input type="text" name="imgWidthPx" size="2" value="{MEDIA_IMG_WIDTH}" onkeyup="mediaResize('w');" style="padding-left: 3px; padding-right: 3px; text-align: right;" /> px
+          <input type="hidden" name="imgWidthPxUnround" value="{MEDIA_IMG_WIDTH}" />
+          <input type="hidden" name="imgWidthPxStandard" value="{MEDIA_IMG_WIDTH}" />
+        </td>
+        <td valign="middle">
+          <input type="checkbox" name="mediaImgBalance" checked /> {TXT_MEDIA_BALANCE}
+        </td>
+      </tr>
+      <tr class="row1">
+        <td width="70">{TXT_MEDIA_HEIGHT}:</td>
+        <td width="70" valign="middle">
+          <input type="text" name="imgHeightPx" size="2" value="{MEDIA_IMG_HEIGHT}" onkeyup="mediaResize('h');" style="padding-left: 3px; padding-right: 3px; text-align: right;" /> px
+          <input type="hidden" name="imgHeightPxUnround" value="{MEDIA_IMG_HEIGHT}" />
+          <input type="hidden" name="imgHeightPxStandard" value="{MEDIA_IMG_HEIGHT}" />
+        </td>
+        <td valign="middle">
+          &nbsp;
+        </td>
+      </tr>
+      <tr class="row2">
+        <td width="70">{TXT_MEDIA_QUALITY}:</td>
+        <td width="70" valign="middle">
+          <input type="text" name="imgQuality" size="2" value="95" onkeyup="mediaResize('q');" style="padding-left: 3px; padding-right: 3px; text-align: right;" /> %
+        </td>
+        <td valign="middle">
+          <input type="button" name="previewImage" onclick="mediaImagePreview();" value="{TXT_PREVIEW}" />
+        </td>
+      </tr>
+      <tr class="row1">
+        <td colspan="3"><img src="{MEDIA_FILE_IMAGE_IMG}" id="mediaImageResizable" style="width: {MEDIA_IMG_WIDTH}px; height: {MEDIA_IMG_HEIGHT}px;" /></td>
+      </tr>
+    </table>
+  </div>
+  <!-- END mediaFileImage -->
+</form>
 <!-- END mediaFile -->
 
 <!-- END module_media_action.html -->

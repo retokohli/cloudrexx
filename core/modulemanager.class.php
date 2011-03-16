@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Modulemanager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -20,19 +21,21 @@
  */
 class modulemanager
 {
-    public $strErrMessage = '';
-    public $strOkMessage = '';
-    public $arrayInstalledModules = array();
-    public $arrayRemovedModules = array();
-    public $langId;
-    public $defaultOrderValue = 111;
+    var $strErrMessage = '';
+    var $strOkMessage = '';
+    var $arrayInstalledModules = array();
+    var $arrayRemovedModules = array();
+    var $langId;
+    var $defaultOrderValue = 111;
 
     /**
      * Constructor
      */
     function __construct()
     {
-        $this->langId = FRONTEND_LANG_ID;
+        global $objInit;
+
+        $this->langId = $objInit->userFrontendLangId;
     }
 
 
@@ -97,7 +100,7 @@ class modulemanager
             SELECT module
               FROM ".DBPREFIX."content_navigation
              WHERE module!=0
-               AND `lang`=$this->langId
+               AND lang=$this->langId
              GROUP BY module
         ");
         if ($objResult) {
@@ -117,26 +120,14 @@ class modulemanager
         global $objDatabase, $_CORELANG, $objTemplate;
 
         $objTemplate->setVariable('MODULE_ACTION', 'edit');
-
-/*
-        $objResult = $objDatabase->Execute("
-            SELECT module, `lang`
-              FROM ".DBPREFIX."content_navigation
-             WHERE module!=0
-             GROUP BY module");
-        while(!$objResult->EOF){
-// TODO: This whole array is never used!
-//            $arrAvailableModulesInLang[$objResult->fields['lang']][] = $objResult->fields['module'];
-            $objResult->MoveNext();
-        }
-*/
-
         $arrayInstalledModules = $this->getModules();
         $query = "
-            SELECT id, name, description_variable, is_core, is_required
+            SELECT id, name, description_variable,
+                   is_core, is_required
               FROM ".DBPREFIX."modules
              WHERE status='y'
-             ORDER BY is_required DESC, name ASC";
+             ORDER BY is_required DESC, name ASC
+        ";
         $i = 0;
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
@@ -223,13 +214,13 @@ class modulemanager
         }
         $currentTime = time();
         $paridarray = array();
-        foreach (array_keys($_POST['installModule']) as $module_id) {
-            $module_id = intval($module_id);
+        foreach (array_keys($_POST['installModule']) as $moduleId) {
             $alreadyexist = false;
+            $id = intval($moduleId);
             $objResult = $objDatabase->Execute("
                 SELECT name
                   FROM ".DBPREFIX."modules
-                 WHERE id=$module_id
+                 WHERE id=$id
             ");
             if ($objResult) {
                 if (!$objResult->EOF) {
@@ -241,35 +232,38 @@ class modulemanager
             }
 
             $q_check_repo_lang = "
-                SELECT count(lang) as langcount, `lang`
-                  FROM ".DBPREFIX."module_repository
-                 WHERE moduleid=$module_id
-                 GROUP BY `lang`
-                HAVING langcount>0
-                 ORDER BY langcount ASC
+                SELECT 
+                    count(lang) as langcount,
+                    lang
+                FROM ".DBPREFIX."module_repository
+                WHERE moduleid=$id
+                GROUP BY lang
+                HAVING langcount > 0
+                ORDER BY langcount ASC
             ";
-            $objResult = $objDatabase->Execute($q_check_repo_lang);
+            $check_repo_lang = $objDatabase->Execute($q_check_repo_lang);
+
             // figure out what repository langid to use and store
-            // it in $repo_lang_id.
-            // Start with the default language, so it is initialized
-            // in case there are no records
-            $repo_lang_id = $objInit->defaultFrontendLangId;
-            while ($objResult && !$objResult->EOF) {
-                $repo_lang_id = $objResult->fields['lang'];
+            // it in $repo_lang_id
+            while ($check_repo_lang and !$check_repo_lang->EOF) {
+                $repo_lang_id = $check_repo_lang->fields['lang'];
                 // preference in this order: current language id, default id, lowest id
                 if ($this->langId                   == $repo_lang_id) break;
                 if ($objInit->defaultFrontendLangId == $repo_lang_id) break;
-                // lowest id is the last, so we just loop till the
-                // end (or until we find something better).
-                $objResult->MoveNext();
+            
+                // lowest id is the last, so we just loop till the 
+                // end (or until we find something better). 
+                $check_repo_lang->MoveNext();
             }
-            unset($objResult);
-            $query = "
-                SELECT *
-                  FROM ".DBPREFIX."module_repository
-                 WHERE moduleid=$module_id
-                   AND `lang`=$repo_lang_id
-                 ORDER BY parid ASC";
+            unset($check_repo_lang);
+
+            $query = "SELECT *
+                     FROM ".DBPREFIX."module_repository
+                     WHERE moduleid=$id
+                     AND lang=$repo_lang_id
+                     ORDER BY parid ASC";
+
+
             $objResult = $objDatabase->Execute($query);
             if ($objResult) {
                 while (!$objResult->EOF) {
@@ -280,8 +274,8 @@ class modulemanager
                             $objResult2 = $objDatabase->Execute("
                                 SELECT catid
                                   FROM ".DBPREFIX."content_navigation
-                                 WHERE module=$module_id
-                                   AND `lang`=$this->langId
+                                 WHERE module=$id
+                                   AND lang=$this->langId
                             ");
                             if ($objResult2 && !$objResult2->EOF) {
                                 $objDatabase->Execute("
@@ -291,8 +285,8 @@ class modulemanager
                             }
                             $objDatabase->Execute("
                                 DELETE FROM ".DBPREFIX."content_navigation
-                                 WHERE module=$module_id
-                                   AND `lang`=$this->langId
+                                 WHERE module=$id
+                                   AND lang=$this->langId
                             ");
                         }
                         $alreadyexist = true;
@@ -308,16 +302,13 @@ class modulemanager
 
                     // Set displayorder to a high value for the parent module page
                     $displayorder = ($i == 1 ? $this->defaultOrderValue : $objResult->fields['displayorder']);
+                    $langId = $this->langId;
                     $modulerepid = $objResult->fields['id'];
                     $username = $objResult->fields['username'];
 
-                    $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
-                    $catid = $objRS->fields['nextId'];
-
                     $query = "
                         INSERT INTO ".DBPREFIX."content_navigation
-                         SET   catid='$catid',
-                               parcat='$parcat',
+                           SET parcat='$parcat',
                                catname='$title',
                                module='$moduleid',
                                cmd='$cmd',
@@ -326,61 +317,24 @@ class modulemanager
                                changelog='$currentTime',
                                protected='0',
                                displaystatus='$displaystatus',
-                               `lang`=$this->langId
+                               lang=$this->langId
                     ";
                     if ($objDatabase->Execute($query)) {
-                        $paridarray[$modulerepid] = $catid;
+                        $catid = $paridarray[$modulerepid] = $objDatabase->Insert_ID();
                         $query = "
                             INSERT INTO ".DBPREFIX."content
                                SET id=$catid,
-                                   lang_id=".$this->langId.",
                                    content='$content',
                                    title='$title',
                                    metatitle='$title',
                                    metadesc='$title',
                                    metakeys='$title',
                                    metarobots='index',
-                                   expertmode='$expertmode'";
+                                   expertmode='$expertmode'
+                        ";
                         if ($objDatabase->Execute($query) === false) {
                             $this->errorHandling();
                             return false;
-                        }
-                        foreach (FWLanguage::getLanguageArray() as $arrLang) {
-                        	if($arrLang['frontend'] < 1 || $arrLang['id'] == $this->langId){
-                        	    continue;
-                        	}
-                        	$query = "
-                                INSERT INTO ".DBPREFIX."content_navigation
-                                 SET   catid='$catid',
-                                       parcat='$parcat',
-                                       catname='$title',
-                                       module='$moduleid',
-                                       cmd='$cmd',
-                                       displayorder='$displayorder',
-                                       username='$username',
-                                       changelog='$currentTime',
-                                       protected='0',
-                                       displaystatus='$displaystatus',
-                                       `lang`=".$arrLang['id'];
-                        	if ($objDatabase->Execute($query)) {
-                                $paridarray[$modulerepid] = $catid;
-                                $query = "
-                                    INSERT INTO ".DBPREFIX."content
-                                       SET id=$catid,
-                                           lang_id=".$arrLang['id'].",
-                                           content='',
-                                           title='$title',
-                                           metatitle='$title',
-                                           metadesc='$title',
-                                           metakeys='$title',
-                                           metarobots='index',
-                                           useContentFromLang=".FWLanguage::getDefaultLangId().",
-                                           expertmode='$expertmode'";
-                                if ($objDatabase->Execute($query) === false) {
-                                    $this->errorHandling();
-                                    return false;
-                                }
-                            }
                         }
                         $parcat = $catid;
                     } else {
@@ -401,32 +355,28 @@ class modulemanager
                 $objResult = $objDatabase->Execute("
                     SELECT name
                       FROM ".DBPREFIX."modules
-                     WHERE id=$module_id
+                     WHERE id=$id
                 ");
                 if ($objResult && !$objResult->EOF) {
                     $name = $objResult->fields['name'];
                 }
                 $username = $objFWUser->objUser->getUsername();
-
-                $objRS = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId` FROM `'.DBPREFIX.'content_navigation`');
-                $catid = $objRS->fields['nextId'];
-
                 $query = "
                     INSERT INTO ".DBPREFIX."content_navigation
-                       SET catid='$catid',
-                           parcat='0',
+                       SET parcat='0',
                            catname='$name',
-                           module='$module_id',
+                           module='$id',
                            username='$username',
                            changelog='$currentTime',
                            lang=$this->langId
                 ";
                 if ($objDatabase->Execute($query)) {
+                    $catid = $objDatabase->Insert_ID();
                     $query = "
                         INSERT INTO ".DBPREFIX."content
                            SET id=$catid,
-                               title='$name',
-                               lang_id=".$this->langId;
+                               title='$name'
+                    ";
                     $objDatabase->Execute($query);
                     return true;
                 } else {
@@ -451,7 +401,8 @@ class modulemanager
                            INNER JOIN ".DBPREFIX."modules
                               ON module=id
                            WHERE module='$moduleId'
-                             AND `lang`=$this->langId";
+                             AND lang=$this->langId
+                ";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     while (!$objResult->EOF) {
@@ -459,14 +410,16 @@ class modulemanager
                         $catid = $objResult->fields['catid'];
                         $query = "
                             DELETE FROM ".DBPREFIX."content_navigation
-                             WHERE catid='$catid' AND `lang`=".$this->langId;
+                             WHERE catid='$catid'
+                        ";
                         if ($objDatabase->Execute($query) === false) {
                             $this->errorHandling();
                             return false;
                         }
                         $query = "
                             DELETE FROM ".DBPREFIX."content
-                             WHERE id='$catid' AND `lang_id`=".$this->langId;
+                             WHERE id='$catid'
+                        ";
                         if ($objDatabase->Execute($query) === false) {
                             $this->errorHandling();
                             return false;
@@ -479,8 +432,10 @@ class modulemanager
                 }
             }
             return true;
+        } else {
+            return false;
         }
-        return false;
+
     }
 
 

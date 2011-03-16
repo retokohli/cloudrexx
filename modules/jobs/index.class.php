@@ -1,5 +1,4 @@
-<?php
-
+<?PHP
 /**
  * DocSys
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -15,7 +14,7 @@
  * Includes
  */
 require_once ASCMS_MODULE_PATH . '/jobs/lib/Library.class.php';
-
+error_reporting(E_ALL);
 /**
  * DocSys
  *
@@ -36,11 +35,19 @@ class jobs extends jobsLibrary
     var $_objTpl;
 
 
+    function jobs($pageContent)
+    {
+        $this->__construct($pageContent);
+    }
+
+
+    // CONSTRUCTOR
     function __construct($pageContent)
     {
         global $_LANGID;
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->langId = $_LANGID;
     }
@@ -91,32 +98,32 @@ class jobs extends jobsLibrary
 
         $footnotetext = "";
         $footnotelink = "";
-        $footnote = "";
+    	$footnote = "";
         $link = "";
         $url = "";
 
         if($id > 0) {
-            $query = "SELECT *
-                         FROM `".DBPREFIX."module_jobs_settings`
-                         WHERE name = 'footnote'
-                         OR name = 'link'
-                         OR name = 'url'
-                         ";
-            $objResult = $objDatabase->Execute($query);
+	        $query = "SELECT *
+	                     FROM `".DBPREFIX."module_jobs_settings`
+	                     WHERE name = 'footnote'
+	                     OR name = 'link'
+	                     OR name = 'url'
+	                     ";
+	        $objResult = $objDatabase->Execute($query);
 
-            while(!$objResult->EOF) {
+	        while(!$objResult->EOF) {
 
-                if($objResult->fields['name']== "footnote") {
-                    $footnote = stripslashes($objResult->fields['value']);
-                }
-                elseif($objResult->fields['name']== "link") {
-                    $link = stripslashes($objResult->fields['value']);
-                }
-                elseif($objResult->fields['name']== "url") {
-                    $url = stripslashes($objResult->fields['value']);
-                }
-                $objResult->movenext();
-            }
+	            if($objResult->fields['name']== "footnote") {
+	                $footnote = stripslashes($objResult->fields['value']);
+	            }
+	            elseif($objResult->fields['name']== "link") {
+	                $link = stripslashes($objResult->fields['value']);
+	            }
+	            elseif($objResult->fields['name']== "url") {
+	                $url = stripslashes($objResult->fields['value']);
+	            }
+	            $objResult->movenext();
+	        }
 
         }
 
@@ -175,18 +182,18 @@ class jobs extends jobsLibrary
 
                 $title = stripslashes($objResult->fields['title']);
 
-                /*
-                * Replace self defined placeholders in $url
-                */
-                if(!empty($footnote)) {
-                    $footnotetext = nl2br($footnote);
-                }
+		        /*
+		        * Replace self defined placeholders in $url
+		        */
+		        if(!empty($footnote)) {
+					$footnotetext = nl2br($footnote);
+		        }
 
-                if(!empty($link)) {
-                    $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
-                    $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
-                    $footnotelink = "<a href='$url'>$link</a>";
-                }
+		        if(!empty($link)) {
+			        $url = str_replace("%URL%",urlencode($_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']),$url);
+			        $url = htmlspecialchars(str_replace("%TITLE%",urlencode(stripslashes($title)),$url), ENT_QUOTES, CONTREXX_CHARSET);
+			        $footnotelink = "<a href='$url'>$link</a>";
+		        }
 
 
                 $this->_objTpl->setVariable(array(
@@ -202,13 +209,16 @@ class jobs extends jobsLibrary
                 $objResult->MoveNext();
             }
         } else {
-            header("Location: index.php?section=jobs");
+            CSRF::header("Location: index.php?section=jobs");
             exit;
         }
 
         $this->jobsTitle = strip_tags(stripslashes($title));
         return $this->_objTpl->get();
     }
+
+
+
 
 
     /**
@@ -224,6 +234,9 @@ class jobs extends jobsLibrary
     }
 
 
+
+
+
     /**
     * Gets the list with the headlines
     *
@@ -232,6 +245,7 @@ class jobs extends jobsLibrary
     * @param     string       $page_content
     * @return    string    parsed content
     */
+
     function getTitles()
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
@@ -249,13 +263,17 @@ class jobs extends jobsLibrary
         $category;
 
         $this->_objTpl->setTemplate($this->pageContent);
+
         if(isset($_REQUEST['catid'])) {
             $category = intval($_REQUEST['catid']);
         }
-        // This overwrites $_REQUEST['catid'] but it shouldnt be set parallel anyway
+        /**
+         * This overwrites $_REQUEST['catid'] but it shouldnt be set parallel anyway
+         */
         if(is_numeric($_REQUEST['cmd'])) {
-            $category = $_REQUEST['cmd'];
+        	$category = $_REQUEST['cmd'];
         }
+
 
         if(!empty($category)){
             $selectedId= intval($category);
@@ -270,6 +288,8 @@ class jobs extends jobsLibrary
             $docFilter =" n.catid='$selectedId' AND ";
         }
 
+
+
         $objRS = $objDatabase->Execute("SELECT id,value FROM `".DBPREFIX."module_jobs_settings` WHERE name = 'show_location_fe'");
         if($objRS !== false ) {
             if(intval($objRS->fields['value']) == 1) {
@@ -277,6 +297,7 @@ class jobs extends jobsLibrary
                     $location = intval($_REQUEST['locid']);
                     $locationFilter = ", `".DBPREFIX."module_jobs_rel_loc_jobs` AS rel WHERE  rel.job = n.id AND rel.location = '".$location."' AND ";
                 }
+
                 $jobslocationform ="
     <select name=\"locid\" onchange=\"javascript:this.form.submit();\">
     <option selected=\"selected\" value=''>".$_ARRAYLANG['TXT_JOBS_LOCATION_ALL']."</option>
@@ -284,6 +305,10 @@ class jobs extends jobsLibrary
     </select>";
             }
         }
+
+
+
+
 
         $jobscategoryform ="
     <select name=\"catid\" onchange=\"javascript:this.form.submit();\">
@@ -357,7 +382,7 @@ class jobs extends jobsLibrary
 
                 $this->_objTpl->setVariable(array(
                     'JOBS_STYLE'      => $class,
-                    'JOBS_ID'            => $objResult->fields['docid'],
+                    'JOBS_ID'			=> $objResult->fields['docid'],
                     'JOBS_LONG_DATE'  => date($this->dateLongFormat,$objResult->fields['date']),
                     'JOBS_DATE'       => date($this->dateFormat,$objResult->fields['date']),
                     'JOBS_LINK'       => "<a href=\"?section=jobs&amp;cmd=details&amp;id=".$objResult->fields['docid']."\" title=\"".stripslashes($objResult->fields['title'])."\">".stripslashes($objResult->fields['title'])."</a>",
@@ -378,5 +403,4 @@ class jobs extends jobsLibrary
         return $this->_objTpl->get();
     }
 }
-
 ?>

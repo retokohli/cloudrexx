@@ -28,14 +28,12 @@ class Download {
     private $mime_type;
     private $source;
     private $source_name;
-    private $md5_sum;
     private $icon;
     private $size;
     private $image;
     private $owner_id;
     private $access_id;
     private $protected;
-    private $origin;
     private $license;
     private $version;
     private $author;
@@ -61,13 +59,11 @@ class Download {
             'mime_type'                         => 'string',
             'source'                            => 'string',
             'source_name'                       => 'string',
-            'md5_sum'                           => 'string',
             'icon'                              => 'string',
             'size'                              => 'int',
             'image'                             => 'string',
             'owner_id'                          => 'int',
             'access_id'                         => 'int',
-            'origin'                            => 'string',
             'license'                           => 'string',
             'version'                           => 'string',
             'author'                            => 'string',
@@ -223,28 +219,6 @@ class Download {
         $this->clean();
     }
 
-	public function copy()
-	{
-		$this->loadLocales();
-		if ($this->getAccessId()) {
-			$objFWUser = FWUser::getFWUserObject();
-            $objGroup = $objFWUser->objGroup->getGroups(
-                array('dynamic' => $this->getAccessId())
-            );
-            $this->access_groups = $objGroup->getLoadedGroupIds();
-		} else {
-			$this->access_groups = array();
-		}
-		$this->id = 0;
-		$this->access_id = 0;
-		$this->ctime = time();
-		$this->mtime = $this->ctime;
-		$this->views = 0;
-		$this->download_count = 0;
-		$this->extensions = 0;
-		$this->validity = 0;
-	}
-
     /**
      * Clean download metadata
      *
@@ -259,14 +233,12 @@ class Download {
         $this->mime_type = $this->defaultMimeType;
         $this->source = '';
         $this->source_name = '';
-        $this->md5_sum = '';
         $this->icon = $this->defaultIcon;
         $this->size = 0;
         $this->image = '';
         $this->owner_id = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->access_id = 0;
         $this->protected = false;
-        $this->origin = 'internal';
         $this->license = '';
         $this->version = '';
         $this->author = '';
@@ -475,14 +447,12 @@ class Download {
                 $this->mime_type = isset($this->arrLoadedDownloads[$id]['mime_type']) ? $this->arrLoadedDownloads[$id]['mime_type'] : $this->defaultMimeType;
                 $this->source = isset($this->arrLoadedDownloads[$id]['source']) ? $this->arrLoadedDownloads[$id]['source'] : '';
                 $this->source_name = isset($this->arrLoadedDownloads[$id]['source_name']) ? $this->arrLoadedDownloads[$id]['source_name'] : '';
-                $this->md5_sum = isset($this->arrLoadedDownloads[$id]['md5_sum']) ? $this->arrLoadedDownloads[$id]['md5_sum'] : '';
                 $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
                 $this->image = isset($this->arrLoadedDownloads[$id]['image']) ? $this->arrLoadedDownloads[$id]['image'] : '';
                 $this->owner_id = isset($this->arrLoadedDownloads[$id]['owner_id']) ? $this->arrLoadedDownloads[$id]['owner_id'] : 0;
                 $this->access_id = isset($this->arrLoadedDownloads[$id]['access_id']) ? $this->arrLoadedDownloads[$id]['access_id'] : 0;
                 $this->protected = (bool) $this->access_id;
-                $this->origin = isset($this->arrLoadedDownloads[$id]['origin']) ? $this->arrLoadedDownloads[$id]['origin'] : 'internal';
                 $this->license = isset($this->arrLoadedDownloads[$id]['license']) ? $this->arrLoadedDownloads[$id]['license'] : '';
                 $this->version = isset($this->arrLoadedDownloads[$id]['version']) ? $this->arrLoadedDownloads[$id]['version'] : '';
                 $this->author = isset($this->arrLoadedDownloads[$id]['author']) ? $this->arrLoadedDownloads[$id]['author'] : '';
@@ -623,36 +593,20 @@ class Download {
             $arrTables[] = 'download';
         }
 
-        // parse access permissions for the frontend
-        $objFWUser = FWUser::getFWUserObject();
-        $userLoggedIn = $objFWUser->objUser->login();
-        $managementPermission = Permission::checkAccess(142, 'static', true);
-        if (!empty($arrFilter['group_id'])) {
-            $objGroup = $objFWUser->objGroup->getGroup($arrFilter['group_id']);
-            $arrDynamicPermissionIds = $objGroup->getDynamicPermissionIds();
-            $userId = 0;
-            $managementPermission = false;
-        } elseif (!empty($arrFilter['user_id'])) {
-            $objUser = $objFWUser->objUser->getUser($arrFilter['user_id']);
-            $arrDynamicPermissionIds = $objUser->getDynamicPermissionIds();
-            $userId = $objUser->getId();
-            $arrStaticPermissionIds = $objUser->getStaticPermissionIds();
-            $managementPermission = in_array(142, $arrStaticPermissionIds);
-        } else {
-            $arrDynamicPermissionIds = $objFWUser->objUser->getDynamicPermissionIds();
-            $userId = !empty($arrFilter['user_id']) ? $arrFilter['user_id'] : $objFWUser->objUser->getId();
-        }
 
+        // parse access permissions for the frontend
         if ($this->isFrontendMode) {
+            $objFWUser = FWUser::getFWUserObject();
+
             // download access
             if (!isset($arrFilter['is_active'])) {
                 $arrConditions[] = 'tblD.`is_active` = 1';
             }
             if (!Permission::checkAccess(142, 'static', true)) {
                 $arrConditions[] = 'tblD.`visibility` = 1'.(
-                    $userLoggedIn ?
-                    ' OR tblD.`owner_id` = '.$userId
-                    .(count($arrDynamicPermissionIds) ? ' OR tblD.`access_id` IN ('.implode(', ', $arrDynamicPermissionIds).')' : '')
+                    $objFWUser->objUser->login() ?
+                    ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
+                    .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
                     : '');
             }
 
@@ -664,16 +618,18 @@ class Download {
             $arrConditions[] = 'tblC.`is_active` = 1';
             if (!Permission::checkAccess(142, 'static', true)) {
                 $arrConditions[] = 'tblC.`visibility` = 1'.(
-                    $userLoggedIn ?
-                        ' OR tblC.`owner_id` = '.$userId
-                        .(count($arrDynamicPermissionIds) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $arrDynamicPermissionIds).')' : '')
+                    $objFWUser->objUser->login() ?
+                        ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
+                        .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
                     : '');
             }
-        } elseif (!$managementPermission) {
+        } elseif (!Permission::checkAccess(142, 'static', true)) {
+            $objFWUser = FWUser::getFWUserObject();
+
              $arrConditions[] = 'tblD.`visibility` = 1'.(
-                $userLoggedIn ?
-                ' OR tblD.`owner_id` = '.$userId
-                .(count($arrDynamicPermissionIds) ? ' OR tblD.`access_id` IN ('.implode(', ', $arrDynamicPermissionIds).')' : '')
+                $objFWUser->objUser->login() ?
+                ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
+                .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblD.`access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
                 : '');
         }
 
@@ -991,12 +947,10 @@ class Download {
                     `mime_type` = '".$this->mime_type."',
                     `source` = '".addslashes($this->source)."',
                     `source_name` = '".addslashes($this->source_name)."',
-                    `md5_sum` = '".addslashes($this->md5_sum)."',
                     `icon` = '".addslashes($this->icon)."',
                     `size` = ".intval($this->size).",
                     `image` = '".addslashes($this->image)."',
                     `owner_id` = ".intval($this->owner_id).",
-                    `origin` = '".addslashes($this->origin)."',
                     `license` = '".addslashes($this->license)."',
                     `version` = '".addslashes($this->version)."',
                     `author` = '".addslashes($this->author)."',
@@ -1019,12 +973,10 @@ class Download {
                     `mime_type`,
                     `source`,
                     `source_name`,
-                    `md5_sum`,
                     `icon`,
                     `size`,
                     `image`,
                     `owner_id`,
-                    `origin`,
                     `license`,
                     `version`,
                     `author`,
@@ -1041,12 +993,10 @@ class Download {
                     '".$this->mime_type."',
                     '".addslashes($this->source)."',
                     '".addslashes($this->source_name)."',
-                    '".addslashes($this->md5_sum)."',
                     '".addslashes($this->icon)."',
                     ".intval($this->size).",
                     '".addslashes($this->image)."',
                     ".intval($this->owner_id).",
-                    '".addslashes($this->origin)."',
                     '".addslashes($this->license)."',
                     '".addslashes($this->version)."',
                     '".addslashes($this->author)."',
@@ -1345,11 +1295,6 @@ class Download {
         return $this->source_name;
     }
 
-    public function getMD5Sum()
-    {
-        return $this->md5_sum;
-    }
-
     public function getIcon($small = false)
     {
         return ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.Download::$arrMimeTypes[$this->getMimeType()][($small ? 'icon_small' : 'icon')];
@@ -1379,11 +1324,6 @@ class Download {
     public function getAccessId()
     {
         return $this->access_id;
-    }
-
-    public function getOrigin()
-    {
-        return $this->origin;
     }
 
     public function getLicense()
@@ -1544,7 +1484,6 @@ class Download {
             $extension = strtolower(pathinfo($source, PATHINFO_EXTENSION));
             $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
             $this->source_name = isset($sourceName) ? $sourceName : basename($source);
-            $this->md5_sum = md5_file(ASCMS_PATH.$source);
         }
 
         $this->source = $source;
@@ -1568,11 +1507,6 @@ class Download {
     public function setAccessId($accessId)
     {
         $this->access_id = $accessId;
-    }
-
-    public function setOrigin($origin)
-    {
-        $this->origin = $origin;
     }
 
     public function setLicense($license)

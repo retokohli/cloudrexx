@@ -2,71 +2,71 @@
 <script language="JavaScript" type="text/javascript">
 <!--
 function checkAccount() {
-  msg = "";
-  if (document.getElementById('username').value.length == 0) {
-    msg += '{TXT_SET_USERNAME}\n';
-  }
-  if (document.getElementById('password').value.length == 0) {
-    msg += '{TXT_SET_PASSWORD}\n';
-  } else if (document.getElementById('username').value == document.getElementById('password')) {
-    msg += '{TXT_PASSWORD_LIKE_USERNAME}';
-  } else if (document.getElementById('password').value.length < 6) {
-    msg += '{TXT_PASSWORD_LENGTH}\n';
-  } else if (document.getElementById('password').value != document.getElementById('rePassword').value) {
-    msg += '{TXT_PASSWORD_NOT_VERIFIED}\n';
-  }
-  if (document.getElementById('email').value.length == 0) {
-    msg += '{TXT_SET_EMAIL}\n';
-  } else if (document.getElementById('email').value != document.getElementById('reEmail').value) {
-    msg += '{TXT_EMAIL_NOT_VERIFIED}\n';
-  }
+	msg = "";
+	if (document.getElementById('username').value.length == 0) {
+		msg += '{TXT_SET_USERNAME}\n';
+	}
+	if (document.getElementById('password').value.length == 0) {
+		msg += '{TXT_SET_PASSWORD}\n';
+	} else if (document.getElementById('username').value == document.getElementById('password')) {
+		msg += '{TXT_PASSWORD_LIKE_USERNAME}';
+	} else if (document.getElementById('password').value.length < 6) {
+		msg += '{TXT_PASSWORD_LENGTH}\n';
+	} else if (document.getElementById('password').value != document.getElementById('rePassword').value) {
+		msg += '{TXT_PASSWORD_NOT_VERIFIED}\n';
+	}
+	if (document.getElementById('email').value.length == 0) {
+		msg += '{TXT_SET_EMAIL}\n';
+	} else if (document.getElementById('email').value != document.getElementById('reEmail').value) {
+		msg += '{TXT_EMAIL_NOT_VERIFIED}\n';
+	}
 
-  if (msg.length == 0) {
-    return true;
-  } else {
-    alert(msg);
-    return false;
-  }
+	if (msg.length == 0) {
+		return true;
+	} else {
+		alert(msg);
+		return false;
+	}
 }
 // -->
 </script>
 <input type="hidden" name="adminAccount" />
 <table summary="admin account" class="adminlist" width="100%" cellpadding="0" cellspacing="0" border="0">
-  <!-- BEGIN errorMsg -->
-    <tr>
-      <td colspan="2" class="status_message">
-        <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-            <td>{ERROR_MSG}</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  <!-- END errorMsg -->
-  <tr class="row1">
-    <td colspan="2" height="20"><b>{TXT_ADMIN_ACCOUNT_DESC}</b></td>
-  </tr>
-  <tr class="row2">
-    <td height="20">{TXT_USERNAME}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" tabindex="1" type="text" id="username" name="username" value="{USERNAME}" /></td>
-  </tr>
-  <tr class="row1">
-    <td height="20">{TXT_PASSWORD}&nbsp;{TXT_PASSWORD_LENGTH_DESC}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" tabindex="2" type="password" id="password" name="password" value="{PASSWORD}" /></td>
-  </tr>
-  <tr class="row2">
-    <td height="20">{TXT_PASSWORD_VERIFICATION}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" tabindex="3" type="password" id="rePassword" name="rePassword" value="{REPASSWORD}" /></td>
-  </tr>
-  <tr class="row1">
-    <td height="20">{TXT_EMAIL}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" tabindex="4" type="text" id="email" name="email" value="{EMAIL}" /></td>
-  </tr>
-  <tr class="row2">
-    <td height="20">{TXT_EMAIL_VERIFICATION}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" tabindex="5" type="text" id="reEmail" name="reEmail" value="{REEMAIL}" /></td>
-  </tr>
+	<!-- BEGIN errorMsg -->
+		<tr>
+			<td colspan="2" class="status_message">
+				<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+						<td>{ERROR_MSG}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	<!-- END errorMsg -->
+	<tr class="row1">
+		<td colspan="2" height="20"><b>{TXT_ADMIN_ACCOUNT_DESC}</b></td>
+	</tr>
+	<tr class="row2">
+		<td height="20">{TXT_USERNAME}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" tabindex="1" type="text" id="username" name="username" value="{USERNAME}" /></td>
+	</tr>
+	<tr class="row1">
+		<td height="20">{TXT_PASSWORD}&nbsp;{TXT_PASSWORD_LENGTH_DESC}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" tabindex="2" type="password" id="password" name="password" value="{PASSWORD}" /></td>
+	</tr>
+	<tr class="row2">
+		<td height="20">{TXT_PASSWORD_VERIFICATION}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" tabindex="3" type="password" id="rePassword" name="rePassword" value="{REPASSWORD}" /></td>
+	</tr>
+	<tr class="row1">
+		<td height="20">{TXT_EMAIL}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" tabindex="4" type="text" id="email" name="email" value="{EMAIL}" /></td>
+	</tr>
+	<tr class="row2">
+		<td height="20">{TXT_EMAIL_VERIFICATION}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" tabindex="5" type="text" id="reEmail" name="reEmail" value="{REEMAIL}" /></td>
+	</tr>
 </table>
 <br />
 <!-- END admin_account.html -->

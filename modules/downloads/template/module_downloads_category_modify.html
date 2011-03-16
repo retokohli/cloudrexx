@@ -1,22 +1,6 @@
 <!-- start module_downloads_modify_category.html -->
 <script type="text/javascript">
 // <![CDATA[
-    downloadsCurrentDescriptionLanguage = {DOWNLOADS_DESCRIPTION_LANGUAGE};
-
-    function downloadsSwitchDescription(langId)
-    {
-        document.getElementById('downloads_category_description_tab_'+downloadsCurrentDescriptionLanguage).setAttribute('class', 'inactive');
-        oFCKeditor = CKEDITOR.instances['downloads_category_description_preview'];
-        document.getElementById('downloads_category_description_'+downloadsCurrentDescriptionLanguage).value = oFCKeditor.getData();;
-        if (typeof(langId) != 'undefined') {
-            oFCKeditor.setData(document.getElementById('downloads_category_description_'+langId).value);
-            downloadsCurrentDescriptionLanguage = langId;
-            document.getElementById('downloads_category_description_tab_'+langId).setAttribute('class', 'active');
-        }
-
-        return true;
-    }
-
     function downloadsSyncNameFields(value, type, name) {
         for (i=0; i < document.getElementById('downloads_category_form').getElementsByTagName(type).length;i++) {
             if (typeof(document.getElementById('downloads_category_form').getElementsByTagName(type)[i].name) != 'undefined'
@@ -45,13 +29,12 @@
 
     function downloadsSelectAll()
     {
-      downloadsSelectAllOptions(document.getElementById('downloads_category_read_associated_groups'))
+    	downloadsSelectAllOptions(document.getElementById('downloads_category_read_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_add_subcategories_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_manage_subcategories_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_add_files_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_manage_files_associated_groups'))
         downloadsSelectAllOptions(document.getElementById('downloads_category_associated_downloads'))
-        downloadsSelectAllOptions(document.getElementById('downloads_category_notification_associated_groups'))
     }
 
     function downloadsAddOptionToList(from, dest)
@@ -97,7 +80,7 @@
             }
         }
     }
-
+    
 
     var downloadsPermissionDependencies = {
         'read':{
@@ -123,7 +106,7 @@
         'add_files':['manage_files'],
         'manage_files':[]
     }
-
+        
     function downloadsAdjustAccessConfig(trigger)
     {
         downloadsResolvePermissionDependencies(downloadsPermissionDependencies, null, false, trigger);
@@ -166,10 +149,10 @@
         elTriggerGroupContainer             = document.getElementById('downloads_category_'+trigger+masterContainerType);
         elSyncAssociatedGroupsContainer     = document.getElementById('downloads_category_'+sync+masterContainerType);
         elSyncNotAssociatedGroupsContainer  = document.getElementById('downloads_category_'+sync+slaveContainerType);
-
+        
         aSyncAssociatedGroups = new Array();
         aSyncedGroups = new Array();
-
+        
         for (var i=0; i<elSyncAssociatedGroupsContainer.options.length; i++) {
             aSyncAssociatedGroups[elSyncAssociatedGroupsContainer.options[i].value] = i;
         }
@@ -191,20 +174,20 @@
 
 
 
-//    function downloadsGetFileBrowser(elInsertBox)
-//    {
-//      downloadsElInsertBox = elInsertBox;
-//      downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-//    }
-//
+//		function downloadsGetFileBrowser(elInsertBox)
+//		{
+//			downloadsElInsertBox = elInsertBox;
+//			downloadsOpenWindow('index.php?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+//		}
+//		
 
-  function downloadsOpenWindow(theURL,winName,features)
-  {
-      downloadsPopup = window.open(theURL,"Downloads",features);
-      downloadsPopup.focus();
-  }
+	function downloadsOpenWindow(theURL,winName,features)
+	{
+	    downloadsPopup = window.open(theURL,"Downloads",features);
+	    downloadsPopup.focus();
+	}
 
-
+    
     function SetUrl(url, width, height, alt)
     {
         document.getElementById('downloads_category_image').value = url;
@@ -220,10 +203,9 @@
 <ul id="tabmenu">
     <li><a id="downloadsTab_categoryGeneral" class="active" href="javascript:void(0)" onclick="selectTab('categoryGeneral')" title="{TXT_DOWNLOADS_GENERAL}">{TXT_DOWNLOADS_GENERAL}</a></li>
     <li><a id="downloadsTab_categoryPermissions" href="javascript:void(0)" onclick="selectTab('categoryPermissions')" title="{TXT_DOWNLOADS_PERMISSIONS}">{TXT_DOWNLOADS_PERMISSIONS}</a></li>
-    <li><a id="downloadsTab_categoryNotifications" href="javascript:void(0)" onclick="selectTab('categoryNotifications')" title="{TXT_DOWNLOADS_NOTIFICATIONS}">{TXT_DOWNLOADS_NOTIFICATIONS}</a></li>
 </ul>
 
-<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=category&amp;id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_CATEGORY_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET}" onsubmit="downloadsSelectAll();downloadsSwitchDescription()" method="post">
+<form name="downloads_category_form" id="downloads_category_form" action="index.php?cmd=downloads&amp;act=category&amp;id={DOWNLOADS_CATEGORY_ID}&amp;category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_CATEGORY_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET}" onsubmit="downloadsSelectAll()" method="post">
 <!-- start div downloadsTab_categoryGeneral -->
     <div id="categoryGeneral" class="downloadsTab">
         <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
@@ -250,15 +232,11 @@
                     <td>{TXT_DOWNLOADS_DESCRIPTION}</td>
                     <td>
                         <!-- BEGIN downloads_category_description -->
-                        <ul class="tabmenu">
+                        <textarea id="downloads_category_description_0" cols="10" rows="5" onchange="downloadsSyncNameFields(this.value,'textarea','downloads_category_description')" style="width:300px;">{DOWNLOADS_CATEGORY_DESCRIPTION}</textarea> <a href="javascript:void(0);" onclick="document.getElementById('downloads_category_description_lang_div').style.display = (document.getElementById('downloads_category_description_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
+                        <div id="downloads_category_description_lang_div" style="display:none;">
                         <!-- BEGIN downloads_category_description_list -->
-                            <li><a href="javascript:void(0);" class="{DOWNLOADS_CATEGORY_LANG_DISPLAY_STATUS}" title="{DOWNLOADS_CATEGORY_LANG_DESCRIPTION}" onclick="downloadsSwitchDescription({DOWNLOADS_CATEGORY_LANG_ID})" id="downloads_category_description_tab_{DOWNLOADS_CATEGORY_LANG_ID}">{DOWNLOADS_CATEGORY_LANG_DESCRIPTION}</a><textarea name="downloads_category_description[{DOWNLOADS_CATEGORY_LANG_ID}]" id="downloads_category_description_{DOWNLOADS_CATEGORY_LANG_ID}" cols="1" rows="1" style="display:none;">{DOWNLOADS_CATEGORY_DESCRIPTION}</textarea></li>
+                            <textarea name="downloads_category_description[{DOWNLOADS_CATEGORY_LANG_ID}]" id="downloads_category_description_{DOWNLOADS_CATEGORY_LANG_ID}" cols="10" rows="5" style="margin-top:1px; width:300px;">{DOWNLOADS_CATEGORY_DESCRIPTION}</textarea> {DOWNLOADS_CATEGORY_LANG_DESCRIPTION}<br />
                         <!-- END downloads_category_description_list -->
-                        </ul>
-
-                        <div class="tabContainer" style="padding:1px;">
-                            <br />
-                            {DOWNLOADS_CATEGORY_DESCRIPTION_PREVIEW}
                         </div>
                         <!-- END downloads_category_description -->
                     </td>
@@ -514,7 +492,7 @@
     </div>
 <!-- end div downloadsPermissionCategoryMenu_manageSubcategoriesTab -->
 <br />
-
+                
 <ul id="tabsubmenu">
     <li><a id="downloadsPermissionFilesMenu_addFilesTab" class="active" href="javascript:void(0)" onclick="selectTab('addFilesTab')" title="{TXT_DOWNLOADS_ADD}">{TXT_DOWNLOADS_ADD}</a></li>
     <li><a id="downloadsPermissionFilesMenu_manageFilesTab" href="javascript:void(0)" onclick="selectTab('manageFilesTab')" title="{TXT_DOWNLOADS_MANAGE}">{TXT_DOWNLOADS_MANAGE}</a></li>
@@ -627,51 +605,6 @@
 <input type="checkbox" name="downloads_category_apply_recursive" id="downloads_category_apply_recursive" value="1" {DOWNLOADS_CATEGORY_APPLY_RECURSIVE_CHECKED} /><label for="downloads_category_apply_recursive">{TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ}</label>
 </div>
 <!-- end div downloadsTab_categoryPermissions -->
-<!-- start div downloadsTab_categoryNotifications -->
-    <div id="categoryNotifications" class="downloadsTab" style="display:none;">
-        <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
-            <thead>
-                <tr>
-                    <th colspan="3">{DOWNLOADS_CATEGORY_OPERATION_TITLE}</th>
-                </tr>
-            </thead>
-            <tbody style="vertical-align:top;">
-                <tr class="row3">
-                    <td colspan="3" style="font-weight:bold;">{TXT_DOWNLOADS_EMAIL_NOTIFICATION}</td>
-                </tr>
-                <tr class="row1">
-                    <td colspan="3">{TXT_DOWNLOADS_NOTIFICATION_DESC}</td>
-                </tr>
-                <tr class="row2">
-                    <td width="300">{TXT_DOWNLOADS_AVAILABLE_USER_GROUPS}<br />
-                        <select name="downloads_category_notification_not_associated_groups[]" id="downloads_category_notification_not_associated_groups" size="15" style="width:300px;" multiple="multiple">
-                        {DOWNLOADS_CATEGORY_NOTIFICATION_NOT_ASSOCIATED_GROUPS}
-                        </select>
-                        <br />
-                        <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_notification_not_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
-                        <br />
-                        <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_notification_not_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
-                    </td>
-                    <td width="45" style="text-align:center;">
-                        <br />
-                        <input type="button" value="&gt;&gt;" name="addGroup" onclick="downloadsAddOptionToList(document.getElementById('downloads_category_notification_not_associated_groups'), document.getElementById('downloads_category_notification_associated_groups'))" style="margin-bottom:2px;" />
-                        <br />
-                        <input type="button" value="&lt;&lt;" name="removeGroup" onclick="downloadsRemoveOptionFromList(document.getElementById('downloads_category_notification_not_associated_groups'), document.getElementById('downloads_category_notification_associated_groups'))" />
-                    </td>
-                   <td width="100%">{TXT_DOWNLOADS_ASSIGNED_USER_GROUPS}<br />
-                        <select name="downloads_category_notification_associated_groups[]" id="downloads_category_notification_associated_groups" size="15" style="width:300px;" multiple="multiple">
-                        {DOWNLOADS_CATEGORY_NOTIFICATION_ASSOCIATED_GROUPS}
-                        </select>
-                        <br />
-                        <a href="javascript:void(0);" onclick="downloadsSelectAllOptions(document.getElementById('downloads_category_notification_associated_groups'))" title="{TXT_DOWNLOADS_CHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_CHECK_ALL}</a>
-                        <br />
-                        <a href="javascript:void(0);" onclick="downloadsDeselectAllOptions(document.getElementById('downloads_category_notification_associated_groups'))" title="{TXT_DOWNLOADS_UNCHECK_ALL}" style="color:blue;">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
-                     </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-<!-- end div downloadsTab_categoryNotifications -->
 <br />
 <input type="button" name="downloads_category_cancel" value="{TXT_DOWNLOADS_CANCEL}" onclick="document.location.href='index.php?cmd=downloads&{CSRF_PARAM}&amp;act=categories&amp;parent_id={DOWNLOADS_CATEGORY_PARENT_ID}&amp;category_sort={DOWNLOADS_CATEGORY_CATEGORY_SORT}&amp;category_by={DOWNLOADS_CATEGORY_CATEGORY_SORT_BY}&amp;download_sort={DOWNLOADS_CATEGORY_DOWNLOAD_SORT}&amp;download_by={DOWNLOADS_CATEGORY_DOWNLOAD_BY}&amp;category_pos={DOWNLOADS_CATEGORY_CATEGORY_OFFSET}&amp;download_pos={DOWNLOADS_CATEGORY_DOWNLOAD_OFFSET}'" />
 <input type="submit" name="downloads_category_save" value="{TXT_DOWNLOADS_SAVE}" />

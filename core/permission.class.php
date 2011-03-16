@@ -49,7 +49,7 @@ class Permission
         if ($return) {
             return false;
         }
-        return Permission::noAccess();
+        Permission::noAccess();
     }
 
     /**
@@ -76,7 +76,7 @@ class Permission
         global $objInit;
 
         $objFWUser = FWUser::getFWUserObject();
-        header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).($objFWUser->objUser->login() ? 'cmd=noaccess' : ''));
+        CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).($objFWUser->objUser->login() ? 'cmd=noaccess' : ''));
         exit;
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Livecam
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -104,6 +103,7 @@ class Livecam extends LivecamLibrary
         $this->pageContent = $pageContent;
 
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_getAction();
@@ -176,20 +176,20 @@ class Livecam extends LivecamLibrary
         $this->_objTpl->setGlobalVariable('LIVECAM_DATE', $this->date);
 
         switch ($this->_action) {
-            case 'today':
-                $this->_objTpl->hideBlock('livecamPicture');
-                $this->_showArchive($this->date);
-                break;
+        case 'today':
+            $this->_objTpl->hideBlock('livecamPicture');
+            $this->_showArchive($this->date);
+            break;
 
-            case 'archive':
-                $this->_objTpl->hideBlock('livecamPicture');
-                $this->_showArchive($this->date);
-                break;
+        case 'archive':
+            $this->_objTpl->hideBlock('livecamPicture');
+            $this->_showArchive($this->date);
+            break;
 
-            default:
-                $this->_objTpl->hideBlock('livecamArchive');
-                $this->_showPicture();
-                break;
+        default:
+            $this->_objTpl->hideBlock('livecamArchive');
+            $this->_showPicture();
+            break;
         }
 
         if (isset($this->statusMessage)) {
@@ -262,7 +262,7 @@ class Livecam extends LivecamLibrary
      */
     function _showArchive($date)
     {
-        global $_ARRAYLANG;
+		global $_ARRAYLANG;
 
         JS::activate("shadowbox", array('players' => array('img')));
         JS::activate("datepicker");
@@ -305,7 +305,6 @@ class Livecam extends LivecamLibrary
             $this->_objTpl->parse('livecamArchive');
         } else {
             $this->statusMessage = $_ARRAYLANG['TXT_LIVECAM_NO_PICTURES_OF_SELECTED_DAY'];
-            $this->_objTpl->hideBlock('livecamArchive');
         }
     }
 
@@ -402,5 +401,4 @@ class Livecam extends LivecamLibrary
         }
     }
 }
-
 ?>

@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_SUBCATEGORIES'] = "Underkategorier";
 $_ARRAYLANG['TXT_DATA_SHOW_ALL'] = "Vis alle";
 $_ARRAYLANG['TXT_DATA_OVERLAY_HEIGHT'] = "Overlay-boksens højde";
 $_ARRAYLANG['TXT_DATA_OVERLAY_WIDTH'] = "Overlay-boksens bredde";
-$_ARRAYLANG['TXT_DATA_SETTINGS_SHADOWBOX_TEMPLATE'] = "Thickbox-template";
+$_ARRAYLANG['TXT_DATA_SETTINGS_SHADOWBOX_TEMPLATE'] = "Shadowbox-Template";
 $_ARRAYLANG['TXT_ADV_SETTINGS'] = "Advancerede instillinger";
 $_ARRAYLANG['TXT_GENERAL_BOX_WIDTH'] = "Almen boksbredde";
 $_ARRAYLANG['TXT_GENERAL_BOX_HEIGHT'] = "Almen bokshøjde";
@@ -133,5 +133,4 @@ $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'] = "Maximum size of the thumbnail:";
 $_ARRAYLANG['TXT_DATA_WIDTH'] = "Width";
 $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Height";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Attachment description";
-$_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "";
 ?>

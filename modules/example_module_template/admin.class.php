@@ -26,10 +26,10 @@ require_once dirname(__FILE__).'/forumLibExample.class.php';
  */
 class ForumManager extends ForumLibraryExample
 {
-    function getPage()
-    {
+	function getPage()
+	{
 
-    }
+	}
 }
 
 ?>

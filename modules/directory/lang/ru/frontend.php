@@ -110,6 +110,7 @@ $_ARRAYLANG['TXT_MAP'] = "Карта";
 $_ARRAYLANG['TXT_DIR_MOST_POPULAR'] = "Более популярный";
 $_ARRAYLANG['TXT_DIR_LAST_ENTREES'] = "Последние записи";
 $_ARRAYLANG['TXT_DIR_DIRECTORY'] = "Директория";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Последние записи в каталоге ";
 $_ARRAYLANG['TXT_DIR_USER_SUCCESSFULL_ACTIVATE'] = "Ваш пользовательский аккаунт успешно активирован.";
 $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'] = "Не найдено не одной записи";
 $_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'] = "Расширенный поиск";

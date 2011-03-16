@@ -52,15 +52,12 @@ class FileBrowser {
         'shop'      => 'TXT_FILEBROWSER_SHOP',
         'blog'      => 'TXT_FILEBROWSER_BLOG',
         'podcast'   => 'TXT_FILEBROWSER_PODCAST',
-        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS',
-        'partners'  => 'TXT_FILEBROWSER_PARTNERS',
-        'mediadir'  => 'TXT_FILEBROWSER_MEDIADIR'
+        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS'
     );
     public $_shopEnabled;
     public $_blogEnabled;
     public $_podcastEnabled;
     public $_downloadsEnabled;
-    public $_mediadirEnabled;
 
 
     /**
@@ -84,7 +81,6 @@ class FileBrowser {
         $this->_blogEnabled = $this->_checkForModule('blog');
         $this->_podcastEnabled = $this->_checkForModule('podcast');
         $this->_downloadsEnabled = $this->_checkForModule('downloads');
-        $this->_mediadirEnabled = $this->_checkForModule('mediadir');
 
         $this->_checkUpload();
         $this->checkMakeDir();
@@ -242,12 +238,6 @@ class FileBrowser {
             case 'downloads':
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
                 break;
-            case 'partners':
-                $strWebPath = ASCMS_PARTNERS_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'mediadir':
-                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-            break;
             default:
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
@@ -346,43 +336,35 @@ class FileBrowser {
             case 'media1':
                 $strPath    = ASCMS_MEDIA1_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'media2':
                 $strPath    = ASCMS_MEDIA2_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'media3':
                 $strPath    = ASCMS_MEDIA3_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'media4':
                 $strPath    = ASCMS_MEDIA4_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'shop':
                 $strPath    = ASCMS_SHOP_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'blog':
                 $strPath    = ASCMS_BLOG_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'podcast':
                 $strPath    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'downloads':
                 $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'partners':
-                $strPath    = ASCMS_PARTNERS_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_PARTNERS_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'mediadir':
-                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -414,47 +396,40 @@ class FileBrowser {
 
         $file = $uploadFileName;
         $fileExtension = '';
+
         switch($this->_mediaType) {
             case 'media1':
                 $strPath    = ASCMS_MEDIA1_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'media2':
                 $strPath    = ASCMS_MEDIA2_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'media3':
                 $strPath    = ASCMS_MEDIA3_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'media4':
                 $strPath    = ASCMS_MEDIA4_PATH.$this->_path;
                 $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'shop':
                 $strPath    = ASCMS_SHOP_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'blog':
                 $strPath    = ASCMS_BLOG_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'podcast':
                 $strPath    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             case 'downloads':
                 $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
                 $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'partners':
-                $strPath    = ASCMS_PARTNERS_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_PARTNERS_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'mediadir':
-                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-                break;
+            break;
             default:
                 $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
                 $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
@@ -487,24 +462,8 @@ class FileBrowser {
             $objFile->setChmod($strPath, $strWebPath, $file);
         }
         $fileType = pathinfo($strPath.$file);
-        if (isset($fileType['extension'])
-			 && (  $fileType['extension'] == 'jpg'
-				|| $fileType['extension'] == 'jpeg'
-				|| $fileType['extension'] == 'png'
-				|| $fileType['extension'] == 'gif')
-		) {
-            if($this->_mediaType == 'mediadir') {
-                $objRSMediadirSettings = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_mediadir_settings WHERE name='settingsThumbSize'");
-                if ($objRSMediadirSettings !== false) {
-                    $width = $objRSMediadirSettings->fields['value'];
-                }
-                $quality = 100;
-            } else {
-                $width = 80;
-                $quality = 90;
-            }
-
-        	if ($this->_createThumb($strPath, $strWebPath, $file)) {
+        if ($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif') {
+            if ($this->_createThumb($strPath, $strWebPath, $file)) {
               $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
             }
         }
@@ -653,10 +612,11 @@ class FileBrowser {
                     $rowNr++;
                 }
             }
+
             if (count($this->_arrFiles) > 0) {
                 $arrEscapedPaths = array();
                 foreach ($this->_arrFiles as $arrFile) {
-                    $arrEscapedPaths[] = FWValidator::getEscapedSource($arrFile['path']);
+                    $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
                         'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".addslashes(htmlentities($arrFile['path'], ENT_COMPAT, CONTREXX_CHARSET))."',".$arrFile['width'].",".$arrFile['height'].",'')",
@@ -698,12 +658,6 @@ class FileBrowser {
                 case 'downloads':
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
                     break;
-                case 'partners':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PARTNERS_IMAGES_WEB_PATH);
-                    break;
-                case 'mediadir':
-                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIADIR_IMAGES_WEB_PATH);
-                    break;
                 default:
                     $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
             }
@@ -719,11 +673,12 @@ class FileBrowser {
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        $objFWSystem = new FWSystem();
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
         $this->_objTpl->setVariable(array(
             'FILEBROWSER_UPLOAD_TYPE'   => $this->_mediaType,
             'FILEBROWSER_UPLOAD_PATH'   => $this->_path,
-            'FILEBROWSER_MAX_FILE_SIZE' => FWSystem::getMaxUploadFileSize(),
+            'FILEBROWSER_MAX_FILE_SIZE' => $objFWSystem->getMaxUploadFileSize(),
             'TXT_CREATE_DIRECTORY'      => $_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'],
             'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE']
         ));
@@ -752,39 +707,36 @@ class FileBrowser {
         switch($this->_mediaType) {
             case 'media1':
                 $strPath = ASCMS_MEDIA1_PATH.$this->_path;
-                break;
+            break;
             case 'media2':
                 $strPath = ASCMS_MEDIA2_PATH.$this->_path;
-                break;
+            break;
             case 'media3':
                 $strPath = ASCMS_MEDIA3_PATH.$this->_path;
-                break;
+            break;
             case 'media4':
                 $strPath = ASCMS_MEDIA4_PATH.$this->_path;
-                break;
+            break;
             case 'shop':
                 $strPath = ASCMS_SHOP_IMAGES_PATH.$this->_path;
-                break;
+            break;
             case 'blog':
                 $strPath = ASCMS_BLOG_IMAGES_PATH.$this->_path;
-                break;
+            break;
             case 'podcast':
                 $strPath = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
-                break;
+            break;
             case 'downloads':
                 $strPath = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
-                break;
-            case 'partners':
-                $strPath    = ASCMS_PARTNERS_IMAGES_PATH.$this->_path;
-                break;
-            case 'mediadir':
-                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-                break;
+            break;
             default:
                 $strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
         }
+
         $objDir = @opendir($strPath);
+
         $arrFiles = array();
+
         if ($objDir) {
             $path = array();
             if (   $this->_path !== "/"
@@ -804,7 +756,9 @@ class FileBrowser {
                 $file = readdir($objDir);
             }
             closedir($objDir);
+
             sort($arrFiles);
+
             foreach ($arrFiles as $file) {
                 if (is_dir($strPath.$file)) {
                     array_push($this->_arrDirectories, array('name' => $file, 'path' => $this->_path.$file, 'icon' => $this->_getIcon($strPath.$file)));
@@ -862,7 +816,6 @@ class FileBrowser {
             if ($type == 'blog' && !$this->_blogEnabled) { continue; }
             if ($type == 'podcast' && !$this->_podcastEnabled) { continue; }
             if ($type == 'downloads' && !$this->_downloadsEnabled) { continue; }
-            if($type == 'mediadir' && !$this->_mediadirEnabled){ continue; }
             $menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$text]."</option>\n";
         }
         $menu .= "</select>";

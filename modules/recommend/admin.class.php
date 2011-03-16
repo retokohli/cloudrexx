@@ -31,13 +31,13 @@ require_once ASCMS_MODULE_PATH . '/recommend/Lib.class.php';
  * @subpackage  module_recommend
  * @todo        Edit PHP DocBlocks!
  */
-class RecommendManager extends RecommendLibrary
+class RecommendManager extends RecommendLibrary 
 {
     var $_objTpl;
     var $pageTitle='';
     var $strErrMessage = '';
     var $strOkMessage = '';
-
+    
     /**
      * Constructor
      */
@@ -45,7 +45,7 @@ class RecommendManager extends RecommendLibrary
     {
         $this->__construct();
     }
-
+    
     /**
      * PHP5 constructor
      *
@@ -55,22 +55,23 @@ class RecommendManager extends RecommendLibrary
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG;
-
+        
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/recommend/template');
-        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
+        CSRF::add_placeholder($this->_objTpl);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);  
+        
         $objTemplate->setVariable("CONTENT_NAVIGATION","<a href='?cmd=recommend'>".$_ARRAYLANG['TXT_SETTINGS']."</a>");
     }
-
+    
     /**
      * Get content page
      *
      * @access public
      */
-    function getPage()
+    function getPage() 
     {
         global $objTemplate;
-
+        
         switch ($_GET['act']) {
             case "saveSettings":
                 $this->_saveSettings();
@@ -79,7 +80,7 @@ class RecommendManager extends RecommendLibrary
                 $this->_showSettings();
                 break;
         }
-
+        
         $objTemplate->setVariable(array(
             'CONTENT_TITLE'             => $this->pageTitle,
             'CONTENT_OK_MESSAGE'        => $this->strOkMessage,
@@ -89,24 +90,24 @@ class RecommendManager extends RecommendLibrary
 
 
     }
-
+    
     /**
      * Shows the settings page
      */
     function _showSettings()
     {
         global $_ARRAYLANG, $_FRONTEND_LANGID;
-
+        
         $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-
+        
         $sal_female = $this->getFemaleSalutation($_FRONTEND_LANGID);
         $sal_male   = $this->getMaleSalutation($_FRONTEND_LANGID);
         $subject    = $this->getMessageSubject($_FRONTEND_LANGID);
         $body       = $this->getMessageBody($_FRONTEND_LANGID);
-
+        
         $this->_showForm($sal_female, $sal_male, $subject, $body);
     }
-
+    
     /**
      * Save settings
      *
@@ -117,62 +118,62 @@ class RecommendManager extends RecommendLibrary
     function _saveSettings()
     {
         global $_ARRAYLANG, $objDatabase, $_FRONTEND_LANGID;
-
+        
         $error = false;
-
+        
         if (empty($_POST['subject'])) {
             $error = true;
         }
 
         if (empty($_POST['body'])) {
-            $error = true;
+            $error = true;  
         }
-
+        
         if (empty($_POST['salutation_female'])) {
             $error = true;
         }
-
+        
         if (empty($_POST['salutation_male'])) {
             $error = true;
         }
-
+        
         $salutation_female  = $_POST['salutation_female'];
         $salutation_male    = $_POST['salutation_male'];
-        $subject            = $_POST['subject'];
+        $subject            = $_POST['subject'];        
         $body               = $_POST['body'];
-
+        
         if ($error) {
             $this->pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
             $this->strErrMessage = $_ARRAYLANG['TXT_ERROR'];
-
+            
             $this->_showForm($subject, $body);
         } else {
             $this->_saveValue('subject', $subject);
             $this->_saveValue('body', $body);
             $this->_saveValue('salutation_female', $salutation_female);
             $this->_saveValue('salutation_male', $salutation_male);
-
+            
             $this->strOkMessage = $_ARRAYLANG['TXT_STATUS_OK'];
-
+                
             $sal_female = $this->getFemaleSalutation($_FRONTEND_LANGID);
             $sal_male   = $this->getMaleSalutation($_FRONTEND_LANGID);
             $subject    = $this->getMessageSubject($_FRONTEND_LANGID);
             $body       = $this->getMessageBody($_FRONTEND_LANGID);
-
+            
             $this->_showForm($sal_female, $sal_male, $subject, $body);
         }
     }
-
-
+    
+    
     /**
      * Shows the form
      */
     function _showForm($sal_female, $sal_male, $subject, $body)
     {
         global $_ARRAYLANG;
-
+        
         $this->_objTpl->loadTemplateFile('settings.html',true,true);
-
+        
         $this->_objTpl->setVariable(array(
             "TXT_SALUTATION_FEMALE" => $_ARRAYLANG['TXT_SALUTATION_FEMALE'],
             "TXT_SALUTATION_MALE"   => $_ARRAYLANG['TXT_SALUTATION_MALE'],
@@ -189,27 +190,27 @@ class RecommendManager extends RecommendLibrary
             "TXT_COMMENT"       => $_ARRAYLANG['TXT_COMMENT'],
             "TXT_SALUTATION"    => $_ARRAYLANG['TXT_SALUTATION'],
             ));
-
+                    
         $this->_objTpl->setVariable(array(
             "SETTINGS_SALUTATION_FEMALE"    => $sal_female,
             "SETTINGS_SALUTATION_MALE"      => $sal_male,
             "SETTINGS_SUBJECT"              => $subject,
             "SETTINGS_BODY"                 => $body
             ));
-
-        $this->_objTpl->parse();
+        
+        $this->_objTpl->parse();        
     }
-
+    
     function _saveValue($name, $value)
     {
         global $_FRONTEND_LANGID, $objDatabase;
-
+        
         // check if the dataset for the body for the current lang exists already
         $query = "SELECT * FROM ".DBPREFIX."module_recommend WHERE name = '$name' AND lang_id = $_FRONTEND_LANGID";
         $objResult = $objDatabase->Execute($query);
         if ($objResult->RecordCount() > 0 ) {
             // Dataset exists already
-            $query = "UPDATE ".DBPREFIX."module_recommend
+            $query = "UPDATE ".DBPREFIX."module_recommend 
                      SET value='".addslashes($value)."'
                      WHERE name = '$name' AND lang_id = $_FRONTEND_LANGID";
         } else {
@@ -220,5 +221,5 @@ class RecommendManager extends RecommendLibrary
         }
         $objDatabase->Execute($query);
     }
-
+    
 }

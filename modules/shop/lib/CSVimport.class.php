@@ -121,7 +121,8 @@ class CSVimport
      * @return  array           The available names
      * @static
      */
-    static function getAvailableNamesMenuOptions()
+    //static
+    function getAvailableNamesMenuOptions()
     {
         $strOptions = '';
         foreach (array_keys($this->arrName2Fieldname) as $name) {
@@ -178,19 +179,29 @@ class CSVimport
      * @static
      * @param   string      $catName    The ShopCategory name
      * @param   mixed       $catParent  The optional parent ShopCategory ID,
-     *                                  or null to ignore it (default)
+     *                                  or false to ignore it (default)
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
-    static function getCategoryId($catName, $catParent=null)
+    //static
+    function getCategoryId($catName, $catParent=false)
     {
-        $objCategory = ShopCategories::getChildNamed($catName, $catParent);
-        if ($objCategory) {
-            return $objCategory->getId();
+        global $objDatabase;
+        $query = "
+            SELECT catid
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
+             WHERE catname='$catName'
+               ".($catParent === false ? '' : "AND parentid=".intval($catParent));
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            if ($objResult->RecordCount() > 0) {
+                return $objResult->fields['catid'];
+            }
+            return CSVimport::InsertNewCat($catName, intval($catParent));
         }
-        return CSVimport::InsertNewCat($catName, $catParent);
+        return 0;
     }
 
 
@@ -204,11 +215,19 @@ class CSVimport
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Added creation of default ShopCategory, made static)
      */
-    static function GetFirstCat()
+    //static
+    function GetFirstCat()
     {
-        $category_id = ShopCategory::getNextShopCategoryId();
-        if ($category_id) return $category_id;
-        return CSVimport::InsertNewCat('Import', 0);
+        global $objDatabase;
+        $query = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult !== false) {
+            if ($objResult->RecordCount() > 0) {
+                return $objResult->fields["catid"];
+            } else {
+                return CSVimport::InsertNewCat('Import', 0);
+            }
+        }
     }
 
 
@@ -223,15 +242,19 @@ class CSVimport
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
-    static function InsertNewCat($catName, $catParent)
+    //static
+    function InsertNewCat($catName, $catParent)
     {
-        $objCategory = new ShopCategory($catName, '', $catParent);
-        if ($objCategory->store()) {
-            return $objCategory->getId();
+        global $objDatabase;
+        $query =
+            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
+            "(catname, parentid) VALUES ('".$catName."','".$catParent."')";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            return $objDatabase->Insert_ID();
         }
         return 0;
     }
-
 }
 
 ?>

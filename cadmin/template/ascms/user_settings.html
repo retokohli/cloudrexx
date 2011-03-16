@@ -2,29 +2,29 @@
 <form method="post" action="?cmd=user&amp;act=modbirthday">
 <table summary="" width="100%" class="adminlist">
 <tr>
-  <th colspan="2">Geburtstagsmeldung definieren</th>
+	<th colspan="2">Geburtstagsmeldung definieren</th>
 </tr>
 <tr>
-  <td width="30%"><textarea cols="70" rows="7" name="bdmessage"> {TXT_BIRTDAY_MESSAGE} </textarea></td>
-  <td>
-    <div>
-      <b>{TXT_REPLACEMENT_LIST}</b>
-      <table summary="" border="0">
-      <tr>
-        <td width="20%">[[LASTNAME]]</td><td> {TXT_USER_PLACEHOLDER_LASTNAME_DESCRIPTION} Nachname der Person, welche Geburtstag hat </td>
-      </tr>
-      <tr>
-        <td>[[FIRSTNAME]]</td><td> Vorname der Person, welche Geburtstag hat </td>
-      </tr>
-      <tr>
-        <td>[[AGE]]</td><td> Alter der Person, welche Geburtstag hat</td>
-      </tr>
-      <tr>
-        <td>[[BIRTHDAYMESSAGE]]</td><td>Diese Platzhalter kann schliesslich im Content eingefügt werden und wird durch die hier vordefinierte Geburtstagsmeldung ersetzt</td>
-      </tr>
-      </table>
-    </div>
-  </td>
+	<td width="30%"><textarea cols="70" rows="7" name="bdmessage"> {TXT_BIRTDAY_MESSAGE} </textarea></td>
+	<td>
+		<div>
+			<b>{TXT_REPLACEMENT_LIST}</b>
+			<table summary="" border="0">
+			<tr>
+				<td width="20%">[[LASTNAME]]</td><td> {TXT_USER_PLACEHOLDER_LASTNAME_DESCRIPTION} Nachname der Person, welche Geburtstag hat </td>
+			</tr>
+			<tr>
+				<td>[[FIRSTNAME]]</td><td> Vorname der Person, welche Geburtstag hat </td>
+			</tr>
+			<tr>
+				<td>[[AGE]]</td><td> Alter der Person, welche Geburtstag hat</td>
+			</tr>
+			<tr>
+				<td>[[BIRTHDAYMESSAGE]]</td><td>Diese Platzhalter kann schliesslich im Content eingefügt werden und wird durch die hier vordefinierte Geburtstagsmeldung ersetzt</td>
+			</tr>
+			</table>
+		</div>
+	</td>
 </tr>
 </table>
 &nbsp;<input name="save" type="submit" value="Speichern">

@@ -2,7 +2,7 @@
 <script language="JavaScript" type="text/JavaScript">
 function mediaCheckNewDir()
 {
-    if(document.create_dir.dirName.value == '')
+    if (document.create_dir.dirName.value == '')
     {
         alert("{TXT_MEDIA_CHECK_NAME}");
         document.create_dir.dirName.focus();
@@ -14,15 +14,15 @@ function mediaCheckNewDir()
 function mediaCheckUploadFiles()
 {
     var x = 0;
-    for(var i = 0; i < document.upload_files.elements.length; i++)
+    for (var i = 0; i < document.upload_files.elements.length; i++)
     {
         var e = document.upload_files.elements[i];
-        if(e.name == "fileName[]" && e.value != "")
+        if (e.name == "fileName[]" && e.value != "")
         {
             x++;
         }
     }
-    if(x > 0)
+    if (x > 0)
     {
         return true;
     }
@@ -36,7 +36,7 @@ function mediaCheckUploadFiles()
 
 function mediaConfirmDelete()
 {
-    if(!confirm("{TXT_MEDIA_CONFIRM_DELETE_2}"))
+    if (!confirm("{TXT_MEDIA_CONFIRM_DELETE_2}"))
     {
         return false;
     }
@@ -45,14 +45,14 @@ function mediaConfirmDelete()
 
 function mediaSelectAll(e)
 {
-    if(e.checked)
+    if (e.checked)
     {  // check all
         var ml  = document.fileList;
       var len = ml.elements.length;
-      for(var i = 0; i < len; i++)
+      for (var i = 0; i < len; i++)
       {
           var e = ml.elements[i];
-          if(e.name == "formSelected[]")
+          if (e.name == "formSelected[]")
           {
             e.checked = true;
           }
@@ -62,10 +62,10 @@ function mediaSelectAll(e)
   {  // uncheck all
       var ml  = document.fileList;
       var len = ml.elements.length;
-      for(var i = 0; i < len; i++)
+      for (var i = 0; i < len; i++)
       {
           var e = ml.elements[i];
-          if(e.name == "formSelected[]")
+          if (e.name == "formSelected[]")
           {
             e.checked = false;
           }
@@ -77,15 +77,15 @@ function mediaSelectAll(e)
 function mediaIsChecked(fieldName)
 {
     var x = 0;
-    for(var i = 0; i < document.fileList.elements.length; i++)
+    for (var i = 0; i < document.fileList.elements.length; i++)
     {
         var e = document.fileList.elements[i];
-        if(e.name == fieldName && e.checked == true)
+        if (e.name == fieldName && e.checked == true)
         {
             x++;
         }
     }
-    if(x > 0)
+    if (x > 0)
     {
         return true;
     }
@@ -98,21 +98,21 @@ function mediaIsChecked(fieldName)
 
 function mediaDoAction(action)
 {
-    if(mediaIsChecked("formSelected[]") == true)
+    if (mediaIsChecked("formSelected[]") == true)
     {
-      if(action == "cut")
+      if (action == "cut")
       {
           document.fileList.action = "index.php?cmd=media&act=cut&path={MEDIA_DO_ACTION_PATH}";
           document.fileList.submit();
       }
-      if(action == "copy")
+      if (action == "copy")
       {
           document.fileList.action = "index.php?cmd=media&act=copy&path={MEDIA_DO_ACTION_PATH}";
           document.fileList.submit();
       }
-        if(action == "delete")
+        if (action == "delete")
       {
-          if(confirm("{TXT_MEDIA_CONFIRM_DELETE_2}"))
+          if (confirm("{TXT_MEDIA_CONFIRM_DELETE_2}"))
             {
               document.fileList.action = "index.php?cmd=media&act=delete&path={MEDIA_DO_ACTION_PATH}";
               document.fileList.submit();
@@ -140,11 +140,11 @@ function mediaDoAction(action)
 <div id="newdir" class="mediaTab" style="display:none;">
     <form name="create_dir" method="post" action="{MEDIA_CREATE_DIR_ACTION}" onsubmit="return mediaCheckNewDir();">
       <table width="100%" cellspacing="0" cellpadding="5" border="0" align="middle" class="adminlist">
-        <tr>
+        <tr> 
             <th>{TXT_MEDIA_NEW_DIRECTORY}</th>
         </tr>
         <tr class="row3">
-            <td>
+            <td> 
                 {TXT_MEDIA_NAME}: <input type="text" name="dirName" size="50" style="padding-left: 3px; padding-right: 3px;" />
           </td>
         </tr>
@@ -158,7 +158,7 @@ function mediaDoAction(action)
 <div id="loadfile" class="mediaTab" style="display:none;">
     <form name="upload_files" method="post" action="{MEDIA_UPLOAD_FILES_ACTION}" enctype="multipart/form-data" onsubmit="return mediaCheckUploadFiles2();">
     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="middle" class="adminlist">
-        <tr>
+        <tr> 
             <th>{TXT_MEDIA_UPLOAD_FILES}</th>
         </tr>
         <tr class="row3">
@@ -173,14 +173,14 @@ function mediaDoAction(action)
       </table>
       <br />
       <input type="submit" name="submit" value="{TXT_MEDIA_UPLOAD}" />
-    </form>
+    </form>    
     <br />&nbsp;
 </div>
 
 
 <form name="fileList" method="post" action="{MEDIA_SELECT_MEDIA_ACTION}">
     <table width="100%" cellspacing="0" cellpadding="5" border="0" align="middle" class="adminlist">
-      <tr>
+      <tr> 
           <th width="16"><div align="center">#</div></th>
           <th class="{MEDIA_NAME_CLASS}" colspan="2">
               <a href="{MEDIA_NAME_HREF}" title="{TXT_MEDIA_SORT}">{TXT_MEDIA_FILE_NAME}</a>
@@ -211,10 +211,10 @@ function mediaDoAction(action)
               </div>
           </th>
           <th width="50">&nbsp;
-
+              
           </th>
       </tr>
-       <tr valign="middle" class="row2">
+       <tr valign="middle" class="row2"> 
           <td width="16">
                   <input type="checkbox" name="toggleAll" title="Select or deselect all messages" onclick="mediaSelectAll(this);"{MEDIA_SELECT_STATUS}>
           </td>
@@ -272,7 +272,7 @@ function mediaDoAction(action)
       <!-- END mediaEmptyDirectory -->
     </table>
   <!-- BEGIN mediaSelectAction -->
-
+    
   <!-- END mediaSelectAction -->
 </form>
 <!-- BEGIN mediaActionPaste -->

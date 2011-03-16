@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Blog
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -41,6 +40,7 @@ class BlogAdmin extends BlogLibrary {
 
         BlogLibrary::__construct();
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/blog/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_intLanguageId = $objInit->userFrontendLangId;
@@ -48,13 +48,28 @@ class BlogAdmin extends BlogLibrary {
         $objFWUser = FWUser::getFWUserObject();
         $this->_intCurrentUserId = $objFWUser->objUser->getId();
 
-        $objTemplate->setVariable('CONTENT_NAVIGATION','    <a href="?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>
-                                                            <a href="?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>
-                                                            <a href="?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>
-                                                            <a href="?cmd=blog&amp;act=networks">'.$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>
-                                                            <a href="?cmd=blog&amp;act=block">'.$_CORELANG['TXT_BLOG_BLOCK_TITLE'].'</a>
-                                                            <a href="?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>
-                                                    ');
+        $strNavigation = '';
+
+        //if(in_array(120, $objFWUser->objUser->getStaticPermissionIds())) {
+        	$strNavigation .= '<a href="?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
+        //}
+        if(in_array(121, $objFWUser->objUser->getStaticPermissionIds())) {
+        	$strNavigation .= '<a href="?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
+        }
+        if(in_array(122, $objFWUser->objUser->getStaticPermissionIds())) {
+        	$strNavigation .= '<a href="?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
+        }
+        if(in_array(125, $objFWUser->objUser->getStaticPermissionIds())) {
+        	$strNavigation .= '<a href="?cmd=blog&amp;act=networks">'.$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
+        }
+        //if(in_array(123, $objFWUser->objUser->getStaticPermissionIds())) {
+        	$strNavigation .= '<a href="?cmd=blog&amp;act=block">'.$_CORELANG['TXT_BLOG_BLOCK_TITLE'].'</a>';
+        //}
+        if(in_array(124, $objFWUser->objUser->getStaticPermissionIds())) {
+        	$strNavigation .= '<a href="?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
+        }
+
+        $objTemplate->setVariable('CONTENT_NAVIGATION',$strNavigation);
     }
 
 
@@ -86,7 +101,7 @@ class BlogAdmin extends BlogLibrary {
                 $this->showEntries();
                 break;
             case 'editEntry':
-                Permission::checkAccess(120, 'static');
+                //Permission::checkAccess(120, 'static');
                 $this->editEntry($_GET['id']);
                 break;
             case 'updateEntry':
@@ -210,8 +225,9 @@ class BlogAdmin extends BlogLibrary {
                 $this->showSettings();
                 break;
             default:
-                Permission::checkAccess(120, 'static');
+                //Permission::checkAccess(120, 'static');
                 $this->showEntries();
+
         }
 
         $objTemplate->setVariable(array(
@@ -576,7 +592,17 @@ class BlogAdmin extends BlogLibrary {
         $intSelectedCategory = (isset($_GET['catId'])) ? intval($_GET['catId']) : 0;
         $intPagingPosition = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
 
-        $arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit());
+        $objFWUser = FWUser::getFWUserObject();
+        $this->_intCurrentUserId = $objFWUser->objUser->getId();
+
+        if(!in_array(120, $objFWUser->objUser->getStaticPermissionIds())) {
+
+        	$arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit(), $this->_intCurrentUserId);
+        } else {
+        	$arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit());
+        }
+
+
 
         if (count($arrEntries) > 0) {
             $intRowClass = 1;
@@ -824,7 +850,20 @@ class BlogAdmin extends BlogLibrary {
      */
     function editEntry($intEntryId)
     {
-        global $_CORELANG, $_ARRAYLANG;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
+
+        $objFWUser = FWUser::getFWUserObject();
+        if(!in_array(120, $objFWUser->objUser->getStaticPermissionIds()) && in_array(121, $objFWUser->objUser->getStaticPermissionIds())) {
+        	$count = $objDatabase->Execute('SELECT message_id
+			        						FROM '.DBPREFIX.'module_blog_messages
+			        						WHERE user_id = "'.$this->_intCurrentUserId.'"
+			        						 AND message_id = "'.$intEntryId.'"');
+        	if($count->RecordCount() != 1) {
+
+        		Permission::noAccess();
+        	}
+        }
+
 
         $this->_strPageTitle = $_ARRAYLANG['TXT_BLOG_ENTRY_EDIT_TITLE'];
         $this->_objTpl->loadTemplateFile('module_blog_entries_edit.html',true,true);
@@ -2157,5 +2196,4 @@ class BlogAdmin extends BlogLibrary {
 
         $this->_strOkMessage = $_ARRAYLANG['TXT_BLOG_SETTINGS_SAVE_SUCCESSFULL'];
     }
-
 }

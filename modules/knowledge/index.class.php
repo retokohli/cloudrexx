@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Knowledge
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -23,23 +24,26 @@ class Knowledge extends KnowledgeLibrary
 {
     /**
      * The template object
-     * @var   HTML_Template_Sigma
+     *
+     * @var object
      */
     private $tpl;
 
     public $pageTitle;
 
-
     /**
-     * Call parent-constructor, set language id and create local template-object
-     * @global $_LANGID
-     */
+    * Call parent-constructor, set language id and create local template-object
+    *
+    * @global $_LANGID
+    */
     public function __construct($pageContent)
     {
         global $_LANGID;
 
         KnowledgeLibrary::__construct();
+
         $this->languageId = intval($_LANGID);
+
         $this->tpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->tpl);
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -56,12 +60,12 @@ class Knowledge extends KnowledgeLibrary
     public function getPage()
     {
         global $_LANGID;
-        JS::activate('jquery');
+        JS::activate('prototype');
+        JS::registerJS('modules/knowledge/frontend/fix_prototype.js');
+        JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
-        JS::registerJS('modules/knowledge/frontend/commentBox.js');
-        JS::registerJS('lib/javascript/FRAMEWORK/ajaxFormHelpers.js');
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = "";
@@ -75,20 +79,16 @@ class Knowledge extends KnowledgeLibrary
            $search = new Search();
            $search->performSearch();
            die();
-        } elseif($_GET['act'] == "hitArticle") {
+        } elseif ($_GET['act'] == "hitArticle") {
             $this->hitArticle();
-            break;
+// TODO: There is nothing to be broken break here!  What's the point?
+//            break;
         } elseif ($_GET['act'] == "rate") {
             $this->rate();
             die();
-        } elseif ($_GET['act'] == 'comment') {
-	    $this->actComment();
-	}
-	elseif ($_GET['act'] == 'getComments') {
-	    $this->actGetComments();
-	}	
-	 
-        if(!isset($_GET['cmd'])) {
+        }
+
+        if (!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         }
 
@@ -104,9 +104,6 @@ class Knowledge extends KnowledgeLibrary
                 break;
             case 'search':
                 $this->search();
-                break;
-            case 'glossary':
-                $this->glossary();
                 break;
             case 'start':
             default:
@@ -125,12 +122,13 @@ class Knowledge extends KnowledgeLibrary
                 }
                 break;
         }
+
         return $this->tpl->get();
     }
 
-
     /**
      * The frontpage
+     *
      * @global $_LANGID
      * @global $_ARRAYLANG
      */
@@ -193,14 +191,16 @@ class Knowledge extends KnowledgeLibrary
         $counter = $this->parseArticleList($mostRead, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=mostRead");
         $this->parseArticleList($bestRated, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], $counter, "index.php?section=knowledge".MODULE_INDEX."&amp;act=bestRated");
 
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
     }
 
-
     /**
      * Show a category
+     *
      * @param int $id
      * @global $_LANGID
      * @global $_ARRAYLANG
@@ -221,7 +221,7 @@ class Knowledge extends KnowledgeLibrary
             $id = intval($_GET['id']);
         }
 
-        //JS::activate('prototype');
+      //JS::activate('prototype');
 
         $category = &$this->categories->categories[$id];
         $this->tpl->setVariable(array(
@@ -250,6 +250,8 @@ class Knowledge extends KnowledgeLibrary
 
         $this->showCrumbtrail($id);
 
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
         JS::registerJS('modules/knowledge/frontend/search.js');
         JS::registerJS('modules/knowledge/frontend/slider.js');
@@ -257,6 +259,7 @@ class Knowledge extends KnowledgeLibrary
 
     /**
      * Show the most read articles
+     *
      * @global $_ARRAYLANG
      * @global $_LANGID
      */
@@ -268,9 +271,9 @@ class Knowledge extends KnowledgeLibrary
         $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_MOST_READ_ARTICLES'], 0);
     }
 
-
     /**
      * Show the best rated articles
+     *
      * @global $_LANGID
      * @global $_ARRAYLANG
      */
@@ -281,7 +284,6 @@ class Knowledge extends KnowledgeLibrary
         $articles = $this->articles->getBestRated($_LANGID);
         $this->parseArticleList($articles, $_ARRAYLANG['TXT_KNOWLEDGE_BEST_RATED_ARTICLES'], 0);
     }
-
 
     /**
      * Show an article
@@ -311,7 +313,6 @@ class Knowledge extends KnowledgeLibrary
         $article = $this->articles->articles[$id];
         $average = ($article['votes'] > 0) ? $article['votevalue'] / $article['votes'] : 0;
         $amount = $article['votes'];
-	$contentId = $article['content'][$_LANGID]['id'];
 
         $this->tpl->setVariable(array(
            "TXT_RATING"    => $_ARRAYLANG['TXT_KNOWLEDGE_YOUR_RATING'],
@@ -321,14 +322,10 @@ class Knowledge extends KnowledgeLibrary
            "TXT_LAST_CHANGE"   => $_ARRAYLANG['TXT_KNOWLEDGE_UPDATED'],
            "TXT_AMOUNT_OF_RATING" => $_ARRAYLANG['TXT_KNOWLEDGE_AMOUNT_OF_RATING'],
            "TXT_AVERAGE_RATING"     => $_ARRAYLANG['TXT_KNOWLEDGE_AVERAGE_RATING'],
-	   "TXT_COMMENT" => $_ARRAYLANG['TXT_COMMENT'],
-	   "TXT_SHOW_COMMENTS" => $_ARRAYLANG['TXT_SHOW_COMMENTS'],
 
            "ARTICLEID"     => $id,
-	   "CONTENTID"     => $contentId,
            "QUESTION"      => $article['content'][$_LANGID]['question'],
            "ANSWER"        => $article['content'][$_LANGID]['answer'],
-	   "LANGUAGE"      => $_LANGID,
            "AVERAGE"       => round($average, 2),
            "AMOUNT_OF_RATING" => $amount,
 
@@ -337,9 +334,7 @@ class Knowledge extends KnowledgeLibrary
            "HITS"          => $article['hits'],
 
            "DATE_CREATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_created']),
-           "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated']),
-
-      	   "AMOUNT_OF_COMMENTS" => $this->countComments($contentId)
+           "DATE_UPDATED"  => date(ASCMS_DATE_SHORT_FORMAT, $article['date_updated'])
         ));
 
         $this->showCrumbtrail($article['category']);
@@ -348,10 +343,10 @@ class Knowledge extends KnowledgeLibrary
 
         $this->pageTitle = $article['content'][$_LANGID]['question'];
 
+        JS::activate('prototype');
+        JS::activate('scriptaculous');
         JS::registerJS('modules/knowledge/rating.js');
-        JS::registerJS('modules/knowledge/frontend/commentInterface.js');
     }
-
 
     /**
      * Show the tags of an article
@@ -379,10 +374,9 @@ class Knowledge extends KnowledgeLibrary
         $this->tpl->parse("tags");
     }
 
-
     /**
      * Hit article
-
+     *
      * Increment the hit counter of an article.
      * Called through ajax.
      */
@@ -399,9 +393,9 @@ class Knowledge extends KnowledgeLibrary
         die();
     }
 
-
     /**
      * Show all articles of a tag
+     *
      * @global $_LANGID
      * @global $_ARRAYLANG
      */
@@ -464,7 +458,6 @@ class Knowledge extends KnowledgeLibrary
         }
     }
 
-
     /**
      * Show the search results
      *
@@ -523,11 +516,9 @@ class Knowledge extends KnowledgeLibrary
                    try {
                        $tags = $this->tags->getByArticle($articleid, $_LANGID);
                    } catch (DatabaseError $e) {
-                           // nothing yet
+                       // nothing yet
                    }
-
                    $this->parseTags($tags);
-
                    $this->tpl->parse("article");
                 }
             }
@@ -539,41 +530,11 @@ class Knowledge extends KnowledgeLibrary
                 "TXT_SEARCH_INPUT"  => $searchterm
          ));
 
+        JS::activate("prototype");
+        JS::activate("scriptaculous");
         JS::registerJS("modules/knowledge/rating.js");
         JS::registerJS("modules/knowledge/frontend/search.js");
         JS::registerJS("modules/knowledge/frontend/slider.js");
-    }
-
-    /**
-     * Show the glossary
-     */
-    private function glossary()
-    {
-        global $_ARRAYLANG, $_LANGID;
-
-        $articles = $this->articles->getGlossary($_LANGID);
-
-        if (count($articles)) {
-            foreach ($articles as $letter => $letterarticles) {
-                $this->tpl->setVariable(array(
-                    "LETTER"        => $letter,
-                ));
-                foreach ($letterarticles as $articleid => $article) {
-                    $this->tpl->setVariable(array(
-                       'ARTICLE'    => $article['content'][$_LANGID]['question'],
-                       'ID'         => $article['id']
-                    ));
-                    $this->tpl->parse("entry");
-                }
-                $this->tpl->parse("letter");
-            }
-        } else {
-            // no articles
-            $this->tpl->setVariable(array(
-                "TXT_NO_ENTRIES"     => $_ARRAYLANG['TXT_KNOWLEDGE_NO_GLOSSARY_ENTRIES']
-            ));
-            $this->tpl->parse("no_entries");
-        }
     }
 
     /**
@@ -723,9 +684,11 @@ class Knowledge extends KnowledgeLibrary
     private function rate()
     {
         $id = intval($_POST['id']);
+
         $rated = intval($_POST['rated']);
         if (!isset($_COOKIE['knowledge_rating_'.$id])) {
             try {
+                var_dump(setcookie('knowledge_rating_'.$id, 'rated', 0, ASCMS_PATH_OFFSET.'/'));
                 $this->articles->vote($id, $rated);
             } catch (DatabaseError $e) {
                 die($e->plain());
@@ -746,41 +709,6 @@ class Knowledge extends KnowledgeLibrary
         }
     }
 
-    /**
-     * Ajax comment call
-     */
-    private function actComment()
-    {
-	require_once(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
-	require_once(ASCMS_CORE_PATH.'/validator.inc.php');
-	if(isset($_GET['id']) && isset($_GET['target']) && isset($_POST['commentData'])) {
-	    if($_GET['target'] == 'article') {
-		$commentData = $_POST['commentData'];
-		
-		//check email address
-		if(strlen($commentData['email']) > 0 && !FWValidator::isEmail($commentData['email']))
-		    die(json_encode(array('status' => 'error',
-					  'message' => 'no valid email address given.')));
-		
-		$commentData = contrexx_addslashes($commentData);
-		
-		//ok, print json
-		die(json_encode($this->comment('create', intval($_GET['id']), $commentData)));
-	    }
-	}
-	//we're missing a field
-	die(json_encode(array('status' => 'error',
-			      'message' => 'not all required fields set.')));
-    }
-
-    private function actGetComments()
-    {
-	if(!isset($_GET['id'])) {
-	    die(json_encode(array('status' => 'error',
-				  'message' => 'no id given.')));	    
-	}
-	
-	die(json_encode($this->loadComments(intval($_GET['id']))));
-    }
 }
+
 ?>

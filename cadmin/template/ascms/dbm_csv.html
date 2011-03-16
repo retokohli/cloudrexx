@@ -3,12 +3,12 @@
 // <![CDATA[
 function optimizeDB()
 {
-  window.location = 'index.php?cmd=dbm&act=optimize';
+  window.location = 'index.php?cmd=dbm&{CSRF_PARAM}&act=optimize';
 }
 
 function repairDB()
 {
-  window.location = 'index.php?cmd=dbm&act=repair';
+  window.location = 'index.php?cmd=dbm&{CSRF_PARAM}&act=repair';
 }
 
 function selectMultiAction()

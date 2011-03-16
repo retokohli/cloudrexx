@@ -157,9 +157,6 @@ class downloads extends DownloadsLibrary
             case 'download':
                 $this->download();
                 break;
-		    case 'copy_download':
-				$this->download(true);
-				break;
             case 'delete_download':
                 $this->deleteDownload();
                 $this->_downloads();
@@ -425,7 +422,6 @@ class downloads extends DownloadsLibrary
             $objGroup->setType(isset($_POST['downloads_group_type']) ? contrexx_stripslashes($_POST['downloads_group_type']) : '');
             $objGroup->setInfoPage(isset($_POST['downloads_group_'.$objGroup->getType().'_source']) ? contrexx_stripslashes($_POST['downloads_group_'.$objGroup->getType().'_source']) : '');
             $objGroup->setCategories(isset($_POST['downloads_group_associated_categories']) ? array_map('intval', $_POST['downloads_group_associated_categories']) : array());
-            $objGroup->setSortMethod(isset($_POST['downloads_group_sort']) ? $_POST['downloads_group_sort'] : null);
 
             if ($objGroup->store()) {
                 return $this->groups();
@@ -452,9 +448,7 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_SAVE'                                        => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
             'TXT_DOWNLOADS_STATUS'                                      => $_ARRAYLANG['TXT_DOWNLOADS_STATUS'],
             'TXT_DOWNLOADS_UNCHECK_ALL'                                 => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
-            'TXT_DOWNLOADS_URL'                                         => $_ARRAYLANG['TXT_DOWNLOADS_URL'],
-            'TXT_DOWNLOADS_ALPHABETICALLY_SORTED'                       => $_ARRAYLANG['TXT_DOWNLOADS_ALPHABETICALLY_SORTED'],
-            'TXT_DOWNLOADS_CUSTOM_SORT'                                 => $_ARRAYLANG['TXT_DOWNLOADS_CUSTOM_SORT']
+            'TXT_DOWNLOADS_URL'                                         => $_ARRAYLANG['TXT_DOWNLOADS_URL']
         ));
 
         // parse sorting & paging of the groups overview section
@@ -506,19 +500,15 @@ class downloads extends DownloadsLibrary
             $option = '<option value="'.$arrCategories[$i]['id'].'">'.htmlentities($arrCategories[$i]['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
 
             if (in_array($arrCategories[$i]['id'], $arrAssociatedCategories)) {
-                $arrAssociatedCategoryOptions[array_search($arrCategories[$i]['id'], $arrAssociatedCategories)] = $option;
+                $arrAssociatedCategoryOptions[] = $option;
             } else {
                 $arrNotAssociatedCategoryOptions[] = $option;
             }
         }
-        ksort($arrAssociatedCategoryOptions);
 
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_GROUP_ASSOCIATED_CATEGORIES'      => implode("\n", $arrAssociatedCategoryOptions),
-            'DOWNLOADS_GROUP_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions),
-            'DOWNLOADS_GROUP_SORT_CUSTOM_BOX'            => $objGroup->getSortMethod() == 'custom' ? '' : 'none',
-            'DOWNLOADS_GROUP_SORT_CUSTOM'                => $objGroup->getSortMethod() == 'custom' ? 'selected="selected"' : '',
-            'DOWNLOADS_GROUP_SORT_ALPHABETICALLY'        => $objGroup->getSortMethod() == 'custom' ? '' : 'selected="selected"'
+            'DOWNLOADS_GROUP_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions)
         ));
 
         return true;
@@ -599,7 +589,6 @@ class downloads extends DownloadsLibrary
             $objCategory->setNames(isset($_POST['downloads_category_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_name'])) : array());
             $objCategory->setDescriptions(isset($_POST['downloads_category_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_description'])) : array());
             $objCategory->setDownloads(isset($_POST['downloads_category_associated_downloads']) ? array_map('intval', $_POST['downloads_category_associated_downloads']) : array());
-            $objCategory->setNotificationGroups(isset($_POST['downloads_category_notification_associated_groups']) ? array_map('intval', $_POST['downloads_category_notification_associated_groups']) : array());
 
             if (Permission::checkAccess(142, 'static', true)) {
                 $objCategory->setOwner(isset($_POST['downloads_category_owner_id']) ? intval($_POST['downloads_category_owner_id']) : $objFWUser->objUser->getId());
@@ -651,6 +640,10 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_MANAGE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE'],
             'TXT_DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER'                 => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER'],
             'TXT_DOWNLOADS_CATEGORY_MANAGE_BY_OWNER'                    => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORY_MANAGE_BY_OWNER'],
+//            'TXT_DOWNLOADS_ADD_SUBCATEGORIES'                           => $_ARRAYLANG['TXT_DOWNLOADS_ADD_SUBCATEGORIES'],
+//            'TXT_DOWNLOADS_MANAGE_SUBCATEGORIES'                        => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_SUBCATEGORIES'],
+//            'TXT_DOWNLOADS_ADD_FILES'                                   => $_ARRAYLANG['TXT_DOWNLOADS_ADD_FILES'],
+//            'TXT_DOWNLOADS_MANAGE_FILES'                                => $_ARRAYLANG['TXT_DOWNLOADS_MANAGE_FILES'],
             'TXT_DOWNLOADS_CANCEL'                                      => $_ARRAYLANG['TXT_DOWNLOADS_CANCEL'],
             'TXT_DOWNLOADS_SAVE'                                        => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
             'TXT_DOWNLOADS_BROWSE'                                      => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
@@ -668,10 +661,7 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ'                => $_ARRAYLANG['TXT_DOWNLOADS_APPLY_PERMISSIONS_RECURSIVEJ'],
             'TXT_DOWNLOADS_DOWNLOADS'                                   => $_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS'],
             'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'                         => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
-            'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'                          => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
-            'TXT_DOWNLOADS_EMAIL_NOTIFICATION'                          => $_ARRAYLANG['TXT_DOWNLOADS_EMAIL_NOTIFICATION'],
-            'TXT_DOWNLOADS_NOTIFICATION_DESC'                           => $_ARRAYLANG['TXT_DOWNLOADS_NOTIFICATION_DESC'],
-            'TXT_DOWNLOADS_NOTIFICATIONS'                               => $_ARRAYLANG['TXT_DOWNLOADS_NOTIFICATIONS']
+            'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'                          => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS']
         ));
         // parse sorting & paging of the categories overview section
         $this->objTemplate->setVariable(array(
@@ -687,7 +677,7 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_ID'                         => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_PARENT_ID'                  => $objCategory->getParentId(),
             'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'],
-            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), 'name="downloads_category_owner_id" onchange="document.getElementById(\'downloads_category_owner_config\').style.display = this.value == '.$objFWUser->objUser->getId().' ? \'none\' : \'\'" style="width:300px;"') : $this->getParsedUsername($objCategory->getOwnerId()),
+            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
             'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(142, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
             'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $objCategory->getDeletableByOwner() ? 'checked="checked"' : '',
             'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $objCategory->getModifyAccessByOwner() ? 'checked="checked"' : '',
@@ -715,12 +705,11 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_DEFAULT_CATEGORY_IMAGE'          => $this->defaultCategoryImage['src'],
             'DOWNLOADS_DEFAULT_CATEGORY_IMAGE_WIDTH'    => $this->defaultCategoryImage['width'].'px',
             'DOWNLOADS_DEFAULT_CATEGORY_IMAGE_HEIGHT'   => $this->defaultCategoryImage['height'].'px',
-            'DOWNLOADS_CATEGORY_IMAGE_REMOVE_DISPLAY'   => empty($image) ? 'none' : ''
+            'DOWNLOADS_CATEGORY_IMAGE_REMOVE_DISPLAY'   => empty($image) ? 'none' : '',
         ));
 
         // parse name and description attributres
         $arrLanguages = FWLanguage::getLanguageArray();
-        $firstLanguage = true;
         foreach ($arrLanguages as $langId => $arrLanguage) {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_CATEGORY_NAME'       => htmlentities($objCategory->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
@@ -730,17 +719,11 @@ class downloads extends DownloadsLibrary
             $this->objTemplate->parse('downloads_category_name_list');
 
             $this->objTemplate->setVariable(array(
-                'DOWNLOADS_CATEGORY_LANG_DISPLAY_STATUS' => $firstLanguage ? 'active' : 'inactive',
                 'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($objCategory->getDescription($langId), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_CATEGORY_LANG_ID'            => $langId,
                 'DOWNLOADS_CATEGORY_LANG_DESCRIPTION'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
             ));
             $this->objTemplate->parse('downloads_category_description_list');
-
-            if ($firstLanguage) {
-                $descriptionPreviewLangId = $langId;
-                $firstLanguage = false;
-            }
         }
 
         $this->objTemplate->setVariable(array(
@@ -750,8 +733,8 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->parse('downloads_category_name');
 
         $this->objTemplate->setVariable(array(
-            'DOWNLOADS_DESCRIPTION_LANGUAGE'            => $descriptionPreviewLangId,
-            'DOWNLOADS_CATEGORY_DESCRIPTION_PREVIEW'    => get_wysiwyg_editor('downloads_category_description_preview', $objCategory->getDescription($descriptionPreviewLangId), 'shop', FRONTEND_LANG_ID)
+            'DOWNLOADS_CATEGORY_DESCRIPTION'    => htmlentities($objCategory->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->objTemplate->parse('downloads_category_description');
 
@@ -806,26 +789,6 @@ class downloads extends DownloadsLibrary
             ));
         }
         $this->objTemplate->setVariable('DOWNLOADS_CATEGORY_APPLY_RECURSIVE_CHECKED', $objCategory->hasToSetPermissionsRecursive() ? 'checked="checked"' : '');
-
-        // parse notification groups
-        $arrNotificationGroupIds = $objCategory->getNotificationGroupIds();
-        $associatedGroups = '';
-        $notAssociatedGroups = '';
-        $objGroup = FWUser::getFWUserObject()->objGroup->getGroups();
-        while (!$objGroup->EOF) {
-            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName(), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
-            if (in_array($objGroup->getId(), $arrNotificationGroupIds)) {
-                $associatedGroups .= $option;
-            } else {
-                $notAssociatedGroups .= $option;
-            }
-            $objGroup->next();
-        }
-        $this->objTemplate->setVariable(array(
-            'DOWNLOADS_CATEGORY_NOTIFICATION_NOT_ASSOCIATED_GROUPS'   => $notAssociatedGroups,
-            'DOWNLOADS_CATEGORY_NOTIFICATION_ASSOCIATED_GROUPS'       => $associatedGroups
-        ));
-
         return true;
     }
 
@@ -856,65 +819,13 @@ class downloads extends DownloadsLibrary
             }
         }
 
-        $groupId = 0;
-        $userId = 0;
-        $userIsAdmin = false;
-        $managementPermission = Permission::checkAccess(142, 'static', true);
-        $arrDynamicPermissionIds = array();
-        $showHiddenDownloads = $managementPermission && (isset($_REQUEST['downloads_search_keyword']) ? !empty($_REQUEST['downloads_filter_hidden_downloads']) : 1);
-        if ($managementPermission && !empty($_REQUEST['downloads_filter_group_id'])) {
-            $groupId = intval($_REQUEST['downloads_filter_group_id']);
-            $objGroup = $objFWUser->objGroup->getGroup($groupId);
-            $arrDynamicPermissionIds = $objGroup->getDynamicPermissionIds();
-            $managementPermission = false;
-        } elseif ($managementPermission && !empty($_REQUEST['downloads_filter_user_id'])) {
-            $userId = intval($_REQUEST['downloads_filter_user_id']);
-            $objUser = $objFWUser->objUser->getUser($userId);
-            $arrDynamicPermissionIds = $objUser->getDynamicPermissionIds();
-            $arrStaticPermissionIds = $objUser->getStaticPermissionIds();
-            $userIsAdmin = $objUser->getAdminStatus();
-            $managementPermission = in_array(142, $arrStaticPermissionIds);
-        } else {
-            $arrDynamicPermissionIds = $objFWUser->objUser->getDynamicPermissionIds();
-            $userIsAdmin = $objFWUser->objUser->getAdminStatus();
-            $userId = $managementPermission ? 0 : $objFWUser->objUser->getId();
-        }
-
-		// parse search form
-        $this->objTemplate->setVariable(array(
-            'DOWNLOADS_SEARCH_KEYWORD'              => htmlentities($this->searchKeyword, ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_SEARCH_GROUP_MENU'           => $this->getGroupDropDownMenu($groupId),
-            'DOWNLOADS_SEARCH_USER_MENU'            => $this->getUserDropDownMenu($userId, 'name="downloads_filter_user_id" id="downloads_filter_user_id" onchange="document.getElementById(\'downloads_filter_group_id\').value=0;this.form.submit()" style="width:300px;"', true),
-            'DOWNLOADS_FILTER_HIDDEN_CHECKED'       => $showHiddenDownloads ? 'checked="checked"' : '',
-            'TXT_DOWNLOADS_SEARCH'                  => $_ARRAYLANG['TXT_DOWNLOADS_SEARCH'],
-            'TXT_DOWNLOADS_SHOW_PERMISSIONS'        => $_ARRAYLANG['TXT_DOWNLOADS_SHOW_PERMISSIONS'],
-            'TXT_DOWNLOADS_LIST_HIDDEN_DOWNLOADS'   => $_ARRAYLANG['TXT_DOWNLOADS_LIST_HIDDEN_DOWNLOADS']
-        ));
-        $this->objTemplate->setGlobalVariable(array(
-            'DOWNLOADS_SORT_SEARCH_KEYWORD' => urlencode($this->searchKeyword),
-            'DOWNLOADS_FILTER_GROUP_ID'     => $groupId,
-            'DOWNLOADS_FILTER_USER_ID'      => $userId,
-            'DOWNLOADS_FILTER_HIDDEN'       => $showHiddenDownloads
-        ));
-
-        if (Permission::checkAccess(142, 'static', true)) {
-            $this->objTemplate->parse('downloads_show_permissions');
-        } else {
-            $this->objTemplate->hideBlock('downloads_show_permissions');
-        }
-
-
         // this is required so that the method Download::getFilteredIdList()
         // will be processed
         $filter = array('category_id' => 0);
-        if (!$showHiddenDownloads) {
-            $filter['group_id'] = $groupId;
-            $filter['user_id'] = $userId;
-        }
 
         $objDownload = new Download();
         $objDownload->loadDownloads(
-            $filter, $this->searchKeyword, $arrOrder, null,
+            $filter, null, $arrOrder, null,
             $_CONFIG['corePagingLimit'], $limitOffset
         );
         if ($objDownload->EOF) {
@@ -932,7 +843,6 @@ class downloads extends DownloadsLibrary
 
         $this->objTemplate->setGlobalVariable(array(
             'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
-            'TXT_DOWNLOADS_COPY'    => $_ARRAYLANG['TXT_DOWNLOADS_COPY'],
             'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
         ));
 
@@ -977,12 +887,12 @@ class downloads extends DownloadsLibrary
 
         $downloadCount = $objDownload->getFilteredSearchDownloadCount();
         if ($downloadCount > $_CONFIG['corePagingLimit']) {
-            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&amp;cmd=downloads&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy)."&amp;downloads_search_keyword=".urlencode($this->searchKeyword)."&amp;downloads_filter_group_id=".$groupId."&amp;downloads_filter_user_id=".$userId."&amp;downloads_filter_hidden_downloads=".$showHiddenDownloads, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&amp;cmd=downloads&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
         }
 
 
         if (// managers are allowed to change the sort order
-            $managementPermission
+            Permission::checkAccess(142, 'static', true)
         ) {
             $changeOrderAllowed = true;
             $this->objTemplate->setVariable('TXT_DOWNLOADS_ORDER', $_ARRAYLANG['TXT_DOWNLOADS_ORDER']);
@@ -996,7 +906,7 @@ class downloads extends DownloadsLibrary
         $nr = 0;
         while (!$objDownload->EOF)
         {
-            $description = strip_tags($objDownload->getDescription($_LANGID));
+            $description = $objDownload->getDescription($_LANGID);
             if (strlen($description) > 100) {
                 $description = substr($description, 0, 97).'...';
             }
@@ -1021,9 +931,9 @@ class downloads extends DownloadsLibrary
             }
 
             if (// managers are allowed to modify/delete downloads
-                $managementPermission
+                Permission::checkAccess(142, 'static', true)
                 // to owner of the download is allowed to modify/delete it
-                || $objDownload->getOwnerId() == $userId
+                || $objDownload->getOwnerId() == $objFWUser->objUser->getId()
             ) {
                 // parse select checkbox
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
@@ -1054,17 +964,8 @@ class downloads extends DownloadsLibrary
                 $this->objTemplate->hideBlock('downloads_download_checkbox');
                 $this->objTemplate->hideBlock('downloads_download_status_link_open');
                 $this->objTemplate->hideBlock('downloads_download_status_link_close');
-
-                if (Permission::checkAccess(142, 'static', true)) {
-                    // parse modify link
-                    $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_ID', $objDownload->getId());
-                    $this->objTemplate->parse('downloads_download_modify_link_open');
-                    $this->objTemplate->touchBlock('downloads_download_modify_link_close');
-                } else {
                 $this->objTemplate->hideBlock('downloads_download_modify_link_open');
                 $this->objTemplate->hideBlock('downloads_download_modify_link_close');
-                }
-
                 $this->objTemplate->hideBlock('downloads_download_functions');
                 $this->objTemplate->touchBlock('downloads_download_no_functions');
             }
@@ -1072,11 +973,11 @@ class downloads extends DownloadsLibrary
             if (// download isn't protected -> everyone is allowed to download it
                 !$objDownload->getAccessId()
                 // the owner of the download is allowed to download it
-                || $objDownload->getOwnerId() == $userId
+                || $objDownload->getOwnerId() == $objFWUser->objUser->getId()
                 // the download is protected -> only those who have the sufficent permissions are allowed to download it
-                || ($userIsAdmin || in_array($objDownload->getAccessId(), $arrDynamicPermissionIds))
+                || Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
                 // managers are allowed to download every download
-                || $managementPermission
+                || Permission::checkAccess(142, 'static', true)
             ) {
                 // parse download function
                 $this->objTemplate->setVariable(array(
@@ -1099,7 +1000,7 @@ class downloads extends DownloadsLibrary
                 'DOWNLOADS_DOWNLOAD_STATUS_LED'             => $objDownload->getActiveStatus() ? 'led_green.gif' : 'led_red.gif',
                 //'DOWNLOADS_DOWNLOAD_ICON'                   => $objDownload->getIcon(),
                 'DOWNLOADS_DOWNLOAD_NAME'                   => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_DESCRIPTION'            => $description,
+                'DOWNLOADS_DOWNLOAD_DESCRIPTION'            => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_OWNER'                  => $this->getParsedUsername($objDownload->getOwnerId()),
                 'DOWNLOADS_DOWNLOAD_DOWNLOADED'             => $objDownload->getDownloadCount(),
                 'DOWNLOADS_DOWNLOAD_VIEWED'                 => $objDownload->getViewCount()
@@ -1294,7 +1195,7 @@ class downloads extends DownloadsLibrary
     }
 
 
-    private function download($copy = false)
+    private function download()
     {
         global $_ARRAYLANG, $_LANGID;
 
@@ -1310,10 +1211,6 @@ class downloads extends DownloadsLibrary
             return $this->_downloads();
         }
 
-		if ($copy) {
-			$objDownload->copy();
-        }
-
         $categoryId = isset($_REQUEST['parent_id']) ? intval($_REQUEST['parent_id']) : 0;
 
         $arrAssociatedGroupOptions = array();
@@ -1324,10 +1221,8 @@ class downloads extends DownloadsLibrary
         $arrAssociatedCategories = array();
         $arrAssociatedDownloadOptions = array();
         $arrNotAssociatedDownloadOptions = array();
-        $sendNotifications = false;
 
         if (isset($_POST['downloads_download_save'])) {
-            $sendNotifications = !empty($_POST['downloads_download_send_notifications']);
             $objDownload->setNames(isset($_POST['downloads_download_name']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_name'])) : array());
             $objDownload->setDescriptions(isset($_POST['downloads_download_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_download_description'])) : array());
             $objDownload->setType(isset($_POST['downloads_download_type']) ? contrexx_stripslashes($_POST['downloads_download_type']) : '');
@@ -1338,7 +1233,6 @@ class downloads extends DownloadsLibrary
             $this->arrConfig['use_attr_license'] ? $objDownload->setLicense(isset($_POST['downloads_download_license']) ? contrexx_stripslashes($_POST['downloads_download_license']) : '') : null;
             $this->arrConfig['use_attr_version'] ? $objDownload->setVersion(isset($_POST['downloads_download_version']) ? contrexx_stripslashes($_POST['downloads_download_version']) : '') : null;
             $this->arrConfig['use_attr_author'] ? $objDownload->setAuthor(isset($_POST['downloads_download_author']) ? contrexx_stripslashes($_POST['downloads_download_author']) : '') : null;
-            $this->arrConfig['use_attr_origin'] ? $objDownload->setOrigin(isset($_POST['downloads_download_origin']) ? contrexx_stripslashes($_POST['downloads_download_origin']) : '') : null;
             $this->arrConfig['use_attr_website'] ? $objDownload->setWebsite(isset($_POST['downloads_download_website']) ? contrexx_stripslashes($_POST['downloads_download_website']) : '') : null;
             $objDownload->setImage(isset($_POST['downloads_download_image']) ? contrexx_stripslashes($_POST['downloads_download_image']) : '');
             $objDownload->setValidityTimePeriod(!empty($_POST['downloads_download_validity']) ? intval($_POST['downloads_download_validity']) : 0);
@@ -1355,14 +1249,6 @@ class downloads extends DownloadsLibrary
 
             $objDownload->updateMTime();
             if ($objDownload->store()) {
-                // send notifications
-                if ($sendNotifications) {
-                    $arrAssociatedCategories = $objDownload->getAssociatedCategoryIds();
-                    foreach ($arrAssociatedCategories as $associatedCategoryId) {
-                        DownloadsLibrary::sendNotificationEmails($objDownload, Category::getCategory($associatedCategoryId));
-                    }
-                }
-
                 if ($categoryId) {
                     $this->loadCategoryNavigation();
                     $this->categories();
@@ -1376,7 +1262,7 @@ class downloads extends DownloadsLibrary
             }
         }
 
-        $this->_pageTitle = $objDownload->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] : ($copy ? $_ARRAYLANG['TXT_DOWNLOADS_COPY_DOWNLOAD'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD']);
+        $this->_pageTitle = $objDownload->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_DOWNLOAD'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_DOWNLOAD'];
         $this->objTemplate->loadTemplateFile('module_downloads_download_modify.html');
 
         $this->objTemplate->setVariable(array(
@@ -1397,15 +1283,11 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
             'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
             'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_ORIGIN'                          => $_ARRAYLANG['TXT_DOWNLOADS_ORIGIN'],
-            'TXT_DOWNLOADS_INTERNAL'                        => $_ARRAYLANG['TXT_DOWNLOADS_INTERNAL'],
-            'TXT_DOWNLOADS_EXTERNAL'                        => $_ARRAYLANG['TXT_DOWNLOADS_EXTERNAL'],
             'TXT_DOWNLOADS_WEBSITE'                         => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
             'TXT_DOWNLOADS_IMAGE'                           => $_ARRAYLANG['TXT_DOWNLOADS_IMAGE'],
             'TXT_DOWNLOADS_CATEGORIES'                      => $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'],
             'TXT_DOWNLOADS_AVAILABLE_CATEGORIES'            => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_CATEGORIES'],
             'TXT_DOWNLOADS_ASSIGNED_CATEGORIES'             => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_CATEGORIES'],
-            'TXT_DOWNLOADS_SEND_NOTIFICATIONS_TXT'          => $_ARRAYLANG['TXT_DOWNLOADS_SEND_NOTIFICATIONS_TXT'],
             'TXT_DOWNLOADS_RELATED_DOWNLOADS'               => $_ARRAYLANG['TXT_DOWNLOADS_RELATED_DOWNLOADS'],
             'TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'             => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_DOWNLOADS'],
             'TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'              => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_DOWNLOADS'],
@@ -1434,7 +1316,6 @@ class downloads extends DownloadsLibrary
 
         // parse name and description attributres
         $arrLanguages = FWLanguage::getLanguageArray();
-        $firstLanguage = true;
         foreach ($arrLanguages as $langId => $arrLanguage) {
             $this->objTemplate->setVariable(array(
                 'DOWNLOADS_DOWNLOAD_NAME'       => htmlentities($objDownload->getName($langId), ENT_QUOTES, CONTREXX_CHARSET),
@@ -1444,17 +1325,11 @@ class downloads extends DownloadsLibrary
             $this->objTemplate->parse('downloads_download_name_list');
 
             $this->objTemplate->setVariable(array(
-                'DOWNLOADS_DOWNLOAD_LANG_DISPLAY_STATUS' => $firstLanguage ? 'active' : 'inactive',
                 'DOWNLOADS_DOWNLOAD_DESCRIPTION'        => htmlentities($objDownload->getDescription($langId), ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_LANG_ID'            => $langId,
                 'DOWNLOADS_DOWNLOAD_LANG_DESCRIPTION'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET)
             ));
             $this->objTemplate->parse('downloads_download_description_list');
-
-            if ($firstLanguage) {
-                $descriptionPreviewLangId = $langId;
-                $firstLanguage = false;
-            }
         }
 
         $this->objTemplate->setVariable(array(
@@ -1464,8 +1339,8 @@ class downloads extends DownloadsLibrary
         $this->objTemplate->parse('downloads_download_name');
 
         $this->objTemplate->setVariable(array(
-            'DOWNLOADS_DESCRIPTION_LANGUAGE'            => $descriptionPreviewLangId,
-            'DOWNLOADS_DOWNLOAD_DESCRIPTION_PREVIEW'    => get_wysiwyg_editor('downloads_download_description_preview', $objDownload->getDescription($descriptionPreviewLangId), 'shop', FRONTEND_LANG_ID)
+            'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($objDownload->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
+            'TXT_DOWNLOADS_EXTENDED'            => $_ARRAYLANG['TXT_DOWNLOADS_EXTENDED']
         ));
         $this->objTemplate->parse('downloads_download_description');
 
@@ -1537,18 +1412,6 @@ class downloads extends DownloadsLibrary
             $this->objTemplate->parse('downloads_download_attr_author');
         } else {
             $this->objTemplate->hideBlock('downloads_download_attr_author');
-        }
-
-        // parse origin
-        if ($this->arrConfig['use_attr_origin']) {
-            $this->objTemplate->setVariable(array(
-                'DOWNLOADS_DOWNLOAD_ATTRIBUTE_ROW'      => $attrRow++ % 2 + 1,
-                'DOWNLOADS_DOWNLOAD_ORIGIN_INTERNAL'    => $objDownload->getOrigin() == 'internal' ? 'checked="checked"' : '',
-                'DOWNLOADS_DOWNLOAD_ORIGIN_EXTERNAL'    => $objDownload->getOrigin() == 'external' ? 'checked="checked"' : '',
-            ));
-            $this->objTemplate->parse('downloads_download_attr_origin');
-        } else {
-            $this->objTemplate->hideBlock('downloads_download_attr_origin');
         }
 
         // parse website
@@ -1636,8 +1499,7 @@ class downloads extends DownloadsLibrary
 
         $this->objTemplate->setVariable(array(
             'DOWNLOADS_DOWNLOAD_ASSOCIATED_CATEGORIES'  => implode("\n", $arrAssociatedCategoryOptions),
-            'DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions),
-            'DOWNLOADS_DOWNLOAD_SEND_NOTIFICATIONS_CHECKED' => $sendNotifications ? 'checked="checked"' : ''
+            'DOWNLOADS_DOWNLOAD_NOT_ASSOCIATED_CATEGORIES'  => implode("\n", $arrNotAssociatedCategoryOptions)
         ));
 
         // parse related downloads
@@ -1650,7 +1512,7 @@ class downloads extends DownloadsLibrary
                 continue;
             }
 
-            $option = '<option value="'.$objAvailableDownload->getId().'">'.htmlentities($objAvailableDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ('.substr(strip_tags($objAvailableDownload->getDescription($_LANGID)), 0, 100).')</option>';
+            $option = '<option value="'.$objAvailableDownload->getId().'">'.htmlentities($objAvailableDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ('.htmlentities($objAvailableDownload->getDescription($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).')</option>';
 
             if (in_array($objAvailableDownload->getId(), $arrRelatedDownloads)) {
                 $arrAssociatedDownloadOptions[] = $option;
@@ -1727,19 +1589,13 @@ class downloads extends DownloadsLibrary
 
 
     /**
-     * Update Category Order
-     *
-     * Sets the new category order defined by $arrCategoryOrder.
-     * Where the keys of $arrCategoryOrder represents the IDs of the
-     * categories and the associated values their sort order.
-     *
-     * @param array
-     * @global integer
-     * @global array
+     * @todo  Documentation
      */
     private function updateCategoryOrder($arrCategoryOrder)
     {
         global $_LANGID, $_ARRAYLANG;
+
+        // TODO: check subcategory manage access permission of $parentCategoryId
 
         $arrFailedCategories = array();
         foreach ($arrCategoryOrder as $categoryId => $orderNr) {
@@ -1838,23 +1694,6 @@ class downloads extends DownloadsLibrary
             return Permission::noAccess();
         }
 
-        // check of it is allowed to operate on subcategories
-        if (// managers are allowed to manage every subcategory
-            Permission::checkAccess(142, 'static', true)
-            // the selected category must be valid to proceed future permission checks.
-            // this is required to protect the overview section from non-admins
-            || $objCategory->getId() && (
-                // the category isn't protected => everyone is allowed to modify subcategories
-                !$objCategory->getManageSubcategoriesAccessId()
-                // the category is protected => only those who have the sufficent permissions are allowed to modify subcategories
-                || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
-            )
-        ) {
-            $operateOnSubcategories = true;
-        } else {
-            $operateOnSubcategories = false;
-        }
-
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES'];
         $this->objTemplate->addBlockFile('DOWNLOADS_CATEGORY_TEMPLATE', 'module_downloads_categories', 'module_downloads_categories.html');
         $minColspan = 7;
@@ -1863,12 +1702,10 @@ class downloads extends DownloadsLibrary
         if (isset($_POST['downloads_category_select_action'])) {
             switch ($_POST['downloads_category_select_action']) {
                 case 'order':
-                    if ($operateOnSubcategories) {
-                        $this->updateCategoryOrder(
-                               isset($_POST['downloads_category_order'])
-                            && is_array($_POST['downloads_category_order'])
-                                ? $_POST['downloads_category_order'] : array());
-                    }
+                    $this->updateCategoryOrder(
+                           isset($_POST['downloads_category_order'])
+                        && is_array($_POST['downloads_category_order'])
+                            ? $_POST['downloads_category_order'] : array());
                     break;
                 case 'delete':
                     $this->deleteCategories(isset($_POST['downloads_category_id']) && is_array($_POST['downloads_category_id']) ? $_POST['downloads_category_id'] : array(), isset($_POST['downloads_category_delete_recursive']) && $_POST['downloads_category_delete_recursive']);
@@ -1926,9 +1763,67 @@ class downloads extends DownloadsLibrary
 
         $this->objTemplate->setGlobalVariable(array(
             'TXT_DOWNLOADS_EDIT'    => $_ARRAYLANG['TXT_DOWNLOADS_EDIT'],
-            'TXT_DOWNLOADS_COPY'    => $_ARRAYLANG['TXT_DOWNLOADS_COPY'],
             'TXT_DOWNLOADS_DELETE'  => $_ARRAYLANG['TXT_DOWNLOADS_DELETE']
         ));
+
+//        // check if user is allowed to add a subcategory
+//        if (// managers are allowed to add subcategories
+//            Permission::checkAccess(142, 'static', true)
+//            // the selected category must be valid to proceed future permission checks.
+//            // this is required to protect the overview section from non-admins
+//            || $objCategory->getId() && (
+//                // the category isn't protected => everyone is allowed to add subcategories
+//                !$objCategory->getAddSubcategoriesAccessId()
+//                // the category is protected => only those who have the sufficent permissions are allowed to add subcategories
+//                || Permission::checkAccess($objCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
+//                // the owner is allowed to add subcategories
+//                || ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() && $objCategory->getOwnerId() == $objFWUser->objUser->getId()
+//            )
+//        ) {
+//            $this->objTemplate->setVariable(array(
+//                'DOWNLOADS_CATEGORY_ID' => $objCategory->getId(),
+//                // TODO: rename
+//                //'TXT_ADD_CATEGORY'      => $_ARRAYLANG['TXT_ADD_CATEGORY']
+//            ));
+//            $this->objTemplate->parse('downloads_category_add_buttom');
+//        } else {
+//            $this->objTemplate->hideBlock('downloads_category_add_buttom');
+//        }
+
+        // check of it is allowed to change the sort order
+        if (// managers are allowed to manage every subcategory
+            Permission::checkAccess(142, 'static', true)
+            // the selected category must be valid to proceed future permission checks.
+            // this is required to protect the overview section from non-admins
+            || $objCategory->getId() && (
+                // the category isn't protected => everyone is allowed to modify subcategories
+                !$objCategory->getManageSubcategoriesAccessId()
+                // the category is protected => only those who have the sufficent permissions are allowed to modify subcategories
+                || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
+            )
+        ) {
+            $changeSortOrder = true;
+        } else {
+            $changeSortOrder = false;
+        }
+
+        // parse select posibilities and dropdown action menu
+        if (// managers are allowed to operate on subcategories
+            Permission::checkAccess(142, 'static', true)
+            // the selected category must be valid to proceed future permission checks.
+            // this is required to protect the overview section from non-admins
+            || $objCategory->getId() && (
+                // the category isn't protected => everyone is allowed to operate on subcategories
+                !$objCategory->getManageSubcategoriesAccessId()
+                // the category is protected => only those who have the sufficent permissions are allowed to operate on subcategories
+                || Permission::checkAccess($objCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
+            )
+        ) {
+            $operateOnSubcategories = true;
+        } else {
+            $operateOnSubcategories = false;
+        }
+
 
         // parse add downloads buttons
         if (// we can only add downloads to a category
@@ -1991,21 +1886,21 @@ class downloads extends DownloadsLibrary
             }
 
             while (!$objSubcategory->EOF) {
-                if (// subcategory is hidden -> check if the user is allowed to see it listed anyways
-                    !$objSubcategory->getVisibility()
-                    // non managers are not allowed to see hidden subcategories
-                    && !Permission::checkAccess(142, 'static', true)
-                    // those who have read access permission to the subcategory are allowed to see it listed
-                    && !Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
-                    // the owner is allowed to see its own categories
-                    && (!$objSubcategory->getOwnerId() || $objSubcategory->getOwnerId() != $objFWUser->objUser->getId())
-                ) {
-                    $objSubcategory->next();
-                    continue;
-                }
+//                if (// subcategory is hidden -> check if the user is allowed to see it listed anyways
+//                    !$objSubcategory->getVisibility()
+//                    // non managers are not allowed to see hidden subcategories
+//                    && !Permission::checkAccess(142, 'static', true)
+//                    // those who have read access permission to the subcategory are allowed to see it listed
+//                    && !Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
+//                    // the owner is allowed to see its own categories
+//                    && (!$objSubcategory->getOwnerId() || $objSubcategory->getOwnerId() != $objFWUser->objUser->getId())
+//                ) {
+//                    $objSubcategory->next();
+//                    continue;
+//                }
 
                 // parse order input box
-                if ($operateOnSubcategories) {
+                if ($changeSortOrder) {
                     $this->objTemplate->setVariable(array(
                         'DOWNLOADS_CATEGORY_ID'     => $objSubcategory->getId(),
                         'DOWNLOADS_CATEGORY_ORDER'  => $objSubcategory->getOrder()
@@ -2130,7 +2025,7 @@ class downloads extends DownloadsLibrary
                     $this->objTemplate->hideBlock('downloads_category_name_link_close');
                 }
 
-                $description = strip_tags($objSubcategory->getDescription($_LANGID));
+                $description = $objSubcategory->getDescription($_LANGID);
                 if (strlen($description) > 100) {
                     $description = substr($description, 0, 97).'...';
                 }
@@ -2143,7 +2038,7 @@ class downloads extends DownloadsLibrary
                     'DOWNLOADS_CATEGORY_NAME'               => htmlentities($objSubcategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_CATEGORY_PROTECTED'          => $objSubcategory->getReadAccessId() ? '_locked' : '',
                     'DOWNLOADS_CATEGORY_DOWNLOADS_COUNT'    => intval($objSubcategory->getAssociatedDownloadsCount()),
-                    'DOWNLOADS_CATEGORY_DESCRIPTION'        => $description,
+                    'DOWNLOADS_CATEGORY_DESCRIPTION'        => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                     'DOWNLOADS_CATEGORY_AUTHOR'             => $this->getParsedUsername($objSubcategory->getOwnerId())
                 ));
                 $this->objTemplate->parse('downloads_category_list');
@@ -2469,7 +2364,7 @@ class downloads extends DownloadsLibrary
             }
 
 
-            $description = strip_tags($objDownload->getDescription($_LANGID));
+            $description = $objDownload->getDescription($_LANGID);
             if (strlen($description) > 100) {
                 $description = substr($description, 0, 97).'...';
             }
@@ -2478,7 +2373,7 @@ class downloads extends DownloadsLibrary
             // parse download id
                 'DOWNLOADS_DOWNLOAD_ID'             => $objDownload->getId(),
                 'DOWNLOADS_DOWNLOAD_NAME'           => htmlentities($objDownload->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET),
-                'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => $description,
+                'DOWNLOADS_DOWNLOAD_DESCRIPTION'    => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
                 'DOWNLOADS_DOWNLOAD_OWNER'          => $this->getParsedUsername($objDownload->getOwnerId()),
                 'DOWNLOADS_DOWNLOAD_DOWNLOADED'     => $objDownload->getDownloadCount(),
                 'DOWNLOADS_DOWNLOAD_VIEWED'         => $objDownload->getViewCount(),
@@ -2505,67 +2400,20 @@ class downloads extends DownloadsLibrary
         ));
     }
 
+
     /**
      * Settings page
      * @global array $_ARRAYLANG
      */
     private function settings()
     {
-        global $_ARRAYLANG;
-
-        $this->objTemplate->loadTemplatefile('module_downloads_settings.html');
-        switch ($_REQUEST['tpl']) {
-            case 'general':
-                $this->settingsGeneral();
-                break;
-
-            case 'interfaces':
-                $this->settingsInterfaces();
-                break;
-
-            case 'emails':
-                $this->settingsEmails();
-                break;
-
-            case 'modifyMail':
-                $this->settingsModifyEmails();
-                break;
-
-            case 'copyMail':
-                $this->settingsModifyEmails(true);
-                break;
-
-            case 'deleteMail':
-                $this->settingsDeleteEmail();
-                $this->settingsEmails();
-                break;
-
-            default:
-                $this->settingsGeneral();
-                break;
-        }
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
-        $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_GENERAL'     => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
-            'TXT_DOWNLOADS_INTERFACES'  => $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'],
-            'TXT_DOWNLOADS_EMAILS'      => $_ARRAYLANG['TXT_DOWNLOADS_EMAILS']
-        ));
-
-    }
-
-    /**
-     * General Settings page
-     * @global array $_ARRAYLANG
-     */
-    private function settingsGeneral()
-    {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_LANGID;
 
         Permission::checkAccess(142, 'static');
 
+
         $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
-        $this->objTemplate->addBlockfile('DOWNLOADS_SETTINGS_TEMPLATE', 'module_downloads_settings_general', 'module_downloads_settings_general.html');
+        $this->objTemplate->loadTemplateFile('module_downloads_settings.html');
 
         if (isset($_POST['downloads_settings_save'])) {
             $this->arrConfig['overview_cols_count']         = !empty($_POST['downloads_settings_col_count']) ? intval($_POST['downloads_settings_col_count']) : $this->arrConfig['overview_cols_count'];
@@ -2574,7 +2422,6 @@ class downloads extends DownloadsLibrary
             $this->arrConfig['use_attr_license']            = !empty($_POST['downloads_settings_attribute_license']) ? intval($_POST['downloads_settings_attribute_license']) : 0;
             $this->arrConfig['use_attr_version']            = !empty($_POST['downloads_settings_attribute_version']) ? intval($_POST['downloads_settings_attribute_version']) : 0;
             $this->arrConfig['use_attr_author']             = !empty($_POST['downloads_settings_attribute_author']) ? intval($_POST['downloads_settings_attribute_author']) : 0;
-            $this->arrConfig['use_attr_origin']             = !empty($_POST['downloads_settings_attribute_origin']) ? intval($_POST['downloads_settings_attribute_origin']) : 0;
             $this->arrConfig['use_attr_website']            = !empty($_POST['downloads_settings_attribute_website']) ? intval($_POST['downloads_settings_attribute_website']) : 0;
             $this->arrConfig['most_viewed_file_count']      = !empty($_POST['downloads_settings_most_viewed_file_count']) ? intval($_POST['downloads_settings_most_viewed_file_count']) : $this->arrConfig['most_viewed_file_count'];
             $this->arrConfig['most_downloaded_file_count']  = !empty($_POST['downloads_settings_most_downloaded_file_count']) ? intval($_POST['downloads_settings_most_downloaded_file_count']) : $this->arrConfig['most_downloaded_file_count'];
@@ -2583,11 +2430,31 @@ class downloads extends DownloadsLibrary
             $this->arrConfig['updated_file_count']          = !empty($_POST['downloads_settings_updated_file_count']) ? intval($_POST['downloads_settings_updated_file_count']) : $this->arrConfig['updated_file_count'];
             $this->arrConfig['new_file_time_limit']         = !empty($_POST['downloads_settings_new_file_time_limit']) ? intval($_POST['downloads_settings_new_file_time_limit']) : $this->arrConfig['new_file_time_limit'];
             $this->arrConfig['updated_file_time_limit']     = !empty($_POST['downloads_settings_updated_file_time_limit']) ? intval($_POST['downloads_settings_updated_file_time_limit']) : $this->arrConfig['updated_file_time_limit'];
+            $this->arrConfig['associate_user_to_groups']    = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
 
             $this->updateSettings();
         }
 
+        $objFWUser = FWUser::getFWUserObject();
+        $objGroup = $objFWUser->objGroup->getGroups();
+        $arrGroups = explode(',', $this->arrConfig['associate_user_to_groups']);
+        $associatedGroups = '';
+        $notAssociatedGroups = '';
+
+        while (!$objGroup->EOF) {
+            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
+            if (in_array($objGroup->getId(), $arrGroups)) {
+                $associatedGroups .= $option;
+            } else {
+                $notAssociatedGroups .= $option;
+            }
+
+            $objGroup->next();
+        }
+
+
         $this->objTemplate->setVariable(array(
+            'TXT_DOWNLOADS_SETTINGS'                        => $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'],
             'TXT_DOWNLOADS_OVERVIEW_PAGE'                   => $_ARRAYLANG['TXT_DOWNLOADS_OVERVIEW_PAGE'],
             'TXT_DOWNLOADS_COL_COUNT'                       => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT'],
             'TXT_DOWNLOADS_COL_COUNT_DESC'                  => $_ARRAYLANG['TXT_DOWNLOADS_COL_COUNT_DESC'],
@@ -2616,10 +2483,17 @@ class downloads extends DownloadsLibrary
             'TXT_DOWNLOADS_LICENSE'                         => $_ARRAYLANG['TXT_DOWNLOADS_LICENSE'],
             'TXT_DOWNLOADS_VERSION'                         => $_ARRAYLANG['TXT_DOWNLOADS_VERSION'],
             'TXT_DOWNLOADS_AUTHOR'                          => $_ARRAYLANG['TXT_DOWNLOADS_AUTHOR'],
-            'TXT_DOWNLOADS_ORIGIN'                          => $_ARRAYLANG['TXT_DOWNLOADS_ORIGIN'],
             'TXT_DOWNLOADS_WEBSITE'                         => $_ARRAYLANG['TXT_DOWNLOADS_WEBSITE'],
             'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
+            'TXT_DOWNLOADS_UNCHECK_ALL'                     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
+            'TXT_DOWNLOADS_CHECK_ALL'                       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
             'TXT_DOWNLOADS_GENERAL'                         => $_ARRAYLANG['TXT_DOWNLOADS_GENERAL'],
+            'TXT_DOWNLOADS_INTERFACES'                      => $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'],
+            'TXT_DOWNLOADS_USER_ADMIN'                      => $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'],
+            'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'     => $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'],
+            'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'=> $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'],
+            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'           => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
+            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'            => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
             'DOWNLOADS_SETTINGS_COL_COUNT'                  => $this->arrConfig['overview_cols_count'],
             'DOWNLOADS_SETTINGS_SUBCAT_COUNT'               => $this->arrConfig['overview_max_subcats'],
             'DOWNLOADS_SETTINGS_ATTRIBUTE_SIZE_CHECKED'     => $this->arrConfig['use_attr_size'] ? 'checked="checked"' : '',
@@ -2633,276 +2507,12 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_SETTINGS_NEWEST_FILE_COUNT'          => $this->arrConfig['newest_file_count'],
             'DOWNLOADS_SETTINGS_UPDATED_FILE_COUNT'         => $this->arrConfig['updated_file_count'],
             'DOWNLOADS_SETTINGS_NEW_FILE_TIME_LIMIT'        => $this->arrConfig['new_file_time_limit'],
-            'DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT'  => $this->arrConfig['updated_file_time_limit']
-        ));
-
-        $this->objTemplate->parse('module_downloads_settings_general');
-    }
-
-    /**
-     * Interfaces Settings page
-     * @global array $_ARRAYLANG
-     * @global integer $_LANGID
-     */
-    private function settingsInterfaces()
-    {
-        global $_ARRAYLANG, $_LANGID;
-
-        Permission::checkAccess(142, 'static');
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
-        $this->objTemplate->addBlockfile('DOWNLOADS_SETTINGS_TEMPLATE', 'module_downloads_settings_interfaces', 'module_downloads_settings_interfaces.html');
-
-        if (isset($_POST['downloads_settings_save'])) {
-            $this->arrConfig['associate_user_to_groups'] = !empty($_POST['downloads_settings_associate_user_to_groups_associated_groups']) ? implode(',', array_map('intval', $_POST['downloads_settings_associate_user_to_groups_associated_groups'])) : $this->arrConfig['associate_user_to_groups'];
-
-            $this->updateSettings();
-        }
-
-        $objFWUser = FWUser::getFWUserObject();
-        $objGroup = $objFWUser->objGroup->getGroups();
-        $arrGroups = explode(',', $this->arrConfig['associate_user_to_groups']);
-        $associatedGroups = '';
-        $notAssociatedGroups = '';
-
-        while (!$objGroup->EOF) {
-            $option = '<option value="'.$objGroup->getId().'">'.htmlentities($objGroup->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).' ['.$objGroup->getType().']</option>';
-            if (in_array($objGroup->getId(), $arrGroups)) {
-                $associatedGroups .= $option;
-            } else {
-                $notAssociatedGroups .= $option;
-            }
-
-            $objGroup->next();
-        }
-
-        $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_SAVE'                            => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
-            'TXT_DOWNLOADS_UNCHECK_ALL'                     => $_ARRAYLANG['TXT_DOWNLOADS_UNCHECK_ALL'],
-            'TXT_DOWNLOADS_CHECK_ALL'                       => $_ARRAYLANG['TXT_DOWNLOADS_CHECK_ALL'],
-            'TXT_DOWNLOADS_INTERFACES'                      => $_ARRAYLANG['TXT_DOWNLOADS_INTERFACES'],
-            'TXT_DOWNLOADS_USER_ADMIN'                      => $_ARRAYLANG['TXT_DOWNLOADS_USER_ADMIN'],
-            'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'     => $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION'],
-            'TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'=> $_ARRAYLANG['TXT_DOWNLOADS_AUTOMATIC_CATEGORY_CREATION_DESC'],
-            'TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'           => $_ARRAYLANG['TXT_DOWNLOADS_AVAILABLE_USER_GROUPS'],
-            'TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'            => $_ARRAYLANG['TXT_DOWNLOADS_ASSIGNED_USER_GROUPS'],
+            'DOWNLOADS_SETTINGS_UPDATEDED_FILE_TIME_LIMIT'  => $this->arrConfig['updated_file_time_limit'],
             'DOWNLOADS_SETTINGS_NOT_ASSOCIATED_GROUPS'      => $notAssociatedGroups,
             'DOWNLOADS_SETTINGS_ASSOCIATED_GROUPS'          => $associatedGroups
         ));
-
-        $this->objTemplate->parse('module_downloads_settings_interfaces');
     }
 
-    private function settingsEmails()
-    {
-        global $_ARRAYLANG, $_LANGID;
-
-        Permission::checkAccess(142, 'static');
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_DOWNLOADS_SETTINGS'];
-        $this->objTemplate->addBlockfile('DOWNLOADS_SETTINGS_TEMPLATE', 'module_downloads_settings_mail', 'module_downloads_settings_mail.html');
-
-        $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_EMAIL_NOTIFICATIONS'    => $_ARRAYLANG['TXT_DOWNLOADS_EMAIL_NOTIFICATIONS'],
-            'TXT_DOWNLOADS_TYPE'                   => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
-            'TXT_DOWNLOADS_LANGUAGE'               => $_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'],
-            'TXT_DOWNLOADS_MAIL_SUBJECT'           => $_ARRAYLANG['TXT_DOWNLOADS_MAIL_SUBJECT'],
-            'TXT_DOWNLOADS_FUNCTIONS'              => $_ARRAYLANG['TXT_DOWNLOADS_FUNCTIONS']
-        ));
-
-        $this->objTemplate->setGlobalVariable(array(
-            'TXT_DOWNLOADS_CONFIRM_DELETE_MAIL'    => rawurlencode($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_MAIL']),
-            'TXT_DOWNLOADS_DELETE_MAIL_TEMPLATE'   => $_ARRAYLANG['TXT_DOWNLOADS_DELETE_MAIL_TEMPLATE'],
-            'TXT_DOWNLOADS_COPY_MAIL_TEMPLATE'     => $_ARRAYLANG['TXT_DOWNLOADS_COPY_MAIL_TEMPLATE'],
-            'TXT_DOWNLOADS_MODIFY_MAIL_TEMPLATE'   => $_ARRAYLANG['TXT_DOWNLOADS_MODIFY_MAIL_TEMPLATE']
-        ));
-
-        $objMail = new Downloads_Setting_Mail();
-        $objMail->loadMails();
-        while (!$objMail->EOF) {
-            while (!$objMail->languageEOF) {
-                $this->objTemplate->setVariable(array(
-                    'DOWNLOADS_ROW_CLASS_NR'    => $objMail->getLangId() ? 2 : 1,
-                    'DOWNLOADS_MAIL_TYPE'       => $objMail->getType(),
-                    'DOWNLOADS_MAIL_LANG'       => $objMail->getLangId(),
-                    'DOWNLOADS_MAIL_TYPE_TXT'   => $objMail->getLangId() ? '&rarr; '.$objMail->getTypeDescription() : $objMail->getTypeDescription(),
-                    'DOWNLOADS_MAIL_TYPE_STYLE' => $objMail->getLangId() ? 'text-indent:10px;' : '',
-                    'DOWNLOADS_MAIL_LANGUAGE'   => $objMail->getLangId() ? FWLanguage::getLanguageParameter($objMail->getLangId(), 'name') : $_ARRAYLANG['TXT_DOWNLOADS_ALL'],
-                    'DOWNLOADS_MAIL_SUBJECT'    => htmlentities($objMail->getSubject(), ENT_QUOTES, CONTREXX_CHARSET)
-                ));
-
-                if ($objMail->getLangId()) {
-                    $this->objTemplate->hideBlock('downloads_email_copy');
-                    $this->objTemplate->hideBlock('downloads_email_delete_space');
-                    $this->objTemplate->touchBlock('downloads_email_delete');
-                } else {
-                    $this->objTemplate->touchBlock('downloads_email_copy');
-                    $this->objTemplate->touchBlock('downloads_email_delete_space');
-                    $this->objTemplate->hideBlock('downloads_email_delete');
-                }
-
-                $this->objTemplate->parse('downloads_email_list');
-
-                $objMail->nextLanguage();
-            }
-            $objMail->next();
-        }
-        $this->objTemplate->parse('module_downloads_settings_mail');
-    }
-
-    private function settingsModifyEmails($copy = false)
-    {
-        global $_ARRAYLANG;
-
-        if (empty($_REQUEST['type'])) {
-            return $this->settingsEmails();
-        }
-
-        $objMail = new Downloads_Setting_Mail();
-
-        if ($copy) {
-            $objMail->load(contrexx_addslashes($_REQUEST['type']));
-            $objMail->setLangId(!empty($_REQUEST['downloads_mail_lang']) ? intval($_REQUEST['downloads_mail_lang']) : 0);
-        } elseif (!$objMail->load(contrexx_addslashes($_REQUEST['type']), !empty($_REQUEST['downloads_mail_lang']) ? intval($_REQUEST['downloads_mail_lang']) : null)) {
-            return $this->settingsEmails();
-        }
-
-        if (isset($_POST['downloads_save_mail'])|| isset($_GET['downloads_change_format'])) {
-            // only administrators are allowed to modify the config
-            if (!Permission::hasAllAccess()) {
-                Permission::noAccess();
-            }
-
-            $objMail->setFormat(!empty($_POST['downloads_mail_format']) ? $_POST['downloads_mail_format'] : null);
-            $objMail->setSubject(!empty($_POST['downloads_mail_subject']) ? contrexx_stripslashes($_POST['downloads_mail_subject']) : '');
-            $objMail->setSenderMail(!empty($_POST['downloads_mail_sender_address']) ? contrexx_stripslashes($_POST['downloads_mail_sender_address']) : '');
-            $objMail->setSenderName(!empty($_POST['downloads_mail_sender_name']) ? contrexx_stripslashes($_POST['downloads_mail_sender_name']) : '');
-            $objMail->setBodyText(!empty($_POST['downloads_mail_body_text']) ? contrexx_stripslashes($_POST['downloads_mail_body_text']) : '');
-            $objMail->setBodyHtml(!empty($_POST['downloads_mail_body_html']) ? contrexx_stripslashes($_POST['downloads_mail_body_html']) : '');
-
-            if (isset($_POST['downloads_save_mail'])) {
-                if ($objMail->store()) {
-                    $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_MAIL_STORED_SUCCESSFULLY'];
-                    return $this->settingsEmails();
-                } else {
-                    $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objMail->getErrorMsg());
-                }
-            }
-        }
-
-        $this->objTemplate->addBlockfile('DOWNLOADS_SETTINGS_TEMPLATE', 'module_downloads_settings_mail_modify', 'module_downloads_settings_mail_modify.html');
-
-        $this->objTemplate->setVariable(array(
-            'TXT_DOWNLOADS_MODIFY_EMAIL'           => $_ARRAYLANG['TXT_DOWNLOADS_MODIFY_EMAIL'],
-            'TXT_DOWNLOADS_MAIL_SUBJECT'           => $_ARRAYLANG['TXT_DOWNLOADS_MAIL_SUBJECT'],
-            'TXT_DOWNLOADS_SEND_AS'                => $_ARRAYLANG['TXT_DOWNLOADS_SEND_AS'],
-            'TXT_DOWNLOADS_SENDER_ADDRESS'         => $_ARRAYLANG['TXT_DOWNLOADS_SENDER_ADDRESS'],
-            'TXT_DOWNLOADS_SENDER_NAME'            => $_ARRAYLANG['TXT_DOWNLOADS_SENDER_NAME'],
-            'TXT_DOWNLOADS_TEXT_BODY'              => $_ARRAYLANG['TXT_DOWNLOADS_TEXT_BODY'],
-            'TXT_DOWNLOADS_CANCEL'                 => $_ARRAYLANG['TXT_DOWNLOADS_CANCEL'],
-            'TXT_DOWNLOADS_SAVE'                   => $_ARRAYLANG['TXT_DOWNLOADS_SAVE'],
-            'TXT_DOWNLOADS_TYPE'                   => $_ARRAYLANG['TXT_DOWNLOADS_TYPE'],
-            'TXT_DOWNLOADS_LANGUAGE'               => $_ARRAYLANG['TXT_DOWNLOADS_LANGUAGE'],
-            'TXT_DOWNLOADS_PLACEHOLDER_DIRECTORY'  => $_ARRAYLANG['TXT_DOWNLOADS_PLACEHOLDER_DIRECTORY']
-        ));
-
-        if ($copy) {
-            if (($language = Downloads_Setting_Mail::getMailLanguageMenu($objMail->getType(), $objMail->getLangId(), 'name="downloads_mail_lang" style="width:400px;"')) === false) {
-                return $this->settingsEmails();
-            }
-        } elseif (!$objMail->getLangId()) {
-            $language = '-';
-        } else {
-            $language = '<input type="hidden" name="downloads_mail_lang" value="'.$objMail->getLangId().'" />'.FWLanguage::getLanguageParameter($objMail->getLangId(), 'name');
-        }
-
-        $this->objTemplate->setVariable(array(
-            'DOWNLOADS_MAIL_ACTION'            => $copy ? 'copyMail' : 'modifyMail',
-            'DOWNLOADS_MAIL_TYPE'             => $objMail->getType(),
-            'DOWNLOADS_MAIL_TYPE_TXT'         => $objMail->getTypeDescription(),
-            'DOWNLOADS_MAIL_LANGUAGE'          => $language,
-            'DOWNLOADS_MAIL_SUBJECT'          => htmlentities($objMail->getSubject(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_MAIL_FORMAT'           => $this->getMailFormatMenu($objMail->getFormat(), 'name="downloads_mail_format" onchange="document.getElementById(\'downloads_mail_form\').action=\'index.php?cmd=downloads&amp;act=settings&amp;tpl='.($copy ? 'copyMail' : 'modifyMail').'&amp;type='.$objMail->getType().'&amp;downloads_mail_lang=\'+(typeof(document.getElementsByName(\'downloads_mail_lang\')[0]) != \'undefined\' ? document.getElementsByName(\'downloads_mail_lang\')[0].value : 0)+\'&amp;downloads_change_format=1\';document.getElementById(\'downloads_mail_form\').submit()" size="1" style="width:400px;"'),
-            'DOWNLOADS_MAIL_SENDER_ADDRESS'   => htmlentities($objMail->getSenderMail(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_MAIL_SENDER_NAME'      => htmlentities($objMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_MAIL_BODY_TEXT'        => htmlentities($objMail->getBodyText(), ENT_QUOTES, CONTREXX_CHARSET),
-            'DOWNLOADS_MAIL_BODY_HTML'        => $objMail->getFormat() != 'text' ? get_wysiwyg_editor('downloads_mail_body_html', $objMail->getBodyHtml()) : '<input type="hidden" name="downloads_mail_body_html" value="'.htmlentities($objMail->getBodyHtml(), ENT_QUOTES, CONTREXX_CHARSET).'" />',
-            'DOWNLOADS_MAIL_HTML_BODY_STAUTS' => $objMail->getFormat() != 'text' ? 'block' : 'none',
-            'DOWNLOADS_MAIL_TEXT_BODY_STAUTS' => $objMail->getFormat() == 'text' ? 'block' : 'none',
-            'DOWNLOADS_MAIL_HTML_BODY_CLASS'  => $objMail->getFormat() != 'text' ? 'active' : '',
-            'DOWNLOADS_MAIL_TEXT_BODY_CLASS'  => $objMail->getFormat() == 'text' ? 'active' : '',
-        ));
-
-        if ($objMail->getFormat() == 'text') {
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_TEXT', $_ARRAYLANG['TXT_DOWNLOADS_TEXT']);
-            $this->objTemplate->touchBlock('downloads_mail_text_body');
-            $this->objTemplate->hideBlock('downloads_mail_html_body');
-        } elseif ($objMail->getFormat() == 'html') {
-            $this->objTemplate->setVariable('TXT_DOWNLOADS_HTML_UC', $_ARRAYLANG['TXT_DOWNLOADS_HTML_UC']);
-            $this->objTemplate->touchBlock('downloads_mail_html_body');
-            $this->objTemplate->hideBlock('downloads_mail_text_body');
-        } else {
-            $this->objTemplate->setVariable(array(
-                'TXT_DOWNLOADS_HTML_UC'    => $_ARRAYLANG['TXT_DOWNLOADS_HTML_UC'],
-                'TXT_DOWNLOADS_TEXT'       => $_ARRAYLANG['TXT_DOWNLOADS_TEXT']
-            ));
-            $this->objTemplate->touchBlock('downloads_mail_html_body');
-            $this->objTemplate->touchBlock('downloads_mail_text_body');
-        }
-
-        foreach ($objMail->getPlaceholders() as $groupTxt => $arrPlaceholders) {
-            $nr = 0;
-            foreach ($arrPlaceholders as $placeholder => $placeholderTxt) {
-                $this->objTemplate->setVariable(array(
-                    'DOWNLOADS_CLASS_ROW_NR'   => $nr++ % 2 ? 2 : 1,
-                    'DOWNLOADS_PLACEHOLDER_TXT'    => $_ARRAYLANG[$placeholderTxt],
-                    'DOWNLOADS_PLACEHOLDER'        => $placeholder
-                ));
-                $this->objTemplate->parse('downloads_placeholder_entry');
-            }
-            $this->objTemplate->setVariable('DOWNLOADS_PLACEHOLDER_HEADER', $_ARRAYLANG[$groupTxt]);
-            $this->objTemplate->parse('downloads_placeholder_header');
-            $this->objTemplate->touchBlock('downloads_placeholder_spacer');
-            $this->objTemplate->parse('downloads_placeholder_list');
-        }
-        $this->objTemplate->parse('module_downloads_settings_mail_modify');
-        return true;
-    }
-
-    private function settingsDeleteEmail()
-    {
-        global $_ARRAYLANG;
-
-        // only administrators are allowed to modify the config
-        if (!Permission::hasAllAccess()) {
-            Permission::noAccess();
-        }
-
-        if (empty($_REQUEST['type'])) {
-            return;
-        }
-
-        $objMail = new Downloads_Setting_Mail();
-        if (!$objMail->load(contrexx_addslashes($_REQUEST['type']), !empty($_REQUEST['downloads_mail_lang']) ? intval($_REQUEST['downloads_mail_lang']) : null)) {
-            return;
-        }
-
-        if ($objMail->delete()) {
-            $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_DOWNLOADS_EMAIL_DEL_SUCCESS'];
-        } else {
-            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objMail->getErrorMsg());
-        }
-    }
-
-    private function getMailFormatMenu($selectedFormat, $attrs)
-    {
-        $menu = '<select'.($attrs ? ' '.$attrs : '').">\n";
-        foreach (Downloads_Setting_Mail::getFormats() as $format => $formatTxt) {
-            $menu .= '<option value="'.$format.'"'.($format == $selectedFormat ? ' selected="selected"' : '').'>'.$formatTxt."</option>\n";
-        }
-        $menu .= "</select>\n";
-        return $menu;
-    }
 
     /**
      * placeholder

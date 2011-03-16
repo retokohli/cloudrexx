@@ -1,0 +1,70 @@
+#metanavigation  a {
+    font-size:1em;
+    text-decoration:none;
+    padding:0px 3px;
+    color:#767b80;
+}
+
+#footer a {
+    margin: 0 0 2px 0;
+}
+
+#footer a.langLink {
+    text-decoration:none;
+    color:#484f56;
+}
+
+#footer form {
+    padding:6px 0 0 52px;
+}
+
+#footer input#btnSearch {
+    position: relative;
+    left: 2px;
+    padding: 0;
+    margin: 0;
+    color: #000000;
+    font-size: 10px;
+    background: none;
+}
+
+h1 {
+    color:#487EAD;
+    font-size:1.2em;
+}
+
+h2, h3, h4, h5, h6, h7 {
+    color:#487EAD;
+    font-size:1em;
+}
+
+a:link, a:hover, a:visited, a:active {
+    color:#487EAD;
+}
+
+ul {
+    padding: 0 0 0 15px;
+}
+
+input#searchterm {
+    width: 158px;
+    height: 11px;
+    padding: 1px 3px;
+    margin: 0 0 0 20px;
+    font-size: 0.6em;
+    vertical-align: top;
+}
+
+#footer a:link, #footer a:hover, #footer a:visited, #footer a:active {
+    text-decoration:none;
+    color:#000000;
+}
+
+#content img {
+    max-width:100% !important;
+    height:auto !important;
+}
+
+#wrapper_navtree img {
+    vertical-align:middle;
+}

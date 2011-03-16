@@ -13,16 +13,6 @@
 
 require_once ASCMS_MODULE_PATH."/hotel/HotelLib.class.php";
 
-/**
-* Hotel management
-*
-* @copyright    CONTREXX CMS - Astalavista IT Engineering GmbH Thun
-* @author       Astalavista Development Team <thun@astalvista.ch>
-* @module       hotel
-* @modulegroup  modules
-* @access       public
-* @version      1.0.0
-*/
 class HotelManager extends HotelLib
 {
 
@@ -224,6 +214,7 @@ class HotelManager extends HotelLib
                                         lang_id = 1 AND lower(name) LIKE '%hlung%'"); // aufzählung
         $this->_listingCount = $objRS->fields['cnt'];
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
         $this->_weekdays = explode(',', $_CORELANG['TXT_DAY_ARRAY']);
@@ -891,7 +882,7 @@ class HotelManager extends HotelLib
         if (!empty($_GET['id'])) {
             $hotelID = intval($_GET['id']);
             if (empty($hotelID)) {
-                header('Location: ?section=hotel&cmd=hotellist');
+                CSRF::header('Location: ?section=hotel&cmd=hotellist');
                 die();
             }
         }

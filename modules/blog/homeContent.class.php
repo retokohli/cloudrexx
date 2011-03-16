@@ -35,6 +35,7 @@ class BlogHomeContent extends BlogLibrary  {
         BlogLibrary::__construct();
         $this->_strPageContent = $strPageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_intLanguageId = intval($_LANGID);
         $this->_arrSettings = $this->createSettingsArray();
     }

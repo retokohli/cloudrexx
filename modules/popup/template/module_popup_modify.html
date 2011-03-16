@@ -4,139 +4,139 @@
 function add(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
-  {
-    if (from.options[0] != null)
-      from.options[0].selected = true;
-    from.focus();
-    return false;
-  }
-  else
-  {
-//    str='';
-//    j=0;
-//    for(i in from){
-//      if(i = "length"){
-//        alert(from[i]):
-//      }
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{
+//		str='';
+//		j=0;
+//		for(i in from){
+//			if(i = "length"){
+//				alert(from[i]):
+//			}
 //
-//    }
-//    alert(str);
-    for (var i=0; i<from.options.length; i++)
-    {
-      if (from.options[i].selected)
-      {
-          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-         }
-    }
-      for (var i=from.length-1; i>=0; i--)
-    {
-      if (from.options[i].selected)
-      {
-           from.options[i] = null;
-         }
-    }
-  }
+//		}
+//		alert(str);
+		for (var i=0; i<from.options.length; i++)
+		{
+			if (from.options[i].selected)
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--)
+		{
+			if (from.options[i].selected)
+			{
+		       from.options[i] = null;
+   			}
+		}
+	}
     //disableButtons(from,dest,add,remove);
 }
 
 
 function remove(from,dest,add,remove)
 {
-  if ( dest.selectedIndex < 0)
-  {
-    if (dest.options[0] != null)
-      dest.options[0].selected = true;
-    dest.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<dest.options.length; i++)
-    {
-      if (dest.options[i].selected)
-      {
-          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-         }
-    }
-      for (var i=dest.options.length-1; i>=0; i--)
-    {
-      if (dest.options[i].selected)
-      {
-           dest.options[i] = null;
-         }
-    }
-  }
-  //disableButtons(from,dest,add,remove);
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+		       dest.options[i] = null;
+   			}
+		}
+	}
+	//disableButtons(from,dest,add,remove);
 }
 
 function disableButtons(from,dest,add,remove)
 {
-  if (from.options.length > 0 )
-  {
-    add.disabled = 0;
-  }
-  else
-    add.disabled = 1;
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
 
-  if (dest.options.length > 0)
-    remove.disabled = 0;
-  else
-    remove.disabled = 1;
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
 }
 
 function selectAll(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
+	for(var i = 0;i < CONTROL.length;i++)
     {
-    CONTROL.options[i].selected = true;
-  }
+		CONTROL.options[i].selected = true;
+	}
 }
 
 function deselectAll(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
 }
 
 function showOrHide(strElement)
 {
-  //alert(document.getElementByName(strElement+'_selectedPages[]').value);
+	//alert(document.getElementByName(strElement+'_selectedPages[]').value);
 
-  addpages    =  document.getElementsByName(strElement+'_addpages')[0];
-  removepages    =  document.getElementsByName(strElement+'_removepages')[0];
-  checkbox     =   document.getElementsByName('popup_show_on_all_pages['+strElement+']')[0];
+	addpages		=	document.getElementsByName(strElement+'_addpages')[0];
+	removepages		=	document.getElementsByName(strElement+'_removepages')[0];
+	checkbox 		= 	document.getElementsByName('popup_show_on_all_pages['+strElement+']')[0];
 
-  if(checkbox.checked){
-    addpages.disabled = true;
-    removepages.disabled = true;
+	if(checkbox.checked){
+		addpages.disabled = true;
+		removepages.disabled = true;
 
-     while(document.getElementsByName(strElement+'_selectedPages[]')[0].length > 0){
-       remove(document.getElementById(strElement+'notSelectedPages'),document.getElementById(strElement+'SelectedPages'),addpages,removepages);
-    }
-  }else{
-    addpages.disabled = false;
-    removepages.disabled = false;
-  }
+ 		while(document.getElementsByName(strElement+'_selectedPages[]')[0].length > 0){
+ 			remove(document.getElementById(strElement+'notSelectedPages'),document.getElementById(strElement+'SelectedPages'),addpages,removepages);
+		}
+	}else{
+		addpages.disabled = false;
+		removepages.disabled = false;
+	}
 
 
-  /*if (document.getElementById(strElement).style.display == 'block'){
-    document.getElementByName(strElement+'_selectedPages[]').value = '';
-  } else {
-    document.getElementById(strElement).style.display = 'block';
-  }*/
+	/*if (document.getElementById(strElement).style.display == 'block'){
+		document.getElementByName(strElement+'_selectedPages[]').value = '';
+	} else {
+		document.getElementById(strElement).style.display = 'block';
+	}*/
 }
 
 function toggleLists(status)
 {
-  popup_Lists = document.getElementById('popupLists');
+	popup_Lists = document.getElementById('popupLists');
 
-  if(status == 'on'){
-    popup_Lists.style.display = 'block';
-  } else {
-    popup_Lists.style.display = 'none';
-  }
+	if(status == 'on'){
+		popup_Lists.style.display = 'block';
+	} else {
+		popup_Lists.style.display = 'none';
+	}
 }
 
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
@@ -156,176 +156,176 @@ Text[5]=["","{TXT_POPUP_DATE_DESC}"];
     var enddate = document.getElementById("newCalendarNote").inputEndDate.value.replace(/-/g, "");
 
     if (startdate > enddate) {
-      var date = document.getElementById("newCalendarNote").inputStartDate.value;
-      document.getElementById("newCalendarNote").inputEndDate.value = date;
+    	var date = document.getElementById("newCalendarNote").inputStartDate.value;
+    	document.getElementById("newCalendarNote").inputEndDate.value = date;
     }
   }
 </script>
 <form name="popupFormModifyPopup" action="index.php?cmd=popup&amp;act=modify" method="post" onsubmit="{POPUP_FORM_ONSUBMIT}">
-  <input type="hidden" name="popupId" value="{POPUP_ID}" size="50" />
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-      <tbody>
-        <tr>
-          <th colspan="5">{POPUP_MODIFY_TITLE}</th>
-        </tr>
-        <tr class="row2">
-          <td>{TXT_POPUP_NAME}:</td>
-          <td width="84%" colspan="4" nowrap><input type="text" name="popupName" value="{POPUP_NAME}" size="50" /></td>
-        </tr>
-        <tr class="row1">
-          <td width="16%">{TXT_POPUP_TYPE}:</td>
-          <td width="12%" nowrap><input type="radio" name="popupType" value="1" onclick="toggleLists('on');" {POPUP_TYPE_WINDOW}/>Fenster&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" alt="Note" border="0" /></td>
-          <td width="12%" nowrap><input type="radio" name="popupType" onclick="toggleLists('off');" value="2" {POPUP_TYPE_LAYER}/>Layer&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" alt="Note" border="0" /></td>
-          <td width="60%" nowrap><!-- <input type="radio" name="popupType" onclick="toggleLists('off');" value="3" {POPUP_TYPE_LIGHTBOX}/>ThickBox&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="Note" border="0" /> --><br /></td>
-        </tr>
-        <tr class="row2">
-          <td nowrap>{TXT_POPUP_SIZE}:</td>
-          <td nowrap>{TXT_POPUP_WIDTH}:&nbsp;<input type="text" name="popupWidth" value="{POPUP_WIDTH}" size="8" /></td>
-          <td nowrap colspan="2">{TXT_POPUP_HEIGHT}:&nbsp;<input type="text" name="popupHeight" value="{POPUP_HEIGHT}" size="8" />&nbsp;&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" alt="Note" border="0" /></td>
-        </tr>
-        <tr class="row1">
-          <td nowrap>{TXT_POPUP_POSITION}:</td>
-          <td nowrap>{TXT_POPUP_TOP}:&nbsp;<input type="text" name="popupTop" value="{POPUP_TOP}" size="8" /></td>
-          <td colspan="2" nowrap>{TXT_POPUP_LEFT}:&nbsp;<input type="text" name="popupLeft" value="{POPUP_LEFT}" size="8" />&nbsp;&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="Note" border="0" /></td>
-        </tr>
+	<input type="hidden" name="popupId" value="{POPUP_ID}" size="50" />
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+			<tbody>
+				<tr>
+					<th colspan="5">{POPUP_MODIFY_TITLE}</th>
+				</tr>
+				<tr class="row2">
+					<td>{TXT_POPUP_NAME}:</td>
+					<td width="84%" colspan="4" nowrap><input type="text" name="popupName" value="{POPUP_NAME}" size="50" /></td>
+				</tr>
+				<tr class="row1">
+					<td width="16%">{TXT_POPUP_TYPE}:</td>
+					<td width="12%" nowrap><input type="radio" name="popupType" value="1" onclick="toggleLists('on');" {POPUP_TYPE_WINDOW}/>Fenster&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" alt="Note" border="0" /></td>
+					<td width="12%" nowrap><input type="radio" name="popupType" onclick="toggleLists('off');" value="2" {POPUP_TYPE_LAYER}/>Layer&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" alt="Note" border="0" /></td>
+					<td width="60%" nowrap><!-- <input type="radio" name="popupType" onclick="toggleLists('off');" value="3" {POPUP_TYPE_LIGHTBOX}/>ThickBox&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" alt="Note" border="0" /> --><br /></td>
+				</tr>
+				<tr class="row2">
+					<td nowrap>{TXT_POPUP_SIZE}:</td>
+					<td nowrap>{TXT_POPUP_WIDTH}:&nbsp;<input type="text" name="popupWidth" value="{POPUP_WIDTH}" size="8" /></td>
+					<td nowrap colspan="2">{TXT_POPUP_HEIGHT}:&nbsp;<input type="text" name="popupHeight" value="{POPUP_HEIGHT}" size="8" />&nbsp;&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[3],Style[0])" alt="Note" border="0" /></td>
+				</tr>
+				<tr class="row1">
+					<td nowrap>{TXT_POPUP_POSITION}:</td>
+					<td nowrap>{TXT_POPUP_TOP}:&nbsp;<input type="text" name="popupTop" value="{POPUP_TOP}" size="8" /></td>
+					<td colspan="2" nowrap>{TXT_POPUP_LEFT}:&nbsp;<input type="text" name="popupLeft" value="{POPUP_LEFT}" size="8" />&nbsp;&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="Note" border="0" /></td>
+				</tr>
 
-        <tr class="row2">
-          <td nowrap>{TXT_POPUP_SCROLLBARS}:</td>
-          <td nowrap><input type="radio" name="popupScrollbars" value="1" {POPUP_SCROLL_ON}/>{TXT_POPUP_ACTIVE}</td>
-          <td colspan="2" nowrap><input type="radio" name="popupScrollbars" value="0" {POPUP_SCROLL_OFF}/>{TXT_POPUP_INACTIVE}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div id="popupLists" style="display:block;">
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-      <tbody>
-        <tr class="row1" id="adressList">
-          <td width="16%">{TXT_POPUP_ADRESSLIST}:</td>
-          <td width="12%"><input type="radio" name="popupAdressList" value="1" {POPUP_ADRESS_ON}/>{TXT_POPUP_ACTIVE}</td>
-          <td width="72%"><input type="radio" name="popupAdressList" value="0" {POPUP_ADRESS_OFF}/>{TXT_POPUP_INACTIVE}</td>
-        </tr>
-        <tr class="row2" id="resizeable">
-          <td>{TXT_POPUP_RESIZABLE}:</td>
-          <td><input type="radio" name="popupResizable" value="1" {POPUP_RESIZABLE_ON}/>{TXT_POPUP_ACTIVE}</td>
-          <td><input type="radio" name="popupResizable" value="0" {POPUP_RESIZABLE_OFF}/>{TXT_POPUP_INACTIVE}</td>
-        </tr>
-        <tr class="row1" id="menuList">
-          <td>{TXT_POPUP_MENULIST}:</td>
-          <td><input type="radio" name="popupMenuList" value="1" {POPUP_MENU_ON}/>{TXT_POPUP_ACTIVE}</td>
-          <td><input type="radio" name="popupMenuList" value="0" {POPUP_MENU_OFF}/>{TXT_POPUP_INACTIVE}</td>
-        </tr>
-        <tr class="row2" id="statusList">
-          <td>{TXT_POPUP_STATUSLIST}:</td>
-          <td><input type="radio" name="popupStatusList" value="1" {POPUP_STATUS_ON}/>{TXT_POPUP_ACTIVE}</td>
-          <td><input type="radio" name="popupStatusList" value="0" {POPUP_STATUS_OFF}/>{TXT_POPUP_INACTIVE}</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-      <tbody>
-        <tr class="row1" style="vertical-align:top;">
-          <td width="16%">{TXT_POPUP_FRONTEND_LANGUAGES}</td>
-          <td width="20%" colspan="2">
-            <!-- BEGIN popup_associated_language_0 -->
-              <a id="popupLangTab_Lang{POPUP_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{POPUP_LANG_ID2}'); showOrHide('{POPUP_LANG_ID2}')" title="" hidefocus>{POPUP_LANG_NAME}</a> {POPUP_LANG_STATUS}<br />
-            <!-- END popup_associated_language_0 -->
-          </td>
-          <td width="20%">
-            <!-- BEGIN popup_associated_language_1 -->
-              <a id="popupLangTab_Lang{POPUP_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{POPUP_LANG_ID2}'); showOrHide('{POPUP_LANG_ID2}')" title="" hidefocus>{POPUP_LANG_NAME}</a> {POPUP_LANG_STATUS}<br />
-            <!-- END popup_associated_language_1 -->
-          </td>
-          <td width="44%">
-            <!-- BEGIN popup_associated_language_2 -->
-              <a id="popupLangTab_Lang{POPUP_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{POPUP_LANG_ID2}'); showOrHide('{POPUP_LANG_ID2}')" title="" hidefocus>{POPUP_LANG_NAME}</a> {POPUP_LANG_STATUS}<br />
-            <!-- END popup_associated_language_2 -->
-          </td>
-        </tr>
-    </table>
-    <br />
-    <!-- BEGIN popup_associated_language_details -->
-    <div id="Lang{POPUP_LANG_ID}"  class="popupLangTab"  style="display:none;">
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-      <tbody>
-        <tr>
-          <th colspan="4">{POPUP_SELECTED_LANG_NAME}</th>
-        </tr>
-        <tr class="row2">
-          <td width="16%">{TXT_POPUP_LANG_SHOW}:</td>
-          <td width="84%" colspan="3"><input type="checkbox" name="popup_associated_language[]" value="{POPUP_LANG_ID}" {POPUP_LANG_ASSOCIATED} />&nbsp;{TXT_POPUP_ACTIVATE}</td>
-        </tr>
-        <tr class="row1">
-          <td width="16%">{TXT_POPUP_SHOW_ON_ALL_PAGES}:</td>
-          <td width="84%" colspan="3"><input onclick="showOrHide('{POPUP_LANG_ID}');" type="checkbox" name="popup_show_on_all_pages[{POPUP_LANG_ID}]" value="1" {POPUP_SHOW_ON_ALL_PAGES} />&nbsp;{TXT_POPUP_ACTIVATE}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div id="pages_{POPUP_SELECTED_LANG_SHORTCUT}" style="display:block;">
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-      </tbody>
-        <tr class="row2">
-          <td width="16%" valign="top">{TXT_POPUP_FRONTEND_PAGES}:</td>
-          <td width="84%" colspan="3">
-            <table width="100%" border="0">
-              <tr>
-                <td width="13%">
-                  <select id="{POPUP_LANG_ID}notSelectedPages" name="{POPUP_LANG_ID}_notSelectedPages[]" size="12" style="width:200px;" multiple="multiple">
-                      {POPUP_RELATION_PAGES_UNSELECTED}
-                  </select>
-                  <br />
-                  <font size="1"><a href="javascript:selectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_SELECT}<br />
-                  </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font>
-                </td>
-                <td width="4%">
-                  <div align="center">
-                    <input type="button" value=" &gt;&gt; " name="{POPUP_LANG_ID}_addpages" onclick="add(document.getElementById('{POPUP_LANG_ID}notSelectedPages'),document.getElementById('{POPUP_LANG_ID}SelectedPages'),document.getElementsByName('{POPUP_LANG_ID}_addpages')[0],document.getElementsByName('{POPUP_LANG_ID}_removepages')[0]);" />
-                    <br />
-                    <input type="button" value=" &lt;&lt; " name="{POPUP_LANG_ID}_removepages" onclick="remove(document.getElementById('{POPUP_LANG_ID}notSelectedPages'),document.getElementById('{POPUP_LANG_ID}SelectedPages'),document.getElementsByName('{POPUP_LANG_ID}_addpages')[0],document.getElementsByName('{POPUP_LANG_ID}_removepages')[0]);" />
-                    <br /><br />
-                  </div>
-                </td>
-                <td width="1%">
-                  <div align="left">
-                    <select id="{POPUP_LANG_ID}SelectedPages" name="{POPUP_LANG_ID}_selectedPages[]" size="12" style="width:200px;" multiple="multiple">
-                      {POPUP_RELATION_PAGES_SELECTED}
-                    </select>
-                    <br />
-                    <font size="1"><a href="javascript:selectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_SELECT}<br />
-                    </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font>
-                  </div>
-                </td>
-                <td width="82%">&nbsp;</td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <br />
-    </div>
-    <!-- END popup_associated_language_details -->
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-      <tbody>
-        <tr class="row3">
-          <th  colspan="2" style="font-weight:bold;">{TXT_POPUP_CONTENT}</th>
-        </tr>
-        <tr class="row2">
-          <td  colspan="2">{POPUP_CONTENT}</td>
-        </tr>
-      </tbody>
-    </table>
-    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-      <tbody>
-        <tr class="row1">
-          <td width="16%" nowrap>{TXT_POPUP_DATE}:</td>
-          <td width="12%" nowrap>{TXT_POPUP_FROM}:&nbsp;<input type="text" name="popupFrom" value="{POPUP_FROM}" size="12" id="DPC_popupFrom_YYYY-MM-DD"/></td>
-          <td width="72%" nowrap>{TXT_POPUP_TO}:&nbsp;<input type="text" name="popupTo" value="{POPUP_TO}" size="12" id="DPC_popupTo_YYYY-MM-DD" />&nbsp;&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" alt="Note" border="0" /></td>
-        </tr>
-      </tbody>
-    </table>
-    <br />
-  <input type="submit" name="popup_save_popup" value="{TXT_POPUP_SAVE}" />
+				<tr class="row2">
+					<td nowrap>{TXT_POPUP_SCROLLBARS}:</td>
+					<td nowrap><input type="radio" name="popupScrollbars" value="1" {POPUP_SCROLL_ON}/>{TXT_POPUP_ACTIVE}</td>
+					<td colspan="2" nowrap><input type="radio" name="popupScrollbars" value="0" {POPUP_SCROLL_OFF}/>{TXT_POPUP_INACTIVE}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="popupLists" style="display:block;">
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+			<tbody>
+				<tr class="row1" id="adressList">
+					<td width="16%">{TXT_POPUP_ADRESSLIST}:</td>
+					<td width="12%"><input type="radio" name="popupAdressList" value="1" {POPUP_ADRESS_ON}/>{TXT_POPUP_ACTIVE}</td>
+					<td width="72%"><input type="radio" name="popupAdressList" value="0" {POPUP_ADRESS_OFF}/>{TXT_POPUP_INACTIVE}</td>
+				</tr>
+				<tr class="row2" id="resizeable">
+					<td>{TXT_POPUP_RESIZABLE}:</td>
+					<td><input type="radio" name="popupResizable" value="1" {POPUP_RESIZABLE_ON}/>{TXT_POPUP_ACTIVE}</td>
+					<td><input type="radio" name="popupResizable" value="0" {POPUP_RESIZABLE_OFF}/>{TXT_POPUP_INACTIVE}</td>
+				</tr>
+				<tr class="row1" id="menuList">
+					<td>{TXT_POPUP_MENULIST}:</td>
+					<td><input type="radio" name="popupMenuList" value="1" {POPUP_MENU_ON}/>{TXT_POPUP_ACTIVE}</td>
+					<td><input type="radio" name="popupMenuList" value="0" {POPUP_MENU_OFF}/>{TXT_POPUP_INACTIVE}</td>
+				</tr>
+				<tr class="row2" id="statusList">
+					<td>{TXT_POPUP_STATUSLIST}:</td>
+					<td><input type="radio" name="popupStatusList" value="1" {POPUP_STATUS_ON}/>{TXT_POPUP_ACTIVE}</td>
+					<td><input type="radio" name="popupStatusList" value="0" {POPUP_STATUS_OFF}/>{TXT_POPUP_INACTIVE}</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+			<tbody>
+				<tr class="row1" style="vertical-align:top;">
+					<td width="16%">{TXT_POPUP_FRONTEND_LANGUAGES}</td>
+					<td width="20%" colspan="2">
+						<!-- BEGIN popup_associated_language_0 -->
+							<a id="popupLangTab_Lang{POPUP_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{POPUP_LANG_ID2}'); showOrHide('{POPUP_LANG_ID2}')" title="" hidefocus>{POPUP_LANG_NAME}</a> {POPUP_LANG_STATUS}<br />
+						<!-- END popup_associated_language_0 -->
+					</td>
+					<td width="20%">
+						<!-- BEGIN popup_associated_language_1 -->
+							<a id="popupLangTab_Lang{POPUP_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{POPUP_LANG_ID2}'); showOrHide('{POPUP_LANG_ID2}')" title="" hidefocus>{POPUP_LANG_NAME}</a> {POPUP_LANG_STATUS}<br />
+						<!-- END popup_associated_language_1 -->
+					</td>
+					<td width="44%">
+						<!-- BEGIN popup_associated_language_2 -->
+							<a id="popupLangTab_Lang{POPUP_LANG_ID2}" href="javascript:{}" style="color: #000099; border: 0px solid #000000; padding: 0px; background-color: transparent;" onclick="selectTab('Lang{POPUP_LANG_ID2}'); showOrHide('{POPUP_LANG_ID2}')" title="" hidefocus>{POPUP_LANG_NAME}</a> {POPUP_LANG_STATUS}<br />
+						<!-- END popup_associated_language_2 -->
+					</td>
+				</tr>
+		</table>
+		<br />
+		<!-- BEGIN popup_associated_language_details -->
+		<div id="Lang{POPUP_LANG_ID}"  class="popupLangTab"  style="display:none;">
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+			<tbody>
+				<tr>
+					<th colspan="4">{POPUP_SELECTED_LANG_NAME}</th>
+				</tr>
+				<tr class="row2">
+					<td width="16%">{TXT_POPUP_LANG_SHOW}:</td>
+					<td width="84%" colspan="3"><input type="checkbox" name="popup_associated_language[]" value="{POPUP_LANG_ID}" {POPUP_LANG_ASSOCIATED} />&nbsp;{TXT_POPUP_ACTIVATE}</td>
+				</tr>
+				<tr class="row1">
+					<td width="16%">{TXT_POPUP_SHOW_ON_ALL_PAGES}:</td>
+					<td width="84%" colspan="3"><input onclick="showOrHide('{POPUP_LANG_ID}');" type="checkbox" name="popup_show_on_all_pages[{POPUP_LANG_ID}]" value="1" {POPUP_SHOW_ON_ALL_PAGES} />&nbsp;{TXT_POPUP_ACTIVATE}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div id="pages_{POPUP_SELECTED_LANG_SHORTCUT}" style="display:block;">
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+			</tbody>
+				<tr class="row2">
+					<td width="16%" valign="top">{TXT_POPUP_FRONTEND_PAGES}:</td>
+					<td width="84%" colspan="3">
+						<table width="100%" border="0">
+						  <tr>
+						    <td width="13%">
+						      <select id="{POPUP_LANG_ID}notSelectedPages" name="{POPUP_LANG_ID}_notSelectedPages[]" size="12" style="width:200px;" multiple="multiple">
+						          {POPUP_RELATION_PAGES_UNSELECTED}
+						      </select>
+						      <br />
+						      <font size="1"><a href="javascript:selectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_SELECT}<br />
+						      </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_notSelectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font>
+						    </td>
+						    <td width="4%">
+						      <div align="center">
+						        <input type="button" value=" &gt;&gt; " name="{POPUP_LANG_ID}_addpages" onclick="add(document.getElementById('{POPUP_LANG_ID}notSelectedPages'),document.getElementById('{POPUP_LANG_ID}SelectedPages'),document.getElementsByName('{POPUP_LANG_ID}_addpages')[0],document.getElementsByName('{POPUP_LANG_ID}_removepages')[0]);" />
+						        <br />
+						        <input type="button" value=" &lt;&lt; " name="{POPUP_LANG_ID}_removepages" onclick="remove(document.getElementById('{POPUP_LANG_ID}notSelectedPages'),document.getElementById('{POPUP_LANG_ID}SelectedPages'),document.getElementsByName('{POPUP_LANG_ID}_addpages')[0],document.getElementsByName('{POPUP_LANG_ID}_removepages')[0]);" />
+						        <br /><br />
+						      </div>
+						    </td>
+						    <td width="1%">
+						      <div align="left">
+						        <select id="{POPUP_LANG_ID}SelectedPages" name="{POPUP_LANG_ID}_selectedPages[]" size="12" style="width:200px;" multiple="multiple">
+						        	{POPUP_RELATION_PAGES_SELECTED}
+						        </select>
+						        <br />
+						        <font size="1"><a href="javascript:selectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_SELECT}<br />
+						        </a><a href="javascript:deselectAll(document.popupFormModifyPopup.elements['{POPUP_LANG_ID}_selectedPages[]']);" style="color:blue;">{TXT_POPUP_RELATION_DESELECT}</a></font>
+						      </div>
+						    </td>
+						    <td width="82%">&nbsp;</td>
+						  </tr>
+						</table>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+		<br />
+		</div>
+		<!-- END popup_associated_language_details -->
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+			<tbody>
+				<tr class="row3">
+					<th  colspan="2" style="font-weight:bold;">{TXT_POPUP_CONTENT}</th>
+				</tr>
+				<tr class="row2">
+					<td  colspan="2">{POPUP_CONTENT}</td>
+				</tr>
+			</tbody>
+		</table>
+		<table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+			<tbody>
+				<tr class="row1">
+					<td width="16%" nowrap>{TXT_POPUP_DATE}:</td>
+					<td width="12%" nowrap>{TXT_POPUP_FROM}:&nbsp;<input type="text" name="popupFrom" value="{POPUP_FROM}" size="12" id="DPC_popupFrom_YYYY-MM-DD"/></td>
+					<td width="72%" nowrap>{TXT_POPUP_TO}:&nbsp;<input type="text" name="popupTo" value="{POPUP_TO}" size="12" id="DPC_popupTo_YYYY-MM-DD" />&nbsp;&nbsp;<img src="{POPUP_SRC_NOTE_IMAGE}" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" alt="Note" border="0" /></td>
+				</tr>
+			</tbody>
+		</table>
+		<br />
+	<input type="submit" name="popup_save_popup" value="{TXT_POPUP_SAVE}" />
 </form>
 <!-- END module_popup_popup.html DPC_edit1_YYYY-MM-DD-->

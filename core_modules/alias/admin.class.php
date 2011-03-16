@@ -72,6 +72,7 @@ class AliasAdmin extends aliasLib
         parent::__construct();
 
         $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/alias/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->objSettings = new settingsManager();
@@ -85,12 +86,7 @@ class AliasAdmin extends aliasLib
         }
 
         $arrConfig = $this->_getConfig();
-		/* this must be tested against an empty string because the initial setting
-         * of aliasStatus is defined as such. If aliasStatus is set to 0, then this will
-         * mean that the alias modul has been deactivated and therefor there should be
-         * no intention to activate the module automatically.
-         */
-        if ($arrConfig['aliasStatus'] == '') {
+        if (!$arrConfig['aliasStatus']) {
             if ($this->_isModRewriteInUse()) {
                 $this->_setAliasAdministrationStatus(true);
                 $this->_initConfig();
@@ -99,12 +95,8 @@ class AliasAdmin extends aliasLib
         }
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            ($arrConfig['aliasStatus'] == '1' && $this->objFWHtAccess->isHtAccessFileLoaded()
-                ?   "<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
-                   ."<a href='index.php?cmd=alias&amp;act=modify'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>"
-                   ."<a href='index.php?cmd=alias&amp;act=maplist'>".$_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS']."</a>"
-                   ."<a href='index.php?cmd=alias&amp;act=mapmod'>".$_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS_ADD']."</a>"
-                : '')
+            ($arrConfig['aliasStatus'] == '1' && $this->objFWHtAccess->isHtAccessFileLoaded() ? "<a href='index.php?cmd=alias'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
+            ."<a href='index.php?cmd=alias&amp;act=modify'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>" : '')
             ."<a href='index.php?cmd=alias&amp;act=settings'>".$_ARRAYLANG['TXT_ALIAS_SETTINGS']."</a>"
         );
     }
@@ -138,18 +130,6 @@ class AliasAdmin extends aliasLib
                 $this->_modifyAlias();
                 break;
 
-            case 'maplist':
-                $this->_listMappings();
-                break;
-
-            case 'mapmod':
-                $this->_modifyMapping();
-                break;
-                
-            case 'deletemap':
-            	$this->_deletemap();
-            	break; 
-                
             case 'delete':
                 $this->_delete();
 
@@ -186,7 +166,7 @@ class AliasAdmin extends aliasLib
 
         $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit']);
         $nr = 1;
-        if (count($arrAliases[$this->langId])) {
+        if (count($arrAliases)) {
             $this->_objTpl->setVariable(array(
                 'TXT_ALIAS_PAGE'        => $_ARRAYLANG['TXT_ALIAS_PAGE'],
                 'TXT_ALIAS_ALIAS'    => $_ARRAYLANG['TXT_ALIAS_ALIAS'],
@@ -196,45 +176,26 @@ class AliasAdmin extends aliasLib
             ));
 
             $this->_objTpl->setGlobalVariable(array(
-                'TXT_ALIAS_DELETE'                  => $_ARRAYLANG['TXT_ALIAS_DELETE'],
-                'TXT_ALIAS_MODIFY'                  => $_ARRAYLANG['TXT_ALIAS_MODIFY'],
-                'TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'   => $_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW']
+                'TXT_ALIAS_DELETE'    => $_ARRAYLANG['TXT_ALIAS_DELETE'],
+                'TXT_ALIAS_MODIFY'    => $_ARRAYLANG['TXT_ALIAS_MODIFY']
             ));
 
-            $langPathPrefix = $_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($this->langId, 'lang') : '';
             $arrRewriteInfo = $this->_getRewriteInfo();
 
-            foreach ($arrAliases[$this->langId] as $aliasId => $arrAlias) {
+            foreach ($arrAliases as $aliasId => $arrAlias) {
                 foreach ($arrAlias['sources'] as $arrAliasSource) {
 
                     $this->_objTpl->setVariable(array(
-                        'ALIAS_SOURCE_REAL_URL' => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'/'.stripslashes($arrAliasSource['url']),
-                        'ALIAS_SOURCE_URL'      => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'<strong>/'.stripslashes($arrAliasSource['url']).'</strong>',
+                        'ALIAS_SOURCE_URL'    => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'<strong>/'.stripslashes($arrAliasSource['url']).'</strong>',
                     ));
 
-                    if ($arrAlias['type'] == 'local') {
-                        // alias points to a local webpage
-                        $target = $arrAlias['pageUrl'];
-                    } else {
-                        $target = $arrAlias['url'];
-                    }
-
-                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                        // virtual language path has be taken in account
-                        $source = FWLanguage::getLanguageParameter($this->langId, 'lang').'/'.$arrAliasSource['url'];
-                    } else {
-                        $source = $arrAliasSource['url'];
-                    }
-
-                    if (   is_array($arrRewriteInfo) // check if there are any rewrite rules defined
-                        && isset($arrRewriteInfo[$target]) // check if one of the rewrite rules uses our target URI
-                        && in_array($source, $arrRewriteInfo[$target]) // check if the rewrite rule that uses our target URI also uses our source URI
-                    ) {
-                        $this->_objTpl->hideBlock('alias_source_not_set');
-                    } else {
+                    if (!is_array($arrRewriteInfo) || !isset($arrRewriteInfo[($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])]) || !in_array($arrAliasSource['url'], $arrRewriteInfo[($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'])])) {
                         $this->_objTpl->setVariable('TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG', $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG']);
                         $this->_objTpl->touchBlock('alias_source_not_set');
+                    } else {
+                        $this->_objTpl->hideBlock('alias_source_not_set');
                     }
+
                     $this->_objTpl->parse('alias_source_list');
                 }
                 $this->_objTpl->setVariable(array(
@@ -248,7 +209,7 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->parse('alias_data');
             $this->_objTpl->hideBlock('alias_no_data');
 
-            if ($this->_getAliasesCount() > count($arrAliases[$this->langId])) {
+            if ($this->_getAliasesCount() > count($arrAliases)) {
                 $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&amp;cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {
@@ -257,97 +218,6 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->hideBlock('alias_data');
             $this->_objTpl->parse('alias_no_data');
         }
-    }
-
-
-    function _modifyMapping()
-    {
-        global $_ARRAYLANG, $_CONFIG;
-
-        $mappingId = !empty($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-        $arrMapping = array();
-        
-        $this->_objTpl->loadTemplateFile('module_alias_mapping_modify.html');
-        $this->_pageTitle = $mappingId ? $_ARRAYLANG['TXT_ALIAS_MAPPING_MODIFY'] : $_ARRAYLANG['TXT_ALIAS_MAPPING_ADD'];
-        $this->_objTpl->setVariable($_ARRAYLANG);
-        $error = false;
-        
-        if(isset($_REQUEST['alias_mapping_save'])){
-	        $arrMapping['target'] = $_REQUEST['alias_mapping_page_id'];
-	        $arrMapping['domain'] = trim($_REQUEST['alias_mapping_domain']);
-	        if(empty($arrMapping['domain'])){
-	        	$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_DOMAIN'];
-	        	$error = true;
-	        } else {
-	        	if($arrMapping['domain'] == $_CONFIG['domainUrl']){
-	        		$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_DOMAIN_CANNOT_BE_SAME_AS_DEFAULT'];
-	        		$error = true;
-	        	}
-
-	        	if(!preg_match('#^(?:\w+\.)?(?:\w+\.|\w+)+(?:\w{2,6})?[^.]$#', $arrMapping['domain'])){
-	        		$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_INVALID_DOMAIN_NAME'];
-	        		$error = true;
-	        	}	        	
-	        }       
-	        
-	        if(empty($arrMapping['target'])){
-	        	$this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_MISSING_TARGET'];
-	        	$error = true;
-	        }        
-	        
-	        if(!$error){
-		        if (!$mappingId) { //new
-		        	$this->_addMapping($arrMapping);        	        		
-		        } else {
-		        	$this->_updateMapping($mappingId, $arrMapping);
-		        }
-
-		        $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_SAVED_SUCCESSFULLY'];	
-				return $this->_listMappings();
-			}		        
-        } 
-        	
-        $arrMapping = $this->_getMapping($mappingId);
-                
-        $this->_objTpl->setVariable(array(
-            'CSRF_KEY'                  => CSRF::key(),
-            'CSRF_CODE'                 => CSRF::code(),
-       		'ALIAS_MAPPING_ID' 			=> $mappingId,
-        	'ALIAS_MAPPING_TITLE_TXT' 	=> $this->_pageTitle,
-        	'ALIAS_MAPPING_PAGE_ID' 	=> $arrMapping['target'],
-        	'ALIAS_MAPPING_DOMAIN' 		=> $arrMapping['domain'],
-        	'ALIAS_MAPPING_PAGE_URL'	=> $this->_getPageURL($arrMapping['target'])
-		));           
-    }
-
-    function _listMappings()
-    {
-   		global $_ARRAYLANG, $_CONFIG;
-   		
-    	$this->_objTpl->loadTemplateFile('module_alias_mapping_list.html');
-        $this->_pageTitle = $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS'];
-        $this->_objTpl->setVariable($_ARRAYLANG);
-
-        $arrMappings = $this->_getMappings($_CONFIG['corePagingLimit']);
-        if($arrMappings){
-        	$this->_objTpl->hideBlock('mapping_no_data');
-        } else {
-        	$this->_objTpl->hideBlock('mapping_data');
-        }
-        
-        foreach($arrMappings as $arrMapping){
-        	$this->_objTpl->setVariable(array(
-        		'ALIAS_MAPPING_ID' 			=> $arrMapping['id'], 
-        		'ALIAS_MAPPING_DOMAIN_URL' 	=> 'http://'.$arrMapping['domain'], 
-        		'ALIAS_MAPPING_DOMAIN' 		=> $arrMapping['domain'],
-        		'ALIAS_MAPPING_TITLE'  		=> $this->_getPageURL($arrMapping['target']),
-        	));
-        	$this->_objTpl->parse('mapping_list');    	
-        }    
-        $mappingCount = $this->_getMappingCount();
-        if ($mappingCount > count($arrMappings)) {
-        	$this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($mappingCount, !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&amp;cmd=alias&amp;act=maplist', $_ARRAYLANG['TXT_ALIAS_DOMAIN_MAPPINGS']));
-        }	
     }
 
     function _modifyAlias()
@@ -418,24 +288,13 @@ class AliasAdmin extends aliasLib
 
             if (!empty($arrAlias['url'])) {
                 if (!$this->_isUniqueAliasTarget($arrAlias['url'], $aliasId)) {
-                    $this->arrStatusMsg['error'][] = sprintf(
-                        $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'],
-                        htmlentities(
-                            ($arrAlias['type'] == 'local'
-                                ? $arrAlias['pageUrl'] : $arrAlias['url']),
-                            ENT_QUOTES, CONTREXX_CHARSET));
+                    $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'], htmlentities(($arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url']), ENT_QUOTES, CONTREXX_CHARSET));
                 } elseif (count($arrAlias['sources'])) {
                     $error = false;
 
                     foreach ($arrAlias['sources'] as $arrSource) {
                         $target = $arrAlias['type'] == 'local' ? $arrAlias['pageUrl'] : $arrAlias['url'];
-// TODO: _isUniqueAliasSource RETURNS FALSE -> IMPROVE THE CHECK SO THAT NO FALSE POSITIVE HAPPENDS
-//print "!\$this->_isUniqueAliasSource( ${arrSource['url']}, $target, $oldTarget, ".(empty($arrSource['id']) ? 0 : $arrSource['id']).")";
-                        if (   in_array($arrSource['url'], $arrSourceUrls)
-                            || !$this->_isUniqueAliasSource(
-                                    $arrSource['url'], $target, $oldTarget,
-                                    (empty($arrSource['id']) ? 0 : $arrSource['id']))
-                        ) {
+                        if (in_array($arrSource['url'], $arrSourceUrls) || !$this->_isUniqueAliasSource($arrSource['url'], $target, $oldTarget,(!empty($arrSource['id']) ? $arrSource['id'] : 0))) {
                             $error = true;
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_ALREADY_IN_USE'], htmlentities($arrSource['url'], ENT_QUOTES, CONTREXX_CHARSET));
                         } elseif (!$this->is_alias_valid($arrSource['url'])) {
@@ -487,11 +346,9 @@ class AliasAdmin extends aliasLib
             'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
         ));
 
-        $langPathPrefix = $_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($this->langId, 'lang') : '';
-
         $this->_objTpl->setGlobalVariable(array(
             'TXT_ALIAS_DELETE'                    => $_ARRAYLANG['TXT_ALIAS_DELETE'],
-            'ALIAS_DOMAIN_URL'                => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'/',
+            'ALIAS_DOMAIN_URL'                => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
             'TXT_ALIAS_STANDARD_RADIOBUTTON'    => $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON']
         ));
 
@@ -511,7 +368,7 @@ class AliasAdmin extends aliasLib
 
         foreach ($arrAlias['sources'] as $arrAliasSource) {
             $this->_objTpl->setVariable(array(
-                'ALIAS_DOMAIN_URL'        => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$langPathPrefix.'/',
+                'ALIAS_DOMAIN_URL'        => 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/',
                 'ALIAS_ALIAS_ID'        => !empty($arrAliasSource['id']) ? $arrAliasSource['id'] : '',
                 'ALIAS_ALIAS_NR'        => $nr++,
                 'ALIAS_IS_DEFAULT'      => $arrAliasSource['isdefault'] == 1 ? 'checked' : '',
@@ -594,24 +451,6 @@ class AliasAdmin extends aliasLib
         }
     }
 
-    function _deletemap()
-    {
-   		global $_ARRAYLANG;
-
-        $mappingId = !empty($_GET['id']) ? intval($_GET['id']) : 0;
-
-        if ($mappingId) {
-            if ($this->_deleteMapping($mappingId)) {
-                $this->arrStatusMsg['ok'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_SUCCESSFULLY_REMOVED'];
-            } else {
-                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_MAPPING_REMOVE_FAILED'];
-                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
-            }
-        }
-        $this->_writeHtAccessMappings();
-        $this->_listMappings();
-    }
-    
     function _delete()
     {
         global $_ARRAYLANG;

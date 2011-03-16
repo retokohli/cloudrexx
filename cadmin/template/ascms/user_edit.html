@@ -1,93 +1,93 @@
 <!-- START user_edit.html -->
 <script language="JavaScript" type="text/javascript">
-function AddToTheList(from,dest,add,remove)
+function AddToTheList(from,dest,add,remove) 
 {
     if ( from.selectedIndex < 0)
-  {
-    if (from.options[0] != null)
-      from.options[0].selected = true;
-    from.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<from.length; i++)
-    {
-      if (from.options[i].selected)
-      {
-          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-         }
-    }
-      for (var i=from.length-1; i>=0; i--)
-    {
-      if (from.options[i].selected)
-      {
-           from.options[i] = null;
-         }
-    }
-  }
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{	
+		for (var i=0; i<from.length; i++) 
+		{	    
+			if (from.options[i].selected) 
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);				
+   			}			
+		}
+	    for (var i=from.length-1; i>=0; i--) 
+		{	    
+			if (from.options[i].selected) 
+			{
+		       from.options[i] = null;				
+   			}			
+		}		
+	}
     disapleButtons(from,dest,add,remove);
 }
 
-function RemoveFromTheList(from,dest,add,remove)
+function RemoveFromTheList(from,dest,add,remove) 
 {
-  if ( dest.selectedIndex < 0)
-  {
-    if (dest.options[0] != null)
-      dest.options[0].selected = true;
-    dest.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<dest.options.length; i++)
-    {
-      if (dest.options[i].selected)
-      {
-          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-         }
-    }
-      for (var i=dest.options.length-1; i>=0; i--)
-    {
-      if (dest.options[i].selected)
-      {
-           dest.options[i] = null;
-         }
-    }
-  }
-  disapleButtons(from,dest,add,remove);
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{	
+		for (var i=0; i<dest.options.length; i++) 
+		{	    
+			if (dest.options[i].selected) 
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);				
+   			}			
+		}
+	    for (var i=dest.options.length-1; i>=0; i--) 
+		{	    
+			if (dest.options[i].selected) 
+			{
+		       dest.options[i] = null;				
+   			}			
+		}		
+	}	
+	disapleButtons(from,dest,add,remove);
 }
 
 
 function disapleButtons(from,dest,add,remove)
 {
-  if (from.options.length > 0 )
-  {
-    add.disabled = 0;
-  }
-  else
-    add.disabled = 1;
+	if (from.options.length > 0 )
+	{		
+		add.disabled = 0;		
+	}
+	else
+		add.disabled = 1;
 
-  if (dest.options.length > 0)
-    remove.disabled = 0;
-  else
-    remove.disabled = 1;
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
 }
 
 function SelectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
+	for(var i = 0;i < CONTROL.length;i++)
     {
-    CONTROL.options[i].selected = true;
-  }
+		CONTROL.options[i].selected = true;
+	}
 }
 
 function DeselectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
 }
 </script>
 <ul id="tabmenu">
@@ -100,109 +100,109 @@ function DeselectAllList(CONTROL)
 <input type="hidden" name="userId" value="{USERS_ID}" />
 <!-- start userEdit1 div -->
 <div id="userEdit1" class="userTab" style="display:block">
-  <table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user account informations">
-    <tr>
-      <th colspan="2">{TXT_USER_ACCOUNT}</th>
-    </tr>
-    <tr class="row1">
-      <td width="17%">{TXT_USER_NAME}</td>
-      <td width="83%"><input type="text" name="username" size="50" value="{USERS_USERNAME}" /></td>
-    </tr>
-    <tr class="row2">
-      <td width="17%">{TXT_PASSWORD}</td>
-      <td width="83%"><input type="text" name="password" size="50" value="{USERS_PASSWORD}" /><font color="red">*</font> {TXT_PASSWORD_MINIMAL_CHARACTERS}</td>
-    </tr>
-    <tr class="row1">
-      <td width="17%">{TXT_EMAIL}</td>
-      <td width="83%"><input type="text" name="email" size="50" value="{USERS_EMAIL}" /></td>
-    </tr>
-    <tr class="row2">
-      <td width="17%">{TXT_LANGUAGE}</td>
-      <td width="83%"><select name="adminlang">{USERS_LANGUAGE_MENU}</select></td>
-    </tr>
-    <tr class="row1">
-      <td valign="top" width="17%">{TXT_ADMIN_STATUS}</td>
-      <td width="83%"><input type="checkbox" name="is_admin" value="1" {USERS_ADMIN_STATUS} />{TXT_USER_ADMIN_RIGHTS}</td>
-    </tr>
-    <tr class="row2">
-      <td colspan="2">[<font color="red">&nbsp;*&nbsp;</font>]&nbsp;{TXT_PASSWORD_FIELD_EMPTY} {TXT_PASSWORD_MD5_ENCRYPTED}<br /></td>
-    </tr>
-  </table>
-  <br />
+	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user account informations">
+		<tr> 
+			<th colspan="2">{TXT_USER_ACCOUNT}</th>
+		</tr>
+		<tr class="row1"> 
+			<td width="17%">{TXT_USER_NAME}</td>
+			<td width="83%"><input type="text" name="username" size="50" value="{USERS_USERNAME}" /></td>
+		</tr>
+		<tr class="row2"> 
+			<td width="17%">{TXT_PASSWORD}</td>
+			<td width="83%"><input type="text" name="password" size="50" value="{USERS_PASSWORD}" /><font color="red">*</font> {TXT_PASSWORD_MINIMAL_CHARACTERS}</td>
+		</tr>
+		<tr class="row1">
+			<td width="17%">{TXT_EMAIL}</td>
+			<td width="83%"><input type="text" name="email" size="50" value="{USERS_EMAIL}" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="17%">{TXT_LANGUAGE}</td>
+			<td width="83%"><select name="adminlang">{USERS_LANGUAGE_MENU}</select></td>
+		</tr>
+		<tr class="row1">
+			<td valign="top" width="17%">{TXT_ADMIN_STATUS}</td>
+			<td width="83%"><input type="checkbox" name="is_admin" value="1" {USERS_ADMIN_STATUS} />{TXT_USER_ADMIN_RIGHTS}</td>
+		</tr>
+		<tr class="row2">
+			<td colspan="2">[<font color="red">&nbsp;*&nbsp;</font>]&nbsp;{TXT_PASSWORD_FIELD_EMPTY} {TXT_PASSWORD_MD5_ENCRYPTED}<br /></td>
+		</tr>
+	</table>
+	<br />
 </div>
 <!-- end userEdit1 div -->
 <!-- start userEdit2 div -->
 <div id="userEdit2" class="userTab" style="display:none">
-  <table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user group assignements">
-    <tr>
-      <th colspan="3">{TXT_USER_GROUP_S}</th>
-    </tr>
-    <tr class="row1">
-      <td>{TXT_GROUPS}<br />
-        <select name="fromuser[]" size="10" style="width:200px;" multiple="multiple">
-        {GROUPS_EDIT_FROMUSER}
-        </select><br />
-        <font size="1"><a href="javascript:SelectAllList(document.form.elements['fromuser[]']);" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-        <a href="javascript:DeselectAllList(document.form.elements['fromuser[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font>
-      </td>
-      <td valign="top">
-        <div align="center"><br />
-        <input type="button" value="&gt;&gt;" name="adduser" onClick="AddToTheList(document.form.elements['fromuser[]'],document.form.elements['destuser[]'],adduser,removeuser);" />
-        <br />
-        <input type="button" value="&lt;&lt;" name="removeuser" onClick="RemoveFromTheList(document.form.elements['fromuser[]'],document.form.elements['destuser[]'],adduser,removeuser);" />
-        </div>
-      </td>
-      <td width="100%">{TXT_GROUPS_DEST}<br />
-        <select name="destuser[]" size="10" style="width:200px;" multiple="multiple">
-        {GROUPS_EDIT_DESTUSER}
-        </select>
-        <br />
-        <font size="1"><a href="javascript:SelectAllList(document.form.elements['destuser[]']);" style="color:blue;">{TXT_SELECT_ALL}</a>
-        <br />
-        <a href="javascript:DeselectAllList(document.form.elements['destuser[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font>
-        <div align="left"> </div>
-      </td>
-    </tr>
-  </table>
-  <br />
+	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user group assignements">
+		<tr> 
+			<th colspan="3">{TXT_USER_GROUP_S}</th>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_GROUPS}<br />
+				<select name="fromuser[]" size="10" style="width:200px;" multiple="multiple">
+				{GROUPS_EDIT_FROMUSER}      
+				</select><br />
+				<font size="1"><a href="javascript:SelectAllList(document.form.elements['fromuser[]']);" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+				<a href="javascript:DeselectAllList(document.form.elements['fromuser[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font>
+			</td>
+			<td valign="top"> 
+				<div align="center"><br />
+				<input type="button" value="&gt;&gt;" name="adduser" onClick="AddToTheList(document.form.elements['fromuser[]'],document.form.elements['destuser[]'],adduser,removeuser);" />
+				<br />
+				<input type="button" value="&lt;&lt;" name="removeuser" onClick="RemoveFromTheList(document.form.elements['fromuser[]'],document.form.elements['destuser[]'],adduser,removeuser);" />
+				</div>
+			</td>
+			<td width="100%">{TXT_GROUPS_DEST}<br />
+				<select name="destuser[]" size="10" style="width:200px;" multiple="multiple">
+				{GROUPS_EDIT_DESTUSER}
+				</select>
+				<br />
+				<font size="1"><a href="javascript:SelectAllList(document.form.elements['destuser[]']);" style="color:blue;">{TXT_SELECT_ALL}</a> 
+				<br />
+				<a href="javascript:DeselectAllList(document.form.elements['destuser[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font> 
+				<div align="left"> </div>
+			</td>
+		</tr>
+	</table>
+	<br />
 </div>
 <!-- end userEdit2 div -->
 <!-- start userEdit3 div -->
 <div id="userEdit3" class="userTab" style="display:none">
-  <table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="profile">
-    <tr>
-      <th colspan="2">{TXT_USER_GROUP_S}</th>
-    </tr>
-    <tr class="row1">
-      <td width="17%">{TXT_FIRST_NAME}</td>
-      <td width="83%"><input type="text" name="firstname" size="50" maxlength="150" value="{USERS_FIRSTNAME}" /></td>
-    </tr>
-    <tr class="row2">
-      <td width="17%">{TXT_LAST_NAME}</td>
-      <td width="83%"><input type="text" name="lastname" size="50" maxlength="150" value="{USERS_LASTNAME}" /></td>
-    </tr>
-    <tr class="row1">
-      <td width="17%">{TXT_RESIDENCE}</td>
-      <td width="83%"><input type="text" name="residence" size="50" maxlength="255" value="{USERS_RESIDENCE}" /></td>
-    </tr>
-    <tr class="row2">
-      <td width="17%">{TXT_PROFESSION}</td>
-      <td width="83%"><input type="text" name="profession" size="50" maxlength="255" value="{USERS_PROFESSION}" /></td>
-    </tr>
-    <tr class="row1">
-      <td width="17%">{TXT_INTERESTS}</td>
-      <td width="83%"><input type="text" name="interests" size="50" maxlength="255" value="{USERS_INTERESTS}" /></td>
-    </tr>
-    <tr class="row2">
-      <td width="17%">{TXT_WEBPAGE}</td>
-      <td width="83%"><input type="text" name="webpage" size="50" maxlength="255" value="{USERS_WEBPAGE}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_COMPANY}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="company" size="50" maxlength="255" value="{USERS_COMPANY}" /></td>
-    </tr>
-  </table>
-  <br />
+	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="profile">
+		<tr> 
+			<th colspan="2">{TXT_USER_GROUP_S}</th>
+		</tr>
+		<tr class="row1">
+			<td width="17%">{TXT_FIRST_NAME}</td>
+			<td width="83%"><input type="text" name="firstname" size="50" maxlength="150" value="{USERS_FIRSTNAME}" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="17%">{TXT_LAST_NAME}</td>
+			<td width="83%"><input type="text" name="lastname" size="50" maxlength="150" value="{USERS_LASTNAME}" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="17%">{TXT_RESIDENCE}</td>
+			<td width="83%"><input type="text" name="residence" size="50" maxlength="255" value="{USERS_RESIDENCE}" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="17%">{TXT_PROFESSION}</td>
+			<td width="83%"><input type="text" name="profession" size="50" maxlength="255" value="{USERS_PROFESSION}" /></td>
+		</tr>
+		<tr class="row1">
+			<td width="17%">{TXT_INTERESTS}</td>
+			<td width="83%"><input type="text" name="interests" size="50" maxlength="255" value="{USERS_INTERESTS}" /></td>
+		</tr>
+		<tr class="row2">
+			<td width="17%">{TXT_WEBPAGE}</td>
+			<td width="83%"><input type="text" name="webpage" size="50" maxlength="255" value="{USERS_WEBPAGE}" /></td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_COMPANY}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="company" size="50" maxlength="255" value="{USERS_COMPANY}" /></td>
+		</tr>
+	</table>
+	<br />
 </div>
 <!-- end userEdit3 div -->
 <input type="submit" value="{TXT_ACCEPT_CHANGES}" name="submit" />

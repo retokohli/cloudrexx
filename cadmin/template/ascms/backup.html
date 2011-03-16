@@ -3,30 +3,30 @@
 // <![CDATA[
 function SelectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
+	for(var i = 0;i < CONTROL.length;i++)
 {
-    CONTROL.options[i].selected = true;
-  }
+		CONTROL.options[i].selected = true;
+	}
 }
 
 function DeselectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
 }
 
 function deleteBackup(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("?cmd=backup&act=delete&backupid="+id);
+		window.location.replace("?cmd=backup&{CSRF_PARAM}&act=delete&backupid="+id);
 }
 
 function restoreBackup(id)
 {
     if(confirm('{TXT_CONFIRM_RESTORE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-        window.location.replace("?cmd=backup&act=restore&backupid="+id);
+        window.location.replace("?cmd=backup&{CSRF_PARAM}&act=restore&backupid="+id);
 }
 // ]]>
 </script>
@@ -107,7 +107,7 @@ SelectAllList(document.formbackup.elements['tables[]']);
     <td width="10%"> {BACKUP_SIZE} </td>
     <td nowrap="nowrap" width="18%" style="text-align:right;">
       <!--<a href="javascript:restoreBackup({BACKUP_ID})"><img src="images/icons/fs_refresh.gif" border="0" title="{TXT_RESTORE}" alt="" width="18" height="18" /></a>-->
-        <a href="?cmd=backup&amp;act=download&amp;backupid={BACKUP_ID}"><img src="images/icons/save.png" border="0" title="{TXT_DOWNLOAD}" alt="{TXT_DOWNLOAD}" /></a>
+      	<a href="?cmd=backup&amp;act=download&amp;backupid={BACKUP_ID}"><img src="images/icons/save.png" border="0" title="{TXT_DOWNLOAD}" alt="{TXT_DOWNLOAD}" /></a>
         <a href="?cmd=backup&amp;act=view&amp;backupid={BACKUP_ID}"> <img src="images/icons/viewmag.png" border="0" title="{TXT_VIEW}" alt="{TXT_VIEW}" /></a>
         <a href="javascript:deleteBackup({BACKUP_ID})"><img src="images/icons/delete.gif" border="0" title="{TXT_DELETE}" alt="{TXT_DELETE}" /></a>
     </td>

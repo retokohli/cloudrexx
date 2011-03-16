@@ -2,110 +2,110 @@
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
 function setTableSelection(isSet) {
-  var listElement = document.frmDatabaseExport.elements['frmDatabaseExport_Tables[]'];
-
-  for(var intTableIndex = 0; intTableIndex < listElement.length; intTableIndex++) {
-    listElement.options[intTableIndex].selected = isSet;
-  }
+	var listElement = document.frmDatabaseExport.elements['frmDatabaseExport_Tables[]'];
+	
+	for(var intTableIndex = 0; intTableIndex < listElement.length; intTableIndex++) {
+		listElement.options[intTableIndex].selected = isSet;
+	}
 }
 
 function deleteBackup(backupId) {
     if(confirm('{TXT_EXISTING_BACKUP_DELETE}')) {
-        window.location.replace('?cmd=dbm&act=deleteBackup&id=' + backupId);
+        window.location.replace('?cmd=dbm&{CSRF_PARAM}&act=deleteBackup&id=' + backupId);
     }
 }
 // ]]>
 </script>
 <ul id="tabmenu">
-  <li><a id="setTab_Overview" class="active" href="javascript:{}" onclick="selectTab('Overview')" title="{TXT_EXISTING_BACKUPS_TITLE}">{TXT_EXISTING_BACKUPS_TITLE}</a></li>
-  <li><a id="setTab_Backup" href="javascript:{}" onclick="selectTab('Backup')" title="{TXT_EXPORT_TITLE}">{TXT_EXPORT_TITLE}</a></li>
-  <li><a id="setTab_Import" href="javascript:{}" onclick="selectTab('Import')" title="{TXT_IMPORT_TITLE}">{TXT_IMPORT_TITLE}</a></li>
+	<li><a id="setTab_Overview" class="active" href="javascript:{}" onclick="selectTab('Overview')" title="{TXT_EXISTING_BACKUPS_TITLE}">{TXT_EXISTING_BACKUPS_TITLE}</a></li>
+	<li><a id="setTab_Backup" href="javascript:{}" onclick="selectTab('Backup')" title="{TXT_EXPORT_TITLE}">{TXT_EXPORT_TITLE}</a></li>
+	<li><a id="setTab_Import" href="javascript:{}" onclick="selectTab('Import')" title="{TXT_IMPORT_TITLE}">{TXT_IMPORT_TITLE}</a></li>
 </ul>
 <div id="Overview" class="setTab" style="display: block;">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-    <tr>
-      <th colspan="8">{TXT_EXISTING_BACKUPS_TITLE}</th>
-    </tr>
-    <tr class="row3">
-      <td width="12%"><b>{TXT_EXISTING_BACKUP_DATE}</b></td>
-      <td width="27%"><b>{TXT_EXISTING_BACKUP_DESC}</b></td>
-      <td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_TYPE}</b></td>
-      <td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_VERSION}</b></td>
-      <td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_EDITION}</b></td>
-      <td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_TABLES}</b></td>
-      <td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_SIZE}</b></td>
-      <td width="10%">&nbsp;</td>
-    </tr>
-    <!-- BEGIN showBackups -->
-    <tr class="{BACKUP_CLASS}">
-      <td>{BACKUP_DATE}</td>
-      <td>{BACKUP_DESC}</td>
-      <td style="text-align: center;">{BACKUP_TYPE}</td>
-      <td style="text-align: center;">{BACKUP_VERSION}</td>
-      <td style="text-align: center;">{BACKUP_EDITION}</td>
-      <td style="text-align: center;">{BACKUP_TABLES}</td>
-      <td style="text-align: center;">{BACKUP_SIZE} kB</td>
-      <td style="text-align: right;" nowrap="nowrap">
-        <a href="?cmd=dbm&amp;act=details&amp;id={BACKUP_ID}" title="{TXT_DETAILS}"><img src="images/icons/viewmag.png" border="0" title="{TXT_DETAILS}" alt="{TXT_DETAILS}" /></a>
-        <a href="?cmd=dbm&amp;act=downloadBackup&amp;id={BACKUP_ID}" title="{TXT_BACKUP_DOWNLOAD}"><img src="images/icons/save.png" border="0" title="{TXT_BACKUP_DOWNLOAD}" alt="{TXT_BACKUP_DOWNLOAD}" /></a>
-        <a href="javascript: deleteBackup({BACKUP_ID});" title="{TXT_BACKUP_DELETE}"><img src="images/icons/delete.gif" border="0" title="{TXT_BACKUP_DELETE}" alt="{TXT_BACKUP_DELETE}" /></a>
-      </td>
-    </tr>
-    <!-- END showBackups -->
-  </table>
-  <br />
-  {TXT_EXISTING_BACKUP_COMMENTS}
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="8">{TXT_EXISTING_BACKUPS_TITLE}</th>
+		</tr>
+		<tr class="row3">
+			<td width="12%"><b>{TXT_EXISTING_BACKUP_DATE}</b></td>
+			<td width="27%"><b>{TXT_EXISTING_BACKUP_DESC}</b></td>
+			<td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_TYPE}</b></td>
+			<td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_VERSION}</b></td>
+			<td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_EDITION}</b></td>
+			<td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_TABLES}</b></td>
+			<td width="10%" style="text-align: center;"><b>{TXT_EXISTING_BACKUP_SIZE}</b></td>
+			<td width="10%">&nbsp;</td>
+		</tr>
+		<!-- BEGIN showBackups -->
+		<tr class="{BACKUP_CLASS}">
+			<td>{BACKUP_DATE}</td>
+			<td>{BACKUP_DESC}</td>
+			<td style="text-align: center;">{BACKUP_TYPE}</td>
+			<td style="text-align: center;">{BACKUP_VERSION}</td>
+			<td style="text-align: center;">{BACKUP_EDITION}</td>
+			<td style="text-align: center;">{BACKUP_TABLES}</td>
+			<td style="text-align: center;">{BACKUP_SIZE} kB</td>
+			<td style="text-align: right;" nowrap="nowrap">
+				<a href="?cmd=dbm&amp;act=details&amp;id={BACKUP_ID}" title="{TXT_DETAILS}"><img src="images/icons/viewmag.png" border="0" title="{TXT_DETAILS}" alt="{TXT_DETAILS}" /></a>
+				<a href="?cmd=dbm&amp;act=downloadBackup&amp;id={BACKUP_ID}" title="{TXT_BACKUP_DOWNLOAD}"><img src="images/icons/save.png" border="0" title="{TXT_BACKUP_DOWNLOAD}" alt="{TXT_BACKUP_DOWNLOAD}" /></a>
+				<a href="javascript: deleteBackup({BACKUP_ID});" title="{TXT_BACKUP_DELETE}"><img src="images/icons/delete.gif" border="0" title="{TXT_BACKUP_DELETE}" alt="{TXT_BACKUP_DELETE}" /></a>
+			</td>
+		</tr>
+		<!-- END showBackups -->
+	</table>
+	<br />
+	{TXT_EXISTING_BACKUP_COMMENTS}
 </div>
 <div id="Backup" class="setTab" style="display: none;">
-  <form name="frmDatabaseExport" method="post" action="?cmd=dbm&amp;act=createBackup">
-    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-      <tr>
-        <th colspan="2">{TXT_EXPORT_TITLE}</th>
-      </tr>
-      <tr class="row1">
-        <td width="10%"><b>{TXT_EXPORT_DESCRIPTION}</b></td>
-        <td width="90%"><input type="text" name="frmDatabaseExport_Desc" size="50" /></td>
-      </tr>
-      <tr class="row1">
-        <td valign="top"><b>{TXT_EXPORT_TYPE}</b></td>
-        <td>
-          <input type="radio" name="frmDatabaseExport_Type" value="sql" checked="checked" />SQL<br />
-          <input type="radio" name="frmDatabaseExport_Type" value="csv" />CSV
-        </td>
-      </tr>
-      <tr class="row1">
-        <td valign="top"><b>{TXT_EXPORT_TABLES}</b></td>
-        <td>
-          <select name="frmDatabaseExport_Tables[]" size="10" multiple="multiple">
-            <!-- BEGIN showTables -->
-            <option value="{TABLE_NAME}">{TABLE_NAME}</option>
-            <!-- END showTables -->
-          </select>
-          <br /><br />
-          <a href="javascript: setTableSelection(true);">{TXT_EXPORT_SELECT_ALL}</a>&nbsp;|&nbsp;<a href="javascript: setTableSelection(false);">{TXT_EXPORT_UNSELECT_ALL}</a>
-        </td>
-      </tr>
-    </table>
-    <br />
-    <input type="submit" name="frmDatabaseExport_Submit" value="{TXT_EXPORT_SUBMIT}" />
-  </form>
+	<form name="frmDatabaseExport" method="post" action="?cmd=dbm&amp;act=createBackup">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+			<tr>
+				<th colspan="2">{TXT_EXPORT_TITLE}</th>
+			</tr>
+			<tr class="row1">
+				<td width="10%"><b>{TXT_EXPORT_DESCRIPTION}</b></td>
+				<td width="90%"><input type="text" name="frmDatabaseExport_Desc" size="50" /></td>
+			</tr>
+			<tr class="row1">
+				<td valign="top"><b>{TXT_EXPORT_TYPE}</b></td>
+				<td>
+					<input type="radio" name="frmDatabaseExport_Type" value="sql" checked="checked" />SQL<br />
+					<input type="radio" name="frmDatabaseExport_Type" value="csv" />CSV
+				</td>
+			</tr>
+			<tr class="row1">
+				<td valign="top"><b>{TXT_EXPORT_TABLES}</b></td>
+				<td>
+					<select name="frmDatabaseExport_Tables[]" size="10" multiple="multiple">
+						<!-- BEGIN showTables -->
+						<option value="{TABLE_NAME}">{TABLE_NAME}</option>
+						<!-- END showTables -->
+					</select>
+					<br /><br />
+					<a href="javascript: setTableSelection(true);">{TXT_EXPORT_SELECT_ALL}</a>&nbsp;|&nbsp;<a href="javascript: setTableSelection(false);">{TXT_EXPORT_UNSELECT_ALL}</a>
+				</td>
+			</tr>
+		</table>
+		<br />
+		<input type="submit" name="frmDatabaseExport_Submit" value="{TXT_EXPORT_SUBMIT}" />
+	</form>
 </div>
 <div id="Import" class="setTab" style="display: none;">
-  <form name="frmDatabaseImport" method="post" action="?cmd=dbm&amp;act=uploadBackup" enctype="multipart/form-data">
-    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-      <tr>
-        <th colspan="2">{TXT_IMPORT_TITLE}</th>
-      </tr>
-      <tr class="row1">
-        <td colspan="2">{TXT_IMPORT_DESCRIPTION}</td>
-      </tr>
-      <tr class="row1">
-        <td width="10%"><b>{TXT_IMPORT_FILE}:</b></td>
-        <td width="90%"><br /><input type="file" name="frmDatabaseImport_File" size="40" value="" /><br /><br /></td>
-      </tr>
-    </table>
-    <br />
-    <input type="submit" name="frmDatabaseImport" value="{TXT_IMPORT_SUBMIT}" />
-  </form>
+	<form name="frmDatabaseImport" method="post" action="?cmd=dbm&amp;act=uploadBackup" enctype="multipart/form-data">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+			<tr>
+				<th colspan="2">{TXT_IMPORT_TITLE}</th>
+			</tr>
+			<tr class="row1">
+				<td colspan="2">{TXT_IMPORT_DESCRIPTION}</td>
+			</tr>
+			<tr class="row1">
+				<td width="10%"><b>{TXT_IMPORT_FILE}:</b></td>
+				<td width="90%"><br /><input type="file" name="frmDatabaseImport_File" size="40" value="" /><br /><br /></td>
+			</tr>
+		</table>
+		<br />
+		<input type="submit" name="frmDatabaseImport" value="{TXT_IMPORT_SUBMIT}" />
+	</form>
 </div>
 <!-- END dbm_import_export.html -->

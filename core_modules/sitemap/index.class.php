@@ -48,6 +48,7 @@ class sitemap
     {
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_objTpl->setTemplate($this->pageContent);
@@ -81,7 +82,7 @@ class sitemap
                          m.name AS section,
                          a_s.url AS alias_url
                     FROM ".DBPREFIX."content_navigation     AS n
-              INNER JOIN ".DBPREFIX."content                AS c        ON c.id = n.catid AND c.lang_id = n.lang
+              INNER JOIN ".DBPREFIX."content                AS c        ON c.id = n.catid
               INNER JOIN ".DBPREFIX."modules                AS m        ON m.id = n.module
          LEFT OUTER JOIN ".DBPREFIX."module_alias_target    AS a_t      ON a_t.url = n.catid
          LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s      ON a_s.target_id = a_t.id AND a_s.isdefault = 1

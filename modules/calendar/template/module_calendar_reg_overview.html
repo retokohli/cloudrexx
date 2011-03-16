@@ -3,97 +3,97 @@
 <!--
 function deleteReg(Id)
 {
-  if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-    window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+Id);
-  }
+	if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+		window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=regdelete&note_id={CALENDAR_NOTE_ID}&id="+Id);
+	}
 }
 
 
 function selectMultiAction()
 {
-  with (document.frmRegList) {
-    switch (frmRegList_MultiAction.value) {
-      case 'delete':
-        if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
-          action='?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}';
-          submit();
-        }
-        break;
+	with (document.frmRegList) {
+		switch (frmRegList_MultiAction.value) {
+			case 'delete':
+				if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}')) {
+					action='?cmd=calendar{CALENDAR_MANDATE}&act=regdelete&note_id={CALENDAR_NOTE_ID}';
+					submit();
+				}
+				break;
 
-      case 'signon':
-        action='?cmd=calendar{CALENDAR_MANDATE}&act=regsign&type=1&note_id={CALENDAR_NOTE_ID}';
-        submit();
-        break;
+			case 'signon':
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=regsign&type=1&note_id={CALENDAR_NOTE_ID}';
+				submit();
+				break;
 
-      case 'signoff':
-        action='?cmd=calendar{CALENDAR_MANDATE}&act=regsign&type=0&note_id={CALENDAR_NOTE_ID}';
-        submit();
-        break;
+			case 'signoff':
+				action='?cmd=calendar{CALENDAR_MANDATE}&act=regsign&type=0&note_id={CALENDAR_NOTE_ID}';
+				submit();
+				break;
 
-      default: //do nothing
-    }
-  }
+			default: //do nothing
+		}
+	}
 }
 // -->
 </script>
 
 <form name="frmRegList"  method="post">
 <table class="adminlist" style="width: 100%; border-spacing: 0px; margin: 0px;" cellpadding="3" cellspacing="0">
-  <tr>
-    <th colspan="7">
-      {TXT_CALENDAR_REGISTRATIONS}
-    </th>
-  </tr>
-  <tr class="row3">
-    <td style="width: 20px"><span style="font-weight:bold;">#</span></td>
-    <td style="width: 40px"><span style="font-weight:bold;">{TXT_CALENDAR_REG_TYPE}</span></td>
-    <td style="width: 170px"><span style="font-weight:bold;">{TXT_CALENDAR_DATE} {TXT_CALENDAR_TERMIN}</span></td>
-    <td style="width: 170px"><span style="font-weight:bold;">{TXT_CALENDAR_DATE} {TXT_CALENDAR_REGISTRATION}</span></td>
-    <td style="width: 270px"><span style="font-weight:bold;">{TXT_CALENDAR_NAME}</span></td>
-    <td><span style="font-weight:bold;">{TXT_CALENDAR_EMAIL}</span></td>
-    <td style="width: 16px; text-align: right;"><b>{TXT_CALENDAR_ACTION}</b></td>
-  </tr>
-  <!-- BEGIN registrations -->
-  <tr class="{CALENDAR_ROW}">
-    <td>
-      <input type="checkbox" name="selectedRegId[]" id="selectedRegId" value="{CALENDAR_REG_ID}" />
-    </td>
-    <td style="text-align: center;"><img src="images/icons/led_{CALENDAR_REG_TYPE_IMG}.gif" border="0" alt="{CALENDAR_REG_TYPE_TXT}" title="{CALENDAR_REG_TYPE_TXT}" /></td>
-    <td>{CALENDAR_REG_NOTE_DATE}</td>
-    <td>{CALENDAR_REG_DATE}</td>
-    <td>{CALENDAR_REG_NAME}</td>
-    <td><a href="mailto:{CALENDAR_REG_MAIL}">{CALENDAR_REG_MAIL}</a></td>
-    <td>
-      <a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=regdetail&amp;id={CALENDAR_REG_ID}" title="{TXT_CALENDAR_DETAILS}">
-        <img src="images/icons/details.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_DETAILS}" />
-      </a><a href="javascript:deleteReg({CALENDAR_REG_ID})" title="{TXT_CALENADR_DELETE}">
-        <img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CALENDAR_DELETE}" />
-      </a>
-    </td>
-  </tr>
-  <!-- END registrations -->
-  <!-- BEGIN noRegistrations -->
-  <tr class="row1">
-    <td colspan="8">{TXT_CALENDAR_NO_REGISTRATIONS}</td>
-  </tr>
-  <!-- END noRegistrations -->
+	<tr>
+		<th colspan="7">
+			{TXT_CALENDAR_REGISTRATIONS}
+		</th>
+	</tr>
+	<tr class="row3">
+		<td style="width: 20px"><span style="font-weight:bold;">#</span></td>
+		<td style="width: 40px"><span style="font-weight:bold;">{TXT_CALENDAR_REG_TYPE}</span></td>
+		<td style="width: 170px"><span style="font-weight:bold;">{TXT_CALENDAR_DATE} {TXT_CALENDAR_TERMIN}</span></td>
+		<td style="width: 170px"><span style="font-weight:bold;">{TXT_CALENDAR_DATE} {TXT_CALENDAR_REGISTRATION}</span></td>
+		<td style="width: 270px"><span style="font-weight:bold;">{TXT_CALENDAR_NAME}</span></td>
+		<td><span style="font-weight:bold;">{TXT_CALENDAR_EMAIL}</span></td>
+		<td style="width: 16px; text-align: right;"><b>{TXT_CALENDAR_ACTION}</b></td>
+	</tr>
+	<!-- BEGIN registrations -->
+	<tr class="{CALENDAR_ROW}">
+		<td>
+			<input type="checkbox" name="selectedRegId[]" id="selectedRegId" value="{CALENDAR_REG_ID}" />
+		</td>
+		<td style="text-align: center;"><img src="images/icons/led_{CALENDAR_REG_TYPE_IMG}.gif" border="0" alt="{CALENDAR_REG_TYPE_TXT}" title="{CALENDAR_REG_TYPE_TXT}" /></td>
+		<td>{CALENDAR_REG_NOTE_DATE}</td>
+		<td>{CALENDAR_REG_DATE}</td>
+		<td>{CALENDAR_REG_NAME}</td>
+		<td><a href="mailto:{CALENDAR_REG_MAIL}">{CALENDAR_REG_MAIL}</a></td>
+		<td>
+			<a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=regdetail&amp;id={CALENDAR_REG_ID}" title="{TXT_CALENDAR_DETAILS}">
+				<img src="images/icons/details.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_DETAILS}" />
+			</a><a href="javascript:deleteReg({CALENDAR_REG_ID})" title="{TXT_CALENADR_DELETE}">
+				<img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CALENDAR_DELETE}" />
+			</a>
+		</td>
+	</tr>
+	<!-- END registrations -->
+	<!-- BEGIN noRegistrations -->
+	<tr class="row1">
+		<td colspan="8">{TXT_CALENDAR_NO_REGISTRATIONS}</td>
+	</tr>
+	<!-- END noRegistrations -->
 </table>
 
 <table cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td style="border: 0px;">
-      <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-      <a href="#" onclick="changeCheckboxes('frmRegList','selectedRegId',true); return false;">{TXT_SELECT_ALL}</a> /
-      <a href="#" onclick="changeCheckboxes('frmRegList','selectedRegId',false); return false;">{TXT_DESELECT_ALL}</a>
-      <img src="images/icons/strike.gif" alt="space" />
+	<tr>
+		<td style="border: 0px;">
+			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+			<a href="#" onclick="changeCheckboxes('frmRegList','selectedRegId',true); return false;">{TXT_SELECT_ALL}</a> /
+			<a href="#" onclick="changeCheckboxes('frmRegList','selectedRegId',false); return false;">{TXT_DESELECT_ALL}</a>
+			<img src="images/icons/strike.gif" alt="space" />
             <select name="frmRegList_MultiAction" onchange="selectMultiAction();">
               <option value="">{TXT_SUBMIT_SELECT}</option>
               <option value="delete">{TXT_SUBMIT_DELETE}</option>
               <option value="signoff">{TXT_SUBMIT_SIGN_OFF}</option>
               <option value="signon">{TXT_SUBMIT_SIGN_ON}</option>
             </select>
-    </td>
-  </tr>
+		</td>
+	</tr>
 </table>
 </form>
 <!-- END calendar_reg_ovreview.html -->

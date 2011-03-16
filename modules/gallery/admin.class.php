@@ -57,6 +57,7 @@ class galleryManager extends GalleryLibrary
         global $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/gallery/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->intLangId=$objInit->userFrontendLangId;
@@ -463,6 +464,8 @@ class galleryManager extends GalleryLibrary
                 $objResult->MoveNext();
             }
             $intRowCounter = 0;
+// TODO: Unused
+//            $objFWUser = FWUser::getFWUserObject();
             foreach (array_keys($arrMaincats) as $intMainKey) {
                 $objResult = $objDatabase->Execute('SELECT     sorting,
                                                             status, backendProtected, backend_access_id
@@ -669,6 +672,8 @@ class galleryManager extends GalleryLibrary
     {
         global $_LANGID;
 
+// TODO: Unused
+//        $objFWuser = FWUser::getFWUserObject();
         $categories = $this->sql->getCategoriesArray($_LANGID, $parent_id);
 
         if ($disabled) {
@@ -1869,7 +1874,6 @@ class galleryManager extends GalleryLibrary
                 } else {
                     $strValue = get_magic_quotes_gpc() ? strip_tags($strValue) : addslashes(strip_tags($strValue));
                 }
-
                 $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_language_pics
                                         SET     name="'.$strValue.'"
                                         WHERE     picture_id='.$intPicId.' AND
@@ -2020,10 +2024,15 @@ class galleryManager extends GalleryLibrary
                 case 'show_file_name':
                     if ($objResult->fields['value'] == 'on') {
                         $checked = "checked='checked'";
+                        $display = "display: block";
                     } else {
                         $checked = "";
+                        $display = "display: none";
                     }
-                    $this->_objTpl->setVariable('SETTINGS_VALUE_SHOW_FILE_NAME', $checked);
+                    $this->_objTpl->setVariable(array(
+                        'SETTINGS_VALUE_SHOW_FILE_NAME' => $checked,
+                        'EXTENSION_SHOW_BLOCK'          => $display
+                    ));
                     break;
                 default: //integer value
                     $this->_objTpl->SetVariable('SETTINGS_VALUE_'.strtoupper($objResult->fields['name']),$objResult->fields['value']);
@@ -2412,6 +2421,8 @@ class galleryManager extends GalleryLibrary
                                                     ');
 
                 $strDetailsActive     = ($objResult->fields['status'] == '1') ? 'checked' : '';
+// TODO: Unused
+//                $intImageCatId         = $objResult->fields['catid'];
                 $arrImageInfos         = getimagesize($this->strImagePath.$objResult->fields['path']);
 
                 $this->_objTpl->setCurrentBlock('showThumbSize');
@@ -3495,9 +3506,13 @@ $strFileNew = '';
         @touch($strPathNew.$strFileNew);
 
         @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
+        $objSystem = new FWSystem();
+        if ($objSystem === false) {
+            return false;
+        }
 
         if (is_array($intSize)) {
-            $memoryLimit = FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
+            $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
             // a $memoryLimit of zero means that there is no limit. so let's try it and hope that the host system has enough memory
             if (!empty($memoryLimit)) {
                    $potentialRequiredMemory = $intSize[0] * $intSize[1] * ($intSize['bits']/8) * $intSize['channels'] * 1.8 * 2;
@@ -3511,7 +3526,7 @@ $strFileNew = '';
                 if ($potentialRequiredMemory > $memoryLimit) {
                     // try to set a higher memory_limit
                     @ini_set('memory_limit', $potentialRequiredMemory);
-                    $curr_limit = FWSystem::getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
+                    $curr_limit = $objSystem->_getBytes(@ini_get('memory_limit'));
                     if ($curr_limit < $potentialRequiredMemory) {
                         return false;
                     }

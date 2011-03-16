@@ -1,20 +1,22 @@
 /***************************************************/
 /* Fix the PNG transparency in IE6                 */
 /***************************************************/
-img,a { behavior: url(themes/contrexx_theme_2_1/iepngfix.htc) }
+img,a { behavior: url(themes/contrexx_theme_2_1_en/iepngfix.htc) }
 
 /***************************************************/
 /* CSS GLOBAL DEFINITIONS FOR FORMS IN MODULES     */
 /***************************************************/
 
-form {
+form p {
+    width: 450px;
     clear: left;
     margin: 0;
-    padding: 2px 0 3px 5px;
+    padding: 2px 0 3px 0;
+    padding-left: 190px;
     height: 1%;
 }
 
-form label.description {
+form p label.description {
     font-weight: normal;
     float: left;
     margin: 0px 0px 0px 10px;
@@ -22,22 +24,27 @@ form label.description {
     width: 300px;
 }
 
-form label.noCaption {
+form p label.noCaption {
     float: left;
+    width: 420px;
     margin-left: 2px;
     margin-top: 2px;
     font-weight: normal;
 }
 
-form img.captcha {
+form .contactFormGroup {
     float: left;
+    margin-top: -15px !important;
 }
 
-form label, form  span {
-    clear: left;
+form img.captcha {
+    padding-right: 200px;
+}
+
+form p label, form  p span {
     font-weight: bold;
     float: left;
-    margin-top: 5px;
+    margin-left: -190px;
     width: 180px;
 }
 
@@ -117,117 +124,6 @@ div.row2 {
 
 
 /***************************************************/
-/* CSS DEFINITIONS FOR MEDIADIR MODULE             */
-/***************************************************/
-
-#mediadir .mediadirSelector,
-#mediadir .mediadirGoogleMap{
-    clear: both;
-    padding-left: 155px;
-    margin-top: -15px;
-    margin-bottom: 15px;
-}
-
-#mediadir .map{
-    margin-top: 10px;
-    border: 1px solid #CFCFCF;
-    width: 489px; 
-    height: 250px; 
-}
-
-#mediadir table.list{
-    padding: 0px 20px 10px 20px;
-    width: 710px !important;
-    margin-bottom: 20px;
-    margin-left: -20px;
-	background-image:url(images/list_radius_bg.gif);
-	background-repeat:repeat-x;
-	background-position:bottom left;
-}
-
-#mediadir table.list h3{
-    padding: 0px 0px 0px 0px;
-    margin: 0px 0px 0px 0px;
-}
-
-#mediadir table.list tr td{
-    padding: 4px 0px 4px 0px;
-}
-
-#mediadir .mapLarge{
-    margin-top: 10px;
-    border: 0px solid #CFCFCF;
-    width: 698px; 
-    height: 600px; 
-}
-
-#mediadir input[type="button"].active {
-	font-weight:bold;
-	text-transform:uppercase;
-	color: #74CC00;
-}
-
-#mediadir input.mediadirInputfieldGoogleMapLarge {
-	width: 185px;
-}
-
-#mediadir input.mediadirInputfieldGoogleMapSmall {
-	width: 35px;
-}
-
-#mediadir input.mediadirVoteButton {
-       font-weight:normal;  
-       min-width:1px; 
-       width: 30px !important;
-}
-
-#mediadir p {
-    clear: left;
-    margin: 0;
-    padding: 2px 0 3px 0;
-    padding-left: 155px;
-    height: 1%;
-    width: 500px;
-}
-
-#mediadir p label {
-    font-weight: bold;
-    float: left;
-    margin-left: -155px;
-    width: 150px;
-}
-
-#mediadir .mediadirCommentForm p{
-    width: 330px;
-}
-
-#mediadir p span{
-    padding-bottom: 15px;
-    margin-left: 0px;
-    width: 300px;
-    font-weight: normal;
-}
-
-
-#mediadir .mediadirCommentOk,
-#mediadir .mediadirVotingOk{
-    border: 1px solid #9DCF5A;
-    background-color:#F8FFEF;
-    padding: 10px;
-    color: #9DCF5A;
-}
-
-#mediadir .mediadirCommentErr,
-#mediadir .mediadirVotingErr{
-    border: 1px solid #FF8F8F;
-    background-color:#FFEFEF;
-    padding: 10px;
-    color: #FF8F8F;
-}
-
-
-
-/***************************************************/
 /* CSS DEFINITIONS FOR VOTING MODULE               */
 /***************************************************/
 
@@ -268,42 +164,6 @@ div.row2 {
 /***************************************************/
 div#livecam #CALBUTTONDPC_datum {
     display: none;
-}
-
-/***************************************************/
-/* CSS DEFINITIONS FOR CONTACT MODULE              */
-/***************************************************/
-form#contactForm .noCaption{
-    clear: none;
-    width: 420px;
-    margin: 0px;
-}
-
-form#contactForm input{
-    float: left;
-    clear: right;
-}
-
-form#contactForm select, form#contactForm textarea{
-    float: left;
-}
-
-form#contactForm hr{
-    float: left;
-    width: 100%;
-}
-
-form#contactForm p{
-    float: left;
-    width: 100%;
-}
-
-form#contactForm .contactFormGroup {
-    float: left;
-}
-
-form#contactForm div.contactFormGroup input{
-    clear: left;
 }
 
 /***************************************************/
@@ -461,7 +321,6 @@ form#contactForm div.contactFormGroup input{
 	padding: 0px 0px 15px 0px;
 	height: auto !important;
 	text-align:left;
-        clear: both;
 }
 
 #calendar div.registration  {
@@ -504,7 +363,7 @@ form#contactForm div.contactFormGroup input{
 	margin: 0px 0px 5px 15px;
 }
 
-#calendar div.place,
+#calendar div.adress,
 #calendar div.organizer {
 	float: left;
 	width: 50%;
@@ -513,7 +372,7 @@ form#contactForm div.contactFormGroup input{
 	height: auto !important;
 }
 
-#calendar div.place address,
+#calendar div.adress address,
 #calendar div.organizer address {
 	font-style: normal;
 }
@@ -1431,35 +1290,6 @@ table.news_meta td {
     border: 0px;
 }
 
-#news div.comments {
-	padding: 7px 7px 7px 7px;
-	margin: 0px 0px 15px 0px;
-	background-color: #f9f9f9;
-	border: 1px dotted #E6E6E6;
-	clear:both;
-}
-
-#news div.errorMessage {
-	color:#FF0000;
-}
-
-#news div.comment_posted {
-	font-size: 0.9em;
-	color: #888888;
-	font-style: italic;
-}
-
-#news div.comment_avatar {
-	float:right;
-	padding: 0px 0px 5px 5px;
-	margin: 0px 0px 0px 0px;
-}
-
-#news div.comment_text {
-	padding: 10px 0px 0px 0px;
-	margin: 0px 0px 0px 0px;
-}
-
 
 /***************************************************/
 /* CSS DEFINITIONS FOR NEWSLETTER MODULE           */
@@ -2223,25 +2053,4 @@ dl.data_module img {
 #downloads #download_tabbar_closer {
     margin-top: 2.2em;
     border-top: 1px solid #f0f0f0;
-}
-
-
-/****************************************/
-/* CSS DEFINITIONS FOR MEDIA-MODULE     */
-/****************************************/
-#media_div div.message_ok,
-#media_div div.message_error {
-	width: 100%;
-	padding: 0px 0px 0px 0px;
-	margin: 0px 0px 15px 0px;
-	float:left;
-	height:auto !important;
-}
-
-#media_div div.message_error {
-	color: #ff0000;
-}
-
-#media_div div.message_ok {
-	color: #029202;
 }

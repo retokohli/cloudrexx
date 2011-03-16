@@ -1,46 +1,26 @@
-<style type="text/css">@import url(/lib/jscalendar/skins/aqua/theme.css);</style>
-<script type="text/javascript" src="/lib/jscalendar/calendar.js"></script>
-<script type="text/javascript" src="/lib/jscalendar/lang/calendar-de.js"></script>
-<script type="text/javascript" src="/lib/jscalendar/calendar-setup.js"></script>
-
 <!-- START content_editor.html -->
 <script type="text/javascript">
-/* <![CDATA[ */
+// <[![CDATA
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_CONTENT_TYPE_HELP}"];
 Text[1]=['','{CONTENT_ALIAS_HELPTEXT}'];
-Text[2]=['','{TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT}'];
-
-__CSRF__ = {key:"{CSRF_KEY}", code:"{CSRF_CODE}"};
-__CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
-
-newsElType = '';
-
-function goToUrlCSRF(url){
-    if(url.indexOf('?') == -1){
-        url = url+'?'+__CSRF__QSTR
-    }else{
-        url = url+'&'+__CSRF__QSTR;
-    }
-    location.href = url;
-}
 
 function setText() {
-  with( document.formContent )
-  {
-  var txtNewpage= newpage.value;
-  if(title.value == "")
-    title.value=txtNewpage;
-  if(metatitle.value == "")
-    metatitle.value=txtNewpage;
-  if(desc.value == "")
-    desc.value=txtNewpage;
-  if(key.value == "")
-    key.value=txtNewpage;
-  // if(alias.value == "")
-  //   alias.value=aliasText(txtNewpage);
-  //  updateAliasPreview(txtNewpage);
-  }
+	with( document.formContent )
+	{
+	var txtNewpage= newpage.value;
+	if(title.value == "")
+		title.value=txtNewpage;
+	if(metatitle.value == "")
+		metatitle.value=txtNewpage;
+	if(desc.value == "")
+		desc.value=txtNewpage;
+	if(key.value == "")
+		key.value=txtNewpage;
+	// if(alias.value == "")
+	// 	alias.value=aliasText(txtNewpage);
+	//	updateAliasPreview(txtNewpage);
+	}
 }
 
 
@@ -49,1758 +29,777 @@ function updateAliasPreview(text) {
 
     var target = document.getElementById('aliastarget');
 
-  target.innerHTML = aliasText(text);
+	target.innerHTML = aliasText(text);
     target.parentNode.style.textDecoration = linkstyle;
 
-  document.formContent.alias.value = aliasText(text);
+	document.formContent.alias.value = aliasText(text);
 }
 
 
 function preSubmitCheck(){
-  if (document.formContent.newpage.value == "") {
-    document.getElementById('errormessagetarget').innerHTML = '<div id="alertbox">{TXT_ERROR_NO_TITLE}</div><br />';
-    return false;
-  }
-  SelectAllList(document.formContent.elements['assignedGroups[]']);
-  SelectAllList(document.formContent.elements['assignedBackendGroups[]']);
-  //SelectAllList(document.formContent.elements['assignedBlocks[]']);
-  return true;
+	if (document.formContent.newpage.value == "") {
+		document.getElementById('errormessagetarget').innerHTML = '<div id="alertbox">{TXT_ERROR_NO_TITLE}</div><p/>';
+		return false;
+	}
+	SelectAllList(document.formContent.elements['assignedGroups[]']);
+	SelectAllList(document.formContent.elements['assignedBackendGroups[]']);
+	SelectAllList(document.formContent.elements['assignedBlocks[]']);
+	return true;
 }
 
 function aliasText(txt) {
-  return txt
-    .replace(/Ä/ig, 'ae')
-    .replace(/Ö/ig, 'oe')
-    .replace(/Ü/ig, 'ue')
-    .replace(/ä/ig, 'ae')
-    .replace(/ö/ig, 'oe')
-    .replace(/ü/ig, 'ue')
-    .replace(/à/ig,  'a')
-    .replace(/ç/ig,  'c')
-    .replace(/[èé]/ig, 'e')
-    .replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
-    .replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
-    // Sanitize most latin1 characters.
-    // there's more to come. maybe there's
-    // a generic function for this?
-    // Fallback for everything we didn't catch by now
-    .replace(/[^\sa-z_-]+/ig, '_')
-    .replace(/[_-]{2,}/g, '_')
-    .replace(/^[_\.\/\-]+/, '')
-    .toLowerCase()
-  ;
+	return txt
+		.replace(/Ä/ig, 'ae')
+		.replace(/Ö/ig, 'oe')
+		.replace(/Ü/ig, 'ue')
+		.replace(/ä/ig, 'ae')
+		.replace(/ö/ig, 'oe')
+		.replace(/ü/ig, 'ue')
+		.replace(/à/ig,  'a')
+		.replace(/ç/ig,  'c')
+		.replace(/[èé]/ig, 'e')
+		.replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
+		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
+		// Sanitize most latin1 characters.
+		// there's more to come. maybe there's
+		// a generic function for this?
+		// Fallback for everything we didn't catch by now
+		.replace(/[^\sa-z_-]+/ig, '_')
+		.replace(/[_-]{2,}/g, '_')
+		.replace(/^[_\.\/\-]+/, '')
+		.toLowerCase()
+	;
 }
 
 function setDateToday(txtValue) {
-  with(document.formContent)
-  {
-  if(txtValue.value=="")
-  {
-   txtValue.value=date.value;
-  }
-  }
+	with(document.formContent)
+	{
+	if(txtValue.value=="")
+	{
+	 txtValue.value=date.value;
+	}
+	}
 }
 
 function swapBlock( div,status ) {
-  if(status == 1){
-      document.getElementById( div ).style.display ='block';
-  }else{
-      document.getElementById( div ).style.display ='none';
-  }
+	if(status == 1){
+	    document.getElementById( div ).style.display ='block';
+	}else{
+	    document.getElementById( div ).style.display ='none';
+	}
 }
 
 function AddToTheList(from,dest,add,remove) {
     if ( from.selectedIndex < 0){
-    if (from.options[0] != null)
-      from.options[0].selected = true;
-    from.focus();
-    return false;
-  }else{
-    for (var i=0; i<from.length; i++) {
-      if (from.options[i].selected)
-      {
-          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-         }
-    }
-      for (var i=from.length-1; i>=0; i--) {
-      if (from.options[i].selected)
-      {
-           from.options[i] = null;
-         }
-    }
-  }
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}else{
+		for (var i=0; i<from.length; i++) {
+			if (from.options[i].selected)
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--) {
+			if (from.options[i].selected)
+			{
+		       from.options[i] = null;
+   			}
+		}
+	}
     disapleButtons(from,dest,add,remove);
 }
 
 function RemoveFromTheList(from,dest,add,remove) {
-  if ( dest.selectedIndex < 0){
-    if (dest.options[0] != null)
-      dest.options[0].selected = true;
-    dest.focus();
-    return false;
-  }
-  else{
-    for (var i=0; i<dest.options.length; i++)
-    {
-      if (dest.options[i].selected)
-      {
-          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-         }
-    }
-      for (var i=dest.options.length-1; i>=0; i--)
-    {
-      if (dest.options[i].selected)
-      {
-           dest.options[i] = null;
-         }
-    }
-  }
-  disapleButtons(from,dest,add,remove);
+	if ( dest.selectedIndex < 0){
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+		       dest.options[i] = null;
+   			}
+		}
+	}
+	disapleButtons(from,dest,add,remove);
 }
 
 function disapleButtons(from,dest,add,remove) {
-  if (from.options.length > 0 )
-  {
-    add.disabled = 0;
-  }
-  else
-    add.disabled = 1;
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
 
-  if (dest.options.length > 0)
-    remove.disabled = 0;
-  else
-    remove.disabled = 1;
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
 }
 
 function SelectAllList(CONTROL) {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = true;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = true;
+	}
 }
 
 function DeselectAllList(CONTROL) {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
 }
 
 function deletePage(intId) {
-  if (confirm('{TXT_DELETE_MESSAGE}')) {
-    goToUrlCSRF("{DIRECTORY_INDEX}?cmd=content&act=delete&pageId="+intId);
-  }
+	if (confirm('{TXT_DELETE_MESSAGE}')) {
+		window.location.href = "index.php?cmd=content&{CSRF_PARAM}&act=delete&pageId="+intId;
+	}
 }
 
 function showOrHide(strElement) {
-  if (document.getElementById(strElement).style.display == 'block'){
-    document.getElementById(strElement).style.display = 'none';
-  } else {
-    document.getElementById(strElement).style.display = 'block';
-  }
+	if (document.getElementById(strElement).style.display == 'block'){
+		document.getElementById(strElement).style.display = 'none';
+	} else {
+		document.getElementById(strElement).style.display = 'block';
+	}
 }
 
 function deleteHistory(intId) {
-  if (confirm('{TXT_DELETE_HISTORY_MSG}')) {
-    goToUrlCSRF("{DIRECTORY_INDEX}?cmd=workflow&act=deleteHistory&hId="+intId);
-  }
+	if (confirm('{TXT_DELETE_HISTORY_MSG}')) {
+		window.location.replace("index.php?cmd=workflow&{CSRF_PARAM}&act=deleteHistory&hId="+intId);
+	}
 }
 
 function activateHistory(intId) {
-  if (confirm('{TXT_ACTIVATE_HISTORY_MSG}')) {
-    goToUrlCSRF("{DIRECTORY_INDEX}?cmd=workflow&act=activateHistory&hId="+intId);
-  }
+	if (confirm('{TXT_ACTIVATE_HISTORY_MSG}')) {
+		window.location.replace("index.php?cmd=workflow&{CSRF_PARAM}&act=activateHistory&hId="+intId);
+	}
 }
 
 function historyMultiAction() {
-  with (document.formContent)
-  {
-    switch (formContent_HistoryMultiAction.value) {
-      case 'delete':
-        if (confirm('{TXT_DELETE_HISTORY_MSG_ALL}')) {
-          submit();
-        }
-      break;
-      default: //do nothing
+	with (document.formContent)
+	{
+		switch (formContent_HistoryMultiAction.value) {
+			case 'delete':
+				if (confirm('{TXT_DELETE_HISTORY_MSG_ALL}')) {
+					submit();
+				}
+			break;
+			default: //do nothing
 
-    }
-  }
+		}
+	}
 }
 
 function modusSelection(strAction) {
-  if (strAction == 'type_content'){
-    document.getElementById('type_content').style.display = 'block';
-    document.getElementById('type_redirect').style.display = 'none';
-    document.getElementById('type_useContentFromLang').style.display = 'none';
-    document.getElementById('page_type_content').style.display = '';
-  } else if(strAction == 'type_redirect') {
-    document.getElementById('type_content').style.display = 'none';
-    document.getElementById('type_redirect').style.display = 'block';
-    document.getElementById('type_useContentFromLang').style.display = 'none';
-    document.getElementById('page_type_content').style.display = 'none';
-  } else {
-    document.getElementById('type_content').style.display = 'none';
-    document.getElementById('type_redirect').style.display = 'none';
-    document.getElementById('type_useContentFromLang').style.display = 'block';
-    document.getElementById('page_type_content').style.display = 'none';
-  }
+	if (strAction == 'type_content'){
+		document.getElementById('type_content').style.display = 'block';
+		document.getElementById('type_redirect').style.display = 'none';
+	} else {
+		document.getElementById('type_content').style.display = 'none';
+		document.getElementById('type_redirect').style.display = 'block';
+	}
 }
 
 function SetUrl(url, width, height, alt) {
-  switch (newsElType) {
-  case 'image':
-  case 'webpages':
-    document.getElementById(newsElInsertBox).value = url;
-    break
-  case 'link':
-    insertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
-    break;
-  default:
-    CKEDITOR.tools.callFunction(1, url);
-    break;
-  }
-
-    newsElType = '';
+	switch (newsElType) {
+	case 'image':
+	case 'webpages':
+		document.getElementById(newsElInsertBox).value = url;
+		break
+	case 'link':
+		insertLink(document.getElementById(newsElInsertBox), '<a href="'+url+'">'+newsElLinkText+'</a>');
+		break;
+	}
 }
 
 function getFileBrowser(elInsertBox, sType)
 {
-  newsElInsertBox = elInsertBox;
-  newsElType = sType;
+	newsElInsertBox = elInsertBox;
+	newsElType = sType;
 
-  if (sType == 'webpages') {
-    openWindow('?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-  } else {
-    openWindow('?cmd=fileBrowser&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
-  }
+	if (sType == 'webpages') {
+		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	} else {
+		openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+	}
 }
 
 function insertLink(elInsertBox, sLink) {
-  elInsertBox.focus();
+	elInsertBox.focus();
 
-  /* für Internet Explorer */
-  if (typeof document.selection != 'undefined') {
-    /* Einfügen des Formatierungscodes */
-    var range = document.selection.createRange();
-    var insText = range.text;
-    range.text = sLink;
-  }
+	/* für Internet Explorer */
+	if (typeof document.selection != 'undefined') {
+		/* Einfügen des Formatierungscodes */
+		var range = document.selection.createRange();
+		var insText = range.text;
+		range.text = sLink;
+	}
 
-  /* für neuere auf Gecko basierende Browser */
-  else if (typeof elInsertBox.selectionStart != 'undefined') {
-    /* Einfügen des Formatierungscodes */
-    var start = elInsertBox.selectionStart;
-    var end = elInsertBox.selectionEnd;
+	/* für neuere auf Gecko basierende Browser */
+	else if (typeof elInsertBox.selectionStart != 'undefined') {
+		/* Einfügen des Formatierungscodes */
+		var start = elInsertBox.selectionStart;
+		var end = elInsertBox.selectionEnd;
 
-    elInsertBox.value = elInsertBox.value.substr(0, start) + sLink + elInsertBox.value.substr(end);
-  }
+		elInsertBox.value = elInsertBox.value.substr(0, start) + sLink + elInsertBox.value.substr(end);
+	}
 
-  /* für die übrigen Browser */
-  else {
-    /* Abfrage der Einfügeposition */
-    var pos;
-    var re = new RegExp('^[0-9]{0,3}$');
-    while(!re.test(pos)) {
-      pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
-    }
-    if (pos > elInsertBox.value.length) {
-      pos = elInsertBox.value.length;
-    }
-    /* Einfügen des Formatierungscodes */
-    elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
-  }
+	/* für die übrigen Browser */
+	else {
+		/* Abfrage der Einfügeposition */
+		var pos;
+		var re = new RegExp('^[0-9]{0,3}$');
+		while(!re.test(pos)) {
+			pos = prompt("Einfügen an Position (0.." + elInsertBox.value.length + "):", "0");
+		}
+		if (pos > elInsertBox.value.length) {
+			pos = elInsertBox.value.length;
+		}
+		/* Einfügen des Formatierungscodes */
+		elInsertBox.value = elInsertBox.value.substr(0, pos) + sType + elInsertBox.value.substr(pos);
+	}
 }
 
 function openWindow(theURL,winName,features){
-  galleryPopup = window.open(theURL,"gallery",features);
-  galleryPopup.focus();
+	galleryPopup = window.open(theURL,"gallery",features);
+	galleryPopup.focus();
 }
 
-
-//if new page, set global gotPageId variable, indicating if a pageId already exists
-//in case none exists, one has to be generated upon submitting the form
-if(location.href.match(/act=new/)){
-    window.gotPageId = false;
-} else {
-    window.gotPageId = true;
-}
-
-(function(){  //wrap in anonyomous function to avoid polluting the global namespace
-var availableLanguages = []; //available languages (long names)
-var $form; //the content form
-var getFrameContent = function(){
-        if(_CONTREXX_EXPERT_MODE){
-        return $J('textarea[name=html]:visible', $form).val();
-    }else{//if($J('iframe:hidden', $form).length == 1)
-        return CKEDITOR.instances.html.getData();
+//displays only templates beginning with home_ if home module is set for this page and vice versa.
+//the removed entries
+disabledOptions = [];
+//our logic, onchange handler
+function onModuleChanged(sender) {
+    //whether home-module was selected
+    var displayHome = $$('[name="selectmodule"] option')[sender.selectedIndex].innerHTML == "home";
+    //all content options
+    var options = $$('[name="custom_content"] option');
+    //the custom content dropdown
+    var ccDropdown = $$('[name="custom_content"]')[0];
+    //re-insert options disabled before
+    for(var i = 0; i < disabledOptions.length; i++) {
+        ccDropdown.insert(disabledOptions[i]);
     }
-}
-
-var previewContent = function(){
-    var content = getFrameContent();
-
-    if($J('input[name=TypeSelection]:checked', $form).val() == 'redirect'){
-        if($J('input[name=redirectUrl]', $form).val().match(/^\w{2,6}:\/\//)){ //if is absolute uri
-            previewWindow = window.open(+$J('input[name=redirectUrl]', $form).val());
-        }else{
-            previewWindow = window.open('../'+$J('input[name=redirectUrl]', $form).val());
-        }
-        return false;
-    }
-
-    var pageId  = $J('input[name=pageId]', $form).val();
-    var langId  = $J('#contentLanguages a.active', $form).attr('title').replace(/.*?(\d+)$/, '$1');
-    var useContentFromLang = 0;
-
-    if($J('input[name=TypeSelection]:checked', $form).val() == 'useContentFromLang'){
-        var useContentFromLang = $J('select[name=useContentFromLang] option:selected').text();
-        var content = $J('textarea[name=html]').data(useContentFromLang);
-    }
-
-    var cmd     = $J('input[name=command]', $form).val();
-    var section = $J('select[name=selectmodule] option:selected', $form).text();
-    var title   = $J('input[name=title]', $form).val();
-
-    var cssName = $J('input[name=cssName]', $form).val();
-    var themeId = $J('select[name=themesId] option:selected', $form).val();
-    previewWindow = null;
-
-    if(section == '{TXT_NO_MODULE}'){
-        section = '';
-    }
-    $J.ajax({
-        url: '{DIRECTORY_INDEX}?cmd=content&act=setPreviewContent',
-        type: 'POST',
-        async: false,
-        global: true,
-        cache: false,
-        data: {page: pageId, lang: langId, previewContent: content, previewTitle: title},
-        dataType: 'json',
-        success: function(data, textStatus){
-            previewWindow = window.open('../{DIRECTORY_INDEX}?frontPreview=1&page='+pageId+'&cmd='+cmd+'&section='+section+
-                                        '&langId='+langId+'&css='+cssName+'&preview='+themeId);
-            $J("#ajaxbusy,#ajaxwait").hide();
-        },
-        error: setDataFetchError
-    });
-    return false;
-}
-
-waitMillisecs = function(millis){
-    var date = new Date();
-    var curDate = null;
-    do { curDate = new Date(); }
-    while(curDate-date < millis);
-    return true;
-}
-
-var setTitle = function(){
-    if($J('#typeUseContentFromLang:checked').length == 1
- 		 && $J.trim($J('input[name=newpage]').val()) == ''){
-        var langName = $J('select[name=useContentFromLang] option:selected').text();
-        $J('input[name=newpage]').val($J('input[name=newpage]').data(langName));
-        setText();
-   }
-}
-
-var setFrameContent = function(html, lastActive){
-    $J('textarea[name=html]', $form).val(html);
-    if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html){
-        CKEDITOR.instances.html.setData(html, function(){
-            //called after setData has finished
-        });
-    }
-}
-
-window.editorLoadCallbacks = [];
-var addEditorLoadCallback = function(fn){
-    if(typeof fn == 'function'){
-        window.editorLoadCallbacks[window.editorLoadCallbacks.length] = fn;
-    }
-}
-
-var setEditor = function(){
-    var html  = getFrameContent();
-    if($J('input[name=expertmode]', $form).attr('checked')){
-        $J('#cke_html', $form).hide();
-        $J('textarea[name=html]', $form).show().css({visibility: 'visible'});
-    }else{
-        $J('textarea[name=html]', $form).hide();
-        $J('#cke_html', $form).show();
-    }
-    setFrameContent(html);
-}
-
-var submitFormHandler = function(event){
-    if(location.href.match(/act=new/) && !window.gotPageId){
-        $J.ajax({
-            url: '{DIRECTORY_INDEX}?'+$J.param({cmd:"content", act:"nextPageId", {CSRF_KEY}:"{CSRF_CODE}"}),
-            cache: false,
-            async: false,
-            success: function(data){
-                if(!data.pageId || data.pageId < 1){
-                   return false;
-                }
-                window.gotPageId = true;
-                $J('input[name=pageId]', $form).val(data.pageId);
-                submitForm(event);
-            },
-            error: submitError,
-            dataType: 'json'
-        });
-    } else {
-        submitForm(event);
-    }
-}
-
-var submitForm = function(event){
-    $J('#ajaxbusy,#ajaxwait').show();
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    $J('#contentLanguages li a').unbind('click');
-    var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
-    selectTab('content1');
-    _CONTREXX_FORCE_SWAP = true;
-    var $form   = $J('form[name=formContent]');
-    var pageId  = $J('input[name=pageId]', $form).val();
-    var $active = $J('#contentLanguages li a.active', $form);
-    var last = false;
-
-    var content = getFrameContent();
-    $J('textarea[name=html]').data($active.text(), content);
-    $J('textarea[name=html]').val(content);
-
-    $J('#contentLanguages li a').each(function(){
-        var langId   = $J(this).attr('title').replace(/.*?(\d+)$/, '$1');
-        var langName = $J(this).text();
-
-        switchTab(this, langName);
-
-        if($J('form[name=formContent] input[name=newpage]').val() == ''){
-            $J('form[name=formContent] input[name=newpage]').val('{TXT_CONTENT_NO_TITLE}')
-        }
-        $J('textarea[name=html]', $form).attr('disabled', 'disabled');
-
-        $J('select[name="assignedGroups[]"]', $form).children().attr('selected', 'selected');
-        $J('select[name="assignedBackendGroups[]"]', $form).children().attr('selected', 'selected');
-        //$J('select[name="assignedBlocks[]"]', $form).children().attr('selected', 'selected');
-        var contentData = $J('textarea[name=html]').data(langName);
-        var postData = $form.serialize();
-
-        if($J(this).closest('li').is(':last-child')){
-            postData += '&'+$J.param({lastUpdate: 1});
-            if(_CONTREXX_SITEMAP_ENABLED){
-                $J('#ajaxstatus').text('{TXT_PLEASE_WAIT_SITEMAP}');
-            }
-        }
-
-        postData += '&'+$J.param({  html:   contentData,
-                                    langId: $J(this).attr('title').replace(/.*?(\d+)$/, '$1'),
-                                    langName: $J(this).attr('title').replace(/(.*?)_\d+$/, '$1')});
-        $J('textarea[name=html]', $form).removeAttr('disabled');
-
-        $J.ajax({
-            async:       false,
-            cache:       false,
-            complete:    submitComplete,
-            data:        postData,
-            processData: false,
-            dataType:    'json',
-            success:     function(data, textStatus){
-                            submitSuccess(data, textStatus);
-                            if(typeof data != 'undefined' && data.lastUpdate){
-                                last = true;
-                            }
-                         },
-            error:       submitError,
-            type:        'POST',
-            url:         '{DIRECTORY_INDEX}?cmd=content&act={CONTENT_FORM_ACTION}'
-        });
-
-        $J.ajax({
-           url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=history',
-           type: 'POST',
-           async: true,
-           cache: false,
-           data: {page: pageId , lang: langId},
-           dataType: 'html',
-           success:
-               function(data){
-                    $J('#content5').data(langName, data);
-                    $J('#content5').html(data);
-                    if(last){ //only hide if it was the last update request
-                        $J("#ajaxbusy,#ajaxwait").hide();
-                        $J('#ajaxstatus').text('');
-                    }else{
-                        $J("#ajaxbusy,#ajaxwait").show();
-                    }
-               },
-           error: setDataFetchError
-        });
-    });
-    _CONTREXX_FORCE_SWAP = false;
-    if(location.href.match(/act=new/) || $J.browser.msie || $J('input[name=expertmode]', $form).attr('checked') != _CONTREXX_EXPERT_MODE){
-        goToUrlCSRF('{DIRECTORY_INDEX}?cmd=content&act=edit&pageId='+pageId);
-        return false;
-    }
-    switchTab($active.get(0), $active.text());
-    selectTab(activeContentTab);
-    $J("#ajaxbusy,#ajaxwait").show();
-    return false;
-}
-
-var submitError = function(xhr, textStatus, errorThrown){
-     if($J('.alertbox').length==1){
-        var $box = $J('.alertbox');
-        var attrs = '';
-     }else{
-        var $box = $J('#errormessagetarget');
-        var attrs = 'style="position: relative; width: '+($J('th', $J('form[name=formContent]')).eq(0).width()-10)+'px;" \
-                     class="alertbox"';
-     }
-     $J('#errormessagetarget').append('<div class="alertbox">XHR['+textStatus+']: '+errorThrown+'</div>').find(':last-child')
-                              .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
-}
-
-var submitComplete = function(xhr, textStatus){
-    _CONTREXX_REQUEST_ACTIVE = false;
-}
-
-var submitSuccess = function(data, textStatus){
-    var pageId = data.pageId;
-    var lang   = data.langName;
-    if(data.error){ //we've had an invalid value for useContentFromLang or alias. show error
-        if($J('.alertbox').length > 0){
-            var $box = $J('.alertbox');
-            var attrs = '';
-        }else{
-            var $box = $J('#errormessagetarget');
-            var attrs = 'style="position: relative; width: '+($J('th', $J('form[name=formContent]')).eq(0).width()-10)+'px;" \
-                         class="alertbox"';
-        }
-        $box.append('<div '+attrs+'>'+data.error+'</div>').find(':last-child')
-            .stop(true, true).css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
-        $J('#type_useContentFromLang tr.row2').addClass('rowWarn'); //indicate wrong value
-        $J('#type_useContentFromLang tr.row2').data(lang, 'warn'); //save for tab switches
-    }
-    if(pageId < 0){ //page wasn't inserted, DB error? show error
-        $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_INSERT_PAGE}</div>').find(':last-child')
-                                 .stop(true, true).css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
-    } else { //content page was updated, show confirmation
-        if($J('.okbox').length > 0){
-            var $box = $J('.okbox');
-            var attrs = '';
-        }else{
-            var $box = $J('#errormessagetarget');
-            var attrs = 'style="position: relative; width: '+($J('th', $J('form[name=formContent]')).eq(0).width()-10)+'px;" \
-                         class="okbox"';
-        }
-        $box.append('<div '+attrs+'>{TXT_SUCCESS_PAGE_SAVED} '+lang+'</div>').find(':last-child')
-            .stop(true, true).css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
-        $J('#type_useContentFromLang tr.row2').removeClass('rowWarn');
-        $J('#type_useContentFromLang tr.row2').data(lang, '');
-    }
-}
-
-var makeTabActive = function(aElement){
-    var $a = $J(aElement);
-    $J('#contentLanguages li a').removeClass('active').addClass('inactive');
-    $a.removeClass('inactive').addClass('active');
-    var timeOut = setTimeout(function(){
-        $J('#contentLanguages li a').one('click', function(){
-            switchTab(this);
-        })
-    }, 800);
-}
-
-var filterInputs = function(){
-    return $J(this).attr('id') != 'selectedChangelogId';
-}
-
-var switchTab = function(aElement, langName){
-    $J('#contentLanguages li a').unbind('click');
-    $J('#ajaxbusy,#ajaxwait').show();
-        var $inputs = $J('input[type=checkbox],input[type=radio]', $form).filter(filterInputs);
-    $inputs.attr('disabled', 'disabled');
-    swapLanguage(aElement, langName);
-    makeTabActive(aElement);
-    $J('form[name=formContent] input').removeAttr('disabled');
-    if(!_CONTREXX_FORCE_SWAP){
-        $J('#ajaxbusy,#ajaxwait').hide();
-    }
-}
-
-var getTabData = function(a){
-    var langName = $J(a).text();
-    if(typeof $J('select[name=category]', $form).data(langName) != 'undefined' || $J(a).attr('title') == _CONTREXX_FIRST_ACTIVE_TAB){        //return if we have already have the data for this language
-        return false;
-    }
-    getNavMenu(a);
-    if(location.href.match(/pageId=\d+/)){//fill contents from DB if we are editing or copying
-        getContentData(a);
-    }
-}
-
-var swapLanguage = function(aElement, langName){
-    var $a = $J(aElement);
-    if($a.is('.active') && !_CONTREXX_FORCE_SWAP){
-        return false;
-    }
-
-    //reset undo history
-    if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances.html && CKEDITOR.instances.html.resetUndo){
-        CKEDITOR.instances.html.resetUndo()
-    }
-
-    var lastActive = $J('#contentLanguages li a.active').text();
-    var $iFrame    = $form.find('iframe');
-    var $textarea  = $form.find('textarea[name=html]');
-
-    if(typeof langName == 'undefined'){
-        var content = (typeof CKEDITOR.instances.html == 'undefined')
-            ? $textarea.val()
-            : getFrameContent();
-
-        $textarea.data(lastActive, content);    //save frame contents for current lang
-
-        typeof $textarea.data($a.text()) == 'undefined'   //load frame contents for new lang
-          ?  setFrameContent('', lastActive)
-          :  setFrameContent($textarea.data($a.text()), lastActive);
-    }
-    getTabData(aElement); //get nav menu dropdown and content data
-
-    if(location.href.match(/act=edit/)){
-        $J('#content5').data(lastActive, $J('#content5').html());
-        $J('#content5').html($J('#content5').data($a.text()));
-    }
-
-    $J('form[name=formContent] th:first-child').each(
-        function(){
-            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$a.text()+')')
-        }
-    )
-
-    $J('form[name=formContent] input').removeAttr('disabled');
-
-    $J('#aliastarget').data(lastActive, $J('#aliastarget').text());
-    typeof $J('#aliastarget').data($a.text()) == 'undefined'
-      ? $J('#aliastarget').text('')
-      : $J('#aliastarget').text($J('#aliastarget').data($a.text()))
-
-    $form.find('input[type=text]').each(function(){ //swap input text contents
-        var that = this;
-        var inputName = $J.trim($J(this).attr('name'));
-        switch(inputName){
-            case 'command':
-                //contact module may have different commands
-                var moduleName = $J.trim($J('[name=selectmodule] option:selected').text());
-                if(moduleName == 'contact'){
-            		$J(this).data(lastActive, $J(this).val());
-            	} else {
-                    $J(availableLanguages).each(function(index, name){
-                    	$J(that).data(name, $J(that).val());
-                    });
-            	}
-      	    break;
-      	    default:
-    	        $J(this).data(lastActive, $J(this).val());
-        }
-        typeof $J(this).data($a.text()) == 'undefined'
-            ? $J(this).val('')
-            : $J(this).val($J(this).data($a.text()));
-    });
-
-    $form.find('input[type=radio]:checked').each(function(){ //swap input radio buttons
-        var $radio = $J($form.find('input[name='+$J(this).attr('name')+']:first'));
-        //wtf, if the following line is uncommented then switching the TypeSelection radio buttons doesn't work in FF when in expertmode
-        console.log($form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']'));
-        $radio.data(lastActive, $J(this).val());
-        typeof $radio.data($a.text()) == 'undefined'
-            ? $radio.click()
-            : $form.find('[name='+$J(this).attr('name')+'][value='+$radio.data($a.text())+']').click();
-    });
-
-    var $unchecked = $form.find('input[type=checkbox]:not(:checked)');
-    $form.find('input[type=checkbox]:checked').each(function(){ //swap input checkboxes which are checked
-        if($J(this).attr('name') == 'expertmode'){
-            return;
-        }
-        $J(this).data(lastActive, $J(this).attr('checked'));
-        if(typeof $J(this).data($a.text()) == 'undefined'){
-            $J(this).attr('checked', 'checked');
-        }else{
-            if( !(($J(this).data($a.text()) && $J(this).data(lastActive)) || (!$J(this).data($a.text()) && !$J(this).data(lastActive))) ){
-                $J(this).click();
-            }
-        }
-    });
-
-    $unchecked.each(function(){ //swap input checkboxes which are not checked
-        if($J(this).attr('name') == 'expertmode'){
-            return;
-        }
-        $J(this).data(lastActive, $J(this).attr('checked'));
-        if(typeof $J(this).data($a.text()) == 'undefined'){
-            $J(this).attr('checked', false);
-        }else{
-            if( !( ($J(this).data($a.text()) && $J(this).data(lastActive)) || (!$J(this).data($a.text()) && !$J(this).data(lastActive)) ) ){
-                $J(this).click();
-            }
-        }
-    });
-
-    if($J('#type_useContentFromLang tr.row2').data(langName) == 'warn'){
-        $J('#type_useContentFromLang tr.row2').addClass('warn');
-    } else {
-        $J('#type_useContentFromLang tr.row2').removeClass('warn');
-    }
-
-    $J('input', $form).attr('disabled', 'disabled');
-
-    $form.find('select').each(function(){
-        switch($J(this).attr('name')){
-            case 'selectmodule': //module is always the same for all languages
-            case 'formContent_HistoryMultiAction': //do not touch multiaction select
-                return;
-        }
-        var $options = $J(this).find('option');
-        var value    = $J(this).find('option:selected').val();
-        $J(this).data(lastActive, {options: $options, value: value});
-        if(typeof $J(this).data($a.text()) == 'undefined'){//set default options and value if not yet
-            $J(this)
-            .data($a.text(), {
-                                options : $J(this).data('default').options,
-                                value   : $J(this).data('default').value
-                             }
-            );
-        }
-        $J(this).empty();
-        $J(this).append($J(this).data($a.text()).options);
-        $J(this).val($J(this).data($a.text()).value);
-    });
-
-    setTitle();
-
-    if($J.browser.msie && $J.browser.version.match(/^\d/)[0] == 6 ){ //redraw tabs because of buggy IE shit ("display: none;" bugs)
-        var activeContentTab = $J('#tabmenu a.active').attr('id').replace('editorTab_', '');
-        var inactiveContentTab = $J('#tabmenu a:not(.active)').attr('id').replace('editorTab_', '');
-        selectTab(inactiveContentTab);
-        selectTab(activeContentTab);
-    }
-}
-
-var switchLangTab = function(inputLangElement){
-    var $tab = $J(inputLangElement);
-    if($J("tr#availableLanguages :checked").length == 0){ //if only one language is enabled don't uncheck
-        return $tab.attr('checked', 'checked');
-    }
-    var done        = false;
-    var tabName     = $tab.parent().find('label').text().replace(/\s\(\w\w\)/, '');
-    var $tabActive  = $J("#contentLanguages li a.active");
-
-    if($tab.attr('checked')){
-        var id      = $tab.attr('id').replace(/.*?(\d+)$/, "$1");
-        var insNode = '<li><a title="'+tabName+'_'+id+'">'+tabName+'</a></li>';
-        var index   = $J('#availableLanguages input').index(inputLangElement);
-        var len     = $J('#availableLanguages input').length;
-
-        if(index == 0){ //if it's the first language always insert it before the first child
-            $J('#contentLanguages li:first-child').before(insNode);
-        } else if(index == len-1){ //if it's the last language always insert after the last child
-            $J('#contentLanguages li:last').after(insNode);
-        } else {
-            //otherwise get all checked after the clicked input and insert it at the correct position
-            var numberOfCheckedBefore = $J('#availableLanguages input:gt('+index+'):checked').length
-            var $insertAt = $J($J('#contentLanguages li').get().reverse()).eq(numberOfCheckedBefore);
-            if($insertAt.length == 0){
-                $J('#contentLanguages li:first').before(insNode);
-            }else{
-                $insertAt.after(insNode);
-            }
-        }
-        $J('#contentLanguages li a:contains('+tabName+')').one('click', function(){
-            switchTab(this);
-        });
-        $tab.trigger('setData', [tabName]);
-        $tabActive.click(); //back to newly added tab
-    } else {
-        $tab = $J('#contentLanguages li:contains('+tabName+')');
-        if($tab.find('a').is('.active')){
-            if($tab.next().find('a').length > 0){
-                $tab.next().find('a').click();
-            }else{
-                $tab.prev().find('a').click();
-            }
-        }
-        $tab.remove();
-    }
-}
-
-var getContentData = function(a){
-    var pageId = $J('form[name=formContent] input[name=pageId]').val();
-    var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
-    var langName = $J(a).text();
-
-    if(location.href.match(/act=new/) && (m = location.href.match(/pageId=(\d+)/))){
-        pageId = m[1]; //set lang id to copy from if we're copying
-    }
-
-    $J.ajax({
-       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputText',
-       type: 'POST',
-       async: true,
-       cache: false,
-       data: {page: pageId , lang: langId, langName: langName},
-       dataType: 'json',
-       success: setInputText,
-       error: setDataFetchError
-    });
-
-    $J.ajax({
-       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputRadio',
-       type: 'POST',
-       async: true,
-       cache: false,
-       data: {page: pageId , lang: langId, langName: langName},
-       dataType: 'json',
-       success: setInputRadio,
-       error: setDataFetchError
-    });
-
-    $J.ajax({
-       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=inputCheckbox',
-       type: 'POST',
-       async: true,
-       cache: false,
-       data: {page: pageId , lang: langId, langName: langName},
-       dataType: 'json',
-       success: setInputCheckbox,
-       error: setDataFetchError
-    });
-
-    $J.ajax({
-       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=select',
-       type: 'POST',
-       async: true,
-       cache: false,
-       data: {page: pageId , lang: langId, langName: langName},
-       dataType: 'json',
-       success: setSelect,
-       error: setDataFetchError
-    });
-
-
-    $J.ajax({
-       url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=history',
-       type: 'POST',
-       async: true,
-       cache: false,
-       data: {page: pageId , lang: langId},
-       dataType: 'html',
-       success: function(data, textStatus){$J('#content5').data(langName, data)},
-       error: setDataFetchError
-    });
-}
-
-var setSelect = function(data, textStatus){
-    var name;
-    var langName = data.langName;
-    var $container = $J('form[name=formContent]');
-    for(name in data){
-        if(name == 'langName'){ continue; }
-        $container.find('select[name='+name+']')
-        .data(langName, {
-                            options : data[name].options,
-                            value   : data[name].value
-                        }
-        );
-    }
-}
-
-var setInputCheckbox = function(data, textStatus){
-    var name;
-    var langName = data.langName;
-    var $container = $J('form[name=formContent]');
-    for(name in data){
-        $container.find('input[name='+name+']').data(langName, data[name]);
-    }
-}
-
-
-var setInputRadio = function(data, textStatus){
-    var name;
-    var langName = data.langName;
-    var $container = $J('form[name=formContent]');
-    for(name in data){
-        $container.find('input[name='+name+']:first').data(langName, data[name]);
-    }
-}
-
-var setInputText = function(data, textStatus){
-    var name;
-    var langName = data.langName;
-    for(name in data){
-        if(name == 'content'){
-            $J('textarea[name=html]', $form).data(langName, data[name]);
+    disabledOptions = [];
+    for(var i = 0; i < options.length; i++) {
+        if(options[i].value == "") //standard entry, leave it
             continue;
+        var isHomeEntry = options[i].innerHTML.substr(0,4) == "home";
+        if((!displayHome && isHomeEntry) || (displayHome && !isHomeEntry)) { 
+            disabledOptions.push(options[i].remove());
         }
-        if(name == 'alias'){
-        	data[name] = aliasText(data[name]);
-            //$J('#aliastarget', $form).data(langName, aliasText(data[name]);
-        }
-        if(name == 'newpage'){
-            var strCopy = '';
-            if(location.href.match(/act=new/) && location.href.match(/pageId=\d+/)){
-                strCopy = ' ({TXT_SITEMAP_COPY})';
-            }
-            $J('input[name=newpage]', $form).data(langName, data[name] + strCopy);
-            continue;
-        }
-        $J('input[name='+name+']', $form).data(langName, data[name]);
     }
 }
 
-var getNavMenu = function(a){
-    var langName = $J(a).text();
-    var pageId = $J('form[name=formContent] input[name=pageId]').val();
-    var langId = $J(a).attr('title').replace(/.*?(\d+)$/, '$1');
-    $J.ajax({
-        url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=navMenu',
-        type: 'POST',
-        async: false,
-        cache: false,
-        data: {page: pageId , lang: langId, langName: langName},
-        dataType: 'json',
-        success: setNavMenu,
-        error: setDataFetchError
-    });
-    return true;
-}
+//loads the custom content templates for the selected thene
+function onThemeChanged(sender) {
+    var selectedThemeId = $$('[name="themesId"] option')[sender.selectedIndex].value;
+    new Ajax.Request('index.php?cmd=content&act=ajaxGetCustomContentTemplates&theme='+selectedThemeId, {
+        onSuccess: function(response) {
+            disabledOptions = []; //remove disabled options from last set of options
+            var ccDropdown = $$('[name="custom_content"]')[0]; //custom content dropdown
 
+            //remove the old options (except standard)
+            var oldOptions = ccDropdown.childElements();
+            for(var i = 0; i < oldOptions.length; i++) {
+                if(oldOptions[i].value != "") //leave standard element
+                    oldOptions[i].remove();
+            }
 
-var setNavMenu = function(data, textStatus){
-    var langName = data.langName;
-    var $container = $J('form[name=formContent]');
-    $container.find('select[name=category]')
-    .data(langName, {
-                        options : data['options'],
-                        value   : data['value']
-                    }
-
-    );
-}
-
-var setDataFetchError = function(xhr, textStatus, errorThrown){
-    $J('#errormessagetarget').append('<div id="alertbox">{TXT_ERROR_COULD_NOT_GET_DATA}</div>').find(':last-child')
-                             .css({opacity: 0.9}).delay(2000).fadeOut(1000, function(){$J(this).remove()});
-//    $J('#ajaxbusy,#ajaxwait').hide();
-}
-
-
-var saveFormElementData = function(event, lang){
-    //var $container = $J('form[name=formContent]');
-    //skeleton for custom event handler, might be useful later
-}
-
-
-var resetRowClasses = function(){
-    var i=0;
-    $J('#content1 > table.adminlist tr').each(function(){
-        $J(this).removeClass('row1 row2');
-        if($J(this).is('.hidden')){
-            return;
+            //insert the new options
+            var options = response.responseText.evalJSON();
+            for(var i = 0; i < options.length; i++) {
+                var option = new Element('option', {'value':options[i]}).update(options[i]);
+                ccDropdown.appendChild(option);
+            }
+            //make sure only the applicable options are displayed
+            onModuleChanged($$('[name="selectmodule"]')[0]);
         }
-        $J(this).addClass('row' + (i++ % 2 == 0 ? 1 : 2));
     });
 }
 
-
-//(function(){$J('#contentLanguages li a.inactive').eq(0).click();setTimeout(arguments.callee,100)})();
-$J(function($){ //this way we can use $ normally, but no prototype stuff can be used inside this fn
-    $("#ajaxbusy").css({opacity: 0.75}).show();
-    $('#ajaxwait').show();
-    $form = $('form[name=formContent]');
-    $('#contentLanguages li a').each(function(){
-        availableLanguages.push($J(this).text())
-    });
-    window._CONTREXX_EXPERT_MODE = $('input[name=expertmode]', $form).attr('checked');
-    window._CONTREXX_CONTENT_READY = [];
-    window._CONTREXX_FORCE_SWAP = false;
-    window._CONTREXX_SITEMAP_ENABLED = false;
-    window._CONTREXX_FIRST_ACTIVE_TAB = $('#contentLanguages li a.active').attr('title');
-
-    //add global ajax evenet handlers
-    $("#ajaxbusy")
-    .bind("ajaxStart", function(){
-        window._CONTREXX_REQUEST_ACTIVE = true;
-        $(this)
-         .css({opacity: 0.75})
-         .show();
-        $('#ajaxwait')
-         .show();
-    })
-    .bind("ajaxStop", function(){
-        window._CONTREXX_REQUEST_ACTIVE = false;
-    });
-
-    $('select[name=category]').change(function(){
-        var sel = this;
-        $J('#contentLanguages a.inactive').each(function(){
-            if($J(sel).data($J(this).text())){
-	            var options = $J(sel).data($J(this).text()).options;
-            } else {
-            	var options = $J(sel).data('default').options;
-            }
-            $J(sel).data($J(this).text(), {options: options, value: $J('option:selected', sel).val()});
-        });
-    });
-
-     //set default options
-    $('select', $form).each(function(){
-        var defaultOptions  = $(this).html();
-        var defaultValue    = $(this).find('option:selected').val();
-        $(this).data('default', {options: defaultOptions, value: defaultValue});
-    });
-
-    if(_CONTREXX_EXPERT_MODE){
-        var $textarea = $('textarea[name=html]:last', $form);
-        CKEDITOR_BASEPATH = '/editor/ckeditor/';
-        $('<sc'+'ript></sc'+'ript>')
-            .attr('src', '../editor/ckeditor/ckeditor.js')
-            .attr('type', 'text/javascript')
-            .appendTo('head');
-        addEditorLoadCallback(function(){
-            CKEDITOR.replace('html', {
-                customConfig: CKEDITOR.getUrl('config.contrexx.js.php'),
-                width: '100%',
-                height: 450,
-                toolbar: 'Default'
-            });
-            CKEDITOR.on('instanceReady', function(event){
-                $('#cke_html').hide()
-                    .after('<textarea style="height:450px;width:100%;" name="html">'
-                             +CKEDITOR.instances.html.getData()+'</textarea>');
-            });
-        });
-/*    }else{
-        (function(){
-            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances && CKEDITOR.instances.html){
-                html = CKEDITOR.instances.html.getData();
-                var $editor  = $('#cke_html');
-                $editor.after('<textarea style="height:450px;width:100%;" name="html">'+html+'</textarea>');
-                $('textarea[name=html]', $form).hide();
-            }else{
-                setTimeout(arguments.callee, 100);
-            }
-        })()*/
-    }
-
-    $('form[name=formContent] th:first-child').each(
-        function(){
-            $(this).text($(this).text().replace(/\s\(.*?\)$/, '')+' ('+$('#contentLanguages li a.active').text()+')')
-        }
-    )
-
-    if(location.href.match(/pageId=\d+/)){ //if we're editing or copying get tab data for all tabs except first one, which is already loaded
-        $('#contentLanguages li a.inactive').each(function(){
-            getTabData(this);
-        });
-    } else { //new page, only get the select dropdowns because thats the only thing that differs between the languages
-        var pageId = $J('form[name=formContent] input[name=pageId]').val();
-        $('#contentLanguages li a.inactive').each(function(){
-            var langId = $J(this).attr('title').replace(/.*?(\d+)$/, '$1');
-            var langName = $J(this).text();
-            $J.ajax({
-               url: '{DIRECTORY_INDEX}?cmd=content&act=JSON&data=select',
-               type: 'POST',
-               async: true,
-               cache: false,
-               data: {page: pageId , lang: langId, langName: langName},
-               dataType: 'json',
-               success: setSelect,
-               error: setDataFetchError
-            });
-            getNavMenu(this);
-        });
-    }
-
-//    $('[name=expertmode]', $form).click(function(){
-//        setEditor();
-//        _CONTREXX_EXPERT_MODE = !_CONTREXX_EXPERT_MODE;
-//    });
-
-    $('[name=preview]', $form).click(previewContent);
-    $form.submit(submitFormHandler);
-
-    //add click eventhandler to all new tab links
-    $('#contentLanguages li a').one('click', function(){
-        switchTab(this);
-    });
-
-    //set language checkbox handlers
-    $('#availableLanguages input').each(function(){
-        var lang = $(this).next().text().replace(/\s\(.*?\)$/, '');
-        $(this).bind('setData', lang, function(event){ //add custom event handler, not used yet
-            saveFormElementData(event, lang);
-        });
-        $(this).bind('click', function(){
-            switchLangTab(this);
-        });
-    });
-
-    if(_CONTREXX_EXPERT_MODE || (typeof CKEDITOR != 'undefined')){
-        $('#ajaxbusy,#ajaxwait').hide(); //hide if editor has already loaded or we are in expertmode
-    }
-
-   var numTry = 0;
-    (function(){ //poll if editor is loaded
-        var isLostAndFound = "{CONTENT_IS_LOST_AND_FOUND}";
-        if(isLostAndFound == 'true'){
-            $J('#ajaxbusy,#ajaxwait').hide();
-            return false;
-        }
-        if(typeof CKEDITOR == 'undefined' || CKEDITOR.status != 'basic_loaded' || typeof CKEDITOR.instances.html == 'undefined'){
-            if(numTry++ > 50){ //give up after 50 tries, something seems to be REALLY slow.
-                $J('#ajaxbusy,#ajaxwait').hide();
-                return false;
-            }
-            var x = setTimeout(arguments.callee, 200);
-            return false;
-        }else{
-            if(CKEDITOR.instances.html || $J('form[name=formContent] input[name=TypeSelection]:checked').val() == 'redirect'){
-                $J('#ajaxbusy,#ajaxwait').hide();
-            }
-            for(var f = 0; f < editorLoadCallbacks.length; f++){
-                editorLoadCallbacks[f]();
-            }
-            setEditor();
-        }
-    })();//end poll
-
-    //update navigation dropdown if title is changed
-    /*$J('input[name=newpage]').keyup(function(){
-        var pageId = $J('[name=pageId]', $J('form[name=formContent]')).val();
-        $J('select[name=category] option[value='+pageId+']').text($J(this).val())
-    });*/
-
-    //handler to copy content from another language into the editor
-    $J('#copyLangContentBtn').click(function(){
-        var content = $J('textarea[name=html]').data($J('#copyLangContentSel option:selected').val())
-        setFrameContent(content);
-    });
-
-    $J('#toggleMetaData').toggle(function(){
-        $J(this).removeClass('nodeCollapsed');
-        $J(this).addClass('nodeExpanded');
-        $J('.meta').removeClass('hidden');
-        resetRowClasses();
-    },
-    function(){
-        $J(this).removeClass('nodeExpanded');
-        $J(this).addClass('nodeCollapsed');
-        $J('.meta').addClass('hidden');
-        resetRowClasses();
-    });
-
-    $J('#typeUseContentFromLang,select[name=useContentFromLang]').click(setTitle);
-
-}); //end document ready (~onload)
-})();//execute anonymous function
-
-
-if(typeof console === 'undefined'){
-    console = {};
-    console.log = function(s){window.status=s;}
-}
-
-/* ]]> */
+//remove options as necessary on page load
+document.observe('dom:loaded', function() { onModuleChanged($$('[name="selectmodule"]')[0]); });
+// ]]>
 </script>
-
-<div id="ajaxbusy"></div>
-<div id="ajaxwait"><img src="../core_modules/frontendEditing/images/loading.gif" title="{TXT_CONTENT_PLEASE_WAIT}" alt="{TXT_CONTENT_PLEASE_WAIT}" /><p>{TXT_CONTENT_PLEASE_WAIT}<br /><span id="ajaxstatus"> </span> </p></div>
-
-<span class="red" id="errormessagetarget" style="position:fixed; top: 10px;">{CONTENT_STATUS}</span>
-<br />
-<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" style="display:none;">
-  <tr>
-    <th colspan="{LANGUAGE_COUNT}">{TXT_LANGUAGES}</th>
-  </tr>
-  <tr class="row1" id="availableLanguages">
-    <!-- BEGIN languages_activate -->
-    <td style="white-space: nowrap; min-width: 100px;" valign="top">{LANGUAGE_CHECKBOX}</td>
-    <!-- END languages_activate -->
-        <td width="70%">&nbsp;</td>
-  </tr>
-</table>
-
-<form name="formContent" method="post" action="{DIRECTORY_INDEX}?cmd=content&amp;act={CONTENT_FORM_ACTION}">
-<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-  <tr>
-    <th colspan="2">{TXT_NAVIGATION}</th>
-  </tr>
-  <tr class="row1" id="navigationRow">
-    <td width="15%">{TXT_CONTENT_PARENT_PAGE}</td>
-    <td width="85%">
-        <select name="category" style="margin-right:5px;"
-          onfocus="this.lastSelectedOption=this.selectedIndex"
-          onchange="if (this.options[this.selectedIndex].disabled) {this.selectedIndex = this.lastSelectedOption;}">
-          <option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_SITEMAP_ROOTSITE}</option>
-                {CONTENT_CAT_MENU}
-        </select>
-    </td>
-  </tr>
-</table>
-<br />
-
-<input type="hidden" name="pageId" value="{CONTENT_CATID}" />
-<input type="hidden" name="date" value="{CONTENT_DATE}" />
-<input type="hidden" name="pagetitle" value="{CONTENT_TOP_TITLE}" />
-
-<ul id="contentLanguages" class="tabmenu">
-<!-- BEGIN languages_tab -->
-    <li><a class="{TAB_CLASS}" title="{LANGUAGE_TITLE}">{LANGUAGE_NAME}</a></li>
-<!-- END languages_tab -->
-</ul>
-<div class="tabContainer">
-    <br />
-  <ul id="tabmenu">
-    <li><a id="editorTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_BASIC_DATA}">{TXT_BASIC_DATA}</a></li>
-    <li><a id="editorTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_MORE_OPTIONS}">{TXT_MORE_OPTIONS}</a></li>
-    <li><a id="editorTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_FRONTEND_PERMISSION}">{TXT_FRONTEND_PERMISSION}</a></li>
-    <li><a id="editorTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_RELATEDNESS}">{TXT_RELATEDNESS}</a></li>
-    <!--<li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>-->
-    <!-- BEGIN changelog1 -->
-    <li><a id="editorTab_content5" href="javascript:{}" onclick="selectTab('content5')" title="{TXT_CHANGELOG}">{TXT_CHANGELOG}</a></li>
-    <!-- END changelog1 -->
-  </ul>
-</div>
-  <div id="content1" class="editorTab" style="display:block">
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-      <thead style="vertical-align:top; white-space:nowrap;">
-          <tr>
-          <th colspan="2">{TXT_PAGE_NAME}</th>
-        </tr>
-      </thead>
-      <tbody style="vertical-align:top; white-space:nowrap;">
-        <tr class="row2">
-          <td width="15%">{TXT_MENU_NAME}</td>
-          <td width="85%">
-            <div style="display:inline; float:left;">
-              <input type="text" name="newpage" size="40" onchange="setText()" maxlength="100" value="{CONTENT_MENU_NAME}" style="margin-right:5px;" />
-              <label for="activestatuscb">{TXT_ACTIVE}</label>
-              <input id="activestatuscb" type="checkbox" name="activestatus" value="on" {CONTENT_ACTIVESTATUS} />
-              <label for="displaystatuscb">{TXT_VISIBLE}</label>
-              <input type="checkbox" id="displaystatuscb" name="displaystatus" value="on" {CONTENT_DISPLAYSTATUS} />
-            </div>
-            <!-- BEGIN deleteButton -->
-              <div style="display:inline; float:right;">
-                <a href="javascript:void(0);" onclick="deletePage({CONTENT_CATID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_DELETE}" /></a>
-              </div>
-            <!-- END deleteButton -->
-          </td>
-        </tr>
-        <tr class="row1">
-          <td><a href="#" id="toggleMetaData" class="nodeCollapsed">&nbsp;&nbsp;&nbsp;&nbsp;</a><span style="margin-left: 3px;">{TXT_CONTENT_TITLE}<span></td>
-          <td><input type="text" name="title" value="{CONTENT_TITLE_VAL}" maxlength="250" size="80" /></td>
-        </tr>
-        <tr class="row2 hidden meta">
-          <td>{TXT_META_TITLE}</td>
-          <td><input type="text" name="metatitle" value="{CONTENT_META_TITLE}" maxlength="250" size="80" /></td>
-        </tr>
-        <tr class="row1 hidden meta">
-          <td>{TXT_META_DESCRIPTION}</td>
-          <td><input type="text" name="desc" value="{CONTENT_DESC}" maxlength="250" size="80" /></td>
-        </tr>
-        <tr class="row2 hidden meta">
-          <td>{TXT_META_KEYWORD}</td>
-          <td><input type="text" name="key" value="{CONTENT_KEY}" size="80" /></td>
-        </tr>
-        <tr class="row2" {CONTENT_ALIAS_DISABLE}>
-          <td>{TXT_DEFAULT_ALIAS}</td>
-          <td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
-        </tr>
-        <tr class="row2 hidden" {CONTENT_ALIAS_DISABLE}>
-          <td>&nbsp;</td>
-          <td>{TXT_BASE_URL}<span style="font-weight: bold;" id="aliastarget">{CONTENT_ALIAS}</span></td>
-        </tr>
-        <tr class="row1">
-          <td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
-          <td>
-            <input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
-            <input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
-            <!-- BEGIN multilang_1 -->
-            <input type="radio" id="typeUseContentFromLang" name="TypeSelection" value="useContentFromLang" onclick="modusSelection('type_useContentFromLang');" {CONTENT_TYPE_CHECKED_USE_CONTENT_FROM_LANG}><label for="typeUseContentFromLang">{TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG}</label>
-            <!-- END multilang_1 -->
-          </td>
-        </tr>
-        <!-- BEGIN multilang_2 -->
-        <tr class="row2" id="page_type_content">
-            <td nowrap="nowrap">{TXT_USE_CONTENT_FROM_LANGUAGE}</td>
-            <td>
-                <span>
-                    <select id="copyLangContentSel" name="copyLangContent">
-                        <!-- BEGIN copyLangContent -->
-                        <option>{LANG_NAME}</option>
-                        <!-- END copyLangContent -->
-                    </select>
-                    <input type="button" value="{TXT_COPY_TO_EDITOR}" id="copyLangContentBtn"> </input>
-                 </span>
-
-            </td>
-        </tr>
-        <!-- END multilang_2 -->
-      </tbody>
-    </table>
-    <br />
-    <div id="type_content" {CONTENT_TYPE_STYLE_CONTENT}>
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-      <thead style="vertical-align:top;">
-        <tr>
-            <th>
-                {TXT_CONTENT}
-            </th>
-
-            <th style="text-align: right;">
-                {TXT_SOURCE_MODE} <input type="checkbox" name="expertmode" value="y" {CONTENT_SHOW_EXPERTMODE} />
-            </th>
-          </thead>
-         <tbody>
-        </tr>
-        <tr class="row2">
-          <td colspan="2">{CONTENT_HTML}</td>
-        </tr>
-        <tr class="row1">
-          <td colspan="2" height="26">&nbsp;</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <div id="type_redirect" {CONTENT_TYPE_STYLE_REDIRECT}>
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-      <thead style="vertical-align:top;">
-        <tr>
-          <th colspan="2">{TXT_CONTENT_TYPE_REDIRECT}</th>
-        </tr>
-      </thead>
-           <tbody>
-        <tr class="row2">
-          <td width="15%">{TXT_REDIRECT}</td>
-          <td width="85%">
-            <input type="text" id="typeRedirectValue" name="redirectUrl" value="{TXT_NO_REDIRECT}" maxlength="255" size="80" />&nbsp;
-            <input type="button" value="{TXT_BROWSE}" onClick="getFileBrowser('typeRedirectValue', 'webpages')" />&nbsp;
-            <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-        </tr>
-         </tbody>
-    </table>
-    </div>
-    <div id="type_useContentFromLang" {CONTENT_TYPE_STYLE_USE_CONTENT_FROM_LANG}>
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
-      <thead style="vertical-align:top;">
-        <tr>
-          <th colspan="2">{TXT_CONTENT_TYPE_USE_CONTENT_FROM_LANG}</th>
-        </tr>
-      </thead>
-           <tbody>
-        <tr class="row2">
-          <td width="15%">{TXT_LANGUAGE}</td>
-          <td width="85%">
-            <select name="useContentFromLang">
-                <!-- BEGIN contentFromLang -->
-                <option value="{LANG_ID}" {LANG_SELECTED}>{LANG_NAME}</option>
-                <!-- END contentFromLang -->
-            </select>
-            <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[2],Style[0])" /></td>
-        </tr>
-         </tbody>
-    </table>
-    </div>
-  </div>
-  <div id="content2" class="editorTab" style="display:none">
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-      <thead>
-        <tr>
-          <th colspan="2">{TXT_GENERAL_OPTIONS}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row2">
-          <td width="15%">{TXT_START_DATE}</td>
-          <td width="85%"><input type="text" name="startdate" size="10" maxlength="10" onfocus="Calendar.setup({inputField:this,ifFormat:'%Y-%m-%d',range:[1900,2100]})" value="{CONTENT_STARTDATE}" /></td>
-        </tr>
-        <tr class="row1">
-          <td>{TXT_END_DATE}</td>
-          <td><input type="text" name="enddate" size="10" maxlength="10" onfocus="Calendar.setup({inputField:this,ifFormat:'%Y-%m-%d',range:[1900,2100]})" value="{CONTENT_ENDDATE}" /></td>
-        </tr>
-      </tbody>
-    </table>
-    <br />
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-      <thead style="white-space:nowrap;">
-        <tr>
-          <th colspan="2">{TXT_THEMES}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row2">
-          <td width="15%">{TXT_THEMES}</td>
-          <td width="85%">
-            <select name="themesId" style="margin-right:5px;">
-              {CONTENT_THEMES_MENU}
-            </select>
-            {TXT_RECURSIVE_CHANGE}
-            <input type="checkbox" name="themesRecursive" value="1" />
-          </td>
-        </tr>
-        <tr class="row1">
-          <td>{TXT_OPTIONAL_CSS_NAME}</td>
-          <td><input name="cssName" type="text" id="cssName" value="{CONTENT_CSS_NAME}" size="40" maxlength="50" /></td>
-        </tr>
-      </tbody>
-    </table>
-    <br />
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-      <thead style="white-space:nowrap;">
-          <tr>
-            <th colspan="2">{TXT_NAVIGATION}</th>
-          </tr>
-      </thead>
-      <tbody>
-          <tr class="row2">
-              <td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
-              <td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" />
-                &nbsp; {TXT_RECURSIVE_CHANGE}
-                <input type="checkbox" name="cssNameNavRecursive" value="1" />
-              </td>
-            </tr>
-            <tr class="row1">
-              <td>{TXT_TARGET}</td>
-              <td>
-              <select name="redirectTarget" style="margin-right:5px;">
-                  <option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
-                  <option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
-                  <option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
-                  <option value="_self">{TXT_TARGET_SELF} (_self)</option>
-                  <option value="_top">{TXT_TARGET_TOP} (_top)</option>
-              </select>
-           </td>
-           </tr>
-       </tbody>
-    </table>
-    <br />
-    <table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
-      <thead style="white-space:nowrap;">
-      <tr>
-        <th colspan="2">{TXT_EXPERT_MODE}</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr class="row2">
-        <td width="15%">{TXT_MODULE} (cmd | section)</td>
-        <td width="85%">
-          <input type="text" name="command" value="{CONTENT_SHOW_CMD}" maxlength="100" size="40" />
-          <select name="selectmodule">
-            <option value="" {CONTENT_NO_MODULE_SELECTED}>{TXT_NO_MODULE}</option>
-            {CONTENT_MODULE_MENU}
-          </select>
-        </td>
-      </tr>
-      <tr class="row1">
-        <td>{TXT_CACHING_STATUS}</td>
-        <td><input type="checkbox" name="cachingstatus" value="1" {CONTENT_CACHING_STATUS} /></td>
-      </tr>
-      <tr class="row2">
-          <td>{TXT_META_ROBOTS}</td>
-          <td><input type="checkbox" name="robots" value="index" {CONTENT_ROBOTS} /></td>
-      </tr>
-     </tbody>
-    </table>
-  </div>
-  <!-- start content3 div -->
-  <div id="content3" class="editorTab" style="display:none">
-    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
-      <thead style="white-space:nowrap;">
-        <tr>
-          <th>{TXT_FRONTEND_PERMISSION}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row2">
-          <td>
-            <input value="0" id="noFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',0);" {CONTENT_PROTECTION_INACTIVE} /><label for="noFrontendProtection">&nbsp;{TXT_PUBLIC_PAGE}</label><br />
-            <input value="1" id="yesFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',1);" {CONTENT_PROTECTION_ACTIVE} /><label for="yesFrontendProtection">&nbsp;{TXT_PROTECTION}</label>
-          </td>
-        </tr>
-        <tr class="row1">
-          <td><label for="recursive">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="recursive" name="recursive" value="1" /></td>
-        </tr>
-      </tbody>
-    </table>
-    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="frontendGroups" style="display:{CONTENT_PROTECTION_DISPLAY};">
-      <tbody style="vertical-align:top;">
-        <tr class="row2">
-          <td colspan="3">&nbsp;</td>
-        </tr>
-        <tr class="row1">
-          <td width="15%">{TXT_GROUPS}</td>
-          <td width="1%">&nbsp;</td>
-          <td>{TXT_GROUPS_DEST}</td>
-        </tr>
-        <tr class="row2">
-          <td>
-            <select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
-            {CONTENT_EXISTING_GROUPS}
-            </select>
-            <br />
-            <font size="1">
-              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-            </font>
-          </td>
-          <td>
-            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
-            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" />
-          </td>
-          <td>
-            <select name="assignedGroups[]" size="10" style="width:300px;" multiple="multiple">
-            {CONTENT_ASSIGNED_GROUPS}
-            </select>
-            <br />
-            <font size="1">
-              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-            </font>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <!-- start content4 div -->
-  <div id="content4" class="editorTab" style="display: none">
-    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
-      <thead style="white-space:nowrap;">
-        <tr>
-          <th>{TXT_RELATEDNESS}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row2">
-          <td>
-            <input value="0" name="backendPermission" id="noBackendPermission" type="radio" onclick="swapBlock('backendGroups',0);" {CONTENT_CONTROL_BACKEND_INACTIVE} /><label for="noBackendPermission">&nbsp;{TXT_BACKEND_RELEASE}</label><br />
-            <input value="1" name="backendPermission" id="yesBackendPermission" type="radio" onclick="swapBlock('backendGroups',1);" {CONTENT_CONTROL_BACKEND_ACTIVE} /><label for="yesBackendPermission">&nbsp;{TXT_LIMIT_GROUP_RIGHTS}</label>
-          </td>
-        </tr>
-        <tr class="row1">
-          <td><label for="backendInherit">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="backendInherit" name="backendInherit" value="1" /></td>
-        </tr>
-      </tbody>
-    </table>
-    <table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="backendGroups" style="display:{CONTENT_CONTROL_BACKEND_DISPLAY};">
-      <thead style="vertical-align:top">
-        <tr class="row2">
-          <td colspan="3">&nbsp;</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row1">
-          <td width="15%">{TXT_GROUPS}</td>
-          <td width="1%">&nbsp;</td>
-          <td>{TXT_GROUPS_DEST}</td>
-        </tr>
-        <tr class="row2">
-          <td>
-            <select name="existingBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
-            {CONTENT_EXISTING_BACKEND_GROUPS}
-            </select>
-            <br />
-            <font size="1">
-              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-            </font>
-          </td>
-          <td width="1%">
-            <input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
-            <input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" />
-          </td>
-          <td>
-            <select name="assignedBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
-            {CONTENT_ASSIGNED_BACKEND_GROUPS}
-            </select>
-            <br />
-            <font size="1">
-              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
-              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-            </font>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <!-- end content4 div -->
-  <!-- start content5 div -->
-  <!-- BEGIN changelog2 -->
-  <div id="content5" class="editorTab" style="display: none">
-    <table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top" width="100%" class="adminlist">
-            <thead>
-        <tr>
-        <th colspan="5">{TXT_CHANGELOG}</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr class="row3">
-        <td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
-        <td width="25%"><b>{TXT_CHANGELOG_DATE}</b></td>
-        <td width="48%"><b>{TXT_CHANGELOG_NAME}</b></td>
-        <td width="25%"><b>{TXT_CHANGELOG_USER}</b></td>
-        <td width="1%"><b>{TXT_CHANGELOG_FUNCTIONS}</b></td>
-      </tr>
-      <!-- BEGIN showChanges -->
-      <tr class="{CHANGELOG_ROWCLASS}">
-        <td><div style="border-bottom:0px;">{CHANGELOG_CHECKBOX}</div></td>
-        <td><div style="border-bottom:0px;">{CHANGELOG_DATE}</div></td>
-        <td><div style="border-bottom:0px;"><a href="javascript:showOrHide('contentDiv_{CHANGELOG_ID}');">{CHANGELOG_TITLE}</a></div></td>
-        <td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{CHANGELOG_USER}" title="{CHANGELOG_USER}" border="0" align="middle" />&nbsp;{CHANGELOG_USER}</div></td>
-        <td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
-          {CHANGELOG_ACTIVATE}
-          {CHANGELOG_DELETE}
-        </div></td>
-      </tr>
-      <tr class="{CHANGELOG_ROWCLASS}">
-        <td colspan="5">
-          <div id="contentDiv_{CHANGELOG_ID}" style="width:100%; border:1px solid #DDE4FF; display:none;">
-            <table summary="" border="0" cellpadding="3" width="100%">
-              <tr>
-                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_PAGETITLE}</b></div></td>
-                <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_PAGETITLE}</div></td>
-                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_START_DATE}</b></div></td>
-                <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_STARTDATE}</div></td>
-                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_MODULE} (cmd|section)</b></div></td>
-                <td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CMD} | {CHANGELOG_SECTION}</div></td>
-                <td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_FRONTEND}</b></div></td>
-                <td width="15%" valign="top" rowspan="2"><div style="border-bottom:0px;">{CHANGELOG_FRONTEND}</div></td>
-              </tr>
-              <tr>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_TITLE}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METATITLE}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_END_DATE}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_ENDDATE}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_REDIRECT}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_REDIRECT}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-              </tr>
-              <tr>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_DESCRIPTION}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METADESC}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_THEMES}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_THEME}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_SOURCE_MODE}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_SOURCEMODE}</div></td>
-                <td nowrap="nowrap" valign="top" height="1%"><div style="border-bottom:0px;"><b>{TXT_CL_BACKEND}</b></div></td>
-                <td rowspan="2" valign="top"><div style="border-bottom:0px;">{CHANGELOG_BACKEND}</div></td>
-              </tr>
-              <tr>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_KEYWORD}</b></div></td>
-                <td valign="top"><div style="border-bottom:0px;">{CHANGELOG_METAKEY}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_OPTIONAL_CSS_NAME}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_OPTIONAL_CSS}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CACHINGSTATUS}</b></div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CACHINGSTATUS}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-              </tr>
-              <tr>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CATEGORY}</b></div></td>
-                <td valign="top"><div style="border-bottom:0px;">{CHANGELOG_CATEGORY}</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-                <td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
-              </tr>
-            </table>
-          </div>
-        </td>
-      </tr>
-      <!-- END showChanges -->
-      </tbody>
-    </table>
-    <table summary="" cellpadding="3" cellspacing="0" border="0">
-    <tbody>
-      <tr>
-        <td>
-          <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-          <a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',true); return false;">{TXT_SELECT_ALL}</a> /
-          <a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-          <img src="images/icons/strike.gif" alt="layout" />
-          <select name="formContent_HistoryMultiAction" onchange="historyMultiAction();">
-            <option value="0">{TXT_CHANGELOG_SUBMIT}</option>
-            <option value="delete">{TXT_CHANGELOG_SUBMIT_DEL}</option>
-          </select>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <!-- END changelog2 -->
-  <!-- end content5 div -->
-  <!-- start content6 div -->
-  <!--
-  <div id="content6" class="editorTab" style="display: none">
-    <table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
-      <thead>
-          <tr>
-          <th colspan="3">{TXT_CONTENT_ASSIGN_BLOCK}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr class="row2">
-          <td height="22" width="15%">{TXT_GROUPS}</td>
-          <td width="1%">&nbsp;</td>
-          <td>{TXT_GROUPS_DEST}</td>
-        </tr>
-        <tr class="row1">
-          <td>
-            <select name="existingBlocks[]" size="10" style="width:300px;" multiple="multiple">
-            {CONTENT_EXISTING_BLOCKS}
-            </select>
-            <br />
-            <font size="1">
-              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
-              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-            </font>
-          </td>
-          <td width="1%" valign="top" nowrap>
-            &nbsp;<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" style="margin-bottom:1px;" />&nbsp;<br />
-            &nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" />&nbsp;
-          </td>
-          <td>
-            <select name="assignedBlocks[]" size="10" style="width:300px;" multiple="multiple">
-            {CONTENT_ASSIGNED_BLOCK}
-            </select>
-            <br />
-            <font size="1">
-              <a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
-              <a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
-            </font>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  -->
-  <!-- end content6 div -->
-  <br />
-  <input type="submit" name="Submit" value="{TXT_STORE}" />
-  <select name="editstatus">
-    <option value="">{TXT_CONTENT_EDITSTATUS}</option>
-    <option {EDITSTATUS_SELECTED_DRAFT} value="draft">{TXT_CONTENT_EDITSTATUS_DRAFT}</option>
-    <option {EDITSTATUS_SELECTED_READY_FOR_TRANSLATION} value="ready_for_translation">{TXT_CONTENT_EDITSTATUS_READY_FOR_TRANSLATION}</option>
-    <option {EDITSTATUS_SELECTED_TRANSLATED} value="translated">{TXT_CONTENT_EDITSTATUS_TRANSLATED}</option>
-    <option {EDITSTATUS_SELECTED_CONTROLLED} value="controlled">{TXT_CONTENT_EDITSTATUS_CONTROLLED}</option>
-    <!--<option {EDITSTATUS_SELECTED_PUBLISHED} value="published">{TXT_CONTENT_EDITSTATUS_PUBLISHED}</option>-->
-  </select>
-  <input type="button" name="preview" value="{TXT_THEME_PREVIEW}" />
-  <br />
+<span class="red" id="errormessagetarget">{CONTENT_STATUS}</span>
+<form name="formContent" method="post" onsubmit="return preSubmitCheck()" action="index.php?cmd=content&amp;act={CONTENT_FORM_ACTION}">
+	<input type="hidden" name="pageId" value="{CONTENT_CATID}" />
+	<input type="hidden" name="date" value="{CONTENT_DATE}" />
+	<input type="hidden" name="pagetitle" value="{CONTENT_TOP_TITLE}" />
+	<ul id="tabmenu">
+		<li><a id="editorTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_BASIC_DATA}">{TXT_BASIC_DATA}</a></li>
+		<li><a id="editorTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_MORE_OPTIONS}">{TXT_MORE_OPTIONS}</a></li>
+		<li><a id="editorTab_content3" href="javascript:{}" onclick="selectTab('content3')" title="{TXT_FRONTEND_PERMISSION}">{TXT_FRONTEND_PERMISSION}</a></li>
+		<li><a id="editorTab_content4" href="javascript:{}" onclick="selectTab('content4')" title="{TXT_RELATEDNESS}">{TXT_RELATEDNESS}</a></li>
+		<!-- BEGIN changelog1 -->
+		<li><a id="editorTab_content5" href="javascript:{}" onclick="selectTab('content5')" title="{TXT_CHANGELOG}">{TXT_CHANGELOG}</a></li>
+		<!-- END changelog1 -->
+		<li><a id="editorTab_content6" href="javascript:{}" onclick="selectTab('content6')" title="{TXT_BLOCKS}">{TXT_ASSIGN_BLOCK}</a></li>
+	</ul>
+	<div id="content1" class="editorTab" style="display:block">
+		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
+			<tbody style="vertical-align:top; white-space:nowrap;">
+				<tr>
+					<th colspan="2">{TXT_PAGE_NAME}</th>
+				</tr>
+				<tr class="row2">
+					<td width="15%">{TXT_MENU_NAME}</td>
+					<td width="85%">
+						<div style="display:inline; float:left;">
+							<input type="text" name="newpage" size="40" onchange="setText()" maxlength="100" value="{CONTENT_MENU_NAME}" style="margin-right:5px;" />
+							<select name="category" style="margin-right:5px;"
+								onfocus="this.lastSelectedOption=this.selectedIndex"
+								onchange="if (this.options[this.selectedIndex].disabled) {this.selectedIndex = this.lastSelectedOption;}">
+								<option value="" selected="selected" {CONTENT_CAT_MENU_NEW_PAGE}>{TXT_NEW_CATEGORY}</option>
+								{CONTENT_CAT_MENU}
+							</select>
+							{TXT_TARGET}
+							<select name="redirectTarget" style="margin-right:5px;">
+								<option value="{CONTENT_TARGET}" selected="selected">{CONTENT_TARGET}</option>
+								<option value="_blank">{TXT_TARGET_BLANK} (_blank)</option>
+								<option value="_parent">{TXT_TARGET_PARENT} (_parent)</option>
+								<option value="_self">{TXT_TARGET_SELF} (_self)</option>
+								<option value="_top">{TXT_TARGET_TOP} (_top)</option>
+							</select>
+							{TXT_VISIBLE}
+							<input type="checkbox" name="displaystatus" value="on" {CONTENT_DISPLAYSTATUS} />
+						</div>
+						<!-- BEGIN deleteButton -->
+							<div style="display:inline; float:right;">
+								<a href="javascript:void(0);" onclick="deletePage({CONTENT_CATID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_DELETE}" /></a>
+							</div>
+						<!-- END deleteButton -->
+					</td>
+				</tr>
+				<tr class="row1">
+					<td>{TXT_CONTENT_TITLE}</td>
+					<td><input type="text" name="title" value="{CONTENT_TITLE_VAL}" maxlength="250" size="80" /></td>
+				</tr>
+				<tr class="row2">
+					<td>{TXT_META_TITLE}</td>
+					<td><input type="text" name="metatitle" value="{CONTENT_META_TITLE}" maxlength="250" size="80" /></td>
+				</tr>
+				<tr class="row1">
+					<td>{TXT_META_DESCRIPTION}</td>
+					<td><input type="text" name="desc" value="{CONTENT_DESC}" maxlength="250" size="80" /></td>
+				</tr>
+				<tr class="row2">
+					<td>{TXT_META_KEYWORD}</td>
+					<td><input type="text" name="key" value="{CONTENT_KEY}" size="80" /></td>
+				</tr>
+				<tr class="row1" {CONTENT_ALIAS_DISABLE}>
+					<td>{TXT_DEFAULT_ALIAS}</td>
+					<td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
+				</tr>
+				<tr class="row2" {CONTENT_ALIAS_DISABLE}>
+					<td>&nbsp;</td>
+					<td>{TXT_BASE_URL}<span style="font-weight: bold;" id="aliastarget">{CONTENT_ALIAS}</span></td>
+				</tr>
+				<tr class="row1">
+					<td>{TXT_META_ROBOTS}</td>
+					<td><input type="checkbox" name="robots" value="index" {CONTENT_ROBOTS} /></td>
+				</tr>
+				<tr class="row2">
+					<td nowrap="nowrap">{TXT_TYPE_SELECT}</td>
+					<td>
+						<input type="radio" id="typeContent" name="TypeSelection" value="content" onclick="modusSelection('type_content');" {CONTENT_TYPE_CHECKED_CONTENT}><label for="typeContent">{TXT_CONTENT_TYPE_DEFAULT}</label>
+						<input type="radio" id="typeRedirect" name="TypeSelection" value="redirect" onclick="modusSelection('type_redirect');" {CONTENT_TYPE_CHECKED_REDIRECT}><label for="typeRedirect">{TXT_CONTENT_TYPE_REDIRECT}</label>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br />
+		<div id="type_content" {CONTENT_TYPE_STYLE_CONTENT}>
+		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
+			<thead style="vertical-align:top;">
+				<tr>
+					<th>{TXT_CONTENT}</th>
+				</tr>
+				<tr class="row2">
+					<td>{CONTENT_HTML}</td>
+				</tr>
+				<tr class="row1">
+					<td height="26">&nbsp;</td>
+				</tr>
+			</thead>
+		</table>
+		</div>
+		<div id="type_redirect" {CONTENT_TYPE_STYLE_REDIRECT}>
+		<table summary="" border="0" cellspacing="0" cellpadding="3" width=100% class="adminlist">
+			<thead style="vertical-align:top;">
+				<tr>
+					<th colspan="2">{TXT_CONTENT_TYPE_REDIRECT}</th>
+				</tr>
+				<tr class="row2">
+					<td width="15%">{TXT_REDIRECT}</td>
+					<td width="85%"><input type="text" id="typeRedirectValue" name="redirectUrl" value="{TXT_NO_REDIRECT}" maxlength="255" size="80" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="getFileBrowser('typeRedirectValue', 'webpages')" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+				</tr>
+			</thead>
+		</table>
+		</div>
+	</div>
+	<div id="content2" class="editorTab" style="display:none">
+		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+			<tbody>
+				<tr>
+					<th colspan="2">{TXT_GENERAL_OPTIONS}</th>
+				</tr>
+				<tr class="row2">
+					<td width="15%">{TXT_START_DATE}</td>
+					<td width="85%"><input type="text" name="startdate" size="10" maxlength="10" onclick="setDateToday(startdate);" value="{CONTENT_STARTDATE}" /></td>
+				</tr>
+				<tr class="row1">
+					<td>{TXT_END_DATE}</td>
+					<td><input type="text" name="enddate" size="10" maxlength="10" onfocus="setDateToday(enddate);" value="{CONTENT_ENDDATE}" /></td>
+				</tr>
+			</tbody>
+		</table>
+		<br />
+		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+			<thead style="white-space:nowrap;">
+				<tr>
+					<th colspan="2">{TXT_THEMES}</th>
+				</tr>
+				<tr class="row2">
+					<td width="15%">{TXT_THEMES}</td>
+					<td width="85%">
+						<select name="themesId" onchange="onThemeChanged(this)" style="margin-right:5px;">
+							{CONTENT_THEMES_MENU}
+						</select>
+						{TXT_RECURSIVE_CHANGE}
+						<input type="checkbox" name="themesRecursive" value="1" />
+					</td>
+				</tr>
+				<tr class="row1">
+					<td>{TXT_CUSTOM_CONTENT}</td>
+					<td>
+						<select name="custom_content" style="margin-right:5px;">
+							{CONTENT_CUSTOM_CONTENT_MENU}
+						</select>
+					</td>
+				</tr>
+				<tr class="row2">
+					<td>{TXT_OPTIONAL_CSS_NAME}</td>
+					<td><input name="cssName" type="text" id="cssName" value="{CONTENT_CSS_NAME}" size="40" maxlength="50" /></td>
+				</tr>
+			</thead>
+		</table>
+		<br />
+		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+			<thead style="white-space:nowrap;">
+			<tr>
+				<th colspan="2">{TXT_NAVIGATION}</th>
+			</tr>
+			<tr class="row2">
+					<td width="15%">{TXT_OPTIONAL_CSS_NAME}</td>
+					<td width="85%"><input name="cssNameNav" type="text" id="cssNameNav" value="{NAVIGATION_CSS_NAME}" size="40" maxlength="50" /></td>
+				</tr>
+		</table>
+		<br />
+		<table summary="" border="0" cellspacing="0" cellpadding="3" width="100%" class="adminlist">
+			<thead style="white-space:nowrap;">
+			<tr>
+				<th colspan="2">{TXT_EXPERT_MODE}</th>
+			</tr>
+			<tr class="row2">
+				<td width="15%">{TXT_MODULE} (cmd | section)</td>
+				<td width="85%">
+					<input type="text" name="command" value="{CONTENT_SHOW_CMD}" maxlength="100" size="40" />
+					<select name="selectmodule" onchange="onModuleChanged(this)">
+						<option value="">{TXT_NO_MODULE}</option>
+						{CONTENT_MODULE_MENU}
+					</select>
+				</td>
+			</tr>
+			<tr class="row1">
+				<td>{TXT_SOURCE_MODE}</td>
+				<td><input type="checkbox" name="expertmode" value="y" {CONTENT_SHOW_EXPERTMODE} /></td>
+			</tr>
+			<tr class="row2">
+				<td>{TXT_CACHING_STATUS}</td>
+				<td><input type="checkbox" name="cachingstatus" value="1" {CONTENT_CACHING_STATUS} /></td>
+			</tr>
+		</table>
+	</div>
+	<!-- start content3 div -->
+	<div id="content3" class="editorTab" style="display:none">
+		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
+			<thead style="white-space:nowrap;">
+				<tr>
+					<th>{TXT_FRONTEND_PERMISSION}</th>
+				</tr>
+				<tr class="row2">
+					<td>
+						<input value="0" id="noFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',0);" {CONTENT_PROTECTION_INACTIVE} /><label for="noFrontendProtection">&nbsp;{TXT_PUBLIC_PAGE}</label><br />
+						<input value="1" id="yesFrontendProtection" name="protection" type="radio" onclick="swapBlock('frontendGroups',1);" {CONTENT_PROTECTION_ACTIVE} /><label for="yesFrontendProtection">&nbsp;{TXT_PROTECTION}</label>
+					</td>
+				</tr>
+				<tr class="row1">
+					<td><label for="recursive">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="recursive" name="recursive" value="1" /></td>
+				</tr>
+			</thead>
+		</table>
+		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="frontendGroups" style="display:{CONTENT_PROTECTION_DISPLAY};">
+			<thead style="vertical-align:top;">
+				<tr class="row2">
+					<td colspan="3">&nbsp;</td>
+				</tr>
+				<tr class="row1">
+					<td width="15%">{TXT_GROUPS}</td>
+					<td width="1%">&nbsp;</td>
+					<td>{TXT_GROUPS_DEST}</td>
+				</tr>
+				<tr class="row2">
+					<td>
+						<select name="existingGroups[]" size="10" style="width:300px;" multiple="multiple">
+						{CONTENT_EXISTING_GROUPS}
+						</select>
+						<br />
+						<font size="1">
+							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+						</font>
+					</td>
+					<td>
+						<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
+						<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingGroups[]'],document.formContent.elements['assignedGroups[]'],adduser,removeuser);" />
+					</td>
+					<td>
+						<select name="assignedGroups[]" size="10" style="width:300px;" multiple="multiple">
+						{CONTENT_ASSIGNED_GROUPS}
+						</select>
+						<br />
+						<font size="1">
+							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+						</font>
+					</td>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	<!-- start content4 div -->
+	<div id="content4" class="editorTab" style="display: none">
+		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
+			<thead style="white-space:nowrap;">
+				<tr>
+					<th>{TXT_RELATEDNESS}</th>
+				</tr>
+				<tr class="row2">
+					<td>
+						<input value="0" name="backendPermission" id="noBackendPermission" type="radio" onclick="swapBlock('backendGroups',0);" {CONTENT_CONTROL_BACKEND_INACTIVE} /><label for="noBackendPermission">&nbsp;{TXT_BACKEND_RELEASE}</label><br />
+						<input value="1" name="backendPermission" id="yesBackendPermission" type="radio" onclick="swapBlock('backendGroups',1);" {CONTENT_CONTROL_BACKEND_ACTIVE} /><label for="yesBackendPermission">&nbsp;{TXT_LIMIT_GROUP_RIGHTS}</label>
+					</td>
+				</tr>
+				<tr class="row1">
+					<td><label for="backendInherit">{TXT_RECURSIVE_CHANGE}&nbsp;</label><input type="checkbox" id="backendInherit" name="backendInherit" value="1" /></td>
+				</tr>
+			</thead>
+		</table>
+		<table summary="" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="backendGroups" style="display:{CONTENT_CONTROL_BACKEND_DISPLAY};">
+			<thead style="vertical-align:top">
+				<tr class="row2">
+					<td colspan="3">&nbsp;</td>
+				</tr>
+				<tr class="row1">
+					<td width="15%">{TXT_GROUPS}</td>
+					<td width="1%">&nbsp;</td>
+					<td>{TXT_GROUPS_DEST}</td>
+				</tr>
+				<tr class="row2">
+					<td>
+						<select name="existingBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
+						{CONTENT_EXISTING_BACKEND_GROUPS}
+						</select>
+						<br />
+						<font size="1">
+							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+						</font>
+					</td>
+					<td width="1%">
+						<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" style="margin-bottom:1px;" /><br />
+						<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBackendGroups[]'],document.formContent.elements['assignedBackendGroups[]'],adduser,removeuser);" />
+					</td>
+					<td>
+						<select name="assignedBackendGroups[]" size="10" style="width:300px;" multiple="multiple">
+						{CONTENT_ASSIGNED_BACKEND_GROUPS}
+						</select>
+						<br />
+						<font size="1">
+							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
+							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBackendGroups[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+						</font>
+					</td>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	<!-- end content4 div -->
+	<!-- start content5 div -->
+	<!-- BEGIN changelog2 -->
+	<div id="content5" class="editorTab" style="display: none">
+		<table summary="" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top" width="100%" class="adminlist">
+			<tr>
+				<th colspan="5">{TXT_CHANGELOG}</th>
+			</tr>
+			<tr class="row3">
+				<td width="1%" align="center"><div style="padding-left:10px;"><b>#</b></div></td>
+				<td width="25%"><b>{TXT_CHANGELOG_DATE}</b></td>
+				<td width="48%"><b>{TXT_CHANGELOG_NAME}</b></td>
+				<td width="25%"><b>{TXT_CHANGELOG_USER}</b></td>
+				<td width="1%"><b>{TXT_CHANGELOG_FUNCTIONS}</b></td>
+			</tr>
+			<!-- BEGIN showChanges -->
+			<tr class="{CHANGELOG_ROWCLASS}">
+				<td><div style="border-bottom:0px;">{CHANGELOG_CHECKBOX}</div></td>
+				<td><div style="border-bottom:0px;">{CHANGELOG_DATE}</div></td>
+				<td><div style="border-bottom:0px;"><a href="javascript:showOrHide('contentDiv_{CHANGELOG_ID}');">{CHANGELOG_TITLE}</a></div></td>
+				<td><div style="border-bottom:0px;"><img src="images/icons/creator.gif" alt="{CHANGELOG_USER}" title="{CHANGELOG_USER}" border="0" align="middle" />&nbsp;{CHANGELOG_USER}</div></td>
+				<td nowrap="nowrap"><div style="border-bottom:0px; text-align:right;">
+					{CHANGELOG_ACTIVATE}
+					{CHANGELOG_DELETE}
+				</div></td>
+			</tr>
+			<tr class="{CHANGELOG_ROWCLASS}">
+				<td colspan="5">
+					<div id="contentDiv_{CHANGELOG_ID}" style="width:100%; border:1px solid #DDE4FF; display:none;">
+						<table summary="" border="0" cellpadding="3" width="100%">
+							<tr>
+								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_PAGETITLE}</b></div></td>
+								<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_PAGETITLE}</div></td>
+								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_START_DATE}</b></div></td>
+								<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_STARTDATE}</div></td>
+								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_MODULE} (cmd|section)</b></div></td>
+								<td nowrap="nowrap" width="15%" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CMD} | {CHANGELOG_SECTION}</div></td>
+								<td nowrap="nowrap" width="5%"  valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_FRONTEND}</b></div></td>
+								<td width="15%" valign="top" rowspan="2"><div style="border-bottom:0px;">{CHANGELOG_FRONTEND}</div></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_TITLE}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METATITLE}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_END_DATE}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_ENDDATE}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_REDIRECT}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_REDIRECT}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_DESCRIPTION}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_METADESC}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_THEMES}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_THEME}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_SOURCE_MODE}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_SOURCEMODE}</div></td>
+								<td nowrap="nowrap" valign="top" height="1%"><div style="border-bottom:0px;"><b>{TXT_CL_BACKEND}</b></div></td>
+								<td rowspan="2" valign="top"><div style="border-bottom:0px;">{CHANGELOG_BACKEND}</div></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_META_KEYWORD}</b></div></td>
+								<td valign="top"><div style="border-bottom:0px;">{CHANGELOG_METAKEY}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_OPTIONAL_CSS_NAME}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_OPTIONAL_CSS}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CACHINGSTATUS}</b></div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">{CHANGELOG_CACHINGSTATUS}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+							</tr>
+							<tr>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;"><b>{TXT_CL_CATEGORY}</b></div></td>
+								<td valign="top"><div style="border-bottom:0px;">{CHANGELOG_CATEGORY}</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+								<td nowrap="nowrap" valign="top"><div style="border-bottom:0px;">&nbsp;</div></td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+			<!-- END showChanges -->
+		</table>
+		<table summary="" cellpadding="3" cellspacing="0" border="0">
+			<tr>
+				<td>
+					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+					<a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',true); return false;">{TXT_SELECT_ALL}</a> /
+					<a href="#" onclick="changeCheckboxes('formContent','selectedChangelogId[]',false); return false;">{TXT_DESELECT_ALL}</a>
+					<img src="images/icons/strike.gif" alt="layout" />
+					<select name="formContent_HistoryMultiAction" onchange="historyMultiAction();">
+						<option value="0">{TXT_CHANGELOG_SUBMIT}</option>
+						<option value="delete">{TXT_CHANGELOG_SUBMIT_DEL}</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<!-- END changelog2 -->
+	<!-- end content5 div -->
+	<!-- start content6 div -->
+	<div id="content6" class="editorTab" style="display: none">
+		<table summary="" cellspacing="0" cellpadding="0" border="0" width="100%" class="adminlist" >
+			<thead>
+			    <tr>
+					<th colspan="3">{TXT_CONTENT_ASSIGN_BLOCK}</th>
+				</tr>
+				<tr class="row2">
+					<td height="22" width="15%">{TXT_GROUPS}</td>
+					<td width="1%">&nbsp;</td>
+					<td>{TXT_GROUPS_DEST}</td>
+				</tr>
+				<tr class="row1">
+					<td>
+						<select name="existingBlocks[]" size="10" style="width:300px;" multiple="multiple">
+						{CONTENT_EXISTING_BLOCKS}
+						</select>
+						<br />
+						<font size="1">
+							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a><br />
+							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['existingBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+						</font>
+					</td>
+					<td width="1%" valign="top" nowrap>
+						&nbsp;<input type="button" value="&gt;&gt;" name="adduser" onclick="AddToTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" style="margin-bottom:1px;" />&nbsp;<br />
+						&nbsp;<input type="button" value="&lt;&lt;" name="removeuser" onclick="RemoveFromTheList(document.formContent.elements['existingBlocks[]'],document.formContent.elements['assignedBlocks[]'],adduser,removeuser);" />&nbsp;
+					</td>
+					<td>
+						<select name="assignedBlocks[]" size="10" style="width:300px;" multiple="multiple">
+						{CONTENT_ASSIGNED_BLOCK}
+						</select>
+						<br />
+						<font size="1">
+							<a href="javascript:void(0);" onclick="SelectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_SELECT_ALL}</a> <br />
+							<a href="javascript:void(0);" onclick="DeselectAllList(document.formContent.elements['assignedBlocks[]'])" style="color:blue;">{TXT_DESELECT_ALL}</a>
+						</font>
+					</td>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	<!-- end content6 div -->
+	<br />
+	<input type="submit" name="Submit" value="{TXT_STORE}" />
+	<br />
 </form>
 
 <script type="text/javascript">

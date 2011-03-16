@@ -29,9 +29,6 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  */
 class HotelFacility
 {
-    /**
-     * Text keys
-     */
     const TEXT_HOTELCARD_FACILITY = 'hotelcard_facility';
     const TEXT_HOTELCARD_FACILITY_GROUP = 'hotelcard_facility_group';
 
@@ -99,16 +96,11 @@ class HotelFacility
     /**
      * Initializes the facilities and groups data from the database
      *
-     * The $short parameter, if true, reduces the list of facilities to
-     * those with an ordinal value below 1000.
-     * The resulting array is ordered by the facility names, ascending.
      * Note that this does not read relations.  See {@see getRelationArray()}
      * for that.
-     * @param   boolean   $short        If true, only the short list is
-     *                                  set up and read
      * @global  ADONewConnection  $objDatabase
      */
-    static function init($short=false)
+    static function init()
     {
         global $objDatabase;
 
@@ -121,23 +113,18 @@ class HotelFacility
             SELECT `facility`.`id`,  `facility`.`facility_group_id`,
                    `facility`.`ord` ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_hotelcard_hotel_facility` AS `facility`".
-                   $arrSqlName['join'].
-            ($short
-              ? " WHERE `facility`.`ord`<1000"
-              : '' //" ORDER BY `facility`.`ord` ASC"
-            )."
-             ORDER BY ".$arrSqlName['text']." ASC";
+                   $arrSqlName['join']."
+             ORDER BY `facility`.`ord` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         self::$arrFacilities = array();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-            $text_id = $objResult->fields['name_text_id'];
+            $text_id = $objResult->fields[$arrSqlName['id']];
             $strName = $objResult->fields[$arrSqlName['text']];
             if ($strName === null) {
                 $objText = Text::getById($text_id, 0);
                 if ($objText) $strName = $objText->getText();
-//echo("Missing Text, got replacement: $strName<br />");
             }
             self::$arrFacilities[$id] = array(
                 'id'       => $id,
@@ -183,19 +170,6 @@ class HotelFacility
 
 
     /**
-     * Clears the internal data
-     *
-     * Always call this after modifying the database.
-     */
-    static function reset()
-    {
-        self::$arrFacilities = false;
-        self::$arrGroups = false;
-        self::$arrRelations = false;
-    }
-
-
-    /**
      * Returns the array of all facilities
      *
      * The optional $group_id parameter limits the result to that group.
@@ -232,7 +206,7 @@ class HotelFacility
     {
         static $arrFacilityName = false;
 
-        if (empty(self::$arrFacilities)) self::init($short);
+        if (empty(self::$arrFacilities)) self::init();
         if (empty($group_id)) {
             // There is no group ID.
             // Return the buffered array, or set it up first.
@@ -256,11 +230,6 @@ class HotelFacility
     }
 
 
-    /**
-     * Returns the Hotel facility name for the given facility ID
-     * @param   integer   $facility_id      The facility ID
-     * @return  string                      The facility name
-     */
     static function getFacilityNameById($facility_id)
     {
 //echo("HotelFacility::getFacilityNameById($facility_id): Entered<br />");
@@ -397,15 +366,21 @@ class HotelFacility
         global $objDatabase;
 
         if (empty($name)) return false;
+
         $text_id = 0;
         if ($id) {
             if (empty(self::$arrFacilities)) self::init();
             $text_id = self::$arrFacilities[$id]['text_id'];
+            if ($text_id) $objText = Text::getById($text_id, FRONTEND_LANG_ID);
         }
-        $text_id = Text::replace(
-            $text_id, FRONTEND_LANG_ID, $name,
-                MODULE_ID, self::TEXT_HOTELCARD_FACILITY);
-        if (!$text_id) return false;
+        if (!$objText)
+            $objText = new Text(
+                $name, FRONTEND_LANG_ID, MODULE_ID,
+                self::TEXT_HOTELCARD_FACILITY, $text_id);
+        $objText->setText($name);
+        $objText->setLanguageId(FRONTEND_LANG_ID);
+        if (!$objText->store()) return false;
+        $text_id = $objText->getId();
         if (self::recordFacilityExists($id)) {
             return self::updateFacility($text_id, $group_id, $id, $ord);
         }
@@ -439,7 +414,7 @@ class HotelFacility
              WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return self::errorHandler();
+        return false;
     }
 
 
@@ -468,7 +443,7 @@ class HotelFacility
             )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return self::errorHandler();
+        return false;
     }
 
 
@@ -484,39 +459,6 @@ class HotelFacility
         $query = "
             DELETE FROM `".DBPREFIX."module_hotelcard_hotel_has_facility`
              WHERE `hotel_id`=$hotel_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        return true;
-    }
-
-
-    /**
-     * Deletes the hotel facility with the given ID
-     *
-     * Also deletes any relations between Hotels and that facility,
-     * as well as the related Text records.
-     * @param   integer   $facility_id  The hotel facility ID
-     * @return  boolean                 True on success, false otherwise
-     */
-    static function deleteFacilityById($facility_id)
-    {
-        global $objDatabase;
-
-        $query = "
-            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_has_facility`
-             WHERE `facility_id`=$facility_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-
-        $arrFacilities = self::getFacilityArray();
-        if (empty($arrFacilities) || empty($arrFacilities[$facility_id]))
-            return false;
-        // Then, delete the Text and the record itself
-        $text_id = $arrFacilities[$facility_id]['text_id'];
-        if (!Text::deleteById($text_id, 0)) return false;
-        $query = "
-            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_facility`
-             WHERE `id`=$facility_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         return true;
@@ -546,11 +488,16 @@ class HotelFacility
         if ($id) {
             if (empty(self::$arrGroups)) self::init();
             $text_id = self::$arrGroups[$id]['text_id'];
+            if ($text_id) $objText = Text::getById($text_id, FRONTEND_LANG_ID);
         }
-        $text_id = Text::replace(
-            $text_id, FRONTEND_LANG_ID, $name,
-            MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP);
-        if (!$text_id) return false;
+        if (!$objText)
+            $objText = new Text(
+                $name, FRONTEND_LANG_ID, MODULE_ID,
+                self::TEXT_HOTELCARD_FACILITY_GROUP, $text_id);
+        $objText->setText($name);
+        $objText->setLanguageId(FRONTEND_LANG_ID);
+        if (!$objText->store()) return false;
+        $text_id = $objText->getId();
         if (self::recordFacilityGroupExists($id)) {
             return self::updateFacilityGroup($text_id, $id, $ord);
         }
@@ -583,12 +530,12 @@ class HotelFacility
              WHERE `id`=$id";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return self::errorHandler();
+        return false;
     }
 
 
     /**
-     * Inserts a facility group
+     * Inserts a facility
      *
      * Use {@see storeFacilityGroup()} instead.
      * Mind that the related Text record is inserted in {@see storeFacility()}
@@ -604,54 +551,23 @@ class HotelFacility
     {
         global $objDatabase;
 
-        $ord = intval((empty($ord) || !is_numeric($ord)) ? 100 : $ord);
         $query = "
-            INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility_group` (
+            INSERT INTO `".DBPREFIX."module_hotelcard_hotel_facility` (
                 `name_text_id`, `ord`
             ) VALUES (
                 $text_id, $ord
             )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return self::errorHandler();
-    }
-
-
-    /**
-     * Deletes the hotel facility group with the given ID
-     *
-     * Also deletes contained facilities as well as any relations between
-     * Hotels and those facilities, and related Text records.
-     * @param   integer   $group_id     The hotel facility group ID
-     * @return  boolean                 True on success, false otherwise
-     */
-    static function deleteGroupById($group_id)
-    {
-        global $objDatabase;
-
-        $arrFacilities = self::getFacilityArray($group_id);
-        if (empty($arrFacilities)) return false;
-        foreach (array_keys($arrFacilities) as $facility_id) {
-            if (!self::deleteFacilityById($facility_id)) return false;
-        }
-        $arrGroups = self::getGroupArray();
-        if (empty($arrGroups) || empty($arrGroups[$group_id])) return false;
-        // Then, delete the Text and the record itself
-        $text_id = $arrGroups[$group_id]['text_id'];
-        if (!Text::deleteById($text_id, 0)) return false;
-        $query = "
-            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_facility_group`
-            WHERE `id`=$group_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        return true;
+        return false;
     }
 
 
     /**
      * Initializes the hotel to facility relations
      *
-     * Reads the relations from the database for the hotel ID given.
+     * Reads the relations from the database for the hotel ID given, if any,
+     * or the complete table otherwise.  Mind your step!
      * The facility IDs are sorted by the ordinal value from the facility
      * table.
      * The array returned looks like
@@ -661,22 +577,19 @@ class HotelFacility
      *    ),
      *    ... more ...
      *  );
-     * @todo    The inner array value could be replaced by the facility name
-     *          in the current frontend language.
-     * @todo    This *COULD* be extended to include more than one Hotel,
-     *          but then perhaps it shouldn't.
-     * @param   integer   $hotel_id     The Hotel ID
+     * @todo    The array value should be replaced by the facility name
+     *          in the current frontend language
+     * @param   integer   $hotel_id     The optional hotel ID
      * @return  array                   The relation array on success,
      *                                  false otherwise
      * @global  ADONewConnection  $objDatabase
      * @static
      */
-    static function getRelationArray($hotel_id)
+    static function getRelationArray($hotel_id=0)
     {
         global $objDatabase;
 
-        if (empty($hotel_id)) return false;
-        if (   empty(self::$arrRelations[$hotel_id])
+        if (   ($hotel_id && empty(self::$arrRelations[$hotel_id]))
             || empty(self::$arrRelations)) {
             $query = "
                 SELECT `relation`.`hotel_id`, `relation`.`facility_id`
@@ -705,7 +618,7 @@ class HotelFacility
      *
      * Note that this does not verify the existence of either the hotel
      * nor the facility, but only the relation itself.
-     * @param   integer   $hotel_id        The hotel ID
+     * @param   integer   $hotelid        The hotel ID
      * @param   integer   $facility_id    The facility ID
      * @return  boolean                   True if the record exists,
      *                                    false otherwise
@@ -727,32 +640,12 @@ class HotelFacility
 
 
     /**
-     * Stores all the relations for the given Hotel ID
-     *
-     * Deletes any old relations first, then adds the current ones
-     * present in the array
-     * @param   integer   $hotel_id       The hotel ID
-     * @param   array     $arrFacilityId  The facility ID array
-     * @return  boolean                   True on success, false otherwise
-     * @static
-     */
-    static function storeRelations($hotel_id, $arrFacilityId)
-    {
-        if (!self::deleteByHotelId($hotel_id)) return false;
-        foreach ($arrFacilityId as $facility_id) {
-            if (!self::addRelation($hotel_id, $facility_id)) return false;
-        }
-        return true;
-    }
-
-
-    /**
      * Adds a relation for the given hotel and facility IDs
      *
      * Inserts a new relation if it's not present in the database yet.
      * There's no need for an update for this table.
      * If a record exists already, true is returned.
-     * @param   integer   $hotel_id        The hotel ID
+     * @param   integer   $hotelid        The hotel ID
      * @param   integer   $facility_id    The facility ID
      * @return  boolean                   True on success, false otherwise
      * @static
@@ -771,7 +664,7 @@ class HotelFacility
             )";
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return self::errorHandler();
+        return false;
     }
 
 
@@ -782,7 +675,7 @@ class HotelFacility
      * If no such record exists, true is returned anyway.
      * If the $facility_id argument is empty, all records for the
      * given $hotel_id are removed.
-     * @param   integer   $hotel_id        The hotel ID
+     * @param   integer   $hotelid        The hotel ID
      * @param   integer   $facility_id    The optional facility ID
      * @return  boolean                   True on success, false otherwise
      * @static
@@ -797,7 +690,7 @@ class HotelFacility
             ($facility_id ? " AND `facility_id`=$facility_id" : '');
         $objResult = $objDatabase->Execute($query);
         if ($objResult) return true;
-        return self::errorHandler();
+        return false;
     }
 
 
@@ -852,22 +745,23 @@ die("HotelFacility::errorHandler(): Disabled!<br />");
         // Add data
         // Groups
         $arrFacilityGroup = array(
+// TODO: Translate the group names to French and Italian
             'general' => array(
                 1 => 'Allgemein', // Deutsch
                 2 => 'General',   // English
                 3 => 'Géneral',   // Français
-                4 => 'Caratteristiche generali',  // Italiano
+                4 => 'Generali',  // Italiano
             ),
             'activities' => array(
                 1 => 'Aktivitäten', // Deutsch
                 2 => 'Activities',  // English
                 3 => 'Activités',   // Français
-                4 => 'Attività',    // Italiano
+                4 => 'Attivitati',  // Italiano
             ),
             'services' => array(
                 1 => 'Dienstleistungen', // Deutsch
                 2 => 'Services',         // English
-                3 => 'Prestations',      // Français
+                3 => 'Services',         // Français
                 4 => 'Servizi',          // Italiano
             ),
         );
@@ -882,7 +776,7 @@ die("HotelFacility::errorHandler(): Disabled!<br />");
                     3 => 'Air Conditioning', // fr
                     4 => 'Air Conditioning', // it
                 ),
-// NTH: Translate all the entries in English, French, and Italian
+// TODO: Translate all the entries in English, French, and Italian
                 array(
                     1 => 'Fahrstuhl',
                     2 => '', // en
@@ -1422,7 +1316,10 @@ die("HotelFacility::errorHandler(): Disabled!<br />");
                 $objText = new Text(
                     $name, $lang_id,
                     MODULE_ID, self::TEXT_HOTELCARD_FACILITY_GROUP, $text_id);
-                $objText->store(); //if (!$objText->store()) { die("failed to add Text for facility group $group: $name"); return false; }
+                if (!$objText->store()) {
+//die("failed to add Text for facility group $group: $name");
+//                    return false;
+                }
                 $text_id = $objText->getId();
             }
             $objResult = $objDatabase->Execute("
@@ -1446,7 +1343,10 @@ die("HotelFacility::errorHandler(): Disabled!<br />");
                     $objText = new Text(
                         $name, $lang_id,
                         MODULE_ID, self::TEXT_HOTELCARD_FACILITY, $text_id);
-                    $objText->store(); //if (!$objText->store()) { die("HotelFacility::errorHandler(): Failed to store facility text $name<br />"); continue; }
+                    if (!$objText->store()) {
+//die("HotelFacility::errorHandler(): Failed to store facility text $name<br />");
+//                        continue;
+                    }
                     $text_id = $objText->getId();
                 }
                 $objResult = $objDatabase->Execute("
@@ -1455,8 +1355,9 @@ die("HotelFacility::errorHandler(): Disabled!<br />");
                     ) VALUES (
                       $text_id, $group_id, $ord_facility
                     )");
-                if (!$objResult) { //die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
-                    continue;
+                if (!$objResult) {
+//die("HotelFacility::errorHandler(): Failed to insert facility $name<br />");
+//                    continue;
                 }
             }
         }
@@ -1469,16 +1370,15 @@ die("HotelFacility::errorHandler(): Disabled!<br />");
         }
         $query = "
             CREATE TABLE `".DBPREFIX."module_hotelcard_hotel_has_facility` (
-              `hotel_id`    INT(10) UNSIGNED NOT NULL DEFAULT 0,
-              `facility_id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+              `hotel_id` INT(10) UNSIGNED NOT NULL,
+              `facility_id` INT(10) UNSIGNED NOT NULL,
               PRIMARY KEY (`hotel_id`, `facility_id`)
             ) ENGINE=MYISAM";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-die("HotelFacility::errorHandler(): Failed to create table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
+//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
 //            return false;
         }
-//echo("HotelFacility::errorHandler(): Created table ".DBPREFIX."module_hotelcard_hotel_has_facility<br />");
 
         // More to come...
 

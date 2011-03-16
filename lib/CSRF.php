@@ -111,9 +111,9 @@ class CSRF {
      * Only use it for headers in the form "Foo: an_url", for
      * instance "Location: index.php?foo=bar".
      */
-    public static function header($header)
+    public static function header($header, $replace = true, $httpResponseCode = null)
     {
-        header(self::__enhance_header($header));
+        header(self::__enhance_header($header), $replace, $httpResponseCode);
     }
 
 
@@ -255,58 +255,9 @@ class CSRF {
             : $_POST
         );
         self::add_code();
-
-        // TODO: make this a nice little template
-        $html = '
-<html><head>
-<title>'.$_CORELANG['TXT_CSRF_TITLE'].'</title>
-<style type="text/css">
-  * {
-    font-family: Arial,Helvetica,sans-serif;
-  }
-  div#message {
-    margin-left: auto;
-    margin-right: auto;
-    width: 500px;
-    border: 1px solid red;
-    padding: 5px;
-    background-color: #ffefef;
-    margin-top: 100px;
-  }
-  .safe, .unsafe {
-	display: block;
-	padding: 15px 30px;
-	color: #000;
-	text-align: center;
-	float: left;
-	margin: 0 15px;
-  }
-  .safe {
-	border: 1px solid #090;
-	background-color: #afa;
-  }
-  .unsafe {
-	border: 1px solid #f00;
-	color: #f00;
-  }
-  
-</style>
-</head>
-<body>
-<div id="message">
-  <h2>'.$_CORELANG['TXT_CSRF_TITLE'].'</h2>
-  '.$_CORELANG['TXT_CSRF_DESCR'].'
-
-  <p/>
-  <form method="'.$_SERVER['REQUEST_METHOD'].'">
-  _____ELEMENTS___
-  <a href="index.php?cmd='.$_GET['cmd'].'" class="safe">'.$_CORELANG['TXT_CSRF_ABORT'].'</a>
-  <input type="submit" class="unsafe" value="'.$_CORELANG['TXT_CSRF_BUTTON'].'" />
-  </form>
-</div>
-</body>
-</html>
-';
+       	$tpl = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $tpl->setErrorHandling(PEAR_ERROR_DIE);
+        $tpl->loadTemplateFile('csrfprotection.html');
         $form = '';
         foreach ($data as $key => $value) {
             if ($key == self::$formkey or $key == 'amp;'.self::$formkey) {
@@ -314,8 +265,21 @@ class CSRF {
             }
             $form .= self::parseRequestParametersForForm($key, $value);
         }
-        $html = str_replace('_____ELEMENTS___', $form, $html);
-        die($html);
+
+        $tpl->setGlobalVariable(array(
+	        'TXT_CSRF_TITLE' => $_CORELANG['TXT_CSRF_TITLE'],
+    	    'TXT_CSRF_DESCR' => $_CORELANG['TXT_CSRF_DESCR'],
+        	'TXT_CSRF_ABORT' => $_CORELANG['TXT_CSRF_ABORT'],
+            'TXT_CSRF_CONTINUE' => $_CORELANG['TXT_CSRF_CONTINUE'],
+            'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'],
+            'SAFE_CMD' => 'index.php?cmd='.$_GET['cmd'],
+    	    'FORM_ELEMENTS' => $form,
+            'IMAGES_PATH' => ASCMS_ADMIN_WEB_PATH.'/images/csrfprotection',
+        ));
+        $tpl->parse();
+
+        
+        die($tpl->get());
     }
 
 

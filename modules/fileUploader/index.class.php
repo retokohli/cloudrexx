@@ -1,5 +1,4 @@
 <?php
-
 /**
  * File Uploader
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -88,5 +87,4 @@ class FileUploader extends FileUploaderLib {
         $this->objTpl->show();
     }
 }
-
 ?>

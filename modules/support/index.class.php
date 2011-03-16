@@ -224,6 +224,7 @@ class Support
         }
 
         $this->objTemplate = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strTemplate);
 
@@ -358,7 +359,7 @@ if (MY_DEBUG) echo("Support::supportRequest(): Got Ticket ID $ticketId.<br />");
                 ),
             'SUPPORT_REQUEST_CONTINUE_FUNCTION' =>
                 ($ticketId
-                    ? "JavaScript:window.location.href='index.php';"
+                    ? "JavaScript:window.location.href='index.php?".CSRF::param()."';"
                     : "JavaScript:supportContinue();"
                 ),
             'SUPPORT_REQUEST_TICKET_ID'     => $ticketId,

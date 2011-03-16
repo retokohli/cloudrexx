@@ -4,75 +4,75 @@
 <!--
 function deleteNote(Id)
 {
-    if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=delete&id="+Id);
+    if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
+        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=delete&id="+Id);
 }
 // -->
 </script>
 
 <table class="adminlist" style="width: 100%; border-spacing: 0px;">
 <tr>
-  <th>
-  {TXT_CALENDAR}
-  </th>
-  <th>
-  {TXT_CALENDAR_DATE} - {CALENDAR_TITLE}
-  </th>
+	<th>
+	{TXT_CALENDAR}
+	</th>
+	<th>
+	{TXT_CALENDAR_DATE} - {CALENDAR_TITLE}
+	</th>
 </tr>
 <tr>
-  <td style="width: 200px;">
-  {CALENDAR}
-  </td>
-  <td style="vertical-align: top;">
-    <table style="width: 100%; border-spacing: 0px;" cellspacing="0">
-      <tr class="row1">
-        <td width="100"> {TXT_CALENDAR_CAT}: </td>
-        <td> {CALENDAR_CAT} </TD>
-      </tr>
-      <tr class="row1">
-        <td width="100"> {TXT_CALENDAR_NAME}: </td>
-        <td> {CALENDAR_NAME} </td>
-      </tr>
-      <tr class="row1">
-        <td width="100"> {TXT_CALENDAR_PLACE}: </td>
-        <td> {CALENDAR_PLACE} </td>
-      </tr>
-      <!--  <tr class="row1">
-        <td width="100"> {TXT_CALENDAR_PRIORITY}: </td>
-        <td> <img src="images/icons/{CALENDAR_PRIORITY_GIF}.gif" align="absmiddle" title="{CALENDAR_PRIORITY_GIF}" alt="{CALENDAR_PRIORITY_GIF}" />
-        ({CALENDAR_PRIORITY}) </td>
-      </tr> -->
-      <tr class="row1">
-        <td width="100"> {TXT_CALENDAR_START}: </td>
-        <td> {CALENDAR_START} </td>
-      </tr>
-      <tr class="row1">
-        <td width="100"> {TXT_CALENDAR_END}: </td>
-        <td> {CALENDAR_END} </td>
-      </tr>
-      <tr class="row1">
-        <td width="100" valign="top"> {TXT_CALENDAR_COMMENT}: </td>
-        <td> {CALENDAR_COMMENT} </td>
-      </tr>
-      <!-- BEGIN infolink -->
-      <tr class="row1">
-        <td width="100" valign="top">{TXT_CALENDAR_INFO}: </td>
-        <td>
-          <a href="{CALENDAR_INFO_HREF}">{CALENDAR_INFO}</a>
-        </td>
-      </tr>
-      <!-- END infolink -->
-      <tr class="row1">
-        <td width="100" valign="top"> <br />
-        <a href="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=edit&amp;id={CALENDAR_ID}" title="{TXT_CALENDAR_EDIT}">
-        <img src="images/icons/edit.gif" align="absmiddle" border="0" title="neu" alt="neu" /> </a>
-        <a href="javascript:deleteNote({CALENDAR_ID})" title="{TXT_CALENDAR_DELETE}">
-        <img src="images/icons/delete.gif" align="absmiddle" border="0" title="l&ouml;schen" alt="l&ouml;schen" /> </a>
-        </td>
-        <td>&nbsp; </td>
-      </tr>
-      </table>
-  </td>
+	<td style="width: 200px;">
+	{CALENDAR}
+	</td>
+	<td style="vertical-align: top;">
+		<table style="width: 100%; border-spacing: 0px;" cellspacing="0">
+			<tr class="row1">
+				<td width="100"> {TXT_CALENDAR_CAT}: </td>
+				<td> {CALENDAR_CAT} </TD>
+			</tr>
+			<tr class="row1">
+			  <td width="100"> {TXT_CALENDAR_NAME}: </td>
+			  <td> {CALENDAR_NAME} </td>
+			</tr>
+			<tr class="row1">
+			  <td width="100"> {TXT_CALENDAR_PLACE}: </td>
+			  <td> {CALENDAR_PLACE} </td>
+			</tr>
+		  <!--  <tr class="row1">
+			  <td width="100"> {TXT_CALENDAR_PRIORITY}: </td>
+			  <td> <img src="images/icons/{CALENDAR_PRIORITY_GIF}.gif" align="absmiddle" title="{CALENDAR_PRIORITY_GIF}" alt="{CALENDAR_PRIORITY_GIF}" />
+				({CALENDAR_PRIORITY}) </td>
+			</tr> -->
+			<tr class="row1">
+			  <td width="100"> {TXT_CALENDAR_START}: </td>
+			  <td> {CALENDAR_START} </td>
+			</tr>
+			<tr class="row1">
+			  <td width="100"> {TXT_CALENDAR_END}: </td>
+			  <td> {CALENDAR_END} </td>
+			</tr>
+			<tr class="row1">
+			  <td width="100" valign="top"> {TXT_CALENDAR_COMMENT}: </td>
+			  <td> {CALENDAR_COMMENT} </td>
+			</tr>
+			<!-- BEGIN infolink -->
+			<tr class="row1">
+				<td width="100" valign="top">{TXT_CALENDAR_INFO}: </td>
+				<td>
+					<a href="{CALENDAR_INFO_HREF}">{CALENDAR_INFO}</a>
+				</td>
+			</tr>
+			<!-- END infolink -->
+			<tr class="row1">
+			  <td width="100" valign="top"> <br />
+				<a href="index.php?cmd=calendar{CALENDAR_MANDATE}&amp;act=edit&amp;id={CALENDAR_ID}" title="{TXT_CALENDAR_EDIT}">
+				<img src="images/icons/edit.gif" align="absmiddle" border="0" title="neu" alt="neu" /> </a>
+				<a href="javascript:deleteNote({CALENDAR_ID})" title="{TXT_CALENDAR_DELETE}">
+				<img src="images/icons/delete.gif" align="absmiddle" border="0" title="l&ouml;schen" alt="l&ouml;schen" /> </a>
+			  </td>
+			  <td>&nbsp; </td>
+			</tr>
+		  </table>
+	</td>
 </tr>
 </table>
 <!-- END calendar_show_note.html -->

@@ -20,9 +20,9 @@ class u2uLibrary {
     var $_intCurrentUserId;
     var $_arrSettings           = array();
     var $_arrLanguages          = array();
-       var $_arrlistLevel = null;
-       var $PaginactionCount;
-       var $orderedResults,$orderofResult;
+   	var $_arrlistLevel = null;
+   	var $PaginactionCount;
+   	var $orderedResults,$orderofResult;
     var $paginationCount,$counter;
 
     /**
@@ -47,6 +47,26 @@ class u2uLibrary {
         if (preg_match('/.*innodb.*/i', $objMetaResult->fields['Engine'])) {
             $this->_boolInnoDb = true;
         }
+    }
+
+    /**
+     *
+     * Selects the username with the id of the user who has loggged on.
+     * @global      $objDatabase
+     */
+    function getUserID($userName) {
+        global $objDatabase;
+
+        $userName = contrexx_addslashes($userName);
+        $selUserID  = 'SELECT id FROM '.DBPREFIX.'access_users
+                       WHERE username="'.$userName.'" AND
+                       active=1';
+        $objResult = $objDatabase->Execute($selUserID);
+        while (!$objResult->EOF) {
+          $ID=$objResult->fields['id'];
+          $objResult->MoveNext();
+        }
+        return $ID;
     }
 
     /**
@@ -96,7 +116,7 @@ class u2uLibrary {
       $count = $objResult->RecordCount();
       $this->counter=$count;
 
-      $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=".$_REQUEST['cmd'],$pagingText, true);
+	  $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=".$_REQUEST['cmd'],$pagingText, true);
 
       $selMessage ='SELECT
                         Log.message_text,
@@ -164,7 +184,7 @@ class u2uLibrary {
       $objResult = $objDatabase->Execute($selMessage);
       $count = $objResult->RecordCount();
       $this->counter=$count;
-      $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=outbox", "<b>".$_ARRAYLANG['TXT_OUTBOX_PAGING']."</b>", true);
+	  $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=outbox", "<b>".$_ARRAYLANG['TXT_OUTBOX_PAGING']."</b>", true);
 
       $selMessage ='SELECT
                         Log.message_text,

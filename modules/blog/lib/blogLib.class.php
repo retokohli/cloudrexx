@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Blog library
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -22,8 +21,7 @@ require_once ASCMS_LIBRARY_PATH.'/activecalendar/activecalendar.php';
  * @package     contrexx
  * @subpackage  module_blog
  */
-class BlogLibrary
-{
+class BlogLibrary {
     var $_boolInnoDb = false;
     var $_intLanguageId;
     var $_intCurrentUserId;
@@ -31,8 +29,9 @@ class BlogLibrary
     var $_arrLanguages          = array();
 
     /**
-     * Constructor
-     */
+    * Constructor
+    *
+    */
     function __construct()
     {
         $this->setDatabaseEngine();
@@ -43,6 +42,7 @@ class BlogLibrary
 
     /**
      * Reads out the used database engine and sets the local variable.
+     *
      */
     function setDatabaseEngine() {
         global $objDatabase;
@@ -58,6 +58,7 @@ class BlogLibrary
     /**
      * Create an array containing all settings of the blog-module.
      * Example: $arrSettings[$strSettingName] for the content of $strSettingsName
+     *
      * @global  ADONewConnection
      * @return  array       $arrReturn
      */
@@ -86,6 +87,7 @@ class BlogLibrary
      * Contents:
      * $arrValue[$langId]['short']      =>  For Example: en, de, fr, ...
      * $arrValue[$langId]['long']       =>  For Example: 'English', 'Deutsch', 'French', ...
+     *
      * @global  ADONewConnection
      * @return  array       $arrReturn
      */
@@ -118,6 +120,7 @@ class BlogLibrary
      * Contents:
      * $arrCategories[$categoryId][$langId]['name']         =>  Translation for the category with ID = $categoryId for the desired language ($langId).
      * $arrCategories[$categoryId][$langId]['is_active']    =>  Status of the category with ID = $categoryId for the desired language ($langId).
+     *
      * @global  ADONewConnection
      * @param   integer     $intStartingIndex: can be used for paging. The value defines, with which row the result should start.
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
@@ -195,6 +198,7 @@ class BlogLibrary
      * $arrEntries[$entryId]['translation'][$langId]['image']       =>  Image of entry in the language with the id = langId.
      * $arrEntries[$entryId]['translation'][$langId]['content']     =>  Content of entry in the language with the id = langId.
      * $arrEntries[$entryId]['translation'][$langId]['tags']        =>  Keywords of entry in the language with the id = langId.
+     *
      * @global  ADONewConnection
      * @global  array
      * @param   integer     $intLanguageId: The value defines, if categories of a specific language should be returned. If the value is zero, all languages will be used.
@@ -202,7 +206,7 @@ class BlogLibrary
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many entries will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
      * @return  array       $arrReturn
      */
-    function createEntryArray($intLanguageId=0, $intStartingIndex=0, $intLimitIndex=0) {
+    function createEntryArray($intLanguageId=0, $intStartingIndex=0, $intLimitIndex=0, $intUserId=0) {
         global $objDatabase, $_ARRAYLANG;
 
         $arrReturn = array();
@@ -224,6 +228,13 @@ class BlogLibrary
             $intLimitIndex = $this->countEntries();
         }
 
+        $strQueryWhere = '';
+        if($intUserId != 0) {
+        	$strQueryWhere = "WHERE user_id = '".$intUserId."'";
+        }
+
+
+
         $objResultMain = $objDatabase->Execute('SELECT      blogMessages.message_id,
                                                         blogMessages.user_id,
                                                         blogMessages.time_created,
@@ -233,6 +244,7 @@ class BlogLibrary
                                             FROM        '.DBPREFIX.'module_blog_messages        AS blogMessages
                                             '.$strLanguageJoin.'
                                             '.$strLanguageWhere.'
+                                            '.$strQueryWhere.'
                                             ORDER BY    time_created DESC
                                             LIMIT       '.$intStartingIndex.','.$intLimitIndex.'
                                         ');
@@ -302,7 +314,7 @@ class BlogLibrary
                 while (!$objLangResult->EOF) {
                     $intLanguageId = $objLangResult->fields['lang_id'];
 
-                    if ( ($intLanguageId == $this->_intLanguageId && !empty($objLangResult->fields['subject'])) ||
+                    if ( ($intLanguageId == $this->_intLanguageId && !empty($objResult->fields['subject'])) ||
                          empty($arrReturn[$intMessageId]['subject']) )
                     {
                         $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objLangResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -316,11 +328,15 @@ class BlogLibrary
 
                     $objLangResult->MoveNext();
                 }
+
+
                 $objResultMain->MoveNext();
             }
         }
+
         return $arrReturn;
     }
+
 
 
     /**
@@ -333,6 +349,7 @@ class BlogLibrary
      * $arrEntries[$intNetworkId]['icon']               =>  Icon of the service provider.
      * $arrEntries[$intNetworkId]['icon_img']           =>  Icon of the service provider as am <img>-tag.
      * $arrEntries[$intNetworkId]['status'][$langId]    =>  Activation status of a specific language.
+     *
      * @global  ADONewConnection
      * @param   integer     $intStartingIndex: can be used for paging. The value defines, with which row the result should start.
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many categories will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
@@ -399,6 +416,7 @@ class BlogLibrary
 
     /**
      * Returns the allowed maximum element per page. Can be used for paging.
+     *
      * @global  array
      * @return  integer     allowed maximum of elements per page.
      */
@@ -411,6 +429,7 @@ class BlogLibrary
 
     /**
      * Counts all existing entries in the database.
+     *
      * @global  ADONewConnection
      * @return  integer     number of entries in the database
      */
@@ -428,6 +447,7 @@ class BlogLibrary
 
     /**
      * Counts the number of active messages which are assigned to a specific category.
+     *
      * @param   integer     $intCategoryId: The assigned messages of this category will be counted.
      */
     function countEntriesOfCategory($intCategoryId) {
@@ -454,6 +474,7 @@ class BlogLibrary
 
     /**
      * Counts all existing categories in the database.
+     *
      * @global  ADONewConnection
      * @return  integer     number of categories in the database
      */
@@ -470,6 +491,7 @@ class BlogLibrary
 
     /**
      * Counts all votings for a specific entry.
+     *
      * @global  ADONewConnection
      * @param   integer     $intMessageId: the votings of the message with this id will be counted.
      * @return  integer     number of votings for the desired entry.
@@ -490,6 +512,7 @@ class BlogLibrary
 
     /**
      * Counts all existing networks in the database.
+     *
      * @global  ADONewConnection
      * @return  integer     number of networks in the database
      */
@@ -507,6 +530,7 @@ class BlogLibrary
 
     /**
      * Creates an rating bar (****) for a specific message.
+     *
      * @global  ADONewConnection
      * @global  array
      * @param   integer     $intMessageId: The rating bar will be created for the message with this id.
@@ -544,6 +568,7 @@ class BlogLibrary
 
     /**
      * Counts all comments for a specific entry.
+     *
      * @global  ADONewConnection
      * @param   integer     $intMessageId: the comments of the message with this id will be counted.
      * @param   boolean     $boolOnlyActive: if this parameter is true, only the "active" comments are counted
@@ -569,11 +594,13 @@ class BlogLibrary
     }
 
 
+
     /**
      * Creates a "posted by $strUsername on $strDate" string.
+     *
      * @global  array
      * @param   string      $strUsername
-     * @param   string        $strDate
+     * @param   string		$strDate
      * @return  string
      */
     function getPostedByString($strUsername, $strDate) {
@@ -586,18 +613,20 @@ class BlogLibrary
     }
 
 
-    /**
+	/**
      * Returns an img-Tag for the "posted by" string.
-     * @param   string        $strDate
+     *
+	 * @param   string		$strDate
      * @return  string
      */
     function getPostedByIcon($strDate) {
-        return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/calendar.gif" alt="'.$strDate.'" />';
+    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/calendar.gif" alt="'.$strDate.'" />';
     }
 
 
     /**
      * Returns a string containing the names of all parametered category-id's. Example: "Category 1, Category 2, Category 3".
+     *
      * @param   array       $arrCategories: Array containing all id's which should be resolved. Example for the Resolution of Categories 1 .. 3: array(1 => 1, 2 => 1, 3 => 1)
      * @param   boolean     $boolLinked: If it is needed, that the single categories are linked with the search-site, this parameter must be set true.
      * @return  string      String as described in introduction.
@@ -625,6 +654,7 @@ class BlogLibrary
 
     /**
      * Checks, if the category selected by the user corresponds with the assigned categories of an entry.
+     *
      * @param   integer     $intSelectedCategory: this category was selected by the user. can also be zero, which means "all categories" selected.
      * @param   array       $arrAssignedCategories: an array containing all categories assigned to an entry.
      * @return  boolean     true, if the entry was assigned to the searched category.
@@ -644,6 +674,7 @@ class BlogLibrary
      * Creates an array containing all used tags (keywords) with an calculated number of points. The points depend of the usage-frequency,
      * the number of hits for the assigned topics, voting of the assigned topics and the number of commend of the assigned topics. The
      * array is ordered alphabetically by the keywords.
+     *
      * @return  array       Sorted array in the format $arrExample[Keyword] = NumberOfPoints.
      */
     function createKeywordArray()
@@ -703,13 +734,16 @@ class BlogLibrary
                 }
             }
         }
+
         ksort($arrKeywords);
+
         return $arrKeywords;
     }
 
 
     /**
      * Creates the html-source for a tag-cloud with all used keywords.
+     *
      * @return  string      html-source for the tag cloud.
      */
     function getTagCloud() {
@@ -749,6 +783,7 @@ class BlogLibrary
 
     /**
      * Creates the html-source for a tag-hitlist with the $intNumberOfTags-most used keywords.
+     *
      * @param   integer     $intNumberOfTags: the hitlist contains less or equals items than this value, depending on the number of keywords used.
      * @return  string      html-source for the tag hitlist.
      */
@@ -783,6 +818,7 @@ class BlogLibrary
 
     /**
      * Returns the HTML-source for a category-select. Is used on the search-page or the home-site.
+     *
      * @param   string      $strFieldName: This value will be entered in the "name"-field of the <select>-tag
      * @param   integer     $intSelectedCategory: The category with this id will be marked as "selected".
      * @param   boolean     $boolStandalone: If this parameter is set to true, a javascript is added to the menu => After changing the selection the search is stared.
@@ -830,6 +866,7 @@ class BlogLibrary
 
     /**
      * This function replaces all tags with links to the search-module.
+     *
      * @param   string      $strUnlinkedTags: The input String looks something like this: "Keyword 1, Keyword 2, Keyword 3".
      * @return  string      The Keywords are replaced with linked tags, for example: "<a href="index.php?section=blog&amp;cmd=search&term=Keyword 1">Keyword1</a>, ..."
      */
@@ -843,16 +880,18 @@ class BlogLibrary
 
     /**
      * Returns an img-Tag for the "tags"-icon.
-     * @param   string        $strDate
+     *
+	 * @param   string		$strDate
      * @return  string
      */
     function getTagsIcon() {
-        return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/tags.gif" alt="Tags" />';
+    	return '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/tags.gif" alt="Tags" />';
     }
 
 
     /**
      * Returns the source-code for a calendar in the "month"-view.
+     *
      * @param   integer     $intYear: This year will be selected. If empty it will be used the current year.
      * @param   integer     $intMonth: This month will be selected. If empty it will be used the current month.
      * @param   integer     $intDay: This day will be selected. If empty it will be used the current day.
@@ -887,6 +926,7 @@ class BlogLibrary
      * Returns an array containing the timestamps of all entries within a given range.
      * Example: $arrReturn[0] = 1123144112
      *          $arrReturn[1] = 1234316412
+     *
      * @param   integer     $intStartingDate: The Unix-timestamp in this parameter defines the beginning of the range.
      * @param   integer     $intEndingDate: The Unix-timestamp in this parameter defines the end of the range.
      * @return  array       Array as described before.
@@ -920,6 +960,7 @@ class BlogLibrary
     /**
      * The text in the parameter $strFullMessage will be shortened to the introduction-length definied in the settings-array. If
      * the text is smaller than the definied length, nothing is done.
+     *
      * @param   string      $strFullMessage: This message will be reduced.
      * @return  string      Reduced message, can be used as introduction text.
      */
@@ -941,6 +982,7 @@ class BlogLibrary
 
     /**
      * Writes RSS feed containing the latest N messages to the feed-directory. This is done for every language seperately.
+     *
      * @global  array
      * @global  array
      */
@@ -996,6 +1038,7 @@ class BlogLibrary
 
     /**
      * Writes RSS feed containing the latest N comments to the feed-directory. This is done for every language seperately.
+     *
      * @global  array
      * @global  array
      * @global  ADONewConnection
@@ -1068,6 +1111,7 @@ class BlogLibrary
 
     /**
      * Writes RSS feed containing the latest N messages of each category the feed-directory. This is done for every language seperately.
+     *
      * @global  array
      * @global  array
      * @global  FWLanguage
@@ -1139,12 +1183,11 @@ class BlogLibrary
 
                             @chmod(ASCMS_FEED_PATH.'/blog_category_'.$intCategoryId.'_'.$arrLanguageValues['short'].'.xml', 0777);
                         }
+
                     }
+
                 }
             }
         }
     }
-
 }
-
-?>

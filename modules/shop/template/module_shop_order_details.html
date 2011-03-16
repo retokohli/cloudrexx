@@ -3,7 +3,7 @@
 <!--
 function edit(orderId)
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=editorder&orderid="+orderId);
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=editorder&orderid="+orderId);
 }
 //-->
 </script>
@@ -54,10 +54,10 @@ function edit(orderId)
     <td nowrap='nowrap'>{SHOP_SHIP_COMPANY}&nbsp;</td>
   </tr>
   <tr class="row2">
-    <td nowrap='nowrap'>{TXT_SHOP_TITLE}</td>
-    <td nowrap='nowrap'>{SHOP_TITLE}&nbsp;</td>
-    <td nowrap='nowrap'>{TXT_SHOP_TITLE}</td>
-    <td nowrap='nowrap'>{SHOP_SHIP_TITLE}&nbsp;</td>
+    <td nowrap='nowrap'>{TXT_PREFIX}</td>
+    <td nowrap='nowrap'>{SHOP_PREFIX}&nbsp;</td>
+    <td nowrap='nowrap'>{TXT_PREFIX}</td>
+    <td nowrap='nowrap'>{SHOP_SHIP_PREFIX}&nbsp;</td>
   </tr>
   <tr class="row1">
     <td nowrap='nowrap'>{TXT_LAST_NAME}</td>

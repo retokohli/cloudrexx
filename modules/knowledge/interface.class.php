@@ -45,8 +45,8 @@ class KnowledgeInterface extends KnowledgeLibrary
         $lowestFontSize = 10;
         
         try {
-            $tags_pop = $this->tags->getAllOrderByPopularity($_LANGID);
-            $tags = $this->tags->getAll($_LANGID);
+            $tags_pop = $this->tags->getAllOrderByPopularity($_LANGID, true);
+            $tags = $this->tags->getAll($_LANGID, true);
         } catch (DatabaseError $e) {
             echo $e->plain();
         }

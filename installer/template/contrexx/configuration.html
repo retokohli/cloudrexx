@@ -17,147 +17,147 @@ Style[4]=["","","","","",,"#000000","#ecf1f9","","","",,,,1,"#3366cc",2,24,0.3,,
 </script>
 <input type="hidden" name="configuration" />
 <table summary="configuration" class="adminlist" border="0" width="100%" cellpadding="0" cellspacing="0">
-  <!-- BEGIN general -->
-    <tr>
-      <th colspan="2">{TXT_GENERAL}</th>
-    </tr>
-    <!-- BEGIN generalErrorMsg -->
-      <tr>
-        <td colspan="2" class="status_message">
-          <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-              <td>{GENERAL_ERROR_MSG}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    <!-- END generalErrorMsg -->
-    <tr class="row1">
-      <td height="20" width="30%">{TXT_DOCUMENT_ROOT}</td>
-      <td height="20" width="70%">{DOCUMENT_ROOT}</td>
-    </tr>
-    <tr class="row2">
-      <td height="20" width="30%">{TXT_OFFSET_PATH}</td>
-      <td height="20" width="70%">{OFFSET_PATH}</td>
-    </tr>
-    <tr class="row1">
-      <td colspan="2"><br /></td>
-    </tr>
-  <!-- END general -->
-  <!-- BEGIN database -->
-    <tr>
-      <th colspan="2">{TXT_DATABASE}</th>
-    </tr>
-    <!-- BEGIN databaseErrorMsg -->
-      <tr>
-        <td colspan="2" class="status_message">
-          <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-              <td>{DATABASE_ERROR_MSG}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    <!-- END databaseErrorMsg -->
-    <tr class="row1">
-      <td height="20" width="30%">{TXT_HOSTNAME}</td>
-      <td height="20" width="70%">{DB_HOSTNAME}</td>
-    </tr>
-    <tr class="row2">
-      <td height="20" width="30%">{TXT_DATABASE_NAME}</td>
-      <td height="20" width="70%">{DB_DATABASE_NAME}{CREATE_DB}</td>
-    </tr>
-    <tr class="row1">
-      <td height="20" width="30%">{TXT_USERNAME}</td>
-      <td height="20" width="70%">{DB_USERNAME}</td>
-    </tr>
-    <tr class="row2">
-      <td height="20" width="30%">{TXT_PASSWORD}</td>
-      <td height="20" width="70%">{DB_PASSWORD}</td>
-    </tr>
-    <tr class="row1">
-      <td height="20" width="30%">{TXT_TABLE_PREFIX}</td>
-      <td height="20" width="70%">{DB_TABLE_PREFIX}</td>
-    </tr>
-    <!-- BEGIN database_collation -->
-      <tr class="row2">
-        <td height="20">{TXT_DATABASE_CONNECTION_COLLATION}</td>
-        <td height="20">{DB_CONNECTION_COLLATION}</td>
-      </tr>
-    <!-- END database_collation -->
-    <tr>
-      <td colspan="2"><br /></td>
-    </tr>
-  <!-- END database -->
-  <!-- BEGIN ftp -->
-    <tr>
-      <th colspan="2">{TXT_FTP}</th>
-    </tr>
-    <!-- BEGIN ftpErrorMsg -->
-      <tr>
-        <td colspan="2" class="status_message">
-          <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-              <td>{FTP_ERROR_MSG}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    <!-- END ftpErrorMsg -->
-    <!-- BEGIN useFtp -->
-      <tr class="row1">
-        <td colspan="2">{USE_FTP}</td>
-      </tr>
-    <!-- END useFtp -->
-    <tr class="row2">
-      <td height="20" width="30%">{TXT_HOSTNAME}</td>
-      <td height="20" width="70%">{FTP_HOSTNAME}{FTP_PASV}</td>
-    </tr>
-    <tr class="row1">
-      <td height="20" width="30%">{TXT_USERNAME}</td>
-      <td height="20" width="70%">{FTP_USERNAME}</td>
-    </tr>
-    <tr class="row2">
-      <td height="20" width="30%">{TXT_PASSWORD}</td>
-      <td height="20" width="70%">{FTP_PASSWORD}</td>
-    </tr>
-    <!-- BEGIN ftpPath -->
-      <tr class="row1">
-        <td height="20" width="30%">{TXT_FTP_PATH}</td>
-        <td height="20" width="70%">{FTP_PATH}</td>
-      </tr>
-    <!-- END ftpPath -->
-  <!-- END ftp -->
-  <!-- BEGIN ftpPathConfig -->
-    <tr>
-      <th colspan="2">{TXT_FTP_PATH_CONFIG}<input type="hidden" name="ftpPathConfig" value="1" /></th>
-    </tr>
-    <!-- BEGIN ftpPathErrorMsg -->
-      <tr>
-        <td colspan="2" class="status_message">
-          <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-              <td>{FTP_PATH_ERROR_MSG}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    <!-- END ftpPathErrorMsg -->
-    <!-- BEGIN ftpDirectoryTree -->
-      <tr>
-        <td colspan="2" height="20"><b>{TXT_FTP_PATH_DESCRIPTION}</b></td>
-      </tr>
-      <!-- BEGIN ftpDirectory -->
-        <tr class="{FTP_DIRECTORY_ROW_CLASS}">
-          <td style="{FTP_DIRECTORY_STYLE}">{FTP_DIRECTORY}</td>
-        </tr>
-      <!-- END ftpDirectory -->
-    <!-- END ftpDirectoryTree -->
-  <!-- END ftpPathConfig -->
+	<!-- BEGIN general -->
+		<tr>
+			<th colspan="2">{TXT_GENERAL}</th>
+		</tr>
+		<!-- BEGIN generalErrorMsg -->
+			<tr>
+				<td colspan="2" class="status_message">
+					<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+							<td>{GENERAL_ERROR_MSG}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		<!-- END generalErrorMsg -->
+		<tr class="row1">
+			<td height="20" width="30%">{TXT_DOCUMENT_ROOT}</td>
+			<td height="20" width="70%">{DOCUMENT_ROOT}</td>
+		</tr>
+		<tr class="row2">
+			<td height="20" width="30%">{TXT_OFFSET_PATH}</td>
+			<td height="20" width="70%">{OFFSET_PATH}</td>
+		</tr>
+		<tr class="row1">
+			<td colspan="2"><br /></td>
+		</tr>
+	<!-- END general -->
+	<!-- BEGIN database -->
+		<tr>
+			<th colspan="2">{TXT_DATABASE}</th>
+		</tr>
+		<!-- BEGIN databaseErrorMsg -->
+			<tr>
+				<td colspan="2" class="status_message">
+					<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+							<td>{DATABASE_ERROR_MSG}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		<!-- END databaseErrorMsg -->
+		<tr class="row1">
+			<td height="20" width="30%">{TXT_HOSTNAME}</td>
+			<td height="20" width="70%">{DB_HOSTNAME}</td>
+		</tr>
+		<tr class="row2">
+			<td height="20" width="30%">{TXT_DATABASE_NAME}</td>
+			<td height="20" width="70%">{DB_DATABASE_NAME}{CREATE_DB}</td>
+		</tr>
+		<tr class="row1">
+			<td height="20" width="30%">{TXT_USERNAME}</td>
+			<td height="20" width="70%">{DB_USERNAME}</td>
+		</tr>
+		<tr class="row2">
+			<td height="20" width="30%">{TXT_PASSWORD}</td>
+			<td height="20" width="70%">{DB_PASSWORD}</td>
+		</tr>
+		<tr class="row1">
+			<td height="20" width="30%">{TXT_TABLE_PREFIX}</td>
+			<td height="20" width="70%">{DB_TABLE_PREFIX}</td>
+		</tr>
+		<!-- BEGIN database_collation -->
+			<tr class="row2">
+				<td height="20">{TXT_DATABASE_CONNECTION_COLLATION}</td>
+				<td height="20">{DB_CONNECTION_COLLATION}</td>
+			</tr>
+		<!-- END database_collation -->
+		<tr>
+			<td colspan="2"><br /></td>
+		</tr>
+	<!-- END database -->
+	<!-- BEGIN ftp -->
+		<tr>
+			<th colspan="2">{TXT_FTP}</th>
+		</tr>
+		<!-- BEGIN ftpErrorMsg -->
+			<tr>
+				<td colspan="2" class="status_message">
+					<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+							<td>{FTP_ERROR_MSG}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		<!-- END ftpErrorMsg -->
+		<!-- BEGIN useFtp -->
+			<tr class="row1">
+				<td colspan="2">{USE_FTP}</td>
+			</tr>
+		<!-- END useFtp -->
+		<tr class="row2">
+			<td height="20" width="30%">{TXT_HOSTNAME}</td>
+			<td height="20" width="70%">{FTP_HOSTNAME}{FTP_PASV}</td>
+		</tr>
+		<tr class="row1">
+			<td height="20" width="30%">{TXT_USERNAME}</td>
+			<td height="20" width="70%">{FTP_USERNAME}</td>
+		</tr>
+		<tr class="row2">
+			<td height="20" width="30%">{TXT_PASSWORD}</td>
+			<td height="20" width="70%">{FTP_PASSWORD}</td>
+		</tr>
+		<!-- BEGIN ftpPath -->
+			<tr class="row1">
+				<td height="20" width="30%">{TXT_FTP_PATH}</td>
+				<td height="20" width="70%">{FTP_PATH}</td>
+			</tr>
+		<!-- END ftpPath -->
+	<!-- END ftp -->
+	<!-- BEGIN ftpPathConfig -->
+		<tr>
+			<th colspan="2">{TXT_FTP_PATH_CONFIG}<input type="hidden" name="ftpPathConfig" value="1" /></th>
+		</tr>
+		<!-- BEGIN ftpPathErrorMsg -->
+			<tr>
+				<td colspan="2" class="status_message">
+					<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="24"><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+							<td>{FTP_PATH_ERROR_MSG}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		<!-- END ftpPathErrorMsg -->
+		<!-- BEGIN ftpDirectoryTree -->
+			<tr>
+				<td colspan="2" height="20"><b>{TXT_FTP_PATH_DESCRIPTION}</b></td>
+			</tr>
+			<!-- BEGIN ftpDirectory -->
+				<tr class="{FTP_DIRECTORY_ROW_CLASS}">
+					<td style="{FTP_DIRECTORY_STYLE}">{FTP_DIRECTORY}</td>
+				</tr>
+			<!-- END ftpDirectory -->
+		<!-- END ftpDirectoryTree -->
+	<!-- END ftpPathConfig -->
 </table>
 <br />
 <!-- end configuration.html -->

@@ -1,90 +1,90 @@
 <!-- START module_survey_overview.html -->
 <script language="JavaScript" type="text/javascript">
 
-function deleteSurvey(surveyId){
-    if(confirm('{TXT_JS_DELETE_MSG}'))
-        window.location.replace("?cmd=survey&act=delete&id="+surveyId);
+function deleteSurvey(surveyId){ 
+    if(confirm('{TXT_JS_DELETE_MSG}')) 
+        window.location.replace("?cmd=survey&{CSRF_PARAM}&act=delete&id="+surveyId);
 }
 
 function selectMultiAction() {
-  with (document.frmShowSurveys) {
-    switch (frmShowSurveys_MultiAction.value) {
-      case 'activate':
-        action='?cmd=survey&act=multiaction';
-        submit();
-      break;
-      case 'deactivate':
-        action='?cmd=survey&act=multiaction';
-        submit();
-      break;
-      case 'delete':
-        if (confirm('{TXT_JS_DELETE_ALL_MSG}')) {
-          action='?cmd=survey&act=multiaction';
-          submit();
-        }
-      break;
-      default: //do nothing
-    }
-  }
+	with (document.frmShowSurveys) {
+		switch (frmShowSurveys_MultiAction.value) {
+			case 'activate':
+				action='?cmd=survey&act=multiaction';
+				submit();
+			break;
+			case 'deactivate':
+				action='?cmd=survey&act=multiaction';
+				submit();
+			break;
+			case 'delete':
+				if (confirm('{TXT_JS_DELETE_ALL_MSG}')) {
+					action='?cmd=survey&act=multiaction';
+					submit();
+				}
+			break;
+			default: //do nothing			
+		}
+	}
 }
 
 </script>
 
 <form name="frmShowSurveys" method="post" action="?cmd=survey&amp;act=survey_multiaction">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-    <tr>
-      <th colspan="9">Existierende Umfragen</th>
-    </tr>
-    <tr class="row3">
-      <td nowrap="nowrap" width="2%"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
-      <td nowrap="nowrap" width="3%"><span style="font-weight:bold;">{TXT_SUBTITLE_STATUS}</span></td>
-      <td nowrap="nowrap" width="3%"><span style="font-weight:bold;">{TXT_SUBTITLE_TYPE}</span></td>
-      <td nowrap="nowrap" width="3%"><span style="font-weight:bold;">{TXT_SUBTITLE_PLACEHOLDER}</span></td>
-      <td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_SUBTITLE_DATE}</span></td>
-      <td nowrap="nowrap" width="33%"><span style="font-weight:bold;">{TXT_SUBTITLE_NAME}</span></td>
-      <td nowrap="nowrap" width="11%"><span style="font-weight:bold;">{TXT_SUBTITLE_PARTICIPANT}</span></td>
-      <td nowrap="nowrap" width="25%"><span style="font-weight:bold;">{TXT_SUBTITLE_PARTICIPANT_LAST}</span></td>
-      <td nowrap="nowrap" width="5%"><div align="right"><span style="font-weight:bold;">{TXT_SUBTITLE_ACTIONS}</span></div></td>
-    </tr>
-    <!-- BEGIN showSurveys -->
-    <tr class="{SURVEY_ROWCLASS}">
-      <td><input type="checkbox" name="selectedSurveyId[]" id="selectedSurveyId" value="{SURVEY_ID}" /></td>
-      <td><a href="?cmd=survey&amp;act=status&amp;id={SURVEY_ID}" target="_self"><img src="images/icons/{SURVEY_STATUS_ICON}.gif" border="0" alt="{TXT_IMGALT_STATUS}" title="{TXT_IMGALT_STATUS}" /></td>
-      <td>{SURVEY_TYPE_ICON}</td>
-      <td>{SURVEY_HOME_ICON}</td>
-      <td>{SURVEY_DATE}</td>
-      <td>{SURVEY_NAME}</td>
-      <td>{SURVEY_VOTE_COUNT}</td>
-      <td>{SURVEY_LAST_VOTE}</td>
-      <td nowrap="nowrap">
-        <div align="right">
-          <a href="?cmd=survey&amp;act=edit&amp;id={SURVEY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
-          <a href="javascript:deleteSurvey({SURVEY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
-        </div>
-      </td>
-    </tr>
-    <!-- END showSurveys -->
-    <!-- BEGIN noSurveys -->
-    <tr class="row2">
-      <td colspan="9"><div align="center">{TXT_NO_CATEGORIES}</div></td>
-    </tr>
-    <!-- END noSurveys -->
-  </table>
-  <table cellpadding="2" cellspacing="0" border="0">
-    <tr>
-      <td>
-        <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-        <a href="#" onClick="changeCheckboxes('frmShowSurveys','selectedSurveyId[]',true); return false;">{TXT_SELECT_ALL}</a> /
-        <a href="#" onClick="changeCheckboxes('frmShowSurveys','selectedSurveyId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-        <img src="images/icons/strike.gif" />
-        <select name="frmShowSurveys_MultiAction" onChange="selectMultiAction();">
-          <option value="0">{TXT_SUBMIT_SELECT}</option>
-          <option value="delete">{TXT_SUBMIT_DELETE}</option>
-          <option value="activate">{TXT_SUBMIT_ACTIVATE}</option>
-          <option value="deactivate">{TXT_SUBMIT_DEACTIVATE}</option>
-        </select>
-      </td>
-    </tr>
-  </table>
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<tr>
+			<th colspan="9">Existierende Umfragen</th>
+		</tr>
+		<tr class="row3">
+			<td nowrap="nowrap" width="2%"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
+			<td nowrap="nowrap" width="3%"><span style="font-weight:bold;">{TXT_SUBTITLE_STATUS}</span></td>
+			<td nowrap="nowrap" width="3%"><span style="font-weight:bold;">{TXT_SUBTITLE_TYPE}</span></td>
+			<td nowrap="nowrap" width="3%"><span style="font-weight:bold;">{TXT_SUBTITLE_PLACEHOLDER}</span></td>
+			<td nowrap="nowrap" width="15%"><span style="font-weight:bold;">{TXT_SUBTITLE_DATE}</span></td>
+			<td nowrap="nowrap" width="33%"><span style="font-weight:bold;">{TXT_SUBTITLE_NAME}</span></td>
+			<td nowrap="nowrap" width="11%"><span style="font-weight:bold;">{TXT_SUBTITLE_PARTICIPANT}</span></td>
+			<td nowrap="nowrap" width="25%"><span style="font-weight:bold;">{TXT_SUBTITLE_PARTICIPANT_LAST}</span></td>
+			<td nowrap="nowrap" width="5%"><div align="right"><span style="font-weight:bold;">{TXT_SUBTITLE_ACTIONS}</span></div></td>
+		</tr>
+		<!-- BEGIN showSurveys -->
+		<tr class="{SURVEY_ROWCLASS}">
+			<td><input type="checkbox" name="selectedSurveyId[]" id="selectedSurveyId" value="{SURVEY_ID}" /></td>
+			<td><a href="?cmd=survey&amp;act=status&amp;id={SURVEY_ID}" target="_self"><img src="images/icons/{SURVEY_STATUS_ICON}.gif" border="0" alt="{TXT_IMGALT_STATUS}" title="{TXT_IMGALT_STATUS}" /></td>
+			<td>{SURVEY_TYPE_ICON}</td>
+			<td>{SURVEY_HOME_ICON}</td>
+			<td>{SURVEY_DATE}</td>
+			<td>{SURVEY_NAME}</td>
+			<td>{SURVEY_VOTE_COUNT}</td>
+			<td>{SURVEY_LAST_VOTE}</td>
+			<td nowrap="nowrap">
+				<div align="right">
+					<a href="?cmd=survey&amp;act=edit&amp;id={SURVEY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+					<a href="javascript:deleteSurvey({SURVEY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a> 
+				</div>
+			</td>
+		</tr>
+		<!-- END showSurveys -->
+		<!-- BEGIN noSurveys -->
+		<tr class="row2">
+			<td colspan="9"><div align="center">{TXT_NO_CATEGORIES}</div></td>
+		</tr>
+		<!-- END noSurveys -->
+	</table>
+	<table cellpadding="2" cellspacing="0" border="0">
+		<tr>
+			<td>
+				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+				<a href="#" onClick="changeCheckboxes('frmShowSurveys','selectedSurveyId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
+				<a href="#" onClick="changeCheckboxes('frmShowSurveys','selectedSurveyId[]',false); return false;">{TXT_DESELECT_ALL}</a>
+				<img src="images/icons/strike.gif" />
+				<select name="frmShowSurveys_MultiAction" onChange="selectMultiAction();">
+					<option value="0">{TXT_SUBMIT_SELECT}</option>
+					<option value="delete">{TXT_SUBMIT_DELETE}</option>
+					<option value="activate">{TXT_SUBMIT_ACTIVATE}</option>
+					<option value="deactivate">{TXT_SUBMIT_DEACTIVATE}</option>
+				</select>
+			</td>
+		</tr>
+	</table>
 </form>
 <!-- END module_survey_overview.html -->

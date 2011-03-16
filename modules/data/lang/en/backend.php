@@ -22,7 +22,7 @@ $_ARRAYLANG['TXT_SUBCATEGORIES'] = "Sub categories";
 $_ARRAYLANG['TXT_DATA_SHOW_ALL'] = "show all";
 $_ARRAYLANG['TXT_DATA_OVERLAY_HEIGHT'] = "Height of the overlay box";
 $_ARRAYLANG['TXT_DATA_OVERLAY_WIDTH'] = "Width of the overlay box";
-$_ARRAYLANG['TXT_DATA_SETTINGS_SHADOWBOX_TEMPLATE'] = "Thickbox template";
+$_ARRAYLANG['TXT_DATA_SETTINGS_SHADOWBOX_TEMPLATE'] = "Shadowbox-Template";
 $_ARRAYLANG['TXT_ADV_SETTINGS'] = "Advanced settings";
 $_ARRAYLANG['TXT_GENERAL_BOX_WIDTH'] = "General box width";
 $_ARRAYLANG['TXT_GENERAL_BOX_HEIGHT'] = "General box height";
@@ -133,5 +133,4 @@ $_ARRAYLANG['TXT_DATA_THUMBNAIL_SIZE'] = "Maximum size of the thumbnail:";
 $_ARRAYLANG['TXT_DATA_WIDTH'] = "Width";
 $_ARRAYLANG['TXT_DATA_HEIGHT'] = "Height";
 $_ARRAYLANG['TXT_DATA_ATTACHMENT_DESC'] = "Attachment description";
-$_ARRAYLANG['TXT_DIV_THUMBNAIL_TYPE'] = "";
 ?>

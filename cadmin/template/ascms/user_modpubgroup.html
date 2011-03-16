@@ -3,91 +3,91 @@
 function add(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
-  {
-    if (from.options[0] != null)
-      from.options[0].selected = true;
-    from.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<from.length; i++)
-    {
-      if (from.options[i].selected)
-      {
-          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-         }
-    }
-      for (var i=from.length-1; i>=0; i--)
-    {
-      if (from.options[i].selected)
-      {
-           from.options[i] = null;
-         }
-    }
-  }
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<from.length; i++)
+		{
+			if (from.options[i].selected)
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
+   			}
+		}
+	    for (var i=from.length-1; i>=0; i--)
+		{
+			if (from.options[i].selected)
+			{
+		       from.options[i] = null;
+   			}
+		}
+	}
     disapleButtons(from,dest,add,remove);
 }
 
 
 function remove(from,dest,add,remove)
 {
-  if ( dest.selectedIndex < 0)
-  {
-    if (dest.options[0] != null)
-      dest.options[0].selected = true;
-    dest.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<dest.options.length; i++)
-    {
-      if (dest.options[i].selected)
-      {
-          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-         }
-    }
-      for (var i=dest.options.length-1; i>=0; i--)
-    {
-      if (dest.options[i].selected)
-      {
-           dest.options[i] = null;
-         }
-    }
-  }
-  disapleButtons(from,dest,add,remove);
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{
+		for (var i=0; i<dest.options.length; i++)
+		{
+			if (dest.options[i].selected)
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
+   			}
+		}
+	    for (var i=dest.options.length-1; i>=0; i--)
+		{
+			if (dest.options[i].selected)
+			{
+		       dest.options[i] = null;
+   			}
+		}
+	}
+	disapleButtons(from,dest,add,remove);
 }
 
 function disapleButtons(from,dest,add,remove)
 {
-  if (from.options.length > 0 )
-  {
-    add.disabled = 0;
-  }
-  else
-    add.disabled = 1;
+	if (from.options.length > 0 )
+	{
+		add.disabled = 0;
+	}
+	else
+		add.disabled = 1;
 
-  if (dest.options.length > 0)
-    remove.disabled = 0;
-  else
-    remove.disabled = 1;
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
 }
 
 function selectAll(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
+	for(var i = 0;i < CONTROL.length;i++)
     {
-    CONTROL.options[i].selected = true;
-  }
+		CONTROL.options[i].selected = true;
+	}
 }
 
 function deselectAll(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
 }
 </script>
 <form name="form" action="{USER_FORM_ACTION}" method="post" onsubmit="selectAll(document.form.elements['selectedUsers[]']);
@@ -138,7 +138,7 @@ function deselectAll(CONTROL)
             <td width="1%">
               <div align="left">{TXT_ASSIGNED_USERS}
                 <select name="selectedUsers[]" size="10" style="width:200px;" multiple="multiple">
-        {USER_SELECTED}
+				{USER_SELECTED}
                 </select>
                 <br />
                 <font size="1"><a href="javascript:selectAll(document.form.elements['selectedUsers[]']);" style="color:blue;">{TXT_SELECT_ALL}<br />
@@ -153,8 +153,8 @@ function deselectAll(CONTROL)
   </table>
   <br />
 <ul id="tabmenu">
-  <li><a id="pubGroupTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_PROTECT_RANGES}">{TXT_PROTECT_RANGES}</a></li>
-  <li><a id="pubGroupTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_PERMISSIONS}">{TXT_PERMISSIONS}</a></li>
+	<li><a id="pubGroupTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_PROTECT_RANGES}">{TXT_PROTECT_RANGES}</a></li>
+	<li><a id="pubGroupTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_PERMISSIONS}">{TXT_PERMISSIONS}</a></li>
 </ul>
 <div id="content1" class="pubGroupTab" style="display:block">
   <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
@@ -186,7 +186,7 @@ function deselectAll(CONTROL)
             <td width="1%">
               <div align="left">{TXT_ASSIGNED_RANGES}
                 <select name="selectedPages[]" size="12" style="width:200px;" multiple="multiple">
-        {PAGES_SELECTED}
+				{PAGES_SELECTED}
                 </select>
                 <br />
                 <font size="1"><a href="javascript:selectAll(document.form.elements['selectedPages[]']);" style="color:blue;">{TXT_SELECT_ALL}<br />
@@ -201,23 +201,23 @@ function deselectAll(CONTROL)
   </table>
 </div>
 <div id="content2" class="pubGroupTab" style="display: none">
-  <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-     <tr>
-          <th width="90%" nowrap="nowrap">{TXT_MODULE}</th>
-      <th nowrap="nowrap" width="10%" style="text-align:center;">{TXT_ALLOW}</th>
-      </tr>
-      <!-- BEGIN module_list -->
-        <tr class="row3">
-            <td colspan="2" nowrap="nowrap" width="100%"><b>{USER_MANAGEMENT_MODULE}</b></td>
-          </tr>
-          <!-- BEGIN module_function_list -->
-        <tr class="row2">
-              <td nowrap="nowrap" width="90%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{USER_MANAGEMENT_MODULE_FUNCTION}&nbsp;[{USER_MANAGEMENT_ACCESS_ID}]</td>
-              <td nowrap="nowrap" width="10%"><div style="text-align:center;"><input name="accessId[]" value="{USER_MANAGEMENT_ACCESS_ID}" {USER_MANAGEMENT_ACCESS_CHECKED} type="checkbox" /></div></td>
-            </tr>
-          <!-- END module_function_list -->
-        <!-- END module_list -->
-  </table>
+	<table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+ 		<tr>
+      		<th width="90%" nowrap="nowrap">{TXT_MODULE}</th>
+			<th nowrap="nowrap" width="10%" style="text-align:center;">{TXT_ALLOW}</th>
+    	</tr>
+    	<!-- BEGIN module_list -->
+    		<tr class="row3">
+      			<td colspan="2" nowrap="nowrap" width="100%"><b>{USER_MANAGEMENT_MODULE}</b></td>
+      		</tr>
+      		<!-- BEGIN module_function_list -->
+				<tr class="row2">
+      				<td nowrap="nowrap" width="90%">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{USER_MANAGEMENT_MODULE_FUNCTION}&nbsp;[{USER_MANAGEMENT_ACCESS_ID}]</td>
+      				<td nowrap="nowrap" width="10%"><div style="text-align:center;"><input name="accessId[]" value="{USER_MANAGEMENT_ACCESS_ID}" {USER_MANAGEMENT_ACCESS_CHECKED} type="checkbox" /></div></td>
+      			</tr>
+      		<!-- END module_function_list -->
+      	<!-- END module_list -->
+	</table>
 </div>
   <br />
   <input type="reset" value="{TXT_RESET}" name="Reset" />

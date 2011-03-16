@@ -287,11 +287,4 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SEARCH_ARTICLES'] = "Search articles";
 $_ARRAYLANG['TXT_KNOWLEDGE_JUMP'] = "Jump";
 $_ARRAYLANG['TXT_KNOWLEDGE_TIDY_TAGS_SUCCESSFUL'] = "Stichworte wurden aufgeräumt.";
 $_ARRAYLANG['TXT_KNOWLEDGE_RESET_VOTES_SUCCESSFUL'] = "Bewertungsstatistiken wurden zurückgesetzt.";
-$_ARRAYLANG['TXT_KNOWLEDGE_AVAILABLE_CATEGORIES'] = "Verfügbare Kategorien";
-$_ARRAYLANG['TXT_KNOWLEDGE_CHECK_ALL'] = "Alle markieren";
-$_ARRAYLANG['TXT_KNOWLEDGE_UNCHECK_ALL'] = "Auswahl löschen";
-$_ARRAYLANG['TXT_KNOWLEDGE_ASSIGNED_CATEGORIES'] = "Zugewiesene Kategorien";
-$_ARRAYLANG['TXT_MANAGE'] = "manage";
-$_ARRAYLANG['TXT_CONFIRM_COMMENT_DELETION'] = "The comment will be irreversably deleted. Are you sure?";
-$_ARRAYLANG['TXT_TITLE'] = "Title";
 ?>

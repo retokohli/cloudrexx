@@ -439,25 +439,35 @@ class File
             || empty($target_path))
             return false;
         $tmp_path = $_FILES[$upload_field_name]['tmp_name'];
-        $tmp_name = $_FILES[$upload_field_name]['name'];
         if ($accepted_extensions) {
-            $extension = pathinfo($tmp_name, PATHINFO_EXTENSION);
-            if (!in_array($extension, $accepted_extensions))
+            $path_parts = pathinfo($tmp_path, PATHINFO_EXTENSION);
+            if (!in_array($path_parts['extension'], $accepted_extensions))
                 return false;
         }
         if ($maximum_size > 0 && filesize($tmp_path) > $maximum_size)
             return false;
-        if(strpos($target_path, ASCMS_DOCUMENT_ROOT) === false){
-            if (strpos($target_path, ASCMS_PATH) !== false){
-                $target_path = str_replace(ASCMS_PATH, '', $target_path);
-            }
-            $target_path = ASCMS_DOCUMENT_ROOT.'/'.$target_path;
-        }
-
-        if (!move_uploaded_file($tmp_path, $target_path)) return false;
+        if (!move_uploaded_file($tmp_path, ASCMS_PATH.$target_path)) return false;
         return true;
     }
 
+    /**
+     * Determines the file size of a given file by $file and returns its size in bytes.
+     *
+     * @param   string The relative path to a file
+     * @return  integer Filesize of $file in bytes
+     */
+    function getFileSizeInBytes($file)
+    {
+        $size = sprintf('%u', filesize(ASCMS_DOCUMENT_ROOT.'/'.$file));
+        if ((!$size || $size > PHP_INT_MAX) && $this->ftp_is_activated) {
+            $result = ftp_raw($this->conn_id, 'SIZE '.$this->ftpDirectory.ASCMS_PATH_OFFSET.'/'.$file);
+            if (preg_match('/^213\s(.*)$/', $result[0], $match)) {
+                $size = $match[1];
+            }
+        }
+
+        return $size;
+    }
 }
 
 ?>

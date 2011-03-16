@@ -1,15 +1,3 @@
-<script type="text/javascript" >
-function showOrHide(strElement) 
-{
-    if (document.getElementById(strElement).style.display == 'none') {
-        document.getElementById(strElement).style.display = 'block';
-    } else {
-        document.getElementById(strElement).style.display = 'none';
-    }
-}
-
-</script>
-
 <!-- START voting_add.html -->
 <form action="index.php?cmd=voting&amp;act=editsubmit" method="post">
   <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
@@ -27,34 +15,19 @@ function showOrHide(strElement)
     <tr valign="top" class="row1">
       <td nowrap="nowrap" width="15%">{TXT_NAME}&nbsp;<span class="status"><b>*</b></span></td>
       <td width="85%">
-        <input maxlength="255" name="votingnames[0]" style="width: 450px;" value="{EDIT_NAME}" />&nbsp;<a href="javascript:showOrHide('langName');">{TXT_EXTENDED}</a>
-            <div id="langName" style="display: none;">
-                <!-- BEGIN showNameFields -->
-                <input style="width: 450px;" type="text" name="votingnames[{LANG_ID}]" value="{LANG_VALUE}" id="name_{LANG_ID}"/>&nbsp;<label for="name_{LANG_ID}">{LANG_NAME}</label><br />
-                <!-- END showNameFields -->
-            </div>
+        <input maxlength="255" name="votingname" style="width: 450px;" value="{EDIT_NAME}" />
       </td>
     </tr>
     <tr valign="top" class="row2">
       <td nowrap="nowrap">{TXT_VOTING_QUESTION}&nbsp;<span class="status"><b>*</b></span></td>
       <td>
-        <input maxlength="255" name="votingquestion[0]" style="width: 450px;" value="{EDIT_QUESTION}" />&nbsp;<a href="javascript:showOrHide('langQuestion');">{TXT_EXTENDED}</a>
-            <div id="langQuestion" style="display: none;">
-                <!-- BEGIN showQuestionFields -->
-                <input style="width: 450px;" type="text" name="votingquestions[{LANG_ID}]" value="{LANG_VALUE}" id="name_{LANG_ID}"/>&nbsp;<label for="name_{LANG_ID}">{LANG_NAME}</label><br />
-                <!-- END showQuestionFields -->
-            </div>
+        <input maxlength="255" name="votingquestion" style="width: 450px;" value="{EDIT_QUESTION}" />
       </td>
     </tr>
     <tr valign="top" class="row1">
       <td nowrap="nowrap">{TXT_VOTING_ADD_OPTIONS}&nbsp;<span class="status"><b>*</b></span></td>
       <td>
-        <textarea name="votingoptions[0]" rows="6"  style="width: 450px;">{EDIT_OPTIONS}</textarea>&nbsp;<a href="javascript:showOrHide('langVotingOptions');">{TXT_EXTENDED}</a>
-          <div id="langVotingOptions" style="display: none">
-                <!-- BEGIN showVotingOptionFields -->
-                <textarea name="votingoptions[{LANG_ID}]" rows="6" style="width: 450px;" id="votingOptions_{LANG_ID}">{LANG_VALUE}</textarea>&nbsp;<label for="votingOptions_{LANG_ID}">{LANG_NAME}</label><br />
-                <!-- END showVotingOptionFields -->
-          </div>
+        <textarea name="votingoptions" rows="6"  style="width: 450px;">{EDIT_OPTIONS}</textarea>
       </td>
     </tr>
     <tr valign="top" class="row2">
@@ -65,34 +38,34 @@ function showOrHide(strElement)
       </td>
     </tr>
     <tr valign="top" class="row1">
-        <td nowrap="nowrap">{TXT_ADDITIONAL}</td>
+		<td nowrap="nowrap">{TXT_ADDITIONAL}</td>
       <td>
-        <input type="checkbox" name="additional_nickname" id="additional_nickname" {VOTING_FLAG_ADDITIONAL_NICKNAME}/>
-        <label for="additional_nickname">{TXT_ADDITIONAL_NICKNAME}</label><br />
+		<input type="checkbox" name="additional_nickname" id="additional_nickname" {VOTING_FLAG_ADDITIONAL_NICKNAME}/>
+		<label for="additional_nickname">{TXT_ADDITIONAL_NICKNAME}</label><br />
 
-        <input type="checkbox" name="additional_forename" id="additional_forename" {VOTING_FLAG_ADDITIONAL_FORENAME}/>
-        <label for="additional_forename">{TXT_ADDITIONAL_FORENAME}</label> <br />
+		<input type="checkbox" name="additional_forename" id="additional_forename" {VOTING_FLAG_ADDITIONAL_FORENAME}/>
+		<label for="additional_forename">{TXT_ADDITIONAL_FORENAME}</label> <br />
 
-        <input type="checkbox" name="additional_surname"  id="additional_surname"  {VOTING_FLAG_ADDITIONAL_SURNAME} />
-        <label for="additional_surname" >{TXT_ADDITIONAL_SURNAME}</label> <br />
+		<input type="checkbox" name="additional_surname"  id="additional_surname"  {VOTING_FLAG_ADDITIONAL_SURNAME} />
+		<label for="additional_surname" >{TXT_ADDITIONAL_SURNAME}</label> <br />
 
-        <input type="checkbox" name="additional_email"    id="additional_email"    {VOTING_FLAG_ADDITIONAL_EMAIL} />
-        <label for="additional_email" >{TXT_ADDITIONAL_EMAIL}</label> <br />
+		<input type="checkbox" name="additional_email"    id="additional_email"    {VOTING_FLAG_ADDITIONAL_EMAIL} />
+		<label for="additional_email" >{TXT_ADDITIONAL_EMAIL}</label> <br />
 
-        <input type="checkbox" name="additional_phone"    id="additional_phone"    {VOTING_FLAG_ADDITIONAL_PHONE}   />
-        <label for="additional_phone"   >{TXT_ADDITIONAL_PHONE}</label> <br />
+		<input type="checkbox" name="additional_phone"    id="additional_phone"    {VOTING_FLAG_ADDITIONAL_PHONE}   />
+		<label for="additional_phone"   >{TXT_ADDITIONAL_PHONE}</label> <br />
 
-        <input type="checkbox" name="additional_street"   id="additional_street"   {VOTING_FLAG_ADDITIONAL_STREET}  />
-        <label for="additional_street"  >{TXT_ADDITIONAL_STREET} </label> <br />
+		<input type="checkbox" name="additional_street"   id="additional_street"   {VOTING_FLAG_ADDITIONAL_STREET}  />
+		<label for="additional_street"  >{TXT_ADDITIONAL_STREET} </label> <br />
 
-        <input type="checkbox" name="additional_zip"      id="additional_zip"      {VOTING_FLAG_ADDITIONAL_ZIP}     />
-        <label for="additional_zip"     >{TXT_ADDITIONAL_ZIP} </label> <br />
+		<input type="checkbox" name="additional_zip"      id="additional_zip"      {VOTING_FLAG_ADDITIONAL_ZIP}     />
+		<label for="additional_zip"     >{TXT_ADDITIONAL_ZIP} </label> <br />
 
-        <input type="checkbox" name="additional_city"     id="additional_city"     {VOTING_FLAG_ADDITIONAL_CITY}    />
-        <label for="additional_city"    >{TXT_ADDITIONAL_CITY} </label> <br />
+		<input type="checkbox" name="additional_city"     id="additional_city"     {VOTING_FLAG_ADDITIONAL_CITY}    />
+		<label for="additional_city"    >{TXT_ADDITIONAL_CITY} </label> <br />
 
-        <input type="checkbox" name="additional_comment"  id="additional_comment"  {VOTING_FLAG_ADDITIONAL_COMMENT} />
-        <label for="additional_comment" >{TXT_ADDITIONAL_COMMENT} </label> <br />
+		<input type="checkbox" name="additional_comment"  id="additional_comment"  {VOTING_FLAG_ADDITIONAL_COMMENT} />
+		<label for="additional_comment" >{TXT_ADDITIONAL_COMMENT} </label> <br />
       </td>
     </tr>
   </table>

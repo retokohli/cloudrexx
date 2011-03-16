@@ -44,6 +44,7 @@ class Blog extends BlogLibrary  {
         $this->_intCurrentUserId = 0;
 
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
     }
@@ -123,7 +124,7 @@ class Blog extends BlogLibrary  {
                 'BLOG_ENTRIES_ID'           =>  $intEntryId,
                 'BLOG_ENTRIES_TITLE'        =>  $arrEntryValues['subject'],
                 'BLOG_ENTRIES_POSTED'       =>  $this->getPostedByString($arrEntryValues['user_name'],$arrEntryValues['time_created']),
-                'BLOG_ENTRIES_POSTED_ICON'    =>    $this->getPostedByIcon($arrEntryValues['time_created']),
+                'BLOG_ENTRIES_POSTED_ICON'	=>	$this->getPostedByIcon($arrEntryValues['time_created']),
                 'BLOG_ENTRIES_CONTENT'      =>  $arrEntryValues['translation'][$this->_intLanguageId]['content'],
                 'BLOG_ENTRIES_INTRODUCTION' =>  $this->getIntroductionText($arrEntryValues['translation'][$this->_intLanguageId]['content']),
                 'BLOG_ENTRIES_IMAGE'        =>  ($arrEntryValues['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntryValues['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntryValues['subject'].'" alt="'.$arrEntryValues['subject'].'" />' : '',
@@ -132,7 +133,7 @@ class Blog extends BlogLibrary  {
                 'BLOG_ENTRIES_COMMENTS'     =>  $arrEntryValues['comments_active'].' '.$_ARRAYLANG['TXT_BLOG_FRONTEND_OVERVIEW_COMMENTS'].'&nbsp;',
                 'BLOG_ENTRIES_CATEGORIES'   =>  $this->getCategoryString($arrEntryValues['categories'][$this->_intLanguageId], true),
                 'BLOG_ENTRIES_TAGS'         =>  $this->getLinkedTags($arrEntryValues['translation'][$this->_intLanguageId]['tags']),
-                'BLOG_ENTRIES_TAGS_ICON'    =>  $this->getTagsIcon(),
+                'BLOG_ENTRIES_TAGS_ICON'	=>  $this->getTagsIcon(),
                 'BLOG_ENTRIES_SPACER'       =>  ($this->_arrSettings['blog_voting_activated'] && $this->_arrSettings['blog_comments_activated']) ? '&nbsp;&nbsp;|&nbsp;&nbsp;' : ''
             ));
 
@@ -164,7 +165,7 @@ class Blog extends BlogLibrary  {
         $intMessageId = intval($intMessageId);
 
         if ($intMessageId < 1) {
-            header("Location: index.php?section=blog");
+            CSRF::header("Location: index.php?section=blog");
         }
 
         //Empty form-values
@@ -220,7 +221,7 @@ class Blog extends BlogLibrary  {
             'BLOG_DETAILS_ID'           =>  $intMessageId,
             'BLOG_DETAILS_TITLE'        =>  $arrEntries[$intMessageId]['subject'],
             'BLOG_DETAILS_POSTED'       =>  $this->getPostedByString($arrEntries[$intMessageId]['user_name'], $arrEntries[$intMessageId]['time_created']),
-            'BLOG_DETAILS_POSTED_ICON'    =>    $this->getPostedByIcon($arrEntries[$intMessageId]['time_created']),
+            'BLOG_DETAILS_POSTED_ICON'	=>	$this->getPostedByIcon($arrEntries[$intMessageId]['time_created']),
             'BLOG_DETAILS_CONTENT'      =>  $arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['content'],
             'BLOG_DETAILS_IMAGE'        =>  ($arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'] != '') ? '<img src="'.$arrEntries[$intMessageId]['translation'][$this->_intLanguageId]['image'].'" title="'.$arrEntries[$intMessageId]['subject'].'" alt="'.$arrEntries[$intMessageId]['subject'].'" />' : '',
             'BLOG_DETAILS_NETWORKS'     =>  $strNetworks
@@ -287,28 +288,28 @@ class Blog extends BlogLibrary  {
             if ($objCommentsResult->RecordCount() > 0) {
                 while (!$objCommentsResult->EOF) {
 
-                    //Get username and avatar
-                    $strUserName     = '';
-                    $strUserAvatar    = '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/no_avatar.gif" alt="'.$strUserName.'" />';
-                    $objUser = $objFWUser->objUser->getUser($objCommentsResult->fields['user_id']);
+                	//Get username and avatar
+                	$strUserName 	= '';
+                	$strUserAvatar	= '<img src="'.ASCMS_BLOG_IMAGES_WEB_PATH.'/no_avatar.gif" alt="'.$strUserName.'" />';
+					$objUser = $objFWUser->objUser->getUser($objCommentsResult->fields['user_id']);
 
-                    if ($objCommentsResult->fields['user_id'] == 0 || $objUser === false) {
-                        $strUserName     = $objCommentsResult->fields['user_name'];
-                    } else {
-                        $strUserName     = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+                	if ($objCommentsResult->fields['user_id'] == 0 || $objUser === false) {
+						$strUserName 	= $objCommentsResult->fields['user_name'];
+                	} else {
+						$strUserName 	= htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 
-                        if ($objUser->getProfileAttribute('picture') != '') {
-                            $strUserAvatar    = '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
-                        }
-                    }
+						if ($objUser->getProfileAttribute('picture') != '') {
+							$strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
+						}
+                	}
 
-                    //Parse comment
+					//Parse comment
                     $this->_objTpl->setVariable(array(
-                        'BLOG_DETAILS_COMMENT_ID'           =>  $objCommentsResult->fields['comment_id'],
-                        'BLOG_DETAILS_COMMENT_TITLE'        =>  htmlentities(stripslashes($objCommentsResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
-                        'BLOG_DETAILS_COMMENT_POSTED'       =>  $this->getPostedByString($strUserName, date(ASCMS_DATE_FORMAT,$objCommentsResult->fields['time_created'])),
-                        'BLOG_DETAILS_COMMENT_CONTENT'        =>    contrexx_stripslashes($objCommentsResult->fields['comment']),
-                        'BLOG_DETAILS_COMMENT_AVATAR'        =>    $strUserAvatar
+                        'BLOG_DETAILS_COMMENT_ID'       	=>  $objCommentsResult->fields['comment_id'],
+                        'BLOG_DETAILS_COMMENT_TITLE'    	=>  htmlentities(stripslashes($objCommentsResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
+                        'BLOG_DETAILS_COMMENT_POSTED'   	=>  $this->getPostedByString($strUserName, date(ASCMS_DATE_FORMAT,$objCommentsResult->fields['time_created'])),
+                        'BLOG_DETAILS_COMMENT_CONTENT'		=>	contrexx_stripslashes($objCommentsResult->fields['comment']),
+                        'BLOG_DETAILS_COMMENT_AVATAR'		=>	$strUserAvatar
                     ));
 
                     $this->_objTpl->parse('showCommentRows');

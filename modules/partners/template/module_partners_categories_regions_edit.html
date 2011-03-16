@@ -1,0 +1,133 @@
+<!-- START module_blog_categories_edit.html -->
+<script language="JavaScript" type="text/javascript">
+//<![CDATA[
+function showOrHide(strElement) {
+	if (document.getElementById(strElement).style.display == 'none') {
+		document.getElementById(strElement).style.display = 'block';
+	} else {
+		document.getElementById(strElement).style.display = 'none';
+	}
+}
+
+function copyText(strField) {
+	for (var h=0; h < document.forms.length;h++) {
+		for (var i=0; i < document.forms[h].elements.length;i++) {
+			//read out all form-elements with the loop
+			if(document.forms[h].elements[i].name.search(strField) != -1) {
+				switch (strField) {
+					case 'frmEditCategory_Name_':
+						document.forms[h].elements[i].value = document.frmEditCategory.frmEditCategory_Name.value;
+					break;
+				}
+			}
+		}
+	}	
+}
+//Following Functions are needed for Picture-Selection -------------------------------------------------------------
+function SetUrl(url, width, height, alt) {
+	document.getElementById(newsElInsertBox).value = url;
+}
+
+function newsGetFileBrowser(elInsertBox) {
+	newsElInsertBox = elInsertBox;
+	openWindow('?cmd=fileBrowser&{CSRF_PARAM}&standalone=true&type=partners','','width=800,height=600,resizable=yes,status=no,scrollbars=yes');
+}
+
+function openWindow(theURL,winName,features){
+	partnersPopup = window.open(theURL,"partners",features);
+	partnersPopup.focus();
+}
+
+
+
+function checkCheckboxes(){
+changeCheckboxes('frmEditCategory','frmLevel_title',true);
+changeCheckboxes('frmEditCategory','frmLevel_content',true);
+changeCheckboxes('frmEditCategory','frmLevel_cname',true);
+changeCheckboxes('frmEditCategory','frmLevel_country',true);
+changeCheckboxes('frmEditCategory','frmLevel_phone',true);
+changeCheckboxes('frmEditCategory','frmLevel_address1',true);
+changeCheckboxes('frmEditCategory','frmLevel_address2',true);
+changeCheckboxes('frmEditCategory','frmLevel_city',true);
+changeCheckboxes('frmEditCategory','frmLevel_zipcode',true);
+changeCheckboxes('frmEditCategory','frmLevel_logo',true);
+changeCheckboxes('frmEditCategory','frmLevel_clogo',true);
+changeCheckboxes('frmEditCategory','frmLevel_llogo',true);
+changeCheckboxes('frmEditCategory','frmLevel_level',true);
+changeCheckboxes('frmEditCategory','frmLevel_quote',true);
+return false;
+}
+
+function uncheckCheckboxes(){
+changeCheckboxes('frmEditCategory','frmLevel_title',false);
+changeCheckboxes('frmEditCategory','frmLevel_content',false);
+changeCheckboxes('frmEditCategory','frmLevel_cname',false);
+changeCheckboxes('frmEditCategory','frmLevel_country',false);
+changeCheckboxes('frmEditCategory','frmLevel_phone',false);
+changeCheckboxes('frmEditCategory','frmLevel_address1',false);
+changeCheckboxes('frmEditCategory','frmLevel_address2',false);
+changeCheckboxes('frmEditCategory','frmLevel_city',false);
+changeCheckboxes('frmEditCategory','frmLevel_zipcode',false);
+changeCheckboxes('frmEditCategory','frmLevel_logo',false);
+changeCheckboxes('frmEditCategory','frmLevel_clogo',false);
+changeCheckboxes('frmEditCategory','frmLevel_llogo',false);
+changeCheckboxes('frmEditCategory','frmLevel_level',false);
+changeCheckboxes('frmEditCategory','frmLevel_quote',false);
+return false;
+}
+//]]>
+</script>
+<form name="frmEditCategory" method="post" action="?cmd=partners&amp;act=updateCategory">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="4">{TXT_EDIT_TITLE}</th>
+		</tr>
+		<tr class="row1">
+			<td valign="top">{TXT_EDIT_NAME}</td>
+			<td colspan="3">
+				<input type="text" name="frmEditCategory_Name" value="{EDIT_NAME}" maxlength="100" onchange="copyText('frmEditCategory_Name_');" style="width:30%;" />&nbsp;<a href="javascript:showOrHide('divEditCategoryLang_Name');">{TXT_EDIT_EXTENDED}</a>
+				<div id="divEditCategoryLang_Name" style="display: none;">
+					<!-- BEGIN editCategoryNameFields -->
+					<input type="text" name="frmEditCategory_Name_{EDIT_NAME_LANGID}" value="{EDIT_NAME_VALUE}" maxlength="100" style="width:30%; margin-top:1px;" />&nbsp;<label for="frmEditCategory_Name_{EDIT_NAME_LANGID}">{EDIT_NAME_LANG}</label><br />
+					<!-- END editCategoryNameFields -->
+                    <input type="hidden" name="cat_id" value="{CAT_ID}" />
+				</div>
+			</td>
+		</tr>
+
+
+             <!-- BEGIN Display_browse -->
+            <tr class="row2">
+            <td>{PARTNERS_LEVEL_IMAGE}</td>
+            <td colspan="3"><input type="text" name="frmLevel_Image" id="frmLevel_Image" style="width:230px;" value="{DIV_IMAGE_CAT}">&nbsp;<input type="button" value="Browse" onclick="javascript:newsGetFileBrowser('frmLevel_Image','images')"></td>
+            </tr>
+             <!-- END Display_browse -->
+            		<!-- BEGIN Display_level -->
+             <tr  class="row1" width="100%"><td colspan="4" align="center">
+             <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+             <th>{TXT_ADD_DISPLAY}</th><th><a href="#" onclick="checkCheckboxes();">{TXT_ADD_ALL}</a>&nbsp;/&nbsp;<a href="#" onclick="uncheckCheckboxes();">{TXT_ADD_DALL}</a></th>
+             <tr class="row1"><td><input type="checkbox" name="frmLevel_title" {PARTNERS_TITLE} value="1"/>{TXT_ADD_TITLES}</td><td><input type="checkbox" name="frmLevel_content" {PARTNERS_CONTENT} value="1"/>{TXT_ADD_CONTENT}</td></tr>
+             <tr class="row2"><td><input type="checkbox" name="frmLevel_cname" {PARTNERS_CONTACT} value="1"/>{TXT_ADD_CONTACT}</td><td><input type="checkbox" name="frmLevel_country" {PARTNERS_COUNTRY} value="1"/>{TXT_ADD_COUNTRY}</td></tr>
+             <tr class="row1"><td><input type="checkbox" name="frmLevel_phone" {PARTNERS_PHONE} value="1"/>{TXT_ADD_PHONE}</td><td><input type="checkbox" name="frmLevel_address1" {PARTNERS_ADDRESS1} value="1"/>{TXT_ADD_ADDRESS1}</td></tr>
+             <tr class="row2"><td><input type="checkbox" name="frmLevel_address2" {PARTNERS_ADDRESS2} value="1"/>{TXT_ADD_ADDRESS2}</td><td><input type="checkbox" name="frmLevel_city" {PARTNERS_CITY} value="1"/>{TXT_ADD_CITY}</td></tr>
+             <tr class="row1"><td><input type="checkbox" name="frmLevel_zipcode" {PARTNERS_ZIPCODE} value="1"/>{TXT_ADD_ZIPCODE}</td><td><input type="checkbox" name="frmLevel_level" {PARTNERS_LEVEL} value="1"/>{TXT_ADD_LEVEL}</td></tr>
+             <tr class="row2"><td><input type="checkbox" name="frmLevel_logo" {PARTNERS_LOGO} value="1"/>{TXT_ADD_LOGO}</td><td><input type="checkbox" name="frmLevel_llogo" {PARTNERS_LLOGO} value="1"/>{TXT_ADD_LLOGO}</td></tr>
+             <tr class="row1"><td><input type="checkbox" name="frmLevel_clogo" {PARTNERS_CLOGO} value="1"/>{TXT_ADD_CLOGO}</td><td><input type="checkbox" name="frmLevel_quote" {PARTNERS_QUOTE} value="1"/>{TXT_ADD_QUOTE}</td></tr>
+             </table>
+              </td>
+            </tr>
+            <!-- END Display_level -->
+            <th colspan="4">{TXT_ADD_LANGUAGES}</th>
+			<tr class="row1">
+			<td width="10%">{TXT_EDIT_LANGUAGES}</td>
+			<td width="10%" valign="top">{EDIT_LANGUAGES_1}</td>
+			<td width="10%" valign="top">{EDIT_LANGUAGES_2}</td>
+			<td width="70%" valign="top">{EDIT_LANGUAGES_3}</td>
+		</tr>
+	</table>
+	<br />
+	<input type="hidden" value="{EDIT_CATEGORY_ID}" name="frmEditCategory_Id" />
+	<input type="hidden"  name="cat_name_edit" value="{PARTNERS_CAT_NAME}">
+	<input type="submit" value="{TXT_EDIT_SUBMIT}" name="frmEditCategory_Submit" />
+</form>
+<!-- END module_blog_categories_edit.html -->

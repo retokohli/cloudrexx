@@ -12,7 +12,7 @@
 
 // SECURITY CHECK
 if (eregi('index.class.php', $_SERVER['PHP_SELF'])) {
-    header('Location: '.CONTREXX_DIRECTORY_INDEX);
+    CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX);
     die();
 }
 
@@ -41,9 +41,9 @@ if(ini_get('allow_url_fopen') != 1){
  */
 class feed extends feedLibrary
 {
-    /**
-     * @var    HTML_Template_Sigma
-     */
+	/**
+	 * @var    HTML_Template_Sigma
+	 */
     public $_objTpl;
     public $pageTitle;
     public $statusMessage;
@@ -54,6 +54,7 @@ class feed extends feedLibrary
     {
         $this->pageContent = $pageContent;
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -201,7 +202,7 @@ class feed extends feedLibrary
             if(!isset($_GET['cat']) and !isset($_GET['news'])){
                 $this->_objTpl->setVariable('FEED_NO_NEWSFEED', $_ARRAYLANG['TXT_FEED_NO_NEWSFEED']);
             }else{
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=feed");
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=feed");
             }
         } else {
             if ($this->_objTpl->blockExists('feed_cat')) {
@@ -253,7 +254,7 @@ class feed extends feedLibrary
                            AND status = '1'";
             $objResult = $objDatabase->Execute($query);
             if($objResult->RecordCount() == 0){
-                header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=feed");
+                CSRF::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=feed");
                 die;
             }
 
@@ -313,8 +314,10 @@ class feed extends feedLibrary
             foreach ($rss->getItems() as $value){
                 if($x < $objResult->fields['articles']){
                     $this->_objTpl->setVariable(array(
-                        'FEED_LINK'   => $value['link'],
-                        'FEED_NAME'   => $value['title'],
+                        'FEED_ROWCLASS' => $x % 2 ? 'row2' : 'row1',
+                        'FEED_DATE'     => date('d.m.Y', strtotime($value['pubdate'])),
+                        'FEED_LINK'     => $value['link'],
+                        'FEED_NAME'     => $value['title'],
                     ));
                     $this->_objTpl->parse('feed_output_news');
                     $x++;

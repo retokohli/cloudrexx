@@ -2,9 +2,9 @@
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
 function setContactEmail(email) {
-  if (document.getElementById('contactEmail').value == "") {
-    document.getElementById('contactEmail').value = email;
-  }
+	if (document.getElementById('contactEmail').value == "") {
+		document.getElementById('contactEmail').value = email;
+	}
 }
 
 Text[0]=["","{TXT_DOMAIN_URL_EXPLANATION}"];
@@ -13,67 +13,67 @@ Style[0]=["","","","","",,"#000000","#ecf1f9","","","",,,,1,"#3366cc",2,24,0.3,,
 </script>
 <input type="hidden" name="sysConfig" />
 <table summary="system config" class="adminlist" border="0" width="100%" cellpadding="0" cellspacing="0">
-  <!-- BEGIN globalErrorMsg -->
-    <tr>
-      <td colspan="2" class="status_message">
-        <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-            <td>{GLOBAL_ERROR_MSG}</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  <!-- END globalErrorMsg -->
-  <tr class="row1">
-    <td colspan="2" height="20"><b>{TXT_GENERAL}</b></td>
-  </tr>
-  <!-- BEGIN generalErrorMsg -->
-    <tr>
-      <td colspan="2" class="status_message">
-        <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-            <td>{GENERAL_ERROR_MSG}</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  <!-- END generalErrorMsg -->
-  <tr class="row2">
-    <td height="20">{TXT_ADMIN_EMAIL}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" type="text" name="adminEmail" tabindex="1" value="{ADMIN_EMAIL}" onchange="setContactEmail(this.value);" /></td>
-  </tr>
-  <tr class="row1">
-    <td height="20">{TXT_ADMIN_NAME}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" type="text" name="adminName" tabindex="2" value="{ADMIN_NAME}" /></td>
-  </tr>
-  <tr class="row2">
-    <td height="20">{TXT_DOMAIN_URL} <img src="template/contrexx/images/help.gif" alt="" width="16" height="16" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
-    <td height="20" style="text-align:right;"><input class="textBox" type="text" name="domainURL" tabindex="3" maxlength="65535" value="{DOMAIN_URL}" /></td>
-  </tr>
-  <tr class="row1">
-    <td colspan="2">&nbsp;</td>
-  </tr>
-  <tr class="row2">
-    <td colspan="2" height="20"><b>{TXT_CONTACT}</b></td>
-  </tr>
-  <!-- BEGIN contactErrorMsg -->
-    <tr>
-      <td colspan="2" class="status_message">
-        <table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
-          <tr>
-            <td><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
-            <td>{CONTACT_ERROR_MSG}</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  <!-- END contactErrorMsg -->
-  <tr class="row1">
-    <td height="20">{TXT_CONTACT_EMAIL}</td>
-    <td height="20" style="text-align: right;"><input class="textBox" type="text" tabindex="4" name="contactEmail" id="contactEmail" value="{CONTACT_EMAIL}" /></td>
-  </tr>
+	<!-- BEGIN globalErrorMsg -->
+		<tr>
+			<td colspan="2" class="status_message">
+				<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+						<td>{GLOBAL_ERROR_MSG}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	<!-- END globalErrorMsg -->
+	<tr class="row1">
+		<td colspan="2" height="20"><b>{TXT_GENERAL}</b></td>
+	</tr>
+	<!-- BEGIN generalErrorMsg -->
+		<tr>
+			<td colspan="2" class="status_message">
+				<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+						<td>{GENERAL_ERROR_MSG}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	<!-- END generalErrorMsg -->
+	<tr class="row2">
+		<td height="20">{TXT_ADMIN_EMAIL}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" type="text" name="adminEmail" tabindex="1" value="{ADMIN_EMAIL}" onchange="setContactEmail(this.value);" /></td>
+	</tr>
+	<tr class="row1">
+		<td height="20">{TXT_ADMIN_NAME}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" type="text" name="adminName" tabindex="2" value="{ADMIN_NAME}" /></td>
+	</tr>
+	<tr class="row2">
+		<td height="20">{TXT_DOMAIN_URL} <img src="template/contrexx/images/help.gif" alt="" width="16" height="16" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" /></td>
+		<td height="20" style="text-align:right;"><input class="textBox" type="text" name="domainURL" tabindex="3" maxlength="65535" value="{DOMAIN_URL}" /></td>
+	</tr>
+	<tr class="row1">
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr class="row2">
+		<td colspan="2" height="20"><b>{TXT_CONTACT}</b></td>
+	</tr>
+	<!-- BEGIN contactErrorMsg -->
+		<tr>
+			<td colspan="2" class="status_message">
+				<table summary="status message" border="0" width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td><img src="template/contrexx/images/stop.gif" width="24" height="24" alt="{TXT_STOP}" title="{TXT_STOP}" /></td>
+						<td>{CONTACT_ERROR_MSG}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	<!-- END contactErrorMsg -->
+	<tr class="row1">
+		<td height="20">{TXT_CONTACT_EMAIL}</td>
+		<td height="20" style="text-align: right;"><input class="textBox" type="text" tabindex="4" name="contactEmail" id="contactEmail" value="{CONTACT_EMAIL}" /></td>
+	</tr>
 </table>
 <br />
 <!-- end system_config.html -->

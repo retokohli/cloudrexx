@@ -12,7 +12,7 @@
 // SECURITY CHECK
 if (eregi('feedLib.class.php', $_SERVER['PHP_SELF']))
 {
-    header('Location: index.php');
+    CSRF::header('Location: index.php');
     die();
 }
 

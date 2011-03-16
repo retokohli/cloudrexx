@@ -6,5 +6,5 @@
  * @package     contrexx
  * @subpackage  module_fileUploader
  */
-$_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'] = "Fermer ";
+$_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'] = "Close";
 ?>

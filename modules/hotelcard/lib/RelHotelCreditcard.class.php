@@ -12,6 +12,12 @@
  */
 
 /**
+ * Multilanguage text
+ * @ignore
+ */
+require_once ASCMS_CORE_PATH.'/Text.class.php';
+
+/**
  * Hotelcard to Creditcard relation class
  * @version     2.2.0
  * @since       2.2.0

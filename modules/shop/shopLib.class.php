@@ -58,8 +58,140 @@ define('SHOP_PAYMENT_RESULT_COUNT',           3);
 class ShopLibrary
 {
     const noPictureName = 'no_picture.gif';
-    const thumbnailSuffix = '.thumb';
-    const usernamePrefix = 'user';
+
+    /**
+     * @todo These class variable *SHOULD* be initialized in the constructor,
+     * otherwise it makes no sense to have them as class variables
+     * -- unless they are indeed treated as public, which is dangerous.
+     * Someone might try to access them before they are set up!
+     */
+    public $arrConfig = array();
+
+    /**
+     * Array of all countries
+     * @var     array [$arrCountries] array of all countries
+     * @access  public
+     * @see     _initCountries()
+     */
+    public $arrCountries = array();
+
+    /**
+     * Sorting order strings according to the corresponding setting
+     *
+     * Order 1: By order field value ascending, ID descending
+     * Order 2: By title ascending, Product ID ascending
+     * Order 3: By Product ID ascending, title ascending
+     * @var     array
+     * @see     Products::getByShopParam()
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    public static $arrProductOrder = array(
+        1 => 'p.sort_order ASC, p.id DESC',
+        2 => 'p.title ASC, p.product_id ASC',
+        3 => 'p.product_id ASC, p.title ASC',
+    );
+
+
+    /**
+     * Returns an array of the zones
+     * @return  array   The zones array
+     */
+    function _getZones()
+    {
+        global $objDatabase;
+        $query = "SELECT zones_id, zones_name, activation_status FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones ORDER BY zones_name";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $arrZones[$objResult->fields['zones_id']] = array(
+                    'zones_id'          => $objResult->fields['zones_id'],
+                    'zones_name'        => $objResult->fields['zones_name'],
+                    'activation_status' => $objResult->fields['activation_status']
+                    );
+            $objResult->MoveNext();
+        }
+        return $arrZones;
+    }
+
+
+    function _getRelCountries()
+    {
+        global $objDatabase;
+
+        $query = "SELECT zones_id, countries_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries ORDER BY id";
+        $objResult = $objDatabase->Execute($query);
+        while ($objResult && !$objResult->EOF) {
+            $arrRelCountries[]=array($objResult->fields['zones_id'], $objResult->fields['countries_id']);
+            $objResult->MoveNext();
+        }
+        return $arrRelCountries;
+    }
+
+
+    function _getZonesMenu($menuName="zone_id", $selectedId="", $onchange="")
+    {
+        global $objDatabase;
+
+        $menu = "<input type='hidden' name='old_$menuName' value='$selectedId' />\n".
+                "\n<select name='$menuName'".
+                (!empty($onchange) ? " onchange='$onchange'" : '') .">\n";
+        $query = "SELECT zones_id, zones_name FROM ".DBPREFIX."module_shop".MODULE_INDEX."_zones WHERE activation_status=1";
+        $objResult = $objDatabase->Execute($query);
+        while (!$objResult->EOF) {
+            $menu .=
+                "<option value='".$objResult->fields['zones_id']."'".
+                (intval($selectedId)==intval($objResult->fields['zones_id'])
+                    ? " selected='selected'"
+                    : '').
+                '>'.$objResult->fields['zones_name']."</option>\n";
+            $objResult->MoveNext();
+        }
+        $menu .= "</select>\n";
+        return $menu;
+    }
+
+
+    /**
+     * Returns a dropdown menu or hidden input field (plus name) string
+     * for the active country/-ies.
+     *
+     * If there is just one active country, returns a hidden <input> tag with the
+     * countries' name appended.  If there are more, returns a dropdown menu with
+     * the optional ID preselected and optional onchange method added.
+     * @param   string  $menuName   Optional name of the menu
+     * @param   string  $selectedId Optional pre-selected country ID
+     * @param   string  $onchange   Optional onchange callback function
+     * @return  string              The dropdown menu string
+     */
+    function _getCountriesMenu($menuName='countryId', $selectedId='', $onchange='')
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT countries_id, countries_name
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             WHERE activation_status=1";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult->RecordCount() > 1) {
+            $menu =
+                '<select name="'.$menuName.'"'.
+                (empty($onchange)
+                  ? ''
+                  : ' onchange="'.$onchange.'"').">\n";
+            while (!$objResult->EOF) {
+                $menu .=
+                    '<option value="'.$objResult->fields['countries_id'].'"'.
+                    (intval($selectedId) == $objResult->fields['countries_id']
+                      ? ' selected="selected"' : '').
+                    '>'.$objResult->fields['countries_name']."</option>\n";
+                $objResult->MoveNext();
+            }
+            return $menu."</select>\n";
+        }
+        return
+            '<input name="'.$menuName.'" type="hidden" value="'.
+            $objResult->fields['countries_id'].'" />'.
+            $objResult->fields['countries_name']."\n";
+    }
 
 
     /**
@@ -77,13 +209,37 @@ class ShopLibrary
 
         $menu = "\n<select name=\"".$menuName."\">\n";
         $menu .= ($selectedId==0) ? "<option value=\"0\" selected=\"selected\">All</option>\n" : "<option value=\"0\">All</option>\n";
-
         foreach ($arrLanguage as $id => $data) {
             $selected = (intval($selectedId)==$id) ? "selected=\"selected\"" : "";
             $menu .="<option value=\"".$id."\" $selected>".$data['name']."</option>\n";
         }
         $menu .= "</select>\n";
         return $menu;
+    }
+
+
+    function _initCountries()
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT countries_id, countries_name,
+                   countries_iso_code_2, countries_iso_code_3,
+                   activation_status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_countries
+             ORDER BY countries_id
+         ";
+         $objResult = $objDatabase->Execute($query);
+         while (!$objResult->EOF) {
+            $this->arrCountries[$objResult->fields['countries_id']] = array(
+                'countries_id' => $objResult->fields['countries_id'],
+                'countries_name' => $objResult->fields['countries_name'],
+                'countries_iso_code_2' => $objResult->fields['countries_iso_code_2'],
+                'countries_iso_code_3' => $objResult->fields['countries_iso_code_3'],
+                'activation_status' => $objResult->fields['activation_status']
+            );
+            $objResult->MoveNext();
+        }
     }
 
 
@@ -117,6 +273,41 @@ class ShopLibrary
         }
         $menu .= "</select>\n";
         return $menu;
+    }
+
+
+    /**
+     * Initialize the shop configuration array
+     *
+     * The array created contains all of the common shop settings.
+     * @global  $objDatabase    Database object
+     * @return                  True on success, false otherwise
+     */
+    function _initConfiguration()
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT id, name, value, status
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
+        ";
+        $objResult = $objDatabase->Execute($query);
+        $this->arrConfig = array();
+        if (!$objResult) return false;
+        while (!$objResult->EOF) {
+            $this->arrConfig[$objResult->fields['name']] = array(
+                'id'     => $objResult->fields['id'],
+                'value'  => $objResult->fields['value'],
+                'status' => $objResult->fields['status'],
+            );
+            $objResult->MoveNext();
+        }
+        $this->arrConfig['js_cart'] = array(
+            'id'     => 9999,
+            'value'  => '',
+            'status' => '0',
+        );
+        return true;
     }
 
 
@@ -175,13 +366,13 @@ class ShopLibrary
      * Get the selected mail template and associated fields from the database.
      * @static
      * @param   integer $shopTemplateId     The mail template ID
-     * @param   integer $lang_id             The language ID
+     * @param   integer $langId             The language ID
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @return  mixed                       The mail template array on success,
      *                                      false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function shopSetMailtemplate($shopTemplateId, $lang_id)
+    static function shopSetMailtemplate($shopTemplateId, $langId)
     {
         global $objDatabase;
 
@@ -189,7 +380,7 @@ class ShopLibrary
             SELECT from_mail, xsender, subject, message
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_mail_content
              WHERE tpl_id=$shopTemplateId
-               AND lang_id=$lang_id
+               AND lang_id=$langId
         ";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && !$objResult->EOF) {
@@ -350,8 +541,8 @@ class ShopLibrary
      */
     function scaleImageSizeToThumbnail(&$arrSize)
     {
-        $thumbWidthMax = SettingDb::getValue('thumbnail_max_width');
-        $thumbHeightMax = SettingDb::getValue('thumbnail_max_height');
+        $thumbWidthMax = $this->arrConfig['shop_thumbnail_max_width']['value'];
+        $thumbHeightMax = $this->arrConfig['shop_thumbnail_max_height']['value'];
         $ratioWidth = $thumbWidthMax/$arrSize[0];
         $ratioHeight = $thumbHeightMax/$arrSize[1];
         if ($ratioWidth > $ratioHeight) {
@@ -385,7 +576,6 @@ class ShopLibrary
 
 
     /**
-     * OBSOLETE -- REMOVE
      * Deletes the order with the given ID.
      *
      * If no valid ID is specified, looks in the GET and POST request
@@ -399,7 +589,6 @@ class ShopLibrary
      */
     function deleteOrder($orderId=0)
     {
-die("OBSOLETE: ShopLibrary::deleteOrder()");
         global $objDatabase, $_ARRAYLANG;
 
         $arrOrderId = array();
@@ -511,6 +700,64 @@ die("OBSOLETE: ShopLibrary::deleteOrder()");
 
 
     /**
+     * Returns a dropdown menu string with all available order status.
+     *
+     * The enclosing <select> tag is only added if the $menuName argument
+     * is non-empty.  If that is empty, however, an additional header
+     * option is added.  See {@link getOrderStatusMenuoptions()} for details.
+     * @param   string  $selectedId     Optional preselected status ID
+     * @param   string  $menuName       Optional menu name
+     * @param   string  $onchange       Optional onchange callback function
+     * @return  string  $menu           The dropdown menu string
+     * @global  array
+     */
+    static function getOrderStatusMenu($selected='', $menuName='', $onchange='')
+    {
+        if ($menuName != '') {
+            $menu =
+                '<select name="'.$menuName.'" id="'.$menuName.'" '.
+                ($onchange != '' ? 'onchange="'.$onchange.'"' : '').
+                ">\n".
+                self::getOrderStatusMenuoptions(
+                    $selected, empty($menuName)
+                ).
+                "</select>\n";
+        }
+        return $menu;
+    }
+
+
+    /**
+     * Returns the HTML menu options for selecting an order status
+     *
+     * Adds a "-- Status --" header option with empty string value
+     * if the $flagFilter parameter is true.
+     * @param   string      $selected       The value of the preselected status
+     * @param   boolean     $flagFilter     If true, the header option is added
+     * @return  string                      The HTML menu options string
+     */
+    static function getOrderStatusMenuoptions($selected='', $flagFilter=false)
+    {
+           global $_ARRAYLANG;
+
+        $strMenuoptions =
+            ($flagFilter
+                ? '<option value="">-- '.
+                  $_ARRAYLANG['TXT_STATUS'].
+                  " --</option>\n"
+                : ''
+            );
+        for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {
+            $strMenuoptions .=
+                '<option value="'.$i.'"'.
+                ($i === $selected ? ' selected="selected"' : '').'>'.
+                $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$i]."</option>\n";
+        }
+        return $strMenuoptions;
+    }
+
+
+    /**
      * Moves Product or Category images to the shop image folder if necessary
      * and changes the given file path from absolute to relative to the
      * shop image folder
@@ -535,6 +782,7 @@ die("OBSOLETE: ShopLibrary::deleteOrder()");
     {
         global $_ARRAYLANG;
 
+        if ($imageFileSource == '') return;
         $arrMatch = array();
         $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
         $imageFileTarget = $imageFileSource;
@@ -589,409 +837,6 @@ die("OBSOLETE: ShopLibrary::deleteOrder()");
         }
         return $strMenuoptions;
 
-    }
-
-
-    /**
-     * Send a confirmation e-mail with the order data
-     * @static
-     * @param   integer   $order_id   The order ID
-     * @return  boolean               The Customers' e-mail address on success,
-     *                                false otherwise
-     * @access  private
-     */
-    static function sendConfirmationMail($order_id, $create_accounts=true)
-    {
-        global $objDatabase;
-
-        $arrSubstitution =
-            ShopLibrary::getOrderSubstitutionArray($order_id, $create_accounts);
-        $customer_id = $arrSubstitution['CUSTOMER_ID'];
-        $objCustomer = Customer::getById($customer_id);
-        if (!$objCustomer) {
-//die("Failed to get Customer for ID $customer_id");
-            return false;
-        }
-        $arrSubstitution += $objCustomer->getSubstitutionArray();
-//die("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_export($arrSubstitution, true));
-        if (empty($arrSubstitution)) return false;
-        // Prepared template for order confirmation
-        $arrMailtemplate = array(
-            'key'     => 1,
-            'lang_id' => $arrSubstitution['LANG_ID'],
-            'to'      =>
-                $arrSubstitution['CUSTOMER_EMAIL'].','.
-                SettingDb::getValue('email_confirmation'),
-            'substitution' => &$arrSubstitution,
-        );
-//DBG::log("sendConfirmationMail($order_id, $create_accounts): Template: ".var_export($arrMailtemplate, true));
-        if (!MailTemplate::send($arrMailtemplate)) return false;
-        return $arrSubstitution['CUSTOMER_EMAIL'];
-    }
-
-
-    /**
-     * Returns an array with all placeholders and their values to be
-     * replaced in any shop mailtemplate for the given order ID.
-     *
-     * You only have to set the 'substitution' index value of your Mailtemplate
-     * array to the array returned.
-     * Customer data is not included here.  See {@see Customer::getSubstitutionArray()}.
-     * Note that this method is now mostly independent of the current session.
-     * The language of the mail template is determined by the browser
-     * language range stored with the order.
-     * The password is no longer available in the session if the confirmation
-     * is sent after paying with some external PSP that uses some form of
-     * instant payment notification (i.e. PayPal)!
-     * In that case, it is replaced by asterisks in the confirmation mail.
-     * @access  private
-     * @static
-     * @param   integer $order_id     The order ID
-     * @param   boolean $create_accounts  If true, creates User accounts
-     *                                    and Coupon codes.  Defaults to true
-     * @return  array                 The array with placeholders as keys
-     *                                and values from the order on success,
-     *                                false otherwise
-     */
-    static function getOrderSubstitutionArray($order_id, $create_accounts=true)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-/*
-            $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'].":\r\n".
-            'http://'.$_SERVER['SERVER_NAME'].
-            "/index.php?section=download\r\n";
-*/
-
-        // Pick the order from the database
-        // Note: order_sum is left out, as this is currently not set!
-        $query = "
-            SELECT customerid, customer_lang,
-                   selected_currency_id,
-                   currency_order_sum,
-                   order_date, order_status,
-                   ship_prefix, ship_company, ship_firstname, ship_lastname,
-                   ship_address, ship_city, ship_zip, ship_country_id, ship_phone,
-                   tax_price,
-                   shipping_id, currency_ship_price,
-                   payment_id, currency_payment_price,
-                   customer_note, last_modified
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             WHERE orderid=$order_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->RecordCount() == 0) {
-            // Order not found
-            return false;
-        }
-        $lang_id = $objResult->fields['customer_lang'];
-        if (!intval($lang_id))
-            $lang_id = FWLanguage::getLangIdByIso639_1($lang_id);
-        $order_status = $objResult->fields['order_status'];
-        $customer_id = $objResult->fields['customerid'];
-        $payment_id = $objResult->fields['payment_id'];
-
-        $arrSubstitution = array (
-            'LANG_ID'             => $lang_id,
-            'NOW'                 => date(ASCMS_DATE_FORMAT),
-            'TODAY'               => date(ASCMS_DATE_SHORT_FORMAT),
-//            'DATE'                => date(ASCMS_DATE_SHORT_FORMAT, strtotime($objResult->fields['order_date'])),
-            'ORDER_ID'            => $order_id,
-            'ORDER_ID_CUSTOM'     => ShopLibrary::getCustomOrderId($order_id),
-            'ORDER_DATE'          =>
-                date(ASCMS_DATE_SHORT_FORMAT,
-                    strtotime($objResult->fields['order_date'])),
-            'ORDER_TIME'          =>
-                date(ASCMS_DATE_FORMAT,
-                    strtotime($objResult->fields['order_date'])),
-            'ORDER_STATUS_ID'     => $order_status,
-            'ORDER_STATUS'        => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objResult->fields['order_status']],
-            'MODIFIED'            =>
-                date(ASCMS_DATE_FORMAT,
-                    strtotime($objResult->fields['last_modified'])),
-            'REMARKS'             => $objResult->fields['customer_note'],
-            // Must be present in the Order, so the Customer can be found
-            'CUSTOMER_ID'         => $customer_id,
-            'SHIPPING_COMPANY'    => $objResult->fields['ship_company'],
-            'SHIPPING_TITLE'      => $objResult->fields['ship_title'],
-            'SHIPPING_FIRSTNAME'  => $objResult->fields['ship_firstname'],
-            'SHIPPING_LASTNAME'   => $objResult->fields['ship_lastname'],
-            'SHIPPING_ADDRESS'    => $objResult->fields['ship_address'],
-            'SHIPPING_ZIP'        => $objResult->fields['ship_zip'],
-            'SHIPPING_CITY'       => $objResult->fields['ship_city'],
-            'SHIPPING_COUNTRY_ID' => $objResult->fields['ship_country_id'],
-            'SHIPPING_COUNTRY'    => Country::getNameById(
-                $objResult->fields['ship_country_id']),
-            'SHIPPING_PHONE'      => $objResult->fields['ship_phone'],
-            'SHIPPING_ID'         => $objResult->fields['shipping_id'],
-            'SHIPPING_NAME'       => sprintf('%-40s', Shipment::getShipperName($objResult->fields['shipping_id'])),
-            'SHIPPING_PRICE'      => sprintf('% 9.2f', $objResult->fields['currency_ship_price']),
-//            'SHIP_PRICE'          => sprintf('% 9.2f', $objResult->fields['currency_ship_price']),
-//            'CURRENCY_SHIP_PRICE' => sprintf('% 9.2f', $objResult->fields['currency_ship_price']),
-            'PAYMENT_ID'          => $payment_id,
-            'PAYMENT_NAME'        => sprintf('%-40s', Payment::getProperty($objResult->fields['payment_id'], 'name')),
-            'PAYMENT_PRICE'       => sprintf('% 9.2f', $objResult->fields['currency_payment_price']),
-//            'CURRENCY_PAYMENT_PRICE' => sprintf('% 9.2f', $objResult->fields['currency_payment_price']),
-            'TAX_PRICE'           => sprintf('% 9.2f', $objResult->fields['tax_price']),
-            'ORDER_SUM'           => sprintf('% 9.2f', $objResult->fields['currency_order_sum']),
-//            'CURRENCY_ORDER_SUM'  => sprintf('% 9.2f', $objResult->fields['currency_order_sum']),
-            'CURRENCY'            => Currency::getCodeById($objResult->fields['selected_currency_id']),
-        );
-
-// yantramatte
-        $coupon_code = '';
-        $objCoupon = null;
-        // Pick the Coupon code Attribute, if any
-        $query = "
-            SELECT product_option_value, product_option_values_price
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
-             WHERE order_id=$order_id
-               AND product_option_name='".addslashes(Coupon::COUPON_ATTRIBUTE_NAME)."'";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult && !$objResult->EOF) {
-            $coupon_code = $objResult->fields['product_option_value'];
-            $arrSubstitution['DISCOUNT_COUPON'][] = array(
-                'DISCOUNT_COUPON_CODE' => sprintf('%-40s',
-                    $coupon_code),
-                // Note that the price is stored with a negative sign already
-                'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f',
-                    $objResult->fields['product_option_values_price']),
-            );
-        }
-
-        // Pick the order items from the database
-        // order items: order_items_id, orderid, productid, product_name,
-        //              price, quantity, vat_percent, weight
-        $query = "
-            SELECT order_items_id, productid, product_name, price, quantity
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
-             WHERE orderid=$order_id";
-        $objResultItem = $objDatabase->Execute($query);
-        if (!$objResultItem || $objResultItem->EOF) {
-            // Order not found
-die("Order not found");
-//            return false;
-        }
-
-// yantramatte
-        // Deduct Order discounts for Coupons from each Product price
-        $objCoupon = Coupon::get(
-            $coupon_code, $arrSubstitution['ORDER_SUM'], $customer_id,
-            0, $payment_id);
-//        $discount_amount = 0;
-        $discount_rate   = 0;
-        if ($objCoupon) {
-            $coupon_code = $objCoupon->code();
-            if ($objCoupon->discount_rate())
-                $discount_rate = $objCoupon->discount_rate();
-//            if ($objCoupon->discount_amount())
-//                $discount_amount = $objCoupon->discount_amount();
-//DBG::log("ShopLibrary::getOrderSubstitutionArray(): Found Coupon; rate $discount_rate, amount $discount_amount");
-        }
-
-        $orderItemCount = 0;
-        $priceTotalItems = 0;
-        while (!$objResultItem->EOF) {
-            $orderItemId = $objResultItem->fields['order_items_id'];
-            $product_id = $objResultItem->fields['productid'];
-//echo("Item: Product ID $product_id");
-            $product_name = substr($objResultItem->fields['product_name'], 0, 40);
-            $item_price = $objResultItem->fields['price'];
-
-// yantramatte
-            // Deduct Product discounts for Coupons from this Product price,
-            // if applicable and no global Coupon is already in use
-            if (!$coupon_code) {
-                $objCoupon = Coupon::get(
-                    $coupon_code, $arrSubstitution['ORDER_SUM'], $customer_id,
-                    $product_id, $payment_id);
-                if ($objCoupon) {
-                    $coupon_code = $objCoupon->code();
-                    if ($objCoupon->discount_rate())
-                        $item_price -= $item_price * ($objCoupon->discount_rate() / 100);
-//                    if ($objCoupon->discount_amount())
-//                        $discount_amount = $objCoupon->discount_amount();
-//DBG::log("ShopLibrary::getOrderSubstitutionArray(): Found Coupon; rate $discount_rate, amount $discount_amount");
-                }
-            }
-// yantramatte
-            // Deduct global discount, by rate in percent *only*
-            if ($discount_rate) {
-                $item_price -= $item_price * ($discount_rate / 100);
-//DBG::log("ShopLibrary::getOrderSubstitutionArray(): Deducted $discount_rate%: $item_price");
-            }
-            $item_price = Currency::getCurrencyPrice($item_price);
-
-            $quantity = $objResultItem->fields['quantity'];
-// Add individual VAT rates for Products
-//            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
-
-            $objProduct = Product::getById($product_id);
-            if (!$objProduct) {
-                $objResultItem->MoveNext();
-die("Product ID $product_id not found");
-                continue;
-            }
-            // Decrease the Product stock count,
-            // applies to "real", shipped goods only
-            $objProduct->decreaseStock($quantity);
-            $product_code = $objProduct->code();
-
-            // Pick the order items attributes from the database
-            $query = "
-                SELECT product_option_name, product_option_value
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items_attributes
-                 WHERE order_items_id=$orderItemId
-                 ORDER BY product_option_name ASC";
-            $objResultAttribute = $objDatabase->Execute($query);
-            $str_options = '';
-            // Any attributes?
-            if ($objResultAttribute && $objResultAttribute->RecordCount() > 0) {
-                $str_options = '  '; // '[';
-                $optionNamePrevious = '';
-                while (!$objResultAttribute->EOF) {
-                    $optionName = $objResultAttribute->fields['product_option_name'];
-                    $optionValue = $objResultAttribute->fields['product_option_value'];
-                    // Recognize the names of uploaded files,
-                    // verify their presence and use the original name
-                    $optionValueStripped = ShopLibrary::stripUniqidFromFilename($optionValue);
-                    if (   $optionValue != $optionValueStripped
-                        && file_exists(ASCMS_PATH.'/'.self::$uploadDir.'/'.$optionValue)) {
-                            $optionValue = $optionValueStripped;
-                    }
-                    if ($optionName != $optionNamePrevious) {
-                        if ($optionNamePrevious) {
-                            $str_options .= '; ';
-                        }
-                        $str_options .= $optionName.': '.$optionValue;
-                        $optionNamePrevious = $optionName;
-                    } else {
-                        $str_options .= ', '.$optionValue;
-                    }
-                    $objResultAttribute->MoveNext();
-                }
-//                $str_options .= ']';
-            }
-
-            // Product details
-            $arrProduct = array(
-                'PRODUCT_ID' => $product_id,
-                'PRODUCT_CODE' => $product_code,
-                'PRODUCT_QUANTITY' => $quantity,
-                'PRODUCT_TITLE' => $product_name,
-                'PRODUCT_OPTIONS' => $str_options,
-                'PRODUCT_ITEM_PRICE' => sprintf('% 9.2f', $item_price),
-                'PRODUCT_TOTAL_PRICE' => sprintf('% 9.2f', $item_price*$quantity),
-            );
-            $orderItemCount += $quantity;
-            $priceTotalItems += $item_price*$quantity;
-
-            if ($create_accounts) {
-                // Add an account for every single instance of every Product
-                for ($instance = 1; $instance <= $quantity; ++$instance) {
-                    $validity = 0; // Default to unlimited validity
-                    // In case there are protected downloads in the cart,
-                    // collect the group IDs
-                    $arrUsergroupId = array();
-                    if ($objProduct->distribution() == 'download') {
-                        $usergroupIds = $objProduct->usergroup_ids();
-                        if ($usergroupIds != '') {
-                            $arrUsergroupId = explode(',', $usergroupIds);
-                            $validity = $objProduct->weight();
-                        }
-                    }
-                    // create an account that belongs to all collected
-                    // user groups, if any.
-                    if (count($arrUsergroupId) > 0) {
-                        // The login names are created separately for
-                        // each product instance
-                        $username = self::usernamePrefix."-$order_id-$product_id-$instance";
-                        $userpass = uniqid();
-                        $userEmail =
-                            "shop_customer_${order_id}_${product_id}_${instance}-".
-                            $arrSubstitution['CUSTOMER_EMAIL'];
-
-                        $objUser = new User();
-                        $objUser->setUsername($username);
-                        $objUser->setPassword($userpass);
-                        $objUser->setEmail($userEmail);
-                        $objUser->setAdminStatus(false);
-                        $objUser->setActiveStatus(true);
-                        $objUser->setGroups($arrUsergroupId);
-                        $objUser->setValidityTimePeriod($validity);
-                        $objUser->setFrontendLanguage(FRONTEND_LANG_ID);
-                        $objUser->setBackendLanguage(FRONTEND_LANG_ID);
-                        $objUser->setProfile(array(
-                            'firstname'    => array(0 => $arrSubstitution['CUSTOMER_FIRSTNAME']),
-                            'lastname'     => array(0 => $arrSubstitution['CUSTOMER_LASTNAME']),
-                            'company'      => array(0 => $arrSubstitution['CUSTOMER_COMPANY']),
-                            'address'      => array(0 => $arrSubstitution['CUSTOMER_ADDRESS']),
-                            'zip'          => array(0 => $arrSubstitution['CUSTOMER_ZIP']),
-                            'city'         => array(0 => $arrSubstitution['CUSTOMER_CITY']),
-                            'country'      => array(0 => $arrSubstitution['CUSTOMER_COUNTRY_ID']),
-                            'phone_office' => array(0 => $arrSubstitution['CUSTOMER_PHONE']),
-                            'phone_fax'    => array(0 => $arrSubstitution['CUSTOMER_FAX']),
-                        ));
-                        if (!$objUser->store()) {
-                            Shop::addMessage(implode(
-                                '<br />', $objUser->getErrorMsg()));
-                            return false;
-                        }
-                        if (empty($arrProduct['USER_DATA']))
-                            $arrProduct['USER_DATA'] = array();
-                        $arrProduct['USER_DATA'][] = array(
-                            'USER_NAME' => $username,
-                            'USER_PASS' => $userpass,
-                        );
-                    }
-//echo("Instance $instance");
-                    if ($objProduct->distribution() == 'coupon') {
-                        if (empty($arrProduct['COUPON_DATA']))
-                            $arrProduct['COUPON_DATA'] = array();
-//DBG::log("Getting code");
-                        $code = Coupon::getNewCode();
-//DBG::log("Got code: $code, calling Coupon::addCode($code, 0, 0, 0, $item_price)");
-                        Coupon::addCode($code, 0, 0, 0, $item_price, 0, 0, 1e10);
-                        $arrProduct['COUPON_DATA'][] = array(
-                            'COUPON_CODE' => $code
-                        );
-                    }
-                }
-                // "Use" the Coupon, if possible for the Product
-                if ($coupon_code) {
-                    $objCoupon = Coupon::useCoupon(
-                        $coupon_code, $arrSubstitution['ORDER_SUM'],
-                        $customer_id, $product_id, $payment_id
-                    );
-                    if ($objCoupon) $coupon_code = '';
-                }
-
-            }
-            if (empty($arrSubstitution['ORDER_ITEM']))
-                $arrSubstitution['ORDER_ITEM'] = array();
-            $arrSubstitution['ORDER_ITEM'][] = $arrProduct;
-            $objResultItem->MoveNext();
-        }
-        $arrSubstitution['ORDER_ITEM_SUM'] =
-            sprintf('% 9.2f', $priceTotalItems);
-        $arrSubstitution['ORDER_ITEM_COUNT'] = sprintf('% 4u', $orderItemCount);
-
-        // "Use" the Coupon, if possible for the Order
-        if ($coupon_code) {
-            $objCoupon = Coupon::useCoupon(
-                $coupon_code, $arrSubstitution['ORDER_ITEM_SUM'],
-                $customer_id, 0, $payment_id
-            );
-        }
-
-        if (Vat::isEnabled()) {
-            $arrSubstitution['TAX_TEXT'] =
-                sprintf('%-40s',
-                    (Vat::isIncluded()
-                        ? $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL']
-                        : $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL']
-                    ));
-        }
-        return $arrSubstitution;
     }
 
 }

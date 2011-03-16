@@ -1385,18 +1385,18 @@ $this->arrRows[2] = '';
         $status="error";
 
         if (!$this->settings['addFeed']['value'] == '1' || (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1')) {
-            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory');
+            CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory');
             exit;
         } elseif ($this->settings['addFeed_only_community']['value'] == '1') {
             $objFWUser = FWUser::getFWUserObject();
-            if ($objFWUser->objUser->login()) {
-                if (!Permission::checkAccess(96, 'static', true)) {
-                    header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
-                    exit;
-                }
-            }else {
+			if ($objFWUser->objUser->login()) {
+				if (!Permission::checkAccess(96, 'static', true)) {
+                    CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
+					exit;
+				}
+			}else {
                 $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
+                CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1416,6 +1416,14 @@ $this->arrRows[2] = '';
         $levelId = 0;
         $categories = $this->getCategories($catId, 1);
         $levels = $this->getLevels($levelId, 1);
+// TODO: $osId is not defined
+//$osId = 0;
+// TODO: Never used
+//        $platforms = $this->getPlatforms($osId);
+// TODO: $langId is not defined
+//$langId = 0;
+// TODO: Never used
+//        $languages = $this->getLanguages($langId);
 
         //get inputfields
         $this->getInputfields(
@@ -1512,19 +1520,19 @@ $this->arrRows[2] = '';
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1') {
-            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory');
+            CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory');
             exit;
         }
 
         $objFWUser = FWUser::getFWUserObject();
-        if ($objFWUser->objUser->login()) {
-            if (!Permission::checkAccess(94, 'static', true)) {
-                header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
-                exit;
-            }
-        }else {
+		if ($objFWUser->objUser->login()) {
+			if (!Permission::checkAccess(94, 'static', true)) {
+                CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
+				exit;
+			}
+		}else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-            header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
+            CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
             exit;
         }
 
@@ -1596,19 +1604,19 @@ $this->arrRows[2] = '';
         $status = "error";
 
         if (!$this->settings['editFeed']['value'] == '1' || (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1')) {
-            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=myfeeds');
+            CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=myfeeds');
             exit;
         }
 
         $objFWUser = FWUser::getFWUserObject();
-        if ($objFWUser->objUser->login()) {
-            if (!Permission::checkAccess(94, 'static', true)) {
-                header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
-                exit;
-            }
-        }else {
+		if ($objFWUser->objUser->login()) {
+			if (!Permission::checkAccess(94, 'static', true)) {
+                CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&cmd=noaccess");
+				exit;
+			}
+		}else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-            header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
+            CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
             exit;
         }
 
@@ -1621,20 +1629,22 @@ $this->arrRows[2] = '';
         }
 
         if ($_GET['id'] == '' && $_POST['edit_id'] == '') {
-            header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=myfeeds');
+            CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=directory&cmd=myfeeds');
             exit;
         }
 
         $objResult = $objDatabase->Execute("SELECT spezial, addedby FROM ".DBPREFIX."module_directory_dir WHERE id = '".contrexx_addslashes($id)."'");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+// TODO: Never used
+//                $spezSort = $objResult->fields['spezial'];
                 $author = $objResult->fields['addedby'];
                 $objResult->MoveNext();
             }
         }
 
         if ($author != $objFWUser->objUser->getId()) {
-            header("Location: ".CONTREXX_SCRIPT_PATH."?section=directory&cmd=myfeeds");
+            CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=directory&cmd=myfeeds");
         }
 
         //get navigation
@@ -1760,6 +1770,8 @@ $this->arrRows[2] = '';
         }
 
         $pos = intval($_GET['pos']);
+// TODO: Never used
+//        $searchTermOrg = contrexx_addslashes($_GET['term']);
         $searchTerm = contrexx_addslashes($_GET['term']);
         $searchTermGoogle = $searchTerm;
         $array = explode(' ', $searchTerm);
@@ -1872,6 +1884,10 @@ $this->arrRows[2] = '';
                 $i = 0;
                 while (!$objResult->EOF) {
                     //get score
+// TODO: Never used
+//                    $score = $objResult->fields['score'];
+// TODO: Never used
+//                    $scorePercent = ($score >= 1 ? 100 : intval($score*100));
                     //get votes
                     $this->getVotes($objResult->fields['id']);
                     //get voting
@@ -1996,7 +2012,7 @@ $this->arrRows[2] = '';
         if (!$search_result) {
             $err = $objGoogleSearch->getError();
             if ($err) {
-                header("Location: ".CONTREXX_SCRIPT_PATH."?section=directory&cmd=search");
+                CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=directory&cmd=search");
                 exit;
             }
         }
@@ -2062,7 +2078,7 @@ $this->arrRows[2] = '';
                     $objResult->MoveNext();
                 }
             }
-            header("Location: ".$link);
+            CSRF::header("Location: ".$link);
             exit;
         }
     }

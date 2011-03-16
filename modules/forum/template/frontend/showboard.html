@@ -31,7 +31,7 @@
             <td align="center">[[FORUM_THREADS_HITS]]</td>
             <td align="center" style="vertical-align: middle;">                            <!-- BEGIN deleteThread -->                              <a onclick="deleteThread('[[FORUM_FORUM_ID]]', '[[FORUM_THREADS_ID]]'); return false;" href="index.php?section=forum&amp;cmd=board&amp;id=[[FORUM_FORUM_ID]]&amp;act=delete&amp;threadid=[[FORUM_THREADS_ID]]">                                  <img style="border: medium none ; vertical-align: middle;" src="images/modules/forum/delete.gif" title="Thema löschen" alt="Thema löschen" />                              </a>                            <!-- END deleteThread -->                         </td>
         </tr>
-        <!-- END forumThreads -->     <!-- BEGIN forumNoThreads -->
+        <!-- END forumThreads --> 		<!-- BEGIN forumNoThreads -->
         <tr class="row_0">
             <td align="center" colspan="6">[[TXT_FORUM_NO_THREADS]]</td>
         </tr>
@@ -42,41 +42,41 @@
 <br />
 <!-- BEGIN addThread -->
 <a name="thread" />
-<div class="div_title" stlye="text-align: left;">   [[TXT_FORUM_ADD_THREAD]]  </div>
+<div class="div_title" stlye="text-align: left;"> 	[[TXT_FORUM_ADD_THREAD]]  </div>
 <form name="frm_thread" action="?section=forum&amp;cmd=board&amp;id=[[FORUM_FORUM_ID]]" method="post">
     <div class="div_board">
     <table cellspacing="0" cellpadding="0">
         <!--<tr>
-        <th colspan="2" style="text-align: left;">
-          [[TXT_FORUM_ADD_THREAD]]
-        </th>
-      </tr>-->
+				<th colspan="2" style="text-align: left;">
+					[[TXT_FORUM_ADD_THREAD]]
+				</th>
+			</tr>-->
         <tbody>
             <tr>
-                <td>           <!--[[TXT_FORUM_ICON]]-->         </td>
+                <td> 					<!--[[TXT_FORUM_ICON]]--> 				</td>
                 <td nowrap="nowrap" colspan="2" style="padding-left: 0px; margin-left: 0px;">
-                <ul>           <!-- BEGIN icons -->
-                    <li style="display: none;">               <input type="radio" style="border: 0px none ;" id="icons_[[FORUM_ICON_VALUE]]" name="icons" value="[[FORUM_ICON_VALUE]]" /><label for="icons_[[FORUM_ICON_VALUE]]"><img src="[[FORUM_ICON_SRC]]" alt="[[FORUM_ICON_ALT]]" title="[[FORUM_ICON_TITLE]]" /></label>             </li>
-                    <!-- END icons -->                   </ul>
+                <ul> 					<!-- BEGIN icons -->
+                    <li style="display: none;"> 							<input type="radio" style="border: 0px none ;" id="icons_[[FORUM_ICON_VALUE]]" name="icons" value="[[FORUM_ICON_VALUE]]" /><label for="icons_[[FORUM_ICON_VALUE]]"><img src="[[FORUM_ICON_SRC]]" alt="[[FORUM_ICON_ALT]]" title="[[FORUM_ICON_TITLE]]" /></label> 						</li>
+                    <!-- END icons -->				 					</ul>
                     </td>
                 </tr>
                 <tr>
-                    <td>           [[TXT_FORUM_SUBJECT]]         </td>
-                    <td colspan="2">           <input type="text" style="width: 400px;" name="thread_subject" value="[[FORUM_SUBJECT]]" />         </td>
+                    <td> 					[[TXT_FORUM_SUBJECT]] 				</td>
+                    <td colspan="2"> 					<input type="text" style="width: 400px;" name="thread_subject" value="[[FORUM_SUBJECT]]" /> 				</td>
                 </tr>
                 <tr>
-                    <td>           [[TXT_FORUM_MESSAGE]]         </td>
-                    <td colspan="2">           <textarea style="width: 400px; height: 150px;" name="thread_message">[[FORUM_MESSAGE]]</textarea>         </td>
+                    <td> 					[[TXT_FORUM_MESSAGE]] 				</td>
+                    <td colspan="2"> 					<textarea style="width: 400px; height: 150px;" name="thread_message">[[FORUM_MESSAGE]]</textarea> 				</td>
                 </tr>
                 <tr>
-                    <td style="vertical-align: middle;">           Captcha-Code:                  </td>
-                    <td style="vertical-align: middle; width: 10%;">           <img src="[[FORUM_CAPTCHA_IMAGE_URL]]" title="[[FORUM_CAPTCHA_IMAGE_ALT]]" alt="[[FORUM_CAPTCHA_IMAGE_ALT]]" />         </td>
-                    <td style="vertical-align: middle; width: 90%;">           <input type="text" name="captcha" size="6" />           <input type="hidden" name="offset" value="[[FORUM_CAPTCHA_OFFSET]]" />         </td>
+                    <td style="vertical-align: middle;"> 					Captcha-Code: 				 				</td>
+                    <td style="vertical-align: middle; width: 10%;"> 					<img src="[[FORUM_CAPTCHA_IMAGE_URL]]" title="[[FORUM_CAPTCHA_IMAGE_ALT]]" alt="[[FORUM_CAPTCHA_IMAGE_ALT]]" /> 				</td>
+                    <td style="vertical-align: middle; width: 90%;"> 					<input type="text" name="captcha" size="6" /> 					<input type="hidden" name="offset" value="[[FORUM_CAPTCHA_OFFSET]]" /> 				</td>
                 </tr>
             </tbody>
         </table>
         <br />
-        <input type="reset" value="[[TXT_FORUM_RESET]]" />     <input type="submit" name="create" value="[[TXT_FORUM_CREATE_THREAD]]" />     <!--<input type="submit" name="preview" value="[[TXT_FORUM_PREVIEW]]" />-->   </div>
+        <input type="reset" value="[[TXT_FORUM_RESET]]" /> 		<input type="submit" name="create" value="[[TXT_FORUM_CREATE_THREAD]]" /> 		<!--<input type="submit" name="preview" value="[[TXT_FORUM_PREVIEW]]" />--> 	</div>
         <input type="hidden" name="category_id" value="[[FORUM_FORUM_ID]]" />         <input type="hidden" value="[[FORUM_PAGING_POS]]" name="pos" />
     </form>
     </div>

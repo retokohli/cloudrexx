@@ -38,7 +38,7 @@ class docSysLibrary
         global $objDatabase;
 
         $strMenu = "";
-        !$cmdName ? $query_where = '' : $query_where = " AND cmd='".$cmdName."'";
+		!$cmdName ? $query_where = '' : $query_where = " AND cmd='".$cmdName."'";
 
         $query="SELECT catid,
                        name

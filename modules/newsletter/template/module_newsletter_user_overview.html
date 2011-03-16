@@ -1,38 +1,41 @@
 <!-- START module_newsletter -->
 <style type="text/css">
-table.adminlist thead tr.row3head th{
-  background-color: #DDE4FF;
-  color: #000000;
-}
+  table.adminlist thead tr.row3head th{
+    background-color: #DDE4FF;
+    color: #000000;
+  }
 
-table.adminlist th A {
-  color: #000000;
-  text-decoration: underline
-}
-table.adminlist th A:active {
-  color: #000000;
-  text-decoration: underline
-}
-table.adminlist th A:visited {
-  color: #000000;
-  text-decoration: underline
-}
-table.adminlist TH A:hover {
-  color: #0A50A1;
-  background-color: #DCE4FF;
-  text-decoration: none;
-}
+  table.adminlist th A {
+    color: #000000;
+    text-decoration: underline
+  }
+  table.adminlist th A:active {
+    color: #000000;
+    text-decoration: underline
+  }
+  table.adminlist th A:visited {
+    color: #000000;
+    text-decoration: underline
+  }
+  table.adminlist TH A:hover {
+    color: #0A50A1;
+    background-color: #DCE4FF;
+    text-decoration: none;
+  }
+
 </style>
-<script type="text/javascript">
-// <![CDATA[
+
+<script type="text/javascript">//<![CDATA[
+
 /**
  *  DOM userlist sorting
  *  remote script by savino
  *  (c) 2006, COMVATION AG
  */
-var clearArrows = function() {
+
+var clearArrows = function(){
   var fields = new Array('status', 'email', 'firstname', 'lastname', 'street', 'zip', 'city', 'country', 'emaildate');
-  for (i=0; i<fields.length; i++) {
+  for (i=0; i<fields.length; i++){
     document.getElementById(fields[i]+"order").innerHTML = '';
   }
 }
@@ -44,9 +47,9 @@ if (document.ELEMENT_NODE == null) {
 
 function getXMLHttpRequestObj() {
   var objXHR;
-  if (window.XMLHttpRequest) {
+  if(window.XMLHttpRequest) {
       objXHR = new XMLHttpRequest();
-  } else if (window.ActiveXObject) {
+  } else if(window.ActiveXObject) {
       objXHR = new ActiveXObject("Microsoft.XMLHTTP");
   }
   return objXHR;
@@ -58,27 +61,27 @@ function sendReq(field) {
   limit = document.getElementById("paging_limit").value;
   orderspan = document.getElementById(field+"order");
   listDropdown = document.getElementById("newsletterListId");
-  if (orderspan.order == 'asc') {
+  if(orderspan.order == 'asc'){
     orderspan.order = 'desc';
-  } else if (orderspan.order == 'desc') {
+  }else if(orderspan.order == 'desc'){
     orderspan.order = 'asc';
-  } else {
+  }else{
     orderspan.order = 'asc';
   }
   clearArrows();
-  if (orderspan.order == 'asc') {
+  if (orderspan.order == 'asc'){
     orderspan.innerHTML = '\u2191';
-  } else {
+  }else{
     orderspan.innerHTML = '\u2193';
   }
   listId = listDropdown.options[listDropdown.options.selectedIndex].value;
   listId = (listId == 'selectcategory') ? 0 : listId ;
-  http.open('get', 'index.php?cmd=newsletter&standalone=1&act=editusersort&field='+field+'&order='+orderspan.order+'&limit='+limit+'&list='+listId+"&{CSRF_PARAM}");
+  http.open('get', '?cmd=newsletter&standalone=1&act=editusersort&field='+field+'&order='+orderspan.order+'&limit='+limit+'&list='+listId);
   http.onreadystatechange = updateUserlist
-  http.send(null);
+    http.send(null);
 }
 
-function createTdWithText(text) {
+function createTdWithText(text){
   td = document.createElement("td");
   td.style.whiteSpace = 'nowrap';
   text = (text == '') ? '-' : text;
@@ -111,63 +114,60 @@ var imgDelete = new Image();
   imgDelete.border = '0';
 
 function updateUserlist() {
-  if (http.readyState == 4 && http.status == 200) {
-    var users = new Array();
+    if(http.readyState == 4 && http.status == 200){
+      var users = new Array();
     var recipients = new Array();
     var fields = new Array();
-    var response = http.responseText;
-    var update = new Array()
-    if (response.indexOf('%') != -1) {
-      users = response.split('%');
-      for (i=0; i<users.length-1; i++) {
-        fields = users[i].split('#');
-        recipients[i] = new Array(10);
-        recipients[i]['id'] = fields[0];
-        recipients[i]['status'] = fields[1];
-        recipients[i]['email'] = fields[2];
-        recipients[i]['lastname'] = fields[3];
-        recipients[i]['firstname'] = fields[4];
-        recipients[i]['street'] = fields[5];
-        recipients[i]['zip'] = fields[6];
-        recipients[i]['city'] = fields[7];
-        recipients[i]['country'] = fields[8];
-        recipients[i]['emaildate'] = fields[9];
-      }
-      tbl = document.getElementById('tbluserlist');
+        var response = http.responseText;
+        var update = new Array()
+        if(response.indexOf('%') != -1) {
+            users = response.split('%');
+          for(i=0; i<users.length-1; i++){
+              fields = users[i].split('#');
+              recipients[i] = new Array(10);
+              recipients[i]['id']     = fields[0];
+              recipients[i]['status']   = fields[1];
+              recipients[i]['email']     = fields[2];
+              recipients[i]['lastname']  = fields[3];
+              recipients[i]['firstname']   = fields[4];
+              recipients[i]['street']   = fields[5];
+              recipients[i]['zip']     = fields[6];
+              recipients[i]['city']     = fields[7];
+              recipients[i]['country']   = fields[8];
+              recipients[i]['emaildate']  = fields[9];
+            }
+            tbl = document.getElementById('tbluserlist');
       tBody = tbl.tBodies[0];
-      for (i = tBody.childNodes.length-1; i>=0; i--) {
-        bin = tBody.removeChild(tBody.childNodes[i]);
-      }
-      for (i=0; i<recipients.length; i++) {
-        row = document.createElement("tr");
-        row.className = 'row' + ((i%2) + 1);
-        inputCB = document.createElement("input");
+      for(i = tBody.childNodes.length-1; i>=0; i--){
+              bin = tBody.removeChild(tBody.childNodes[i]);
+            }
+            for(i=0; i<recipients.length; i++){
+              row = document.createElement("tr");
+              row.className = 'row' + ((i%2) + 1);
+              inputCB = document.createElement("input");
         inputCB.type = 'checkbox';
         inputCB.name = 'userid[]';
         inputCB.value = recipients[i]['id'];
-        tdCB = document.createElement("td");
-        tdCB.appendChild(inputCB);
-        row.appendChild(tdCB);
         status = (recipients[i]['status'] == 1) ? true : false;
         imgStatus = (status) ? greenLed.cloneNode(false) : redLed.cloneNode(false);
         tdStatus = document.createElement("td");
         tdStatus.style.whiteSpace = 'nowrap';
-//        tdStatus.appendChild(inputCB);
+        tdStatus.appendChild(inputCB);
         tdStatus.appendChild(imgStatus);
         row.appendChild(tdStatus);
         row.appendChild(createTdWithText(recipients[i]['email']));
-        row.appendChild(createTdWithText(recipients[i]['lastname']));
-        row.appendChild(createTdWithText(recipients[i]['firstname']));
-        row.appendChild(createTdWithText(recipients[i]['street']));
-        row.appendChild(createTdWithText(recipients[i]['zip']));
-        row.appendChild(createTdWithText(recipients[i]['city']));
-        row.appendChild(createTdWithText(recipients[i]['country']));
-        row.appendChild(createTdWithText(recipients[i]['emaildate']));
-        aEdit = document.createElement("a");
+              row.appendChild(createTdWithText(recipients[i]['lastname']));
+              row.appendChild(createTdWithText(recipients[i]['firstname']));
+              row.appendChild(createTdWithText(recipients[i]['street']));
+              row.appendChild(createTdWithText(recipients[i]['zip']));
+              row.appendChild(createTdWithText(recipients[i]['city']));
+              row.appendChild(createTdWithText(recipients[i]['country']));
+              row.appendChild(createTdWithText(recipients[i]['emaildate']));
+              aEdit = document.createElement("a");
         aEdit.href = 'index.php?cmd=newsletter&act=users&tpl=edit&id='+recipients[i]['id'];
         aEdit.title = '{TXT_NEWSLETTER_MODIFY_RECIPIENT}';
-        aEdit.appendChild(imgEdit.cloneNode(false));
-        aDelete = document.createElement("a");
+              aEdit.appendChild(imgEdit.cloneNode(false));
+              aDelete = document.createElement("a");
         aDelete.href = 'javascript:DeleteUser('+ recipients[i]['id'] +'\''+recipients[i]['email']+'\')';
         aDelete.title = '{TXT_NEWSLETTER_DELETE_RECIPIENT}'
         aDelete.appendChild(imgDelete.cloneNode(false));
@@ -177,19 +177,21 @@ function updateUserlist() {
         tdFunc.appendChild(aDelete);
         row.appendChild(tdFunc);
         tBody.appendChild(row);
-      }
-    } else {
-      if (http.statusText == 'OK') {
-        return false;
-      }
-      alert('error: ' + http.statusText);
+            }
+        }else{
+          if(http.statusText == 'OK'){
+            return false;
+          }else{
+            alert('error: ' + http.statusText);
+          }
+        }
     }
-  }
 }
 
-var confirmDeleteInactive = function() {
+var confirmDeleteInactive = function(){
   return confirm("{TXT_NEWSLETTER_REALLY_DELETE_ALL_INACTIVE}\n{TXT_ACTION_IS_IRREVERSIBLE}");
 }
+
 //]]>
 </script>
 
@@ -204,12 +206,12 @@ var confirmDeleteInactive = function() {
       <form name="SearchForm" action="index.php?cmd=newsletter&amp;act=users" method="POST">
         <table cellspacing="0" cellpadding="1" border="0">
           <tr>
-            <td><input type="text" name="keyword" value="{NEWSLETTER_SEARCH_KEYWORD}" size="40" maxlength="255" /></td>
+						<td><input type="text" name="keyword" value="{NEWSLETTER_SEARCH_KEYWORD}" size="40" maxlength="255" /></td>
             <td>{SELECTLIST_FIELDS}</td>
             <td>{SELECTLIST_STATUS}</td>
             <td>
               <input type="submit" value="{TXT_SEARCH}" />
-              <input type="hidden" name="newsletterListId" id="srch_newsletterListId" value="{NEWSLETTER_SEARCH_LIST_ID}" />
+                <input type="hidden" name="newsletterListId" id="srch_newsletterListId" value="{NEWSLETTER_SEARCH_LIST_ID}" />
             </td>
           </tr>
         </table>
@@ -220,102 +222,89 @@ var confirmDeleteInactive = function() {
 <br />{EMAIL_CODE_CHECK}
 {TXT_NEWSLETTER_ROWS_PER_PAGE}:
 
-<a href="index.php?cmd=newsletter&amp;act=users&amp;limit=50{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
-  50
+<a href="?cmd=newsletter&amp;act=users&amp;limit=50{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
+	50
 </a>
-<a href="index.php?cmd=newsletter&amp;act=users&amp;limit=250{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
-  250
+<a href="?cmd=newsletter&amp;act=users&amp;limit=250{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
+	250
 </a>
-<a href="index.php?cmd=newsletter&amp;act=users&amp;limit=500{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
+<a href="?cmd=newsletter&amp;act=users&amp;limit=500{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
   500
 </a>
 <br />
 {USER_PAGING}
 <br /><br />
-<form name="userlist" action="index.php?cmd=newsletter&amp;act=users&amp;bulkdelete=1" method="post">
-  <p>{NEWSLETTER_LIST_MENU}</p>
-  <div style="background-color: #0A50A1; height: 22px;">
-    <a href="index.php?cmd=newsletter&amp;act=deleteInactive" onclick="return confirmDeleteInactive();" title="{TXT_NEWSLETTER_DELETE_ALL_INACTIVE}"><span style="float: right; position: relative; right: 5px; top: 5px; font-weight: bold; color: #FFFFFF"> [ {TXT_NEWSLETTER_DELETE_ALL_INACTIVE} ] </span></a>
+<form name="userlist" action="?cmd=newsletter&amp;act=users&amp;bulkdelete=exe" method="post">
+<p>{NEWSLETTER_LIST_MENU}</p>
+<div style="background-color: #0A50A1; height: 22px;">
+       <a href="?cmd=newsletter&amp;act=deleteInactive" onclick="return confirmDeleteInactive();" title="{TXT_NEWSLETTER_DELETE_ALL_INACTIVE}"><span style="float: right; position: relative; right: 5px; top: 5px; font-weight: bold; color: #FFFFFF"> [ {TXT_NEWSLETTER_DELETE_ALL_INACTIVE} ] </span></a>
     <span style="float: left; position: relative; left: 5px; top: 5px; font-weight: bold; color: #FFFFFF"> {TXT_NEWSLETTER_RECIPIENTS} </span>
-  </div>
-  <table id="tbluserlist" width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
-    <thead>
-      <tr class="row3head">
-        <th nowrap width="10%" align="center" colspan="2">
-          <a id="status" href="javascript: void(0);" onclick="sendReq('status', 'asc');" >{TXT_STATUS}</a>
-          <span id="statusorder"> </span>
-        </th>
-        <th nowrap width="30%">
-          <a id="email" href="javascript: void(0);" onclick="sendReq('email');">{TXT_EMAIL_ADDRESS}</a>
-          <span id="emailorder"> </span>
-        </th>
-        <th nowrap width="10%">
-          <a id="lastname"  href="javascript: void(0);" onclick="sendReq('lastname');">{TXT_LASTNAME}</a>
-          <span id="lastnameorder"> </span>
-        </th>
-        <th nowrap width="10%">
-          <a id="firstname" href="javascript: void(0);" onclick="sendReq('firstname');">{TXT_FIRSTNAME}</a>
-          <span id="firstnameorder"> </span>
-        </th>
-        <th nowrap width="10%">
-          <a id="street" href="javascript: void(0);" onclick="sendReq('street');">{TXT_STREET}</a>
-          <span id="streetorder"> </span>
-        </th>
-        <th nowrap width="10%">
-          <a id="zip" href="javascript: void(0);" onclick="sendReq('zip');">{TXT_ZIP}</a>
-          <span id="ziporder"> </span>
-        </th>
-        <th nowrap width="10%">
-          <a id="city" href="javascript: void(0);" onclick="sendReq('city');">{TXT_CITY}</a>
-          <span id="cityorder"> </span>
-        </th>
-        <th nowrap width="10%">
-          <a id="country" href="javascript: void(0);" onclick="sendReq('country');">{TXT_COUNTRY}</a>
-          <span id="countryorder"> </span>
-        </th>
-        <th nowrap width="10%">
-          <a id="emaildate" href="javascript: void(0);" onclick="sendReq('emaildate');">{TXT_NEWSLETTER_REGISTRATION_DATE}</a>
-          <span id="emaildateorder"> &darr; </span>
-        </th>
-        <th width="10%" style="text-align:right;">{TXT_FUNCTIONS}</th>
-      </tr>
-    </thead>
-    <tbody>
-<!-- BEGIN newsletter_user -->
-      <tr class="{ROW_CLASS}" style="height: 27px;">
-        <td style="white-space:nowrap;">
-<!-- BEGIN newsletter_checkbox -->
-          <input name="userid[]" type="checkbox" value="{NEWSLETTER_USER_ID}" />
-<!-- END newsletter_checkbox -->
-<!-- BEGIN newsletter_checkbox_access -->
-          <!-- <input name="accessUserid[]" type="checkbox" value="{NEWSLETTER_USER_ID}" /> -->
-<!-- END newsletter_checkbox_access -->
-        </td>
-        <td style="white-space:nowrap;">
-          {STATUS_IMG}
-        </td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_EMAIL}</td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_LASTNAME}</td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_FIRSTNAME}</td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_STREET}</td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_ZIP}</td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_CITY}</td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_COUNTRY}</td>
-        <td style="white-space:nowrap;">{NEWSLETTER_USER_REGISTRATION_DATE}</td>
-        <td style="text-align:right;">
-<!-- BEGIN newsletter_user_type -->
-          <a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=edit&amp;id={NEWSLETTER_USER_ID}" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"><img src="images/icons/edit.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"/></a>
-          <a href="javascript:DeleteUser({NEWSLETTER_USER_ID}, '{NEWSLETTER_USER_EMAIL}');"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_NEWSLETTER_DELETE_RECIPIENT}" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}" /></a>
-<!-- END newsletter_user_type -->
-<!-- BEGIN access_user_type -->
-<!-- END access_user_type -->
-        </td>
-     </tr>
-<!-- END newsletter_user -->
-    </tbody>
-  </table>
+</div>
+<table id="tbluserlist" width="100%" border="0" cellpadding="3" cellspacing="0" class="adminlist">
+  <thead>
+    <tr class="row3head">
+      <th nowrap width="10%" align="center">
+        <a id="status" href="javascript: void(0);" onclick="sendReq('status', 'asc');">{TXT_STATUS}</a>
+        <span id="statusorder"> </span>
+      </th>
+      <th nowrap width="30%">
+        <a id="email" href="javascript: void(0);" onclick="sendReq('email');">{TXT_EMAIL_ADDRESS}</a>
+        <span id="emailorder"> </span>
+      </th>
+      <th nowrap width="10%">
+        <a id="lastname"  href="javascript: void(0);" onclick="sendReq('lastname');">{TXT_LASTNAME}</a>
+        <span id="lastnameorder"> </span>
+      </th>
+      <th nowrap width="10%">
+        <a id="firstname" href="javascript: void(0);" onclick="sendReq('firstname');">{TXT_FIRSTNAME}</a>
+        <span id="firstnameorder"> </span>
+      </th>
+      <th nowrap width="10%">
+        <a id="street" href="javascript: void(0);" onclick="sendReq('street');">{TXT_STREET}</a>
+        <span id="streetorder"> </span>
+      </th>
+      <th nowrap width="10%">
+        <a id="zip" href="javascript: void(0);" onclick="sendReq('zip');">{TXT_ZIP}</a>
+        <span id="ziporder"> </span>
+      </th>
+      <th nowrap width="10%">
+        <a id="city" href="javascript: void(0);" onclick="sendReq('city');">{TXT_CITY}</a>
+        <span id="cityorder"> </span>
+      </th>
+      <th nowrap width="10%">
+        <a id="country" href="javascript: void(0);" onclick="sendReq('country');">{TXT_COUNTRY}</a>
+        <span id="countryorder"> </span>
+      </th>
+      <th nowrap width="10%">
+        <a id="emaildate" href="javascript: void(0);" onclick="sendReq('emaildate');">{TXT_NEWSLETTER_REGISTRATION_DATE}</a>
+        <span id="emaildateorder"> &darr; </span>
+      </th>
+      <th width="10%" style="text-align:right;">{TXT_FUNCTIONS}</th>
 
-  <div>
+    </tr>
+  </thead>
+  <tbody>
+  <!-- BEGIN newsletter_user -->
+  <tr class="{ROW_CLASS}">
+    <td style="white-space:nowrap;"><input name="userid[]" type="checkbox" value="{NEWSLETTER_USER_ID}" />{STATUS_IMG}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_EMAIL}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_LASTNAME}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_FIRSTNAME}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_STREET}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_ZIP}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_CITY}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_COUNTRY}</td>
+    <td style="white-space:nowrap;">{NEWSLETTER_USER_REGISTRATION_DATE}</td>
+    <td style="text-align:right;">
+      <a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=edit&amp;id={NEWSLETTER_USER_ID}" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"><img src="images/icons/edit.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"/></a>
+      <a href="javascript:DeleteUser({NEWSLETTER_USER_ID}, '{NEWSLETTER_USER_EMAIL}');"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_NEWSLETTER_DELETE_RECIPIENT}" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}" /></a>
+    </td>
+  </tr>
+  <!-- END newsletter_user -->
+  </tbody>
+</table>
+
+<div>
     <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="arrow" />
     <a href="javascript:void(0)" onclick="changeCheckboxes('userlist','userid[]',true); return false;">{TXT_NEWSLETTER_CHECK_ALL}</a> /
     <a href="javascript:void(0)" onclick="changeCheckboxes('userlist','userid[]',false); return false;">{TXT_NEWSLETTER_UNCHECK_ALL}</a>
@@ -324,19 +313,19 @@ var confirmDeleteInactive = function() {
       <option value="0">{TXT_NEWSLETTER_WITH_SELECTED}:</option>
       <option value="delete">{TXT_NEWSLETTER_DELETE}</option>
     </select>
-  </div>
-  <input type="hidden" id="paging_limit" name="paginglimit" value="{NEWSLETTER_PAGING_LIMIT}" />
+</div>
+<input type="hidden" id="paging_limit" name="paginglimit" value="{NEWSLETTER_PAGING_LIMIT}" />
 </form>
 <br />
 {TXT_NEWSLETTER_ROWS_PER_PAGE}:
 
-<a href="index.php?cmd=newsletter&amp;act=users&amp;limit=50{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
-  50
+<a href="?cmd=newsletter&amp;act=users&amp;limit=50{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
+	50
 </a>
-<a href="index.php?cmd=newsletter&amp;act=users&amp;limit=250{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
-  250
+<a href="?cmd=newsletter&amp;act=users&amp;limit=250{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
+	250
 </a>
-<a href="index.php?cmd=newsletter&amp;act=users&amp;limit=500{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
+<a href="?cmd=newsletter&amp;act=users&amp;limit=500{NEWSLETTER_CATEGORY_ID}&amp;SearchStatus={NEWSLETTER_SEARCH_STATUS}&amp;keyword={NEWSLETTER_SEARCH_KEYWORD}&amp;SearchFields={NEWSLETTER_SEARCH_FIELDS}">
   500
 </a>
 <br />

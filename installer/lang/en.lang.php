@@ -102,7 +102,6 @@ $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "The table prefix may only consist of
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "The directory tree couldn't be showed on this server, due that the PHP-directive open_basedir is active, but does not include the required temp path (/tmp)!";
 $_ARRLANG['TXT_DATABASE_CONNECTION_COLLATION'] = "Connection collation";
 $_ARRLANG['TXT_DB_COLLATION_DESCRIPTION'] = "The connection collation is used to determine to sort order, or for search operations.<br /><br />If you are going to create a multilanguage based Website, then it is recommended to use either <strong>utf8_unicode_ci</strong> or <strong>utf8_general_ci</strong> as a collation. The difference of these two collations is that only <strong>utf8_unicode_ci</strong> supports expansions, which means it knows for example that in German `ß´ is equal to `ss´. On the other hand, <strong>utf8_general_ci</strong> is faster, but comparisons are less correct, due of its lack of expansions support.<br /><br />Wenn this will be only a one language based website, then you could probably use a language specific collation.";
-$_ARRLANG['TXT_REGISTER_GLOBALS_ON'] = "<a href=\"http://www.php.net/manual/en/ini.core.php#ini.register-globals\" title=\"register_globals PHP documentation\">register_globals</a> is activated. It is recommended to disable this PHP configuration option.";
 
 // installation
 $_ARRLANG['TXT_COULD_NOT_DEACTIVATE_UNUSED_LANGUAGES'] = "Could not deactivate the unused languages!";

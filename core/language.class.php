@@ -99,10 +99,6 @@ class LanguageManager
                 $this->deleteLanguage();
                 $this->languageOverview();
             break;
-            case 'truncate':
-                $this->_truncate();
-                $this->languageOverview();
-                break;
             case 'vars':
                 $this->listVariables();
             break;
@@ -169,30 +165,6 @@ class LanguageManager
         return false;
     }
 
-    /**
-     * Clears the contents of the selected language and sets all "useContentFromLang" fields of that language to the default language
-     *
-     * @global    array
-     * @global    ADONewConnection
-     * @return    boolean    True on success, false on failure
-     */
-    function _truncate(){
-        global $_CORELANG, $objDatabase;
-        $defaultLangId = FWLanguage::getDefaultLangId();
-        if (!empty($_REQUEST['id']) && $_REQUEST['id'] != $defaultLangId) {
-            $query = "  UPDATE `".DBPREFIX."content`
-                        SET `content`='',
-                            `useContentFromLang` = $defaultLangId
-                        WHERE lang_id=".intval($_REQUEST['id']);
-            if ($objDatabase->Execute($query)) {
-                $this->strOkMessage = $_CORELANG['TXT_LANGUAGE_TRUNCATE_SUCCESS'];
-                return true;
-            }
-            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-        }
-        return false;
-    }
-
 
     /**
      * deletes the selected language variables
@@ -242,7 +214,8 @@ class LanguageManager
         }
         if ($objResult->RecordCount() > 0) {
             // Language exists already.
-            $this->strErrMessage = $_CORELANG['TXT_LANGUAGE_ALREADY_EXIST'];
+// TODO: Add a more suitable error message here.
+            $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             return false;
         }
         $objDatabase->Execute("
@@ -924,11 +897,7 @@ class LanguageManager
             'TXT_ADMINISTRATION_PAGES'       => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
             'TXT_WEB_PAGES'                  => $_CORELANG['TXT_WEB_PAGES'],
             'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],
-            'TXT_DEFAULT_LANGUAGE'           => $_CORELANG['TXT_STANDARD_LANGUAGE'],
-            'TXT_LANGUAGE_TRUNCATE_CONTENT'  => $_CORELANG['TXT_LANGUAGE_TRUNCATE_CONTENT'],
-            'TXT_LANGUAGE_TRUNCATE_CONFIRM'  => $_CORELANG['TXT_LANGUAGE_TRUNCATE_CONFIRM'],
-            'CSRF_KEY'                       => CSRF::key(),
-            'CSRF_CODE'                      => CSRF::code(),
+            'TXT_DEFAULT_LANGUAGE'           => $_CORELANG['TXT_STANDARD_LANGUAGE']
         ));
         //end language variables
 
@@ -939,15 +908,8 @@ class LanguageManager
         }
 
         $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."languages ORDER BY id");
-        $defaultLangId = FWLanguage::getDefaultLangId();
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                if($objResult->fields['id'] == $defaultLangId){
-                    $objTemplate->hideBlock('truncateLang');
-                }else{
-                    $objTemplate->touchBlock('truncateLang');
-                }
-
                 $checked = "";
                 if ($objResult->fields['is_default']=="true") {
                   $checked = "checked";
@@ -1044,7 +1006,6 @@ class LanguageManager
             //-----------------------------------------------
             foreach ($_POST['langName'] as $id => $name) {
                 $active = 0;
-                $_POST['langActiveStatus'][$_POST['langDefaultStatus']] = 1; //make sure the default language is enabled
                 if (isset($_POST['langActiveStatus'][$id]) && $_POST['langActiveStatus'][$id]==1 ) {
                     $active = 1;
                 }
@@ -1060,12 +1021,12 @@ class LanguageManager
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             FWLanguage::init();
-            if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+             if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
                 $settings = new settingsManager();
                 $settings->setVirtualLanguagePath(true);
             }
             return true;
-       }
+        }
         return false;
     }
 

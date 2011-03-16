@@ -148,7 +148,7 @@ class logmanager
                      log.http_x_forwarded_for AS http_x_forwarded_for,
                      log.referer AS referer
                 FROM ".DBPREFIX."log AS log
-                 $q_search
+                 $q_search 
                 ORDER BY log.id DESC
          ";
 

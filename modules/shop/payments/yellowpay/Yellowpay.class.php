@@ -244,19 +244,14 @@ class Yellowpay
 
 
     /**
-     * Creates and returns the HTML-Form for requesting the yellowpay-service.
+     * Initializes class
      *
-     * @access  public
-     * @return  string    The HTML-Form
-     * @see     addRequiredKeys(), addPaymentTypeKeys(), addOtherKeys()
+     * Sets up the accepted payment methods according to the settings
      */
-    static function getForm(
-        $arrShopOrder, $submitValue='send', $autopost=false
-    ) {
+    static function init()
+    {
         $strAcceptedPaymentMethods =
-            SettingDb::getValue('postfinance_accepted_payment_methods');
-        self::$strAuthorization =
-            SettingDb::getValue('postfinance_authorization_type');
+            Settings::getValueByName('yellowpay_accepted_payment_methods');
         // There needs to be at least one accepted payment method,
         // if there is none, accept all.
         if (!empty($strAcceptedPaymentMethods)) {
@@ -267,7 +262,22 @@ class Yellowpay
                 }
             }
         }
+    }
 
+
+    /**
+     * Creates and returns the HTML-Form for requesting the yellowpay-service.
+     *
+     * @access  public
+     * @return  string    The HTML-Form
+     * @see     addRequiredKeys(), addPaymentTypeKeys(), addOtherKeys()
+     */
+    static function getForm(
+        $arrShopOrder, $submitValue='send', $autopost=false
+    ) {
+        global $_ARRAYLANG;
+
+        self::init();
         self::$arrShopOrder = $arrShopOrder;
         // Build the base URI from the referrer, which also includes the
         // protocol (http:// or https://)
@@ -293,6 +303,7 @@ class Yellowpay
             self::$arrShopOrder['cancelurl'] = $base_uri.'0';
         }
         self::$form =
+            $_ARRAYLANG['TXT_ORDER_LINK_PREPARED']."<br/><br/>\n".
             // The real yellowpay server or the test server
             '<form name="yellowpay" method="post" '.
 // OLD yellowpay URI
@@ -300,7 +311,7 @@ class Yellowpay
 //            '.postfinance.ch/checkout/Yellowpay.aspx?userctrl=Invisible"'.
 // CURRENT Postfinance E-Commerce URI
             'action="https://e-payment.postfinance.ch/ncol/'.
-            (SettingDb::getValue('postfinance_use_testserver') ? 'test' : 'prod').
+            (Settings::getValueByName('yellowpay_use_testserver') ? 'test' : 'prod').
             '/orderstandard.asp"'.
             ">\n";
 /*
@@ -352,14 +363,14 @@ class Yellowpay
      *
      * Concatenates the values of the fields
      *  orderID, amount, currency, PSPID
-     * plus the secret taken from the 'postfinance_hash_signature_in' setting
+     * plus the secret taken from the 'yellowpay_hash_seed' setting
      * and computes the SHA1 hash.
      * Fails if one or more of the needed values are empty.
      * @return  boolean         True on success, false otherwise
      */
     private static function addHash()
     {
-        $seed = SettingDb::getValue('postfinance_hash_signature_in');
+        $seed = Settings::getValueByName('yellowpay_hash_signature_in');
         if (   empty(self::$arrShopOrder['orderID'])
             || empty(self::$arrShopOrder['amount'])
             || empty(self::$arrShopOrder['currency'])
@@ -548,7 +559,11 @@ class Yellowpay
      */
     static function getOrderId()
     {
-        return (isset($_GET['orderID']) ? $_GET['orderID'] : false);
+        if (isset($_POST['txtOrderIDShop']))
+            return $_POST['txtOrderIDShop'];
+        if (isset($_GET['orderID']))
+            return $_GET['orderID'];
+        return false;
     }
 
 
@@ -577,7 +592,7 @@ class Yellowpay
             }
             $hash_string .= $_GET[$key];
         }
-        $hash_string .= SettingDb::getValue('postfinance_hash_signature_out');
+        $hash_string .= Settings::getValueByName('yellowpay_hash_signature_out');
         $hash = strtoupper(sha1($hash_string));
         if ($_GET['SHASIGN'] == $hash) {
             return true;
@@ -597,6 +612,7 @@ class Yellowpay
      */
     static function getAcceptedPaymentMethods()
     {
+        self::init();
         return array_keys(self::$arrAcceptedPaymentMethod);
     }
 
@@ -612,6 +628,7 @@ class Yellowpay
     {
         global $_ARRAYLANG;
 
+        self::init();
         $strOptions = '';
         foreach (array_keys(self::$arrAcceptedPaymentMethod)
                   as $strPaymentMethod) {
@@ -636,6 +653,7 @@ class Yellowpay
     {
         global $_ARRAYLANG;
 
+        self::init();
         $strOptions = '';
         foreach (Yellowpay::$arrKnownPaymentMethod as $index => $strPaymentMethod) {
             $strOptions .=
@@ -657,6 +675,8 @@ class Yellowpay
     {
         global $_ARRAYLANG;
 
+        self::$strAuthorization =
+            Settings::getValueByName('yellowpay_authorization_type');
         return
             '<option value="SAL"'.
             (self::$strAuthorization == 'SAL' ? ' selected="selected"' : '').'>'.

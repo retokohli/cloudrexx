@@ -68,8 +68,9 @@ class Vat
     private static $vatDefaultId = false;
 
     /**
-     * @var     double  $vatDefaultRate The default VAT rate.
-     * @see     init(), calculateDefaultTax()
+     * @var     double  $vatDefaultRate The default VAT rate, determined by the tax_default_id entry
+     *                                  in the shop_config table.  See {@see init()},
+     *                                  {@see  calculateDefaultTax()}.
      * @static
      * @access  private
      */
@@ -180,37 +181,50 @@ class Vat
             // Foreign countries
             0 => array(
                 // Customer
-                0 => SettingDb::getValue('vat_enabled_foreign_customer'),
+                0 => Settings::getValueByName('vat_enabled_foreign_customer'),
                 // Reseller
-                1 => SettingDb::getValue('vat_enabled_foreign_reseller'),
+                1 => Settings::getValueByName('vat_enabled_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => SettingDb::getValue('vat_enabled_home_customer'),
+                0 => Settings::getValueByName('vat_enabled_home_customer'),
                 // Reseller
-                1 => SettingDb::getValue('vat_enabled_home_reseller'),
+                1 => Settings::getValueByName('vat_enabled_home_reseller'),
             ),
         );
         self::$arrVatIncluded = array(
             // Foreign country
             0 => array(
                 // Customer
-                0 => SettingDb::getValue('vat_included_foreign_customer'),
+                0 => Settings::getValueByName('vat_included_foreign_customer'),
                 // Reseller
-                1 => SettingDb::getValue('vat_included_foreign_reseller'),
+                1 => Settings::getValueByName('vat_included_foreign_reseller'),
             ),
             // Home country
             1 => array(
                 // Customer
-                0 => SettingDb::getValue('vat_included_home_customer'),
+                0 => Settings::getValueByName('vat_included_home_customer'),
                 // Reseller
-                1 => SettingDb::getValue('vat_included_home_reseller'),
+                1 => Settings::getValueByName('vat_included_home_reseller'),
             ),
         );
-        self::$vatDefaultId = SettingDb::getValue('vat_default_id');
+        self::$vatDefaultId = Settings::getValueByName('vat_default_id');
         self::$vatDefaultRate = self::getRate(self::$vatDefaultId);
-        self::$vatOtherId = SettingDb::getValue('vat_other_id');
+        self::$vatOtherId = Settings::getValueByName('vat_other_id');
+
+// NOTE: Temporary fix for VAT rate change on 2011-01-01 in switzerland
+        if (   isset(self::$arrVat[10])
+            && self::$arrVat[10]['rate'] == 7.6) {
+            $date = date('Y-m-d');
+            if ($date >= '2011-01-01') {
+                self::updateVat(
+                    array(10 => self::$arrVat[10]['class']),
+                    array(10 => '8.00'));
+                self::$arrVat[10]['rate'] = '8.00';
+            }
+        }
+
         return true;
     }
 
@@ -683,14 +697,14 @@ class Vat
      * Otherwise, returns -1.
      * Note: This function returns the VAT rate no matter whether it is
      * enabled in the shop or not.  Check this yourself!
-     * @param   double  $product_id  The product ID
+     * @param   double  $productId  The product ID
      * @global  ADONewConnection
      * @return  double              The (positive) associated vat rate
      *                              in percent, or -1 if the record could
      *                              not be found.
      * @static
      */
-    static function getAssociatedTaxRate($product_id)
+    static function getAssociatedTaxRate($productId)
     {
         global $objDatabase;
 
@@ -698,7 +712,7 @@ class Vat
             SELECT percent FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat vat
              INNER JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products products
                 ON vat.id=products.vat_id
-             WHERE products.id=$product_id
+             WHERE products.id=$productId
         ";
         $objResult = $objDatabase->Execute($query);
         // There must be exactly one match
@@ -712,8 +726,7 @@ class Vat
     /**
      * Returns the VAT amount using the default rate for the given price.
      *
-     * Note that the amount returned is not formatted as a currency,
-     * nor are any checks performed on whether VAT is active or not!
+     * Note that the amount returned is not formatted as a currency.
      * @param   double  $price  The price
      * @return  double          The VAT amount
      * @static

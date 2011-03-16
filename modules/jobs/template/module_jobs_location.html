@@ -5,14 +5,14 @@
 
 function deleteLocations()
 {
-  with (document.form2){
-    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-       action = "index.php?cmd=jobs&act=delloc";
-      method = "post";
-      submit();
-      return true;
-    }
-  }
+	with (document.form2){
+		if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {									
+		 	action = "index.php?cmd=jobs&act=delloc"; 
+			method = "post";
+			submit();
+			return true;
+		} 
+	}
 }
 
 /**
@@ -25,30 +25,30 @@ function deleteLocations()
  */
 function setCheckboxes(do_check)
 {
-  with (document.form2){
-      var box      = elements['selectedId[]'];
+	with (document.form2){	
+	    var box      = elements['selectedId[]'];
+	                  
+	    var box_cnt  = (typeof(box.length) != 'undefined')
+	                  ? box.length
 
-      var box_cnt  = (typeof(box.length) != 'undefined')
-                    ? box.length
-
-                    : 0;
-
-      if (box_cnt) {
-          for (var i = 0; i < box_cnt; i++)
-          {
-              box[i].checked = do_check;
-          }
-      } else {
-          box.checked = do_check;
-      }
-      return true;
-  }
+	                  : 0;
+	                  
+	    if (box_cnt) {
+	        for (var i = 0; i < box_cnt; i++) 
+	        {
+	            box[i].checked = do_check;
+	        }
+	    } else {
+	        box.checked = do_check;
+	    }	
+	    return true;
+	}	    
 }
 
 function deleteLocation(id)
 {
     if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
-        window.location.replace("index.php?cmd=jobs&act=delloc&locId="+id);
+        window.location.replace("index.php?cmd=jobs&{CSRF_PARAM}&act=delloc&locId="+id);
 }
 // -->
 </script>
@@ -79,7 +79,7 @@ function deleteLocation(id)
       </th>
     </tr>
     <tr class="row2">
-        <td width="1%" valign="top" nowrap="nowrap"><b>#</b></td>
+        <td width="1%" valign="top" nowrap="nowrap"><b>#</b></td> 
         <td width="2%" nowrap><b>{TXT_ID}</b></td>
         <td width="100%"><b>{TXT_NAME}</b></td>
         <td width="5%" nowrap>
@@ -108,7 +108,7 @@ function deleteLocation(id)
 <input type="button" name="delete" value="{TXT_DELETE}" onclick="deleteLocations(); return false;" />&nbsp;&nbsp;
 <br />
 <br />
-  <input type="submit" name="submit" value="{TXT_ACCEPT_CHANGES}" />
+  <input type="submit" name="submitButton" value="{TXT_ACCEPT_CHANGES}" />
 </form>
 <br />
 <!-- END module_jobs_location.html -->

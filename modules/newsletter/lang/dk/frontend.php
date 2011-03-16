@@ -6,10 +6,10 @@
  * @package     contrexx
  * @subpackage  module_newsletter
  */
-$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Conferma ricevuta! Da d'esso riciverà la Newsletter.";
+$_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_SUCCESSFUL'] = "Succesfuld bekræftelse! Du vil fremover modtage nyhedsbrevet.";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_ERROR'] = "De indtastede informationer matcher ikke. <br>Tjek venligst IDen og emailadressen fra nyhedsbrevet.";
 $_ARRAYLANG['TXT_NEWSLETTER_SEND_TO_ALL_SUBSCRIBERS_SUCCESSFUL'] = "Nyhedsbrevet blev sendt til alle abonnementer";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "La sua E-Mail e stata registrata, nei prossimi minuti riceverà una conferma.";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBE_OK'] = "Din emailadresse blev registreret. Du vil snart modtage en email til bekræftelse af registreringen";
 $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION'] = "Tilmelding til nyhedsbrev";
 $_ARRAYLANG['TXT_NEWSLETTER_MUST_CONFIRM'] = "Bekræft venligst tilmeldingen ved at følge nedstående link:";
 $_ARRAYLANG['TXT_NEWS_MESSAGES'] = "Nyhedsmeldinger";
@@ -25,7 +25,7 @@ $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "Data er blevet slettet med 
 $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'] = "Fejl ved sletnig af data!";
 $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'] = "Fejl ved forsendelse af besked";
 $_ARRAYLANG['TXT_EMAIL'] = "E-Mail";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED'] = "Il suo indirizzo E-Mail è già registrato.";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIBER_ALREADY_INSERTED'] = "Din email adresse eksisterer allerede i vores database.";
 $_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS'] = "Din emailadresse er forkert!";
 $_ARRAYLANG['TXT_LASTNAME'] = "Navn";
 $_ARRAYLANG['TXT_FIRSTNAME'] = "Fornavn";
@@ -41,7 +41,7 @@ $_ARRAYLANG['TXT_AUTHENTICATION_FAILED'] = "Authentication Failed!";
 $_ARRAYLANG['TXT_CATEGORY_ERROR'] = "Du skal valge en kategori med mindst to modtager";
 $_ARRAYLANG['TXT_NOT_VALID_EMAIL'] = "Ugyldig emailadresse";
 $_ARRAYLANG['TXT_EMAL_ALLREDY_EXIST'] = "Emailadressen eksisterer allerede";
-$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Il suo indirizzo E-Mail è stato cancellato.";
+$_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'] = "Din emailadresse er blevet slettet fra systemet med sucess";
 $_ARRAYLANG['TXT_STATISTICS'] = "Statistik";
 $_ARRAYLANG['TXT_GENERALLY'] = "Generelt";
 $_ARRAYLANG['TXT_NEWSLETTER_ALL'] = "Alle";
@@ -67,11 +67,11 @@ $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY'] = "January,February,March,April,May,June,July,August,September,October,November,December";
 $_ARRAYLANG['TXT_NEWSLETTER_MUST_SELECT_LIST'] = "Du skal som minimum valge en liste!";
 $_ARRAYLANG['TXT_NEWSLETTER_YOUR_DATE_SUCCESSFULLY_UPDATED'] = "Dine data er blevet aktualiseret med sucess";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Dispiacevolmente nelle sue datte c'è un errore!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Nella sua Newsletter c'è entrato un errore!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_UPDATE_YOUR_DATA'] = "Der er opstået en fejl ved aktualiseringen af dine data!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_ADDING_YOU'] = "Der er opstået en fejl ved tilføjelsen af nyhedsbrevsystemet";
 $_ARRAYLANG['TXT_NEWSLETTER_AUTHENTICATION_FAILED'] = "Authentication Failed!";
-$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "Dispiacevolmente la sua registrazione è stata interotta, l'E-Mail non è stata spedita!";
-$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Mentre la cancellazzione del suo indirizzo E-Mail c'è stato uno sbaglio!";
+$_ARRAYLANG['TXT_NEWSLETTER_SUBSCRIPTION_CANCELED_BY_EMAIL'] = "Tilmeldingen er blevet afbrudt fordi aktiveringsemailen ikke kunne sendes!";
+$_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'] = "Der er opstået en fejl ved sletningen af din emailadresse!";
 $_ARRAYLANG['TXT_NEWSLETTER_SEX'] = "Køn";
 $_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN'] = "Ukendt";
 $_ARRAYLANG['TXT_NEWSLETTER_URI'] = "URI";

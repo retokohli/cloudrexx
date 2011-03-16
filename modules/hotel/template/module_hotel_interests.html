@@ -6,280 +6,280 @@
 //<![CDATA[
 
     function deleteContact(contactID) {
-      strConfirmTxt = '{TXT_HOTEL_CONFIRM_DELETE_CONTACT}';
-      if (confirm(strConfirmTxt+'\n{TXT_HOTEL_CANNOT_UNDO_OPERATION}')) {
-        window.location.href = "?cmd=hotel&act=interests&del="+contactID;
-      }
+    	strConfirmTxt = '{TXT_HOTEL_CONFIRM_DELETE_CONTACT}';
+    	if (confirm(strConfirmTxt+'\n{TXT_HOTEL_CANNOT_UNDO_OPERATION}')) {
+    		window.location.href = "?cmd=hotel&{CSRF_PARAM}&act=interests&del="+contactID;
+    	}
     }
 
     /*
-   Tooltip stuff
-   */
+	 Tooltip stuff
+	 */
     var Style = new Array();
     var Text = new Array();
-  Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+	Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
     <!-- BEGIN commentsArray -->
-  Text[{HOTEL_COMMENT_INDEX}]=["","{HOTEL_COMMENT_TEXT}"];<!-- END commentsArray -->
+	Text[{HOTEL_COMMENT_INDEX}]=["","{HOTEL_COMMENT_TEXT}"];<!-- END commentsArray -->
 
-  /**
-   *  DOM userlist sorting
-   *  remote script by savino
-   *  (c) 2006, ASTALAVISTA IT Engineering
-   */
-  var http;
-  var request_active = false;
-  var requests  = new Array();
-  var contacts   = new Array();
-  var fields     = new Array();
-  var comment   = new Array();
-  var hotelID = {HOTEL_ID};
-  fields[1]   = new Array('hotel_id', 'name', 'firstname', 'street', 'zip', 'location', 'phone_home', 'comment', 'time');
-  var clearArrows = function(index){
-    for (i=0; i<fields[index].length; i++){
-      document.getElementById(fields[index][i]+"_order").innerHTML = '';
-    }
-  }
+	/**
+	 *  DOM userlist sorting
+	 *	remote script by savino
+	 *	(c) 2006, ASTALAVISTA IT Engineering
+	 */
+	var http;
+	var request_active = false;
+	var requests	= new Array();
+	var contacts 	= new Array();
+	var fields 		= new Array();
+	var comment 	= new Array();
+	var hotelID = {HOTEL_ID};
+	fields[1] 	= new Array('hotel_id', 'name', 'firstname', 'street', 'zip', 'location', 'phone_home', 'comment', 'time');
+	var clearArrows = function(index){	
+		for (i=0; i<fields[index].length; i++){
+			document.getElementById(fields[index][i]+"_order").innerHTML = '';
+		}
+	}
+	
+	if (document.ELEMENT_NODE == null) {
+	  document.ELEMENT_NODE = 1;
+	  document.TEXT_NODE = 3;
+	}
+	
+	function getXMLHttpRequestObj() {
+	  var objXHR;
+	  if(window.XMLHttpRequest) {
+	      objXHR = new XMLHttpRequest();
+	  } else if(window.ActiveXObject) {
+	      objXHR = new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	  return objXHR;
+	}
 
-  if (document.ELEMENT_NODE == null) {
-    document.ELEMENT_NODE = 1;
-    document.TEXT_NODE = 3;
-  }
+	http = getXMLHttpRequestObj();
+	
+	var imgDetails = new Image();
+	imgDetails.src = 'images/icons/details.gif';
+	imgDetails.title = '{TXT_HOTEL_DETAILS}';
+	imgDetails.alt = '{TXT_HOTEL_DETAILS}';
+	imgDetails.border = '0';
 
-  function getXMLHttpRequestObj() {
-    var objXHR;
-    if(window.XMLHttpRequest) {
-        objXHR = new XMLHttpRequest();
-    } else if(window.ActiveXObject) {
-        objXHR = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    return objXHR;
-  }
+	var imgDelete = new Image();
+	imgDelete.src = 'images/icons/delete.gif';
+	imgDelete.title = '{TXT_HOTEL_DELETE}';
+	imgDelete.alt = '{TXT_HOTEL_DELETE}';
+	imgDelete.border = '0';
 
-  http = getXMLHttpRequestObj();
-
-  var imgDetails = new Image();
-  imgDetails.src = 'images/icons/details.gif';
-  imgDetails.title = '{TXT_HOTEL_DETAILS}';
-  imgDetails.alt = '{TXT_HOTEL_DETAILS}';
-  imgDetails.border = '0';
-
-  var imgDelete = new Image();
-  imgDelete.src = 'images/icons/delete.gif';
-  imgDelete.title = '{TXT_HOTEL_DELETE}';
-  imgDelete.alt = '{TXT_HOTEL_DELETE}';
-  imgDelete.border = '0';
-
-  var imgComment = new Image();
-  imgComment.src = 'images/icons/note.gif';
-  imgComment.title = '{TXT_HOTEL_DELETE}';
-  imgComment.alt = '{TXT_HOTEL_DELETE}';
-  imgComment.border = '0';
-
-  var addEvent, removeEvent;
-  addEvent = function(obj, type, fn){
-    if (obj.addEventListener){
-      addEvent = function(obj, type, fn){ //self-redeclaration
-        obj.addEventListener( type, fn, false );
-      }
-    }else if (obj.attachEvent){
-      addEvent = function(obj, type, fn){
-        obj["e"+type+fn] = fn;
-        obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
-        obj.attachEvent( "on"+type, obj[type+fn] );
-      }
-    }
-  }
-  //for completeness
-  removeEvent = function(obj, type, fn){
-    if (obj.removeEventListener){
-      removeEvent = function(obj, type, fn){
-        obj.removeEventListener( type, fn, false );
-      }
-    }else if (obj.detachEvent){
-      removeEvent = function(obj, type, fn){
-        obj.detachEvent( "on"+type, obj[type+fn] );
-        obj[type+fn] = null;
-        obj["e"+type+fn] = null;
-      }
-    }
-  }
-  function sendReq(field, type) {
-    if(request_active){
-      return false;
-    }else{
-      request_active = true;
-    }
-    limit       = document.getElementById("paging_limit").value;
-    pos       = document.getElementById("paging_pos").value;
-    orderspan     = document.getElementById(field+"_order");
-    searchField    = document.getElementById("hsearchField").value;
-    search       = document.getElementById("hsearch").value;
-    hfield       = document.getElementById("field");
-    hfield.value   = field;
-    if(orderspan.order == 'asc'){
-      orderspan.order = 'desc';
-    }else if(orderspan.order == 'desc'){
-      orderspan.order = 'asc';
-    }else{
-      orderspan.order = 'asc';
-    }
-    clearArrows(type);
-    if (orderspan.order == 'asc'){
-      orderspan.innerHTML = '\u2191';
-    }else{
-      orderspan.innerHTML = '\u2193';
-    }
-
-    if(document.getElementById("ignore_timespan").checked){
-      timespan="on";
-    }else{
-      timespan="";
-    }
-
-    if(type == 1){
-      http.open('get', '?cmd=hotel&act=rpcsisort&field='+field+'&order='+orderspan.order+'&limit='+limit+'&pos='+pos+'&search='+search+'&searchField='+searchField+'&hotelid='+hotelID);
-      http.onreadystatechange = updateDownloadList
-    }else{
-    }
-      http.send(null);
-  }
-
-  function createTdWithText(text){
-    td = document.createElement("td");
-    td.style.whiteSpace = 'nowrap';
-    text = (text == '') ? 'N/A' : text;
-    textNode = document.createTextNode(text);
-    td.appendChild(textNode);
-    return td;
-  }
-
-  var findPosX = function(obj){
-    var curleft = 0;
-    if (obj.offsetParent)
-    {
-      while (obj.offsetParent)
-      {
-        curleft += obj.offsetLeft
-        obj = obj.offsetParent;
-      }
-    }
-    else if (obj.x)
-      curleft += obj.x;
-    return curleft;
-  }
-
-  var findPosY = function(obj){
-    var curtop = 0;
-    if (obj.offsetParent)
-    {
-      while (obj.offsetParent)
-      {
-        curtop += obj.offsetTop
-        obj = obj.offsetParent;
-      }
-    }
-    else if (obj.y)
-      curtop += obj.y;
-    return curtop;
-  }
-
-  var getInputPosition = function(obj){
-    try{
-      x = findPosX(obj);
-      y = findPosY(obj);
-    }catch(e){}
-    y-=25;
-    return {X: x+'px', Y: y+'px'};
-  }
-
-  function showTip(messageid, obj){
-    try{
-      pos = getInputPosition(obj);
-      div=document.createElement('div');
-      div.id="commentTip";
-      div.innerHTML=comment[messageid];
-      div.style.border='1px solid black';
-      div.style.padding='1px';
-      div.style.backgroundColor='#ffffe1';
-      div.style.position='absolute';
-      div.style.top = pos.Y;
-      div.style.left = (parseInt(pos.X) + 20) + 'px';
-      obj.parentNode.appendChild(div);
-    }catch(e){}
-  }
-
-  function hideTip(){
-    try{
-      document.getElementById('commentTip').parentNode.removeChild(document.getElementById('commentTip'));
-    }catch(e){}
-  }
-
-  function updateDownloadList() {
-      if(http.readyState == 4 && http.status == 200){
-        requests = new Array();
-          var response = http.responseText;
-          eval(response); // create contacts array
-          tbl = document.getElementById('downloadlist');
-        tBody = tbl.tBodies[0];
-        for(i = tBody.childNodes.length-1; i>=0; i--){
-                try{
-                  bin = tBody.removeChild(tBody.childNodes[i]);
-                }catch(e){}
-              }
-              for(i in contacts){
-                row = document.createElement("tr");
-                row.className = 'row' + ((i%2) + 1);
-              aOpen = document.createElement("a");
-          aOpen.href = '/?section=hotel&cmd=showObj&id='+unescape(contacts[i].hotel_id);
-          aOpen.title = unescape(contacts[i].location);
-          aOpen.target = '_blank';
-                aOpen.appendChild(document.createTextNode(unescape(contacts[i].hotel_id)));
-                pageTD = document.createElement("td");
-                pageTD.appendChild(aOpen);
-                row.appendChild(pageTD);
-                row.appendChild(createTdWithText(unescape(contacts[i].name)));
-                row.appendChild(createTdWithText(unescape(contacts[i].firstname)));
-                row.appendChild(createTdWithText(unescape(contacts[i].street)));
-                row.appendChild(createTdWithText(unescape(contacts[i].zip)));
-                row.appendChild(createTdWithText(unescape(contacts[i].location)));
-                row.appendChild(createTdWithText(unescape(contacts[i].telephone)));
-                comment[i] = (contacts[i].comment != ' ') ? unescape(contacts[i].comment) : "N/A";
-                comment[i] = comment[i].replace(/\r\n|\r|\n/g, "<br />");
-                commentTD = document.createElement("td");
-                commentTD.style.whiteSpace="nowrap";
-                commentTD.innerHTML = '<img onmouseout="hideTip();" onmouseover="showTip(\''+i+'\', this);" src="images/icons/note.gif" alt="comment" width="12" height="12" />';
-
-                row.appendChild(commentTD);
-                row.appendChild(createTdWithText(unescape(contacts[i].timestamp)));
-                aDetails = document.createElement("a");
-          aDetails.href = '?cmd=hotel&act=interestdetails&id='+contacts[i].contact_id;
-          aDetails.title = '{TXT_HOTEL_EDIT}';
-                aDetails.appendChild(imgDetails.cloneNode(false));
-                aDelete = document.createElement("a");
-          aDelete.href = 'javascript:DeleteUser('+ contacts[i]['contact_id'] +')';
-          aDelete.title = '{TXT_HOTEL_DELETE}'
-          aDelete.appendChild(imgDelete.cloneNode(false));
-          tdFunc = document.createElement("td");
-          tdFunc.style.textAlign = 'right';
-          tdFunc.appendChild(aDetails);
-          tdFunc.appendChild(aDelete);
-          row.appendChild(tdFunc);
-
-          tBody.appendChild(row);
-              }
-              request_active = false;
+	var imgComment = new Image();
+	imgComment.src = 'images/icons/note.gif';
+	imgComment.title = '{TXT_HOTEL_DELETE}';
+	imgComment.alt = '{TXT_HOTEL_DELETE}';
+	imgComment.border = '0';
+	 
+	var addEvent, removeEvent;
+	addEvent = function(obj, type, fn){ 
+		if (obj.addEventListener){
+			addEvent = function(obj, type, fn){ //self-redeclaration
+				obj.addEventListener( type, fn, false );
+			}
+		}else if (obj.attachEvent){
+			addEvent = function(obj, type, fn){ 
+				obj["e"+type+fn] = fn;
+				obj[type+fn] = function() { obj["e"+type+fn]( window.event ); }
+				obj.attachEvent( "on"+type, obj[type+fn] );
+			}
+		}
+	}
+	//for completeness
+	removeEvent = function(obj, type, fn){
+		if (obj.removeEventListener){
+			removeEvent = function(obj, type, fn){
+				obj.removeEventListener( type, fn, false );
+			}
+		}else if (obj.detachEvent){
+			removeEvent = function(obj, type, fn){
+				obj.detachEvent( "on"+type, obj[type+fn] );
+				obj[type+fn] = null;
+				obj["e"+type+fn] = null;				
+			}
+		}
+	}		
+	function sendReq(field, type) {
+		if(request_active){
+			return false;
+		}else{
+			request_active = true;
+		}
+		limit 			= document.getElementById("paging_limit").value;
+		pos 			= document.getElementById("paging_pos").value;
+		orderspan 		= document.getElementById(field+"_order");
+		searchField		= document.getElementById("hsearchField").value;
+		search 			= document.getElementById("hsearch").value;
+		hfield 			= document.getElementById("field");
+		hfield.value 	= field;
+		if(orderspan.order == 'asc'){
+			orderspan.order = 'desc';
+		}else if(orderspan.order == 'desc'){
+			orderspan.order = 'asc';
+		}else{
+			orderspan.order = 'asc';
+		}
+		clearArrows(type);
+		if (orderspan.order == 'asc'){
+			orderspan.innerHTML = '\u2191';
+		}else{
+			orderspan.innerHTML = '\u2193';
+		}
+		
+		if(document.getElementById("ignore_timespan").checked){
+			timespan="on";
+		}else{
+			timespan="";		
+		}
+			
+		if(type == 1){
+			http.open('get', '?cmd=hotel&act=rpcsisort&field='+field+'&order='+orderspan.order+'&limit='+limit+'&pos='+pos+'&search='+search+'&searchField='+searchField+'&hotelid='+hotelID);
+			http.onreadystatechange = updateDownloadList
+		}else{
+		}
+	    http.send(null);
+	}
+	
+	function createTdWithText(text){
+		td = document.createElement("td");
+		td.style.whiteSpace = 'nowrap';
+		text = (text == '') ? 'N/A' : text;
+		textNode = document.createTextNode(text);
+		td.appendChild(textNode);
+		return td;
+	}
+	
+	var findPosX = function(obj){
+		var curleft = 0;
+		if (obj.offsetParent)
+		{
+			while (obj.offsetParent)
+			{
+				curleft += obj.offsetLeft
+				obj = obj.offsetParent;
+			}
+		}
+		else if (obj.x)
+			curleft += obj.x;
+		return curleft;
+	}
+	
+	var findPosY = function(obj){
+		var curtop = 0;
+		if (obj.offsetParent)
+		{
+			while (obj.offsetParent)
+			{
+				curtop += obj.offsetTop
+				obj = obj.offsetParent;
+			}
+		}
+		else if (obj.y)
+			curtop += obj.y;
+		return curtop;
+	}
+	
+	var getInputPosition = function(obj){
+		try{
+			x = findPosX(obj);
+			y = findPosY(obj);
+		}catch(e){}
+		y-=25;
+		return {X: x+'px', Y: y+'px'};
+	}
+	
+	function showTip(messageid, obj){
+		try{
+			pos = getInputPosition(obj);
+			div=document.createElement('div');
+			div.id="commentTip";
+			div.innerHTML=comment[messageid];
+			div.style.border='1px solid black';
+			div.style.padding='1px';
+			div.style.backgroundColor='#ffffe1';
+			div.style.position='absolute';
+			div.style.top = pos.Y;
+			div.style.left = (parseInt(pos.X) + 20) + 'px';
+			obj.parentNode.appendChild(div);
+		}catch(e){}
+	}
+	
+	function hideTip(){
+		try{
+			document.getElementById('commentTip').parentNode.removeChild(document.getElementById('commentTip'));
+		}catch(e){}
+	}
+	
+	function updateDownloadList() {
+	    if(http.readyState == 4 && http.status == 200){
+	    	requests = new Array();
+	        var response = http.responseText;
+	        eval(response); // create contacts array  
+	        tbl = document.getElementById('downloadlist');
+				tBody = tbl.tBodies[0];
+				for(i = tBody.childNodes.length-1; i>=0; i--){
+	            	try{
+	            		bin = tBody.removeChild(tBody.childNodes[i]);
+	            	}catch(e){}
+	            }
+	            for(i in contacts){
+	            	row = document.createElement("tr");
+	            	row.className = 'row' + ((i%2) + 1);
+        			aOpen = document.createElement("a");
+					aOpen.href = '/?section=hotel&cmd=showObj&{CSRF_PARAM}&id='+unescape(contacts[i].hotel_id);
+					aOpen.title = unescape(contacts[i].location);
+					aOpen.target = '_blank';
+	            	aOpen.appendChild(document.createTextNode(unescape(contacts[i].hotel_id)));
+	            	pageTD = document.createElement("td");
+	            	pageTD.appendChild(aOpen);
+	            	row.appendChild(pageTD);
+	            	row.appendChild(createTdWithText(unescape(contacts[i].name)));
+	            	row.appendChild(createTdWithText(unescape(contacts[i].firstname)));
+	            	row.appendChild(createTdWithText(unescape(contacts[i].street)));
+	            	row.appendChild(createTdWithText(unescape(contacts[i].zip)));
+	            	row.appendChild(createTdWithText(unescape(contacts[i].location)));
+	            	row.appendChild(createTdWithText(unescape(contacts[i].telephone)));
+	            	comment[i] = (contacts[i].comment != ' ') ? unescape(contacts[i].comment) : "N/A";
+	            	comment[i] = comment[i].replace(/\r\n|\r|\n/g, "<br />");
+	            	commentTD = document.createElement("td");
+	            	commentTD.style.whiteSpace="nowrap";
+	            	commentTD.innerHTML = '<img onmouseout="hideTip();" onmouseover="showTip(\''+i+'\', this);" src="images/icons/note.gif" alt="comment" width="12" height="12" />';
+	            	
+	            	row.appendChild(commentTD);
+	            	row.appendChild(createTdWithText(unescape(contacts[i].timestamp)));
+	            	aDetails = document.createElement("a");
+					aDetails.href = '?cmd=hotel&act=interestdetails&id='+contacts[i].contact_id;
+					aDetails.title = '{TXT_HOTEL_EDIT}';
+	            	aDetails.appendChild(imgDetails.cloneNode(false));
+	            	aDelete = document.createElement("a");
+					aDelete.href = 'javascript:DeleteUser('+ contacts[i]['contact_id'] +')';
+					aDelete.title = '{TXT_HOTEL_DELETE}'
+					aDelete.appendChild(imgDelete.cloneNode(false));
+					tdFunc = document.createElement("td");
+					tdFunc.style.textAlign = 'right';
+					tdFunc.appendChild(aDetails);
+					tdFunc.appendChild(aDelete);
+					row.appendChild(tdFunc);
+	            	
+					tBody.appendChild(row);
+	            }
+	            request_active = false;
         }else{
-          try{
-            if(http.statusText == 'OK'){
-              return false;
-            }else{
-              alert('error: ' + http.statusText);
-            }
-          }catch(e){}
+        	try{
+	        	if(http.statusText == 'OK'){
+	        		return false;
+	        	}else{
+		        	alert('error: ' + http.statusText);
+	        	}
+        	}catch(e){}
         }
     }
 //]]>
-
+    
 </script>
 
 <!-- START Tabmenu -->
@@ -297,51 +297,51 @@
 <form action="?cmd=hotel&amp;act=interests&amp;id={HOTEL_FORM_ACTION_ID}" method="post">
 
 <table border="0" id="statslist" cellspacing="0" class="adminlist" style="width: 100%; display: none;" cellpadding="3">
-  <tr>
-    <th>
-      {TXT_HOTEL_TIMESPAN}
-    </th>
-  </tr>
-  <tr>
-    <td><!-- datepickercontrol options -->
-      <input type="hidden" id="DPC_TODAY_TEXT" value="heute" />
-      <input type="hidden" id="DPC_BUTTON_TITLE" value="Kalender öffnen..." />
-      <input type="hidden" id="DPC_MONTH_NAMES" value="['Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']" />
-      <input type="hidden" id="DPC_DAY_NAMES" value="['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']" />
-      <!-- /datepickercontrol options -->
-
-      <div id="datepick">
-        {TXT_HOTEL_FROM} <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_TODAY}" style="width: 8em; padding: 2px;" />
-        {TXT_HOTEL_TO} <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_NEXT_MONTH}" style="width: 8em; padding: 2px;" />         <input type="checkbox" id="ignore_timespan" name="ignore_timespan" checked="checked" /> {TXT_HOTEL_IGNORE_TIMESPAN}
-        <input type="submit" name="show_entries_in_timespan" value="{TXT_HOTEL_REFRESH}" />
-      </div>
-    </td>
-  </tr>
+	<tr>
+		<th>
+			{TXT_HOTEL_TIMESPAN}
+		</th>
+	</tr>
+	<tr>
+		<td><!-- datepickercontrol options -->
+			<input type="hidden" id="DPC_TODAY_TEXT" value="heute" />
+			<input type="hidden" id="DPC_BUTTON_TITLE" value="Kalender öffnen..." />
+			<input type="hidden" id="DPC_MONTH_NAMES" value="['Januar', 'Februar', 'M&auml;rz', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']" />
+			<input type="hidden" id="DPC_DAY_NAMES" value="['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']" />
+			<!-- /datepickercontrol options -->		
+			
+			<div id="datepick">
+				{TXT_HOTEL_FROM} <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{CALENDAR_TODAY}" style="width: 8em; padding: 2px;" /> 
+				{TXT_HOTEL_TO} <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{CALENDAR_NEXT_MONTH}" style="width: 8em; padding: 2px;" /> 				<input type="checkbox" id="ignore_timespan" name="ignore_timespan" checked="checked" /> {TXT_HOTEL_IGNORE_TIMESPAN}
+				<input type="submit" name="show_entries_in_timespan" value="{TXT_HOTEL_REFRESH}" />				
+			</div>
+		</td>
+	</tr>
 </table>
 
 <table  border="0" cellspacing="0" class="adminlist" style="width: 100%" cellpadding="3">
 <tr>
-  <th>
-    <!--<span style="float: right; margin-right: 10px;">{TXT_HOTEL_EXPORT}</span>-->Buchungen suchen
-  </th>
+	<th>
+		<!--<span style="float: right; margin-right: 10px;">{TXT_HOTEL_EXPORT}</span>-->Buchungen suchen
+	</th>
 </tr>
 <tr>
 <td>
 
 
 <div style="float: right; display: none;">
-  <a href="?cmd=hotel&amp;act=export&amp;type=interests&amp;hotel_id={HOTEL_ID}"> <img style="vertical-align: middle; border: 0;" src="images/icons/excel.gif" title="export" alt="export" /> {TXT_HOTEL_DOWNLOAD_LIST}</a>
+	<a href="?cmd=hotel&amp;act=export&amp;type=interests&amp;hotel_id={HOTEL_ID}"> <img style="vertical-align: middle; border: 0;" src="images/icons/excel.gif" title="export" alt="export" /> {TXT_HOTEL_DOWNLOAD_LIST}</a>
 </div>
 
 
 <input name="search" type="text" value="" />
 <select name="searchField">
-  <option value="email">{TXT_HOTEL_EMAIL}</option>
-  <option value="name">{TXT_HOTEL_NAME}</option>
-  <!--<option value="firstname">{TXT_HOTEL_FIRSTNAME}</option>
-  <option value="company">{TXT_HOTEL_COMPANY}</option>
-  <option value="street">{TXT_HOTEL_STREET}</option>
-  <option value="location">{TXT_HOTEL_LOCATION}</option>-->
+	<option value="email">{TXT_HOTEL_EMAIL}</option>
+	<option value="name">{TXT_HOTEL_NAME}</option>
+	<!--<option value="firstname">{TXT_HOTEL_FIRSTNAME}</option>
+	<option value="company">{TXT_HOTEL_COMPANY}</option>
+	<option value="street">{TXT_HOTEL_STREET}</option>
+	<option value="location">{TXT_HOTEL_LOCATION}</option>-->
 </select>
 <input type="submit" value="{TXT_HOTEL_SEARCH}" />
 </td>
@@ -351,56 +351,56 @@
 <table id="downloadlist" border="0" cellspacing="0" class="adminlist" style="width: 100%" cellpadding="3">
 <thead>
 <tr>
-  <th colspan="11">Buchungen</th>
+	<th colspan="11">Buchungen</th>
 </tr>
 <tr class="row3">
-  <td><a id="hotel_id" href="javascript:void(0);" onclick="sendReq('hotel_id', 1);"><strong>{TXT_HOTEL_HOTEL_ID}</strong></a>
-    <span id="hotel_id_order"> </span>
-  </td>
-  <td><a id="name" href="javascript:void(0);" onclick="sendReq('name', 1);"><strong>{TXT_HOTEL_NAME}</strong></a>
-    <span id="name_order"> </span>
-  </td>
-  <td><a id="firstname" href="javascript:void(0);" onclick="sendReq('firstname', 1);"><strong>{TXT_HOTEL_FIRSTNAME}</strong></a>
-    <span id="firstname_order"> </span>
-  </td>
-  <td><a id="street" href="javascript:void(0);" onclick="sendReq('street', 1);"><strong>{TXT_HOTEL_STREET}</strong></a>
-    <span id="street_order"> </span>
-  </td>
-  <td><a id="zip" href="javascript:void(0);" onclick="sendReq('zip', 1);"><strong>{TXT_HOTEL_ZIP}</strong></a>
-    <span id="zip_order"> </span>
-  </td>
-  <td><a id="location" href="javascript:void(0);" onclick="sendReq('location', 1);"><strong>{TXT_HOTEL_LOCATION}</strong></a>
-    <span id="location_order"> </span>
-  </td>
-  <td><a id="phone_home" href="javascript:void(0);" onclick="sendReq('phone_home', 1);"><strong>{TXT_HOTEL_TELEPHONE}</strong></a>
-    <span id="phone_home_order"> </span>
-  </td>
-  <td><a id="comment" href="javascript:void(0);" onclick="sendReq('comment', 1);"><strong>{TXT_HOTEL_COMMENT}</strong></a>
-    <span id="comment_order"> </span>
-  </td>
-  <td><a id="time" href="javascript:void(0);" onclick="sendReq('time', 1);"><strong>{TXT_HOTEL_TIMESTAMP}</strong></a>
-    <span id="time_order"> </span>
-  </td>
-  <td style="text-align: right;">
-     {TXT_HOTEL_FUNCTIONS}
-  </td>
+	<td><a id="hotel_id" href="javascript:void(0);" onclick="sendReq('hotel_id', 1);"><strong>{TXT_HOTEL_HOTEL_ID}</strong></a>
+		<span id="hotel_id_order"> </span>
+	</td>
+	<td><a id="name" href="javascript:void(0);" onclick="sendReq('name', 1);"><strong>{TXT_HOTEL_NAME}</strong></a>
+		<span id="name_order"> </span>
+	</td>
+	<td><a id="firstname" href="javascript:void(0);" onclick="sendReq('firstname', 1);"><strong>{TXT_HOTEL_FIRSTNAME}</strong></a>
+		<span id="firstname_order"> </span>
+	</td>
+	<td><a id="street" href="javascript:void(0);" onclick="sendReq('street', 1);"><strong>{TXT_HOTEL_STREET}</strong></a>
+		<span id="street_order"> </span>
+	</td>
+	<td><a id="zip" href="javascript:void(0);" onclick="sendReq('zip', 1);"><strong>{TXT_HOTEL_ZIP}</strong></a>
+		<span id="zip_order"> </span>
+	</td>
+	<td><a id="location" href="javascript:void(0);" onclick="sendReq('location', 1);"><strong>{TXT_HOTEL_LOCATION}</strong></a>
+		<span id="location_order"> </span>
+	</td>
+	<td><a id="phone_home" href="javascript:void(0);" onclick="sendReq('phone_home', 1);"><strong>{TXT_HOTEL_TELEPHONE}</strong></a>
+		<span id="phone_home_order"> </span>
+	</td>
+	<td><a id="comment" href="javascript:void(0);" onclick="sendReq('comment', 1);"><strong>{TXT_HOTEL_COMMENT}</strong></a>
+		<span id="comment_order"> </span>
+	</td>
+	<td><a id="time" href="javascript:void(0);" onclick="sendReq('time', 1);"><strong>{TXT_HOTEL_TIMESTAMP}</strong></a>
+		<span id="time_order"> </span>
+	</td>
+	<td style="text-align: right;">
+	   {TXT_HOTEL_FUNCTIONS}
+	</td>	
 </tr>
 </thead>
 <tbody>
 <!-- BEGIN downloads -->
 <tr class="{ROW_CLASS}">
-  <td> <a target="_blank" href="{PATH_OFFSET}/?section=hotel&amp;cmd=showObj&amp;id={HOTEL_HOTEL_ID}" title="{HOTEL_OBJECT_HEADER} {HOTEL_OBJECT_ADDRESS} {HOTEL_OBJECT_LOCATION}">{HOTEL_HOTEL_ID}&nbsp;</a></td>
-  <td>{HOTEL_NAME}&nbsp;</td>
-  <td>{HOTEL_FIRSTNAME}&nbsp;</td>
-  <td>{HOTEL_STREET}&nbsp;</td>
-  <td>{HOTEL_ZIP}&nbsp;</td>
-  <td>{HOTEL_LOCATION}&nbsp;</td>
-  <td>{HOTEL_TELEPHONE}&nbsp;</td>
-  <td><img onmouseout="htm();" onmouseover="stm(Text[{HOTEL_COMMENT_INDEX2}], Style[0])" src="images/icons/note.gif" alt="" width="12" height="12"/>&nbsp;</td>
-  <td>{HOTEL_TIMESTAMP}&nbsp;</td>
-  <td style="text-align: right;">
-      <a href="?cmd=hotel&amp;act=interestdetails&amp;id={HOTEL_CONTACT_ID}" title="{TXT_HOTEL_DETAILS}"> <img style="border: none;" src="images/icons/details.gif" title="{TXT_HOTEL_DETAILS}" alt="{TXT_HOTEL_DETAILS}" /> </a>
-      <a href="javascript:deleteContact({HOTEL_CONTACT_ID})" title="{TXT_HOTEL_DELETE}"> <img style="border: none;" src="images/icons/delete.gif" title="{TXT_HOTEL_DELETE}" alt="{TXT_HOTEL_DELETE}" /> </a>
+	<td> <a target="_blank" href="{PATH_OFFSET}/?section=hotel&amp;cmd=showObj&amp;id={HOTEL_HOTEL_ID}" title="{HOTEL_OBJECT_HEADER} {HOTEL_OBJECT_ADDRESS} {HOTEL_OBJECT_LOCATION}">{HOTEL_HOTEL_ID}&nbsp;</a></td>
+	<td>{HOTEL_NAME}&nbsp;</td>
+	<td>{HOTEL_FIRSTNAME}&nbsp;</td>
+	<td>{HOTEL_STREET}&nbsp;</td>
+	<td>{HOTEL_ZIP}&nbsp;</td>
+	<td>{HOTEL_LOCATION}&nbsp;</td>
+	<td>{HOTEL_TELEPHONE}&nbsp;</td>
+	<td><img onmouseout="htm();" onmouseover="stm(Text[{HOTEL_COMMENT_INDEX2}], Style[0])" src="images/icons/note.gif" alt="" width="12" height="12"/>&nbsp;</td>
+	<td>{HOTEL_TIMESTAMP}&nbsp;</td>
+	<td style="text-align: right;">
+    	<a href="?cmd=hotel&amp;act=interestdetails&amp;id={HOTEL_CONTACT_ID}" title="{TXT_HOTEL_DETAILS}"> <img style="border: none;" src="images/icons/details.gif" title="{TXT_HOTEL_DETAILS}" alt="{TXT_HOTEL_DETAILS}" /> </a>
+    	<a href="javascript:deleteContact({HOTEL_CONTACT_ID})" title="{TXT_HOTEL_DELETE}"> <img style="border: none;" src="images/icons/delete.gif" title="{TXT_HOTEL_DELETE}" alt="{TXT_HOTEL_DELETE}" /> </a>
     </td>
 </tr>
 <!-- END downloads -->

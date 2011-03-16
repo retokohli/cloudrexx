@@ -13,7 +13,7 @@ function deleteProduct(ProductID)
 }
 
 function Position(ProductID, Direction){
-  document.location.href = 'index.php?cmd=egov&act=products&id='+ProductID+'&Direction='+Direction;
+  document.location.href = 'index.php?cmd=egov&{CSRF_PARAM}&act=products&id='+ProductID+'&Direction='+Direction;
 }
 // -->
 </script>

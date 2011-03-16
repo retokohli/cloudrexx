@@ -90,6 +90,7 @@ class HotelManager extends HotelLib {
     {
         global $objTemplate, $_ARRAYLANG;
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/hotel/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "
@@ -549,7 +550,7 @@ class HotelManager extends HotelLib {
         if(!empty($interestID)){
             if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_hotel_interest WHERE id = $interestID") !== false){
                 $this->_strOkMessage = $_ARRAYLANG['TXT_HOTEL_SUCCESSFULLY_DELETED'];
-                header('Location: /admin/?cmd=hotel&act=interests');
+                CSRF::header('Location: /admin/?cmd=hotel&act=interests');
                 return true;
             }
         }
@@ -2078,6 +2079,7 @@ WHERE id = $hotelID )";
                                     WHERE field_id=$fieldID")
             !== false)
         {
+//TODO: _strOkMessage
             $this->_strOkMessage = $_ARRAYLANG['TXT_HOTEL_SUCCESSFULLY_DELETED'];
         }else{
             $this->_strErrMessage = $_ARRAYLANG['TXT_HOTEL_DB_ERROR'] ." ".$objDatabase->ErrorMsg();
@@ -3115,7 +3117,7 @@ WHERE id = $hotelID )";
             }
         }
 
-        header("Location: ?cmd=hotel&act=settings");
+        CSRF::header("Location: ?cmd=hotel&act=settings");
         exit;
     }
 

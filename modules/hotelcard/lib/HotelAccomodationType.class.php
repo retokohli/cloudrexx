@@ -29,9 +29,6 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  */
 class HotelAccomodationType
 {
-    /**
-     * Text keys
-     */
     const TEXT_ACCOMODATION_TYPE = 'hotelcard_accomodation_type';
 
     /**
@@ -95,18 +92,6 @@ class HotelAccomodationType
 
 
     /**
-     * Clear static class data
-     *
-     * Forces the data to be reinitialized on the next access
-     * @global  ADONewConnection  $objDatabase
-     */
-    static function reset()
-    {
-        self::$arrAccomodationTypes = false;
-    }
-
-
-    /**
      * Returns the array of all accomodation types
      * @return  array               The accomodation types array on success,
      *                              false otherwise
@@ -157,118 +142,6 @@ class HotelAccomodationType
         if (empty($id)) $id = 1;
         return (isset(self::$arrAccomodationTypes[$id])
             ? self::$arrAccomodationTypes[$id]['name'] : false);
-    }
-
-
-    /**
-     * Stores an accomodation type
-     *
-     * Adds or replaces the related Text entry, then calls either
-     * {@see update()} or {@see insert()}.
-     * Remember to call {@see reset()} when all storing is done, so the
-     * static data is refreshed on the next access.
-     * @param   string    $name           The accomodation type name
-     * @param   integer   $facility_id    The accomodation type ID, or zero
-     * @param   integer   $ord            The optional ordinal value.
-     *                                    Defaults to zero
-     * @return  boolean                   True on success, false otherwise
-     */
-    static function store($name, $type_id=0, $ord=0)
-    {
-        if (empty($name)) return false;
-
-        $text_id = 0;
-        if ($type_id) {
-            if (empty(self::$arrAccomodationTypes)) self::init();
-            if (empty(self::$arrAccomodationTypes[$type_id])) {
-                $type_id = 0;
-            } else {
-                $text_id = self::$arrAccomodationTypes[$type_id]['text_id'];
-            }
-        }
-        $text_id = Text::replace(
-            $text_id, FRONTEND_LANG_ID, $name,
-                MODULE_ID, self::TEXT_ACCOMODATION_TYPE);
-        if (!$text_id) return false;
-        $ord = intval(empty($ord) || !is_numeric($ord) ? 100 : $ord);
-        if ($type_id)
-            return self::update($text_id, $type_id, $ord);
-        return self::insert($text_id, $ord);
-    }
-
-
-    /**
-     * Updates an existing accomodation type record
-     *
-     * This does not change the Text record, so you'd better use
-     * {@see store().
-     * @param   integer   $text_id        The accomodation type Text ID
-     * @param   integer   $type_id        The accomodation type ID
-     * @param   integer   $ord            The ordinal value
-     * @return  boolean                   True on success, false otherwise
-     */
-    static function update($text_id, $type_id, $ord)
-    {
-        global $objDatabase;
-
-        $query = "
-            UPDATE `".DBPREFIX."module_hotelcard_hotel_accomodation_type`
-               SET `name_text_id`=$text_id,
-                   `ord`=$ord
-             WHERE `id`=$type_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        return true;
-    }
-
-
-    /**
-     * Inserts a new accomodation type record
-     *
-     * This does not add the Text record, so you'd better use
-     * {@see store().
-     * @param   integer   $text_id        The accomodation type name Text ID
-     * @param   integer   $ord            The ordinal value
-     * @return  boolean                   True on success, false otherwise
-     */
-    static function insert($text_id, $ord)
-    {
-        global $objDatabase;
-
-        $query = "
-            INSERT INTO `".DBPREFIX."module_hotelcard_hotel_accomodation_type` (
-              `name_text_id`, `ord`
-            ) VALUES (
-              $text_id, $ord
-            )";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        return true;
-    }
-
-
-    /**
-     * Deletes the accomodation type with the given ID from the database
-     *
-     * Also removes the related Text records.
-     * @param   integer   $type_id        The accomodation type ID
-     * @return  boolean                   True on success, false otherwise
-     */
-    static function deleteById($type_id)
-    {
-        global $objDatabase;
-
-        if (empty($type_id) || !is_numeric($type_id)) return false;
-        if (empty(self::$arrAccomodationTypes)) self::init();
-        if (empty(self::$arrAccomodationTypes[$type_id])) return false;
-        $text_id = self::$arrAccomodationTypes[$type_id]['text_id'];
-        if (!Text::deleteById($text_id)) return false;
-        $query = "
-            DELETE FROM `".DBPREFIX."module_hotelcard_hotel_accomodation_type`
-             WHERE `id`=$type_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        return true;
     }
 
 

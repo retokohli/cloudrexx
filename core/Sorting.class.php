@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Provides methods to create sorted tables
  *
@@ -7,19 +6,17 @@
  * field and direction.
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     0.9.0
  * @package     contrexx
  * @subpackage  core
  */
-
-require_once ASCMS_CORE_PATH.'/Html.class.php';
 
 /**
  * Provides methods to create sorted tables
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @version     2.2.0
+ * @version     0.9.0
  * @package     contrexx
  * @subpackage  core
  */
@@ -43,12 +40,21 @@ class Sorting
     private $baseUri;
 
     /**
-     * The array of database field names and header field names.
+     * The array of database field names corresponding to the header
+     * field names.
      *
-     * Note that the first element will be the default sorting field.
+     * Note that the first element will be the default.
      * @var array
      */
-    private $arrField;
+    private $arrFieldName;
+
+    /**
+     * The array of header field names.
+     *
+     * Note that the first element will be the default.
+     * @var array
+     */
+    private $arrHeaderName;
 
     /**
      * Flag indicating the default order
@@ -82,24 +88,29 @@ class Sorting
      * Note that the base page URI is handed over by reference and that
      * the order parameter name is removed from that, if present.
      * @param   string  $baseURI        The base page URI, by reference
-     * @param   array   $arrField       The field names and corresponding
-     *                                  header texts
+     * @param   array   $arrFieldName   The acceptable field names.
+     * @param   array   $arrHeaderName  The header names for displaying.
      * @param   boolean $flagDefaultAsc The flag indicating the default order
      *                                  direction. Defaults to true (ascending).
      * @return  Sorting
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     function __construct(
-        &$baseUri, $arrField, $flagDefaultAsc=true,
+        &$baseUri, $arrFieldName, $arrHeaderName, $flagDefaultAsc=true,
         $orderUriParameter=self::ORDER_PARAMETER_NAME
     ) {
+        // Remove the order parameter name argument from the base URI
+        $baseUri = preg_replace(
+            '/'.preg_quote($this->orderUriParameter, '\=[^&]*\&?/').'/',
+            '', $baseUri);
+        $this->baseUri        = $baseUri;
+        $this->arrFieldName   = $arrFieldName;
+        $this->arrHeaderName  = $arrHeaderName;
+//echo("Sorting::__construct(baseUri=$baseUri, arrFieldName=$arrFieldName, arrHeaderName=$arrHeaderName, flagDefaultAsc=$flagDefaultAsc, orderUriParameter=$orderUriParameter):<br />"."Field names: ".var_export($this->arrFieldName, true)."<br />"."Header names: ".var_export($this->arrHeaderName, true)."<hr />");
+
         $this->flagDefaultAsc = $flagDefaultAsc;
         // Default order parameter name.  Change if needed.
         $this->orderUriParameter = $orderUriParameter;
-        $this->setUri($baseUri);
-        $this->arrField = $arrField;
-//echo("Sorting::__construct(baseUri=$baseUri, arrField=$arrField, flagDefaultAsc=$flagDefaultAsc, orderUriParameter=$orderUriParameter):<br />"."Field names: ".var_export($this->arrField, true)."<br />"."<hr />");
-
         // By default, the table will be sorted by the first field,
         // according to the direction flag.
         // The default is overridden by the order stored in the session, if any.
@@ -108,16 +119,13 @@ class Sorting
         $this->setOrder(
             (empty($_REQUEST[$this->orderUriParameter])
                 ? (empty($_SESSION['sorting'][$this->orderUriParameter])
-                    ? current($this->arrField).' '.
+                    ? $this->arrFieldName[0].' '.
                       ($this->flagDefaultAsc ? 'ASC' : 'DESC')
                     : $_SESSION['sorting'][$this->orderUriParameter])
                 : $_REQUEST[$this->orderUriParameter]
             )
         );
-//DBG::log("Sorting::__construct(): baseUri=$baseUri");
-//DBG::log("Sorting::__construct(): arrField=".var_export($arrField, true));
-//DBG::log("Sorting::__construct(): flagDefaultAsc=$flagDefaultAsc");
-//DBG::log("Sorting::__construct(): Made order: ".$this->getOrder());
+//echo("Sorting::__construct(baseUri=$baseUri, arrFieldName=$arrFieldName, arrHeaderName=$arrHeaderName, flagDefaultAsc=$flagDefaultAsc):<br />made order: ".$this->getOrder()."<br />");
     }
 
 
@@ -144,53 +152,6 @@ class Sorting
 
 
     /**
-     * Returns the base URI
-     *
-     * If the optional $field parameter contains any valid field name,
-     * the sorting and direction for that field is appended.
-     * @param   string    $field    The optional field name
-     * @return  string              The URI
-     */
-    function getUri($field=null)
-    {
-        return
-// OPEN:  Should $baseUri be urldecode()d?
-            $this->baseUri.
-            ($field && $this->arrField[$field]
-                ? '&'.$this->getOrderUriEncoded($field) : '');
-    }
-
-
-    /**
-     * Returns the base URI with HTML entities encoded
-     *
-     * If the optional $field parameter contains any valid field name,
-     * the sorting and direction for that field is appended.
-     * @param   string    $field    The optional field name
-     * @return  string              The URI
-     */
-    function getUri_entities($field=null)
-    {
-        return
-            $this->baseUri.
-            ($field && $this->arrField[$field]
-                ? '&amp;'.$this->getOrderUriEncoded($field) : '');
-    }
-
-
-    /**
-     * Sets the base URI
-     * @param   string    $uri      The URI
-     */
-    function setUri($uri)
-    {
-        // Remove the order parameter name argument from the base URI
-        Html::stripUriParam($uri, $this->orderUriParameter);
-        $this->baseUri = $uri;
-    }
-
-
-    /**
      * Returns an array of strings to display the table headers.
      *
      * Uses the order currently stored in the object, as set by
@@ -203,8 +164,8 @@ class Sorting
     function getHeaderArray()
     {
         $arrHeader = array();
-        foreach (array_keys($this->arrField) as $field) {
-            $arrHeader[] = $this->getHeaderForField($field);
+        foreach ($this->arrFieldName as $fieldName) {
+            $arrHeader[] = $this->getHeaderForField($fieldName);
         }
         return $arrHeader;
     }
@@ -218,53 +179,36 @@ class Sorting
      * @return  string      The string for a clickable table header field.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getHeaderForField($field)
+    function getHeaderForField($fieldName)
     {
-//echo("Sorting::getHeaderForField(fieldName=$field): field names: ".var_export($this->arrField, true)."<br />");
+        global $_ARRAYLANG;
 
-        // The field may consist of the database field name
-        // enclosed in backticks, plus optional direction
-        $match = array();
-        if (preg_match('/^`?(\w+)`?[\s\+]?/i', $field, $match)) {
-            $field = $match[1];
-//DBG::log("Sorting::getHeaderForField(fieldName=$field): Fixed");
+        $fieldIndex = array_search($fieldName, $this->arrFieldName);
+        if ($fieldIndex === false) {
+//echo("Sorting::getHeaderForField(fieldName=$fieldName): ERROR: unknown field name<br />");
+            return '';
         }
-        if (empty($this->arrField[$field])) return '';
-        $header = $this->arrField[$field];
-        $strHeader =
-            "<a href='$this->baseUri".
-            $this->getOrderReverseUriEncoded($field).
-            "'>$header".
-            ($this->orderField == $field
-                ? '&nbsp;'.$this->getOrderDirectionImage() : '').
-            '</a>';
-//echo("Sorting::getHeaderForField(fieldName=$field): made header: ".htmlentities($strHeader)."<br />");
-        return $strHeader;
-    }
-
-
-    /**
-     * Returns an HTML img tag with the icon representing the current
-     * order direction
-     *
-     * Note that the decision where to include the icon or not must
-     * be made by the code calling.
-     * @return    string        The HTML img tag for the sorting direction icon
-     */
-    function getOrderDirectionImage()
-    {
-        global $_CORELANG;
-
         $orderDirectionString =
             ($this->orderDirection == 'ASC'
-                ? $_CORELANG['TXT_CORE_SORTING_ASCENDING']
-                : $_CORELANG['TXT_CORE_SORTING_DESCENDING']
+                ? $_ARRAYLANG['TXT_CORE_SORTING_ASCENDING']
+                : $_ARRAYLANG['TXT_CORE_SORTING_DESCENDING']
             );
-        return
+        $orderDirectionImage =
             '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/'.
                 strtolower($this->orderDirection).
             '.png" border=0 alt="'.$orderDirectionString.
             '" title="'.$orderDirectionString.'" />';
+
+        $field  = $this->arrFieldName[$fieldIndex];
+        $header = $this->arrHeaderName[$field];
+        $strHeader =
+            "<a href='$this->baseUri".
+            $this->getOrderReverseUriEncoded($field).
+            "'>$header".
+            ($this->orderField == $field ? "&nbsp;$orderDirectionImage" : '').
+            '</a>';
+//echo("Sorting::getHeaderForField(fieldName=$fieldName): made header: ".htmlentities($strHeader)."<br />");
+        return $strHeader;
     }
 
 
@@ -279,14 +223,9 @@ class Sorting
      */
     function getOrder()
     {
-        $field = $this->orderField;
-        $match = array();
-        if (preg_match('/^`?(\w+)`?[\s\+]?/i', $field, $match)) {
-            $field = $match[1];
-        }
         // Better backquote all field names to avoid SQL errors on
         // reserved words
-        return "`$field` $this->orderDirection";
+        return "`$this->orderField` $this->orderDirection";
     }
 
 
@@ -297,22 +236,11 @@ class Sorting
      */
     function setOrder($order)
     {
-        $orderField     = 'invalid';
-        $orderDirection = 'invalid';
-        $match = array();
-        if (preg_match('/^`?(\w+)`?(?:[\s\+]+((?:a|de)sc))?/i', $order, $match)) {
-            $orderField     = $match[1];
-            $orderDirection = (isset($match[2]) ? $match[2] : '');
-//DBG::log("Sorting::setOrder($order): got $orderField / $orderDirection");
-        } else {
-            $orderField = key($this->arrField);
-//DBG::log("Sorting::setOrder($order): using default $orderField");
-        }
+        list ($orderField, $orderDirection) = split(' ', $order);
         // If the order field isn't in the list of accepted field names,
         // fall back to default
-        if (   empty($this->arrField[$orderField])
-            && empty($this->arrField["$orderField $orderDirection"])) {
-            $orderField = key($this->arrField);
+        if (!in_array($orderField, $this->arrFieldName)) {
+            $orderField = $this->arrFields[0];
         }
         switch ($orderDirection) {
           case 'ASC':
@@ -324,7 +252,6 @@ class Sorting
         }
         $this->orderField     = $orderField;
         $this->orderDirection = $orderDirection;
-//DBG::log("Sorting::setOrder($order): setting $orderField / $orderDirection");
         $_SESSION['sorting'][$this->orderUriParameter] = $order;
     }
 
@@ -343,15 +270,12 @@ class Sorting
         if (!$field) {
             $field = $this->orderField;
         }
-        if (!preg_match('/^`?\w+`?[\s\+]+(?:a|de)sc/i', $field)) {
-            $field .= ' '.$this->orderDirection;
-        }
         return
-// NOTE: I guess that it's better to leave it to another piece of code
+// TODO: I guess that it's better to leave it to another piece of code
 // whether to add '?' or '&'...?
             //'&amp;'.
             $this->orderUriParameter.
-            '='.urlencode($field);
+            '='.urlencode("$field $this->orderDirection");
     }
 
 
@@ -368,10 +292,6 @@ class Sorting
     {
         if (!$field) {
             $field = $this->orderField;
-        }
-        $match = array();
-        if (preg_match('/^`?(\w+)`?[\s\+]?/i', $field, $match)) {
-            $field = $match[1];
         }
         $orderDirectionReverse = $this->getOrderDirectionReverse();
         return
@@ -390,20 +310,6 @@ class Sorting
     function getOrderDirection()
     {
         return $this->orderDirection;
-    }
-    /**
-     * Set the sorting direction string
-     *
-     * $direction defaults to 'ASC' and may be left empty, or set
-     * to 'ASC' or 'DESC'.
-     * Any other value is ignored and the default used instead.
-     * @param   string    $direction    The optional order direction string
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    function setOrderDirection($direction='ASC')
-    {
-        $this->orderDirection =
-            (strtoupper($direction) == 'DESC' ? 'DESC' : 'ASC');
     }
 
 
@@ -435,22 +341,8 @@ class Sorting
      * @return  string      The field name
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getOrderField()
-    {
+    function getOrderField() {
         return $this->orderField;
-    }
-
-
-    /**
-     * Returns the field array as provided to the constructor
-     * @return  array         The field array
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @see     __construct()
-     * @see     $arrField
-     */
-    function getFieldArray()
-    {
-        return $this->arrField;
     }
 
 }

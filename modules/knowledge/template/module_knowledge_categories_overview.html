@@ -14,17 +14,17 @@ var notAllowedMsg = "{NOT_ALLOWED_MSG}";
 
 function selectMultiAction()
 {
-  with (document.frmShowEntries) {
-    switch (frmShowEntries_MultiAction.value) {
-      case 'delete':
-        if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
-          action='?cmd=knowledge{MODULE_INDEX}&act=multiactionEntry';
-          submit();
-        }
-      break;
-      default: //do nothing
-    }
-  }
+	with (document.frmShowEntries) {
+		switch (frmShowEntries_MultiAction.value) {
+			case 'delete':
+				if (confirm('{TXT_ENTRIES_SUBMIT_DELETE_JS}')) {
+					action='?cmd=knowledge{MODULE_INDEX}&act=multiactionEntry';
+					submit();
+				}
+			break;
+			default: //do nothing
+		}
+	}
 }
 
 /**
@@ -109,9 +109,6 @@ var catTree = {
      */
     openPart : function(obj)
     {
-        if (obj.parentNode.cleanWhitespace == undefined) {
-            Element.extend(obj.parentNode);
-        }
         obj.parentNode.cleanWhitespace();
         var subLists = $A(obj.parentNode.parentNode.parentNode.parentNode.parentNode.childNodes);
         var div = null;
@@ -121,14 +118,8 @@ var catTree = {
             }
         });
         // div is the last available div element now
-        if (div.cleanWhitespace == undefined) {
-            Element.extend(div);
-        }
         div.cleanWhitespace();
         div.firstChild.show();
-        if (obj.select == undefined) {
-            Element.extend(obj);
-        }
         obj.select('.openClosePicture')[0].src = "images/icons/minuslink.gif";
         obj.nextSibling.src = "../images/modules/knowledge/folder-open.small.png";
         obj.onclick = function() { catTree.closePart(obj); }
@@ -226,10 +217,6 @@ var updateSort = function(id)
         });
 }
 
-Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
-Text[0]=["","{TXT_SORT}"];
-
-
 //]]>
 </script>
 
@@ -243,9 +230,7 @@ Text[0]=["","{TXT_SORT}"];
         </thead>
         <tbody>
             <tr class="row3">
-                <td style="width: 20px;">
-                    <img src="images/icons/note.gif" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
-                </td>
+                <td style="width: 75px;"><strong>{TXT_SORT}</strong></td>
                 <td style="width: 50px;"><strong>#</strong></td>
                 <td><strong>{TXT_NAME}</strong></td>
                 <td style="width: 100px;"><strong>{TXT_ENTRIES_AMOUNT}</strong></td>
@@ -266,7 +251,7 @@ Text[0]=["","{TXT_SORT}"];
                     <li id="category_{CATEGORY_ID}" style="background-color: {CSS_BGCOLOR};">
                         <table style="width: 100%;">
                             <tr>
-                                <td style="width: 20px; cursor: move;" class="drag_handle_{SORTABLE_ID}" onmousedown="lastDragged = {CATEGORY_ID}; handlerEvent();">
+                                <td style="width: 75px;   cursor: move;" class="drag_handle_{SORTABLE_ID}" onmousedown="lastDragged = {CATEGORY_ID}; handlerEvent();">
                                     <img src="../images/modules/knowledge/sort.gif" style="boder: none;" />
                                 </td>
                                 <td style="width: 50px;">
@@ -293,16 +278,16 @@ Text[0]=["","{TXT_SORT}"];
                                 </td>
                                 <td style="width: 40px;">
                                     <a href="?cmd=knowledge{MODULE_INDEX}&amp;section=categories&amp;act=edit&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
-                          <a href="javascript:deleteCategory({CATEGORY_ID}, {ENTRIES_AMOUNT});" target="_self" title="{TXT_DELETE_CATEGORY}">
-                             <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
-                            </a>
+                					<a href="javascript:deleteCategory({CATEGORY_ID}, {ENTRIES_AMOUNT});" target="_self" title="{TXT_DELETE_CATEGORY}">
+                					   <img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE_CATEGORY}" title="{TXT_DELETE_CATEGORY}" />
+                				    </a>
                                 </td>
                             </tr>
                         </table>
 
-                <div class="subcategories">
-                    {SUB}
-                </div>
+    				    <div class="subcategories">
+    				        {SUB}
+    				    </div>
                     </li>
                     <!-- END row -->
                     {ROWS}

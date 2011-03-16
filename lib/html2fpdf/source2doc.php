@@ -1,22 +1,22 @@
 <?php
 /*
- Copyright (C) 2004 Renato Coelho
+ Copyright (C) 2004 Renato Coelho 
  (PHP)Source 2 Doc v0.5.0
  This is a simple script created in order to update the HTML2FPDF page
  It should make a php class documentation
  LICENSE: Freeware.
- Lacks: html_decode and the likes
+ Lacks: html_decode and the likes 
  Plans: make an independent table for each part?
 
  Usage:
-
+ 
  require_once('source2doc.php');
  echo source2doc('filename.php'); //Print doc info on browser
-
- HOW TO declare var types and HOW TO use @return and @desc: (//! is a one-line comment)
-
+ 
+ HOW TO declare var types and HOW TO use @return and @desc: (//! is a one-line comment) 
+ 
  var $name; //! type
-
+ 
  function name()
  {
  //! @return void
@@ -32,9 +32,9 @@ function source2doc($filename)
   $classname = '';
   $extends = '';
 
-    $file = fopen($filename,"r");
+	$file = fopen($filename,"r");
   $tamarquivo = filesize($filename);
-  $buffer = fread($file, $tamarquivo);
+  $buffer = fread($file, $tamarquivo);  
   fclose($file);
 
 ////
@@ -43,19 +43,19 @@ function source2doc($filename)
 ////
 
   //Remove /* multi-line comments */
-     $regexp = '|/\\*.*?\\*/|s';
-     $buffer = preg_replace($regexp,'',$buffer);
-  //Remove // one line comments
-     $regexp = '|//[^!].*|m';
-     $buffer = preg_replace($regexp,'',$buffer);
+ 	$regexp = '|/\\*.*?\\*/|s';
+ 	$buffer = preg_replace($regexp,'',$buffer);
+  //Remove // one line comments 
+ 	$regexp = '|//[^!].*|m';
+ 	$buffer = preg_replace($regexp,'',$buffer);
 
 ////
 // Get class name and what it extends (or not)
 ////
-
-     $regexp = '|class\\s+?(\\S+)(\\s+?\\S+\\s+?(\\S+))?|mi';
+  
+ 	$regexp = '|class\\s+?(\\S+)(\\s+?\\S+\\s+?(\\S+))?|mi';
   preg_match($regexp,$buffer,$aux); //one class per source file
-
+  
   $classname = $aux[1];
   if (!empty($aux[3])) $extends = $aux[3];
   else $extends = '';
@@ -74,7 +74,7 @@ function source2doc($filename)
   $html .= '</th>' . endl;
   $html .= '</tr>' . endl;
 
-     $regexp = '/define[(](.*?);/si';
+ 	$regexp = '/define[(](.*?);/si';
   preg_match_all($regexp,$buffer,$const);
 
   $const = $const[0];
@@ -97,7 +97,7 @@ function source2doc($filename)
   $html .= '</th>' . endl;
   $html .= '</tr>' . endl;
 
-     $regexp = '/((require|include)[(_].*?);/si';
+ 	$regexp = '/((require|include)[(_].*?);/si';
   preg_match_all($regexp,$buffer,$imports);
 
   $imports = $imports[0];
@@ -120,12 +120,12 @@ function source2doc($filename)
   $html .= '</th>' . endl;
   $html .= '</tr>' . endl;
 
-     $regexp = '|var\\s(.+);\\s*(//!\\s*?(\\S+))?|mi';
+ 	$regexp = '|var\\s(.+);\\s*(//!\\s*?(\\S+))?|mi';
   preg_match_all($regexp,$buffer,$atr);
 
   $vname = $atr[1];
   $vtype = $atr[3];
-
+  
   if(!empty($vname))
   {
     $html .= '<tr>' . endl;
@@ -163,9 +163,9 @@ function source2doc($filename)
   $html .= '</th>' . endl;
   $html .= '</tr>' . endl;
 
-     $regexp = '|function\\s([^)]*)[)].*?(//!.*?)*;|si';
+ 	$regexp = '|function\\s([^)]*)[)].*?(//!.*?)*;|si';
   preg_match_all($regexp,$buffer,$func);
-
+  
   $funcname = $func[1];
   $funccomment = $func[0];
 
@@ -179,7 +179,7 @@ function source2doc($filename)
 
     $desc = '';
     $ret = '';
-       $regexp = '|//!(.*)|mi';
+ 	  $regexp = '|//!(.*)|mi';
     preg_match_all($regexp,$funccomment[$i],$temp);
     $temp = $temp[1];
 
@@ -188,16 +188,16 @@ function source2doc($filename)
     {
       if (strstr($val,'@desc'))
       {
-           $regexp = '|.*?@desc(.*)|si';
+       	$regexp = '|.*?@desc(.*)|si';
         preg_match($regexp,$val,$temp2);
         $desc = $temp2[1];
       }
       elseif (strstr($val,'@return'))
       {
-           $regexp = '|.*?@return(.*)|si';
+       	$regexp = '|.*?@return(.*)|si';
         preg_match($regexp,$val,$temp3);
         $ret = $temp3[1];
-      }
+      }      
     }
     if ($ret != '' or $desc != '')
     {

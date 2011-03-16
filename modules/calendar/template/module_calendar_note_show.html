@@ -4,147 +4,147 @@
 <!--
 function deleteNote(Id)
 {
-    if (confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
-        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&act=all&id="+Id);
+    if(confirm('{TXT_CALENDAR_DELETE_CONFIRM}'))
+        window.location.replace("?cmd=calendar{CALENDAR_MANDATE}&{CSRF_PARAM}&act=all&id="+Id);
 }
 // -->
 </script>
 
 <table class="adminlist" style="width: 100%; border-spacing: 0px;">
 <tr>
-  <th>
-  {TXT_CALENDAR}
-  </th>
-  <th>
-  {TXT_CALENDAR_EVENT}
-  </th>
+	<th>
+	{TXT_CALENDAR}
+	</th>
+	<th>
+	{TXT_CALENDAR_EVENT}
+	</th>
 </tr>
 <tr>
-  <td style="width: 200px;" valign="top">
-  {CALENDAR_ACTUALL_BOXES}
-  </td>
-  <td style="vertical-align: top;">
-    <table style="width: 100%; border-spacing: 0px;" cellspacing="0">
-      <tr class="row1">
-          <td valign="top" width="180">{TXT_CALENDAR_CAT}</td>
-          <td valign="top">{CALENDAR_CATEGORIE}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_TITLE}</td>
-          <td valign="top">{CALENDAR_TITLE}</td>
-        </tr>
-        <tr class="row1">
-          <td>{TXT_CALENDAR_LINK}</td>
-          <td>{CALENDAR_LINK}</td>
-      </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_THUMBNAIL}</td>
-          <td valign="top">{CALENDAR_PIC_THUMBNAIL}</td>
-        </tr>
-        <tr class="row1">
-          <td valign="top">{TXT_CALENDAR_ATTACHMENT}</td>
-          <td valign="top">{CALENDAR_ATTACHMENT}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top"> {TXT_CALENDAR_START}</td>
-          <td valign="top">{CALENDAR_START} - {CALENDAR_START_TIME}</td>
-        </tr>
-        <tr class="row1">
-          <td valign="top">{TXT_CALENDAR_END}</td>
-          <td valign="top">{CALENDAR_END} - {CALENDAR_END_TIME}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_COMMENT}</td>
-          <td valign="top">{CALENDAR_DESCRIPTION}</td>
-        </tr>
-    </table>
-    <br />
-    <table style="width: 100%; border-spacing: 0px;" cellspacing="0">
-      <tr>
-          <th valign="top" colspan="2">{TXT_CALENDAR_PLACE}</th>
-        </tr>
-        <tr class="row1">
-          <td valign="top" width="180">{TXT_CALENDAR_ORGANIZER_NAME}</td>
-          <td valign="top">{CALENDAR_PLACE}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_STREET_NR}</td>
-          <td valign="top">{CALENDAR_PLACE_STREET_NR}</td>
-        </tr>
-        <tr class="row1">
-          <td valign="top">{TXT_CALENDAR_PLACE}</td>
-          <td valign="top">{CALENDAR_PLACE_ZIP} {CALENDAR_PLACE_CITY}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_LINK}</td>
-          <td valign="top">{CALENDAR_PLACE_LINK}</td>
-        </tr>
-        <tr class="row1">
-          <td valign="top"> {TXT_CALENDAR_MAIL}</td>
-          <td valign="top">{CALENDAR_PLACE_MAP_THUMBNAIL}</td>
-        </tr>
-    </table>
-    <br />
-    <table style="width: 100%; border-spacing: 0px;" cellspacing="0">
-      <tr>
-          <th valign="top" colspan="2">{TXT_CALENDAR_ORGANIZER}</th>
-        </tr>
-        <tr class="row1">
-          <td valign="top" width="180">{TXT_CALENDAR_ORGANIZER_NAME}</td>
-          <td valign="top">{CALENDAR_ORGANIZER}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_STREET_NR}</td>
-          <td valign="top">{CALENDAR_ORGANIZER_STREET_NR}</td>
-        </tr>
-        <tr class="row1">
-          <td valign="top">{TXT_CALENDAR_PLACE}</td>
-          <td valign="top">{CALENDAR_ORGANIZER_ZIP} {CALENDAR_ORGANIZER_PLACE}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_LINK}</td>
-          <td valign="top">{CALENDAR_ORGANIZER_LINK}</td>
-        </tr>
-        <tr class="row1">
-          <td valign="top"> {TXT_CALENDAR_MAP}</td>
-          <td valign="top">{CALENDAR_ORGANIZER_MAIL}</td>
-        </tr>
-    </table>
-    <br />
-    <table style="width: 100%; border-spacing: 0px;" cellspacing="0">
-      <tr>
-          <th valign="top" colspan="2">{TXT_CALENDAR_OPTIONS}</th>
-        </tr>
-        <tr class="row1">
-          <td valign="top" width="180">{TXT_CALENDAR_ACCESS}</td>
-          <td valign="top">{CALENDAR_ACCESS}</td>
-        </tr>
-        <tr class="row2">
-          <td valign="top">{TXT_CALENDAR_PRIORITY}</td>
-          <td valign="top">{CALENDAR_PRIORITY}</td>
-        </tr>
-        <tr class="row1">
-          <td valign="top" width="180">{TXT_CALENDAR_REGISTRATIONS}</td>
-          <td valign="top"><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
-        </tr>
-        <tr class="row2">
-          <td valign="top" width="180">{TXT_CALENDAR_SUBSCRIBER}</td>
-          <td valign="top">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
-        </tr>
-    </table>
-    <br />
-    <!-- <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-      <tr class="row1">
-        <td width="100" valign="top"> <br />
-        <a href="index.php?cmd=calendar&amp;act=edit&amp;id={CALENDAR_ID}" title="{TXT_CALENDAR_EDIT}">
-        <img src="images/icons/edit.gif" align="abstop" border="0" title="neu" alt="neu" /> </a>
-        <a href="javascript:deleteNote({CALENDAR_ID})" title="{TXT_CALENDAR_DELETE}">
-        <img src="images/icons/delete.gif" align="abstop" border="0" title="l&ouml;schen" alt="l&ouml;schen" /> </a>
-        </td>
-        <td>&nbsp; </td>
-      </tr>
-    </table> -->
-  </td>
+	<td style="width: 200px;" valign="top">
+	{CALENDAR_ACTUALL_BOXES}
+	</td>
+	<td style="vertical-align: top;">
+		<table style="width: 100%; border-spacing: 0px;" cellspacing="0">
+			<tr class="row1">
+		      <td valign="top" width="180">{TXT_CALENDAR_CAT}</td>
+		      <td valign="top">{CALENDAR_CATEGORIE}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_TITLE}</td>
+		      <td valign="top">{CALENDAR_TITLE}</td>
+		    </tr>
+		    <tr class="row1">
+		    	<td>{TXT_CALENDAR_LINK}</td>
+		    	<td>{CALENDAR_LINK}</td>
+			</tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_THUMBNAIL}</td>
+		      <td valign="top">{CALENDAR_PIC_THUMBNAIL}</td>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top">{TXT_CALENDAR_ATTACHMENT}</td>
+		      <td valign="top">{CALENDAR_ATTACHMENT}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top"> {TXT_CALENDAR_START}</td>
+		      <td valign="top">{CALENDAR_START} - {CALENDAR_START_TIME}</td>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top">{TXT_CALENDAR_END}</td>
+		      <td valign="top">{CALENDAR_END} - {CALENDAR_END_TIME}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_COMMENT}</td>
+		      <td valign="top">{CALENDAR_DESCRIPTION}</td>
+		    </tr>
+		</table>
+		<br />
+		<table style="width: 100%; border-spacing: 0px;" cellspacing="0">
+			<tr>
+		      <th valign="top" colspan="2">{TXT_CALENDAR_PLACE}</th>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top" width="180">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+		      <td valign="top">{CALENDAR_PLACE}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_STREET_NR}</td>
+		      <td valign="top">{CALENDAR_PLACE_STREET_NR}</td>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top">{TXT_CALENDAR_PLACE}</td>
+		      <td valign="top">{CALENDAR_PLACE_ZIP} {CALENDAR_PLACE_CITY}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_LINK}</td>
+		      <td valign="top">{CALENDAR_PLACE_LINK}</td>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top"> {TXT_CALENDAR_MAIL}</td>
+		      <td valign="top">{CALENDAR_PLACE_MAP_THUMBNAIL}</td>
+		    </tr>
+		</table>
+		<br />
+		<table style="width: 100%; border-spacing: 0px;" cellspacing="0">
+			<tr>
+		      <th valign="top" colspan="2">{TXT_CALENDAR_ORGANIZER}</th>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top" width="180">{TXT_CALENDAR_ORGANIZER_NAME}</td>
+		      <td valign="top">{CALENDAR_ORGANIZER}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_STREET_NR}</td>
+		      <td valign="top">{CALENDAR_ORGANIZER_STREET_NR}</td>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top">{TXT_CALENDAR_PLACE}</td>
+		      <td valign="top">{CALENDAR_ORGANIZER_ZIP} {CALENDAR_ORGANIZER_PLACE}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_LINK}</td>
+		      <td valign="top">{CALENDAR_ORGANIZER_LINK}</td>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top"> {TXT_CALENDAR_MAP}</td>
+		      <td valign="top">{CALENDAR_ORGANIZER_MAIL}</td>
+		    </tr>
+		</table>
+		<br />
+		<table style="width: 100%; border-spacing: 0px;" cellspacing="0">
+			<tr>
+		      <th valign="top" colspan="2">{TXT_CALENDAR_OPTIONS}</th>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top" width="180">{TXT_CALENDAR_ACCESS}</td>
+		      <td valign="top">{CALENDAR_ACCESS}</td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top">{TXT_CALENDAR_PRIORITY}</td>
+		      <td valign="top">{CALENDAR_PRIORITY}</td>
+		    </tr>
+		    <tr class="row1">
+		      <td valign="top" width="180">{TXT_CALENDAR_REGISTRATIONS}</td>
+		      <td valign="top"><a href="?cmd=calendar{CALENDAR_MANDATE}&amp;act=reg&amp;id={CALENDAR_ID}">{CALENDAR_EVENT_COUNT_REG} / {CALENDAR_EVENT_COUNT_SIGNOFF}</a></td>
+		    </tr>
+		    <tr class="row2">
+		      <td valign="top" width="180">{TXT_CALENDAR_SUBSCRIBER}</td>
+		      <td valign="top">{CALENDAR_EVENT_COUNT_SUBSCRIBER}</td>
+		    </tr>
+		</table>
+		<br />
+		<!-- <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+			<tr class="row1">
+			  <td width="100" valign="top"> <br />
+				<a href="index.php?cmd=calendar&amp;act=edit&amp;id={CALENDAR_ID}" title="{TXT_CALENDAR_EDIT}">
+				<img src="images/icons/edit.gif" align="abstop" border="0" title="neu" alt="neu" /> </a>
+				<a href="javascript:deleteNote({CALENDAR_ID})" title="{TXT_CALENDAR_DELETE}">
+				<img src="images/icons/delete.gif" align="abstop" border="0" title="l&ouml;schen" alt="l&ouml;schen" /> </a>
+			  </td>
+			  <td>&nbsp; </td>
+			</tr>
+	  </table> -->
+	</td>
 </tr>
 </table>
 <!-- END calendar_show_note.html -->

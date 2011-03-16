@@ -1,91 +1,91 @@
 <!-- START user_add.html -->
 <script language="JavaScript" type="text/javascript">
-function AddToTheList(from,dest,add,remove)
+function AddToTheList(from,dest,add,remove) 
 {
     if ( from.selectedIndex < 0)
-  {
-    if (from.options[0] != null)
-      from.options[0].selected = true;
-    from.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<from.length; i++)
-    {
-      if (from.options[i].selected)
-      {
-          dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);
-         }
-    }
-      for (var i=from.length-1; i>=0; i--)
-    {
-      if (from.options[i].selected)
-      {
-           from.options[i] = null;
-         }
-    }
-  }
+	{
+		if (from.options[0] != null)
+			from.options[0].selected = true;
+		from.focus();
+		return false;
+	}
+	else
+	{	
+		for (var i=0; i<from.length; i++) 
+		{	    
+			if (from.options[i].selected) 
+			{
+		    	dest.options[dest.length] = new Option( from.options[i].text, from.options[i].value, false, false);				
+   			}			
+		}
+	    for (var i=from.length-1; i>=0; i--) 
+		{	    
+			if (from.options[i].selected) 
+			{
+		       from.options[i] = null;				
+   			}			
+		}		
+	}
     disapleButtons(from,dest,add,remove);
-}
+}	
 
-function RemoveFromTheList(from,dest,add,remove)
+function RemoveFromTheList(from,dest,add,remove) 
 {
-  if ( dest.selectedIndex < 0)
-  {
-    if (dest.options[0] != null)
-      dest.options[0].selected = true;
-    dest.focus();
-    return false;
-  }
-  else
-  {
-    for (var i=0; i<dest.options.length; i++)
-    {
-      if (dest.options[i].selected)
-      {
-          from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);
-         }
-    }
-      for (var i=dest.options.length-1; i>=0; i--)
-    {
-      if (dest.options[i].selected)
-      {
-           dest.options[i] = null;
-         }
-    }
-  }
-  disapleButtons(from,dest,add,remove);
+	if ( dest.selectedIndex < 0)
+	{
+		if (dest.options[0] != null)
+			dest.options[0].selected = true;
+		dest.focus();
+		return false;
+	}
+	else
+	{	
+		for (var i=0; i<dest.options.length; i++) 
+		{	    
+			if (dest.options[i].selected) 
+			{
+		    	from.options[from.options.length] = new Option( dest.options[i].text, dest.options[i].value, false, false);				
+   			}			
+		}
+	    for (var i=dest.options.length-1; i>=0; i--) 
+		{	    
+			if (dest.options[i].selected) 
+			{
+		       dest.options[i] = null;				
+   			}			
+		}		
+	}	
+	disapleButtons(from,dest,add,remove);
 }
 function disapleButtons(from,dest,add,remove)
 {
-  if (from.options.length > 0 )
-  {
-    add.disabled = 0;
-  }
-  else
-    add.disabled = 1;
+	if (from.options.length > 0 )
+	{		
+		add.disabled = 0;		
+	}
+	else
+		add.disabled = 1;
 
-  if (dest.options.length > 0)
-    remove.disabled = 0;
-  else
-    remove.disabled = 1;
+	if (dest.options.length > 0)
+		remove.disabled = 0;
+	else
+		remove.disabled = 1;
 }
 
 function SelectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
+	for(var i = 0;i < CONTROL.length;i++)
 {
-    CONTROL.options[i].selected = true;
-  }
+		CONTROL.options[i].selected = true;
+	}
 }
 
 function DeselectAllList(CONTROL)
 {
-  for(var i = 0;i < CONTROL.length;i++)
-  {
-    CONTROL.options[i].selected = false;
-  }
+	for(var i = 0;i < CONTROL.length;i++)
+	{
+		CONTROL.options[i].selected = false;
+	}
 }
 
 </script>
@@ -98,112 +98,112 @@ function DeselectAllList(CONTROL)
 <input type="hidden" name="add" value="yes" />
 <!-- start userAdd1 div -->
 <div id="userAdd1" class="userTab" style="display:block">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="user account informations">
-    <tr>
-      <th nowrap="nowrap" colspan="2">{TXT_USER_ACCOUNT}</th>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_LOGIN_NAME}<b>&nbsp;</b><font color="red">*</font><b>&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="username" size="30" maxlength="40" value="{USERS_LOGINNAME}" />&nbsp;&nbsp;</td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width="17%">{TXT_LOGIN_PASSWORD}&nbsp;<font color="red">*</font></td>
-      <td nowrap="nowrap" width="83%"><input type="password" name="password" size="30" maxlength="50" value="{USERS_PASSWORD}" />&nbsp;{TXT_PASSWORD_MINIMAL_CHARACTERS}</td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_VERIFY_PASSWORD}&nbsp;<font color="red">*</font></td>
-      <td nowrap="nowrap" width="83%"><input type="password" name="password2" size="30" maxlength="50" value="{USERS_PASSWORD2}" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width="17%">{TXT_EMAIL} <font color="red">*</font></td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="email" size="30" maxlength="255" value="{USERS_EMAIL}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_LANGUAGE}</td>
-      <td nowrap="nowrap" width="83%"><select name="adminlang">{USERS_NEW_EDIT_LANGUAGE_DROPDOWNMENU}</select></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width="17%">{TXT_ADMIN_STATUS}</td>
-      <td nowrap="nowrap" width="83%"><input type="checkbox" name="is_admin" value="1" {USERS_ADMIN_CHECKBOX} /></td>
-    </tr>
-    <tr>
-      <td colspan="2">&nbsp;[ <font color="red">*</font> ] {TXT_ALL_FIELDS_REQUIRED} {TXT_PASSWORD_NOT_USERNAME_TEXT}</td>
-    </tr>
-  </table>
-  <br />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="user account informations">
+		<tr>
+			<th nowrap="nowrap" colspan="2">{TXT_USER_ACCOUNT}</th>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_LOGIN_NAME}<b>&nbsp;</b><font color="red">*</font><b>&nbsp;&nbsp;&nbsp;&nbsp;</b></td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="username" size="30" maxlength="40" value="{USERS_LOGINNAME}" />&nbsp;&nbsp;</td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap" width="17%">{TXT_LOGIN_PASSWORD}&nbsp;<font color="red">*</font></td>
+			<td nowrap="nowrap" width="83%"><input type="password" name="password" size="30" maxlength="50" value="{USERS_PASSWORD}" />&nbsp;{TXT_PASSWORD_MINIMAL_CHARACTERS}</td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_VERIFY_PASSWORD}&nbsp;<font color="red">*</font></td>
+			<td nowrap="nowrap" width="83%"><input type="password" name="password2" size="30" maxlength="50" value="{USERS_PASSWORD2}" /></td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap" width="17%">{TXT_EMAIL} <font color="red">*</font></td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="email" size="30" maxlength="255" value="{USERS_EMAIL}" /></td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_LANGUAGE}</td>
+			<td nowrap="nowrap" width="83%"><select name="adminlang">{USERS_NEW_EDIT_LANGUAGE_DROPDOWNMENU}</select></td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap" width="17%">{TXT_ADMIN_STATUS}</td>
+			<td nowrap="nowrap" width="83%"><input type="checkbox" name="is_admin" value="1" {USERS_ADMIN_CHECKBOX} /></td>
+		</tr>
+		<tr>
+			<td colspan="2">&nbsp;[ <font color="red">*</font> ] {TXT_ALL_FIELDS_REQUIRED} {TXT_PASSWORD_NOT_USERNAME_TEXT}</td>
+		</tr>
+	</table>
+	<br />
 </div>
 <!-- end userAdd1 div -->
 <!-- start userAdd2 div -->
 <div id="userAdd2" class="userTab" style="display:none">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="user groups assignements">
-    <tr>
-      <th nowrap="nowrap" colspan="3">{TXT_USER_GROUP_S}</th>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" valign="top">{TXT_GROUPS}<br />
-        <select name="from[]" size="10" style="width:200px;" multiple="multiple">
-        {USERS_NEW_EDIT_GROUPS}
-
-        </select>
-        &nbsp;<br />
-        <font face="arial" size="1"><a href="javascript:SelectAllList(document.addForm.elements['from[]']);" style="color:blue;">{TXT_SELECT_ALL}<br />
-        </a><a href="javascript:DeselectAllList(document.addForm.elements['from[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font>
-      </td>
-      <td nowrap="nowrap" valign="top">
-        <div align="center"><br />
-        <input type="button" value="&gt;&gt;" name="add" onclick="AddToTheList(document.addForm.elements['from[]'],document.addForm.elements['dest[]'],add,remove);" />
-        <br />
-        <input type="button" value="&lt;&lt;" name="remove" onclick="RemoveFromTheList(document.addForm.elements['from[]'],document.addForm.elements['dest[]'],add,remove);" />
-        </div>
-      </td>
-      <td valign="top" nowrap="nowrap" width="100%"> {TXT_GROUPS_DEST}<br />
-        <select name="dest[]" size="10" style="width:200px;" multiple="multiple">
-        </select>
-        &nbsp;<br />
-        <font size="1"><a href="javascript:SelectAllList(document.addForm.elements['dest[]']);" style="color:blue;">{TXT_SELECT_ALL}<br />
-        </a><a href="javascript:DeselectAllList(document.addForm.elements['dest[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font>
-      </td>
-    </tr>
-  </table>
-  <br />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="user groups assignements">
+		<tr> 
+			<th nowrap="nowrap" colspan="3">{TXT_USER_GROUP_S}</th>
+		</tr>
+		<tr class="row1"> 
+			<td nowrap="nowrap" valign="top">{TXT_GROUPS}<br />
+				<select name="from[]" size="10" style="width:200px;" multiple="multiple">
+				{USERS_NEW_EDIT_GROUPS}
+				
+				</select>
+				&nbsp;<br />
+				<font face="arial" size="1"><a href="javascript:SelectAllList(document.addForm.elements['from[]']);" style="color:blue;">{TXT_SELECT_ALL}<br />
+				</a><a href="javascript:DeselectAllList(document.addForm.elements['from[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font>
+			</td>
+			<td nowrap="nowrap" valign="top"> 
+				<div align="center"><br />
+				<input type="button" value="&gt;&gt;" name="add" onclick="AddToTheList(document.addForm.elements['from[]'],document.addForm.elements['dest[]'],add,remove);" />
+				<br />
+				<input type="button" value="&lt;&lt;" name="remove" onclick="RemoveFromTheList(document.addForm.elements['from[]'],document.addForm.elements['dest[]'],add,remove);" />
+				</div>
+			</td>
+			<td valign="top" nowrap="nowrap" width="100%"> {TXT_GROUPS_DEST}<br />
+				<select name="dest[]" size="10" style="width:200px;" multiple="multiple">
+				</select>
+				&nbsp;<br />
+				<font size="1"><a href="javascript:SelectAllList(document.addForm.elements['dest[]']);" style="color:blue;">{TXT_SELECT_ALL}<br />
+				</a><a href="javascript:DeselectAllList(document.addForm.elements['dest[]']);" style="color:blue;">{TXT_DESELECT_ALL}</a></font> 
+			</td>
+		</tr>
+	</table>
+	<br />
 </div>
 <!-- end userAdd2 div -->
 <!-- start userAdd3 div -->
 <div id="userAdd3" class="userTab" style="display:none">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="profile">
-    <tr>
-      <th nowrap="nowrap" colspan="2">{TXT_PROFILE}</th>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_FIRST_NAME}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="firstname" size="30" maxlength="150" value="{USERS_FIRSTNAME}" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width="17%">{TXT_LAST_NAME}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="lastname" size="30" maxlength="150" value="{USERS_LASTNAME}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_RESIDENCE}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="residence" size="30" maxlength="255" value="{USERS_RESIDENCE}" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width="17%">{TXT_PROFESSION}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="profession" size="30" maxlength="255" value="{USERS_PROFESSION}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_INTERESTS}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="interests" size="30" maxlength="255" value="{USERS_INTERESTS}" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap" width="17%">{TXT_WEBPAGE}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="webpage" size="30" maxlength="255" value="{USERS_WEBPAGE}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="17%">{TXT_COMPANY}</td>
-      <td nowrap="nowrap" width="83%"><input type="text" name="company" size="30" maxlength="255" value="{USERS_COMPANY}" /></td>
-    </tr>
-  </table>
-  <br />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="profile">
+		<tr>
+			<th nowrap="nowrap" colspan="2">{TXT_PROFILE}</th>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_FIRST_NAME}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="firstname" size="30" maxlength="150" value="{USERS_FIRSTNAME}" /></td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap" width="17%">{TXT_LAST_NAME}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="lastname" size="30" maxlength="150" value="{USERS_LASTNAME}" /></td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_RESIDENCE}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="residence" size="30" maxlength="255" value="{USERS_RESIDENCE}" /></td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap" width="17%">{TXT_PROFESSION}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="profession" size="30" maxlength="255" value="{USERS_PROFESSION}" /></td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_INTERESTS}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="interests" size="30" maxlength="255" value="{USERS_INTERESTS}" /></td>
+		</tr>
+		<tr class="row2">
+			<td nowrap="nowrap" width="17%">{TXT_WEBPAGE}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="webpage" size="30" maxlength="255" value="{USERS_WEBPAGE}" /></td>
+		</tr>
+		<tr class="row1">
+			<td nowrap="nowrap" width="17%">{TXT_COMPANY}</td>
+			<td nowrap="nowrap" width="83%"><input type="text" name="company" size="30" maxlength="255" value="{USERS_COMPANY}" /></td>
+		</tr>
+	</table>
+	<br />
 </div>
 <!-- end userAdd3 div -->
 <input type="submit" value="{TXT_ADDUSER}" name="submit" />

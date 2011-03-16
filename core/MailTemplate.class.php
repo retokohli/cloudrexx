@@ -2,7 +2,7 @@
 
 /**
  * Core Mail and Template Management
- * @version     3.0.0
+ * @version     2.2.0
  * @since       2.2.0
  * @package     contrexx
  * @subpackage  core
@@ -10,8 +10,6 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */
-
-require_once ASCMS_CORE_PATH.'/SettingDb.class.php';
 require_once ASCMS_CORE_PATH.'/Text.class.php';
 
 /**
@@ -22,7 +20,7 @@ require_once ASCMS_CORE_PATH.'/Text.class.php';
  * Includes a nice wrapper for the phpmailer class that allows
  * sending all kinds of mail in plain text or HTML, also with
  * attachments.
- * @version     3.0.0
+ * @version     2.2.0
  * @since       2.2.0
  * @package     contrexx
  * @subpackage  core
@@ -35,43 +33,39 @@ class MailTemplate
     /**
      * Class constant for the mail template name Text key
      */
-    const TEXT_NAME = 'core_mail_template_name';
+    const TEXT_NAME    = 'core_mail_template_name';
     /**
      * Class constant for the mail template from Text key
      */
-    const TEXT_FROM = 'core_mail_template_from';
+    const TEXT_FROM    = 'core_mail_template_from';
     /**
      * Class constant for the mail template sender Text key
      */
-    const TEXT_SENDER = 'core_mail_template_sender';
+    const TEXT_SENDER  = 'core_mail_template_sender';
     /**
      * Class constant for the mail template reply Text key
      */
-    const TEXT_REPLY = 'core_mail_template_reply';
+    const TEXT_REPLY  = 'core_mail_template_reply';
     /**
      * Class constant for the mail template to Text key
      */
-    const TEXT_TO = 'core_mail_template_to';
+    const TEXT_TO  = 'core_mail_template_to';
     /**
      * Class constant for the mail template cc Text key
      */
-    const TEXT_CC = 'core_mail_template_cc';
+    const TEXT_CC  = 'core_mail_template_cc';
     /**
      * Class constant for the mail template bcc Text key
      */
-    const TEXT_BCC = 'core_mail_template_bcc';
+    const TEXT_BCC  = 'core_mail_template_bcc';
     /**
      * Class constant for the mail template subject Text key
      */
     const TEXT_SUBJECT = 'core_mail_template_subject';
     /**
-     * Class constant for the mail template message plain Text key
+     * Class constant for the mail template message Text key
      */
     const TEXT_MESSAGE = 'core_mail_template_message';
-    /**
-     * Class constant for the mail template message HTML Text key
-     */
-    const TEXT_MESSAGE_HTML = 'core_mail_template_message_html';
     /**
      * Class constant for the mail template attachments Text key
      */
@@ -122,34 +116,32 @@ class MailTemplate
     static function getNew($key='')
     {
         return array(
-            'key'                  => $key,
-            'text_name_id'         => 0,
-            'name'                 => '',
-            'text_from_id'         => 0,
-            'from'                 => '',
-            'text_sender_id'       => 0,
-            'sender'               => '',
-            'text_reply_id'        => 0,
-            'reply'                => '',
-            'text_to_id'           => 0,
-            'to'                   => '',
-            'text_cc_id'           => 0,
-            'cc'                   => '',
-            'text_bcc_id'          => 0,
-            'bcc'                  => '',
-            'text_subject_id'      => 0,
-            'subject'              => '',
-            'text_message_id'      => 0,
-            'message'              => '',
-            'text_message_html_id' => 0,
-            'message_html'         => '',
-            'text_attachments_id'  => 0,
-            'attachments'          => '',
-            'text_inline_id'       => 0,
-            'inline'               => '',
-            'protected'            => 0,
-            'html'                 => 0,
-            'available'            => false,
+            'key'                 => $key,
+            'text_name_id'        => 0,
+            'name'                => '',
+            'text_from_id'        => 0,
+            'from'                => '',
+            'text_sender_id'      => 0,
+            'sender'              => '',
+            'text_reply_id'       => 0,
+            'reply'               => '',
+            'text_to_id'          => 0,
+            'to'                  => '',
+            'text_cc_id'          => 0,
+            'cc'                  => '',
+            'text_bcc_id'         => 0,
+            'bcc'                 => '',
+            'text_subject_id'     => 0,
+            'subject'             => '',
+            'text_message_id'     => 0,
+            'message'             => '',
+            'text_attachments_id' => 0,
+            'attachments'         => '',
+            'text_inline_id'      => 0,
+            'inline'              => '',
+            'protected'           => 0,
+            'html'                => 0,
+            'available'           => false,
         );
     }
 
@@ -206,41 +198,38 @@ class MailTemplate
         if (empty($limit)) $limit = 20;
 
         $arrSqlName = Text::getSqlSnippets(
-            '`mail`.`text_name_id`', $lang_id, MODULE_ID,
-            self::TEXT_NAME, 'name');
+            '`mail`.`text_name_id`', $lang_id, MODULE_ID, self::TEXT_NAME, 'name'
+        );
         $arrSqlFrom = Text::getSqlSnippets(
-            '`mail`.`text_from_id`', $lang_id, MODULE_ID,
-            self::TEXT_FROM, 'from');
+            '`mail`.`text_from_id`', $lang_id, MODULE_ID, self::TEXT_FROM, 'from'
+        );
         $arrSqlSender = Text::getSqlSnippets(
-            '`mail`.`text_sender_id`', $lang_id, MODULE_ID,
-            self::TEXT_SENDER, 'sender');
+            '`mail`.`text_sender_id`', $lang_id, MODULE_ID, self::TEXT_SENDER, 'sender'
+        );
         $arrSqlReply = Text::getSqlSnippets(
-            '`mail`.`text_reply_id`', $lang_id, MODULE_ID,
-            self::TEXT_REPLY, 'reply');
+            '`mail`.`text_reply_id`', $lang_id, MODULE_ID, self::TEXT_REPLY, 'reply'
+        );
         $arrSqlTo = Text::getSqlSnippets(
-            '`mail`.`text_to_id`', $lang_id, MODULE_ID,
-            self::TEXT_TO, 'to');
+            '`mail`.`text_to_id`', $lang_id, MODULE_ID, self::TEXT_TO, 'to'
+        );
         $arrSqlCc = Text::getSqlSnippets(
-            '`mail`.`text_cc_id`', $lang_id, MODULE_ID,
-            self::TEXT_CC, 'cc');
+            '`mail`.`text_cc_id`', $lang_id, MODULE_ID, self::TEXT_CC, 'cc'
+        );
         $arrSqlBcc = Text::getSqlSnippets(
-            '`mail`.`text_bcc_id`', $lang_id, MODULE_ID,
-            self::TEXT_BCC, 'bcc');
+            '`mail`.`text_bcc_id`', $lang_id, MODULE_ID, self::TEXT_BCC, 'bcc'
+        );
         $arrSqlSubject = Text::getSqlSnippets(
-            '`mail`.`text_subject_id`', $lang_id, MODULE_ID,
-            self::TEXT_SUBJECT, 'subject');
+            '`mail`.`text_subject_id`', $lang_id, MODULE_ID, self::TEXT_SUBJECT, 'subject'
+        );
         $arrSqlMessage = Text::getSqlSnippets(
-            '`mail`.`text_message_id`', $lang_id, MODULE_ID,
-            self::TEXT_MESSAGE, 'message');
-        $arrSqlMessageHtml = Text::getSqlSnippets(
-            '`mail`.`text_message_html_id`', $lang_id, MODULE_ID,
-            self::TEXT_MESSAGE_HTML, 'message_html');
+            '`mail`.`text_message_id`', $lang_id, MODULE_ID, self::TEXT_MESSAGE, 'message'
+        );
         $arrSqlAttachments = Text::getSqlSnippets(
-            '`mail`.`text_attachments_id`', $lang_id, MODULE_ID,
-            self::TEXT_ATTACHMENTS, 'attachments');
+            '`mail`.`text_attachments_id`', $lang_id, MODULE_ID, self::TEXT_ATTACHMENTS, 'attachments'
+        );
         $arrSqlInline = Text::getSqlSnippets(
-            '`mail`.`text_inline_id`', $lang_id, MODULE_ID,
-            self::TEXT_INLINE, 'inline');
+            '`mail`.`text_inline_id`', $lang_id, MODULE_ID, self::TEXT_INLINE, 'inline'
+        );
 
         $query_from = "
               FROM `".DBPREFIX."core_mail_template` AS `mail`".
@@ -253,7 +242,6 @@ class MailTemplate
                    $arrSqlBcc['join'].
                    $arrSqlSubject['join'].
                    $arrSqlMessage['join'].
-                   $arrSqlMessageHtml['join'].
                    $arrSqlAttachments['join'].
                    $arrSqlInline['join']."
              WHERE `mail`.`module_id`=".MODULE_ID;
@@ -274,134 +262,79 @@ class MailTemplate
                    $arrSqlBcc['field'].
                    $arrSqlSubject['field'].
                    $arrSqlMessage['field'].
-                   $arrSqlMessageHtml['field'].
                    $arrSqlAttachments['field'].
                    $arrSqlInline['field']."
-            $query_from
-            $query_order",
+              $query_from$query_order",
             $limit, $position);
         if (!$objResult) return self::errorHandler();
+//DBG::log("MailTemplate::init($lang_id): Result<br />".var_export($objResult, true)."<hr />");
         self::$arrTemplates = array();
         while (!$objResult->EOF) {
-            $available = true;
             $key = $objResult->fields['key'];
+            $available = true;
             $text_name_id = $objResult->fields[$arrSqlName['name']];
             $strName = $objResult->fields[$arrSqlName['text']];
-            if ($strName === null && $text_name_id) {
-                $strName = Text::getById($text_name_id, 0)->getText();
-                $available = false;
-            }
             $text_from_id = $objResult->fields[$arrSqlFrom['name']];
             $strFrom = $objResult->fields[$arrSqlFrom['text']];
-            if ($strFrom === null && $text_from_id) {
-                $strFrom = Text::getById($text_from_id, 0)->getText();
-                $available = false;
-            }
             $text_sender_id = $objResult->fields[$arrSqlSender['name']];
             $strSender = $objResult->fields[$arrSqlSender['text']];
-            if ($strSender === null && $text_sender_id) {
-                $strSender = Text::getById($text_sender_id, 0)->getText();
-                $available = false;
-            }
             $text_reply_id = $objResult->fields[$arrSqlReply['name']];
             $strReply = $objResult->fields[$arrSqlReply['text']];
-            if ($strReply === null && $text_reply_id) {
-                $strReply = Text::getById($text_reply_id, 0)->getText();
-                $available = false;
-            }
             $text_to_id = $objResult->fields[$arrSqlTo['name']];
             $strTo = $objResult->fields[$arrSqlTo['text']];
-            if ($strTo === null && $text_to_id) {
-                $strTo = Text::getById($text_to_id, 0)->getText();
-                $available = false;
-            }
             $text_cc_id = $objResult->fields[$arrSqlCc['name']];
             $strCc = $objResult->fields[$arrSqlCc['text']];
-            if ($strCc === null && $text_cc_id) {
-                $strCc = Text::getById($text_cc_id, 0)->getText();
-                $available = false;
-            }
             $text_bcc_id = $objResult->fields[$arrSqlBcc['name']];
             $strBcc = $objResult->fields[$arrSqlBcc['text']];
-            if ($strBcc === null && $text_bcc_id) {
-                $strBcc = Text::getById($text_bcc_id, 0)->getText();
-                $available = false;
-            }
             $text_subject_id = $objResult->fields[$arrSqlSubject['name']];
             $strSubject = $objResult->fields[$arrSqlSubject['text']];
-            if ($strSubject === null && $text_subject_id) {
-                $strSubject = Text::getById($text_subject_id, 0)->getText();
-                $available = false;
-            }
             $text_message_id = $objResult->fields[$arrSqlMessage['name']];
             $strMessage = $objResult->fields[$arrSqlMessage['text']];
-            if ($strMessage === null && $text_message_id) {
-                $strMessage = Text::getById($text_message_id, 0)->getText();
-                $available = false;
-            }
-            $text_message_html_id = $objResult->fields[$arrSqlMessageHtml['name']];
-            $strMessageHtml = $objResult->fields[$arrSqlMessageHtml['text']];
-            if ($strMessageHtml === null && $text_message_html_id) {
-                $strMessageHtml = Text::getById($text_message_html_id, 0)->getText();
-                $available = false;
-            }
             $text_attachments_id = $objResult->fields[$arrSqlAttachments['name']];
             $strAttachments = $objResult->fields[$arrSqlAttachments['text']];
-            if ($strAttachments === null && $text_attachments_id) {
-                $strAttachments = Text::getById($text_attachments_id, 0)->getText();
-                $available = false;
-            }
             $text_inline_id = $objResult->fields[$arrSqlInline['name']];
             $strInline = $objResult->fields[$arrSqlInline['text']];
-            if ($strInline === null && $text_inline_id) {
-                $strInline = Text::getById($text_inline_id, 0)->getText();
-                $available = false;
-            }
-// TODO: Hard to decide which should be mandatory, as any of them may
-// be filled in "just in time". -- Time will tell.
-            if (   $strName == ''
-//                || $strFrom == ''
-//                || $strSender == ''
-//                || $strReply == ''
-//                || $strTo == ''
-//                || $strCc == ''
-//                || $strBcc == ''
-                || $strSubject == ''
-                || $strMessage == ''
-//                || $strMessageHtml == ''
-//                || $strAttachments == ''
-//                || $strInline == ''
+            if (   $strName === null
+// TODO: Hard to decide which should really be mandatory.  Time will tell.
+//                || $strFrom === null
+//                || $strSender === null
+//                || $strReply === null
+//                || $strTo === null
+//                || $strCc === null
+//                || $strBcc === null
+                || $strSubject === null
+                || $strMessage === null
+//                || $strAttachments === null
+//                || $strInline === null
             ) $available = false;
 
             self::$arrTemplates[$key] = array(
-                'key'                  => $key,
-                'text_name_id'         => $text_name_id,
-                'name'                 => $strName,
-                'text_from_id'         => $text_from_id,
-                'protected'            => $objResult->fields['protected'],
-                'html'                 => $objResult->fields['html'],
-                'from'                 => $strFrom,
-                'text_sender_id'       => $text_sender_id,
-                'sender'               => $strSender,
-                'text_reply_id'        => $text_reply_id,
-                'reply'                => $strReply,
-                'text_to_id'           => $text_to_id,
-                'to'                   => $strTo,
-                'text_cc_id'           => $text_cc_id,
-                'cc'                   => $strCc,
-                'text_bcc_id'          => $text_bcc_id,
-                'bcc'                  => $strBcc,
-                'text_subject_id'      => $text_subject_id,
-                'subject'              => $strSubject,
-                'text_message_id'      => $text_message_id,
-                'message'              => $strMessage,
-                'text_message_html_id' => $text_message_html_id,
-                'message_html'         => $strMessageHtml,
-                'text_attachments_id'  => $text_attachments_id,
-                'attachments'          => eval("$strAttachments;"),
-                'text_inline_id'       => $text_inline_id,
-                'inline'               => eval("$strInline;"),
-                'available'            => $available,
+                'key'                 => $key,
+                'text_name_id'        => $text_name_id,
+                'name'                => $strName,
+                'text_from_id'        => $text_from_id,
+                'from'                => $strFrom,
+                'text_sender_id'      => $text_sender_id,
+                'sender'              => $strSender,
+                'text_reply_id'       => $text_reply_id,
+                'reply'               => $strReply,
+                'text_to_id'          => $text_to_id,
+                'to'                  => $strTo,
+                'text_cc_id'          => $text_cc_id,
+                'cc'                  => $strCc,
+                'text_bcc_id'         => $text_bcc_id,
+                'bcc'                 => $strBcc,
+                'text_subject_id'     => $text_subject_id,
+                'subject'             => $strSubject,
+                'text_message_id'     => $text_message_id,
+                'message'             => $strMessage,
+                'text_attachments_id' => $text_attachments_id,
+                'attachments'         => $strAttachments,
+                'text_inline_id'      => $text_inline_id,
+                'inline'              => $strInline,
+                'protected'           => $objResult->fields['protected'],
+                'html'                => $objResult->fields['html'],
+                'available'           => $available,
             );
             $objResult->MoveNext();
         }
@@ -409,7 +342,9 @@ class MailTemplate
         $objResult = $objDatabase->Execute("
             SELECT COUNT(*) AS `count` $query_from");
         if (!$objResult) return self::errorHandler();
-        $count += $objResult->fields['count'];
+        // Ignore the code analyzer warning.
+        $count = $objResult->fields['count'];
+
         // Remember the language used
         self::$lang_id = $lang_id;
         return true;
@@ -430,6 +365,9 @@ class MailTemplate
         $lang_id=0,
         $order, $position, $limit, &$count
     ) {
+
+//echo("MailTemplate::getTemplateArray(lang_id $lang_id, order $order, position $position, limit $limit, count $count): Entered<br />");
+
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
         self::init($lang_id, $order, $position, $limit, $count);
         return self::$arrTemplates;
@@ -458,6 +396,7 @@ class MailTemplate
         self::init($lang_id);
         if (isset(self::$arrTemplates[$key]))
             return self::$arrTemplates[$key];
+//DBG::log("Template not found for key $key<br />");
         return false;
     }
 
@@ -474,8 +413,7 @@ class MailTemplate
      *  cc            The carbon copy e-mail address(es), comma separated
      *  bcc           The blind carbon copy e-mail address(es), comma separated
      *  subject       The message subject
-     *  message       The plain text message body
-     *  message_html  The HTML message body
+     *  message       The message body
      *  html          If this evaluates to true, turns on HTML mode
      *  attachments   An array of file paths to attach.  The array keys may
      *                be used for the paths, and the values for the name.
@@ -485,27 +423,13 @@ class MailTemplate
      *  search        The array of patterns to be replaced by...
      *  replace       The array of replacements for the patterns
      * If the key index is present, the corresponding mail template is loaded
-     * first.  Other indices present (sender, from, to, subject, message, etc.)
+     * first.  Other indices present (sender, from, to, subject, message)
      * will override the template fields.
      * Missing mandatory fields are filled with the
      * default values from the global $_CONFIG array (sender, from, to),
      * or some core language variables (subject, message).
-     * A simple {@see str_replace()} is used for the search and replace
-     * operation, and the placeholder names are quoted in the substitution,
-     * so you cannot use regular expressions.
-     * More complex substitutions including repeated blocks may be specified
-     * in the substitution subarray of the $arrField parameter value.
-     * The e-mail addresses in the To: field will be used as follows:
-     * - Groups of addresses are separated by semicola (;)
-     * - Single addresses are separated by comma (,)
-     * All recipients of any single group are added to the To: field together,
-     * Groups are processed separately.  So, if your To: looks like
-     *    a@a.com,b@b.com;c@c.com,d@d.com
-     * a total of two e-mails will be sent; one to a and b, and a second one
-     * to c and d.
-     * Addresses for copies (Cc:) and blind copies (Bcc:) are added to all
-     * e-mails sent, so if your e-mail is in the Cc: or Bcc: field in the
-     * example above, you will receive two copies.
+     * A simple {@see str_replace()} is used for the pattern
+     * substitution, so you cannot use regular expressions.
      * Note:  The attachment paths must comply with the requirements for
      * file paths as defined in the {@see File} class version 2.2.0.
      * @static
@@ -518,9 +442,10 @@ class MailTemplate
     {
         global $_CONFIG; //, $_CORELANG;
 
-        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
+//DBG::log("MailTemplate::send(".var_export($arrField, true)."): Entered<hr />");
+
+        if (!@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php')
             return false;
-        }
         $objMail = new phpmailer();
         if (   !empty($_CONFIG['coreSmtpServer'])
             && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
@@ -537,50 +462,39 @@ class MailTemplate
 
         $lang_id = (empty($arrField['lang_id'])
               ? FRONTEND_LANG_ID : $arrField['lang_id']);
-        $arrTemplate = null;
-        if (empty($arrField['key'])) {
-            $arrTemplate = self::getNew();
-        } else {
+        $arrTemplate = array();
+        if (!empty($arrField['key']))
             $arrTemplate = self::getTemplate($arrField['key'], $lang_id);
-            if (empty($arrTemplate)) {
-                return false;
-            }
-        }
+        if (empty($arrTemplate)) return false;
+//DBG::log("MailTemplate::send(): Template<br />".var_export($arrTemplate, true)."<hr />");
         $search  =
             (isset($arrField['search']) && is_array($arrField['search'])
-              ? $arrField['search'] : null);
+              ? $arrField['search']  : array());
         $replace =
             (isset($arrField['replace']) && is_array($arrField['replace'])
-              ? $arrField['replace'] : null);
-        $substitution =
-            (   isset($arrField['substitution'])
-             && is_array($arrField['substitution'])
-              ? $arrField['substitution'] : null);
-        foreach ($arrTemplate as $field => &$value) {
-            if (   $field == 'inline'
-                || $field == 'attachments') continue;
-            if (isset($arrField[$field])) $value = $arrField[$field];
-            if (empty($value) || is_numeric($value)) continue;
-// TODO: Fix the regex
-//                preg_replace('/\015?\012/', "\015\012", $value);
-            if ($search) {
-                $value = str_replace($search, $replace, $value);
-            }
-            if ($substitution) {
-                self::substitute($value, $substitution);
-            }
-            self::clearEmptyPlaceholders($value);
+              ? $arrField['replace'] : array());
+
+        foreach ($arrTemplate as $field => $value) {
+            $arrTemplate[$field] =
+                preg_replace('/\015\012/', "\012",
+                    str_replace($search, $replace,
+                        (empty($value)
+                          ? (empty($arrTemplate[$field])
+                              ? ''
+                              : $arrTemplate[$field])
+                          : $value)));
         }
+//DBG::log("MailTemplate::send(): Fixed<br />".var_export($arrTemplate, true)."<hr />");
+
+//DBG::log("MailTemplate::send(): Attachments and inlines<br />".var_export($arrTemplate, true)."<hr />");
 
         // Use defaults for missing mandatory fields
 //        if (empty($arrTemplate['sender']))
 //            $arrTemplate['sender'] = $_CONFIG['coreAdminName'];
-        if (empty($arrTemplate['from'])) {
+        if (empty($arrTemplate['from']))
             $arrTemplate['from'] = $_CONFIG['coreAdminEmail'];
-        }
-        if (empty($arrTemplate['to'])) {
+        if (empty($arrTemplate['to']))
             $arrTemplate['to'] = $_CONFIG['coreAdminEmail'];
-        }
 //        if (empty($arrTemplate['subject']))
 //            $arrTemplate['subject'] = $_CORELANG['TXT_CORE_MAILTEMPLATE_NO_SUBJECT'];
 //        if (empty($arrTemplate['message']))
@@ -589,219 +503,87 @@ class MailTemplate
         $objMail->FromName = $arrTemplate['sender'];
         $objMail->From = $arrTemplate['from'];
         $objMail->Subject = $arrTemplate['subject'];
-        $objMail->CharSet = CONTREXX_CHARSET;
-        if ($arrTemplate['html']) {
-            $objMail->IsHTML(true);
-            $objMail->Body = $arrTemplate['message_html'];
-            $objMail->AltBody = $arrTemplate['message'];
-        } else {
-            $objMail->Body = $arrTemplate['message'];
-        }
-        foreach (preg_split('/\s*,\s*/', $arrTemplate['reply'], null, PREG_SPLIT_NO_EMPTY) as $address) {
+        $objMail->Body = $arrTemplate['message'];
+        foreach (preg_split('/\s*,\s*/', $arrTemplate['reply'],  null, PREG_SPLIT_NO_EMPTY) as $address) {
             $objMail->AddReplyTo($address);
         }
-// Send mail to multiple recipients individually.  See below.
-//        foreach (preg_split('/\s*,\s*/', $arrTemplate['to'], null, PREG_SPLIT_NO_EMPTY) as $address) {
-//            $objMail->AddAddress($address);
-//        }
-        foreach (preg_split('/\s*,\s*/', $arrTemplate['cc'], null, PREG_SPLIT_NO_EMPTY) as $address) {
+        foreach (preg_split('/\s*,\s*/', $arrTemplate['to'],  null, PREG_SPLIT_NO_EMPTY) as $address) {
+            $objMail->AddAddress($address);
+        }
+        foreach (preg_split('/\s*,\s*/', $arrTemplate['cc'],  null, PREG_SPLIT_NO_EMPTY) as $address) {
             $objMail->AddCC($address);
         }
         foreach (preg_split('/\s*,\s*/', $arrTemplate['bcc'], null, PREG_SPLIT_NO_EMPTY) as $address) {
             $objMail->AddBCC($address);
         }
-
-        // Applicable to attachments stored with the Mailtemplate only!
-        $arrTemplate['attachments'] =
-            self::attachmentsToArray($arrTemplate['attachments']);
-        // Now the Mailtemplates' attachments index is guaranteed to
-        // contain an array.
-        // Add attachments from the parameter array, if any.
-        if (   isset($arrField['attachments'])
-            && is_array($arrField['attachments'])) {
-            foreach ($arrField['attachments'] as $path => $name) {
-//                if (empty($path)) $path = $name;
-//                if (empty($name)) $name = basename($path);
-                $arrTemplate['attachments'][$path] = $name;
-            }
-        }
+        $arrTemplate['attachments'] = self::attachmentsToArray($arrTemplate['attachments']);
         foreach ($arrTemplate['attachments'] as $path => $name) {
             if (is_numeric($path)) $path = $name;
             $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.'/'.$path, $name);
         }
-        $arrTemplate['inline'] =
-            self::attachmentsToArray($arrTemplate['inline']);
+        $arrTemplate['inline'] = self::attachmentsToArray($arrTemplate['inline']);
         if ($arrTemplate['inline']) $arrTemplate['html'] = true;
         foreach ($arrTemplate['inline'] as $path => $name) {
             if (is_numeric($path)) $path = $name;
             $objMail->AddEmbeddedImage(ASCMS_DOCUMENT_ROOT.'/'.$path, uniqid(), $name);
         }
-        if (   isset($arrField['inline'])
-            && is_array($arrField['inline'])) {
-            $arrTemplate['html'] = true;
-            foreach ($arrField['inline'] as $path => $name) {
-                if (is_numeric($path)) $path = $name;
-                $objMail->AddEmbeddedImage(ASCMS_DOCUMENT_ROOT.'/'.$path, uniqid(), $name);
-            }
-        }
         $objMail->CharSet = CONTREXX_CHARSET;
         $objMail->IsHTML($arrTemplate['html']);
-        $result = true;
-        foreach (preg_split('/\s*;\s*/', $arrTemplate['to'], null, PREG_SPLIT_NO_EMPTY) as $addresses) {
-            $objMail->ClearAddresses();
-            foreach (preg_split('/\s*[,]\s*/', $addresses, null, PREG_SPLIT_NO_EMPTY) as $address) {
-                $objMail->AddAddress($address);
-            }
-// Comment out for testing purposes only!
-            $result &= $objMail->Send();
-        }
-        return $result;
+//DBG::log("MailTemplate::send(): Mail<br />".var_export($objMail, true)."<br />Sending...<hr />");
+        return $objMail->Send();
     }
 
 
-    /**
-     * Substitutes the placeholders found in the $substitution array in $value
-     *
-     * Each array key in $substitution is regarded as a placeholder name.
-     * Each name is enclosed in square brackets ("[", "]") to form the
-     * full placeholder.
-     * If its value is an array, it represents a repeatable block with contents
-     * in an (indexed) array, otherwise it's a simple replacement.
-     *
-     * Your template $string might look something like
-     *
-     *    A single [PLACEHOLDER] is substituted here once.
-     *
-     *    [[BLOCK]This line is repeated for each [ITEM] in the block.[BLOCK]]
-     *    If there is no [ITEM] in the BLOCK subarray, the block is never
-     *    parsed and thus removed.
-     *
-     * The $substitution array looks like
-     *  array(
-     *    'PLACEHOLDER' => 'Scalar replacement value',
-     *    'BLOCK'       => array(
-     *      index => array(
-     *        'ITEM'                        => 'Another scalar value',
-     *        'MORE_PLACEHOLDERS_OR_BLOCKS' => 'Nest as deep as memory allows',
-     *        ... more ...
-     *      ),
-     *      ... more ...
-     *    ),
-     *    ... more ...
-     *  )
-     *
-     * Of course, all names used above are just examples, any block or
-     * placeholder name may be an arbitrary word consisting of letters
-     * and underscores.
-     *
-     * Any block may occur more than once.  Its contents are repeated.
-     * Each block name *MUST* occur an even number of times in the string.
-     *
-     * Mind that the names in the substitution array *SHOULD* be unique,
-     * or the order of the elements becomes relevant and the results may not
-     * be what you expect!  The array is processed depth-first, so every time
-     * a block array is encountered, it is completely substituted recursively
-     * before the next value is even looked at.
-     *
-     * Final note:
-     * To replace any blocks or placeholders from the string that have not been
-     * substituted, call {@see clearEmptyPlaceholders()} after *all* values
-     * have been substituted.  This will take care both of unused blocks and
-     * placeholders.  See {@see send()} for an example.
-     * @param   string    $string         The string to be searched and replaced,
-     *                                    by reference
-     * @param   array     $substitution   The array of placeholders and values,
-     *                                    by reference
-     */
-    static function substitute(&$string, &$substitution)
-    {
-        if (empty($string)) return;
-        $match = array();
-        foreach ($substitution as $placeholder => $value) {
-            $block_quoted = preg_quote("[$placeholder]", '/');
-            $block_re = '/\['.$block_quoted.'(.+?)'.$block_quoted.'\]/is';
-            if (   preg_match($block_re, $string, $match)
-                && $match[1]) {
-                $block_template = $match[1];
-                $block_parsed = '';
-                if (is_array($value)) {
-                    // Parse block with subarray contents (nested block)
-                    foreach ($value as $value_inner) {
-                        $block = $block_template;
-                        self::substitute($block, $value_inner);
-                        $block_parsed .= $block;
-                    }
-                } else {
-                    // Substitute the block normally, but drop it if
-                    // it does not contain any placeholder present
-                    // in the substitution (conditional block)
-                    $block = $block_template;
-                    self::substitute($block, $substitution);
-                    if ($block != $block_template) {
-                        $block_parsed = $block;
-                    }
-                }
-                $string = preg_replace($block_re, $block_parsed, $string);
-            } else {
-                // Cannot operate on simple placeholders with an array
-                if (is_array($value)) continue;
-                $placeholder_re = '/'.preg_quote("[$placeholder]", '/').'/i';
-                if (preg_match($placeholder_re, $string)) {
-                    $string = preg_replace(
-                        $placeholder_re, $value, $string);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Removes left over placeholders and blocks from the string
-     * @param   string    $value        The string, by reference
-     */
-    static function clearEmptyPlaceholders(&$value)
-    {
-        // Replace left over blocks
-        $value = preg_replace('/\[(\[\w+\]).+?\1\]/s', '', $value);
-        // Replace left over placeholders
-        $value = preg_replace('/\[\w+\]/', '', $value);
-    }
-
-
-    /**
-     * Converts the attachment string from the database table into an array,
-     * if necessary
-     *
-     * If the parameter value is an array already, it is returned unchanged.
-     * If the parameter value is a string, it *MUST* be in one of the forms
-     *  'return array();'
-     * or
-     *  'return array(index => "path/filename");'
-     * or
-     *  'return array("path" => "filename");'
-     * with zero or more entries containing at least the "filename" as value
-     * and an optional path as key.  "path" *MUST* be either a path relative
-     * to the document root (including the file name), or a numeric key.
-     * If "path" is numeric, it will be ignored and the "filename" will be used.
-     * In this case, "filename" itself needs to contain the path to the
-     * attachment.
-     * The third form allows you to specify a file name different from the
-     * original provided in "path" to be used for the e-mail.
-     * @param   mixed     $attachments      The attachment string or array
-     * @return  array                       The attachment array on success,
-     *                                      the empty array otherwise
-     */
     static function attachmentsToArray($attachments)
     {
-        if (is_array($attachments)) return $attachments;
         $arrAttachments = array();
         try {
             $arrAttachments = @eval($attachments);
-        } catch (Exception $e) {
-            DBG::log($e->__toString());
-        }
+        } catch (Exception $e) { DBG::log($e->__toString()); }
         if (!is_array($arrAttachments)) $arrAttachments = array();
         return $arrAttachments;
+    }
+
+
+    /**
+     * Validate the email address
+     *
+     * Does an extensive syntax check to determine whether the string argument
+     * is a real email address.
+     * Note that this doesn't mean that the address is necessarily valid,
+     * but only that it isn't just an arbitrary character sequence.
+     * @todo    Some valid addresses are rejected by this method,
+     * such as *%+@mymail.com.
+     * Valid (atom) characters are: "!#$%&'*+-/=?^_`{|}~" (without the double quotes),
+     * see {@link http://rfc.net/rfc2822.html RFC 2822} for details.
+     * @todo    The rules applied to host names are not correct either, see
+     * {@link http://rfc.net/rfc1738.html RFC 1738} and {@link http://rfc.net/rfc3986.html}.
+     * Excerpt from RFC 1738:
+     * - hostport       = host [ ":" port ]
+     * - host           = hostname | hostnumber
+     * - hostname       = *[ domainlabel "." ] toplabel
+     * - domainlabel    = alphadigit | alphadigit *[ alphadigit | "-" ] alphadigit
+     * - toplabel       = alpha | alpha *[ alphadigit | "-" ] alphadigit
+     * - alphadigit     = alpha | digit
+     * Excerpt from RFC 3986:
+     * "Non-ASCII characters must first be encoded according to UTF-8 [STD63],
+     * and then each octet of the corresponding UTF-8 sequence must be percent-
+     * encoded to be represented as URI characters".
+     * @todo    The regex here doesn't do a very good job.
+     *          There's a better one used in some validator class, I think...?
+     * @version 1.0
+     * @param   string    $string   The string to be checked
+     * @return  boolean             True if the argument looks like an e-mail
+     *                              address, false otherwise
+     */
+    function isValidAddress($string)
+    {
+        return (boolean)preg_match(
+            '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  // user
+            '@([a-z0-9]+([-\.a-z0-9]+)*)+'. // domain
+            '\.[a-z]{2,6}$/',               // sld, tld
+            $string
+        );
     }
 
 
@@ -810,26 +592,21 @@ class MailTemplate
      *
      * Protected (system) templates can not be deleted.
      * Deletes all languages available.
-     * if the $key argument is left out, looks for a key in the
-     * delete_mailtemplate_key index of the $_REQUEST array.
-     * @param   string    $key    The optional template key
+     * @param   string    $key    The template key
      * @return  boolean           True on success, false otherwise
      */
-    static function deleteTemplate($key='')
+    static function deleteTemplate($key)
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase;
 
-        if (empty($key)) {
-            if (empty($_REQUEST['delete_mailtemplate_key'])) return '';
-            $key = $_REQUEST['delete_mailtemplate_key'];
-            // Prevent this from being run twice
-            unset($_REQUEST['delete_mailtemplate_key']);
-        }
+//echo("MailTemplate::deleteTemplate($key): Entered<br />");
+        if (empty($key)) return false;
 
         $arrTemplate = self::getTemplate($key);
+//echo("MailTemplate::deleteTemplate(): Loaded template<br />".var_export($arrTemplate, true)."<br />");
         // Cannot delete protected (system) templates
         if ($arrTemplate['protected']) {
-            self::addError($_CORELANG['TXT_CORE_MAILTEMPLATE_IS_PROTECTED']);
+//echo("MailTemplate::deleteTemplate(): Template is protected<br />");
             return false;
         }
 
@@ -837,25 +614,25 @@ class MailTemplate
         self::reset();
 
         // Delete associated Text records
-        if (!Text::deleteById($arrTemplate['text_name_id']))         return false;
-        if (!Text::deleteById($arrTemplate['text_from_id']))         return false;
-        if (!Text::deleteById($arrTemplate['text_sender_id']))       return false;
-        if (!Text::deleteById($arrTemplate['text_reply_id']))        return false;
-        if (!Text::deleteById($arrTemplate['text_to_id']))           return false;
-        if (!Text::deleteById($arrTemplate['text_cc_id']))           return false;
-        if (!Text::deleteById($arrTemplate['text_bcc_id']))          return false;
-        if (!Text::deleteById($arrTemplate['text_subject_id']))      return false;
-        if (!Text::deleteById($arrTemplate['text_message_id']))      return false;
-        if (!Text::deleteById($arrTemplate['text_message_html_id'])) return false;
-        if (!Text::deleteById($arrTemplate['text_attachments_id']))  return false;
-        if (!Text::deleteById($arrTemplate['text_inline_id']))       return false;
+        if (!Text::deleteById($arrTemplate['text_name_id']))        return false;
+        if (!Text::deleteById($arrTemplate['text_from_id']))        return false;
+        if (!Text::deleteById($arrTemplate['text_sender_id']))      return false;
+        if (!Text::deleteById($arrTemplate['text_reply_id']))       return false;
+        if (!Text::deleteById($arrTemplate['text_to_id']))          return false;
+        if (!Text::deleteById($arrTemplate['text_cc_id']))          return false;
+        if (!Text::deleteById($arrTemplate['text_bcc_id']))         return false;
+        if (!Text::deleteById($arrTemplate['text_subject_id']))     return false;
+        if (!Text::deleteById($arrTemplate['text_message_id']))     return false;
+        if (!Text::deleteById($arrTemplate['text_attachments_id'])) return false;
+        if (!Text::deleteById($arrTemplate['text_inline_id']))      return false;
+
         if (!$objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_mail_template`
              WHERE `key`='".addslashes($key)."'")) {
-            self::addError($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETING_FAILED']);
+//echo("MailTemplate::deleteTemplate($key): Failed to delete Template<br />");
             return false;
         }
-        self::addMessage($_CORELANG['TXT_CORE_MAILTEMPLATE_DELETED_SUCCESSFULLY']);
+//echo("MailTemplate::deleteTemplate($key): Template deleted<br />");
         $objDatabase->Execute("OPTIMIZE TABLE `".DBPREFIX."core_mail_template`");
         return true;
     }
@@ -877,8 +654,7 @@ class MailTemplate
      *  cc            The carbon copy e-mail address(es), comma separated
      *  bcc           The blind carbon copy e-mail address(es), comma separated
      *  subject       The message subject
-     *  message       The plain text message body
-     *  message_html  The HTML message body
+     *  message       The message body
      *  html          If this evaluates to true, turns on HTML mode
      *  attachments   An array of file paths to attach.  The array keys may
      *                be used for the paths, and the values for the name.
@@ -897,6 +673,8 @@ class MailTemplate
     {
         global $objDatabase;
 
+//DBG::log("MailTemplate::storeTemplate(".var_export($arrField, true).": Entered<hr />");
+
         if (empty($arrField['key'])) return false;
 
 // TODO: Field verification
@@ -907,46 +685,43 @@ class MailTemplate
             ? $arrField['lang_id'] : FRONTEND_LANG_ID);
         $key = (isset($arrField['key'])
             ? $arrField['key'] : '');
-        // Strip crap characters from the key
-        $key = preg_replace('/[^_a-z\d]/i', '', $key);
-        $text_name_id         = 0;
-        $text_from_id         = 0;
-        $text_sender_id       = 0;
-        $text_reply_id        = 0;
-        $text_to_id           = 0;
-        $text_cc_id           = 0;
-        $text_bcc_id          = 0;
-        $text_subject_id      = 0;
-        $text_message_id      = 0;
-        $text_message_html_id = 0;
-        $text_attachments_id  = 0;
-        $text_inline_id       = 0;
+        if (empty($arrField['html'])) $arrField['html'] = false;
+        $text_name_id        = 0;
+        $text_from_id        = 0;
+        $text_sender_id      = 0;
+        $text_reply_id       = 0;
+        $text_to_id          = 0;
+        $text_cc_id          = 0;
+        $text_bcc_id         = 0;
+        $text_subject_id     = 0;
+        $text_message_id     = 0;
+        $text_attachments_id = 0;
+        $text_inline_id      = 0;
+        $protected           = 0;
 
         $update = false;
         // The original template is needed for the Text IDs and protected
         // flag only
         $arrTemplate = self::getTemplate($key, $lang_id);
+//echo("MailTemplate::storeTemplate(): Loaded Template<br />".var_export($arrTemplate, true)."<hr />");
         if ($arrTemplate) { // && $arrTemplate['available']) {
             $update = true;
-            $text_name_id          = $arrTemplate['text_name_id'];
-            $text_from_id          = $arrTemplate['text_from_id'];
-            $text_sender_id        = $arrTemplate['text_sender_id'];
-            $text_reply_id         = $arrTemplate['text_reply_id'];
-            $text_to_id            = $arrTemplate['text_to_id'];
-            $text_cc_id            = $arrTemplate['text_cc_id'];
-            $text_bcc_id           = $arrTemplate['text_bcc_id'];
-            $text_subject_id       = $arrTemplate['text_subject_id'];
-            $text_message_id       = $arrTemplate['text_message_id'];
-            $text_message_html_id  = $arrTemplate['text_message_html_id'];
-            $text_attachments_id   = $arrTemplate['text_attachments_id'];
-            $text_inline_id        = $arrTemplate['text_inline_id'];
-            $arrField['protected'] = $arrTemplate['protected'];
+            $text_name_id        = $arrTemplate['text_name_id'];
+            $text_from_id        = $arrTemplate['text_from_id'];
+            $text_sender_id      = $arrTemplate['text_sender_id'];
+            $text_reply_id       = $arrTemplate['text_reply_id'];
+            $text_to_id          = $arrTemplate['text_to_id'];
+            $text_cc_id          = $arrTemplate['text_cc_id'];
+            $text_bcc_id         = $arrTemplate['text_bcc_id'];
+            $text_subject_id     = $arrTemplate['text_subject_id'];
+            $text_message_id     = $arrTemplate['text_message_id'];
+            $text_attachments_id = $arrTemplate['text_attachments_id'];
+            $text_inline_id      = $arrTemplate['text_inline_id'];
+            $protected           = $arrTemplate['protected'];
         }
 
-        if (empty($arrField['name'])) {
-            if ($text_name_id) {
-                Text::deleteById($text_name_id, $lang_id);
-            }
+        if (empty($arrField['name']) && $text_name_id) {
+            Text::deleteById($text_name_id, $lang_id);
             $text_name_id = 0;
         } else {
             $text_name_id = Text::replace(
@@ -954,10 +729,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_NAME
             );
         }
-        if (empty($arrField['from'])) {
-            if ($text_from_id) {
-                Text::deleteById($text_from_id, $lang_id);
-            }
+        if (empty($arrField['from']) && $text_from_id) {
+            Text::deleteById($text_from_id, $lang_id);
             $text_from_id = 0;
         } else {
             $text_from_id = Text::replace(
@@ -965,10 +738,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_FROM
             );
         }
-        if (empty($arrField['sender'])) {
-            if ($text_sender_id) {
-                Text::deleteById($text_sender_id, $lang_id);
-            }
+        if (empty($arrField['sender']) && $text_sender_id) {
+            Text::deleteById($text_sender_id, $lang_id);
             $text_sender_id = 0;
         } else {
             $text_sender_id = Text::replace(
@@ -976,10 +747,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_SENDER
             );
         }
-        if (empty($arrField['reply'])) {
-            if ($text_reply_id) {
-                Text::deleteById($text_reply_id, $lang_id);
-            }
+        if (empty($arrField['reply']) && $text_reply_id) {
+            Text::deleteById($text_reply_id, $lang_id);
             $text_reply_id = 0;
         } else {
             $text_reply_id = Text::replace(
@@ -987,10 +756,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_REPLY
             );
         }
-        if (empty($arrField['to'])) {
-            if ($text_to_id) {
-                Text::deleteById($text_to_id, $lang_id);
-            }
+        if (empty($arrField['to']) && $text_to_id) {
+            Text::deleteById($text_to_id, $lang_id);
             $text_to_id = 0;
         } else {
             $text_to_id = Text::replace(
@@ -998,10 +765,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_TO
             );
         }
-        if (empty($arrField['cc'])) {
-            if ($text_cc_id) {
-                Text::deleteById($text_cc_id, $lang_id);
-            }
+        if (empty($arrField['cc']) && $text_cc_id) {
+            Text::deleteById($text_cc_id, $lang_id);
             $text_cc_id = 0;
         } else {
             $text_cc_id = Text::replace(
@@ -1009,10 +774,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_CC
             );
         }
-        if (empty($arrField['bcc'])) {
-            if ($text_bcc_id) {
-                Text::deleteById($text_bcc_id, $lang_id);
-            }
+        if (empty($arrField['bcc']) && $text_bcc_id) {
+            Text::deleteById($text_bcc_id, $lang_id);
             $text_bcc_id = 0;
         } else {
             $text_bcc_id = Text::replace(
@@ -1020,10 +783,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_BCC
             );
         }
-        if (empty($arrField['subject'])) {
-            if ($text_subject_id) {
-                Text::deleteById($text_subject_id, $lang_id);
-            }
+        if (empty($arrField['subject']) && $text_subject_id) {
+            Text::deleteById($text_subject_id, $lang_id);
             $text_subject_id = 0;
         } else {
             $text_subject_id = Text::replace(
@@ -1031,10 +792,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_SUBJECT
             );
         }
-        if (empty($arrField['message'])) {
-            if ($text_message_id) {
-                Text::deleteById($text_message_id, $lang_id);
-            }
+        if (empty($arrField['message']) && $text_message_id) {
+            Text::deleteById($text_message_id, $lang_id);
             $text_message_id = 0;
         } else {
             $text_message_id = Text::replace(
@@ -1042,21 +801,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_MESSAGE
             );
         }
-        if (empty($arrField['message_html'])) {
-            if ($text_message_html_id) {
-                Text::deleteById($text_message_html_id, $lang_id);
-            }
-            $text_message_html_id = 0;
-        } else {
-            $text_message_html_id = Text::replace(
-                $text_message_html_id, $lang_id, $arrField['message_html'],
-                MODULE_ID, self::TEXT_MESSAGE_HTML
-            );
-        }
-        if (empty($arrField['attachments'])) {
-            if ($text_attachments_id) {
-                Text::deleteById($text_attachments_id, $lang_id);
-            }
+        if (empty($arrField['attachments']) && $text_attachments_id) {
+            Text::deleteById($text_attachments_id, $lang_id);
             $text_attachments_id = 0;
         } else {
             // The attachment array is flattened to a PHP code string
@@ -1066,10 +812,8 @@ class MailTemplate
                 MODULE_ID, self::TEXT_ATTACHMENTS
             );
         }
-        if (empty($arrField['inline'])) {
-            if ($text_inline_id) {
-                Text::deleteById($text_inline_id, $lang_id);
-            }
+        if (empty($arrField['inline']) && $text_inline_id) {
+            Text::deleteById($text_inline_id, $lang_id);
             $text_inline_id = 0;
         } else {
             // And so is the inline array
@@ -1095,11 +839,10 @@ class MailTemplate
                     `text_bcc_id`=$text_bcc_id,
                     `text_subject_id`=$text_subject_id,
                     `text_message_id`=$text_message_id,
-                    `text_message_html_id`=$text_message_html_id,
                     `text_attachments_id`=$text_attachments_id,
                     `text_inline_id`=$text_inline_id,
-                    `html`=".(empty($arrField['html']) ? 0 : 1).",
-                    `protected`=".(empty($arrField['protected']) ? 0 : 1)."
+                    `html`=".($arrField['html'] ? 1 : 0).",
+                    `protected`=".($protected ? 1 : 0)."
               WHERE `key`='".addslashes($key)."'
                 AND `module_id`=".MODULE_ID
           : "INSERT INTO ".DBPREFIX."core_mail_template (
@@ -1114,7 +857,6 @@ class MailTemplate
                 `text_bcc_id`,
                 `text_subject_id`,
                 `text_message_id`,
-                `text_message_html_id`,
                 `text_attachments_id`,
                 `text_inline_id`,
                 `html`,
@@ -1131,11 +873,10 @@ class MailTemplate
                 $text_bcc_id,
                 $text_subject_id,
                 $text_message_id,
-                $text_message_html_id,
                 $text_attachments_id,
                 $text_inline_id,
-                ".(empty($arrField['html']) ? 0 : 1).",
-                ".(empty($arrField['protected']) ? 0 : 1)."
+                ".($arrField['html'] ? 1 : 0).",
+                ".($protected ? 1 : 0)."
             )");
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
@@ -1155,13 +896,8 @@ class MailTemplate
     {
         global $_ARRAYLANG;
 
-        // Anything to be stored?
-        // If so, and if it fails, return to the edit view in order
-        // to save the posted form
-        if (self::storeTemplateFromPost() === false) return self::edit();
-        self::deleteTemplate();
-
         $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        CSRF::add_placeholder($objTemplateLocal);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplateLocal->loadTemplateFile('mailtemplate_overview.html', true, true))
             die("Failed to load template mailtemplate_overview.html");
@@ -1169,20 +905,16 @@ class MailTemplate
         SettingDb::init();
         if (empty($limit))
             $limit = SettingDb::getValue('mailtemplate_per_page_backend');
-        $uri = Html::getRelativeUri_entities();
-        $active_tab = SettingDb::getTabIndex();
-        Html::replaceUriParameter($uri, 'active_tab='.$active_tab);
-        Html::stripUriParam($uri, 'key');
-        Html::stripUriParam($uri, 'act');
-        Html::stripUriParam($uri, 'delete_mailtemplate_key');
-        $uri_edit = $uri_overview = $uri;
-        Html::replaceUriParameter($uri_edit, 'act=mailtemplate_edit');
-        Html::replaceUriParameter($uri_overview, 'act=mailtemplate_overview');
+        $uri = htmlentities(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
+//echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         $objSorting = new Sorting(
-            $uri_overview,
+            $uri,
             array(
-                'name' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NAME'],
-                'key'  => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY'],
+                'name', 'key',
+            ),
+            array(
+                $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NAME'],
+                $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_KEY'],
             ),
             true,
             'order_mailtemplate'
@@ -1195,48 +927,52 @@ class MailTemplate
             $limit,
             $count
         );
+//echo("MailTemplate::overview(): got<br />".var_export($arrTemplates, true)."<hr />");
         //$cmd = (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '');
 
-        $objTemplateLocal->setGlobalVariable(
-            $_ARRAYLANG
-          + array(
+        // Replace the old action from the URI by the overview
+        Html::replaceUriParameter($uri, 'act=mailtemplate_overview');
+//echo("Made uri for paging: ".htmlentities($uri)."<br />");
+        $objTemplateLocal->setGlobalVariable(array(
+            'TXT_CORE_MAILTEMPLATE_PROTECTED' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_PROTECTED'],
             'TXT_CORE_MAILTEMPLATE_NAME' => $objSorting->getHeaderForField('name'),
             'TXT_CORE_MAILTEMPLATE_KEY' => $objSorting->getHeaderForField('key'),
             'TXT_CORE_MAILTEMPLATE_FUNCTIONS' => $_ARRAYLANG['TXT_CORE_HTML_FUNCTIONS'],
+            'TXT_CORE_MAILTEMPLATE_NEW' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NEW'],
             'PAGING' => Paging::getPaging(
-                $count, null, $uri_overview,
+                $count,
+                $uri,
                 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_PAGING'],
-                true, $limit
+                true,
+                $limit
             ),
-            'URI_BASE' => $uri,
         ));
 
+        Html::replaceUriParameter($uri, 'act=mailtemplate_edit');
+//echo("Made uri for template edit link: ".htmlentities($uri)."<br />");
         $i = 0;
         foreach ($arrTemplates as $arrTemplate) {
+//echo("Protected: ".$arrTemplate['protected']." => ".(2*(1-$arrTemplate['protected']))."<br />");
             $objTemplateLocal->setVariable(array(
                 'MAILTEMPLATE_ROWCLASS' => ++$i % 2 + 1,
-                'MAILTEMPLATE_PROTECTED' =>
+                'MAILTEMPLATE_PROTECTED' => // 0 => 2, 1 => 0
                     Html::getCheckmark($arrTemplate['protected']),
-                'MAILTEMPLATE_HTML' =>
-                    Html::getCheckmark($arrTemplate['html']),
                 'MAILTEMPLATE_NAME' =>
-                    '<a href="'.$uri_edit.
-                    '&amp;key='.urlencode($arrTemplate['key']).'">'.
-                      htmlentities($arrTemplate['name'], ENT_QUOTES, CONTREXX_CHARSET).
+                    '<a href="'.
+                      $uri.
+//                      '&amp;'.$objSorting->getOrderUriEncoded().
+//                      '&amp;pos='.Paging::getPosition().
+                      '&amp;key='.urlencode($arrTemplate['key']).
+                      '">'.
+                    $arrTemplate['name'].
                     '</a>',
                 'MAILTEMPLATE_KEY' => $arrTemplate['key'],
-                'MAILTEMPLATE_FUNCTION' => Html::getBackendFunctions(
-                    array(
-                        'copy'   => $uri_edit.'&amp;copy=1&amp;key='.$arrTemplate['key'],
-                        'edit'   => $uri_edit.'&amp;key='.$arrTemplate['key'],
-                        'delete' => ($arrTemplate['protected']
-                          ? ''
-                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key']),
-                    ),
-                    array(
-                        'delete' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_DELETE_CONFIRM'],
-                    )
-                ),
+                'MAILTEMPLATE_FUNCTION' => Html::getBackendFunctions(array(
+                    'copy'   => '&amp;act=mailtemplate_edit&amp;copy=1&amp;key='.$arrTemplate['key'],
+                    'edit'   => '&amp;act=mailtemplate_edit&amp;key='.$arrTemplate['key'],
+                    ($arrTemplate['protected'] ? 'dummy' : 'delete') =>
+                        '&amp;act=mailtemplate_delete&amp;key='.$arrTemplate['key'],
+                )),
             ));
             $objTemplateLocal->parse('core_mailtemplate_row');
         }
@@ -1244,7 +980,14 @@ class MailTemplate
         $objTemplateLocal->setVariable(
             'TXT_CORE_MAILTEMPLATES', $_ARRAYLANG['TXT_CORE_MAILTEMPLATES']
         );
-        self::showMessages();
+
+        if (self::$strOkMessage || self::$strErrMessage) {
+            global $objTemplate;
+            $objTemplate->setVariable(array(
+                'CONTENT_OK_MESSAGE'     => self::$strOkMessage,
+                'CONTENT_STATUS_MESSAGE' => self::$strErrMessage,
+            ));
+        }
         return $objTemplateLocal;
     }
 
@@ -1266,9 +1009,14 @@ class MailTemplate
         global $_ARRAYLANG;
 
         // Anything to be stored?
-        //// If so, and if it succeeds, return to the overview
-        //if (self::storeTemplateFromPost() === true) return self::overview();
-        self::storeTemplateFromPost();
+        if (   isset($_POST['bsubmit'])) {
+            if (self::storeTemplate($_POST)) {
+                self::addMessage($_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORED_SUCCESSFULLY']);
+                return self::overview();
+            } else {
+                self::addError($_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORING_FAILED']);
+            }
+        }
 
         // If the $key parameter is empty, check the request
         if (empty($key)) {
@@ -1280,31 +1028,24 @@ class MailTemplate
         if (!$arrTemplate) $arrTemplate = self::getNew($key);
         // Copy the template?
         if (isset($_REQUEST['copy'])) $arrTemplate['key'] = '';
+//echo("MailTemplate::edit(): got<br />".var_export($arrTemplate, true)."<hr />");
 
         $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplate->loadTemplateFile('mailtemplate_edit.html', true, true))
             die("Failed to load template mailtemplate_edit.html");
 
-        $uri = Html::getRelativeUri_entities();
-        Html::stripUriParam($uri, 'key');
-        Html::stripUriParam($uri, 'act');
-        $active_tab = SettingDb::getTabIndex();
-        Html::replaceUriParameter($uri, 'active_tab='.$active_tab);
-        $objTemplate->setGlobalVariable(
-            $_ARRAYLANG
-          + array(
-            'CORE_MAILTEMPLATE_ACTIVE_TAB' => $active_tab,
-            'CORE_MAILTEMPLATE_SECTION' =>
-                (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : ''),
-            'URI_BASE' => $uri,
+        $objTemplate->setGlobalVariable(array(
+            'TXT_CORE_MAILTEMPLATE_EDIT' => ($arrTemplate['key']
+                ? $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_EDIT']
+                : $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NEW']),
+            'TXT_CORE_MAILTEMPLATE_STORE' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORE'],
+            'TXT_CORE_MAILTEMPLATE_NOTE_PLACEHOLDERS' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_PLACEHOLDERS'],
         ));
 
         $i = 0;
         foreach ($arrTemplate as $name => $value) {
-            // See if there is a posted parameter value
-            if (isset($_POST[$name])) $value = $_POST[$name];
-
             // IDs are set up as hidden fields.
             // They *MUST NOT* be edited!
             if (preg_match('/(?:_id)$/', $name)) {
@@ -1325,39 +1066,15 @@ class MailTemplate
               case 'available':
                 continue 2;
 
-              case 'message_html':
-                // Show WYSIWYG only if HTML is enabled
-                if (empty($arrTemplate['html']))
-                    continue 2;
-                $objTemplate->setVariable(array(
-                    'MAILTEMPLATE_ROWCLASS' => (++$i % 2 + 1),
-                    'MAILTEMPLATE_SPECIAL' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_'.strtoupper($name)],
-                ));
-                $objTemplate->touchBlock('core_mailtemplate_special');
-                $objTemplate->parse('core_mailtemplate_special');
-                $objTemplate->setVariable(array(
-                    'MAILTEMPLATE_ROWCLASS' => (++$i % 2 + 1),
-                    'MAILTEMPLATE_SPECIAL' => get_wysiwyg_editor($name, $value),
-                ));
-                $objTemplate->touchBlock('core_mailtemplate_special');
-                $objTemplate->parse('core_mailtemplate_special');
-                continue 2;
-                //$objTemplate->replaceBlock('core_mailtemplate_special', '', true);
               case 'message':
-                $input =
-                    Html::getTextarea($name, $value, '', 10,
-                        'style="width: 600px;"');
+                $input = Html::getTextarea($name, $value, '', 10, 'style="width: 600px;"');
                 break;
 
+              // These are identical except for the additional attribute
               case 'protected':
                 $attribute = HTML_ATTRIBUTE_DISABLED;
-                $input = Html::getCheckbox($name, 1, '', $value, '', $attribute);
-                break;
               case 'html':
-                $input =
-                    Html::getCheckbox($name, 1, '', $value, '', $attribute).
-                    '&nbsp;'.
-                    $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORE_TO_SWITCH_EDITOR'];
+                $input = Html::getCheckbox($name, 1, '', $value, '', $attribute);
                 break;
 
               case 'inline':
@@ -1403,50 +1120,20 @@ class MailTemplate
                 $input = ($arrTemplate['key']
                     ? $value.Html::getHidden($name, $value)
                     : Html::getInputText($name, $value, '', 'style="width: 300px;"'));
+//echo("Key /$key/ -> attr $attribute<br />");
                 break;
 
               default:
-                $input = Html::getInputText(
-                    $name, $value, '', 'style="width: 300px;"');
+                $input = Html::getInputText($name, $value, '', 'style="width: 300px;"');
             }
-            $name_upper = strtoupper($name);
             $objTemplate->setVariable(array(
                 'MAILTEMPLATE_ROWCLASS' => (++$i % 2 + 1),
-                'MAILTEMPLATE_NAME' =>
-                    $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_'.$name_upper],
+                'MAILTEMPLATE_NAME' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_'.strtoupper($name)],
                 'MAILTEMPLATE_VALUE' => $input,
-                'MAILTEMPLATE_VALUE_NOTE' =>
-                    (isset($_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_'.$name_upper])
-                        ? $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_'.$name_upper]
-                        : ''),
             ));
             $objTemplate->parse('core_mailtemplate_row');
         }
-        self::showMessages();
         return $objTemplate;
-    }
-
-
-    static function storeTemplateFromPost()
-    {
-        global $_ARRAYLANG;
-
-        if (   empty($_POST['key'])
-//            || !isset($_POST['text_from_id'])
-        ) return '';
-        foreach ($_POST as &$value) {
-            $value = contrexx_stripslashes($value);
-        }
-        if (self::storeTemplate($_POST)) {
-            self::addMessage($_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORED_SUCCESSFULLY']);
-            // Prevent this from being run twice
-            unset($_POST['text_from_id']);
-            return true;
-        }
-        self::addError($_ARRAYLANG['TXT_CORE_MAILTEMPLATE_STORING_FAILED']);
-        // Prevent this from being run twice
-        unset($_POST['text_from_id']);
-        return false;
     }
 
 
@@ -1487,75 +1174,40 @@ class MailTemplate
 
 
     /**
-     * Add the status messages to the global template
-     */
-    static function showMessages()
-    {
-        global $objTemplate;
-
-        if (   empty(self::$strOkMessage)
-            && empty(self::$strErrMessage)) return;
-        $objTemplate->setVariable(array(
-            'CONTENT_OK_MESSAGE'     => self::$strOkMessage,
-            'CONTENT_STATUS_MESSAGE' => self::$strErrMessage,
-        ));
-    }
-
-
-    /**
-     * Returns the status messages
-     */
-    static function getMessages()
-    {
-        return self::$strOkMessage;
-    }
-
-
-    /**
-     * Returns the error messages
-     */
-    static function getErrors()
-    {
-        return self::$strErrMessage;
-    }
-
-
-    /**
      * Handles many problems caused by the database table
      * @return    boolean     False.  Always.
      */
     static function errorHandler()
     {
-//die("MailTemplate::errorHandler(): Disabled!");
+        global $objDatabase;
 
-        require_once(ASCMS_CORE_PATH.'/DbTool.class.php');
+die("MailTemplate::errorHandler(): Disabled!<br />");
 
-        $table_name = DBPREFIX."core_mail_template";
-        $table_structure = array(
-            'key' => array('type' => 'TINYTEXT', 'default' => ''),
-            'module_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_from_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_sender_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_reply_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_to_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_cc_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_bcc_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_subject_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_message_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_message_html_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_attachments_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'text_inline_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'html' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1'),
-            'protected' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '1'),
-        );
-        $table_index =  array(
-            'id' => array(
-                'fields' => array('key' => 32, 'module_id')
-            ),
-        );
+        $arrTables = $objDatabase->MetaTables('TABLES');
+        if (!in_array(DBPREFIX."core_mail_template", $arrTables)) {
+            $query = "
+                CREATE TABLE ".DBPREFIX."core_mail_template (
+                  `key` TINYTEXT NOT NULL DEFAULT '' COMMENT '',
+                  `module_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_name_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_from_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_sender_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_reply_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_to_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_cc_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_bcc_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_subject_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_message_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_attachments_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `text_inline_id` INT(10) UNSIGNED NULL DEFAULT NULL COMMENT '',
+                  `html` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '',
+                  `protected` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '',
+                  PRIMARY KEY (`key`(32), `module_id`)
+                ) ENGINE=MYISAM";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return false;
+//DBG::log("MailTemplate::errorHandler(): Created table ".DBPREFIX."core_mail_template<br />");
 
-        if (!DbTool::table_exists($table_name)) {
             // Make sure there are no bodies lying around
             Text::deleteByKey(self::TEXT_NAME);
             Text::deleteByKey(self::TEXT_FROM);
@@ -1566,48 +1218,8 @@ class MailTemplate
             Text::deleteByKey(self::TEXT_BCC);
             Text::deleteByKey(self::TEXT_SUBJECT);
             Text::deleteByKey(self::TEXT_MESSAGE);
-            Text::deleteByKey(self::TEXT_MESSAGE_HTML);
             Text::deleteByKey(self::TEXT_ATTACHMENTS);
             Text::deleteByKey(self::TEXT_INLINE);
-            // There is no previous version, so don't use DbTools::table()
-            if (!DbTool::create_table($table_name, $table_structure, $table_index)) {
-die("MailTemplate::errorHandler(): Error: failed to create table $table_name, code avs78idrjh");
-            }
-        }
-        // The column for HTML messages went missing in some older pre-releases
-        if (!DbTool::column_exists($table_name, 'text_message_html_id')) {
-            if (!DbTool::check_columns($table_name, $table_structure, true)) {
-die("MailTemplate::errorHandler(): Error: failed to add column 'text_message_html_id' to table $table_name, code aighkj44sd");
-            }
-        }
-
-        // Import existing templates from the shop
-        if (!@include_once(ASCMS_MODULE_PATH.'/shop/lib/Mail.class.php')) {
-die("MailTemplate::errorHandler(): Error: failed to load previous Shop Mail class, code beiwjkbjh4s8s");
-
-        }
-        $arrKeys = array(
-            1 => 'shop_mail_template_confirm',
-            2 => 'shop_mail_template_complete',
-            3 => 'shop_mail_template_login',
-            4 => 'shop_mail_template_account',
-        );
-        foreach (array_keys(FWLanguage::getLanguageArray()) as $lang_id) {
-            $arrTemplates = Mail::getTemplateArray($lang_id);
-            if (empty($arrTemplates)) continue;
-            foreach ($arrTemplates as $key => $arrTemplate) {
-//echo("Found template:<br />".var_export($arrTemplate, true)."<hr />");
-                $arrTemplate['key'] = (isset($arrKeys[$key])
-                    ? $arrKeys[$key] : 'shop_mail_template_'.$key);
-                $arrTemplate['protected'] = ($key < 5);
-                // Replace any old format <PLACE_HOLDER> by [PLACE_HOLDER]
-                foreach ($arrTemplate as $index => $value) {
-                    $arrTemplate[$index] = preg_replace(
-                        '/\<(\w+)\>/', '[$1]', $value);
-                }
-                MailTemplate::storeTemplate($arrTemplate);
-//echo("Stored template:<br />".var_export(self::getTemplate($arrTemplate['key'], $lang_id), true)."<hr />");
-            }
         }
 
         // More to come...

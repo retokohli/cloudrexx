@@ -41,6 +41,7 @@ class docSys extends docSysLibrary
         global $_LANGID;
         $this->pageContent = $pageContent;
         $this->_objTpl = &new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->langId = $_LANGID;
     }
@@ -100,8 +101,8 @@ class docSys extends docSysLibrary
                          WHERE status = 1
                            AND id = $id
                            AND lang=".$this->langId."
-                           AND (startdate<=".time()." OR startdate=0)
-                           AND (enddate>=".time()." OR enddate=0)";
+			               AND (startdate<=".time()." OR startdate=0)
+			               AND (enddate>=".time()." OR enddate=0)";
             $objResult = $objDatabase->SelectLimit($query, 1);
 
             while(!$objResult->EOF) {
@@ -139,7 +140,7 @@ class docSys extends docSysLibrary
                 $objResult->MoveNext();
             }
         } else {
-            header("Location: ?section=docsys".MODULE_INDEX);
+            CSRF::header("Location: ?section=docsys".MODULE_INDEX);
             exit;
         }
 
@@ -227,7 +228,7 @@ class docSys extends docSysLibrary
                     'DOCSYS_STYLE'      => ($row++) % 2 + 1,
                     'DOCSYS_LONG_DATE'  => date($this->dateLongFormat, $entry['date']),
                     'DOCSYS_DATE'       => date($this->dateFormat, $entry['date']),
-                    'DOCSYS_LINK'        => "<a href=\"".CONTREXX_SCRIPT_PATH."?section=docsys".MODULE_INDEX."&amp;cmd=$cmd&amp;id=".
+                    'DOCSYS_LINK'	    => "<a href=\"".CONTREXX_SCRIPT_PATH."?section=docsys".MODULE_INDEX."&amp;cmd=$cmd&amp;id=".
                                             $entry['id']."\" title=\"".stripslashes($entry['title'])."\">".stripslashes($entry['title'])."</a>",
                     'DOCSYS_CATEGORY'   => stripslashes($entry['name']),
                     'DOCSYS_AUTHOR'     => stripslashes($entry['author']),

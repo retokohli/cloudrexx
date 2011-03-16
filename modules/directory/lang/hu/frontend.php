@@ -110,6 +110,7 @@ $_ARRAYLANG['TXT_MAP'] = "Map";
 $_ARRAYLANG['TXT_DIR_MOST_POPULAR'] = "Beliebteste Einträge";
 $_ARRAYLANG['TXT_DIR_LAST_ENTREES'] = "Neuste Einträge";
 $_ARRAYLANG['TXT_DIR_DIRECTORY'] = "Verzeichnis";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Neuste Verzeichnis Einträge";
 $_ARRAYLANG['TXT_DIR_USER_SUCCESSFULL_ACTIVATE'] = "Ihr Benutzerkonto wurde erfolgreich aktiviert!";
 $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'] = "Keine Einträge gefunden";
 $_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'] = "Erweiterte Suche";

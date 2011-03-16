@@ -16,17 +16,12 @@
 class Shipment
 {
     /**
-     * Text keys
-     */
-    const TEXT_NAME = 'shop_shipper_name';
-
-    /**
      * Array of active shippers
      * @static
      * @var     array
      * @access  private
      */
-    private static $arrShippers  = null;
+    private static $arrShippers  = array();
 
     /**
      * Array of active shipment conditions
@@ -34,14 +29,23 @@ class Shipment
      * @var     array
      * @access  private
      */
-    private static $arrShipments = null;
+    private static $arrShipments = array();
 
+
+    /**
+     * OBSOLETE -- All static now.
+     * See {@link init()}.
+     *
+     * Construct a Shipment object
+    function __construct($ignoreStatus=1)
+    {
+    }
+     */
 
     /**
      * Initialize shippers and shipment conditions
      *
-     * Use $all=true for the backend settings.
-     * Reads the shipping options from the shipper (s) and shipment_cost (c)
+     * Read the shipping options from the shipper (s) and shipment_cost (c)
      * tables.  For each shipper, creates array entries like:
      * arrShippers[s.id] = array (
      *      name       => s.name,
@@ -49,62 +53,69 @@ class Shipment
      * )
      * arrShipments[s.id][c.id] = array (
      *      max_weight => c.max_weight,
-     *      free_from => c.free_from,
-     *      fee       => c.fee
+     *      price_free => c.price_free,
+     *      cost       => c.cost
      * )
      * Note that the table module_shop_shipment has been replaced by
      * module_shop_shipper (id, name, status) and
-     * module_shop_shipment_cost (id, shipper_id, max_weight, fee, free_from)
+     * module_shop_shipment_cost (id, shipper_id, max_weight, cost, price_free)
      * as of version 1.1.
      * @global  ADONewConnection
-     * @param   boolean   $all        If true, includes inactive records.
-     *                                Defaults to false.
+     * @param   boolean   $ignoreStatus   If false, only records with status==1
+     *                                    are returned, all records otherwise.
+     *                                    Use $ignoreStatus=true for the
+     *                                    backend settings.
      * @return  void
      * @since   1.1
      * @version 2.1.0
      */
-    static function init($all=false)
+    static function init()
     {
         global $objDatabase;
 
-DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
-
-        $arrSqlName = Text::getSqlSnippets(
-            '`shipper`.`text_name_id`', FRONTEND_LANG_ID,
-            MODULE_ID, self::TEXT_NAME);
+//        $arrSqlName = Text::getSqlSnippets(
+//            '`shipper`.`text_name_id`', FRONTEND_LANG_ID,
+//            MODULE_ID, TEXT_SHOP_SHIPPER_NAME
+//        );
+//        $objResult = $objDatabase->Execute("
+//            SELECT `shipper`.`id`, `shipper`.`status`".$arrSqlName['field']."
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`".
+//                   $arrSqlName['join']."
+//             ORDER BY `shipper`.`id` ASC
+//        ");
         $objResult = $objDatabase->Execute("
-            SELECT `shipper`.`id`, `shipper`.`active`".$arrSqlName['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`".
-                   $arrSqlName['join'].
-             ($all ? '' : ' WHERE `shipper`.`active`=1')."
-             ORDER BY `shipper`.`id` ASC");
-        if (!$objResult) return self::errorHandler();
+            SELECT `shipper`.`id`, `shipper`.`status`, `shipper`.`name`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` as `shipper`
+             ORDER BY `shipper`.`id` ASC
+        ");
+        if (!$objResult) return false;
         while (!$objResult->EOF) {
             $sid = $objResult->fields['id'];
-            $text_name_id = $objResult->fields[$arrSqlName['name']];
-            $strName = $objResult->fields[$arrSqlName['text']];
-            // Replace Text in a missing language by another, if available
-            if ($text_name_id && $strName === null) {
-                $objText = Text::getById($text_name_id, 0);
-                if ($objText)
-                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
-                    $strName = $objText->getText();
-            }
+//            $text_name_id = $objResult->fields[$arrSqlName['name']];
+//            $strName = $objResult->fields[$arrSqlName['text']];
+//            // Replace Text in a missing language by another, if available
+//            if ($text_name_id && $strName === null) {
+//                $objText = Text::getById($text_name_id, 0);
+//                if ($objText)
+//                    $objText->markDifferentLanguage(FRONTEND_LANG_ID);
+//                    $strName = $objText->getText();
+//            }
             self::$arrShippers[$sid] = array(
                 'id' => $objResult->fields['id'],
-                'name' => $strName,
-                'text_name_id' => $text_name_id,
-                'active' => $objResult->fields['active'],
+                'name' => $objResult->fields['name'], //$strName,
+//                'text_name_id' => $text_name_id,
+                'status' => $objResult->fields['status'],
             );
             $objResult->MoveNext();
         }
         // Now get the associated shipment conditions from shipment_cost
         $objResult = $objDatabase->Execute("
             SELECT `c`.`id`, `c`.`shipper_id`,
-                   `c`.`max_weight`, `c`.`fee`, `c`.`free_from`
+                   `c`.`max_weight`, `c`.`cost`, `c`.`price_free`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
-                ON `s`.`id`=`shipper_id`");
+                ON `s`.`id`=`shipper_id`
+        ");
         if (!$objResult) return false;
         while (!$objResult->EOF) {
             $sid = $objResult->fields['shipper_id'];
@@ -112,25 +123,12 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
             self::$arrShipments[$sid][$cid] =
                 array(
                     'max_weight' => Weight::getWeightString($objResult->fields['max_weight']),
-                    'free_from'  => $objResult->fields['free_from'],
-                    'fee'        => $objResult->fields['fee'],
+                    'price_free' => $objResult->fields['price_free'],
+                    'cost'       => $objResult->fields['cost'],
                 );
             $objResult->MoveNext();
         }
         return true;
-    }
-
-
-    /**
-     * Clears the Shippers and Shipments stored in the class
-     *
-     * Call this after updating the database.  The data will be reinitialized
-     * on demand.
-     */
-    static function reset()
-    {
-        self::$arrShippers = null;
-        self::$arrShipments = null;
     }
 
 
@@ -143,7 +141,7 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
     static function getShipperName($shipperId)
     {
         if (empty($shipperId)) return '';
-        if (is_null(self::$arrShippers)) self::init(true);
+        if (empty(self::$arrShippers)) self::init(true);
         if (empty(self::$arrShippers[$shipperId])) return '';
         return self::$arrShippers[$shipperId]['name'];
     }
@@ -151,29 +149,25 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
 
     /**
      * Access method.  Returns the arrShippers array.
-     *
      * See {@link init()}.
-     * @param   boolean   $all      Include inactive Shippers if true.
-     *                              Defaults to false.
-     * @return  array               The array of shippers
+     * @return                The array of shippers
      * @static
      */
-    static function getShippersArray($all=false)
+    static function getShippersArray()
     {
-        if (is_null(self::$arrShippers)) self::init($all);
+        if (empty(self::$arrShippers)) self::init();
         return self::$arrShippers;
     }
 
     /**
      * Access method.  Returns the arrShipments array.
-     *
      * See {@link Shipment()}.
-     * @return  array               The array of shipments
+     * @return  array         The array of shipments
      * @static
      */
     static function getShipmentsArray()
     {
-        if (is_null(self::$arrShipments)) self::init(true);
+        if (empty(self::$arrShippments)) self::init();
         return self::$arrShipments;
     }
 
@@ -181,14 +175,12 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
     /**
      * Returns the shipment arrays (shippers and shipment costs) in JavaScript
      * syntax.
-     *
-     * Backend use only.
      * @static
-     * @return  string              The Shipment arrays definition
+     * @return  string      The Shipment arrays definition in JavaScript
      */
     static function getJSArrays()
     {
-        if (is_null(self::$arrShippments)) self::init(true);
+        if (empty(self::$arrShippers)) self::init();
         // Set up shipment cost javascript arrays
         // Shippers are not needed for calculating the shipment costs
         //$strJsArrays = "arrShippers = new Array();\narrShipments = new Array();\n";
@@ -206,8 +198,8 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
                     $strJsArrays .=
                         "arrShipments[$sid][".$i++."] = new Array('$cid', '".
                         $arrShipment['max_weight']."', '".   // string
-                        Currency::getCurrencyPrice($arrShipment['free_from'])."', '".
-                        Currency::getCurrencyPrice($arrShipment['fee'])."');\n";
+                        Currency::getCurrencyPrice($arrShipment['price_free'])."', '".
+                        Currency::getCurrencyPrice($arrShipment['cost'])."');\n";
                 }
             }
         }
@@ -232,17 +224,17 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
         if (empty(self::$arrShippers)) self::init();
         // Mind that s.shipment_id actually points to a shipper, not a shipment!
         $query = "
-            SELECT `r`.`shipper_id`
+            SELECT `r`.`shipment_id` AS `shipper_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                ON `c`.`zone_id`=`z`.`id`
+                ON `c`.`zones_id`=`z`.`zones_id`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `r`
-                ON `z`.`id`=`r`.`zone_id`
+                ON `z`.`zones_id`=`r`.`zones_id`
              INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
-                ON `r`.`shipper_id`=`s`.`id`
-             WHERE `z`.`active`=1
-               AND `s`.`active`=1".
-              ($countryId ? " AND `c`.`country_id`=$countryId" : '');
+                ON `r`.`shipment_id`=`s`.`id`
+             WHERE `z`.`activation_status`=1
+               AND `s`.`status`=1".
+              ($countryId ? " AND `c`.`countries_id`=$countryId" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $arrShipperId = array();
@@ -279,55 +271,44 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
 
         if (empty(self::$arrShippers)) self::init();
         $arrId = self::getCountriesRelatedShippingIdArray($countryId);
-        if (empty($arrId))
-            return $_ARRAYLANG['TXT_SHOP_SHIPMENT_NONE_FOR_COUNTRY'];
-/*
-         // If no shipment has been chosen yet, select the first.
-        if (empty($selectedId)) {
-            $selectedId = current($arrId);
-        }
-*/
-        foreach ($arrId as $sid) {
-            // Only show suitable shipments in the menu if the user is on the payment page,
-            // check the availability of the shipment in her country,
-            // and verify that the shipper will be able to handle the freight.
-            if (empty($_REQUEST['cmd']) || $_REQUEST['cmd'] != 'payment') {
-                continue;
-            }
-            if (self::calculateShipmentPrice(
-                    $sid,
-                    $_SESSION['shop']['cart']['total_price'],
-                    $_SESSION['shop']['cart']['total_weight']) < 0) {
-                unset($arrId[$id]);
-            }
-        }
-        if (empty($arrId)) {
-            return $_ARRAYLANG['TXT_SHOP_SHIPMENT_TOO_HEAVY'];
-        }
+
         if (count($arrId) == 1) {
-            return
-                htmlentities(
-                    self::$arrShippers[$sid]['name'],
-                    ENT_QUOTES, CONTREXX_CHARSET).
-                '<input type="hidden" name="shipperId"'.
-                ' value="'.current($arrId).'"'."\n";
+            $arrShipper = self::$arrShippers[current($arrId)];
+            return $arrShipper['name'];
         }
+
         $menu =
-            (empty($selectedId)
+            (   intval($selectedId) == 0
+             && count($arrId) > 1
                 ? '<option value="0" selected="selected">'.
                   $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
                   "</option>\n"
-                : '');
-        foreach ($arrId as $sid) {
-            $menu .=
-                '<option value="'.$sid.'"'.
-                ($sid==intval($selectedId) ? ' selected="selected"' : '').
-                '>'.self::$arrShippers[$sid]['name']."</option>\n";
+                : ''
+            );
+        $haveShipper = false;
+        foreach (array_keys(self::$arrShippers) as $sid) {
+            // only show suitable shipments in the menu if the user is on the payment page,
+            // check the availability of the shipment in her country,
+            // and verify that the shipper will be able to handle the freight.
+            if (!($_REQUEST['cmd'] == 'payment') ||
+                ((!$countryId || in_array($sid, $arrId)) &&
+                self::calculateShipmentPrice(
+                    $sid,
+                    $_SESSION['shop']['cart']['total_price'],
+                    $_SESSION['shop']['cart']['total_weight']) != -1
+            )) {
+                $menu .=
+                    '<option value="'.$sid.'"'.
+                    ($sid==intval($selectedId) ? ' selected="selected"' : '').
+                    '>'.self::$arrShippers[$sid]['name']."</option>\n";
+                $haveShipper = true;
+            }
         }
-        if ($onchange) {
+        if (!$haveShipper)
+            return $_ARRAYLANG['TXT_SHOP_SHIPMENT_TOO_HEAVY'];
+        if ($onchange)
             $menu =
                 '<select name="shipperId" onchange="'.$onchange.'">'.$menu.'</select>';
-        }
         return $menu;
     }
 
@@ -351,7 +332,7 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost WHERE shipper_id=".$sid);
         if (!$objResult) return false;
-        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment WHERE shipper=".$sid);
+        $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment WHERE shipment_id=".$sid);
         if (!$objResult) return false;
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipper");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost");
@@ -372,59 +353,65 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
 
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost`
-             WHERE `id`=$cid");
-        return (boolean)$objResult;
+             WHERE `id`=$cid
+        ");
+        return ($objResult ? true : false);
     }
 
 
     /**
      * Add a Shipper to the database
      * @param   string  $name       The Shipper name
-     * @param   boolean $active     If true, the Shipper is made active.
-     *                              Defaults to false
-     * @return  integer             The ID of the new Shipper on success,
-     *                              false otherwise
+     * @param   boolean $isActive   Marking the Shipper as active -- or not
+     * @param   integer $zone       The zone the Shipper is in
+     * @return  boolean             True on success, false otherwise
      * @static
      */
-    function addShipper($name, $active=false)
+    function addShipper($name, $isActive)
     {
         global $objDatabase;
 
-        $text_name_id = Text::replace(
-            null, FRONTEND_LANG_ID, $name,
-            MODULE_ID, self::TEXT_NAME);
-        if (!$text_name_id) return false;
+//        $objText = new Text($name, FRONTEND_LANG_ID, MODULE_ID, TEXT_SHOP_SHIPPER_NAME);
+//        if (!$objText->store()) return false;
+//        $objResult = $objDatabase->Execute("
+//            INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` (
+//                `text_name_id`, `status`
+//            ) VALUES (
+//                ".$objText->getId().", ".($isActive ? 1 : 0)."
+//            )
+//        ");
         $objResult = $objDatabase->Execute("
             INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` (
-                `text_name_id`, `active`
+                `name`, `status`
             ) VALUES (
-                $text_name_id, ".($active ? 1 : 0)."
-            )");
-        if (!$objResult) return false;
-        return $objDatabase->Insert_ID();
+                '".addslashes($name)."', ".($isActive ? 1 : 0)."
+            )
+        ");
+        return ($objResult ? true : false);
     }
 
 
     /**
      * Add a Shipment entry to the database
      * @param   integer $sid            The associated Shipper ID
-     * @param   double  $fee            The fee for delivery
-     * @param   double  $free_from      The minimum order value to get a free delivery
+     * @param   double  $cost           The cost of delivery
+     * @param   double  $price_free     The minimum order value to get a free delivery
      * @param   integer $max_weight     The maximum weight of the delivery
      * @return  boolean                 True on success, false otherwise
      * @static
      */
-    static function addShipment($sid, $fee, $free_from, $max_weight)
+    static function addShipment($sid, $cost, $price_free, $max_weight)
     {
         global $objDatabase;
 
         $objResult = $objDatabase->Execute("
             INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost` (
-                `shipper_id`, `fee`, `free_from`, `max_weight`
+                `shipper_id`, `cost`, `price_free`, `max_weight`
             ) VALUES (
-                $sid, $fee, $free_from, $max_weight
-            )");
-        return (boolean)$objResult;
+                $sid, $cost, $price_free, $max_weight
+            )
+        ");
+        return ($objResult ? true : false);
     }
 
 
@@ -432,74 +419,49 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
      * Update a Shipment entry
      * @param   integer $cid            The Shipment ID
      * @param   integer $sid            The associated Shipper ID
-     * @param   double  $fee            The fee for delivery
-     * @param   double  $free_from      The minimum order value to get a free delivery
+     * @param   double  $cost           The cost of delivery
+     * @param   double  $price_free     The minimum order value to get a free delivery
      * @param   integer $max_weight     The maximum weight of the delivery
      * @return  boolean                 True on success, false otherwise
      * @static
      */
-    static function updateShipment($cid, $sid, $fee, $free_from, $max_weight)
+    static function updateShipment($cid, $sid, $cost, $price_free, $max_weight)
     {
         global $objDatabase;
 
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost`
                SET `shipper_id`=$sid,
-                   `fee`=$fee,
-                   `free_from`=$free_from,
+                   `cost`=$cost,
+                   `price_free`=$price_free,
                    `max_weight`=$max_weight
-             WHERE `id`=$cid");
-        return (boolean)$objResult;
+             WHERE `id`=$cid
+        ");
+        return ($objResult ? true : false);
     }
 
 
     /**
-     * Update the Shipper active status
+     * Update the Shipper
+     *
+     * Note that the name cannot be changed in the settings.
+     * Create a new shipper, change the association from the old shipper
+     * to the new one, and delete the old.
      * @param   integer $svalue     The ID of the Shipper
-     * @param   boolean $active     If true, the Shipper is made active.
-     *                              Defaults to false
+     * @param   boolean $isActive   Marking the Shipper as active -- or not
      * @return  boolean             True on success, false otherwise
      * @static
      */
-    static function updateShipper($sid, $active=false)
+    static function updateShipper($sid, $isActive)
     {
         global $objDatabase;
 
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_shipper`
-               SET `active`=".($active ? 1 : 0)."
-             WHERE `id`=$sid");
-        return (boolean)$objResult;
-    }
-
-
-    /**
-     * Update the Shipper name in the current frontend language
-     * @param   integer $svalue     The ID of the Shipper
-     * @param   string  $name       The new Shipper name
-     * @return  boolean             True on success, false otherwise
-     * @static
-     */
-    static function renameShipper($sid, $name)
-    {
-        global $objDatabase;
-
-        if (empty(self::$arrShippers)) self::init();
-        $text_id = (empty(self::$arrShippers[$sid]['text_name_id'])
-            ? 0 : self::$arrShippers[$sid]['text_name_id']);
-        $text_id = Text::replace(
-            $text_id, FRONTEND_LANG_ID, $name, MODULE_ID, self::TEXT_NAME);
-        if (!$text_id) return false;
-        // The Text ID only changes if it hasn't been set before
-        // (this should never happen)
-        if (empty(self::$arrShippers[$sid]['text_name_id'])) {
-            $objResult = $objDatabase->Execute("
-                UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_shipper`
-                   SET `text_name_id`=$text_id
-                 WHERE `id`=$sid");
-            return (boolean)$objResult;
-        }
-        return true;
+               SET `status`=$isActive
+             WHERE `id`=$sid
+        ");
+        return ($objResult ? true : false);
     }
 
 
@@ -533,36 +495,36 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
         // We'll just try to find the cheapest way to handle the delivery.
         $lowest_cost = 1e100;
         // Temporary shipment cost
-        $fee = 0;
+        $cost = 0;
         // Found flag is set to the index of a suitable shipment, if encountered below.
         // If the flag stays at -1, there is no way to deliver it!
         $found = -1;
         // Try all the available shipments
         // (see Shipment.class.php::getJSArrays())
         foreach ($arrShipment as $cid => $conditions) {
-            $free_from = $conditions['free_from'];
+            $price_free = $conditions['price_free'];
             $max_weight = Weight::getWeight($conditions['max_weight']);
             // Get the shipment conditions that are closest to our order:
             // We have to make sure the maximum weight is big enough for the order,
             // or that it's unspecified (don't care)
             if (($max_weight > 0 && $weight <= $max_weight) || $max_weight == 0) {
-                // If free_from is set, the order amount has to be higher than that
+                // If price_free is set, the order amount has to be higher than that
                 // in order to get the shipping for free.
-                if ($free_from > 0 && $price >= $free_from) {
+                if ($price_free > 0 && $price >= $price_free) {
                     // We're well within the weight limit, and the order is also expensive
                     // enough to get a free shipping.
-                    $fee = '0.00';
+                    $cost = '0.00';
                 } else {
-                    // Either the order amount is too low, or free_from is unset, or zero,
+                    // Either the order amount is too low, or price_free is unset, or zero,
                     // so the shipping has to be paid for in any case.
-                    $fee = $conditions['fee'];
+                    $cost = $conditions['cost'];
                 }
                 // We found a kind of shipment that can handle the order, but maybe
                 // it's too expensive. - keep the cheapest way to deliver it
-                if ($fee < $lowest_cost) {
+                if ($cost < $lowest_cost) {
                     // Found a cheaper one. keep the index.
                     $found = $cid;
-                    $lowest_cost = $fee;
+                    $lowest_cost = $cost;
                 }
             }
         }
@@ -593,37 +555,33 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
         // Get shippers and associated countries (via zones).
         // Make an array(shipper_name => array( array(country, ...), array(conditions) )
         // where the countries are listed as strings of their names,
-        // and the conditions look like: array(max_weight, free_from, fee)
+        // and the conditions look like: array(max_weight, cost_free, cost)
 
         // Return this
         $arrResult = array();
         foreach (self::$arrShippers as $sid => $shipper) {
-            // Get countries covered by this shipper
-            $arrSqlName = Country::getSqlSnippets();
+            // get countries covered by this shipper
             $query ="
-                SELECT DISTINCT `country`.`id`".
-                       $arrSqlName['field']."
-                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
-                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `rs`
-                    ON `s`.`id`=`rs`.`shipment_id`
-                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                    ON `rs`.`zone_id`=`z`.`id`
+                SELECT DISTINCT `c`.`countries_name`
+                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_countries` AS `c`
                  INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `rc`
+                    ON `rc`.`country_id`=`c`.`id`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
                     ON `z`.`id`=`rc`.`zone_id`
-                 INNER JOIN `".DBPREFIX."core_country` AS `country`
-                    ON `rc`.`country_id`=`country`.`id`".
-                       $arrSqlName['join']."
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `rs`
+                    ON `rs`.`zone_id`=`z`.`id`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
+                    ON `s`.`id`=`rs`.`shipment_id`
                  WHERE `s`.`shipment_id`=$sid
-                   AND `z`.`active`=1
-                   AND `s`.`active`=1
-                 ORDER BY ".$arrSqlName['text']." ASC";
+                   AND `z`.`status`=1
+                   AND `s`.`status`=1
+                 ORDER BY `countries_name` ASC
+            ";
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return self::errorHandler();
+            if (!$objResult) return false;
             $arrCountries = array();
             while (!$objResult->EOF) {
-                $country_id = $objResult->fields['id'];
-                $arrCountries[$country_id] =
-                    $objResult->fields[$arrSqlName['text']];
+                $arrCountries[] = $objResult->fields['countries_name'];
                 $objResult->MoveNext();
             }
             // Now add the conditions, and order them by weight
@@ -634,12 +592,12 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
                         ? $arrCond['max_weight']
                         : $_ARRAYLANG['TXT_SHOP_WEIGHT_UNLIMITED']
                     ),
-                    'free_from' => ($arrCond['free_from'] > 0
-                        ? $arrCond['free_from']
+                    'price_free' => ($arrCond['price_free'] > 0
+                        ? $arrCond['price_free']
                         : '-'
                     ),
-                    'fee' => ($arrCond['fee'] > 0
-                        ? $arrCond['fee']
+                    'cost'       => ($arrCond['cost'] > 0
+                        ? $arrCond['cost']
                         : $_ARRAYLANG['TXT_SHOP_COST_FREE']
                     ),
                 );
@@ -667,83 +625,6 @@ DBG::log("Shipment::init(): language ID ".FRONTEND_LANG_ID);
     {
         if (empty(self::$arrShippers)) self::init();
         return self::$arrShippers[$shipperId]['name'];
-    }
-
-
-    function errorHandler()
-    {
-        require_once(ASCMS_CORE_PATH.'/DbTool.class.php');
-        static $break = false;
-
-        if ($break) {
-            die("
-                Shipment::errorHandler(): Recursion detected while handling an error.<br /><br />
-                This should not happen.  We are very sorry for the inconvenience.<br />
-                Please contact customer support: support@comvation.com");
-        }
-        $break = true;
-
-//die("Shipment::errorHandler(): Disabled!<br />");
-
-        $table_name = DBPREFIX.'module_shop_shipper';
-        $table_structure = array(
-            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-            'text_name_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'name'),
-            'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-            'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'status'),
-        );
-        $table_index = array();
-
-        if (DbTool::table_exists($table_name)) {
-            if (DbTool::column_exists($table_name, 'name')) {
-                Text::deleteByKey(self::TEXT_NAME);
-                $objResult = DbTool::sql("
-                    SELECT `id`, `name`
-                      FROM `$table_name`");
-                if (!$objResult) {
-die("Shipment::errorHandler(): Error: failed to query names, code jrstujrths43w");
-                }
-                while (!$objResult->EOF) {
-                    $id = $objResult->fields['id'];
-                    $name = $objResult->fields['name'];
-                    $text_name_id = Text::replace(
-                        null, FRONTEND_LANG_ID,
-                        $name, MODULE_ID, self::TEXT_NAME);
-                    if (!$text_name_id) {
-die("Shipment::errorHandler(): Error: failed to migrate name '$name', code gfs4wuhtj");
-                    }
-                    $objResult2 = DbTool::sql("
-                        UPDATE `$table_name`
-                           SET `name`='$text_name_id'
-                         WHERE `id`=$id");
-                    if (!$objResult2) {
-die("Shipment::errorHandler(): Error: failed to update Shipper ID $id, code ejrsr5t348ujf");
-                    }
-                    $objResult->MoveNext();
-                }
-            }
-        }
-        if (!DbTool::table($table_name, $table_structure, $table_index)) {
-die("Shipment::errorHandler(): Error: failed to migrate Shipper table, code eja47ujed");
-        }
-
-        $table_name = DBPREFIX.'module_shop_shipment_cost';
-        $table_structure = array(
-            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-            'shipper_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-            'max_weight' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'fee' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'cost'),
-            'free_from' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'price_free'),
-        );
-        $table_index = array();
-        if (!DbTool::table($table_name, $table_structure, $table_index)) {
-die("Shipment::errorHandler(): Error: failed to migrate Shipment cost table, code mserjew43erj");
-        }
-
-        // More to come...
-
-        // Always!
-        return false;
     }
 
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Contains database error class
  *
@@ -27,7 +26,7 @@ class DatabaseError extends Exception
     {
         parent::__construct($message);
     }
-
+    
     /**
      * Return a formated error message
      *
@@ -38,9 +37,9 @@ class DatabaseError extends Exception
     public function formatted()
     {
         global $objDatabase;
-
+        
         $txt_details = "Details";
-
+       
         return "<a style=\"margin-left: 1em;\" href=\"javascript:void(0);\" onclick=\"showErrDetails(this);\">$txt_details&gt;&gt;</a>
         <div style=\"display:none;\" id=\"errDetails\">
         ".$this->getMessage()."<br />
@@ -66,7 +65,7 @@ class DatabaseError extends Exception
             /* ]]> */
         </script>";
     }
-
+    
     /**
      * Return a plain error message
      *
@@ -78,12 +77,9 @@ class DatabaseError extends Exception
     public function plain()
     {
         global $objDatabase;
-
+        
         return  $this->getMessage()."\n".
                 strip_tags($objDatabase->ErrorMsg())."\n".
                 $this->getTraceAsString();
     }
-
 }
-
-?>

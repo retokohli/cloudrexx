@@ -150,6 +150,7 @@ $_ARRAYLANG['TXT_MAP'] = "Carte";
 $_ARRAYLANG['TXT_DIR_MOST_POPULAR'] = "Inscriptions préférées";
 $_ARRAYLANG['TXT_DIR_LAST_ENTREES'] = "Nouvelles inscriptions";
 $_ARRAYLANG['TXT_DIR_DIRECTORY'] = "Répertoire des liens";
+$_ARRAYLANG['TXT_DIRECTORY_LATEST'] = "Dernières inscriptions";
 $_ARRAYLANG['DIRECTORY_NO_FEEDS_FOUND'] = "Aucune inscription";
 $_ARRAYLANG['TXT_DIRECTORY_EXP_SEARCH'] = "Recherche étendue";
 $_ARRAYLANG['TXT_DIRECTORY_DETAIL'] = "Détail";

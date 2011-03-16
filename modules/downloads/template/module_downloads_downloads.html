@@ -29,22 +29,10 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 }
 // ]]>
 </script>
+<form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=downloads" method="post">
 <!-- {DOWNLOADS_PARENT_CATEGORY_MENU}
 <br />
 <br /> -->
-<form action="index.php?cmd=downloads" method="post">
-<input type="text" name="downloads_search_keyword" value="{DOWNLOADS_SEARCH_KEYWORD}" style="width:300px;" /> <input type="submit" name="downloads_search" value="{TXT_DOWNLOADS_SEARCH}" />
-<!-- BEGIN downloads_show_permissions -->
-<br />
-<br />
-{TXT_DOWNLOADS_SHOW_PERMISSIONS}<br />
-{DOWNLOADS_SEARCH_GROUP_MENU}
-{DOWNLOADS_SEARCH_USER_MENU}
-<input type="checkbox" name="downloads_filter_hidden_downloads" id="downloads_filter_hidden_downloads" value="1" {DOWNLOADS_FILTER_HIDDEN_CHECKED} onchange="this.form.submit()" /> <label for="downloads_filter_hidden_downloads">{TXT_DOWNLOADS_LIST_HIDDEN_DOWNLOADS}</label>
-<!-- END downloads_show_permissions -->
-</form>
-<br />
-<form name="downloads_download_form" id="downloads_download_form" action="index.php?cmd=downloads&amp;act=downloads" method="post">
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist" summary="downloads list">
     <tr>
         <th colspan="10">{TXT_DOWNLOADS_DOWNLOADS}</th>
@@ -52,15 +40,15 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 <!-- BEGIN downloads_download_data -->
     <tr class="row3" style="font-weight: bold; white-space:nowrap;">
         <td width="1%" style="text-align: center;">#</td>
-		<td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;downloads_search_keyword={DOWNLOADS_SORT_SEARCH_KEYWORD}&amp;downloads_filter_group_id={DOWNLOADS_FILTER_GROUP_ID}&amp;downloads_filter_user_id={DOWNLOADS_FILTER_USER_ID}&amp;downloads_filter_hidden_downloads={DOWNLOADS_FILTER_HIDDEN}&amp;sort={DOWNLOADS_SORT_ID}&amp;by=id" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ID}</a></td>
-        <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;downloads_search_keyword={DOWNLOADS_SORT_SEARCH_KEYWORD}&amp;downloads_filter_group_id={DOWNLOADS_FILTER_GROUP_ID}&amp;downloads_filter_user_id={DOWNLOADS_FILTER_USER_ID}&amp;downloads_filter_hidden_downloads={DOWNLOADS_FILTER_HIDDEN}&amp;sort={DOWNLOADS_SORT_STATUS}&amp;by=is_active" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_STATUS}</a></td>
-        <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;downloads_search_keyword={DOWNLOADS_SORT_SEARCH_KEYWORD}&amp;downloads_filter_group_id={DOWNLOADS_FILTER_GROUP_ID}&amp;downloads_filter_user_id={DOWNLOADS_FILTER_USER_ID}&amp;downloads_filter_hidden_downloads={DOWNLOADS_FILTER_HIDDEN}&amp;sort={DOWNLOADS_SORT_ORDER}&amp;by=order" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ORDER}</a></td>
-        <td width="15%"><a href="index.php?cmd=downloads&amp;downloads_search_keyword={DOWNLOADS_SORT_SEARCH_KEYWORD}&amp;downloads_filter_group_id={DOWNLOADS_FILTER_GROUP_ID}&amp;downloads_filter_user_id={DOWNLOADS_FILTER_USER_ID}&amp;downloads_filter_hidden_downloads={DOWNLOADS_FILTER_HIDDEN}&amp;sort={DOWNLOADS_SORT_NAME}&amp;by=name" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_NAME}</a></td>
-        <td width="63%"><a href="index.php?cmd=downloads&amp;downloads_search_keyword={DOWNLOADS_SORT_SEARCH_KEYWORD}&amp;downloads_filter_group_id={DOWNLOADS_FILTER_GROUP_ID}&amp;downloads_filter_user_id={DOWNLOADS_FILTER_USER_ID}&amp;downloads_filter_hidden_downloads={DOWNLOADS_FILTER_HIDDEN}&amp;sort={DOWNLOADS_SORT_DESCRIPTION}&amp;by=description" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DESCRIPTION}</a></td>
+        <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_ID}&amp;by=id" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ID}</a></td>
+        <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_STATUS}&amp;by=is_active" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_STATUS}</a></td>
+        <td width="1%" style="text-align: center;"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_ORDER}&amp;by=order" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_ORDER}</a></td>
+        <td width="15%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_NAME}&amp;by=name" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_NAME}</a></td>
+        <td width="63%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_DESCRIPTION}&amp;by=description" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DESCRIPTION}</a></td>
         <td width="15%">{TXT_DOWNLOADS_OWNER}</td>
         <!-- <td width="25%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_SOURCE}&amp;by=source" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_SOURCE}</a></td> -->
-        <td width="1%"><a href="index.php?cmd=downloads&amp;downloads_search_keyword={DOWNLOADS_SORT_SEARCH_KEYWORD}&amp;downloads_filter_group_id={DOWNLOADS_FILTER_GROUP_ID}&amp;downloads_filter_user_id={DOWNLOADS_FILTER_USER_ID}&amp;downloads_filter_hidden_downloads={DOWNLOADS_FILTER_HIDDEN}&amp;sort={DOWNLOADS_SORT_DOWNLOADED}&amp;by=download_count" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOADED}</a></td>
-        <td width="1%"><a href="index.php?cmd=downloads&amp;downloads_search_keyword={DOWNLOADS_SORT_SEARCH_KEYWORD}&amp;downloads_filter_group_id={DOWNLOADS_FILTER_GROUP_ID}&amp;downloads_filter_user_id={DOWNLOADS_FILTER_USER_ID}&amp;downloads_filter_hidden_downloads={DOWNLOADS_FILTER_HIDDEN}&amp;sort={DOWNLOADS_SORT_VIEWED}&amp;by=views" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_VIEWED}</a></td>
+        <td width="1%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_DOWNLOADED}&amp;by=download_count" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_DOWNLOADED}</a></td>
+        <td width="1%"><a href="index.php?cmd=downloads&amp;sort={DOWNLOADS_SORT_VIEWED}&amp;by=views" title="{TXT_DOWNLOADS_CHANGE_SORT_DIRECTION}">{DOWNLOADS_VIEWED}</a></td>
         <td width="1%">{TXT_DOWNLOADS_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN downloads_download_list -->
@@ -85,7 +73,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             <!-- BEGIN downloads_download_order_no_modify -->
             {DOWNLOADS_DOWNLOAD_ORDER}
             <!-- END downloads_download_order_no_modify -->
-        </td>
+        </td>        
         <td>
             <!-- BEGIN downloads_download_modify_link_open -->
             <a href="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_EDIT}">
@@ -108,12 +96,10 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             <!-- END downloads_download_no_function_download -->
             <!-- BEGIN downloads_download_functions -->
             <a href="index.php?cmd=downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_DOWNLOADS_EDIT}" width="16" height="16" border="0" /></a>
-            <a href="index.php?cmd=downloads&amp;act=copy_download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_COPY}"><img src="images/icons/copy.gif" alt="{TXT_DOWNLOADS_COPY}" width="16" height="16" border="0" /></a>
             <a href="javascript:void(0);" onclick="downloadsDeleteDownload({DOWNLOADS_DOWNLOAD_ID},'{DOWNLOADS_DOWNLOAD_NAME_JS}')" title="{TXT_DOWNLOADS_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DOWNLOADS_DELETE}" width="17" height="17" border="0" /></a>
             <!-- END downloads_download_functions -->
             <!-- BEGIN downloads_download_no_functions -->
             <img src="images/icons/pixel.gif" alt="no permission to modify this download" width="16" height="16" border="0" />
-            <img src="images/icons/pixel.gif" alt="no permission to copy this download" width="16" height="16" border="0" />
             <img src="images/icons/pixel.gif" alt="no permission to delete this download" width="17" height="17" border="0" />
             <!-- END downloads_download_no_functions -->
         </td>

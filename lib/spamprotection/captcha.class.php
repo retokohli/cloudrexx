@@ -10,20 +10,20 @@
  */
 class Captcha {
     var $boolFreetypeInstalled = false;
-
+    
     var $strRandomString;
     var $strSalt;
-
+    
     var $strFilename;
     var $strFontDir;
     var $strBackgroundDir;
     var $strAbsolutePath;
     var $strWebPath;
-
+    
     var $intRandomLength = 5;
     var $intSaltLength = 20;
     var $intMaximumCharacters = 20;
-
+    
     var $intImageWidth = 120;
     var $intNumberOfBackgrounds = 7;
 
@@ -33,39 +33,39 @@ class Captcha {
     */
     function Captcha() {
         $this->__construct();
-    }
-
-
+    }    
+    
+    
     /**
     * Constructor: Initializes base-state of object
     *
     */
     function __construct() {
         srand ((double)microtime()*1000000);
-
+                
         $this->strRandomString     = $this->createRandomString();
         $this->strSalt             = $this->createRandomString($this->intSaltLength);
-
+        
         $this->strFilename         = $this->createFilename();
         $this->strFontDir         = ASCMS_DOCUMENT_ROOT.'/lib/spamprotection/fonts/';
         $this->strBackgroundDir = ASCMS_DOCUMENT_ROOT.'/lib/spamprotection/backgrounds/';
         $this->strAbsolutePath     = ASCMS_DOCUMENT_ROOT.'/images/spamprotection/';
         $this->strWebPath         = ASCMS_PATH_OFFSET.'/images/spamprotection/';
-
+        
         $this->isFreetypeInstalled();
         $this->cleanDirectory();
         $this->createImage();
     }
-
+    
     /**
      * Figures out if the Freetype-Extension (part of GD) is installed.
      */
     function isFreetypeInstalled() {
         $arrExtensions = get_loaded_extensions();
-
+        
         if (in_array('gd', $arrExtensions)) {
-            $arrGdFunctions = get_extension_funcs('gd');
-
+            $arrGdFunctions = get_extension_funcs('gd');       
+                
             if (in_array('imagettftext', $arrGdFunctions)) {
                 $this->boolFreetypeInstalled = true;
             }
@@ -85,9 +85,9 @@ class Captcha {
                 }
             }
             closedir($handleDir);
-        }
+        }        
     }
-
+    
     /**
      * Creates an random string with $intDigits digits.
      *
@@ -98,8 +98,8 @@ class Captcha {
         if ($intDigits > $this->intMaximumCharacters || $intDigits == 0) {
             $intDigits = $this->intRandomLength;
         }
-
-        $strReturn = '';
+        
+        $strReturn = '';            
         for ($i=1; $i <= $intDigits; ++$i) {
             switch (rand(0,1)) {
                 case 0:
@@ -111,11 +111,11 @@ class Captcha {
                 default:
             }
         }
-
+        
         return  $strReturn;
     }
-
-
+    
+    
     /**
      * Creates a new filename for the image.
      *
@@ -125,11 +125,11 @@ class Captcha {
         do {
             $strFileName = md5(time().$this->strRandomString).'.jpg';
         } while (is_file($this->strAbsolutePath.$strFileName));
-
+         
         return $strFileName;
     }
-
-
+    
+    
     /**
      * Creates the image into the temporary folder.
      *
@@ -140,45 +140,45 @@ class Captcha {
         $intFontSize         = floor($intWidth / strlen($this->strRandomString)) - 2;
         $intAngel             = 15;
         $intVerticalMove     = floor($intHeight/7);
-
+        
         $image = imagecreatetruecolor($intWidth, $intHeight);
-
+        
         $arrFontColors     = array(imagecolorallocate($image, 0, 0, 0),        //black
                                 imagecolorallocate($image, 255, 0, 0),         //red
                                 imagecolorallocate($image, 0, 180, 0),         //darkgreen
                                 imagecolorallocate($image, 0, 105, 172),    //blue
                                 imagecolorallocate($image, 145, 19, 120)    //purple
                             );
-
+                                                        
         $arrFonts    = array(    $this->strFontDir.'coprgtb.ttf',
                                 $this->strFontDir.'ltypeb.ttf',
                         );
-
+                        
         //Draw background
         $imagebg = imagecreatefromjpeg($this->strBackgroundDir.rand(1, $this->intNumberOfBackgrounds).'.jpg');
         imagesettile($image, $imagebg);
         imagefilledrectangle($image, 0, 0, $intWidth, $intHeight, IMG_COLOR_TILED);
-
+        
         //Draw string
         for ($i = 0; $i < strlen($this->strRandomString); ++$i) {
             $intColor     = rand(0, count($arrFontColors)-1);
             $intFont    = rand(0, count($arrFonts)-1);
             $intAngel     = rand(-$intAngel, $intAngel);
             $intYMove     = rand(-$intVerticalMove, $intVerticalMove);
-
+            
             if ($this->boolFreetypeInstalled) {
-                imagettftext(    $image,
-                                $intFontSize,
-                                $intAngel,
-                                (6+$intFontSize*$i),
-                                ($intHeight/2+$intFontSize/2+$intYMove),
-                                $arrFontColors[$intColor],
-                                $arrFonts[$intFont],
+                imagettftext(    $image, 
+                                $intFontSize, 
+                                $intAngel, 
+                                (6+$intFontSize*$i), 
+                                ($intHeight/2+$intFontSize/2+$intYMove), 
+                                $arrFontColors[$intColor], 
+                                $arrFonts[$intFont], 
                                 substr($this->strRandomString,$i,1)
                             );
             } else {
-                imagestring($image,
-                            5,
+                imagestring($image, 
+                            5, 
                             (6+25*$i),
                             12+$intYMove,
                             substr($this->strRandomString,$i,1),
@@ -186,24 +186,24 @@ class Captcha {
                         );
             }
         }
-
+        
         //Create Image
         imagejpeg($image, $this->strAbsolutePath.$this->strFilename, 90);
         @chmod($this->strAbsolutePath.$this->strFilename, 0777);
         imagedestroy($image);
     }
-
-
+    
+    
     /**
      * Because of security-problems: returns just an "spamprotection" string.
      *
      * @return    string        Alt tag for the image
      */
-    function getAlt() {
+    function getAlt() {        
        return 'Spamprotection';
     }
 
-
+    
     /**
      * Return the relative URL to the created image.
      *
@@ -212,19 +212,19 @@ class Captcha {
     function getUrl() {
         return $this->strWebPath.$this->strFilename;
     }
-
-
+    
+    
     /**
-     * Returns an salt-value and an md5-hash (random-string concatenated with salt) divided by a semicolon.
-     * This function received its name getOffset() for compatibility-reasons with older versions, which were offset-based.
+     * Returns an salt-value and an md5-hash (random-string concatenated with salt) divided by a semicolon. 
+     * This function received its name getOffset() for compatibility-reasons with older versions, which were offset-based. 
      *
      * @return    string        md5-hash of the random number
      */
     function getOffset() {
         return $this->strSalt.';'.md5($this->strRandomString.$this->strSalt);
     }
-
-
+    
+    
     /**
      * This function is used to validate the entered values of a user.
      *
@@ -235,7 +235,7 @@ class Captcha {
     function compare($strEnteredString, $strOffset) {
         $strEnteredString = strtoupper($strEnteredString);
         $arrOffsetParts = explode(';', $strOffset, 2);
-
+        
         return ($arrOffsetParts[1] == md5($strEnteredString.$arrOffsetParts[0])) ? true : false;
     }
 }

@@ -1,327 +1,147 @@
 <!-- START module_knowledge_articles_edit.html -->
 
 <script type="text/javascript" src="../modules/knowledge/template/javascript/Tags.js"></script>
+
 <script type="text/javascript">
 /* <![CDATA[ */
-function preSave()
-{
-  knowledgeSwitchAnswer();
-  selectAllOptions($('knowledge_assigned_categories_'+knowledgeCurrentAnswerLanguage), true);
-  return checkCategory();
-}
 
-function checkCategory()
+var checkCategory = function()
 {
-  // Only check the currently active language.
-  // The languages are synchronized.
-  if ($('knowledge_assigned_categories_'+knowledgeCurrentAnswerLanguage).selectedIndex < 0) {
-    $('alertbox').show();
-    return false;
-  }
-  return true;
-}
-
-function selectAllOptions(control, onoff)
-{
-  for (var i = 0; i < control.length; ++i) {
-    control.options[i].selected = onoff;
-  }
-}
-
-function moveSelectedOptions(source, destination)
-{
-  if (source.selectedIndex < 0) {
-    if (source.options[0] != null) {
-      source.options[0].selected = true;
+    if ($('category').value == 0) {
+        $('alertbox').show();
+        return false;
+    } else {
+        return true;
     }
-    source.focus();
-    return;
-  }
-  var src_id = source.getAttribute("id");
-  src_id = src_id.replace(/\d$/, "");
-  var dst_id = destination.getAttribute("id");
-  dst_id = dst_id.replace(/\d$/, "");
-  for (lang = 1; lang <= 6; ++lang) {
-    dst_lang = $(dst_id + lang);
-    if (!dst_lang) continue;
-    for (var i = 0; i < source.length; ++i) {
-      if (source.options[i].selected && !source.options[i].disabled) {
-        dst_lang.options[dst_lang.length] = new Option(source.options[i].text, source.options[i].value, false, false);
-      }
-    }
-  }
-  for (var i = source.length-1; i >= 0; --i) {
-    if (source.options[i].selected && !source.options[i].disabled) {
-      for (lang = 1; lang <= 6; ++lang) {
-        src_lang = $(src_id + lang);
-        if (!src_lang) continue;
-        src_lang.options[i] = null;
-      }
-    }
-  }
-}
-
-//var categoryChanged = function(obj)
-//{
-//// TODO: Adapt for multiple selections
-//  var index = obj.selectedIndex;
-//  $$('.category_selector').each(function(obj) {
-//    obj.selectedIndex = index;
-//  });
-//}
-
-var activeChanged = function(val)
-{
-  if (val == 1) {
-    $$('.actives_true').each(function(obj) {
-      obj.checked = "checked";
-    });
-  } else {
-    $$('.actives_false').each(function(obj) {
-      obj.checked = "checked";
-    });
-  }
 }
 
 knowledgeCurrentAnswerLanguage = {KNOWLEDGE_ANSWER_LANG};
+
 function knowledgeSwitchAnswer(langId)
 {
-  oFCKeditor = CKEDITOR.instances['answer_preview'];
-  document.getElementById('answer_'+knowledgeCurrentAnswerLanguage).value = oFCKeditor.getData();
-  if (typeof(langId) != 'undefined') {
-    oFCKeditor.setData(document.getElementById('answer_'+langId).value);
-    knowledgeCurrentAnswerLanguage = langId;
-  }
-  return true;
+    oFCKeditor = FCKeditorAPI.GetInstance('answer_preview');
+    document.getElementById('answer_'+knowledgeCurrentAnswerLanguage).value = oFCKeditor.GetHTML();
+    if (typeof(langId) != 'undefined') {
+        oFCKeditor.SetHTML(document.getElementById('answer_'+langId).value);
+        knowledgeCurrentAnswerLanguage = langId;
+    }
+
+    return true;
 }
+
 /* ]]> */
 </script>
 
 <div id="alertbox" style="display: none; margin-bottom: 2em;" >
-  {TXT_PLEASE_CHOOSE_CATEGORY}
+{TXT_PLEASE_CHOOSE_CATEGORY}
 </div>
 
-<form action="index.php?cmd=knowledge{MODULE_INDEX}&amp;section=articles&amp;act={ACTION}"
-    method="post" onsubmit="return preSave();">
 
-  <ul id="tabmenu">
-    <!-- BEGIN showLanguageTabs -->
-  	<li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:void(0);" onclick="selectTab('{TABS_DIV_ID}');knowledgeSwitchAnswer({TABS_LANG_ID});commentInterface.setArticleContentId({CONTENT_ID});" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
-    <!-- END showLanguageTabs -->
-  </ul>
-
-  <!-- BEGIN langDiv -->
-  <div id="{ID}" style="display: {DISPLAY}" class="editArticle">
-    <textarea name="answer_{LANG_ID}" id="answer_{LANG_ID}" cols="1" rows="1" style="display:none;">{ANSWER}</textarea>
-    <table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
-      <thead>
-        <tr>
-          <th colspan="3">{LANG}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row2">
-<!--
-          <td style="width: 200px;">{TXT_CATEGORY}:</td>
-          <td colspan="2">
-            <select name="category_{LANG_ID}" id="category_{LANG_ID}" class="category_selector" onchange="categoryChanged(this)">
-              <option value="0">{TXT_CHOOSE_CATEGORY}</option>
-              {CATEGORIES}
-            </select>
-          </td>
--->
-          <td valign="top" style="width: 200px;">{TXT_KNOWLEDGE_CATEGORIES}:</td>
-          <td colspan="2">
-            <table cellspacing="0" cellpadding="3" border="0" summary="">
-              <tbody style="vertical-align:top;">
-                <tr>
-                  <td width="300" style="border-bottom:0px;">{TXT_KNOWLEDGE_AVAILABLE_CATEGORIES}<br />
-                    <select name="knowledge_unassigned_categories_{LANG_ID}[]"
-                        id="knowledge_unassigned_categories_{LANG_ID}"
-                        size="15" style="width:300px;" multiple="multiple">
-                      {KNOWLEDGE_NOT_ASSIGNED_CATEGORIES}
-                    </select>
-                    <br />
-                    <a href="javascript:void(0);"
-                        onclick="selectAllOptions(document.getElementById('knowledge_unassigned_categories_{LANG_ID}'),true)"
-                        title="{TXT_KNOWLEDGE_CHECK_ALL}" style="color:blue;">{TXT_KNOWLEDGE_CHECK_ALL}</a>
-                    <br />
-                    <a href="javascript:void(0);"
-                        onclick="selectAllOptions(document.getElementById('knowledge_unassigned_categories_{LANG_ID}'),false)"
-                        title="{TXT_KNOWLEDGE_UNCHECK_ALL}" style="color:blue;">{TXT_KNOWLEDGE_UNCHECK_ALL}</a>
-                  </td>
-                  <td width="45" style="border-bottom:0px; text-align:center;">
-                    <br />
-                    <input type="button" value="&gt;&gt;" name="addOption"
-                        onclick="moveSelectedOptions(document.getElementById('knowledge_unassigned_categories_{LANG_ID}'),document.getElementById('knowledge_assigned_categories_{LANG_ID}'))"
-                        style="margin-bottom:2px;" />
-                    <br />
-                    <input type="button" value="&lt;&lt;" name="removeOption"
-                        onclick="moveSelectedOptions(document.getElementById('knowledge_assigned_categories_{LANG_ID}'),document.getElementById('knowledge_unassigned_categories_{LANG_ID}'))" />
-                  </td>
-                  <td width="100%" style="border-bottom:0px;">{TXT_KNOWLEDGE_ASSIGNED_CATEGORIES}<br />
-                    <select name="knowledge_assigned_categories_{LANG_ID}[]"
-                        id="knowledge_assigned_categories_{LANG_ID}" size="15"
-                        style="width:300px;" multiple="multiple">
-                      {KNOWLEDGE_ASSIGNED_CATEGORIES}
-                    </select>
-                    <br />
-                    <a href="javascript:void(0);"
-                        onclick="selectAllOptions(document.getElementById('knowledge_assigned_categories_{LANG_ID}'),true)"
-                        title="{TXT_KNOWLEDGE_CHECK_ALL}" style="color:blue;">{TXT_KNOWLEDGE_CHECK_ALL}</a>
-                    <br />
-                    <a href="javascript:void(0);"
-                        onclick="selectAllOptions(document.getElementById('knowledge_assigned_categories_{LANG_ID}'),false)"
-                        title="{TXT_KNOWLEDGE_UNCHECK_ALL}" style="color:blue;">{TXT_KNOWLEDGE_UNCHECK_ALL}</a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-
-        </tr>
-        <tr class="row1">
-          <td style="vertical-align: top; width: 200px;">{TXT_QUESTION}:</td>
-          <td colspan="2">
-            <textarea name="question_{LANG_ID}" style="width: 97%; height: 35px; padding: 3px;">{QUESTION}</textarea>
-          </td>
-        </tr>
-        <tr class="row2">
-          <td style="vertical-align: top;">{TXT_STATUS}:</td>
-          <td colspan="2">
-            <input type="radio" name="state_{LANG_ID}" value="1" id="active_1_{LANG_ID}" class="actives_true" {ACTIVE_CHECKED} onchange="activeChanged(1)" /> <label for="active_1">{TXT_ACTIVE}</label>
-            <input type="radio" name="state_{LANG_ID}" value="0" id="active_0_{LANG_ID}" class="actives_false" {INACTIVE_CHECKED} onchange="activeChanged(0)"  /> <label for="active_0">{TXT_INACTIVE}</label>
-          </td>
-        </tr>
-        <tr class="row1">
-          <td style="vertical-align: top;">{TXT_TAGS}:</td>
-          <td colspan="2">
-            <input type="text" name="tags_{LANG_ID}" value="{TAGS}" style="width: 50%" id="tags_{LANG_ID}" /> {TXT_COMMA_SEPARATED}
-          </td>
-        </tr>
-        <tr class="row2">
-          <td style="vertical-align: top;">{TXT_AVAILABLE_TAGS}:</td>
-          <td style="vertical-align: top;">
-            <div class="knowledge_taglist" id="taglist_{LANG_ID}">
-            </div>
-          </td>
-          <td style="width: 200px;">
-            {TXT_SORT_BY}:
-            <a href="javascript:void(0);" onclick="Tags_{LANG_ID}.getTags('popularity')">{TXT_POPULARITY}</a>
-            <a href="javascript:void(0);" onclick="Tags_{LANG_ID}.getTags('alphabetical')">{TXT_ALPHABETICAL}</a>
-          </td>
-        </tr>
-        <tr class="row1">
-          <td>
-            {TXT_INDEX}
-          </td>
-          <td colspan="2">
-            <select name="index_{LANG_ID}">
-              <option value="0">{TXT_NO_INDEX}</option>
-              {TXT_INDEX_OPTIONS}
-            </select>
-          </td>
-        </tr>
-        <tr class="row1">
-          <td>
-            Kommentare
-          </td>
-          <td colspan="2">
-	      <a onclick="commentInterface.showCommentEditBox()">{TXT_MANAGE}</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <script type="text/javascript">
-  /* <![CDATA[ */
-  var Tags_{LANG_ID} = new Tags('tags_{LANG_ID}', '{LANG_ID}');
-  /* ]]> */
-  </script>
-  <!-- END langDiv -->
-
-  <table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
+<form action="index.php?cmd=knowledge{MODULE_INDEX}&section=articles&act={ACTION}" method="post" onsubmit="knowledgeSwitchAnswer();return checkCategory();">
+<table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
     <thead>
-      <tr>
-        <th colspan="3">{TXT_ANSWER}</th>
-      </tr>
+        <tr>
+            <th colspan="3">
+            {TITLE}
+            </th>
+        </tr>
     </thead>
     <tbody>
-      <tr class="row2">
-        <td colspan="3">
-          {ANSWER_PREVIEW}
-        </td>
-      </tr>
+        <tr class="row1">
+            <td style="width: 200px;">{TXT_CATEGORY}:</td>
+            <td colspan="2">
+                <select name="category" id="category">
+                    <option value="0">{TXT_CHOOSE_CATEGORY}</option>
+                    {CATEGORIES}
+                </select>
+            </td>
+        </tr>
+        <tr class="row2">
+            <td style="vertical-align: top;">{TXT_STATUS}:</td>
+            <td colspan="2">
+                <input type="radio" name="state" value="1" id="active_1" {ACTIVE_CHECKED} /> <label for="active_1">{TXT_ACTIVE}</label>
+                <input type="radio" name="state" value="0" id="active_0" {INACTIVE_CHECKED}  /> <label for="active_0">{TXT_INACTIVE}</label>
+            </td>
+        </tr>
     </tbody>
-  </table>
+</table>
+<br /> <br />
+<ul id="tabmenu">
+	<!-- BEGIN showLanguageTabs -->
+	<li><a id="editArticle_{TABS_LINK_ID}" class="{TABS_CLASS}" href="javascript:void(0);" onclick="selectTab('{TABS_DIV_ID}');knowledgeSwitchAnswer({TABS_LANG_ID})" title="{TABS_NAME}" style="{TABS_DISPLAY_STYLE}">{TABS_NAME}</a></li>
+	<!-- END showLanguageTabs -->
+</ul>
 
-  <br /><br />
-  <!-- BEGIN edit_id -->
-  <input type="hidden" value="{ID}" name="id" />
-  <!-- END edit_id -->
+<!-- BEGIN langDiv -->
+<div id="{ID}" style="display: {DISPLAY}" class="editArticle">
+<textarea name="answer_{LANG_ID}" id="answer_{LANG_ID}" cols="1" rows="1" style="display:none;">{ANSWER}</textarea>
+<table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
+    <thead>
+        <tr>
+            <th colspan="3">{LANG}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="row1">
+            <td style="vertical-align: top; width: 200px;">{TXT_QUESTION}:</td>
+            <td colspan="2">
+                <textarea name="question_{LANG_ID}" style="width: 97%; height: 35px; padding: 3px;">{QUESTION}</textarea>
+            </td>
+        </tr>
+        <tr class="row2">
+            <td style="vertical-align: top;">{TXT_TAGS}:</td>
+            <td colspan="2">
+                <input type="text" name="tags_{LANG_ID}" value="{TAGS}" style="width: 50%" id="tags_{LANG_ID}" /> {TXT_COMMA_SEPARATED}
+            </td>
+        </tr>
+        <tr class="row1">
+            <td style="vertical-align: top;">{TXT_AVAILABLE_TAGS}:</td>
+            <td style="vertical-align: top;">
+                <div class="knowledge_taglist" id="taglist_{LANG_ID}">
 
-  <input type="submit" value="{TXT_SUBMIT}" />
-</form>
-
-<!-- BEGIN comment_editing -->
-<div id="commentTemplate" class="adminComment" style="display:none">
-    <a class="adminCommentDelete" href="#">{TXT_DELETE}</a>
-    <table>
-	<tbody>
-	    <tr>
-		<td class="adminCommentDescription">
-		    ID
-		</td>
-		<td>
-		    <div class="comment_id"></div>
-		</td>
-	    </tr>
-	    <tr>
-		<td class="adminCommentDescription">
-		{TXT_NAME}    
-		</td>
-		<td>
-		    <div class="comment_name"></div>
-		</td>
-	    </tr>
-	    <tr>
-		<td class="adminCommentDescription">
-		{TXT_EMAIL}
-		</td>
-		<td>
-		    <div class="comment_email"></div>
-		</td>
-	    </tr>
-	    <tr>
-		<td class="adminCommentDescription">
-		{TXT_TITLE}
-		</td>
-		<td>
-		    <div class="comment_subject"></div>
-		</td>
-	    </tr>
-	    <tr>
-		<td class="adminCommentDescription">
-		Kommentar
-		</td>
-		<td>
-		    <div class="comment_comment"></div>
-		</td>
-	    </tr>
-	</tbody>
-    </table>
-</div>
-<div id="commentEditBox" style="display:none">
-
-</div>
-<div id="commentDeleteConfirmBox" style="display:none">
-    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>{TXT_CONFIRM_COMMENT_DELETION}</p>
+                </div>
+            </td>
+            <td style="width: 200px;">
+                {TXT_SORT_BY}:
+                    <a href="javascript: void(0);" onclick="Tags_{LANG_ID}.getTags('popularity')">{TXT_POPULARITY}</a>
+                    <a href="javascript: void(0);" onclick="Tags_{LANG_ID}.getTags('alphabetical')">{TXT_ALPHABETICAL}</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
 </div>
 <script type="text/javascript">
 /* <![CDATA[ */
-$J('document').ready(function(){ commentInterface = new CommentInterface({CONTENT_ID}); commentInterface.i18n({'TXT_DELETE': '{TXT_DELETE}', 'TXT_CANCEL': '{TXT_CANCEL}'}) });
+
+var Tags_{LANG_ID} = new Tags('tags_{LANG_ID}', '{LANG_ID}');
+
 /* ]]> */
 </script>
-<!-- END comment_editing -->
+<!-- END langDiv -->
+
+<table  cellspacing="0" cellpadding="3" border="0" class="adminlist" style="width: 100%;">
+    <thead>
+        <tr>
+            <th colspan="3">{TXT_ANSWER}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="row2">
+            <td colspan="3">
+                {ANSWER_PREVIEW}
+           </td>
+         </tr>
+    </tbody>
+</table>
+
+<br /><br />
+<!-- BEGIN edit_id -->
+<input type="hidden" value="{ID}" name="id" />
+<!-- END edit_id -->
+
+<input type="submit" value="{TXT_SUBMIT}" />
+</form>
+
+
 
 <!-- END module_knowledge_articles_edit.html -->

@@ -374,25 +374,6 @@ class HTML_Template_Sigma extends PEAR
         $this->setCacheRoot($cacheRoot);
     }
 
-    
-    /**
-    * Clears the variables
-    *
-    * Global variables are not affected. The method is useful when you add
-    * a lot of variables via setVariable() and are not sure whether all of
-    * them appear in the block you parse(). If you clear the variables after
-    * parse(), you don't risk them suddenly showing up in other blocks.
-    *
-    * @access public
-    * @see    setVariable()
-    */
-
-    function clearVariables()
-    {
-        $this->_variables = array();
-    }
-    
-    
 
    /**
     * Sets the file root for templates. The file root gets prefixed to all

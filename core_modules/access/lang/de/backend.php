@@ -251,27 +251,4 @@ $_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'] = "Für den Benutzer %s w
 $_ARRAYLANG['TXT_ACCESS_ADDITIONAL_FUNCTIONS'] = "Zusätzliche Funktionen";
 $_ARRAYLANG['TXT_ACCESS_DIGITAL_ASSET_MANAGEMENT'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_ACCESS_ADD_DAM_CATEGORY'] = "Für diesen Benutzer eine neue, persönliche und nur für ihn zugängliche Kategorie beim Digital Asset Management Modul hinzufügen.";
-$_ARRAYLANG['TXT_ACCESS_HOMEPAGE'] = "Startseite";
-$_ARRAYLANG['TXT_ACCESS_BROWSE'] = "Durchsuchen";
-$_ARRAYLANG['TXT_ACCESS_HOMEPAGE_DESC'] = "Wählen Sie hier die Seite, auf welcher die Benutzer dieser Gruppe landen sollen, nachdem sich die Benutzer erfolgreich authentifiziert haben.";
-$_ARRAYLANG['TXT_ACCESS_TOS_SINGUP_DESC'] = "Benutzer müssen bei der Registrierung die <a href=\"%s\" target=\"_blank\" title=\"AGB's\">AGB's</a> akzeptieren.";
-$_ARRAYLANG['TXT_ACCESS_TOS'] = "Allgemeine Geschäftsbedingungen";
-$_ARRAYLANG['TXT_ACCESS_CAPTCHA'] = "Sicherheitscode";
-$_ARRAYLANG['TXT_ACCESS_CAPTCHA_SIGNUP_DESC'] = "Benutzer müssen bei der Registrierung einen Sicherheitscode abschreiben. Dies verhindert, dass sich Roboter registrieren können.";
-$_ARRAYLANG['TXT_ACCESS_CROP_THUMBNAIL_TXT'] = "Auf Thumbnail-Grösse zuschneiden";
-$_ARRAYLANG['TXT_ACCESS_SCALE_THUMBNAIL_TXT'] = "Auf Thumbnail-Grösse skalieren";
-$_ARRAYLANG['TXT_ACCESS_BACKGROUND_COLOR'] = "Hintergrundfarbe";
-$_ARRAYLANG['TXT_ACCESS_THUMBNAIL_GENERATION'] = "Thumbnail Generierung";
-$_ARRAYLANG['TXT_ACCESS_NEWSLETTER_LISTS'] = "Newsletter";
-$_ARRAYLANG['TXT_ACCESS_IMPORT'] = "Benutzer importieren";
-$_ARRAYLANG['TXT_ACCESS_CHOOSE_FILE'] = "CSV Datei auswählen";
-$_ARRAYLANG['TXT_ACCESS_IMPORT_MESSAGE_TEMPLATE'] = "%1\$s: %2\$s";
-$_ARRAYLANG['TXT_ACCESS_IMPORT_ERROR_INVALID_EMAIL'] = "Ungültige E-Mail Adresse";
-$_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_USER_CREATED'] = "Benutzerkonto angelegt";
-$_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_USER_UPDATED'] = "Benutzerkonto aktualisiert";
-$_ARRAYLANG['TXT_ACCESS_IMPORT_ERROR_CREATING_USER'] = "Benutzerkonto konnte nicht angelegt werden";
-$_ARRAYLANG['TXT_ACCESS_IMPORT_SUCCESS_LIST_CREATED'] = "Liste angelegt";
-$_ARRAYLANG['TXT_ACCESS_DELETE'] = "Löschen";
-$_ARRAYLANG['TXT_ACCESS_SELECT_ACTION'] = "Aktion auswählen";
-$_ARRAYLANG['TXT_ACCESS_CONFIRM_DELETE_USERS'] = "Möchten Sie die ausgewählten Benutzer wirklich löschen?";
 ?>

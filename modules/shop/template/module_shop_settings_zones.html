@@ -101,7 +101,7 @@ function selectZone()
 function deleteZone(zId)
 {
   if (confirm('{TXT_CONFIRM_DELETE_ZONE}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=settings&tpl=zones&zonesId="+zId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=zones&zonesId="+zId);
 }
 
 function add_zone()
@@ -119,12 +119,12 @@ function add_zone()
 -->
 </style>
 <ul id="tabmenu">
-<li><a id="zoneTab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_ZONES}">{TXT_ZONES}</a></li>
-<li><a id="zoneTab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
+<li><a id="zoneTab_shopContent1" class="active" href="javascript:{}" onclick="selectTab('shopContent1')" title="{TXT_ZONES}">{TXT_ZONES}</a></li>
+<li><a id="zoneTab_shopContent2" href="javascript:{}" onclick="selectTab('shopContent2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
 </ul>
 <form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=zones">
-<!-- start content1 div -->
-<div id="content1" class="zoneTab" style="display:block">
+<!-- start shopContent1 div -->
+<div id="shopContent1" class="zoneTab" style="display:block">
   <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="2">{TXT_ZONE_LIST}</th>
@@ -190,10 +190,10 @@ function add_zone()
   <br />
   <input type="submit" name="zones" value="{TXT_STORE}" onclick="submit_form();" />
 </div>
-<!-- end content1 div -->
+<!-- end shopContent1 div -->
 
-<!-- start content2 div -->
-<div id="content2" class="zoneTab" style="display:none">
+<!-- start shopContent2 div -->
+<div id="shopContent2" class="zoneTab" style="display:none">
   <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="2">{TXT_ADD}</th>
@@ -231,6 +231,6 @@ function add_zone()
   <br />
   <input type="submit" name="zones_new" value="{TXT_ADD}" onclick="add_zone();" />
 </div>
-<!-- end content2 div -->
+<!-- end shopContent2 div -->
 </form>
 <!-- END module_shop_settings_zones.html -->

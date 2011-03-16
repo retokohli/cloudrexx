@@ -9,62 +9,62 @@ Text[1]=["","{TXT_SETTINGS_EXPIRATION_HELP}"];
 </script>
 
 <ul id="tabmenu">
-  <li><a id="setTab_Caching1" class="active" href="javascript:{}" onclick="selectTab('Caching1')" title="{TXT_TAB1}">{TXT_TAB1}</a></li>
-  <li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_TAB2}">{TXT_TAB2}</a></li>
-  <li><a id="setTab_Caching3" href="javascript:{}" onclick="selectTab('Caching3')" title="{TXT_TAB3}">{TXT_TAB3}</a></li>
+	<li><a id="setTab_Caching1" class="active" href="javascript:{}" onclick="selectTab('Caching1')" title="{TXT_TAB1}">{TXT_TAB1}</a></li>
+	<li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_TAB2}">{TXT_TAB2}</a></li>
+	<li><a id="setTab_Caching3" href="javascript:{}" onclick="selectTab('Caching3')" title="{TXT_TAB3}">{TXT_TAB3}</a></li>
 </ul>
 <div id="Caching1" class="setTab" style="display:block;">
-  <form name="frmSettings" method="post" action="index.php?cmd=settings&amp;act=cache_update">
-    <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-      <tr>
-        <th colspan="2">{TXT_TAB1}</th>
-      </tr>
-      <tr class="row2">
-        <td width="20%">{TXT_SETTINGS_STATUS}&nbsp;</td>
-        <td width="80%">
-          <label for="cachingStatus"><input type="radio" name="cachingStatus" value="on" {SETTINGS_STATUS_ON}>{TXT_SETTINGS_ON}</label>&nbsp;
-          <label for="cachingStatus"><input type="radio" name="cachingStatus" value="off" {SETTINGS_STATUS_OFF}>{TXT_SETTINGS_OFF}</label>&nbsp;
-          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
-        </td>
-      </tr>
-      <tr class="row1">
-        <td>{TXT_SETTINGS_EXPIRATION}</td>
-        <td>
-          <input type="text" name="cachingExpiration" value="{SETTINGS_EXPIRATION}" size="70" maxlength="250" />
-          <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
-        </td>
-      </tr>
-    </table>
-    <br />
-    <!-- BEGIN cache_submit_button --><input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}"><!-- END cache_submit_button -->
-  </form>
+	<form name="frmSettings" method="post" action="index.php?cmd=settings&amp;act=cache_update">
+		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+			<tr>
+				<th colspan="2">{TXT_TAB1}</th>
+			</tr>
+			<tr class="row2">
+				<td width="20%">{TXT_SETTINGS_STATUS}&nbsp;</td>
+				<td width="80%">
+					<label for="cachingStatus"><input type="radio" name="cachingStatus" value="on" {SETTINGS_STATUS_ON}>{TXT_SETTINGS_ON}</label>&nbsp;
+					<label for="cachingStatus"><input type="radio" name="cachingStatus" value="off" {SETTINGS_STATUS_OFF}>{TXT_SETTINGS_OFF}</label>&nbsp;
+					<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+				</td>
+			</tr>
+			<tr class="row1">
+				<td>{TXT_SETTINGS_EXPIRATION}</td>
+				<td>
+					<input type="text" name="cachingExpiration" value="{SETTINGS_EXPIRATION}" size="70" maxlength="250" />
+					<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[1],Style[0])" />
+				</td>
+			</tr>
+		</table>
+		<br />
+		<!-- BEGIN cache_submit_button --><input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}"><!-- END cache_submit_button -->
+	</form>
 </div>
 <div id="Caching2" class="setTab" style="display:none;">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_TAB2}</th>
-    </tr>
-    <tr class="row2">
-      <td width="20%">
-        <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href='index.php?cmd=settings&amp;act=cache_empty'">
-      </td>
-      <td width="80%" align="justify">{TXT_EMPTY_DESC}</td>
-    </tr>
-  </table>
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_TAB2}</th>
+		</tr>
+		<tr class="row2">
+			<td width="20%">
+				<input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href='index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty'">
+			</td>
+			<td width="80%" align="justify">{TXT_EMPTY_DESC}</td>
+		</tr>
+	</table>
 </div>
 <div id="Caching3" class="setTab" style="display:none;">
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_TAB3}</th>
-    </tr>
-    <tr class="row2">
-      <td width="20%">{TXT_STATS_FILES}</td>
-      <td width="80%">{STATS_FILES}</td>
-    </tr>
-    <tr class="row1">
-      <td>{TXT_STATS_FOLDERSIZE}</td>
-      <td>{STATS_FOLDERSIZE} kB</td>
-    </tr>
-  </table>
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_TAB3}</th>
+		</tr>
+		<tr class="row2">
+			<td width="20%">{TXT_STATS_FILES}</td>
+			<td width="80%">{STATS_FILES}</td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_STATS_FOLDERSIZE}</td>
+			<td>{STATS_FOLDERSIZE} kB</td>
+		</tr>
+	</table>
 </div>
 <!-- END settings.html -->

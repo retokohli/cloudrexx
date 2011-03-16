@@ -3,58 +3,58 @@
 // <![CDATA[
 function executeSQLQueries(objEvent)
 {
-  if (objEvent.shiftKey && objEvent.keyCode == 13) {
-    document.getElementById('frmDatabaseQuery_Submit').style.display = 'none';
-    document.getElementById('frmDatabaseQuery').submit();
-    return true;
-  }
+	if (objEvent.shiftKey && objEvent.keyCode == 13) {
+		document.getElementById('frmDatabaseQuery_Submit').style.display = 'none';
+		document.getElementById('frmDatabaseQuery').submit();
+		return true;
+	}
 }
 // ]]>
 </script>
 <!-- BEGIN performedQuery -->
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-  <tr>
-    <th>{TXT_SQL_PERFOMED}</th>
-  </tr>
-  <tr class="row1">
-    <td><div style="width: 100%; height: 300px; overflow: auto;">{PERFOMED_QUERY}</div></td>
-  </tr>
+	<tr>
+		<th>{TXT_SQL_PERFOMED}</th>
+	</tr>
+	<tr class="row1">
+		<td><div style="width: 100%; height: 300px; overflow: auto;">{PERFOMED_QUERY}</div></td>
+	</tr>
 </table>
 <br />
 <!-- END performedQuery -->
 <form name="frmDatabaseQuery" id="frmDatabaseQuery" method="post" action="index.php?cmd=dbm&amp;act=sql" enctype="multipart/form-data">
-  <input type="hidden" name="frmDatabaseQuery_Submited" value="1" />
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-    <tr>
-      <th>{TXT_SQL_CODE_TITLE}</th>
-    </tr>
-    <tr class="row1">
-      <td width="100%"><textarea name="frmDatabaseQuery_Code" id="frmDatabaseQuery_Code" onkeypress="executeSQLQueries(event)" cols="20" rows="20" style="width: 100%; height: 200px;">{PARSED_QUERY}</textarea></td>
-    </tr>
-    <tr class="row1">
-      <td>{TXT_SQL_CODE_HINT}</td>
-    </tr>
-  </table>
-  <br />
-  <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_SQL_FILE_TITLE}</th>
-    </tr>
-    <tr class="row1">
-      <td width="10%"><b>{TXT_SQL_FILE_ALLOWED_TYPES}:</b></td>
-      <td width="90%">{FILE_TYPES}</td>
-    </tr>
-    <tr class="row1">
-      <td><b>{TXT_SQL_FILE_ALLOWED_SIZE}:</b></td>
-      <td>{FILE_SIZE} kB</td>
-    </tr>
-    <tr class="row1">
-      <td><b>{TXT_SQL_FILE_FILE}:</b></td>
-      <td><br  /><input type="file" name="frmDatabaseQuery_File" size="50" value="" /><br /><br /></td>
-    </tr>
-  </table>
-  <br />
-  <input type="submit" name="frmDatabaseQuery_Submit" id="frmDatabaseQuery_Submit" value="{TXT_SQL_SUBMIT}" />
+	<input type="hidden" name="frmDatabaseQuery_Submited" value="1" />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th>{TXT_SQL_CODE_TITLE}</th>
+		</tr>
+		<tr class="row1">
+			<td width="100%"><textarea name="frmDatabaseQuery_Code" id="frmDatabaseQuery_Code" onkeypress="executeSQLQueries(event)" cols="20" rows="20" style="width: 100%; height: 200px;">{PARSED_QUERY}</textarea></td>
+		</tr>
+		<tr class="row1">
+			<td>{TXT_SQL_CODE_HINT}</td>
+		</tr>
+	</table>
+	<br />
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+		<tr>
+			<th colspan="2">{TXT_SQL_FILE_TITLE}</th>
+		</tr>
+		<tr class="row1">
+			<td width="10%"><b>{TXT_SQL_FILE_ALLOWED_TYPES}:</b></td>
+			<td width="90%">{FILE_TYPES}</td>
+		</tr>
+		<tr class="row1">
+			<td><b>{TXT_SQL_FILE_ALLOWED_SIZE}:</b></td>
+			<td>{FILE_SIZE} kB</td>
+		</tr>
+		<tr class="row1">
+			<td><b>{TXT_SQL_FILE_FILE}:</b></td>
+			<td><br  /><input type="file" name="frmDatabaseQuery_File" size="50" value="" /><br /><br /></td>
+		</tr>
+	</table>
+	<br />
+	<input type="submit" name="frmDatabaseQuery_Submit" id="frmDatabaseQuery_Submit" value="{TXT_SQL_SUBMIT}" />
 </form>
 <script type="text/javascript">
 // <![CDATA[

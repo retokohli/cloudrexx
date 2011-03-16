@@ -38,13 +38,14 @@ class GuestbookManager extends GuestbookLibrary
 
 
     /**
-    * constructor
-    */
+     * constructor
+     */
     function __construct()
     {
         global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/guestbook/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
         $this->langId=$objInit->userFrontendLangId;
@@ -59,10 +60,10 @@ class GuestbookManager extends GuestbookLibrary
     /**
      * Gets the requested methods
      * @global   array
-    * @global   array
-    * @global   HTML_Template_Sigma
-    * @return   string    parsed content
-    */
+     * @global   array
+     * @global   HTML_Template_Sigma
+     * @return   string    parsed content
+     */
     function getPage()
     {
         global $_ARRAYLANG, $objTemplate;
@@ -201,12 +202,12 @@ class GuestbookManager extends GuestbookLibrary
 
 
     /**
-    * Save an entry
-    *
-    * @global  ADONewConnection
-    * @global  array
-    * @return  string   $status
-    */
+     * Save an entry
+     *
+     * @global  ADONewConnection
+     * @global  array
+     * @return  string   $status
+     */
     function _store()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -253,12 +254,12 @@ class GuestbookManager extends GuestbookLibrary
 
 
     /**
-    * shows the edit page
-    *
-    * @global  ADONewConnection
-    * @global  array
-    * @access private
-    */
+     * shows the edit page
+     *
+     * @global  ADONewConnection
+     * @global  array
+     * @access private
+     */
 
     function _showEdit()
     {
@@ -448,11 +449,11 @@ class GuestbookManager extends GuestbookLibrary
 
 
     /**
-    * Update guestbook
-    *
-    * @global  ADONewConnection
-    * @global  array
-    */
+     * Update guestbook
+     *
+     * @global  ADONewConnection
+     * @global  array
+     */
     function _update()
     {
         global $objDatabase, $_ARRAYLANG;

@@ -70,22 +70,21 @@ class popupManager extends popupLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-// TODO: (RE)MOVE THESE!!
         $_ARRAYLANG['TXT_NO_POPUP_FOUND'] = "keine PopUps gefunden";
         $_ARRAYLANG['TXT_POPUP_POPUPS'] = "PopUp Fenster";
         $_ARRAYLANG['TXT_POPUP_NAME'] = "Name";
         $_ARRAYLANG['TXT_POPUP_TYPE'] = "Typ";
         $_ARRAYLANG['TXT_POPUP_FUNCTIONS'] = "Funktionen";
         $_ARRAYLANG['TXT_POPUP_DATE'] = "Anzeigedauer";
-        $_ARRAYLANG['TXT_POPUP_SUBMIT_SELECT'] = "Aktion wählen";
-        $_ARRAYLANG['TXT_POPUP_SUBMIT_DELETE'] = "Markierte löschen";
+        $_ARRAYLANG['TXT_POPUP_SUBMIT_SELECT'] = "Aktion wÃ¤hlen";
+        $_ARRAYLANG['TXT_POPUP_SUBMIT_DELETE'] = "Markierte lÃ¶schen";
         $_ARRAYLANG['TXT_POPUP_SUBMIT_ACTIVATE'] = "Markierte aktivieren";
         $_ARRAYLANG['TXT_POPUP_SUBMIT_DEACTIVATE'] = "Markierte deaktivieren";
         $_ARRAYLANG['TXT_POPUP_SELECT_ALL'] = "Alles markieren";
-        $_ARRAYLANG['TXT_POPUP_DESELECT_ALL'] = "Markierung löschen";
-        $_ARRAYLANG['TXT_POPUP_DELETE_SELECTED_POPUP'] = "Möchten Sie die markierten PopUps wirklich löschen?";
-        $_ARRAYLANG['TXT_POPUP_OPERATION_IRREVERSIBLE'] = "Dieser Vorgang kann nicht rückgängig gemacht werden! ";
-        $_ARRAYLANG['TXT_POPUP_CONFIRM_DELETE_POPUP'] = "Möchten Sie das PopUp %s wirklich löschen? ";
+        $_ARRAYLANG['TXT_POPUP_DESELECT_ALL'] = "Markierung lÃ¶schen";
+        $_ARRAYLANG['TXT_POPUP_DELETE_SELECTED_POPUP'] = "MÃ¶chten Sie die markierten PopUps wirklich lÃ¶schen?";
+        $_ARRAYLANG['TXT_POPUP_OPERATION_IRREVERSIBLE'] = "Dieser Vorgang kann nicht rÃ¼ckgÃ¤ngig gemacht werden! ";
+        $_ARRAYLANG['TXT_POPUP_CONFIRM_DELETE_POPUP'] = "MÃ¶chten Sie das PopUp %s wirklich lÃ¶schen? ";
         $_ARRAYLANG['TXT_POPUP_ACTIVE'] = "Aktiv";
         $_ARRAYLANG['TXT_POPUP_INACTIVE'] = "Inaktiv";
         $_ARRAYLANG['TXT_POPUP_WINDOW'] = "Fenster";
@@ -96,8 +95,8 @@ class popupManager extends popupLibrary
         $_ARRAYLANG['TXT_POPUP_NO_DATE'] = "keine Angaben";
         $_ARRAYLANG['TXT_POPUP_UPDATED_SUCCESSFULLY'] = "Das Popup %s wurde erfolgreich editiert";
         $_ARRAYLANG['TXT_POPUP_COULD_NOT_BE_UPDATED'] = "Fehler beim Editieren des Popup %s";
-        $_ARRAYLANG['TXT_POPUP_ADDED_SUCCESSFULLY'] = "Das Popup %s wurde erfolgreich hinzugefügt";
-        $_ARRAYLANG['TXT_POPUP_COULD_NOT_BE_ADDED'] = "Fehler beim Hinzufügen des Popup %s";
+        $_ARRAYLANG['TXT_POPUP_ADDED_SUCCESSFULLY'] = "Das Popup %s wurde erfolgreich hinzugefÃ¼gt";
+        $_ARRAYLANG['TXT_POPUP_COULD_NOT_BE_ADDED'] = "Fehler beim HinzufÃ¼gen des Popup %s";
         $_ARRAYLANG['TXT_POPUP_CONTENT']="Popup Inhalt";
         $_ARRAYLANG['TXT_POPUP_NAME']="Name";
         $_ARRAYLANG['TXT_POPUP_FRONTEND_LANGUAGES']="Frontend Sprachen";
@@ -106,20 +105,20 @@ class popupManager extends popupLibrary
         $_ARRAYLANG['TXT_POPUP_POSITION']="Positionierung";
         $_ARRAYLANG['TXT_POPUP_SCROLLBARS']="Scrollbalken";
         $_ARRAYLANG['TXT_POPUP_ADRESSLIST']="Adressliste";
-        $_ARRAYLANG['TXT_POPUP_RESIZABLE']="Fenstergrösse veränderbar";
+        $_ARRAYLANG['TXT_POPUP_RESIZABLE']="FenstergrÃ¶sse verÃ¤nderbar";
         $_ARRAYLANG['TXT_POPUP_MENULIST']="Menuliste";
         $_ARRAYLANG['TXT_POPUP_STATUSLIST']="Statusliste";
         $_ARRAYLANG['TXT_POPUP_TYPE']="Anzeigetyp";
         $_ARRAYLANG['TXT_POPUP_ACTIVE']="Aktiviert";
         $_ARRAYLANG['TXT_POPUP_INACTIVE']="Deaktiviert";
-        $_ARRAYLANG['TXT_POPUP_HEIGHT']="Höhe";
+        $_ARRAYLANG['TXT_POPUP_HEIGHT']="HÃ¶he";
         $_ARRAYLANG['TXT_POPUP_WIDTH']="Breite";
         $_ARRAYLANG['TXT_POPUP_TOP']="Oben";
         $_ARRAYLANG['TXT_POPUP_LEFT']="Links";
-        $_ARRAYLANG['TXT_POPUP_WINDOW_DESC']="Öffnet mittels JavaScript ein neues Browser-Fenster. Diese Fenster werden jedoch durch Popup-Blocker blockiert.";
-        $_ARRAYLANG['TXT_POPUP_LAYER_DESC']="Generiert einen Div-Layer, welcher über das gesamte Design gelegt wird und mittels Klick wieder verschwindet. Diese Art wird von Popup-Blockern nicht erkannt.";
+        $_ARRAYLANG['TXT_POPUP_WINDOW_DESC']="Ã–ffnet mittels JavaScript ein neues Browser-Fenster. Diese Fenster werden jedoch durch Popup-Blocker blockiert.";
+        $_ARRAYLANG['TXT_POPUP_LAYER_DESC']="Generiert einen Div-Layer, welcher Ã¼ber das gesamte Design gelegt wird und mittels Klick wieder verschwindet. Diese Art wird von Popup-Blockern nicht erkannt.";
         $_ARRAYLANG['TXT_POPUP_LIGHTBOX_DESC']="Generiert mittels JavaScript einen animierten Bereich, in welchem der entsprechende Inhalt angezeigt wird.";
-        $_ARRAYLANG['TXT_POPUP_SIZE_DESC']="Definiert die Grösse des anzuzeigenden Fensters. Die angegebene Grösse wird bei jedem Anzeigetyp berücksichtigt. Werte in Pixel.";
+        $_ARRAYLANG['TXT_POPUP_SIZE_DESC']="Definiert die GrÃ¶sse des anzuzeigenden Fensters. Die angegebene GrÃ¶sse wird bei jedem Anzeigetyp berÃ¼cksichtigt. Werte in Pixel.";
         $_ARRAYLANG['TXT_POPUP_POSITION_DESC']="Definiert die Position des Popups bezogen auf den oberen und linken (x/y Koordinaten) Browserrand. Werte in Pixel.";
         $_ARRAYLANG['TXT_POPUP_ACTIVATE']="aktivieren";
         $_ARRAYLANG['TXT_POPUP_SHOW_ON_ALL_PAGES']="Popup auf jeder Seite dieser Sprache verwenden";
@@ -127,9 +126,10 @@ class popupManager extends popupLibrary
         $_ARRAYLANG['TXT_POPUP_LANG_SHOW']="Popup in dieser Sprache verwenden";
         $_ARRAYLANG['TXT_POPUP_FROM'] = "von";
         $_ARRAYLANG['TXT_POPUP_TO'] = "bis";
-        $_ARRAYLANG['TXT_POPUP_DATE_DESC'] = "Um eine unbegrenzte Anzeigedauer zu definieren, müssen beiden Felder leer gelassen werden. Es kann auch nur ein Start- oder Enddatum angegeben werden.";
+        $_ARRAYLANG['TXT_POPUP_DATE_DESC'] = "Um eine unbegrenzte Anzeigedauer zu definieren, mÃ¼ssen beiden Felder leer gelassen werden. Es kann auch nur ein Start- oder Enddatum angegeben werden.";
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/popup/template');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $objTemplate->setVariable("CONTENT_NAVIGATION", "<a href='index.php?cmd=popup&amp;act=overview'>".$_ARRAYLANG['TXT_POPUP_OVERVIEW']."</a><a href='index.php?cmd=popup&amp;act=modify'>".$_ARRAYLANG['TXT_PUPUP_ADD_PUPUP']."</a><a href='index.php?cmd=popup&amp;act=settings'>".$_ARRAYLANG['TXT_POPUP_SETTINGS']."</a>");
@@ -425,8 +425,7 @@ class popupManager extends popupLibrary
             $popupAssociatedLangIds = array_keys(FWLanguage::getLanguageArray());
         }
 
-// TODO: Language variables!
-        $pageTitle = $popupId != 0 ? "Popup bearbeiten" : "Popup hinzuf&uuml;gen";
+        $pageTitle = $popupId != 0 ? "Popup bearbeiten" : "Popup hinzufï¿½gen";
         $this->_pageTitle = $pageTitle;
 
         if ($copy) {
@@ -660,9 +659,8 @@ class popupManager extends popupLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
-// TODO: (RE)MOVE THESE!!
-        $_ARRAYLANG['TXT_POPUP_COULD_NOT_DELETE_POPUP']="Fehler beim Löschen der Popups";
-        $_ARRAYLANG['TXT_POPUP_SUCCESSFULLY_DELETED']="Popups erfolgreich gelöscht";
+        $_ARRAYLANG['TXT_POPUP_COULD_NOT_DELETE_POPUP']="Fehler beim Lï¿½schen der Popups";
+        $_ARRAYLANG['TXT_POPUP_SUCCESSFULLY_DELETED']="Popups erfolgreich gelï¿½scht";
 
         $arrDelPopups = array();
         $arrFailedPopup = array();
@@ -794,7 +792,7 @@ class popupManager extends popupLibrary
                 $objDatabase->Execute($query);
             }
 
-            //header('Location: index.php?cmd=popup&act=settings');
+            //CSRF::header('Location: index.php?cmd=popup&act=settings');
         }
 
         $objResult = $objDatabase->Execute("SELECT    name, value FROM    ".DBPREFIX."module_popup_settings");

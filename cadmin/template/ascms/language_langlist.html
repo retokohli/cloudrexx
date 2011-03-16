@@ -1,23 +1,15 @@
 <!-- START language_list.html -->
 <script language="JavaScript" type="text/javascript">
-/* <![CDATA[ */
-__CSRF__ = {key:"{CSRF_KEY}", code:"{CSRF_CODE}"};
-__CSRF__QSTR = __CSRF__.key+'='+__CSRF__.code;
-
+<!--
 // confirm delete variable
-function deleteLanguage(id){
-    if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-        window.location.replace("index.php?cmd=language&act=dellang&id="+id);
-    }
+function deleteLanguage(id)
+{
+if(confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
+{
+window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id);
 }
-
-function truncateLanguage(id){
-    if(confirm('{TXT_LANGUAGE_TRUNCATE_CONFIRM}\n{TXT_ACTION_IS_IRREVERSIBLE}')){
-        window.location.replace("index.php?cmd=language&act=truncate&id="+id+'&'+__CSRF__QSTR);
-    }
 }
-
-/* ]]> */
+// -->
 </script>
 <form name="languageForm" method="post" action="index.php?cmd=language&amp;act=modlang">
 <input type="hidden" name="modLanguage" value="true" />
@@ -49,20 +41,7 @@ function truncateLanguage(id){
       <td>{LANGUAGE_LANG_STATUS}</td>
       <td>{LANGUAGE_ACTIVE_STATUS}</td>
       <td>{LANGUAGE_ADMIN_STATUS}</td>
-      <td>
-        <div align="right" style="{LANGUAGE_ADMIN_STYLE}">
-            <a href="javascript:deleteLanguage('{LANGUAGE_LANG_ID}')">
-                <img src="images/icons/delete.gif" alt="Sprache lÃ¶schen" border="0" />
-            </a>
-        </div>
-        <!-- BEGIN truncateLang -->
-        <div align="right">
-            <a href="javascript:truncateLanguage('{LANGUAGE_LANG_ID}')">
-                <img src="images/icons/delete.gif" alt="{TXT_LANGUAGE_TRUNCATE_CONTENT}" border="0" />
-            </a>
-        </div>
-        <!-- END truncateLang -->
-     </td>
+      <td><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><a href="javascript:deleteLanguage('{LANGUAGE_LANG_ID}')"><img src="images/icons/delete.gif" alt="Sprache löschen" border="0" /></a></div></td>
     </tr>
     <!-- END languageRow -->
   </table>

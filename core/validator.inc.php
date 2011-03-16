@@ -5,9 +5,9 @@
  *
  * Global request validator
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @access      public
- * @version     1.0.0
+ * @author        Comvation Development Team <info@comvation.com>
+ * @access        public
+ * @version        1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -15,56 +15,54 @@
  */
 
 //Security-Check
-if (preg_match("#".$_SERVER['PHP_SELF']."#", __FILE__)) {
-    Header("Location: ../index.php");
+if (eregi("validator.inc.php",$_SERVER['PHP_SELF'])) {
+    Header("Location: index.php");
     die();
 }
 
 
 /**
  * strip_tags wrapper
+ *
  * @param     string     $string
  * @return    string     $string (cleaned)
  */
 function contrexx_strip_tags($string)
 {
-    if (CONTREXX_ESCAPE_GPC) return strip_tags($string);
+    if (CONTREXX_ESCAPE_GPC) {
+    return strip_tags($string);
+    }
     return addslashes(strip_tags($string));
 }
 
 
 /**
- * addslashes wrapper to check for gpc_magic_quotes
- * @param    string    $string | array
- * @return   string    $string (cleaned)
+ * addslashes wrapper to check for gpc_magic_quotes - gz
+ * @param     string     $string
+ * @return    string              cleaned
  */
-function contrexx_addslashes($param)
+function contrexx_addslashes($string)
 {
-    // if magic quotes is on the string is already quoted,
-    // just return it
-    if (CONTREXX_ESCAPE_GPC) return $param;
-    if (is_array($param)) {
-	$slashed_array = array();
-	foreach($param as $k => $v) {
-	    $slashed_array[$k] = addslashes($v);
-	}
-	return $slashed_array;
+    // if magic quotes is on, the string is already quoted
+    if (CONTREXX_ESCAPE_GPC) {
+        return $string;
     }
-    return addslashes($param);
+    return addslashes($string);
 }
 
 
 /**
  * stripslashes wrapper to check for gpc_magic_quotes
- * @param    string    $string
- * @return   string    $string
+ * @param   string    $string
+ * @return  string
  */
 function contrexx_stripslashes($string)
 {
-    if (CONTREXX_ESCAPE_GPC) return stripslashes($string);
+    if (CONTREXX_ESCAPE_GPC) {
+        return stripslashes($string);
+    }
     return $string;
 }
-
 
 /**
  * Convenient match-and-replace-in-one function
@@ -83,14 +81,17 @@ function preg_match_replace(
 ) {
     if (preg_match($pattern, $subject, $subpatterns)) {
         $subject = preg_replace($pattern, $replace, $subject, $limit, $count);
+//echo("preg_match_replace(<br />pattern $pattern,<br />replace $replace,<br />subject $subject,<br />subpatterns ".var_export($subpatterns, true).",<br />limit $limit,<br />count $count<br />): Match, made ".htmlentities($subject)."<br />");
         return $subject;
     }
+//echo("NO match<br />");
     return $subject;
 }
 
 
 /**
- * Checks whether the request comes from a spider
+ * Checks if the request comes from a spider
+ *
  * @return  boolean
  */
 function checkForSpider()
@@ -100,10 +101,96 @@ function checkForSpider()
     $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
     foreach ($arrRobots as $spider) {
         $spiderName = trim($spider);
-        if (preg_match('/'.preg_quote($spiderName, '/').'/', $useragent))
+        if (preg_match("=".$spiderName."=",$useragent)) {
             return true;
+            break;
+        }
     }
     return false;
 }
 
+
+/////////////////////////////////////////////////////////////
+//convenience escaping function layer - use these rather than
+//contrexx_addslashes() and so on please.
+
+/**
+ * Escapes a raw string, e.g. from the db. The resulting string can be safely
+ * written to the XHTML response.
+ * @param string $raw
+ * @return the escaped string
+ */
+function contrexx_raw2xhtml($raw) {
+    return htmlentities($raw, ENT_QUOTES, CONTREXX_CHARSET);
+}
+
+/**
+ * Unescapes an input string (from Get/Post/Cookie) as necessary so you get a raw string.
+ * @param string $input
+ * @return the raw string
+ */
+function contrexx_input2raw($input) {
+  return  contrexx_stripslashes($input);
+}
+
+/**
+ * Adds slashes so you can insert a string into the database
+ * @param string $raw
+ * @return the escaped string
+ */
+function contrexx_raw2db($raw) {
+    return addslashes($raw);
+}
+
+/**
+ * Escapes a raw string, e.g. from the db. The resulting string can be safely
+ * written to an XML target.
+ * @param string $raw
+ * @return the escaped string
+ */
+function contrexx_raw2xml($raw) {
+    return htmlspecialchars($raw, ENT_QUOTES, CONTREXX_CHARSET);
+}
+
+/**
+ * Encode the given url so that it can be used as a a.href or img.src attribute value.
+ * @param string $raw
+ * @param boolean $encodeDash whether to encode dashes ('/') too - defaults to false
+ * @return string
+ */
+function contrexx_raw2encodedUrl($source, $encodeDash = false)
+{
+    $cutHttp = false;
+    if(!$encodeDash && substr($source,0,7) == "http://") {
+        $source = substr($source, 7);
+        $cutHttp = true;
+    } 
+
+    $source = array_map('rawurlencode', explode('/', $source));
+
+    if ($encodeDash) {
+        $source = str_replace('-', '%2D', $source);
+    }
+
+    $result = implode('/', $source);
+
+    if($cutHttp)
+        $result = "http://".$result;
+
+    return $result;
+}
+
+/**
+ * Remove script tags and their content from the string given
+ * @param string $raw
+ * @return string scriptless string.
+ * @todo check for eventhandlers (onclick and the like)
+ */
+function contrexx_remove_script_tags($raw) {
+    //remove closed script tags and content
+    $result = preg_replace('#<\s*script[^>]*>.*?<\s*/script\s*>#is','',$raw);
+    //remove unclosed script tags
+    $result = preg_replace('#<\s*script[^>]*>#is', '',$result);
+    return $result;
+}
 ?>

@@ -41,36 +41,31 @@ require_once 'HotelAccomodationType.class.php';
  */
 class Hotel
 {
-    /**
-     * Text keys
-     */
 // Generic, not used
 //    const TEXT_HOTEL       = 'hotelcard_hotel';
     const TEXT_GROUP        = 'hotelcard_hotel_group';
     const TEXT_DESCRIPTION  = 'hotelcard_hotel_description';
     const TEXT_POLICY       = 'hotelcard_hotel_policy';
-// Single language only
-//    const TEXT_LOCATION     = 'hotelcard_hotel_location';
+    //const TEXT_LOCATION     = 'hotelcard_hotel_location';
 
     /**
-     * Various Hotel status, pretty much self-descriptive.
-     * @see     getStatusArray()
-     * @see     getStatusColor()
-     * @see     getStatusSelection()
-     * @see     getStatusText()
+     * Various Hotel status, pretty much self-descriptive
      */
-    const STATUS_UNKNOWN    =   0; // Error or whatever
-    const STATUS_ACCOUNT    =   1; // User account created
-    const STATUS_CONFIRMED  =   2; // Confirmation e-mail sent
-    const STATUS_COMPLETED  =   4; // Wizard completed
-    const STATUS_VERIFIED   =   8; // Hotel data internally verified
-    const STATUS_AVAILABLE  =  16; // Valid room availability
-    const STATUS_VISIBLE    =  32; // Hotel visible in the frontend
-    const STATUS_DELETED    =  64; // Marked as deleted if set
-    const STATUS_MAX        = 127; // Keep this up to date!
+// TODO:  Apply these!
+    const STATUS_UNKNOWN    = 0; // Error or whatever
+    const STATUS_ACCOUNT    = 1; // User account created
+    const STATUS_CONFIRMED  = 2; // Confirmation e-mail sent
+    const STATUS_VERIFIED   = 3; // Hotel data internally verified
+    const STATUS_LOCKED     = 4; // User account locked
+    const STATUS_DISABLED   = 5; // Hotel not visible in the frontend
+    const STATUS_TERMINATED = 6; // Cooperation terminated,
+                                 // like LOCKED and DISABLED.
+    const STATUS_DELETED    = 7; // Account and hotel deleted.
+                                 // This will never occur, for obvious reasons.
+    const STATUS_COUNT      = 8; // Keep this up to date!
 
 
-    /**
+   /**
      * A complete list of all Hotel database table field names
      *
      * Mind that there are other (temporary) fields not listed here,
@@ -133,7 +128,7 @@ class Hotel
     );
 
 
-    /**
+   /**
      * A complete list of all fields by which lists of Hotels may be sorted
      *
      * Some of the field names are aliases for joined Text records and are
@@ -193,17 +188,14 @@ class Hotel
      * given and refers to an existing record
      *
      * If the ID is invalid or no record is found for it, returns false.
-     * @param   integer   $hotel_id       The Hotel ID
-     * @param   boolean   $include_price  Include the availability and price
-     *                                    if true
-     * @return  Hotel                     The object
+     * @param   integer   $hotel_id   The Hotel ID
+     * @return  Hotel                 The object
      */
-    static function getById($hotel_id, $include_price=false)
+    static function getById($hotel_id)
     {
         global $objDatabase;
 
-//DBG::activate(DBG_PHP|DBG_ADODB|DBG_LOG_FIREPHP);
-
+// TODO: Test
         $arrSqlGroup = Text::getSqlSnippets(
             '`hotel`.`group_id`', FRONTEND_LANG_ID,
             MODULE_ID, self::TEXT_GROUP
@@ -217,61 +209,36 @@ class Hotel
             MODULE_ID, self::TEXT_POLICY
         );
 
-        // Consider the room price in the frontend only
-        $arrSqlPrice = array(
-            'field' => '',
-            'join' => '',
-            'where' => '',
-        );
-        if ($include_price) {
-            $arrSqlPrice = HotelRoom::getSqlSnippets_price(
-                '`hotel`.`id`',
-                date(ASCMS_DATE_FORMAT_DATE, $_SESSION['hotelcard']['date_from']),
-                date(ASCMS_DATE_FORMAT_DATE, $_SESSION['hotelcard']['date_to']),
-                null, null);
-        }
-//echo("Hotel::getById(): arrSqlPrice: ".var_export($arrSqlPrice, true)."<br />");
-
         $query = "
             SELECT `hotel`.`".join('`,`hotel`.`', self::$arrFieldnames)."`".
                    $arrSqlGroup['field'].
                    $arrSqlDescription['field'].
-                   $arrSqlPolicy['field'].
-                   $arrSqlPrice['field']."
+                   $arrSqlPolicy['field']."
               FROM `".DBPREFIX."module_hotelcard_hotel` AS `hotel`".
                    $arrSqlGroup['join'].
                    $arrSqlDescription['join'].
-                   $arrSqlPolicy['join'].
-                   $arrSqlPrice['join']."
-             WHERE `hotel`.`id`=$hotel_id".
-                   $arrSqlPrice['where']."
-             GROUP BY `hotel`.`id`";
+                   $arrSqlPolicy['join']."
+             WHERE `hotel`.`id`=$hotel_id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
-        if ($objResult->EOF) {
-//DBG::log("Hotel::getById(): Failed to get Hotel ID $hotel_id");
-            return false;
-        }
+        if ($objResult->EOF) return false;
         $objHotel = new Hotel();
         foreach (self::$arrFieldnames as $name) {
             $objHotel->arrFieldvalues[$name] = $objResult->fields[$name];
         }
         // Text
-        // Note:  The Hotel region is only stored as a ZIP in the object.
         $objHotel->arrFieldvalues['group'] = $objResult->fields[$arrSqlGroup['text']];
         $objHotel->arrFieldvalues['description_text'] = $objResult->fields[$arrSqlDescription['text']];
         $objHotel->arrFieldvalues['policy_text'] = $objResult->fields[$arrSqlPolicy['text']];
         $objHotel->arrFieldvalues['accomodation_type'] =
             HotelAccomodationType::getNameById(
                 $objHotel->arrFieldvalues['accomodation_type_id']);
+        // Note:  The Hotel region is only stored as a ZIP in the object.
+//        $objHotel->arrFieldvalues['hotel_region'] =
+//            Text::getById($objHotel->getFieldvalue('hotel_region'), FRONTEND_LANG_ID);
         // Image
         $objHotel->arrFieldvalues['images'] =
             Image::getArrayById($objHotel->getFieldvalue('image_id'));
-        if ($include_price) {
-            $objHotel->arrFieldvalues['room_price'] =
-                $objResult->fields[$arrSqlPrice['room_price']];
-        }
-//DBG::log("Hotel: ".var_export($objHotel, true));
         return $objHotel;
     }
 
@@ -308,46 +275,6 @@ class Hotel
 
 
     /**
-     * Returns an array of all Hotel names, indexed by their ID
-     *
-     * If $hotel_ids is empty, all Hotels are included.
-     * If the optional $include_id parameter is true, the IDs are appended
-     * to the Hotel name in parentheses.
-     * @param   string    $hotel_ids    The optional comma seaparated list of
-     *                                  Hotel IDs available to the user.
-     *                                  Defaults to the empty string
-     * @param   boolean   $include_id   If true, Hotel IDs are appended to
-     *                                  the names.  Defaults to false.
-     * @return  array                   The Hotel name array on success,
-     *                                  false otherwise
-     */
-    static function getNameArray($hotel_ids='', $include_id=false)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $query = "
-            SELECT `id`, `hotel_name`
-              FROM `".DBPREFIX."module_hotelcard_hotel`".
-            ($hotel_ids ? " WHERE `id` IN ($hotel_ids)" : '');
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        $arrName = array();
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $name = $objResult->fields['hotel_name'];
-            $arrName[$id] =
-                ($include_id
-                  ? sprintf(
-                      $_ARRAYLANG['TXT_HOTELCARD_TEMPLATE_HOTEL_NAME_AND_ID'],
-                      $name, $id)
-                  : $name);
-            $objResult->MoveNext();
-        }
-        return $arrName;
-    }
-
-
-    /**
      * Returns an array of Hotel IDs for the given parameters
      *
      * The $filter array may include zero or more of the following field
@@ -369,18 +296,13 @@ class Hotel
      *                                of Hotels returned
      * @param   integer   $limit      The maximum number of Hotels to be
      *                                returned
-     * @param   boolean   $include_price  Include the availability and price
-     *                                    if true
      * @return  array                 The array of Hotel arrays on success,
      *                                false otherwise
      */
     static function getIdArray(
-        &$count, $order=false, $filter=false, $offset=0, $limit=0,
-        $include_price=false
+        &$count, $order=false, $filter=false, $offset=0, $limit=0
     ) {
         global $objDatabase;
-
-//DBG::activate(DBG_ADODB);
 
         $arrSqlGroup = Text::getSqlSnippets(
             '`hotel`.`group_id`', FRONTEND_LANG_ID,
@@ -403,48 +325,22 @@ class Hotel
         $arrSqlLocation = Location::getSqlSnippets(
             '`hotel`.`hotel_location`', 'hotel_location_name'
         );
+        if (empty($order)) $order = 'register_date DESC';
         // The order *SHOULD* contain the direction.
         // Add backticks if they are not present.
-        $match = array();
-        $order = (preg_match('/`?(\w+)`?(\s+(?:a|de)sc)?/i', $order, $match)
-          ? '`'.$match[1].'` '.$match[2]
-          : ($include_price
-              ? '`register_date` DESC'
-              : '`room_price` ASC'
-            )
-        );
-//        $order_ticked = preg_match_replace('/^(\w)(\s\w)?$/', '`$1` $2', $order);
+        $order = preg_match_replace('/^(\w)(\s\w)?$/', '`$1` $2', $order);
         $term = (empty($filter['term']) ? '' : addslashes($filter['term']));
         $query_id = "SELECT `hotel`.`id`";
         $query_count = "SELECT COUNT(*) AS `numof_hotels`";
-        // May be changed below, for sorting by other than Hotel fields
-        $query_order = " GROUP BY `hotel`.`id` ORDER BY `hotel`.$order";
-
+        $query_order = " ORDER BY `hotel`.$order";
 //echo("Status: ${filter['status']}: ".(is_numeric($filter['status']) ? "num" : " not num").(is_integer($filter['status']) ? "int" : " not int")."<br />");
-
-        $query_status = '';
-        if (isset($filter['status']) && is_array($filter['status'])) {
-            for ($bit = 1; $bit < Hotel::STATUS_MAX; $bit <<= 1) {
-                // Look for presence or absence of status bits:
-                // bit > 0: must be set
-                // bit < 0: must be unset
-                if (!empty($filter['status'][$bit])) {
-                    $query_status .=
-                        ($query_status ? ' AND' : '').
-                        " `hotel`.`status`&$bit".
-                        ($filter['status'][$bit] > 0 ? '' : '=0');
-                }
-            }
-            $query_status = ($query_status ? ' AND ('.$query_status.')' : '');
-        }
-        $query_from = "
+        $query_body = "
               FROM `".DBPREFIX."module_hotelcard_hotel` AS `hotel`".
                    $arrSqlGroup['join'].
 //                   $arrSqlAccomodation['join'].
                    $arrSqlDescription['join'].
                    $arrSqlPolicy['join'].
-                   $arrSqlLocation['join'];
-        $query_where = "
+                   $arrSqlLocation['join']."
              WHERE 1".
         // Hotel identity matches
               (empty($filter['id']) ? '' : " AND `hotel`.`id`=".$filter['id']).
@@ -468,28 +364,28 @@ class Hotel
                   ? ''
                   : " AND `hotel`.`hotel_region`='".
                     $filter['hotel_region']."'").
-              $query_status.
+              (isset($filter['status']) && is_numeric($filter['status'])
+                  ? " AND `hotel`.`status`=".$filter['status'] : '').
         // Search term
               (empty($term)
                 ? ''
-                : " AND (   `".$arrSqlGroup['alias']."`.`text` LIKE '%$term%'
-                         OR `".$arrSqlDescription['alias']."`.`text` LIKE '%$term%'
-                         OR `".$arrSqlPolicy['alias']."`.`text` LIKE '%$term%'
-                         OR `hotel`.`hotel_name` LIKE '%$term%'
-                         OR `hotel`.`hotel_address` LIKE '%$term%'
-                         OR `hotel`.`hotel_location` LIKE '%$term%'
-                         OR `hotel`.`hotel_region` LIKE '%$term%'
-                         OR `hotel`.`description_text_id` LIKE '%$term%'
-                         OR `hotel`.`policy_text_id` LIKE '%$term%'
-                         OR `hotel`.`hotel_uri` LIKE '%$term%'
-                         OR `hotel`.`contact_name` LIKE '%$term%'
-                         OR `hotel`.`contact_position` LIKE '%$term%'
-                         OR `hotel`.`contact_department` LIKE '%$term%'
-                         OR `hotel`.`contact_phone` LIKE '%$term%'
-                         OR `hotel`.`contact_fax` LIKE '%$term%'
-                         OR `hotel`.`contact_email` LIKE '%$term%'
-                         OR `hotel`.`comment` LIKE '%$term%')"
-              );
+                : " AND (
+                     `".$arrSqlGroup['alias']."`.`text` LIKE '%$term%'
+                  OR `".$arrSqlDescription['alias']."`.`text` LIKE '%$term%'
+                  OR `".$arrSqlPolicy['alias']."`.`text` LIKE '%$term%'
+                  OR `hotel`.`hotel_name` LIKE '%$term%'
+                  OR `hotel`.`hotel_address` LIKE '%$term%'
+                  OR `hotel`.`hotel_location` LIKE '%$term%'
+                  OR `hotel`.`hotel_region` LIKE '%$term%'
+                  OR `hotel`.`description_text_id` LIKE '%$term%'
+                  OR `hotel`.`policy_text_id` LIKE '%$term%'
+                  OR `hotel`.`hotel_uri` LIKE '%$term%'
+                  OR `hotel`.`contact_name` LIKE '%$term%'
+                  OR `hotel`.`contact_position` LIKE '%$term%'
+                  OR `hotel`.`contact_department` LIKE '%$term%'
+                  OR `hotel`.`contact_phone` LIKE '%$term%'
+                  OR `hotel`.`contact_fax` LIKE '%$term%'
+                  OR `hotel`.`contact_email` LIKE '%$term%' ".
 // Unused -- for the time being
 //                  OR `hotel`.`reservation_name` LIKE '%$term%'
 //                  OR `hotel`.`reservation_phone` LIKE '%$term%'
@@ -505,58 +401,24 @@ class Hotel
 //                  OR `hotel`.`billing_company` LIKE '%$term%'
 //                  OR `hotel`.`billing_location` LIKE '%$term%'
 //                  OR `hotel`.`billing_tax_id` LIKE '%$term%'
-//                  OR `hotel`.`found_how` LIKE '%$term%'
-
-// TODO
-        // Consider the room price in the frontend only
-        if ($include_price) {
-            if (empty($filter['room_price_min']))
-                $filter['room_price_min'] = null;
-            if (empty($filter['room_price_max']))
-                $filter['room_price_max'] = null;
-            // Only include results with a room price > 0 and not NULL
-            $arrSqlPrice = HotelRoom::getSqlSnippets_price(
-                '`hotel`.`id`',
-                date(ASCMS_DATE_FORMAT_DATE, $_SESSION['hotelcard']['date_from']),
-                date(ASCMS_DATE_FORMAT_DATE, $_SESSION['hotelcard']['date_to']),
-                $filter['room_price_min'],
-                $filter['room_price_max']
-            );
-//echo("Hotel::getIdArray(): arrSqlPrice: ".var_export($arrSqlPrice, true)."<br />");
-            $query_count .= $arrSqlPrice['field'];
-            $query_id .= $arrSqlPrice['field'];
-            $query_from .= $arrSqlPrice['join'];
-            $query_where .= $arrSqlPrice['where'];
-//DBG::log("Order: $order");
-            if (preg_match('/room_price/', $order)) {
-                $order = preg_match_replace('/room_price/',
-                    $arrSqlPrice['room_price'], $order);
-//DBG::log("=> Order: $order");
-                $query_order = '
-                    GROUP BY `hotel`.`id` ORDER BY '.$order;
-            }
-        }
+                  "OR `hotel`.`comment` LIKE '%$term%'
+                  OR `hotel`.`found_how` LIKE '%$term%')");
 
         // Get the total count of matching hotels, set $count
-        $objResult = $objDatabase->Execute(
-            $query_count.$query_from.$query_where);
+        $objResult = $objDatabase->Execute($query_count.$query_body);
         if (!$objResult) return self::errorHandler();
         $count = $objResult->fields['numof_hotels'];
 
         // Get the IDs of the hotels according to the offset and limit
         if (empty($limit)) $limit = -1;
         $objResult = $objDatabase->SelectLimit(
-            $query_id.$query_from.$query_where.$query_order,
-            $limit, $offset);
+            $query_id.$query_body.$query_order, $limit, $offset);
         if (!$objResult) return self::errorHandler();
         $arrId = array();
         while (!$objResult->EOF) {
             $arrId[] = $objResult->fields['id'];
             $objResult->MoveNext();
         }
-//DBG::log("Hotel::getIdArray(): got ".count($arrId)." IDs: ".var_export($arrId, true)."<br />");
-//DBG::deactivate(DBG_ADODB);
-
         // Return the array of IDs
         return $arrId;
     }
@@ -621,7 +483,6 @@ class Hotel
           // INT(10) NULL, IDs -> Verify that it's a non-negative integer
           case 'group_id':
           case 'image_id':
-          case 'description_text_id': // See below
           case 'policy_text_id':
             $value = intval($value);
             if ($value < 0) return false;
@@ -631,6 +492,7 @@ class Hotel
           // -> Verify that it's a positive integer
           case 'accomodation_type_id':
           case 'lang_id':
+          case 'description_text_id': // See below
           case 'billing_country_id':
           case 'numof_rooms':
             $value = intval($value);
@@ -754,14 +616,10 @@ class Hotel
 
           // TEXT -> Strip tags and possibly other crap
           case 'description_text': // See above
+            // Need
             $value = trim(strip_tags($value));
 //echo("Trimmed text to $value<br />");
-            // Note: UTF-8 characters may occupy more than one character in the
-            // string, so the upper limit cannot be enforced here properly.
-            // Luckily, the string is truncated on the page itself, so we can
-            // simply ignore it here.
-            //if (strlen($value) < 100 || strlen($value) > 500) return false;
-            if (strlen($value) < 100) return false;
+            if (strlen($value) < 100 || strlen($value) > 500) return false;
             break;
           case 'comment':
           case 'found_how':
@@ -970,108 +828,6 @@ class Hotel
 
 
     /**
-     * Updates the status for the given Hotel ID
-     *
-     * Sets the bits present in the $status value if it's positive,
-     * clears them if it's negative.
-     * Note that you cannot set and clear bits at the same time!
-     * This would never lead to the expected result.
-     * @param   integer   $hotel_id     The Hotel ID
-     * @param   integer   $status       The Hotel status bits
-     * @return  boolean                 True on success, false otherwise
-     */
-    static function updateStatus($hotel_id, $status)
-    {
-        global $objDatabase;
-
-        $hotel_id = intval($hotel_id);
-        if ($hotel_id <= 0)
-            return false;
-        $status = intval($status);
-        if (   $status < -self::STATUS_MAX
-            || $status >  self::STATUS_MAX)
-            return false;
-        $query = "
-            UPDATE `".DBPREFIX."module_hotelcard_hotel`
-               SET `status`=`status`".
-            ($status < 0
-              // Clear the bits if negative
-              ? '&'.(self::STATUS_MAX+$status)
-              // Set the bits if positive
-              : '|'.$status)."
-             WHERE `id`=$hotel_id";
-        $objResult = $objDatabase->Execute($query);
-        return (bool)$objResult;
-    }
-
-
-    /**
-     * Deletes the Hotel with the given ID and all associated data
-     * @param   integer   $hotel_id     The Hotel ID
-     * @return  boolean                 True on success, false otherwise
-     */
-    static function deleteById($hotel_id)
-    {
-        $hotel_id = intval($hotel_id);
-        if ($hotel_id <= 0) return false;
-        $objHotel = self::getById($hotel_id);
-        if (empty($objHotel)) return false;
-        return $objHotel->delete();
-    }
-
-
-    /**
-     * Deletes the Hotel and all associated data
-     * @return  boolean                 True on success, false otherwise
-     */
-    function delete()
-    {
-        global $objDatabase;
-
-        $hotel_id = intval($this->arrFieldvalues['id']);
-        if ($hotel_id <= 0) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, illegal ID<br />");
-            return false;
-        }
-        $objHotel = self::getById($hotel_id);
-        if (empty($objHotel)) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, Hotel not found<br />");
-            return false;
-        }
-        if (!HotelFacility::deleteByHotelId($hotel_id)) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, failed to delete Hotel facilities<br />");
-            return false;
-        }
-        if (!HotelRoom::deleteByHotelId($hotel_id)) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, failed to delete Hotel room types<br />");
-            return false;
-        }
-        if (!Image::deleteById($this->arrFieldvalues['image_id'])) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, failed to delete Hotel images<br />");
-            return false;
-        }
-        if (!Text::deleteById($this->arrFieldvalues['group_id'])) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, failed to delete group text<br />");
-            return false;
-        }
-        if (!Text::deleteById($this->arrFieldvalues['description_text_id'])) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, failed to delete description text<br />");
-            return false;
-        }
-        if (!Text::deleteById($this->arrFieldvalues['policy_text_id'])) {
-//echo("Hotel::delete(): Hotel ID $hotel_id, failed to delete policy text<br />");
-            return false;
-        }
-        $query = "
-            DELETE FROM `".DBPREFIX."module_hotelcard_hotel`
-             WHERE `id`=$hotel_id";
-        $objResult = $objDatabase->Execute($query);
-//if (!$objResult) {echo("Hotel::delete(): Hotel ID $hotel_id, failed to delete Hotel<br />");            return false;        }
-        return (bool)$objResult;
-    }
-
-
-    /**
      * Returns the time of the last hotel registration that took place
      *
      * If there is a problem with the query, or no hotel registered,
@@ -1122,228 +878,18 @@ class Hotel
 
 
     /**
-     * Returns an array of available Hotel status
-     *
-     * If the $sign parameter is positive, the array contains the
-     * status with positive sign, indicating that the status should
-     * include that bit.
-     * If the $sign parameter is negative, the array contains the
-     * status with negative sign, indicating that the status should not
-     * include that bit.
-     * If the $sign parameter is empty, the array contains all of the above.
-     * @param   integer   $sign       The desired sign of the status.
-     *                                Defaults to 1 (one).
-     * @return  array                 The Hotel status array
+     * Returns an array of all available Hotel status
+     * @return  array             The Hotel status array
      */
-    static function getStatusArray($sign=1)
+    static function getStatusArray()
     {
         global $_ARRAYLANG;
 
         $arrStatus = array();
-        for ($bit = 1; $bit < Hotel::STATUS_MAX; $bit <<= 1) {
-            if ($sign <= 0)
-                $arrStatus[$bit] =
-                    $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_'.$bit];
-            if ($sign >= 0)
-                $arrStatus[-$bit] =
-                    $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_NOT_'.$bit];
+        for ($i = self::STATUS_UNKNOWN; $i < self::STATUS_COUNT; ++$i) {
+            $arrStatus[$i] = $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_'.$i];
         }
         return $arrStatus;
-    }
-
-
-    /**
-     * Returns a set of radiobutton groups for selecting arbitrary combinations
-     * of status
-     *
-     * Serves as a user interface for filtering Hotels by their status.
-     * The $arrStatus parameter should look like this:
-     *  array(
-     *    status bit => 0, or the sign,
-     *    ... more bits ...
-     *  )
-     * The keys represent the numerical value of the status bit, i.e.
-     * 1 (2^0) for bit 0, 2 (2^1) for bit 1, and so on.
-     * A positive value indicates that the respective status bit must set.
-     * A negative value indicates that the respective status bit must be
-     * cleared.
-     * A zero value indicates that the respective status doesn't matter
-     * and will be ignored.
-     * @param   array     $arrStatus    The array of preselected states
-     * @return  string                  The HTML code for the selection
-     */
-    static function getStatusSelection($arrStatus)
-    {
-        global $_ARRAYLANG;
-
-        $selection = '';
-        for ($bit = 1; $bit < Hotel::STATUS_MAX; $bit <<= 1) {
-            $selection .=
-                '<div style="clear: none; float: right;">'.
-                '<div style="clear: none; float: left; vertical-align: bottom; text-align: left;">'.
-                $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_'.$bit].
-                '</div>'.
-                Html::getRadioGroup(
-                    'status['.$bit.']',
-                    array(
-                        $bit => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_YES'],
-                       -$bit => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_NO'],
-                        0    => $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_ANY'],
-                    ),
-                    (empty($arrStatus[$bit])
-                      ? 0
-                      : ($arrStatus[$bit] > 0 ? $bit : -$bit))
-                ).'</div>';
-        }
-        return $selection;
-    }
-
-
-    /**
-     * Returns the color suitable for the Hotel status
-     *
-     * The color may be one of 'green', 'yellow', or 'red'.
-     * It is used for displaying the proper LED status icon.
-     * @param   integer   $status     The Hotel status
-     * @return  string                The Hotel status color
-     */
-    static function getStatusColor($status)
-    {
-        // Default to red
-        $status_color = 'red';
-        // The minimum flags needed to get to yellow
-        if ($status & (Hotel::STATUS_ACCOUNT | Hotel::STATUS_CONFIRMED))
-            $status_color = 'yellow';
-        // With these set, all is green
-        if (   $status & Hotel::STATUS_COMPLETED
-            || $status & Hotel::STATUS_VERIFIED)
-            $status_color = 'green';
-        // But if it's invisible, missing available rooms, or deleted,
-        // it's red nevertheless
-// TODO: There should be a special marking for these!
-        if (   !($status & Hotel::STATUS_VISIBLE)
-            || !($status & Hotel::STATUS_AVAILABLE)
-            ||   $status & Hotel::STATUS_DELETED)
-            $status_color = 'red';
-        return $status_color;
-    }
-
-
-    /**
-     * Returns the text for the current Hotel status value
-     *
-     * The optional $sign argument determines which texts are included in the
-     * string.  For values > 0 only set bits, for values < 0 only unset bits,
-     * and for zero all bits are considered.
-     * @param   integer   $status     The Hotel status
-     * @param   integer   $sign       Include text for set, unset, or all
-     *                                available status.  Defaults to -1
-     * @return  string                The Hotel status text
-     */
-    static function getStatusText($status, $sign=-1)
-    {
-        global $_ARRAYLANG;
-
-//        if (empty($status)) return
-//            $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_'.Hotel::STATUS_UNKNOWN];
-        $strStatus = '';
-        for ($bit = 1; $bit < Hotel::STATUS_MAX; $bit <<= 1) {
-            $strStatus .=
-                ($status & $bit
-                  ? ($sign >= 0
-                      ? ($strStatus ? ', ' : '').
-                        $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_'.$bit]
-                      : '')
-                  : ($sign <= 0
-                      ? ($strStatus ? ', ' : '').
-                        $_ARRAYLANG['TXT_HOTELCARD_HOTEL_STATUS_NOT_'.$bit]
-                      : '')
-                );
-        }
-        return $strStatus;
-    }
-
-
-    /**
-     * Returns the description for the Hotel and given language ID
-     *
-     * If no record can be found, returns false.
-     * @param   integer   $lang_id    The language ID
-     * @return  string                The description text
-     */
-    function getDescriptionByLanguageId($lang_id)
-    {
-        global $objDatabase;
-
-//DBG::activate(DBG_PHP|DBG_ADODB|DBG_LOG_FIREPHP);
-
-        $hotel_id = intval($this->arrFieldvalues['id']);
-        if (empty($hotel_id)) return false;
-        $arrSqlDescription = Text::getSqlSnippets(
-            '`hotel`.`description_text_id`', $lang_id,
-            MODULE_ID, self::TEXT_DESCRIPTION
-        );
-        $query = "
-            SELECT 1".$arrSqlDescription['field']."
-              FROM `".DBPREFIX."module_hotelcard_hotel` AS `hotel`".
-                   $arrSqlDescription['join']."
-             WHERE `hotel`.`id`=$hotel_id";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return self::errorHandler();
-        if ($objResult->EOF) {
-//DBG::log("Hotel::getDescriptionByLanguageId($lang_id): Failed to get the description for Hotel ID $hotel_id, language ID $lang_id");
-            return false;
-        }
-        return $objResult->fields[$arrSqlDescription['text']];
-    }
-
-
-    /**
-     * Updates the description for the Hotel and given language ID
-     * @param   integer   $lang_id      The language ID
-     * @param   string    $description  The description text
-     * @return  boolean                 True on success, false otherwise
-     */
-    function updateDescriptionByLanguageId($lang_id, $description)
-    {
-        global $objDatabase;
-
-//DBG::activate(DBG_PHP|DBG_ADODB|DBG_LOG_FIREPHP);
-
-        $hotel_id = intval($this->arrFieldvalues['id']);
-        if (empty($hotel_id)) {
-//DBG::log(("updateDescriptionByLanguageId($lang_id, $description): Error: No Hotel ID"));
-            return false;
-        }
-        $text_id = intval($this->arrFieldvalues['description_text_id']);
-        if (empty($text_id)) {
-//DBG::log("updateDescriptionByLanguageId($lang_id, $description): Warning: No Description Text ID");
-        }
-//DBG::log("updateDescriptionByLanguageId($lang_id, $description): OKAY: Got Text ID $text_id; language ID $lang_id");
-        // There's no use in keeping empty text records.  Delete those
-        // and use some other language in the frontend instead.
-        if ($text_id && empty($description)) {
-            if (!Text::deleteById($text_id, $lang_id)) return false;;
-            // If there is no description left at all, clear the ID field
-            if (!Text::getById($text_id, 0))
-                $this->setFieldvalue('description_text_id', 0);
-            return true;
-        }
-        $text_id = Text::replace(
-            $text_id, $lang_id, $description,
-            MODULE_ID, self::TEXT_DESCRIPTION);
-        if ($text_id) {
-//DBG::log("updateDescriptionByLanguageId($lang_id, $description): OKAY: Text updated for language ID $lang_id");
-            $this->setFieldvalue('description_text_id', $text_id);
-            // Important:  If the multilanguage indexed form of the
-            // description_text parameter is posted, the single language
-            // parameter stored in the Hotel must be ignored.
-            // Otherwise, the current frontend language will be overwritten
-            // with the old value upon storing the hotel!
-            unset($this->arrFieldvalues['description_text']);
-            return true;
-        }
-        return false;
     }
 
 

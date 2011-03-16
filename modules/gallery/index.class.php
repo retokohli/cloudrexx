@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Gallery
  *
@@ -50,6 +49,7 @@ class Gallery
         $this->langId= $_LANGID;
 
         $this->_objTpl = new HTML_Template_Sigma('.');
+        CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->strImagePath = ASCMS_GALLERY_PATH . '/';
@@ -80,7 +80,7 @@ class Gallery
         if (isset($_GET['pId']) && !empty($_GET['pId'])) {
             if (isset($_POST['frmGalComAdd_PicId'])) {
                 $this->addComment();
-                header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
+                CSRF::header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
                     intval($_POST['frmGalComAdd_GalId']).'&pId='.
                     intval($_POST['frmGalComAdd_PicId']));
                 exit;
@@ -88,7 +88,7 @@ class Gallery
 
             if (isset($_GET['mark'])) {
                 $this->countVoting($_GET['pId'],$_GET['mark']);
-                header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
+                CSRF::header('location:'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.html_entity_decode($this->strCmd, ENT_QUOTES, CONTREXX_CHARSET).'&cid='.
                     intval($_GET['cid']).'&pId='.intval($_GET['pId']));
                 exit;
             }
@@ -128,7 +128,7 @@ class Gallery
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
                     $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    CSRF::header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                     exit;
             }
         }
@@ -403,7 +403,7 @@ class Gallery
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
                     $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    CSRF::header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                     exit;
             }
         }
@@ -761,7 +761,7 @@ class Gallery
         if ($categoryProtected > 0) {
             if (!Permission::checkAccess($categoryProtected, 'dynamic', true)) {
                     $link=base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-                    header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
+                    CSRF::header ("Location: ".CONTREXX_DIRECTORY_INDEX."?section=login&cmd=noaccess&redirect=".$link);
                     exit;
             }
         }
@@ -939,6 +939,7 @@ class Gallery
                 $imageSizeShow = $objResult->fields['size_show'];
                 $imageLinkOutput = '';
                 $imageSizeOutput = '';
+                $imageTitleTag = '';
 
                 // chop the file extension if the settings tell us to do so
                 if ($this->arrSettings['show_ext'] == 'off') {
@@ -967,12 +968,40 @@ class Gallery
                 }
                 //Ends here
 
+                if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
+                    $imageSizeOutput = $imageName;
+                    $imageTitleTag   = $imageName;
+                    if ($this->arrSettings['show_file_name'] == 'on' || $imageSizeShow) {
+                        $imageData = array();
+                        if ($this->arrSettings['show_file_name'] == 'on') {
+                            if ($this->arrSettings['show_names'] == 'off') {
+                                $imageSizeOutput .= $imageFileName;
+                                $imageTitleTag   .= $imageFileName;
+                            } else {
+                                $imageData[] = $imageFileName;
+                            }
+                        }
+                        
+                        if (!empty($imageData)) {
+                            $imageTitleTag .= ' ('.join(' ', $imageData).')';
+                        }
+                        if ($imageSizeShow == '1') {
+                            // the size of the file has to be shown
+                            $imageData[] = $imageFileSize.' kB';
+                        }
+                        if (!empty($imageData)) {
+                            $imageSizeOutput .= ' ('.join(' ', $imageData).')<br />';
+                        }
+                    }
+                }
+
                 if ($this->arrSettings['enable_popups'] == "on") {
-                    $strImageOutput =
+
+                        $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
-                        '}"  title="'.$imageTitle.'" href="'.
-                        $strImagePath.'"><img title="'.$imageTitle.'" src="'.
-                        $imageThumbPath.'" alt="'.$imageTitle.'" /></a>';
+                        '}"  title="'.$imageTitleTag.'" href="'.
+                        $strImagePath.'"><img title="'.$imageTitleTag.'" src="'.
+                        $imageThumbPath.'" alt="'.$imageTitleTag.'" /></a>';
                     /*
                     $strImageOutput =
                         '<a rel="shadowbox['.$intParentId.'];options={'.$optionValue.
@@ -985,29 +1014,8 @@ class Gallery
                         '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=gallery'.
                         $this->strCmd.'&amp;cid='.$intParentId.'&amp;pId='.
                         $objResult->fields['id'].'">'.'<img  title="'.
-                        $imageTitle.'" src="'.$imageThumbPath.'"'.
-                        'alt="'.$imageTitle.'" /></a>';
-                }
-
-                if ($this->arrSettings['show_names'] == 'on' || $this->arrSettings['show_file_name'] == 'on') {
-                    $imageSizeOutput = $imageName;
-                    if ($this->arrSettings['show_file_name'] == 'on' || $imageSizeShow) {
-                        $imageData = array();
-                        if ($this->arrSettings['show_file_name'] == 'on') {
-                            if ($this->arrSettings['show_names'] == 'off') {
-                                $imageSizeOutput .= $imageFileName;
-                            } else {
-                                $imageData[] = $imageFileName;
-                            }
-                        }
-                    if ($imageSizeShow == '1') {
-                        // the size of the file has to be shown
-                            $imageData[] = $imageFileSize.' kB';
-                        }
-                        if (!empty($imageData)) {
-                            $imageSizeOutput .= ' ('.join(' ', $imageData).')<br />';
-                        }
-                    }
+                        $imageTitleTag.'" src="'.$imageThumbPath.'"'.
+                        'alt="'.$imageTitleTag.'" /></a>';
                 }
 
                 if ($this->arrSettings['show_comments'] == 'on' && $boolComment) {

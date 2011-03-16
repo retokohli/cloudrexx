@@ -201,5 +201,4 @@ $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW'] = "Diaporama";
 $_ARRAYLANG['TXT_GALLERY_SLIDE_SHOW_SECONDS'] = "Durée en secondes par image.";
 $_ARRAYLANG['TXT_GALLERY_SINGLE_IMAGE_VIEW'] = "Affichage 1 image à la fois";
 $_ARRAYLANG['TXT_GALLERY_SHOW_FILE_NAME'] = "Afficher le nom de l'image";
-$_ARRAYLANG['TXT_GALLERY_GD_LIB_NOT_INSTALLED'] = "Image n'a pas pu être tourné, parceque la fonction PHP imagerotate manque.";
 ?>
