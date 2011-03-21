@@ -202,6 +202,19 @@ class cmsSession
         return $this->sessionPath;
     }
 
+    /**
+     * Gets a web temp path.
+     * This path is needed to work with the File-class from the framework.
+     *
+     * @return string 
+     */
+    function getWebTempPath() {
+        $tp = $this->getTempPath();
+        if(!$tp)
+            return false;
+        return ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
+    }
+
     public function cleanTempPaths()
     {
         $dirs = array();

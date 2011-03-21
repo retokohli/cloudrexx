@@ -1,0 +1,22 @@
+#form_uploader .submitButton {
+    margin-top: 8px;
+}
+
+#form_uploader .delete {
+    display:inline-block;
+    background-image: url(../../../../../cadmin/images/icons/delete.gif);
+    width: 18px;
+    height: 18px;
+    vertical-align:middle;
+}
+
+#form_uploader .add {
+    display:block;
+    background-image: url(../../../../../cadmin/images/icons/add.gif);
+    width: 18px;
+    height: 18px;
+}
+
+#form_uploader .file input {
+    width: 96%;
+}

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Media Manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -199,10 +198,6 @@ class MediaManager extends MediaLibrary
                 $this->_createNewDir($_POST['dirName']);
                 $this->_overviewMedia();
                 break;
-            case 'upload':
-                $this->_uploadMedia();
-                $this->_overviewMedia();
-                break;
             case 'download':
                 $this->_downloadMedia();
                 //$this->_overviewMedia();
@@ -339,26 +334,46 @@ class MediaManager extends MediaLibrary
             }
         }
 
+        /**
+         * Uploader button handling
+         */
+        require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
+        //data we want to remember for handling the uploaded files
+        $data = array(
+            'path' => $this->path,
+            'webPath' => $this->webPath
+        );
 
-        $objModulChecker = new ModuleChecker();
-        if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
+        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/media/mediaLib.class.php', 'MediaLibrary', 'uploadFinished'));
+        $comboUp->setData($data);
+        //set instance name to combo_uploader so we are able to catch the instance with js
+        $comboUp->setJsInstanceName('exposed_combo_uploader');
+		$redirectUrl = CSRF::enhanceURI('index.php?'.$_SERVER['QUERY_STRING'].'&highlightUploadId='.$comboUp->getUploadId());
+		$redirectUrl = str_replace('&act=delete', '', $redirectUrl);
+        $comboUp->setRedirectUrl('cadmin/'.$redirectUrl);
+        
+        $this->_objTpl->setVariable(array(
+              'FILEBROWSER_ADVANCED_UPLOAD_PATH'  => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->archive.'&amp;path='.urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1)),
+			  'REDIRECT_URL'					  => $redirectUrl,
+              'TXT_MEDIA_FILE_UPLOADER'           => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'],
+              'TXT_MEDIA_START_FILE_UPLOADER'     => $_ARRAYLANG['TXT_MEDIA_START_FILE_UPLOADER'],
+              'TXT_MEDIA_FILE_UPLOADER_DESC'      => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC'],
+              'COMBO_UPLOADER_CODE'               => $comboUp->getXHtml(true)
+        ));
+        //end of uploader button handling
 
-            $this->_objTpl->setVariable(array(
-                'FILEBROWSER_ADVANCED_UPLOAD_PATH'  => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->archive.'&amp;path='.urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1)),
-                'TXT_MEDIA_FILE_UPLOADER'           => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'],
-                'TXT_MEDIA_START_FILE_UPLOADER'     => $_ARRAYLANG['TXT_MEDIA_START_FILE_UPLOADER'],
-                'TXT_MEDIA_FILE_UPLOADER_DESC'      => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC']
-            ));
+        //check if a finished upload caused reloading of the page.
+        //if yes, we know the added files and want to highlight them
+        if (!empty($_GET['highlightUploadId'])) {
+            $key = 'media_upload_files_'.intval($_GET['highlightUploadId']);
+            $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in mediaLib::uploadFinished
+            //clean up session; we do only highlight once
+            unset($_SESSION[$key]);
 
-            $this->_objTpl->parse('media_use_advanced_file_uploader');
-
-            if (!empty($_GET['highlightFiles'])) {
-                $this->highlightName = array_merge($this->highlightName, array_map('basename', json_decode(contrexx_stripslashes(urldecode($_GET['highlightFiles'])))));
-            }
-        } else {
-            $this->_objTpl->hideBlock('media_use_advanced_file_uploader');
+            if(is_array($sessionHighlightCandidates)) //make sure we don't cause any unexpected behaviour if we lost the session data
+                $this->highlightName = $sessionHighlightCandidates;
         }
-
 
         // media directory tree
         $i       = 1;
@@ -369,6 +384,8 @@ class MediaManager extends MediaLibrary
             if (isset($dirTree[$key]['icon']) && is_array($dirTree[$key]['icon'])) {
                 for ($x = 0; $x < count($dirTree[$key]['icon']); $x++) {
                     $fileName = $dirTree[$key]['name'][$x];
+                    // colors
+		    	    $class = ($x % 2) ? 'row2' : 'row1';
                     if (in_array($fileName, $this->highlightName)) {
                         $class .= '" style="background-color: '.$this->highlightColor.';';
                     }
@@ -430,7 +447,7 @@ class MediaManager extends MediaLibrary
                     }
 
                     $this->_objTpl->setVariable(array(
-                        'MEDIA_DIR_TREE_ROW'  => 'row'.(++$i % 2 + 1),
+                        'MEDIA_DIR_TREE_ROW'  => $class,
                         'MEDIA_FILE_ICON'     => $this->iconWebPath.$dirTree[$key]['icon'][$x].'.gif',
                         'MEDIA_FILE_NAME'     => $fileName,
                         'MEDIA_FILE_SIZE'     => $this->_formatSize($dirTree[$key]['size'][$x]),

@@ -74,7 +74,7 @@ class FileUploader extends FileUploaderLib
         $this->objTpl->setVariable(array(
             'TXT_FILEUPLOADER_CLOSE'        => $_ARRAYLANG['TXT_FILEUPLOADER_CLOSE'],
             'CONTREXX_CHARSET'              => CONTREXX_CHARSET,
-            'FILEUPLOADER_APPLET_PATH'      => ASCMS_ADMIN_WEB_PATH.'/fileUploader.jar',
+            'FILEUPLOADER_APPLET_PATH'      => ASCMS_MODULE_WEB_PATH.'/fileUploader/lib/fileUploader.jar',
             'FILEUPLOADER_LANG_PATH'        => ASCMS_MODULE_WEB_PATH.'/fileUploader/lib/lang/messages_'.$lang.'.zip',
             'FILEUPLOADER_HANDLER_PATH'     => ASCMS_ADMIN_WEB_PATH.'/index.php'.$this->moduleURI.'&amp;act=upload&amp;type='.$this->mediaType.'&amp;path='.urlencode($this->path),
             'FILEUPLOADER_PARTITION_LENGTH' => $this->getPartitionLength()

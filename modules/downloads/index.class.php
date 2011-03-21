@@ -226,9 +226,6 @@ class downloads extends DownloadsLibrary
                 /* CATEGORY DETAIL PAGE */
                 $this->pageTitle = htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET);
 
-                // process upload
-                $this->processUpload($objCategory);
-
                 // process create directory
                 $this->processCreateDirectory($objCategory);
 
@@ -349,84 +346,100 @@ class downloads extends DownloadsLibrary
         $this->parseGlobalStuff($objCategory);
     }
 
+	public static function uploadFinished($tempPath, $data, $uploadId) {
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-    private function processFormUpload(&$fileName, &$fileExtension, &$suffix)
-    {
-        global $_ARRAYLANG;
+		$path = $data['path'];
+        $webPath = $data['webPath'];
+        $objCategory = Category::getCategory($data['category_id']);
 
-        $inputField = 'downloads_upload_file';
-        if (!isset($_FILES[$inputField]) || !is_array($_FILES[$inputField])) {
-            return false;
-        }
+        // check for sufficient permissions
+        if ($objCategory->getAddFilesAccessId() && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId()) { return; }
 
-        $fileName = !empty($_FILES[$inputField]['name']) ? contrexx_stripslashes($_FILES[$inputField]['name']) : '';
-        $fileTmpName = !empty($_FILES[$inputField]['tmp_name']) ? $_FILES[$inputField]['tmp_name'] : '';
+        //we remember the names of the uploaded files here. they are stored in the session afterwards,
+        //so we can later display them highlighted.
+        $arrFiles = array(); 
 
-        switch ($_FILES[$inputField]['error']) {
-            case UPLOAD_ERR_INI_SIZE:
-                //Die hochgeladene Datei überschreitet die in der Anweisung upload_max_filesize in php.ini festgelegte Grösse.
-                include_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-                $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_SIZE_EXCEEDS_LIMIT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET), FWSystem::getMaxUploadFileSize());
-                break;
-            case UPLOAD_ERR_FORM_SIZE:
-                //Die hochgeladene Datei überschreitet die in dem HTML Formular mittels der Anweisung MAX_FILE_SIZE angegebene maximale Dateigrösse.
-                $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_TOO_LARGE'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                break;
-            case UPLOAD_ERR_PARTIAL:
-                //Die Datei wurde nur teilweise hochgeladen.
-                $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_CORRUPT'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                break;
-            case UPLOAD_ERR_NO_FILE:
-                //Es wurde keine Datei hochgeladen.
+        //rename files, delete unwanted
+        $arrFilesToRename = array(); //used to remember the files we need to rename
+        $h = opendir($tempPath);
+        while (false !== ($file = readdir($h))) {
+			$info = pathinfo($file);
+
+            //skip . and ..
+            if($file == '.' || $file == '..') { continue; }
+
+			$file = self::cleanFileName($file);
+
+			//delete potentially malicious files
+            if(!FWValidator::is_file_ending_harmless($file)) {
+                @unlink($tempPath.'/'.$file);
                 continue;
-                break;
-            default:
-                if (!empty($fileTmpName)) {
-                    $suffix = '';
-                    $file = ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$fileName;
-                    $arrFile = pathinfo($file);
-                    $i = 0;
-                    while (file_exists($file)) {
-                        $suffix = '-'.++$i;
-                        $file = ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
-                    }
+            }
 
-                    if (FWValidator::is_file_ending_harmless($fileName)) {
-                        $fileExtension = $arrFile['extension'];
-
-                        if (@move_uploaded_file($fileTmpName, $file)) {
-                            $fileName = $arrFile['filename'];
-
-                            if (in_array(strtolower($fileExtension), array('jpg', 'jpeg', 'png', 'gif'))) {
-                                ImageManager::_createThumb(ASCMS_DOWNLOADS_IMAGES_PATH.'/', ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/', $arrFile['filename'].$suffix.'.'.$arrFile['extension']);
-                            }
-
-                            return true;
-                        } else {
-                            $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_UPLOAD_FAILED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                        }
-                    } else {
-                        $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_DOWNLOADS_FILE_EXTENSION_NOT_ALLOWED'], htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET));
-                    }
+            //check if file needs to be renamed
+			$newName = '';
+			$suffix = '';
+            if (file_exists($path.$file)) {
+				$suffix = '_'.time();
+                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+					$newName = $info['filename'].$suffix.'.'.$info['extension'];
+					$arrFilesToRename[$file] = $newName;
+					array_push($arrFiles, $newName);
                 }
-                break;
+            }
+
+			ImageManager::_createThumb(ASCMS_DOWNLOADS_IMAGES_PATH.'/', ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/', $info['filename'].$suffix.'.'.$info['extension']);
+
+			$objDownloads = new downloads('');
+			$objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads);
         }
-        return false;
+
+        //rename files where needed
+        foreach($arrFilesToRename as $oldName => $newName){
+            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+        }
+
+        //remeber the uploaded files
+        $_SESSION['media_upload_files_'.$uploadId] = $arrFiles;
+
+        /* unwanted files have been deleted, unallowed filenames corrected.
+           we can now simply return the desired target path, as only valid
+           files are present in $tempPath */
+
+		return array($path, $webPath);
     }
 
+	protected static function cleanFileName($string) {
+        //contrexx file name policies
+        $string = FWValidator::getCleanFileName($string);
 
-    private function processFileUploaderUpload(&$fileName, &$fileExtension, &$suffix)
-    {
-        require_once ASCMS_MODULE_PATH.'/fileUploader/lib/FileUploaderLib.class.php';
-        $objFileUploader = new FileUploaderLib();
-        $objFileUploader->upload(true);
-        $fileName = $objFileUploader->getUploadFileName();
-        $fileExtension = $objFileUploader->getUploadFileExtension();
-        $suffix = $objFileUploader->getUploadFileSuffix();
+        //media library special changes; code depends on those
+        // replace $change with ''
+        $change = array('+');
+        // replace $signs1 with $signs
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
+
+        foreach ($change as $str) {
+            $string = str_replace($str, '_', $string);
+        }
+        for ($x = 0; $x < count($signs1); $x++) {
+            $string = str_replace($signs1[$x], $signs2[$x], $string);
+        }
+        $string = str_replace('__', '_', $string);
+        if (strlen($string) > 60) {
+            $info       = pathinfo($string);
+            $stringExt  = $info['extension'];
+
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
+            $string     = $stringName.'.'.$stringExt;
+        }
+        return $string;
     }
 
-
-    private function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory)
+    public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads)
     {
         $objDownload = new Download();
 
@@ -458,7 +471,7 @@ class downloads extends DownloadsLibrary
         if ($objDownload->getMimeType() == 'image') {
             $objDownload->setImage(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension);
         }
-        $this->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$fileName.$suffix.'.'.$fileExtension)) : null;
+        $objDownloads->arrConfig['use_attr_size'] ? $objDownload->setSize(filesize(ASCMS_DOWNLOADS_IMAGES_PATH.'/'.$fileName.$suffix.'.'.$fileExtension)) : null;
         $objDownload->setVisibility(true);
         $objDownload->setProtection(false);
         $objDownload->setGroups(array());
@@ -466,43 +479,12 @@ class downloads extends DownloadsLibrary
         $objDownload->setDownloads(array());
 
         if (!$objDownload->store($objCategory)) {
-            $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], $objDownload->getErrorMsg());
+            $objDownloads->arrStatusMsg['error'] = array_merge($objDownloads->arrStatusMsg['error'], $objDownload->getErrorMsg());
             return false;
         } else {
             return true;
         }
     }
-
-
-    private function processUpload($objCategory)
-    {
-        global $_ARRAYLANG;
-
-        // check for sufficient permissions
-        if ($objCategory->getAddFilesAccessId()
-            && !Permission::checkAccess($objCategory->getAddFilesAccessId(), 'dynamic', true)
-            && $objCategory->getOwnerId() != $this->userId
-        ) {
-            return;
-        }
-
-        $fileName = '';
-        $fileExtension = '';
-        $suffix = '';
-        if (isset($_REQUEST['fileUploader'])) {
-            $this->processFileUploaderUpload($fileName, $fileExtension, $suffix, $objCategory);
-        } else {
-            if (!$this->processFormUpload($fileName, $fileExtension, $suffix, $objCategory)) {
-                return;
-            }
-        }
-
-        $this->addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory);
-        if (isset($_REQUEST['fileUploader'])) {
-            die($fileName.'.'.$fileExtension);
-        }
-   }
-
 
     private function processCreateDirectory($objCategory)
     {
@@ -617,12 +599,30 @@ class downloads extends DownloadsLibrary
             if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
                 $objFWSystem = new FWSystem();
 
+				//Uploader button handling
+				JS::activate('cx');
+				require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
+				//paths we want to remember for handling the uploaded files
+				$data = array(
+					'path' => ASCMS_DOWNLOADS_IMAGES_PATH,
+					'webPath' => ASCMS_DOWNLOADS_IMAGES_WEB_PATH,
+					'category_id' => $objCategory->getId(),
+				);
+				$comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+				$comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/downloads/index.class.php', 'downloads', 'uploadFinished'));
+				$comboUp->setData($data);
+				//set instance name to combo_uploader so we are able to catch the instance with js
+				$comboUp->setJsInstanceName('exposed_combo_uploader');
+				$redirectUrl = CSRF::enhanceURI('index.php?'.$_SERVER['QUERY_STRING']);
+				$comboUp->setRedirectUrl($redirectUrl);
+
                 $this->objTemplate->setVariable(array(
+					'COMBO_UPLOADER_CODE' 			=> $comboUp->getXHtml(true),
+					'DOWNLOADS_UPLOAD_REDIRECT_URL' => $redirectUrl,
                     'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
                     'TXT_DOWNLOADS_UPLOAD_FILE'     => $_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE'],
                     'TXT_DOWNLOADS_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_DOWNLOADS_MAX_FILE_SIZE'],
                     'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE'],
-                    'DOWNLOADS_UPLOAD_URL'          => CONTREXX_SCRIPT_PATH.$this->moduleParamsHtml.'&amp;category='.$objCategory->getId(),
                     'DOWNLOADS_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
                 ));
                 $this->objTemplate->parse('downloads_simple_file_upload');

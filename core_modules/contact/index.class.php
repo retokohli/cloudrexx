@@ -1,4 +1,6 @@
 <?php
+class ContactException extends Exception
+{}
 /**
  * Contact
  *
@@ -62,6 +64,21 @@ class Contact extends ContactLib
 
     var $captchaError = '';
 
+    /**
+     * An id unique per form submission and user.
+     * This means an user can submit the same form twice at the same time,
+     * and the form gets a different submission id for each submit.
+     * @var integer
+     */
+    protected $submissionId = 0;
+
+    /**
+     * we're in legacy mode if true.
+     * this means file uploads are coming directly from inputs, rather than being
+     * handled by the contrexx upload core-module.
+     * @var boolean
+     */
+    protected $legacyMode;
 
     /**
      * Contact constructor
@@ -93,14 +110,17 @@ class Contact extends ContactLib
 
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
+        $this->handleUniqueId();
 
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
             'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
             'TXT_CONTACT_RESET'     => $_ARRAYLANG['TXT_CONTACT_RESET']
         ));
-
+        
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
+            $this->checkLegacyMode();
+
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
             $this->_getParams();
             $arrFormData =& $this->_getContactFormData();
@@ -136,7 +156,54 @@ class Contact extends ContactLib
             }
         }
 
+        $this->initUploader();
+
         return $this->objTemplate->get();
+    }
+
+    /**
+     * generates an unique id for each form and user.
+     * @see Contact::$submissionId
+     */
+    protected function handleUniqueId() {
+        $id = 0;
+        if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
+            $id = intval($_REQUEST['unique_id']);
+        }
+        else { //generate a new id
+            if(!isset($_SESSION['contact_last_id']))
+                $_SESSION['contact_last_id'] = 0;
+            $id = ++$_SESSION['contact_last_id'];
+        }
+        $this->objTemplate->setVariable('CONTACT_UNIQUE_ID', $id);
+        $this->submissionId = $id;
+    }
+
+    /**
+     * Inits the uploader when displaying a contact form.
+     */
+    protected function initUploader() {
+        //init the uploader       
+        JS::activate('cx'); //the uploader needs the framework
+        require_once(ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php');
+        $f = UploadFactory::getInstance();
+        
+        //retrieve temporary location for uploaded files
+        $tup = self::getTemporaryUploadPath($this->submissionId);
+        //create the folder
+        $fm = new File();
+        $fm->mkdir($tup[0], $tup[1], '/'.$tup[2]);
+        //initialize the widget displaying the folder contents
+        $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+
+        $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml('#contactFormField_uploadWidget','uploadWidget'));
+        
+        $uploader = $f->newUploader('exposedCombo');       
+        $uploader->setJsInstanceName('exposed_combo_uploader');
+        $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
+        $uploader->setData($this->submissionId);
+
+        $this->objTemplate->setVariable('UPLOADER_CODE',$uploader->getXHtml());
     }
 
     function setCaptcha($useCaptcha)
@@ -229,6 +296,64 @@ class Contact extends ContactLib
     }
 
     /**
+     * Checks whether this is an old form and sets $this->legacyMode.
+     * @see Contact::$legacyMode
+     */
+    protected function checkLegacyMode() {
+        $this->legacyMode = !isset($_REQUEST['unique_id']);
+    }
+    
+    /**
+     * Handle uploads
+     * @see Contact::_uploadFilesLegacy()
+     * @return array A list of files that have been stored successfully in the system
+     */
+    protected function _uploadFiles($arrFields) {
+        
+        /* the field unique_id has been introduced with the new uploader.
+         * it helps us to tell whether we're handling an form generated
+         * before the new uploader using the classic input fields or
+         * if we have to treat the files already uploaded by the uploader.
+         */
+        if(!$this->legacyMode) { //new uploader used
+            $id = intval($_REQUEST['unique_id']);
+            $tup = self::getTemporaryUploadPath($id);
+            $tmpUploadDir = $tup[0].'/'.$tup[2].'/'; //all the files uploaded are in here
+            $arrFiles = array(); //we'll collect name => path of all files here and return this
+            
+            //determine where formular uploads are stored
+            $arrSettings = $this->getSettings();
+            $depositionTarget = $arrSettings['fileUploadDepositionPath'].'/';
+
+            //move all files
+            if(!file_exists($tmpUploadDir))
+                throw new ContactException("could not find temporary upload directory '$tmpUploadDir'");
+            $h = opendir($tmpUploadDir);
+            while(false !== ($f = readdir($h))) {
+                if($f != '..' && $f != '.') {
+                    //do not overwrite existing files.
+                    $prefix = '';
+                    while (file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f)) {
+                        if (empty($prefix)) {
+                            $prefix = 0;
+                        }
+                        $prefix ++;
+                    }
+
+                    rename($tmpUploadDir.$f,ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f);
+                    $arrFiles[$f] = $depositionTarget.$prefix.$f;
+                }                    
+            }
+            //cleanup
+            @rmdir($tmpUploadDir);
+            return $arrFiles;
+        }
+        else { //legacy function for old uploader
+            return $this->_uploadFilesLegacy($arrFields);
+        }
+    }
+
+    /**
      * Upload submitted files
      *
      * Move all files that are allowed to be uploaded in the folder that
@@ -239,7 +364,7 @@ class Contact extends ContactLib
      * @see getSettings(), _cleanFileName(), errorMsg, FWSystem::getMaxUploadFileSize()
      * @return array A list of files that have been stored successfully in the system
      */
-    function _uploadFiles($arrFields)
+    function _uploadFilesLegacy($arrFields)
     {
         global $_ARRAYLANG;
 
@@ -463,10 +588,32 @@ class Contact extends ContactLib
             }
         }
 
-        foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-            array_push($arrDbEntry, base64_encode($key).",".base64_encode(contrexx_strip_tags($file)));
+        if($this->legacyMode) { //store files according to their inputs name*/
+            foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                array_push($arrDbEntry, base64_encode($key).",".base64_encode(contrexx_strip_tags($file)));
+            }
         }
+        else { //assign all files uploaded to the uploader fields name
+            $arrTmp = array();
+            foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                array_push($arrTmp, $file);
+            }
+            //a * in front of the file names marks a 'new style' entry
+            $files = '*'.implode('*', $arrTmp);
+            //find the file field's name
+            $fileFieldName = null;
+            foreach($arrFormData['fields'] as $field) {
+                if($field['type'] == 'file') {
+                    $fileFieldName = $field['name'];
+                    break;
+                }
+            }
+            if($fileFieldName == null)
+                throw new ContactException('could not find file field for form with id ' . $arrFormData['id']);
 
+            array_push($arrDbEntry, base64_encode($fileFieldName).','.base64_encode($files));
+        }
+        
         $message = implode(';', $arrDbEntry);
 
         if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_data (`id_form`, `time`, `host`, `lang`, `browser`, `ipaddress`, `data`) VALUES (".$arrFormData['id'].", ".$arrFormData['meta']['time'].", '".$arrFormData['meta']['host']."', '".$arrFormData['meta']['lang']."', '".$arrFormData['meta']['browser']."', '".$arrFormData['meta']['ipaddress']."', '".$message."')") !== false) {
@@ -750,7 +897,7 @@ class Contact extends ContactLib
         global $objDatabase;
 
         $arrFields = array();
-        if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
+        if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd']))) {
             $objFields = $objDatabase->Execute('SELECT `id`, `type`, `attributes` FROM `'.DBPREFIX.'module_contact_form_field` WHERE `id_form`='.$formId);
             if ($objFields !== false) {
                 while (!$objFields->EOF) {
@@ -781,6 +928,30 @@ class Contact extends ContactLib
                 $this->objTemplate->setVariable($arrFields);
             }
         }
+    }
+
+    /**
+     * Gets the temporary upload location for files.
+     * @param integer $submissionId
+     * @return array('path','webpath', 'dirname')
+     */
+    protected static function getTemporaryUploadPath($submissionId) {
+        global $sessionObj;
+        $dirname = 'contact_files_'.$submissionId;
+        $result = array(
+            $sessionObj->getTempPath(),
+            $sessionObj->getWebTempPath(),
+            $dirname
+        );
+        return $result;
+    }
+
+    //Uploader callback
+    public static function uploadFinished($tempPath, $data, $uploadId) {
+        //todo: remove files with bad file extensions
+        //todo: rename files
+        $tup = self::getTemporaryUploadPath($data);
+        return array($tup[0].'/'.$tup[2],$tup[1].'/'.$tup[2]);
     }
 }
 ?>

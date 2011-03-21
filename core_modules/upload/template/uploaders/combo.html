@@ -1,0 +1,26 @@
+<div id="combo_uploader">
+  <div class="uploader">
+    {UPLOADER_CODE}
+  </div>
+  <!-- BEGIN advanced_file_uploader -->
+  <div class="advancedFileUploader">
+  <hr />
+    <div class="advancedLinkContainer"><a class="advancedLink" href="advancedUploader">{OTHER_UPLOADERS_CAPTION} &gt;&gt;</a></div>
+    <div style="display:none" class="uploaderLinks"></div>
+    <div class="clearfix"></div>
+  </div>
+
+  <script type="text/javascript">
+    cx.ready(function() {
+      var cu = new ComboUploader({
+        uploaders: {CONFIG_UPLOADERS_JS},
+        uploadId: {UPLOAD_ID},
+        switchUrl: '{SWITCH_URL}',
+        otherUploadersCaption: '{OTHER_UPLOADERS_CAPTION}',
+        div: $J('#combo_uploader')
+      });
+      {JS_INSTANCE_CODE}
+    });
+  </script>
+  <!-- END advanced_file_uploader -->
+</div>

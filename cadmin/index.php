@@ -27,7 +27,6 @@
  */
 include_once('../lib/DBG.php');
 DBG::deactivate();
-
 $startTime = explode(' ', microtime());
 $adminPage = true;
 
@@ -63,7 +62,6 @@ if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
 
 require_once('../core/API.php');
 include_once('../lib/CSRF.php');
-
 
 //-------------------------------------------------------
 // Initialize database object
@@ -340,7 +338,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // fileBrowser is an exception, as it eats CSRF codes like
 // candy. We're doing CSRF::check_code() in the relevant
 // parts in the module instead.
-if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'fileUploader'))) {
+if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'fileUploader', 'upload'))) {
     CSRF::check_code();
 }
 
@@ -1040,6 +1038,22 @@ switch ($plainCmd) {
         $subMenuTitle = $_CORELANG['TXT_AUCTION_TITLE'];
         $objAuction = new Auction();
         $objAuction->getPage();
+        break;
+
+    /*
+     * Upload Module
+     *
+     * Generates no output, requests are answered by a die()
+     *
+     * @since   2.1.5
+     */
+    case 'upload': 
+        $modulespath = ASCMS_CORE_MODULE_PATH.'/upload/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objUploadModule = new Upload();
+        $objUploadModule->getPage();
+        //execution never reaches this point
         break;
 
     /**

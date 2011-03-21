@@ -274,6 +274,7 @@ class ContactManager extends ContactLib
             break;
 
         case 'save':
+
             $this->_saveForm();
             break;
 
@@ -386,7 +387,17 @@ class ContactManager extends ContactLib
 
                         if (isset($arrEntry['data'][$col])) {
                             if (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'file') {
-                                $value = '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                if(substr($arrEntry['data'],0,1) == '*') {
+                                    //new style entry; multiple files and links
+                                    $arrFiles = explode('*', substr($arrEntry['data'][$col],1)); //the substr kills the leading '*'
+                                    $value = '';
+                                    foreach($arrFiles as $file) {
+                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                    }
+                                }
+                                else { //old entry, single file and link
+                                    $value = '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                }
                             } else {
                                 $value = htmlentities($arrEntry['data'][$col], ENT_QUOTES, CONTREXX_CHARSET);
                             }
@@ -860,9 +871,21 @@ class ContactManager extends ContactLib
                         }
 
                         $boolUsesRecipientField = false;
+                        $fileFieldFound = false;
                         foreach ($arrFields as $arrField) {
                         	if($arrField['type'] == 'recipient'){
                         	    $boolUsesRecipientField = true;
+                            }
+
+                            if($arrField['type'] == 'file') {
+                                if(!$fileFieldFound) { //first time running into a file field
+                                    $fileFieldFound = true;
+                                }
+                                else { //multiple file fields in this form - we do not want this
+                                    $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_MULTIPLE_UPLOAD_FIELDS'];
+                                    $this->_modifyForm();
+                                    return;
+                                }
                             }
                         }                       
 
@@ -1274,6 +1297,8 @@ class ContactManager extends ContactLib
     {
         global $_ARRAYLANG, $objInit, $objDatabase;
 
+        $hasFileInput = false; //remember if we added a file input -> this would need the uploader to be initialized
+
         $arrFields = $this->getFormFields($id);
         $sourcecode = array();
         $this->initContactForms(true);
@@ -1324,7 +1349,9 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'file':
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
+                    $sourcecode[] = '<div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget"></div>';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormField_upload" type="file" name="contactFormField_upload" disabled="disabled"/>';
+                    $hasFileInput = true;
                     break;
 
                 case 'hidden':
@@ -1408,11 +1435,15 @@ class ContactManager extends ContactLib
         $sourcecode[] = "<p>";
         $sourcecode[] = '<input class="contactFormClass_button" type="submit" name="submitContactForm" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_SUBMIT'] : '{TXT_CONTACT_SUBMIT}').'" /><input class="contactFormClass_button" type="reset" value="'.($preview ? $_ARRAYLANG['TXT_CONTACT_RESET'] : '{TXT_CONTACT_RESET}').'" />';
         $sourcecode[] = "</p>";
+        $sourcecode[] = '<input type="hidden" name="unique_id" value="{CONTACT_UNIQUE_ID}" />';
         $sourcecode[] = "</fieldset>";
         $sourcecode[] = "</form>";
         $sourcecode[] = "<!-- END contact_form -->";
 
         $sourcecode[] = $this->_getJsSourceCode($id, $arrFields, $preview, $show);
+
+        if($hasFileInput)
+            $sourcecode[] = $this->getUploaderSourceCode();
 
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
@@ -1420,7 +1451,6 @@ class ContactManager extends ContactLib
 
         return implode("\n", $sourcecode);
     }
-
 
     function _getEntryDetails($arrEntry, $formId)
     {
@@ -1441,7 +1471,22 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'file':
-                    $sourcecode .= isset($arrEntry['data'][$arrField['name']]) ? '<a href="'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($arrEntry['data'][$arrField['name']], ENT_QUOTES, CONTREXX_CHARSET).'</a>' : '&nbsp;';
+                    if(isset($arrEntry['data'][$arrField['name']])) {
+                        $fieldData = $arrEntry['data'][$arrField['name']];
+                        if(substr($fieldData,0,1) == '*') {
+                            $arrFiles = explode('*', substr($fieldData,1)); //the substr kills the leading '*';
+                            foreach($arrFiles as $file) {
+                                $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                $sourcecode .= '&nbsp;';
+                            }
+                        }
+                        else {
+                            $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                        }
+                    }
+                    else {
+                        $sourcecode .= '&nbsp;';
+                    }
                     break;
 
                 case 'text':
@@ -2107,13 +2152,34 @@ function setListBorder(field, borderColor) {
 }
 
 JS_setListBorder;
-
+      
         $code .= <<<JS_misc
 /* ]]> */
 </script>
 
 JS_misc;
         return $code;
+    }
+
+    protected function getUploaderSourceCode() {
+        $source .= <<<EOS
+{UPLOAD_WIDGET_CODE}
+{UPLOADER_CODE}
+<script>
+    cx.include(
+        [
+            'core_modules/contact/js/extendedFileInput.js'
+        ],
+        function() {
+            var ef = new ExtendedFileInput({
+               field:  \$J('#contactFormField_upload')
+            });            
+        }
+    );
+</script>
+EOS;
+
+        return $source;
     }
 }
 ?>

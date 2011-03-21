@@ -1,14 +1,6 @@
 <?php
-
-/**
- * Javascript
- * @author      Stefan Heinemann <sh@comvation.com>
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
- * @subpackage  module_feed
- * @todo        Edit PHP DocBlocks!
- */
-
+//this is needed for ContrexxJS (activated with 'cx')
+require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/ContrexxJavascript.php';
 /**
  * Javascript
  * @author      Stefan Heinemann <sh@comvation.com>
@@ -110,7 +102,28 @@ class JS
             'specialcode'  => 'var tmpOnLoad = window.onload; window.onload = function() { if(tmpOnLoad){tmpOnLoad();} Shadowbox.init(); }',
             'loadcallback' => 'parseShadowBoxOptions',
             'makecallback' => 'makeShadowBoxOptions'
-        )
+        ),
+        'jquery'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery/jquery-1.4.4.min.js',
+            ),
+            'specialcode'  => 'var $J = jQuery.noConflict();',
+        ),
+        'cx'         => array(
+            'jsfiles'      => array(
+                'lib/javascript/cx/contrexxJs.js',
+                'lib/javascript/cx/contrexxJs-tools.js',
+                'lib/javascript/jquery/jquery.includeMany-1.2.2.min.js' //to dynamically include javascript files
+            ),
+            'dependencies' => array('jquery')
+            //we insert the specialCode for the Contrexx-API later in getCode()
+        ),
+        'jquery-tools'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery/tools/jquery.tools.min.js',
+            ),
+            'dependencies' => array('jquery')
+        ),
     );
 
     /**
@@ -287,7 +300,7 @@ class JS
             return false;
         }
 
-        if (array_search(file, self::$customCSS) === false) {
+        if (array_search($file, self::$customCSS) === false) {
             self::$customCSS[] = $file;
         }
 
@@ -348,6 +361,11 @@ class JS
                 if (isset($data['makecallback'])) {
                     self::$data['makecallback']();
                 }
+
+                //special case contrexx-API: fetch specialcode if activated
+                if($name == 'cx') {
+                    $specialcode[] = ContrexxJavascript::getInstance()->initJs();
+                }                  
             }
         }
 

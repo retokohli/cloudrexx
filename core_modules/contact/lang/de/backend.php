@@ -145,4 +145,5 @@ $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'] = "Empfängeradressen Au
 $_ARRAYLANG['TXT_CONTACT_INVALID_EMAIL'] = "Die E-Mail Adresse '%s' ist nicht gültig!";
 $_ARRAYLANG['TXT_CONTACT_FORM_ENTRY_DELETED'] = "Der Eintrag wurde gelöscht.";
 $_ARRAYLANG['TXT_CONTACT_SET_MANDATORY_FIELD'] = "All Mandatory field values must be set!";
+$_ARRAYLANG['TXT_CONTACT_FORM_MULTIPLE_UPLOAD_FIELDS'] = "Sie haben mehrere Uploadfelder erstellt. Ein Formular darf nur ein Uploadfeld enthalten (dort können mehrere Dateien heraufgeladen werden)";
 ?>

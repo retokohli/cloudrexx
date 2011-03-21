@@ -49,6 +49,6 @@ if(!empty($_GET['bbcode'])){
 FCKConfig.LinkBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true&langId=<?php echo $langId;?>&absoluteURIs=<?php echo $absoluteURIs;?>&type=webpages' ;
 FCKConfig.ImageBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true&langId=<?php echo $langId;?>&absoluteURIs=<?php echo $absoluteURIs;?>';
 FCKConfig.FlashBrowserURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true&langId=<?php echo $langId;?>&absoluteURIs=<?php echo $absoluteURIs;?>';
-FCKConfig.LinkUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true&type=webpages';
-FCKConfig.ImageUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';
-FCKConfig.FlashUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&act=FCKEditorUpload&standalone=true';
+FCKConfig.LinkUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true&type=webpages';
+FCKConfig.ImageUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true';
+FCKConfig.FlashUploadURL = FCKConfig.BasePath + '../../..<?php echo ASCMS_BACKEND_PATH; ?>/index.php?cmd=fileBrowser&standalone=true';

@@ -123,10 +123,12 @@ $_CONFIG['dataUseModule']            = 1;
 
 /**
 * -------------------------------------------------------------------------
-* FileUploader
+* Upload
 * -------------------------------------------------------------------------
 */
-$_CONFIG['fileUploaderStatus']       = "off";
+$_CONFIG['advancedUploadBackend']    = "on";
+$_CONFIG['advancedUploadFrontend']   = "on";
+$_CONFIG['fileUploaderStatus']       = "on";
 
 /**
 * -------------------------------------------------------------------------
