@@ -65,12 +65,6 @@
 		</td>
 	</tr>
 	<tr class="row2">
-		<td nowrap="nowrap" valign="top">{TXT_SETTINGS_UPLOAD}</td>
-		<td>
-			<input type="text" name="max_images_upload" value="{SETTINGS_VALUE_MAX_IMAGES_UPLOAD}" style="width:50px" />
-		</td>
-	</tr>
-	<tr class="row1">
 		<td nowrap="nowrap" valign="top">{TXT_SETTINGS_VALIDATION_TYPE}</td>
 		<td>
 			<input type="radio" name="validation_standard_type" value="all" {SETTINGS_VALUE_VALIDATION_TYPE_ALL} /><label for="validation_standard_type">{TXT_SETTINGS_VALIDATION_ALL}</label><br />
@@ -80,7 +74,7 @@
 			<input type="radio" name="validation_standard_type" value="single" {SETTINGS_VALUE_VALIDATION_TYPE_SINGLE} /><label for="validation_standard_type">{TXT_SETTINGS_VALIDATION_SINGLE}</label>
 		</td>
 	</tr>
-	<tr class="row2">
+	<tr class="row1">
 		<td nowrap="nowrap" valign="top">{TXT_SETTINGS_THUMB_TYPE}</td>
 		<td>
 			<input type="radio" name="standard_size_type" value="abs" {SETTINGS_VALUE_THUMB_TYPE_ABS} /><label for="standard_size_type">{TXT_SETTINGS_THUMB_ABS}</label><br />
@@ -94,14 +88,14 @@
 			</div>
 		</td>
 	</tr>
-	<tr class="row1">
+	<tr class="row2">
 		<td nowrap="nowrap" valign="top">{TXT_SETTINGS_QUALITY}</td>
 		<td>
 			<input type="text" name="standard_quality" value="{SETTINGS_VALUE_STANDARD_QUALITY}" style="width:50px">&nbsp;<label for="standard_quality">{TXT_STANDARD_QUALITY_UPLOADED_PICS}</label><br />
 			<input type="text" name="quality" value="{SETTINGS_VALUE_QUALITY}" style="width:50px">&nbsp;<label for="quality">{TXT_QUALITY}</label><br />
 		</td>
 	</tr>
-	<tr class="row2">
+	<tr class="row1">
 		<td nowrap="nowrap" valign="top">{TXT_GALLERY_SETTINGS_POPUP_ENABLED}</td>
 		<td>
             <input type="checkbox" onchange="if (this.checked) { $('slide_settings').show(); $('image_width_settings_container').show(); } else { $('slide_settings').hide(); $('image_width_settings_container').hide(); }" name="enable_popups" value="on" {SETTINGS_VALUE_ENABLE_POPUPS} />
@@ -117,19 +111,19 @@
 			</div>
 		</td>
 	</tr>
-	<tr class="row1" id="image_width_settings_container" style="{IMAGE_WIDTH_CONTAINER_VISIBILITY}">
+	<tr class="row2" id="image_width_settings_container" style="{IMAGE_WIDTH_CONTAINER_VISIBILITY}">
         <td nowrap="nowrap" valign="top">{TXT_GALLERY_SETTINGS_IMAGE_WIDTH}</td>
         <td>
             <input type="text" size="2" name="image_width" value="{SETTINGS_VALUE_IMAGE_WIDTH}"  />
         </td>
 	</tr>
-	<tr class="row2">
+	<tr class="row1">
 		<td nowrap="nowrap" valign="top">{TXT_GALLERY_SETTINGS_PAGING}</td>
 		<td>
 			<input type="text" size="2" name="paging" value="{SETTINGS_VALUE_PAGING}"  />
 		</td>
 	</tr>
-	<tr class="row1">
+	<tr class="row2">
 		<td nowrap="nowrap" valign="top" width="10%">{TXT_SETTINGS_IMAGENAME_SHOW}</td>
 		<td width="90%">
 			<input type="checkbox" name="show_names" value="on" {SETTINGS_VALUE_SHOW_NAMES} />

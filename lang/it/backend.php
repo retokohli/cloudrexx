@@ -1054,4 +1054,5 @@ $_ARRAYLANG['TXT_CSRF_DESCR'] = "You are changing the system configuration. If y
 $_ARRAYLANG['TXT_CSRF_ABORT'] = "discard changes";
 $_ARRAYLANG['TXT_CSRF_CONTINUE'] = "save changes";
 $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "The alias %s couldn't be used, because it is physically present!";
+$_ARRAYLANG['UPLOAD_FINISHED'] = 'Upload finished';
 ?>

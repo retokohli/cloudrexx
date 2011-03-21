@@ -639,4 +639,5 @@ $_ARRAYLANG['TXT_ALIAS_MODULE_DESCRIPTION'] = "URL-alias administration";
 $_ARRAYLANG['TXT_ALIAS_ADMINISTRATION'] = "Alias administration";
 $_ARRAYLANG['TXT_IMAGE'] = "Image";
 $_ARRAYLANG['TXT_EXP_SEARCH'] = "expanded Search";
+$_ARRAYLANG['UPLOAD_FINISHED'] = 'Upload finished';
 ?>

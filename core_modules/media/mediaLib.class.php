@@ -84,85 +84,6 @@ class MediaLibrary
         imagejpeg($img, '', 100);
     }
 
-
-    /**
-     * upload files to the current directory
-     *
-     * act: upload
-     */
-    function _uploadMedia()
-    {
-        global $_ARRAYLANG, $objTemplate;
-
-        if (empty($_FILES)) return;
-
-        $ok         = 0;
-        $er         = 0;
-        $errorFiles = array();
-        $warn       = false;
-        foreach (array_keys($_FILES) as $key) {
-            $file    = $_FILES[$key];
-            for ($x = 0; $x < count($file['name']); $x++) {
-                $tmpFile  = $file['tmp_name'][$x];
-                $fileName = $this->_replaceCharacters($file['name'][$x]);
-                $count = 0;
-                $fileName = preg_replace("/[^\x2c-\x7d]/", "_", $fileName, -1, $count);
-
-                if (!empty($fileName)) {
-                    if (!FWValidator::is_file_ending_harmless($fileName)) {
-                        continue;
-                    }
-
-                    if (file_exists($this->path.$fileName)) {
-                        $info     = pathinfo($fileName);
-                        $exte     = $info['extension'];
-                        $exte     = (!empty($exte)) ? '.'.$exte : '';
-                        $part1    = substr($fileName, 0, strlen($fileName) - strlen($exte));
-                        if (!empty($_REQUEST['uploadForceOverwrite']) && intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                            $fileName = $part1.$exte;
-                        } else {
-                            $fileName = $part1.'_'.(time() + $x).$exte;
-                        }
-                    }
-
-                    $thumb_name = ImageManager::getThumbnailFilename($fileName);
-                    // delete old thumb
-                    if (file_exists($this->path.$thumb_name)) {
-                        @unlink($this->path.$thumb_name);
-                    }
-
-                    if ($count > 0) {
-                        $warn = true;
-                    }
-// This flag should not be reset
-//                    else {
-//                        $warn = false;
-//                    }
-                    if (@move_uploaded_file($tmpFile, $this->path.$fileName)) {
-                        $obj_file = new File();
-                        $obj_file->setChmod($this->path, $this->webPath, $fileName);
-                        $this->highlightName[] = $fileName;
-                        $ok++;
-                    } else {
-                        $errorFiles[] = $fileName;
-                        $er++;
-                    }
-                }
-            }
-        }
-        if ($ok != 0 && $er == 0) {
-            $objTemplate->setVariable('CONTENT_OK_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_NEW_FILE']);
-            if ($warn) {
-                $objTemplate->setVariable('CONTENT_WARNING_MESSAGE', $_ARRAYLANG['TXT_MEDIA_MSG_FILENAME_REPLACED']);
-            }
-        } elseif ($ok == 0 && $er != 0) {
-            $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_ERROR_NEW_FILE']);
-        } else {
-            $objTemplate->setVariable('CONTENT_STATUS_MESSAGE',$_ARRAYLANG['TXT_MEDIA_MSG_SEVERAL_NEW_FILE']);
-        }
-    }
-
-
     /**
      * downloads the media
      *
@@ -175,7 +96,6 @@ class MediaLibrary
             exit;
         }
     }
-
 
     /**
      * Send a file for downloading
@@ -514,35 +434,6 @@ class MediaLibrary
         }
         chmod($thumb_name, $this->chmodFile);
     }
-
-
-    // replaces some characters
-    function _replaceCharacters($string)
-    {
-        // replace $change with ''
-        $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|', '+');
-        // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
-        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
-
-        foreach ($change as $str) {
-            $string = str_replace($str, '_', $string);
-        }
-        for ($x = 0; $x < count($signs1); $x++) {
-            $string = str_replace($signs1[$x], $signs2[$x], $string);
-        }
-        $string = str_replace('__', '_', $string);
-        if (strlen($string) > 60) {
-            $info       = pathinfo($string);
-            $stringExt  = $info['extension'];
-
-            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
-            $string     = $stringName.'.'.$stringExt;
-        }
-        return $string;
-    }
-
 
     // check for manual input in $_GET['path']
     function _pathCheck($path) {
@@ -926,6 +817,100 @@ END;
         return $code;
     }
 
-}
+    /**
+     * this is called as soon as uploads have finished.
+     * takes care of moving them to the right folder
+     * 
+     * @return string the directory to move to
+     */
+    public static function uploadFinished($tempPath, $data, $uploadId){
+        $path = $data['path'];
+        $webPath = $data['webPath'];
 
+        //we remember the names of the uploaded files here. they are stored in the session afterwards,
+        //so we can later display them highlighted.
+        $arrFiles = array(); 
+        
+        //rename files, delete unwanted
+        $arrFilesToRename = array(); //used to remember the files we need to rename
+        $h = opendir($tempPath);
+        while(false !== ($file = readdir($h))) {
+            //delete potentially malicious files
+            if(!FWValidator::is_file_ending_harmless($file)) {
+                @unlink($file);
+                continue;
+            }
+            //skip . and ..           
+            if($file == '.' || $file == '..')
+                continue;
+
+			//clean file name
+            $newName = self::cleanFileName($nameToEscape);
+
+            $newName = '';
+            //check if file needs to be renamed
+            if (file_exists($path.$file)) {
+                $info     = pathinfo($file);
+                $exte     = $info['extension'];
+                $exte     = (!empty($exte)) ? '.'.$exte : '';
+                $part1    = $info['filename'];
+                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+                    $newName = $part1.'_'.time().$exte;
+                }
+            }
+ 
+            //if the name has changed, the file needs to be renamed afterwards
+            if($newName != $file)
+                $arrFilesToRename[$file] = $newName;
+
+            array_push($arrFiles, $newName);
+        }
+        //rename files where needed
+        foreach($arrFilesToRename as $oldName => $newName){
+            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+        }
+
+        //remeber the uploaded files
+        $_SESSION["media_upload_files_$uploadId"] = $arrFiles;
+
+        /* unwanted files have been deleted, unallowed filenames corrected.
+           we can now simply return the desired target path, as only valid
+           files are present in $tempPath                                   */
+	 
+        return array($data['path'],$data['webPath']);
+    }
+
+    // replaces some characters
+    protected static function cleanFileName($string)
+    {
+        //contrexx file name policies
+        $string = FWValidator::getCleanFileName($string);
+
+        //media library special changes; code depends on those
+        // replace $change with ''
+        $change = array('+');
+        // replace $signs1 with $signs
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
+
+        foreach ($change as $str) {
+            $string = str_replace($str, '_', $string);
+        }
+        for ($x = 0; $x < count($signs1); $x++) {
+            $string = str_replace($signs1[$x], $signs2[$x], $string);
+        }
+
+        $string = str_replace('__', '_', $string);
+        if (strlen($string) > 60) {
+            $info       = pathinfo($string);
+            $stringExt  = $info['extension'];
+
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
+            $string     = $stringName.'.'.$stringExt;
+        }
+        return $string;
+    }
+
+}
 ?>

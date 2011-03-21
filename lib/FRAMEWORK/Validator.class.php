@@ -200,5 +200,16 @@ class FWValidator
         );
         return $result;
     }
+    /**
+     * Get a file name that is allowed on all file systems.
+     */
+    public static function getCleanFileName($fileName)
+    {
+        // replace $change with ''
+        $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|');
+        $fileName = str_replace($change, '_', $fileName);
+
+        return $fileName;
+    }
 }
 ?>

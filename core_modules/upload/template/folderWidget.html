@@ -1,0 +1,15 @@
+<script type="text/javascript">
+    cx.include(
+        ['core_modules/upload/js/folderWidget.js'],
+        function() {
+            var fw = new FolderWidget({
+                container: $J(cx.variables.get('containerSelector', 'folderWidget_{ID}')),
+                id: {ID},
+                refreshUrl: cx.variables.get('refreshUrl', 'folderWidget_{ID}'),
+                deleteUrl: cx.variables.get('deleteUrl', 'folderWidget_{ID}'),
+                files: cx.variables.get('files', 'folderWidget_{ID}')
+            });
+            cx.instances.set(cx.variables.get('instanceName', 'folderWidget_{ID}'), fw, 'folderWidget');
+        }
+    );
+</script> 

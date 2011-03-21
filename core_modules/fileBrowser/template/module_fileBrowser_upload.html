@@ -5,12 +5,11 @@
 		<tbody>
 			<tr>
 				<td>
-                    <input type="file" name="fileBrowserUploadFile" />&nbsp;<input type="submit" name="uploadFile" value="{TXT_UPLOAD_FILE}" />
+					<input id="exposedComboUploaderStarter" type="button" name="exposedComboUploaderStarter" value="{TXT_UPLOAD_FILE}" />
                     <!-- BEGIN fileBrowser_advanced_upload -->
                     <script language="javascript" type="text/javascript">
                     // <![CDATA[
-                    function openWindow(theURL,winName,features)
-                    {
+                    function openWindow(theURL,winName,features) {
                         objPopup = window.open(theURL,"fileUploader",features);
                         objPopup.focus();
                     }
@@ -22,9 +21,18 @@
                 </td>
 			</tr>
 			<tr>
-                <td><input type="text" name="newDir" /> <input type="submit" name="createDir" value="{TXT_CREATE_DIRECTORY}" /></td>
+                <td><input type="text" name="newDir" /><input type="submit" name="createDir" value="{TXT_CREATE_DIRECTORY}" /></td>
 			</tr>
 		</tbody>
 	</table>
 </form>
+{COMBO_UPLOADER_CODE}
+<script type="text/javascript">
+	cx.ready(function(){
+		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+		uploader.dialog().bind('close',function(){
+			window.location = '{REDIRECT_URL}';
+		});
+	},true);
+</script>
 <!-- end module_fileBrowser_upload.html -->

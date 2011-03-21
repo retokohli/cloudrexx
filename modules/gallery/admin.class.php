@@ -236,7 +236,7 @@ class galleryManager extends GalleryLibrary
             break;
             case 'upload_images':
                 $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'];
-                $this->uploadImages();
+                $this->uploadFinished();
                 $this->showValidateForm();
             break;
             case 'validate_form':
@@ -382,7 +382,7 @@ class galleryManager extends GalleryLibrary
         if (isset($arrayPicToDel)) {
             foreach ($arrayPicToDel as $id => $path) {
                 if (is_file($this->strThumbnailPath.$path)) {
-                    @unlink($this->strThumbnailPath.$path);
+                   @unlink($this->strThumbnailPath.$path);
                 }
                 if (is_file($this->strImagePath.$path)) {
                     @unlink($this->strImagePath.$path);
@@ -2140,7 +2140,32 @@ class galleryManager extends GalleryLibrary
     {
         global $objDatabase,$_ARRAYLANG;
 
+        /**
+         * Uploader button handling
+         */
+        require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
+        //paths we want to remember for handling the uploaded files
+        $paths = array(
+            'path' => ASCMS_GALLERY_PATH,
+            'webPath' => ASCMS_GALLERY_WEB_PATH
+        );
+        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/gallery/admin.class.php', 'galleryManager', 'uploadFinished'));
+        $comboUp->setData($paths);
+        //set instance name to combo_uploader so we are able to catch the instance with js
+        $comboUp->setJsInstanceName('exposed_combo_uploader');
+		$redirectUrl = CSRF::enhanceURI('index.php?cmd=gallery&act=validate_form');
+        $comboUp->setRedirectUrl('cadmin/'.$redirectUrl);
+
+        $this->_objTpl->loadTemplateFile('module_gallery_upload_images.html', true, true);
+        $this->_objTpl->setVariable(array(
+              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
+			  'REDIRECT_URL'		=> $redirectUrl
+        ));
+        //end of uploader button handling
+
         //get enabled filetypes
+		$strEnabledTypes = '';
         if ($this->boolGifEnabled == true) {
             $strEnabledTypes .= 'GIF ';
         }
@@ -2153,103 +2178,132 @@ class galleryManager extends GalleryLibrary
             $strEnabledTypes .= 'PNG ';
         }
 
-        $this->_objTpl->loadTemplateFile('module_gallery_upload_images.html',true,true);
-         $this->_objTpl->setVariable(array(
-            'TXT_TITLE'                    =>    $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
-            'TXT_IMAGENUMBER'            =>    $_ARRAYLANG['TXT_GALLERY_UPLOAD_FORM_IMAGE_NUMBER'],
-            'TXT_ENABLED_IMAGE_TYPE'    =>    $_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'].' '.$strEnabledTypes.'. '.$_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'],
-            'TXT_BUTTON_SUBMIT'            =>    $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM_SUBMIT']
+        $this->_objTpl->setVariable(array(
+            'TXT_TITLE'                 =>    $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'],
+            'TXT_IMAGENUMBER'           =>    $_ARRAYLANG['TXT_GALLERY_UPLOAD_FORM_IMAGE_NUMBER'],
+            'TXT_ENABLED_IMAGE_TYPE'	=>    $_ARRAYLANG['TXT_GALLERY_FORMAT_SUPPORT'].' '.$strEnabledTypes.'. '.$_ARRAYLANG['TXT_GALLERY_NO_UPLOAD'],
+            'TXT_BUTTON_SUBMIT'         =>    $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM_SUBMIT']
         ));
-
-        $this->_objTpl->setCurrentBlock('showUploadForm');
-        $intRowCounter = 0;
-        for ($i = 1; $i <= $this->arrSettings['max_images_upload'];$i++)
-        {
-            $this->_objTpl->setVariable(array(
-                'UPLOAD_IMAGENUMBER'    =>    $i,
-                'UPLOAD_ROWCLASS'        =>    ($intRowCounter % 2)
-                ));
-            $this->_objTpl->parseCurrentBlock();
-            $intRowCounter++;
-        }
     }
 
 
     /**
      * Upload the submitted images
      *
-     * @global    ADONewConnection
-     * @global    array
-     * @global    array
+     * @global	ADONewConnection
+     * @global  array
+     * @global  array
+     * @param   string		$tempPath
+     * @param   array		$paths
+     * @param   integer    	$uploadId
      */
-    function uploadImages() {
-        global $objDatabase,$_ARRAYLANG,$_CONFIG;
+    public static function uploadFinished($tempPath, $paths, $uploadId) {
+		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+		$objGallery = new galleryManager();
 
-        $uploadedImagesCounter = 0;
-        for ($i = 1; $i <= $this->arrSettings['max_images_upload'];$i++) {
-            $strUploaded_Name         = strcheck($_FILES['imageFile'.$i]['name']);
-            $strUploaded_Type        = $_FILES['imageFile'.$i]['type'];
-// TODO: Unused
-//            $intUploaded_Size        = $_FILES['imageFile'.$i]['size'];
-            $strUploaded_Tempname    = $_FILES['imageFile'.$i]['tmp_name'];
-            $intUploaded_Error         = $_FILES['imageFile'.$i]['error'];
+		$path = $paths['path'];
+        $webPath = $paths['webPath'];
 
-            $arrEnabledTypes = array();
+        //we remember the names of the uploaded files here. they are stored in the session afterwards,
+        //so we can later display them highlighted.
+        $arrFiles = array(); 
 
-            if ($this->boolGifEnabled) {
-                $arrEnabledTypes[] = 'image/gif';
+		//get allowed file types
+		$arrAllowedFileTypes = array();
+		if (imagetypes() & IMG_GIF) { $arrAllowedFileTypes[] = 'gif'; }
+		if (imagetypes() & IMG_JPG) { $arrAllowedFileTypes[] = 'jpg'; $arrAllowedFileTypes[] = 'jpeg'; }
+		if (imagetypes() & IMG_PNG) { $arrAllowedFileTypes[] = 'png'; }
+
+        //rename files, delete unwanted
+        $arrFilesToRename = array(); //used to remember the files we need to rename
+        $h = opendir($tempPath);
+		$uploadedImagesCount = 0;
+        while(false !== ($file = readdir($h))) {
+			$info = pathinfo($file);
+
+            //skip . and ..
+            if($file == '.' || $file == '..') { continue; }
+
+			//delete unwanted files
+            if(!in_array($info['extension'], $arrAllowedFileTypes)) {
+               @unlink($tempPath.'/'.$file);
+                continue;
             }
 
-            if ($this->boolJpgEnabled) {
-                $arrEnabledTypes[] = 'image/pjpeg';
-                $arrEnabledTypes[] = 'image/jpeg';
-            }
+			//width of the image is wider than the allowed value. Show Error.
+			$arrImageSize = getimagesize($tempPath.'/'.$file);
+			if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
+				$objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
+                @unlink($tempPath.'/'.$file);
+                continue;
+			}
 
-            if ($this->boolPngEnabled) {
-                $arrEnabledTypes[] = 'image/png';
-            }
-
-            if ($intUploaded_Error == 0 ) { // no errors reported
-                if (in_array($strUploaded_Type, $arrEnabledTypes)) { //filetype is okay
-
-                    $arrSizes = getimagesize($strUploaded_Tempname);
-                    if (intval($arrSizes[0]) > intval($this->arrSettings['image_width'])) {
-                        //Image-Width was bigger than the allowed value. Show Error.
-                        $this->strErrMessage = str_replace('{WIDTH}',$this->arrSettings['image_width'],$_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
-                        return;
-                    }
-
-                    if (file_exists($this->strImagePath.$strUploaded_Name)) { //This filename already exists --> add a number behind the file (1,2,3...)
-                        $strTempFileEnding     = strrchr($strUploaded_Name,'.'); // i have the fileending
-                        $strTempFileName     = '';
-                        $arrTempFile         = explode('.',$strUploaded_Name);
-
-                        for ($j = 0;$j < count($arrTempFile)-1;$j++) {
-                            $strTempFileName .= $arrTempFile[$j].'.';
-                        }
-                        $strTempFileName = substr($strTempFileName,0,strlen($strTempFileName)-1); // i have the filename
-
-                        $boolChecker = false;
-                        $j=1;
-                        while ($boolChecker == false) {
-                            if (!file_exists($this->strImagePath.$strTempFileName.$j.$strTempFileEnding)) { //The filename is okay
-                                $strUploaded_Name = $strTempFileName.$j.$strTempFileEnding;
-                                $boolChecker = true;
-                            }
-                            $j++;
-                        }
-                    }
-                    $strUploadPath         = $this->strImagePath.$strUploaded_Name;
-                    $strDatabasePath     = $strUploaded_Name;
-
-                    move_uploaded_file($strUploaded_Tempname,$strUploadPath);
-                    @chmod($strUploadPath, 0644);
-                    $this->insertImage($strDatabasePath,$strUploaded_Name);
-                    $uploadedImagesCounter++;
+            //check if file needs to be renamed
+			$newName = '';
+            if (file_exists($path.$file)) {
+                $info     = pathinfo($file);
+                $exte     = $info['extension'];
+                $exte     = (!empty($exte)) ? '.'.$exte : '';
+                $part1    = $info['filename'];
+                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+                    $newName = $part1.'_'.time().$exte;
                 }
             }
+
+            //check whether file was renamed above
+            $nameToEscape = $newName == '' ? $file : $newName;
+            $newName = self::cleanFileName($nameToEscape);
+
+            //if the name has changed, the file needs to be renamed afterwards
+            if ($newName != $file) {
+                $arrFilesToRename[$file] = $newName;
+				array_push($arrFiles, $newName);
+			}
+
+			//create entry in the database for the uploaded image
+			self::insertImage($objGallery, $newName, $newName);
+
+			$uploadedImagesCount++;
         }
-        $this->strOkMessage = $uploadedImagesCounter.' '.$_ARRAYLANG['TXT_GALLERY_STATUS_MESSAGE_IMAGES_UPLOADED'];
+
+        //rename files where needed
+        foreach($arrFilesToRename as $oldName => $newName){
+            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+        }
+
+        /* unwanted files have been deleted, unallowed filenames corrected.
+           we can now simply return the desired target path, as only valid
+           files are present in $tempPath */
+		return array($path, $webPath);
+    }
+
+	protected static function cleanFileName($string) {
+        //contrexx file name policies
+        $string = FWValidator::getCleanFileName($string);
+
+        //media library special changes; code depends on those
+        // replace $change with ''
+        $change = array('+');
+        // replace $signs1 with $signs
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
+
+        foreach ($change as $str) {
+            $string = str_replace($str, '_', $string);
+        }
+        for ($x = 0; $x < count($signs1); $x++) {
+            $string = str_replace($signs1[$x], $signs2[$x], $string);
+        }
+        $string = str_replace('__', '_', $string);
+        if (strlen($string) > 60) {
+            $info       = pathinfo($string);
+            $stringExt  = $info['extension'];
+
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
+            $string     = $stringName.'.'.$stringExt;
+        }
+        return $string;
     }
 
 
@@ -2261,20 +2315,21 @@ class galleryManager extends GalleryLibrary
      * @param    string        $strImagePath
      * @param    integer        $imageName
      */
-    function insertImage($strImagePath,$imageName) {
+    public static function insertImage($objGallery, $strImagePath,$imageName) {
         global $objDatabase,$_CONFIG;
 
-        $arrImageInfo     = getimagesize($this->strImagePath.$strImagePath);
+        $arrImageInfo     = getimagesize($objGallery->strImagePath.$strImagePath);
+
         $intOldWidth     = $arrImageInfo[0];
         $intOldHeight     = $arrImageInfo[1];
-        $intNewWidth     = intval($this->arrSettings['standard_width_abs']);
-        $intNewHeight     = intval($this->arrSettings['standard_height_abs']);
+        $intNewWidth     = intval($objGallery->arrSettings['standard_width_abs']);
+        $intNewHeight     = intval($objGallery->arrSettings['standard_height_abs']);
 
         if ($intNewWidth == 0) {
             // exception if width and height or 0!
             if ($intNewHeight == 0) {
-                $this->arrSettings['standard_height_abs'] = 100;
-                $intNewHeight = intval($this->arrSettings['standard_height_abs']);
+                $objGallery->arrSettings['standard_height_abs'] = 100;
+                $intNewHeight = intval($objGallery->arrSettings['standard_height_abs']);
                 $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
             } else {
                 $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
@@ -2287,9 +2342,9 @@ class galleryManager extends GalleryLibrary
                                 INTO     '.DBPREFIX.'module_gallery_pictures
                                 SET     path="'.$strImagePath.'",
                                         lastedit="'.time().'",
-                                        quality="'.$this->arrSettings['standard_quality'].'",
-                                        size_type="'.$this->arrSettings['standard_size_type'].'",
-                                        size_proz="'.$this->arrSettings['standard_size_proz'].'",
+                                        quality="'.$objGallery->arrSettings['standard_quality'].'",
+                                        size_type="'.$objGallery->arrSettings['standard_size_type'].'",
+                                        size_proz="'.$objGallery->arrSettings['standard_size_proz'].'",
                                         size_abs_h="'.$intNewHeight.'",
                                         size_abs_w="'.$intNewWidth.'"');
 
@@ -2665,7 +2720,6 @@ class galleryManager extends GalleryLibrary
                         $intNewThumbHeight     = $objResult->fields['size_abs_h'];
                         $intNewThumbQuality     = $objResult->fields['quality'];
                     }
-
                     //create thumb
                     $this->createImages_JPG_GIF_PNG($this->strImagePath, ASCMS_PATH, $objResult->fields['path'], $arrImageInfo[$objResult->fields['id']]['random_path'], $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
                     $arrFileInfo = getimagesize(ASCMS_PATH.$arrImageInfo[$objResult->fields['id']]['random_path']);
@@ -3186,7 +3240,7 @@ $strFileNew = '';
                 }
             break;
         }
-        @unlink($strThumbPath);
+       @unlink($strThumbPath);
         @rename($strNewPath,$strThumbPath);
 
 
@@ -3236,7 +3290,7 @@ $strFileNew = '';
                 }
             break;
         }
-        unlink($strOrgPath);
+       unlink($strOrgPath);
         rename($strNewBigPath,$strOrgPath);
      }
 
@@ -3459,11 +3513,11 @@ $strFileNew = '';
 
             //insert image in db
             $strDatabasePath = $strImportedImageName;
-            $this->insertImage($strDatabasePath,$strImportedImageName);
+            self::insertImage($this, $strDatabasePath,$strImportedImageName);
 
             //delete imported images
             if (file_exists($this->strImagePath.$strImportedImageName)) {
-                unlink($this->strImportPath.$strFile);
+               unlink($this->strImportPath.$strFile);
             }
         }
     }
@@ -3572,7 +3626,6 @@ $strFileNew = '';
                     $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
                     ImagePNG($handleImage2, $strPathNew.$strFileNew);
-
                     ImageDestroy($handleImage1);
                     ImageDestroy($handleImage2);
                 } else {

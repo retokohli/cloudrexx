@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -205,7 +204,6 @@ if (   isset($_GET['handler'])
 
 
 $section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section']) : '';
-
 // To clone any module, use an optional integer cmd suffix.
 // E.g.: "shop2", "gallery5", etc.
 // Mind that you *MUST* copy all necessary database tables, and fix any
@@ -228,6 +226,7 @@ define('MODULE_INDEX', $moduleIndex);
 //-------------------------------------------------------
 // Load interface language data
 //-------------------------------------------------------
+
 /**
  * Core language data
  * @global array $_CORELANG
@@ -238,7 +237,6 @@ $_CORELANG = $objInit->loadLanguageData('core');
  * @global array $_ARRAYLANG
  */
 $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
-
 //-------------------------------------------------------
 // Webapp Intrusion Detection System
 //-------------------------------------------------------
@@ -270,6 +268,23 @@ $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
 
+
+if($section == 'upload') { //handle uploads separately, since they have no content
+    /*
+     * Upload Module
+     *
+     * Generates no output, requests are answered by a die()
+     *
+     * @since   2.1.5
+     */
+    $modulespath = 'core_modules/upload/index.class.php';
+    if (file_exists($modulespath)) require_once($modulespath);
+    else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+    $objUploadModule = new Upload();
+    $objUploadModule->getPage();
+    //execution never reaches this point
+}
+
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $pageId  = $objInit->getPageID($page, $section, $command, $history);
 }
@@ -281,7 +296,6 @@ $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
 
 require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
-
 //-------------------------------------------------------
 // Frontend Editing: Collect parameters
 //-------------------------------------------------------
@@ -1026,6 +1040,7 @@ $page_content = str_replace('{TITLE}',  $page_title, $page_content);
 //-------------------------------------------------------
 // start module switches
 //-------------------------------------------------------
+
 switch ($plainSection) {
     //-------------------------------------------------------
     // Access module

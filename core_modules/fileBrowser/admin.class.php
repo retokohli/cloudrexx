@@ -10,9 +10,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-/**
- * Includes
- */
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
@@ -58,15 +55,15 @@ class FileBrowser {
     public $_blogEnabled;
     public $_podcastEnabled;
     public $_downloadsEnabled;
-
+    public $highlightedFiles     = array(); // added files
+    public $highlightColor    = '#D8FFCA'; // highlight added files [#d8ffca]
 
     /**
     * PHP5 constructor
     *
     * @global array
     */
-    function __construct()
-    {
+    function __construct() {
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/fileBrowser/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -82,20 +79,18 @@ class FileBrowser {
         $this->_podcastEnabled = $this->_checkForModule('podcast');
         $this->_downloadsEnabled = $this->_checkForModule('downloads');
 
-        $this->_checkUpload();
         $this->checkMakeDir();
         $this->_initFiles();
     }
 
-
     /**
-     * checks whether the a module is available and active
+     * checks whether a module is available and active
      *
      * @return bool
      */
     function _checkForModule($strModuleName) {
         global $objDatabase;
-        if ( ($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'", 1)) != false) {
+        if (($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'", 1)) != false) {
             if ($objRS->RecordCount() > 0) {
                 return true;
             }
@@ -103,14 +98,7 @@ class FileBrowser {
         return false;
     }
 
-
-    /**
-     * Get the type of which media content should be displayed in the file browser
-     * @access private
-     * @see FileBrowser::_arrMediaTypes
-     */
-    function _getMediaType()
-    {
+    function _getMediaType() {
         if (isset($_REQUEST['type']) && isset($this->_arrMediaTypes[$_REQUEST['type']])) {
             return $_REQUEST['type'];
         } else {
@@ -118,13 +106,7 @@ class FileBrowser {
         }
     }
 
-
-    /**
-     * Get the path
-     * @return string    current browsing path
-     */
-    function _getPath()
-    {
+    function _getPath() {
         $path = "";
         if (isset($_REQUEST['path']) && !stristr($_REQUEST['path'], '..')) {
             $path = $_REQUEST['path'];
@@ -137,9 +119,7 @@ class FileBrowser {
         return $path;
     }
 
-
-    function _setFrontendLanguageId()
-    {
+    function _setFrontendLanguageId() {
         global $_FRONTEND_LANGID;
 
         if (!empty($_GET['langId']) || !empty($_POST['langId'])) {
@@ -149,63 +129,22 @@ class FileBrowser {
         }
     }
 
-
-    function _checkURIReturnType()
-    {
+    function _checkURIReturnType() {
         if (!empty($_REQUEST['absoluteURIs'])) {
             $this->_absoluteURIs = (bool) $_REQUEST['absoluteURIs'];
         }
     }
 
-
-    /**
-     * Set the backend page
-     */
-    function getPage()
-    {
-        if (!isset($_REQUEST['act'])) {
-            $_REQUEST['act'] = '';
-        }
-        switch ($_REQUEST['act']) {
-        case 'FCKEditorUpload':
-            $this->_FCKEditorUpload();
-            break;
-
-        default:
-            $this->_showFileBrowser();
-            break;
-        }
+    function getPage() {
+		$this->_showFileBrowser();
     }
-
-
-    function SendResults( $errorNumber, $fileUrl = '', $fileName = '', $customMsg = '' )
-    {
-        echo '<script type="text/javascript">' ;
-        echo 'window.parent.OnUploadCompleted(' . $errorNumber . ',"' . str_replace( '"', '\\"', $fileUrl ) . '","' . str_replace( '"', '\\"', $fileName ) . '", "' . str_replace( '"', '\\"', $customMsg ) . '") ;' ;
-        echo '</script>' ;
-        exit ;
-    }
-
-
-    function _FCKEditorUpload()
-    {
-        if (!isset($_FILES['NewFile']) || is_null($_FILES['NewFile']['tmp_name']) || $_FILES['NewFile']['name'] == '') {
-            $this->SendResults('202');
-        } else {
-            $uploadFileName = '';
-            $this->_uploadFile($_FILES['NewFile']['name'], $_FILES['NewFile']['tmp_name'], $uploadFileName);
-            $this->SendResults( 0, ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path.$uploadFileName, $uploadFileName);
-        }
-    }
-
 
     /**
      * Show the file browser
      * @access private
      * @global array
      */
-    function _showFileBrowser()
-    {
+    function _showFileBrowser() {
         global $_ARRAYLANG;
 
         $this->_objTpl->loadTemplateFile('module_fileBrowser_frame.html');
@@ -249,19 +188,17 @@ class FileBrowser {
         ));
 
         $this->_setNavigation();
-        $this->_setContent(!empty($_GET['noAliases']) ? $_GET['noAliases'] : false);
         $this->_setUploadForm();
+        $this->_setContent(!empty($_GET['noAliases']) ? $_GET['noAliases'] : false);
         $this->_showStatus();
         $this->_objTpl->show();
     }
-
 
     /**
      * set the error/ok messages in the template
      * @return void
      */
-    function _showStatus()
-    {
+    function _showStatus() {
         $okMessage  = implode('<br />', $this->_okMessage);
         $errMessage = implode('<br />', $this->_errMessage);
 
@@ -278,7 +215,6 @@ class FileBrowser {
         }
     }
 
-
     /**
      * put $message in the array specified by type
      * for later use of $this->_showStatus();
@@ -287,8 +223,7 @@ class FileBrowser {
      * @return void
      * @see $this->_showStatus();
      */
-    function _pushStatusMessage($message, $type = 'ok')
-    {
+    function _pushStatusMessage($message, $type = 'ok') {
        switch ($type) {
            case 'ok':
                array_push($this->_okMessage, $message);
@@ -302,34 +237,13 @@ class FileBrowser {
        }
     }
 
-
-    /**
-     * Check if there is a file-upload in the current reqest
-     *
-     */
-    function _checkUpload()
-    {
-        if (isset($_FILES['fileBrowserUploadFile']) && !empty($_FILES['fileBrowserUploadFile'])) {
-            $tmp = '';
-            $this->_uploadFile(
-                $_FILES['fileBrowserUploadFile']['name'],
-                $_FILES['fileBrowserUploadFile']['tmp_name'],
-                $tmp
-            );
-        }
-    }
-
-
-    private function checkMakeDir()
-    {
+    private function checkMakeDir() {
         if (isset($_POST['createDir']) && !empty($_POST['newDir'])) {
             $this->makeDir($_POST['newDir']);
         }
     }
 
-
-    private function makeDir($dir)
-    {
+    private function makeDir($dir) {
         global $_ARRAYLANG;
 
         switch($this->_mediaType) {
@@ -382,119 +296,7 @@ class FileBrowser {
             $this->_pushStatusMessage($_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS'], 'error');
         }
     }
-
-
-    /**
-     * Upload a file
-     * @param string $uploadFileName: the name of the file
-     * @param string $tmpFileName: temporary name of th efile
-     * @param string $uploadedFileName: reference to the file name after upload
-     */
-    function _uploadFile($uploadFileName, $tmpFileName, &$uploadedFileName)
-    {
-        global $_ARRAYLANG;
-
-        $file = $uploadFileName;
-        $fileExtension = '';
-
-        switch($this->_mediaType) {
-            case 'media1':
-                $strPath    = ASCMS_MEDIA1_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->_path;
-            break;
-            case 'media2':
-                $strPath    = ASCMS_MEDIA2_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->_path;
-            break;
-            case 'media3':
-                $strPath    = ASCMS_MEDIA3_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->_path;
-            break;
-            case 'media4':
-                $strPath    = ASCMS_MEDIA4_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->_path;
-            break;
-            case 'shop':
-                $strPath    = ASCMS_SHOP_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'blog':
-                $strPath    = ASCMS_BLOG_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'podcast':
-                $strPath    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'downloads':
-                $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-            break;
-            default:
-                $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
-                $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
-        }
-
-        $nr = 1;
-
-        if (!FWValidator::is_file_ending_harmless($uploadFileName)) {
-            return false;
-        }
-
-        if (@file_exists($strPath.$uploadFileName)) {
-            $arrSubPatterns = array();
-            if (preg_match('/.*\.(.*)$/', $uploadFileName, $arrSubPatterns)) {
-                $fileName = substr($uploadFileName, 0, strrpos($uploadFileName, '.'));
-                $fileExtension = $arrSubPatterns[1];
-                $file = $fileName.'-'.$nr.'.'.$fileExtension;
-                while (@file_exists($strPath.$file)) {
-                    $file = substr($uploadFileName, 0, strrpos($uploadFileName, '.')).'-'.$nr.'.'.$fileExtension;
-                    $nr++;
-                }
-            } else {
-                return false;
-            }
-        }
-        $uploadedFileName = $file;
-
-        if (move_uploaded_file($tmpFileName, $strPath.$file)) {
-            $objFile = new File();
-            $objFile->setChmod($strPath, $strWebPath, $file);
-        }
-        $fileType = pathinfo($strPath.$file);
-        if ($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif') {
-            if ($this->_createThumb($strPath, $strWebPath, $file)) {
-              $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
-            }
-        }
-        return true;
-    }
-
-
-    /**
-     * @todo    OBSOLETE.  Use core/Image.class.php instead.
-     */
-    function _createThumb($strPath, $strWebPath, $file, $height=80, $quality=90)
-    {
-        global $_ARRAYLANG;
-
-        $objFile = new File();
-        $_objImage = new ImageManager();
-        $_objImage->_createThumbWhq(
-            $strPath, $strWebPath, $file, 1e10, $height, $quality
-        );
-//        $tmpSize = getimagesize($strPath.$file);
-//        $thumbWidth = $height / $tmpSize[1] * $tmpSize[0];
-//        $_objImage->loadImage($strPath.$file);
-//        $_objImage->resizeImage($thumbWidth, $height, $quality);
-//        $_objImage->saveNewImage($strPath.$file . '.thumb');
-        if ($objFile->setChmod($strPath, $strWebPath,
-            ImageManager::getThumbnailFilename($file)))
-            return true;
-        return false;
-    }
-
-
+	
     /**
      * Set the navigation with the media type drop-down menu in the file browser
      * @access private
@@ -608,7 +410,6 @@ class FileBrowser {
                         'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;'
                     ));
                     $this->_objTpl->parse('content_files');
-
                     $rowNr++;
                 }
             }
@@ -619,7 +420,8 @@ class FileBrowser {
                     $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".addslashes(htmlentities($arrFile['path'], ENT_COMPAT, CONTREXX_CHARSET))."',".$arrFile['width'].",".$arrFile['height'].",'')",
+						'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
+                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".FWValidator::getEscapedSource($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
                         'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
                         'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
                         'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
@@ -673,14 +475,85 @@ class FileBrowser {
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $objFWSystem = new FWSystem();
+        /**
+         * Uploader handling
+         */
+        require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
+
+        //data we want to remember for handling the uploaded files
+		$data = array();
+		switch($this->_mediaType) {
+            case 'media1':
+                $data['path']    = ASCMS_MEDIA1_PATH.$this->_path;
+                $data['webPath'] = ASCMS_MEDIA1_WEB_PATH.$this->_path;
+            break;
+            case 'media2':
+                $data['path']    = ASCMS_MEDIA2_PATH.$this->_path;
+                $data['webPath'] = ASCMS_MEDIA2_WEB_PATH.$this->_path;
+            break;
+            case 'media3':
+                $data['path']    = ASCMS_MEDIA3_PATH.$this->_path;
+                $data['webPath'] = ASCMS_MEDIA3_WEB_PATH.$this->_path;
+            break;
+            case 'media4':
+                $data['path']    = ASCMS_MEDIA4_PATH.$this->_path;
+                $data['webPath'] = ASCMS_MEDIA4_WEB_PATH.$this->_path;
+            break;
+            case 'shop':
+                $data['path']    = ASCMS_SHOP_IMAGES_PATH.$this->_path;
+                $data['webPath'] = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'blog':
+                $data['path']    = ASCMS_BLOG_IMAGES_PATH.$this->_path;
+                $data['webPath'] = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'podcast':
+                $data['path']    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
+                $data['webPath'] = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
+            break;
+            case 'downloads':
+                $data['path']    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
+                $data['webPath'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
+            break;
+            default:
+                $data['path']    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
+                $data['webPath'] = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
+        }
+
+        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/fileBrowser/admin.class.php','FileBrowser','uploadFinished'));
+        $comboUp->setData($data);
+        //set instance name to combo_uploader so we are able to catch the instance with js
+        $comboUp->setJsInstanceName('exposed_combo_uploader');
+		$redirectUrl = 'index.php?'.$_SERVER['QUERY_STRING'].'&highlightUploadId='.$comboUp->getUploadId();
+        $comboUp->setRedirectUrl('cadmin/'.$redirectUrl);
+
+        $this->_objTpl->setVariable(array(
+              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
+			  'REDIRECT_URL'		=> $redirectUrl
+        ));
+        //end of uploader button handling
+        //check if a finished upload caused reloading of the page.
+        //if yes, we know the added files and want to highlight them
+        if (!empty($_GET['highlightUploadId'])) {
+            $key = 'media_upload_files_'.intval($_GET['highlightUploadId']);
+            $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in FileBrowser::uploadFinished
+            //clean up session; we do only highlight once
+            unset($_SESSION[$key]);
+
+            if(is_array($sessionHighlightCandidates)) //make sure we don't cause any unexpected behaviour if we lost the session data
+                $this->highlightedFiles = $sessionHighlightCandidates;
+        }
+
+		$objFWSystem = new FWSystem();
         $this->_objTpl->addBlockfile('FILEBROWSER_UPLOAD', 'fileBrowser_upload', 'module_fileBrowser_upload.html');
         $this->_objTpl->setVariable(array(
             'FILEBROWSER_UPLOAD_TYPE'   => $this->_mediaType,
             'FILEBROWSER_UPLOAD_PATH'   => $this->_path,
             'FILEBROWSER_MAX_FILE_SIZE' => $objFWSystem->getMaxUploadFileSize(),
             'TXT_CREATE_DIRECTORY'      => $_ARRAYLANG['TXT_FILEBROWSER_CREATE_DIRECTORY'],
-            'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE']
+            'TXT_UPLOAD_FILE'           => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE'],
+			'JAVASCRIPT'            	=> JS::getCode(),
         ));
 
         $objModulChecker = new ModuleChecker();
@@ -696,6 +569,95 @@ class FileBrowser {
         }
 
         $this->_objTpl->parse('fileBrowser_upload');
+    }
+
+
+	/**
+     * this is called as soon as uploads have finished.
+     * takes care of moving them to the right folder
+     * 
+     * @return string the directory to move to
+     */
+    public static function uploadFinished($tempPath, $data, $uploadId) {
+        $path = $data['path'];
+        $webPath = $data['webPath'];
+
+        //we remember the names of the uploaded files here. they are stored in the session afterwards,
+        //so we can later display them highlighted.
+        $arrFiles = array(); 
+        
+        //rename files, delete unwanted
+        $arrFilesToRename = array(); //used to remember the files we need to rename
+        $h = opendir($tempPath);
+        while(false !== ($file = readdir($h))) {
+			$info = pathinfo($file);
+
+            //skip . and ..
+            if($file == '.' || $file == '..') { continue; }
+
+			$file = self::cleanFileName($file);
+
+			//delete potentially malicious files
+            if(!FWValidator::is_file_ending_harmless($file)) {
+                @unlink($tempPath.'/'.$file);
+                continue;
+            }
+
+			//check if file needs to be renamed
+			$newName = '';
+			$suffix = '';
+            if (file_exists($path.$file)) {
+				$suffix = '_'.time();
+                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+					$newName = $info['filename'].$suffix.'.'.$info['extension'];
+					$arrFilesToRename[$file] = $newName;
+					array_push($arrFiles, $newName);
+                }
+            }
+        }
+
+        //rename files where needed
+        foreach($arrFilesToRename as $oldName => $newName){
+            rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+        }
+
+        //remeber the uploaded files
+        $_SESSION["media_upload_files_$uploadId"] = $arrFiles;
+
+        /* unwanted files have been deleted, unallowed filenames corrected.
+           we can now simply return the desired target path, as only valid
+           files are present in $tempPath */
+	 
+        return array($path, $webPath);
+    }
+
+	protected static function cleanFileName($string) {
+        //contrexx file name policies
+        $string = FWValidator::getCleanFileName($string);
+
+        //media library special changes; code depends on those
+        // replace $change with ''
+        $change = array('+');
+        // replace $signs1 with $signs
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
+
+        foreach ($change as $str) {
+            $string = str_replace($str, '_', $string);
+        }
+        for ($x = 0; $x < count($signs1); $x++) {
+            $string = str_replace($signs1[$x], $signs2[$x], $string);
+        }
+        $string = str_replace('__', '_', $string);
+        if (strlen($string) > 60) {
+            $info       = pathinfo($string);
+            $stringExt  = $info['extension'];
+
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
+            $string     = $stringName.'.'.$stringExt;
+        }
+        return $string;
     }
 
 

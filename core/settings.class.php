@@ -258,17 +258,14 @@ class settingsManager
             'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED'   => $arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : 'disabled="disabled"'
         ));
 
-        $objModuleChecker = new ModuleChecker();
-        if ($objModuleChecker->getModuleStatusById(52)) {
-            $objTemplate->setVariable(array(
-                'TXT_FILE_UPLOADER_STATUS'          => $_CORELANG['TXT_SETTINGS_FILE_UPLOADER'],
-                'SETTINGS_FILE_UPLOADER_ON'           => ($arrSettings['fileUploaderStatus'] == 'on') ? 'checked="checked"' : '',
-                'SETTINGS_FILE_UPLOADER_OFF'           => ($arrSettings['fileUploaderStatus'] == 'off') ? 'checked="checked"' : ''
-            ));
-            $objTemplate->parse('showFileUploaderStatus');
-        } else {
-            $objTemplate->hideBlock('showFileUploaderStatus');
-        }
+        $objTemplate->setVariable(array(
+            'TXT_ADVANCED_UPLOAD_STATUS_BACKEND'          => $_CORELANG['TXT_ADVANCED_UPLOAD_STATUS_BACKEND'],
+            'TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'          => $_CORELANG['TXT_ADVANCED_UPLOAD_STATUS_FRONTEND'],
+            'SETTINGS_ADVANCED_UPLOAD_BACKEND_ON'           => ($arrSettings['advancedUploadBackend'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_ADVANCED_UPLOAD_BACKEND_OFF'           => ($arrSettings['advancedUploadBackend'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON'           => ($arrSettings['advancedUploadFrontend'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF'           => ($arrSettings['advancedUploadFrontend'] == 'off') ? 'checked="checked"' : ''
+        ));
     }
 
 
