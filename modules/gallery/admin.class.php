@@ -234,11 +234,6 @@ class galleryManager extends GalleryLibrary
                 Permission::checkAccess(67, 'static');
                 $this->showUploadForm();
             break;
-            case 'upload_images':
-                $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_UPLOAD_FORM'];
-                $this->uploadFinished();
-                $this->showValidateForm();
-            break;
             case 'validate_form':
                 $this->strPageTitle = $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'];
                 Permission::checkAccess(69, 'static');
@@ -2329,41 +2324,35 @@ class galleryManager extends GalleryLibrary
             // exception if width and height or 0!
             if ($intNewHeight == 0) {
                 $objGallery->arrSettings['standard_height_abs'] = 100;
-                $intNewHeight = intval($objGallery->arrSettings['standard_height_abs']);
+                $intNewHeight = $objGallery->arrSettings['standard_height_abs'];
                 $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
             } else {
                 $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
             }
-        } else {
+        } else if ($intNewHeight == 0){
             $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
         }
-
-        $objDatabase->Execute('    INSERT
-                                INTO     '.DBPREFIX.'module_gallery_pictures
-                                SET     path="'.$strImagePath.'",
+        
+        //the link="" is needed as the column has no default value and mysql
+        //doesn't allow to specify one for text columns.
+        $query = '    INSERT
+                                INTO    '.DBPREFIX.'module_gallery_pictures
+                                SET     link="",
+                                        path="'.$strImagePath.'",
                                         lastedit="'.time().'",
                                         quality="'.$objGallery->arrSettings['standard_quality'].'",
                                         size_type="'.$objGallery->arrSettings['standard_size_type'].'",
                                         size_proz="'.$objGallery->arrSettings['standard_size_proz'].'",
                                         size_abs_h="'.$intNewHeight.'",
-                                        size_abs_w="'.$intNewWidth.'"');
+                                        size_abs_w="'.$intNewWidth.'"';
+        $objDatabase->Execute($query);
 
         $intPictureId = $objDatabase->insert_id();
-        $objResult = $objDatabase->Execute('    SELECT        id
-                                                FROM        '.DBPREFIX.'languages
-                                                ORDER BY    id ASC
-                                            ');
-        if ($objResult->RecordCount() > 0) {
-            while (!$objResult->EOF) {
-                $objDatabase->Execute('    INSERT
-                                        INTO    '.DBPREFIX.'module_gallery_language_pics
-                                        SET        picture_id='.$intPictureId.',
-                                                lang_id='.$objResult->fields['id'].',
-                                                name="'.$imageName.'"
-                                    ');
-                $objResult->MoveNext();
-            }
-        }
+        $objResult = $objDatabase->Execute('INSERT INTO '.DBPREFIX.'module_gallery_language_pics 
+                                               (picture_id, lang_id, name)
+                                            SELECT
+                                               '.$intPictureId.', id, "'.$imageName.'"
+                                            FROM contrexx_languages');
     }
 
 
