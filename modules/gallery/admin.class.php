@@ -2325,10 +2325,8 @@ class galleryManager extends GalleryLibrary
             if ($intNewHeight == 0) {
                 $objGallery->arrSettings['standard_height_abs'] = 100;
                 $intNewHeight = $objGallery->arrSettings['standard_height_abs'];
-                $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
-            } else {
-                $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
             }
+            $intNewWidth = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
         } else if ($intNewHeight == 0){
             $intNewHeight = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
         }
@@ -3024,8 +3022,12 @@ $strFileNew = '';
                 $strInsertType         = $_POST['settingsThumbSize'];
 
                 if ($intNewWidth == 0) {
+                    if($intNewHeight == 0)
+                        $intNewHeight = $this->arrSettings['standard_height_abs'];
+                    if($intNewHeight == 0) //set a standard value if the settings default to 0
+                        $intNewHeight = 100;
                     $intNewWidth     = round(($intOldWidth * $intNewHeight) / $intOldHeight,0);
-                } else {
+                } else if ($intNewHeight == 0){
                     $intNewHeight     = round(($intOldHeight * $intNewWidth) / $intOldWidth,0);
                 }
 
