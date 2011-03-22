@@ -1,12 +1,10 @@
 <?php
-
 /**
  * Modul Admin Index
  *
  * CMS Administration
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Engineering Team
- * @version     2.1.2
  * @package     contrexx
  * @subpackage  admin
  */
@@ -29,7 +27,6 @@ include_once('../lib/DBG.php');
 DBG::deactivate();
 $startTime = explode(' ', microtime());
 $adminPage = true;
-
 /**
  * Path, database, FTP configuration settings
  *
