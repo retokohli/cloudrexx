@@ -80,9 +80,9 @@ abstract class Uploader
     }
 
     /**
-     * Set the Url where the User is redirected to after a successful upload, relative to cmsRoot.
-     * e.g. "index.php?cmd=test"
-     * Not all uploaders may redirect, chunked uploading happens without redirect for example.
+     * Used by the factory to set the Url where the User is redirected to after a successful upload
+     * , relative to cmsRoot, e.g. "index.php?cmd=test". Mainly for iframe-using uploaders.
+     * Not all uploaders may need a redirect, chunked uploading happens without redirect for example.
      * Redirection is triggered via @link Uploader::redirect()
      * @param string $url the url, beginning with ASCMS_PATH_OFFSET or ASCMS_ADMIN_WEB_PATH
      * @param boolean $updateSession if a new url is set, this will update the

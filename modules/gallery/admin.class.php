@@ -2149,8 +2149,6 @@ class galleryManager extends GalleryLibrary
         $comboUp->setData($paths);
         //set instance name to combo_uploader so we are able to catch the instance with js
         $comboUp->setJsInstanceName('exposed_combo_uploader');
-		$redirectUrl = CSRF::enhanceURI('index.php?cmd=gallery&act=validate_form');
-        $comboUp->setRedirectUrl('cadmin/'.$redirectUrl);
 
         $this->_objTpl->loadTemplateFile('module_gallery_upload_images.html', true, true);
         $this->_objTpl->setVariable(array(

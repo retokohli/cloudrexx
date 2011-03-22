@@ -525,8 +525,6 @@ class FileBrowser {
         $comboUp->setData($data);
         //set instance name to combo_uploader so we are able to catch the instance with js
         $comboUp->setJsInstanceName('exposed_combo_uploader');
-		$redirectUrl = 'index.php?'.$_SERVER['QUERY_STRING'].'&highlightUploadId='.$comboUp->getUploadId();
-        $comboUp->setRedirectUrl('cadmin/'.$redirectUrl);
 
         $this->_objTpl->setVariable(array(
               'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
