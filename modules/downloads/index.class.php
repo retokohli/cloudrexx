@@ -613,8 +613,6 @@ class downloads extends DownloadsLibrary
 				$comboUp->setData($data);
 				//set instance name to combo_uploader so we are able to catch the instance with js
 				$comboUp->setJsInstanceName('exposed_combo_uploader');
-				$redirectUrl = CSRF::enhanceURI('index.php?'.$_SERVER['QUERY_STRING']);
-				$comboUp->setRedirectUrl($redirectUrl);
 
                 $this->objTemplate->setVariable(array(
 					'COMBO_UPLOADER_CODE' 			=> $comboUp->getXHtml(true),

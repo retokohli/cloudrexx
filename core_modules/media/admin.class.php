@@ -349,9 +349,6 @@ class MediaManager extends MediaLibrary
         $comboUp->setData($data);
         //set instance name to combo_uploader so we are able to catch the instance with js
         $comboUp->setJsInstanceName('exposed_combo_uploader');
-		$redirectUrl = CSRF::enhanceURI('index.php?'.$_SERVER['QUERY_STRING'].'&highlightUploadId='.$comboUp->getUploadId());
-		$redirectUrl = str_replace('&act=delete', '', $redirectUrl);
-        $comboUp->setRedirectUrl('cadmin/'.$redirectUrl);
         
         $this->_objTpl->setVariable(array(
               'FILEBROWSER_ADVANCED_UPLOAD_PATH'  => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->archive.'&amp;path='.urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1)),
