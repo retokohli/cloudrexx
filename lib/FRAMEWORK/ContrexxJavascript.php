@@ -53,7 +53,7 @@ class ContrexxJavascript {
      * @param mixed $value value (mandatory) on single value, else scope (optional)
      * @param mixed $scope scope (mandatory) on single value, else unused
      */
-    public function setVariable($key, $value, $scope) {
+    public function setVariable($key, $value, $scope=null) {
         //if the scope parameter is not set, we're dealing with one of the following cases:
         //a) the key parameter is an array of multiple key-value pairs
         //   => in this case, the scope is in parameter value
