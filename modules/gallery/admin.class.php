@@ -2192,7 +2192,7 @@ class galleryManager extends GalleryLibrary
      * @param   array		$paths
      * @param   integer    	$uploadId
      */
-    public static function uploadFinished($tempPath, $paths, $uploadId) {
+    public static function uploadFinished($tempPath, $tempWebPath, $paths, $uploadId) {
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 		$objGallery = new galleryManager();
 
