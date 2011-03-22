@@ -208,7 +208,9 @@ abstract class Uploader
         global $sessionObj;
 
         //temporary path where files were uploaded
-        $tempPath = $sessionObj->getTempPath().'/upload_'.$this->uploadId;
+        $tempDir = '/upload_'.$this->uploadId;
+        $tempPath = $sessionObj->getTempPath().$tempDir;
+        $tempWebPath = $sessionObj->getWebTempPath().$tempDir;
 
         //we're going to call the callbck, so the data is not needed anymore
         //well... not quite sure. need it again in contact form.
@@ -223,7 +225,7 @@ abstract class Uploader
             require_once $this->callbackData[0];
         }
 
-        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$this->getData(), $this->uploadId);
+        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId);
         
         //the callback could have returned a path where he wants the files moved to
         if(!is_null($ret)) { //we need to move the files
@@ -361,12 +363,12 @@ abstract class Uploader
             while (($file = readdir($dir)) !== false) {
                 $filePath = $targetDir . DIRECTORY_SEPARATOR . $file;
 
-            // Remove temp files if they are older than the max age
-            if (preg_match('/\\.tmp$/', $file) && (filemtime($filePath) < time() - $maxFileAge))
-                @unlink($filePath);
-        }
+                // Remove temp files if they are older than the max age
+                if (preg_match('/\\.tmp$/', $file) && (filemtime($filePath) < time() - $maxFileAge))
+                    @unlink($filePath);
+            }
 
-          closedir($dir);
+            closedir($dir);
         } else
             throw new UploaderException('Failed to open temp directory.');
 

@@ -947,7 +947,7 @@ class Contact extends ContactLib
     }
 
     //Uploader callback
-    public static function uploadFinished($tempPath, $data, $uploadId) {
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId) {
         //todo: remove files with bad file extensions
         //todo: rename files
         $tup = self::getTemporaryUploadPath($data);

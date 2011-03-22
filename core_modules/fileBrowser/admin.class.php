@@ -420,8 +420,8 @@ class FileBrowser {
                     $arrEscapedPaths[] = contrexx_raw2encodedUrl($arrFile['path']);
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'             => $rowNr%2 == 0 ? "row1" : "row2",
-						'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
-                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".FWValidator::getEscapedSource($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
+                        'FILEBROWSER_ROW_STYLE'				=> in_array($arrFile['name'], $this->highlightedFiles) ? ' style="background: '.$this->highlightColor.';"' : '',
+                        'FILEBROWSER_FILE_PATH_DBLCLICK'    => "setUrl('".contrexx_raw2xhtml($arrFile['path'])."',".$arrFile['width'].",".$arrFile['height'].",'')",
                         'FILEBROWSER_FILE_PATH_CLICK'       => "javascript:{showPreview(".(count($arrEscapedPaths)-1).",".$arrFile['width'].",".$arrFile['height'].")}",
                         'FILEBROWSER_FILE_NAME'             => contrexx_stripslashes($arrFile['name']),
                         'FILEBROWSER_FILESIZE'              => $arrFile['size'].' KB',
@@ -536,7 +536,7 @@ class FileBrowser {
         //check if a finished upload caused reloading of the page.
         //if yes, we know the added files and want to highlight them
         if (!empty($_GET['highlightUploadId'])) {
-            $key = 'media_upload_files_'.intval($_GET['highlightUploadId']);
+            $key = 'filebrowser_upload_files_'.intval($_GET['highlightUploadId']);
             $sessionHighlightCandidates = $_SESSION[$key]; //an array with the filenames, set in FileBrowser::uploadFinished
             //clean up session; we do only highlight once
             unset($_SESSION[$key]);
@@ -556,18 +556,6 @@ class FileBrowser {
 			'JAVASCRIPT'            	=> JS::getCode(),
         ));
 
-        $objModulChecker = new ModuleChecker();
-        if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
-            $this->_objTpl->setVariable(array(
-                'TXT_UPLOAD_FILE_MULTI'                => $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'],
-                'TXT_FILEBROWSER_START_FILE_UPLOADER'   => $_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER'],
-                'FILEBROWSER_ADVANCED_UPLOAD_PATH'    => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->_mediaType.'&amp;path='.urlencode($this->_path)
-            ));
-            $this->_objTpl->parse('fileBrowser_advanced_upload');
-        } else {
-            $this->_objTpl->hideBlock('fileBrowser_advanced_upload');
-        }
-
         $this->_objTpl->parse('fileBrowser_upload');
     }
 
@@ -578,7 +566,7 @@ class FileBrowser {
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $data, $uploadId) {
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId) {
         $path = $data['path'];
         $webPath = $data['webPath'];
 
@@ -615,19 +603,33 @@ class FileBrowser {
                 }
             }
         }
-
+        
         //rename files where needed
         foreach($arrFilesToRename as $oldName => $newName){
             rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
         }
 
-        //remeber the uploaded files
-        $_SESSION["media_upload_files_$uploadId"] = $arrFiles;
+        //create thumbnails
+        foreach($arrFiles as $file) {
+            $fileType = pathinfo($file);
+            if ($fileType['extension'] == 'jpg' || $fileType['extension'] == 'jpeg' || $fileType['extension'] == 'png' || $fileType['extension'] == 'gif') {
+                $objFile = new File();
+                $_objImage = new ImageManager();
+                $_objImage->_createThumbWhq($tempPath.'/', $tempWebPath.'/', $file, 1e10, 80, 90);
+                
+                if ($objFile->setChmod($tempPath, $tempWebPath, ImageManager::getThumbnailFilename($file)))
+                    $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_THUMBNAIL_SUCCESSFULLY_CREATED'], $strWebPath.$file));
+            }
+        }
+
+        //remember the uploaded files
+        if(isset($_SESSION["filebrowser_upload_files_$uploadId"])) //do not overwrite already uploaded files
+            $arrFiles = array_merge($_SESSION["filebrowser_upload_files_$uploadId"], $arrFiles);
+        $_SESSION["filebrowser_upload_files_$uploadId"] = $arrFiles;
 
         /* unwanted files have been deleted, unallowed filenames corrected.
            we can now simply return the desired target path, as only valid
-           files are present in $tempPath */
-	 
+           files are present in $tempPath */	 
         return array($path, $webPath);
     }
 
