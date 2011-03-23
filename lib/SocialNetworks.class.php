@@ -93,6 +93,7 @@ class SocialNetworks
     {
         $arr = array();
         $arr['SN_FACEBOOK_LIKE'] = $this->getFacebookLikeButton();
+        $arr['SN_FACEBOOK_SHARE'] = $this->getFacebookShareButton();
 
         return $arr;
     }
