@@ -688,7 +688,6 @@ class Knowledge extends KnowledgeLibrary
         $rated = intval($_POST['rated']);
         if (!isset($_COOKIE['knowledge_rating_'.$id])) {
             try {
-                var_dump(setcookie('knowledge_rating_'.$id, 'rated', 0, ASCMS_PATH_OFFSET.'/'));
                 $this->articles->vote($id, $rated);
             } catch (DatabaseError $e) {
                 die($e->plain());
