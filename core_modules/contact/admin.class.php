@@ -387,12 +387,15 @@ class ContactManager extends ContactLib
 
                         if (isset($arrEntry['data'][$col])) {
                             if (isset($arrFormFields[$arrFormFieldNames[$col]]) && $arrFormFields[$arrFormFieldNames[$col]]['type'] == 'file') {
-                                if(substr($arrEntry['data'],0,1) == '*') {
-                                    //new style entry; multiple files and links
-                                    $arrFiles = explode('*', substr($arrEntry['data'][$col],1)); //the substr kills the leading '*'
+                                $fileData = $arrEntry['data'][$col];
+                                if(substr($fileData,0,1) == '*') { //new style entry
                                     $value = '';
-                                    foreach($arrFiles as $file) {
-                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                    if($fileData != '*' ) { //not empty
+                                        //new style entry; multiple files and links
+                                        $arrFiles = explode('*', substr($fileData,1)); //the substr kills the leading '*'
+                                        foreach($arrFiles as $file) {
+                                            $value .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                        }
                                     }
                                 }
                                 else { //old entry, single file and link
