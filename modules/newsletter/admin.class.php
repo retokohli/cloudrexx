@@ -2440,12 +2440,12 @@ class newsletter extends NewsletterLib
                          WHERE id=$NewsletterID
                     ");
                 }
-            } elseif ($mail->error_count) {
+            } /*elseif ($mail->error_count) {
                 if (strstr($mail->ErrorInfo, 'authenticate')) {
                     $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
                     $ReturnVar = false;
                 }
-            }
+            }*/
         } else {
             if (strstr($mail->ErrorInfo, 'authenticate')) {
                 $this->_strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_AUTH_FAILED'], htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET)).'<br />';
