@@ -13,3 +13,4 @@ Allgemein:
 ****************************************
 Modul: Verzeichnis
 - Bereits erfasste Anhänge werden beim Bearbeiten eines Eintrages beibehalten.
+- Die Anzeige der Anzahl neusten Einträge auf der Übersichtsseite ist korrekt.

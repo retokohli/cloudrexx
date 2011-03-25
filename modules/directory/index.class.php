@@ -209,6 +209,7 @@ class rssDirectory extends directoryLibrary
         if ($cId == 0 && $lId == 0) {
             $objResult = $objDatabase->SelectLimit("SELECT SUM(1) AS feedCount FROM ".DBPREFIX."module_directory_dir WHERE status = 1", 1);
             $allFeeds = $objResult->fields['feedCount'];
+            if ($allFeeds > 5) $allFeeds = 5;
             $insertFeeds = str_replace('%COUNT%', '<b>'.$allFeeds.'</b>', $_ARRAYLANG['TXT_INSERT_FEEDS']);
 
             if ($this->_objTpl->blockExists('showInsertFeeds'))
