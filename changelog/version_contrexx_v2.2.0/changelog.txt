@@ -5,6 +5,8 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Allgemein:
+- SMTP over SSL Unterstützung bei E-Mail Konten (Bsp. Host: ssl://smtp.example.com, Port: 465)
 
 ****************************************
 * Behobene Fehler **********************
