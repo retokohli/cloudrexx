@@ -2141,7 +2141,15 @@ if (document.getElementsByName(\'inputValue['.$inputName.']\')[0].value == "") {
                     }
                 }
 
-                $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
+                /*
+                 * 'attachment' coulmn must be updated only when new file is uploaded or old one is deleted
+                 * other input types must be updated unconditionally.
+                 */
+                if ($inputName != "attachment") {
+                    $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
+                } else if ($inputName == "attachment" && (!empty($_FILES[$inputName]['name']) || $_POST["deleteMedia"][$inputName] == 1)) {
+                    $query .= contrexx_addslashes($inputName)." ='".contrexx_strip_tags(contrexx_addslashes($inputValue))."', ";
+                }
             }
 
             //get status settings
