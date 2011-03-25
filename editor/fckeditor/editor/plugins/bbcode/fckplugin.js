@@ -47,11 +47,11 @@ FCK.DataProcessor =
 
         // [quote]
         while(data.match(/\[quote=([^\]]+)\](.+?)\[\/quote\]/gi)){
-        	data = data.replace( /\[quote=([^\]]+)](.+?)\[\/quote\]/gi, '<span class="quote_from">quote $1:</span><br /><div class="quote">$2</div><br />' ) ;
+        	data = data.replace( /\[quote=([^\]]+)\](.+?)\[\/quote\](<br \/>)?/gi, '<span class="quote_from">quote $1:</span><br /><div class="quote">$2</div><br />' ) ;
 		}
 
 		while(data.match(/\[quote\](.+?)\[\/quote\]/gi)){
-        	data = data.replace( /\[quote\](.+?)\[\/quote\]/gi, '<span class="quote_from">quote:</span><br /><div class="quote">$1</div><br />' ) ;
+        	data = data.replace( /\[quote\](.+?)\[\/quote\](<br \/>)?/gi, '<span class="quote_from">quote:</span><br /><div class="quote">$1</div><br />' ) ;
 		}
 
         // [url]
@@ -96,11 +96,11 @@ FCK.DataProcessor =
 	    // [code]
 	    data = data.replace( /Code:[\r\n]*?<div .*?class="code".*?>([\s\S]*?)<\/div>\r\n/gi, '[code]$1[/code]') ;
 	    // [quote]
-		while(data.match(/<span .*?class="quote_from">quote:<\/span>\r\n*?<div .*?class="quote">([^#]*?)<\/div>\r\n/gi)){
-        	data = data.replace( /<span .*?class="quote_from">quote:<\/span>\r\n*?<div .*?class="quote">([^#]*?)<\/div>\r\n/gi, '[quote]$1[/quote]');
+		while(data.match(/<span .*?class=["']?quote_from["']?>quote:<\/span>\r\n*?<div .*?class=["']?quote["']?>([^#]*?)<\/div>[\r\n]?/gi)){
+        	data = data.replace( /<span .*?class=["']?quote_from["']?>quote:<\/span>\r\n*?<div .*?class=["']?quote["']?>([^#]*?)<\/div>/gi, '[quote]$1[/quote]');
 		}
-		while(data.match(/<span .*?class="quote_from">quote ([0-9a-zA-Z_ ]+):.*?<\/span>\r\n*?<div .*?class="quote">([\s\S]*?)<\/div>\r\n/gi)){
-	    	data = data.replace( /<span .*?class="quote_from">quote ([0-9a-zA-Z_ ]+):.*?<\/span>[\s\S]*?<div .*?class="quote">([\s\S]*?)<\/div>\r\n/gi, '[quote=$1]$2[/quote]') ;
+		while(data.match(/<span .*?class=["']?quote_from["']?>quote ([0-9a-zA-Z_ ]+):.*?<\/span>\r\n*?<div .*?class=["']?quote["']?>([\s\S]*?)<\/div>[\r\n]?/gi)){
+	    	data = data.replace( /<span .*?class=["']?quote_from["']?>quote ([0-9a-zA-Z_ ]+):.*?<\/span>[\s\S]*?<div .*?class=["']?quote["']?>([\s\S]*?)<\/div>/gi, '[quote=$1]$2[/quote]') ;
 		}
 
 		// [url]

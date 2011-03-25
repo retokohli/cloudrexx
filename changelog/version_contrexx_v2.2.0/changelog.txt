@@ -11,6 +11,9 @@ Allgemein:
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Modul: Forum
+- Das Zitieren eines bereits zitierten Eintrages funktioniert korrekt.
+
 Modul: Verzeichnis
 - Bereits erfasste Anhänge werden beim Bearbeiten eines Eintrages beibehalten.
 - Die Anzeige der Anzahl neusten Einträge auf der Übersichtsseite ist korrekt.
