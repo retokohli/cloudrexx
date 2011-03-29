@@ -9,6 +9,7 @@
                 deleteUrl: cx.variables.get('deleteUrl', 'folderWidget_{ID}'),
                 files: cx.variables.get('files', 'folderWidget_{ID}')
             });
+            fw.refresh();
             cx.instances.set(cx.variables.get('instanceName', 'folderWidget_{ID}'), fw, 'folderWidget');
         }
     );

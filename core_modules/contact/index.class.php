@@ -107,7 +107,6 @@ class Contact extends ContactLib
     function getContactPage()
     {
         global $_ARRAYLANG;
-
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
         $this->handleUniqueId();
@@ -124,14 +123,16 @@ class Contact extends ContactLib
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
             $this->_getParams();
             $arrFormData =& $this->_getContactFormData();
+
+
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
                     $this->_sendMail($arrFormData);
                 } else {
                     $this->setCaptcha($useCaptcha);
+                    $this->initUploader();
                     return $this->_showError();
                 }
-
                 if (!$showThanks) {
                     $this->_showFeedback($arrFormData);
                 } else {
@@ -194,7 +195,9 @@ class Contact extends ContactLib
         $fm = new File();
         $fm->mkdir($tup[0], $tup[1], '/'.$tup[2]);
         //initialize the widget displaying the folder contents
+        
         $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+        Logger::getInstance()->log($tup[0].'/'.$tup[2]);
 
         $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml('#contactFormField_uploadWidget','uploadWidget'));
         
@@ -306,10 +309,13 @@ class Contact extends ContactLib
     /**
      * Handle uploads
      * @see Contact::_uploadFilesLegacy()
+     * @param array $arrFields
+     * @param boolean move should the files be moved or 
+     *                do we just want an array of filenames?
+     *                defaults to false. no effect in legacy mode.
      * @return array A list of files that have been stored successfully in the system
      */
-    protected function _uploadFiles($arrFields) {
-        
+    protected function _uploadFiles($arrFields, $move = false) {
         /* the field unique_id has been introduced with the new uploader.
          * it helps us to tell whether we're handling an form generated
          * before the new uploader using the classic input fields or
@@ -339,8 +345,9 @@ class Contact extends ContactLib
                         }
                         $prefix ++;
                     }
-
-                    rename($tmpUploadDir.$f,ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f);
+                    
+                    if($move)
+                        rename($tmpUploadDir.$f,ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f);
                     $arrFiles[$f] = $depositionTarget.$prefix.$f;
                 }                    
             }
@@ -581,6 +588,12 @@ class Contact extends ContactLib
         if (!empty($this->errorMsg)) return false;
 
         $arrDbEntry = array();
+        
+        //handle files and collect the filenames
+        //for legacy mode. this has already been done in the first
+        //_uploadFiles() call in getContactPage().
+        if(!$this->legacyMode)
+            $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields'], true);
 
         if(!empty($arrFormData['data'])) {
             foreach ($arrFormData['data'] as $key => $value) {
