@@ -171,6 +171,15 @@ class JS
     private static $shadowBoxLanguage = "en";
 
     /**
+     * Remembers all js files already added in some way.
+     *
+     * @access private
+     * @static
+     * @var array
+     */
+    private static $registeredJsFiles = array();
+
+    /**
      * Set the offset parameter
      * @param string
      * @static
@@ -193,11 +202,12 @@ class JS
      * the options to be used.
      * @param string $name
      * @param array $options
+     * @param bool $dependencies
      * @access public
      * @static
      * @return bool
      */
-    public static function activate($name, $options = null)
+    public static function activate($name, $options = null, $dependencies = true)
     {
         $name = strtolower($name);
         if (array_key_exists($name, self::$available) === false) {
@@ -207,7 +217,17 @@ class JS
         }
 
         $data = self::$available[$name];
-        if (!empty($data['dependencies'])) {
+		if (!empty($data['ref'])) {
+			$name = $data['ref'];
+			if (array_key_exists($name, self::$available)) {
+				$data = self::$available[$name];
+			} else {
+				self::$error = $name.' unknown reference';
+				return false;
+			}
+		}
+
+        if (!empty($data['dependencies']) && $dependencies) {
             foreach ($data['dependencies'] as $dep) {
                 self::activate($dep);
             }
@@ -235,7 +255,7 @@ class JS
     public static function deactivate($name)
     {
         $name = strtolower($name);
-	$searchResult = array_search($name, self::$active);
+        $searchResult = array_search($name, self::$active);
         if ($searchResult === false)
         {
             self::$error = $name.' is not a valid name for
@@ -243,6 +263,7 @@ class JS
             return false;
         }
         unset(self::$active[$searchResult]);
+
         return true;
     }
 
@@ -339,6 +360,7 @@ class JS
         $jsfiles = array();
         $cssfiles = array();
         $specialcode = array();
+        $retstring  = '';
 
         if (count(self::$active) > 0) {
             foreach (self::$active as $name) {
@@ -348,14 +370,14 @@ class JS
                         one js file...";
                     return false;
                 }
-                $jsfiles = array_merge($jsfiles, $data['jsfiles']);
+                $retstring .= self::makeJSFiles($data['jsfiles']);
 
                 if (!empty($data['cssfiles'])) {
                     $cssfiles = array_merge($cssfiles, $data['cssfiles']);
                 }
 
                 if (isset($data['specialcode']) && strlen($data['specialcode']) > 0) {
-                    $specialcode[] = $data['specialcode'];
+                    $retstring .= self::makeSpecialCode(array($data['specialcode']));
                 }
 
                 if (isset($data['makecallback'])) {
@@ -364,17 +386,15 @@ class JS
 
                 //special case contrexx-API: fetch specialcode if activated
                 if($name == 'cx') {
-                    $specialcode[] = ContrexxJavascript::getInstance()->initJs();
+                    $retstring .= self::makeSpecialCode(array(ContrexxJavascript::getInstance()->initJs()));
                 }                  
             }
         }
 
-        $retstring  = self::makeJSFiles($jsfiles);
         $retstring .= self::makeJSFiles(self::$customJS);
         $retstring .= self::makeCSSFiles($cssfiles);
         $retstring .= self::makeCSSFiles(self::$customCSS);
-        $specialcode = array_merge($specialcode, self::$customCode);
-        $retstring .= self::makeSpecialCode($specialcode);
+        $retstring .= self::makeSpecialCode(self::$customCode);
 
         return $retstring;
     }
@@ -417,6 +437,10 @@ class JS
         $code = "";
 
         foreach ($files as $file) {
+            //file has already been added to the js list
+            if(array_search($file, self::$registeredJsFiles) !== false)
+                continue;
+            self::$registeredJsFiles[] = $file;
             $code .= "<script type=\"text/javascript\" src=\"".self::$offset.$file."\"></script>\n\t";
         }
 
@@ -546,7 +570,7 @@ class JS
         }
 
         // make the code for loading the skins
-        $skindir = self::$offset."lib/javascript/shadowbox/skin";
+        $skindir = "lib/javascript/shadowbox/skin";
         $skin = 'standard';
         if ($objInit->mode == "frontend") {
             $themePath = $objInit->getCurrentThemesPath();
