@@ -197,7 +197,6 @@ class Contact extends ContactLib
         //initialize the widget displaying the folder contents
         
         $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
-        Logger::getInstance()->log($tup[0].'/'.$tup[2]);
 
         $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml('#contactFormField_uploadWidget','uploadWidget'));
         
