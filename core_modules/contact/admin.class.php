@@ -394,7 +394,7 @@ class ContactManager extends ContactLib
                                         //new style entry; multiple files and links
                                         $arrFiles = explode('*', substr($fileData,1)); //the substr kills the leading '*'
                                         foreach($arrFiles as $file) {
-                                            $value .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                            $value .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>&nbsp;';
                                         }
                                     }
                                 }
