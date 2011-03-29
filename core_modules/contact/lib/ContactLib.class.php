@@ -403,6 +403,8 @@ class ContactLib
         global $objDatabase;
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
+
+        //todo: what happens with file entries?
     }
 
     function getFormEntries($formId, &$arrCols, $pagingPos, &$paging, $limit = true)
@@ -428,6 +430,10 @@ class ContactLib
                 foreach ($arrKeyValue as $keyValue) {
                     $arrTmp = explode(',', $keyValue);
                     $decodedKey = base64_decode($arrTmp[0]);
+
+                    if($decodedKey == 'unique_id') //skip unique id of each entry, we do not want to display this.
+                        continue;
+
                     $arrData[$decodedKey] = base64_decode($arrTmp[1]);
 
                     if (!in_array($decodedKey, $arrCols)) {
