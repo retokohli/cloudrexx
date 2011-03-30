@@ -35,9 +35,9 @@
 		});
 	}
 	else { // no known js framework
-		var script_opener = '<script type="text/javascript" ';
-		var script_closer = '\x3c'+'/sc'+'ript>';
-		document.write(script_opener + ' src="[CORE_MODULE_URL]/stats/counter.php?mode=script&amp;referer='+referer+'&amp;pageId=[PAGEID]&amp;screen=' + screen.width + 'x' + screen.height + '&amp;color_depth=' + c + '[SEARCHTERM]" >' + script_closer);
+        var script_opener = '%3Cscript type="text/javascript" ';
+        var script_closer = '%3C/script%3E';
+        document.write(unescape(script_opener) + ' src="[CORE_MODULE_URL]/stats/counter.php?mode=script&amp;referer='+referer+'&amp;pageId=[PAGEID]&amp;screen=' + screen.width + 'x' + screen.height + '&amp;color_depth=' + c + '[SEARCHTERM]" >' + unescape(script_closer));
 	}
 })();
 // ]]>
