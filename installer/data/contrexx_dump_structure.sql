@@ -2303,6 +2303,298 @@ CREATE TABLE `contrexx_module_market_spez_fields` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_categories` (
+  `id` int(7) NOT NULL auto_increment,
+  `parent_id` int(7) NOT NULL,
+  `order` int(7) NOT NULL,
+  `show_subcategories` int(11) NOT NULL,
+  `show_entries` int(1) NOT NULL,
+  `picture` mediumtext NOT NULL,
+  `active` int(1) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_categories_names` (
+  `lang_id` int(1) NOT NULL,
+  `category_id` int(7) NOT NULL,
+  `category_name` varchar(255) NOT NULL,
+  `category_description` mediumtext NOT NULL,
+  KEY `lang_id` (`lang_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_comments` (
+  `id` int(7) NOT NULL auto_increment,
+  `entry_id` int(7) NOT NULL,
+  `added_by` varchar(255) NOT NULL,
+  `date` varchar(100) NOT NULL,
+  `ip` varchar(100) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `mail` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `notification` int(1) NOT NULL default '0',
+  `comment` mediumtext NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_entries` (
+  `id` int(10) NOT NULL auto_increment,
+  `order` int(7) NOT NULL default '0',
+  `form_id` int(7) NOT NULL,
+  `create_date` int(50) NOT NULL,
+  `update_date` int(50) NOT NULL,
+  `validate_date` int(50) NOT NULL,
+  `added_by` int(10) NOT NULL,
+  `updated_by` int(10) NOT NULL,
+  `lang_id` int(1) NOT NULL,
+  `hits` int(10) NOT NULL,
+  `popular_hits` int(10) NOT NULL,
+  `popular_date` varchar(20) NOT NULL,
+  `last_ip` varchar(50) NOT NULL,
+  `ready_to_confirm` int(1) NOT NULL default '0',
+  `confirmed` int(1) NOT NULL,
+  `active` int(1) NOT NULL,
+  `duration_type` int(1) NOT NULL,
+  `duration_start` int(50) NOT NULL,
+  `duration_end` int(50) NOT NULL,
+  `duration_notification` int(1) NOT NULL,
+  `translation_status` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `lang_id` (`lang_id`),
+  KEY `active` (`active`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_form_names` (
+  `lang_id` int(1) NOT NULL,
+  `form_id` int(7) NOT NULL,
+  `form_name` varchar(255) NOT NULL,
+  `form_description` mediumtext NOT NULL
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_forms` (
+  `id` int(7) NOT NULL auto_increment,
+  `order` int(7) NOT NULL,
+  `picture` mediumtext NOT NULL,
+  `active` int(1) NOT NULL,
+  `use_level` int(1) NOT NULL,
+  `use_category` int(1) NOT NULL,
+  `use_ready_to_confirm` int(1) NOT NULL,
+  `cmd` varchar(50) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_inputfield_names` (
+  `lang_id` int(10) NOT NULL,
+  `form_id` int(7) NOT NULL,
+  `field_id` int(10) NOT NULL,
+  `field_name` varchar(255) NOT NULL,
+  `field_default_value` mediumtext NOT NULL,
+  `field_info` mediumtext NOT NULL,
+  KEY `field_id` (`field_id`),
+  KEY `lang_id` (`lang_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_inputfield_types` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `active` int(1) NOT NULL,
+  `multi_lang` int(1) NOT NULL,
+  `exp_search` int(7) NOT NULL,
+  `dynamic` int(1) NOT NULL,
+  `comment` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_inputfield_verifications` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `regex` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_inputfields` (
+  `id` int(10) NOT NULL auto_increment,
+  `form` int(7) NOT NULL,
+  `type` int(10) NOT NULL,
+  `verification` int(10) NOT NULL,
+  `search` int(10) NOT NULL,
+  `required` int(10) NOT NULL,
+  `order` int(10) NOT NULL,
+  `show_in` int(10) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_level_names` (
+  `lang_id` int(1) NOT NULL,
+  `level_id` int(7) NOT NULL,
+  `level_name` varchar(255) NOT NULL,
+  `level_description` mediumtext NOT NULL,
+  KEY `lang_id` (`lang_id`),
+  KEY `category_id` (`level_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_levels` (
+  `id` int(7) NOT NULL auto_increment,
+  `parent_id` int(7) NOT NULL,
+  `order` int(7) NOT NULL,
+  `show_sublevels` int(11) NOT NULL,
+  `show_categories` int(1) NOT NULL,
+  `show_entries` int(1) NOT NULL,
+  `picture` mediumtext NOT NULL,
+  `active` int(1) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_mail_actions` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `default_recipient` enum('admin','author') NOT NULL,
+  `need_auth` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_mails` (
+  `id` int(7) NOT NULL auto_increment,
+  `title` varchar(255) NOT NULL,
+  `content` longtext NOT NULL,
+  `recipients` mediumtext NOT NULL,
+  `lang_id` int(1) NOT NULL,
+  `action_id` int(1) NOT NULL,
+  `is_default` int(1) NOT NULL,
+  `active` int(1) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_masks` (
+  `id` int(7) NOT NULL auto_increment,
+  `title` varchar(255) NOT NULL,
+  `fields` mediumtext NOT NULL,
+  `active` int(11) NOT NULL,
+  `form_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_order_rel_forms_selectors` (
+  `selector_id` int(7) NOT NULL,
+  `form_id` int(7) NOT NULL,
+  `selector_order` int(7) NOT NULL,
+  `exp_search` int(1) NOT NULL
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_rel_entry_categories` (
+  `entry_id` int(10) NOT NULL,
+  `category_id` int(10) NOT NULL,
+  KEY `entry_id` (`entry_id`),
+  KEY `category_id` (`category_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_rel_entry_inputfields` (
+  `entry_id` int(7) NOT NULL,
+  `lang_id` int(7) NOT NULL,
+  `form_id` int(7) NOT NULL,
+  `field_id` int(7) NOT NULL,
+  `value` longtext NOT NULL,
+  FULLTEXT KEY `value` (`value`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_rel_entry_levels` (
+  `entry_id` int(10) NOT NULL,
+  `level_id` int(10) NOT NULL,
+  KEY `entry_id` (`entry_id`),
+  KEY `category_id` (`level_id`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_settings` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `name` (`name`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_settings_num_categories` (
+  `group_id` int(1) NOT NULL,
+  `num_categories` varchar(10) NOT NULL
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_settings_num_entries` (
+  `group_id` int(1) NOT NULL,
+  `num_entries` varchar(10) NOT NULL default 'n'
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_settings_num_levels` (
+  `group_id` int(1) NOT NULL,
+  `num_levels` varchar(10) NOT NULL
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_settings_perm_group_forms` (
+  `group_id` int(7) NOT NULL,
+  `form_id` int(1) NOT NULL,
+  `status_group` int(1) NOT NULL
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_mediadir_votes` (
+  `id` int(7) NOT NULL auto_increment,
+  `entry_id` int(7) NOT NULL,
+  `added_by` varchar(255) NOT NULL,
+  `date` varchar(100) NOT NULL,
+  `ip` varchar(100) NOT NULL,
+  `vote` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_memberdir_directories` (
   `dirid` int(10) unsigned NOT NULL auto_increment,
   `parentdir` int(11) NOT NULL default '0',
