@@ -1109,6 +1109,19 @@ switch ($plainCmd) {
     break;
 
     //-------------------------------------------------------
+    // media directory
+    //-------------------------------------------------------
+    case 'mediadir':
+        Permission::checkAccess(153, 'static');
+        $modulespath = ASCMS_MODULE_PATH.'/mediadir/admin.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $subMenuTitle = $_CORELANG['TXT_MEDIADIR_MODULE'];
+        $objMediaDirectory = new mediaDirectoryManager();
+        $objMediaDirectory->getPage();
+        break;
+
+    //-------------------------------------------------------
     // show default admin page
     //-------------------------------------------------------
     default:

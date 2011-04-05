@@ -1443,7 +1443,7 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        $objAccessId = $objDatabase->Execute('
+        $query = '
             SELECT tblI.`access_id`
             FROM `'.DBPREFIX.'access_users` AS tblU
             INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblR ON tblR.`user_id` = tblU.`id`
@@ -1452,7 +1452,9 @@ class User extends User_Profile
             WHERE tblU.`id` = '.$this->id.'
                   AND tblG.`is_active`
             GROUP BY tblI.`access_id`
-            ORDER BY tblI.`access_id`');
+            ORDER BY tblI.`access_id`';
+
+        $objAccessId = $objDatabase->Execute($query);
 
         if ($objAccessId !== false) {
             $this->arrCachedUsers[$this->id][$type.'_access_ids'] = array();

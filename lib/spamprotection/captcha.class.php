@@ -236,7 +236,7 @@ class Captcha {
         $strEnteredString = strtoupper($strEnteredString);
         $arrOffsetParts = explode(';', $strOffset, 2);
         
-        return ($arrOffsetParts[1] == md5($strEnteredString.$arrOffsetParts[0])) ? true : false;
+        return ($arrOffsetParts[1] == md5($strEnteredString.$arrOffsetParts[0]));
     }
 }
 ?>
