@@ -1677,5 +1677,13 @@ class HTML_Template_Sigma extends PEAR
                 $str:
                 str_replace($this->openingDelimiter, $this->openingDelimiter . '%preserved%' . $this->closingDelimiter, $str);
     }
+
+    /**
+     * added by comvation for media directory
+     */
+    function clearVariables()
+    {
+        $this->_variables = array();
+    }
 }
 ?>

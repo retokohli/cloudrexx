@@ -209,4 +209,11 @@ $_ARRAYLANG['UPLOAD_EXPOSED_DIALOG_TITLE'] = 'Dateien hochladen';
 $_ARRAYLANG['STOP_CURRENT_UPLOAD'] = 'Momentanen Upload abbrechen';
 $_ARRAYLANG['DRAG_FILES_HERE'] = 'Ziehen Sie Dateien hierhin';
 $_ARRAYLANG['UPLOAD_FINISHED'] = 'Heraufladen abgeschlossen.';
+$_ARRAYLANG['TXT_CORE_SETTING_NAME'] = "Beschreibung";
+$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'] = 'Eintrag hinzufügen';
+$_ARRAYLANG['TXT_MEDIADIR_MODIFY_ENTRY'] = 'Eintrag bearbeiten';
+$_ARRAYLANG['TXT_MEDIADIR_MANAGE_LEVELS'] = 'Ebenen verwalten';
+$_ARRAYLANG['TXT_MEDIADIR_MANAGE_CATEGORIES'] = 'Kategorien verwalten';
+$_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
+$_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Einstellungen';
 ?>

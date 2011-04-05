@@ -1020,6 +1020,44 @@ if (file_exists($modulespath)) {
     }
 }
 
+//-------------------------------------------------------
+// Media directory: set placeholders I
+//-------------------------------------------------------
+$modulespath = 'modules/mediadir/placeholders.class.php';
+if (file_exists($modulespath)) {
+    /** @ignore */
+    require_once($modulespath);
+    
+    $objMadiadirPlaceholders = new mediaDirectoryPlaceholders();
+    
+    // Level/Category Navbar
+    if (preg_match_all('/{MEDIADIR_NAVBAR}/ms', $page_content, $arrMatches)) {
+        $page_content = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $page_content);
+    }
+    if (preg_match_all('/{MEDIADIR_NAVBAR}/ms', $page_template, $arrMatches)) {
+        $page_template = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $page_template);
+    }
+    if (preg_match_all('/{MEDIADIR_NAVBAR}/ms', $themesPages['index'], $arrMatches)) {
+        $themesPages['index'] = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $themesPages['index']);
+    }
+    if (preg_match_all('/{MEDIADIR_NAVBAR}/ms', $themesPages['sidebar'], $arrMatches)) {
+        $themesPages['sidebar'] = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $themesPages['sidebar']);
+    }
+
+    // Latest Entries      
+    if (preg_match_all('/{MEDIADIR_LATEST}/ms', $page_content, $arrMatches)) {
+        $page_content = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $page_content);
+    }
+    if (preg_match_all('/{MEDIADIR_LATEST}/ms', $page_template, $arrMatches)) {
+        $page_template = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $page_template);
+    }
+    if (preg_match_all('/{MEDIADIR_LATEST}/ms', $themesPages['index'], $arrMatches)) {
+        $themesPages['index'] = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $themesPages['index']);
+    }
+    if (preg_match_all('/{MEDIADIR_LATEST}/ms', $themesPages['sidebar'], $arrMatches)) {
+        $themesPages['sidebar'] = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $themesPages['sidebar']);
+    } 
+}
 
 //-------------------------------------------------------
 // Load design template
@@ -1633,6 +1671,29 @@ switch ($plainSection) {
         break;
 
     //-------------------------------------------------------
+    // Media Directory Module
+    //-------------------------------------------------------
+    case 'mediadir': 
+        $modulespath = 'modules/mediadir/index.class.php';
+        if (file_exists($modulespath)) require_once($modulespath);
+        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objMediaDirectory = new mediaDirectory($page_content);
+
+        $objMediaDirectory->pageTitle = $page_title;
+        $objMediaDirectory->metaTitle = $page_metatitle;
+
+        $objTemplate->setVariable('CONTENT_TEXT', $objMediaDirectory->getPage());
+
+        if($objMediaDirectory->getPageTitle() != '') {
+            $page_title->pageTitle = $objMediaDirectory->getPageTitle();
+        }
+
+        if($objMediaDirectory->getMetaTitle() != '') {
+            $page_metatitle = $objMediaDirectory->getMetaTitle();
+        }
+        break;   
+
+    //-------------------------------------------------------
     // default case
     //-------------------------------------------------------
     default:
@@ -1759,6 +1820,31 @@ if ($_CONFIG['bannerStatus'] == '1') {
     }
 }
 
+//-------------------------------------------------------
+// Media directory: Set placeholders II (latest / headline)
+//-------------------------------------------------------
+$mediadirCheck = array();
+
+for($i = 1; $i <= 10; $i++){
+    if($objTemplate->blockExists('mediadirLatest_row_'.$i)){
+        array_push($mediadirCheck, $i);
+    }
+}
+
+if(!empty($mediadirCheck)) {
+    $modulespath = "modules/mediadir/index.class.php";
+    if (file_exists($modulespath)){
+        /**
+         * @ignore
+         */
+        require_once($modulespath);
+        $objMediadir = new mediaDirectory('');
+        if(!empty($mediadirCheck)) {
+            $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+            $objMediadir->getHeadlines($mediadirCheck);
+        }
+    }
+}
 
 //-------------------------------------------------------
 // Frontend Editing: prepare needed code-fragments
