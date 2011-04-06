@@ -275,7 +275,7 @@ class User extends User_Profile
         parent::__construct();
 
         $arrSettings = FWUser::getSettings();
-        // TODO:  Provide default values here in case the settings are missing!
+// TODO:  Provide default values here in case the settings are missing!
         $this->defaultProfileAccessTyp = $arrSettings['default_profile_access']['value'];
         $this->defaultEmailAccessType = $arrSettings['default_email_access']['value'];
 
@@ -459,7 +459,7 @@ class User extends User_Profile
         return $this->backend_language;
     }
 
-    public function getDynamicPermissionIds($reload = false)
+    public function getDynamicPermissionIds($reload=false)
     {
         if (!isset($this->arrCachedUsers[$this->id]['dynamic_access_ids']) || $reload) {
             $this->loadPermissionIds('dynamic');
@@ -640,7 +640,7 @@ class User extends User_Profile
         return $this->restore_key_time;
     }
 
-    public function getStaticPermissionIds($reload = false)
+    public function getStaticPermissionIds($reload=false)
     {
         if (!isset($this->arrCachedUsers[$this->id]['static_access_ids']) || $reload) {
             $this->loadPermissionIds('static');
@@ -666,8 +666,10 @@ class User extends User_Profile
         return $this->username;
     }
 
-    public function getUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = 0)
-    {
+    public function getUsers(
+        $filter=null, $search=null, $arrSort=null, $arrAttributes=null, 
+        $limit=null, $offset=0
+    ) {
         $objUser = clone $this;
         $objUser->arrCachedUsers = &$this->arrCachedUsers;
 
@@ -732,8 +734,11 @@ class User extends User_Profile
         return false;
     }
 
-    private function loadUsers($filter = null, $search = null, $arrSort = null, $arrAttributes = null, $limit = null, $offset = 0)
-    {
+
+    private function loadUsers(
+        $filter=null, $search=null, $arrSort=null, $arrAttributes=null,
+        $limit=null, $offset=0
+    ) {
         global $objDatabase;
 
         if ($this->isLoggedIn()) {
@@ -991,14 +996,12 @@ class User extends User_Profile
             'joins'         => $arrCustomJoins,
             'conditions'    => $arrCustomSelection,
             'sort'          => $arrSortExpressions,
-            'group_tables'  => $groupTables
+            'group_tables'  => $groupTables,
         );
         /*$arrNotSortedUserIds = array_diff(array_keys($this->arrLoadedUsers), $arrUserIds);
         foreach ($arrNotSortedUserIds as $userId) {
             $arrUserIds[$userId] = '';
         }*/
-// TODO:  Unreachable
-//        return $arrUserIds;
     }
 
     public function setRestoreKey()
@@ -1791,9 +1794,7 @@ class User extends User_Profile
     {
         if (preg_match('/^[a-zA-Z0-9-_]+$/', $username)) {
             return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     /**

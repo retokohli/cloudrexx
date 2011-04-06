@@ -1702,7 +1702,6 @@ class User_Profile_Attribute
 
     /**
      * Returns an array of all custom attribute names
-     *
      * @return    array                     An array with attribute names indexed
      *                                      by their IDs
      */
@@ -1716,6 +1715,7 @@ class User_Profile_Attribute
         }
         return $arrNames;
     }
+
 }
 
 ?>

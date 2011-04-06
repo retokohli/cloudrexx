@@ -17,8 +17,8 @@
  * @package     contrexx
  * @subpackage  lib_framework
  */
-class UserGroup {
-
+class UserGroup
+{
     var $id;
     var $name;
     var $description;
@@ -56,15 +56,18 @@ class UserGroup {
      */
     var $error_msg;
 
+
     function UserGroup()
     {
         $this->__construct();
     }
 
+
     function __construct()
     {
         $this->clean();
     }
+
 
     public function getGroups(
         $filter=null, $arrSort=null, $arrAttributes=null,
@@ -75,6 +78,7 @@ class UserGroup {
         $objGroup->loadGroups($filter, $arrSort, $arrAttributes, $limit, $offset);
         return $objGroup;
     }
+
 
     private function loadGroups(
         $filter=null, $arrSort=null, $arrAttributes=null,
@@ -179,6 +183,7 @@ class UserGroup {
         return $arrConditions;
     }
 
+
     public function getGroup($id)
     {
         $objGroup = clone $this;
@@ -186,6 +191,7 @@ class UserGroup {
         $objGroup->load($id);
         return $objGroup;
     }
+
 
     private function load($id)
     {
@@ -208,6 +214,7 @@ class UserGroup {
             $this->clean();
         }
     }
+
 
     private function loadUsers()
     {
@@ -237,6 +244,7 @@ class UserGroup {
         }
     }
 
+
     private function loadPermissions($type)
     {
         global $objDatabase;
@@ -255,15 +263,18 @@ class UserGroup {
         }
     }
 
+
     private function loadDynamicPermissions()
     {
         return $this->loadPermissions('dynamic');
     }
 
+
     private function loadStaticPermissions()
     {
         return $this->loadPermissions('static');
     }
+
 
     /**
      * Store user account
@@ -272,7 +283,6 @@ class UserGroup {
      * password, email, language ID, activ status and the administration status,
      * to the database.
      * If it is a new user, it also sets the registration time to the current time.
-     *
      * @global ADONewConnection
      * @global array
      * @return boolean
@@ -332,12 +342,12 @@ class UserGroup {
         return true;
     }
 
+
     /**
      * Store user associations
      *
      * Stores the user associations of the loaded group.
      * Returns TRUE no success, FALSE on failure.
-     *
      * @global ADONewConnection
      * @return boolean
      */
@@ -364,6 +374,7 @@ class UserGroup {
 
         return $status;
     }
+
 
     private function storePermissions()
     {
@@ -392,6 +403,7 @@ class UserGroup {
         return $status;
     }
 
+
     private function clean()
     {
         $this->id = 0;
@@ -405,6 +417,7 @@ class UserGroup {
         $this->EOF = true;
     }
 
+
     public function delete()
     {
         global $objDatabase, $_CORELANG;
@@ -417,9 +430,9 @@ class UserGroup {
         }
     }
 
+
     /**
      * Load first group
-     *
      */
     function first()
     {
@@ -430,9 +443,9 @@ class UserGroup {
         }
     }
 
+
     /**
      * Load next group
-     *
      */
     public function next()
     {
@@ -447,24 +460,27 @@ class UserGroup {
         $this->name = $name;
     }
 
+
     public function setDescription($description)
     {
         $this->description = $description;
     }
+
 
     public function setActiveStatus($status)
     {
         $this->is_active = (bool)$status;
     }
 
+
     public function setType($type)
     {
         $this->type = in_array($type, $this->arrTypes) ? $type : $this->defaultType;
     }
 
+
     /**
      * Set ID's of users which should belong to this group
-     *
      * @param array $arrUsers
      * @see User, User::getUser()
      * @return void
@@ -481,25 +497,30 @@ class UserGroup {
         }
     }
 
+
     public function setDynamicPermissionIds($arrPermissionIds)
     {
         $this->arrDynamicPermissions = array_map('intval', $arrPermissionIds);
     }
+
 
     public function setStaticPermissionIds($arrPermissionIds)
     {
         $this->arrStaticPermissions = array_map('intval', $arrPermissionIds);
     }
 
+
     public function getLoadedGroupCount()
     {
         return count($this->arrLoadedGroups);
     }
 
+
     public function getLoadedGroupIds()
     {
         return array_keys($this->arrLoadedGroups);
     }
+
 
     public function getGroupCount($arrFilter = null)
     {
@@ -522,6 +543,7 @@ class UserGroup {
         }
     }
 
+
     public function getUserCount($onlyActive = false)
     {
         global $objDatabase;
@@ -536,6 +558,7 @@ class UserGroup {
         }
     }
 
+
     public function getAssociatedUserIds()
     {
         if (!isset($this->arrUsers)) {
@@ -543,6 +566,7 @@ class UserGroup {
         }
         return $this->arrUsers;
     }
+
 
     public function getDynamicPermissionIds()
     {
@@ -552,6 +576,7 @@ class UserGroup {
         return $this->arrDynamicPermissions;
     }
 
+
     public function getStaticPermissionIds()
     {
         if (!isset($this->arrStaticPermissions)) {
@@ -560,35 +585,42 @@ class UserGroup {
         return $this->arrStaticPermissions;
     }
 
+
     public function getId()
     {
         return $this->id;
     }
+
 
     public function getName()
     {
         return $this->name;
     }
 
+
     public function getDescription()
     {
         return $this->description;
     }
+
 
     public function getActiveStatus()
     {
         return $this->is_active;
     }
 
+
     public function getType()
     {
         return $this->type;
     }
 
+
     public function getTypes()
     {
         return $this->arrTypes;
     }
+
 
     public function getErrorMsg()
     {
@@ -619,6 +651,7 @@ class UserGroup {
         }
     }
 
+
     function isValidGroupName()
     {
         global $_CORELANG;
@@ -630,6 +663,7 @@ class UserGroup {
             return false;
         }
     }
+
 }
 
 ?>
