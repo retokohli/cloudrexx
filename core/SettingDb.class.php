@@ -10,6 +10,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+require_once ASCMS_CORE_PATH.'/Message.class.php';
 require_once ASCMS_CORE_PATH.'/Html.class.php';
 
 /**
@@ -27,6 +28,38 @@ require_once ASCMS_CORE_PATH.'/Html.class.php';
 class SettingDb
 {
     /**
+     * Upload path for documents
+     * Used externally only, see hotelcard module for an example.
+     */
+    const FILEUPLOAD_FOLDER_PATH = 'media';
+
+    /**
+     * Setting types
+     * See {@see show()} for examples on how to extend these.
+     */
+    const TYPE_DROPDOWN = 'dropdown';
+    const TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE = 'dropdown_user_custom_attribute';
+    const TYPE_DROPDOWN_USERGROUP = 'dropdown_usergroup';
+    const TYPE_WYSIWYG = 'wysiwyg';
+    const TYPE_FILEUPLOAD = 'fileupload';
+    const TYPE_TEXT = 'text';
+    const TYPE_TEXTAREA = 'textarea';
+    const TYPE_EMAIL = 'email';
+    const TYPE_BUTTON = 'button';
+// 20110224
+    const TYPE_CHECKBOX = 'checkbox';
+    const TYPE_CHECKBOXGROUP = 'checkboxgroup';
+// Not implemented
+//    const TYPE_SUBMIT = 'submit';
+
+    /**
+     * Default width for input fields
+     *
+     * Note that textareas often use twice that value.
+     */
+    const DEFAULT_INPUT_WIDTH = 220;
+
+    /**
      * The array of currently loaded settings settings, like
      *  array(
      *    'name' => array(
@@ -43,16 +76,25 @@ class SettingDb
      * @static
      * @access  private
      */
-    private static $arrSettings = false;
+    private static $arrSettings = null;
 
     /**
      * The key last used to {@see init()} the settings.
-     * Defaults to false (ignored).
+     * Defaults to null (ignored).
      * @var     string
      * @static
      * @access  private
      */
-    private static $key = false;
+    private static $key = null;
+
+    /**
+     * The module ID last used to {@see init()} the settings.
+     * Defaults to null (which will cause an error in most methods).
+     * @var     integer
+     * @static
+     * @access  private
+     */
+    private static $module_id = null;
 
     /**
      * Changes flag
@@ -65,40 +107,86 @@ class SettingDb
      */
     private static $flagChanged = false;
 
+    /**
+     * Tab counter for the {@see show()} and {@see show_external()}
+     * @var     integer
+     * @access  private
+     */
+    private static $tab_index = 1;
+
+
+    /**
+     * OBSOLETE
+     *
+     * Returns the current error message
+     *
+     * The message is cleared when read, so you *SHOULD* read it once.
+     * @return  string                  The error message, if any,
+     *                                  or the empty string
+     */
+    static function getErrorString()
+    {
+DBG::log("SettingDb::getErrorString(): ERROR: Obsolete method called");
+        return '';
+    }
+
+
+    /**
+     * Returns the current value of the tab index
+     * @return  integer             The current tab index
+     */
+    static function getTabIndex()
+    {
+        return self::$tab_index;
+    }
+
 
     /**
      * Initialize the settings entries from the database with key/value pairs
      * for the current module ID and the given key
      *
-     * A $key value of false is ignored.  All records with the current module ID
-     * taken from the global MODULE_ID constant are included in this case.
+     * An empty $key value is ignored.  All records with the module ID
+     * (taken from the global MODULE_ID constant if missing) are included in
+     * this case.
      * Note that the setting name *SHOULD* be unambiguous whether $key is
      * empty or not.  If there are two settings with the same name but different
      * $key values, the second one will overwrite the first!
      * @internal  The records are ordered by
      *            `key` ASC, `ord` ASC, `name` ASC
-     * @param   string    $key        The key, or false.  Defaults to false
+     * @param   string    $key        The key, or an empty value.
+     *                                Defaults to the empty string
+     * @param   integer   $module_id  The optional module ID.  *MUST* be set
+     *                                unless the global MODULE_ID is defined.
+     *                                Defaults to null.
      * @return  boolean               True on success, false otherwise
      */
-    function init($key=false)
+    function init($key='', $module_id=null)
     {
         global $objDatabase;
 
+        if (empty($module_id)) {
+            if (!defined('MODULE_ID')) {
+                return false;
+            }
+            $module_id = MODULE_ID;
+        }
+        self::$module_id = $module_id;
         self::flush();
 //echo("SettingDb::init($key): Entered<br />");
         $objResult = $objDatabase->Execute("
             SELECT `name`, `key`, `value`,
                    `type`, `values`, `ord`
               FROM ".DBPREFIX."core_setting
-             WHERE `module_id`=".MODULE_ID.
-             ($key === false ? '' : " AND `key`='".addslashes($key)."'")."
+             WHERE `module_id`=".$module_id.
+             ($key ? " AND `key`='".addslashes($key)."'" : '')."
              ORDER BY `key` ASC, `ord` ASC, `name` ASC");
         if (!$objResult) return self::errorHandler();
-        self::$key = $key;
+        // Set the current key to the empty string if empty
+        self::$key = ($key ? $key : '');
         self::$arrSettings = array();
         while (!$objResult->EOF) {
             self::$arrSettings[$objResult->fields['name']] = array(
-                'module_id' => MODULE_ID,
+                'module_id' => $module_id,
                 'key'       => $objResult->fields['key'],
                 'value'     => $objResult->fields['value'],
                 'type'      => $objResult->fields['type'],
@@ -115,14 +203,15 @@ class SettingDb
     /**
      * Flush the stored settings
      *
-     * Resets the class to its initial state
+     * Resets the class to its initial state.
+     * Does *NOT* clear the module ID, however.
      * @return  void
      */
     static function flush()
     {
-        self::$arrSettings = false;
-        self::$key         = false;
-        self::$flagChanged = false;
+        self::$arrSettings = null;
+        self::$key         = null;
+        self::$flagChanged = null;
     }
 
 
@@ -145,11 +234,11 @@ class SettingDb
      * If the method is called successively using the same $key argument,
      * the current settings are returned without calling {@see init()}.
      * Thus, changes made by calling {@see set()} will be preserved.
-     * @param   string    $key        The key, or false
+     * @param   string    $key        The optional key
      * @return  array                 The settings array on success,
      *                                false otherwise
      */
-    function getArray($key=false)
+    function getArray($key='')
     {
         if (self::$key !== $key) {
             if (!self::init($key)) return false;
@@ -162,28 +251,32 @@ class SettingDb
      * Returns the settings value stored in the object for the name given.
      *
      * If the settings have not been initialized (see {@see init()}), or
-     * if no setting of that name is present in the current set, false
+     * if no setting of that name is present in the current set, null
      * is returned.
      * @param   string    $name       The settings name
      * @return  mixed                 The settings value, if present,
-     *                                false otherwise
+     *                                null otherwise
      */
     function getValue($name)
     {
+        if (is_null(self::$arrSettings)) {
+DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
+            return null;
+        }
 //echo("SettingDb::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
-        return (isset(self::$arrSettings[$name]['value'])
-            ? self::$arrSettings[$name]['value'] : false
-        );
+        if (isset(self::$arrSettings[$name]['value'])) {
+            return self::$arrSettings[$name]['value'];
+        };
+DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current key ".var_export(self::$key, true).")");
+        return null;
     }
 
 
     /**
-     * Updates or adds a setting
+     * Updates a setting
      *
-     * If the name does not exist yet, it is added, and $flagChanged
-     * is set to true.
-     * If the new value is not equal to the old one, it is updated,
-     * and $flagChanged set to true.
+     * If the setting name exists and the new value is not equal to
+     * the old one, it is updated, and $flagChanged set to true.
      * Otherwise, nothing happens, and false is returned
      * @see init(), updateAll()
      * @param   string    $name       The settings name
@@ -253,18 +346,27 @@ class SettingDb
     {
         global $objDatabase;
 
+        if (empty(self::$module_id)) {
+// TODO: Error message
+            return false;
+        }
         // Fail if the name is invalid
         // or the setting does not exist already
 // TODO: Add error messages for individual errors
-        if (empty($name)) return false;
-        if (!isset(self::$arrSettings[$name])) return false;
-
+        if (empty($name)) {
+//echo("Empty setting name: $name<br />");
+            return false;
+        }
+        if (!isset(self::$arrSettings[$name])) {
+//echo("Unknown setting: $name<br />");
+            return false;
+        }
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_setting`
                SET `value`='".addslashes(self::$arrSettings[$name]['value'])."'
              WHERE `name`='".addslashes($name)."'
-               AND `module_id`=".MODULE_ID.
-             (self::$key !== false ? " AND `key`='".addslashes(self::$key)."'" : ''));
+               AND `module_id`=".self::$module_id.
+             (self::$key ? " AND `key`='".addslashes(self::$key)."'" : ''));
         if (!$objResult) return self::errorHandler();
         self::$flagChanged = true;
         return true;
@@ -289,25 +391,32 @@ class SettingDb
      * @param   string    $key      The optional key
      * @return  boolean             True on success, false otherwise
      */
-    static function add($name, $value, $ord=false, $type='text', $values='', $key=false)
+    static function add(
+        $name, $value, $ord=false, $type='text', $values='', $key=null)
     {
         global $objDatabase;
 
+        if (empty(self::$module_id)) {
+// TODO: Error message
+            return false;
+        }
         // Fail if the name is invalid
         if (empty($name)) return false;
 
         // This can only be done with a non-empty key!
         // Use the current key, if present, otherwise fail
-        if ($key === false) {
-            if (self::$key === false) return false;
+        if (!$key) {
+            if (!self::$key) return false;
             $key = self::$key;
         }
-        // Initialize if necessard
-        if (self::$arrSettings === false || self::$key != $key)
+        // Initialize if necessary
+        if (is_null(self::$arrSettings) || self::$key != $key)
             self::init($key);
 
-        // Such an entry exists already, fail
-        if (self::getValue($name)) return false;
+        // Such an entry exists already, fail.
+        // Note that getValue() returns null if the entry is not present
+        $old_value = self::getValue($name);
+        if (isset($old_value)) return false;
 
         // Not present, insert it
         $objResult = $objDatabase->Execute("
@@ -321,7 +430,7 @@ class SettingDb
                 `ord`
             ) VALUES (
                 '".addslashes($name)."',
-                ".MODULE_ID.",
+                ".self::$module_id.",
                 '".addslashes($key)."',
                 '".addslashes($value)."',
                 '".addslashes($type)."',
@@ -334,7 +443,38 @@ class SettingDb
 
 
     /**
-     * Display the settings stored in the given array
+     * Delete one or more records from the database table
+     *
+     * For maintenance/update purposes only.
+     * At least one of the parameter values must be non-empty.
+     * It will fail if both are empty.  Mind that in this case,
+     * no records will be deleted.
+     * Does {@see flush()} the currently loaded settings on success.
+     * @param   string    $name     The optional setting name.
+     *                              Defaults to null
+     * @param   string    $key      The optional key.
+     *                              Defaults to null
+     * @return  boolean             True on success, false otherwise
+     */
+    static function delete($name=null, $key=null)
+    {
+        global $objDatabase;
+
+        // Fail if both parameter values are empty
+        if (empty($name) && empty($key)) return false;
+        $objResult = $objDatabase->Execute("
+            DELETE FROM `".DBPREFIX."core_setting`
+             WHERE 1".
+            ($name ? " AND `name`='".addslashes($name)."'" : '').
+            ($key  ? " AND `key`='".addslashes($key)."'"   : ''));
+        if (!$objResult) return self::errorHandler();
+        self::flush();
+        return true;
+    }
+
+
+    /**
+     * Display the settings present in the $arrSettings class array
      *
      * Uses the indices as the names for any parameter, the values
      * as themselves, and adds language variables for the settings' name
@@ -345,9 +485,9 @@ class SettingDb
      *    Prefix:   'TXT_'
      *  Results in placeholders to be set as follows:
      *    Placeholder         Value
-     *    SETTINGDB_NAME        The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
-     *    SETTINGDB_VALUE       The HTML element for the setting type with
-     *                          a name attribute of 'shop_dummy'
+     *    SETTINGDB_NAME      The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
+     *    SETTINGDB_VALUE     The HTML element for the setting type with
+     *                        a name attribute of 'shop_dummy'
      *
      * Placeholders:
      * The settings' name is to SETTINGDB_NAME, and the input element to
@@ -365,17 +505,18 @@ class SettingDb
      * The template object is given by reference, and if the block
      * 'core_settingdb_row' is not present, is replaced by the default backend
      * template.
-     * $uriBase *SHOULD* be the URI for the current module start page, without
-     * any 'act' parameter, i.e. 'index.php?section=mymodule'.
-     * If you want your settings to be stored, you *MUST* handle the parameter
-     * 'act=settings' in your modules' getPage() method, check for the 'bsubmit'
-     * index in the $_POST array, and call {@see SettingDb::store()}.
+     * $uriBase *SHOULD* be the URI for the current module page.
+     * If you want your settings to be stored, you *MUST* handle the post
+     * request, check for the 'bsubmit' index in the $_POST array, and call
+     * {@see SettingDb::store()}.
      * @param   HTML_Template_Sigma $objTemplateLocal   Template object
      * @param   string              $uriBase      The base URI for the module.
-     * @param   string              $section      The section header text to add
-     * @param   string              $tabName      The tab name to add
-     * @param   string              $prefix       The prefix for language variables,
-     *                                            defaults to 'TXT_'
+     * @param   string              $section      The optional section header
+     *                                            text to add
+     * @param   string              $tab_name     The optional tab name to add
+     * @param   string              $prefix       The optional prefix for
+     *                                            language variables.
+     *                                            Defaults to 'TXT_'
      * @return  boolean                           True on success, false otherwise
      * @todo    Add functionality to handle arrays within arrays
      * @todo    Add functionality to handle special form elements
@@ -383,92 +524,100 @@ class SettingDb
      *          that store them, like add(), update(), and updateAll()
      */
     static function show(
-        &$objTemplateLocal, $uriBase, $section='', $tabName='', $prefix='TXT_'
+        &$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_'
     ) {
-        global $objTemplate, $_CORELANG, $_ARRAYLANG;
-        static $tab_index = 0;
+        global $_CORELANG, $_ARRAYLANG;
 
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
-        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+        // "instanceof" considers subclasses of Sigma to be a Sigma, too!
+        if (!($objTemplateLocal instanceof HTML_Template_Sigma)) {
             $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        }
+        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+            $objTemplateLocal->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
+//            $objTemplateLocal->setCacheRoot('.');
             if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
                 die("Failed to load template settingDb.html");
+//die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
         }
-        if (!preg_match('/[&;]act\=/', $uriBase))
-            $uriBase .= '&amp;act=settings';
-        $objTemplateLocal->setGlobalVariable('URI_BASE', $uriBase);
 
+// TODO: Test if everything works without this line
+//        Html::replaceUriParameter($uriBase, 'act=settings');
+        Html::replaceUriParameter($uriBase, 'active_tab='.self::$tab_index);
         // Default headings and elements
-        $objTemplateLocal->setGlobalVariable(array(
-            'TXT_CORE_SETTINGDB'       => $_CORELANG['TXT_CORE_SETTINGDB'],
-            'TXT_CORE_SETTINGDB_STORE' => $_CORELANG['TXT_CORE_SETTINGDB_STORE'],
-            'TXT_CORE_SETTINGDB_NAME'  => $_CORELANG['TXT_CORE_SETTINGDB_NAME'],
-            'TXT_CORE_SETTINGDB_VALUE' => $_CORELANG['TXT_CORE_SETTINGDB_VALUE'],
+        $objTemplateLocal->setGlobalVariable(
+            $_CORELANG
+          + array(
+            'URI_BASE' => $uriBase,
         ));
 
         if ($objTemplateLocal->blockExists('core_settingdb_row'))
             $objTemplateLocal->setCurrentBlock('core_settingdb_row');
 //echo("SettingDb::show(objTemplateLocal, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
         if (!is_array(self::$arrSettings)) {
-            $objTemplate->setVariable(
-                'CONTENT_STATUS_MESSAGE',
-                $_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING']
-            );
+            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING'],
+                Message::MSG_CLASS_ERROR);
+//die("No Settings array");
             return false;
         }
         if (empty(self::$arrSettings)) {
-            $objTemplate->setVariable(
-                'CONTENT_STATUS_MESSAGE',
+            Message::add(
                 sprintf(
                     $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
-                    $tabName, $section
-                )
-            );
-            return true;
+                    $tab_name, $section),
+                Message::MSG_CLASS_WARN);
+//die("No Settings found");
+            return false;
         }
 
+        // This is set to multipart if necessary
+        $enctype = '';
         $i = 0;
         foreach (self::$arrSettings as $name => $arrSetting) {
             // Determine HTML element for type and apply values and selected
             $element = '';
             $value = $arrSetting['value'];
-
-            if (empty($value)) {
-                $objTemplate->setVariable(
-                    'CONTENT_STATUS_MESSAGE',
+            $values = self::splitValues($arrSetting['values']);
+            $type = $arrSetting['type'];
+            // Not implemented yet:
+            // Warn if some mandatory value is empty
+            if (empty($value) && preg_match('/_mandatory$/', $type)) {
+                Message::add(
                     sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
                         $_ARRAYLANG[$prefix.strtoupper($name)],
-                        $name)
-                );
+                        $name),
+                    Message::MSG_CLASS_WARN);
             }
+            // Warn if some language variable is not defined
             if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
-                $objTemplate->setVariable(
-                    'CONTENT_STATUS_MESSAGE',
+                Message::add(
                     sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_MISSING_LANGUAGE'],
                         $prefix.strtoupper($name),
-                        $name)
-                );
+                        $name),
+                    Message::MSG_CLASS_WARN);
             }
             $value_align = (is_numeric($value) ? 'text-align: right;' : '');
-            switch ($arrSetting['type']) {
+//DBG::log("Value: $value -> align $value_align");
+            switch ($type) {
               // Dropdown menu
-              case 'dropdown':
+              case self::TYPE_DROPDOWN:
+                $arrValues = self::splitValues($arrSetting['values']);
+//DBG::log("Values: ".var_export($arrValues, true));
                 $element = Html::getSelect(
-                    $name, self::splitValues($arrSetting['values']), $value,
+                    $name, $arrValues, $value,
                     '', '',
                     'style="width: 220px;'.$value_align.'"');
                 break;
-              case 'dropdown_user_custom_attribute':
-                $objFWUser = FWUser::getFWUserObject();
+              case self::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE:
                 $element = Html::getSelect(
                     $name,
-                    $objFWUser->objUser->objAttribute->getCustomAttributeNameArray(),
+                    User_Profile_Attribute::getCustomAttributeNameArray(),
                     $arrSetting['value'], '', '', 'style="width: 220px;"'
                 );
                 break;
-              case 'dropdown_usergroup':
+              case self::TYPE_DROPDOWN_USERGROUP:
                 $element = Html::getSelect(
                     $name,
                     UserGroup::getNameArray(),
@@ -476,7 +625,7 @@ class SettingDb
                     '', '', 'style="width: 220px;"'
                 );
                 break;
-              case 'wysiwyg':
+              case self::TYPE_WYSIWYG:
                 // These must be treated differently, as wysiwyg editors
                 // claim the full width
                 $element = get_wysiwyg_editor($name, $value);
@@ -490,30 +639,102 @@ class SettingDb
                     'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
                 ));
                 $objTemplateLocal->parseCurrentBlock();
+                // Skip the part below, all is done already
                 continue 2;
 
+              case self::TYPE_FILEUPLOAD:
+//echo("Setting up upload for $name, $value<br />");
+                $element =
+                    Html::getInputFileupload(
+                        // Set the ID only if the $value is non-empty.
+                        // This toggles the file name and delete icon on or off
+                        $name, ($value ? $name : false),
+                        Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
+                        // "values" defines the MIME types allowed
+                        $arrSetting['values'],
+                        'style="width: 220px;"', true,
+                        ($value
+                          ? $value
+                          : 'media/'.
+                            (isset($_REQUEST['cmd'])
+                                ? $_REQUEST['cmd'] : 'other'))
+                    );
+                // File uploads must be multipart encoded
+                $enctype = 'enctype="multipart/form-data"';
+                break;
+
+              case self::TYPE_BUTTON:
+                // The button is only available to trigger some event.
+                $event =
+                    'onclick=\''.
+                      'if (confirm("'.$_ARRAYLANG[$prefix.strtoupper($name).'_CONFIRM'].'")) {'.
+                        'document.getElementById("'.$name.'").value=1;'.
+                        'document.formSettings_'.self::$tab_index.'.submit();'.
+                      '}\'';
+//DBG::log("SettingDb::show(): Event: $event");
+                $element =
+                    Html::getInputButton(
+                        // The button itself gets a dummy name attribute value
+                        '__'.$name,
+                        $_ARRAYLANG[strtoupper($prefix.$name).'_LABEL'],
+                        'button', false,
+                        $event
+                    ).
+                    // The posted value is set to 1 when confirmed,
+                    // before the form is posted
+                    Html::getHidden($name, 0, '');
+//DBG::log("SettingDb::show(): Element: $element");
+                break;
+
+              case self::TYPE_TEXTAREA:
+                $element =
+                    Html::getTextarea($name, $value, 80, 8, '');
+//                        'style="width: 220px;'.$value_align.'"');
+                break;
+
+              case self::TYPE_CHECKBOX:
+// TODO: TEST
+die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
+                $element =
+                    Html::getCheckbox($name, $value, false,
+                    in_array($value, array_keys($arrValues)),
+                    '',
+                    'style="width: '.(2*self::DEFAULT_INPUT_WIDTH).'px;'.'"');
+                break;
+
+              case self::TYPE_CHECKBOXGROUP:
+                $checked = self::splitValues($value);
+                $element =
+                    Html::getCheckboxGroup($name, $values, $values, $checked,
+                        false, '', '<br />', '', '');
+                break;
+
 // More...
-//              case '':
+//              case self::TYPE_:
 //                break;
 
               // Default to text input fields
-              case 'text':
-              case 'email':
+              case self::TYPE_TEXT:
+              case self::TYPE_EMAIL:
               default:
                 $element =
                     Html::getInputText(
-                        $name, $value, '',
+                        $name, $value, false,
                         'style="width: 220px;'.$value_align.'"');
             }
 
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_NAME'        => $_ARRAYLANG[$prefix.strtoupper($name)],
-                'CORE_SETTINGDB_VALUE'       => $element,
-                'CORE_SETTINGDB_ROWCLASS2'    => (++$i % 2 ? '1' : '2'),
+                'CORE_SETTINGDB_NAME'      => $_ARRAYLANG[$prefix.strtoupper($name)],
+                'CORE_SETTINGDB_VALUE'     => $element,
+                'CORE_SETTINGDB_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
 //echo("SettingDb::show(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
+
+        // Set form encoding to multipart if necessary
+        if (!empty($enctype))
+            $objTemplateLocal->setVariable('CORE_SETTINGDB_ENCTYPE', $enctype);
 
         if (   !empty($section)
             && $objTemplateLocal->blockExists('core_settingdb_section')) {
@@ -524,18 +745,74 @@ class SettingDb
             $objTemplateLocal->parse('core_settingdb_section');
         }
 
+        // The tabindex must be set in the form name in any case
+        $objTemplateLocal->setGlobalVariable(
+            'CORE_SETTINGDB_TAB_INDEX', self::$tab_index);
         // Set up tab, if any
-        if (!empty($tabName)) {
+        if (!empty($tab_name)) {
+            $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME'  => $tabName,
-                'CORE_SETTINGDB_TAB_INDEX' => ++$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS' => ($tab_index == 1 ? 'active' : ''),
-                'CORE_SETTINGDB_TAB_DISPLAY' => ($tab_index == 1 ? 'block' : 'none'),
+                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
+//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
+                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
+                'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
             ));
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
             $objTemplateLocal->parse('core_settingdb_tab_row');
             $objTemplateLocal->touchBlock('core_settingdb_tab_div');
             $objTemplateLocal->parse('core_settingdb_tab_div');
+        }
+
+// NOK
+//die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
+
+        return true;
+    }
+
+
+    /**
+     * Adds an external settings view to the current template
+     *
+     * The content must contain the full view, including the surrounding form
+     * tags and submit button.
+     * Note that these are always appended on the right end of the tab list.
+     * @param   HTML_Template_Sigma $objTemplateLocal   Template object
+     * @param   string              $tab_name           The tab name to add
+     * @param   string              $content            The external content
+     */
+    static function show_external(
+        &$objTemplateLocal, $tab_name, $content
+    ) {
+        global $_CORELANG, $_ARRAYLANG;
+
+//$objTemplate->setCurrentBlock();
+//echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
+
+        if (   empty($objTemplateLocal)
+            || !$objTemplateLocal->blockExists('core_settingdb_row')) {
+            $objTemplateLocal = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+            if (!$objTemplateLocal->loadTemplateFile('settingDb.html'))
+                die("Failed to load template settingDb.html");
+        }
+
+        $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
+        // The tabindex must be set in the form name in any case
+        $objTemplateLocal->setGlobalVariable(array(
+            'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
+            'CORE_SETTINGDB_EXTERNAL' => $content,
+        ));
+        // Set up the tab, if any
+        if (!empty($tab_name)) {
+            $objTemplateLocal->setGlobalVariable(array(
+                'CORE_SETTINGDB_TAB_NAME'    => $tab_name,
+//                'CORE_SETTINGDB_TAB_INDEX'   => self::$tab_index,
+                'CORE_SETTINGDB_TAB_CLASS'   => (self::$tab_index == $active_tab ? 'active' : ''),
+                'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
+            ));
+            $objTemplateLocal->touchBlock('core_settingdb_tab_row');
+            $objTemplateLocal->parse('core_settingdb_tab_row');
+            $objTemplateLocal->touchBlock('core_settingdb_tab_div_external');
+            $objTemplateLocal->parse('core_settingdb_tab_div_external');
         }
         return true;
     }
@@ -543,23 +820,109 @@ class SettingDb
 
     /**
      * Update and store all settings found in the $_POST array
+     *
+     * Sets up an error message on failure.
      * @return  boolean                 True on success,
      *                                  the empty string if none was changed,
      *                                  or false on failure
      */
     static function storeFromPost()
     {
-//echo("SettingDb::storeFromPost(): Entered<br />");
-        // Compare POST with current settings.
-        // Only store what was changed.
-        self::init(false);
-        unset($_POST['store']);
-//        unset($_POST['csrf']);
+        global $_CORELANG;
+
+//echo("SettingDb::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
+//echo("SettingDb::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
+        // There may be several tabs for different keys being edited, so
+        // load the full set of settings for the module.
+        // Note that this is why setting names should be unique.
+// TODO: You *MUST* call this yourself *before* in order to
+// properly initialize the module ID!
+//        self::init();
+        unset($_POST['bsubmit']);
+        $result = true;
+        // Compare POST with current settings and only store what was changed.
         foreach ($_POST as $name => $value) {
-            $value = contrexx_stripslashes($value);
+//            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
+//                continue;
+            if (empty(self::$arrSettings[$name])) {
+                Message::add(sprintf(
+                    $_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING_UNKNOWN_SETTING'],
+                    $name), Message::MSG_CLASS_WARN);
+// Ignore unknown settings for the time being
+//                $result = false;
+                continue;
+            }
+            switch (self::$arrSettings[$name]['type']) {
+              case self::TYPE_FILEUPLOAD:
+                // An empty folder path has been posted, indicating that the
+                // current file should be removed
+                if (empty($value)) {
+//echo("Empty value, deleting file...<br />");
+                    if (self::$arrSettings[$name]['value']) {
+                        if (File::delete_file(self::$arrSettings[$name]['value'])) {
+//echo("File deleted<br />");
+                            $value = '';
+                        } else {
+//echo("Failed to delete file<br />");
+                            Message::add(File::getErrorString(),
+                                Message::MSG_CLASS_ERROR);
+                            $result = false;
+                        }
+                    }
+                } else {
+                    // No file uploaded.  Skip.
+                    if (empty($_FILES[$name]['name'])) continue;
+                    // $value is the target folder path
+                    $target_path = $value.'/'.$_FILES[$name]['name'];
+// TODO: Test if this works in all browsers:
+                    // The path input field name is the same as the
+                    // file upload input field name!
+                    $result_upload = File::upload_file_http(
+                        $name, $target_path,
+                        Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
+                        // The allowed file types
+                        self::$arrSettings[$name]['values']
+                    );
+                    // If no file has been uploaded at all, ignore the no-change
+                    if ($result_upload === '') continue;
+                    if ($result_upload === true) {
+                        $value = $target_path;
+                    } else {
+//echo("SettingDb::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
+// TODO: Add error message
+                        Message::add(File::getErrorString(), Message::MSG_CLASS_ERROR);
+                        $result = false;
+                    }
+                }
+                break;
+// TODO: Not implemented yet
+              case self::TYPE_CHECKBOX:
+die("SettingDb::storeFromPost(): ERROR: Type CHECKBOX is not implemented yet!");
+                break;
+              case self::TYPE_CHECKBOXGROUP:
+                $value = join(',', array_keys($value));
+              default:
+                // Regular value of any other type
+                $value = contrexx_stripslashes($value);
+                break;
+            }
             SettingDb::set($name, $value);
         }
-        return self::updateAll();
+//echo("SettingDb::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
+        $result_update = self::updateAll();
+        if ($result_update === false) {
+            Message::add($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING'],
+                Message::MSG_CLASS_ERROR);
+        } elseif ($result_update === true) {
+            Message::add($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+        }
+        // If nothing bad happened above, return the result of updateAll(),
+        // which may be true, false, or the empty string
+        if ($result === true) {
+            return $result_update;
+        }
+        // There has been an error anyway
+        return false;
     }
 
 
@@ -567,18 +930,92 @@ class SettingDb
      * Deletes all entries for the current module
      *
      * This is for testing purposes only.  Use with care!
-     * The global MODULE_ID determines the current module ID.
+     * The static $module_id determines the current module ID.
      * @return    boolean               True on success, false otherwise
      */
     static function deleteModule()
     {
         global $objDatabase;
 
+        if (empty(self::$module_id)) {
+// TODO: Error message
+            return false;
+        }
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `module_id`=".MODULE_ID);
+             WHERE `module_id`=".self::$module_id);
         if (!$objResult) return self::errorHandler();
         return true;
+    }
+
+
+    /**
+     * Splits the string value at commas and returns an array of strings
+     *
+     * Commas escaped by a backslash (\) are ignored and replaced by a
+     * single comma.
+     * The values themselves may be composed of pairs of key and value,
+     * separated by a colon.  Colons escaped by a backslash (\) are ignored
+     * and replaced by a single colon.
+     * Leading and trailing whitespace is removed from both keys and values.
+     * Note that keys *MUST NOT* contain commas or colons!
+     * @param   string    $strValues    The string to be split
+     * @return  array                   The array of strings
+     */
+    static function splitValues($strValues)
+    {
+/*
+Example:
+postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
+*/
+        $arrValues = array();
+        $match = array();
+        foreach (
+            preg_split(
+                '/\s*(?<!\\\\),\s*/', $strValues,
+                null, PREG_SPLIT_NO_EMPTY) as $value
+        ) {
+            $key = null;
+            if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
+                $key = $match[1];
+                $value = $match[2];
+//DBG::log("Split $key and $value");
+            }
+            str_replace(array('\\,', '\\:'), array(',', ':'), $value);
+            if (isset($key)) {
+                $arrValues[$key] = $value;
+            } else {
+                $arrValues[] = $value;
+            }
+//DBG::log("Split $key and $value");
+        }
+//DBG::log("Array: ".var_export($arrValues, true));
+        return $arrValues;
+    }
+
+
+    /**
+     * Joins the strings in the array with commas into a single values string
+     *
+     * Commas within the strings are escaped by a backslash (\).
+     * The array keys are prepended to the values, separated by a colon.
+     * Colons within the strings are escaped by a backslash (\).
+     * Note that keys *MUST NOT* contain either commas or colons!
+     * @param   array     $arrValues    The array of strings
+     * @return  string                  The concatenated values string
+     * @todo    Untested!  May or may not work as described.
+     */
+    static function joinValues($arrValues)
+    {
+        $strValues = '';
+        foreach ($arrValues as $key => $value) {
+            $value = str_replace(
+                array(',', ':'), array('\\,', '\\:'), $value);
+            $strValues .=
+                ($strValues ? ',' : '').
+                "$key:$value";
+        }
+        return $strValues;
     }
 
 
@@ -592,7 +1029,7 @@ class SettingDb
     {
         global $objDatabase;
 
-die("SettingDb::errorHandler(): Disabled!<br />");
+//die("SettingDb::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (!in_array(DBPREFIX."core_setting", $arrTables)) {
@@ -614,6 +1051,8 @@ echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
         // Use SettingDb::add(); in your module code to add missing and
         // new settings.
+//        SettingDb::init('country');
+//        SettingDb::add('core_country_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
 
         // More to come...
 
