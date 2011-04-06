@@ -506,7 +506,6 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
         //get data
         $intId = intval($intCategoryId);
         $intParentId = intval($arrData['categoryPosition']);
-        $intOrder = intval(0);
         $intShowEntries = intval($arrData['categoryShowEntries']);
         $intShowCategories = intval($arrData['categoryShowSubcategories']);
         $intActive = intval($arrData['categoryActive']);
@@ -522,7 +521,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_categories
                 SET
                     `parent_id`='".$intParentId."',
-                    `order`='".$intOrder."',
+                    `order`= 0,
                     `show_entries`='".$intShowEntries."',
                     `show_subcategories`='".$intShowCategories."',
                     `picture`='".$strPicture."',
@@ -573,7 +572,6 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_categories
                 SET
                     ".$parentSql."
-                    `order`='".$intOrder."',
                     `show_entries`='".$intShowEntries."',
                     `show_subcategories`='".$intShowCategories."',
                     `picture`='".$strPicture."',

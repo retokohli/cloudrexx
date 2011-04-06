@@ -498,7 +498,6 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
         //get data
         $intId = intval($intLevelId);
         $intParentId = intval($arrData['levelPosition']);
-        $intOrder = intval(0);
         $intShowEntries = intval($arrData['levelShowEntries']);
         $intShowSublevels = intval($arrData['levelShowSublevels']);
         $intShowCategories = intval($arrData['levelShowCategories']);
@@ -515,7 +514,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_levels
                 SET
                     `parent_id`='".$intParentId."',
-                    `order`='".$intOrder."',
+                    `order`=0,
                     `show_entries`='".$intShowEntries."',
                     `show_sublevels`='".$intShowSublevels."',
                     `show_categories`='".$intShowCategories."',
@@ -567,7 +566,6 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_levels
                 SET
                     ".$parentSql."
-                    `order`='".$intOrder."',
                     `show_entries`='".$intShowEntries."',
                     `show_sublevels`='".$intShowSublevels."',
                     `show_categories`='".$intShowCategories."',
