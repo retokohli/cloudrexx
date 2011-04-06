@@ -22,47 +22,64 @@ if (eregi("validator.inc.php",$_SERVER['PHP_SELF'])) {
 
 
 /**
- * strip_tags wrapper
- *
+ * Wrapper for strip_tags() that complies with gpc_magic_quotes
  * @param     string     $string
  * @return    string     $string (cleaned)
  */
 function contrexx_strip_tags($string)
 {
-    if (CONTREXX_ESCAPE_GPC) {
-    return strip_tags($string);
-    }
+    if (CONTREXX_ESCAPE_GPC) return strip_tags($string);
     return addslashes(strip_tags($string));
 }
 
 
 /**
- * addslashes wrapper to check for gpc_magic_quotes - gz
+ * Wrapper for addslashes() that complies with gpc_magic_quotes
  * @param     string     $string
  * @return    string              cleaned
  */
 function contrexx_addslashes($string)
 {
-    // if magic quotes is on, the string is already quoted
-    if (CONTREXX_ESCAPE_GPC) {
-        return $string;
-    }
+    // If magic quotes is on the string is already quoted,
+    // just return it
+    if (CONTREXX_ESCAPE_GPC) return $string;
     return addslashes($string);
 }
 
 
 /**
- * stripslashes wrapper to check for gpc_magic_quotes
+ * Wrapper for stripslashes() that complies with gpc_magic_quotes
  * @param   string    $string
  * @return  string
  */
 function contrexx_stripslashes($string)
 {
-    if (CONTREXX_ESCAPE_GPC) {
-        return stripslashes($string);
-    }
+    if (CONTREXX_ESCAPE_GPC) return stripslashes($string);
     return $string;
 }
+
+
+/**
+ * Processes the argument like {@see contrexx_stripslashes()}, but also
+ * handles arrays
+ *
+ * Recurses down into array parameters and applies
+ * {@see contrexx_stripslashes()} to any scalar value encountered.
+ * @param   mixed   $param      A scalar or array value
+ * @return  mixed               The parameter with magic slashes removed
+ *                              recursively, if any.
+ */
+function contrexx_stripslashes_recursive($param)
+{
+    if (is_array($param)) {
+        foreach ($param as &$thing) {
+            $thing = contrexx_stripslashes_recursive($thing);
+        }
+        return $param;
+    }
+    return contrexx_stripslashes($param);
+}
+
 
 /**
  * Convenient match-and-replace-in-one function
@@ -81,17 +98,14 @@ function preg_match_replace(
 ) {
     if (preg_match($pattern, $subject, $subpatterns)) {
         $subject = preg_replace($pattern, $replace, $subject, $limit, $count);
-//echo("preg_match_replace(<br />pattern $pattern,<br />replace $replace,<br />subject $subject,<br />subpatterns ".var_export($subpatterns, true).",<br />limit $limit,<br />count $count<br />): Match, made ".htmlentities($subject)."<br />");
         return $subject;
     }
-//echo("NO match<br />");
     return $subject;
 }
 
 
 /**
- * Checks if the request comes from a spider
- *
+ * Checks whether the request comes from a known spider
  * @return  boolean
  */
 function checkForSpider()
@@ -101,9 +115,8 @@ function checkForSpider()
     $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
     foreach ($arrRobots as $spider) {
         $spiderName = trim($spider);
-        if (preg_match("=".$spiderName."=",$useragent)) {
+        if (preg_match('/'.preg_quote($spiderName, '/').'/', $useragent)) {
             return true;
-            break;
         }
     }
     return false;
@@ -111,86 +124,103 @@ function checkForSpider()
 
 
 /////////////////////////////////////////////////////////////
-//convenience escaping function layer - use these rather than
-//contrexx_addslashes() and so on please.
+// Convenience escaping function layer - use these rather than
+// contrexx_addslashes() and so on please.
 
 /**
- * Escapes a raw string, e.g. from the db. The resulting string can be safely
- * written to the XHTML response.
- * @param string $raw
- * @return the escaped string
+ * Encodes a raw string for use with [X]HTML
+ *
+ * Apply to raw strings and those taken from the database before writing it
+ * to the HTML response stream.
+ * @param   string  $raw      The raw string
+ * @return  string            The HTML encoded string
  */
-function contrexx_raw2xhtml($raw) {
+function contrexx_raw2xhtml($raw)
+{
     return htmlentities($raw, ENT_QUOTES, CONTREXX_CHARSET);
 }
 
+
 /**
- * Unescapes an input string (from Get/Post/Cookie) as necessary so you get a raw string.
- * @param string $input
- * @return the raw string
+ * Unescapes data from any request, and returns a raw string
+ *
+ * Apply to any string taken from a get or post request, or from a cookie.
+ * @param   string  $input    The input string
+ * @return  string            The raw string
  */
-function contrexx_input2raw($input) {
+function contrexx_input2raw($input)
+{
   return  contrexx_stripslashes($input);
 }
 
+
 /**
- * Adds slashes so you can insert a string into the database
- * @param string $raw
- * @return the escaped string
+ * Adds slashes to the given string
+ *
+ * Apply to any raw string before inserting it into the database.
+ * @param   string  $raw      The raw string
+ * @return  string            The slashed string
  */
-function contrexx_raw2db($raw) {
+function contrexx_raw2db($raw)
+{
     return addslashes($raw);
 }
 
+
 /**
- * Escapes a raw string, e.g. from the db. The resulting string can be safely
- * written to an XML target.
- * @param string $raw
- * @return the escaped string
+ * Encodes a raw string for use with XML
+ *
+ * Apply to raw strings and those taken from the database before writing
+ * to the XML response stream.
+ * @param   string  $raw    The raw string
+ * @return  string          The XML encoded string
  */
-function contrexx_raw2xml($raw) {
+function contrexx_raw2xml($raw)
+{
     return htmlspecialchars($raw, ENT_QUOTES, CONTREXX_CHARSET);
 }
 
+
 /**
- * Encode the given url so that it can be used as a a.href or img.src attribute value.
- * @param string $raw
- * @param boolean $encodeDash whether to encode dashes ('/') too - defaults to false
- * @return string
+ * Encodes a raw string for use as a href or src attribute value.
+ *
+ * Apply to any raw string that is to be used as a link or image address
+ * in any tag attribute, such as a.href or img.src.
+ * @param   string  $raw          The raw string
+ * @param   boolean $encodeDash   Encode dashes ('-') if true.
+ *                                Defaults to false
+ * @return  string                The URL encoded string
  */
-function contrexx_raw2encodedUrl($source, $encodeDash = false)
+function contrexx_raw2encodedUrl($source, $encodeDash=false)
 {
     $cutHttp = false;
-    if(!$encodeDash && substr($source,0,7) == "http://") {
+    if (!$encodeDash && substr($source, 0, 7) == 'http://') {
         $source = substr($source, 7);
         $cutHttp = true;
-    } 
-
+    }
     $source = array_map('rawurlencode', explode('/', $source));
-
     if ($encodeDash) {
         $source = str_replace('-', '%2D', $source);
     }
-
     $result = implode('/', $source);
-
-    if($cutHttp)
-        $result = "http://".$result;
-
+    if ($cutHttp) $result = 'http://'.$result;
     return $result;
 }
+
 
 /**
- * Remove script tags and their content from the string given
- * @param string $raw
- * @return string scriptless string.
- * @todo check for eventhandlers (onclick and the like)
+ * Removes script tags and their content from the given string
+ * @param   string  $raw    The original string
+ * @return  string          The string with script tags removed
+ * @todo    Check for event handlers
  */
-function contrexx_remove_script_tags($raw) {
-    //remove closed script tags and content
-    $result = preg_replace('#<\s*script[^>]*>.*?<\s*/script\s*>#is','',$raw);
-    //remove unclosed script tags
-    $result = preg_replace('#<\s*script[^>]*>#is', '',$result);
+function contrexx_remove_script_tags($raw)
+{
+    // Remove closed script tags and content
+    $result = preg_replace('/<\s*script[^>]*>.*?<\s*\/script\s*>/is', '', $raw);
+    // Remove unclosed script tags
+    $result = preg_replace('/<\s*script[^>]*>/is', '', $result);
     return $result;
 }
+
 ?>
