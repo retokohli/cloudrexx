@@ -81,6 +81,13 @@ class Contact extends ContactLib
     protected $legacyMode;
 
     /**
+     * used by @link ContactException::_uploadFiles() .
+     * remembers the directory made in the first call to _uploadFiles.
+     * @var string
+     */
+    protected $depositionTarget;
+
+    /**
      * Contact constructor
      *
      * The constructor does initialize a template system
@@ -325,10 +332,46 @@ class Contact extends ContactLib
             $tup = self::getTemporaryUploadPath($id);
             $tmpUploadDir = $tup[0].'/'.$tup[2].'/'; //all the files uploaded are in here
             $arrFiles = array(); //we'll collect name => path of all files here and return this
-            
-            //determine where formular uploads are stored
-            $arrSettings = $this->getSettings();
-            $depositionTarget = $arrSettings['fileUploadDepositionPath'].'/';
+
+            $depositionTarget = ""; //target folder            
+
+            //on the first call, _uploadFiles is called with move=false.
+            //this is done in order to get an array of the moved files' names, but
+            //the files are left in place.
+            //the second call is done with move=true - here we finally move the
+            //files.
+            //the target folder is created in the first call, because if we can't
+            //create the folder, the target path is left pointing at the path
+            //specified by $arrSettings['fileUploadDepositionPath'].
+            //to remember the target folder for the second call, it is stored in
+            //$this->depositionTarget.
+            if(!$move) { //first call - create folder
+                //determine where formular uploads are stored
+                $arrSettings = $this->getSettings();
+                $depositionTarget = $arrSettings['fileUploadDepositionPath'].'/';
+
+                //find an unique folder name for the uploaded files
+                $folderName = date("Ymd");
+                $suffix = "";
+                if(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName)) {
+                    $suffix = 1;
+                    while(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName.'-'.$suffix))
+                        $suffix++;
+
+                    $suffix = '-'.$suffix;
+                }
+                $folderName .= $suffix;
+                
+                //try to make the folder and change target accordingly on success
+                if(mkdir(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName.'/')) {
+                    $depositionTarget .= $folderName.'/';
+                }
+                $this->depositionTarget = $depositionTarget;
+            }
+            else //second call - restore remembered target
+            {
+                $depositionTarget = $this->depositionTarget;
+            }
 
             //move all files
             if(!file_exists($tmpUploadDir))
