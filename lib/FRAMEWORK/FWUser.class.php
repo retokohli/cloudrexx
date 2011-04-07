@@ -109,13 +109,6 @@ class FWUser extends User_Setting
         if (isset($username) && isset($password)) {
             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
 
-            if ($this->isBackendMode()) {
-                if (!$this->checkCode($validationCode)) {
-                    $this->arrStatusMsg['error'][] = $_CORELANG['TXT_SECURITY_CODE_IS_INCORRECT'];
-                    return false;
-                }
-            }
-
             if ($this->objUser->auth($username, $password, $this->isBackendMode())) {
                 if ($this->isBackendMode()) {
                     // sets cookie for 30 days

@@ -170,19 +170,31 @@ $objModules = new ModuleChecker();
 
 $objFWUser = FWUser::getFWUserObject();
 
-//-------------------------------------------------------
-// Authentification start
-//-------------------------------------------------------
-if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
-    $modulespath = ASCMS_CORE_PATH . "/imagecreator.php";
-    if (file_exists($modulespath)) require_once($modulespath);
-    else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+/* authentification */
+$loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
+$captchaError = ''; //captcha error message is placed in here if needed
 
+if(!$loggedIn) { //not logged in already - do captcha and password checks
+    //captcha check
+    $validationCode = isset($_POST['captchaCode']) ? contrexx_input2raw($_POST['captchaCode']) : false;
+    $validationOffset = isset($_POST['captchaOffset']) ? contrexx_input2raw($_POST['captchaOffset']) : false;
+
+    if($validationCode !== false && $validationOffset !== false) { //a captcha has been given
+        include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+        $captcha = new Captcha();
+        $captchaPassed = $captcha->compare($validationCode, $validationOffset);    
+        if(!$captchaPassed) { //captcha check failed -> do not check authentication
+            $captchaError = $_CORELANG['TXT_SECURITY_CODE_IS_INCORRECT'];
+        }
+        else { //captcha passed, let's autenticate
+            $objFWUser->checkAuth();
+        }
+    }   
+}
+
+//user only gets the backend if he's logged in
+if (!$objFWUser->objUser->login(true)) {
     switch ($plainCmd) {
-        case "secure":
-            $_SESSION['auth']['secid'] = FWUser::mkSECID();
-            getSecurityImage($_SESSION['auth']['secid']);
-            exit;
         case "lostpw":
             $objTemplate->loadTemplateFile('login_index.html');
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_lost_password.html');
@@ -277,12 +289,10 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
             $objTemplate->show();
             exit;
         default:
-            if(checkGDExtension()) {
-                $loginSecurityCode = '<img src="index.php?cmd=secure" alt="Security Code" title="Security Code"/>';
-            } else {
-                $_SESSION['auth']['secid'] = strtoupper(substr(md5(microtime()), 0, 4));
-                $loginSecurityCode = $_SESSION['auth']['secid'];
-            }
+            include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+            $captcha = new Captcha();
+            $captchaOffset = $captcha->getOffset();
+            $loginSecurityCode = '<img src="'.$captcha->getURL().'" alt="'.$captcha->getAlt().'" title="Security Code"/>';
 
             $objTemplate->loadTemplateFile('login_index.html',true,true);
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
@@ -297,7 +307,9 @@ if (!$objFWUser->objUser->login(true) && !$objFWUser->checkAuth()) {
                 'UID'                     => isset($_COOKIE['username']) ? $_COOKIE['username'] : '',
                 'TITLE'                   => $_CORELANG['TXT_LOGIN'],
                 'LOGIN_IMAGE'             => $loginSecurityCode,
-                'LOGIN_ERROR_MESSAGE'     => $objFWUser->getErrorMsg()
+                'LOGIN_ERROR_MESSAGE'     => $objFWUser->getErrorMsg(),
+                'CAPTCHA_ERROR'           => $captchaError,
+                'CAPTCHA_OFFSET'          => $captchaOffset
             ));
             $objTemplate->show();
             exit;

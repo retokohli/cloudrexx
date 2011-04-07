@@ -103,7 +103,10 @@ class Captcha {
         for ($i=1; $i <= $intDigits; ++$i) {
             switch (rand(0,1)) {
                 case 0:
-                    $strReturn .= chr(rand(65,90));
+                    $char = chr(rand(65,90));
+                    while($char == 'O') //no O's pleace
+                        $char = chr(rand(65,90));                    
+                    $strReturn .= $char;
                     break;
                 case 1:
                     $strReturn .= sprintf("%d", rand(2,9));
