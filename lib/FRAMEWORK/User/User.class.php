@@ -1,4 +1,5 @@
 <?php
+class UserException extends Exception {} ;
 
 /**
  * User Object
@@ -305,7 +306,9 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        return ($objResult = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."access_users` WHERE `username` = '".addslashes($username)."' AND `password` = '".$password."' AND `active` = 1 AND ( `expiration` = 0 OR `expiration` > ".time().")", 1)) !== false
+        $objResult = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."access_users` WHERE `username` = '".addslashes($username)."' AND `password` = '".$password."' AND `active` = 1 AND ( `expiration` = 0 OR `expiration` > ".time().")", 1);
+
+        return $objResult !== false
             && $objResult->RecordCount() == 1
             && $this->load($objResult->fields['id'])
             && $this->hasModeAccess($backend)
@@ -738,6 +741,7 @@ class User extends User_Profile
      * Get username, email, lang_id, is_active and is_admin states from database
      * and put them into the analogous class variables.
      * @param integer $id
+     * @throws UserException
      * @return unknown
      */
     private function load($id)
@@ -745,8 +749,7 @@ class User extends User_Profile
         global $_LANGID;
 
         if ($this->isLoggedIn()) {
-            $arrDebugBackTrace =  debug_backtrace();
-            die("User->load(): Illegal method call in {$arrDebugBackTrace[0]['file']} on line {$arrDebugBackTrace[0]['line']}!");
+            throw new UserException("User->load(): Illegal method call - try getUser()!");
         }
 
         if ($id) {
@@ -1442,15 +1445,22 @@ class User extends User_Profile
     {
         global $sessionObj;
 
-        return $this->isLoggedIn() ||
-            isset($sessionObj)
+        if($this->isLoggedIn())
+            return true;
+
+        if(isset($sessionObj)
             && is_object($sessionObj)
             && $sessionObj->userId
             && $this->load($sessionObj->userId)
             && $this->getActiveStatus()
             && $this->hasModeAccess($backend)
-            && $this->updateLastActivityTime()
-            && ($this->loggedIn = true);
+            && $this->updateLastActivityTime()) {
+
+            $this->loggedIn = true;
+            return true;
+        }
+
+        return false;
     }
 
 

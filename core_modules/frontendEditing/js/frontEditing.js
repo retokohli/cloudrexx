@@ -129,6 +129,7 @@ function fe_doLogin() {
 												username: $F(fe_loginUsername),
 												password: $F(fe_loginPassword),
 												seckey: $F(fe_loginSecurityKey),
+                                                seckeyOffset: $F(fe_loginSecurityKeyOffset),
 												type: loginType
 											},
 		  						onSuccess: function(transport) {

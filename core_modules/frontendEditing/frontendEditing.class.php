@@ -27,7 +27,6 @@ require_once(BASE_FOLDER.'core/API.php');
 require_once(ASCMS_LIBRARY_PATH.'/CSRF.php');
 require_once(ASCMS_CORE_PATH.'/Init.class.php');
 require_once(ASCMS_CORE_PATH.'/wysiwyg.class.php');
-require_once(ASCMS_CORE_PATH.'/imagecreator.php');
 require_once(ASCMS_CORE_PATH.'/permission.class.php');
 require_once('frontendEditingLib.class.php');
 
@@ -136,7 +135,7 @@ class frontendEditing extends frontendEditingLib {
 		$strErrorCode = '';
 
 		//Template
-		$this->objTemplate = &new HTML_Template_Sigma($this->strTemplatePath);
+		$this->objTemplate = new HTML_Template_Sigma($this->strTemplatePath);
         CSRF::add_placeholder($this->objTemplate);
 		$this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -213,9 +212,6 @@ class frontendEditing extends frontendEditingLib {
 		} else {
 			//User is not logged in or not allowed to edit¨
 			switch($this->strErrorCode) {
-				case 'securityImage':
-					$this->getSecurityImage();
-					break;
 				case 'login':
 					echo $this->getLoginPage();
 					break;
@@ -234,12 +230,6 @@ class frontendEditing extends frontendEditingLib {
 	 * @return true, if the user is allowed to access the requested url.
 	 */
 	private function checkAccessRights() {
-		//check for security-image loading
-		if ($this->strAction == 'getSecurityImage') {
-			$this->strErrorCode = 'securityImage';
-			return false;
-		}
-
 		//check for login
 		if ($_POST['doLogin'] == 'true') {
 			if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['seckey']) && !empty($_POST['type'])) {
@@ -247,15 +237,24 @@ class frontendEditing extends frontendEditingLib {
 				//Assign variables for login
 				$_POST['USERNAME'] 	= $_POST['username'];
 				$_POST['PASSWORD'] 	= $_POST['password'];
-				$_POST['secid2'] 	= strtoupper($_POST['seckey']);
+                $captchaKey = strtoupper($_POST['seckey']);
+                $captchaOffset = $_POST['seckeyOffset'];
+                include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+                $captcha = new Captcha();
+                $captchaPassed = $captcha->compare($captchaKey, $captchaOffset);
 
-				if ($this->objUser->checkAuth() && (Permission::hasAllAccess() || $this->isUserInBackendGroup())) {
-					//Login successfull
-					$_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
-					$this->setToolbarVisibility(true);
-				} else {
-					$this->boolLoginFailed = true;
-				}
+                if ($captchaPassed) {
+                    if ($this->objUser->checkAuth() && (Permission::hasAllAccess() || $this->isUserInBackendGroup())) {
+                        //Login successfull
+                        $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
+                        $this->setToolbarVisibility(true);
+                    } else {
+                        $this->boolLoginFailed = true;
+                    }
+                }
+                else {
+                    $this->boolLoginFailed = true;
+                }
 			} else {
 				$this->boolLoginFailed = true;
 			}
@@ -330,6 +329,10 @@ class frontendEditing extends frontendEditingLib {
 			$statusMessage = '<div class="fe_LoginError">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FAILED'].'</div>';
 		}
 
+        include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+        $captcha = new Captcha();
+        $captchaOffset = $captcha->getOffset();
+
 		$this->objTemplate->setVariable(array(	'TXT_LOGIN_TITLE'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'],
 												'TXT_LOGIN_USERNAME'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'],
 												'TXT_LOGIN_PASSWORD'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD'],
@@ -345,22 +348,13 @@ class frontendEditing extends frontendEditingLib {
 		$this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=>	$this->intPageId,
 												'LOGIN_PAGE_SECTION'	=>	$this->strPageSection,
 												'LOGIN_PAGE_CMD'		=>	$this->strPageCommand,
-												'LOGIN_SECURITY_IMAGE'	=>	frontendEditingLib::FRONTENDEDITING_PATH .'frontendEditing.class.php?act=getSecurityImage',
+												'LOGIN_SECURITY_IMAGE'	=>	$captcha->getURL(),
 												'LOGIN_USERNAME'		=>	(get_magic_quotes_gpc() == 1 ? stripslashes($_POST['USERNAME']) : $_POST['USERNAME']),
-												'LOGIN_STATUS_MESSAGE'	=>	$statusMessage
+												'LOGIN_STATUS_MESSAGE'	=>	$statusMessage,
+                                                'CAPTCHA_OFFSET'        =>  $captchaOffset
 										));
 
 		return 'login'.$this->strSplitChar.$this->objTemplate->get();
-	}
-
-	/**
-	 * Shows a security-image which is used for protection of the login-form.
-	 *
-	 */
-	private function getSecurityImage() {
-        $_SESSION['auth']['secid'] = FWUser::mkSECID();
-
-		getSecurityImage($_SESSION['auth']['secid']);
 	}
 
 	/**

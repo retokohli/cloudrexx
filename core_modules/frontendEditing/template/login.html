@@ -16,7 +16,8 @@
 				<div class="fe_LoginBoxLabel">{TXT_LOGIN_PASSWORD}</div>
 				<div class="fe_LoginBoxValue"><input type="password" id="fe_LoginPassword" name="fe_LoginPassword" value="" class="fe_LoginBoxPassword" /></div>
 				<div class="fe_LoginBoxLabel">{TXT_LOGIN_SECKEY}</div>
-				<div class="fe_LoginBoxValue"><input type="text" id="fe_LoginSecurityKey" onchange="this.value=this.value.toUpperCase();" name="fe_LoginSecurityKey" class="fe_LoginBoxCaptcha" value="" maxlength="4" />&nbsp;<img src="{LOGIN_SECURITY_IMAGE}" title="Security Image" style="margin: 0px;" /></div>
+				<div class="fe_LoginBoxValue"><input type="text" id="fe_LoginSecurityKey" onchange="this.value=this.value.toUpperCase();" name="fe_LoginSecurityKey" class="fe_LoginBoxCaptcha" value="" maxlength="5" />
+                <input type="hidden" value="{CAPTCHA_OFFSET}" name="fe_loginSecurityKeyOffset" id="fe_loginSecurityKeyOffset" />&nbsp;<img src="{LOGIN_SECURITY_IMAGE}" title="Security Image" style="margin: 0px;" /></div>
 				<div class="fe_LoginBoxLabel">{TXT_LOGIN_AREA}</div>
 				<div class="fe_LoginBoxValue"><input type="radio" id="fe_LoginTypeFrontend" name="fe_LoginType" value="Frontend" checked="checked" />&nbsp;{TXT_LOGIN_AREA_FRONTEND}&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" id="fe_LoginTypeBackend" name="fe_LoginType" value="Backend" />&nbsp;{TXT_LOGIN_AREA_BACKEND}<br /></div>
 				<br />

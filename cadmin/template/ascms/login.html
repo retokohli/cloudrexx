@@ -38,7 +38,9 @@ function ValidateForm(theform)
 	</tr>
 	<tr>
 		<td nowrap="nowrap">{TXT_ENTER_SECURITY_CODE}:</td>
-		<td><input style="width:100%;" tabindex="1" name="secid2" value="" maxlength="5" onchange="javascript:this.value=this.value.toUpperCase();" /></td>
+		<td><input style="width:100%;" tabindex="1" name="captchaCode" value="" maxlength="5" onchange="javascript:this.value=this.value.toUpperCase();" />
+        <input type="hidden" name="captchaOffset" value="{CAPTCHA_OFFSET}" />
+        </td>
 	</tr>
 	<tr>
 		<td nowrap="nowrap">{TXT_USER_NAME}:</td>
@@ -55,7 +57,7 @@ function ValidateForm(theform)
 		<td colspan="2"><a href="index.php?cmd=lostpw"><br />&raquo;&nbsp;{TXT_PASSWORD_LOST}</a></td>
 	</tr>
 	<tr>
-		<td colspan="2"><div style="color: #ff0000; font-weight: bold;"><br />{LOGIN_ERROR_MESSAGE}</div></td>
+		<td colspan="2"><div style="color: #ff0000; font-weight: bold;"><br />{LOGIN_ERROR_MESSAGE}{CAPTCHA_ERROR}</div></td>
 	</tr>
 </table>
 </form>
