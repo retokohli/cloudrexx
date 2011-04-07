@@ -667,7 +667,7 @@ class User extends User_Profile
     }
 
     public function getUsers(
-        $filter=null, $search=null, $arrSort=null, $arrAttributes=null, 
+        $filter=null, $search=null, $arrSort=null, $arrAttributes=null,
         $limit=null, $offset=0
     ) {
         $objUser = clone $this;
@@ -1792,7 +1792,7 @@ class User extends User_Profile
      */
     public static function isValidUsername($username)
     {
-        if (preg_match('/^[a-zA-Z0-9-_]+$/', $username)) {
+        if (preg_match('/^[a-zA-Z0-9-_]+$/', $username))
             return true;
         return false;
     }
