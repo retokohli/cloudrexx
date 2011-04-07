@@ -8,6 +8,10 @@
  * @package     contrexx
  * @subpackage  lib_framework
  */
+
+require_once('User_Profile.class.php');
+require_once('User_Setting.class.php');
+
 /**
  * User Object
  *
@@ -270,6 +274,7 @@ class User extends User_Profile
      */
     private $loggedIn;
 
+
     public function __construct()
     {
         parent::__construct();
@@ -281,6 +286,7 @@ class User extends User_Profile
 
         $this->clean();
     }
+
 
     /**
      * Authenticate user against username and password
@@ -306,6 +312,7 @@ class User extends User_Profile
             && $this->updateLastAuthTime();
     }
 
+
     /**
      * Check password correctness
      *
@@ -320,6 +327,7 @@ class User extends User_Profile
 
         return ($objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."access_users` WHERE `id` = ".$this->id." AND `password` = '".md5($password)."'", 1)) !== false && $objResult->RecordCount() == 1;
     }
+
 
     /**
      * Clean user metadata
@@ -355,6 +363,7 @@ class User extends User_Profile
         $this->EOF = true;
         $this->loggedIn = false;
     }
+
 
     /**
      * Delete the current loaded user account
@@ -398,6 +407,7 @@ class User extends User_Profile
         return false;
     }
 
+
     public function finishSignUp()
     {
         $this->restore_key = '';
@@ -406,6 +416,7 @@ class User extends User_Profile
 
         return $this->store();
     }
+
 
     /**
      * Load first user
@@ -420,6 +431,7 @@ class User extends User_Profile
         }
     }
 
+
     public static function forceDefaultEmailAccess()
     {
         global $objDatabase;
@@ -427,6 +439,7 @@ class User extends User_Profile
         $arrSettings = FWUser::getSettings();
         return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `email_access` = '".$arrSettings['default_email_access']['value']."'");
     }
+
 
     public static function forceDefaultProfileAccess()
     {
@@ -436,15 +449,18 @@ class User extends User_Profile
         return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `profile_access` = '".$arrSettings['default_profile_access']['value']."'");
     }
 
+
     public function getActiveStatus()
     {
         return $this->is_active;
     }
 
+
     public function getAdminStatus()
     {
         return $this->is_admin;
     }
+
 
     public function getAssociatedGroupIds()
     {
@@ -454,10 +470,12 @@ class User extends User_Profile
         return $this->arrGroups;
     }
 
+
     public function getBackendLanguage()
     {
         return $this->backend_language;
     }
+
 
     public function getDynamicPermissionIds($reload=false)
     {
@@ -468,6 +486,7 @@ class User extends User_Profile
         return $this->arrCachedUsers[$this->id]['dynamic_access_ids'];
     }
 
+
     public function getEmail()
     {
         // START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
@@ -476,25 +495,30 @@ class User extends User_Profile
         // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
     }
 
+
     public function getEmailAccess()
     {
         return $this->email_access;
     }
+
 
     public function getErrorMsg()
     {
         return $this->error_msg;
     }
 
+
     public function getExpirationDate()
     {
         return $this->expiration;
     }
 
+
     public function getFilteredSearchUserCount()
     {
         return $this->filtered_search_count;
     }
+
 
     private function getFilteredUserIdList($arrFilter = null, $search = null)
     {
@@ -576,25 +600,30 @@ class User extends User_Profile
         );
     }
 
+
     public function getFrontendLanguage()
     {
         return $this->frontend_language;
     }
+
 
     public function getId()
     {
         return $this->id;
     }
 
+
     public function getLastActivityTime()
     {
         return $this->last_activity;
     }
 
+
     public function getLastAuthenticationTime()
     {
         return $this->last_auth;
     }
+
 
     public function getPrivacyAccessMenu($attrs, $option)
     {
@@ -609,10 +638,12 @@ class User extends User_Profile
         return $menu;
     }
 
+
     public function getProfileAccess()
     {
         return $this->profile_access;
     }
+
 
     public function getProfileAttribute($attributeId, $historyId = 0)
     {
@@ -625,20 +656,24 @@ class User extends User_Profile
         }
     }
 
+
     public function getRegistrationDate()
     {
         return $this->regdate;
     }
+
 
     public function getRestoreKey()
     {
         return $this->restore_key;
     }
 
+
     public function getRestoreKeyTime()
     {
         return $this->restore_key_time;
     }
+
 
     public function getStaticPermissionIds($reload=false)
     {
@@ -649,23 +684,34 @@ class User extends User_Profile
         return $this->arrCachedUsers[$this->id]['static_access_ids'];
     }
 
+
     public function getUser($id)
     {
         $objUser = clone $this;
         $objUser->arrCachedUsers = &$this->arrCachedUsers;
-
         if ($objUser->load($id)) {
             return $objUser;
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     public function getUsername()
     {
         return $this->username;
     }
 
+
+    /**
+     * Returns a User object according to the given criteria
+     * @param unknown_type $filter
+     * @param unknown_type $search
+     * @param unknown_type $arrSort
+     * @param unknown_type $arrAttributes
+     * @param unknown_type $limit
+     * @param unknown_type $offset
+     * @return  User
+     */
     public function getUsers(
         $filter=null, $search=null, $arrSort=null, $arrAttributes=null,
         $limit=null, $offset=0
@@ -675,22 +721,22 @@ class User extends User_Profile
 
         if ($objUser->loadUsers($filter, $search, $arrSort, $arrAttributes, $limit, $offset)) {
             return $objUser;
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     public function getValidityTimePeriod()
     {
         return $this->validity;
     }
 
+
     /**
      * Load user data
      *
      * Get username, email, lang_id, is_active and is_admin states from database
      * and put them into the analogous class variables.
-     *
      * @param integer $id
      * @return unknown
      */
@@ -831,15 +877,10 @@ class User extends User_Profile
     }
 
 
-
     public function __clone()
     {
         $this->clean();
     }
-
-
-
-
 
 
     /*private function parseFilterConditions($filter)
@@ -962,7 +1003,8 @@ class User extends User_Profile
             .(count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
 // TODO: some conditions are not well enclosed, so there might be a more proper solution that adding more brackes at this point
-            .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
+// TODO: $arrQuery is not defined
+//            .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
         if (empty($limit)) {
@@ -1309,6 +1351,7 @@ class User extends User_Profile
         return true;
     }
 
+
     /**
      * Store group associations
      *
@@ -1342,6 +1385,7 @@ class User extends User_Profile
         return $status;
     }
 
+
     private function removeOutdatedAccounts()
     {
         global $objDatabase;
@@ -1369,6 +1413,7 @@ class User extends User_Profile
         }
     }
 
+
     private function validateUsername()
     {
         global $_CORELANG;
@@ -1387,13 +1432,11 @@ class User extends User_Profile
     }
 
 
-
-
-
     private function isLoggedIn()
     {
         return $this->loggedIn;
     }
+
 
     public function login($backend = false)
     {
@@ -1409,6 +1452,7 @@ class User extends User_Profile
             && $this->updateLastActivityTime()
             && ($this->loggedIn = true);
     }
+
 
     private function validateEmail()
     {
@@ -1426,6 +1470,7 @@ class User extends User_Profile
 
         return false;
     }
+
 
     /**
      * Validate language id
@@ -1456,12 +1501,9 @@ class User extends User_Profile
                   AND tblG.`is_active`
             GROUP BY tblI.`access_id`
             ORDER BY tblI.`access_id`';
-
         $objAccessId = $objDatabase->Execute($query);
-
         if ($objAccessId !== false) {
             $this->arrCachedUsers[$this->id][$type.'_access_ids'] = array();
-
             while (!$objAccessId->EOF) {
                 $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
                 $objAccessId->MoveNext();
@@ -1484,6 +1526,7 @@ class User extends User_Profile
             ", 1)) !== false && $objUser->RecordCount() == 1;
     }
 
+
     private function updateLastActivityTime()
     {
         global $objDatabase;
@@ -1496,12 +1539,14 @@ class User extends User_Profile
         return true;
     }
 
+
     private function updateLastAuthTime()
     {
         global $objDatabase;
 
         return $objDatabase->Execute("UPDATE `".DBPREFIX."access_users` SET `last_auth` = '".time()."' WHERE `id` = ".$this->id);
     }
+
 
     /**
      * Sets username of user
@@ -1516,6 +1561,7 @@ class User extends User_Profile
     {
         $this->username = $username;
     }
+
 
     /**
      * Sets the validity period of the account
@@ -1539,10 +1585,12 @@ class User extends User_Profile
         return true;
     }
 
+
     private function setExpirationDate($expiration)
     {
         $this->expiration = $expiration;
     }
+
 
     /**
      * Sets email address of user
@@ -1565,6 +1613,7 @@ class User extends User_Profile
         // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         $this->email = $email;
     }
+
 
     /**
      * Sets password of user
@@ -1601,6 +1650,7 @@ class User extends User_Profile
         return false;
     }
 
+
     /**
      * Set frontend language ID of user
      *
@@ -1615,6 +1665,7 @@ class User extends User_Profile
         $this->validateLanguageId('frontend');
     }
 
+
     /**
      * Set backend language ID of user
      *
@@ -1628,6 +1679,7 @@ class User extends User_Profile
         $this->backend_language = intval($langId);
         $this->validateLanguageId('backend');
     }
+
 
     /**
      * Set active status of user
@@ -1667,6 +1719,7 @@ class User extends User_Profile
         }
     }
 
+
     /**
      * Set ID's of groups to which this user should belong to
      *
@@ -1687,15 +1740,18 @@ class User extends User_Profile
         }
     }
 
+
     public function setEmailAccess($emailAccess)
     {
         $this->email_access = in_array($emailAccess, array_keys($this->arrPrivacyAccessTypes)) ? $emailAccess : $this->defaultEmailAccessType;
     }
 
+
     public function setProfileAccess($profileAccess)
     {
         $this->profile_access = in_array($profileAccess, array_keys($this->arrPrivacyAccessTypes)) ? $profileAccess : $this->defaultProfileAccessTyp;
     }
+
 
     /**
      * Is last admin
@@ -1716,6 +1772,7 @@ class User extends User_Profile
             return true;
         }
     }
+
 
     /**
      * Is unique email
@@ -1741,6 +1798,7 @@ class User extends User_Profile
         }
     }
 
+
     /**
      * Is valid email
      *
@@ -1759,6 +1817,7 @@ class User extends User_Profile
         }
     }
 
+
     /**
      * Is unique username
      *
@@ -1768,19 +1827,18 @@ class User extends User_Profile
      * @param integer $id
      * @return boolean
      */
-    private function isUniqueUsername($username, $id = 0)
+    private function isUniqueUsername($username, $id=0)
     {
         global $objDatabase;
 
         $this->removeOutdatedAccounts();
-
         $objResult = $objDatabase->SelectLimit("SELECT 1 FROM ".DBPREFIX."access_users WHERE username='".addslashes($username)."' AND id != ".$id, 1);
-
         if ($objResult && $objResult->RecordCount() == 0) {
             return true;
         }
         return false;
     }
+
 
     /**
      * Is valid username
@@ -1797,22 +1855,17 @@ class User extends User_Profile
         return false;
     }
 
+
     /**
-     * Is valid password
-     *
-     * Checks if the password is valid
-     *
+     * Checks whether the password is valid
      * @param string $password
      * @return boolean
      */
     private function isValidPassword($password)
     {
-        if (strlen($password) >= 6) {
-            return true;
-        } else {
-            return false;
-        }
+        return strlen($password) >= 6;
     }
+
 
     public function isAllowedToChangeEmailAccess()
     {
@@ -1824,6 +1877,7 @@ class User extends User_Profile
         return $arrSettings['user_config_email_access']['status'];
     }
 
+
     public function isAllowedToChangeProfileAccess()
     {
         if ($this->getAdminStatus()) {
@@ -1834,11 +1888,13 @@ class User extends User_Profile
         return $arrSettings['user_config_profile_access']['status'];
     }
 
+
     public function isAllowedToDeleteAccount()
     {
         $arrSettings = User_Setting::getSettings();
         return $arrSettings['user_delete_account']['status'];
     }
+
 
     /**
      * Returns the e-mail address if the User accounts has been created

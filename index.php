@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -53,6 +54,7 @@
  * @uses        /modules/immo/index.class.php
  * @uses        /modules/blog/homeContent.class.php
  * @uses        /modules/blog/index.class.php
+ * @uses        /modules/mediadir/index.class.php
  * @uses        /lib/FRAMEWORK/SocialNetworks.class.php
  */
 
@@ -82,6 +84,8 @@ $starttime = explode(' ', microtime());
 //enable gzip compressing of the output - up to 75% smaller responses!
 ob_start("ob_gzhandler");
 
+// Makes code analyzer warnings go away
+$_CONFIG = $_CONFIGURATION = null;
 /**
  * Path, database, FTP configuration settings
  *
@@ -239,10 +243,10 @@ $_CORELANG = $objInit->loadLanguageData('core');
  * @global array $_ARRAYLANG
  */
 $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+
 //-------------------------------------------------------
 // Webapp Intrusion Detection System
 //-------------------------------------------------------
-
 $objSecurity = new Security;
 $_GET = $objSecurity->detectIntrusion($_GET);
 $_POST = $objSecurity->detectIntrusion($_POST);
@@ -270,18 +274,15 @@ $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
 
-
-if($section == 'upload') { //handle uploads separately, since they have no content
+ if ($section == 'upload') { //handle uploads separately, since they have no content
     /*
      * Upload Module
      *
      * Generates no output, requests are answered by a die()
-     *
      * @since   2.1.5
      */
-    $modulespath = 'core_modules/upload/index.class.php';
-    if (file_exists($modulespath)) require_once($modulespath);
-    else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+    if (!include_once(ASCMS_CORE_MODULE_PATH.'/upload/index.class.php'))
+        die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
     $objUploadModule = new Upload();
     $objUploadModule->getPage();
     //execution never reaches this point
@@ -298,13 +299,14 @@ $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
 
 require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
+$sessionObj = null;
+$shopObj = null;
 //-------------------------------------------------------
 // Frontend Editing: Collect parameters
 //-------------------------------------------------------
 $frontEditing           = isset($_REQUEST['frontEditing']) ? intval($_GET['frontEditing']) : 0;
 $frontEditingContent    = isset($_REQUEST['previewContent']) ? preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' , html_entity_decode(stripslashes($_GET['previewContent']), ENT_QUOTES, CONTREXX_CHARSET)) : '';
-
-if($frontEditing) {
+ if ($frontEditing) {
     $themesPages['index']   = '{CONTENT_FILE}';
     $themesPages['content'] = '{CONTENT_TEXT}';
     $themesPages['home']    = '{CONTENT_TEXT}';
@@ -410,7 +412,7 @@ $objNavbar  = new Navigation($pageId);
 // Start page or default page for no section
 //-------------------------------------------------------
 if ($is_home){
-    if(!$objInit->hasCustomContent()){
+    if (!$objInit->hasCustomContent()){
         $page_template = $themesPages['home'];}
     else
         $page_template = $themesPages['content'];
@@ -435,33 +437,25 @@ $arrMatches = array();
 //-------------------------------------------------------
 if ($_CONFIG['newsTeasersStatus'] == '1') {
     // set news teasers in the content
-    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/ms', $page_content, $arrMatches)) {
-        $modulespath = 'core_modules/news/lib/teasers.class.php';
-        if (file_exists($modulespath)) {
-            /** @ignore */
-            include_once($modulespath);
+    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
+        /** @ignore */
+        if (@include_once(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
             $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $page_content);
         }
     }
-
     // set news teasers in the page design
-    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/ms', $page_template, $arrMatches)) {
-        $modulespath = 'core_modules/news/lib/teasers.class.php';
-        if (file_exists($modulespath)) {
-            /** @ignore */
-            include_once($modulespath);
+    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
+        /** @ignore */
+        if (@include_once(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
             $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $page_template);
         }
     }
-
     // set news teasers in the website design
-    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/ms', $themesPages['index'], $arrMatches)) {
-        $modulespath = 'core_modules/news/lib/teasers.class.php';
-        if (file_exists($modulespath)) {
-            /** @ignore */
-            include_once($modulespath);
+    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
+        /** @ignore */
+        if (@include_once(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
             $objTeasers = new Teasers();
             $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
         }
@@ -471,13 +465,9 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
 //-------------------------------------------------------
 // Set download groups
 //-------------------------------------------------------
-if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/ms', $page_content, $arrMatches)) {
-    $modulespath = "modules/downloads/lib/downloadsLib.class.php";
-    if (file_exists($modulespath)) {
-        /**
-         * @ignore
-         */
-        include_once($modulespath);
+if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) {
+    /** @ignore */
+    if (@include_once(ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php')) {
         $objDownloadLib = new DownloadsLibrary();
         $objDownloadLib->setGroups($arrMatches[1], $page_content);
     }
@@ -487,29 +477,23 @@ if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/ms', $page_content, $arrMatches)
 // Set NewsML messages
 //-------------------------------------------------------
 if ($_CONFIG['feedNewsMLStatus'] == '1') {
-    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/ms', $page_content, $arrMatches)) {
-        $modulespath = 'modules/feed/newsML.class.php';
-        if (file_exists($modulespath)) {
-            /** @ignore */
-            require_once $modulespath;
+    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
+        /** @ignore */
+        if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_content);
         }
     }
-    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/ms', $page_template, $arrMatches)) {
-        $modulespath = 'modules/feed/newsML.class.php';
-        if (file_exists($modulespath)) {
-            /** @ignore */
-            require_once $modulespath;
+    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
+        /** @ignore */
+        if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_template);
         }
     }
-    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/ms', $themesPages['index'], $arrMatches)) {
-        $modulespath = 'modules/feed/newsML.class.php';
-        if (file_exists($modulespath)) {
-            /** @ignore */
-            require_once $modulespath;
+    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
+        /** @ignore */
+        if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $themesPages['index']);
         }
@@ -520,13 +504,11 @@ if ($_CONFIG['feedNewsMLStatus'] == '1') {
 //-------------------------------------------------------
 // Set popups
 //-------------------------------------------------------
-$modulespath = 'modules/popup/index.class.php';
-if (file_exists($modulespath)) {
+if (preg_match('/{POPUP_JS_FUNCTION}/', $themesPages['index'])) {
     /** @ignore */
-    if (preg_match_all('/{POPUP_JS_FUNCTION}/ms', $themesPages['index'], $arrMatches)) {
-        require_once $modulespath;
+    if (@include_once ASCMS_MODULE_PATH.'/popup/index.class.php') {
         $objPopup = new popup();
-        if (preg_match_all('/{POPUP}/ms', $themesPages['index'], $arrMatches)) {
+        if (preg_match('/{POPUP}/', $themesPages['index'])) {
             $objPopup->setPopup($themesPages['index'], $pageId);
         }
         $objPopup->_setJS($themesPages['index']);
@@ -537,79 +519,78 @@ if (file_exists($modulespath)) {
 // Set Blocks
 //-------------------------------------------------------
 if ($_CONFIG['blockStatus'] == '1') {
-    $modulespath = 'modules/block/index.class.php';
-    if (file_exists($modulespath)) {
-        /** @ignore */
-        require_once $modulespath;
+    /** @ignore */
+    if (@include_once ASCMS_MODULE_PATH.'/block/index.class.php') {
         $objBlock = new block();
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/ms', $page_content, $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_content, $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $page_content);
         }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/ms', $page_template, $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_template, $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $page_template);
         }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/ms', $themesPages['index'], $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['index'], $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $themesPages['index']);
         }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/ms', $themesPages['sidebar'], $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['sidebar'], $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $themesPages['sidebar']);
         }
 
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'GLOBAL}/ms', $page_content, $arrMatches)) {
+        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $page_content)) {
             $objBlock->setBlockGlobal($page_content, $pageId);
         }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'GLOBAL}/ms', $page_template, $arrMatches)) {
+        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $page_template)) {
             $objBlock->setBlockGlobal($page_template, $pageId);
         }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'GLOBAL}/ms', $themesPages['index'], $arrMatches)) {
+        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $themesPages['index'])) {
             $objBlock->setBlockGlobal($themesPages['index'], $pageId);
         }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'GLOBAL}/ms', $themesPages['sidebar'], $arrMatches)) {
+        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $themesPages['sidebar'])) {
             $objBlock->setBlockGlobal($themesPages['sidebar'], $pageId);
         }
 
         if ($_CONFIG['blockRandom'] == '1') {
             //randomizer block 1
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $page_content, $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $page_content)) {
                 $objBlock->setBlockRandom($page_content, 1);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $page_template, $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $page_template)) {
                 $objBlock->setBlockRandom($page_template, 1);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $themesPages['index'], $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $themesPages['index'])) {
                 $objBlock->setBlockRandom($themesPages['index'], 1);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/ms', $themesPages['sidebar'], $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $themesPages['sidebar'])) {
                 $objBlock->setBlockRandom($themesPages['sidebar'], 1);
             }
 
             //randomizer block 2
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $page_content, $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $page_content)) {
                 $objBlock->setBlockRandom($page_content, 2);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $page_template, $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $page_template)) {
                 $objBlock->setBlockRandom($page_template, 2);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $themesPages['index'], $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $themesPages['index'])) {
                 $objBlock->setBlockRandom($themesPages['index'], 2);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/ms', $themesPages['sidebar'], $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $themesPages['sidebar'])) {
                 $objBlock->setBlockRandom($themesPages['sidebar'], 2);
             }
 
             //randomizer block 3
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $page_content, $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $page_content)) {
                 $objBlock->setBlockRandom($page_content, 3);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $page_template, $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $page_template)) {
                 $objBlock->setBlockRandom($page_template, 3);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $themesPages['index'], $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $themesPages['index'])) {
                 $objBlock->setBlockRandom($themesPages['index'], 3);
             }
-            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/ms', $themesPages['sidebar'], $arrMatches)) {
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $themesPages['sidebar'])) {
                 $objBlock->setBlockRandom($themesPages['sidebar'], 3);
             }
+
         }
     }
 }
@@ -618,41 +599,39 @@ if ($_CONFIG['blockStatus'] == '1') {
 //-------------------------------------------------------
 // Get Headlines
 //-------------------------------------------------------
-$modulespath = 'core_modules/news/lib/headlines.class.php';
 /** @ignore */
-if (file_exists($modulespath)) include_once($modulespath);
-$newsHeadlinesObj = new newsHeadlines($themesPages['headlines']);
-$homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
-$page_content = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_content);
-$themesPages['index'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['index']);
-$themesPages['sidebar'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['sidebar']);
-$page_template = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_template);
+if (@include_once(ASCMS_CORE_MODULE_PATH.'/news/lib/headlines.class.php')) {
+    $newsHeadlinesObj = new newsHeadlines($themesPages['headlines']);
+    $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
+    $page_content = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_content);
+    $themesPages['index'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['index']);
+    $themesPages['sidebar'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['sidebar']);
+    $page_template = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_template);
+}
 
 
 //-------------------------------------------------------
 // Get Calendar Events
 //-------------------------------------------------------
-$modulespath = 'modules/calendar/headlines.class.php';
-if (MODULE_INDEX < 2 && file_exists($modulespath)) {
+if (MODULE_INDEX < 2) {
     /** @ignore */
-    include_once($modulespath);
-    $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
-    $calHeadlines = $calHeadlinesObj->getHeadlines();
-    $page_content = str_replace('{EVENTS_FILE}', $calHeadlines, $page_content);
-    $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['index']);
-    $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['sidebar']);
-    $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['home']);
-    $page_template = str_replace('{EVENTS_FILE}', $calHeadlines, $page_template);
+    if (@include_once(ASCMS_MODULE_PATH.'/calendar/headlines.class.php')) {
+        $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
+        $calHeadlines = $calHeadlinesObj->getHeadlines();
+        $page_content = str_replace('{EVENTS_FILE}', $calHeadlines, $page_content);
+        $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['index']);
+            $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['sidebar']);
+        $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['home']);
+        $page_template = str_replace('{EVENTS_FILE}', $calHeadlines, $page_template);
+    }
 }
 
 
 //-------------------------------------------------------
 // Get immo headline
 //-------------------------------------------------------
-$modulespath = 'modules/immo/headlines.class.php';
-if (file_exists($modulespath)) {
-    /** @ignore */
-    include_once($modulespath);
+/** @ignore */
+if (@include_once(ASCMS_MODULE_PATH.'/headlines/index.class.php')) {
     $immoHeadlines = new immoHeadlines($themesPages['immo']);
     $immoHomeHeadlines = $immoHeadlines->getHeadlines();
     $page_content = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_content);
@@ -665,19 +644,17 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // get Newsletter
 //-------------------------------------------------------
-$modulespath = 'modules/newsletter/index.class.php';
-if (file_exists($modulespath)) {
-    /** @ignore */
-    require_once($modulespath);
+/** @ignore */
+if (@include_once(ASCMS_MODULE_PATH.'/newsletter/index.class.php')) {
     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('newsletter'));
     $newsletter = new newsletter('');
-    if (preg_match_all('/{NEWSLETTER_BLOCK}/ms', $page_content, $arrMatches)) {
+    if (preg_match('/{NEWSLETTER_BLOCK}/', $page_content)) {
         $newsletter->setBlock($page_content);
     }
-    if (preg_match_all('/{NEWSLETTER_BLOCK}/ms', $page_template, $arrMatches)) {
+    if (preg_match('/{NEWSLETTER_BLOCK}/', $page_template)) {
         $newsletter->setBlock($page_template);
     }
-    if (preg_match_all('/{NEWSLETTER_BLOCK}/ms', $themesPages['index'], $arrMatches)) {
+    if (preg_match('/{NEWSLETTER_BLOCK}/', $themesPages['index'])) {
         $newsletter->setBlock($themesPages['index']);
     }
 }
@@ -687,9 +664,8 @@ if (file_exists($modulespath)) {
 // get knowledge content
 //-------------------------------------------------------
 if (MODULE_INDEX < 2 && !empty($_CONFIG['useKnowledgePlaceholders'])) {
-    $modulespath = 'modules/knowledge/interface.class.php';
-    if (file_exists($modulespath)) {
-        require_once($modulespath);
+    if (@include_once(ASCMS_MODULE_PATH.'/knowledge/interface.class.php')) {
+
         $knowledgeInterface = new KnowledgeInterface();
         if (preg_match('/{KNOWLEDGE_[A-Za-z0-9_]+}/i', $page_content)) {
             $knowledgeInterface->parse($page_content);
@@ -708,18 +684,16 @@ if (MODULE_INDEX < 2 && !empty($_CONFIG['useKnowledgePlaceholders'])) {
 // get Directory Homecontent
 //-------------------------------------------------------
 if ($_CONFIG['directoryHomeContent'] == '1') {
-    $modulespath = 'modules/directory/homeContent.class.php';
-    if (file_exists($modulespath)) {
-        /** @ignore */
-        require_once($modulespath);
+    if (@include_once(ASCMS_MODULE_PATH.'/directory/homeContent.class.php')) {
+
         $dirc = $themesPages['directory_content'];
-        if (preg_match_all('/{DIRECTORY_FILE}/ms', $page_content, $arrMatches)) {
+        if (preg_match('/{DIRECTORY_FILE}/', $page_content)) {
             $page_content = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $page_content);
         }
-        if (preg_match_all('/{DIRECTORY_FILE}/ms', $page_template, $arrMatches)) {
+        if (preg_match('/{DIRECTORY_FILE}/', $page_template)) {
             $page_template = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $page_template);
         }
-        if (preg_match_all('/{DIRECTORY_FILE}/ms', $themesPages['index'], $arrMatches)) {
+        if (preg_match('/{DIRECTORY_FILE}/', $themesPages['index'])) {
             $themesPages['index'] = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $themesPages['index']);
         }
     }
@@ -730,10 +704,8 @@ if ($_CONFIG['directoryHomeContent'] == '1') {
 // get + replace forum latest entries content
 //-------------------------------------------------------
 if ($_CONFIG['forumHomeContent'] == '1') {
-    $modulespath = 'modules/forum/homeContent.class.php';
-    if (file_exists($modulespath)) {
-        /** @ignore */
-        require_once($modulespath);
+    /** @ignore */
+    if (@include_once(ASCMS_MODULE_PATH.'/forum/homeContent.class.php')) {
         $forumHomeContentInPageContent = false;
         $forumHomeContentInPageTemplate = false;
         $forumHomeContentInThemesPage = false;
@@ -746,12 +718,12 @@ if ($_CONFIG['forumHomeContent'] == '1') {
         if (strpos($themesPages['index'], '{FORUM_FILE}') !== false) {
             $forumHomeContentInThemesPage = true;
         }
+        $homeForumContent = '';
         if ($forumHomeContentInPageContent || $forumHomeContentInPageTemplate || $forumHomeContentInThemesPage) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('forum'));
             $objForum = new ForumHomeContent($themesPages['forum_content']);
-			$homeForumContent = $objForum->getContent();
+            $homeForumContent = $objForum->getContent();
         }
-        
         if ($forumHomeContentInPageContent) {
             $page_content = str_replace('{FORUM_FILE}', $homeForumContent, $page_content);
         }
@@ -759,7 +731,7 @@ if ($_CONFIG['forumHomeContent'] == '1') {
             $page_template = str_replace('{FORUM_FILE}', $homeForumContent, $page_template);
         }
         if ($forumHomeContentInThemesPage) {
-           $themesPages['index'] = str_replace('{FORUM_FILE}', $homeForumContent, $themesPages['index']);
+            $themesPages['index'] = str_replace('{FORUM_FILE}', $homeForumContent, $themesPages['index']);
         }
     }
 }
@@ -769,16 +741,17 @@ if ($_CONFIG['forumHomeContent'] == '1') {
 // get + replace forum tagcloud
 //------------------------------
 if (!empty($_CONFIG['forumTagContent'])) {
-    $modulespath = 'modules/forum/homeContent.class.php';
-    if (file_exists($modulespath)) {
-        require_once($modulespath);
+    if (@include_once(ASCMS_MODULE_PATH.'/forum/homeContent.class.php')) {
         $objForumHome = new ForumHomeContent();
         //Forum-TagCloud
         $forumHomeTagCloudInContent     = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_content);
         $forumHomeTagCloudInTemplate = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_template);
         $forumHomeTagCloudInTheme    = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $themesPages['index']);
         $forumHomeTagCloudInSidebar    = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $themesPages['sidebar']);
-        if ($forumHomeTagCloudInContent || $forumHomeTagCloudInTemplate || $forumHomeTagCloudInTheme || $forumHomeTagCloudInSidebar) {
+        if (   $forumHomeTagCloudInContent
+            || $forumHomeTagCloudInTemplate
+            || $forumHomeTagCloudInTheme
+            || $forumHomeTagCloudInSidebar) {
             $strTagCloudSource = $objForumHome->getHomeTagCloud();
             $page_content            = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_content, $forumHomeTagCloudInContent);
             $page_template            = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_template, $forumHomeTagCloudInTemplate);
@@ -789,44 +762,38 @@ if (!empty($_CONFIG['forumTagContent'])) {
 }
 
 
-
-
 //-------------------------------------------------------
 // Get Gallery-Images (Latest, Random)
 //-------------------------------------------------------
-$modulespath = 'modules/gallery/homeContent.class.php';
-if (file_exists($modulespath)) {
-    /** @ignore */
-    require_once($modulespath);
+/** @ignore */
+if (@include_once(ASCMS_MODULE_PATH.'/gallery/homeContent.class.php')) {
     $objGalleryHome = new GalleryHomeContent();
     if ($objGalleryHome->checkRandom()) {
-        if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_content, $arrMatches)) {
+        if (preg_match('/{GALLERY_RANDOM}/', $page_content)) {
             $page_content = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_content);
         }
-        if (preg_match_all('/{GALLERY_RANDOM}/ms', $page_template, $arrMatches))  {
+        if (preg_match('/{GALLERY_RANDOM}/', $page_template))  {
             $page_template = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_template);
         }
-        if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['index'], $arrMatches)) {
+        if (preg_match('/{GALLERY_RANDOM}/', $themesPages['index'])) {
             $themesPages['index'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['index']);
         }
-        if (preg_match_all('/{GALLERY_RANDOM}/ms', $themesPages['sidebar'], $arrMatches)) {
+        if (preg_match('/{GALLERY_RANDOM}/', $themesPages['sidebar'])) {
             $themesPages['sidebar'] = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $themesPages['sidebar']);
         }
     }
-    
     if ($objGalleryHome->checkLatest()) {
-		$latestImage = $objGalleryHome->getLastImage();
-		
-        if (preg_match_all('/{GALLERY_LATEST}/ms', $page_content, $arrMatches)) {
+        $latestImage = $objGalleryHome->getLastImage();
+        if (preg_match('/{GALLERY_LATEST}/', $page_content)) {
             $page_content = str_replace('{GALLERY_LATEST}', $latestImage, $page_content);
         }
-        if (preg_match_all('/{GALLERY_LATEST}/ms', $page_template, $arrMatches)) {
+        if (preg_match('/{GALLERY_LATEST}/', $page_template)) {
             $page_template = str_replace('{GALLERY_LATEST}', $latestImage, $page_template);
         }
-        if (preg_match_all('/{GALLERY_LATEST}/ms', $themesPages['index'], $arrMatches)) {
+        if (preg_match('/{GALLERY_LATEST}/', $themesPages['index'])) {
             $themesPages['index'] = str_replace('{GALLERY_LATEST}', $latestImage, $themesPages['index']);
         }
-        if (preg_match_all('/{GALLERY_LATEST}/ms', $themesPages['sidebar'], $arrMatches)) {
+        if (preg_match('/{GALLERY_LATEST}/', $themesPages['sidebar'])) {
             $themesPages['sidebar'] = str_replace('{GALLERY_LATEST}', $latestImage, $themesPages['sidebar']);
         }
     }
@@ -838,10 +805,8 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 $podcastFirstBlock = false;
 if (!empty($_CONFIG['podcastHomeContent'])) {
-    $modulespath = 'modules/podcast/homeContent.class.php';
-    if (file_exists($modulespath)) {
-        /** @ignore */
-        require_once($modulespath);
+    /** @ignore */
+    if (@include_once(ASCMS_MODULE_PATH.'/podcast/homeContent.class.php')) {
         $podcastHomeContentInPageContent = false;
         $podcastHomeContentInPageTemplate = false;
         $podcastHomeContentInThemesPage = false;
@@ -854,12 +819,13 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
         if (strpos($themesPages['index'], '{PODCAST_FILE}') !== false) {
             $podcastHomeContentInThemesPage = true;
         }
-        if ($podcastHomeContentInPageContent || $podcastHomeContentInPageTemplate || $podcastHomeContentInThemesPage) {
+        if (   $podcastHomeContentInPageContent
+            || $podcastHomeContentInPageTemplate
+            || $podcastHomeContentInThemesPage) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
             $objPodcast = new podcastHomeContent($themesPages['podcast_content']);
-			$podcastContent = $objPodcast->getContent();
+            $podcastContent = $objPodcast->getContent();
         }
-        
         if ($podcastHomeContentInPageContent) {
             $page_content = str_replace('{PODCAST_FILE}', $podcastContent, $page_content);
         }
@@ -868,12 +834,13 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
         }
         if ($podcastHomeContentInThemesPage) {
             $podcastFirstBlock = false;
-            if(strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
+            if (strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
                 $podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
                 $contentPos      = strpos($themesPages['index'], '{CONTENT_FILE}');
                 $podcastFirstBlock   = $podcastBlockPos < $contentPos ? true : false;
             }
-            $themesPages['index'] = str_replace('{PODCAST_FILE}', $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
+            $themesPages['index'] = str_replace('{PODCAST_FILE}',
+                $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
         }
     }
 }
@@ -886,24 +853,22 @@ if (MODULE_INDEX < 2 && $_CONFIGURATION['custom']['shopJsCart']
     && (   $_CONFIGURATION['custom']['shopnavbar']
         ||    isset($_REQUEST['section'])
            && $_REQUEST['section'] == 'shop')) {
-    $modulespath = 'modules/shop/index.class.php';
-    if (file_exists($modulespath)) {
-        /** @ignore */
-        require_once($modulespath);
+    /** @ignore */
+    if (@include_once(ASCMS_MODULE_PATH.'/shop/index.class.php')) {
         $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('shop'));
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['sidebar'], $arrMatches, PREG_SET_ORDER)) {
+        if (preg_match('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['sidebar'], $arrMatches)) {
             $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $themesPages['sidebar']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['shopnavbar'], $arrMatches, PREG_SET_ORDER)) {
+        if (preg_match('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['shopnavbar'], $arrMatches)) {
             $themesPages['shopnavbar'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $themesPages['shopnavbar']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['index'], $arrMatches, PREG_SET_ORDER)) {
+        if (preg_match('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $themesPages['index'], $arrMatches)) {
             $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $themesPages['index']);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_content, $arrMatches, PREG_SET_ORDER)) {
+        if (preg_match('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_content, $arrMatches)) {
             $page_content = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $page_content);
         }
-        if (preg_match_all('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_template, $arrMatches, PREG_SET_ORDER)) {
+        if (preg_match('@<!--\s+BEGIN\s+(shopJsCart)\s+-->(.*?)<!--\s+END\s+\1\s+-->@s', $page_template, $arrMatches)) {
             $page_template = preg_replace('@(<!--\s+BEGIN\s+(shopJsCart)\s+-->.*?<!--\s+END\s+\2\s+-->)@s', Shop::setJsCart($arrMatches[0][2]), $page_template);
         }
     }
@@ -913,24 +878,22 @@ if (MODULE_INDEX < 2 && $_CONFIGURATION['custom']['shopJsCart']
 //-------------------------------------------------------
 // get voting
 //-------------------------------------------------------
-$modulespath = 'modules/voting/index.class.php';
-if (file_exists($modulespath)) {
-    require_once($modulespath);
+if (@include_once(ASCMS_MODULE_PATH.'/voting/index.class.php')) {
     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('voting'));
 //  if ($objTemplate->blockExists('voting_result')) {
 //      $objTemplate->_blocks['voting_result'] = setVotingResult($objTemplate->_blocks['voting_result']);
 //  }
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['sidebar'], $arrMatches, PREG_SET_ORDER)) {
-        $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $themesPages['sidebar']);
+    if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $themesPages['sidebar'], $arrMatches)) {
+        $themesPages['sidebar'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[0][2]), $themesPages['sidebar']);
     }
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $themesPages['index'], $arrMatches, PREG_SET_ORDER)) {
-        $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $themesPages['index']);
+    if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $themesPages['index'], $arrMatches)) {
+        $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[0][2]), $themesPages['index']);
     }
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_content, $arrMatches, PREG_SET_ORDER)) {
-        $page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $page_content);
+    if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $page_content, $arrMatches)) {
+        $page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[0][2]), $page_content);
     }
-    if (preg_match_all('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@sm', $page_template, $arrMatches, PREG_SET_ORDER)) {
-        $page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@sm', setVotingResult($arrMatches[0][2]), $page_template);
+    if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $page_template, $arrMatches)) {
+        $page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[0][2]), $page_template);
     }
 }
 
@@ -938,10 +901,8 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // Get content for the blog-module.
 //-------------------------------------------------------
-$modulespath = 'modules/blog/homeContent.class.php';
-if (file_exists($modulespath)) {
-    /** @ignore */
-    require_once($modulespath);
+/** @ignore */
+if (@include_once(ASCMS_MODULE_PATH.'/blog/homeContent.class.php')) {
     $objBlogHome = new BlogHomeContent($themesPages['blog_content']);
     if ($objBlogHome->blockFunktionIsActivated()) {
         //Blog-File
@@ -1023,14 +984,13 @@ if (file_exists($modulespath)) {
 //-------------------------------------------------------
 // Media directory: set placeholders I
 //-------------------------------------------------------
-$modulespath = 'modules/mediadir/placeholders.class.php';
-if (file_exists($modulespath)) {
-    /** @ignore */
-    require_once($modulespath);
-    
+/** @ignore */
+if (@include_once(ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php')) {
+
     $objMadiadirPlaceholders = new mediaDirectoryPlaceholders();
-    
+
     // Level/Category Navbar
+// TODO: RTFM about preg_match()!  :)
     if (preg_match_all('/{MEDIADIR_NAVBAR}/ms', $page_content, $arrMatches)) {
         $page_content = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $page_content);
     }
@@ -1044,7 +1004,7 @@ if (file_exists($modulespath)) {
         $themesPages['sidebar'] = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $themesPages['sidebar']);
     }
 
-    // Latest Entries      
+    // Latest Entries
     if (preg_match_all('/{MEDIADIR_LATEST}/ms', $page_content, $arrMatches)) {
         $page_content = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $page_content);
     }
@@ -1056,7 +1016,7 @@ if (file_exists($modulespath)) {
     }
     if (preg_match_all('/{MEDIADIR_LATEST}/ms', $themesPages['sidebar'], $arrMatches)) {
         $themesPages['sidebar'] = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $themesPages['sidebar']);
-    } 
+    }
 }
 
 //-------------------------------------------------------
@@ -1080,15 +1040,13 @@ $page_content = str_replace('{TITLE}',  $page_title, $page_content);
 //-------------------------------------------------------
 // start module switches
 //-------------------------------------------------------
-
 switch ($plainSection) {
     //-------------------------------------------------------
     // Access module
     //-------------------------------------------------------
     case 'access':
-        $modulespath = 'core_modules/access/index.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/access/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objAccess = new Access($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
         break;
@@ -1097,10 +1055,11 @@ switch ($plainSection) {
     // Login module
     //-------------------------------------------------------
     case 'login':
-        $modulespath = 'core_modules/login/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+// TODO: In case a session is needed here (I would expect so)
+//        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         $objLogin = new Login($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
         break;
@@ -1109,10 +1068,9 @@ switch ($plainSection) {
     // Nettools
     //-------------------------------------------------------
     case 'nettools':
-        $modulespath = 'core_modules/nettools/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/nettools/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objNetTools = new NetTools($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objNetTools->getPage());
         break;
@@ -1122,14 +1080,13 @@ switch ($plainSection) {
     // eCommerce Module
     //-------------------------------------------------------
     case 'shop':
-        $modulespath = 'modules/shop/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/shop/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
         $shopObj = new Shop($page_content);
-        $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getShopPage());
-        $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
+        $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getPage());
+        $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getNavbar($themesPages['shopnavbar']));
         $boolShop = true;
         break;
 
@@ -1137,19 +1094,16 @@ switch ($plainSection) {
     // News module
     //-------------------------------------------------------
     case 'news':
-        $modulespath = 'core_modules/news/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $newsObj= new news($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
         $newsObj->getPageTitle($page_title);
-
-        //set the meta page description to the teaser if we're displaying news details.
+        // Set the meta page description to the teaser text if displaying news details
         $teaser = $newsObj->getTeaser();
-        if($teaser !== null) //news details, else getTeaser would return null
+        if ($teaser !== null) //news details, else getTeaser would return null
             $page_desc = $teaser;
-
         $page_title = $newsObj->newsTitle;
         $page_metatitle = $page_title;
         break;
@@ -1158,24 +1112,22 @@ switch ($plainSection) {
     // Livecam
     //-------------------------------------------------------
     case 'livecam':
-        $modulespath = 'modules/livecam/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/livecam/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLivecam = new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
-        //$moduleStyleFile = 'modules/calendar'.MODULE_INDEX.'/frontend_style.css';
-        $moduleStyleFile = 'modules/livecam/datepicker/datepickercontrol.css';
+        //$moduleStyleFile = ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/frontend_style.css';
+        $moduleStyleFile = ASCMS_MODULE_PATH.'/livecam/datepicker/datepickercontrol.css';
         break;
 
     //-------------------------------------------------------
     // Guestbook
     //-------------------------------------------------------
     case 'guestbook':
-        $modulespath = 'modules/guestbook/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/guestbook/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objGuestbook = new Guestbook($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objGuestbook->getPage());
         break;
@@ -1184,10 +1136,9 @@ switch ($plainSection) {
     // Memberdir
     //-------------------------------------------------------
     case 'memberdir':
-        $modulespath = 'modules/memberdir/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/memberdir/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMemberDir = new memberDir($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
         break;
@@ -1196,10 +1147,9 @@ switch ($plainSection) {
     // Data Module
     //-------------------------------------------------------
     case 'data':
-        $modulespath = 'modules/data/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/data/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
@@ -1211,10 +1161,9 @@ switch ($plainSection) {
     // Download
     //-------------------------------------------------------
     case 'download':
-        $modulespath = 'modules/download/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/download/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownload = new Download($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownload->getPage());
         break;
@@ -1223,10 +1172,9 @@ switch ($plainSection) {
     // Recommend
     //-------------------------------------------------------
     case 'recommend':
-        $modulespath = 'modules/recommend/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/recommend/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objRecommend = new Recommend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objRecommend->getPage());
         break;
@@ -1235,10 +1183,9 @@ switch ($plainSection) {
     // E-Card
     //-------------------------------------------------------
     case 'ecard':
-        $modulespath = 'modules/ecard/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/ecard/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objEcard = new Ecard($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
         break;
@@ -1247,10 +1194,9 @@ switch ($plainSection) {
     // Tools
     //-------------------------------------------------------
     case 'tools':
-        $modulespath = 'modules/tools/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/tools/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objTools = new Tools($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objTools->getPage());
         break;
@@ -1259,10 +1205,9 @@ switch ($plainSection) {
     // Dataviewer
     //-------------------------------------------------------
     case 'dataviewer':
-        $modulespath = 'modules/dataviewer/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/dataviewer/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDataviewer = new Dataviewer($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
         break;
@@ -1271,10 +1216,9 @@ switch ($plainSection) {
     // DocumentSystem module
     //-------------------------------------------------------
     case 'docsys':
-        $modulespath = 'modules/docsys/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/docsys/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $docSysObj= new docSys($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $docSysObj->getDocSysPage());
         $docSysObj->getPageTitle($page_title);
@@ -1286,10 +1230,9 @@ switch ($plainSection) {
     // Search Module
     //-------------------------------------------------------
     case 'search':
-        $modulespath = 'core_modules/search/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/search/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
         $objTemplate->setVariable('CONTENT_TEXT', search_getSearchPage($pos, $page_content));
         unset($pos);
@@ -1299,13 +1242,12 @@ switch ($plainSection) {
     // Contact Module
     //-------------------------------------------------------
     case 'contact':
-        $modulespath = 'core_modules/contact/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $contactObj= new Contact($page_content);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $contactObj = new Contact($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $contactObj->getContactPage());
-        $moduleStyleFile = 'core_modules/contact/frontend_style.css';
+        $moduleStyleFile = ASCMS_CORE_MODULE_WEB_PATH.'/contact/frontend_style.css';
         break;
 
     //-------------------------------------------------------
@@ -1319,10 +1261,9 @@ switch ($plainSection) {
     // Sitemapping
     //-------------------------------------------------------
     case 'sitemap':
-        $modulespath = 'core_modules/sitemap/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $sitemap = new sitemap($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $sitemap->getSitemapContent());
         break;
@@ -1331,10 +1272,9 @@ switch ($plainSection) {
     // media Core
     //-------------------------------------------------------
     case 'media':
-        $modulespath = ASCMS_CORE_MODULE_PATH . '/media/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_CORE_MODULE_PATH.'/media/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMedia = new MediaManager($page_content, $plainSection.MODULE_INDEX);
         $objTemplate->setVariable('CONTENT_TEXT', $objMedia->getMediaPage());
         break;
@@ -1343,10 +1283,9 @@ switch ($plainSection) {
     // newsletter Module
     //-------------------------------------------------------
     case 'newsletter':
-        $modulespath = 'modules/newsletter/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $newsletter = new newsletter($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $newsletter->getPage());
         break;
@@ -1355,10 +1294,9 @@ switch ($plainSection) {
     // gallery Module
     //-------------------------------------------------------
     case 'gallery':
-        $modulespath = 'modules/gallery/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/gallery/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objGallery = new Gallery($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objGallery->getPage());
 
@@ -1373,10 +1311,9 @@ switch ($plainSection) {
     // Voting
     //-------------------------------------------------------
     case 'voting':
-        $modulespath = 'modules/voting/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/voting/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objTemplate->setVariable('CONTENT_TEXT', votingShowCurrent($page_content));
         break;
 
@@ -1384,9 +1321,9 @@ switch ($plainSection) {
     // file uploader
     //-------------------------------------------------------
     case 'fileUploader':
-        $modulespath = ASCMS_MODULE_PATH.'/fileUploader/index.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        /** @ignore */
+        if (!@include_once(ASCMS_MODULE_PATH.'/fileUploader/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFileUploader = new FileUploader();
         $objFileUploader->getPage();
         exit;
@@ -1396,10 +1333,9 @@ switch ($plainSection) {
     // News Feed Module
     //-------------------------------------------------------
     case 'feed':
-        $modulespath = 'modules/feed/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/feed/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFeed = new feed($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objFeed->getFeedPage());
         break;
@@ -1408,13 +1344,12 @@ switch ($plainSection) {
     // immo Module
     //-------------------------------------------------------
     case 'immo':
-        $modulespath = 'modules/immo/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/immo/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objImmo = new Immo($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objImmo->getPage());
-        if(!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj'){
+        if (!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj') {
             $page_title = $objImmo->getPageTitle($page_title);
             $page_metatitle = $page_title;
         }
@@ -1424,15 +1359,14 @@ switch ($plainSection) {
     // Calendar Module
     //-------------------------------------------------------
     case 'calendar':
-        $modulespath = 'modules/calendar'.MODULE_INDEX.'/index.class.php';;
-        $moduleStyleFile = 'modules/calendar'.MODULE_INDEX.'/frontend_style.css';
+        $moduleStyleFile = ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/frontend_style.css';
         define('CALENDAR_MANDATE', MODULE_INDEX);
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objCalendar = new Calendar($page_content, MODULE_INDEX);
         $objTemplate->setVariable('CONTENT_TEXT', $objCalendar->getCalendarPage());
-        if(!empty($objCalendar->pageTitle)) {
+        if ($objCalendar->pageTitle) {
             $page_metatitle = $objCalendar->pageTitle;
             $page_title = $objCalendar->pageTitle;
         }
@@ -1442,31 +1376,29 @@ switch ($plainSection) {
     // Reservation Module
     //-------------------------------------------------------
     case 'reservation':
-        $modulespath = 'modules/reservation/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/reservation/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
             $objReservationModule = new reservations($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
-        $moduleStyleFile = 'modules/reservation/frontend_style.css';
+        $moduleStyleFile = ASCMS_MODULE_PATH.'/reservation/frontend_style.css';
         break;
 
     //-------------------------------------------------------
     // Directory Module
     //-------------------------------------------------------
     case 'directory':
-        $modulespath = 'modules/directory/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/directory/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $directory = new rssDirectory($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $directory->getPage());
         $directory_pagetitle = $directory->getPageTitle();
-        if(!empty($directory_pagetitle)) {
+        if (!empty($directory_pagetitle)) {
             $page_metatitle = $directory_pagetitle;
             $page_title = $directory_pagetitle;
         }
-        if($_GET['cmd'] == 'detail' && isset($_GET['id'])) {
+        if ($_GET['cmd'] == 'detail' && isset($_GET['id'])) {
             $objTemplate->setVariable(array(
                 'DIRECTORY_ENTRY_ID' => intval($_GET['id']),
             ));
@@ -1477,10 +1409,9 @@ switch ($plainSection) {
     // Market Module
     //-------------------------------------------------------
     case 'market':
-        $modulespath = 'modules/market/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/market/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $market = new Market($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $market->getPage());
         break;
@@ -1489,10 +1420,9 @@ switch ($plainSection) {
     // Podcast Module
     //-------------------------------------------------------
     case 'podcast':
-        $modulespath = 'modules/podcast/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/podcast/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objPodcast = new podcast($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPodcast->getPage($podcastFirstBlock));
         break;
@@ -1501,10 +1431,9 @@ switch ($plainSection) {
     // Forum Module
     //-------------------------------------------------------
     case 'forum':
-        $modulespath = 'modules/forum/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/forum/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objForum = new Forum($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
 //        $moduleStyleFile = 'modules/forum/css/frontend_style.css';
@@ -1514,10 +1443,9 @@ switch ($plainSection) {
     // Blog Module
     //-------------------------------------------------------
     case 'blog':
-        $modulespath = 'modules/blog/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/blog/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objBlog = new Blog($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
         break;
@@ -1526,10 +1454,9 @@ switch ($plainSection) {
     // Knowledge Module
     //-------------------------------------------------------
     case 'knowledge':
-        $modulespath = 'modules/knowledge/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/knowledge/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objKnowledge = new Knowledge($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objKnowledge->getPage());
         if (!empty($objKnowledge->pageTitle)) {
@@ -1542,10 +1469,9 @@ switch ($plainSection) {
     // jobs module
     //-------------------------------------------------------
     case 'jobs':
-        $modulespath = 'modules/jobs/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $jobsObj= new jobs($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $jobsObj->getJobsPage());
         $jobsObj->getPageTitle($page_title);
@@ -1566,11 +1492,10 @@ switch ($plainSection) {
     // error module
     //-------------------------------------------------------
     case 'error':
-        $modulespath = 'core/error.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $errorObj= new error($page_content);
+        if (!@include(ASCMS_CORE_PATH.'/error.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $errorObj = new error($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $errorObj->getErrorPage());
         break;
 
@@ -1578,10 +1503,9 @@ switch ($plainSection) {
     // E-Government Module
     //-------------------------------------------------------
     case 'egov':
-        $modulespath = 'modules/egov/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/egov/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objEgov = new eGov($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objEgov->getPage());
         break;
@@ -1593,10 +1517,9 @@ switch ($plainSection) {
          * @since   1.2.0
          * @version 0.0.1 alpha
          */
-        if (!file_exists(ASCMS_MODULE_PATH.'/support/index.class.php'))
-            die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         /** @ignore */
-        require_once(ASCMS_MODULE_PATH.'/support/index.class.php');
+        if (!@include_once(ASCMS_MODULE_PATH.'/support/index.class.php'))
+            die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objSupport = new support($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objSupport->getPage());
         break;
@@ -1605,11 +1528,10 @@ switch ($plainSection) {
     // Partners Module
     //-------------------------------------------------------
     case 'partners':
-        $modulespath = 'modules/partners/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objPartners = new Partners($page_content);
+        if (!@include_once(ASCMS_MODULE_PATH.'/partners/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objPartners = new PartnersFrontend($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objPartners->getPage());
         break;
 
@@ -1617,10 +1539,9 @@ switch ($plainSection) {
     // U2U Module
     //-------------------------------------------------------
     case 'u2u':
-        $modulespath = 'modules/u2u/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/u2u/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objU2u = new u2u($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objU2u->getPage($page_metatitle, $page_title));
         break;
@@ -1629,10 +1550,9 @@ switch ($plainSection) {
     // Auction Module
     //-------------------------------------------------------
     case 'auction':
-        $modulespath = 'modules/auction/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/auction/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $auction = new Auction($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $auction->getPage());
         break;
@@ -1641,57 +1561,50 @@ switch ($plainSection) {
     // Download Module
     //-------------------------------------------------------
     case 'downloads':
-        $modulespath = 'modules/downloads/index.class.php';
         /** @ignore */
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        if (!@include_once(ASCMS_MODULE_PATH.'/downloads/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objDownloadsModule = new downloads($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
         $downloads_pagetitle = $objDownloadsModule->getPageTitle();
-        if(!empty($downloads_pagetitle)) {
+        if ($downloads_pagetitle) {
             $page_metatitle = $downloads_pagetitle;
             $page_title = $downloads_pagetitle;
         }
         break;
 
-    case 'hotelcard':
-        /**
-         * Hotelcard Module
-         * @author  Reto Kohli <reto.kohli@comvation.com>
-         * @since   2.2.0
-         * @version 2.2.0
-         */
-        if (!file_exists(ASCMS_MODULE_PATH.'/hotelcard/index.class.php'))
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        if (empty($sessionObj)) $sessionObj = new cmsSession();
+    //-------------------------------------------------------
+    // Printshop Module
+    //-------------------------------------------------------
+    case 'printshop':
         /** @ignore */
-        require_once(ASCMS_MODULE_PATH.'/hotelcard/index.class.php');
-        $objTemplate->setVariable(
-            'CONTENT_TEXT', Hotelcard::getPage($page_content));
+        if (!@include_once(ASCMS_MODULE_PATH.'/printshop/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        $objPrintshopModule = new Printshop($page_content);
+        $objTemplate->setVariable('CONTENT_TEXT', $objPrintshopModule->getPage());
+        $page_metatitle .= ' '.$objPrintshopModule->getPageTitle();
+        $page_title = '';
         break;
+
 
     //-------------------------------------------------------
     // Media Directory Module
     //-------------------------------------------------------
-    case 'mediadir': 
-        $modulespath = 'modules/mediadir/index.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+    case 'mediadir':
+        /** @ignore */
+        if (!@include_once(ASCMS_MODULE_PATH.'/mediadir/index.class.php'))
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objMediaDirectory = new mediaDirectory($page_content);
-
         $objMediaDirectory->pageTitle = $page_title;
         $objMediaDirectory->metaTitle = $page_metatitle;
-
         $objTemplate->setVariable('CONTENT_TEXT', $objMediaDirectory->getPage());
-
-        if($objMediaDirectory->getPageTitle() != '') {
+        if ($objMediaDirectory->getPageTitle() != '') {
             $page_title->pageTitle = $objMediaDirectory->getPageTitle();
         }
-
-        if($objMediaDirectory->getMetaTitle() != '') {
+        if ($objMediaDirectory->getMetaTitle() != '') {
             $page_metatitle = $objMediaDirectory->getMetaTitle();
         }
-        break;   
+        break;
 
     //-------------------------------------------------------
     // default case
@@ -1703,23 +1616,20 @@ switch ($plainSection) {
 //-------------------------------------------------------
 // show shop navbar on each page
 //-------------------------------------------------------
-if (   MODULE_INDEX < 2
-    && isset($_CONFIGURATION['custom']['shopnavbar'])
-    && $_CONFIGURATION['custom']['shopnavbar'] == true) {
-    if (empty($shopObj)) {
-        $modulespath = 'modules/shop/index.class.php';
-        if (file_exists($modulespath)){
-            /** @ignore */
-            require_once($modulespath);
-            if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
-            $_ARRAYSHOPLANG = $objInit->loadLanguageData('shop');
-            $_ARRAYLANG = array_merge($_ARRAYLANG, $_ARRAYSHOPLANG);
-            $boolShop = true;
-            $shopObj = new Shop();
-            $objTemplate->setVariable('SHOPNAVBAR_FILE',
-                $shopObj->getShopNavbar($themesPages['shopnavbar']));
-        }
-    }
+if (   isset($_CONFIGURATION['custom']['shopnavbar'])
+    && $_CONFIGURATION['custom']['shopnavbar']
+    && !is_object($shopObj)
+// Optionally limit to the first instance
+//    && MODULE_INDEX < 2
+    /** @ignore */
+    && @include_once(ASCMS_MODULE_PATH.'/shop/index.class.php')) {
+    if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
+    $_ARRAYSHOPLANG = $objInit->loadLanguageData('shop');
+    $_ARRAYLANG = array_merge($_ARRAYLANG, $_ARRAYSHOPLANG);
+    $boolShop = true;
+    $shopObj = new Shop();
+    $objTemplate->setVariable('SHOPNAVBAR_FILE',
+        $shopObj->getNavbar($themesPages['shopnavbar']));
 }
 
 //-------------------------------------------------------
@@ -1727,95 +1637,76 @@ if (   MODULE_INDEX < 2
 //-------------------------------------------------------
 // print_r($objTemplate->getPlaceholderList());
 if (MODULE_INDEX < 2) {
-$calendarCheck1 = $objTemplate->placeholderExists('CALENDAR');
-$calendarCheck2 = $objTemplate->placeholderExists('CALENDAR_EVENTS');
-if(!empty($calendarCheck1) OR !empty($calendarCheck2)) {
-    $modulespath = 'modules/calendar/HomeCalendar.class.php';
-    if (file_exists($modulespath)){
+    $calendarCheck1 = $objTemplate->placeholderExists('CALENDAR');
+    $calendarCheck2 = $objTemplate->placeholderExists('CALENDAR_EVENTS');
+    if (   ($calendarCheck1 || $calendarCheck2)
         /** @ignore */
-        require_once($modulespath);
+        && @include_once(ASCMS_MODULE_PATH.'/calendar/HomeCalendar.class.php')) {
         $objHomeCalendar = new HomeCalendar();
-        if(!empty($calendarCheck1)) {
+        if (!empty($calendarCheck1)) {
             $objTemplate->setVariable('CALENDAR', $objHomeCalendar->getHomeCalendar());
         }
-        if(!empty($calendarCheck2)) {
+        if (!empty($calendarCheck2)) {
             $objTemplate->setVariable('CALENDAR_EVENTS', $objHomeCalendar->getHomeCalendarEvents());
         }
     }
-}
 }
 
 
 //-------------------------------------------------------
 // Directory Show Latest
 //-------------------------------------------------------
-
-
 //$directoryCheck = $objTemplate->blockExists('directoryLatest_row_1');
-
 $directoryCheck = array();
-
-for($i = 1; $i <= 10; $i++){
-    if($objTemplate->blockExists('directoryLatest_row_'.$i)){
+for ($i = 1; $i <= 10; $i++) {
+    if ($objTemplate->blockExists('directoryLatest_row_'.$i)) {
         array_push($directoryCheck, $i);
     }
 }
-
-if(!empty($directoryCheck)) {
-    $modulespath = 'modules/directory/index.class.php';
-    if (file_exists($modulespath)){
-        /** @ignore */
-        require_once($modulespath);
-        $objDirectory = new rssDirectory('');
-        if(!empty($directoryCheck)) {
-            $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
-               $objDirectory->getBlockLatest($directoryCheck);
-        }
+if (   !empty($directoryCheck)
+    /** @ignore */
+    && @include_once(ASCMS_MODULE_PATH.'/directory/index.class.php')) {
+    $objDirectory = new rssDirectory('');
+    if (!empty($directoryCheck)) {
+        $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+           $objDirectory->getBlockLatest($directoryCheck);
     }
 }
+
 
 //-------------------------------------------------------
 // Market Show Latest
 //-------------------------------------------------------
 $marketCheck = $objTemplate->blockExists('marketLatest');
-
-if(!empty($marketCheck)) {
-    $modulespath = 'modules/market/index.class.php';
-    if (file_exists($modulespath)){
-        /** @ignore */
-        require_once($modulespath);
-        $objMarket = new Market('');
-        if(!empty($marketCheck)) {
-            $objTemplate->setVariable('TXT_MARKET_LATEST', $_CORELANG['TXT_MARKET_LATEST']);
-               $objMarket->getBlockLatest();
-        }
-    }
+if (   $marketCheck
+    /** @ignore */
+    && @include_once(ASCMS_MODULE_PATH.'/market/index.class.php')) {
+    $objMarket = new Market('');
+    $objTemplate->setVariable('TXT_MARKET_LATEST', $_CORELANG['TXT_MARKET_LATEST']);
+    $objMarket->getBlockLatest();
 }
+
 
 //-------------------------------------------------------
 // Set banner variables
 //-------------------------------------------------------
-
-if ($_CONFIG['bannerStatus'] == '1') {
-    $modulespath = 'core_modules/banner/index.class.php';
-    if (file_exists($modulespath)) {
-        /** @ignore */
-        include_once($modulespath);
-        $objBanner = new Banner();
-        $objTemplate->setVariable(array(
-        'BANNER_GROUP_1'    => $objBanner->getBannerCode(1, $pageId),
-        'BANNER_GROUP_2'     => $objBanner->getBannerCode(2, $pageId),
-        'BANNER_GROUP_3'    => $objBanner->getBannerCode(3, $pageId),
-        'BANNER_GROUP_4'    => $objBanner->getBannerCode(4, $pageId),
-        'BANNER_GROUP_5'     => $objBanner->getBannerCode(5, $pageId),
-        'BANNER_GROUP_6'    => $objBanner->getBannerCode(6, $pageId),
-        'BANNER_GROUP_7'     => $objBanner->getBannerCode(7, $pageId),
-        'BANNER_GROUP_8'     => $objBanner->getBannerCode(8, $pageId),
-        'BANNER_GROUP_9'     => $objBanner->getBannerCode(9, $pageId),
-        'BANNER_GROUP_10'    => $objBanner->getBannerCode(10, $pageId)
-        ));
-    }
-    if(isset($_REQUEST['bannerId'])){
+if (   $_CONFIG['bannerStatus']
+       /** @ignore */
+    && @include_once(ASCMS_CORE_MODULE_PATH.'/banner/index.class.php')) {
+    $objBanner = new Banner();
+    $objTemplate->setVariable(array(
+        'BANNER_GROUP_1'  => $objBanner->getBannerCode(1, $pageId),
+        'BANNER_GROUP_2'  => $objBanner->getBannerCode(2, $pageId),
+        'BANNER_GROUP_3'  => $objBanner->getBannerCode(3, $pageId),
+        'BANNER_GROUP_4'  => $objBanner->getBannerCode(4, $pageId),
+        'BANNER_GROUP_5'  => $objBanner->getBannerCode(5, $pageId),
+        'BANNER_GROUP_6'  => $objBanner->getBannerCode(6, $pageId),
+        'BANNER_GROUP_7'  => $objBanner->getBannerCode(7, $pageId),
+        'BANNER_GROUP_8'  => $objBanner->getBannerCode(8, $pageId),
+        'BANNER_GROUP_9'  => $objBanner->getBannerCode(9, $pageId),
+        'BANNER_GROUP_10' => $objBanner->getBannerCode(10, $pageId),
+    ));
+    if (isset($_REQUEST['bannerId'])) {
         $objBanner->updateClicks(intval($_REQUEST['bannerId']));
     }
 }
@@ -1824,43 +1715,30 @@ if ($_CONFIG['bannerStatus'] == '1') {
 // Media directory: Set placeholders II (latest / headline)
 //-------------------------------------------------------
 $mediadirCheck = array();
-
-for($i = 1; $i <= 10; $i++){
-    if($objTemplate->blockExists('mediadirLatest_row_'.$i)){
+for ($i = 1; $i <= 10; ++$i) {
+    if ($objTemplate->blockExists('mediadirLatest_row_'.$i)){
         array_push($mediadirCheck, $i);
     }
 }
-
-if(!empty($mediadirCheck)) {
-    $modulespath = "modules/mediadir/index.class.php";
-    if (file_exists($modulespath)){
-        /**
-         * @ignore
-         */
-        require_once($modulespath);
-        $objMediadir = new mediaDirectory('');
-        if(!empty($mediadirCheck)) {
-            $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
-            $objMediadir->getHeadlines($mediadirCheck);
-        }
-    }
+if (   $mediadirCheck
+    /** @ignore */
+    && @include_once(ASCMS_MODULE_PATH.'/mediadir/index.class.php')) {
+    $objMediadir = new mediaDirectory('');
+    $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
+    $objMediadir->getHeadlines($mediadirCheck);
 }
+
 
 //-------------------------------------------------------
 // Frontend Editing: prepare needed code-fragments
 //-------------------------------------------------------
 $strFeInclude = $strFeLink = $strFeContent = null;
-if ($_CONFIG['frontendEditingStatus'] == 'on') {
-    $modulespath = 'core_modules/frontendEditing/frontendEditingLib.class.php';
-    if (file_exists($modulespath)) {
-        /**
-         * @ignore
-         */
-        include_once($modulespath);
-        $strFeInclude   = frontendEditingLib::getIncludeCode();
-        $strFeLink      = frontendEditingLib::getLinkCode();
-        $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
-    }
+if ($_CONFIG['frontendEditingStatus'] == 'on'
+    /** @ignore */
+    && @include_once(ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php')) {
+    $strFeInclude   = frontendEditingLib::getIncludeCode();
+    $strFeLink      = frontendEditingLib::getLinkCode();
+    $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
 }
 
 
@@ -1912,7 +1790,7 @@ $objTemplate->setVariable(array(
     'JAVASCRIPT'           => 'javascript_inserting_here',
     'TXT_CORE_LAST_MODIFIED_PAGE' => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE'   => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
-	'FACEBOOK_LIKE_IFRAME' => '<div style="border-bottom: 1px solid #ccc; margin-bottom: 10px;">&nbsp;</div><iframe src="http://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI']).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>',
+    'FACEBOOK_LIKE_IFRAME' => '<div style="border-bottom: 1px solid #ccc; margin-bottom: 10px;">&nbsp;</div><iframe src="http://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_SERVER["HTTP_HOST"].$_SERVER['REQUEST_URI']).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>',
 ));
 
 //include and initialize handler to fill Social Network template variables
@@ -1940,14 +1818,13 @@ if ($objTemplate->blockExists('access_logged_out')) {
 }
 
 // currently online users
-$modulespath = 'core_modules/access/lib/blocks.class.php';
 $objAccessBlocks = false;
 if ($objTemplate->blockExists('access_currently_online_member_list')) {
     if (    FWUser::showCurrentlyOnlineUsers()
         && (    $objTemplate->blockExists('access_currently_online_female_members')
             ||  $objTemplate->blockExists('access_currently_online_male_members')
             ||  $objTemplate->blockExists('access_currently_online_members'))) {
-        if (file_exists($modulespath) && require_once($modulespath))
+        if (@include_once(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objTemplate->blockExists('access_currently_online_female_members'))
             $objAccessBlocks->setCurrentlyOnlineUsers('female');
@@ -1967,7 +1844,7 @@ if ($objTemplate->blockExists('access_last_active_member_list')) {
             ||  $objTemplate->blockExists('access_last_active_male_members')
             ||  $objTemplate->blockExists('access_last_active_members'))) {
         if (   !$objAccessBlocks
-            && file_exists($modulespath) && require_once($modulespath))
+            && @include_once(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objTemplate->blockExists('access_last_active_female_members'))
             $objAccessBlocks->setLastActiveUsers('female');
@@ -1987,7 +1864,7 @@ if ($objTemplate->blockExists('access_latest_registered_member_list')) {
             ||  $objTemplate->blockExists('access_latest_registered_male_members')
             ||  $objTemplate->blockExists('access_latest_registered_members'))) {
         if (   !$objAccessBlocks
-            && file_exists($modulespath) && require_once($modulespath))
+            && @include_once(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objTemplate->blockExists('access_latest_registered_female_members'))
             $objAccessBlocks->setLatestRegisteredUsers('female');
@@ -2007,7 +1884,7 @@ if ($objTemplate->blockExists('access_birthday_member_list')) {
             ||  $objTemplate->blockExists('access_birthday_male_members')
             ||  $objTemplate->blockExists('access_birthday_members'))) {
         if (   !$objAccessBlocks
-            && file_exists($modulespath) && require_once($modulespath))
+            && @include_once(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
             $objAccessBlocks = new Access_Blocks();
         if ($objAccessBlocks->isSomeonesBirthdayToday()) {
             if ($objTemplate->blockExists('access_birthday_female_members'))
@@ -2080,7 +1957,7 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     JS::findJavascripts($endcode);
     /*
      * Proposal:  Use this
-     *     $endcode = preg_replace_callback('/<script .*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
+     *     $endcode = preg_replace_callback('/<script\s.*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
      * and change JS::registerFromRegex to use index 2
      */
     // i know this is ugly, but is there another way
