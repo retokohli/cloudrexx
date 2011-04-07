@@ -24,23 +24,23 @@
  */
 class InitCMS
 {
-    var $defaultBackendLangId;
-    var $backendLangCharset;
-    var $backendLangId;
+    public $defaultBackendLangId;
+    public $backendLangCharset;
+    public $backendLangId;
 
-    var $defaultFrontendLangId;
-    var $frontendLangCharset;
-    var $frontendLangId;
-    var $frontendLangName;
-    var $userFrontendLangId;
+    public $defaultFrontendLangId;
+    public $frontendLangCharset;
+    public $frontendLangId;
+    public $frontendLangName;
+    public $userFrontendLangId;
 
-    var $currentThemesId;
-	var $customContentTemplate = null;
-    var $is_home;
-    var $arrLang = array();
-    var $arrLangNames = array();
-    var $templates = array();
-    var $arrModulePath = array();
+    public $currentThemesId;
+    public $customContentTemplate = null;
+    public $is_home;
+    public $arrLang = array();
+    public $arrLangNames = array();
+    public $templates = array();
+    public $arrModulePath = array();
 
     /**
     * int $isMobileDevice
@@ -59,7 +59,7 @@ class InitCMS
     * string $mode
     * frontend or backend
     */
-    var $mode;
+    public $mode;
 
 
     /**
@@ -173,7 +173,7 @@ class InitCMS
         // enable, ?smallscreen=0 to disable.
         $this->isMobileDevice = 0;
         // only set the smallscreen environment if there's actually a mobile theme defined.
-        if(isset($_GET['smallscreen']) ) {
+        if (isset($_GET['smallscreen']) ) {
             // user wants to enable/disable smallscreen mode.
             if ($_GET['smallscreen'] && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
                 // enable
@@ -196,7 +196,7 @@ class InitCMS
         }
         else {
             // auto detection
-            if($this->_is_mobile_phone() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+            if ($this->_is_mobile_phone() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
                 // same here: only set smallscreen mode if there IS a smallscreen theme
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $this->isMobileDevice = 1;
@@ -214,10 +214,10 @@ class InitCMS
         if (isset($_GET['printview']) && $_GET['printview'] == 1) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
 
-        }elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
+        } elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
             $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
 
-        }elseif ($this->isMobileDevice and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+        } elseif ($this->isMobileDevice and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
             $this->currentThemesId = $this->arrLang[$frontendLangId]['mobile_themes_id'];
 
         } else {
@@ -293,7 +293,7 @@ class InitCMS
             $id = $this->defaultFrontendLangId;
         }
 
-        if($this->arrLang[$id]['frontend']!=1){
+        if ($this->arrLang[$id]['frontend']!=1){
             $id=$this->defaultFrontendLangId;
         }
 
@@ -355,7 +355,7 @@ class InitCMS
     {
         if (empty($this->frontendLangCharset)){
             return CONTREXX_CHARSET;
-        }else{
+        } else {
             return $this->frontendLangCharset;
         }
     }
@@ -371,7 +371,7 @@ class InitCMS
     {
         if (empty($this->backendLangCharset)){
             return CONTREXX_CHARSET;
-        }else{
+        } else {
             return $this->backendLangCharset;
         }
     }
@@ -410,18 +410,18 @@ class InitCMS
     function getTemplates()
     {
         global $objDatabase;
-        
+
         if (isset($_GET['custom_content']) && preg_match('/^[a-zA-Z0-9_]+$/', $_GET['custom_content'])) {
             $this->customContentTemplate=$_GET['custom_content'];
         }
-        
-        if(isset($_GET['preview']) && intval($_GET['preview'])){
+
+        if (isset($_GET['preview']) && intval($_GET['preview'])){
             $objRS = $objDatabase->SelectLimit("
                 SELECT id
                                         FROM ".DBPREFIX."skins
                  WHERE id=".intval($_GET['preview']), 1
             );
-            if($objRS->RecordCount()==1){
+            if ($objRS->RecordCount()==1){
                 $this->currentThemesId=intval($_GET['preview']);
             }
         }
@@ -462,18 +462,18 @@ class InitCMS
 
         if (!$this->hasCustomContent()) {
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
-		}
-        else {
-          	$this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate);
         }
-	
-		$template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
-		foreach ($template_files as $f) {
-			$match = '';
-			if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-				$this->templates['custom_content'][$match[0]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
-			}
-		}
+        else {
+              $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate);
+        }
+
+        $template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
+        foreach ($template_files as $f) {
+            $match = '';
+            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
+                $this->templates['custom_content'][$match[0]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
+            }
+        }
 
         return $this->templates;
     }
@@ -483,31 +483,31 @@ class InitCMS
      * Used by @link ContentManager::ajaxGetCustomContentTemplate()
      * @param string $themeId the theme's id
      * @return array ('content_xy.html','home_xy.html' [ ,... ] )
-     */     
+     */
     public function getCustomContentTemplatesForTheme($themeId) {
         global $objDatabase;
 
-        if($themeId == 0)
+        if ($themeId == 0)
             $themeId = $this->currentThemesId;
 
         $objResult = $objDatabase->Execute("
             SELECT foldername
-            FROM ".DBPREFIX."skins 
+            FROM ".DBPREFIX."skins
             WHERE id=$themeId
             LIMIT 1"
         );
-        if (!$objResult) 
+        if (!$objResult)
             return array();
 
-        $folder = $objResult->fields['foldername'];        
+        $folder = $objResult->fields['foldername'];
         $templateFiles = scandir(ASCMS_THEMES_PATH.'/'.$folder);
-        
+
         $result = array();
-        foreach($templateFiles as $f){
-			$match = null;
-			if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
+        foreach ($templateFiles as $f){
+            $match = null;
+            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
                 array_push($result, $f);
-			}
+            }
         }
 
         return $result;
@@ -535,8 +535,8 @@ class InitCMS
         $objResult = $objDatabase->Execute($query);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                if(strlen($objResult->fields['name'])>0){
-                    switch($objResult->fields['name']){
+                if (strlen($objResult->fields['name'])>0){
+                    switch ($objResult->fields['name']){
                         case 'core':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_DOCUMENT_ROOT.'/lang/';
                             break;
@@ -572,7 +572,7 @@ class InitCMS
         }
 
         // check which module will be loaded
-        if(empty($module)){
+        if (empty($module)){
             if ($objInit->mode == 'backend') {
                 $module = isset($_REQUEST['cmd']) ? addslashes(strip_tags($_REQUEST['cmd'])) : 'core';
             } else {
@@ -590,42 +590,39 @@ class InitCMS
         } else {
             // check if the language file exist
             $path = $objInit->arrModulePath[$module].$objInit->arrLang[$langId]['lang'].'/'.$objInit->mode.'.php';
-               if(!file_exists($path)){
+               if (!file_exists($path)){
                 $langId = $objInit->mode == 'backend' ? $objInit->getBackendDefaultLangId() : $objInit->getFrontendDefaultLangId();
                 $path = $objInit->arrModulePath[$module].$objInit->arrLang[$langId]['lang'].'/'.$objInit->mode.'.php';
-                if(!file_exists($path)){
+                if (!file_exists($path)){
                     $path = '';
                 }
             }
         }
-
         // load variables
-        if(empty($module)){
+        if (empty($module)){
             return $_CORELANG;
-        } else {
-            if(!empty($path)){
-                //require_once($path);
-                require($path);
-                // remove escape characters
-                foreach (array_keys($_ARRAYLANG) as $langTxtId) {
-                    $_ARRAYLANG[$langTxtId] = ereg_replace("\\\"", "\"", $_ARRAYLANG[$langTxtId]);
-                    if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
-                        $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
-                        $moduleID = $objRS->fields['id'];
-                        $objRS = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."language_variable_names
-                                                        WHERE module_id = $moduleID
-                                                        AND name = '$langTxtId'", 1);
-                        if($objRS){
-                            $_ARRAYLANG[$langTxtId] .= " ( ".$objRS->fields['id']." )";
-                        }
+        }
+        if (!empty($path)){
+            //require_once($path);
+            require($path);
+            // remove escape characters
+            foreach (array_keys($_ARRAYLANG) as $langTxtId) {
+                $_ARRAYLANG[$langTxtId] = ereg_replace("\\\"", "\"", $_ARRAYLANG[$langTxtId]);
+                if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
+                    $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
+                    $moduleID = $objRS->fields['id'];
+                    $objRS = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."language_variable_names
+                                                    WHERE module_id = $moduleID
+                                                    AND name = '$langTxtId'", 1);
+                    if ($objRS){
+                        $_ARRAYLANG[$langTxtId] .= " ( ".$objRS->fields['id']." )";
                     }
                 }
-                return $_ARRAYLANG;
-            } else {
-                //die("init::loadLanguageData() error (".$objInit->arrModulePath[$module].$objInit->arrLang[$_LANGID]['lang'].'/'.$objInit->mode.'.php'.")");
-                return $_CORELANG;
             }
+            return $_ARRAYLANG;
         }
+        //die("init::loadLanguageData() error (".$objInit->arrModulePath[$module].$objInit->arrLang[$_LANGID]['lang'].'/'.$objInit->mode.'.php'.")");
+        return $_CORELANG;
     }
 
 
@@ -637,7 +634,6 @@ class InitCMS
      *
      * The old implementation of this function, previously kept as getPageID_old(),
      * has been deleted on 3.2.2011. Last version containing it is 2.1.4.
-     *
      * @global  ADONewConnection  $objDatabase
      * @param   integer           $page_id      The optional page ID
      * @param   string            $section      The optional section/cmd parameter value
@@ -695,51 +691,49 @@ class InitCMS
             }
             $this->_setCustomizedThemesId($objResult->fields['themes_id']);
             define('MODULE_ID', $objResult->fields['module']);
-		}
+        } else {
+            define('MODULE_ID', null);
+        }
 
-		if (empty($history_id)) {
-		  $query = "
-			SELECT themes_id, custom_content
-			  FROM ".DBPREFIX."content_navigation
-			 WHERE catid=$page_id
-		";
-		} else {
-		  $query = "
-			SELECT themes_id, custom_content
-			  FROM ".DBPREFIX."content_navigation_history
-			 WHERE id=$history_id
-		";
-		}
-		$objResult = $objDatabase->SelectLimit($query, 1);
-		if ($objResult !== false) {
-		  if (!$objResult->EOF) {
-			$this->_setCustomizedThemesId($objResult->fields['themes_id']);
-			$this->customContentTemplate = $objResult->fields['custom_content'];
-		  }
-		}
-		
-        define('MODULE_ID', null);
+        if (empty($history_id)) {
+            $query = "
+                SELECT themes_id, custom_content
+                  FROM ".DBPREFIX."content_navigation
+                 WHERE catid=$page_id";
+        } else {
+          $query = "
+              SELECT themes_id, custom_content
+                FROM ".DBPREFIX."content_navigation_history
+               WHERE id=$history_id";
+        }
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult) {
+            if (!$objResult->EOF) {
+                $this->_setCustomizedThemesId($objResult->fields['themes_id']);
+                $this->customContentTemplate = $objResult->fields['custom_content'];
+            }
+        }
         return $page_id;
     }
 
+
     /**
-    * Sets the customized ThemesId
-    *
-    * This method set the currentThemesId if a customized themesId is set
-    * in the navigation table.
-    *
-    * @access private
-    * @param optional string $themesId
-    */
+     * Sets the customized ThemesId
+     *
+     * This method set the currentThemesId if a customized themesId is set
+     * in the navigation table.
+     * @access private
+     * @param optional string $themesId
+     */
     function _setCustomizedThemesId($themesId='')
     {
         global $objDatabase;
 
         $mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
         //only set customized theme if not in printview AND no mobile devic
-        if(!isset($_GET['printview']) && !$mobileThemeDefinedAndRequested) {
+        if (!isset($_GET['printview']) && !$mobileThemeDefinedAndRequested) {
             $themesId=intval($themesId);
-            if($themesId>0){
+            if ($themesId>0){
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE id = $themesId");
                 if ($objResult !== false) {
                     $this->currentThemesId=intval($objResult->fields['id']);
@@ -759,10 +753,10 @@ class InitCMS
         $query = isset($arrVars['cmd']) ? "?cmd=".$arrVars['cmd'] : "";
         $return = "\n<form action='index.php".$query."' method='post' name='userFrontendLangIdForm'>\n";
         $return .= "<select name='userFrontendLangId' size='1' onchange=\"document.forms['userFrontendLangIdForm'].submit()\">\n";
-        foreach($this->arrLang as $id=>$value){
-            if($this->arrLang[$id]['frontend']==1) {
+        foreach ($this->arrLang as $id=>$value){
+            if ($this->arrLang[$id]['frontend']==1) {
                 $i++;
-                if($id==$this->userFrontendLangId) {
+                if ($id==$this->userFrontendLangId) {
                     $return .= "<option value='".$id."' selected='selected'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
                 } else {
                     $return .= "<option value='".$id."'>Frontend [".htmlentities($value['name'], ENT_QUOTES, CONTREXX_CHARSET)."]</option>\n";
@@ -869,7 +863,7 @@ class InitCMS
      */
     public function hasCustomContent()
     {
-		return strlen($this->customContentTemplate) > 0 ? true : false;
+        return strlen($this->customContentTemplate) > 0 ? true : false;
     }
 }
 ?>
