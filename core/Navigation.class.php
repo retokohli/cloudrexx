@@ -66,12 +66,13 @@ class Navigation
     /**
     * Initialize the data hash from the database
     * @global ADONewConnection
+    * @global InitCMS
     * @global Array
     * @access private
     */
     function _initialize()
     {
-        global $objDatabase, $_CONFIG;
+        global $objDatabase, $objInit, $_CONFIG;
 
         $objFWUser = FWUser::getFWUserObject();
 
@@ -126,6 +127,8 @@ class Navigation
                 ORDER BY n.parcat DESC, n.displayorder";
         $objResult = $objDatabase->Execute($query);
 
+        $langPrefix = '/'.FWLanguage::getLanguageParameter($this->langId, 'lang');
+
         if ($objDatabase->Affected_Rows() > 0) {
             while (!$objResult->EOF) {
                 // generate array $this->table
@@ -152,13 +155,41 @@ class Navigation
                 $c=$objResult->fields['cmd'];
                 $section = ($s=="") ? "" : "&amp;section=$s";
                 $cmd = ($c=="") ? "" : "&amp;cmd=$c";
+                $useAlias = false;
+
+                if ($_CONFIG['aliasStatus']
+                    && ($objResult->fields['alias_url']
+                        || $_CONFIG['useVirtualLanguagePath'] == 'on' && $s == 'home'
+                    )
+                ) {
+                    $useAlias = true;
+                }
 
                 // Create alias link if alias is present for this page...
-                if ($objResult->fields['alias_url'] && $_CONFIG['aliasStatus']) {
-                    $menu_url = self::mkurl(CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.$objResult->fields['alias_url']);
+                if ($useAlias) {
+                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                        // the homepage should not use an alias, but only a slash
+                        if ($s == 'home') {
+                            if ($this->langId == $objInit->getDefaultFrontendLangId()) {
+                                // the default language should not use the virtual language path
+                                $menu_url = '/';
+                            } else {
+                                $menu_url = $langPrefix.'/';
+                            }
+                        } else {
+                            $menu_url = $langPrefix.'/'.$objResult->fields['alias_url'];
+                        }
+                    } else {
+                        $menu_url = '/'.$objResult->fields['alias_url'];
+                    }
+                    $menu_url = FWSystem::mkurl($menu_url);
                 } elseif (!empty($objResult->fields['redirect'])) {
                     if (self::is_local_url($objResult->fields['redirect'])) {
-                        $menu_url = ASCMS_PATH_OFFSET.CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.htmlspecialchars($objResult->fields['redirect']);
+                        if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                            $menu_url = ASCMS_PATH_OFFSET.$langPrefix.'/'.htmlspecialchars($objResult->fields['redirect']);
+                        } else {
+                            $menu_url = ASCMS_PATH_OFFSET.'/'.htmlspecialchars($objResult->fields['redirect']);
+                        }
                     }
                     else {
                         $menu_url = htmlspecialchars($objResult->fields['redirect']);
@@ -649,16 +680,6 @@ class Navigation
         if (strpos($url, '/'       ) === 0) return false;
 
         return true;
-    }
-
-
-    static function mkurl($absolute_local_path)
-    {
-        global $_CONFIG;
-        return ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80
-            ? ""
-            : ":".intval($_SERVER['SERVER_PORT'])
-        ).ASCMS_PATH_OFFSET.stripslashes($absolute_local_path);
     }
 
 

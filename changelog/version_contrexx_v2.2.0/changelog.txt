@@ -9,6 +9,11 @@ Allgemein:
 - SMTP over SSL Unterstützung bei E-Mail Konten (Bsp. Host: ssl://smtp.example.com, Port: 465)
 - Contrexx generiert Gzip-komprimierte antworten. Dies ermöglicht um bis zu 75% schnellere Übertragung der Seiteninhalte vom Server.
 
+SEO URL Aliase / Virtuelle Sprachverzeichnisse
+- Unterstützung der Mehrsprachigkeit. Dasselbe Alias kann bei mehreren Sprachen eingesetzt werden.
+- Beim Aufrufe eines Alias bleibt in der Adresszeile des Browsers der Name des Alias angezeigt.
+- Beim Einsatz der Virtuellen Sprachverzeichnisse zeigen die Homepage-URLs auf das DocumentRoot der jeweiligen Sprache. (Bsp. http://www.example.com/de/). Die Homepage-URL der Standardsprache zeigt auf das DocumentRoot der Website (Bsp. http://www.example.com/).
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************

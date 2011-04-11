@@ -6,8 +6,8 @@
  * @package     contrexx
  * @subpackage  core_module_alias
  */
-$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "Aliase";
-$_ARRAYLANG['TXT_ALIAS_ALIAS'] = "Alias";
+$_ARRAYLANG['TXT_ALIAS_ALIASES'] = "SEO URL Aliases";
+$_ARRAYLANG['TXT_ALIAS_ALIAS'] = "SEO URL Alias";
 $_ARRAYLANG['TXT_ALIAS_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_ALIAS_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_ALIAS_MODIFY'] = "Bearbeiten";
@@ -50,4 +50,5 @@ $_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'] = "Das Alias %s kann nicht verwendet
 $_ARRAYLANG['TXT_ALIAS_TARGET_ALREADY_IN_USE'] = "Ein Alias für die Seite %s existiert bereits!";
 $_ARRAYLANG['TXT_ALIAS_NOT_ACTIVE_ALIAS_MSG'] = "Dieses Alias ist nicht mehr aktiv!<br />Klicken Sie auf dieses Symbol um das Alias wieder zu aktivieren.";
 $_ARRAYLANG['TXT_ALIAS_STANDARD_RADIOBUTTON'] = "Use as default:";
+$_ARRAYLANG['TXT_ALIAS_OPEN_ALIAS_NEW_WINDOW'] = "Open alias in a new window";
 ?>

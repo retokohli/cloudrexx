@@ -67,5 +67,23 @@ class FWSystem
 		}
 		return $size;
 	}
+
+    /**
+     * Returns the relative URL $absolute_local_path as absolute URL
+     * @param string The relative URL that shall be made absolute.
+     * @param boolean Wether the absolute URL shall be prefixed by the requested protocol and the domain name.
+     */
+    static public function mkurl($absolute_local_path, $withProtocolAndDomain = false)
+    {
+        global $_CONFIG;
+
+        $url = '';
+        if ($withProtocolAndDomain) {
+            $url .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl']
+                .($_SERVER['SERVER_PORT'] == 80 ? "" : ":".intval($_SERVER['SERVER_PORT']));
+        }
+
+        return $url.ASCMS_PATH_OFFSET.stripslashes($absolute_local_path);
+    }
 }
 ?>
