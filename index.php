@@ -82,7 +82,8 @@ DBG::deactivate();
 $starttime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
-ob_start("ob_gzhandler");
+//still disabled because of problems with pear download
+//ob_start("ob_gzhandler");
 
 // Makes code analyzer warnings go away
 $_CONFIG = $_CONFIGURATION = null;
