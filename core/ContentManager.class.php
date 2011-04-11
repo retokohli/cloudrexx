@@ -1572,7 +1572,7 @@ class ContentManager
                                 ');
         }
 
-        $this->modifyBlocks($_POST['assignedBlocks'], $pageId);
+        $this->modifyBlocks(isset($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array(), $pageId);
         $this->statisticsInterface->updateStatsTitles($pageId,$contenttitle);
     }
 
@@ -1780,7 +1780,7 @@ class ContentManager
                            is_validated="'.($this->boolHistoryActivate ? 1 : 0).'"
                                     ');
             }
-            $this->modifyBlocks($_POST['assignedBlocks'], $pageId);
+            $this->modifyBlocks(isset($_POST['assignedBlocks']) ? $_POST['assignedBlocks'] : array(), $pageId);
         } else {
             $this->strErrMessage[] = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
         }
@@ -2728,9 +2728,10 @@ class ContentManager
 
         //////////////////////////////////////////////////////////////
         // aliasLib has some handy stuff for us here..
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $objInit;
         require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
         $util = new aliasLib;
+        $_ARRAYLANG = array_merge_recursive($_ARRAYLANG, $objInit->loadLanguageData('alias'));
 
         // check if there is already an alias present for the page
         $aliasId = intval($this->_has_default_alias($pageId));
