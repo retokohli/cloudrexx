@@ -28,22 +28,27 @@ require_once ASCMS_FRAMEWORK_PATH.'/FWHtAccess.class.php';
  */
 class aliasLib
 {
-    var $_arrAliasTypes = array(
+    public $_arrAliasTypes = array(
         'local',
         'url'
     );
 
-    var $_arrConfig = null;
+    public $langId;
 
-    var $objFWHtAccess;
+    public $_arrConfig = null;
 
-    function __construct()
+    public $objFWHtAccess;
+
+
+    function __construct($langId = 0)
     {
         $this->objFWHtAccess = new FWHtAccess();
         if (($result = $this->objFWHtAccess->loadHtAccessFile('/.htaccess')) !== true) {;
             $this->arrStatusMsg['error'][] = $result;
         }
+        $this->langId = intval($langId) > 0 ? $langId : FRONTEND_LANG_ID;
     }
+
 
     function _getConfig()
     {
@@ -53,6 +58,7 @@ class aliasLib
 
         return $this->_arrConfig;
     }
+
 
     function _initConfig()
     {
@@ -68,7 +74,8 @@ class aliasLib
         }
     }
 
-    function _getAliases($limit = null)
+
+    function _getAliases($limit = null, $allLanguages = false)
     {
         global $objDatabase, $_CONFIG;
 
@@ -83,9 +90,11 @@ class aliasLib
                 t.`url`       AS targetUrl,
                 s.`id`        AS sourceId,
                 s.`isdefault` AS isdefault,
-                s.`url`       AS sourceUrl
+                s.`url`       AS sourceUrl,
+                s.`lang_id`   AS langId
             FROM `".DBPREFIX."module_alias_target` AS t
-            INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
+            INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`"
+            .(!$allLanguages ? "WHERE s.`lang_id` = ".$this->langId : ' ')."
             ORDER BY sourceUrl ASC";
 
         if (!empty($limit)) {
@@ -96,8 +105,8 @@ class aliasLib
 
         if ($objAlias !== false) {
             while (!$objAlias->EOF) {
-                if (!isset($arrAliases[$objAlias->fields['targetId']])) {
-                    $arrAliases[$objAlias->fields['targetId']] = array(
+                if (!isset($arrAliases[$objAlias->fields['langId']][$objAlias->fields['targetId']])) {
+                    $arrAliases[$objAlias->fields['langId']][$objAlias->fields['targetId']] = array(
                         'type'        => $objAlias->fields['targetType'],
                         'url'        => $objAlias->fields['targetUrl'],
                         'sources'    => array()
@@ -107,7 +116,7 @@ class aliasLib
                         $arrLocalAliases[intval($objAlias->fields['targetUrl'])] = $objAlias->fields['targetId'];
                     }
                 }
-                array_push($arrAliases[$objAlias->fields['targetId']]['sources'], array(
+                array_push($arrAliases[$objAlias->fields['langId']][$objAlias->fields['targetId']]['sources'], array(
                     'id'        => $objAlias->fields['sourceId'],
                     'isdefault' => $objAlias->fields['isdefault'],
                     'url'        => $objAlias->fields['sourceUrl']
@@ -123,18 +132,23 @@ class aliasLib
                         n.`catid`,
                         n.`catname`,
                         n.`cmd`,
+                        n.`lang`,
                         m.`name`
                     FROM
                         `".DBPREFIX."content_navigation` AS n
                     LEFT OUTER JOIN `".DBPREFIX."modules` AS m ON m.`id` = n.`module`
-                    WHERE n.`catid` = ".implode(' OR n.`catid` = ', $arrLocalAliasIds)
+                    WHERE (n.`catid` = ".implode(' OR n.`catid` = ', $arrLocalAliasIds).")".(!$allLanguages ? " AND n.`lang` = ".$this->langId : ' ')
                 );
                 if ($objAlias !== false) {
                     while (!$objAlias->EOF) {
-                        $arrAliases[$arrLocalAliases[$objAlias->fields['catid']]]['title'] = $objAlias->fields['catname'];
-                        $arrAliases[$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET.'/index.php'
-                            .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
-                            .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
+                        if (isset($arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]])) {
+                            $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['title'] = $objAlias->fields['catname'];
+                            $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET
+                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($objAlias->fields['lang'], 'lang') : null)
+                                .'/'.CONTREXX_DIRECTORY_INDEX
+                                .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
+                                .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
+                        }
 
                         $objAlias->MoveNext();
                     }
@@ -145,9 +159,11 @@ class aliasLib
         return $arrAliases;
     }
 
+
 	function is_alias_valid($alias) {
 		return !file_exists(ASCMS_DOCUMENT_ROOT.'/'.$alias);
 	}
+
 
     function _getAliasesCount()
     {
@@ -157,7 +173,7 @@ class aliasLib
             SELECT SUM(1) AS aliasCount
             FROM `".DBPREFIX."module_alias_target` AS t
             INNER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
-        ");
+            WHERE s.`lang_id`=".$this->langId);
 
         if ($objAlias !== false) {
             return $objAlias->fields['aliasCount'];
@@ -166,30 +182,30 @@ class aliasLib
         };
     }
 
+
     function _getAlias($aliasId)
     {
         global $objDatabase;
 
         $objAlias = $objDatabase->Execute("
-            SELECT
-                t.`type` AS targetType,
-                t.`url` AS targetUrl,
-                s.`id` AS sourceId,
-                s.`isdefault` AS isdefault,
-                s.`url` AS sourceUrl
-            FROM `".DBPREFIX."module_alias_target` AS t
-            LEFT OUTER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
-            WHERE t.`id` = ".$aliasId."
-            ORDER BY sourceUrl ASC"
-        );
-
-        if ($objAlias !== false && $objAlias->RecordCount() > 0) {
+            SELECT t.`type` AS targetType,
+                   t.`url` AS targetUrl,
+                   s.`id` AS sourceId,
+                   s.`isdefault` AS isdefault,
+                   s.`url` AS sourceUrl,
+                   s.`lang_id` AS langId
+              FROM `".DBPREFIX."module_alias_target` AS t
+              LEFT OUTER JOIN `".DBPREFIX."module_alias_source` AS s ON s.`target_id` = t.`id`
+             WHERE t.`id` = ".$aliasId." AND s.`lang_id` = ".$this->langId."
+             ORDER BY sourceUrl ASC");
+        if ($objAlias && $objAlias->RecordCount()) {
             while (!$objAlias->EOF) {
                 if (!isset($arrAlias)) {
                     $arrAlias = array(
                         'type'        => $objAlias->fields['targetType'],
                         'url'        => $objAlias->fields['targetUrl'],
-                        'sources'    => array()
+                        'sources'    => array(),
+                        'lang'       => $objAlias->fields['langId']
                     );
                 }
 
@@ -205,14 +221,14 @@ class aliasLib
             $this->_setAliasTarget($arrAlias);
 
             return $arrAlias;
-        } else {
-            return false;
         }
+        return false;
     }
+
 
     function _setAliasTarget(&$arrAlias)
     {
-        global $objDatabase;
+        global $objDatabase, $_CONFIG;
 
         if ($arrAlias['type'] == 'local') {
             $objAlias = $objDatabase->SelectLimit("
@@ -228,22 +244,39 @@ class aliasLib
             );
             if ($objAlias !== false && $objAlias->RecordCount() == 1) {
                 $arrAlias['title'] = $objAlias->fields['catname'];
-                $arrAlias['pageUrl'] = ASCMS_PATH_OFFSET.'/index.php'
+                $arrAlias['pageUrl'] = ASCMS_PATH_OFFSET
+                    .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($arrAlias['lang'], 'lang') : null)
+                    .'/'.CONTREXX_DIRECTORY_INDEX
                     .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
                     .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
             }
         }
     }
 
+
     function _addAlias($arrAlias)
     {
         global $objDatabase;
-        if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_alias_target` (`type`, `url`) VALUES ('".addslashes($arrAlias['type'])."','".addslashes($arrAlias['url'])."')") !== false) {
-            return $this->_setAliasSources($objDatabase->Insert_ID(), $arrAlias);
+
+        $objRS = $objDatabase->SelectLimit("
+            SELECT `id` FROM `".DBPREFIX."module_alias_target`
+            WHERE `url` = '".addslashes($arrAlias['url'])."'", 1);
+        if ($objRS !== false && $objRS->RecordCount() == 1){
+            $aliasId = $objRS->fields['id'];
         } else {
-            return false;
+            if ($objDatabase->Execute("
+                INSERT INTO `".DBPREFIX."module_alias_target` (`type`, `url`)
+                VALUES ('".addslashes($arrAlias['type'])."','".addslashes($arrAlias['url'])."')
+                ON DUPLICATE KEY
+                UPDATE `type`='".addslashes($arrAlias['type'])."', `url`='".addslashes($arrAlias['url'])."'") !== false) {
+                $aliasId = $objDatabase->Insert_ID();
+            } else {
+                return false;
+            }
         }
+        return $this->_setAliasSources($aliasId, $arrAlias);
     }
+
 
     function _updateAlias($aliasId, $arrAlias)
     {
@@ -263,6 +296,7 @@ class aliasLib
         }
     }
 
+
     function _setAliasSources($aliasId, $arrAlias)
     {
         global $objDatabase;
@@ -278,7 +312,8 @@ class aliasLib
                             $qry_update = "
                                 UPDATE `".DBPREFIX."module_alias_source`
                                     SET `url`       = '".addslashes($arrSource['url'])      ."',
-                                        `isdefault` = '".intval    ($arrSource['isdefault'])."'
+                                        `isdefault` = '".intval    ($arrSource['isdefault'])."',
+                                        `lang_id`   = ".$this->langId."
                                 WHERE `id` = ".intval($arrSource['id'])."
                                     AND `target_id` = ".intval($aliasId)
                                 ;
@@ -293,7 +328,7 @@ class aliasLib
                 }
 
                 if (!$stillPresent) {
-                    if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_alias_source` WHERE `id` = ".intval($arrOldSource['id'])." AND `target_id` = ".intval($aliasId)) === false) {
+                    if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_alias_source` WHERE `id` = ".intval($arrOldSource['id'])." AND `target_id` = ".intval($aliasId).' AND `lang_id`='.$this->langId) === false) {
                         $error = true;
                     }
                 }
@@ -306,8 +341,8 @@ class aliasLib
                 $isdefault = intval($arrSource['isdefault']);
                 $url       = addslashes($arrSource['url']);
                 $qry_insert = "
-                    INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`, `isdefault`)
-                    VALUES ($alias_id, '$url', $isdefault)
+                    INSERT INTO `".DBPREFIX."module_alias_source` (`target_id`, `url`, `isdefault`, `lang_id`)
+                    VALUES ($alias_id, '$url', $isdefault, $this->langId)
                     ";
                 if ($objDatabase->Execute($qry_insert) === false) {
                     $error = true;
@@ -315,23 +350,17 @@ class aliasLib
             }
         }
 
-        if (!$error) {
-            if ($arrAlias['type'] == 'local') {
-                $target = $arrAlias['pageUrl'];
-            } else {
-                $target = $arrAlias['url'];
-            }
+        if ($error) return false;
 
-            return $this->_activateRewriteEngine();
-        } else {
-            return false;
-        }
+        return $this->_activateRewriteEngine();
     }
+
 
     function _getRewriteInfo()
     {
-        $arrRewriteInfo = array();
         $arrRules = $this->objFWHtAccess->getSection('core_modules__alias');
+        $arrRewriteInfo = array();
+        $arrRewriteRule = array();
 
         foreach ($arrRules as $directive) {
             if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+(.+)\s+.*$#', $directive, $arrRewriteRule)) {
@@ -342,10 +371,12 @@ class aliasLib
         return $arrRewriteInfo;
     }
 
+
     function _isModRewriteInUse()
     {
         return $this->objFWHtAccess->isRewriteEngineInUse();
     }
+
 
     function _escapeStringForRegex($string) {
         $string = str_replace(array(' ', '\\\ '), '\\ ', $string);
@@ -356,25 +387,52 @@ class aliasLib
         );
     }
 
+
     function _activateRewriteEngine()
     {
+        global $_CONFIG;
+
         $arrRewriteRules = array();
+        $limit = null;
+        $allLanguages = true;
+        $arrRedirectAliases = array();
+        $arrDefinedAliasesByLang = $this->_getAliases($limit, $allLanguages);
 
-        $arrDefinedAliases = $this->_getAliases();
-
-        foreach ($arrDefinedAliases as $arrDefinedAlias) {
-            if ($arrDefinedAlias['type'] == 'local') {
-                if (!empty($arrDefinedAlias['pageUrl'])) {
-                    $target = $arrDefinedAlias['pageUrl'];
+        foreach ($arrDefinedAliasesByLang as $langId => $arrDefinedAliases) {
+            foreach ($arrDefinedAliases as $arrDefinedAlias) {
+                if ($arrDefinedAlias['type'] == 'local') {
+                    if (!empty($arrDefinedAlias['pageUrl'])) {
+                        $target = $arrDefinedAlias['pageUrl'];
+                        if ($_CONFIG['useVirtualLanguagePath'] == 'off') {
+                            $target .= '&setLang='.$langId;
+                        }
+                    } else {
+                        continue;
+                    }
                 } else {
-                    continue;
+                    $target = $arrDefinedAlias['url'];
                 }
-            } else {
-                $target = $arrDefinedAlias['url'];
-            }
+                foreach ($arrDefinedAlias['sources'] as $arrSource) {
+                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                        $langPrefixedSource = FWLanguage::getLanguageParameter($langId, 'lang').'/'.$arrSource['url'];
 
-            foreach ($arrDefinedAlias['sources'] as $arrSource) {
-                $arrRewriteRules[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC,QSA]';
+                        if ($this->_isUniqueAliasSource($arrSource['url'], '/'.$langPrefixedSource, '/'.$langPrefixedSource, $arrSource['id'], $langId, true)) {
+                            // in case the language redirect alias already exists but doesn't belongs to the default language, then overwrite it
+                            $langRedirectRule = 'RewriteRule ^'.$arrSource['url'].'$ /'.$langPrefixedSource.' [L,NC,QSA,R=301]';
+                            if (isset($arrRedirectAliases[$arrSource['url']])) {
+                                if ($langId == FWLanguage::getDefaultLangId()) {
+                                    $arrRewriteRules[$arrRedirectAliases[$arrSource['url']]] =  $langRedirectRule;
+                                }
+                            } else {
+                                $arrRewriteRules[] = $langRedirectRule;
+                                $arrRedirectAliases[$arrSource['url']] = count($arrRewriteRules)-1;
+                            }
+                        }
+                        $arrRewriteRules[] = 'RewriteRule ^'.$langPrefixedSource.'$ '.$target.' [L,NC,QSA]';
+                    } else {
+                        $arrRewriteRules[] = 'RewriteRule ^'.$arrSource['url'].'$    '.$target.' [L,NC,QSA]';
+                    }
+                }
             }
         }
 
@@ -382,58 +440,94 @@ class aliasLib
         return $this->objFWHtAccess->write();
     }
 
+
     function _deactivateRewriteEngine()
     {
         $this->objFWHtAccess->removeSection('core_modules__alias');
         return $this->objFWHtAccess->write();
     }
 
-    function _isUniqueAliasSource($url, $target, $oldTarget, $sourceId = 0)
+
+    function _isUniqueAliasSource($url, $target, $oldTarget, $sourceId = 0, $langId = null, $coreUrl = false)
     {
-        global $objDatabase;
+        global $objDatabase, $_CONFIG;
 
-        if (($arrUsedAliasesInHtaccessFile = $this->_getUsedAlisesInHtaccessFile()) === false || (isset($arrUsedAliasesInHtaccessFile[$url]) && $arrUsedAliasesInHtaccessFile[$url] != $target && $arrUsedAliasesInHtaccessFile[$url] != $oldTarget)) {
+        if (empty($langId)) {
+            $langId = $this->langId;
+        }
+
+        if (!$coreUrl && $_CONFIG['useVirtualLanguagePath'] == 'on') {
+            // virtual language path has be taken in account
+            $source = FWLanguage::getLanguageParameter($langId, 'lang').'/'.$url;
+        } else {
+            $source = $url;
+        }
+
+        $arrUsedAliasesInHtaccessFile = $this->_getUsedAliasesInHtaccessFile();
+        if (   $arrUsedAliasesInHtaccessFile === false
+            || (   isset($arrUsedAliasesInHtaccessFile[$source])
+                && $arrUsedAliasesInHtaccessFile[$source] != $target
+                && $arrUsedAliasesInHtaccessFile[$source] != $oldTarget)) {
             return false;
         }
 
-        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_source` WHERE `id` != ".intval($sourceId)." AND `url` = '".addslashes($url)."'", 1);
-        if ($objResult !== false && $objResult->RecordCount() == 0) {
+        $objResult = $objDatabase->SelectLimit("
+            SELECT 1
+              FROM `".DBPREFIX."module_alias_source`
+             WHERE `id`!=".intval($sourceId)."
+               AND `url`='".addslashes($url)."'
+               AND `lang_id`=".$langId, 1);
+        if ($objResult && $objResult->RecordCount() == 0) {
             return true;
-        } else{
-            return false;
         }
+        return false;
     }
+
 
     function _isUniqueAliasTarget($url, $targetId = 0)
     {
         global $objDatabase;
 
-        $objResult = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_alias_target` WHERE `id` != ".intval($targetId)." AND `url` = '".addslashes($url)."'", 1);
-        if ($objResult !== false && $objResult->RecordCount() == 0) {
+        $objResult = $objDatabase->SelectLimit("
+            SELECT 1
+              FROM `".DBPREFIX."module_alias_target` AS `t`
+              LEFT JOIN `".DBPREFIX."module_alias_source` AS `s` ON (`s`.`target_id` = `t`.`id`)
+             WHERE `t`.`id` != ".intval($targetId)."
+               AND `t`.`url` = '".addslashes($url)."'
+               AND `s`.`lang_id`=".$this->langId, 1);
+        if ($objResult && $objResult->RecordCount() == 0) {
             return true;
-        } else{
-            return false;
         }
+        return false;
     }
+
 
     function _deleteAlias($aliasId)
     {
         global $objDatabase, $_CONFIG;
 
-        if (($arrAlias = $this->_getAlias($aliasId)) !== false) {
-            if ($objDatabase->Execute("DELETE s,t FROM `".DBPREFIX."module_alias_source` AS s INNER JOIN `".DBPREFIX."module_alias_target` AS t ON t.`id` = s.`target_id` WHERE s.`target_id` = ".intval($aliasId)) !== false && $this->_activateRewriteEngine()) {
-                if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
+        $arrAlias = $this->_getAlias($aliasId);
+        if ($arrAlias) {
+            if ($objDatabase->Execute("
+                DELETE s,t
+                  FROM `".DBPREFIX."module_alias_source` AS s
+                 INNER JOIN `".DBPREFIX."module_alias_target` AS t
+                    ON t.`id` = s.`target_id`
+                 WHERE s.`target_id`=".intval($aliasId).'
+                   AND s.`lang_id`='.$this->langId
+            ) !== false && $this->_activateRewriteEngine()) {
+                if (   $_CONFIG['xmlSitemapStatus'] == 'on'
+                    && ($result = XMLSitemap::write()) !== true) {
                     $this->arrStatusMsg['error'][] = $result;
                 }
                 return true;
             }
-            return false;
-        } else {
-            return false;
         }
+        return false;
     }
 
-    function _getUsedAlisesInHtaccessFile()
+
+    function _getUsedAliasesInHtaccessFile()
     {
         static $arrUsedAliases;
 
@@ -441,20 +535,49 @@ class aliasLib
             $objHtAccess = new File_HtAccess(ASCMS_DOCUMENT_ROOT.'/.htaccess');
             if ($objHtAccess->load() !== true) {
                 return false;
-            } else {
-                $arrAddition = $objHtAccess->getAdditional('array');
-                $arrUsedAliases = array();
-
-                foreach ($arrAddition as $directive) {
-                    if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+(.+)\s+.*$#', $directive, $arrAlias)) {
-                        $arrUsedAliases[$arrAlias[1]] = $arrAlias[2];
-                    }
+            }
+            $arrAddition = $objHtAccess->getAdditional('array');
+            $arrUsedAliases = array();
+            $arrAlias = array();
+            foreach ($arrAddition as $directive) {
+// TODO: check the setLang condition -> might be required if we don't use virtual language paths
+                if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+(.+?)(?:&setLang=\d+)?\s+.*$#', $directive, $arrAlias)) {
+//                if (preg_match('#^\s*RewriteRule\s+\^(.+)\$\s+(.+)\s+.*$#', $directive, $arrAlias)) {
+                    $arrUsedAliases[$arrAlias[1]] = $arrAlias[2];
                 }
             }
         }
-
         return $arrUsedAliases;
     }
-}
 
+
+    /**
+     * get all alias_source entries that don't have a corresponding alias_target entry
+     *
+     * @param boolean $cleanUp whether to delete the aimless source entries
+     */
+    function _getUnusedTargets($cleanUp = false){
+        global $objDatabase;
+
+        $arrUnused = array();
+        $query = "SELECT `s`.`id`
+                    FROM `".DBPREFIX."module_alias_source` AS `s`
+                    LEFT JOIN `".DBPREFIX."module_alias_target` AS `t` ON `t`.`id` = `s`.`target_id`
+                    WHERE `t`.`id` IS NULL";
+        if(($objRS = $objDatabase->Execute($query)) !== false){
+            while(!$objRS->EOF){
+                $arrUnused[] = $objRS->fields['id'];
+                $objRS->MoveNext();
+            }
+        }
+        if($cleanUp){
+            $query = "DELETE `s`
+                        FROM `".DBPREFIX."module_alias_source` AS `s`
+                        LEFT JOIN `".DBPREFIX."module_alias_target` AS `t` ON `t`.`id` = `s`.`target_id`
+                        WHERE `t`.`id` IS NULL";
+            $objDatabase->Execute($query);
+        }
+        return $arrUnused;
+    }
+}
 ?>
