@@ -72,7 +72,7 @@ class XMLSitemap {
                 || $objFile->touchFile(XMLSitemap::$strFilePath.'/'.$filename)
             ) && (
                 is_writable(ASCMS_DOCUMENT_ROOT.XMLSitemap::$strFilePath.'/'.$filename)
-                || $objFile->setChmod(ASCMS_DOCUMENT_ROOT.XMLSitemap::$strFilePath, ASMCS_PATH_OFFSET.XMLSitemap::$strFilePath, '/'.$filename)
+                || $objFile->setChmod(ASCMS_DOCUMENT_ROOT.XMLSitemap::$strFilePath, ASCMS_PATH_OFFSET.XMLSitemap::$strFilePath, '/'.$filename)
         );
     }
 
