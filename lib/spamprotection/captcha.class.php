@@ -10,6 +10,7 @@
  */
 class Captcha {
     var $boolFreetypeInstalled = false;
+    var $boolGDInstalled = false;
     
     var $strRandomString;
     var $strSalt;
@@ -51,10 +52,22 @@ class Captcha {
         $this->strBackgroundDir = ASCMS_DOCUMENT_ROOT.'/lib/spamprotection/backgrounds/';
         $this->strAbsolutePath     = ASCMS_DOCUMENT_ROOT.'/images/spamprotection/';
         $this->strWebPath         = ASCMS_PATH_OFFSET.'/images/spamprotection/';
-        
+  
+        $this->isGDInstalled();
         $this->isFreetypeInstalled();
         $this->cleanDirectory();
         $this->createImage();
+    }
+
+    /**
+     * Determines whether the GD is installed
+     */
+    function isGdInstalled() {
+        $arrExtensions = get_loaded_extensions();
+        
+        if (in_array('gd', $arrExtensions)) {
+            $this->boolGDInstalled = true;
+        }
     }
     
     /**
@@ -238,6 +251,9 @@ class Captcha {
     function compare($strEnteredString, $strOffset) {
         $strEnteredString = strtoupper($strEnteredString);
         $arrOffsetParts = explode(';', $strOffset, 2);
+
+        if(!$this->boolGDInstalled) //do not compare the strings if no gd is installed - no image will be displayed anyway
+            return true;
         
         return ($arrOffsetParts[1] == md5($strEnteredString.$arrOffsetParts[0]));
     }
