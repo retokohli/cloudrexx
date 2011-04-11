@@ -24,7 +24,7 @@ class mediaDirectoryPlaceholders extends mediaDirectoryLibrary
     /**
      * Constructor
      */
-    function __construct($pageContent)
+    function __construct()
     {
         parent::__construct('.');
         parent::getSettings();
