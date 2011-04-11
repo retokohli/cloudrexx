@@ -70,7 +70,7 @@ class sitemap
 
     function _initialize()
     {
-        global $objDatabase, $_LANGID, $_CONFIG;
+        global $objDatabase, $_LANGID, $_CONFIG, $objInit;
 
         $objFWUser = FWUser::getFWUserObject();
         $query = "SELECT n.cmd,
@@ -85,7 +85,7 @@ class sitemap
               INNER JOIN ".DBPREFIX."content                AS c        ON c.id = n.catid
               INNER JOIN ".DBPREFIX."modules                AS m        ON m.id = n.module
          LEFT OUTER JOIN ".DBPREFIX."module_alias_target    AS a_t      ON a_t.url = n.catid
-         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s      ON a_s.target_id = a_t.id AND a_s.isdefault = 1
+         LEFT OUTER JOIN ".DBPREFIX."module_alias_source    AS a_s      ON a_s.target_id = a_t.id AND a_s.isdefault = 1 AND a_s.lang_id = ".$_LANGID."
                    WHERE n.displaystatus = 'on'
                      AND n.activestatus = '1'
                      AND n.is_validated='1'
@@ -115,8 +115,33 @@ class sitemap
                 $section = ( ($s=="") ? "" : "&amp;section=$s" );
                 $cmd     = ( ($c=="") ? "" : "&amp;cmd=$c" );
 
-                if ($_CONFIG['aliasStatus'] && ($alias = $objResult->fields['alias_url'])) {
-                    $link = rawurlencode(stripslashes($alias));
+                $useAlias = false;
+
+                if ($_CONFIG['aliasStatus']
+                    && ($objResult->fields['alias_url']
+                        || $_CONFIG['useVirtualLanguagePath'] == 'on' && $s == 'home'
+                    )
+                ) {
+                    $useAlias = true;
+                }
+
+                if ($useAlias) {
+                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                        // the homepage should not use an alias, but only a slash
+                        if ($s == 'home') {
+                            if ($_LANGID == $objInit->defaultFrontendLangId) {
+                                // the default language should not use the virtual language path
+                                $menu_url = '/';
+                            } else {
+                                $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/';
+                            }
+                        } else {
+                            $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.rawurlencode(stripslashes($objResult->fields['alias_url']));
+                        }
+                    } else {
+                        $menu_url = CONTREXX_VIRTUAL_LANGUAGE_PATH.'/'.rawurlencode(stripslashes($objResult->fields['alias_url']));
+                    }
+                    $link = FWSystem::mkurl($menu_url);
                 } elseif (!empty($objResult->fields['redirect'])) {
                     $link = $objResult->fields['redirect'];
                 } elseif (!empty($s)) {
