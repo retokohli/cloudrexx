@@ -12,19 +12,19 @@
 $_CONFIG['cacheEnabled']             = "off";
 $_CONFIG['cacheExpiration']          = 86400;
 $_CONFIG['contentHistoryStatus']     = "on";
-$_CONFIG['coreAdminEmail']           = "info@example.com";
+$_CONFIG['coreAdminEmail']           = "severin.raez@comvation.com";
 $_CONFIG['coreAdminName']            = "Administrator";
-$_CONFIG['coreGlobalPageTitle']      = "Contrexx Demo";
+$_CONFIG['coreGlobalPageTitle']      = "Default Installation";
 $_CONFIG['coreIdsStatus']            = "off";
-$_CONFIG['coreListProtectedPages']   = "on";
+$_CONFIG['coreListProtectedPages']   = "off";
 $_CONFIG['corePagingLimit']          = 30;
 $_CONFIG['coreSmtpServer']           = 0;
 $_CONFIG['dnsServer']                = "ns1.contrexxhosting.com";
 $_CONFIG['domainUrl']                = "pkg.contrexxlabs.com";
 $_CONFIG['frontendEditingStatus']    = "on";
-$_CONFIG['googleMapsAPIKey']         = "";
+$_CONFIG['googleMapsAPIKey']         = "ABQIAAAArUd1k4QcOIBcwuIPks__CBTjY8QpN-ZLBqJgjOKD26EoRQJQGxRrLRJyHThJJRwWqY3S90O7zT2lmQ";
 $_CONFIG['languageDetection']        = "off";
-$_CONFIG['lastAccessId']             = 52;
+$_CONFIG['lastAccessId']             = 54;
 $_CONFIG['searchVisibleContentOnly'] = "on";
 $_CONFIG['sessionLifeTime']          = 3600;
 $_CONFIG['spamKeywords']             = "sex, viagra";
@@ -44,7 +44,7 @@ $_CONFIG['searchDescriptionLength']  = 150;
 * Contact
 * -------------------------------------------------------------------------
 */
-$_CONFIG['contactFormEmail']         = "info@example.com";
+$_CONFIG['contactFormEmail']         = "severin.raez@comvation.com";
 
 /**
 * -------------------------------------------------------------------------
@@ -112,7 +112,7 @@ $_CONFIG['podcastHomeContent']       = 1;
 * Alias
 * -------------------------------------------------------------------------
 */
-$_CONFIG['aliasStatus']              = 0;
+$_CONFIG['aliasStatus']              = "";
 
 /**
 * -------------------------------------------------------------------------
