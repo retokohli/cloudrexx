@@ -271,9 +271,9 @@ class newsletter extends NewsletterLib
 
             if ($arrSystem['defUnsubscribe'] == 1) {
                 //delete
+                //send notification before trying to delete the record
+                $this->_sendNotificationEmail(2, $objUser->fields['id']);
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE user=".$objUser->fields['id']) && $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE id=".$objUser->fields['id'])) {
-                    //send notification
-                    $this->_sendNotificationEmail(2, $objUser->fields['id']);
                     $message = $_ARRAYLANG['TXT_EMAIL_SUCCESSFULLY_DELETED'];
                 } else {
                     $message = $_ARRAYLANG['TXT_NEWSLETTER_FAILED_REMOVING_FROM_SYSTEM'];
@@ -609,7 +609,8 @@ class newsletter extends NewsletterLib
                 return false;
             }
 
-            $objRecipient = $objDatabase->SelectLimit("SELECT sex, title, lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId, 1);
+            $query = "SELECT sex, title, lastname, firstname, email FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId;
+            $objRecipient = $objDatabase->SelectLimit($query, 1);
             if ($objRecipient !== false) {
                 $arrRecipient['sex'] = $objRecipient->fields['sex'];
                 $arrRecipient['title'] = $objRecipient->fields['title'];
