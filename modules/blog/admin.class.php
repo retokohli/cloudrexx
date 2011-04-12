@@ -50,22 +50,23 @@ class BlogAdmin extends BlogLibrary {
 
         $strNavigation = '';
 
-        //if(in_array(120, $objFWUser->objUser->getStaticPermissionIds())) {
+        $isAdmin = $objFWUser->objUser->getAdminStatus();
+        //if(in_array(120, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
         	$strNavigation .= '<a href="?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
         //}
-        if(in_array(121, $objFWUser->objUser->getStaticPermissionIds())) {
+        if(in_array(121, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
         	$strNavigation .= '<a href="?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
         }
-        if(in_array(122, $objFWUser->objUser->getStaticPermissionIds())) {
+        if(in_array(122, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
         	$strNavigation .= '<a href="?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
         }
-        if(in_array(125, $objFWUser->objUser->getStaticPermissionIds())) {
+        if(in_array(125, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
         	$strNavigation .= '<a href="?cmd=blog&amp;act=networks">'.$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
         }
-        //if(in_array(123, $objFWUser->objUser->getStaticPermissionIds())) {
+        //if(in_array(123, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
         	$strNavigation .= '<a href="?cmd=blog&amp;act=block">'.$_CORELANG['TXT_BLOG_BLOCK_TITLE'].'</a>';
         //}
-        if(in_array(124, $objFWUser->objUser->getStaticPermissionIds())) {
+        if(in_array(124, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
         	$strNavigation .= '<a href="?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
         }
 
