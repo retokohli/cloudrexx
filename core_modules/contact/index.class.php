@@ -88,6 +88,13 @@ class Contact extends ContactLib
     protected $depositionTarget;
 
     /**
+     * Determines whether this has a form fiel.
+     * 
+     * @var boolean
+     */
+    protected $hasFileField;
+
+    /**
      * Contact constructor
      *
      * The constructor does initialize a template system
@@ -167,6 +174,22 @@ class Contact extends ContactLib
         $this->initUploader();
 
         return $this->objTemplate->get();
+    }
+
+    /**
+     * Searches a file field in the array given. Format of array as used everywhere here.
+     * @see hasFileField
+     * @see _getContactFormData()
+     *
+     */
+    protected function searchFileField($arrFormFields) {
+        $this->hasFileField = false;
+        foreach($arrFormFields['fields'] as $field) {
+            if($field['type'] == 'file') {
+                $this->hasFileField = true;
+                return;
+            }
+        }
     }
 
     /**
@@ -260,6 +283,7 @@ class Contact extends ContactLib
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
             if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
+
                 foreach ($arrFormData['fields'] as $field) {
                     $this->arrFormFields[] = $field['name'];
                 }
@@ -270,6 +294,8 @@ class Contact extends ContactLib
                 $arrFormData['showForm'] = 1;
                 //$arrFormData['sendCopy'] = 0;
             }
+
+            $this->searchFileField($arrFormData); //determine whether the form has a file field
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
             foreach ($_POST as $key => $value) {
@@ -328,6 +354,9 @@ class Contact extends ContactLib
          * if we have to treat the files already uploaded by the uploader.
          */
         if(!$this->legacyMode) { //new uploader used
+            if(!$this->hasFileField) //nothing to do for us, no files
+                return array();
+                
             $id = intval($_REQUEST['unique_id']);
             $tup = self::getTemporaryUploadPath($id);
             $tmpUploadDir = $tup[0].'/'.$tup[2].'/'; //all the files uploaded are in here
@@ -376,6 +405,7 @@ class Contact extends ContactLib
             //move all files
             if(!file_exists($tmpUploadDir))
                 throw new ContactException("could not find temporary upload directory '$tmpUploadDir'");
+
             $h = opendir($tmpUploadDir);
             while(false !== ($f = readdir($h))) {
                 if($f != '..' && $f != '.') {
@@ -648,7 +678,7 @@ class Contact extends ContactLib
                 array_push($arrDbEntry, base64_encode($key).",".base64_encode(contrexx_strip_tags($file)));
             }
         }
-        else { //assign all files uploaded to the uploader fields name
+        else if(count($arrFormData['uploadedFiles']) > 0) { //assign all files uploaded to the uploader fields name
             $arrTmp = array();
             foreach ($arrFormData['uploadedFiles'] as $key => $file) {
                 array_push($arrTmp, $file);
@@ -747,7 +777,7 @@ class Contact extends ContactLib
                 }
             }
         }
-		$arrSettings = $this->getSettings();
+        $arrSettings = $this->getSettings();
 
         $message  = $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM']." ".$_CONFIG['domainUrl']."\n\n";
         if ($arrSettings['fieldMetaDate']) {
