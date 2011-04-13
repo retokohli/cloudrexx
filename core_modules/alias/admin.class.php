@@ -418,7 +418,7 @@ class AliasAdmin extends aliasLib
 
     function _settings()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->loadTemplateFile('module_alias_settings.html');
 
@@ -448,7 +448,7 @@ class AliasAdmin extends aliasLib
             if ($this->objSettings->isWritable()) {
                 $this->_objTpl->parse('alias_status_form_submit');
             } else {
-                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], implode('<br />', $this->objSettings->strErrMessage));
+                $this->arrStatusMsg['error'] = array_merge($this->arrStatusMsg['error'], array(sprintf($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS'], $this->objSettings->strSettingsFile)));
                 $this->_objTpl->hideBlock('alias_status_form_submit');
             }
         } else {
