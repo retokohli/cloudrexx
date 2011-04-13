@@ -13,6 +13,7 @@ SEO URL Aliase / Virtuelle Sprachverzeichnisse
 - Unterstützung der Mehrsprachigkeit. Dasselbe Alias kann bei mehreren Sprachen eingesetzt werden.
 - Beim Aufrufe eines Alias bleibt in der Adresszeile des Browsers der Name des Alias angezeigt.
 - Beim Einsatz der Virtuellen Sprachverzeichnisse zeigen die Homepage-URLs auf das DocumentRoot der jeweiligen Sprache. (Bsp. http://www.example.com/de/). Die Homepage-URL der Standardsprache zeigt auf das DocumentRoot der Website (Bsp. http://www.example.com/).
+- Beim Bereich Einstellungen wird eine Fehlermeldung ausgegeben, sofern die Contrexx Konfigurationsdatei nicht beschreibbar ist.
 
 ****************************************
 * Behobene Fehler **********************
