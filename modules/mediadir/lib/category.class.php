@@ -213,8 +213,8 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_ROW_CLASS' =>  $this->intRowCount%2==0 ? 'row1' : 'row2',
                         $this->moduleLangVar.'_CATEGORY_ID' => $arrCategory['catId'],
                         $this->moduleLangVar.'_CATEGORY_ORDER' => $arrCategory['catOrder'],
-                        $this->moduleLangVar.'_CATEGORY_NAME' => $arrCategory['catName'][0],
-                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => $arrCategory['catDescription'][0],
+                        $this->moduleLangVar.'_CATEGORY_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
+                        $this->moduleLangVar.'_CATEGORY_DESCRIPTION' => contrexx_raw2xhtml($arrCategory['catDescription'][0]),
                         $this->moduleLangVar.'_CATEGORY_PICTURE' => $arrCategory['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                         $this->moduleLangVar.'_CATEGORY_ICON' => $spacer.$strCategoryIcon,
@@ -303,10 +303,10 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     //parse variables
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategory['catId'],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => $arrCategory['catName'][0],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$arrCategory['catId'].'">'.$arrCategory['catName'][0].'</a>',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategory['catDescription'][0],
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategory['catName'][0]),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$arrCategory['catId'].'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a>',
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => contrexx_raw2xhtml($arrCategory['catDescription'][0]),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategory['catNumEntries'],
                     ));
@@ -343,7 +343,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     	$spacer .= "&nbsp;";
                     }
 
-                    $strDropdownOptions .= '<option value="'.$arrCategory['catId'].'" '.$strSelected.' >'.$spacer.$arrCategory['catName'][0].'</option>';
+                    $strDropdownOptions .= '<option value="'.$arrCategory['catId'].'" '.$strSelected.' >'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';
 
                     if(!empty($arrCategory['catChildren'])) {
                         $arrParentIds[] = $arrCategory['catId'];
@@ -392,9 +392,9 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     }
 
                     if(in_array($arrCategory['catId'], $this->arrSelectedCategories)) {
-                        $this->strSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.$arrCategory['catName'][0].'</option>';
+                      $this->strSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';
                     } else {
-                        $this->strNotSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.$arrCategory['catName'][0].'</option>';
+                      $this->strNotSelectedOptions .= '<option name="'.$strOptionId.'" value="'.$arrCategory['catId'].'">'.$spacer.contrexx_raw2xhtml($arrCategory['catName'][0]).'</option>';
                     }
 
                     $this->intCategoriesSortCounter++;
@@ -417,9 +417,9 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrCategories[$intCategoryId]['catId'],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => $arrCategories[$intCategoryId]['catName'][0],
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.$arrCategories[$intCategoryId]['catName'][0].'</a>',
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrCategories[$intCategoryId]['catDescription'][0],
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategories[$intCategoryId]['catId'].'">'.contrexx_raw2xhtml($arrCategories[$intCategoryId]['catName'][0]).'</a>',
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => contrexx_raw2xhtml($arrCategories[$intCategoryId]['catDescription'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrCategories[$intCategoryId]['catPicture'].'.thumb" border="0" alt="'.$arrCategories[$intCategoryId]['catName'][0].'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrCategories[$intCategoryId]['catPicture'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrCategories[$intCategoryId]['catNumEntries'],
@@ -453,7 +453,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     $strLinkClass = $bolExpandCategory ? 'active' : 'inactive';
                     $strListClass = 'level_'.intval(count($arrParentIds)+$intStartLevel);
                     
-                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategory['catId'].'" class="'.$strLinkClass.'">'.$arrCategory['catName'][0].'</a></li>';
+                    $this->strNavigationPlaceholder .= '<li class="'.$strListClass.'"><a href="index.php?section='.$this->moduleName.$strLevelId.'&amp;cid='.$arrCategory['catId'].'" class="'.$strLinkClass.'">'.contrexx_raw2xhtml($arrCategory['catName'][0]).'</a></li>';
             
                     $arrParentIds[] = $arrCategory['catId'];
 
@@ -512,6 +512,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
         $strPicture = contrexx_addslashes(contrexx_strip_tags($arrData['categoryImage']));
 
         $arrName = $arrData['categoryName'];
+       
         $arrDescription = $arrData['categoryDescription'];
 
         if(empty($intId)) {
@@ -537,8 +538,8 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
 
-                    if(empty($strName)) $strName = contrexx_addslashes(contrexx_strip_tags($arrName[0]));
-                    if(empty($strDescription)) $strDescription = contrexx_addslashes(contrexx_strip_tags($arrDescription[0]));
+                    if(empty($strName)) $strName = $arrName[0];
+                    if(empty($strDescription)) $strDescription = $arrDescription[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -546,8 +547,8 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                         SET
                             `lang_id`='".intval($arrLang['id'])."',
                             `category_id`='".intval($intId)."',
-                            `category_name`='".contrexx_addslashes(contrexx_strip_tags($strName))."',
-                            `category_description`='".contrexx_addslashes(contrexx_strip_tags($strDescription))."'
+                            `category_name`='".contrexx_raw2db($strName)."',
+                            `category_description`='".contrexx_raw2db($strDescription)."'
                     ");
                 }
 
@@ -623,8 +624,8 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                             SET
                                 `lang_id`='".intval($arrLang['id'])."',
                                 `category_id`='".intval($intId)."',
-                                `category_name`='".contrexx_addslashes(contrexx_strip_tags($strName))."',
-                                `category_description`='".contrexx_addslashes(contrexx_strip_tags($strDescription))."'
+                                `category_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
+                                `category_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
                         ");
                     }
 

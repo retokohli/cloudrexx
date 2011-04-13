@@ -894,8 +894,8 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
             //parse data variables
             $this->_objTpl->setGlobalVariable(array(
                 $this->moduleLangVar.'_LEVEL_ID' => $intLevelId,
-                $this->moduleLangVar.'_LEVEL_NAME_MASTER' => $objLevel->arrLevels[$intLevelId]['levelName'][0],
-                $this->moduleLangVar.'_LEVEL_DESCRIPTION_MASTER' => $objLevel->arrLevels[$intLevelId]['levelDescription'][0],
+                $this->moduleLangVar.'_LEVEL_NAME_MASTER' => contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]),
+                $this->moduleLangVar.'_LEVEL_DESCRIPTION_MASTER' => contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelDescription'][0]),
                 $this->moduleLangVar.'_LEVEL_PICTURE' => $objLevel->arrLevels[$intLevelId]['levelPicture'],
                 $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_ON' => $showEntriesOn,
                 $this->moduleLangVar.'_LEVEL_SHOW_ENTRIES_OFF' => $showEntriesOff,
