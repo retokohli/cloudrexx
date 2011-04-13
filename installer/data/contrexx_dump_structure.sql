@@ -2304,6 +2304,14 @@ CREATE TABLE `contrexx_module_market_spez_fields` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_media_settings` (
+  `name` varchar(50) NOT NULL default '',
+  `value` varchar(250) NOT NULL default '',
+  KEY `name` (`name`)
+) TYPE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_mediadir_categories` (
   `id` int(7) NOT NULL auto_increment,
   `parent_id` int(7) NOT NULL,
