@@ -966,6 +966,7 @@ class statsLibrary
             $countResolution = (boolean) isset($_POST['options']['count_screen_resolution']) ? $_POST['options']['count_screen_resolution'] : 0;
             $countColour = (boolean) isset($_POST['options']['count_colour_depth']) ? $_POST['options']['count_colour_depth'] : 0;
             $countJavascript = (boolean) isset($_POST['options']['count_javascript']) ? $_POST['options']['count_javascript'] : 0;
+			$excludeIdentifyingInfo = (boolean) isset($_POST['options']['exclude_identifying_info']) ? $_POST['options']['exclude_identifying_info'] : 0;
             $onlineTimeoutStatus = (boolean) isset($_POST['options']['online_timeout_status']) ? $_POST['options']['online_timeout_status'] : 0;
             $countVisitorNumber = (boolean) isset($_POST['options']['count_visitor_number']) ? $_POST['options']['count_visitor_number'] : 0;
             $onlineTimeout = (int) isset($_POST['options']['online_timeout']) ? $_POST['options']['online_timeout'] : $this->arrConfig['online_timeout']['value'];
@@ -1094,6 +1095,10 @@ class statsLibrary
             }
             if ($countJavascript != $this->arrConfig['count_javascript']['status']) {
                 $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$countJavascript." WHERE `name` = 'count_javascript'";
+                $objDatabase->Execute($query);
+            }
+			if ($excludeIdentifyingInfo != $this->arrConfig['exclude_identifying_info']['status']) {
+                $query = "UPDATE `".DBPREFIX."stats_config` SET `status` = ".$excludeIdentifyingInfo." WHERE `name` = 'exclude_identifying_info'";
                 $objDatabase->Execute($query);
             }
             if ($countVisitorNumber != $this->arrConfig['count_visitor_number']) {
