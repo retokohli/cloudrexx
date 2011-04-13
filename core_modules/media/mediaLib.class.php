@@ -12,6 +12,7 @@
 
 require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
 
+require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 /**
  * Media Library
  *
@@ -29,6 +30,9 @@ class MediaLibrary
     protected $sortDesc = false;
 
 
+    public $_arrSettings           = array();
+
+   
     // act: newDir
     // creates a new directory through php or ftp
     function _createNewDir($dirName)
@@ -99,6 +103,7 @@ class MediaLibrary
 
     /**
      * Send a file for downloading
+     *
      */
     function _downloadMedia()
     {
@@ -404,8 +409,9 @@ class MediaLibrary
         if ($type >= 1 && $type <= 3) {
             // 1 = gif, 2 = jpg, 3 = png
             return $type;
+        } else {
+            return false;
         }
-        return false;
     }
 
 
@@ -433,6 +439,34 @@ class MediaLibrary
             imagejpeg($img, $thumb_name, $this->thumbQuality);
         }
         chmod($thumb_name, $this->chmodFile);
+    }
+
+    // replaces some characters
+    function _replaceCharacters($string)
+    {
+        // replace $change with ''
+        $change = array('\\', '/', ':', '*', '?', '"', '<', '>', '|', '+');
+        // replace $signs1 with $signs
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
+
+        foreach ($change as $str) {
+            $string = str_replace($str, '_', $string);
+        }
+        for ($x = 0; $x < count($signs1); $x++) {
+            $string = str_replace($signs1[$x], $signs2[$x], $string);
+        }
+        $string = str_replace('__', '_', $string);
+
+        if (strlen($string) > 60) {
+            $info       = pathinfo($string);
+            $stringExt  = $info['extension'];
+
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
+            $string     = $stringName . '.' . $stringExt;
+        }
+        return $string;
     }
 
     // check for manual input in $_GET['path']
@@ -795,28 +829,165 @@ class MediaLibrary
 
     function _getJavaScriptCodePreview()
     {
-        $code = <<<END
-<script language="JavaScript" type="text/javascript">
-  function preview(file, width, height)
-  {
-    var f = file;
-    var w = width + 10;
-    var h = height + 10;
-    var l = (screen.availWidth - width) / 2;
-    var t = (screen.availHeight - 50 - height) / 2;
-    prev  = window.open('', '', "width="+w+", height="+h+", left="+l+", top="+t+", scrollbars=no, toolbars=no, status=no, resizable=yes");
-    prev.document.open();
-    prev.document.write('<html><title>'+f+'<\\/title><body style="margin: 5px; padding: 0px;">');
-    prev.document.write('<img src=\\"'+f+'\\" width='+width+' height='+height+' alt=\\"'+f+'\\">');
-    prev.document.write('<\\/body><\\/html>');
-    prev.document.close();
-    prev.focus();
-  }
-</script>
+        global $_ARRAYLANG;
+
+        JS::activate('jquery');
+
+        $delete_msg = $_ARRAYLANG['TXT_MEDIA_DELETE_MSG'];
+        $code       = <<<END
+                    <script language="JavaScript" type="text/javascript">
+                    /* <![CDATA[ */
+                        function preview(file, width, height)
+                        {
+                            var f = file;
+                            var w = width + 10;
+                            var h = height + 10;
+                            var l = (screen.availWidth - width) / 2;
+                            var t = (screen.availHeight - 50 - height) / 2;
+                            prev  = window.open('', '', "width="+w+", height="+h+", left="+l+", top="+t+", scrollbars=no, toolbars=no, status=no, resizable=yes");
+                            prev.document.open();
+                            prev.document.write('<html><title>'+f+'<\/title><body style="margin: 5px; padding: 0px;">');
+                            prev.document.write('<img src=\"'+f+'\" width='+width+' height='+height+' alt=\"'+f+'\">');
+                            prev.document.write('<\/body><\/html>');
+                            prev.document.close();
+                            prev.focus();
+                        }
+
+                        function mediaConfirmDelete()
+                        {
+                            if(confirm('$delete_msg')) {
+                                return true;
+                            }
+                            return false;
+                        }
+        
+                        /*
+                           **  Returns the caret (cursor) position of the specified text field.
+                           **  Return value range is 0-oField.length.
+                           */
+                        function doGetCaretPosition (oField) {
+                                var iCaretPos = 0;
+                                // IE Support
+                                if (document.selection) {
+                                        var oSel = document.selection.createRange ();
+                                        oSel.moveStart ('character', -oField.value.length);
+                                        iCaretPos = oSel.text.length;
+                                } else if (oField.selectionStart || oField.selectionStart == '0') {
+                                        // Firefox support
+                                        iCaretPos = oField.selectionStart;
+                                }
+                                return (iCaretPos);
+                        }
+
+                        /*
+                        **  Sets the caret (cursor) position of the specified text field.
+                        **  Valid positions are 0-oField.length.
+                        */
+                        function doSetCaretPosition(oField, pos){
+                                if (oField.setSelectionRange) {
+                                        oField.setSelectionRange(pos,pos);
+                                } else if (oField.createTextRange) {
+                                        var range = oField.createTextRange();
+                                        range.collapse(true);
+                                        range.moveEnd('character', pos);
+                                        range.moveStart('character', pos);
+                                        range.select();
+                                }
+                        }
+
+                        \$J(document).ready(function() {
+
+                            \$J('#filename').live('keyup', function(event){
+                                pos = doGetCaretPosition(document.getElementById('filename'));
+                                \$J(this).val(\$J(this).val().replace(/[^0-9a-zA-Z_\-\. ]/g,'_'));
+                                doSetCaretPosition(document.getElementById('filename'), pos);
+                                //submit the input value on hitting Enter key to rename action
+                                if(event.keyCode == 13) {
+                                    var newFileName = \$J('#filename').val();
+                                    var oldFileName = \$J('#oldFilename').val();
+                                    var actionPath  = \$J('#actionPath').val();
+                                    var fileExt     = \$J('#fileExt').val();
+                                    if (newFileName != oldFileName && \$J.trim(newFileName) != "") {
+                                        actionPath += '&newfile='+newFileName+fileExt;
+                                        \$J(location).attr('href', actionPath);
+                                    } else {
+                                        \$J('#filename').focusout();
+                                    }
+                                }
+                                return true;
+                            });
+
+                            \$J('.rename_btn').click(function(){
+                                if (\$J('#filename').length == 0) {
+                                    \$J(this).parent().parent().find('.file_name a').css('display','none');
+                                    file_name = "";
+                                    file = \$J(this).parent().parent().find('.file_name a').html();
+                                    fileSplitLength = file.split('.').length;
+                                    isFolder = (\$J(this).parent().parent().find('.file_size').html() == '&nbsp;-') ? 1 : 0;
+        
+                                    //Display Filename in input box without file extension (with multi dots in filename)
+                                    file_ext = (isFolder != 1 && fileSplitLength > 1) ?
+                                                    ("."+file.split('.')[fileSplitLength-1])
+                                                    : "";
+                                    loop     = (isFolder != 1 && fileSplitLength > 1) ?
+                                                    (fileSplitLength - 1)
+                                                    : fileSplitLength;
+        
+                                    for (i=0; i < loop; i++) {
+                                        file_name += i > 0 ? "." : "";
+                                        file_name += file.split('.')[i];
+                                    }
+                                    actionPath = 'index.php?section=$this->archive&act=rename&path=$this->webPath&file='+file_name;
+
+                                    if (\$J(this).parent().parent().find('.file_size').html() != '&nbsp;-') {
+                                        actionPath += file_ext;
+                                    }
+                                    //Rename Form
+                                    \$J(this).parent().parent().find('.file_name')
+                                    .append('<div id="insertform"><input type="text" id="filename" name="filename" style="padding:0px;" value="'+file_name+'"/>'+file_ext
+                                            +'<input type="hidden" value="'+actionPath+'" id="actionPath" name="actionPath" />'
+                                            +'<input type="hidden" value="'+file_name+'" id="oldFilename" name="oldFilename" />'
+                                            +'<input type="hidden" value="'+file_ext+'" id="fileExt" name="fileExt" /></div>');
+                                    \$J("#filename").focus();
+                                }
+                            });
+
+                            //Hide added form and display file name link on blur
+                            \$J("#filename").live('blur',function(){
+                                \$J(this).parent().parent().find('a').css('display','block');
+                                \$J(this).parent().remove();
+                            });
+                        });
+                    /* ]]> */
+                    </script>
 END;
         return $code;
     }
 
+    /**
+     * Create an array containing all settings of the media-module.
+     * Example: $arrSettings[$strSettingName] for the content of $strSettingsName
+     * @global  ADONewConnection
+     * @return  array       $arrReturn
+     */
+    function createSettingsArray() 
+    {
+        global $objDatabase;
+
+        $arrReturn = array();
+        $objResult = $objDatabase->Execute('SELECT  name,
+                                                    value
+                                            FROM    '.DBPREFIX.'module_media_settings
+                                        ');
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $arrReturn[$objResult->fields['name']] = stripslashes(htmlspecialchars($objResult->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
+                $objResult->MoveNext();
+            }
+        }
+        return $arrReturn;
+    }
+    
     /**
      * this is called as soon as uploads have finished.
      * takes care of moving them to the right folder

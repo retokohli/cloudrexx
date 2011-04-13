@@ -19,6 +19,37 @@ function _mediaUpdate()
         }
     }
 
+    try {
+        UpdateUtil::table(
+            DBPREFIX.'module_mediadir_settings',
+            array(
+                'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true),
+                'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
+                'value'      => array('type' => 'VARCHAR(255)', 'after' => 'name')
+            ),
+            array(
+                'name'       => array('fields' => array('name'), 'type' => 'UNIQUE')
+            )
+        );
+
+        $rs = UpdateUtil::sql('SELECT COUNT(1) AS c FROM '.DBPREFIX.'module_mediadir_settings');
+        if($rs->fields['c'] == 0) {//table empty => insert default settings
+            UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings VALUES
+                ("media1_frontend_changable","off"), ("media1_frontend_managable","off"),
+                ("media2_frontend_changable","off"), ("media2_frontend_managable","off"),
+                ("media3_frontend_changable","off"), ("media3_frontend_managable","off"),
+                ("media4_frontend_changable","off"), ("media4_frontend_managable","off");'
+            );
+        }
+    }
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+    UpdateUtil::sql(
+      
     return true;
 }
 
