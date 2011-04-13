@@ -1005,9 +1005,6 @@ class User extends User_Profile
             .($joinGroupTbl && !FWUser::getFWUserObject()->isBackendMode() ? ' INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblGF ON tblGF.`group_id` = tblG.`group_id`' : '')
             .(count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '')
             .(count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '')
-// TODO: some conditions are not well enclosed, so there might be a more proper solution that adding more brackes at this point
-// TODO: $arrQuery is not defined
-//            .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
             .(count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
 
         if (empty($limit)) {
