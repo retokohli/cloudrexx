@@ -699,7 +699,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
 	    $whereLevel = '';
 
         $objCountEntriesRS = $objDatabase->Execute("SELECT
-                                                        cat.entry_id
+                                                        COUNT(1) as c
                                                     FROM
                                                         ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS cat
                                                     WHERE
@@ -707,7 +707,7 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                                                         $whereLevel
                                                    ");
 
-        $this->intNumEntries += $objCountEntriesRS->RecordCount();
+        $this->intNumEntries += $objCountEntriesRS->fields['c'];
 
         return intval($this->intNumEntries);
     }
