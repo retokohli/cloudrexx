@@ -260,10 +260,9 @@ EOF;
     {
         global $objInit;
 
-                   $strLat  = $arrValue['lat'];
-        $strLon  = $arrValue['lon'];
-        $strZoom = $arrValue['zoom'];
-
+        $lat  = floatval($arrValue['lat']);
+        $lon  = floatval($arrValue['lon']);
+        $zoom = floatval($arrValue['zoom']);
 
         if($objInit->mode == 'backend') {
             if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
@@ -285,7 +284,7 @@ EOF;
             }
         }
 
-        $strValue = contrexx_addslashes($strLon.','.$strLat.','.$strZoom.','.$strGeoXml);
+        $strValue = contrexx_addslashes($lon.','.$lat.','.$zoom.','.$strGeoXml);
 
         return $strValue;
     }
