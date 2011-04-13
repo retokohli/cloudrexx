@@ -948,6 +948,7 @@ class mediaDirectory extends mediaDirectoryLibrary
             $strOverviewCmd = null;
         }
 
+
         $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strOverviewCmd.'">'.$_ARRAYLANG['TXT_MEDIADIR_OVERVIEW'].'</a>';
         krsort($this->arrNavtree);
 
@@ -986,7 +987,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         } else {
             $strCategoryCmd = null;
         }
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$objCategory->arrCategories[$intCategoryId]['catId'].'">'.$objCategory->arrCategories[$intCategoryId]['catName'][0].'</a>';
+        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strCategoryCmd.$strLevelId.'&amp;cid='.$objCategory->arrCategories[$intCategoryId]['catId'].'">'.contrexx_raw2xhtml($objCategory->arrCategories[$intCategoryId]['catName'][0]).'</a>';
 
         if($objCategory->arrCategories[$intCategoryId]['catParentId'] != 0) {
             $this->getNavtreeCategories($objCategory->arrCategories[$intCategoryId]['catParentId']);
@@ -1005,7 +1006,7 @@ class mediaDirectory extends mediaDirectoryLibrary
         } else {
             $strLevelCmd = null;
         }
-        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$objLevel->arrLevels[$intLevelId]['levelId'].'">'.$objLevel->arrLevels[$intLevelId]['levelName'][0].'</a>';
+        $this->arrNavtree[] = '<a href="?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$objLevel->arrLevels[$intLevelId]['levelId'].'">'.contrexx_raw2xhtml($objLevel->arrLevels[$intLevelId]['levelName'][0]).'</a>';
 
         if($objLevel->arrLevels[$intLevelId]['levelParentId'] != 0) {
             $this->getNavtreeLevels($objLevel->arrLevels[$intLevelId]['levelParentId']);
