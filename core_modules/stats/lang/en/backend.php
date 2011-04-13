@@ -113,6 +113,7 @@ $_ARRAYLANG['TXT_COLOUR_DEPTH'] = "Colour Depth";
 $_ARRAYLANG['TXT_CLIENT_SUPPORTS_JAVASCRIPT'] = "Client Supports Javascript";
 $_ARRAYLANG['TXT_COUNTRY_OF_ORIGIN'] = "Country Of Origin";
 $_ARRAYLANG['TXT_MAKE_STATISTICS'] = "Create Statistics";
+$_ARRAYLANG['TXT_EXCLUDE_IDENTIFYING_INFO'] = "Do not store personal data (anonymizes IP addresses and hostnames).";
 $_ARRAYLANG['TXT_REMOVE_REQUESTS'] = "Erase pages that haven't been visited recently from the favorites menu.";
 $_ARRAYLANG['TXT_ONLINE_TIMEOUT'] = "Visitor Counter";
 $_ARRAYLANG['TXT_RELOAD_BLOCK_TIME'] = "Unique Visitor Time Period (1800 - 86400 seconds)";

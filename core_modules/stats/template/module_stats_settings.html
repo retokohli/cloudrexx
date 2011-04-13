@@ -62,7 +62,7 @@ function toggleSettings(objCheck, objDiv) {
 				<td nowrap="nowrap" colspan="2">&nbsp;&nbsp;&nbsp;<label for="options_count_javascript"><input id="options_count_javascript" name="options[count_javascript]" type="checkbox" value="1" {STATS_SETTINGS_COUNT_JAVASCRIPT} />&nbsp;{TXT_JAVASCRIPT_SUPPORT}</label></td>
 			</tr>
 			<tr class="row2">
-				<td colspan="2">&nbsp;</td>
+				<td colspan="2"><input id="options_exclude_identifying_info" name="options[exclude_identifying_info]" type="checkbox" value="1" {STATS_SETTINGS_EXCLUDE_IDENTIFYING_INFO} />&nbsp;<label for="options_exclude_identifying_info">{TXT_EXCLUDE_IDENTIFYING_INFO}</label></td>
 			</tr>
 			<tr class="row1">
 				<td colspan="2"><label for="options_remove_requests_status"><input id="options_remove_requests_status" name="options[remove_requests_status]" onclick="toggleSettings('options_remove_requests_status', 'remove_requests_value')" type="checkbox" value="1" {STATS_SETTINGS_REMOVE_REQUESTS_CHECKED} />&nbsp;{TXT_REMOVE_REQUESTS}</label><div style="display:{STATS_SETTINGS_REMOVE_REQUESTS_STATUS};" id="remove_requests_value">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" style="text-align:right;width:60px;" name="options[remove_requests]" value="{STATS_SETTINGS_REMOVE_REQUESTS}" />&nbsp;{TXT_REMOVE_REQUESTS_INTERVAL}</div></td>
