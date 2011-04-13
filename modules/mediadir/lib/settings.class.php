@@ -1445,8 +1445,8 @@ EOF;
             //parse data variables
             $objTpl->setGlobalVariable(array(
                 $this->moduleLangVar.'_FORM_ID' => $intFormId,
-                $this->moduleLangVar.'_FORM_NAME_MASTER' => $objForm->arrForms[$intFormId]['formName'][0],
-                $this->moduleLangVar.'_FORM_DESCRIPTION_MASTER' => $objForm->arrForms[$intFormId]['formDescription'][0],
+                $this->moduleLangVar.'_FORM_NAME_MASTER' => contrexx_raw2xhtml($objForm->arrForms[$intFormId]['formName'][0]),
+                $this->moduleLangVar.'_FORM_DESCRIPTION_MASTER' => contrexx_raw2xhtml($objForm->arrForms[$intFormId]['formDescription'][0]),
                 $this->moduleLangVar.'_FORM_PICTURE' => $objForm->arrForms[$intFormId]['formPicture'],
                 $this->moduleLangVar.'_FORM_CMD' => $objForm->arrForms[$intFormId]['formCmd'],
                 $this->moduleLangVar.'_USE_CATEGORY_ON' => $objForm->arrForms[$intFormId]['formUseCategory'] == 1 ? 'checked="checked"' : '',

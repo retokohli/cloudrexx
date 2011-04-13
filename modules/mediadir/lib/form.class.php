@@ -142,8 +142,8 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_FORM_ID' => $arrForm['formId'],
-                            $this->moduleLangVar.'_FORM_TITLE' => $arrForm['formName'][0],
-                            $this->moduleLangVar.'_FORM_DESCRIPTION' => $arrForm['formDescription'][0],
+                            $this->moduleLangVar.'_FORM_TITLE' => contrexx_raw2xhtml($arrForm['formName'][0]),
+                            $this->moduleLangVar.'_FORM_DESCRIPTION' => contrexx_raw2xhtml($arrForm['formDescription'][0]),
                             $this->moduleLangVar.'_FORM_ORDER' => $arrForm['formOrder'],
                             $this->moduleLangVar.'_FORM_STATUS' => $strStatus,
                             $this->moduleLangVar.'_FORM_SWITCH_STATUS' => $intStatus,
@@ -194,12 +194,12 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_FORM_ROW_CLASS' => $i%2==0 ? 'row1' : 'row2',
                             'TXT_'.$this->moduleLangVar.'_FORM_ID' => $arrForm['formId'],
-                            'TXT_'.$this->moduleLangVar.'_FORM_TITLE' => $arrForm['formName'][0],
-                            'TXT_'.$this->moduleLangVar.'_FORM_DESCRIPTION' => $arrForm['formDescription'][0],
-                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE' => '<img src="'.$arrForm['formPicture'].'" alt="'.$arrForm['formName'][0].'" />',
+                            'TXT_'.$this->moduleLangVar.'_FORM_TITLE' => contrexx_raw2xhtml($arrForm['formName'][0]),
+                            'TXT_'.$this->moduleLangVar.'_FORM_DESCRIPTION' => contrexx_raw2xhtml($arrForm['formDescription'][0]),
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE' => '<img src="'.$arrForm['formPicture'].'" alt="'.contrexx_raw2xhtml($arrForm['formName'][0]).'" />',
                             'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_SRC' => $arrForm['formPicture'],
                             'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_SRC_THUMB' => $arrForm['formPicture']."thumb",
-                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_THUMB' => '<img src="'.$arrForm['formPicture'].'.thumb" alt="'.$arrForm['formName'][0].'" />',
+                            'TXT_'.$this->moduleLangVar.'_FORM_IMAGE_THUMB' => '<img src="'.$arrForm['formPicture'].'.thumb" alt="'.contrexx_raw2xhtml($arrForm['formName'][0]).'" />',
                         ));
 
                         $i++;
@@ -222,7 +222,7 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
 	                        $strSelected = '';
 	                    }
 	
-	                    $strDropdownOptions .= '<option value="'.$arrForm['formId'].'" '.$strSelected.' >'.$arrForm['formName'][0].'</option>';
+	                    $strDropdownOptions .= '<option value="'.$arrForm['formId'].'" '.$strSelected.' >'.contrexx_raw2xhtml($arrForm['formName'][0]).'</option>';
                 	}
                 }
 
@@ -272,8 +272,8 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                     $strName = $arrName[$arrLang['id']];
                     $strDescription = $arrDescription[$arrLang['id']];
 
-                    if(empty($strName)) $strName = contrexx_addslashes(contrexx_strip_tags($arrName[0]));
-                    if(empty($strDescription)) $strDescription = contrexx_addslashes(contrexx_strip_tags($arrDescription[0]));
+                    if(empty($strName)) $strName = $arrName[0];
+                    if(empty($strDescription)) $strDescription = $arrDescription[0];
 
                     $objInsertNames = $objDatabase->Execute("
                         INSERT INTO
@@ -281,8 +281,8 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                         SET
                             `lang_id`='".intval($arrLang['id'])."',
                             `form_id`='".intval($intId)."',
-                            `form_name`='".contrexx_addslashes(contrexx_strip_tags($strName))."',
-                            `form_description`='".contrexx_addslashes(contrexx_strip_tags($strDescription))."'
+                            `form_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
+                            `form_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
                     ");
                 }
 
@@ -401,8 +401,8 @@ class mediaDirectoryForm extends mediaDirectoryLibrary
                         SET
                             `lang_id`='".intval($arrLang['id'])."',
                             `form_id`='".intval($intId)."',
-                            `form_name`='".contrexx_addslashes(contrexx_strip_tags($strName))."',
-                            `form_description`='".contrexx_addslashes(contrexx_strip_tags($strDescription))."'
+                            `form_name`='".contrexx_raw2db(contrexx_input2raw($strName))."',
+                            `form_description`='".contrexx_raw2db(contrexx_input2raw($strDescription))."'
                     ");
                 }
 

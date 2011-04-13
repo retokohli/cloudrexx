@@ -393,7 +393,7 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                         if(($arrInputfield['id'] == 2 && $objForms->arrForms[$this->intFormId]['formUseLevel']) || ($arrInputfield['id'] == 1 && $objForms->arrForms[$this->intFormId]['formUseCategory'])) {
 	                        if($arrInputfield['id'] == 2) {
 	                            $objLevel = new mediaDirectoryLevel();
-	                            $arrSelectorOptions = $objLevel->listLevels($objTpl, 4, null, null, $intEntryId);
+                                $arrSelectorOptions = $objLevel->listLevels($objTpl, 4, null, null, $intEntryId);
 	                            $strSelectedOptionsName = "selectedLevels";
 	                            $strNotSelectedOptionsName = "deselectedLevels";
 	                        } else {
