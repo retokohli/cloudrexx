@@ -12,6 +12,11 @@
  */
 
 /**
+ * @ignore
+ */
+require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
+
+/**
  * Class Navigation
  *
  * This class creates the navigation tree
