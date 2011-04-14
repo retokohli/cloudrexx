@@ -86,12 +86,12 @@ var ComboUploader = function(theConfig) {
             if(!advancedLink.hasClass('expanded')) {
                 div.find('.uploaderLinks:first').fadeIn();
                 advancedLink.addClass('expanded');
-                advancedLink.html(config.otherUploadersCaption + ' &lt;&lt;');
+                advancedLink.html(config.otherUploadersCaption + ' &laquo;');
             }
             else {
                 div.find('.uploaderLinks:first').fadeOut();
                 advancedLink.removeClass('expanded');
-                advancedLink.html(config.otherUploadersCaption + ' &gt;&gt;');
+                advancedLink.html(config.otherUploadersCaption + ' &raquo;');
             }
             return false;
         });
