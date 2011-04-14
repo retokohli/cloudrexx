@@ -21,6 +21,8 @@ SEO URL Aliase / Virtuelle Sprachverzeichnisse
 - Aliase dürfen Zahlen beinhalten.
 - Leerzeichen in Aliase sind nicht mehr erlaubt und werden automatisch durch Unterstriche '_' ersetzt.
 
+WYSIWYG-Editor
+- Neue Version 2.6.6 des FCKeditors.
 
 ****************************************
 * Behobene Fehler **********************
