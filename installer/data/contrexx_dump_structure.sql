@@ -2348,7 +2348,7 @@ CREATE TABLE `contrexx_module_mediadir_comments` (
   `notification` int(1) NOT NULL default '0',
   `comment` mediumtext NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
+) TYPE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
