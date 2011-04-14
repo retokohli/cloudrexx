@@ -2305,10 +2305,10 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_media_settings` (
-  `name` varchar(50) NOT NULL default '',
-  `value` varchar(250) NOT NULL default '',
+  `name` varchar(50) NOT NULL,
+  `value` varchar(250) NOT NULL,
   KEY `name` (`name`)
-) TYPE=MyISAM;
+) TYPE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
