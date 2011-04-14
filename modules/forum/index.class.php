@@ -422,7 +422,6 @@ class Forum extends ForumLibrary {
         $keywords = !empty($_REQUEST['thread_keywords']) ? contrexx_stripslashes($_REQUEST['thread_keywords']) : '';
         $content = !empty($_REQUEST['thread_message']) ? contrexx_stripslashes($_REQUEST['thread_message']) : '';
 
-        $offset = $captcha->getOffset();
         $alt    = $captcha->getAlt();
         $url     = $captcha->getUrl();
 
@@ -450,7 +449,6 @@ class Forum extends ForumLibrary {
             'TXT_FORUM_UPDATE_NOTIFICATION' =>    $_ARRAYLANG['TXT_FORUM_UPDATE_NOTIFICATION'],
             'FORUM_NOTIFICATION_CHECKBOX_CHECKED'    =>    $this->_hasNotification($intThreadId) ? 'checked="checked"' : '',
 
-            'FORUM_CAPTCHA_OFFSET'        =>    $offset,
             'FORUM_CAPTCHA_IMAGE_URL'    =>    $url,
             'FORUM_CAPTCHA_IMAGE_ALT'    =>    $alt,
             'FORUM_FORUM_ID'            =>    $intForumId, // the category id via GET
@@ -539,7 +537,7 @@ class Forum extends ForumLibrary {
                 return false;
             }
 
-            if (!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+            if (!$objFWUser->objUser->login() && !$captcha->check($_POST['captcha'])) {
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
                 return false;
             }
@@ -908,7 +906,7 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('addPost');
                 return false;
             }
-            if(!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {//captcha check
+            if(!$objFWUser->objUser->login() && !$captcha->check($_POST['captcha'])) {//captcha check
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', '<br />'.$_ARRAYLANG['TXT_FORUM_INVALID_CAPTCHA']);
                 return false;
             }
@@ -1010,7 +1008,7 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->hideBlock('postEdit');
                 return false;
             }
-            if (!$objFWUser->objUser->login() && !$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+            if (!$objFWUser->objUser->login() && !$captcha->check($_POST['captcha'])) {
                 $this->_objTpl->touchBlock('updatePost');
                 $this->_objTpl->hideBlock('createPost');
 

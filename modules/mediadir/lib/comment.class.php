@@ -198,7 +198,7 @@ EOF;
         include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
         $captcha = new Captcha();
 
-        $strCode = '<p><label>CAPTCHA</label><img alt="'.$captcha->getAlt().'" src="'.$captcha->getUrl().'" class="captcha" /> <input type="text" name="commentCaptcha" id="commentCaptcha" /><br /><input type="hidden" value="'.$captcha->getOffset().'" name="commentCaptchaOffset" /></p>';
+        $strCode = '<p><label>CAPTCHA</label><img alt="'.$captcha->getAlt().'" src="'.$captcha->getUrl().'" class="captcha" /> <input type="text" name="commentCaptcha" id="commentCaptcha" /><br /></p>';
 
         return $strCode;
     }
@@ -296,7 +296,7 @@ EOF;
             //captcha check
             include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
             $captcha = new Captcha();
-            if(!$captcha->compare($arrCommentData['commentCaptcha'],$arrCommentData['commentCaptchaOffset']))
+            if(!$captcha->check($arrCommentData['commentCaptcha']))
                 die('captcha');
         }
 

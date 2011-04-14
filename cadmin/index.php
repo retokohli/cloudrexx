@@ -177,12 +177,11 @@ $captchaError = ''; //captcha error message is placed in here if needed
 if(!$loggedIn) { //not logged in already - do captcha and password checks
     //captcha check
     $validationCode = isset($_POST['captchaCode']) ? contrexx_input2raw($_POST['captchaCode']) : false;
-    $validationOffset = isset($_POST['captchaOffset']) ? contrexx_input2raw($_POST['captchaOffset']) : false;
 
-    if($validationCode !== false && $validationOffset !== false) { //a captcha has been given
+    if($validationCode !== false) { //a captcha has been given
         include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
         $captcha = new Captcha();
-        $captchaPassed = $captcha->compare($validationCode, $validationOffset);    
+        $captchaPassed = $captcha->check($validationCode);    
         if(!$captchaPassed) { //captcha check failed -> do not check authentication
             $captchaError = $_CORELANG['TXT_SECURITY_CODE_IS_INCORRECT'];
         }
@@ -194,7 +193,7 @@ if(!$loggedIn) { //not logged in already - do captcha and password checks
 
 //user only gets the backend if he's logged in
 if (!$objFWUser->objUser->login(true)) {
-    switch ($plainCmd) {
+switch ($plainCmd) {
         case "lostpw":
             $objTemplate->loadTemplateFile('login_index.html');
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login_lost_password.html');
@@ -288,11 +287,15 @@ if (!$objFWUser->objUser->login(true)) {
             resetPassword($objTemplate);
             $objTemplate->show();
             exit;
+        case "captcha":
+            include_once ASCMS_CORE_MODULE_PATH.'/captcha/admin.class.php';
+            $c = new CaptchaActions(); //instantiate captcha module
+            $c->getPage();
+            exit;
         default:
             include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
             $captcha = new Captcha();
-            $captchaOffset = $captcha->getOffset();
-            $loginSecurityCode = '<img src="'.$captcha->getURL().'" alt="'.$captcha->getAlt().'" title="Security Code"/>';
+            $loginSecurityCode = '<img src="'.$captcha->getUrl().'" alt="'.$captcha->getAlt().'" title="Security Code"/>';
 
             $objTemplate->loadTemplateFile('login_index.html',true,true);
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
@@ -308,8 +311,7 @@ if (!$objFWUser->objUser->login(true)) {
                 'TITLE'                   => $_CORELANG['TXT_LOGIN'],
                 'LOGIN_IMAGE'             => $loginSecurityCode,
                 'LOGIN_ERROR_MESSAGE'     => $objFWUser->getErrorMsg(),
-                'CAPTCHA_ERROR'           => $captchaError,
-                'CAPTCHA_OFFSET'          => $captchaOffset
+                'CAPTCHA_ERROR'           => $captchaError
             ));
             $objTemplate->show();
             exit;
