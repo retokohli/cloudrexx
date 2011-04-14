@@ -16,6 +16,7 @@ require_once ASCMS_CORE_PATH.'/XMLSitemap.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/cache/admin.class.php';
 require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
 require_once ASCMS_CORE_MODULE_PATH.'/stats/share/StatsModuleInterface.class.php';
+require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
 
 /**
  * ContentManager
@@ -589,6 +590,9 @@ class ContentManager
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
         $this->pageTitle = $_CORELANG['TXT_NEW_PAGE'];
 
+        JS::activate('jquery');
+        aliasLib::loadJavaScriptAliasSanitizer();
+
         if (isset($_GET['pageId']) & !empty($_GET['pageId'])) {
             $pageId = intval($_GET['pageId']);
 
@@ -841,17 +845,11 @@ class ContentManager
     /**
      * Returns true if alias functionality is enabled.
      */
-    function _is_alias_enabled() {
-        global $objDatabase;
-        $query = "
-            SELECT setvalue
-            FROM ".DBPREFIX."settings
-            WHERE setmodule = 41 AND setname = 'aliasStatus'
-        ";
-        if ($res = $objDatabase->SelectLimit($query, 1)) {
-            return $res->fields['setvalue'];
-        }
-        return false;
+    function _is_alias_enabled()
+    {
+        global $_CONFIG;
+
+        return (bool)$_CONFIG['aliasStatus'];
     }
 
     /**
@@ -884,6 +882,9 @@ class ContentManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'content_editor', 'content_editor.html');
         $this->pageTitle = $_CORELANG['TXT_EDIT_PAGE'];
+
+        JS::activate('jquery');
+        aliasLib::loadJavaScriptAliasSanitizer();
 
         $objTemplate->setVariable(array(
             'TXT_TARGET'                       => $_CORELANG['TXT_TARGET'],
@@ -2451,7 +2452,7 @@ class ContentManager
     function _getCustomContentMenu($selected=null) {
         global $objInit, $_CORELANG;
 
-        $pageId = intval($_REQUEST['pageId']);
+        $pageId = !empty($_REQUEST['pageId']) ? intval($_REQUEST['pageId']) : 0;
         if($pageId)
           $objInit->getPageId($pageId);
         
@@ -2663,16 +2664,15 @@ class ContentManager
         }
 
         //block relation
-        $objResult = $objDatabase->Execute('SELECT    block_id
-                                            FROM    '.DBPREFIX.'module_block_rel_pages
-                                            WHERE    page_id='.$pageId.'
-                                        ');
-
-
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $arrRelationBlocks[$objResult->fields['block_id']] = '';
-                $objResult->MoveNext();
+        if ($pageId) {
+            $objResult = $objDatabase->Execute('SELECT    `block_id`
+                                                FROM    `'.DBPREFIX.'module_block_rel_pages`
+                                                WHERE    `page_id`='.$pageId);
+            if ($objResult !== false) {
+                while (!$objResult->EOF) {
+                    $arrRelationBlocks[$objResult->fields['block_id']] = '';
+                    $objResult->MoveNext();
+                }
             }
         }
 
@@ -2688,33 +2688,6 @@ class ContentManager
     }
 
     /**
-     * Returns an alias that has only valid characters.
-     */
-    function _fix_alias($txt) {
-        // this is kinda of a duplicate of the javascript function aliasText()
-        // in cadmin/template/ascms/content_editor.html
-
-        // Sanitize most latin1 characters.
-        // there's more to come. maybe there's
-        // a generic function for this?
-        $txt = str_replace(
-            array('ä', 'ö', 'ü', 'à','ç','è','é'),
-            array('ae','oe','ue','a','c','e','e'),
-            strtolower($txt)
-        );
-
-        $txt = preg_replace( '/[\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
-        $txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
-
-        // Fallback for everything we didn't catch by now
-        $txt = preg_replace('/[^\sa-z_-]+/i',  '_', $txt);
-        $txt = preg_replace('/[_-]{2,}/',    '_', $txt);
-        $txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
-        $txt = str_replace(array(' ', '\\\ '), '\\\\ ', $txt);
-        return $txt;
-    }
-
-    /**
      * Sets default alias for a given page id. If an empty alias is given and the
      * page already has a default alias, it will be removed.
      *
@@ -2723,15 +2696,14 @@ class ContentManager
      * @param alias   the alias to install for the page. if it is empty or null,
      *                no change will happen.
      */
-    function _set_default_alias($pageId, $alias) {
-        $alias    = $this->_fix_alias($alias);
-
-        //////////////////////////////////////////////////////////////
-        // aliasLib has some handy stuff for us here..
+    function _set_default_alias($pageId, $alias)
+    {
         global $objDatabase, $_ARRAYLANG, $objInit;
-        require_once(ASCMS_CORE_MODULE_PATH .'/alias/lib/aliasLib.class.php');
+
         $util = new aliasLib;
-        $_ARRAYLANG = array_merge_recursive($_ARRAYLANG, $objInit->loadLanguageData('alias'));
+        $alias = $util->sanitizeAlias($alias);
+
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('alias'));
 
         // check if there is already an alias present for the page
         $aliasId = intval($this->_has_default_alias($pageId));

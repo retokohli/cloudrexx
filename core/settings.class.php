@@ -30,6 +30,10 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/FWHtAccess.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_CORE_MODULE_PATH.'/alias/lib/aliasLib.class.php';
 
 /**
  * Settings
@@ -385,6 +389,9 @@ class settingsManager
         if (!$use) {
             $objFWHtAccess->removeSection('core__language');
             $objFWHtAccess->write();
+
+            aliasLib::switch2virtualLanguagePaths($use);
+
             return true;
         }
 
@@ -439,6 +446,8 @@ class settingsManager
 
         $objFWHtAccess->setSection('core__language', $arrRules);
         $objFWHtAccess->write();
+
+        aliasLib::switch2virtualLanguagePaths($use);
 
         return true;
     }

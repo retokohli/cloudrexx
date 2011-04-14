@@ -17,22 +17,20 @@ function setText() {
 		desc.value=txtNewpage;
 	if(key.value == "")
 		key.value=txtNewpage;
-	// if(alias.value == "")
-	// 	alias.value=aliasText(txtNewpage);
-	//	updateAliasPreview(txtNewpage);
 	}
 }
 
 
-function updateAliasPreview(text) {
-    var linkstyle = (text == '') ? 'line-through' : '';
+function updateAliasPreview(elInput)
+{
+    // sanitize content page alias of input field elInput
+    // function alias_sanitizeAlias() is located in core_modules/alias/lib/aliasLib.class.php
+    // and gets loaded through aliasLib::loadJavaScriptAliasSanitizer();
+    alias_sanitizeAlias(elInput);
 
-    var target = document.getElementById('aliastarget');
-
-	target.innerHTML = aliasText(text);
-    target.parentNode.style.textDecoration = linkstyle;
-
-	document.formContent.alias.value = aliasText(text);
+    var linkstyle = ($J(elInput).val() == '') ? 'line-through' : '';
+	$J('#aliastarget').html($J(elInput).val());
+    $J('#aliastarget').parent().css({textDecoration: 'linkstyle'});
 }
 
 
@@ -45,30 +43,6 @@ function preSubmitCheck(){
 	SelectAllList(document.formContent.elements['assignedBackendGroups[]']);
 	SelectAllList(document.formContent.elements['assignedBlocks[]']);
 	return true;
-}
-
-function aliasText(txt) {
-	return txt
-		.replace(/Ä/ig, 'ae')
-		.replace(/Ö/ig, 'oe')
-		.replace(/Ü/ig, 'ue')
-		.replace(/ä/ig, 'ae')
-		.replace(/ö/ig, 'oe')
-		.replace(/ü/ig, 'ue')
-		.replace(/à/ig,  'a')
-		.replace(/ç/ig,  'c')
-		.replace(/[èé]/ig, 'e')
-		.replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
-		.replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
-		// Sanitize most latin1 characters.
-		// there's more to come. maybe there's
-		// a generic function for this?
-		// Fallback for everything we didn't catch by now
-		.replace(/[^\sa-z_-]+/ig, '_')
-		.replace(/[_-]{2,}/g, '_')
-		.replace(/^[_\.\/\-]+/, '')
-		.toLowerCase()
-	;
 }
 
 function setDateToday(txtValue) {
@@ -407,7 +381,7 @@ document.observe('dom:loaded', function() { onModuleChanged($$('[name="selectmod
 				</tr>
 				<tr class="row1" {CONTENT_ALIAS_DISABLE}>
 					<td>{TXT_DEFAULT_ALIAS}</td>
-					<td><input type="text" name="alias" onkeyup="updateAliasPreview(this.value)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
+					<td><input type="text" name="alias" onkeyup="updateAliasPreview(this)" value="{CONTENT_ALIAS}" size="80" />&nbsp;<span class="note" style="margin-left: 3px;" onmouseover="stm(Text[1], Style[0])" onmouseout="htm()">&nbsp;</span></td>
 				</tr>
 				<tr class="row2" {CONTENT_ALIAS_DISABLE}>
 					<td>&nbsp;</td>
@@ -801,9 +775,4 @@ document.observe('dom:loaded', function() { onModuleChanged($$('[name="selectmod
 	<input type="submit" name="Submit" value="{TXT_STORE}" />
 	<br />
 </form>
-
-<script type="text/javascript">
-    updateAliasPreview(document.formContent.alias.value);
-</script>
-
 <!-- END content_editor.html -->
