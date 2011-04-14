@@ -32,23 +32,28 @@ function _mediaUpdate()
             )
         );
 
-        $rs = UpdateUtil::sql('SELECT COUNT(1) AS c FROM '.DBPREFIX.'module_mediadir_settings');
-        if($rs->fields['c'] == 0) {//table empty => insert default settings
-            UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings VALUES
-                ("media1_frontend_changable","off"), ("media1_frontend_managable","off"),
-                ("media2_frontend_changable","off"), ("media2_frontend_managable","off"),
-                ("media3_frontend_changable","off"), ("media3_frontend_managable","off"),
-                ("media4_frontend_changable","off"), ("media4_frontend_managable","off");'
-            );
+        $arrValues = array(
+                           array("media1_frontend_changable","off"),
+                           array("media2_frontend_changable","off"),
+                           array("media3_frontend_changable","off"),
+                           array("media4_frontend_changable","off"),
+                           array("media1_frontend_managable","off"),
+                           array("media2_frontend_managable","off"),
+                           array("media3_frontend_managable","off"),
+                           array("media4_frontend_managable","off")
+                           );
+o
+        for($i = 0; $i < count($arrValues); $i++) {
+            $rs = UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings WHERE name="'.$arrValues[$i][0].'";');
+            if($rs->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings VALUES ("'.$arrValues[$i][0].'","'.$arrValues[$i][1].'")');
+            }
         }
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
         return UpdateUtil::DefaultActionHandler($e);
     }
-
-
-    UpdateUtil::sql(
       
     return true;
 }
