@@ -2235,3 +2235,35 @@ outline-style:none;
     padding: 10px;
     color: #FF8F8F;
 }
+
+/*************************************/
+/* CSS DEFINITIONS FOR MEDIA ARCHIVE */
+/*************************************/
+#media a img {
+    border: 0px;
+}
+
+#media #insertform #filename {
+    width: 140px;
+}
+
+#media_div div.message_ok,
+#media_div div.message_error {
+    width: 100%;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 15px 0px;
+    float:left;
+    height:auto !important;
+}
+
+#media_div div.message_error {
+    color: #ff0000;
+}
+
+#media_div div.message_ok {
+    color: #029202;
+}
+
+.mediaUploadInput {
+    padding-left: 190px;
+}
