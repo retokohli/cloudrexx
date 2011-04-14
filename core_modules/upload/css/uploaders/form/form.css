@@ -8,6 +8,7 @@
     width: 18px;
     height: 18px;
     vertical-align:middle;
+	margin-left: 8px;
 }
 
 #form_uploader .add {
@@ -15,8 +16,18 @@
     background-image: url(../../../../../cadmin/images/icons/add.gif);
     width: 18px;
     height: 18px;
+	margin: 5px 0 0 8px;
 }
 
 #form_uploader .file input {
     width: 96%;
+}
+#form_uploader input {
+	margin-left: 8px;
+}
+
+#form_uploader div.form_submit {
+	width: 100%;
+	background-color: #ccc;
+	height: 38px;
 }
