@@ -240,8 +240,10 @@ class frontendEditing extends frontendEditingLib {
                 $captchaKey = strtoupper($_POST['seckey']);
                 $captchaOffset = $_POST['seckeyOffset'];
                 include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
+
                 $captcha = new Captcha();
-                $captchaPassed = $captcha->compare($captchaKey, $captchaOffset);
+                $captchaPassed = $captcha->check($captchaKey);
+
 
                 if ($captchaPassed) {
                     if ($this->objUser->checkAuth() && (Permission::hasAllAccess() || $this->isUserInBackendGroup())) {
@@ -331,7 +333,6 @@ class frontendEditing extends frontendEditingLib {
 
         include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
         $captcha = new Captcha();
-        $captchaOffset = $captcha->getOffset();
 
 		$this->objTemplate->setVariable(array(	'TXT_LOGIN_TITLE'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'],
 												'TXT_LOGIN_USERNAME'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'],
@@ -351,7 +352,6 @@ class frontendEditing extends frontendEditingLib {
 												'LOGIN_SECURITY_IMAGE'	=>	$captcha->getURL(),
 												'LOGIN_USERNAME'		=>	(get_magic_quotes_gpc() == 1 ? stripslashes($_POST['USERNAME']) : $_POST['USERNAME']),
 												'LOGIN_STATUS_MESSAGE'	=>	$statusMessage,
-                                                'CAPTCHA_OFFSET'        =>  $captchaOffset
 										));
 
 		return 'login'.$this->strSplitChar.$this->objTemplate->get();
@@ -627,8 +627,10 @@ $objDatabase = getDatabaseObject($strErrorCode);
 $objInit = new InitCMS();
 $_CORELANG = $objInit->loadLanguageData('core');
 
-//Instantiate session-object. Has to be global because of included classes!
-$sessionObj = new cmsSession();
+if(!isset($sessionObj)) {
+    //Instantiate session-object. Has to be global because of included classes!
+    $sessionObj = new cmsSession();
+}
 
 //Instantiate Front editing
 $objFrontendEditing = new frontendEditing();

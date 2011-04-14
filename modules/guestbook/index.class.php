@@ -228,14 +228,12 @@ class Guestbook extends GuestbookLibrary
         require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
         $captcha = new Captcha();
 
-        $offset = $captcha->getOffset();
         $alt = $captcha->getAlt();
         $url = $captcha->getUrl();
 
         $this->_objTpl->setVariable(array(
             "ERROR"                    => $errors,
             "TXT_CAPTCHA"            => $_ARRAYLANG['txt_captcha'],
-            "CAPTCHA_OFFSET"        => $offset,
             "IMAGE_URL"                => $url,
             "IMAGE_ALT"                => $alt,
             "FEMALE_CHECKED"        => $checked
@@ -334,7 +332,7 @@ class Guestbook extends GuestbookLibrary
         $_POST['email'] = strip_tags(contrexx_stripslashes($_POST['email']));
         $_POST['url'] = strip_tags(contrexx_stripslashes($_POST['url']));
 
-        if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+        if (!$captcha->check($_POST['captcha'])) {
             $this->error[] = $_ARRAYLANG['TXT_CAPTCHA_ERROR'];
         }
 

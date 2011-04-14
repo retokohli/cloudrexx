@@ -594,8 +594,6 @@ class news extends newsLibrary {
         require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
         $captcha = new Captcha();
 
-        $offset = $captcha->getOffset();
-        $alt = $captcha->getAlt();
         $url = $captcha->getUrl();
 
         if (isset($_POST['submitNews'])) {
@@ -611,11 +609,12 @@ class news extends newsLibrary {
             $_POST['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl2'], ENT_QUOTES, CONTREXX_CHARSET)));
             $_POST['newsCat'] = intval($_POST['newsCat']);
 
-            if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
+            $captchaValid = $captcha->check($_POST['captcha']);
+            if (!$captchaValid) {
                 $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
 
-            if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) && 
+            if (!empty($_POST['newsTitle']) && $captchaValid) && 
                (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
                     $insertStatus = $this->_insert();
                     if (!$insertStatus) {
@@ -683,9 +682,7 @@ class news extends newsLibrary {
                 'NEWS_URL2'                 => contrexx_raw2xhtml($newsUrl2),
                 'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($newsTeaserText),
                 'NEWS_REDIRECT'             => contrexx_raw2xhtml($newsRedirect),
-                "CAPTCHA_OFFSET"            => $offset,
                 "IMAGE_URL"                 => $url,
-                "IMAGE_ALT"                 => $alt
             ));
 
             if ($this->_objTpl->blockExists('news_category_menu')) {

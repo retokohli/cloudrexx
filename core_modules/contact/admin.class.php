@@ -1402,7 +1402,6 @@ class ContactManager extends ContactLib
                 include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
                 $captcha = new Captcha();
 
-                $offset = $captcha->getOffset();
                 $alt = $captcha->getAlt();
                 $url = $captcha->getUrl();
 
@@ -1419,7 +1418,6 @@ class ContactManager extends ContactLib
                 $sourcecode[] = '<div style="color: red;"></div>';
                 $sourcecode[] = "<p>";
                 $sourcecode[] = '<label for="contactFormCaptcha"> CAPTCHA </label><input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
-                $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="'.$offset.'" />';
                 $sourcecode[] = "</p>";
             }
         } else {
@@ -1430,7 +1428,6 @@ class ContactManager extends ContactLib
             $sourcecode[] = '</p>';
             $sourcecode[] = '<p><span>CAPTCHA</span><img class="captcha" src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
             $sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
-            $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
             $sourcecode[] = "</p>";
             $sourcecode[] = "<!-- END contact_form_captcha -->";
         }

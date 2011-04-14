@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -253,7 +252,6 @@ $_POST = $objSecurity->detectIntrusion($_POST);
 $_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
 $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
 
-
 //-------------------------------------------------------
 // Check Referer -> Redirect
 //-------------------------------------------------------
@@ -274,7 +272,7 @@ $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page    = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
 
- if ($section == 'upload') { //handle uploads separately, since they have no content
+if ($section == 'upload') { //handle uploads separately, since they have no content
     /*
      * Upload Module
      *
@@ -287,6 +285,24 @@ $history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
     $objUploadModule->getPage();
     //execution never reaches this point
 }
+else if ($section == 'captcha') {
+    /*
+     * Captcha Module
+     *
+     * Generates no output, requests are answered by a die()
+     * @since   2.1.5
+     */
+
+    if (!include_once(ASCMS_CORE_MODULE_PATH.'/captcha/index.class.php'))
+        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+
+    if(!$objSession)
+        $objSession = new cmsSession();
+
+    $ca = new CaptchaActions();
+    $ca->getPage();
+}
+
 
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $pageId  = $objInit->getPageID($page, $section, $command, $history);
@@ -297,6 +313,7 @@ $is_home = $objInit->is_home;
 $objCounter = new statsLibrary();
 $objCounter->checkForSpider();
 $themesPages = $objInit->getTemplates();
+
 
 require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
 $sessionObj = null;
@@ -1035,7 +1052,6 @@ $page_content = str_replace('{PAGE_URL}',  htmlspecialchars($objInit->getPageUri
 $page_content = str_replace('{PRINT_URL}',  $objInit->getPrintUri(), $page_content);
 $page_content = str_replace('{PDF_URL}',  $objInit->getPDFUri(), $page_content);
 $page_content = str_replace('{TITLE}',  $page_title, $page_content);
-
 
 //-------------------------------------------------------
 // start module switches

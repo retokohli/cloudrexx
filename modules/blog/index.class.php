@@ -348,8 +348,7 @@ class Blog extends BlogLibrary  {
                     'BLOG_DETAILS_COMMENT_ADD_SUBJECT'          =>  $strSubject,
                     'BLOG_DETAILS_COMMENT_ADD_COMMENT'          =>  $strEditor,
                     'BLOG_DETAILS_COMMENT_ADD_SPAM_URL'         =>  $objCaptcha->getUrl(),
-                    'BLOG_DETAILS_COMMENT_ADD_SPAM_ALT'         =>  $objCaptcha->getAlt(),
-                    'BLOG_DETAILS_COMMENT_ADD_SPAM_OFFSET'      =>  $objCaptcha->getOffset()
+                    'BLOG_DETAILS_COMMENT_ADD_SPAM_ALT'         =>  $objCaptcha->getAlt()
                 ));
             } else {
                 //Anonymous comments arent allowed and the user isn't logged in -> Hide block!
@@ -514,7 +513,7 @@ class Blog extends BlogLibrary  {
         if ($intMessageId <= 0) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MID']); }
         if (empty($strSubject)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBJECT']); }
         if (empty($strComment)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_COMMENT']); }
-        if (!$objCaptcha->compare($strCaptcha, $strOffset)) {   $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM']); }
+        if (!$objCaptcha->check($strCaptcha) {   $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM']); }
 
         //Validate specified-input
         if ($this->_intCurrentUserId == 0) {

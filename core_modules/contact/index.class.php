@@ -251,9 +251,7 @@ class Contact extends ContactLib
             $captcha = new Captcha();
 
             $this->objTemplate->setVariable(array(
-                'CONTACT_CAPTCHA_OFFSET'            => $captcha->getOffset(),
                 'CONTACT_CAPTCHA_URL'                => $captcha->getUrl(),
-                'CONTACT_CAPTCHA_ALT'                => $captcha->getAlt(),
                 'TXT_CONTACT_CAPTCHA_DESCRIPTION'    => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
                 'CONTACT_CAPTCHA_ERROR'                => $this->captchaError
             ));
@@ -299,7 +297,7 @@ class Contact extends ContactLib
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
             foreach ($_POST as $key => $value) {
-                if (!empty($value) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha', 'contactFormCaptchaOffset'))) {
+                if (!empty($value) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
                     $id = intval(substr($key, 17));
                     if (isset($arrFormData['fields'][$id])) {
                         $key = $arrFormData['fields'][$id]['name'];
@@ -606,7 +604,7 @@ class Contact extends ContactLib
             include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
             $captcha = new Captcha();
 
-            if (!$captcha->compare($_POST['contactFormCaptcha'], $_POST['contactFormCaptchaOffset'])) {
+            if (!$captcha->check($_POST['contactFormCaptcha'])) {
                 $error = true;
                 $this->captchaError = $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'];
             }

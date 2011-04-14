@@ -114,14 +114,12 @@ class Recommend extends RecommendLibrary
         require_once ASCMS_LIBRARY_PATH . '/spamprotection/captcha.class.php';
         $objCaptcha = new Captcha();
 
-        $offset = $objCaptcha->getOffset();
         $alt = $objCaptcha->getAlt();
         $url = $objCaptcha->getUrl();
 
         $this->_objTpl->setVariable(array(
             'RECOM_CAPTCHA_URL'        => $url,
             'RECOM_CAPTCHA_ALT'        => $alt,
-            'RECOM_CAPTCHA_OFFSET'    => $offset
         ));
 
         $this->_objTpl->parse('recommend_form');
@@ -164,7 +162,7 @@ class Recommend extends RecommendLibrary
 
         require_once ASCMS_LIBRARY_PATH . '/spamprotection/captcha.class.php';
         $objCaptcha = new Captcha();
-        if (!$objCaptcha->compare($_POST['captchaCode'], $_POST['captchaOffset'])) {
+        if (!$objCaptcha->check($_POST['captchaCode'])) {
             $this->_pageMessage .= $_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'].' '.$_ARRAYLANG['TXT_IS_INVALID'];
         }
 
