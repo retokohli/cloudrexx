@@ -6,8 +6,11 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 Allgemein:
+- Neuer Captcha-Mechanismus, der auch im Backend verwendet wird
+- Modul Medienverzeichnis hinzugefügt
+- Neuer Medienmanager mit Uploadmöglichkeit im Frontend
+- Neuer Uploader, der nun überall verwendet wird. Mithilfe des Uploaders kann das Serverseitige Dateigrössenlimit umgangen werden.
 - SMTP over SSL Unterstützung bei E-Mail Konten (Bsp. Host: ssl://smtp.example.com, Port: 465)
-- Contrexx generiert Gzip-komprimierte antworten. Dies ermöglicht um bis zu 75% schnellere Übertragung der Seiteninhalte vom Server.
 
 SEO URL Aliase / Virtuelle Sprachverzeichnisse
 - Unterstützung der Mehrsprachigkeit. Dasselbe Alias kann bei mehreren Sprachen eingesetzt werden.
@@ -28,3 +31,6 @@ Modul: Forum
 Modul: Verzeichnis
 - Bereits erfasste Anhänge werden beim Bearbeiten eines Eintrages beibehalten.
 - Die Anzeige der Anzahl neusten Einträge auf der Übersichtsseite ist korrekt.
+
+Modul: Blog
+- Adminstrator hat auch Zugriff, wenn in keiner Gruppe
