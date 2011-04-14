@@ -39,6 +39,7 @@ class aliasLib
 
     public $objFWHtAccess;
 
+    private $migrate2virtualLanguagePath = false;
 
     function __construct($langId = 0)
     {
@@ -143,11 +144,17 @@ class aliasLib
                     while (!$objAlias->EOF) {
                         if (isset($arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]])) {
                             $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['title'] = $objAlias->fields['catname'];
-                            $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET
-                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($objAlias->fields['lang'], 'lang') : null)
-                                .'/'.CONTREXX_DIRECTORY_INDEX
+                            $pageUrl = '/'.CONTREXX_DIRECTORY_INDEX
                                 .(!empty($objAlias->fields['name']) ? '?section='.$objAlias->fields['name'] : '?page='.$objAlias->fields['catid'])
                                 .(empty($objAlias->fields['cmd']) ? '' : '&cmd='.$objAlias->fields['cmd']);
+                            $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'] = ASCMS_PATH_OFFSET
+                                .($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($objAlias->fields['lang'], 'lang') : null)
+                                .$pageUrl;
+                            if ($this->migrate2virtualLanguagePath) {
+                                $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrlOld'] = ASCMS_PATH_OFFSET.$pageUrl;
+                            } else {
+                                $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrlOld'] = $arrAliases[$objAlias->fields['lang']][$arrLocalAliases[$objAlias->fields['catid']]]['pageUrl'];
+                            }
                         }
 
                         $objAlias->MoveNext();
@@ -160,9 +167,10 @@ class aliasLib
     }
 
 
-	function is_alias_valid($alias) {
-		return !file_exists(ASCMS_DOCUMENT_ROOT.'/'.$alias);
-	}
+    public static function is_alias_valid($alias)
+    {
+        return !file_exists(ASCMS_DOCUMENT_ROOT.'/'.$alias);
+    }
 
 
     function _getAliasesCount()
@@ -378,16 +386,6 @@ class aliasLib
     }
 
 
-    function _escapeStringForRegex($string) {
-        $string = str_replace(array(' ', '\\\ '), '\\ ', $string);
-        return str_replace(
-            array('\\', '^',    '$',    '.',    '[',    ']',    '|',    '(',    ')',    '?',    '*',    '+',    '{',    '}',    ':'),
-            array('\\\\', '\^',    '\$',    '\.',    '\[',    '\]',    '\|',    '\(',    '\)',    '\?',    '\*',    '\+',    '\{',    '\}',    '\:'),
-            $string
-        );
-    }
-
-
     function _activateRewriteEngine()
     {
         global $_CONFIG;
@@ -403,20 +401,24 @@ class aliasLib
                 if ($arrDefinedAlias['type'] == 'local') {
                     if (!empty($arrDefinedAlias['pageUrl'])) {
                         $target = $arrDefinedAlias['pageUrl'];
+                        $oldTarget = $arrDefinedAlias['pageUrlOld'];
                         if ($_CONFIG['useVirtualLanguagePath'] == 'off') {
                             $target .= '&setLang='.$langId;
+                            $oldTarget .= '&setLang='.$langId;
                         }
                     } else {
                         continue;
                     }
                 } else {
                     $target = $arrDefinedAlias['url'];
+                    $oldTarget = $target;
                 }
                 foreach ($arrDefinedAlias['sources'] as $arrSource) {
                     if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
                         $langPrefixedSource = FWLanguage::getLanguageParameter($langId, 'lang').'/'.$arrSource['url'];
 
-                        if ($this->_isUniqueAliasSource($arrSource['url'], '/'.$langPrefixedSource, '/'.$langPrefixedSource, $arrSource['id'], $langId, true)) {
+                        $oldLangPrefixedSource = $this->migrate2virtualLanguagePath ? $oldTarget : '/'.$langPrefixedSource;
+                        if ($this->_isUniqueAliasSource($arrSource['url'], '/'.$langPrefixedSource, $oldLangPrefixedSource, $arrSource['id'], $langId, true)) {
                             // in case the language redirect alias already exists but doesn't belongs to the default language, then overwrite it
                             $langRedirectRule = 'RewriteRule ^'.$arrSource['url'].'$ /'.$langPrefixedSource.' [L,NC,QSA,R=301]';
                             if (isset($arrRedirectAliases[$arrSource['url']])) {
@@ -462,7 +464,6 @@ class aliasLib
         } else {
             $source = $url;
         }
-
         $arrUsedAliasesInHtaccessFile = $this->_getUsedAliasesInHtaccessFile();
         if (   $arrUsedAliasesInHtaccessFile === false
             || (   isset($arrUsedAliasesInHtaccessFile[$source])
@@ -578,6 +579,80 @@ class aliasLib
             $objDatabase->Execute($query);
         }
         return $arrUnused;
+    }
+
+    public static function loadJavaScriptAliasSanitizer()
+    {
+        $function = <<<JSFUNC
+function alias_sanitizeAlias(elInput)
+{
+    \$J(elInput).val(
+        \$J(elInput).val()
+            .replace(/Ä/ig, 'ae')
+            .replace(/Ö/ig, 'oe')
+            .replace(/Ü/ig, 'ue')
+            .replace(/ä/ig, 'ae')
+            .replace(/ö/ig, 'oe')
+            .replace(/ü/ig, 'ue')
+            .replace(/à/ig,  'a')
+            .replace(/ç/ig,  'c')
+            .replace(/[èé]/ig, 'e')
+            .replace(/[\+\/\(\)=,;%&]+/g, '-') // interpunction etc.
+            .replace(/['<>\\\~$!"]+/g, '')       // quotes and other special characters
+            // Sanitize most latin1 characters.
+            // there's more to come. maybe there's
+            // a generic function for this?
+            // Fallback for everything we didn't catch by now
+            .replace(/[^a-z0-9_-]+/ig, '_')
+            .replace(/[_-]{2,}/g, '_')
+            .replace(/^[_\.\/\-]+/, '')
+            .toLowerCase());
+}
+JSFUNC;
+
+        JS::activate('jquery');
+        JS::registerCode($function);
+    }
+
+
+    /**
+     * Returns an alias that has only valid characters.
+     * @return string Sanitized alias
+     */
+    public static function sanitizeAlias($txt)
+    {
+        // this is kinda of a duplicate of the javascript function alias_sanitizeAlias() above
+
+        // Sanitize most latin1 characters.
+        // there's more to come. maybe there's
+        // a generic function for this?
+        $txt = str_replace(
+            array('ä', 'ö', 'ü', 'à','ç','è','é'),
+            array('ae','oe','ue','a','c','e','e'),
+            strtolower($txt)
+        );
+
+        $txt = preg_replace( '/[\+\/\(\)=,;%&]+/', '-', $txt); // interpunction etc.
+        $txt = preg_replace( '/[\'<>\\\~$!"]+/',     '',  $txt); // quotes and other special characters
+
+        // Fallback for everything we didn't catch by now
+        $txt = preg_replace('/[^a-z0-9_-]+/i',  '_', $txt);
+        $txt = preg_replace('/[_-]{2,}/',    '_', $txt);
+        $txt = preg_replace('/^[_\.\/\-]+/', '',  $txt);
+
+        return $txt;
+    }
+
+    public static function switch2virtualLanguagePaths($useVirtualLanguagePaths)
+    {
+        $objAliasLib = new aliasLib();
+        $objAliasLib->migrate2virtualLanguagePath($useVirtualLanguagePaths); 
+        $objAliasLib->_activateRewriteEngine();
+    }
+    
+    public function migrate2virtualLanguagePath($migrate)
+    {
+        $this->migrate2virtualLanguagePath = $migrate;
     }
 }
 ?>

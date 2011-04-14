@@ -209,6 +209,10 @@ class AliasAdmin extends aliasLib
                         $source = FWLanguage::getLanguageParameter($this->langId, 'lang').'/'.$arrAliasSource['url'];
                     } else {
                         $source = $arrAliasSource['url'];
+
+                        if ($arrAlias['type'] == 'local') {
+                            $target .= '&setLang='.$this->langId;
+                        }
                     }
 
                     if (   is_array($arrRewriteInfo) // check if there are any rewrite rules defined
@@ -225,7 +229,7 @@ class AliasAdmin extends aliasLib
                 $this->_objTpl->setVariable(array(
                     'ALIAS_ROW_CLASS'    => $arrAlias['type'] == 'local' && empty($arrAlias['pageUrl']) && $nr++ ? 'rowWarn ' : 'row'.($nr++ % 2 + 1),
                     'ALIAS_TARGET_ID'        => $aliasId,
-                    'ALIAS_TARGET_TITLE'    => $arrAlias['type'] == 'local' ? (!empty($arrAlias['pageUrl']) ? $arrAlias['title'].' ('.$arrAlias['pageUrl'].')' : $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST']) : htmlentities($arrAlias['url'], ENT_QUOTES, CONTREXX_CHARSET)
+                    'ALIAS_TARGET_TITLE'    => $arrAlias['type'] == 'local' ? (!empty($arrAlias['pageUrl']) ? contrexx_raw2xhtml($arrAlias['title']).' ('.$arrAlias['pageUrl'].')' : $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE_NOT_EXIST']) : htmlentities($arrAlias['url'], ENT_QUOTES, CONTREXX_CHARSET)
                 ));
                 $this->_objTpl->parse('aliases_list');
             }
@@ -279,8 +283,7 @@ class AliasAdmin extends aliasLib
             if (!empty($_POST['alias_aliases']) && is_array($_POST['alias_aliases'])) {
                 $nr = 0;
                 foreach ($_POST['alias_aliases'] as $sourceId => $aliasSource) {
-                    $aliasSource = trim(contrexx_stripslashes($aliasSource));
-                    $aliasSource = str_replace(array(' ', '\\\ '), '\\ ', $aliasSource);
+                    $aliasSource = self::sanitizeAlias(contrexx_input2raw($aliasSource));
                     if (!empty($aliasSource)) {
                         $arrAlias['sources'][] = array(
                             'id'        => intval($sourceId),
@@ -295,7 +298,7 @@ class AliasAdmin extends aliasLib
             if (!empty($_POST['alias_aliases_new']) && is_array($_POST['alias_aliases_new'])) {
 
                 foreach ($_POST['alias_aliases_new'] as $id => $newAliasSource) {
-                    $newAliasSource = trim(str_replace(array(' ', '\\\ '), '\\ ', contrexx_stripslashes($newAliasSource)));
+                    $newAliasSource = self::sanitizeAlias(contrexx_input2raw($newAliasSource));
                     if (!empty($newAliasSource)) {
                         if (!$this->is_alias_valid($newAliasSource)) {
                             $this->arrStatusMsg['error'][] = sprintf($_ARRAYLANG['TXT_ALIAS_MUST_NOT_BE_A_FILE'], htmlentities($newAliasSource, ENT_QUOTES, CONTREXX_CHARSET));
@@ -366,6 +369,8 @@ class AliasAdmin extends aliasLib
 
         $this->_objTpl->loadTemplateFile('module_alias_modify.html');
         $this->_pageTitle = $aliasId ? $_ARRAYLANG['TXT_ALIAS_MODIFY_ALIAS'] : $_ARRAYLANG['TXT_ALIAS_ADD_ALIAS'];
+
+        $this->loadJavaScriptAliasSanitizer();
 
         $this->_objTpl->setVariable(array(
             'TXT_ALIAS_TARGET_PAGE'                => $_ARRAYLANG['TXT_ALIAS_TARGET_PAGE'],
