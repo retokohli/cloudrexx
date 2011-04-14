@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Media Manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -59,7 +58,8 @@ class MediaManager extends MediaLibrary
      */
     function __construct($pageContent, $archive)
     {
-        MediaLibrary::__construct();
+        $this->_arrSettings =$this->createSettingsArray();
+
         $this->archive = (intval(substr($archive,-1,1)) == 0) ? 'media1' : $archive;
         
         // directory variables
@@ -211,6 +211,7 @@ class MediaManager extends MediaLibrary
                         }
                     }
                     
+
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
                         'MEDIA_FILE_ICON'     => $this->iconWebPath . $dirTree[$key]['icon'][$x] . '.gif',
@@ -301,40 +302,33 @@ class MediaManager extends MediaLibrary
             // forms for uploading files and creating folders
             require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
 
-            $objModulChecker = new ModuleChecker();
-            // advanced file upload
-            if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
-                if ($this->_objTpl->blockExists('media_advanced_file_upload')) {
-                    $path = 'index.php?section=fileUploader&amp;standalone=true&amp;type=' . $this->archive . '&amp;path=' . urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1));
-                    $this->_objTpl->setVariable(array(
-                        'MEDIA_FILE_UPLOAD_BUTTON'  => '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_MEDIA_BROWSE'].'" />',
-                        'TXT_MEDIA_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_MEDIA_ADD_NEW_FILE']
-                    ));
-                    $this->_objTpl->parse('media_advanced_file_upload');
-                }
+            if ($this->_objTpl->blockExists('media_simple_file_upload')) {
+                /**
+                 * Uploader button handling
+                 */
+                require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
+                //data we want to remember for handling the uploaded files
+                $data = array(
+                    'path' => $this->path,
+                    'webPath' => $this->webPath
+                );
 
-                if ($this->_objTpl->blockExists('media_simple_file_upload')) {
-                    $this->_objTpl->hideBlock('media_simple_file_upload');
-                }
+                $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+                $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/media/mediaLib.class.php', 'MediaLibrary', 'uploadFinished'));
+                $comboUp->setData($data);
+                //set instance name to combo_uploader so we are able to catch the instance with js
+                $comboUp->setJsInstanceName('exposed_combo_uploader');
 
+                $this->_objTpl->setVariable(array(
+                    'TXT_MEDIA_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_MEDIA_ADD_NEW_FILE'],
+                    'COMBO_UPLOADER_CODE'       => $comboUp->getXHtml(true),
+                    'REDIRECT_URL'              => '?section='.$_REQUEST['section'].'&path='.contrexx_raw2encodedUrl($this->webPath)
+                ));
+                $this->_objTpl->parse('media_simple_file_upload');
             }
-            else {
-                if ($this->_objTpl->blockExists('media_simple_file_upload')) {
-                    // simple file upload
-                    $this->_objTpl->setVariable(array(
-                        'TXT_MEDIA_BROWSE'          => $_ARRAYLANG['TXT_MEDIA_BROWSE'],
-                        'TXT_MEDIA_UPLOAD_FILE'     => $_ARRAYLANG['TXT_MEDIA_UPLOAD_FILE'],
-                        'TXT_MEDIA_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_MEDIA_MAX_FILE_SIZE'],
-                        'TXT_MEDIA_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_MEDIA_ADD_NEW_FILE'],
-                        'MEDIA_UPLOAD_URL'          => CONTREXX_SCRIPT_PATH . '?section=' . $this->archive . $this->getCmd . '&amp;act=upload&amp;path=' . $this->webPath,
-                        'MEDIA_MAX_FILE_SIZE'       => $this->getFormatedFileSize(FWSystem::getMaxUploadFileSize())
-                    ));
-                    $this->_objTpl->parse('media_simple_file_upload');
-                }
 
-                if ($this->_objTpl->blockExists('media_advanced_file_upload')) {
-                    $this->_objTpl->hideBlock('media_advanced_file_upload');
-                }
+            if ($this->_objTpl->blockExists('media_advanced_file_upload')) {
+                $this->_objTpl->hideBlock('media_advanced_file_upload');
             }
             // create directory
             $this->_objTpl->setVariable(array(
