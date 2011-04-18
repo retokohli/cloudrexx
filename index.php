@@ -72,7 +72,7 @@
  * will either activate or deactivate all levels.
  */
 include_once(dirname(__FILE__).'/lib/DBG.php');
-DBG::deactivate();
+DBG::activate();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -1101,8 +1101,8 @@ switch ($plainSection) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
         $shopObj = new Shop($page_content);
-        $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getPage());
-        $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getNavbar($themesPages['shopnavbar']));
+        $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getShopPage());
+        $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
         $boolShop = true;
         break;
 
