@@ -209,7 +209,7 @@ $_ARRAYLANG['UPLOAD_EXPOSED_DIALOG_TITLE'] = 'Upload files';
 $_ARRAYLANG['STOP_CURRENT_UPLOAD'] = 'Cancel current upload';
 $_ARRAYLANG['DRAG_FILES_HERE'] = 'Drag files here';
 $_ARRAYLANG['UPLOAD_FINISHED'] = 'Upload finished';
-
+$_ARRAYLANG['UPLOAD_FORM_ADD'] = 'Add another file';
 $_ARRAYLANG['TXT_CORE_SETTING_NAME'] = "Description";
 $_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'] = 'Add entry';
 $_ARRAYLANG['TXT_MEDIADIR_MODIFY_ENTRY'] = 'Modify entry';

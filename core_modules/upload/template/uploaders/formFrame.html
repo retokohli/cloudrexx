@@ -16,16 +16,16 @@
 
     <div id="form_uploader">
       <form action="{UPLOAD_URL}" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="MAX_FILE_SIZE" value="{MAX_FILE_SIZE}"/>
+        <input type="hidden" name="MAX_FILE_SIZE" value="{MAX_FILE_SIZE}" />
         <div class="files">
           <div class="file">
-            <input type="file" name="uploaderFiles[]"></input>
+            <input type="file" name="uploaderFiles[]" />
             <a href="" class="delete"></a>
           </div>
         </div>
-        <div><a href="" class="add"></a></div>
+        <div><a href="" class="add">{UPLOAD_FORM_ADD}</a></div>
 		<div class="form_submit">
-			<input type="submit" class="submitButton"></input>
+			<input type="submit" class="submitButton" value="{UPLOAD}" />
 		</div>
       </form>
     </div>

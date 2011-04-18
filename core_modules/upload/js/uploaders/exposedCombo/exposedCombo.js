@@ -28,7 +28,7 @@ var ExposedCombo = function(theConfig) {
     //to achieve this, we decorate the dialog's open method:
     var oldOpen = dialog.open;
     dialog.open = function() {
-        //maybe the uploader cached informations about already uploaded files - clean those up.
+        //maybe the uploader cached information about already uploaded files - clean those up.
         comboUploader.refresh();
         oldOpen();        
     };

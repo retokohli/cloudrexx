@@ -1,3 +1,8 @@
+#form_uploader {
+    font-family: Arial,Helvetica,sans-serif;
+	font-size: .9em;
+}
+
 #form_uploader .submitButton {
     margin-top: 8px;
 }
@@ -14,13 +19,17 @@
 #form_uploader .add {
     display:block;
     background-image: url(../../../../../cadmin/images/icons/add.gif);
-    width: 18px;
+	background-repeat: no-repeat;
+	padding-left: 20px;
+	padding-top: 2px;
     height: 18px;
 	margin: 5px 0 0 8px;
+	text-decoration: none;
+	color: #00f;
 }
 
 #form_uploader .file input {
-    width: 96%;
+    width: 94%;
 }
 #form_uploader input {
 	margin-left: 8px;
@@ -28,6 +37,5 @@
 
 #form_uploader div.form_submit {
 	width: 100%;
-	background-color: #ccc;
 	height: 38px;
 }

@@ -1352,8 +1352,8 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'file':
-                    $sourcecode[] = '<div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget"></div>';
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormField_upload" type="file" name="contactFormField_upload" disabled="disabled"/>';
+                    $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget"></div>';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormField_upload" type="file" name="contactFormField_upload" disabled="disabled"/></div>';
                     $hasFileInput = true;
                     break;
 
