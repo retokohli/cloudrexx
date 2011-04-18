@@ -349,6 +349,8 @@ class MediaLibrary
             $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
         }
 
+        $fileName = $obj_file->replaceCharacters($fileName);
+
         if (!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1) {
             // rename old to new
             if (is_dir($this->path.$oldName)) {
