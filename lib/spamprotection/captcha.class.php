@@ -203,7 +203,7 @@ class Captcha {
      * @return boolean
      */
     function check($strEnteredString) {
-        $valid = $strEnteredString == $_SESSION['captchaSecret'];
+        $valid = strtoupper($strEnteredString) == strtoupper($_SESSION['captchaSecret']);
         unset($_SESSION['captchaSecret']); //remove secret to improve security
         return $valid;
     }       
