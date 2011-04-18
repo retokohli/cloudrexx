@@ -9,7 +9,7 @@ function _mediadirUpdate()
         UpdateUtil::table(
             DBPREFIX.'module_mediadir_categories',
             array(
-                    'id'                     => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true),
+                  'id'                     => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                     'parent_id'              => array('type' => 'INT(7)', 'after' => 'id'),
                     'order'                  => array('type' => 'INT(7)', 'after' => 'parent_id'),
                     'show_subcategories'     => array('type' => 'INT(11)', 'after' => 'order'),
@@ -22,7 +22,7 @@ function _mediadirUpdate()
        UpdateUtil::table(
            DBPREFIX.'module_mediadir_categories_names',
            array(
-                    'lang_id'                    => array('type' => 'INT(1)'),
+                 'lang_id'                    => array('type' => 'INT(1)'),
                     'category_id'                => array('type' => 'INT(7)', 'after' => 'lang_id'),
                     'category_name'              => array('type' => 'VARCHAR(255)', 'after' => 'category_id'),
                     'category_description'       => array('type' => 'mediumtext', 'after' => 'category_name')
@@ -36,7 +36,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_comments',
           array(
-              'id'                 => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true),
+              'id'                 => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'entry_id'           => array('type' => 'INT(7)', 'after' => 'id'),
               'added_by'           => array('type' => 'VARCHAR(255)', 'after' => 'entry_id'),
               'date'               => array('type' => 'VARCHAR(100)', 'after' => 'added_by'),
@@ -52,7 +52,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_entries',
           array(
-              'id'                         => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true),
+              'id'                         => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'order'                      => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
               'form_id'                    => array('type' => 'INT(7)', 'after' => 'order'),
               'create_date'                => array('type' => 'INT(50)', 'after' => 'form_id'),
@@ -60,14 +60,14 @@ function _mediadirUpdate()
               'validate_date'              => array('type' => 'INT(50)', 'after' => 'update_date'),
               'added_by'                   => array('type' => 'INT(10)', 'after' => 'validate_date'),
               'updated_by'                 => array('type' => 'INT(10)', 'after' => 'added_by'),
-              'lang_id'                    => array('type' => 'INT(1)', 'after' => 'updated_by'),
+              'lang_id'                    => array('type' => 'INT(1)', 'after' => 'updated_by', 'primary' => true),
               'hits'                       => array('type' => 'INT(10)', 'after' => 'lang_id'),
               'popular_hits'               => array('type' => 'INT(10)', 'after' => 'hits'),
               'popular_date'               => array('type' => 'VARCHAR(20)', 'after' => 'popular_hits'),
               'last_ip'                    => array('type' => 'VARCHAR(50)', 'after' => 'popular_date'),
               'ready_to_confirm'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'last_ip'),
               'confirmed'                  => array('type' => 'INT(1)', 'after' => 'ready_to_confirm'),
-              'active'                     => array('type' => 'INT(1)', 'after' => 'confirmed'),
+              'active'                     => array('type' => 'INT(1)', 'after' => 'confirmed', 'primary' => true),
               'duration_type'              => array('type' => 'INT(1)', 'after' => 'active'),
               'duration_start'             => array('type' => 'INT(50)', 'after' => 'duration_type'),
               'duration_end'               => array('type' => 'INT(50)', 'after' => 'duration_start'),
@@ -75,7 +75,7 @@ function _mediadirUpdate()
               'translation_status'         => array('type' => 'VARCHAR(255)', 'after' => 'duration_notification')
           ),
           array(
-              'lang_id'                    => array('fields' => array('lang_id')),
+                'lang_id'                    => array('fields' => array('lang_id')),
               'active'                     => array('fields' => array('active'))
           )
       );
@@ -93,7 +93,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_forms',
           array(
-              'id'                         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true),
+              'id'                         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'order'                      => array('type' => 'INT(7)', 'after' => 'id'),
               'picture'                    => array('type' => 'mediumtext', 'after' => 'order'),
               'active'                     => array('type' => 'INT(1)', 'after' => 'picture'),
@@ -123,7 +123,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_inputfield_types',
           array(
-              'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true),
+              'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'name'           => array('type' => 'VARCHAR(255)', 'after' => 'id'),
               'active'         => array('type' => 'INT(1)', 'after' => 'name'),
               'multi_lang'     => array('type' => 'INT(1)', 'after' => 'active'),
@@ -132,14 +132,14 @@ function _mediadirUpdate()
               'comment'        => array('type' => 'VARCHAR(255)', 'after' => 'dynamic')
           ),
           array(
-              'name'           => array('fields' => array('name'), 'type' => 'UNIQUE')
+                'name'           => array('fields' => array('name'), 'type' => 'UNIQUE'),              
           )
       );
 
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_inputfield_verifications',
           array(
-              'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true),
+              'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'name'       => array('type' => 'VARCHAR(255)', 'after' => 'id'),
               'regex'      => array('type' => 'VARCHAR(255)', 'after' => 'name')
           ),
@@ -151,7 +151,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_inputfields',
           array(
-              'id'                 => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true),
+              'id'                 => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'form'               => array('type' => 'INT(7)', 'after' => 'id'),
               'type'               => array('type' => 'INT(10)', 'after' => 'form'),
               'verification'       => array('type' => 'INT(10)', 'after' => 'type'),
@@ -179,7 +179,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_levels',
           array(
-              'id'                 => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true),
+              'id'                 => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'parent_id'          => array('type' => 'INT(7)', 'after' => 'id'),
               'order'              => array('type' => 'INT(7)', 'after' => 'parent_id'),
               'show_sublevels'     => array('type' => 'INT(11)', 'after' => 'order'),
@@ -193,7 +193,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_mail_actions',
           array(
-              'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true),
+              'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'name'                   => array('type' => 'VARCHAR(255)', 'after' => 'id'),
               'default_recipient'      => array('type' => 'ENUM(\'admin\',\'author\')', 'after' => 'name'),
               'need_auth'              => array('type' => 'INT(11)', 'after' => 'default_recipient')
@@ -203,7 +203,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_mails',
           array(
-              'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true),
+              'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'title'          => array('type' => 'VARCHAR(255)', 'after' => 'id'),
               'content'        => array('type' => 'longtext', 'after' => 'title'),
               'recipients'     => array('type' => 'mediumtext', 'after' => 'content'),
@@ -217,7 +217,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_masks',
           array(
-              'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true),
+              'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'title'      => array('type' => 'VARCHAR(255)', 'after' => 'id'),
               'fields'     => array('type' => 'mediumtext', 'after' => 'title'),
               'active'     => array('type' => 'INT(11)', 'after' => 'fields'),
@@ -276,7 +276,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_settings',
           array(
-              'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true),
+                'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
               'value'      => array('type' => 'VARCHAR(255)', 'after' => 'name')
           ),
@@ -321,7 +321,7 @@ function _mediadirUpdate()
       UpdateUtil::table(
           DBPREFIX.'module_mediadir_votes',
           array(
-              'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true),
+              'id'             => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
               'entry_id'       => array('type' => 'INT(7)', 'after' => 'id'),
               'added_by'       => array('type' => 'VARCHAR(255)', 'after' => 'entry_id'),
               'date'           => array('type' => 'VARCHAR(100)', 'after' => 'added_by'),
@@ -329,6 +329,10 @@ function _mediadirUpdate()
               'vote'           => array('type' => 'INT(11)', 'after' => 'ip')
           )
                         );
+
+      if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'modules WHERE name="mediadir"')->EOF) {
+        UpdateUtil::sql('INSERT INTO '.DBPREFIX.'modules VALUES(60,"mediadir","TXT_MEDIADIR_MODULE_DESCTIPTION","y",0,0)');
+      }
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
@@ -340,56 +344,56 @@ function _mediadirUpdate()
         //mediadir_settings
         $arrValues = array(array(1,'settingsShowCategoryDescription','1'),array(2,'settingsShowCategoryImage','1'),array(3,'settingsCategoryOrder','1'),array(4,'settingsShowLevels','1'),array(5,'settingsShowLevelDescription','0'),array(6,'settingsShowLevelImage','0'),array(7,'settingsLevelOrder','1'),array(8,'settingsConfirmNewEntries','1'),array(9,'categorySelectorOrder','9'),array(10,'levelSelectorOrder','10'),array(11,'settingsConfirmUpdatedEntries','0'),array(12,'settingsCountEntries','0'),array(13,'settingsThumbSize','120'),array(14,'settingsNumGalleryPics','10'),array(15,'settingsEncryptFilenames','1'),array(16,'settingsAllowAddEntries','1'),array(17,'settingsAllowDelEntries','1'),array(18,'settingsAllowEditEntries','1'),array(19,'settingsAddEntriesOnlyCommunity','1'),array(20,'settingsLatestNumXML','10'),array(21,'settingsLatestNumOverview','5'),array(22,'settingsLatestNumBackend','5'),array(23,'settingsLatestNumFrontend','10'),array(24,'settingsPopularNumFrontend','10'),array(25,'settingsPopularNumRestore','30'),array(26,'settingsLatestNumHeadlines','6'),array(27,'settingsGoogleMapStartposition','46.749647513758326,7.6300048828125,8'),array(28,'settingsAllowVotes','1'),array(29,'settingsVoteOnlyCommunity','0'),array(30,'settingsAllowComments','1'),array(31,'settingsCommentOnlyCommunity','0'),array(32,'settingsGoogleMapAllowKml','0'),array(33,'settingsShowEntriesInAllLang','1'),array(34,'settingsPagingNumEntries','10'),array(35,'settingsGoogleMapType','0'),array(36,'settingsClassificationPoints','5'),array(37,'settingsClassificationSearch','1'),array(38,'settingsEntryDisplaydurationType','1'),array(39,'settingsEntryDisplaydurationValue','0'),array(40,'settingsEntryDisplaydurationValueType','1'),array(41,'settingsEntryDisplaydurationNotification','0'),array(42,'categorySelectorExpSearch','9'),array(43,'levelSelectorExpSearch','10'),array(44,'settingsTranslationStatus','0'),array(45,'settingsReadyToConfirm','0'),array(46,'settingsImageFilesize','300'),array(47,'settingsActiveLanguages','1,2,3'),array(48,'settingsFrontendUseMultilang','0'),array(49,'settingsIndividualEntryOrder','0'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'mediadir_settings WHERE name="'.$arrValue[1].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'mediadir_settings VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings WHERE name="'.$arrValue[1].'"')->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
             }
         }
 
         //mediadir_settings_num_categories
         $arrValues = array(array(3,'n'),array(4,'n'),array(5,'n'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'mediadir_settings_num_categories WHERE group_id='.$arrValue[0])->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'mediadir_settings_num_categories VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_categories WHERE group_id='.$arrValue[0])->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_categories VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
             }
         }
 
         //mediadir_settings_num_entries
         $arrValues = array(array(3,'n'),array(4,'n'),array(5,'n'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'mediadir_settings_num_entries WHERE group_id='.$arrValue[0])->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'mediadir_settings_num_entries VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_entries WHERE group_id='.$arrValue[0])->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_entries VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
             }
         }
 
         //mediadir_settings_num_levels
         $arrValues = array(array(3,'n'),array(4,'n'),array(5,'n'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'mediadir_settings_num_levels WHERE group_id='.$arrValue[0])->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'mediadir_settings_num_levels VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings_num_levels WHERE group_id='.$arrValue[0])->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings_num_levels VALUES('.$arrValue[0].',"'.$arrValue[1].'")');
             }
         }
 
         //mediadir_inputfield_verifications
         $arrValues = array(array(1,'normal','.*'),array(2,'e-mail','^[_a-zA-Z0-9-]+(\\\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\\\.[a-zA-Z0-9-]+)*\\\\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$'),array(3,'url','^(ht|f)tp[s]?\\\\:\\\\/\\\\/[A-Za-z0-9\\\\-\\\\:\\\\.\\\\?\\\\&\\\\=\\\\/\\\\#\\\\%]*$'),array(4,'letters','^[A-Za-zÃƒÂ¤ÃƒÂ'),array(5,'numbers','^[0-9]*$'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'mediadir_inputfield_verifications WHERE name="'.$arrValue[0].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'mediadir_inputfield_verifications VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_verifications WHERE name="'.$arrValue[0].'"')->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_verifications VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
             }
         }
 
         //mediadir_inputfield_types
         $arrValues = array(array(1,'text',1,1,1,0,''),array(2,'textarea',1,1,1,0,''),array(3,'dropdown',1,0,1,0,''),array(4,'radio',1,0,1,0,''),array(5,'checkbox',1,0,0,0,''),array(7,'file',1,0,0,0,''),array(8,'image',1,0,0,0,''),array(9,'gallery',0,0,0,0,'not yet developed'),array(10,'podcast',0,0,0,0,'not yet developed'),array(11,'classification',1,0,1,0,''),array(12,'link',1,0,0,0,''),array(13,'link_group',1,0,0,0,''),array(14,'rss',0,0,0,0,'not yet developed'),array(15,'google_map',1,0,0,0,''),array(16,'add_step',0,0,0,0,''),array(17,'field_group',0,0,0,0,'not yet developed'),array(18,'label',0,0,0,0,'not yet developed'),array(19,'wysiwyg',0,1,0,0,'developed for OSEC (unstable)'),array(20,'mail',1,0,0,0,''),array(21,'google_weather',1,0,0,0,''),array(22,'relation',0,0,0,0,'developed for OSEC (unstable)'),array(23,'relation_group',0,0,0,0,'developed for OSEC (unstable)'),array(24,'accounts',0,0,0,0,'developed for OSEC (unstable)'),array(25,'country',1,0,0,0,''),array(26,'product_attributes',0,0,1,0,''),array(27,'downloads',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(28,'responsibles',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(29,'references',0,1,0,1,'developed for CADexchange.ch (unstable)'),array(30,'title',0,0,0,0,'developed for CADexchange.ch (unstable)'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'mediadir_inputfield_types WHERE name="'.$arrValue[1].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'mediadir_inputfield_types VALUES('.$arrValue[0].',"'.$arrValue[1].'",'.$arrValue[2].','.$arrValue[3].','.$arrValue[4].','.$arrValue[5].',"'.$arrValue[6].'")');
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_types WHERE name="'.$arrValue[1].'"')->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_types VALUES('.$arrValue[0].',"'.$arrValue[1].'",'.$arrValue[2].','.$arrValue[3].','.$arrValue[4].','.$arrValue[5].',"'.$arrValue[6].'")');
             }
         }
 
         //mediadir_mail_actions
         $arrValues = array(array(1,'newEntry','admin',0),array(2,'entryAdded','author',1),array(3,'entryConfirmed','author',1),array(4,'entryVoted','author',1),array(5,'entryDeleted','author',1),array(6,'entryEdited','author',1),array(8,'newComment','author',1),array(9,'notificationDisplayduration','admin',0));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'mediadir_mail_actions WHERE name="'.$arrValue[1].'"')->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'mediadir_mail_actions VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'",'.$arrValue[3].')');
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_mail_actions WHERE name="'.$arrValue[1].'"')->EOF) {
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_mail_actions VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'",'.$arrValue[3].')');
             }
         }   
 
