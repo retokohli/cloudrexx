@@ -645,7 +645,6 @@ class Forum extends ForumLibrary {
 
         require_once ASCMS_LIBRARY_PATH . "/spamprotection/captcha.class.php";
         $captcha = new Captcha();
-        $offset = $captcha->getOffset();
         $alt     = $captcha->getAlt();
         $url     = $captcha->getUrl();
 
@@ -768,7 +767,6 @@ class Forum extends ForumLibrary {
             'FORUM_KEYWORDS'                        =>    stripslashes($keywords),
             'FORUM_ATTACHMENT_OLDNAME'              =>    $attachment,
             'FORUM_MESSAGE_INPUT'                   =>    $strMessageInputHTML,
-            'FORUM_CAPTCHA_OFFSET'                  =>    $offset,
             'FORUM_CAPTCHA_IMAGE_URL'               =>    $url,
             'FORUM_CAPTCHA_IMAGE_ALT'               =>    $alt,
             'FORUM_THREAD_ID'                       =>    $intThreadId,
