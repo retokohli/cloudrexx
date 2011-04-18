@@ -381,6 +381,10 @@ table td.none {border: none;}
   box-shadow: 1px 1px 2px #ddd inset;
 }
 
+.contactFormUpload {
+	margin-left: 190px;
+}
+
 * html #main input,
 #frame_home input,
 #boxes_home input {

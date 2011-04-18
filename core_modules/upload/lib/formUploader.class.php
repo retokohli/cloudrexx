@@ -53,6 +53,8 @@ class FormUploader extends Uploader
     }
 
     public function getFrameXHtml() {
+		global $_CORELANG;
+	
         //JS / CSS dependencies
         JS::activate('cx');
         JS::registerCSS('core_modules/upload/css/uploaders/form/formUploader.css');
@@ -75,6 +77,8 @@ class FormUploader extends Uploader
         $tpl->setVariable('UPLOAD_URL', $uploadPath);
         $tpl->setVariable('INCLUDES', JS::getCode());
         $tpl->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
+		$tpl->setVariable('UPLOAD_FORM_ADD', $_CORELANG['UPLOAD_FORM_ADD']);
+		$tpl->setVariable('UPLOAD', $_CORELANG['UPLOAD']);
         
         require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
         $tpl->setVariable('MAX_FILE_SIZE', FWSystem::getMaxUploadFileSize()-1000);

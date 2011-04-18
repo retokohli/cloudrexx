@@ -208,6 +208,7 @@ $_ARRAYLANG['ADD_FILES'] = 'Dateien hinzufügen';
 $_ARRAYLANG['UPLOAD_EXPOSED_DIALOG_TITLE'] = 'Dateien hochladen';
 $_ARRAYLANG['STOP_CURRENT_UPLOAD'] = 'Momentanen Upload abbrechen';
 $_ARRAYLANG['DRAG_FILES_HERE'] = 'Ziehen Sie Dateien hierhin';
+$_ARRAYLANG['UPLOAD_FORM_ADD'] = 'Weitere Dateien hinzuf&uuml;gen';
 $_ARRAYLANG['UPLOAD_FINISHED'] = 'Heraufladen abgeschlossen.';
 $_ARRAYLANG['TXT_CORE_SETTING_NAME'] = "Beschreibung";
 $_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'] = 'Eintrag hinzufügen';
