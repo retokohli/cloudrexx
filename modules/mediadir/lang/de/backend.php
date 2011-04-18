@@ -203,7 +203,7 @@ $_ARRAYLANG['TXT_MEDIADIR_ALL_LEVELS'] = "Alle Ebenen";
 $_ARRAYLANG['TXT_MEDIADIR_ALL_CATEGORIES'] = "Alle Kategorien";
 $_ARRAYLANG['TXT_MEDIADIR_INPUTFIELD_TYPE_MAIL'] = "E-Mail";
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_NO_KEY'] = "Es wurde kein Google Maps API Schlüssel gefunden. ";
-$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS'] = "Bitte tragen sie den Schlüssel in den <a href=\\\"index.php?cmd=settings\\\">Grundeinstellungen</a> ein.";
+$_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_PLEASE_ENTER_KEY_IN_GLOBAL_SETTINGS'] = "Bitte tragen sie den Schlüssel in den <a href=\"index.php?cmd=settings\">Grundeinstellungen</a> ein.";
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP'] = "Maximale Anzahl auswählbare Kategorien";
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_LEVELS_PER_GROUP'] = "Maximale Anzahl auswählbarer Ebenen";
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_NUM_CATEGORIES_PER_GROUP_INFO'] = "Die maximal Anzahl der Kategorien welche pro Eintrag ausgewählt werden dürfen, wird den einzelnen Community Gruppen zugeteilt in welchen sich die Benutzer befinden.<br /><br />n = unbegrenzt";
