@@ -614,7 +614,7 @@ class news extends newsLibrary {
                 $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . "<br />";
             }
 
-            if (!empty($_POST['newsTitle']) && $captchaValid) && 
+            if (!empty($_POST['newsTitle']) && $captchaValid && 
                (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
                     $insertStatus = $this->_insert();
                     if (!$insertStatus) {
