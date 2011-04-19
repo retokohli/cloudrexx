@@ -2149,6 +2149,7 @@ class galleryManager extends GalleryLibrary
         $comboUp->setData($paths);
         //set instance name to combo_uploader so we are able to catch the instance with js
         $comboUp->setJsInstanceName('exposed_combo_uploader');
+        $redirectUrl = CSRF::enhanceURI('index.php?cmd=gallery&act=validate_form');
 
         $this->_objTpl->loadTemplateFile('module_gallery_upload_images.html', true, true);
         $this->_objTpl->setVariable(array(
@@ -2705,8 +2706,8 @@ class galleryManager extends GalleryLibrary
                         $intNewThumbHeight     = $objResult->fields['size_abs_h'];
                         $intNewThumbQuality     = $objResult->fields['quality'];
                     }
-                    //create thumb
-                    $this->createImages_JPG_GIF_PNG($this->strImagePath, ASCMS_PATH, $objResult->fields['path'], $arrImageInfo[$objResult->fields['id']]['random_path'], $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
+                    //create thumb             
+                    $this->createImages_JPG_GIF_PNG($this->strImagePath, ASCMS_GALLERY_THUMBNAIL_PATH.'/', $objResult->fields['path'], basename($arrImageInfo[$objResult->fields['id']]['random_path']), $intNewThumWidth, $intNewThumbHeight, $intNewThumbQuality);
                     $arrFileInfo = getimagesize(ASCMS_PATH.$arrImageInfo[$objResult->fields['id']]['random_path']);
                     $arrImageInfo[$objResult->fields['id']]['size_t'] = round(filesize(ASCMS_PATH.$arrImageInfo[$objResult->fields['id']]['random_path'])/1024,2);
                     $arrImageInfo[$objResult->fields['id']]['reso_t'] = $arrFileInfo[0].'x'.$arrFileInfo[1];
@@ -3074,6 +3075,7 @@ $strFileNew = '';
                     $intNewThumbHeight     = $objResult->fields['size_abs_h'];
                     $intNewThumbQuality = $objResult->fields['quality'];
                 }
+                
 
                 //create thumb
 // TODO: $strFileOld, $strFileNew are not initialized
@@ -3540,13 +3542,29 @@ $strFileNew = '';
     function createImages_JPG_GIF_PNG($strPathOld, $strPathNew, $strFileOld, $strFileNew, $intNewWidth, $intNewHeight, $intQuality)
     {
         global $_ARRAYLANG;
-
+       
+        //TODO: sometimes, strings are passed... this is a workaround
+        $intNewWidth = intval($intNewWidth);
+        $intNewHeight = intval($intNewHeight);
         //copy image
         $intSize    = getimagesize($strPathOld.$strFileOld); //ermittelt die Gr��e des Bildes
         $intWidth    = $intSize[0]; //die Breite des Bildes
         $intHeight    = $intSize[1]; //die H�he des Bildes
         $strType    = $intSize[2]; //type des Bildes
         @touch($strPathNew.$strFileNew);
+
+        //fix cases of zeroes
+        if ($intNewWidth == 0) {
+            if($intNewHeight == 0)
+                $intNewHeight = $this->arrSettings['standard_height_abs'];
+            if($intNewHeight == 0) //set a standard value if the settings default to 0
+                $intNewHeight = 100;
+            $intNewWidth     = round(($intWidth * $intNewHeight) / $intHeight,0);
+        } else if ($intNewHeight == 0){
+            $intNewHeight     = round(($intHeight * $intNewWidth) / $intWidth,0);
+        }
+
+
 
         @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
         $objSystem = new FWSystem();
@@ -3598,6 +3616,7 @@ $strFileNew = '';
                 if ($this->boolJpgEnabled) {
                     $handleImage1 = ImageCreateFromJpeg($strPathOld.$strFileOld);
                     $handleImage2 = ImageCreateTrueColor($intNewWidth,$intNewHeight);
+
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
                     ImageJpeg($handleImage2, $strPathNew.$strFileNew, $intQuality);
 
