@@ -65,6 +65,8 @@ class PDF extends HTML2FPDF
 
     function __construct()
     {
+        global $_CONFIG;
+
         $this->pdf_orientation     = 'P';
         $this->pdf_unit         = 'mm';
         $this->pdf_format         = 'A4';
