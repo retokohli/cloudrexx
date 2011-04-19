@@ -364,8 +364,6 @@ class downloads extends DownloadsLibrary
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
         while (false !== ($file = readdir($h))) {
-			$info = pathinfo($file);
-
             //skip . and ..
             if($file == '.' || $file == '..') { continue; }
 
@@ -374,6 +372,8 @@ class downloads extends DownloadsLibrary
                 rename($tempPath.'/'.$file, $tempPath.'/'.$cleanFile);
                 $file = $cleanFile;
             }
+
+			$info = pathinfo($file);
 
 			//delete potentially malicious files
             if(!FWValidator::is_file_ending_harmless($file)) {
