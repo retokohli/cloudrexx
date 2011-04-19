@@ -171,6 +171,7 @@ $_ARRAYLANG['TXT_PROVIDE_MODULE'] = "Provide module";
 $_ARRAYLANG['TXT_CALENDAR'] = "Events calendar";
 $_ARRAYLANG['TXT_CALENDAR_MODULE_DESCRIPTION'] = "Events calendar system";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Replacement directory";
+$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'] = "Import/Export";
 $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = "Replacement list";
 $_ARRAYLANG['TXT_FILES'] = "Files";
 $_ARRAYLANG['TXT_CONTENTS'] = "Contents";

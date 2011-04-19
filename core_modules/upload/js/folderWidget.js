@@ -16,7 +16,7 @@ var FolderWidget = function(options) {
                 var ul = $J('<ul></ul>');
                 $.each(json, function(index, file) {
                     var li = $J('<li></li>').html(file);
-                    var del = $J('<a></a>').html('x');
+                    var del = $J(' &nbsp; <a></a>').html('x');
                     del.attr('href','');
                     del.bind('click', function() {
                         var theFile = li;

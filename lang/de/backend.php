@@ -171,6 +171,7 @@ $_ARRAYLANG['TXT_PROVIDE_MODULE'] = "Modul bereitstellen";
 $_ARRAYLANG['TXT_CALENDAR'] = "Kalender";
 $_ARRAYLANG['TXT_CALENDAR_MODULE_DESCRIPTION'] = "Event Kalendersystem";
 $_ARRAYLANG['TXT_DESIGN_REPLACEMENTS_DIR'] = "Platzhalter Verzeichnis";
+$_ARRAYLANG['TXT_THEME_IMPORT_EXPORT'] = "Import/Export";
 $_ARRAYLANG['TXT_REPLACEMENT_LIST'] = "Platzhalter Liste";
 $_ARRAYLANG['TXT_FILES'] = "Dateien";
 $_ARRAYLANG['TXT_CONTENTS'] = "Inhalte";
