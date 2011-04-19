@@ -15,7 +15,7 @@ require_once ASCMS_MODULE_PATH . '/mediadir/lib/lib.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/addStep.class.php';
 require_once ASCMS_MODULE_PATH . '/mediadir/lib/form.class.php';
 
-function loadInputfieldClasses($strClassName) {
+/*function loadInputfieldClasses($strClassName) {
     $strClassFileName = strtolower(str_replace('mediaDirectoryInputfield', '', $strClassName));
 
     if(!file_exists(ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/'.$strClassFileName.'.class.php')) {
@@ -25,11 +25,18 @@ function loadInputfieldClasses($strClassName) {
     }
 }
 
-spl_autoload_register('loadInputfieldClasses');
+spl_autoload_register('loadInputfieldClasses');*/
 
 function safeNew($strClassName) {
     if(!class_exists($strClassName)) {
-        throw new Exception($strClassName.' class doesn\'t exist!');
+        $strClassFileName = strtolower(str_replace('mediaDirectoryInputfield', '', $strClassName));
+
+        if(!file_exists(ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/'.$strClassFileName.'.class.php')) {
+            throw new Exception(ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/'.$strClassFileName.'.class.php not found!<br />');
+        } else {
+            require_once(ASCMS_MODULE_PATH . '/mediadir/lib/inputfields/'.$strClassFileName.'.class.php');
+        }
+        //throw new Exception($strClassName.' class doesn\'t exist!');
     }
 
     return new $strClassName;
