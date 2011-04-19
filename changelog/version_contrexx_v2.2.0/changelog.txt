@@ -11,6 +11,7 @@ Allgemein:
 - Neuer Medienmanager mit Uploadmöglichkeit im Frontend
 - Neuer Uploader, der nun überall verwendet wird. Mithilfe des Uploaders kann das Serverseitige Dateigrössenlimit umgangen werden.
 - SMTP over SSL Unterstützung bei E-Mail Konten (Bsp. Host: ssl://smtp.example.com, Port: 465)
+- Der globale Seitentitel wird bei der PDF-Ansicht als Dokumententitel verwendet.
 
 SEO URL Aliase / Virtuelle Sprachverzeichnisse
 - Unterstützung der Mehrsprachigkeit. Dasselbe Alias kann bei mehreren Sprachen eingesetzt werden.
