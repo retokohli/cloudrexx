@@ -1,10 +1,9 @@
-117@import url(starbox/css/starbox.css);
+@import url(starbox/css/starbox.css);
 
  
 #knowledge_articles #categories {
     float: left;
-    width: 250px;
-    height: 270px;
+    width: auto;
 }
 
 #knowledge_articles #articles {
