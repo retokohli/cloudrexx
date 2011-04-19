@@ -2012,7 +2012,7 @@ function checkAllFields() {
 
     for (var field in fields) {
         var type = fields[field][3];
-        if (type == 'text' || type == 'file' || type == 'password' || type == 'textarea') {
+        if (type == 'text' || type == 'password' || type == 'textarea') {
             value = document.getElementsByName('contactFormField_' + field)[0].value;
             if (value == "" && isRequiredNorm(fields[field][1], value)) {
                 isOk = false;

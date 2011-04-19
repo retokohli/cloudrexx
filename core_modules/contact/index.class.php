@@ -81,7 +81,7 @@ class Contact extends ContactLib
     protected $legacyMode;
 
     /**
-     * used by @link ContactException::_uploadFiles() .
+     * used by @link Contact::_uploadFiles() .
      * remembers the directory made in the first call to _uploadFiles.
      * @var string
      */
@@ -422,7 +422,8 @@ class Contact extends ContactLib
                 }                    
             }
             //cleanup
-            @rmdir($tmpUploadDir);
+            //todo: this does not work for certain reloads - add cleanup routine
+            //@rmdir($tmpUploadDir);
             return $arrFiles;
         }
         else { //legacy function for old uploader
@@ -761,6 +762,8 @@ class Contact extends ContactLib
                     $key    = $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'];
                     $value  = $arrRecipients[$value]['name'];
                 }
+                if($key == 'unique_id') //generated for uploader. no interesting mail content.
+                    continue;
 
                 if(!in_array($key, $textAreaKeys)) { //it's no textarea, indent normally
                     $spaces = 30-strlen($key);
