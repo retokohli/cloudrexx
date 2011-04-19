@@ -513,7 +513,7 @@ class Blog extends BlogLibrary  {
         if ($intMessageId <= 0) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MID']); }
         if (empty($strSubject)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBJECT']); }
         if (empty($strComment)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_COMMENT']); }
-        if (!$objCaptcha->check($strCaptcha) {   $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM']); }
+        if (!$objCaptcha->check($strCaptcha)) {   $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM']); }
 
         //Validate specified-input
         if ($this->_intCurrentUserId == 0) {
