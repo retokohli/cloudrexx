@@ -155,6 +155,32 @@ function contrexx_input2raw($input)
 
 
 /**
+ * Unescapes data from any request and adds slashes for insertion into the database
+ *
+ * Apply to any string taken from a get or post request, or from a cookie
+ * befor inserting into the database.
+ * @param   string $input    The input string
+ * @return  string           The unescaped slashed string
+ */
+function contrexx_input2db($input) {
+    return contrexx_raw2db(contrexx_input2raw($input));
+}
+
+
+/**
+ * Unescapes data from any request and encodes it for use with [X]HTML
+ *
+ * Apply to any string taken from a get or post request, or from a cookie
+ * befor writing it to the HTML response stream.
+ * @param   string $input    The input string
+ * @return  string           The unescaped HTML encoded string
+ */
+function contrexx_input2xhtml($input) {
+    return contrexx_raw2xhtml(contrexx_input2raw($input));
+}
+
+
+/**
  * Adds slashes to the given string
  *
  * Apply to any raw string before inserting it into the database.
