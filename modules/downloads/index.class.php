@@ -369,7 +369,11 @@ class downloads extends DownloadsLibrary
             //skip . and ..
             if($file == '.' || $file == '..') { continue; }
 
-			$file = self::cleanFileName($file);
+			$cleanFile = self::cleanFileName($file);
+            if($cleanFile != $file) {
+                rename($tempPath.'/'.$file, $tempPath.'/'.$cleanFile);
+                $file = $cleanFile;
+            }
 
 			//delete potentially malicious files
             if(!FWValidator::is_file_ending_harmless($file)) {
@@ -380,7 +384,7 @@ class downloads extends DownloadsLibrary
             //check if file needs to be renamed
 			$newName = '';
 			$suffix = '';
-            if (file_exists($path.$file)) {
+            if (file_exists($path.'/'.$file)) {
 				$suffix = '_'.time();
                 if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
 					$newName = $info['filename'].$suffix.'.'.$info['extension'];
