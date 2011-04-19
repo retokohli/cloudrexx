@@ -1,6 +1,6 @@
 <?php
 
-function _mediaUpdate()
+function _media1Update()
 {
     global $_ARRAYLANG, $_CORELANG;
 
