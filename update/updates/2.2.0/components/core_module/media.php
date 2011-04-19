@@ -23,7 +23,7 @@ function _mediaUpdate()
         UpdateUtil::table(
             DBPREFIX.'module_media_settings',
             array(
-                'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true),
+                  'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
                 'value'      => array('type' => 'VARCHAR(255)', 'after' => 'name')
             ),
