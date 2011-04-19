@@ -4333,6 +4333,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, 
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (58,'auction','TXT_AUCTION_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (59,'partners','TXT_PARTNERS_MODULE_DESCRIPTION','y',0,0);
 INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (60,'mediadir','TXT_MEDIADIR_MODULE_DESCTIPTION','y',0,0);
+INSERT INTO `contrexx_modules` (`id`, `name`, `description_variable`, `status`, `is_required`, `is_core`) VALUES (61,'captcha','Catpcha Module','y',1,1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
