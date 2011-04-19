@@ -21,7 +21,7 @@ function _mediaUpdate()
 
     try {
         UpdateUtil::table(
-            DBPREFIX.'module_mediadir_settings',
+            DBPREFIX.'module_media_settings',
             array(
                 'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true),
                 'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
