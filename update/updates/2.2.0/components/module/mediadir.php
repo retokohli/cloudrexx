@@ -328,11 +328,7 @@ function _mediadirUpdate()
               'ip'             => array('type' => 'VARCHAR(100)', 'after' => 'date'),
               'vote'           => array('type' => 'INT(11)', 'after' => 'ip')
           )
-                        );
-
-      if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'modules WHERE name="mediadir"')->EOF) {
-        UpdateUtil::sql('INSERT INTO '.DBPREFIX.'modules VALUES(60,"mediadir","TXT_MEDIADIR_MODULE_DESCTIPTION","y",0,0)');
-      }
+      );
     }
     catch (UpdateException $e) {
         // we COULD do something else here..
