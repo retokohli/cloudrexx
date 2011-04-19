@@ -224,6 +224,9 @@ function _statsUpdate()
         );
         //fill pageTitle with current titles
         UpdateUtil::sql('UPDATE '.DBPREFIX.'stats_requests SET pageTitle = ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId ) WHERE EXISTS ( SELECT title FROM '.DBPREFIX.'content WHERE id=pageId )');
+		
+		//2.2.0: new config option 'exclude_identifying_info'
+		UpdateUtil::sql('INSERT IGNORE INTO '.DBPREFIX'.stats_config (id, name, value, status) VALUES (20, "exclude_identifying_info", 1, 1)');
 
     }
     catch (UpdateException $e) {
