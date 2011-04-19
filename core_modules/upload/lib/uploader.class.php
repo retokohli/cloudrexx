@@ -296,7 +296,7 @@ abstract class Uploader
         if($this->isBackendRequest)
             $uploadPath = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=upload';
         else
-            $uploadPath = ASCMS_PATH_OFFSET.'/index.php?section=upload&cmd=upload';          
+            $uploadPath = CONTREXX_SCRIPT_PATH.'?section=upload&cmd=upload';          
         $uploadPath .= '&uploadId='.$this->uploadId.'&uploadType='.$type;
         return $uploadPath;
     }
