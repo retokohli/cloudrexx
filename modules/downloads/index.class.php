@@ -581,50 +581,34 @@ class downloads extends DownloadsLibrary
 
         require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
 
-        $objModulChecker = new ModuleChecker();
-        if ($objModulChecker->getModuleStatusById(52) && $_CONFIG['fileUploaderStatus'] == 'on') {
-            if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
-                $path = 'index.php?section=fileUploader&amp;standalone=true&amp;type=downloads&amp;catId='.$objCategory->getId();
-                $this->objTemplate->setVariable(array(
-                    'DOWNLOADS_FILE_UPLOAD_BUTTON'  => '<input type="button" onclick="objDAMPopup=window.open(\''.$path.'\',\'fileUploader\',\'width=800,height=600,resizable=yes,status=no,scrollbars=no\');objDAMPopup.focus();" value="'.$_ARRAYLANG['TXT_DOWNLOADS_BROWSE'].'" />',
-                    'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE']
-                ));
-                $this->objTemplate->parse('downloads_advanced_file_upload');
-            }
-
-            if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
-                $this->objTemplate->hideBlock('downloads_simple_file_upload');
-            }
-        } else {
-            if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
-                $objFWSystem = new FWSystem();
-
-				//Uploader button handling
-				JS::activate('cx');
-				require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
-				//paths we want to remember for handling the uploaded files
-				$data = array(
-					'path' => ASCMS_DOWNLOADS_IMAGES_PATH,
-					'webPath' => ASCMS_DOWNLOADS_IMAGES_WEB_PATH,
-					'category_id' => $objCategory->getId(),
-				);
-				$comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
-				$comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/downloads/index.class.php', 'downloads', 'uploadFinished'));
-				$comboUp->setData($data);
-				//set instance name to combo_uploader so we are able to catch the instance with js
-				$comboUp->setJsInstanceName('exposed_combo_uploader');
-
-                $this->objTemplate->setVariable(array(
-					'COMBO_UPLOADER_CODE' 			=> $comboUp->getXHtml(true),
-					'DOWNLOADS_UPLOAD_REDIRECT_URL' => $redirectUrl,
-                    'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
-                    'TXT_DOWNLOADS_UPLOAD_FILE'     => $_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE'],
-                    'TXT_DOWNLOADS_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_DOWNLOADS_MAX_FILE_SIZE'],
-                    'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE'],
-                    'DOWNLOADS_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
-                ));
-                $this->objTemplate->parse('downloads_simple_file_upload');
-            }
+        if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
+            $objFWSystem = new FWSystem();
+            
+			//Uploader button handling
+            JS::activate('cx');
+            require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php';
+            //paths we want to remember for handling the uploaded files
+            $data = array(
+                'path' => ASCMS_DOWNLOADS_IMAGES_PATH,
+                'webPath' => ASCMS_DOWNLOADS_IMAGES_WEB_PATH,
+                'category_id' => $objCategory->getId(),
+            );
+            $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+            $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/downloads/index.class.php', 'downloads', 'uploadFinished'));
+            $comboUp->setData($data);
+            //set instance name to combo_uploader so we are able to catch the instance with js
+            $comboUp->setJsInstanceName('exposed_combo_uploader');
+            
+            $this->objTemplate->setVariable(array(
+                'COMBO_UPLOADER_CODE' 			=> $comboUp->getXHtml(true),
+                'DOWNLOADS_UPLOAD_REDIRECT_URL' => $redirectUrl,
+                'TXT_DOWNLOADS_BROWSE'          => $_ARRAYLANG['TXT_DOWNLOADS_BROWSE'],
+                'TXT_DOWNLOADS_UPLOAD_FILE'     => $_ARRAYLANG['TXT_DOWNLOADS_UPLOAD_FILE'],
+                'TXT_DOWNLOADS_MAX_FILE_SIZE'   => $_ARRAYLANG['TXT_DOWNLOADS_MAX_FILE_SIZE'],
+                'TXT_DOWNLOADS_ADD_NEW_FILE'    => $_ARRAYLANG['TXT_DOWNLOADS_ADD_NEW_FILE'],
+                'DOWNLOADS_MAX_FILE_SIZE'       => $this->getFormatedFileSize($objFWSystem->getMaxUploadFileSize())
+            ));
+            $this->objTemplate->parse('downloads_simple_file_upload');
 
             if ($this->objTemplate->blockExists('downloads_advanced_file_upload')) {
                 $this->objTemplate->hideBlock('downloads_advanced_file_upload');
