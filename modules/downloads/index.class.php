@@ -384,6 +384,7 @@ class downloads extends DownloadsLibrary
             //check if file needs to be renamed
 			$newName = '';
 			$suffix = '';
+
             if (file_exists($path.'/'.$file)) {
 				$suffix = '_'.time();
                 if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
@@ -393,7 +394,9 @@ class downloads extends DownloadsLibrary
                 }
             }
 
-			ImageManager::_createThumb(ASCMS_DOWNLOADS_IMAGES_PATH.'/', ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/', $info['filename'].$suffix.'.'.$info['extension']);
+            if(!isset($arrFilesToRename[$file])) { //file will keep this name - create thumb
+                ImageManager::_createThumb($tempPath.'/', $tempWebPath.'/', $file);
+            }
 
 			$objDownloads = new downloads('');
 			$objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads);
@@ -402,6 +405,8 @@ class downloads extends DownloadsLibrary
         //rename files where needed
         foreach($arrFilesToRename as $oldName => $newName){
             rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);
+            //file will keep this name - create thumb
+            ImageManager::_createThumb($tempPath.'/', $tempWebPath.'/', $newName);
         }
 
         //remeber the uploaded files
