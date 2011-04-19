@@ -42,7 +42,7 @@ function _mediaUpdate()
                            array("media3_frontend_managable","off"),
                            array("media4_frontend_managable","off")
                            );
-o
+
         for($i = 0; $i < count($arrValues); $i++) {
             $rs = UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings WHERE name="'.$arrValues[$i][0].'";');
             if($rs->EOF) {
