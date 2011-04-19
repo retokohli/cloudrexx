@@ -44,9 +44,9 @@ function _media1Update()
                            );
 
         for($i = 0; $i < count($arrValues); $i++) {
-            $rs = UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_settings WHERE name="'.$arrValues[$i][0].'";');
+            $rs = UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_media_settings WHERE name="'.$arrValues[$i][0].'";');
             if($rs->EOF) {
-                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_settings VALUES ("'.$arrValues[$i][0].'","'.$arrValues[$i][1].'")');
+                UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_media_settings VALUES ("'.$arrValues[$i][0].'","'.$arrValues[$i][1].'")');
             }
         }
     }
