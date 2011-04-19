@@ -911,7 +911,7 @@ class MediaLibrary
                                     var fileExt     = \$J('#fileExt').val();
                                     if (newFileName != oldFileName && \$J.trim(newFileName) != "") {
                                         actionPath += '&newfile='+newFileName+fileExt;
-                                        \$J(location).attr('href', actionPath);
+                                        window.location = actionPath;
                                     } else {
                                         \$J('#filename').focusout();
                                     }
