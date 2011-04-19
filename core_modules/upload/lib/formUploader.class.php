@@ -41,7 +41,7 @@ class FormUploader extends Uploader
         if($this->isBackendRequest)
             $iframeUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=formUploaderFrame&uploadId='.$this->uploadId;
         else
-            $iframeUrl = ASCMS_PATH_OFFSET.'/index.php?section=upload&cmd=formUploaderFrame&uploadId='.$this->uploadId;
+            $iframeUrl = CONTREXX_SCRIPT_PATH.'?section=upload&cmd=formUploaderFrame&uploadId='.$this->uploadId;
       
         $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);

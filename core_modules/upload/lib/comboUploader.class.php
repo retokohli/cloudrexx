@@ -67,7 +67,13 @@ class ComboUploader extends Uploader
         //from where the combouploader gets the code on an uploader switch
         $cmdOrSection = $this->isBackendRequest ? 'cmd' : 'section';
         $actOrCmd = $this->isBackendRequest ? 'act' : 'cmd';
-        $switchUrl = ($this->isBackendRequest ? ASCMS_ADMIN_WEB_PATH : ASCMS_PATH_OFFSET).'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode'; 
+        $switchUrl;
+        if($this->isBackendRequest) {
+            $switchUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode';
+        }
+        else {
+            $switchUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode';  
+        }
                 
         $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
