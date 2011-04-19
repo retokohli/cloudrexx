@@ -4,10 +4,10 @@ function _uploadUpdate()
 {
     try { //update/create settings
         //remove fileuploader setting
-        UpdateUtil::sql('DELETE FROM '.DBPREFIX.'_settings WHERE setid=70 AND setname="fileUploaderStatus"');
+        UpdateUtil::sql('DELETE FROM '.DBPREFIX.'settings WHERE setid=70 AND setname="fileUploaderStatus"');
         //see if we have already inserted the new settings
-        UpdateUtil::sql('SELECT id FROM '.DBPREFIX.'_settings WHERE id=73 OR id=74');
-        $res = UpdateUtil::sql('DELETE FROM '.DBPREFIX.'_settings WHERE setid=70 AND setname="fileUploaderStatus"');
+        UpdateUtil::sql('SELECT id FROM '.DBPREFIX.'settings WHERE id=73 OR id=74');
+        $res = UpdateUtil::sql('DELETE FROM '.DBPREFIX.'settings WHERE setid=70 AND setname="fileUploaderStatus"');
 
         $id73found = false;
         $id74found = false;
@@ -21,9 +21,9 @@ function _uploadUpdate()
         }
 
         if(!$id73found) //insert if not found
-            UpdateUtil::sql('INSERT INTO '.DBPREFIX.'_settings VALUES(73,"advancedUploadFrontend","on",52)');
+            UpdateUtil::sql('INSERT INTO '.DBPREFIX.'settings VALUES(73,"advancedUploadFrontend","on",52)');
         if(!$id74found) //insert if not found
-            UpdateUtil::sql('INSERT INTO '.DBPREFIX.'_settings VALUES(74,"advancedUploadBackend","on",52)');
+            UpdateUtil::sql('INSERT INTO '.DBPREFIX.'settings VALUES(74,"advancedUploadBackend","on",52)');
     }
     catch (UpdateException $e) {
         DBG::trace();
