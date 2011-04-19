@@ -1657,7 +1657,7 @@ class ContactManager extends ContactLib
      * @param string $value
      * @return string
      */
-    function _escapeCsvValue(&$value)
+    function _escapeCsvValue($value)
     {
         $value = preg_replace('/\r\n/', "\n", $value);
         $value = $this->csv_mb_convert_encoding($value, $this->_csvCharset, CONTREXX_CHARSET);;
