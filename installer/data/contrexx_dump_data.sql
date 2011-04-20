@@ -4506,7 +4506,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (66,'forumTagContent','0',20);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (67,'useVirtualLanguagePath','off',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (68,'dataUseModule','1',48);
-INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (69,'frontendEditingStatus','on',1);
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (69,'frontendEditingStatus','off',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (70,'fileUploaderStatus','off',52);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (71,'coreListProtectedPages','off',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (72,'useKnowledgePlaceholders','1',56);
