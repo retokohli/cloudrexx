@@ -1,28 +1,56 @@
-Nutzungsbedingungen<br />
-Contrexx – Lizenzvereinbarung<br />
-Comvation AG, 3600 Thun, Switzerland<br />
-1. Präambel<br />
-Diese Lizenzvereinbarung bezieht sich auf das von der Comvation AG veröffentlichte Web Content Management System Contrexx, welches alle Bestandteile des von Comvation AG bereitgestellten Quelltextes, also den gesamten Inhalt der gelieferten Dateien darstellt.<br />
-<br />
-Contrexx ist eine urheberrechtlich geschützte Arbeit. Das Urheberrecht liegt bei der Comvation AG, 3600 Thun, Switzerland. Alle Rechte an Contrexx, die mit dieser Lizenzvereinbarung nicht ausdrücklich an den Lizenznehmer übertragen werden, bleiben ausschliesslich dem Lizenzgeber vorbehalten. Sollten Sie Fragen zu dieser Lizenzvereinbarung haben, wenden Sie sich bitte an Comvation AG <info@comvation.com>. Weitere Informationen finden Sie unter http://www.contrexx.com/.<br />
-2. Verwendung<br />
-Unter der Voraussetzung, dass der Lizenznehmer die Verpflichtungen gemäss dieser Lizenzvereinbarung einhält, ist der Lizenznehmer für jede erworbene Lizenz berechtigt, eine Kopie der Serversoftware auf einem einzigen Server zu installieren. Falls eine weitere Kopie der Serversoftware auf dem gleichen Server installiert wird, ist dafür eine zusätzliche Lizenz erforderlich.<br />
-3. Verbreitung<br />
-Es ist dem Lizenznehmer ausdrücklich untersagt, die Contrexx Software insgesamt oder Teile hiervon, auch Teile des Source Codes (Quelltext) an Dritte weiterzugeben respektive für andere Zwecke zu nutzen. Verstösst der Lizenznehmer gegen diese Bestimmung, steht dem Lizenzgeber ein Schadenersatz von CHF 50'000 zu. In diesem Sinne ist jegliche Reproduktion oder jeglicher Weitervertrieb der Software ausserhalb der Bestimmungen des Lizenzvertrages rechtlich ausdrücklich untersagt und kann schwere zivil- und strafrechtliche Folgen nach sich ziehen. Jede Zuwiderhandlung wird exzessiv verfolgt. Es ist nicht erlaubt, Contrexx im Rahmen dieser Lizenz zu verkaufen, verleihen oder zu vermieten, als Grundlage für eigene Softwareprogramme zu verwenden oder weiter zu lizensieren, es sei denn unter ausdrücklicher schriftlicher Genehmigung des Lizenzgebers.<br />
-<br />
-Ohne Einschränkungen des Vorausgehenden ist das Kopieren oder Reproduzieren der Software auf einem anderen Server oder an anderer Stelle zum Zwecke der weiteren Reproduktion oder des Weitervertriebes ausdrücklich verboten. Für Programmkomponenten, welche in Contrexx verwendet wurden und unter eigener Lizenz stehen, gelten die jeweiligen spezifischen Lizenzbedingungen.<br />
-4. Weiterentwicklung<br />
-Anpassungen oder Erweiterungen an Contrexx dürfen für den eigenen Verwendungszweck vorgenommen werden. Bedingungen sind, dass Anpassungen oder Erweiterungen die bestehenden Copyright Angaben im Quelltext nicht ändern oder entfernen. Die Support- und Updateleistungen des Lizenzgebers werden dadurch per sofort aufgehoben.<br />
-<br />
-Es ist nicht erlaubt, Anpassungen oder Erweiterungen gegen eine Gebühr weiterzugeben, zu verkaufen, verleihen oder zu vermieten, es sei denn unter schriftlicher Genehmigung des Lizenzgebers. Contrexx Partnerfirmen mit gültigem Contrexx Partnervertrag dürfen, in Rücksprache mit dem Lizenzgeber, Anpassungen oder Erweiterungen an Drittkunden gegen eine Gebühr veräussern. Der Lizenzgeber behält sich das Recht vor, Anpassungen oder Erweiterungen von Drittentwicklern ohne Einschränkungen zu verwenden.<br />
-5. Gewährleistung<br />
-Dem Lizenznehmer wird Contrexx im Rahmen dieser Lizenz so wie es ist, ohne Gewährleistung, zur Verfügung gestellt. Es besteht keine Gewährleistung für die Software, weder ausgedrückt oder unterstellt, einschliesslich, aber nicht darauf beschränkt, etwaiger unterstellter Gewährleistungen, die sich auf Marktgängigkeit und Gebrauchsfähigkeit für einen bestimmten Zweck beziehen.<br />
-<br />
-Keinesfalls übernimmt der Lizenzgeber und/oder deren Lieferanten Haftungen für indirekte oder Folgeschäden oder sonstige Schäden, die auf Nutzungsausfall, Verlust von Daten oder entgangenem Gewinn gestützt werden und die durch die oder im Zusammenhang mit der Verwendung von auf diesem Server verfügbaren Informationen entstanden sind. Der Lizenzgeber und dessen Lieferanten behalten sich die Möglichkeit vor, jederzeit Verbesserungen und/oder Änderungen an den hier beschriebenen Produkten und/oder Programmen vorzunehmen. Insbesondere ist die Haftung für Veränderungen von dritter Seite ausgeschlossen.<br />
-6. Einverständnis:<br />
-Sofern der Lizenznehmer mit dem Lizenzgeber von Contrexx nicht schriftlich einen anders lautenden Lizenzvertrag abgeschlossen hat, erklärt er durch das Herunterladen, Installieren oder Anpassen von Contrexx ausdrücklich sein Einverständnis mit den Bestimmungen der vorliegenden Lizenzvereinbarung. Mit der Annahme des Lizenzvertrages gewährt Ihnen der Lizenzgeber eine nicht-ausschliessliche und nicht übertragbare Lizenz zur Nutzung von Contrexx.<br />
-<br />
-Sollte der Lizenznehmer einigen oder allen Bedingungen dieses Lizenzvertrages nicht zustimmen, ist ihm die Nutzung der Software nicht, auch nicht in Teilen, gestattet und muss umgehend entfernt werden.<br />
-7. Gerichtsstand<br />
-Für Streitigkeiten aus diesem Lizenzvertrag gilt der Gerichtsstand Thun (Schweiz).<br />
-Copyright © 2007-2011Comvation AG, 3600 Thun, Switzerland - Alle Rechte vorbehalten.<br />
+============================================================================= 
+Contrexx - kommerzielle Lizenz [15.03.2011]
+============================================================================= 
+Firma: COMVATION AG Militärstrasse 6, 3600 Thun, Switzerland
+URL:   www.contrexx.com
+Autor: Ivan Schmid - ivan.schmid@comvation.com
+
+Lizenz: lizenz_de.txt
+============================================================================= 
+Copyright (c) 2011 - COMVATION AG - All rights reserved. 
+============================================================================= 
+
+Contrexx – Lizenzvereinbarung
+Comvation AG, 3600 Thun, Switzerland
+
+1. Präambel
+
+Diese Lizenzvereinbarung bezieht sich auf das von der Comvation AG veröffentlichte Web Content Management System Contrexx, welches alle Bestandteile des von Comvation AG bereitgestellten Quelltextes, also den gesamten Inhalt der gelieferten Dateien darstellt.
+
+Contrexx ist eine urheberrechtlich geschützte Arbeit. Das Urheberrecht liegt bei der Comvation AG, 3600 Thun, Switzerland. Alle Rechte an Contrexx, die mit dieser Lizenzvereinbarung nicht ausdrücklich an den Lizenznehmer übertragen werden, bleiben ausschliesslich dem Lizenzgeber vorbehalten. Sollten Sie Fragen zu dieser Lizenzvereinbarung haben, wenden Sie sich bitte an Comvation AG <info@comvation.com>. Weitere Informationen finden Sie unter http://www.contrexx.com/.
+
+2. Verwendung
+
+Unter der Voraussetzung, dass der Lizenznehmer die Verpflichtungen gemäss dieser Lizenzvereinbarung einhält, ist der Lizenznehmer für jede erworbene Lizenz berechtigt, eine Kopie der Serversoftware auf einem einzigen Server zu installieren. Falls eine weitere Kopie der Serversoftware auf dem gleichen Server installiert wird, ist dafür eine zusätzliche Lizenz erforderlich.
+
+3. Verbreitung
+
+Es ist dem Lizenznehmer ausdrücklich untersagt, die Contrexx Software insgesamt oder Teile hiervon, auch Teile des Source Codes (Quelltext) an Dritte weiterzugeben respektive für andere Zwecke zu nutzen. Verstösst der Lizenznehmer gegen diese Bestimmung, steht dem Lizenzgeber ein Schadenersatz von CHF 50'000 zu. In diesem Sinne ist jegliche Reproduktion oder jeglicher Weitervertrieb der Software ausserhalb der Bestimmungen des Lizenzvertrages rechtlich ausdrücklich untersagt und kann schwere zivil- und strafrechtliche Folgen nach sich ziehen. Jede Zuwiderhandlung wird exzessiv verfolgt. Es ist nicht erlaubt, Contrexx im Rahmen dieser Lizenz zu verkaufen, verleihen oder zu vermieten, als Grundlage für eigene Softwareprogramme zu verwenden oder weiter zu lizensieren, es sei denn unter ausdrücklicher schriftlicher Genehmigung des Lizenzgebers.
+
+Ohne Einschränkungen des Vorausgehenden ist das Kopieren oder Reproduzieren der Software auf einem anderen Server oder an anderer Stelle zum Zwecke der weiteren Reproduktion oder des Weitervertriebes ausdrücklich verboten. Für Programmkomponenten, welche in Contrexx verwendet wurden und unter eigener Lizenz stehen, gelten die jeweiligen spezifischen Lizenzbedingungen.
+
+4. Weiterentwicklung
+
+Anpassungen oder Erweiterungen an Contrexx dürfen für den eigenen Verwendungszweck vorgenommen werden. Bedingungen sind, dass Anpassungen oder Erweiterungen die bestehenden Copyright Angaben im Quelltext nicht ändern oder entfernen. Die Support- und Updateleistungen des Lizenzgebers werden dadurch per sofort aufgehoben.
+
+Es ist nicht erlaubt, Anpassungen oder Erweiterungen gegen eine Gebühr weiterzugeben, zu verkaufen, verleihen oder zu vermieten, es sei denn unter schriftlicher Genehmigung des Lizenzgebers. Contrexx Partnerfirmen mit gültigem Contrexx Partnervertrag dürfen, in Rücksprache mit dem Lizenzgeber, Anpassungen oder Erweiterungen an Drittkunden gegen eine Gebühr veräussern. Der Lizenzgeber behält sich das Recht vor, Anpassungen oder Erweiterungen von Drittentwicklern ohne Einschränkungen zu verwenden.
+
+5. Gewährleistung
+
+Dem Lizenznehmer wird Contrexx im Rahmen dieser Lizenz so wie es ist, ohne Gewährleistung, zur Verfügung gestellt. Es besteht keine Gewährleistung für die Software, weder ausgedrückt oder unterstellt, einschliesslich, aber nicht darauf beschränkt, etwaiger unterstellter Gewährleistungen, die sich auf Marktgängigkeit und Gebrauchsfähigkeit für einen bestimmten Zweck beziehen.
+
+Keinesfalls übernimmt der Lizenzgeber und/oder deren Lieferanten Haftungen für indirekte oder Folgeschäden oder sonstige Schäden, die auf Nutzungsausfall, Verlust von Daten oder entgangenem Gewinn gestützt werden und die durch die oder im Zusammenhang mit der Verwendung von auf diesem Server verfügbaren Informationen entstanden sind. Der Lizenzgeber und dessen Lieferanten behalten sich die Möglichkeit vor, jederzeit Verbesserungen und/oder Änderungen an den hier beschriebenen Produkten und/oder Programmen vorzunehmen. Insbesondere ist die Haftung für Veränderungen von dritter Seite ausgeschlossen.
+
+6. Einverständnis
+
+Sofern der Lizenznehmer mit dem Lizenzgeber von Contrexx nicht schriftlich einen anders lautenden Lizenzvertrag abgeschlossen hat, erklärt er durch das Herunterladen, Installieren oder Anpassen von Contrexx ausdrücklich sein Einverständnis mit den Bestimmungen der vorliegenden Lizenzvereinbarung. Mit der Annahme des Lizenzvertrages gewährt Ihnen der Lizenzgeber eine nicht-ausschliessliche und nicht übertragbare Lizenz zur Nutzung von Contrexx.
+
+Sollte der Lizenznehmer einigen oder allen Bedingungen dieses Lizenzvertrages nicht zustimmen, ist ihm die Nutzung der Software nicht, auch nicht in Teilen, gestattet und muss umgehend entfernt werden.
+
+7. Gerichtsstand
+
+Für Streitigkeiten aus diesem Lizenzvertrag gilt der Gerichtsstand Thun (Schweiz).
+
+
+Copyright © 2007-2011
+Comvation AG, 3600 Thun, Switzerland - Alle Rechte vorbehalten.

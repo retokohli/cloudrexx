@@ -380,7 +380,7 @@ class Installer
 
 		// set template variables
 		$objTpl->setVariable(array(
-			'LICENSE'	=> $license,
+			'LICENSE'	=> nl2br(preg_replace('/^([0-9]\.\s[^\n]+)\n$/im', '<strong>\1</strong>', $license)),
 			'CHECKED'	=> (isset($_SESSION['installer']['license']) && $_SESSION['installer']['license']) ? "checked=\"checked\"" : ""
 		));
 

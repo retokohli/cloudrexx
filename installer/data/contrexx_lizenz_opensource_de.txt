@@ -1,1 +1,108 @@
-============================================================================= <br />Contrexx Open Source [20.06.2007]<br />============================================================================= <br />Firma: COMVATION AG Militärstrasse 6, 3600 Thun, Switzerland<br />URL:   www.contrexx.com<br />Autor: Ivan Schmid - ivan.schmid@comvation.com<br /><br />Lizenz: lizenz_opensource_de.txt<br />============================================================================= <br />Copyright (c) 2007 - COMVATION AG - All rights reserved. <br />============================================================================= <br /><br />Contrexx Open Source - Lizenzvereinbarung<br />COMVATION AG, 3600 Thun, Switzerland<br /><br />1. Präambel<br /><br />Diese Lizenzvereinbarung bezieht sich auf das von der COMVATION AG<br />veröffentlichte Web Content Management System Contrexx Open <br />Source, welches alle Bestandteile des von COMVATION AG<br />bereitgestellten Quelltextes, also den gesamten Inhalt der gelieferten Dateien <br />darstellt.<br />Contrexx Open Source ist eine urheberrechtlich geschützte Arbeit. Das<br />Urheberrecht liegt bei der COMVATION AG, 3600 Thun, Switzerland.<br />Alle Rechte an Contrexx Open Source, die mit dieser Lizenzvereinbarung nicht <br />ausdrücklich an den Lizenznehmer übertragen werden, bleiben ausschliesslich dem <br />Lizenzgeber vorbehalten.<br /><br />Sollten Sie Fragen zu dieser Lizenzvereinbarung haben, wenden Sie sich bitte an <br />COMVATION AG &lt;info@comvation.com&gt;. Weitere Informationen finden <br />Sie unter http://www.contrexx.com/.<br /><br />2. Verwendung<br /><br />Wird Contrexx Open Source als Ganzes oder in Teilen für kommerzielle Zwecke <br />eingesetzt muss eine "kommerzielle Lizenz" erworben werden. Der Anwender ist <br />für den lizenzkonformen Einsatz in jedem Falle verantwortlich.<br /><br />Eine "Lizenz zum kommerziellen Einsatz" ist über die Contrexx Website <br />http://www.contrexx.com/ zu beziehen.<br /><br />3. Verbreitung<br /><br />Sie dürfen auf beliebigen Medien unveränderte Kopien des Quelltextes des <br />Programms, wie sie ihn erhalten haben, anfertigen und verbreiten. Voraussetzung <br />hierfür ist, dass Sie mit jeder Kopie einen entsprechenden Copyright-Vermerk <br />sowie einen Haftungsausschluss veröffentlichen und desweiteren allen anderen <br />Empfängern des Programms zusammen mit dem Programm eine Kopie dieser Lizenz <br />zukommen lassen. Sie dürfen für den eigentlichen Kopiervorgang eine Gebühr <br />verlangen.<br />Es ist nicht erlaubt, Contrexx Open Source im Rahmen dieser Lizenz gegen eine <br />Gebühr zu verkaufen, verleihen oder zu vermieten, als Grundlage für eigene <br />Softwareprogramme zu verwenden oder weiterzulizensieren, es sei denn unter <br />ausdrücklicher schriftlicher Genehmigung des Lizenzgebers. Für<br />Programmkomponenten, welche in Contrexx Open Source verwendet wurden und unter <br />eigener Lizenz stehen, gelten die jeweiligen spezifischen Lizenzbedingungen.<br /><br />4. Weiterentwicklung<br /><br />Anpassungen oder Erweiterungen an Contrexx Open Source dürfen für den eigenen <br />Verwendungszweck vorgenommen werden. Bedingungen sind, dass Anpassungen oder <br />Erweiterungen den bestehenden Copyright-Vermerk im Quelltext nicht ändern oder <br />entfernen.<br />Anpassungen oder Erweiterungen, welche weitergegeben werden, müssen als <br />Sourcecode mit dieser Lizenzvereinbarung weitergegeben und klar als solche <br />gekennzeichnet werden. Es ist nicht erlaubt, Anpassungen oder Erweiterungen <br />gegen eine Gebühr zu verkaufen, verleihen oder zu vermieten, es sei denn unter <br />schriftlicher Genehmigung des Lizenzgebers. Sie dürfen für den eigentlichen <br />Kopiervorgang eine Gebühr verlangen. Der Lizenzgeber behält sich das Recht vor, <br />Anpassungen oder Erweiterungen von Drittentwickler ohne Einschränkungen zu <br />verwenden.<br /><br />5. Gewährleistung<br /><br />Dem Lizenznehmer wird Contrexx Open Source im Rahmen dieser Lizenz so wie es <br />ist, ohne Gewährleistung, zur Verfügung gestellt.<br /><br />Keinesfalls übernimmt der Lizenzgeber und/oder deren Lieferanten Haftungen für <br />indirekte oder Folgeschäden oder sonstige Schäden, die auf Nutzungsausfall, <br />Verlust von Daten oder entgangenem Gewinn gestützt werden und die durch die <br />oder im Zusammenhang mit der Verwendung von auf diesem Server verfügbaren <br />Informationen entstanden sind. Der Lizenzgeber und deren Lieferanten behalten <br />sich die Möglichkeit vor, jederzeit Verbesserungen und/oder Änderungen an den <br />hier beschriebenen Produkten und/oder Programmen vorzunehmen. Insbesondere ist <br />die Haftung für Veränderungen von dritter Seite ausgeschlossen.<br /><br />6. Einverständnis:<br /><br />Sofern der Lizenznehmer mit dem Lizenzgeber von Contrexx Open Source nicht <br />schriftlich einen anders lautenden Lizenzvertrag abgeschlossen hat, erklärt er <br />durch das Herunterladen, Installieren oder Anpassen von Contrexx Open Source <br />ausdrücklich sein Einverständnis mit den Bestimmungen der vorliegenden <br />Lizenzvereinbarung. Mit der Annahme des Lizenzvertrages gewährt Ihnen der <br />Lizenzgeber eine nicht-ausschliessliche und nicht übertragbare Lizenz zur <br />Nutzung von Contrexx Open Source.<br /><br />Sollte der Lizenznehmer einigen oder allen Bedingungen dieses<br />Lizenzvertrages nicht zustimmen, ist ihm die Nutzung der Software nicht, auch <br />nicht in Teilen gestattet und muss umgehend entfernt werden.<br /><br />7. Gerichtsstand<br /><br />Für Streitigkeiten aus diesem Lizenzvertrag gilt der Gerichtsstand<br />Thun (Schweiz).<br /><br />Copyright © 2007<br />COMVATION AG, 3600 Thun, Switzerland<br />Alle Rechte vorbehalten.<br />
+============================================================================= 
+Contrexx Open Source [15.03.2011]
+============================================================================= 
+Firma: COMVATION AG Militärstrasse 6, 3600 Thun, Switzerland
+URL:   www.contrexx.com
+Autor: Ivan Schmid - ivan.schmid@comvation.com
+
+Lizenz: lizenz_opensource_de.txt
+============================================================================= 
+Copyright (c) 2011 - COMVATION AG - All rights reserved. 
+============================================================================= 
+
+Contrexx Open Source - Lizenzvereinbarung
+COMVATION AG, 3600 Thun, Switzerland
+
+1. Präambel
+
+Diese Lizenzvereinbarung bezieht sich auf das von der COMVATION AG
+veröffentlichte Web Content Management System Contrexx Open 
+Source, welches alle Bestandteile des von COMVATION AG
+bereitgestellten Quelltextes, also den gesamten Inhalt der gelieferten Dateien 
+darstellt.
+Contrexx Open Source ist eine urheberrechtlich geschützte Arbeit. Das
+Urheberrecht liegt bei der COMVATION AG, 3600 Thun, Switzerland.
+Alle Rechte an Contrexx Open Source, die mit dieser Lizenzvereinbarung nicht 
+ausdrücklich an den Lizenznehmer übertragen werden, bleiben ausschliesslich dem 
+Lizenzgeber vorbehalten.
+
+Sollten Sie Fragen zu dieser Lizenzvereinbarung haben, wenden Sie sich bitte an 
+COMVATION AG &lt;info@comvation.com&gt;. Weitere Informationen finden 
+Sie unter http://www.contrexx.com/.
+
+2. Verwendung
+
+Wird Contrexx Open Source als Ganzes oder in Teilen für kommerzielle Zwecke 
+eingesetzt muss eine "kommerzielle Lizenz" erworben werden. Der Anwender ist 
+für den lizenzkonformen Einsatz in jedem Falle verantwortlich.
+
+Eine "Lizenz zum kommerziellen Einsatz" ist über die Contrexx Website 
+http://www.contrexx.com/ zu beziehen.
+
+3. Verbreitung
+
+Sie dürfen auf beliebigen Medien unveränderte Kopien des Quelltextes des 
+Programms, wie sie ihn erhalten haben, anfertigen und verbreiten. Voraussetzung 
+hierfür ist, dass Sie mit jeder Kopie einen entsprechenden Copyright-Vermerk 
+sowie einen Haftungsausschluss veröffentlichen und desweiteren allen anderen 
+Empfängern des Programms zusammen mit dem Programm eine Kopie dieser Lizenz 
+zukommen lassen. Sie dürfen für den eigentlichen Kopiervorgang eine Gebühr 
+verlangen.
+Es ist nicht erlaubt, Contrexx Open Source im Rahmen dieser Lizenz gegen eine 
+Gebühr zu verkaufen, verleihen oder zu vermieten, als Grundlage für eigene 
+Softwareprogramme zu verwenden oder weiterzulizensieren, es sei denn unter 
+ausdrücklicher schriftlicher Genehmigung des Lizenzgebers. Für
+Programmkomponenten, welche in Contrexx Open Source verwendet wurden und unter 
+eigener Lizenz stehen, gelten die jeweiligen spezifischen Lizenzbedingungen.
+
+4. Weiterentwicklung
+
+Anpassungen oder Erweiterungen an Contrexx Open Source dürfen für den eigenen 
+Verwendungszweck vorgenommen werden. Bedingungen sind, dass Anpassungen oder 
+Erweiterungen den bestehenden Copyright-Vermerk im Quelltext nicht ändern oder 
+entfernen.
+Anpassungen oder Erweiterungen, welche weitergegeben werden, müssen als 
+Sourcecode mit dieser Lizenzvereinbarung weitergegeben und klar als solche 
+gekennzeichnet werden. Es ist nicht erlaubt, Anpassungen oder Erweiterungen 
+gegen eine Gebühr zu verkaufen, verleihen oder zu vermieten, es sei denn unter 
+schriftlicher Genehmigung des Lizenzgebers. Sie dürfen für den eigentlichen 
+Kopiervorgang eine Gebühr verlangen. Der Lizenzgeber behält sich das Recht vor, 
+Anpassungen oder Erweiterungen von Drittentwickler ohne Einschränkungen zu 
+verwenden.
+
+5. Gewährleistung
+
+Dem Lizenznehmer wird Contrexx Open Source im Rahmen dieser Lizenz so wie es 
+ist, ohne Gewährleistung, zur Verfügung gestellt.
+
+Keinesfalls übernimmt der Lizenzgeber und/oder deren Lieferanten Haftungen für 
+indirekte oder Folgeschäden oder sonstige Schäden, die auf Nutzungsausfall, 
+Verlust von Daten oder entgangenem Gewinn gestützt werden und die durch die 
+oder im Zusammenhang mit der Verwendung von auf diesem Server verfügbaren 
+Informationen entstanden sind. Der Lizenzgeber und deren Lieferanten behalten 
+sich die Möglichkeit vor, jederzeit Verbesserungen und/oder Änderungen an den 
+hier beschriebenen Produkten und/oder Programmen vorzunehmen. Insbesondere ist 
+die Haftung für Veränderungen von dritter Seite ausgeschlossen.
+
+6. Einverständnis
+
+Sofern der Lizenznehmer mit dem Lizenzgeber von Contrexx Open Source nicht 
+schriftlich einen anders lautenden Lizenzvertrag abgeschlossen hat, erklärt er 
+durch das Herunterladen, Installieren oder Anpassen von Contrexx Open Source 
+ausdrücklich sein Einverständnis mit den Bestimmungen der vorliegenden 
+Lizenzvereinbarung. Mit der Annahme des Lizenzvertrages gewährt Ihnen der 
+Lizenzgeber eine nicht-ausschliessliche und nicht übertragbare Lizenz zur 
+Nutzung von Contrexx Open Source.
+
+Sollte der Lizenznehmer einigen oder allen Bedingungen dieses
+Lizenzvertrages nicht zustimmen, ist ihm die Nutzung der Software nicht, auch 
+nicht in Teilen gestattet und muss umgehend entfernt werden.
+
+7. Gerichtsstand
+
+Für Streitigkeiten aus diesem Lizenzvertrag gilt der Gerichtsstand
+Thun (Schweiz).
+
+
+Copyright © 2007-2011
+Comvation AG, 3600 Thun, Switzerland - Alle Rechte vorbehalten.
