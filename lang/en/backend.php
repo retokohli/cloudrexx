@@ -689,8 +689,7 @@ $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Import Design";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Please select the location of your design. The design can be a local ZIP file or can be a URL.";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Activated Languages";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>
-";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Design Preview";
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail address";

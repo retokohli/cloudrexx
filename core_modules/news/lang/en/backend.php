@@ -117,9 +117,7 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Date with time";
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Link to the news message";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Category of the news message";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-Class: row1 or row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Tag for defining News Entries<br />
-Starttag: &lt!-- BEGIN newsrow --&gt;<br />
-Endtag: &lt!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Tag for defining News Entries<br />Starttag: &lt!-- BEGIN newsrow --&gt;<br />Endtag: &lt!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "The following Placeholders are available in the News Module.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Title of the news message";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Text of the news message";
@@ -127,8 +125,7 @@ $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'] = "Date of the last modification 
 $_ARRAYLANG['TXT_NEWS_SOURCE_DESCRIPTION'] = "External source of the news message";
 $_ARRAYLANG['TXT_NEWS_URL_DESCRIPTION'] = "Link #1 and #2 of the news message";
 $_ARRAYLANG['TXT_PUBLISHED_ON'] = "Published on:";
-$_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In the design Template <b>headlines.html</b>. 
-This placeholder [[HEADLINES_FILE]] may be placed either in the design template or in the content of this page.";
+$_ARRAYLANG['TXT_HEADLINE_PLACEHOLLDERS_USAGE'] = "In the design Template <b>headlines.html</b>.<br />This placeholder [[HEADLINES_FILE]] may be placed either in the design template or in the content of this page.";
 $_ARRAYLANG['TXT_NEWS_IMAGE_PATH_DESCRIPTION'] = "Path to the image of the news message";
 $_ARRAYLANG['TXT_HEADLINE_TEXT_DESCRIPTION'] = "Short text of the news message";
 $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'] = "Teaser Boxes can be included in either Design or Content.  <br />To include the Teaser Boxes use the placeholders displazed in Teaser Administration.";
@@ -218,7 +215,5 @@ $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'] = "Added teaser box.";
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'] = "Teaser box updated.";
 $_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'] = "No entry selected, nothing changed.";
 $_ARRAYLANG['TXT_REPUBLISHING'] = "Republishing";
-$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
-Starttag: &lt!-- BEGIN news_image --&gt;<br />
-Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />Starttag: &lt!-- BEGIN news_image --&gt;<br />Endtag: &lt!-- END news_image --&gt;";
 ?>

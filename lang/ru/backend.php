@@ -419,8 +419,7 @@ $_ARRAYLANG['TXT_EMAIL_NOT_SENT'] = "Невозможно послать e-mail 
 $_ARRAYLANG['TXT_ACTIVATE_DEACTIVATE_USERS'] = "Активировавать/деактивировать пользователя";
 $_ARRAYLANG['TXT_RESET_PASSWORD'] = "Отменить пароль";
 $_ARRAYLANG['TXT_LOST_PASSWORD_TEXT'] = "Введите пожалуйста ваш e-mail. Вскоре вы получите сообщение с дальнейшими инструкциями.";
-$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Здравствуйте “ИМЯ ПОЛЬЗОВАТЕЛЯ”. Чтобы выбрать новый пароль войдите в находящийся ниже URL и введите там свой новый пароль. ВАЖНО: Действие URL будет прекращено через 60 минут после отсылки этого e-mail. Если вам нужно больше времени, введите пожалуйста свой e-mail адрес ещё раз.Ваш URL: „URL“. С наилучшими пожеланиями,
-%Имя отсылаюшего%";
+$_ARRAYLANG['TXT_RESTORE_PASSWORD_MAIL'] = "Здравствуйте “ИМЯ ПОЛЬЗОВАТЕЛЯ”. Чтобы выбрать новый пароль войдите в находящийся ниже URL и введите там свой новый пароль. ВАЖНО: Действие URL будет прекращено через 60 минут после отсылки этого e-mail. Если вам нужно больше времени, введите пожалуйста свой e-mail адрес ещё раз.Ваш URL: „URL“. С наилучшими пожеланиями, %Имя отсылаюшего%";
 $_ARRAYLANG['TXT_LOST_PASSWORD_MAIL_SENT'] = "E-mail с дальнейшими инструкциями был послан по следующему адресу %E-MAIL%.";
 $_ARRAYLANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST'] = "Пользовательский счёт по этому e-mail адресу не существует!";
 $_ARRAYLANG['TXT_SET_PASSWORD_TEXT'] = "Введите пожалуйста желаемый пароль и повторите его для подтверждения.";
@@ -688,8 +687,7 @@ $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Design importieren";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Geben Sie oben die Quelle des Designs an. Es kann eine lokale ZIP-Datei hochgeladen werden oder es kann eine http://-Adresse zu einer externen ZIP-Datei angegeben werden";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Aktivierte Sprachen";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>
-";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designvorschau";
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail";
@@ -806,9 +804,7 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML-Darstellung";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL-Dump";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Fehler: Sie k&ouml;nnen nur auf Tabellen von Contrexx zugreifen.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "SQL-Befehl ausf&uuml;hren";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;</pre>
-<br />
-You can execute the queries by pressing the key combination shift+return.";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;</pre><br />You can execute the queries by pressing the key combination shift+return.";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "SQL-Datei ausf&uuml;hren";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Erlaubte Dateitypen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Erlaubte Dateigr&ouml;sse";

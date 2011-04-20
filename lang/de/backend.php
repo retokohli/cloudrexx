@@ -806,8 +806,7 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML-Darstellung";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL-Dump";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Fehler: Sie können nur auf Tabellen von Contrexx zugreifen.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "SQL-Befehl ausführen";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;</pre>
-Durch betätigen der Tastenkombination Umschalt+Enter werden die Abfragen ausgeführt.";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;</pre><br />Durch betätigen der Tastenkombination Umschalt+Enter werden die Abfragen ausgeführt.";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "SQL-Datei ausführen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Erlaubte Dateitypen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Erlaubte Dateigrösse";

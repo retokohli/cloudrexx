@@ -246,8 +246,7 @@ $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_TIMEOUT_HELP'] = "Number of seconds
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_TIMEOUT'] = "Delay between two comments";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_NOTIFICATION_HELP'] = "Is this setting enabled then you will recieve a notification E-mail when somebody submitted a new comment.";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_NOTIFICATION'] = "Notification on new messages";
-$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_AUTO_ACTIVATE_HELP'] = "Check this box if you want all entries to be approved automatically. Otherwise every comment has to be activated manually.
-";
+$_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_AUTO_ACTIVATE_HELP'] = "Check this box if you want all entries to be approved automatically. Otherwise every comment has to be activated manually.";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_AUTO_ACTIVATE'] = "Automatically activate new comments";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_ALLOW_ANONYMOUS_HELP'] = "Allow unregistered users to write comments.";
 $_ARRAYLANG['TXT_KNOWLEDGE_SETTINGS_COMMENTS_ALLOW_ANONYMOUS'] = "Allow anonymous comments";

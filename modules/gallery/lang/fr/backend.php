@@ -87,9 +87,7 @@ $_ARRAYLANG['TXT_EDIT'] = "Editer";
 $_ARRAYLANG['TXT_CATEGORY'] = "Galerie";
 $_ARRAYLANG['TXT_RESET'] = "Réinitialiser";
 $_ARRAYLANG['TXT_IMAGE_LINK_NAME'] = "Description";
-$_ARRAYLANG['TXT_IMAGE_LINK_HELP'] = "Si vous désirez associer une description à l'image, en saisir le texte.
-
-Si vous désirez que cette description soit un lien hypertexte, saisir également l'adresse du lien.";
+$_ARRAYLANG['TXT_IMAGE_LINK_HELP'] = "Si vous désirez associer une description à l'image, en saisir le texte.<br />Si vous désirez que cette description soit un lien hypertexte, saisir également l'adresse du lien.";
 $_ARRAYLANG['TXT_IMAGE_LINK'] = "Adresse du lien";
 $_ARRAYLANG['TXT_IMAGE_SIZE_SHOW'] = "Afficher la taille";
 $_ARRAYLANG['TXT_SETTINGS'] = "Paramètres";
