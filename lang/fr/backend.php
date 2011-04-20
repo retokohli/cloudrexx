@@ -804,9 +804,7 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "Présentation HTML";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "Dump SQL";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Erreur: seules les tables de Contrexx peuvent être accédées.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "Exécuter la requête SQL";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Attention: Toutes les requêtes doivent se terminer par un point-virgule (\";\"). Exemple:<pre>SELECT * FROM Table;</pre>
-<br />
-You can execute the queries by pressing the key combination shift+return.";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Attention: Toutes les requêtes doivent se terminer par un point-virgule (\";\"). Exemple:<pre>SELECT * FROM Table;</pre><br />You can execute the queries by pressing the key combination shift+return.";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "Exécuter fichier SQL";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Types de donnée autorisés";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Taille maximale";

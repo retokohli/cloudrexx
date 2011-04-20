@@ -117,9 +117,7 @@ $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'] = "Дата со временем"
 $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'] = "Ссылка на новость";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'] = "Категория новости";
 $_ARRAYLANG['TXT_NEWS_CSS_DESCRIPTION'] = "CSS-класс: row1 или row2";
-$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Блок определения новостей.<br />
-Начинается: &lt;!-- BEGIN newsrow --&gt;<br />
-Endtag: &lt;!-- END newsrow --&gt;";
+$_ARRAYLANG['TXT_NEWSROW_DESCRIPTION'] = "Блок определения новостей.<br />Начинается: &lt;!-- BEGIN newsrow --&gt;<br />Endtag: &lt;!-- END newsrow --&gt;";
 $_ARRAYLANG['TXT_NEWS_DETAILS_PLACEHOLLDERS_USAGE'] = "Следующие пути к файлам находятся на странице, принадлежащей к  <b>разделу</b> новостей и имеющих <b>cmd</b> детали.";
 $_ARRAYLANG['TXT_NEWS_TITLE_DESCRIPTION'] = "Заголовок новости";
 $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'] = "Текст новости";
@@ -217,7 +215,5 @@ $_ARRAYLANG['TXT_NEWS_TEASER_BOX_ADDED'] = "Added teaser box.";
 $_ARRAYLANG['TXT_NEWS_TEASER_BOX_UPDATED'] = "Teaser box updated.";
 $_ARRAYLANG['TXT_NEWS_NOTICE_NOTHING_SELECTED'] = "No entry selected, nothing changed.";
 $_ARRAYLANG['TXT_REPUBLISHING'] = "Republishing";
-$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />
-Starttag: &lt!-- BEGIN news_image --&gt;<br />
-Endtag: &lt!-- END news_image --&gt;";
+$_ARRAYLANG['TXT_NEWS_IMAGE_ROW_DESCRIPTION'] = "Optional tag to display the image.<br />Starttag: &lt!-- BEGIN news_image --&gt;<br />Endtag: &lt!-- END news_image --&gt;";
 ?>

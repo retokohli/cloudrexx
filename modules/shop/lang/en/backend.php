@@ -425,8 +425,7 @@ $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Account Owner";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Bank Name";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bank Code";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Direct Bank Debit";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Important: Please fill out the <a href='index.php?section=shop&cmd=einzug' target='_blank'>'debit-direct' authorisation form</a>. Afterwards, please sign it and then mail or fax it to us. You will find the contact information in the above link.<br/>
-As soon as we can debit the given amount from your account, your order will be shipped.";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Important: Please fill out the <a href='index.php?section=shop&cmd=einzug' target='_blank'>'debit-direct' authorisation form</a>. Afterwards, please sign it and then mail or fax it to us. You will find the contact information in the above link.<br/>As soon as we can debit the given amount from your account, your order will be shipped.";
 $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Direct Debit fee";
 $_ARRAYLANG['TXT_MAX_WEIGHT_TIP'] = "Please enter the maximum weight of this delivery. Enter 0 grams if this delivery is not weight-dependent.";
 $_ARRAYLANG['TXT_CONTACT_COMPANY'] = "Company";
@@ -434,8 +433,7 @@ $_ARRAYLANG['TXT_CONTACT_ADDRESS'] = "Address";
 $_ARRAYLANG['TXT_SHOP_EXPORT'] = "Export";
 $_ARRAYLANG['TXT_SHOP_EXPORT_DATA'] = "Export";
 $_ARRAYLANG['TXT_SHOP_EXPORT_SELECTION'] = "Choose the data to export";
-$_ARRAYLANG['TXT_SHOP_EXPORT_WARNING'] = "In the following window choose Save and indicate where you wish to save the file.
-";
+$_ARRAYLANG['TXT_SHOP_EXPORT_WARNING'] = "In the following window choose Save and indicate where you wish to save the file.";
 $_ARRAYLANG['TXT_SHOP_EXPORT_ERROR'] = "Error while creating export data";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_TPRODUCT'] = "Product Table";
 $_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_RPRODUCT'] = "Products (with relational data)";

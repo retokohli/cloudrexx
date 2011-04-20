@@ -120,8 +120,7 @@ $_ARRAYLANG['TXT_DAY_ARRAY'] = "Sonntag,Montag,Dienstag,Mittwoch,Donnerstag,Frei
 $_ARRAYLANG['TXT_HOSTNAME'] = "Rechnername";
 $_ARRAYLANG['TXT_ADMINISTRATION_PAGES'] = "Backend";
 $_ARRAYLANG['TXT_APPLICATION_RANGE'] = "Verwendungsbereich";
-$_ARRAYLANG['TXT_USER_NOT_DELETED'] = "	
-<b> l'utente non può essere eliminato. <br /> almeno un utente attiva con lo status di amministratore è obbligatorio. </ b>";
+$_ARRAYLANG['TXT_USER_NOT_DELETED'] = "<b> l'utente non può essere eliminato. <br /> almeno un utente attiva con lo status di amministratore è obbligatorio. </ b>";
 $_ARRAYLANG['TXT_COLLAPS_LINK'] = "Alles zuklappen";
 $_ARRAYLANG['TXT_PAGE_NOT_DELETED_DELETE_SUBCATEGORIES_FIRST'] = "Die Seite konnte nicht gelöscht werden. Bitte löschen Sie zuerst alle Unterkategorien!";
 $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'] = "Der Datensatz wurde erfolgreich gelöscht!";
@@ -688,8 +687,7 @@ $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Design importieren";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Geben Sie oben die Quelle des Designs an. Es kann eine lokale ZIP-Datei hochgeladen werden oder es kann eine http://-Adresse zu einer externen ZIP-Datei angegeben werden";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Abilitato lingue";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>
-";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Languags highlighted in pink have been activated as a Frontend language in the <a href=\"index.php?cmd=language\">settings.</a>";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designvorschau";
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-Mail";
@@ -806,9 +804,7 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML-Darstellung";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL-Dump";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Fehler: Sie k&ouml;nnen nur auf Tabellen von Contrexx zugreifen.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "SQL-Befehl ausf&uuml;hren";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;</pre>
-<br />
-You can execute the queries by pressing the key combination shift+return.";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Hinweis: Alle Abfragen müssen aus systemtechnischen Gründen immer mit einem Semikolon (\";\") abgeschlossen werden. Nachfolgend ein Beispiel:<pre>SELECT * FROM Table;</pre><br />You can execute the queries by pressing the key combination shift+return.";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "SQL-Datei ausf&uuml;hren";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Erlaubte Dateitypen";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Erlaubte Dateigr&ouml;sse";

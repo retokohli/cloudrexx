@@ -687,8 +687,7 @@ $_ARRAYLANG['TXT_PRIVACY_MODULE_DESCRIPTION'] = "Privacy";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO'] = "Importer design";
 $_ARRAYLANG['TXT_THEME_IMPORT_INFO_BODY'] = "Angiv kilden for designet. Der kan blive uploadet en lokal zip-fil eller der kan angives en http:// adresse til en ekstern zip-fil på nettet.";
 $_ARRAYLANG['TXT_THEME_ACTIVATE_INFO'] = "Aktiverede sprog";
-$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Sprog med lyserød baggrund er blevet aktiveret for frontend-siden <a href=\"index.php?cmd=language\">settings.</a>
-";
+$_ARRAYLANG['TXT_THEME_ACTIVATE_INFO_BODY'] = "Sprog med lyserød baggrund er blevet aktiveret for frontend-siden <a href=\"index.php?cmd=language\">settings.</a>";
 $_ARRAYLANG['TXT_SKINS_PREVIEW'] = "Designpreview";
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_SETTINGS_EMAIL'] = "E-mail";
@@ -805,9 +804,7 @@ $_ARRAYLANG['TXT_DBM_SHOW_TABLE_HTML_TITLE'] = "HTML-visning";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_DUMP_TITLE'] = "SQL-Dump";
 $_ARRAYLANG['TXT_DBM_SHOW_TABLE_WRONG_PREFIX'] = "Fejl: Du har kun adgang til Contrexx-tabeller.";
 $_ARRAYLANG['TXT_DBM_SQL_CODE'] = "Udfør SQL-ordre";
-$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Bemærk: Alle Queries skal på systemtekniske grunde altid slutte med en semikolon (\";\") . Her er et eksempel:<pre>SELECT * FROM Table;</pre>
-<br />
-Du kan udføre de forskellige queries ved at trykke tastekombinationen shift+return.";
+$_ARRAYLANG['TXT_DBM_SQL_HINT'] = "Bemærk: Alle Queries skal på systemtekniske grunde altid slutte med en semikolon (\";\") . Her er et eksempel:<pre>SELECT * FROM Table;</pre><br />Du kan udføre de forskellige queries ved at trykke tastekombinationen shift+return.";
 $_ARRAYLANG['TXT_DBM_SQL_FILE'] = "Kør SQL-fil";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_TYPES'] = "Tilladte filtyper";
 $_ARRAYLANG['TXT_DBM_SQL_FILE_ALLOWED_SIZE'] = "Tilladt filstørrelse";

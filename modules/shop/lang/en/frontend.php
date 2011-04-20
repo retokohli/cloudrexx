@@ -132,8 +132,7 @@ $_ARRAYLANG['TXT_ACCOUNT_HOLDER'] = "Account Owner";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Bank Name";
 $_ARRAYLANG['TXT_ACCOUNT_BLZ'] = "Bank Code";
 $_ARRAYLANG['TXT_PAYMENT_LSV'] = "Direct Bank Debit";
-$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Important: Please fill out the <a href='index.php?section=shop&cmd=einzug' target='_blank'>'debit-direct' authorisation form</a>. Afterwards, please sign it and then mail or fax it to us. You will find the contact information in the above link.<br/>
-As soon as we can debit the given amount from your account, your order will be shipped.";
+$_ARRAYLANG['TXT_PAYMENT_LSV_NOTE'] = "Important: Please fill out the <a href='index.php?section=shop&cmd=einzug' target='_blank'>'debit-direct' authorisation form</a>. Afterwards, please sign it and then mail or fax it to us. You will find the contact information in the above link.<br/>As soon as we can debit the given amount from your account, your order will be shipped.";
 $_ARRAYLANG['TXT_PAYMENT_LSV_FEE'] = "Direct Debit fee";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM_ATTRIBUTE'] = "Error while inserting order items attributes";
 $_ARRAYLANG['TXT_ERROR_INSERTING_ORDER_ITEM'] = "Error while inserting order item";
