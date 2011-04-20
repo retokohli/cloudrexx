@@ -695,7 +695,7 @@ CREATE TABLE `contrexx_module_calendar` (
   `series_pattern_type` int(11) NOT NULL,
   `series_pattern_dourance_type` int(11) NOT NULL,
   `series_pattern_end` int(11) NOT NULL,
-  `series_pattern_begin` int(11) NOT NULL,
+  `series_pattern_begin` int(11) NOT NULL default '0',
   `series_pattern_exceptions` longtext NOT NULL,
   PRIMARY KEY  (`id`),
   FULLTEXT KEY `name` (`name`,`comment`,`placeName`)
