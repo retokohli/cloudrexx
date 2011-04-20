@@ -692,7 +692,7 @@ class Contact extends ContactLib
                     break;
                 }
             }
-            if($fileFieldName == null)
+            if($fileFieldName === null)
                 throw new ContactException('could not find file field for form with id ' . $arrFormData['id']);
 
             array_push($arrDbEntry, base64_encode($fileFieldName).','.base64_encode($files));

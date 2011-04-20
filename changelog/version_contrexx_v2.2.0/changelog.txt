@@ -28,6 +28,9 @@ WYSIWYG-Editor
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Kontakte Manager
+- Der Formularfeldtyp Dateiupload funktioniert auch, sofern dem Formularfeld kein Name zugewiesen wurde.
+
 Modul: Forum
 - Das Zitieren eines bereits zitierten Eintrages funktioniert korrekt.
 
