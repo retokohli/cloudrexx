@@ -4657,7 +4657,7 @@ right after the customer logs in!
                 Currency::formatPrice(
                     $orderItemPrice*$orderItemQuantity
                 ).' '.
-                $strCurrencyCode."\n".
+                $strCurrencyCode."\n";
 //                (empty($productOptions) ? '' : $productOptions."\n");
             $orderItemCount += $orderItemQuantity;
             $priceTotalItems += $orderItemPrice*$orderItemQuantity;
