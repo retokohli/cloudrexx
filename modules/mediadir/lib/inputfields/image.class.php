@@ -77,7 +77,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
                 }
 
         if($objInit->mode == 'backend') {
-                    $strInputfield = $strImagePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/images\')" />';
+                    $strInputfield = $strImagePreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.']" value="'.$strValue.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" style="width: 300px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$this->moduleName.'Inputfield_'.$intId.'\', \''.$this->moduleName.'\', \'/\')" />';
                 } else {
                     $strInputfield = $strImagePreview.'<input type="file" name="imageUpload_'.$intId.'" id="'.$this->moduleName.'Inputfield_'.$intId.'" class="'.$this->moduleName.'InputfieldImage '.$strInfoClass.'" '.$strInfoValue.' value="'.$strValue.'" onfocus="this.select();" /><input id="'.$this->moduleName.'Inputfield_'.$intId.'_hidden" name="'.$this->moduleName.'Inputfield['.$intId.']" value="'.$strValueHidden.'" type="hidden"><span class="'.$this->moduleName.'InputfieldFilesize">'.$_ARRAYLANG['TXT_MEDIADIR_MAX_FILESIZE'].' '.intval($this->arrSettings['settingsImageFilesize']).' KB</span>';
                 }
