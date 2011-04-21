@@ -49,8 +49,7 @@ class FWHtAccess
      */
     private $arrSectionOrder = array(
         'contrexx__core_modules__alias',
-        'contrexx__core__language',
-        'contrexx__modules__fileUploader'
+        'contrexx__core__language'
     );
 
     /**

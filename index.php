@@ -1334,18 +1334,6 @@ switch ($plainSection) {
         break;
 
     //-------------------------------------------------------
-    // file uploader
-    //-------------------------------------------------------
-    case 'fileUploader':
-        /** @ignore */
-        if (!@include_once(ASCMS_MODULE_PATH.'/fileUploader/index.class.php'))
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objFileUploader = new FileUploader();
-        $objFileUploader->getPage();
-        exit;
-        break;
-
-    //-------------------------------------------------------
     // News Feed Module
     //-------------------------------------------------------
     case 'feed':

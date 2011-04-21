@@ -364,11 +364,7 @@ class MediaManager extends MediaLibrary
         $comboUp->setJsInstanceName('exposed_combo_uploader');
         
         $this->_objTpl->setVariable(array(
-              'FILEBROWSER_ADVANCED_UPLOAD_PATH'  => 'index.php?cmd=fileUploader&amp;standalone=true&amp;type='.$this->archive.'&amp;path='.urlencode(substr($this->webPath,strlen($this->arrWebPaths[$this->archive])-1)),
 			  'REDIRECT_URL'					  => $redirectUrl,
-              'TXT_MEDIA_FILE_UPLOADER'           => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER'],
-              'TXT_MEDIA_START_FILE_UPLOADER'     => $_ARRAYLANG['TXT_MEDIA_START_FILE_UPLOADER'],
-              'TXT_MEDIA_FILE_UPLOADER_DESC'      => $_ARRAYLANG['TXT_MEDIA_FILE_UPLOADER_DESC'],
               'COMBO_UPLOADER_CODE'               => $comboUp->getXHtml(true)
         ));
         //end of uploader button handling
