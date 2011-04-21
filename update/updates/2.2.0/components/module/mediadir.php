@@ -2,7 +2,7 @@
 
 function _mediadirUpdate()
 {
-    global $_ARRAYLANG, $_CORELANG, $objUpdate;
+    global $_ARRAYLANG, $_CORELANG, $objUpdate, $_CONFIG;
 
     //create / update tables
     try {
