@@ -28,7 +28,8 @@ function _media1Update()
                   ),
             array(
                   'name'       => array('fields' => array('name'))
-                  )
+                  ),
+            'InnoDB'
         );
         $arrValues = array(
                            array("media1_frontend_changable","off"),
