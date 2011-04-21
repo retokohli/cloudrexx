@@ -4540,6 +4540,7 @@ INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (16
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (17,'count_country','',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (18,'paging_limit_visitor_details','100',1);
 INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (19,'count_visitor_number','',1);
+INSERT INTO `contrexx_stats_config` (`id`, `name`, `value`, `status`) VALUES (20,'exclude_identifying_info','0',1);
 INSERT INTO `contrexx_voting_additionaldata` (`id`, `nickname`, `surname`, `phone`, `street`, `zip`, `city`, `email`, `comment`, `voting_system_id`, `date_entered`, `forename`) VALUES (1,'','','','','','','','',11,'2009-03-05 02:28:11','');
 INSERT INTO `contrexx_voting_additionaldata` (`id`, `nickname`, `surname`, `phone`, `street`, `zip`, `city`, `email`, `comment`, `voting_system_id`, `date_entered`, `forename`) VALUES (2,'','','','','','','','',11,'2009-03-05 02:29:23','');
 INSERT INTO `contrexx_voting_additionaldata` (`id`, `nickname`, `surname`, `phone`, `street`, `zip`, `city`, `email`, `comment`, `voting_system_id`, `date_entered`, `forename`) VALUES (3,'additional_nickname','','','','','additional_city','','',11,'2009-03-05 02:33:04','additional_forename');
