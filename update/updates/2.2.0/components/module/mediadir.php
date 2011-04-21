@@ -391,7 +391,95 @@ function _mediadirUpdate()
             if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_mail_actions WHERE name="'.$arrValue[1].'"')->EOF) {
                 UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_mail_actions VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'",'.$arrValue[3].')');
             }
-        }   
+        }
+		
+		UpdateUtil::sql("INSERT INTO `contrexx_module_mediadir_mails` (`id`, `title`, `content`, `recipients`, `lang_id`, `action_id`, `is_default`, `active`) VALUES 
+('23', '[[URL]] - Eintrag erfolgreich bearbeitet', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])
+
+Ihr Eintrag mit dem Titel \"[[TITLE]]\" auf [[URL]] wurde erfolgreich bearbeitet. 
+
+Benutzen Sie folgenden Link um direkt zu Ihrem Eintrag zu gelangen:
+[[LINK]]
+
+Freundliche Grüsse
+[[URL]]-Team
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '6', '1', '0'),
+('22', '[[URL]] - Eintrag erfolgreich gelöscht', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])
+
+Ihr Eintrag mit dem Titel \"[[TITLE]]\" auf [[URL]] wurde erfolgreich gelöscht. 
+
+Freundliche Grüsse
+Ihr [[URL]]-Team
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '5', '1', '0'),
+('21', '[[URL]] - Eintrag wurde bewertet', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])
+
+Zu Ihrem Eintrag mit dem Titel \"[[TITLE]]\" auf [[URL]] wurde eine Bewertung abgegeben. 
+
+Benutzen Sie folgenden Link um direkt zu Ihrem Eintrag zu gelangen:
+[[LINK]]
+
+Freundliche Grüsse
+Ihr [[URL]]-Team
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '4', '1', '0'),
+('20', '[[URL]] - Ihr Eintrag wurde aufgeschaltet', 'Guten Tag,
+
+Ihr Eintrag \"[[TITLE]]\" wurde geprüft und ist ab sofort einsehbar.
+
+Benutzen Sie folgenden Link um direkt zu ihrem Eintrag zu gelangen:
+[[LINK]]
+
+
+Freundliche Grüsse
+Ihr [[URL]]-Team
+
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '3', '1', '0'),
+('19', '[[URL]] - Eintrag erfolgteich eingetragen', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])
+
+Ihr Eintrag mit dem Titel \"[[TITLE]]\" wurde auf [[URL]] erfolgreich eingetragen. 
+
+
+Freundliche Grüsse
+Ihr [[URL]]-Team
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '2', '1', '0'),
+('24', '[[URL]] - Neuer Kommentar hinzugefügt', 'Hallo [[FIRSTNAME]] [[LASTNAME]] ([[USERNAME]])
+
+Zu Ihrem Eintrag mit dem Titel \"[[TITLE]]\" auf [[URL]] wurde ein neuer Kommentar hinzugefügt. 
+
+Benutzen Sie folgenden Link um direkt zu Ihrem Eintrag zu gelangen:
+[[LINK]]
+
+Freundliche Grüsse
+Ihr [[URL]]-Team
+
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '8', '1', '0'),
+('32', '[[URL]] - Neuer Eintrag zur Prüfung freigegeben', 'Guten Tag,
+
+Auf http://[[URL]] wurde ein neuer Eintrag mit dem Titel \"[[TITLE]]\" erfasst. Bitte prüfen Sie diesen und geben Sie ihn gegebenenfalls frei.
+
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '1', '1', '0'),
+('33', '[[URL]] - Die Anzeigedauer eines Eintrages läuft ab', 'Hallo Admin
+
+Auf [[URL]] läuft in Kürze die Anzeigedauer des Eintrages \"[[TITLE]]\" ab.
+
+Freundliche Grüsse
+Ihr [[URL]]-Team
+
+-- 
+Diese Nachricht wurde am [[DATE]] automatisch von Contrexx auf http://[[URL]] generiert.', '', '1', '9', '1', '0');");
 
     }
     catch (UpdateException $e) {
