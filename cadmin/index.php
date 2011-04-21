@@ -353,7 +353,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // fileBrowser is an exception, as it eats CSRF codes like
 // candy. We're doing CSRF::check_code() in the relevant
 // parts in the module instead.
-if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'fileUploader', 'upload'))) {
+if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload'))) {
     CSRF::check_code();
 }
 
@@ -419,18 +419,6 @@ switch ($plainCmd) {
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objFileBrowser = new FileBrowser();
         $objFileBrowser->getPage();
-        exit;
-        break;
-
-    //-------------------------------------------------------
-    // file uploader
-    //-------------------------------------------------------
-    case 'fileUploader':
-        $modulespath = ASCMS_MODULE_PATH.'/fileUploader/admin.class.php';
-        if (file_exists($modulespath)) require_once($modulespath);
-        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $objFileUploader = new FileUploader();
-        $objFileUploader->getPage();
         exit;
         break;
 

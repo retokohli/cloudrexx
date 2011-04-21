@@ -222,6 +222,15 @@ function _updateSettings()
         return _databaseError($query, $objDatabase->ErrorMsg());
     }
 
+    try {
+        //remove fileuploader setting
+        UpdateUtil::sql('DELETE FROM '.DBPREFIX.'settings WHERE setid=70 AND setname="fileUploaderStatus"');
+    }
+    catch (UpdateException $e) {
+        DBG::trace();
+        return UpdateUtil::DefaultActionHandler($e);
+    }
+
     foreach ($arrSettings as $setId => $arrSetting) {
         if (!_updateSettingsTable($setId, $arrSetting)) {
             return false;
