@@ -1,6 +1,6 @@
 <?php
 function _aliasUpdate() {
-    global $objUpdate;
+    global $objUpdate, $_CONFIG;
 
     try {
         UpdateUtil::table(
