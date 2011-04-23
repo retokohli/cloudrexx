@@ -221,9 +221,19 @@ class Contact extends ContactLib
         
         //retrieve temporary location for uploaded files
         $tup = self::getTemporaryUploadPath($this->submissionId);
+// TODO: check if $tup[0] === false -> $tup[0] is $sessionObj->getTempPath() 
+
         //create the folder
         $fm = new File();
-        $fm->mkdir($tup[0], $tup[1], '/'.$tup[2]);
+        if (!is_dir($tup[0].'/'.$tup[2]) && !$fm->mkdir($tup[0], $tup[1], '/'.$tup[2])) {
+// TODO: add exception handler in case the system was unable to create the upload temp path
+            //return false;
+        }
+
+        if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
+// TODO: add exception handler in case the system was unable to chmod the upload temp path
+            //return false;
+        }
         //initialize the widget displaying the folder contents
         
         $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
