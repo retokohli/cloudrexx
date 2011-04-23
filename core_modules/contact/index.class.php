@@ -1033,6 +1033,9 @@ class Contact extends ContactLib
      */
     protected static function getTemporaryUploadPath($submissionId) {
         global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+
         $dirname = 'contact_files_'.$submissionId;
         $result = array(
             $sessionObj->getTempPath(),

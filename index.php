@@ -296,8 +296,7 @@ else if ($section == 'captcha') {
     if (!include_once(ASCMS_CORE_MODULE_PATH.'/captcha/index.class.php'))
         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
 
-    if(!$objSession)
-        $objSession = new cmsSession();
+    if(!$sessionObj) $sessionObj = new cmsSession();
 
     $ca = new CaptchaActions();
     $ca->getPage();
