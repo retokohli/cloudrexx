@@ -197,6 +197,9 @@ class Contact extends ContactLib
      * @see Contact::$submissionId
      */
     protected function handleUniqueId() {
+        global $sessionObj;
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        
         $id = 0;
         if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
             $id = intval($_REQUEST['unique_id']);
