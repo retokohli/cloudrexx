@@ -372,7 +372,7 @@ function _mediadirUpdate()
         //mediadir_inputfield_verifications
         $arrValues = array(array(1,'normal','.*'),array(2,'e-mail','^[_a-zA-Z0-9-]+(\\\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\\\.[a-zA-Z0-9-]+)*\\\\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$'),array(3,'url','^(ht|f)tp[s]?\\\\:\\\\/\\\\/[A-Za-z0-9\\\\-\\\\:\\\\.\\\\?\\\\&\\\\=\\\\/\\\\#\\\\%]*$'),array(4,'letters','^[A-Za-zÃƒÂ¤ÃƒÂ'),array(5,'numbers','^[0-9]*$'));
         foreach($arrValues as $arrValue) {
-            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_verifications WHERE name="'.$arrValue[0].'"')->EOF) {
+            if(UpdateUtil::sql('SELECT 1 FROM '.DBPREFIX.'module_mediadir_inputfield_verifications WHERE name="'.$arrValue[1].'"')->EOF) {
                 UpdateUtil::sql('INSERT INTO '.DBPREFIX.'module_mediadir_inputfield_verifications VALUES('.$arrValue[0].',"'.$arrValue[1].'","'.$arrValue[2].'")');
             }
         }
