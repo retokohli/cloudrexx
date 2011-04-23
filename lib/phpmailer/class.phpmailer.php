@@ -451,7 +451,7 @@ class PHPMailer {
    */
   private function AddAnAddress($kind, $address, $name = '') {
     if (!preg_match('/^(to|cc|bcc|ReplyTo)$/', $kind)) {
-      DBG::log('Invalid recipient array: ' . kind);
+      DBG::msg('Invalid recipient array: ' . kind);
       return false;
     }
     $address = trim($address);
@@ -461,7 +461,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw new phpmailerException($this->Lang('invalid_address').': '.$address);
       }
-      DBG::log($this->Lang('invalid_address').': '.$address);
+      DBG::msg($this->Lang('invalid_address').': '.$address);
       return false;
     }
     if ($kind != 'ReplyTo') {
@@ -493,7 +493,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw new phpmailerException($this->Lang('invalid_address').': '.$address);
       }
-      DBG::log($this->Lang('invalid_address').': '.$address);
+      DBG::msg($this->Lang('invalid_address').': '.$address);
       return false;
     }
     $this->From = $address;
@@ -583,7 +583,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw $e;
       }
-      DBG::log($e->getMessage());
+      DBG::msg($e->getMessage());
       return false;
     }
   }
@@ -1367,7 +1367,7 @@ class PHPMailer {
       if ($this->exceptions) {
         throw $e;
       }
-      DBG::log($e->getMessage());
+      DBG::msg($e->getMessage());
       if ( $e->getCode() == self::STOP_CRITICAL ) {
         return false;
       }
