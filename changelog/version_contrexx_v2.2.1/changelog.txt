@@ -1,0 +1,25 @@
+////////////////////////////////////////
+// CHANGELOG 2.2.0-2.2.1 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Allgemein
+- CAPTCHA-Schutz funktioniert bei Bots.
+
+Datenbank Manager
+- Darstellung erfolgt korrekt.
+
+Kontakte Manager
+- Dateiupload funktioniert bei nicht authentifizierten Benutzer.
+
+Modul: Newsletter
+- Debug Meldungen ausgeblendet.
+
+Update
+- Datenbankmigrationsskript des Medienverzeichnis korrigiert.

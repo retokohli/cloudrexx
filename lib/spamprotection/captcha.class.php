@@ -34,6 +34,10 @@ class Captcha {
     *
     */
     function __construct() {
+        global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+
         srand ((double)microtime()*1000000);
                 
         $this->strRandomString     = $this->createRandomString();
@@ -203,6 +207,9 @@ class Captcha {
      * @return boolean
      */
     function check($strEnteredString) {
+        // in case there was a session initialization problem, $_SESSION['captchaSecret'] might be NULL
+        if (empty($strEnteredString)) return false;
+
         $valid = strtoupper($strEnteredString) == strtoupper($_SESSION['captchaSecret']);
         unset($_SESSION['captchaSecret']); //remove secret to improve security
         return $valid;
