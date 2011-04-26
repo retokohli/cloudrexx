@@ -229,13 +229,11 @@ class Contact extends ContactLib
         //create the folder
         $fm = new File();
         if (!is_dir($tup[0].'/'.$tup[2]) && !$fm->mkdir($tup[0], $tup[1], '/'.$tup[2])) {
-// TODO: add exception handler in case the system was unable to create the upload temp path
-            //return false;
+            throw new ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
         }
 
         if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
-// TODO: add exception handler in case the system was unable to chmod the upload temp path
-            //return false;
+            throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
         }
         //initialize the widget displaying the folder contents
         
@@ -380,9 +378,11 @@ class Contact extends ContactLib
             //the files are left in place.
             //the second call is done with move=true - here we finally move the
             //files.
+            //
             //the target folder is created in the first call, because if we can't
             //create the folder, the target path is left pointing at the path
             //specified by $arrSettings['fileUploadDepositionPath'].
+            //
             //to remember the target folder for the second call, it is stored in
             //$this->depositionTarget.
             if(!$move) { //first call - create folder
