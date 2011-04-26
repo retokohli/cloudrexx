@@ -224,7 +224,7 @@ class Contact extends ContactLib
         
         //retrieve temporary location for uploaded files
         $tup = self::getTemporaryUploadPath($this->submissionId);
-// TODO: check if $tup[0] === false -> $tup[0] is $sessionObj->getTempPath() 
+        // TODO: check if $tup[0] === false -> $tup[0] is $sessionObj->getTempPath() 
 
         //create the folder
         $fm = new File();

@@ -177,6 +177,7 @@ class File
 
         $newDir = $this->ftpDirectory.$webPath.$dirName;
 
+        $status = '';
         if ($this->ftp_is_activated == true) {
             ftp_mkdir($this->conn_id, $newDir);
 
