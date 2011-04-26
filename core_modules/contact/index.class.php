@@ -144,6 +144,7 @@ class Contact extends ContactLib
                     $this->_sendMail($arrFormData);
                 } else {
                     $this->setCaptcha($useCaptcha);
+                    $this->searchFileField($arrFormData);
                     $this->initUploader();
                     return $this->_showError();
                 }
@@ -217,36 +218,41 @@ class Contact extends ContactLib
      * Inits the uploader when displaying a contact form.
      */
     protected function initUploader() {
-        //init the uploader       
-        JS::activate('cx'); //the uploader needs the framework
-        require_once(ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php');
-        $f = UploadFactory::getInstance();
+        try {
+            //init the uploader       
+            JS::activate('cx'); //the uploader needs the framework
+            require_once(ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php');
+            $f = UploadFactory::getInstance();
         
-        //retrieve temporary location for uploaded files
-        $tup = self::getTemporaryUploadPath($this->submissionId);
-        // TODO: check if $tup[0] === false -> $tup[0] is $sessionObj->getTempPath() 
+            //retrieve temporary location for uploaded files
+            $tup = self::getTemporaryUploadPath($this->submissionId);
+            // TODO: check if $tup[0] === false -> $tup[0] is $sessionObj->getTempPath() 
 
-        //create the folder
-        $fm = new File();
-        if (!is_dir($tup[0].'/'.$tup[2]) && !$fm->mkdir($tup[0], $tup[1], '/'.$tup[2])) {
-            throw new ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+            //create the folder
+            $fm = new File();
+            if (!is_dir($tup[0].'/'.$tup[2]) && !$fm->mkdir($tup[0], $tup[1], '/'.$tup[2])) {
+                throw new ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+            }
+
+            if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
+                throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+            }
+            //initialize the widget displaying the folder contents
+        
+            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+
+            $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml('#contactFormField_uploadWidget','uploadWidget'));
+        
+            $uploader = $f->newUploader('exposedCombo');       
+            $uploader->setJsInstanceName('exposed_combo_uploader');
+            $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
+            $uploader->setData($this->submissionId);
+
+            $this->objTemplate->setVariable('UPLOADER_CODE',$uploader->getXHtml());
         }
-
-        if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
-            throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+        catch (Exception $e) {
+            $this->objTemplate->setVariable('UPLOADER_CODE','<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->');            
         }
-        //initialize the widget displaying the folder contents
-        
-        $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
-
-        $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml('#contactFormField_uploadWidget','uploadWidget'));
-        
-        $uploader = $f->newUploader('exposedCombo');       
-        $uploader->setJsInstanceName('exposed_combo_uploader');
-        $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
-        $uploader->setData($this->submissionId);
-
-        $this->objTemplate->setVariable('UPLOADER_CODE',$uploader->getXHtml());
     }
 
     function setCaptcha($useCaptcha)
