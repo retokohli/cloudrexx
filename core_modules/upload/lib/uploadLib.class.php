@@ -35,6 +35,17 @@ class UploadLib
         die($uploader->getFrameFinishedXHtml());        
     }
 
+    //send the jumpUploader applet
+    public function jumpUploaderApplet() {
+        //the applet is sent via request because of basic auth problems with a path for the .jar-file that is different from the path the browser authenticated himself against.
+        require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
+        $download = new HTTP_Download();
+        $download->setFile(ASCMS_CORE_MODULE_PATH.'/upload/ressources/uploaders/jump/jumpLoader.jar');
+        $download->setContentType('application/java-archive');
+        $download->send();
+        die();      
+    }
+
     //gets the current folder contents for a folderwidget
     public function refreshFolder()
     {

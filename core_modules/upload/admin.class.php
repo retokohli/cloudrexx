@@ -27,6 +27,11 @@ class Upload extends UploadLib
             case 'formUploaderFrameFinished': //send the formuploader iframe content
                 $this->formUploaderFrameFinished();
                 break;
+            //uploaders - jumploader
+            case 'jumpUploaderApplet': //send the jumpUploader applet
+                $this->jumpUploaderApplet();
+                break;
+          
             //folderWidget
             case 'refreshFolder':
                 $this->refreshFolder();
