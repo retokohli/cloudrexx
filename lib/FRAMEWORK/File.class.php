@@ -33,12 +33,8 @@ class File
 
     public $chmodFolder     = 0777;   // chmod for folder 0777
     public $chmodFile       = 0666;   // chmod for files  0644,0766
-    public $chmodFolderPHP4 = '0777';
-    public $chmodFilePHP4   = '0666';
 
     public $saveMode;                 // save_mode is true/false
-    public $is_php5;
-
 
     /**
      * Creates a new File helper object. Uses FTP if configured,
@@ -54,7 +50,6 @@ class File
         $this->ftpUserPass = $_FTPCONFIG['password'];
         $this->ftpDirectory = $_FTPCONFIG['path'];
         $this->saveMode = @ini_get('safe_mode');
-        $this->is_php5 = (phpversion()<5) ? false : true;
 
         if ($this->ftp_is_activated == true) {
             $this->conn_id = ftp_connect($this->ftpHost);
@@ -181,12 +176,7 @@ class File
         if ($this->ftp_is_activated == true) {
             ftp_mkdir($this->conn_id, $newDir);
 
-            if ($this->is_php5 == false) {
-                $chmod_cmd='CHMOD 0777 '.$newDir;
-                ftp_site($this->conn_id, $chmod_cmd);
-            } else {
-                ftp_chmod($this->conn_id, $this->chmodFolder, $newDir);
-            }
+            ftp_chmod($this->conn_id, $this->chmodFolder, $newDir);
             $status = $dirName;
         } else {
             if (mkdir($path.$dirName)) {
@@ -393,22 +383,12 @@ class File
         if (is_dir($path.$fileName)) {
             if (chmod($path.$fileName, $this->chmodFolder)) return true;
             if ($this->ftp_is_activated) {
-                if ($this->is_php5)
-                    return ftp_chmod($this->conn_id, $this->chmodFolder, $this->ftpDirectory.$webPath.$fileName);
-                chown($path.$fileName, $_FTPCONFIG['username']);
-                chmod($path.$fileName, $this->chmodFolder);
-                $chmod_cmd = 'CHMOD '.$this->chmodFolderPHP4.' '.$this->ftpDirectory.$webPath.$fileName;
-                return ftp_site($this->conn_id, $chmod_cmd);
+                return ftp_chmod($this->conn_id, $this->chmodFolder, $this->ftpDirectory.$webPath.$fileName);
             }
         } else {
             if (chmod($path.$fileName, $this->chmodFile)) return true;
             if ($this->ftp_is_activated) {
-                if ($this->is_php5)
-                    return ftp_chmod($this->conn_id, $this->chmodFile, $this->ftpDirectory.$webPath.$fileName);
-                chown($path.$fileName, $_FTPCONFIG['username']);
-                chmod($path.$fileName, $this->chmodFile);
-                $chmod_cmd = 'CHMOD '.$this->chmodFilePHP4.' '.$this->ftpDirectory.$webPath.$fileName;
-                return ftp_site($this->conn_id, $chmod_cmd);
+                return ftp_chmod($this->conn_id, $this->chmodFile, $this->ftpDirectory.$webPath.$fileName);
             }
         }
         return false;
