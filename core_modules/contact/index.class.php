@@ -235,7 +235,15 @@ class Contact extends ContactLib
             }
 
             if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
-                throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+                //some hosters have problems with ftp and file system sync.
+                //this is a workaround that seems to somehow show php that
+                //the directory was created. clearstatcache() sadly doesn't
+                //work in those cases.
+                @closedir(@opendir($tup[0]));
+
+                if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
+                    throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+                }
             }
             //initialize the widget displaying the folder contents
         
