@@ -116,6 +116,10 @@ if (isset($adminPage) && $adminPage ) {
     require_once ASCMS_CORE_PATH.'/Security.class.php';
 }
 
+//wrappers providing php functions via PEAR and other third party libraries if they're not found.
+$wrapperDir = ASCMS_LIBRARY_PATH.'/wrapper/';
+require_once $wrapperDir.'json.php';
+
 /**
  * Builds a (partially localized) date string from the optional timestamp.
  *
