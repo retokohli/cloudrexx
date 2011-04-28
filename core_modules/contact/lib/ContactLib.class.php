@@ -403,9 +403,47 @@ class ContactLib
     {
         global $objDatabase;
 
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
+        //let's search for uploaded files left.
+        $rs = $objDatabase->Execute("SELECT id_form, data FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
+        if(!$rs->EOF) {
+            $data = $rs->fields['data'];
+            $formId = $rs->fields['id_form'];
 
-        //todo: what happens with file entries?
+            //get all form data into arrData
+            $arrData = array();
+            foreach (explode(';', $data) as $keyValue) {
+                $arrTmp = explode(',', $keyValue);
+                $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
+            }
+          
+            //load contact form fields - we need to know which ones have the type 'file'
+            $this->initContactForms();
+            $arrFormFields = $this->getFormFields($formId);
+            
+            foreach($arrFormFields as $arrField) {
+                //see if it's a file field...
+                if($arrField['type'] == 'file') {
+                    //...and delete the files if yes:
+                    $val = $arrData[$arrField['name']];
+                    $arrFiles;
+                    if(substr($val,0,1) == '*') {
+                        //new style entry, multiple files
+                        $arrFiles = explode('*',substr($val,1));
+                    }
+                    else {
+                        //old style entry, single file
+                        $arrFiles = array($val);
+                    }
+                  
+                    //nice, we have all the files. delete them.
+                    foreach($arrFiles as $file) {
+                        @unlink(ASCMS_DOCUMENT_ROOT.$file);
+                    }
+                }
+            }
+        }
+
+        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
     }
 
     function getFormEntries($formId, &$arrCols, $pagingPos, &$paging, $limit = true)
