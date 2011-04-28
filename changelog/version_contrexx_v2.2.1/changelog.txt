@@ -11,6 +11,8 @@
 ****************************************
 Allgemein
 - CAPTCHA-Schutz funktioniert bei Bots.
+- Ist die PHP-Erweiterung "json" nicht aktiviert, wird auf eine
+  PEAR-Alternative zurückgegriffen.
 
 Datenbank Manager
 - Darstellung erfolgt korrekt.
@@ -20,6 +22,9 @@ Kontakte Manager
 
 Modul: Newsletter
 - Debug Meldungen ausgeblendet.
+
+Uploader
+- Funktioniert mit HTTP-Authentifikation
 
 Update
 - Datenbankmigrationsskript des Medienverzeichnis korrigiert.
