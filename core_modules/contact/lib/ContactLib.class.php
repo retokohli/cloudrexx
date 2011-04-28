@@ -148,8 +148,9 @@ class ContactLib
                 'name'  => 'TXT_CONTACT_REGEX_EVERYTHING'
             ),
             2   => array(
-                'regex' => '^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(([0-9]{1,3})|([a-zA-Z]{2,3})|(aero|coop|info|museum|name))$',
-                'name'  => 'TXT_CONTACT_REGEX_EMAIL'
+                'regex' => '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$',
+                'name'  => 'TXT_CONTACT_REGEX_EMAIL',
+                'modifiers' => 'i'
             ),
             3   => array(
                 'regex' => '^(ht|f)tp[s]?\:\/\/[A-Za-z0-9\-\:\.\?\&\=\/\#\%]*$',

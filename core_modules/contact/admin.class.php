@@ -1993,16 +1993,12 @@ class ContactManager extends ContactLib
         $code .= "fields = new Array();\n";
 
         foreach ($formFields as $key => $field) {
+            $modifiers = isset($this->arrCheckTypes[$field['check_type']]['modifiers']) ? $this->arrCheckTypes[$field['check_type']]['modifiers'] : '';
+           
             $code .= "fields[$key] = Array(\n";
             $code .= "\t'".addslashes($field['name'])."',\n";
             $code .= "\t{$field['is_required']},\n";
-            if ($preview) {
-                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-            } elseif ($show) {
-                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-            } else {
-                $code .= "\t'". addslashes($this->arrCheckTypes[$field['check_type']]['regex']) ."',\n";
-            }
+            $code .= "\t/". ($this->arrCheckTypes[$field['check_type']]['regex']) ."/".$modifiers.",\n";
             $code .= "\t'".$field['type']."');\n";
         }
 
@@ -2063,11 +2059,7 @@ JS_isRequiredNorm;
         // Matches the type of the value and pattern. Returns true if it matched, false if not.
         $code .= <<<JS_matchType
 function matchType(pattern, value) {
-    var reg = new RegExp(pattern);
-    if (value.match(reg)) {
-        return true;
-    }
-    return false;
+    return value.match(pattern) != null;
 }
 
 JS_matchType;
