@@ -1018,12 +1018,11 @@ END;
                 continue;
 
 			//clean file name
-            $newName = self::cleanFileName($nameToEscape);
+            $newName = self::cleanFileName($file);
 
-            $newName = '';
             //check if file needs to be renamed
-            if (file_exists($path.$file)) {
-                $info     = pathinfo($file);
+            if (file_exists($path.$newName)) {
+                $info     = pathinfo($newName);
                 $exte     = $info['extension'];
                 $exte     = (!empty($exte)) ? '.'.$exte : '';
                 $part1    = $info['filename'];
