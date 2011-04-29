@@ -6,6 +6,9 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 
+Administrationsoberfläche (Backend)
+- Navigation alphabetisch sortiert
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
