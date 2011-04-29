@@ -228,7 +228,7 @@ class Shop extends ShopLibrary
             $_GET['act'] = $_GET['cmd'];
         }
         if (isset($_GET['act'])) {
-            switch($_GET['act']) {
+            switch ($_GET['act']) {
                 case 'shipment':
                     $this->showShipmentTerms();
                     break;

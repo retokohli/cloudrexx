@@ -180,7 +180,7 @@ class Exchange
         global $objDatabase, $_ARRAYLANG;
         print "EXPORT";
 //        $this->selectPage('export',$this->arrExchangeStep['export']);
-        switch($step) {
+        switch ($step) {
             case 'none':
                 $this->arrExchangeStep['export'] = $this->arrExchangeSteps['export'][0];
                 break;
@@ -225,7 +225,7 @@ class Exchange
                 }
                 unset($_SESSION['shop_exchange_export']['tables']);
 
-                switch($_SESSION['shop_exchange_export']['table']['name'])
+                switch ($_SESSION['shop_exchange_export']['table']['name'])
                 {
                     case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         // Gets the product selection list
@@ -281,7 +281,7 @@ class Exchange
                         'FILENAME' => $_SESSION['shop_exchange_export']['table']['text']
                         ));
 
-                switch($_SESSION['shop_exchange_export']['table']['name']) {
+                switch ($_SESSION['shop_exchange_export']['table']['name']) {
                     case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         $this->_objTpl->setCurrentBlock('categorieList_selectCols');
                         for ($i=0;$i<count($_REQUEST['categories']);$i++) {
@@ -330,7 +330,7 @@ class Exchange
                             }
                             $link .= $_SESSION['shop_exchange_export']['cols'][$i];
                         }
-                        switch($_SESSION['shop_exchange_export']['table']['name']) {
+                        switch ($_SESSION['shop_exchange_export']['table']['name']) {
                             case DBPREFIX."module_shop".MODULE_INDEX."_products":
                                 $link .=" FROM ".$_SESSION['shop_exchange_export']['table']['name']." WHERE ";
                                 $first = true;
@@ -374,7 +374,7 @@ class Exchange
         global $objDatabase, $_ARRAYLANG;
         print "IMPORT";
 //        $this->selectPage('import',$this->arrExchangeStep['import']);
-        switch($step) {
+        switch ($step) {
             case 'none':
                 $this->arrExchangeStep['import'] = $this->arrExchangeSteps['import'][0];
                 break;
@@ -497,7 +497,7 @@ class Exchange
                 $fileContent = file_get_contents($this->strImportPath.$_SESSION['shop_exchange_import']['file']['name']);
 
                 // Put the cols and the cells from the content of the file into arrays
-                switch($_SESSION['shop_exchange_import']['file']['type']) {
+                switch ($_SESSION['shop_exchange_import']['file']['type']) {
                     case "csv":
                         $strStart = 0;
                         for ($i=0;$i<strlen($fileContent);$i++) {
@@ -614,7 +614,7 @@ class Exchange
 
                 // Clear the table
                 if ($_POST['optionImport'] == "del") {
-                    switch($_SESSION['shop_exchange_import']['table']['name']) {
+                    switch ($_SESSION['shop_exchange_import']['table']['name']) {
                         case DBPREFIX.'module_shop_products':
                             // Check if there are products that are still in use by an ordering
                             $query = "SELECT productid FROM ".DBPREFIX.'module_shop_order_items';

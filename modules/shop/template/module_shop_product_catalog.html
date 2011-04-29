@@ -10,7 +10,7 @@ function deleteProduct(id)
 function shopProductsDoAction(obj,act)
 {
   if (shopProductsIsChecked('selectedProductId[]')) {
-    switch(act) {
+    switch (act) {
       case 'delete':
         if (confirm('{TXT_CONFIRM_DELETE_PRODUCT}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
           document.formCatalog.action = "index.php?cmd=shop{MODULE_INDEX}&act=deleteProduct";
