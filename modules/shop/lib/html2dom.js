@@ -28,9 +28,9 @@ var html2dom = {
             doc=parser.parseFromString(html,"text/xml");
         }
         var root = doc.documentElement;
-		if (root.nodeName == 'parsererror') {
-			return false;
-		}
+        if (root.nodeName == 'parsererror') {
+            return false;
+        }
         if (root.hasChildNodes()) {
 
             if (appendTo) {
@@ -68,14 +68,14 @@ var html2dom = {
                         for (var j = 0, a; a = children[i].attributes[j]; j++) {
                             //http://whyiesucks.blogspot.com/2006/04/dynamically-changing-classes.html
 
-                            if(a['nodeName'] == 'class' && navigator.appName.match(/internet explorer/i)){
+                            if (a['nodeName'] == 'class' && navigator.appName.match(/internet explorer/i)){
                                 ieVersion = navigator.appVersion.substr(22,1);
-                                if(ieVersion < 8) {
+                                if (ieVersion < 8) {
                                     attrName = 'className';
                                 } else {
                                     attrName = a['nodeName'];
                                 }
-                            }else{
+                            } else {
                                attrName = a['nodeName'];
                             }
 

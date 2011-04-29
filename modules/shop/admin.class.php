@@ -3320,7 +3320,7 @@ class shopmanager extends ShopLibrary
         $shopCustomerType = -1;
         $shopListLetter = '';
         $shopSearchTerm = '';
-	$shopShowPendingOrders = '';
+        $shopShowPendingOrders = '';
         if (!empty($_REQUEST['shopSearchTerm'])) {
             $shopSearchTerm = htmlspecialchars(
                 $_REQUEST['shopSearchTerm'], ENT_QUOTES, CONTREXX_CHARSET
@@ -3380,7 +3380,7 @@ class shopmanager extends ShopLibrary
             self::$objTemplate->setVariable(
                 'SHOP_SHOW_PENDING_ORDERS_CHECKED', ' checked="checked"'
             );
-	    $shopShowPendingOrders = 1;
+        $shopShowPendingOrders = 1;
         }
         if (!empty($_REQUEST['shopListLetter'])) {
             $shopListLetter = htmlspecialchars(

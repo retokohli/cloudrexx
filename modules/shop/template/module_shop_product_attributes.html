@@ -221,7 +221,7 @@ function addValue(id)
 function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 {
   if (checkboxIsChecked(strForm,strCheckbox) == true) {
-    switch(strAct) {
+    switch (strAct) {
       case 'del':
         if (confirm('{TXT_CONFIRM_DELETE_OPTION}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
           document.getElementById('shopSelectOptions').action = "index.php?cmd=shop{MODULE_INDEX}&act=products&tpl=attributes";
