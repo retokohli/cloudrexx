@@ -116,12 +116,29 @@ class adminMenu
             }
 
             $navigation = '';
+
+            //used to remember items in current menu group
+            $arrMatchingItems = array();
+            //used to remember captions of the current menu group
+            //later used to perform array_multisort
+            $arrMatchingItemCaptions = array();
+
+            //(1/3) find entries of current menu group
             foreach ($this->arrMenuItems as $link_data) {
                 // checks if the links are childs of this area ID
                 if ($link_data[0] == $group_id) {
-                    if ($this->moduleExists($link_data[4])) {
-                        $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
-                    }
+                    $arrMatchingItems[] = $link_data;
+                    $arrMatchingItemCaptions[] = $link_data[1];
+                }
+            }
+
+            //(2/3) sort entries by captions
+            array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
+            
+            //(3/3) display a nice ordered menu.
+            foreach ($arrMatchingItems as $link_data) {
+                if ($this->moduleExists($link_data[4])) {
+                    $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }
 
