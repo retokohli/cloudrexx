@@ -346,7 +346,7 @@ class downloads extends DownloadsLibrary
         $this->parseGlobalStuff($objCategory);
     }
 
-	public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId) {
+	public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
 		$path = $data['path'];
