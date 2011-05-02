@@ -226,7 +226,6 @@ class Contact extends ContactLib
         
             //retrieve temporary location for uploaded files
             $tup = self::getTemporaryUploadPath($this->submissionId);
-            // TODO: check if $tup[0] === false -> $tup[0] is $sessionObj->getTempPath() 
 
             //create the folder
             $fm = new File();
@@ -614,7 +613,18 @@ class Contact extends ContactLib
         $this->initCheckTypes();
         if (count($arrFields['fields']) > 0) {
             foreach ($arrFields['fields'] as $field) {
-                $source = $field['type'] == 'file' ? 'uploadedFiles' : 'data';
+                $isFile = $field['type'] == 'file';
+                $source = $isFile ? 'uploadedFiles' : 'data';
+                if($isFile && !$this->legacyMode) {
+                    //check if the user has uploaded any files
+                    $tup = self::getTemporaryUploadPath($this->submissionId);
+                    $path = $tup[0].'/'.$tup[2];
+                    if(count(@scandir($path)) == 2) { //only . and .. present, directory is empty
+                        //no uploaded files in a mandatory field - no good.
+                        $error = true;
+                    }
+                    continue;
+                }
                 $regex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
                 if ($field['is_required'] && empty($arrFields[$source][$field['name']])) {
                     $error = true;
