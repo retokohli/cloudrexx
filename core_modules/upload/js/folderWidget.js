@@ -3,6 +3,7 @@ var FolderWidget = function(options) {
     var id = options.id; //the unique widget id
     var refreshUrl = options.refreshUrl; //the url to get fresh folder data from
     var deleteUrl = options.deleteUrl; //the url used to send a delete request for a file
+    var files = []; //the files in target folder
     var $ = $J; //jquery at $ locally
 
     var refresh = function() {
@@ -14,7 +15,8 @@ var FolderWidget = function(options) {
             function(json) {
                 container.empty();
                 var ul = $J('<ul></ul>');
-                $.each(json, function(index, file) {
+                files = json;
+                $.each(files, function(index, file) {
                     var li = $J('<li></li>').html(file);
                     var del = $J(' &nbsp; <a></a>').html('x');
                     del.attr('href','');
@@ -41,7 +43,12 @@ var FolderWidget = function(options) {
     //load the files
     refresh();
 
+    var isEmpty = function() {
+        return files.length == 0;
+    };
+
     return {
-        refresh: refresh
+        refresh: refresh,
+        isEmpty: isEmpty
     };
 };

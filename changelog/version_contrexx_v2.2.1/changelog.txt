@@ -22,6 +22,8 @@ Datenbank Manager
 
 Kontakte Manager
 - Dateiupload funktioniert bei nicht authentifizierten Benutzer.
+- Dateiupload-Pflichtfelder funktionieren.
+- Wird ein Eintrag gelöscht, werden die zugehörigen heraufgeladenen Dateien ebenfalls gelöscht.
 
 Modul: Newsletter
 - Debug Meldungen ausgeblendet.

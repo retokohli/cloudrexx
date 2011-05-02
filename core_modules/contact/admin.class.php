@@ -2031,6 +2031,13 @@ function checkAllFields() {
             if (!isRequiredRadio(fields[field][1], field)) {
                 isOk = false;
             }
+        } else if (type == 'file') {
+            var required = fields[field][1];
+            var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
+            if(required && folderWidget.isEmpty()) {
+                isOk = false;
+                document.getElementsByName('contactFormField_upload')[0].style.border = "red 1px solid";
+            }
         }
     }
 

@@ -89,7 +89,7 @@ class FolderWidget {
      * @return boolean whether the file was found and deleted
      */
     public function delete($file) {
-      $path = $this->folder.'/'.basename($file); //basename to stop '../' jokers;
+        $path = $this->folder.'/'.basename($file); //basename to stop '../' jokers;
         if(!file_exists($path))
             return false;
         unlink($path);
