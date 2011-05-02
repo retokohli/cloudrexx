@@ -349,6 +349,8 @@ class downloads extends DownloadsLibrary
 	public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
 		global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
+        $originalNames = $fileInfos['originalFileNames'];
+
 		$path = $data['path'];
         $webPath = $data['webPath'];
         $objCategory = Category::getCategory($data['category_id']);
@@ -448,7 +450,7 @@ class downloads extends DownloadsLibrary
         return $string;
     }
 
-    public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads)
+    public static function addDownloadFromUpload($fileName, $fileExtension, $suffix, $objCategory, $objDownloads, $sourceName)
     {
         $objDownload = new Download();
 
@@ -474,7 +476,7 @@ class downloads extends DownloadsLibrary
         $objDownload->setNames($arrNames);
         $objDownload->setDescriptions($arrDescriptions);
         $objDownload->setType('file');
-        $objDownload->setSource(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension, $fileName.'.'.$fileExtension);
+        $objDownload->setSource(ASCMS_DOWNLOADS_IMAGES_WEB_PATH.'/'.$fileName.$suffix.'.'.$fileExtension, $sourceName);
         $objDownload->setActiveStatus(true);
         $objDownload->setMimeType($fileMimeType);
         if ($objDownload->getMimeType() == 'image') {
