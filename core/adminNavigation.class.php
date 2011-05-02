@@ -131,9 +131,11 @@ class adminMenu
                     $arrMatchingItemCaptions[] = $link_data[1];
                 }
             }
-
-            //(2/3) sort entries by captions
-            array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
+            
+            if($group_id == 2) {  //modules group
+                //(2/3) sort entries by captions
+                array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
+            }
             
             //(3/3) display a nice ordered menu.
             foreach ($arrMatchingItems as $link_data) {
