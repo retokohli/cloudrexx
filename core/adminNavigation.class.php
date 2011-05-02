@@ -1,33 +1,32 @@
 <?php
+
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 
 /**
- * Admin CP navigation
- *
  * Class for the Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
 class adminMenu
 {
-    var $arrMenuItems = array();
-    var $arrMenuGroups = array();
-    var $statusMessage;
-    var $arrUserRights = array();
-    var $arrUserGroups = array();
+    public $arrMenuItems = array();
+    public $arrMenuGroups = array();
+    public $statusMessage;
+    public $arrUserRights = array();
+    public $arrUserGroups = array();
 
 
     /**
@@ -38,6 +37,7 @@ class adminMenu
         $this->init();
     }
 
+
     function getAdminNavbar()
     {
         global $objTemplate;
@@ -45,6 +45,7 @@ class adminMenu
         $this->getMenu();
         $objTemplate->setVariable('STATUS_MESSAGE',trim($this->statusMessage));
     }
+
 
     function init()
     {
@@ -93,12 +94,13 @@ class adminMenu
         }
     }
 
+
     /**
-     * gets the administration menu by user rights
+     * Creates the administration navigation
      *
-     * creates the navigation by userright
-     *
-     * @global array $_CORELANG
+     * Considers the users' rights and only shows what he's
+     * allowed to see
+     * @global array  $_CORELANG
      * @global object $objTemplate
      * @global object $objModules
      */
@@ -108,13 +110,11 @@ class adminMenu
 
         $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'index_navigation.html');
         reset($this->arrMenuItems);
-
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
             if ($group_id==2 && !$objModules->existsModuleFolders) {
                 continue;
             }
-
             $navigation = '';
 
             //used to remember items in current menu group
@@ -131,12 +131,10 @@ class adminMenu
                     $arrMatchingItemCaptions[] = $link_data[1];
                 }
             }
-            
             if($group_id == 2) {  //modules group
                 //(2/3) sort entries by captions
                 array_multisort($arrMatchingItemCaptions, $arrMatchingItems);
             }
-            
             //(3/3) display a nice ordered menu.
             foreach ($arrMatchingItems as $link_data) {
                 if ($this->moduleExists($link_data[4])) {
@@ -152,21 +150,23 @@ class adminMenu
                     'NAVIGATION_STYLE'        => isset($_COOKIE['navigation_'.$group_id]) ? $_COOKIE['navigation_'.$group_id] : 'none'
                 ));
                 $objTemplate->parse('navigationRow');
+            }
         }
-        }
-
         $objTemplate->setVariable('TXT_LOGOUT', $_CORELANG['TXT_LOGOUT']);
         $objTemplate->parse('navigation_output');
     }
 
+
     function moduleExists($moduleFolderName)
     {
         global $objModules;
+
         if (empty($moduleFolderName)) {
             return true;
-        } else {
-            return $objModules->getModuleStatusByName($moduleFolderName);
         }
+        return $objModules->getModuleStatusByName($moduleFolderName);
     }
+
 }
+
 ?>

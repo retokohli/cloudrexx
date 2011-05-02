@@ -174,7 +174,7 @@ class shopmanager extends ShopLibrary
     /**
      * Set up the shop admin page
      */
-    function getShopPage()
+    function getPage()
     {
         global $objTemplate, $_ARRAYLANG;
 

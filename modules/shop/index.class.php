@@ -222,7 +222,7 @@ class Shop extends ShopLibrary
    }
 
 
-    function getShopPage()
+    function getPage()
     {
         if (isset($_GET['cmd'])) {
             $_GET['act'] = $_GET['cmd'];
@@ -303,7 +303,7 @@ class Shop extends ShopLibrary
     }
 
 
-    function getShopNavbar($shopNavbarContent)
+    function getNavbar($shopNavbarContent)
     {
         global $_ARRAYLANG;
         static $strContent;
@@ -870,8 +870,8 @@ class Shop extends ShopLibrary
             'TXT_SHOP_DISCOUNTPRICE'     => $_ARRAYLANG['TXT_SHOP_DISCOUNTPRICE'],
             'SHOP_JAVASCRIPT_CODE'       => $this->getJavascriptCode(),
         ));
-// Moved to getShopPage()
-//        $this->objTemplate->setVariable('SHOPNAVBAR_FILE', $this->getShopNavbar($themesPages['shopnavbar']));
+// Moved to getPage()
+//        $this->objTemplate->setVariable('SHOPNAVBAR_FILE', $this->getNavbar($themesPages['shopnavbar']));
 
         if (isset($_REQUEST['referer']) && $_REQUEST['referer'] == 'cart') {
             $cartProdId = $productId;

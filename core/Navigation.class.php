@@ -86,8 +86,8 @@ class Navigation
         if (!empty($_GET['preview'])) {
             $objRS = $objDatabase->SelectLimit("
                 SELECT id
-                                        FROM ".DBPREFIX."skins
-                                        WHERE id = ".intval($_GET['preview']), 1);
+                  FROM ".DBPREFIX."skins
+                 WHERE id = ".intval($_GET['preview']), 1);
             if ($objRS->RecordCount() == 1) {
                 $currentThemesId = intval($_GET['preview']);
             }
@@ -303,7 +303,7 @@ class Navigation
 
         if ($boolShop) {
             global $shopObj, $themesPages;
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', $shopObj->getNavbar($themesPages['shopnavbar']));
         }
 
         if (isset($this->_objTpl->_blocks['navigation_dropdown'])) {
@@ -340,8 +340,8 @@ class Navigation
         $navigationId[] = 0; // CSS styling ID's
 
         $array_ids = array_keys( $this->tree );
-        // foreach($this->tree as $id => $level)
-        foreach( $array_ids as $key => $id ) {
+        // foreach ($this->tree as $id => $level)
+        foreach ( $array_ids as $key => $id ) {
             $level = $this->tree[$id];
 
             if (!isset($navigationId[$level])) {
@@ -359,11 +359,11 @@ class Navigation
             $hideLevel=false;
 
             // checks if the page is in the current tree
-            if(in_array($this->parentId[$id], $this->parents)){
+            if (in_array($this->parentId[$id], $this->parents)){
                 // checks for customized blocks. e.g. "level_1"
-                if($this->_objTpl->blockExists('level_'.$level)){
+                if ($this->_objTpl->blockExists('level_'.$level)){
                     // gets the top level block name from the template
-                    if(!isset($topLevelBlockName)){
+                    if (!isset($topLevelBlockName)){
                         $topLevelBlockName='level_'.$level;
                     }
                     $blockName = 'level_'.$level;
@@ -371,18 +371,18 @@ class Navigation
                 // no customized blocks for this level
                 else {
                     // we already had customized blocks
-                    if(isset($topLevelBlockName)){
+                    if (isset($topLevelBlockName)){
                         // checks for the standard block e.g. "level"
-                        if($this->_objTpl->blockExists('level')){
+                        if ($this->_objTpl->blockExists('level')){
                             $blockName = 'level';
-                        }else {
+                        } else {
                             $hideLevel=true;
                         }
                     }
                 }
 
-                if(isset($topLevelBlockName)){
-                    if(!$hideLevel){
+                if (isset($topLevelBlockName)){
+                    if (!$hideLevel){
                         // checks if we are in the active tree
                         $activeTree = (in_array($id, $this->parents)) ? true : false;
                         if ($this->data[$id]['status'] == 'on') {
@@ -411,13 +411,13 @@ class Navigation
         }
         unset($navigationId);
 
-        if(isset($topLevelBlockName)){
+        if (isset($topLevelBlockName)){
             // replaces the top level block with the complete parsed navigation
             // this is because the Sigma Template system don't support nested blocks
             // with difference object based orders
             $this->_objTpl->replaceBlock($topLevelBlockName, $htmlOutput, true);
             $this->_objTpl->touchBlock($topLevelBlockName);
-            if($this->_objTpl->blockExists('navigation')){
+            if ($this->_objTpl->blockExists('navigation')){
                 $this->_objTpl->parse('navigation');
             }
         }
@@ -456,10 +456,10 @@ class Navigation
         $array_ids = array_keys( $this->tree );
 
         // Make an array with visible items only
-        foreach($array_ids as $key => $id ) {
+        foreach ($array_ids as $key => $id ) {
             $level = $this->tree[$id];
             // Checks if the menu item is in the current tree
-             if(in_array($this->parentId[$id], $this->parents)) {
+             if (in_array($this->parentId[$id], $this->parents)) {
                 // Checks if the menu item level is visible
                 if (($level>=$match[1] && $level<=$match[2]) || ($level>=$match[1] && $match[2] == "+")) {
                     if ($this->data[$id]['status'] == 'on') {
@@ -605,8 +605,8 @@ class Navigation
     function _getParents()
     {
         $parentId = !empty($this->parentId[$this->pageId]) ? $this->parentId[$this->pageId] : 0;
-        while($parentId!=0) {
-            if(is_array($this->table[$parentId])) {
+        while ($parentId!=0) {
+            if (is_array($this->table[$parentId])) {
                 array_push($this->parents, $parentId);
                 if (!empty($this->parentId[$parentId])) {
                     $parentId = $this->parentId[$parentId];
@@ -631,7 +631,7 @@ class Navigation
             ? $this->parentId[$this->pageId] : 0);
         while ($parentId!=0) {
             if (!empty($this->data[$parentId])) {
-                if(!is_array($this->table[$parentId])) {
+                if (!is_array($this->table[$parentId])) {
                     return $return;
                 }
                 $n = $this->data[$parentId]['catname'];
@@ -660,9 +660,9 @@ class Navigation
 
         $this->arrLang = $objInit->getLanguageArray();
         $langNavigation = "";
-          if(count($this->arrLang)>1) {
-                foreach($this->arrLang as $id=>$value) {
-                    if($this->arrLang[$id]['frontend']==1) {
+          if (count($this->arrLang)>1) {
+                foreach ($this->arrLang as $id=>$value) {
+                    if ($this->arrLang[$id]['frontend']==1) {
                         if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
                             $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
                         } else {
@@ -694,6 +694,7 @@ class Navigation
           print_r($obj);
           echo "</pre>";
     }
+
 }
 
 ?>
