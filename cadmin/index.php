@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Modul Admin Index
  *
@@ -201,14 +202,14 @@ if(!$loggedIn) { //not logged in already - do captcha and password checks
     if($validationCode !== false) { //a captcha has been given
         include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
         $captcha = new Captcha();
-        $captchaPassed = $captcha->check($validationCode);    
+        $captchaPassed = $captcha->check($validationCode);
         if(!$captchaPassed) { //captcha check failed -> do not check authentication
             $captchaError = $_CORELANG['TXT_SECURITY_CODE_IS_INCORRECT'];
         }
         else { //captcha passed, let's autenticate
             $objFWUser->checkAuth();
         }
-    }   
+    }
 }
 
 //user only gets the backend if he's logged in

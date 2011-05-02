@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1100,8 +1101,8 @@ switch ($plainSection) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         if (shopUseSession() && empty($sessionObj)) $sessionObj = new cmsSession();
         $shopObj = new Shop($page_content);
-        $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getShopPage());
-        $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getShopNavbar($themesPages['shopnavbar']));
+        $objTemplate->setVariable('CONTENT_TEXT', $shopObj->getPage());
+        $objTemplate->setVariable('SHOPNAVBAR_FILE', $shopObj->getNavbar($themesPages['shopnavbar']));
         $boolShop = true;
         break;
 
