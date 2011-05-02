@@ -41,10 +41,18 @@ abstract class Uploader
     protected $data = null;
 
     /**
-     * @see FormUploader::setRedirectUrl()
+     * @see FormUploader::getFrameXHtml()
      * @var string
      */
-    public $redirectUrl = null;
+    protected $redirectUrl = null;
+
+    /**
+     * an array mapping originalFileName => renamedFileName. used to pass this information to the callback.
+     * @see Uploader::addChunk()
+     * @see Uploader::notifyCallback()
+     * @var array
+     */
+    protected $originalFileNames = array();
 
     /**
      * @param boolean $backend whether this is a backend request or not
@@ -225,7 +233,16 @@ abstract class Uploader
             require_once $this->callbackData[0];
         }
 
-        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId);
+        //various file infos are passed via this array
+        $fileInfos = array(
+            'originalFileNames' => $this->originalFileNames
+        );
+
+        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos);
+
+        //clean up session: we do no longer need the array with the original file names
+        $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
+        unset($_SESSION[$sessionKey]);
         
         //the callback could have returned a path where he wants the files moved to
         if(!is_null($ret)) { //we need to move the files
@@ -332,16 +349,26 @@ abstract class Uploader
         // 5 minutes execution time
         @set_time_limit(5 * 60);
 
+        // remember the "raw" file name, we want to store all original
+        // file names in the session.
+        $originalFileName = $fileName;
         // Clean the fileName for security reasons
         $fileName = preg_replace('/[^\w\._]+/', '', $fileName);
 
         //try to retrieve session file name for chunked uploads
-        if ($chunk > 0)
+        if ($chunk > 0) {
             if(isset($_SESSION['upload_fileName_'.$this->uploadId]))
                 $fileName = $_SESSION['upload_fileName_'.$this->uploadId];
             else
                 throw new UploaderException('Session lost.');
-
+        }
+        else { //first chunk, store original file name in session
+            $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
+            if(isset($_SESSION[$sessionKey]))
+                $this->originalFileNames = $_SESSION[$sessionKey];
+            $this->originalFileNames[$fileName] = $originalFileName;
+            $_SESSION[$sessionKey] = $this->originalFileNames;
+        }
 
         // Make sure the fileName is unique (for chunked uploads only on first chunk, since we're using the same name)
         if (file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName) && $chunk == 0) {

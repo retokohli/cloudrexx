@@ -996,7 +996,7 @@ END;
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId){
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos){
         $path = $data['path'];
         $webPath = $data['webPath'];
 

@@ -62,7 +62,6 @@ class FormUploader extends Uploader
         
         $uploadPath = $this->getUploadPath('form');
 
-        $redirectUrl = '';
         $redirectUrl = '';   
         if($this->isBackendRequest)
             $redirectUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=formUploaderFrameFinished&uploadId='.$this->uploadId;
