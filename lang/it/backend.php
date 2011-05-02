@@ -1057,4 +1057,5 @@ $_ARRAYLANG['TXT_MEDIADIR_MANAGE_LEVELS'] = 'Manage levels';
 $_ARRAYLANG['TXT_MEDIADIR_MANAGE_CATEGORIES'] = 'Manage categories';
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
+$_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable media directory.';
 ?>
