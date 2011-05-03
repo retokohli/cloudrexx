@@ -47,14 +47,6 @@ abstract class Uploader
     protected $redirectUrl = null;
 
     /**
-     * an array mapping originalFileName => renamedFileName. used to pass this information to the callback.
-     * @see Uploader::addChunk()
-     * @see Uploader::notifyCallback()
-     * @var array
-     */
-    protected $originalFileNames = array();
-
-    /**
      * @param boolean $backend whether this is a backend request or not
      */
     public function __construct($backend)
@@ -233,15 +225,16 @@ abstract class Uploader
             require_once $this->callbackData[0];
         }
 
+        $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
+        $originalFileNames = $_SESSION[$sessionKey];
         //various file infos are passed via this array
         $fileInfos = array(
-            'originalFileNames' => $this->originalFileNames
+            'originalFileNames' => $originalFileNames
         );
 
         $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos);
 
         //clean up session: we do no longer need the array with the original file names
-        $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
         unset($_SESSION[$sessionKey]);
         
         //the callback could have returned a path where he wants the files moved to
@@ -364,10 +357,11 @@ abstract class Uploader
         }
         else { //first chunk, store original file name in session
             $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
+            $originalFileNames = array();
             if(isset($_SESSION[$sessionKey]))
-                $this->originalFileNames = $_SESSION[$sessionKey];
-            $this->originalFileNames[$fileName] = $originalFileName;
-            $_SESSION[$sessionKey] = $this->originalFileNames;
+                $originalFileNames = $_SESSION[$sessionKey];
+            $originalFileNames[$fileName] = $originalFileName;
+            $_SESSION[$sessionKey] = $originalFileNames;
         }
 
         // Make sure the fileName is unique (for chunked uploads only on first chunk, since we're using the same name)
