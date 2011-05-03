@@ -3629,9 +3629,9 @@ $strFileNew = '';
             case 3: //PNG
                 if ($this->boolPngEnabled) {
                     $handleImage1 = ImageCreateFromPNG($strPathOld.$strFileOld);
-                    ImageAlphaBlending($handleImage1, true);
-                    ImageSaveAlpha($handleImage1, true);
                     $handleImage2 = @ImageCreateTrueColor($intNewWidth,$intNewHeight);
+                    ImageAlphaBlending($handleImage2, false);
+                    ImageSaveAlpha($handleImage2, true); 
                     ImageCopyResampled($handleImage2, $handleImage1,0,0,0,0,$intNewWidth,$intNewHeight, $intWidth,$intHeight);
                     ImagePNG($handleImage2, $strPathNew.$strFileNew);
                     ImageDestroy($handleImage1);

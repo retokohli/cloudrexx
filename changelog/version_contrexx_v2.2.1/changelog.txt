@@ -17,11 +17,15 @@ Allgemein
 - Ist die PHP-Erweiterung "json" nicht aktiviert, wird auf eine
   PEAR-Alternative zurückgegriffen.
 
+Bildergalerie
+- Thumbnails von transparenten PNGs haben keinen schwarzen Hintergrund mehr.
+
 Datenbank Manager
 - Darstellung erfolgt korrekt.
 
 Digital Asset Management
 - Wird im Frontend eine Datei heraufgeladen, wird nun der Original-Dateiname als Titel verwendet.
+- Gruppen-Platzhalter generiert funktionierende Links.
 
 Kontakte Manager
 - Dateiupload funktioniert bei nicht authentifizierten Benutzer.
