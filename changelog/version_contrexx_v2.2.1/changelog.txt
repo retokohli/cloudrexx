@@ -20,6 +20,9 @@ Allgemein
 Datenbank Manager
 - Darstellung erfolgt korrekt.
 
+Digital Asset Management
+- Wird im Frontend eine Datei heraufgeladen, wird nun der Original-Dateiname als Titel verwendet.
+
 Kontakte Manager
 - Dateiupload funktioniert bei nicht authentifizierten Benutzer.
 - Dateiupload-Pflichtfelder funktionieren.
