@@ -19,10 +19,20 @@ class ContrexxJavascript {
     {
         global $objInit;
 
+        $backOrFrontend = $objInit->mode;
+        global $objFWUser;
+        $langId; 
+        if($backOrFrontend == "frontend")
+            $langId = $objInit->getFrontendLangId();
+        else //backend
+            $langId = $objInit->getBackendLangId();
+        $langCode = FWLanguage::getLanguageCodeById($langId);
+
         $this->setVariable(array(
             'cmsPath' => ASCMS_PATH_OFFSET,
             'cadminPath' => ASCMS_BACKEND_PATH,
             'mode' => $objInit->mode,
+            'language' => $langCode
             ),
             'contrexx'
         );
