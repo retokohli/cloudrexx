@@ -334,7 +334,7 @@ class DownloadsLibrary
             $output = "<ul>\n";
             $objCategory = Category::getCategories(array('id' => $objGroup->getAssociatedCategoryIds()), null, array( 'order' => 'asc', 'name' => 'asc'));
             while (!$objCategory->EOF) {
-                $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=downloads&amp;cmd='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
+                $output .= '<li><a href="'.CONTREXX_SCRIPT_PATH.'?section=downloads&amp;category='.$objCategory->getId().'" title="'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET).'">'.htmlentities($objCategory->getName($_LANGID), ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 $objCategory->next();
             }
             $output .= "</ul>\n";
