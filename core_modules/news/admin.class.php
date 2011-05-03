@@ -550,6 +550,8 @@ class newsManager extends newsLibrary {
     {
         global $_ARRAYLANG, $_CONFIG, $objDatabase;
 
+        JS::activate('cx');
+
         if (!count($this->getCategories())) {
             return $this->manageCategories();
         }
@@ -557,8 +559,8 @@ class newsManager extends newsLibrary {
         $objFWValidator = &new FWValidator();
         $objFWUser = FWUser::getFWUserObject();
 
-        if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
-            $date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+        if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2})/', $_POST['newsDate'], $arrDate)) {
+            $date = mktime(intval($arrDate[4]), intval($arrDate[5]), 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
         } else {
             $date = time();
         }
@@ -734,7 +736,7 @@ class newsManager extends newsLibrary {
             'NEWS_STARTDATE'                => $startDate,
             'NEWS_ENDDATE'                  => $endDate,
             'NEWS_DATE'                     => date('Y-m-d H:i:s'),
-            'NEWS_CREATE_DATE'              => date(ASCMS_DATE_FORMAT),
+            'NEWS_CREATE_DATE'              => date('d.m.Y H:i'),
             'NEWS_SOURCE'                   => htmlentities($newssource, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWS_URL1'                     => htmlentities($newsurl1, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWS_URL2'                     => htmlentities($newsurl2, ENT_QUOTES, CONTREXX_CHARSET),
@@ -872,6 +874,8 @@ class newsManager extends newsLibrary {
     function edit($copy = false)
     {
         global $objDatabase,$_ARRAYLANG, $_CONFIG;
+
+        JS::activate('cx');
 
         if (!count($this->getCategories())) {
             return $this->manageCategories();
@@ -1018,7 +1022,7 @@ class newsManager extends newsLibrary {
                 'NEWS_SOURCE'                   => htmlentities($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_URL1'                     => htmlentities($objResult->fields['url1'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_URL2'                     => htmlentities($objResult->fields['url2'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWS_CREATE_DATE'              => date('H:i:s d.m.Y',$objResult->fields['date']),
+                'NEWS_CREATE_DATE'              => date('d.m.Y H:i',$objResult->fields['date']),
                 'NEWS_STARTDATE'                => $startDate,
                 'NEWS_ENDDATE'                  => $endDate,
                 'NEWS_STATUS'                   => isset($_GET['validate']) ? "checked=\"checked\"" : $status,
@@ -1148,8 +1152,8 @@ class newsManager extends newsLibrary {
             $userId = $objFWUser->objUser->getId();
             $changelog = mktime();
 
-            if (preg_match('/^([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2})\s*([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $_POST['newsDate'], $arrDate)) {
-                $date = mktime(intval($arrDate[1]), intval($arrDate[2]), intval($arrDate[3]), intval($arrDate[5]), intval($arrDate[4]), intval($arrDate[6]));
+            if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2})/', $_POST['newsDate'], $arrDate)) {
+                $date = mktime(intval($arrDate[4]), intval($arrDate[5]), 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
             } else {
                 $date = time();
             }            

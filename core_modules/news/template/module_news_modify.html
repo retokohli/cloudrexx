@@ -4,6 +4,14 @@
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_NEWS_TYPE_REDIRECT_HELP}"];
 
+//adds the datetimepicker to the date field
+cx.ready(function() {
+    $J('input[name=newsDate]').datetimepicker({
+        dateFormat: 'dd.mm.yy',
+        timeFormat: 'hh:mm' 
+    });
+});
+
 function SetUrl(url, width, height, alt) {
 	switch (newsElType) {
 	case 'image':
