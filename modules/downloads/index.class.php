@@ -176,8 +176,6 @@ class downloads extends DownloadsLibrary
     {
         global $_LANGID;
 
-
-
         $objDownload = new Download();
         $objCategory = Category::getCategory($this->categoryId);
 
@@ -190,7 +188,6 @@ class downloads extends DownloadsLibrary
             ) {
                 Permission::noAccess(base64_encode(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId()));
             }
-
 
             // parse crumbtrail
             $this->parseCrumbtrail($objCategory);
@@ -401,7 +398,7 @@ class downloads extends DownloadsLibrary
             }
 
 			$objDownloads = new downloads('');
-			$objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads);
+			$objDownloads->addDownloadFromUpload($info['filename'], $info['extension'], $suffix, $objCategory, $objDownloads, $originalNames[$file]);
         }
 
         //rename files where needed
@@ -458,7 +455,7 @@ class downloads extends DownloadsLibrary
         $arrLanguageIds = array_keys(FWLanguage::getLanguageArray());
 
         foreach ($arrLanguageIds as $langId) {
-            $arrNames[$langId] = $fileName.'.'.$fileExtension;
+            $arrNames[$langId] = $sourceName;
             $arrDescriptions[$langId] = '';
         }
 
