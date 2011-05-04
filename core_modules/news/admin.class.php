@@ -1,4 +1,4 @@
- <?php
+<?php
 /**
  * News manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -140,7 +140,7 @@ class newsManager extends newsLibrary {
         'C99',
         'JAVA',*/
     );
-
+       
     /**
     * Teaser object
     *
@@ -536,8 +536,44 @@ class newsManager extends newsLibrary {
         }
     }
 
+    /**
+     * Takes a date in the format dd.mm.yyyy hh:mm and returns it's representation as mktime()-timestamp.
+     *
+     * @param $value string
+     * @return long timestamp
+     */
+    function dateFromInput($value) {
+        $arrDate = array();
+        if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2})/', $value, $arrDate)) {
+            return mktime(intval($arrDate[4]), intval($arrDate[5]), 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
+        } else {
+            return time();
+        }
+    }
 
+    /**
+     * Takes a mktime()-timestamp and formats it as dd.mm.yyyy hh:mm
+     *
+     * @param $value long timestamp
+     * @return string
+     */
+    function valueFromDate($value = 0) {
+        $format = 'd.m.Y H:i';
+        if($value)
+            return date($format,$value);
+        else
+            return date($format);
+    }
 
+    /**
+     * Takes a mktime()-timestamp and formats it as yyyy-mm-dd hh:mm:00 for insertion in db.
+     *
+     * @param $value long timestamp
+     * @return string
+     */
+    function dbFromDate($value) {
+        return date('Y-m-d H:m:00', $value);
+    }
 
     /**
     * adds a news entry
@@ -559,11 +595,8 @@ class newsManager extends newsLibrary {
         $objFWValidator = &new FWValidator();
         $objFWUser = FWUser::getFWUserObject();
 
-        if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2})/', $_POST['newsDate'], $arrDate)) {
-            $date = mktime(intval($arrDate[4]), intval($arrDate[5]), 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
-        } else {
-            $date = time();
-        }
+        $date = $this->dateFromInput($_POST['newsDate']);
+
         $newstitle              = contrexx_addslashes($_POST['newsTitle']);
         $newstext               = contrexx_addslashes($_POST['newsText']);
         $newstext               = $this->filterBodyTag($newstext);
@@ -573,8 +606,8 @@ class newsManager extends newsLibrary {
         $newsurl2               = $objFWValidator->getUrl(contrexx_strip_tags($_POST['newsUrl2']));
         $newscat                = intval($_POST['newsCat']);
         $userid                 = $objFWUser->objUser->getId();
-        $startDate              = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-        $endDate                = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+        $startDate              = $this->dateFromInput($_POST['startDate']);
+        $endDate                = $this->dateFromInput($_POST['endDate']);
         $status                 = intval($_POST['status']);
         $newsTeaserOnly         = isset($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserText         = contrexx_addslashes($_POST['newsTeaserText']);
@@ -643,8 +676,8 @@ class newsManager extends newsLibrary {
                                                 url2="'.$newsurl2.'",
                                                 catid='.$newscat.',
                                                 lang='.$this->langId.',
-                                                startdate="'.$startDate.'",
-                                                enddate="'.$endDate.'",
+                                                startdate="'.$this->dbFromDate($startDate).'",
+                                                enddate="'.$this->dbFromDate($endDate).'",
                                                 status='.$status.',
                                                 validated="1",
                                                 frontend_access_id="'.$newsFrontendAccessId.'",
@@ -733,10 +766,10 @@ class newsManager extends newsLibrary {
             'NEWS_ID'                       => "0",
             'NEWS_TOP_TITLE'                => $_ARRAYLANG['TXT_CREATE_NEWS'],
             'NEWS_CAT_MENU'                 => $this->getCategoryMenu($this->langId, $newscat),
-            'NEWS_STARTDATE'                => $startDate,
-            'NEWS_ENDDATE'                  => $endDate,
+            'NEWS_STARTDATE'                => $this->valueFromDate($startDate),
+            'NEWS_ENDDATE'                  => $this->valueFromDate($endDate),
             'NEWS_DATE'                     => date('Y-m-d H:i:s'),
-            'NEWS_CREATE_DATE'              => date('d.m.Y H:i'),
+            'NEWS_CREATE_DATE'              => $this->valueFromDate(),
             'NEWS_SOURCE'                   => htmlentities($newssource, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWS_URL1'                     => htmlentities($newsurl1, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWS_URL2'                     => htmlentities($newsurl2, ENT_QUOTES, CONTREXX_CHARSET),
@@ -884,8 +917,6 @@ class newsManager extends newsLibrary {
         $objFWUser = FWUser::getFWUserObject();
 
         $status = "";
-        $startDate = "";
-        $endDate = "";
 
         $this->_objTpl->loadTemplateFile('module_news_modify.html',true,true);
         $this->pageTitle = (($copy) ? $_ARRAYLANG['TXT_CREATE_NEWS'] : $_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
@@ -948,8 +979,8 @@ class newsManager extends newsLibrary {
                                                         source,
                                                         url1,
                                                         url2,
-                                                        startdate,
-                                                        enddate,
+                                                        UNIX_TIMESTAMP(startdate) as startdate,
+                                                        UNIX_TIMESTAMP(enddate) as enddate,
                                                         status,
                                                         userid,
                                                         frontend_access_id,
@@ -972,12 +1003,8 @@ class newsManager extends newsLibrary {
             if($objResult->fields['status']==1){
                 $status = "checked=\"checked\"";
             }
-            if($objResult->fields['startdate']!="0000-00-00 00:00:00"){
-                $startDate = $objResult->fields['startdate'];
-            }
-            if($objResult->fields['enddate']!="0000-00-00 00:00:00"){
-                $endDate = $objResult->fields['enddate'];
-            }
+            $startDate = $objResult->fields['startdate'];
+            $endDate = $objResult->fields['enddate'];
 
             if (empty($objResult->fields['redirect'])) {
                 $this->_objTpl->setVariable(array(
@@ -1022,9 +1049,9 @@ class newsManager extends newsLibrary {
                 'NEWS_SOURCE'                   => htmlentities($objResult->fields['source'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_URL1'                     => htmlentities($objResult->fields['url1'], ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_URL2'                     => htmlentities($objResult->fields['url2'], ENT_QUOTES, CONTREXX_CHARSET),
-                'NEWS_CREATE_DATE'              => date('d.m.Y H:i',$objResult->fields['date']),
-                'NEWS_STARTDATE'                => $startDate,
-                'NEWS_ENDDATE'                  => $endDate,
+                'NEWS_CREATE_DATE'              => $this->valueFromDate($objResult->fields['date']),
+                'NEWS_STARTDATE'                => $this->valueFromDate($startDate),
+                'NEWS_ENDDATE'                  => $this->valueFromDate($endDate),
                 'NEWS_STATUS'                   => isset($_GET['validate']) ? "checked=\"checked\"" : $status,
                 'NEWS_TEASER_TEXT'              => htmlentities($teaserText, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWS_TEASER_SHOW_LINK_CHECKED' => $teaserShowLink ? 'checked="checked"' : '',
@@ -1152,11 +1179,8 @@ class newsManager extends newsLibrary {
             $userId = $objFWUser->objUser->getId();
             $changelog = mktime();
 
-            if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2})/', $_POST['newsDate'], $arrDate)) {
-                $date = mktime(intval($arrDate[4]), intval($arrDate[5]), 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
-            } else {
-                $date = time();
-            }            
+            $date = $this->dateFromInput($_POST['newsDate']);
+
             $title      = contrexx_addslashes($_POST['newsTitle']);
             $text       = contrexx_addslashes($_POST['newsText']);
             $text       = $this->filterBodyTag($text);
@@ -1183,8 +1207,8 @@ class newsManager extends newsLibrary {
                 }
             }
 
-            $startDate      = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['startDate'])) ? '0000-00-00 00:00:00' : $_POST['startDate'];
-            $endDate        = (!preg_match('/^\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?$/',$_POST['endDate'])) ? '0000-00-00 00:00:00' : $_POST['endDate'];
+            $startDate      = $this->dateFromInput($_POST['startDate']);
+            $endDate        = $this->dateFromInput($_POST['endDate']);
 
             $newsFrontendAccess     = !empty($_POST['news_read_access']);
             $newsFrontendGroups     = $newsFrontendAccess && isset($_POST['news_read_access_associated_groups']) && is_array($_POST['news_read_access_associated_groups']) ? array_map('intval', $_POST['news_read_access_associated_groups']) : array();
@@ -1341,8 +1365,8 @@ class newsManager extends newsLibrary {
                                                         userid = '".$set_userid."',
                                                         status = '".$status."',
                                                         ".(isset($_POST['validate']) ? "validated='1'," : "")."
-                                                        startdate = '".$startDate."',
-                                                        enddate = '".$endDate."',
+                                                        startdate = '".$this->dbFromDate($startDate)."',
+                                                        enddate = '".$this->dbFromDate($endDate)."',
                                                         frontend_access_id = '".$newsFrontendAccessId."',
                                                         backend_access_id = '".$newsBackendAccessId."',
                                                         ".($_CONFIG['newsTeasersStatus'] == '1' ? "teaser_only = '".$newsTeaserOnly."',
