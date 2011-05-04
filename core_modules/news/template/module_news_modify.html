@@ -4,12 +4,17 @@
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
 Text[0]=["","{TXT_NEWS_TYPE_REDIRECT_HELP}"];
 
-//adds the datetimepicker to the date field
+//adds the datetimepicker to the date fields
 cx.ready(function() {
-    $J('input[name=newsDate]').datetimepicker({
+    var dpOptions = {
         dateFormat: 'dd.mm.yy',
         timeFormat: 'hh:mm' 
-    });
+    };
+
+    $J('input[name=newsDate]').datetimepicker(dpOptions);
+    $J('input[name=startDate]').datetimepicker(dpOptions);
+    $J('input[name=endDate]').datetimepicker(dpOptions);
+    
 });
 
 function SetUrl(url, width, height, alt) {
@@ -111,22 +116,6 @@ function disableDate(){
 		    endDate.disabled = false;
 		}
 	}
-}
-
-function setStartDate(){
-	with(document.news){
-	   if(startDate.value=="0000-00-00 00:00:00" || startDate.value==""){
-	        startDate.value= "{NEWS_DATE}";
-	   }
-    }
-}
-
-function setEndDate(){
-    with(document.news){
-	   if(endDate.value=="0000-00-00 00:00:00" || endDate.value==""){
-	        endDate.value = "{NEWS_DATE}";
-	   }
-    }
 }
 
 function AddToTheList(from,dest,add,remove) {
@@ -338,9 +327,9 @@ function newsAdjustAccessConfig(elLayer,elDisplay)
 			<td height="20"><b>
 				<input type="checkbox" name="status" value="1" {NEWS_STATUS} onClick="disableDate()" />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;{TXT_STARTDATE}:
-				<input type="text" name="startDate" size="16" maxlength="19" onClick="setStartDate()" value="{NEWS_STARTDATE}" />
+				<input type="text" name="startDate" size="16" maxlength="19"" value="{NEWS_STARTDATE}" />
 				&nbsp;&nbsp; {TXT_ENDDATE}:
-				<input type="text" name="endDate" size="16" maxlength="19" onFocus="setEndDate()" value="{NEWS_ENDDATE}" />
+				<input type="text" name="endDate" size="16" maxlength="19" value="{NEWS_ENDDATE}" />
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )
 			</td>
 		</tr>
