@@ -574,7 +574,7 @@ class skins
             "sgl","odb","odf","sxm","smf","mml","zip","rar","htm",
             "html","shtml","css","js","tpl","thumb","ico"
         );
-        if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path, PCLZIP_OPT_BY_EREG, '('.implode('|', $valid_exts).')$')) != 0){
+        if (($files = $archive->extract(PCLZIP_OPT_PATH, $this->path, PCLZIP_OPT_BY_PREG, '/('.implode('|', $valid_exts).')$/')) != 0){
             //required files array
             $reqFiles = $this->filenames;
             foreach ($files as $file) {
@@ -586,7 +586,8 @@ class skins
                     //if no errors, set permission
                     $this->_objFile->setChmod($this->path, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR, $file['stored_filename']);
                     //if file is in required files array, remove it
-                    if (($reqFileIndex = array_search(substr(strstr($file['stored_filename'],DIRECTORY_SEPARATOR), 1), $reqFiles)) !== false){
+					// use '/' instead of DIRECTORY_SEPARATOR; PclZip always returns posix-style paths --fs
+                    if (($reqFileIndex = array_search(substr(strstr($file['stored_filename'],'/'), 1), $reqFiles)) !== false){
                         unset($reqFiles[$reqFileIndex]);
                     }
                 }
@@ -599,7 +600,7 @@ class skins
                         $this->_objFile->copyFile(ASCMS_ADMIN_TEMPLATE_PATH.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR, 'preview.gif', $this->path.$this->_themeDir.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR, 'preview.gif');
                         break;
                     default:
-                        $fh=fopen($this->path.$this->_themeDir.DIRECTORY_SEPARATOR.$reqFile,'w');
+                        $fh=fopen($this->path.$this->_themeDir.DIRECTORY_SEPARATOR.$reqFile,'w+');
                         fputs($fh,'');
                         fclose($fh);
                         $this->_objFile->setChmod($this->path.$this->_themeDir.DIRECTORY_SEPARATOR, ASCMS_THEMES_WEB_PATH.DIRECTORY_SEPARATOR.$this->_themeDir.DIRECTORY_SEPARATOR, $reqFile);
