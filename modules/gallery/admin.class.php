@@ -2233,9 +2233,9 @@ class galleryManager extends GalleryLibrary
 			}
 
             //check if file needs to be renamed
-			$newName = '';
-            if (file_exists($path.$file)) {
-                $info     = pathinfo($file);
+			$newName = self::cleanFileName($file);
+            if (file_exists($path.'/'.$newName)) {
+                $info     = pathinfo($newName);
                 $exte     = $info['extension'];
                 $exte     = (!empty($exte)) ? '.'.$exte : '';
                 $part1    = $info['filename'];
@@ -2243,10 +2243,6 @@ class galleryManager extends GalleryLibrary
                     $newName = $part1.'_'.time().$exte;
                 }
             }
-
-            //check whether file was renamed above
-            $nameToEscape = $newName == '' ? $file : $newName;
-            $newName = self::cleanFileName($nameToEscape);
 
             //if the name has changed, the file needs to be renamed afterwards
             if ($newName != $file) {
