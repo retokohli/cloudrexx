@@ -22,6 +22,7 @@ Bildergalerie
 
 Datenbank Manager
 - Darstellung erfolgt korrekt.
+- InnoDB-Tabellen mit Überhang werden als in Ordnung behandelt (diese haben immer einen Überhang)
 
 Digital Asset Management
 - Wird im Frontend eine Datei heraufgeladen, wird nun der Original-Dateiname als Titel verwendet.

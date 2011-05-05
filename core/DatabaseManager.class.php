@@ -1344,10 +1344,11 @@ class DatabaseManager
         $objResult = $objDatabase->Execute('SHOW TABLE STATUS LIKE "'.DBPREFIX.'%"');
         $i = 0;
         while (!$objResult->EOF) {
+            $isInnoDbEngine = $objResult->fields['Engine'] == 'InnoDB';
             $objTemplate->setVariable(array(
                 'DBM_CSV_TABLES_NAME' => $objResult->fields['Name'],
                 'DBM_CSV_TABLES_ROW' =>
-                    ($objResult->fields['Data_free']
+                    (!$isInnoDbEngine && $objResult->fields['Data_free']
                       ? 'Warn' : (++$i % 2 ? 2 : 1)
                     ),
                 'DBM_CSV_TABLES_ROWS' => $objResult->fields['Rows'],
