@@ -415,8 +415,10 @@ class Contact extends ContactLib
                 }
                 $folderName .= $suffix;
                 
+                $fm = new File();            
                 //try to make the folder and change target accordingly on success
-                if(mkdir(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName.'/')) {
+                if($fm->mkdir(ASCMS_DOCUMENT_ROOT.'/'.$depositionTarget, ASCMS_PATH_OFFSET.'/'.$depositionTarget , '/'.$folderName)) {
+                    $fm->setChmod(ASCMS_DOCUMENT_ROOT.'/'.$depositionTarget, ASCMS_PATH_OFFSET.'/'.$depositionTarget , '/'.$folderName);
                     $depositionTarget .= $folderName.'/';
                 }
                 $this->depositionTarget = $depositionTarget;
