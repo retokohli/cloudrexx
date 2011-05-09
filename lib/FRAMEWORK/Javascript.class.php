@@ -11,7 +11,7 @@
 
 // TODO: This is awkward here!  Find a way to include it just when it's needed.
 // Required by ContrexxJS (activated with 'cx')
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/ContrexxJavascript.php';
+require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/cxjs/ContrexxJavascript.class.php';
 
 /**
  * Javascript
