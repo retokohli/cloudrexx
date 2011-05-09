@@ -1060,11 +1060,17 @@ class Contact extends ContactLib
      * Gets the temporary upload location for files.
      * @param integer $submissionId
      * @return array('path','webpath', 'dirname')
+     * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId) {
         global $sessionObj;
 
         if (!isset($sessionObj)) $sessionObj = new cmsSession();
+  
+        $tempPath = $sessionObj->getTempPath();
+        $tempWebPath = $sessionObj->getWebTempPath();
+        if($tempPath === false || $tempWebPath === false)
+            throw new ContactException('could not get temporary session folder');
 
         $dirname = 'contact_files_'.$submissionId;
         $result = array(
