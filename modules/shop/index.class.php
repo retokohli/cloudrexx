@@ -4037,9 +4037,7 @@ right after the customer logs in!
                     $vatRate    = Vat::getRate($vatId);
                     $vatPercent = Vat::getShort($vatId);
                     $vatAmount  = Vat::amount(
-                        $vatRate,
-                        ($price+$priceOptions)*$arrProduct['quantity']
-                    );
+                        $vatRate, $price*$arrProduct['quantity']);
 
                     $this->objTemplate->setVariable(array(
                         'SHOP_PRODUCT_ID'           => $arrProduct['id'],
