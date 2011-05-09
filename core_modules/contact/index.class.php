@@ -616,8 +616,9 @@ class Contact extends ContactLib
         if (count($arrFields['fields']) > 0) {
             foreach ($arrFields['fields'] as $field) {
                 $isFile = $field['type'] == 'file';
+                $isRequired = $field['is_required'];
                 $source = $isFile ? 'uploadedFiles' : 'data';
-                if($isFile && !$this->legacyMode) {
+                if($isFile && !$this->legacyMode && $isRequired) {
                     //check if the user has uploaded any files
                     $tup = self::getTemporaryUploadPath($this->submissionId);
                     $path = $tup[0].'/'.$tup[2];
@@ -628,7 +629,7 @@ class Contact extends ContactLib
                     continue;
                 }
                 $regex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
-                if ($field['is_required'] && empty($arrFields[$source][$field['name']])) {
+                if ($isRequired && empty($arrFields[$source][$field['name']])) {
                     $error = true;
                 } elseif (empty($arrFields[$source][$field['name']])) {
                     continue;
