@@ -1,4 +1,5 @@
 <?php
+class ContrexxJavascriptException extends Exception {}
 /**
  * This class configures the ContrexxJavascript-object
  * (referred to as 'cx-object' in the comments)
