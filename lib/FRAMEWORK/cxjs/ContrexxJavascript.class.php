@@ -1,5 +1,7 @@
 <?php
 class ContrexxJavascriptException extends Exception {}
+
+require_once 'ContrexxJavascriptI18n.class.php';
 /**
  * This class configures the ContrexxJavascript-object
  * (referred to as 'cx-object' in the comments)
@@ -38,6 +40,10 @@ class ContrexxJavascript {
             'contrexx'
         );
 
+        //let i18n set it's variables
+        $i18n = new ContrexxJavascriptI18n($langCode);
+        $i18n->variablesTo($this);
+        
         //determine the correct jquery ui css' path.
         //the user might have overridden the default css in the theme, so look out for this too.
         $jQUiCssPath = 'themes/'.$objInit->getCurrentThemesPath().'/jquery-ui.css'; //customized css would be here
