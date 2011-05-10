@@ -572,7 +572,7 @@ class newsManager extends newsLibrary {
      * @return string
      */
     function dbFromDate($value) {
-        return date('Y-m-d H:m:00', $value);
+        return date('Y-m-d H:i:00', $value);
     }
 
     /**
