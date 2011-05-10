@@ -1,5 +1,7 @@
 <?php
 class ContrexxJavascriptI18nException extends ContrexxJavascriptException {}
+
+require_once 'ContrexxJavascriptI18nProvider.interface.php';
 /**
  * This handles i18n for Javascript.
  * @author Severin Räz
@@ -11,27 +13,34 @@ class ContrexxJavascriptI18n {
     */
     protected $languageCode = 'en';
 
+    public function __construct($languageCode) {
+        $this->languageCode = $languageCode;
+    }
+
     /**
-     * returns all i18n variables to pass to js.
-     * @return array an associative array ready to pass @link ContrexxJavascript::setVariable()
+     * sets all i18n variables on target
+     * @param ContrexxJavascript $target
      * @throws ContrexxJavascriptI18nException
      */
-    public function getVariables() {
+    public function variablesTo($target) {
         $vars = array();
         $providers = scandir(ASCMS_FRAMEWORK_PATH.'/cxjs/i18n');
         foreach($providers as $provider) {
-            if($provider == '.' || $provider == '..')
+            if($provider[0] == '.') //do not open ., .., and linux hidden directories (.*)
                 continue;
-            $providerName = substr($provider,0,strstr($provider,'.'));
-            $className = ucfirst($providerName.'Provider');
+            //name as used for the scope ('provider')
+            $providerName = substr($provider,0,strpos($provider,'.'));
+            //name of the class ('providerProvider')
+            $className = ucfirst($providerName.'I18nProvider');
             try {
-                require_once $provider;
-                $provider = new $className();
-                $vars[$providerName] = $provider->getVariables($this->languageCode);
+                require_once 'i18n/'.$provider;
+                $providerInst = new $className();
+                //set the variables accordingly on cxjs object
+                $target->setVariable($providerInst->getVariables($this->languageCode), $providerName);
             }
-            catch( Exception $e)
+            catch(Exception $e)
             {
-                throw new ContrexxJavascriptI18nException("error parsing i18n module '$provider': " $e->getMessage());
+                throw new ContrexxJavascriptI18nException("error parsing i18n module '$provider': " . $e->getMessage());
             }
         }
         return $vars;
