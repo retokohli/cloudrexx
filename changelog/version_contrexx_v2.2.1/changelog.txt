@@ -9,6 +9,9 @@
 Administrationsoberfläche (Backend)
 - Navigation alphabetisch sortiert
 
+News Modul
+- Datumsauswahl mit Kalender
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
