@@ -175,7 +175,7 @@ Coming soon
             'jsfiles' => array(
                 'lib/javascript/cx/contrexxJs.js',
                 'lib/javascript/cx/contrexxJs-tools.js',
-                'lib/javascript/jquery/jquery.includeMany-1.2.2.min.js' //to dynamically include javascript files
+                'lib/javascript/jquery/jquery.includeMany-1.2.2.js' //to dynamically include javascript files
             ),
             'dependencies' => array('jquery')
             //we insert the specialCode for the Contrexx-API later in getCode()
