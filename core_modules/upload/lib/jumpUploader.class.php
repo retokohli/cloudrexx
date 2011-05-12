@@ -59,7 +59,7 @@ class JumpUploader extends Uploader
       require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
       $tpl->setVariable('CHUNK_LENGTH', FWSystem::getMaxUploadFileSize()-1000);
       $tpl->setVariable('APPLET_URL', $appletPath);
-      //todo: set lang_url to corresponding file in upload/ressources/uploaders/jump/messages_* and add the placeholder in template: change {APPLET_URL} => {LANG_URL},{APPLET_URL}
+      //TODO: set lang_url to corresponding file in upload/ressources/uploaders/jump/messages_* and add the placeholder in template: change {APPLET_URL} => {LANG_URL},{APPLET_URL}
       //$tpl->setVariable('LANG_URL', ASCMS_CORE_MODULE_WEB_PATH.'/upload/ressources/uploaders/jump/jumpLoader.jar');
       $tpl->setVariable('UPLOAD_URL', $uploadPath);
       

@@ -214,7 +214,7 @@ abstract class Uploader
 
         //we're going to call the callbck, so the data is not needed anymore
         //well... not quite sure. need it again in contact form.
-        //todo: code session cleanup properly if time.
+        //TODO: code session cleanup properly if time.
         //$this->cleanupCallbackData();
 
         $classFile = $this->callbackData[0];
