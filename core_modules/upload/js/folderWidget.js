@@ -21,14 +21,22 @@ var FolderWidget = function(options) {
                     var del = $J(' &nbsp; <a></a>').html('x');
                     del.attr('href','');
                     del.bind('click', function() {
-                        var theFile = li;
-                        $J.get(deleteUrl,
+                        var fileElement = li;
+                        var fileName = file;
+                        $.get(deleteUrl,
                             {
                                 file: file,
                                 folderWidgetId: id
                             },
-                            function() {
-                                theFile.remove(); //remove the li elem representing the file
+                            function() {                               
+                                fileElement.remove(); //remove the li elem representing the file
+                                //remove the file from our local files array
+                                //this makes sure isEmpty() doesn't lie 
+                                for(index in files) {
+                                    var file = files[index];
+                                    if(file == fileName)
+                                        files.splice(index, 1);
+                                }
                             });
                         return false;
                     });
