@@ -46,6 +46,20 @@ class UploadLib
         die();      
     }
 
+    //send the jumpUploader messages
+    public function jumpUploaderL10n($langCode) {
+        //the messages are sent via request because of basic auth problems with a path for the .zip-file that is different from the path the browser authenticated himself against.
+        require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
+        $download = new HTTP_Download();
+        //load correct language file
+        $objFWUser = FWUser::getFWUserObject();
+
+        $download->setFile(ASCMS_CORE_MODULE_PATH.'/upload/ressources/uploaders/jump/messages_'.$langCode.'.zip');
+        $download->setContentType('application/zip');
+        $download->send();
+        die();      
+    }
+
     //gets the current folder contents for a folderwidget
     public function refreshFolder()
     {

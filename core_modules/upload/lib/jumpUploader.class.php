@@ -15,7 +15,6 @@ class JumpUploader extends Uploader
         $chunks = $_POST['partitionCount'];
         $fileName = contrexx_stripslashes($_FILES['file']['name']);
 
-
         // check if the file has a valid file extension
         if (!FWValidator::is_file_ending_harmless($fileName)) {
             die('Error:'.sprintf('The file %s was refused due to its file extension which is not allowed!', htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET)));
@@ -38,6 +37,7 @@ class JumpUploader extends Uploader
      */     
     public function getXHtml($backend = false)
     {
+      global $objInit;
       $uploadPath = $this->getUploadPath('jump');
 
       $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
@@ -45,22 +45,26 @@ class JumpUploader extends Uploader
       
       $tpl->loadTemplateFile('jump.html');
 
-      //load correct language file
-      $objFWUser = FWUser::getFWUserObject();
-      $lang = FWLanguage::getLanguageParameter($objFWUser->objUser->getBackendLanguage(), 'lang');
-      if (!file_exists(ASCMS_CORE_MODULE_WEB_PATH.'/upload/ressources/uploaders/jump/messages_'.$lang.'.zip')) {
-          $lang = $this->defaultInterfaceLanguage;
-      }
+      $basePath = 'index.php?';
+      $basePath .= ($this->isBackendRequest ? 'cmd=upload&act' : 'section=upload&cmd'); //act and cmd vary 
+      $appletPath = $basePath.'=jumpUploaderApplet';
+      $l10nPath = $basePath.'=jumpUploaderL10n';
 
-      $appletPath = 'index.php?';
-      $appletPath .= ($this->isBackendRequest ? 'cmd=upload&act' : 'section=upload&cmd'); //act and cmd vary 
-      $appletPath .= '=jumpUploaderApplet';
+      $langId;
+      if(!$this->isBackendRequest)
+          $langId = $objInit->getFrontendLangId();
+      else //backend
+          $langId = $objInit->getBackendLangId();
+      $langCode = FWLanguage::getLanguageCodeById($langId);
+      if (!file_exists(ASCMS_CORE_MODULE_PATH.'/upload/ressources/uploaders/jump/messages_'.$langCode.'.zip')) {
+          $langCode = 'en';
+      }
+      $l10nPath .= '&lang='.$langCode;
 
       require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
       $tpl->setVariable('CHUNK_LENGTH', FWSystem::getMaxUploadFileSize()-1000);
       $tpl->setVariable('APPLET_URL', $appletPath);
-      //TODO: set lang_url to corresponding file in upload/ressources/uploaders/jump/messages_* and add the placeholder in template: change {APPLET_URL} => {LANG_URL},{APPLET_URL}
-      //$tpl->setVariable('LANG_URL', ASCMS_CORE_MODULE_WEB_PATH.'/upload/ressources/uploaders/jump/jumpLoader.jar');
+      $tpl->setVariable('LANG_URL', $l10nPath);
       $tpl->setVariable('UPLOAD_URL', $uploadPath);
       
       return $tpl->get();

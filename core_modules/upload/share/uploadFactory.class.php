@@ -251,7 +251,10 @@ class UploadFactory
      */
     protected function setRedirectUrl($uploader, $uploadId) {
         //some uploads may have a redirect url set
-        $redirectUrl = $_SESSION['upload_redirect_url_'.$uploadId];
+        $key = 'upload_redirect_url_'.$uploadId;
+        $redirectUrl = null;
+        if(isset($_SESSION[$key]))
+            $redirectUrl = $_SESSION[$key];
         if($redirectUrl) {
             $uploader->setRedirectUrl($redirectUrl);
         }
