@@ -14,8 +14,19 @@ class FormUploader extends Uploader
         global $_FILES;
 
         //get a writable directory
-        $targetDir = $sessionObj->getTempPath().'/upload_'.$this->uploadId;
-        @mkdir($targetDir);
+        $targetDir = '/upload_'.$this->uploadId;
+        $tempPath = $sessionObj->getTempPath();
+        $webTempPath = $sessionObj->getWebTempPath();
+
+        //create a file manager
+        require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
+        $fm = new File();
+
+        //make sure target directory exists
+        if(!file_exists($tempPath.$targetDir))
+            $fm->mkdir($tempPath, $webTempPath, $targetDir);
+
+        $targetDir = $tempPath.$targetDir;
         
         //move all uploaded file to this upload's temp directory
         foreach($_FILES["uploaderFiles"]["error"] as $key => $error) {
