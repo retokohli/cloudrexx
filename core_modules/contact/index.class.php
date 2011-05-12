@@ -807,6 +807,7 @@ class Contact extends ContactLib
 
                 if(!in_array($key, $textAreaKeys)) { //it's no textarea, indent normally
                     $spaces = 30-strlen($key);
+                    if ($spaces < 0) $spaces = 0;
                     $body .= $key.":".str_repeat(" ", $spaces).$value."\n";
                 }
                 else { //we're dealing with a textearea
