@@ -70,7 +70,7 @@ class PlUploader extends Uploader
           'ADD_FILES' => $_CORELANG['ADD_FILES'],
 
           'STOP_CURRENT_UPLOAD' => $_CORELANG['STOP_CURRENT_UPLOAD'],
-          'DRAG_FILES_HERE' => $_CORELANG['DRAG_FILES_HERE)']
+          'DRAG_FILES_HERE' => $_CORELANG['DRAG_FILES_HERE']
       ));
       
       return $tpl->get();
