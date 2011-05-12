@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Modul Admin Index
  *
@@ -29,7 +28,8 @@ DBG::deactivate();
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
-ob_start("ob_gzhandler");
+//commented out with java uploader l10n using pear http_download
+//ob_start("ob_gzhandler");
 
 $adminPage = true;
 
