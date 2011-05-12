@@ -450,7 +450,7 @@ class Contact extends ContactLib
                 }                    
             }
             //cleanup
-            //todo: this does not work for certain reloads - add cleanup routine
+            //TODO: this does not work for certain reloads - add cleanup routine
             //@rmdir($tmpUploadDir);
             return $arrFiles;
         }
@@ -1083,8 +1083,8 @@ class Contact extends ContactLib
 
     //Uploader callback
     public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
-        //todo: remove files with bad file extensions
-        //todo: rename files
+        //TODO: remove files with bad file extensions
+        //TODO: rename files
         $tup = self::getTemporaryUploadPath($data);
         return array($tup[0].'/'.$tup[2],$tup[1].'/'.$tup[2]);
     }
