@@ -33,7 +33,21 @@ class FormUploader extends Uploader
             if($error == UPLOAD_ERR_OK) {
                 $tmpName = $_FILES["uploaderFiles"]["tmp_name"][$key];
                 $name = $_FILES["uploaderFiles"]["name"][$key];
+                //TODO: Uploader::addChunk does this also -> centralize in function
+                // remember the "raw" file name, we want to store all original
+                // file names in the session.
+                $originalFileName = $name;
+                // Clean the fileName for security reasons
+                $name = preg_replace('/[^\w\._]+/', '', $name);
+                $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
+                $originalFileNames = array();
+                if(isset($_SESSION[$sessionKey]))
+                    $originalFileNames = $_SESSION[$sessionKey];
+                $originalFileNames[$name] = $originalFileName;
+                $_SESSION[$sessionKey] = $originalFileNames;
+                //end of TODO-region
                 @move_uploaded_file($tmpName,$targetDir.'/'.$name);
+                
             }
         }
 
