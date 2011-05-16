@@ -309,9 +309,43 @@ class File
         return $string;
     }
 
+    /**
+     * Move a file or directory from a to b.
+     * You can use this to rename files!
+     *
+     * @return boolean true on success
+     */
+    function moveFile($sourcePath, $sourceWebPath, $sourceName, $targetPath, $targetWebPath, $targetName = null) {
+        //make sure we use the original name if no new name was provided
+        if($targetName === null)
+            $targetName = $sourceName;
 
+        $sameDir = ($targetPath == $sourcePath) || ($sourceWebPath == $targetWebPath);
+        $sameName = $sourceName == $targetName;
 
+        //do nothing where nothing needs to be done.
+        if($sameDir && $sameName)
+            return true; //we do not count this as error
 
+        $errorOccurred = false;
+        if ($this->ftp_is_activated) {
+          if(!ftp_rename($this->conn_id, $this->ftpDirectory.$sourceWebPath.$sourceName, $this->ftpDirectory.$targetWebPath.$targetName))
+                $errorOccurred = true;
+        }
+        else { //no ftp
+            if(!rename($sourcePath.$sourceName, $targetPath.$targetName))
+                $errorOccurred = true;
+        }
+  
+        return !$errorOccurred;
+    }
+
+    /**
+     * Renames a file and leaves it in the same directory.
+     * Use moveFile instead.
+     *
+     * @deprecated
+     */
     function renameFile($path, $webPath, $oldFileName, $newFileName) {
         $webPath=$this->checkWebPath($webPath);
 
@@ -343,8 +377,6 @@ class File
 
         return $status;
     }
-
-
 
     function renameDir($path, $webPath, $oldDirName, $newDirName) {
         $webPath=$this->checkWebPath($webPath);

@@ -246,8 +246,13 @@ abstract class Uploader
             $fm = new File();
             $fm->setChmod($path['dirname'], $pathWeb['dirname'], $path['basename']);
 
-            //revert $path to whole path instead of pathinfo path for copying
-            $path = $path['dirname'].'/'.$path['basename'];
+            //revert $path and $pathWeb to whole path instead of pathinfo path for copying
+            $path = $path['dirname'].'/'.$path['basename'].'/';
+            $pathWeb = $pathWeb['dirname'].'/'.$pathWeb['basename'].'/';
+
+            //trailing slash needed for File-class calls
+            $tempPath .= '/';
+            $tempWebPath .= '/';
             
             //move everything uploaded to target dir
             $h = opendir($tempPath);
@@ -256,7 +261,8 @@ abstract class Uploader
                 if($f == '.' || $f == '..')
                     continue;
 
-                rename($tempPath.'/'.$f, $path.'/'.$f);
+                //TODO: if return value = 'error' => react
+                $fm->moveFile($tempPath, $tempWebPath, $f, $path, $pathWeb);
             }
             closedir($h);
         }
