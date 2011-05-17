@@ -2209,8 +2209,7 @@ sendReq('', 1);
               : (empty($_SESSION['shop']['countryId2'])
                   ? $this->arrConfig['country_id']['value']
                   : $_SESSION['shop']['countryId2']
-                )
-            );
+                ));
     }
 
 
@@ -2972,17 +2971,15 @@ sendReq('', 1);
                 // New template - since 2.1.0
                 'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
                     Country::getMenuoptions(
-                        (isset($_SESSION['shop']['countryId']) ? $_SESSION['shop']['countryId'] : 0)
-                    ),
+                        (isset($_SESSION['shop']['countryId'])
+                            ? $_SESSION['shop']['countryId'] : 0)),
                 // Old template
                 // Compatibility with 2.0 and older versions
                 'SHOP_ACCOUNT_COUNTRY'       =>
                     $this->_getCountriesMenu(
                         'countryId',
                         (isset($_SESSION['shop']['countryId'])
-                          ? $_SESSION['shop']['countryId'] : 0
-                        )
-                    ),
+                            ? $_SESSION['shop']['countryId'] : 0)),
                 'SHOP_ACCOUNT_EMAIL'         => (isset($_SESSION['shop']['email'])      ? stripslashes($_SESSION['shop']['email']) : ''),
                 'SHOP_ACCOUNT_PHONE'         => (isset($_SESSION['shop']['phone'])      ? stripslashes($_SESSION['shop']['phone']) : ''),
                 'SHOP_ACCOUNT_FAX'           => (isset($_SESSION['shop']['fax'])        ? stripslashes($_SESSION['shop']['fax']) : ''),
@@ -3124,7 +3121,8 @@ sendReq('', 1);
         // determine any valid value for it
         if (   $_SESSION['shop']['total_price']
             && !isset($_SESSION['shop']['paymentId'])) {
-            $arrPaymentId = Payment::getCountriesRelatedPaymentIdArray($_SESSION['shop']['countryId'], Currency::getCurrencyArray());
+            $arrPaymentId = Payment::getCountriesRelatedPaymentIdArray(
+                $_SESSION['shop']['countryId'], Currency::getCurrencyArray());
             $_SESSION['shop']['paymentId'] = current($arrPaymentId);
         }
 
@@ -3177,7 +3175,7 @@ die("YYY");
      *     of the shipment ID returned in $_POST['shipperId'], if the latter is set.
      *   - Otherwise, sets $_SESSION['shop']['shipperId'] to the default value
      *     obtained by calling {@see Shipment::getCountriesRelatedShippingIdArray()}
-     *     with the country ID found in $_SESSION['shop']['countryId'].
+     *     with the country ID found in $_SESSION['shop']['countryId2'].
      *   - Returns the shipment dropdown menu as returned by
      *     {@see Shipment::getShipperMenu()}.
      * - If $_SESSION['shop']['shipment'] evaluates to false, does nothing, but simply
@@ -3189,7 +3187,7 @@ die("YYY");
         // Only show the menu if shipment is needed and the ship-to
         // country is known
         if (   empty($_SESSION['shop']['shipment'])
-            || empty($_SESSION['shop']['countryId'])) return '';
+            || empty($_SESSION['shop']['countryId2'])) return '';
         // Choose a shipment in this order from
         // - post, if present,
         // - session, if present,
@@ -3204,18 +3202,17 @@ die("YYY");
                     )
                 );
         }
-/*
         // If no shipment has been chosen yet, set the default
         // as the selected one.
         if (empty($_SESSION['shop']['shipperId'])) {
             // Get available shipment IDs
-            $arrShipmentId = Shipment::getCountriesRelatedShippingIdArray($_SESSION['shop']['countryId']);
+            $arrShipmentId = Shipment::getCountriesRelatedShippingIdArray(
+                $_SESSION['shop']['countryId2']);
             // First is the default shipment ID
             $_SESSION['shop']['shipperId'] = current($arrShipmentId);
         }
-*/
         $menu = Shipment::getShipperMenu(
-            $_SESSION['shop']['countryId'],
+            $_SESSION['shop']['countryId2'],
             $_SESSION['shop']['shipperId'],
             "document.forms['shopForm'].submit()"
         );
@@ -3281,8 +3278,8 @@ die("YYY");
             $_SESSION['shop']['shipment_price'] = 0;
 
         Vat::setIsHomeCountry(
-               empty($_SESSION['shop']['countryId2'])
-            || $_SESSION['shop']['countryId2'] == $this->arrConfig['country_id']['value']
+               empty($_SESSION['shop']['countryId'])
+            || $_SESSION['shop']['countryId'] == $this->arrConfig['country_id']['value']
         );
 /*
 Alternative method that treats Schweiz and Liechtenstein
