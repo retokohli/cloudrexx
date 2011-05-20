@@ -72,7 +72,7 @@ function openWindow(theURL,winName,features){
 	browserPopup.focus();
 }
 
-function add(from,dest,add,remove)
+function calendarAddGroupToList(from,dest,add,remove)
 {
     if ( from.selectedIndex < 0)
 	{
@@ -101,7 +101,7 @@ function add(from,dest,add,remove)
 }
 
 
-function remove(from,dest,add,remove)
+function calendarRemoveGroupFromList(from,dest,add,remove)
 {
 	if ( dest.selectedIndex < 0)
 	{
@@ -466,9 +466,9 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
 		    </td>
 		    <td width="4%">
 		      <div align="center">
-		        <input type="button" value=" &gt;&gt; " name="addgroups" onclick="add(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
+		        <input type="button" value=" &gt;&gt; " name="addgroups" onclick="calendarAddGroupToList(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
 		        <br />
-		        <input type="button" value=" &lt;&lt; " name="removegroups" onclick="remove(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
+		        <input type="button" value=" &lt;&lt; " name="removegroups" onclick="calendarRemoveGroupFromList(document.getElementById('notSelectedGroups'),document.getElementById('SelectedGroups'),document.getElementsByName('addgroups')[0],document.getElementsByName('removegroups')[0]);" />
 		        <br /><br />
 		      </div>
 		    </td>

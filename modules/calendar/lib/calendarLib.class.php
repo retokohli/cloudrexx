@@ -1531,36 +1531,17 @@ class calendarLibrary
               FROM ".DBPREFIX."module_calendar".$this->mandateLink."
              WHERE id='$noteId'";
         $objResultNote     = $objDatabase->SelectLimit($queryNote, 1);
+
         $GoupsNote        = substr($objResultNote->fields['groups'],0,-1);
-        $arrGoupsNote     = explode(";",$GoupsNote);
-        $queryUser = "
-            SELECT id, email, firstname, lastname, groups
-              FROM ".DBPREFIX."access_users
-             WHERE active='1'";
-        $objResultUser     = $objDatabase->Execute($queryUser);
-        if ($objResultUser !== false) {
-            while (!$objResultUser->EOF) {
-                if ($objResultNote->fields['all_groups'] == 1) {
-                    if (!empty($objResultUser->fields['email'])) {
-                        $arrUsers[$objResultUser->fields['id']]['email']         = $objResultUser->fields['email'];
-                        $arrUsers[$objResultUser->fields['id']]['lastname']     = $objResultUser->fields['lastname'];
-                        $arrUsers[$objResultUser->fields['id']]['firstname']     = $objResultUser->fields['firstname'];
-                    }
-                } else {
-                    if (!empty($objResultUser->fields['email'])) {
-                        $arrGoupsUser = explode(",",$objResultUser->fields['groups']);
-                        foreach ($arrGoupsNote as $groupId) {
-                            if (in_array($groupId, $arrGoupsUser)) {
-                                $arrUsers[$objResultUser->fields['id']]['email']         = $objResultUser->fields['email'];
-                                $arrUsers[$objResultUser->fields['id']]['lastname']     = $objResultUser->fields['lastname'];
-                                $arrUsers[$objResultUser->fields['id']]['firstname']     = $objResultUser->fields['firstname'];
-                            }
-                        }
-                    }
-                }
-                $objResultUser->moveNext();
-            }
+        $arrGroupsNote     = explode(";",$GoupsNote);
+
+        $arrUserFilter = array('active' => true);
+        $arrUserAttributes = array('email', 'firstname', 'lastname');
+        if ($objResultNote->fields['all_groups'] != 1) {
+            $arrUserFilter['group_id'] = $arrGroupsNote;
         }
+
+        $objUser = FWUser::getFWUserObject()->objUser->getUsers($arrUserFilter, null, null, $arrUserAttributes);
 
         $objCategory = $objDatabase->SelectLimit('SELECT lang FROM '.DBPREFIX.'module_calendar_categories WHERE id='.$objResultNote->fields['catid']);
         if ($objCategory !== false) {
@@ -1583,15 +1564,15 @@ class calendarLibrary
                 }
             }
 
-            foreach ($arrUsers as $userId => $arrUser) {
+            while (!$objUser->EOF) {
                 $mailTitleReloaded        = $mailTitle;
                 $mailContentReloaded    = $mailContent;
 
-                $key        = base64_encode($noteId."#".$userId."#".$objResultNote->fields['key']);
+                $key        = base64_encode($noteId."#".$objUser->getId()."#".$objResultNote->fields['key']);
                 $url        = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
                 $date        = date(ASCMS_DATE_FORMAT);
-                $firstname    = $arrUser['firstname'];
-                $lastname    = $arrUser['lastname'];
+                $firstname    = $objUser->getProfileAttribute('firstname');
+                $lastname    = $objUser->getProfileAttribute('lastname');
                 $link        = "http://".$url."/".($_CONFIG['useVirtualLanguagePath'] == 'on' ? FWLanguage::getLanguageParameter($languageId, 'lang').'/' : null).CONTREXX_DIRECTORY_INDEX."?section=calendar".$this->mandateLink."&cmd=sign&key=".$key;
                 $title        = $objResultNote->fields['name'];
                 $startdate    = date("Y-m-d H:i", $objResultNote->fields['startdate']);
@@ -1618,9 +1599,11 @@ class calendarLibrary
                 $objMail->Subject = $mailTitleReloaded;
                 $objMail->IsHTML(false);
                 $objMail->Body = $mailContentReloaded;
-                $objMail->AddAddress($arrUser['email']);
+                $objMail->AddAddress($objUser->getEmail());
                 $objMail->Send();
                 $objMail->ClearAddresses();
+
+                $objUser->next();
             }
         }
     }

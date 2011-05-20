@@ -132,7 +132,7 @@ class calendarManager extends calendarLibrary
                 break;
 
             case 'saveEdited':
-                $id = $this->writeNote(intval($_POST['id']));
+                $id = $this->writeNote();
                 CSRF::header("Location: index.php?cmd=calendar".$this->mandateLink);
                 exit;
                 break;
@@ -891,9 +891,8 @@ class calendarManager extends calendarLibrary
      */
     function writeNote()
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase, $_LANGID, $_ARRAYLANG;
 
-        $_POST['inputInfo'] = str_replace(' ', '', $_POST['inputInfo']);
         $return = 0;
 
         //options
@@ -948,13 +947,13 @@ class calendarManager extends calendarLibrary
         //mail
         $mailTitle      = contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailTitle']));
         $mailContent    = contrexx_addslashes(contrexx_strip_tags($_POST['registrationMailContent']));
-        $mailSendAgain  = intval($_POST['inputSendMailAgain']);
+        $mailSendAgain  = !empty($_POST['inputSendMailAgain']);
 
         //notification
         $notification   = intval($_POST['inputNotification']);
 
 		//series pattern
-		$seriesStatus 				= intval($_POST['inputSeriesStatus']);
+		$seriesStatus 				= intval(!empty($_POST['inputSeriesStatus']));
 		$seriesType 				= intval($_POST['inputSeriesType']);
 		$seriesPatternCount			= 0;
 		$seriesPatternWeekday		= 0;
@@ -1092,15 +1091,14 @@ class calendarManager extends calendarLibrary
             }
         }
 
+        $groups                 = "";
         if($registration == 1){
             switch($registrationAdresser){
                 case 0:
-                    $groups         = "";
                     $all_groups     = 0;
                     $public         = 1;
                     break;
                 case 1:
-                    $groups         = "";
                     $all_groups     = 1;
                     $public         = 0;
                     break;
@@ -1112,12 +1110,10 @@ class calendarManager extends calendarLibrary
                         $groups .= $groupId.";";
                     }
 
-
                     break;
             }
         } else {
             $registration           = 0;
-            $groups                 = "";
             $all_groups             = 0;
             $public                 = 0;
             $registrationSubscriber = 0;
@@ -1189,7 +1185,7 @@ class calendarManager extends calendarLibrary
                                 $fieldId        = intval($registrationArrFieldIds[$fieldKey]);
                                 $fieldName      = $registrationArrFieldName[$fieldKey];
                                 $fieldType      = empty($registrationArrFieldType[$fieldKey]) || $registrationArrFieldType[$fieldKey] == 0 ? 1 : $registrationArrFieldType[$fieldKey];
-                                $fieldRequired  = intval($registrationArrFieldRequired[$fieldKey]);
+                                $fieldRequired  = intval(!empty($registrationArrFieldRequired[$fieldKey]));
                                 $fieldOrder     = $registrationArrFieldOrder[$fieldKey];
 
                                 $query = "INSERT INTO ".DBPREFIX."module_calendar".$this->mandateLink."_form_fields (`id`,
