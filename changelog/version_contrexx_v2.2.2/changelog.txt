@@ -1,0 +1,14 @@
+////////////////////////////////////////
+// CHANGELOG 2.2.1-2.2.2 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Modul: Veranstaltungskalender
+- Die E-Mail-Benachrichtigung zur Anmeldung auf eine Veranstaltung funktioniert.
+- Die Zuordnung von Benutzergruppen, welche über eine neue Veranstaltung informierten werden sollen, funktioniert.
