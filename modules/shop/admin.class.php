@@ -6162,9 +6162,11 @@ class shopmanager extends ShopLibrary
             foreach ($arrSelectedMainCats as $key => $value) {
                 $this->doCategoryTreeActiveOnly($value);
                 foreach (array_keys($this->categoryTreeName) as $catKey) {
-                    $selectedCategories .= $catKey.',';
+                    $selectedCategories .=
+                        ($selectedCategories ? ',' : '').$catKey;
                 }
-                $selectedCategories .= $value;
+                $selectedCategories .=
+                    ($selectedCategories ? ',' : '').$value;
             }
             if (empty($selectedCategories)) $selectedCategories = '*';
         }
