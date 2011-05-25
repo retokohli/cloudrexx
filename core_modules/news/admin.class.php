@@ -543,6 +543,8 @@ class newsManager extends newsLibrary {
      * @return long timestamp
      */
     function dateFromInput($value) {
+        if($value === null || $value === '') //not set POST-param passed, return null for the other functions to know this
+            return null;
         $arrDate = array();
         if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})\s*([0-9]{1,2})\:([0-9]{1,2})/', $value, $arrDate)) {
             return mktime(intval($arrDate[4]), intval($arrDate[5]), 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
@@ -558,6 +560,9 @@ class newsManager extends newsLibrary {
      * @return string
      */
     function valueFromDate($value = 0) {
+        if($value === null //user provided no POST
+            || $value === '0') //empty date field
+            return ''; //make an empty date 
         $format = 'd.m.Y H:i';
         if($value)
             return date($format,$value);
@@ -572,7 +577,12 @@ class newsManager extends newsLibrary {
      * @return string
      */
     function dbFromDate($value) {
-        return date('Y-m-d H:i:00', $value);
+        if($value !== null) {
+            return date('"Y-m-d H:i:00"', $value);
+        }
+        else {
+            return 'DEFAULT';
+        }
     }
 
     /**
@@ -676,8 +686,8 @@ class newsManager extends newsLibrary {
                                                 url2="'.$newsurl2.'",
                                                 catid='.$newscat.',
                                                 lang='.$this->langId.',
-                                                startdate="'.$this->dbFromDate($startDate).'",
-                                                enddate="'.$this->dbFromDate($endDate).'",
+                                                startdate='.$this->dbFromDate($startDate).',
+                                                enddate='.$this->dbFromDate($endDate).',
                                                 status='.$status.',
                                                 validated="1",
                                                 frontend_access_id="'.$newsFrontendAccessId.'",
@@ -1365,8 +1375,8 @@ class newsManager extends newsLibrary {
                                                         userid = '".$set_userid."',
                                                         status = '".$status."',
                                                         ".(isset($_POST['validate']) ? "validated='1'," : "")."
-                                                        startdate = '".$this->dbFromDate($startDate)."',
-                                                        enddate = '".$this->dbFromDate($endDate)."',
+                                                        startdate = ".$this->dbFromDate($startDate).",
+                                                        enddate = ".$this->dbFromDate($endDate).",
                                                         frontend_access_id = '".$newsFrontendAccessId."',
                                                         backend_access_id = '".$newsBackendAccessId."',
                                                         ".($_CONFIG['newsTeasersStatus'] == '1' ? "teaser_only = '".$newsTeaserOnly."',
