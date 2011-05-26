@@ -202,14 +202,12 @@ class Recommend extends RecommendLibrary
                 'RECOM_TXT_CAPTCHA'                => $_ARRAYLANG['TXT_RECOMMEND_CAPTCHA']
             ));
 
-            $offset = $objCaptcha->getOffset();
             $alt = $objCaptcha->getAlt();
             $url = $objCaptcha->getUrl();
 
             $this->_objTpl->setVariable(array(
                 'RECOM_CAPTCHA_URL'        => $url,
                 'RECOM_CAPTCHA_ALT'        => $alt,
-                'RECOM_CAPTCHA_OFFSET'    => $offset
             ));
 
             $this->_objTpl->parseCurrentBlock('recommend_form');
