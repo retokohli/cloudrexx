@@ -3171,6 +3171,8 @@ class newsletter extends NewsletterLib
     {
         global $objDatabase, $_ARRAYLANG;
 
+        JS::activate('jquery');
+
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS'];
         $this->_objTpl->loadTemplateFile('module_newsletter_user.html');
 

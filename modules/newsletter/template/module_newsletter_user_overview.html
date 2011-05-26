@@ -76,9 +76,11 @@ function sendReq(field) {
   }
   listId = listDropdown.options[listDropdown.options.selectedIndex].value;
   listId = (listId == 'selectcategory') ? 0 : listId ;
-  http.open('get', '?cmd=newsletter&standalone=1&act=editusersort&field='+field+'&order='+orderspan.order+'&limit='+limit+'&list='+listId);
+  /*http.open('get', '?cmd=newsletter&standalone=1&act=editusersort&field='+field+'&order='+orderspan.order+'&limit='+limit+'&list='+listId);
   http.onreadystatechange = updateUserlist
-    http.send(null);
+    http.send(null);*/
+  $J.get('?cmd=newsletter&standalone=1&act=editusersort&field='+field+'&order='+orderspan.order+'&limit='+limit+'&list='+listId,
+    updateUserlist);
 }
 
 function createTdWithText(text){
@@ -113,12 +115,10 @@ var imgDelete = new Image();
   imgDelete.alt = '{TXT_NEWSLETTER_DELETE_RECIPIENT}';
   imgDelete.border = '0';
 
-function updateUserlist() {
-    if(http.readyState == 4 && http.status == 200){
-      var users = new Array();
+function updateUserlist(response) {
+    var users = new Array();
     var recipients = new Array();
     var fields = new Array();
-        var response = http.responseText;
         var update = new Array()
         if(response.indexOf('%') != -1) {
             users = response.split('%');
@@ -185,7 +185,7 @@ function updateUserlist() {
             alert('error: ' + http.statusText);
           }
         }
-    }
+    
 }
 
 var confirmDeleteInactive = function(){

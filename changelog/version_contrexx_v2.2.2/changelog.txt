@@ -21,6 +21,7 @@ Modul: News
 
 Modul: Newsletter
 - Der Vorname wurde aus der Anredezeile entfernt.
+- Die Sortierung funktioniert wieder.
 
 Modul: Weiterempfehlen
 - Funktioniert mit neuem Captcha-Mechanismus
