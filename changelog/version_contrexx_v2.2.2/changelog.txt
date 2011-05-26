@@ -6,6 +6,9 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 
+Libraries
+- Es wird nun jQuery 1.6.1 anstelle 1.4.4 eingesetzt.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
