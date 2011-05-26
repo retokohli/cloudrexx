@@ -116,7 +116,7 @@ class JS
         ),
         'jquery'     => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery/jquery-1.4.4.min.js',
+                'lib/javascript/jquery/jquery-1.6.1.min.js',
             ),
             'specialcode'  => 'var $J = jQuery.noConflict();',
         ),
