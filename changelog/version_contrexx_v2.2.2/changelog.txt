@@ -15,3 +15,6 @@ Modul: Veranstaltungskalender
 
 Modul: News
 - Die standardmässig aktivierte zeitgesteuerte Veröffentlichung ist wieder deaktiviert.
+
+Modul: Newsletter
+- Der Vorname wurde aus der Anredezeile entfernt.
