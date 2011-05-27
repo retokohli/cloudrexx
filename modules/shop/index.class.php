@@ -3395,8 +3395,7 @@ as the same country:
             // - the shipperId is set already (and the shipment conditions were validated)
             $shipmentStatus =
                 ($_SESSION['shop']['shipment']
-                    ? isset($_SESSION['shop']['shipperId']) : true
-                );
+                    ? isset($_SESSION['shop']['shipperId']) : true);
             // payment status is true, if either
             // - the total price is zero (or less!?), including VAT and shipment, or
             // - the paymentId is set and valid, and the LSV status evaluates to true.
@@ -3761,10 +3760,8 @@ right after the customer logs in!
                     '".trim($_SESSION['shop']['phone2']," \t")."',
                     '{$_SESSION['shop']['vat_price']}',
                     '{$_SESSION['shop']['shipment_price']}', ".
-                    (   isset($_SESSION['shop']['shipperId'])
-                     && $_SESSION['shop']['shipperId']
-                        ? $_SESSION['shop']['shipperId'] : 0
-                    ).",
+                    (!empty($_SESSION['shop']['shipperId'])
+                        ? $_SESSION['shop']['shipperId'] : 0).",
                     {$_SESSION['shop']['paymentId']},
                     '{$_SESSION['shop']['payment_price']}',
                     '$customer_ip',
@@ -4741,14 +4738,12 @@ right after the customer logs in!
 
         $shipperId =
             (isset($_SESSION['shop']['shipperId'])
-                ? $_SESSION['shop']['shipperId'] : 0
-            );
+                ? $_SESSION['shop']['shipperId'] : 0);
         $shipperName =
             ($shipperId > 0 ? Shipment::getShipperName($shipperId) : '');
         $paymentId =
             (isset($_SESSION['shop']['paymentId'])
-                ? $_SESSION['shop']['paymentId'] : 0
-            );
+                ? $_SESSION['shop']['paymentId'] : 0);
         $paymentName = Payment::getProperty($paymentId, 'name');
         $orderData =
             "-----------------------------------------------------------------\n".
@@ -4772,14 +4767,12 @@ right after the customer logs in!
               ? $_ARRAYLANG['TXT_SHIPPING_METHOD'].': '.$shipperName.' '.
                 Currency::formatPrice($objResultOrder->fields['currency_ship_price']).
                 ' '.$strCurrencyCode."\n"
-              : ''
-            ).
+              : '').
             (!empty($paymentId)
               ? $_ARRAYLANG['TXT_PAYMENT_TYPE'].': '.$paymentName.' '.
                 Currency::formatPrice($objResultOrder->fields['currency_payment_price']).
                 ' '.$strCurrencyCode."\n"
-              : ''
-            ).
+              : '').
             $vatTxt.
             "-----------------------------------------------------------------\n".
             $_ARRAYLANG['TXT_TOTAL_PRICE'].': '.$orderSum."\n".

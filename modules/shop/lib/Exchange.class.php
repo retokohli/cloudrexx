@@ -225,8 +225,7 @@ class Exchange
                 }
                 unset($_SESSION['shop_exchange_export']['tables']);
 
-                switch ($_SESSION['shop_exchange_export']['table']['name'])
-                {
+                switch ($_SESSION['shop_exchange_export']['table']['name']) {
                     case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         // Gets the product selection list
                         $query = "SELECT catid, parentid, catname

@@ -750,7 +750,7 @@ class ShopLibrary
         for ($i = SHOP_ORDER_STATUS_PENDING; $i < SHOP_ORDER_STATUS_COUNT; ++$i) {
             $strMenuoptions .=
                 '<option value="'.$i.'"'.
-                ($i === $selected ? ' selected="selected"' : '').'>'.
+                ($i == $selected ? ' selected="selected"' : '').'>'.
                 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$i]."</option>\n";
         }
         return $strMenuoptions;
