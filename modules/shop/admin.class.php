@@ -1021,7 +1021,7 @@ class shopmanager extends ShopLibrary
      */
     function makeProductThumbnailsById($arrId)
     {
-        global $objDatabase, $_CONFIG;
+        global $objDatabase;
         require_once ASCMS_FRAMEWORK_PATH."/Image.class.php";
 
         if (!is_array($arrId)) return false;
@@ -3700,12 +3700,12 @@ class shopmanager extends ShopLibrary
                     'SHOP_CUSTOMER_NOTE' => $objResult->fields['customer_note'],
                     'SHOP_CUSTOMER_IP' => $objResult->fields['customer_ip'] == ''
                             ? '&nbsp;'
-                            : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+                            : '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
                               $objResult->fields['customer_ip'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
                               $objResult->fields['customer_ip'].'</a>',
                     'SHOP_CUSTOMER_HOST' => $objResult->fields['customer_host'] == ''
                             ? '&nbsp;'
-                            : '<a href="?cmd=nettools&amp;tpl=whois&amp;address='.
+                            : '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
                               $objResult->fields['customer_host'].'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
                               $objResult->fields['customer_host'].'</a>',
                     'SHOP_CUSTOMER_LANG' => $objResult->fields['customer_lang'] == '' ? '&nbsp;' : $objResult->fields['customer_lang'],
@@ -3813,7 +3813,7 @@ class shopmanager extends ShopLibrary
                     // we need the VAT rate in there as well in order to be able to correctly change the products,
                     // and the flag indicating whether the VAT is included in the prices already.
                     $strJsArrProduct =
-                        'var vat_included = '.Vat::isIncluded().
+                        'var vat_included = '.intval(Vat::isIncluded()).
                         ";\nvar arrProducts = new Array();\n";
                     $menu = '';
                     foreach ($arrProducts as $arrProduct) {
@@ -5635,7 +5635,7 @@ class shopmanager extends ShopLibrary
                             );
                         }
                         $arrayResults[$key]['column2'] = $arrayResults[$key]['column2'] + $objResult->fields['shopColumn2'];
-                        $arrayResults[$key]['column1'] = "<a href='?cmd=shop".MODULE_INDEX."&amp;act=products&amp;tpl=manage&amp;id=".$objResult->fields['id']."' title=\"".$objResult->fields['title']."\">".$objResult->fields['title']."</a>";
+                        $arrayResults[$key]['column1'] = "<a href='index.php?cmd=shop".MODULE_INDEX."&amp;act=products&amp;tpl=manage&amp;id=".$objResult->fields['id']."' title=\"".$objResult->fields['title']."\">".$objResult->fields['title']."</a>";
                         $arrayResults[$key]['column3'] = $objResult->fields['shopColumn3'];
                         $arrayResults[$key]['column4'] = $arrayResults[$key]['column4'] + $objResult->fields['shopColumn2'] * Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
 
