@@ -88,8 +88,8 @@ class Contact extends ContactLib
     protected $depositionTarget;
 
     /**
-     * Determines whether this has a form fiel.
-     * 
+     * Determines whether this form has a file upload field.
+     * Set in @link _getParams()
      * @var boolean
      */
     protected $hasFileField;
@@ -109,6 +109,7 @@ class Contact extends ContactLib
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
+        $this->hasFileField = false;
     }
 
     /**
@@ -131,21 +132,20 @@ class Contact extends ContactLib
             'TXT_CONTACT_RESET'     => $_ARRAYLANG['TXT_CONTACT_RESET']
         ));
         
-        if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
+        if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
 
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
             $this->_getParams();
             $arrFormData =& $this->_getContactFormData();
 
-
-            if ($arrFormData) {
-                if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) {
+            if ($arrFormData) { 
+              if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) { //validation ok
                     $this->_sendMail($arrFormData);
-                } else {
+                } else { //found errors while validating
                     $this->setCaptcha($useCaptcha);
-                    $this->searchFileField($arrFormData);
-                    $this->initUploader();
+                    if ($this->hasFileField) //initUploader costs a lot. only do it if we need it
+                        $this->initUploader();
                     return $this->_showError();
                 }
                 if (!$showThanks) {
@@ -156,14 +156,16 @@ class Contact extends ContactLib
                     }
                 }
             }
-        } else {
+        } else { //fresh display
             if ($this->objTemplate->blockExists('formText')) {
                 $this->objTemplate->touchBlock('formText');
             }
+            $this->setCaptcha($useCaptcha);
             $this->_getParams();
+            if($this->hasFileField)
+                $this->initUploader();
         }
 
-        $this->setCaptcha($useCaptcha);
         if ($this->objTemplate->blockExists('contact_form')) {
             if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
                 $this->objTemplate->hideBlock('contact_form');
@@ -172,25 +174,7 @@ class Contact extends ContactLib
             }
         }
 
-        $this->initUploader();
-
         return $this->objTemplate->get();
-    }
-
-    /**
-     * Searches a file field in the array given. Format of array as used everywhere here.
-     * @see hasFileField
-     * @see _getContactFormData()
-     *
-     */
-    protected function searchFileField($arrFormFields) {
-        $this->hasFileField = false;
-        foreach($arrFormFields['fields'] as $field) {
-            if($field['type'] == 'file') {
-                $this->hasFileField = true;
-                return;
-            }
-        }
     }
 
     /**
@@ -244,8 +228,7 @@ class Contact extends ContactLib
                     throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
                 }
             }
-            //initialize the widget displaying the folder contents
-        
+            //initialize the widget displaying the folder contents   
             $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
 
             $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml('#contactFormField_uploadWidget','uploadWidget'));
@@ -317,7 +300,6 @@ class Contact extends ContactLib
                 //$arrFormData['sendCopy'] = 0;
             }
 
-            $this->searchFileField($arrFormData); //determine whether the form has a file field
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
 
             foreach ($_POST as $key => $value) {
@@ -1035,6 +1017,9 @@ class Contact extends ContactLib
                         if(!empty($_POST['contactFormField_recipient'])){
                             $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$_POST['contactFormField_recipient']] = 'selected="selected"';
                         }
+                    }
+                    else if($objFields->fields['type'] == 'file'){ //set hasFileField
+                        $this->hasFileField = true;
                     }
                     if (!empty($_GET[$objFields->fields['id']])) {
                         if(in_array($objFields->fields['type'], array('select', 'radio'))){
