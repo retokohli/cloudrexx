@@ -12,6 +12,9 @@ Libraries
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Modul: Kontaktformular
+- Kontaktformulare ohne Dateiupload laden wieder schnell (das Problem trat nur auf Installationen mit aktivertem FTP auf).
+
 Modul: Veranstaltungskalender
 - Die E-Mail-Benachrichtigung zur Anmeldung auf eine Veranstaltung funktioniert.
 - Die Zuordnung von Benutzergruppen, welche über eine neue Veranstaltung informierten werden sollen, funktioniert.
