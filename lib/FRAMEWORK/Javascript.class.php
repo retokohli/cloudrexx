@@ -104,15 +104,14 @@ class JS
         ),
         'shadowbox'     => array(
             'jsfiles'       => array(
-                'lib/javascript/shadowbox/shadowbox-prototype.js',
                 'lib/javascript/shadowbox/shadowbox.js'
             ),
             'dependencies'  => array(
-                'prototype'
             ),
-            'specialcode'  => 'var tmpOnLoad = window.onload; window.onload = function() { if(tmpOnLoad){tmpOnLoad();} Shadowbox.init(); }',
-            'loadcallback' => 'parseShadowBoxOptions',
-            'makecallback' => 'makeShadowBoxOptions'
+            'cssfiles'      => array(
+                'lib/javascript/shadowbox/shadowbox.css'
+            ),
+            'specialcode'  => '$J(\'document\').ready(function(){Shadowbox.init()})'
         ),
         'jquery'     => array(
             'jsfiles'       => array(
@@ -518,101 +517,6 @@ Coming soon
             $retcode .= "\n/* ]]> */\n</script>\n";
         }
         return $retcode;
-    }
-
-
-    /**
-     * Callback function for the shadowbox library
-     *
-     * Called when the shadowbox is loaded and when parameters are given.
-     * Add the the players to a list. Set the language.
-     * Format of the options passed through JS::activate
-     * (everything is optional):
-     * array(
-     *      players => array(img, swf, flv, qt, wmp, iframe, html),
-     *      language => [ar, ca, cs, de-CH, de-DE, en, es
-     *                          et, fi, fr, gl, he, id, is, it,
-     *                          ko, my, nl, no, pl, pt-BR, pt-PT,
-     *                          ro, ru, sk, svn, tr, zh-CN, zh-TW])
-     * )
-     * @static
-     * @access private
-     * @param array $options
-     */
-    private static function parseShadowBoxOptions($options = null)
-    {
-        $available_players = array('img', 'swf', 'flv', 'qt', 'wmp', 'iframe','html');
-        $available_langs = array('ar', 'ca', 'cs', 'de-CH', 'de-DE', 'en',
-            'es', 'et', 'fi', 'fr', 'gl', 'he', 'id', 'is', 'it', 'ko',
-            'my', 'nl', 'no', 'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sv',
-            'tr', 'zh-CN', 'zh-TW');
-        $options = (isset($options)) ? $options : array();
-        if (!empty($options['players'])) {
-            $renewed = false;
-            foreach ($options['players']  as $player) {
-                if (!$renewed) {
-                    self::$shadowBoxPlayers = array();
-                    $renewed = true;
-                }
-                if (array_search($player, $available_players) !== false) {
-                    // valid player
-                    if (array_search($player, self::$shadowBoxPlayers) === false) {
-                        self::$shadowBoxPlayers[] = $player;
-                    }
-                }
-            }
-        } else {
-            // set all players
-            self::$shadowBoxPlayers = $available_players;
-        }
-
-        if (!empty($options['language'])) {
-            if (array_search($options['language'], $available_langs) !== false) {
-                self::$shadowBoxLanguage = $options['language'];
-            }
-        }
-    }
-
-
-    /**
-     * Callback function for the shadowbox library
-     *
-     * Called when the shadowbox was loaded and the code is
-     * generated. Makes the initial-lines to provide the chosen
-     * players and to load the skin. If there is a directory
-     * called 'shadowbox' in the current theme directory, this one
-     * will be taken, otherwise the default skin under lib/javascript/shadowbox.
-     * @static
-     * @access private
-     * @global object $objInit
-     */
-    private static function makeShadowBoxOptions()
-    {
-        global $objInit;
-
-        // make the code for loading the players
-        if (!empty(self::$shadowBoxPlayers)) {
-            $players = "";
-            foreach (self::$shadowBoxPlayers as $player) {
-                $players .= " '".$player."',";
-            }
-            $players = substr($players, 1, -1);
-            self::$customCode[] = "Shadowbox.loadPlayer([".$players."],"
-                ."'".self::$offset."lib/javascript/shadowbox/player/');";
-        }
-
-        // make the code for loading the skins
-        $skindir = self::$offset."lib/javascript/shadowbox/skin";
-        $skin = 'standard';
-        if ($objInit->mode == "frontend") {
-            $themePath = $objInit->getCurrentThemesPath();
-            if (file_exists(ASCMS_THEMES_PATH.'/'.$themePath.'/shadowbox/')) {
-                $skindir = $themePath.'/shadowbox';
-            }
-        }
-        self::$customCode[] = "Shadowbox.loadSkin('".$skin."', '".self::$offset.$skindir."');";
-        // Make the code for loading the language
-        self::$customCode[] = "Shadowbox.loadLanguage('".self::$shadowBoxLanguage."', '".self::$offset."lib/javascript/shadowbox/lang')";
     }
 
 
