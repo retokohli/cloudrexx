@@ -31,3 +31,7 @@ Modul: Newsletter
 
 Modul: Weiterempfehlen
 - Funktioniert mit neuem Captcha-Mechanismus
+
+Modul: Bildergalerie
+- Titel der Bilder werden wieder angezeigt
+- Bilder mit grossgeschriebenen Endungen können ebenfalls heraufgeladen werden.
