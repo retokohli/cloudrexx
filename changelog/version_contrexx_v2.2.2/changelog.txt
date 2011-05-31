@@ -9,6 +9,9 @@
 Libraries
 - Es wird nun jQuery 1.6.1 anstelle 1.4.4 eingesetzt.
 
+Javascript
+- jQuery wird, falls im Theme oder Content eingebunden, durch das mit Contrexx mitgelieferte jQuery ersetzt. Dies garantiert reibungslose Zusammenarbeit der Themes mit dem Contrexx Javascript Framework.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
