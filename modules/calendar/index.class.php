@@ -227,6 +227,31 @@ class Calendar extends calendarLibrary
     	$this->url = CONTREXX_DIRECTORY_INDEX."?section=calendar";
     	$this->_objTpl->setTemplate($this->pageContent);
 
+        JS::activate('cx');
+        $code = <<<JSCODE
+//adds the datepicker to the date fields
+cx.ready(function() {
+    var dpOptions = {
+        dateFormat: 'dd.mm.yy',
+        onSelect: function(dateText, inst) {
+            // adjust start or end date to avoid an invalid date range
+            var startDate = \$J('input[name=startDate]').datepicker('getDate');
+            var endDate = \$J('input[name=endDate]').datepicker('getDate');
+            if (startDate > endDate) {
+                if (\$J(this).attr('name') == 'startDate') {
+                    \$J('input[name=endDate]').datepicker('setDate', dateText);
+                } else {
+                    \$J('input[name=startDate]').datepicker('setDate', dateText);
+                }
+            }
+        }
+    };
+
+    \$J('input[name=startDate]').datepicker(dpOptions);
+    \$J('input[name=endDate]').datepicker(dpOptions);
+}, true);
+JSCODE;
+        JS::registerCode($code);
 
     	$this->_objTpl->setVariable(array(
             "CALENDAR_CATID"            => isset($_GET['catid']) ? intval($_GET['catid']) : 0,
@@ -587,24 +612,6 @@ class Calendar extends calendarLibrary
 					window.location.href = href;
 				}
 				/* ]]> */
-				</script>
-
-				<script src="lib/datepickercontrol/datepickercontrol.js" type="text/javascript">
-				</script>
-
-				<script type="text/javascript">
-				/* <![CDATA[ */
-				  DatePickerControl.onSelect = function(inputid)
-				  {
-				    var startdate = document.getElementById("searchform").startDate.value.replace(/-/g, "");
-				    var enddate = document.getElementById("searchform").endDate.value.replace(/-/g, "");
-
-				    if (startdate > enddate) {
-				   	var date = document.getElementById("searchform").startDate.value;
-				   	document.getElementById("searchform").endDate.value = date;
-				  }
-				 }
-				 /* ]]> */
 				</script>';
 	}
 

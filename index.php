@@ -1131,7 +1131,7 @@ switch ($plainSection) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $objLivecam = new Livecam($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
-        $moduleStyleFile = ASCMS_MODULE_PATH.'/livecam/datepicker/datepickercontrol.css';
+        $moduleStyleFile = ASCMS_MODULE_WEB_PATH.'/livecam/datepicker/datepickercontrol.css';
         break;
 
     //-------------------------------------------------------
@@ -1360,7 +1360,6 @@ switch ($plainSection) {
     // Calendar Module
     //-------------------------------------------------------
     case 'calendar':
-        $moduleStyleFile = ASCMS_MODULE_WEB_PATH.'/calendar'.MODULE_INDEX.'/frontend_style.css';
         define('CALENDAR_MANDATE', MODULE_INDEX);
         /** @ignore */
         if (!@include_once(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/index.class.php'))
@@ -1382,7 +1381,7 @@ switch ($plainSection) {
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
             $objReservationModule = new reservations($page_content);
         $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
-        $moduleStyleFile = ASCMS_MODULE_PATH.'/reservation/frontend_style.css';
+        $moduleStyleFile = ASCMS_MODULE_WEB_PATH.'/reservation/frontend_style.css';
         break;
 
     //-------------------------------------------------------
