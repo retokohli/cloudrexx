@@ -47,7 +47,7 @@ $_FTPCONFIG['host']	= 'localhost';// This is normally set to localhost
 $_FTPCONFIG['port'] = 21; // Ftp remote port
 $_FTPCONFIG['username'] = ''; // Ftp login username
 $_FTPCONFIG['password']	= ''; // Ftp login password
-$_FTPCONFIG['path']	= ''; // Ftp path to cms
+$_FTPCONFIG['path']	= ''; // Ftp path to cms (must not include ascms_root_offset)
 
 /**
 * -------------------------------------------------------------------------
