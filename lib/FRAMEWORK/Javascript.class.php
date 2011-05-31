@@ -233,6 +233,19 @@ Coming soon
     private static $re_name_postfix = 1;
     private static $comment_dict = array();
 
+    /**
+     * Array holding certain scripts we do not want the user to include - we provide
+     * the version supplied with Contrexx instead.
+     *
+     * This was introduced to prevent the user from overriding the jQuery plugins included
+     * by the Contrexx javascript framework.
+     *
+     * @see registerFromRegex()
+     * @var array associative array ( '/regexstring/' => 'componentToIncludeInstead' )
+     */
+    protected static $alternatives = array(
+        '/^jquery(-\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery'
+    );
 
     /**
      * Set the offset parameter
@@ -523,7 +536,18 @@ Coming soon
     public static function registerFromRegex($matchinfo)
     {
         $script = $matchinfo[1];
-        self::registerJS($script);
+        $alternativeFound = false;
+        //make sure we include the alternative if provided
+        foreach(self::$alternatives as $pattern => $alternative) {
+            if(preg_match($pattern, basename($script)) > 0) {
+                $alternativeFound = true;
+                self::activate($alternative);
+                break;
+            }
+        }
+        //only register the js if we didn't activate the alternative
+        if(!$alternativeFound)
+            self::registerJS($script);
     }
 
 
