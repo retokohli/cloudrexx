@@ -35,3 +35,6 @@ Modul: Weiterempfehlen
 Modul: Bildergalerie
 - Titel der Bilder werden wieder angezeigt
 - Bilder mit grossgeschriebenen Endungen können ebenfalls heraufgeladen werden.
+
+Statistik
+- Die Einbindung des Counter-Tags erfolgt nun per jQuery.

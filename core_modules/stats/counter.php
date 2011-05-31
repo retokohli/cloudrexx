@@ -306,7 +306,7 @@ class counter
         $this->_checkMobilePhone();
 		
 		// Anonymize if necessary
-		if ($this->arrConfig['exclude_identifying_info']['status']) { echo 'e';
+		if ($this->arrConfig['exclude_identifying_info']['status']) {
 			// Exclude the least significant part from the hostname or ip address
 			$this->arrClient['ip'] = preg_replace('/[0-9a-fA-F]+$/', '*', $this->arrClient['ip']);
 			$this->arrClient['host'] = preg_replace('/^[a-zA-Z0-9-_]+\./', '*.', $this->arrClient['host']);
