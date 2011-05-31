@@ -1,4 +1,5 @@
 <?php
+require_once('/home/srz/web/root/phptools/profiler.class.php');
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG

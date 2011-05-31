@@ -1,4 +1,5 @@
 <?php
+require_once('/home/srz/web/root/phptools/profiler.class.php');
 /**
  * Modul Admin Index
  *
@@ -30,7 +31,6 @@ $startTime = explode(' ', microtime());
 //enable gzip compressing of the output - up to 75% smaller responses!
 //commented out with java uploader l10n using pear http_download
 //ob_start("ob_gzhandler");
-
 $adminPage = true;
 
 /**

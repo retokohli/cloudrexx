@@ -1,5 +1,5 @@
 if (document.body) {
-	document.write('<div id="news_js_rss_feed"></div>');
+	document.write('<div id="news_rss_feeds"></div>');
 }
 fnWinOnload = window.onload;
 window.onload = function() {
@@ -8,9 +8,21 @@ window.onload = function() {
     }
 
     var rssFeedNews = new Array();rssFeedNews[0] = new Array();
-rssFeedNews[0]['title'] = 'Neue Webseite mit modernster Technologie online! ';
-rssFeedNews[0]['link'] = 'http://localhost/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=';
-rssFeedNews[0]['date'] = '05.05.2008';
+rssFeedNews[0]['title'] = 'qwefqwef';
+rssFeedNews[0]['link'] = 'http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=15&amp;teaserId=';
+rssFeedNews[0]['date'] = '25.05.2011';
+rssFeedNews[1] = new Array();
+rssFeedNews[1]['title'] = 'test!';
+rssFeedNews[1]['link'] = 'http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=13&amp;teaserId=';
+rssFeedNews[1]['date'] = '25.05.2011';
+rssFeedNews[2] = new Array();
+rssFeedNews[2]['title'] = 'a new';
+rssFeedNews[2]['link'] = 'http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=8&amp;teaserId=';
+rssFeedNews[2]['date'] = '25.05.2011';
+rssFeedNews[3] = new Array();
+rssFeedNews[3]['title'] = 'Neue Webseite mit modernster Technologie online! ';
+rssFeedNews[3]['link'] = 'http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=';
+rssFeedNews[3]['date'] = '14.12.2010';
 if (typeof rssFeedFontColor != "string") {
     rssFeedFontColor = "";
 } else {
@@ -46,11 +58,15 @@ if (rssFeedNews.length < rssFeedLimit) {
     rssFeedLimit = rssFeedNews.length;
 }
 
+    rssFeedContainer = document.getElementById('news_rss_feeds');
+    rssFeedContainer.innerHTML = '';
 
 var rssFeedNewsDate = "";
 for (nr = 0; nr < rssFeedLimit; nr++) {
     if (rssFeedShowDate) {
         rssFeedNewsDate = rssFeedNews[nr]['date'];
     }
-    document.write('<a href="'+rssFeedNews[nr]['link']+'" '+rssFeedTarget+' '+style+'>'+rssFeedNewsDate+' '+rssFeedNews[nr]['title']+'</a><br />');
+        rssCode = '<a href="'+rssFeedNews[nr]['link']+'" '+rssFeedTarget+' '+style+'>'+rssFeedNewsDate+' '+rssFeedNews[nr]['title']+'</a><br />';
+        rssFeedContainer.innerHTML += rssCode;
+    }
 }
