@@ -17,11 +17,8 @@ var FolderWidget = function(options) {
                 var ul = $J('<ul></ul>');
                 files = json;
                 $.each(files, function(index, file) {
-                    var span = $J('<span></span>').html(file);
-                    var li = $J('<li></li>').append(span);
-                    var del = $J(' &nbsp; <a></a>');
-                    del.html('delete');
-                    del.addClass('deleteIcon');
+                    var li = $J('<li></li>').html(file);
+                    var del = $J(' &nbsp; <a></a>').html('x');
                     del.attr('href','');
                     del.bind('click', function() {
                         var fileElement = li;

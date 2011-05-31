@@ -2,44 +2,23 @@
 <rss version="2.0">
 	<channel>
 		<title>Contrexx WCMS</title>
-		<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news</link>
+		<link>http://localhost/index.php?section=news</link>
 		<description>Informationen rund um das Contrexx Open Source CMS</description>
 		<language>de</language>
-		<copyright>Copyright 2011, http://pkg.contrexxlabs.com</copyright>
+		<copyright>Copyright 2009, http://localhost</copyright>
 		<webMaster>info@example.com</webMaster>
-		<lastBuildDate>Wed, 25 May 2011 15:52:00 +0200</lastBuildDate>
+		<lastBuildDate>Mon, 05 May 2008 18:49:22 +0200</lastBuildDate>
 		<generator>Contrexx® Web Content Management System</generator>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 		<item>
-			<title>qwefqwef</title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=15&amp;teaserId=</link>
-			<description>qwfqwef&lt;br /&gt;&lt;br /&gt;&amp;nbsp;qwefqwf</description>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Wed, 25 May 2011 15:52:00 +0200</pubDate>
-		</item>
-		<item>
-			<title>test!</title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=13&amp;teaserId=</link>
-			<description>qwefqw&lt;br /&gt;&lt;br /&gt;&amp;nbsp;fqwfwef</description>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Wed, 25 May 2011 15:42:00 +0200</pubDate>
-		</item>
-		<item>
-			<title>a new</title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=8&amp;teaserId=</link>
-			<description>n ew&lt;br /&gt;&lt;br /&gt;&amp;nbsp;qwefqwe</description>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Wed, 25 May 2011 11:45:00 +0200</pubDate>
-		</item>
-		<item>
 			<title>Neue Webseite mit modernster Technologie online! </title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
+			<link>http://localhost/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
 			<description>Unsere neue Webseite ist online! Erstellt wurde das neue Portal mit &lt;a href=&quot;http://www.contrexx.com/&quot; title=&quot;Contrexx WCMS&quot;&gt;Contrexx WCMS&lt;/a&gt;.&lt;br /&gt;&lt;br /&gt;Heute ist es elementar sich seinen Kunden im Internet nicht nur zu pr&amp;auml;sentieren, sondern auch relevante Zusatznutzen zu bieten. Ein Schlagwort ist beispielsweise das &amp;quot;Mitmach-Web&amp;quot; Web 2.0 mit welchem der Kunde interaktiv in einen Dialog eingebunden wird.&lt;br /&gt;
 &lt;br /&gt;
 Dieses Webprojekt ist nun mit modernster Technologie ausger&amp;uuml;stet und trotzdem sehr einfach zu pflegen. Damit verf&amp;uuml;gt dieser Auftritt &amp;uuml;ber alle wesentlichen Funktionen, um den wachsenden Anforderungen auch k&amp;uuml;nftig zu entsprechen. Nun k&amp;ouml;nnen die Inhalte und Funktionalit&amp;auml;ten mit einem kleinen Aufwand stets aktuell gehalten werden. Abonnieren Sie noch heute unseren Newsletter, RSS-Feeder oder besuchen Sie wieder unsere Webseite.&lt;br /&gt;
 &lt;br /&gt;</description>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Tue, 14 Dec 2010 11:39:00 +0100</pubDate>
+			<category domain="http://localhost/index.php?section=news&amp;category=1">Presse</category>
+			<pubDate>Mon, 05 May 2008 18:49:22 +0200</pubDate>
 		</item>
 	</channel>
 </rss>
