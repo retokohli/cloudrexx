@@ -2,37 +2,19 @@
 <rss version="2.0">
 	<channel>
 		<title>Contrexx WCMS</title>
-		<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news</link>
+		<link>http://localhost/index.php?section=news</link>
 		<description>Informationen rund um das Contrexx Open Source CMS</description>
 		<language>de</language>
-		<copyright>Copyright 2011, http://pkg.contrexxlabs.com</copyright>
+		<copyright>Copyright 2009, http://localhost</copyright>
 		<webMaster>info@example.com</webMaster>
-		<lastBuildDate>Wed, 25 May 2011 15:52:00 +0200</lastBuildDate>
+		<lastBuildDate>Mon, 05 May 2008 18:49:22 +0200</lastBuildDate>
 		<generator>Contrexx® Web Content Management System</generator>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 		<item>
-			<title>qwefqwef</title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=15&amp;teaserId=</link>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Wed, 25 May 2011 15:52:00 +0200</pubDate>
-		</item>
-		<item>
-			<title>test!</title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=13&amp;teaserId=</link>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Wed, 25 May 2011 15:42:00 +0200</pubDate>
-		</item>
-		<item>
-			<title>a new</title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=8&amp;teaserId=</link>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Wed, 25 May 2011 11:45:00 +0200</pubDate>
-		</item>
-		<item>
 			<title>Neue Webseite mit modernster Technologie online! </title>
-			<link>http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
-			<category domain="http://pkg.contrexxlabs.com/contrexx_2_2/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Tue, 14 Dec 2010 11:39:00 +0100</pubDate>
+			<link>http://localhost/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
+			<category domain="http://localhost/index.php?section=news&amp;category=1">Presse</category>
+			<pubDate>Mon, 05 May 2008 18:49:22 +0200</pubDate>
 		</item>
 	</channel>
 </rss>
