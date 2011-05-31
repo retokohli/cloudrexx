@@ -1271,7 +1271,7 @@ class galleryManager extends GalleryLibrary
      */
     function showCategoryDetails($intCatId)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
 
         try {
             if (!$this->checkCategoryAccess($intCatId)) {
@@ -1368,7 +1368,7 @@ class galleryManager extends GalleryLibrary
                 $objSubResult = $objDatabase->Execute('    SELECT    name
                                                         FROM    '.DBPREFIX.'module_gallery_language_pics
                                                         WHERE    picture_id='.$objResult->fields['id'].' AND
-                                                                lang_id='.$objFWUser->objUser->getFrontendLanguage().'
+                                                                lang_id='.$objInit->getFrontendLangId().'
                                                         LIMIT    1
                                                     ');
 
@@ -1482,7 +1482,6 @@ class galleryManager extends GalleryLibrary
                     'IMAGES_CATIMG_ICON'            =>    $outputCatimgIcon,
                     'IMAGES_HIDE_LINKICON_S'        =>    $outputLinkIconS,
                     'IMAGES_HIDE_LINKICON_E'        =>    $outputLinkIconE,
-//                    'IMAGES_NAME'                   =>    $strOutputName,
                     'IMAGES_NAME'                   =>    $imageNameChopped,
                     'IMAGES_LASTEDIT'               =>    $strOutputLastedit,
                     'IMAGES_ORIG_RESO'              =>    $strOutputOrigReso,
@@ -2219,7 +2218,7 @@ class galleryManager extends GalleryLibrary
             if($file == '.' || $file == '..') { continue; }
 
 			//delete unwanted files
-            if(!in_array($info['extension'], $arrAllowedFileTypes)) {
+            if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
                @unlink($tempPath.'/'.$file);
                 continue;
             }
