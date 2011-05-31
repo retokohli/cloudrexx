@@ -21,6 +21,7 @@ Modul: Kontaktformular
 Modul: Veranstaltungskalender
 - Die E-Mail-Benachrichtigung zur Anmeldung auf eine Veranstaltung funktioniert.
 - Die Zuordnung von Benutzergruppen, welche über eine neue Veranstaltung informierten werden sollen, funktioniert.
+- Erneuerung des Javascript Kalenders (jQuery Datepicker) im Frontend.
 
 Modul: News
 - Die standardmässig aktivierte zeitgesteuerte Veröffentlichung ist wieder deaktiviert.
