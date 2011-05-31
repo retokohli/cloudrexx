@@ -260,7 +260,7 @@ class modulemanager
             $query = "SELECT *
                      FROM ".DBPREFIX."module_repository
                      WHERE moduleid=$id
-                     AND lang=$repo_lang_id
+                     AND lang='$repo_lang_id'
                      ORDER BY parid ASC";
 
 
