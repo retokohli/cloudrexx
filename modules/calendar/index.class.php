@@ -153,8 +153,8 @@ class Calendar extends calendarLibrary
 
     		$startdate = mktime(0, 0, 0, $month, $day, $year);
     	} else {
-    		$datearr = explode("-", $_POST['startDate']);
-    		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[2], $datearr[0]);
+    		$datearr = explode(".", $_POST['startDate']);
+    		$startdate = mktime(0, 0, 0, $datearr[1], $datearr[0], $datearr[2]);
     		unset($datearr);
     	}
 
@@ -183,8 +183,8 @@ class Calendar extends calendarLibrary
                 $enddate = mktime(23, 59, 59, $month, $day, $year);
             }
         } else {
-            $datearr = explode("-", $_POST['endDate']);
-            $enddate = mktime(23, 59, 59, $datearr[1], $datearr[2], $datearr[0]);
+            $datearr = explode(".", $_POST['endDate']);
+            $enddate = mktime(23, 59, 59, $datearr[1], $datearr[0], $datearr[2]);
             unset($datearr);
         }
 
