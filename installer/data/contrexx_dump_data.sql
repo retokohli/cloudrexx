@@ -2895,8 +2895,8 @@ INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (1,'S
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (2,'Sehr geehrter Herr');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (3,'Dear Ms');
 INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (4,'Dear Mr');
-INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (5,'Madame');
-INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (6,'Monsieur');
+INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (5,'Chère Madame');
+INSERT INTO `contrexx_module_newsletter_user_title` (`id`, `title`) VALUES (6,'Cher Monsieur');
 INSERT INTO `contrexx_module_partners_settings` (`id`, `sortorder`, `width`, `height`, `lwidth`, `lheight`, `cwidth`, `cheight`, `lis_active`, `pis_active`, `cis_active`, `vis_active`, `ctis_active`) VALUES (1,'Subject','100','100','30','30','30','30','1','1','1','1','1');
 INSERT INTO `contrexx_module_partners_user_country` (`id`, `lang_id`, `is_active`, `reg_id`, `sort_id`, `country`) VALUES (1,1,1,0,1,'Afghanistan');
 INSERT INTO `contrexx_module_partners_user_country` (`id`, `lang_id`, `is_active`, `reg_id`, `sort_id`, `country`) VALUES (1,2,1,0,1,'Afghanistan');
