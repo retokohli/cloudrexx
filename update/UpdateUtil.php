@@ -295,7 +295,7 @@ class UpdateUtil {
     }
 
     private function _dropkey($table, $name) {
-        return "DROP INDEX `$name` ON `$table`";
+        return "ALTER TABLE `$table` DROP INDEX `$name`";
     }
 
     private function _keyspec($table, $name, $spec) {
@@ -312,7 +312,7 @@ class UpdateUtil {
         if (isset($spec['force']) && $spec['force']) {
             $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)";
         } else {
-            $descr  = "CREATE $type INDEX `$name` ON $table ($fields)";
+            $descr  = "ALTER TABLE `$table` ADD $type INDEX `$name` ($fields)";
         }
 
         return $descr;
