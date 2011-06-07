@@ -2691,7 +2691,7 @@ class newsletter extends NewsletterLib
         } else {
             $newslimit = intval($_POST['newslimit']);
         }
-        $objNews = $objDatabase->SelectLimit("SELECT `id`, `date`, `title`, `text` FROM ".DBPREFIX."module_news ORDER BY id DESC", $newslimit);
+        $objNews = $objDatabase->SelectLimit("SELECT `id`, `date`, `title`, `text` FROM ".DBPREFIX."module_news WHERE status=1 ORDER BY id DESC", $newslimit);
         if ($objNews !== false) {
             while (!$objNews->EOF) {
                 $this->_objTpl->setVariable(array(
