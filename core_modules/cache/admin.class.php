@@ -43,7 +43,7 @@ class Cache extends cacheLib {
 	function __construct() {
 		global $objTemplate, $_CORELANG;
 
-		$this->objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/cache/template');
+		$this->objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/cache/template');
         CSRF::add_placeholder($this->objTpl);
 		$this->objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

@@ -456,7 +456,7 @@ class blockLibrary
         }
 
         require_once(ASCMS_CORE_PATH.'/settings.class.php');
-        $objSettings = &new settingsManager();
+        $objSettings = new settingsManager();
         $objSettings->writeSettingsFile();
     }
 }

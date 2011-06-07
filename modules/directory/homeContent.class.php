@@ -57,7 +57,7 @@ class dirHomeContent extends directoryLibrary
     function __construct($pageContent)
     {
         $this->_pageContent = $pageContent;
-        $this->_objTemplate = &new HTML_Template_Sigma('.');
+        $this->_objTemplate = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->_objTemplate);
         $this->rssPath = ASCMS_DIRECTORY_FEED_PATH . '/';
         $this->rssWebPath = ASCMS_DIRECTORY_FEED_WEB_PATH. '/';

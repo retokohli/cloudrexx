@@ -68,7 +68,7 @@ class rssDirectory extends directoryLibrary
     {
         global  $_ARRAYLANG, $objInit, $objTemplate, $objDatabase;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/directory/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/directory/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -84,7 +84,7 @@ class rssDirectory extends directoryLibrary
         $this->rssWebPath = ASCMS_FEED_WEB_PATH . '/';
 
         //check chmod
-        $obj_file = &new File();
+        $obj_file = new File();
         $obj_file->setChmod(mediaPath, $this->mediaWebPath, "");
 
         //get settings
@@ -2956,7 +2956,7 @@ EOF;
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".contrexx_addslashes($_POST['setHomeContent'])."' WHERE setid='49'");
 
 
-            $objSettings = &new settingsManager();
+            $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
 
             CSRF::header('Location: ?cmd=directory&act=settings&tpl=homecontent');

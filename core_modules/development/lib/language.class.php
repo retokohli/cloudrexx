@@ -927,7 +927,7 @@ class LanguageManager
     	$arrModulesPath = array();
     	$arrModuleVariables = array();
     	$arrErrorFiles = array();
-    	$objFile = &new File();
+    	$objFile = new File();
 
     	$strHeader = "/**\n* Contrexx CMS\n* generated date ".date('r',time())."\n**/\n\n";
 

@@ -48,7 +48,7 @@ VERSION
 ;
 
 	require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
-	$objFile =& new File();
+	$objFile =new File();
 
 	if (!is_writable(ASCMS_DOCUMENT_ROOT.'/config/version.php')) {
 		$objFile->setChmod(ASCMS_DOCUMENT_ROOT.'/config', ASCMS_PATH_OFFSET.'/config', '/version.php');

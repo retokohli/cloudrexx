@@ -81,7 +81,7 @@ class Immo extends ImmoLib{
 	function __construct()
 	{
 		global $objTemplate, $_ARRAYLANG, $objDatabase;
-		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/immo/template');
+		$this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/immo/template');
         CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -95,7 +95,7 @@ class Immo extends ImmoLib{
 
     	);
 
-    	$this->_objFile =& new File();
+    	$this->_objFile =new File();
 
     	if(function_exists('mysql_set_charset')){
         	mysql_set_charset("utf8"); //this is important for umlauts
@@ -2423,7 +2423,7 @@ WHERE id = $immoID )";
 	 */
 	function _showMapPopup(){
 		global $_ARRAYLANG;
-		$objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/immo/template');
+		$objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/immo/template');
 		$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$objTpl->loadTemplateFile('module_immo_map_popup.html');
 		$googlekey = (!empty($this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']])) ? $this->arrSettings['GOOGLE_API_KEY_'.$_SERVER['SERVER_NAME']] : '';

@@ -32,7 +32,7 @@ class u2uAdmin extends u2uLibrary {
 
         global $objInit, $objTemplate, $_ARRAYLANG, $_CORELANG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/u2u/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/u2u/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

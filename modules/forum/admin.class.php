@@ -39,7 +39,7 @@ class ForumAdmin extends ForumLibrary {
     {
         global $objInit, $objTemplate, $_ARRAYLANG;
         ForumLibrary::__construct();
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/forum/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_intLangId = $objInit->userFrontendLangId;
@@ -348,7 +348,7 @@ class ForumAdmin extends ForumLibrary {
                                     LIMIT    1
                                 ');
             $this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_STATUS_UPDATED'];
-//            $objCache = &new Cache();
+//            $objCache = new Cache();
 //            $objCache->deleteAllFiles();
         }
     }
@@ -417,7 +417,7 @@ class ForumAdmin extends ForumLibrary {
                             ');
 
         $this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_DELETED'];
-//        $objCache = &new Cache();
+//        $objCache = new Cache();
 //        $objCache->deleteAllFiles();
     }
 
@@ -442,7 +442,7 @@ class ForumAdmin extends ForumLibrary {
                 }
             }
             $this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_SORTING_UPDATED'];
-//            $objCache = &new Cache();
+//            $objCache = new Cache();
 //            $objCache->deleteAllFiles();
         }
     }
@@ -533,7 +533,7 @@ class ForumAdmin extends ForumLibrary {
 
             $this->_arrTranslations = $this->createTranslationArray();
             $this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_ADD_SUCCESS'];
-//            $objCache = &new Cache();
+//            $objCache = new Cache();
 //            $objCache->deleteAllFiles();
         } else {
             $this->_strErrMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_ADD_ERROR'];
@@ -697,7 +697,7 @@ class ForumAdmin extends ForumLibrary {
 
             $this->_arrTranslations = $this->createTranslationArray();
             $this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_UPDATE_OK'];
-//            $objCache = &new Cache();
+//            $objCache = new Cache();
 //            $objCache->deleteAllFiles();
         } else {
             //no languages have been selected, show error
@@ -764,7 +764,7 @@ class ForumAdmin extends ForumLibrary {
                 $objResult->MoveNext();
             }
         }
-//        $objCache = &new Cache();
+//        $objCache = new Cache();
 //        $objCache->deleteAllFiles();
     }
 
@@ -873,7 +873,7 @@ class ForumAdmin extends ForumLibrary {
            foreach($arrRights as $intGroupId => $arrRights) {
             $this->saveRights($intCategoryId,$intGroupId,$arrRights,$boolBequeath);
         }
-//        $objCache = &new Cache();
+//        $objCache = new Cache();
 //        $objCache->deleteAllFiles();
         $this->_strOkMessage = $_ARRAYLANG['TXT_FORUM_CATEGORY_ACCESS_UPDATED'];
     }
@@ -1033,7 +1033,7 @@ class ForumAdmin extends ForumLibrary {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."settings SET setvalue='".intval($_POST['setTagContent'])."' WHERE setname='forumTagContent'");
 
             require_once(ASCMS_CORE_PATH.'/settings.class.php');
-            $objSettings = &new settingsManager();
+            $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
             $_CONFIG['forumHomeContent'] = intval($_POST['setHomeContent']);
             $_CONFIG['forumTagContent'] = intval($_POST['setTagContent']);
@@ -1058,7 +1058,7 @@ class ForumAdmin extends ForumLibrary {
                                     LIMIT    1');
         }
         $this->_arrSettings     = $this->createSettingsArray();
-//        $objCache = &new Cache();
+//        $objCache = new Cache();
 //        $objCache->deleteAllFiles();
         $this->_strOkMessage     = $_ARRAYLANG['TXT_FORUM_SETTINGS_UPDATE_OK'];
     }

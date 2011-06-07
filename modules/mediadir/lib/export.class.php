@@ -33,7 +33,7 @@ class mediaDirectoryExport extends mediaDirectoryLibrary
         global $_ARRAYLANG, $_CORELANG, $_LANGID, $objDatabase;      
         
         if($intFormId != null) {
-            $objValidator = &new FWValidator();                                                                                 
+            $objValidator = new FWValidator();                                                                                 
             $arrEntries = array(); 
             $arrEntriesData = array();
             $arrInputfields = array();   

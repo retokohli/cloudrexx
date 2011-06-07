@@ -61,7 +61,7 @@ class Market extends marketLibrary
 
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/market/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/market/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';

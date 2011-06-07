@@ -44,7 +44,7 @@ class reservationManager extends reservationLib
 
 		$objTemplate->setVariable("CONTENT_TITLE", $_ARRAYLANG['TXT_RESERVATION']);
 
-		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/reservation/template');
+		$this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/reservation/template');
         CSRF::add_placeholder($this->_objTpl);
 
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);

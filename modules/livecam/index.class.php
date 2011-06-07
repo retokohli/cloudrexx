@@ -102,7 +102,7 @@ class Livecam extends LivecamLibrary
     {
         $this->pageContent = $pageContent;
 
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -322,7 +322,7 @@ class Livecam extends LivecamLibrary
 
         $path = ASCMS_DOCUMENT_ROOT."/".$this->camSettings['archivePath'].'/'.$this->date.'/';
         $objDirectory = @opendir($path);
-        $objFile = &new File();
+        $objFile = new File();
         $chmoded = false;
 
         if ($objDirectory) {
