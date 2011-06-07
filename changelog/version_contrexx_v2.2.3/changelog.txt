@@ -1,0 +1,14 @@
+////////////////////////////////////////
+// CHANGELOG 2.2.2-2.2.3 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+
+Layout & Design
+- Wird eine Benutzerdefinierte Vorlage nicht gefunden (z.B. weil die Datei in der Druckansicht nicht vorhanden ist), so wird auf die Standardmässige Inhaltsvorlage des aktiven Templates zurückgegriffen.
