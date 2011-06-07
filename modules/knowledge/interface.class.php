@@ -81,7 +81,7 @@ class KnowledgeInterface extends KnowledgeLibrary
         
         $template = $this->settings->formatTemplate($this->settings->get("best_rated_sidebar_template"));
         
-        $objTemplate = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         
@@ -118,7 +118,7 @@ class KnowledgeInterface extends KnowledgeLibrary
         
         $template = $this->settings->formatTemplate($this->settings->get("most_read_sidebar_template"));
         
-        $objTemplate = &new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
         CSRF::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         

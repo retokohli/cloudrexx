@@ -80,7 +80,7 @@ class Search {
         $this->json = new Services_JSON();
 
         // the template system
-        $this->tpl = &new HTML_Template_Sigma('');
+        $this->tpl = new HTML_Template_Sigma('');
         CSRF::add_placeholder($this->tpl);
 		$this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->tpl->loadTemplateFile($this->templateFile);

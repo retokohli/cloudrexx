@@ -21,7 +21,7 @@ function votingShowCurrent($page_content){
 
 	$paging = '';
 
-	$objTpl = &new HTML_Template_Sigma('.');
+	$objTpl = new HTML_Template_Sigma('.');
     CSRF::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($page_content);
@@ -43,7 +43,7 @@ function votingShowCurrent($page_content){
     	if ($objVoting !== false && $objVoting->RecordCount() == 1) {
     		if ($objVoting->fields['submit_check'] == 'email') {
     			$email = contrexx_addslashes($_POST['votingemail']);
-    			$objValidator = &new FWValidator();
+    			$objValidator = new FWValidator();
     			if ($objValidator->isEmail($email)) {
         			if (!_alreadyVotedWithEmail($votingId, $email)) {
         				if (($msg = VotingSubmitEmail($votingId, $voteId, $email)) === true) {
@@ -364,7 +364,7 @@ function setVotingResult($template)
 	global $objDatabase, $_CONFIG, $_ARRAYLANG;
 	$paging="";
 
-	$objTpl = &new HTML_Template_Sigma('.');
+	$objTpl = new HTML_Template_Sigma('.');
     CSRF::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($template);
@@ -431,7 +431,7 @@ function _getMXHosts($email)
 {
 	require_once ASCMS_FRAMEWORK_PATH.'/MXLookup.class.php';
 
-	$objMXLookup = &new MXLookup();
+	$objMXLookup = new MXLookup();
 
 	$host = substr($email, strrpos($email, '@') + 1);
 

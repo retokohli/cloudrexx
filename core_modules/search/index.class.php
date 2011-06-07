@@ -36,7 +36,7 @@ function search_getSearchPage($pos, $page_content)
 {
     global $_CONFIG, $_ARRAYLANG,$objDatabase;
 
-    $objTpl = &new HTML_Template_Sigma('.');
+    $objTpl = new HTML_Template_Sigma('.');
     CSRF::add_placeholder($objTpl);
     $objTpl->setErrorHandling(PEAR_ERROR_DIE);
     $objTpl->setTemplate($page_content);
@@ -44,7 +44,7 @@ function search_getSearchPage($pos, $page_content)
 
     $term = ""; //$_SERVER['HTTP_HOST'];
     if (isset($_REQUEST['term'])&& strlen($_REQUEST['term'])>=3) {
-    	$objModulChecker = &new ModuleChecker();
+    	$objModulChecker = new ModuleChecker();
     	$arrActiveModules = array_keys($objModulChecker->arrActiveModulesByName);
 
 		$term = contrexx_addslashes(trim($_REQUEST['term']));

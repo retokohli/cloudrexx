@@ -50,7 +50,7 @@ class LivecamManager extends LivecamLibrary
 
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/livecam/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/livecam/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

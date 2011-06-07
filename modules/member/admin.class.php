@@ -27,7 +27,7 @@ class MemberManager
 	 */
 	function __construct()
 	{
-		$this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/member/template');
+		$this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/member/template');
         CSRF::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 

@@ -207,7 +207,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
 
                 	if($setNewSize == 1) {
 
-						$objImage = &new ImageManager();
+						$objImage = new ImageManager();
 			            $objImage->loadImage($this->imagePath.'images/'.$imageName);
 			            $objImage->resizeImage($intNewWidth, $intNewHeight, 100);
 			            $objImage->saveNewImage($this->imagePath.'images/'.$imageName, true);
@@ -240,7 +240,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
         $arrImageInfo = getimagesize(ASCMS_PATH.$strPathImage);
 
         if ($arrImageInfo['mime'] == "image/gif" || $arrImageInfo['mime'] == "image/jpeg" || $arrImageInfo['mime'] == "image/jpg" || $arrImageInfo['mime'] == "image/png") {
-            $objImage = &new ImageManager();
+            $objImage = new ImageManager();
 
             $arrImageInfo = array_merge($arrImageInfo, pathinfo($strPathImage));
 

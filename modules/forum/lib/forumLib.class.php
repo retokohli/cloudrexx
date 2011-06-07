@@ -149,7 +149,7 @@ class ForumLibrary
         if ($objDatabase->Execute($query) === false) {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
-//      $objCache = &new Cache();
+//      $objCache = new Cache();
 //      $objCache->deleteAllFiles();
         return true;
     }
@@ -253,7 +253,7 @@ class ForumLibrary
         } else {
             die('Database error: '.$objDatabase->ErrorMsg());
         }
-//      $objCache = &new Cache();
+//      $objCache = new Cache();
 //      $objCache->deleteAllFiles();
         return true;
     }

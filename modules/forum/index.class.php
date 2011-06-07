@@ -40,7 +40,7 @@ class Forum extends ForumLibrary {
 
         ForumLibrary::__construct();
         $this->_intLangId = intval($_LANGID);
-        $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
@@ -584,7 +584,7 @@ class Forum extends ForumLibrary {
                 $this->_updateNotification($intLastThreadId);
                 $this->_sendNotifications($intLastThreadId, $subject, $content);
                 $this->updateViewsNewItem($intForumId, $lastInsertId);
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
             }
             CSRF::header('Location: ?section=forum&cmd=board&id='.$intForumId);
@@ -949,7 +949,7 @@ class Forum extends ForumLibrary {
                 $this->updateViewsNewItem($intCatId, $lastInsertId, true);
                 $this->_updateNotification($intThreadId);
                 $this->_sendNotifications($intThreadId, $subject, $content);
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
             }
             CSRF::header('Location: index.php?section=forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
@@ -1039,7 +1039,7 @@ class Forum extends ForumLibrary {
 
             if($objDatabase->Execute($updateQuery) !== false){
                 $this->updateViews($intThreadId, $intPostId);
-                $objCache = &new Cache();
+                $objCache = new Cache();
                 $objCache->deleteAllFiles();
             }
 
@@ -1249,7 +1249,7 @@ class Forum extends ForumLibrary {
 
         $intCategoryId = $this->_getCategoryIdFromThread($intThreadId);
 
-        $mail =& new PHPMailer();
+        $mail =new PHPMailer();
         $query = '    SELECT `subject`, `user_id` FROM `'.DBPREFIX.'module_forum_postings`
                     WHERE `thread_id` = '.$intThreadId.'
                     AND `prev_post_id` = 0';

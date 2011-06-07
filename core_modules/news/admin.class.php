@@ -168,7 +168,7 @@ class newsManager extends newsLibrary {
     {
         global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
+        $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -602,7 +602,7 @@ class newsManager extends newsLibrary {
             return $this->manageCategories();
         }
 
-        $objFWValidator = &new FWValidator();
+        $objFWValidator = new FWValidator();
         $objFWUser = FWUser::getFWUserObject();
 
         $date = $this->dateFromInput($_POST['newsDate']);
@@ -716,7 +716,7 @@ class newsManager extends newsLibrary {
         $this->pageTitle = $_ARRAYLANG['TXT_CREATE_NEWS'];
 
         require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
-        $objTeaser = &new Teasers(true);
+        $objTeaser = new Teasers(true);
 
         $frameIds = "";
         foreach ($objTeaser->arrTeaserFrameNames as $frameName => $frameId) {
@@ -1033,7 +1033,7 @@ class newsManager extends newsLibrary {
             }
 
             require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
-            $objTeaser = &new Teasers(true);
+            $objTeaser = new Teasers(true);
 
             $frameIds = "";
             $associatedFrameIds = "";
@@ -1182,7 +1182,7 @@ class newsManager extends newsLibrary {
         }
 
         if (isset($_POST['newsId'])) {
-            $objFWValidator = &new FWValidator();
+            $objFWValidator = new FWValidator();
             $objFWUser = FWUser::getFWUserObject();
 
             $id = intval($_POST['newsId']);
@@ -1790,7 +1790,7 @@ class newsManager extends newsLibrary {
             $this->createRSS();
 
             require_once(ASCMS_CORE_PATH.'/settings.class.php');
-            $objSettings = &new settingsManager();
+            $objSettings = new settingsManager();
             $objSettings->writeSettingsFile();
         }
     }
@@ -2032,7 +2032,7 @@ class newsManager extends newsLibrary {
                     if ($objDatabase->Execute(($id > 0 ? "UPDATE" : "INSERT INTO")." `".DBPREFIX."module_news_ticker` SET `name` = '".addslashes($newName)."', `charset` = '".addslashes($charset)."', `urlencode` = ".$urlencode.", `prefix` = '".addslashes($prefix)."'".($id > 0 ?" WHERE `id` = ".$id : ''))) {
                         require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
 
-                        $objFile = &new File();
+                        $objFile = new File();
                         $objFile->setChmod(ASCMS_FEED_PATH, ASCMS_FEED_WEB_PATH, $newName);
 
                         $fpTicker = @fopen(ASCMS_FEED_PATH.'/'.$newName, 'wb');
@@ -2279,7 +2279,7 @@ class newsManager extends newsLibrary {
         global $_ARRAYLANG;
 
         require_once ASCMS_CORE_MODULE_PATH . '/news/lib/teasers.class.php';
-        $this->_objTeaser = &new Teasers(true);
+        $this->_objTeaser = new Teasers(true);
 
         $this->_objTpl->loadTemplateFile('module_news_teasers.html');
 
@@ -2356,7 +2356,7 @@ class newsManager extends newsLibrary {
             $this->strOkMessage .= $result;
         }
         
-        $this->_objTeaser = &new Teasers(true);
+        $this->_objTeaser = new Teasers(true);
 
         $this->_objTpl->loadTemplateFile('module_news_teasers.html');
 
