@@ -6,6 +6,9 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 
+Code-Qualität
+- Sämtlicher Eigencode verzichtet auf "new &"-Statements, um PHP5.3-Kompatibel zu sein. Drittcode (Bibliotheken) benutzt zum Teil noch "new &".
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
