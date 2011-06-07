@@ -464,7 +464,21 @@ class InitCMS
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
         }
         else {
-              $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate);
+            $customTemplatePath = ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate;
+            //only include the custom template if it really exists.
+            //if the user selected custom_x.html as a page's custom template, a print-view request will
+            //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
+            //exists. trying to read a non-existant file would lead to an empty content-template.
+            //to omit this, we read the standard print content template instead.
+            //another possible behaviour would be to read the standard theme's custom content template instead.
+            //this is not done, because customcontent files are mostly used for sidebars etc. - 
+            //stuff that should not change the print representation of the content.
+            if(file_exists($customTemplatePath)) {
+                $this->templates['content'] = file_get_contents($customTemplatePath);
+            }
+            else {
+                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
+            }
         }
 
         $template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
