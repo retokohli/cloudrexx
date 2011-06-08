@@ -35,6 +35,13 @@ function toggleDisplayDouration(){
         elmLayer.style.display = 'inline';
     }
 }
+
+//adds a datepicker to the display duration fields
+cx.ready(function() {
+    var opts = {dateFormat: 'dd.mm.yy'};
+    $J('input[name=durationStart]').datepicker(opts);
+    $J('input[name=durationEnd]').datepicker(opts);
+});
 </script>
 
 <script src="../lib/datepickercontrol/datepickercontrol.js" type="text/javascript"></script>
@@ -82,7 +89,7 @@ function toggleDisplayDouration(){
                 <option value="2" {MEDIADIR_DISPLAYDURATION_SELECT_PERIOD}>{TXT_MEDIADIR_DISPLAYDURATION_PERIOD}</option>
             </select>
             <span id="durationTypePeriod" style="display:{MEDIADIR_DISPLAYDURATION_SHOW_PERIOD};">
-                &nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_FROM}&nbsp;<input type="text" name="durationStart" id="DPC_edit1_YYYY-MM-DD" value="{MEDIADIR_DISPLAYDURATION_START}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_TO}&nbsp;<input type="text" name="durationEnd" id="DPC_edit2_YYYY-MM-DD" value="{MEDIADIR_DISPLAYDURATION_END}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS}
+                &nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_FROM}&nbsp;<input type="text" name="durationStart" value="{MEDIADIR_DISPLAYDURATION_START}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{TXT_MEDIADIR_DISPLAYDURATION_TO}&nbsp;<input type="text" name="durationEnd" value="{MEDIADIR_DISPLAYDURATION_END}" style="width: 80px;" />&nbsp;&nbsp;&nbsp;{MEDIADIR_DISPLAYDURATION_RESET_NOTIFICATION_STATUS}
             </span>
         </td>
     </tr>
