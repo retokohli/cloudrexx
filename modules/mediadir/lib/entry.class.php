@@ -834,10 +834,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 $intActive = 0;
                 $intShowIn = 3;
                 $intDurationType =  intval($arrData['durationType']);
-                $arrDurationStart = explode("-",$arrData['durationStart']);
-                $arrDurationEnd = explode("-",$arrData['durationEnd']);
-                $intDurationStart = intval(mktime(0,0,0,$arrDurationStart[1],$arrDurationStart[2],$arrDurationStart[0]));
-                $intDurationEnd =  intval(mktime(0,0,0,$arrDurationEnd[1],$arrDurationEnd[2],$arrDurationEnd[0]));
+                $intDurationStart = $this->dateFromInput($arrData['durationStart']);
+                $intDurationEnd = $this->dateFromInput($arrData['durationEnd']);
             } else {
                 $intConfirmed = $this->arrSettings['settingsConfirmNewEntries'] == 1 ? 0 : 1;
                 $intActive = 1;
@@ -888,10 +886,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 $intConfirmed = 1;
                 $intShowIn = 3;
 
-                $arrDurationStart = explode("-",$arrData['durationStart']);
-                $arrDurationEnd = explode("-",$arrData['durationEnd']);
-                $intDurationStart = intval(mktime(0,0,0,$arrDurationStart[1],$arrDurationStart[2],$arrDurationStart[0]));
-                $intDurationEnd =  intval(mktime(0,0,0,$arrDurationEnd[1],$arrDurationEnd[2],$arrDurationEnd[0]));
+                $intDurationStart = $this->dateFromInput($arrData['durationStart']);
+                $intDurationEnd = $this->dateFromInput($arrData['durationEnd']);
 
                 $arrAdditionalQuery[] = "`duration_type`='". intval($arrData['durationType'])."', `duration_start`='". intval($intDurationStart)."',  `duration_end`='". intval($intDurationEnd)."'";
             } else {
@@ -1371,5 +1367,23 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
         $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleTablePrefix."_entries SET duration_notification='".intval($bolStatus)."' WHERE id='".intval($intEntryId)."'");
     }
+
+    /**
+     * Takes a date in the format dd.mm.yyyyand returns it's representation as mktime()-timestamp.
+     *
+     * @param $value string
+     * @return long timestamp
+     */
+    function dateFromInput($value) {
+        if($value === null || $value === '') //not set POST-param passed, return null for the other functions to know this
+            return null;
+        $arrDate = array();
+        if (preg_match('/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{1,4})/', $value, $arrDate)) {
+            return mktime(0, 0, 0, intval($arrDate[2]), intval($arrDate[1]), intval($arrDate[3]));
+        } else {
+            return time();
+        }
+    }
 }
+
 ?>

@@ -318,7 +318,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
 
-        JS::activate('jquery');
+        JS::activate('cx');
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_modify_entry.html',true,true);
         $this->pageTitle = $_ARRAYLANG['TXT_MEDIADIR_ENTRIES'];
@@ -528,14 +528,14 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 		$intEntryDourationAlways = 'selected="selected"';
                 		$intEntryDourationPeriod = '';
                         $intEntryDourationShowPeriod = 'none';
-	                    $intEntryDourationStart = date("Y-m-d", mktime());
-                        $intEntryDourationEnd = date("Y-m-d", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
+	                    $intEntryDourationStart = date("d.m.Y", mktime());
+                        $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                 	} else {
                         $intEntryDourationAlways = '';
                         $intEntryDourationPeriod = 'selected="selected"';
                         $intEntryDourationShowPeriod = 'inline';
-	                    $intEntryDourationStart = date("Y-m-d", $objEntry->arrEntries[$intEntryId]['entryDurationStart']);
-	                    $intEntryDourationEnd = date("Y-m-d", $objEntry->arrEntries[$intEntryId]['entryDurationEnd']);
+	                    $intEntryDourationStart = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationStart']);
+	                    $intEntryDourationEnd = date("d.m.Y", $objEntry->arrEntries[$intEntryId]['entryDurationEnd']);
                 	}
 
                 	if(intval($objEntry->arrEntries[$intEntryId]['entryDurationNotification']) == 1) {
@@ -554,8 +554,8 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                         $intEntryDourationShowPeriod = 'inline';
                     }
 
-                    $intEntryDourationStart = date("Y-m-d", mktime());
-                    $intEntryDourationEnd = date("Y-m-d", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
+                    $intEntryDourationStart = date("d.m.Y", mktime());
+                    $intEntryDourationEnd = date("d.m.Y", mktime(0,0,0,date("m")+$intDiffMonth,date("d")+$intDiffDay,date("Y")+$intDiffYear));
                 }
 
                 //parse spez fields
