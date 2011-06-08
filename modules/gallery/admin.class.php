@@ -617,9 +617,9 @@ class galleryManager extends GalleryLibrary
             'PUBLIC_ACCESS_CHECKED_FRONTEND'    => "checked=\"checked\"",
             'PUBLIC_ACCESS_CHECKED_BACKEND'     => "checked=\"checked\"",
             'VALUE_TYPE_MAIN'                   => 'checked=\"checked\"',
-            'VALUE_STATE_ON'                    => 'checked=\"checked\"',
-            'VALUE_COMMENT_ON'                  => 'checked=\"checked\"',
-            'VALUE_VOTING_ON'                   => 'checked=\"checked\"',
+            'VALUE_STATE_OFF'                    => 'checked=\"checked\"',
+            'VALUE_COMMENT_OFF'                  => 'checked=\"checked\"',
+            'VALUE_VOTING_OFF'                   => 'checked=\"checked\"',
             'FORM_ACT'                          => 'insert_category'
         ));
 
