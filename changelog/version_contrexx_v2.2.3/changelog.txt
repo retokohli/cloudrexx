@@ -16,5 +16,11 @@ Code-Qualität
 Layout & Design
 - Wird eine Benutzerdefinierte Vorlage nicht gefunden (z.B. weil die Datei in der Druckansicht nicht vorhanden ist), so wird auf die Standardmässige Inhaltsvorlage des aktiven Templates zurückgegriffen.
 
+Modul: Galerie
+- Optionen Status, Kommentarfunktion und Bewertung per Vorgabe inaktiv bei einem neuen Eintrag
+
 Modul: Newsletter
 - Deaktivierte News werden im Newsletter nicht mehr angezeigt.
+
+Modul: Medienverzeichnis
+- Schweizer Datumsformat für Anzeigedauer, verwendet Datepicker
