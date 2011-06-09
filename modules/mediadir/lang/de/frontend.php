@@ -49,13 +49,13 @@ $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_SUCCESSFULL'] = "Ihr Kommentar wurde erfol
 $_ARRAYLANG['TXT_MEDIADIR_COMMENT_ADD_CORRUPT'] = "Beim Übermitteln der Daten ist eine Fehler aufgetreten, daher konnte ihr Kommentar nicht gespeichert werden.";
 $_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'] = "Link zu Googe Maps";
 
-$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'] = "erfogreich hinzugefügt.";
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'] = "erfolgreich hinzugefügt.";
 $_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'] = "konnte nicht hinzugefügt werden.";
-$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'] = "erfogreich bearbeitet.";
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'] = "erfolgreich bearbeitet.";
 $_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'] = "konnte nicht bearbeitet werden.";
-$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'] = "erfogreich gelöscht.";
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'] = "erfolgreich gelöscht.";
 $_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'] = "konnte nicht gelöscht werden.";
-$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_CONFIRM'] = "erfogreich bestätigt.";
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_CONFIRM'] = "erfolgreich bestätigt.";
 $_ARRAYLANG['TXT_MEDIADIR_ACCOUNT_SUCCESSFULLY_CREATED'] = "Ihr Benutzerkonto wurde erfolgreich erstellt.";
 $_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Registrierungsfehler: Konnte kein Bestätigungsmail schicken";
 $_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_EMAIL'] = "Konnte keine Bestätigung per Mail senden.<br />Für weitere Informationen wenden Sie sich bitte an den Administrator %EMAIL%. ";
