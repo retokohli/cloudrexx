@@ -63,4 +63,17 @@ $_ARRAYLANG['TXT_MEDIADIR_TITLE'] = "Title";
 $_ARRAYLANG['TXT_MEDIADIR_PHONE'] = 'Phone';
 $_ARRAYLANG['TXT_MEDIADIR_FAX'] = 'Fax';
 $_ARRAYLANG['TXT_MEDIADIR_FUNCTION'] = 'Position';
+$_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_EMAIL'] = "Could not send confirmation e-mail.<br />For further informations, please contact the adminstrator at %EMAIL%.";
+$_ARRAYLANG['TXT_MEDIADIR_COULD_NOT_SEND_ACTIVATION_MAIL'] = "Error while signing up: Could not send confirmation e-mail.";
+
+$_ARRAYLANG['TXT_MEDIADIR_ID_OR_SEARCH_TERM'] = "id or search term...";
+
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_ADDED'] = "successfully added.";
+$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_ADDED'] = "could not be added.";
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_EDITED'] = "successfully edited.";
+$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_EDITED'] = "could not be edited.";
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_DELETED'] = "successfully deleted.";
+$_ARRAYLANG['TXT_MEDIADIR_CORRUPT_DELETED'] = "could not be deleted.";
+$_ARRAYLANG['TXT_MEDIADIR_SUCCESSFULLY_CONFIRM'] = "successfully confirmed.";
+$_ARRAYLANG['TXT_MEDIADIR_ACCOUNT_SUCCESSFULLY_CREATED'] = "Your user account has been created succcessfully.";
 ?>
