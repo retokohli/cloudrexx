@@ -225,7 +225,7 @@ class Captcha {
         $isBackend = $objInit->mode == "backend";
         $url = ASCMS_PATH_OFFSET;
         if($isBackend) {
-            $url .= '/cadmin/index.php?cmd=captcha&act=new';
+            $url .= ASCMS_BACKEND_PATH.'/index.php?cmd=captcha&act=new';
         }
         else {
             $url .= '/index.php?section=captcha&cmd=new';
