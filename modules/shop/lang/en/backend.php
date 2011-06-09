@@ -670,4 +670,14 @@ $_ARRAYLANG['TXT_SHOP_EMAIL_ADDRESS'] = "e-mail address";
 $_ARRAYLANG['TXT_SHOP_RECIPIENT_ADDRESS'] = "recipient e-mail address";
 $_ARRAYLANG['TXT_SHOP_PLEASE_SET_RECIPIENT_ADDRESS'] = "Please enter the recipient e-mail address";
 $_ARRAYLANG['TXT_SHOP_DEL_ICON'] = "Remove Image";
+
+//translated by srz to ensure proper msgids for gettext
+$_ARRAYLANG['TXT_SHOP_ALL'] = "all";
+$_ARRAYLANG['TXT_SHOP_YELLOWPAY_REQUEST_FOR_SALE'] = "Sale";
+$_ARRAYLANG['TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_OUT'] = "SHA-1-OUT ignature";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW_TIP'] = "At least one of the values must not be zero";
+$_ARRAYLANG['TXT_SHOP_SHIPMENT_NEW'] = "New shipment condition";
+$_ARRAYLANG['TXT_SHOP_YELLOWPAY_REQUEST_FOR_AUTHORIZATION'] = "Authorization";
+$_ARRAYLANG['TXT_SHOP_YELLOWPAY_HASH_SIGNATURE_IN'] = "SHA-1-IN signature";
+$_ARRAYLANG['TXT_SHOP_YELLOWPAY_PSPID'] = "PSPID";
 ?>
