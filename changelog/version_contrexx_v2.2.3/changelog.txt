@@ -24,3 +24,6 @@ Layout & Design
 
 Modul: Newsletter
 - Deaktivierte News werden im Newsletter nicht mehr angezeigt.
+
+Captcha
+- Funktioniert auch, wenn ASCMS_BACKEND_PATH verändert wird
