@@ -3,7 +3,7 @@
 ////////////////////////////////////////
 
 ****************************************
-* Neue Funktionen / Änderungen *********
+* Neue Funktionen / Ã„nderungen *********
 ****************************************
 
 Libraries
@@ -20,11 +20,11 @@ Modul: Kontaktformular
 
 Modul: Veranstaltungskalender
 - Die E-Mail-Benachrichtigung zur Anmeldung auf eine Veranstaltung funktioniert.
-- Die Zuordnung von Benutzergruppen, welche über eine neue Veranstaltung informierten werden sollen, funktioniert.
+- Die Zuordnung von Benutzergruppen, welche Ã¼ber eine neue Veranstaltung informierten werden sollen, funktioniert.
 - Erneuerung des Javascript Kalenders (jQuery Datepicker) im Frontend.
 
 Modul: News
-- Die standardmässig aktivierte zeitgesteuerte Veröffentlichung ist wieder deaktiviert.
+- Die standardmÃ¤ssig aktivierte zeitgesteuerte VerÃ¶ffentlichung ist wieder deaktiviert.
 
 Modul: Newsletter
 - Der Vorname wurde aus der Anredezeile entfernt.
@@ -35,7 +35,12 @@ Modul: Weiterempfehlen
 
 Modul: Bildergalerie
 - Titel der Bilder werden wieder angezeigt
-- Bilder mit grossgeschriebenen Endungen können ebenfalls heraufgeladen werden.
+- Bilder mit grossgeschriebenen Endungen kÃ¶nnen ebenfalls heraufgeladen werden.
 
 Statistik
 - Die Einbindung des Counter-Tags erfolgt nun per jQuery.
+
+Modul: Shop
+- Die Auswahl mehrerer Hauptkategorien fÃ¼r PDF Preislisten ist mÃ¶glich
+- E-Mail Adressen mit Grossbuchstaben werden akzeptiert
+- Die Kundensprache wird bei Kunden und Bestellungen, die von Ã¤lteren Contrexx Versionen angelegt worden sind, korrekt erkannt
