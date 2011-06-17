@@ -303,7 +303,7 @@ class Mail
         if (preg_match(
             '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  // user
             '@([a-z0-9]+([-\.a-z0-9]+)*)+'. // domain
-            '\.[a-z]{2,4}$/',               // sld, tld
+            '\.[a-z]{2,4}$/i',              // sld, tld
             $string
         )) return true;
         return false;
