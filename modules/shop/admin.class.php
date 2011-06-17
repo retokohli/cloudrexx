@@ -629,7 +629,6 @@ class shopmanager extends ShopLibrary
                     if (empty($catName) && !empty($catId)) {
                         break;
                     }
-
                     if (empty($catName)) {
                         $catId = $this->objCSVimport->GetFirstCat();
                     } else {
@@ -640,9 +639,8 @@ class shopmanager extends ShopLibrary
                     $catId = $this->objCSVimport->GetFirstCat();
                 }
                 $query = "
-                    INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                    ($strColumnNames, catid) VALUES ($strColumnValues, $catId)
-                ";
+                    REPLACE INTO ".DBPREFIX."module_shop".MODULE_INDEX."_products
+                    ($strColumnNames, catid) VALUES ($strColumnValues, $catId)";
                 $objResult = $objDatabase->Execute($query);
                 if ($objResult) {
                     $arrId[] = $objDatabase->Insert_ID();
@@ -4634,18 +4632,20 @@ class shopmanager extends ShopLibrary
                     //check if the logindata must be sent
                     if (isset($_POST['shopSendLoginData'])) {
                         // Determine customer language
+                        $lang_id = FRONTEND_LANG_ID;
                         $query = "
                             SELECT customer_lang
                               FROM ".DBPREFIX."module_shop_customers
                              INNER JOIN ".DBPREFIX."module_shop_orders
                              USING (customerid)
-                             WHERE customerid=$customerid
-                        ";
+                             WHERE customerid=$customerid";
                         $objResult = $objDatabase->Execute($query);
-                        if (!$objResult || $objResult->RecordCount() == 0) {
-                            return false;
+                        if ($objResult && !$objResult->EOF) {
+                            $lang_id = $objResult->fields['customer_lang'];
+                            if (intval($lang_id) == 0) {
+                                $lang_id = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
+                            }
                         }
-                        $lang_id = FWLanguage::getLangIdByIso639_1($objResult->fields['customer_lang']);
                         // Select template for sending login data
                         $arrShopMailtemplate = ShopLibrary::shopSetMailtemplate(3, $lang_id);
                         $shopMailTo = $_POST['shopEmail'];

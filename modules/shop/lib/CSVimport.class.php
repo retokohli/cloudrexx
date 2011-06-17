@@ -31,6 +31,7 @@ class CSVimport
         global $_ARRAYLANG;
 
         $this->arrName2Fieldname = array(
+            $_ARRAYLANG['TXT_SHOP_ID'] => 'id',
             $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] => 'product_id',
             $_ARRAYLANG['TXT_SHOP_IMAGE'] => 'picture',
             $_ARRAYLANG['TXT_PRODUCT_NAME'] => 'title',
@@ -46,7 +47,6 @@ class CSVimport
             $_ARRAYLANG['TXT_B2C'] => 'b2c',
             $_ARRAYLANG['TXT_WEIGHT'] => 'weight',
         );
-
         $this->initTemplateArray();
     }
 
