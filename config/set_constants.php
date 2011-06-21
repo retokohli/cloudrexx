@@ -108,6 +108,6 @@ define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',	ASCMS_PATH_OFFSET.'/images/modules/ecar
 define('ASCMS_PARTNERS_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.'/images/partners');
 define('ASCMS_PARTNERS_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.'/images/partners');
 define('ASCMS_MODEL_PATH', ASCMS_DOCUMENT_ROOT.'/model');
-define('ASCMS_MODEL_PROXIES_PATH', ASCMS_TEMP_PATH.'/model/entities');
+define('ASCMS_MODEL_PROXIES_PATH', ASCMS_TEMP_PATH.'/model/proxies');
 
 ?>
