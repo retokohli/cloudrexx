@@ -1,0 +1,115 @@
+Cx\Model\ContentManager\Page:
+  type: entity
+  table: pages
+  
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    lang: #missing foreign entity
+      type: integer
+
+    type:
+      type: integer
+    
+    title:
+      type: string
+      length: 255
+      gedmo:
+        - translatable
+        - versioned
+    
+    content:
+      type: text
+      gedmo:
+        - translatable
+        - versioned
+
+    customContent:
+      nullable: true
+      type: string
+      length: 64
+      gedmo:
+        - versioned
+    
+    cssName:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
+    metatitle:
+      nullable: true
+      type: string
+      length: 255
+
+    metadesc:
+      nullable: true
+      type: string
+      length: 255
+
+    metakeys:
+      nullable: true
+      type: string
+      length: 255
+
+    metarobots:
+      nullable: true
+      type: string
+      length: 7
+
+    #publishing
+    start:
+      nullable: true
+      type: date
+
+    end:
+      nullable: true
+      type: date
+    
+    editingStatus:
+      type: boolean
+
+    #visibility
+    display:
+      type: boolean
+    
+    active:
+      type: boolean
+
+    #redirection
+    target:
+      nullable: true
+      type: string
+      length: 255
+
+    #modul
+    module: #mising foreign entity
+      nullable: true
+      type: integer
+      gedmo:
+        - versioned
+    cmd:
+      nullable: true
+      type: string
+      length: 50
+      gedmo:
+        - versioned
+
+  manyToOne:
+    node:
+      targetEntity: Cx\Model\ContentManager\Node
+      inversedBy: pages
+      joinColumn:
+        name: node_id
+        referencedColumnName: id
+
+    skin:
+      targetEntity: Cx\Model\ContentManager\Skin
+      inversedBy: pages
+      joinColumn:
+        name: skin_id
+        referencedColumnName: id   

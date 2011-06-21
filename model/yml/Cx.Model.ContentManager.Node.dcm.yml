@@ -1,0 +1,42 @@
+Cx\Model\ContentManager\Node:
+  type: entity
+  table: nodes
+  repositoryClass: Gedmo\Tree\Entity\Repository\NestedTreeRepository
+  gedmo:
+    tree:
+      type: nested
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    lft:
+      type: integer
+      gedmo:
+        - treeLeft
+    rgt:
+      type: integer 
+      gedmo:
+        - treeRight
+    lvl:
+      type: integer
+      gedmo:
+        - treeLevel
+  manyToOne:
+    parent:
+      targetEntity: Cx\Model\ContentManager\Node
+      inversedBy: children
+      joinColumn:
+        name: parent_id
+        referencedColumnName: id
+        onDelete: SET NULL
+      gedmo:
+        - treeParent
+  oneToMany:
+    children:
+      targetEntity: Cx\Model\ContentManager\Node
+      mappedBy: parent
+    pages:
+      targetEntity: Cx\Model\ContentManager\Page
+      mappedBy: node
