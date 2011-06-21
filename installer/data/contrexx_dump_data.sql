@@ -4494,7 +4494,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (50,'cacheEnabled','off',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (51,'coreGlobalPageTitle','Default Installation',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (52,'cacheExpiration','86400',1);
-INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (53,'domainUrl','pkg.contrexxlabs.com',1);
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (53,'domainUrl','cx.local',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (54,'xmlSitemapStatus','on',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (55,'systemStatus','on',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (56,'searchVisibleContentOnly','on',1);
