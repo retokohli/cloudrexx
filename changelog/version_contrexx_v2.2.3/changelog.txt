@@ -27,3 +27,6 @@ Modul: Newsletter
 
 Captcha
 - Funktioniert auch, wenn ASCMS_BACKEND_PATH verändert wird
+
+Gallerie
+- Shadowbox funktioniert im Internet Explorer

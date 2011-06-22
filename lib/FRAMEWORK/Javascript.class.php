@@ -107,6 +107,7 @@ class JS
                 'lib/javascript/shadowbox/shadowbox.js'
             ),
             'dependencies'  => array(
+                'jquery'
             ),
             'cssfiles'      => array(
                 'lib/javascript/shadowbox/shadowbox.css'
