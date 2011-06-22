@@ -18,13 +18,11 @@ Cx\Model\ContentManager\Page:
       type: string
       length: 255
       gedmo:
-        - translatable
         - versioned
     
     content:
       type: text
       gedmo:
-        - translatable
         - versioned
 
     customContent:

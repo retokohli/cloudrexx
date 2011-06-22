@@ -50,10 +50,10 @@ $config->setAutoGenerateProxyClasses(true /*dev setting*/);
 
 $connectionOptions = array(
     'driver' => 'pdo_mysql',
-    'user' => 'root',
-    'password' => '1234',
-    'host' => 'localhost',
-    'dbname' => 'contentmanager_doctrine'
+    'user' => $_DBCONFIG['user'],
+    'password' => $_DBCONFIG['password'],
+    'host' => $_DBCONFIG['host'],
+    'dbname' => $_DBCONFIG['database']
                            );
 /*$connectionOptions = array(
     'driver' => 'pdo_sqlite',
@@ -81,15 +81,14 @@ $evm->addEventSubscriber($loggableListener);
 //tree stuff
 $treeListener = new \Gedmo\Tree\TreeListener();
 $evm->addEventSubscriber($treeListener);
-
-//translatable stuff
-$translatableDriverImpl = $config->newDefaultAnnotationDriver(
-    $doctrineDir.'Gedmo/Translatable/Entity' // Document for ODM
-);
-$chainDriverImpl->addDriver($translatableDriverImpl, 'Gedmo\Translatable');
-
 $config->setMetadataDriverImpl($chainDriverImpl);
 
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
+
+//resolve enum, set errors
+$conn = $em->getConnection();
+$conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+$conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
+
 
 Env::setEm($em);
