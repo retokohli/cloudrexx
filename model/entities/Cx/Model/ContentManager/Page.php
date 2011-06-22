@@ -18,11 +18,6 @@ class Page
     private $lang;
 
     /**
-     * @var integer $type
-     */
-    private $type;
-
-    /**
      * @var string $title
      */
     private $title;
@@ -115,12 +110,13 @@ class Page
 
     public function __construct() {
         //default values
-        $this->type = 1;
+        $this->type = 'content';
         $this->content = '';
         $this->editingStatus = true;
         $this->visibility = true;
         $this->active = false;
         $this->display = true;
+        $this->caching = false;
     }
 
     /**
@@ -151,26 +147,6 @@ class Page
     public function getLang()
     {
         return $this->lang;
-    }
-
-    /**
-     * Set type
-     *
-     * @param integer $type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * Get type
-     *
-     * @return integer $type
-     */
-    public function getType()
-    {
-        return $this->type;
     }
 
     /**
@@ -532,5 +508,80 @@ class Page
     public function getSkin()
     {
         return $this->skin;
+    }
+    /**
+     * @var boolean $caching
+     */
+    private $caching;
+
+    /**
+     * @var integer $user
+     */
+    private $user;
+
+
+    /**
+     * Set caching
+     *
+     * @param boolean $caching
+     */
+    public function setCaching($caching)
+    {
+        $this->caching = $caching;
+    }
+
+    /**
+     * Get caching
+     *
+     * @return boolean $caching
+     */
+    public function getCaching()
+    {
+        return $this->caching;
+    }
+
+    /**
+     * Set user
+     *
+     * @param integer $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * Get user
+     *
+     * @return integer $user
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+    /**
+     * @var string $type
+     */
+    private $type;
+
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string $type
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }
