@@ -1,5 +1,21 @@
 <?php
 
+class Env {
+    protected static $em;
+    public static function setEm($em) {
+        self::$em = $em;
+    }
+    /**
+     * Retrieves the Doctrine EntityManager
+     * 
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public static function em()
+    {
+        return self::$em;
+    }
+}
+
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 require_once('configuration.php');
@@ -75,3 +91,5 @@ $chainDriverImpl->addDriver($translatableDriverImpl, 'Gedmo\Translatable');
 $config->setMetadataDriverImpl($chainDriverImpl);
 
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
+
+Env::setEm($em);
