@@ -10,6 +10,8 @@ $helpers = array(
 );
 */
 
+$em = Env::em();
+
 $n = new \Cx\Model\ContentManager\Node();
 
 $c = new \Cx\Model\ContentManager\Node();
