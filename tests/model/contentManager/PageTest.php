@@ -16,6 +16,7 @@ class PageTest extends PHPUnit_Framework_TestCase
         $p->setLang(1);
         $p->setTitle('testpage');
         $p->setNode($n);
+        $p->setUser(1); //bogus user
 
         self::$em->persist($n);
 

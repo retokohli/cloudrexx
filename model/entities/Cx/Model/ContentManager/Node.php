@@ -181,4 +181,29 @@ class Node
     public function addAssociatedPage($page) {
         $this->pages[] = $page;
     }
+    /**
+     * @var string $type
+     */
+    private $type;
+
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string $type
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 }

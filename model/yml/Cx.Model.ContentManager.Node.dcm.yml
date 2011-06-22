@@ -10,7 +10,7 @@ Cx\Model\ContentManager\Node:
       type: integer
       generator:
         strategy: AUTO
-  fields:
+  fields:    
     lft:
       type: integer
       gedmo:

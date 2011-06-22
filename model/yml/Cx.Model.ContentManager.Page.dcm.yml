@@ -12,8 +12,13 @@ Cx\Model\ContentManager\Page:
       type: integer
 
     type:
-      type: integer
-    
+      type: string
+      length: 16
+
+    caching:
+      type: boolean
+
+    #content    
     title:
       type: string
       length: 255
@@ -39,6 +44,7 @@ Cx\Model\ContentManager\Page:
       gedmo:
         - versioned
 
+    #meta
     metatitle:
       nullable: true
       type: string
@@ -69,7 +75,11 @@ Cx\Model\ContentManager\Page:
       type: date
     
     editingStatus:
-      type: boolean
+      type: string
+      length: 16
+
+    user: #missing foreign entity
+      type: integer
 
     #visibility
     display:
@@ -84,7 +94,7 @@ Cx\Model\ContentManager\Page:
       type: string
       length: 255
 
-    #modul
+    #module
     module: #mising foreign entity
       nullable: true
       type: integer
