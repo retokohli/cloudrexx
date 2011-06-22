@@ -1,13 +1,8 @@
 <?php
-class PageTest extends PHPUnit_Framework_TestCase
+include_once('../testCases/DoctrineTestCase.php');
+
+class PageTest extends DoctrineTestCase
 {
-    protected static $em;
-
-    public static function setUpBeforeClass() {
-        include('../../config/doctrine.php');
-        self::$em = Env::em();
-    }
-
     public function testLoggable() {
         $n = new \Cx\Model\ContentManager\Node();
 
