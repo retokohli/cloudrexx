@@ -1,4 +1,4 @@
 #!/bin/bash
 dir=$(pwd)
-cd ../lib/PHPUnit
+cd PHPUnit
 php phpunit.php $dir/tests
