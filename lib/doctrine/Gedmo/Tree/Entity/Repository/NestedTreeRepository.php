@@ -204,14 +204,20 @@ class NestedTreeRepository extends AbstractTreeRepository
      * @throws InvalidArgumentException - if input is not valid
      * @return Query
      */
-    public function childrenQuery($node = null, $direct = false, $sortByField = null, $direction = 'ASC')
+    public function childrenQuery($node = null, $direct = false, $sortByField = null, $direction = 'ASC', $baseQueryBuilder = null)
     {
         $meta = $this->getClassMetadata();
         $config = $this->listener->getConfiguration($this->_em, $meta->name);
 
-        $qb = $this->_em->createQueryBuilder();
-        $qb->select('node')
-            ->from($config['useObjectClass'], 'node');
+        $qb = null;
+        if(!$baseQueryBuilder) {
+            $qb = $this->_em->createQueryBuilder();
+        }
+        else {
+            $qb = $baseQueryBuilder;
+        }
+        $qb->addSelect('node')
+          ->from($config['useObjectClass'], 'node');
         if ($node !== null) {
             if ($node instanceof $meta->name) {
                 if (!$this->_em->getUnitOfWork()->isInIdentityMap($node)) {
@@ -262,9 +268,9 @@ class NestedTreeRepository extends AbstractTreeRepository
      * @param string $direction - sort direction : "ASC" or "DESC"
      * @return array - list of given $node children, null on failure
      */
-    public function children($node = null, $direct = false, $sortByField = null, $direction = 'ASC')
+    public function children($node = null, $direct = false, $sortByField = null, $direction = 'ASC', $baseQueryBuilder = null)
     {
-        $q = $this->childrenQuery($node, $direct, $sortByField, $direction);
+        $q = $this->childrenQuery($node, $direct, $sortByField, $direction, $baseQueryBuilder);
         return $q->getResult();
     }
 

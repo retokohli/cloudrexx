@@ -128,6 +128,12 @@ class Node
         $this->children[] = $children;
     }
 
+    public function addParsedChild(\Cx\Model\ContentManager\Node $child)
+    {
+        $this->children[] = $child;
+    }
+    
+
     /**
      * Get children
      *
