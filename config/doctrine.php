@@ -83,12 +83,13 @@ $treeListener = new \Gedmo\Tree\TreeListener();
 $evm->addEventSubscriber($treeListener);
 $config->setMetadataDriverImpl($chainDriverImpl);
 
+//$config->setSqlLogger(new Doctrine\DBAL\Logging\EchoSQLLogger());
+
 $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
 
 //resolve enum, set errors
 $conn = $em->getConnection();
 $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
-
 
 Env::setEm($em);
