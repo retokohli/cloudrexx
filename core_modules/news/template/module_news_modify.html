@@ -8,7 +8,20 @@ Text[0]=["","{TXT_NEWS_TYPE_REDIRECT_HELP}"];
 cx.ready(function() {
     var dpOptions = {
         dateFormat: 'dd.mm.yy',
-        timeFormat: 'hh:mm' 
+        timeFormat: 'hh:mm',
+        onSelect: function(dateText, inst) {
+            // adjust start or end date to avoid an invalid date range
+            var startDate = $J('input[name=startDate]').datepicker('getDate');
+            var endDate = $J('input[name=endDate]').datepicker('getDate');
+
+            if (endDate != null && startDate > endDate) {
+                if ($J(this).attr('name') == 'startDate') {
+                    $J('input[name=endDate]').datepicker('setDate', dateText);
+                } else {
+                    $J('input[name=startDate]').datepicker('setDate', dateText);
+                }
+            }
+        }
     };
 
     $J('input[name=newsDate]').datetimepicker(dpOptions);
