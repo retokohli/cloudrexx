@@ -6,7 +6,7 @@
 * Neue Funktionen / Änderungen *********
 ****************************************
 
-Modul: Galerie
+Modul: Bildergalerie
 - Optionen Status, Kommentarfunktion und Bewertung per Vorgabe inaktiv bei einem neuen Eintrag
 
 Modul: Medienverzeichnis
@@ -28,5 +28,8 @@ Modul: Newsletter
 Captcha
 - Funktioniert auch, wenn ASCMS_BACKEND_PATH verändert wird
 
-Gallerie
+Modul: Bildergalerie
 - Shadowbox funktioniert im Internet Explorer
+
+News Manager
+- Es kann kein negativer Veröffentlichungszeitraum definiert werden (Enddatum < Startdatum).
