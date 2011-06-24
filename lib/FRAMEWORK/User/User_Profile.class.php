@@ -276,7 +276,7 @@ class User_Profile
 
         foreach ($arrFilter as $attribute => $condition) {
             /**
-             * $attribute is the account attribute like 'firstname' or 'username'
+             * $attribute is the account profile attribute like 'firstname' or 'lastname'
              * $condition is either a simple condition (integer or string) or an condition matrix (array)
              */
             if ($this->objAttribute->load($attribute) && $this->objAttribute->isCoreAttribute($attribute)) {
@@ -295,7 +295,7 @@ class User_Profile
                     default:
                         $arrComparisonOperators = array(
                             'int'       => array('=','<','>'),
-                            'string'    => array('!=','<','>')
+                            'string'    => array('!=','<','>', 'REGEXP')
                         );
                         $arrDefaultComparisonOperator = array(
                             'int'       => '=',

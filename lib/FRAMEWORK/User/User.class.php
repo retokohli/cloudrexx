@@ -1118,7 +1118,7 @@ class User extends User_Profile
         $arrConditions = array();
         foreach ($arrFilter as $attribute => $condition) {
             /**
-             * $attribute is the account attribute like 'firstname' or 'username'
+             * $attribute is the account attribute like 'email' or 'username'
              * $condition is either a simple condition (integer or string) or an condition matrix (array)
              */
             if (isset($this->arrAttributes[$attribute])) {
