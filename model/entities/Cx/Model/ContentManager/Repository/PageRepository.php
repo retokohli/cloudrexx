@@ -17,11 +17,7 @@ class PageRepository extends EntityRepository {
         $this->em = $em;
     }
 
-
-    public function getTree($lang = null) {
-        //TODO: join pages w/ nodes.
-        //      then assign each page it's node, each node it's children
-        //      navigation w/ page->getNode()->getParent()->getPages(lang)
+    public function getTree($rootNode = null, $lang = null) {
         $repo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $qb = $this->em->createQueryBuilder();
 
@@ -39,23 +35,8 @@ class PageRepository extends EntityRepository {
         $qb->leftJoin('node.pages', 'p', $joinConditionType, $joinCondition);
 
         //get all nodes
-        $tree = $repo->children(null, false, 'lft', 'ASC', $qb);
+        $tree = $repo->children($rootNode, false, 'lft', 'ASC', $qb);
 
-        $cur = 1;
-        //set up children node arrays
-        /*
-        foreach($tree as $node) {
-            $parent = $node->getParent();
-            while($parent) {
-                echo "node " . $node->getId() ." at lvl " .$node->getLvl(). ": adding $cur\n";
-                $parent->addParsedChild($node);
-                $parent = $parent->getParent();
-            }
-            $cur++;
-        }
-        */
-        
-        //return
         return $tree;
     }
 }
