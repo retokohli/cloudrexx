@@ -143,10 +143,19 @@ class PageRepository extends EntityRepository {
         if($matchedLen == 0)
             return null;
 
-        return array(
+        $result = array(
             'matchedPath' => substr($path, 0, $matchedLen),
-            'pages' => $treePointer['__data']['node']->getPagesByLang(),
-            'lang' => $treePointer['__data']['lang'],
         );
+        if(!$lang) {
+            $result['pages'] = $treePointer['__data']['node']->getPagesByLang();
+            $result['lang'] = $treePointer['__data']['lang'];
+        }
+        else {
+            $page = $treePointer['__data']['node']->getPagesByLang();
+            $page = $page[$lang];
+            $result['page'] = $page;
+        }
+
+        return $result;
     }
 }
