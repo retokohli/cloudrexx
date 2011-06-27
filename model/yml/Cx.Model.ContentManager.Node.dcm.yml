@@ -35,6 +35,7 @@ Cx\Model\ContentManager\Node:
         - treeParent
   oneToMany:
     children:
+      fetch: EAGER #progressive fetching
       targetEntity: Cx\Model\ContentManager\Node
       mappedBy: parent
     pages:
