@@ -58,8 +58,6 @@ class PageRepositoryTest extends DoctrineTestCase
         $pages = $tree[0]->getPages();
         foreach($pages as $page) 
             $this->assertEquals(1, $page->getLang());
-
-        DoctrineDebug::dump($tree);
                 
         //page count as expected?
         $this->assertEquals(2, count($tree[0]->getPages()));
