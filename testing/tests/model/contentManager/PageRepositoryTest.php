@@ -234,6 +234,11 @@ class PageRepositoryTest extends DoctrineTestCase
 
         //exact matching
         $match = $repo->getPagesAtPath('rootTitle_2/childTitle/asdfasdf', null, null, true);
-        $this->assertEquals(null,$match);        
+        $this->assertEquals(null,$match);
+
+        //given lang matching
+        $match = $repo->getPagesAtPath('rootTitle_1', null, 1);
+        $this->assertEquals('rootTitle_1',$match['matchedPath']);
+        $this->assertInstanceOf('Cx\Model\ContentManager\Page',$match['page']);
     }
 }
