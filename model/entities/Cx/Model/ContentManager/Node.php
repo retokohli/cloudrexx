@@ -164,6 +164,18 @@ class Node
         return $this->pages;
     }
 
+    public function getPagesByLang()
+    {
+        $pages = $this->getPages();
+        $result = array();
+
+        foreach($pages as $page){
+            $result[$page->getLang()] = $page;
+        }
+
+        return $result;
+    }
+
     /**
      * Set parent
      *

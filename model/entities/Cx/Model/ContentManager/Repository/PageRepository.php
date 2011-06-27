@@ -10,9 +10,7 @@ use Doctrine\ORM\EntityRepository,
 
 class PageRepository extends EntityRepository {
     protected $em = null;
-    const ChildProperty = '__childs';
     const DataProperty = '__data';
-    const NodeProperty = '__node';
 
     public function __construct(EntityManager $em, ClassMetadata $class)
     {
@@ -86,11 +84,11 @@ class PageRepository extends EntityRepository {
 
             if(isset($target[$title])) { //another language's Page has the same title
                 //add the language
-                $target[$title][self::DataProperty]['lang'][] = $lang;
+                $target[$title]['__data']['lang'][] = $lang;
             }
             else {
                 $target[$title] = array();
-                $target[$title][self::DataProperty] = array(
+                $target[$title]['__data'] = array(
                     'lang' => array($lang),
                     'page' => $page,
                     'node' => $root,
@@ -104,5 +102,51 @@ class PageRepository extends EntityRepository {
         foreach($root->getChildren() as $child) {
             $this->treeByTitle($child, $result, $myLang2arr);
         }
+    }
+
+    /**
+     * Tries to find the path's Page.
+     *
+     * @param string $path e.g. Hello/APage/AModuleObject
+     * @param Node $root
+     * @param int $lang
+     * @param boolean $exact if true, returns null on partially matched path
+     * @return array ( 
+     *     matchedPath => string (e.g. 'Hello/APage'),
+     *     node => Node,
+     *     lang => array (the langIds where this matches)
+     * )
+     */
+    public function getPagesAtPath($path, $root = null, $lang = null, $exact = false) {
+        $tree = $this->getTreeByTitle($root, $lang, true);
+        
+        //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
+        $pathParts = explode('/', $path);
+        $matchedLen = 0;
+        $treePointer = &$tree;
+        
+        foreach($pathParts as $part) {
+            if(isset($treePointer[$part])) {
+                $treePointer = &$treePointer[$part];
+                $matchedLen += strlen($part);
+                if('/' == substr($path,$matchedLen,1))
+                    $matchedLen++;
+            }
+            else {
+                if($exact)
+                    return null;
+                break;
+            }
+        }
+
+        //no level matched
+        if($matchedLen == 0)
+            return null;
+
+        return array(
+            'matchedPath' => substr($path, 0, $matchedLen),
+            'pages' => $treePointer['__data']['node']->getPagesByLang(),
+            'lang' => $treePointer['__data']['lang'],
+        );
     }
 }

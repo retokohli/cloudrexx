@@ -4,7 +4,6 @@ include_once('../testCases/DoctrineTestCase.php');
 class PageTest extends DoctrineTestCase
 {
     public function testLoggable() {
-        return true;
         $n = new \Cx\Model\ContentManager\Node();
 
         $p = new \Cx\Model\ContentManager\Page();
