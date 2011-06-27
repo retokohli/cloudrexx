@@ -96,9 +96,66 @@ class PageRepositoryTest extends DoctrineTestCase
         $childNode = $tree[0]->getChildren();
         $childNode = $childNode[0];
         $subTree = $repo->getTree($childNode);
-        DoctrineDebug::Dump($subTree);
         $p = $subTree[0]->getPages();
         $p = $p[0];
         $this->assertEquals('subtreeTest_target', $p->getTitle());
+    }
+
+    public function testTreeByTitle() {
+        $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        
+        $n1 = new \Cx\Model\ContentManager\Node();
+        $n2 = new \Cx\Model\ContentManager\Node();
+
+        $n2->setParent($n1);
+
+        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1->setLang(1);
+        $p1->setTitle('rootTitle_1');
+        $p1->setNode($n1);
+        $p1->setUser(1);
+
+        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2->setLang(2);
+        $p2->setTitle('rootTitle_1');
+        $p2->setNode($n1);
+        $p2->setUser(1);
+
+        $p3 = new \Cx\Model\ContentManager\Page();     
+        $p3->setLang(3);
+        $p3->setTitle('rootTitle_2');
+        $p3->setNode($n1);
+        $p3->setUser(1);
+
+        $p4 = new \Cx\Model\ContentManager\Page();     
+        $p4->setLang(3);
+        $p4->setTitle('childTitle');
+        $p4->setNode($n2);
+        $p4->setUser(1);
+
+        self::$em->persist($n1);
+        self::$em->persist($n2);
+
+        self::$em->persist($p1);
+        self::$em->persist($p2);
+        self::$em->persist($p3);
+        self::$em->persist($p4);
+
+        self::$em->flush();
+
+        //make sure we re-fetch a correct state
+        self::$em->clear();
+
+        $tree = $repo->getTreeByTitle();
+
+        //check node assigning
+        $this->assertInstanceOf('Cx\Model\ContentManager\Node', $tree['rootTitle_1'][$repo::DataProperty]['node']);
+
+        //check lang assigning
+        $this->assertEquals(2, count($tree['rootTitle_1'][$repo::DataProperty]['lang']));
+        $this->assertEquals(1, count($tree['rootTitle_2'][$repo::DataProperty]['lang']));
+
+        //check children
+        $this->assertInstanceOf('Cx\Model\ContentManager\Node', $tree['rootTitle_2']['childTitle'][$repo::DataProperty]['node']);
     }
 }
