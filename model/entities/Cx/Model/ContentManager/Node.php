@@ -5,7 +5,7 @@ namespace Cx\Model\ContentManager;
 /**
  * Cx\Model\ContentManager\Node
  */
-class Node
+class Node extends \Cx\Model\Base\EntityBase
 {
     /**
      * @var integer $id
