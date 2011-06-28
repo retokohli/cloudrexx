@@ -224,4 +224,12 @@ class Node extends \Cx\Model\Base\EntityBase
     {
         return $this->type;
     }
+
+    /**
+     * @prePersist
+     */
+    public function validate()
+    {
+        // Add your code here
+    }
 }

@@ -2,4 +2,4 @@
 cd $(dirname $0)
 dir=$(pwd)
 cd PHPUnit
-php phpunit.php $dir/tests
+php ../cx_bootstrap.php $dir/tests

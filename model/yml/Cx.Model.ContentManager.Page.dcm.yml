@@ -121,4 +121,7 @@ Cx\Model\ContentManager\Page:
       inversedBy: pages
       joinColumn:
         name: skin_id
-        referencedColumnName: id   
+        referencedColumnName: id
+
+  lifecycleCallbacks:
+      prePersist: [ validate ]

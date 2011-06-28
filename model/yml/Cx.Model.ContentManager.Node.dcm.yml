@@ -41,3 +41,6 @@ Cx\Model\ContentManager\Node:
     pages:
       targetEntity: Cx\Model\ContentManager\Page
       mappedBy: node
+
+  lifecycleCallbacks:
+      prePersist: [ validate ]

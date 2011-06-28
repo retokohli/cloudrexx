@@ -107,7 +107,6 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     private $skin;
 
-
     public function __construct() {
         //default values
         $this->type = 'content';
@@ -117,6 +116,11 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->active = false;
         $this->display = true;
         $this->caching = false;
+        
+        $this->validators = array(
+            'module' => new \Zend_Validate_Alnum(),
+            'cmd' => new \Zend_Validate_Alnum()
+        );
     }
 
     /**
