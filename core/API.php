@@ -116,6 +116,10 @@ if (isset($adminPage) && $adminPage ) {
     require_once ASCMS_CORE_PATH.'/Security.class.php';
 }
 
+//zend.
+set_include_path(implode(PATH_SEPARATOR, array(get_include_path(),ASCMS_LIBRARY_PATH)));
+require_once ASCMS_LIBRARY_PATH.'/Zend/Loader/Autoloader.php';
+
 //wrappers providing php functions via PEAR and other third party libraries if they're not found.
 $wrapperDir = ASCMS_LIBRARY_PATH.'/wrapper/';
 require_once $wrapperDir.'json.php';
