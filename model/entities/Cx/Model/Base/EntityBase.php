@@ -56,7 +56,7 @@ class EntityBase {
             $val = $this->$methodName();
             if($val) {
                 if(!$validator->isValid($val)) {
-                    $errors[$field] = $validator->getMessages();
+                     $errors[$field] = $validator->getMessages();
                 }
             }
         }
@@ -64,4 +64,3 @@ class EntityBase {
             throw new ValidationException($errors);
     }
 }
-?>
