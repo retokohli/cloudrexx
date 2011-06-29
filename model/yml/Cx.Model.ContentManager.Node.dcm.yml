@@ -1,7 +1,7 @@
 Cx\Model\ContentManager\Node:
   type: entity
   table: nodes
-  repositoryClass: Gedmo\Tree\Entity\Repository\NestedTreeRepository
+  repositoryClass: Cx\Model\ContentManager\Repository\NodeRepository
   gedmo:
     tree:
       type: nested
