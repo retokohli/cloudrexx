@@ -23,31 +23,31 @@ class PageRepositoryTest extends DoctrineTestCase
         $p1->setLang(1);
         $p1->setTitle('testpage1');
         $p1->setNode($n1);
-        $p1->setUser(1);
+        $p1->setUsername('user');
 
         $p2 = new \Cx\Model\ContentManager\Page();     
         $p2->setLang(2);
         $p2->setTitle('testpage2');
         $p2->setNode($n1);
-        $p2->setUser(1);
+        $p2->setUsername('user');
 
         $p3 = new \Cx\Model\ContentManager\Page();     
         $p3->setLang(3);
         $p3->setTitle('testpage3');
         $p3->setNode($n1);
-        $p3->setUser(1);
+        $p3->setUsername('user');
 
         $p4 = new \Cx\Model\ContentManager\Page();     
         $p4->setLang(1);
         $p4->setTitle('testpage1_child');
         $p4->setNode($n2);
-        $p4->setUser(1);
+        $p4->setUsername('user');
 
         $p5 = new \Cx\Model\ContentManager\Page();     
         $p5->setLang(1);
         $p5->setTitle('subtreeTest_target');
         $p5->setNode($n3);
-        $p5->setUser(1);
+        $p5->setUsername('user');
 
         self::$em->persist($n1);
         self::$em->persist($n2);
@@ -113,25 +113,25 @@ class PageRepositoryTest extends DoctrineTestCase
         $p1->setLang(1);
         $p1->setTitle('rootTitle_1');
         $p1->setNode($n1);
-        $p1->setUser(1);
+        $p1->setUsername('user');
 
         $p2 = new \Cx\Model\ContentManager\Page();     
         $p2->setLang(2);
         $p2->setTitle('rootTitle_1');
         $p2->setNode($n1);
-        $p2->setUser(1);
+        $p2->setUsername('user');
 
         $p3 = new \Cx\Model\ContentManager\Page();     
         $p3->setLang(3);
         $p3->setTitle('rootTitle_2');
         $p3->setNode($n1);
-        $p3->setUser(1);
+        $p3->setUsername('user');
 
         $p4 = new \Cx\Model\ContentManager\Page();     
         $p4->setLang(3);
         $p4->setTitle('childTitle');
         $p4->setNode($n2);
-        $p4->setUser(1);
+        $p4->setUsername('user');
 
         self::$em->persist($n1);
         self::$em->persist($n2);
@@ -171,25 +171,25 @@ class PageRepositoryTest extends DoctrineTestCase
         $p1->setLang(1);
         $p1->setTitle('rootTitle_1');
         $p1->setNode($n1);
-        $p1->setUser(1);
+        $p1->setUsername('user');
 
         $p2 = new \Cx\Model\ContentManager\Page();     
         $p2->setLang(2);
         $p2->setTitle('rootTitle_1');
         $p2->setNode($n1);
-        $p2->setUser(1);
+        $p2->setUsername('user');
 
         $p3 = new \Cx\Model\ContentManager\Page();     
         $p3->setLang(3);
         $p3->setTitle('rootTitle_2');
         $p3->setNode($n1);
-        $p3->setUser(1);
+        $p3->setUsername('user');
 
         $p4 = new \Cx\Model\ContentManager\Page();     
         $p4->setLang(3);
         $p4->setTitle('childTitle');
         $p4->setNode($n2);
-        $p4->setUser(1);
+        $p4->setUsername('user');
 
         self::$em->persist($n1);
         self::$em->persist($n2);

@@ -41,6 +41,7 @@ Cx\Model\ContentManager\Node:
     pages:
       targetEntity: Cx\Model\ContentManager\Page
       mappedBy: node
+      cascade: ["remove"]
 
   lifecycleCallbacks:
       prePersist: [ validate ]

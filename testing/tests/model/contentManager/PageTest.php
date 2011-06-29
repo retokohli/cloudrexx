@@ -11,7 +11,7 @@ class PageTest extends DoctrineTestCase
         $p->setLang(1);
         $p->setTitle('testpage');
         $p->setNode($n);
-        $p->setUser(1); //bogus user
+        $p->setUsername('user');
 
         self::$em->persist($n);
 
