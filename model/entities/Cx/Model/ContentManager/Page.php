@@ -111,15 +111,37 @@ class Page extends \Cx\Model\Base\EntityBase
         //default values
         $this->type = 'content';
         $this->content = '';
-        $this->editingStatus = true;
+        $this->editingStatus = '';
         $this->visibility = true;
         $this->active = false;
         $this->display = true;
         $this->caching = false;
+
+        $typeValidator = new \Zend_Validate();
+        $typeValidator->addValidator(new \Zend_Validate_StringLength(array('max' => 16)));
+        $typeValidator->addValidator(new \Zend_Validate_Alnum());
         
         $this->validators = array(
+            'lang' => new \Zend_Validate_Int(),
+            'type' => $typeValidator,
+            //caching is boolean, not checked
+
+            'title' => new \Zend_Validate_StringLength(array('max' => 255)),
+            'customContent' => new \Zend_Validate_StringLength(array('max' => 64)),
+            'cssName' => new \Zend_Validate_StringLength(array('max' => 255)),
+            'metatitle' => new \Zend_Validate_StringLength(array('max' => 255)),
+            'metadesc' => new \Zend_Validate_StringLength(array('max' => 255)),
+            'metakeys' => new \Zend_Validate_StringLength(array('max' => 255)),
+            'metarobots' => new \Zend_Validate_StringLength(array('max' => 255)),
+            //'start' => maybe date? format?
+            //'end' => maybe date? format?
+            'editingStatus'  => new \Zend_Validate_StringLength(array('max' => 16)),
+            'user' => new \Zend_Validate_Int(),
+            //display is boolean, not checked
+            //active is boolean, not checked
+            'target' => new \Zend_Validate_StringLength(array('max' => 255)),
             'module' => new \Zend_Validate_Alnum(),
-            'cmd' => new \Zend_Validate_Alnum()
+            'cmd' => new \Zend_Validate_Alnum(),            
         );
     }
 
