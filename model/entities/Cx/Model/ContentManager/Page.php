@@ -116,6 +116,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->active = false;
         $this->display = true;
         $this->caching = false;
+        $this->setUpdatedAtToNow();
 
         $typeValidator = new \Zend_Validate();
         $typeValidator->addValidator(new \Zend_Validate_StringLength(array('max' => 16)));
@@ -642,5 +643,35 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         //workaround, this method is regenerated each time
         parent::validate(); 
+    }
+
+    public function setUpdatedAtToNow()
+    {
+        $this->updatedAt = new \DateTime("now");
+    }
+    /**
+     * @var datetime $updatedAt
+     */
+    private $updatedAt;
+
+
+    /**
+     * Set updatedAt
+     *
+     * @param datetime $updatedAt
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return datetime $updatedAt
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 }

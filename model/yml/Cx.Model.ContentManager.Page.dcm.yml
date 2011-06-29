@@ -19,6 +19,9 @@ Cx\Model\ContentManager\Page:
     caching:
       type: boolean
 
+    updatedAt:
+      type: datetime    
+
     #content    
     title:
       type: string
