@@ -46,10 +46,12 @@ class EntityBase {
 
     /**
      * @throws ValidationException
-     * @return null | array( 'field' => array( 'errorid' => 'errormessage') )
      * @prePersis
      */
     public function validate() {
+        if(!$this->validators)
+            return;
+
         $errors = array();
         foreach($this->validators as $field => $validator) {
             $methodName = 'get'.ucfirst($field);

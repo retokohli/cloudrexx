@@ -136,7 +136,7 @@ class Page extends \Cx\Model\Base\EntityBase
             //'start' => maybe date? format?
             //'end' => maybe date? format?
             'editingStatus'  => new \Zend_Validate_StringLength(array('max' => 16)),
-            'user' => new \Zend_Validate_Int(),
+            'username' => new \Zend_Validate_StringLength(array('max' => 64)),
             //display is boolean, not checked
             //active is boolean, not checked
             'target' => new \Zend_Validate_StringLength(array('max' => 255)),
@@ -609,5 +609,38 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getType()
     {
         return $this->type;
+    }
+    /**
+     * @var string $username
+     */
+    private $username;
+
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * Get username
+     *
+     * @return string $username
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+    /**
+     * @prePersist
+     */
+    public function validate()
+    {
+        //workaround, this method is regenerated each time
+        parent::validate(); 
     }
 }

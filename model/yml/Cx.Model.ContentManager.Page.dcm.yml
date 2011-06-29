@@ -79,8 +79,9 @@ Cx\Model\ContentManager\Page:
       type: string
       length: 16
 
-    user: #missing foreign entity
-      type: integer
+    username:
+      type: string
+      length: 64
 
     #visibility
     display:

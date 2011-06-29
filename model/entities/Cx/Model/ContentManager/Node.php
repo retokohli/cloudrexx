@@ -230,6 +230,7 @@ class Node extends \Cx\Model\Base\EntityBase
      */
     public function validate()
     {
-        // Add your code here
+        //workaround, this method is regenerated each time
+        parent::validate(); 
     }
 }
