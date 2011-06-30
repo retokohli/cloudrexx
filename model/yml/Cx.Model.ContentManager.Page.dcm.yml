@@ -47,6 +47,10 @@ Cx\Model\ContentManager\Page:
       length: 255
       gedmo:
         - versioned
+    
+    skin:
+      type: integer
+      nullable: true
 
     #meta
     metatitle:
@@ -118,13 +122,6 @@ Cx\Model\ContentManager\Page:
       inversedBy: pages
       joinColumn:
         name: node_id
-        referencedColumnName: id
-
-    skin:
-      targetEntity: Cx\Model\ContentManager\Skin
-      inversedBy: pages
-      joinColumn:
-        name: skin_id
         referencedColumnName: id
 
   lifecycleCallbacks:
