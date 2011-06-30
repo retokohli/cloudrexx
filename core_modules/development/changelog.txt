@@ -1,4 +1,0 @@
-ALTER TABLE `contrexx_modules` CHANGE `id` `id` TINYINT( 2 ) UNSIGNED NOT NULL AUTO_INCREMENT 
-
-
-UPDATE `contrexx_backend_areas` SET `target` = '_self' WHERE `area_id` =4 LIMIT 1 ;
