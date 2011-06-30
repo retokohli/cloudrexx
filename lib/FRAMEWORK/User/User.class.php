@@ -687,6 +687,16 @@ class User extends User_Profile
         return $this->arrCachedUsers[$this->id]['static_access_ids'];
     }
 
+    public function getNodePermissionIds($frontend=true, $reload=false)
+    {
+        $frontendOrBackend = $frontend ? 'frontend' : 'backend';
+        $key = 'node_' . $frontendOrBackend . '_access_ids';
+        if (!isset($this->arrCachedUsers[$this->id][$key]) || $reload) {
+            $this->loadPermissionIds('node_'.$frontendOrBackend);
+        }
+
+        return $this->arrCachedUsers[$this->id][$key];
+    }
 
     public function getUser($id)
     {
@@ -1497,23 +1507,51 @@ class User extends User_Profile
     private function loadPermissionIds($type)
     {
         global $objDatabase;
+        
+        if(substr($type, 0, 4) != 'node') {
+            $query = '
+                SELECT tblI.`access_id`
+                FROM `'.DBPREFIX.'access_users` AS tblU
+                INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblR ON tblR.`user_id` = tblU.`id`
+                INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblG ON tblG.`group_id` = tblR.`group_id`
+                INNER JOIN `'.DBPREFIX.'access_group_'.$type.'_ids` AS tblI ON tblI.`group_id` = tblG.`group_id`
+                WHERE tblU.`id` = '.$this->id.'
+                      AND tblG.`is_active`
+                GROUP BY tblI.`access_id`
+                ORDER BY tblI.`access_id`';
+//TODO: is the above GROUP BY necessary?
+//TODO: is the above ORDER BY necessary?
+            $objAccessId = $objDatabase->Execute($query);
+            if ($objAccessId !== false) {
+                $this->arrCachedUsers[$this->id][$type.'_access_ids'] = array();
+                while (!$objAccessId->EOF) {
+                    $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
+                    $objAccessId->MoveNext();
+                }
+            }    
+        }
+        else { // node_backend or node_frontend
+            $backOrFrontend = substr($type, 5);
+            $backOrFrontendType = 0; //value for frontend
+            if($backOrFrontend == 'backend')
+                $backOrFrontend = 1;
 
-        $query = '
-            SELECT tblI.`access_id`
-            FROM `'.DBPREFIX.'access_users` AS tblU
-            INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblR ON tblR.`user_id` = tblU.`id`
-            INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblG ON tblG.`group_id` = tblR.`group_id`
-            INNER JOIN `'.DBPREFIX.'access_group_'.$type.'_ids` AS tblI ON tblI.`group_id` = tblG.`group_id`
-            WHERE tblU.`id` = '.$this->id.'
-                  AND tblG.`is_active`
-            GROUP BY tblI.`access_id`
-            ORDER BY tblI.`access_id`';
-        $objAccessId = $objDatabase->Execute($query);
-        if ($objAccessId !== false) {
-            $this->arrCachedUsers[$this->id][$type.'_access_ids'] = array();
-            while (!$objAccessId->EOF) {
-                $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
-                $objAccessId->MoveNext();
+            $query = '
+                SELECT tblN.`node_id`
+                FROM `'.DBPREFIX.'access_users` AS tblU
+                INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblR ON tblR.`user_id` = tblU.`id`
+                INNER JOIN `'.DBPREFIX.'access_user_groupyes` AS tblG ON tblG.`group_id` = tblR.`group_id`
+                INNER JOIN `'.DBPREFIX.'access_group_node` AS tblN ON tblN.`group_id` = tblG.`group_id`
+                WHERE tblU.`id` = '.$this->id.'
+                      AND tblN.`type` = '.$backOrFrontendType.'
+                      AND tblG.`is_active`';
+            $rs = $objDatabase->Execute($query);
+            if ($rs !== false) {
+                $this->arrCachedUsers[$this->id]['node_'.$backOrFrontendType.'_access_ids'] = array();
+                while (!$rs->EOF) {
+                    $this->arrCachedUsers[$this->id]['node_'.$backOrFrontendType.'_access_ids'][] = $rs->fields['node_id'];
+                    $rs->MoveNext();
+                }
             }
         }
     }
