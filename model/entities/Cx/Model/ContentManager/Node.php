@@ -233,4 +233,15 @@ class Node extends \Cx\Model\Base\EntityBase
         //workaround, this method is regenerated each time
         parent::validate(); 
     }
+
+    /**
+     * Check whether the current user has access to this node.
+     *
+     * @param boolean $frontend whether front- or backend. defaults to frontend
+     * @return boolean
+     */
+    public function hasAccessByUserId($frontend = true) {
+        $type = 'node_' . ($frontend ? 'frontend' : 'backend');
+        return Permission::checkAccess($this->id, $type, true);        
+    }
 }
