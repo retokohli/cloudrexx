@@ -80,4 +80,9 @@ $_CONFIG['coreCharacterEncoding'] = ''; // example 'UTF-8'
 * -------------------------------------------------------------------------
 */
 require_once dirname(__FILE__).'/set_constants.php';
+/**
+ * Initialize doctrine
+ */
+require_once dirname(__FILE__).'/doctrine.php';
+
 ?>

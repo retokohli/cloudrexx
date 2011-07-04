@@ -1,24 +1,9 @@
 <?php
 
-class Env {
-    protected static $em;
-    public static function setEm($em) {
-        self::$em = $em;
-    }
-    /**
-     * Retrieves the Doctrine EntityManager
-     * 
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public static function em()
-    {
-        return self::$em;
-    }
-}
-
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 require_once('configuration.php');
+require_once(ASCMS_CORE_PATH.'/Env.class.php');
 
 $doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
 
@@ -93,3 +78,5 @@ $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
 
 Env::setEm($em);
+
+

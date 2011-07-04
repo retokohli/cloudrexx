@@ -81,16 +81,21 @@ DBG::deactivate();
 $starttime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
-//ob_start("ob_gzhandler");
+//ob_start("ob_gzhandler")
 
 // Makes code analyzer warnings go away
 $_CONFIG = $_CONFIGURATION = null;
+/**
+ * Environment repository
+ */
+require_once dirname(__FILE__).'/core/Env.class.php';
 /**
  * Path, database, FTP configuration settings
  *
  * Initialises global settings array and constants.
  */
 include_once(dirname(__FILE__).'/config/configuration.php');
+Env::set('config', $_CONFIG);
 /**
  * User configuration settings
  *
@@ -140,6 +145,7 @@ $errorMsg = '';
  * @global ADONewConnection $objDatabase
  */
 $objDatabase = getDatabaseObject($errorMsg);
+Env::set('db', $objDatabase);
 
 if ($objDatabase === false) {
     die(
@@ -156,10 +162,21 @@ if (DBG::getMode() & DBG_ADODB_TRACE) {
     DBG::disable_adodb_debug();
 }
 
+//an array mapping module names to their id
+$module2id = array();
+$db = Env::get('db');
+$rs = $db->Query('SELECT id, name FROM contrexx_modules');
+while(!$rs->EOF) {
+    $module2id[$rs->fields['name']] = $rs->fields['id'];
+    $rs->MoveNext();
+}
+Env::set('module2id', $module2id);
+
 //-------------------------------------------------------
 // Initialize base system
 //-------------------------------------------------------
 $objInit = new InitCMS();
+Env::set('init', $objInit);
 
 /**
  * Frontend language ID
@@ -237,11 +254,13 @@ define('MODULE_INDEX', $moduleIndex);
  * @global array $_CORELANG
  */
 $_CORELANG = $objInit->loadLanguageData('core');
+Env::set('coreLang', $_CORELANG);
 /**
  * Module specific data
  * @global array $_ARRAYLANG
  */
 $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+Env::set('lang', $_ARRAYLANG);
 
 //-------------------------------------------------------
 // Webapp Intrusion Detection System
