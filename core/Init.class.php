@@ -121,7 +121,7 @@ class InitCMS
         } else {
             $backendLangId = $this->defaultBackendLangId;
         }
-        if ($this->arrLang[$backendLangId]['backend'] != 1) {
+        if (!isset($this->arrLang[$backendLangId]) || $this->arrLang[$backendLangId]['backend'] != 1) {
             $backendLangId = $this->defaultBackendLangId;
         }
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
