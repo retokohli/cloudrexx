@@ -164,18 +164,22 @@ if (DBG::getMode() & DBG_ADODB_TRACE) {
 
 //an array mapping module names to their id
 $module2id = array();
+//above arrays' counterpart
+$id2module = array();
 $db = Env::get('db');
 $rs = $db->Query('SELECT id, name FROM contrexx_modules');
 while(!$rs->EOF) {
     $module2id[$rs->fields['name']] = $rs->fields['id'];
+    $id2module[$rs->fields['id']] = $rs->fields['name'];
     $rs->MoveNext();
 }
 Env::set('module2id', $module2id);
+Env::set('id2module', $id2module);
 
 //-------------------------------------------------------
 // Initialize base system
 //-------------------------------------------------------
-$objInit = new InitCMS();
+$objInit = new InitCMS('frontend', Env::em());
 Env::set('init', $objInit);
 
 /**
@@ -347,6 +351,12 @@ $frontEditingContent    = isset($_REQUEST['previewContent']) ? preg_replace('/\[
 }
 
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
+    /* $em = Env::em(); */
+    /* $pageRepo = $em->getRepo('Page'); */
+    /* $pageRepo->findOneBy(array( */
+        
+    /* )); */
+    
     $query = "
           SELECT `c`.`content`, `c`.`title`, `c`.`redirect`,
                  `c`.`metatitle`, `c`.`metadesc`,

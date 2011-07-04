@@ -52,6 +52,10 @@ class InitCMS
     */
     private $isMobileDevice = 0;
 
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    protected $em = null;
 
     private $themesPath;
 
@@ -66,10 +70,11 @@ class InitCMS
     * Constructor
     *
     */
-    function __construct($mode='frontend')
+    function __construct($mode='frontend', $entityManager)
     {
         global $objDatabase;
 
+        $this->em = $entityManager;
         $this->is_home=false;
         $this->mode=$mode;
 
@@ -680,6 +685,24 @@ class InitCMS
                 $section = 'home';
                 $command = '';
             }
+
+            //doctrine rewrite
+            /*
+            $pageRepo = $this->em->getRepo('Page');
+            $page = $pageRepo->findOneBy(array(
+                'module' => $section,
+                'cmd' => $command,
+                'lang' => FRONTEND_LANG_ID
+            ));
+            if(!$page) {
+                CSRF::header('Location: index.php?section=error');
+                exit;
+            }
+            $m2id = Env::get('module2id');
+            $this->_setCustomizedThemesId($page->getSkin()); 
+            define('MODULE_ID', $m2id[$page->getModule()]);
+            */
+
             // if the section is given, we need to search the command too,
             // even if it's empty. Otherwise, on ?section=access it could be
             // that another "access" page shows up as the cmd is not explicitly
