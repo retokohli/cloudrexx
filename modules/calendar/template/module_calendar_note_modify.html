@@ -22,6 +22,20 @@ function checkNote()
 		document.modifyCalendarNote.inputEndDate.focus();
 		return false;
 	}
+
+    var seriesType = -1;
+    $$('select[name="inputSeriesType"] option').forEach(function(o){if(o.selected){seriesType = o.value;}});
+    if(seriesType == 2) { //weekly - check a weekday was selected
+        var weekDaySelected = false;
+        $$('#seriesMaskWeekly .weekday').forEach(function(w){
+            if(w.checked)
+               weekDaySelected = true;
+        })
+        if(!weekDaySelected) {
+            alert('{TXT_CALENDAR_ERROR_WEEKLY_NO_WEEKDAY}');
+            return false;
+        }
+    }
 }
 
 function whole_day()
@@ -668,13 +682,13 @@ Text[2]=['','{TXT_CALENDAR_NOTIFICATION_ADDRESS_INFO}'];
       <td valign="middle" width="140"><br /></td>
       <td valign="middle">
         {TXT_CALENDAR_ALL}&nbsp;<input type="text" name='inputSeriesWeeklyWeeks' maxlength="3" value="{CALENDAR_SERIES_PATTERN_WEEKLY_WEEKS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_WEEKS}&nbsp;{TXT_CALENDAR_AT}:&nbsp;<br />
-        <input type="checkbox" name='inputSeriesWeeklyDays[1]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_MONDAY}/>&nbsp;{TXT_CALENDAR_DAYS_MONDAY}&nbsp;&nbsp;
-        <input type="checkbox" name='inputSeriesWeeklyDays[2]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_TUESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_TUESDAY}&nbsp;&nbsp;
-        <input type="checkbox" name='inputSeriesWeeklyDays[3]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_WEDNESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_WEDNESDAY}&nbsp;&nbsp;
-        <input type="checkbox" name='inputSeriesWeeklyDays[4]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_THURSDAY}/>&nbsp;{TXT_CALENDAR_DAYS_THURSDAY}&nbsp;&nbsp;
-        <input type="checkbox" name='inputSeriesWeeklyDays[5]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_FRIDAY}/>&nbsp;{TXT_CALENDAR_DAYS_FRIDAY}&nbsp;&nbsp;
-        <input type="checkbox" name='inputSeriesWeeklyDays[6]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_SATURDAY}/>&nbsp;{TXT_CALENDAR_DAYS_SATURDAY}&nbsp;&nbsp;
-        <input type="checkbox" name='inputSeriesWeeklyDays[7]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_SUNDAY}/>&nbsp;{TXT_CALENDAR_DAYS_SUNDAY}&nbsp;&nbsp;
+        <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[1]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_MONDAY}/>&nbsp;{TXT_CALENDAR_DAYS_MONDAY}&nbsp;&nbsp;
+        <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[2]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_TUESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_TUESDAY}&nbsp;&nbsp;
+        <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[3]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_WEDNESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_WEDNESDAY}&nbsp;&nbsp;
+        <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[4]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_THURSDAY}/>&nbsp;{TXT_CALENDAR_DAYS_THURSDAY}&nbsp;&nbsp;
+        <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[5]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_FRIDAY}/>&nbsp;{TXT_CALENDAR_DAYS_FRIDAY}&nbsp;&nbsp;
+        <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[6]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_SATURDAY}/>&nbsp;{TXT_CALENDAR_DAYS_SATURDAY}&nbsp;&nbsp;
+        <input class="weekday" type="checkbox" name='inputSeriesWeeklyDays[7]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_SUNDAY}/>&nbsp;{TXT_CALENDAR_DAYS_SUNDAY}&nbsp;&nbsp;
       </td>
     </tr>
    </table>
