@@ -110,7 +110,12 @@ function _blogUpdate() {
         return UpdateUtil::DefaultActionHandler($e);
     }
 
-
+    try {
+        UpdateUtil::sql('UPDATE contrexx_module_blog_settings SET value="textarea" WHERE name="blog_comments_editor"');
+    catch (UpdateException $e) {
+        // we COULD do something else here..
+        return UpdateUtil::DefaultActionHandler($e);
+    }
 
 
 	/************************************************

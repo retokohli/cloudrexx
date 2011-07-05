@@ -9,6 +9,9 @@
 Modul: Bildergalerie
 - Optionen Status, Kommentarfunktion und Bewertung per Vorgabe inaktiv bei einem neuen Eintrag
 
+Modul: Blog
+- XSS-Lücke bei Kommentaren geschlossen. (Thanks to an anonymous contributor working with Beyond Security's SecuriTeam Secure Disclosure program)
+
 Modul: Medienverzeichnis
 - Schweizer Datumsformat für Anzeigedauer, verwendet Datepicker
 
