@@ -25,9 +25,6 @@ function _blogUpdate() {
 		return _databaseError($query, $objDatabase->ErrorMsg());
 	}
 
-
-
-
     try{
         UpdateUtil::table(
             DBPREFIX.'module_blog_categories',
@@ -110,13 +107,24 @@ function _blogUpdate() {
         return UpdateUtil::DefaultActionHandler($e);
     }
 
-    try {
+    try { //update to 2.2.3 in this block
+        //we've hidden the wysiwyg - let's default to textare
         UpdateUtil::sql('UPDATE contrexx_module_blog_settings SET value="textarea" WHERE name="blog_comments_editor"');
+
+        //convert escaped db entries to their unescaped equivalents
+        $rs = UpdateUtil::sql('SELECT id, content FROM contrexx_module_blog');
+        while(!$rs->EOF) {
+            $content = $rs->fields['content'];
+            $id = $rs->fields['id'];
+            $content = contrexx_raw2db(html_entity_decode($content, ENT_QUOTES, CONTREXX_CHARSET));
+            UpdateUtil::sql('UPDATE contrexx_module_blog SET content="'.$content.'" WHERE id='.$id);
+            $rs->MoveNext();
+        }
+    }
     catch (UpdateException $e) {
         // we COULD do something else here..
         return UpdateUtil::DefaultActionHandler($e);
     }
-
 
 	/************************************************
 	* BUGFIX:	Set write access to the upload dir  *
