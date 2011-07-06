@@ -1464,13 +1464,13 @@ class ContactManager extends ContactLib
             
             $arrActiveSystemFrontendLanguageIds = array_keys(FWLanguage::getActiveFrontendLanguages());
             foreach ($arrActiveSystemFrontendLanguageIds as $langId) {
-                if (!empty($_POST['contactFormLanguages'][$langId] == 1) {
+                if (!empty($_POST['contactFormLanguages'][$langId])) {
                     $arrFields[$id]['lang'][$langId] = array(
-                        'name'	=> contrexx_input2raw($fieldNames[$id][$langId]);
+                        'name'	=> contrexx_input2raw($fieldNames[$id][$langId]),
                         'value'	=>    $fieldType != 'checkbox'
                                    && $fieldType != 'country'
                                    && $fieldType != 'access_country'
-                                    ? contrexx_intput2raw($fieldValues[$id][$langId])
+                                    ? contrexx_input2raw($fieldValues[$id][$langId])
                                     : $fieldValue = $fieldValues[$id]);
                 }
             }

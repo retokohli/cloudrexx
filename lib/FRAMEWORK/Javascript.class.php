@@ -125,6 +125,12 @@ class JS
             ),
             'dependencies' => array('jquery')
         ),
+        'ckeditor'     => array(
+            'jsfiles'       => array(
+                'editor/ckeditor/ckeditor.js'
+            ),
+        ),
+
 /*
 Coming soon
         'jqueryui'     => array(
