@@ -8,9 +8,6 @@
  */
 
 include_once('../../lib/DBG.php');
-DBG::deactivate();
-
-
 require_once "../../config/configuration.php";
 require_once "../../config/set_constants.php";
 require_once "../../core/validator.inc.php";

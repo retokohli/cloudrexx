@@ -9,6 +9,7 @@ define('DBG_LOG_FILE'   , 16);
 define('DBG_LOG_FIREPHP', 32);
 define('DBG_ALL'        , 63);
 
+DBG::deactivate();
 
 class DBG
 {

@@ -18,7 +18,6 @@ define('BASE_FOLDER', '../../');
 
 //Includes
 include_once(BASE_FOLDER.'lib/DBG.php');
-DBG::deactivate();
 require_once(BASE_FOLDER.'config/configuration.php');
 require_once(BASE_FOLDER.'config/settings.php');
 require_once(BASE_FOLDER.'config/set_constants.php');

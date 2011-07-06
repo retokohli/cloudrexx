@@ -26,7 +26,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-DBG::deactivate();
+//DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
 
 require_once 'UpdateUtil.php';
 
