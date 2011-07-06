@@ -37,7 +37,7 @@ class ContactLib
      */
     public function getLastRecipientId($refresh = false)
     {
-    	global $objDatabase;
+        global $objDatabase;
         if (empty($this->_lastRecipientId) || $refresh) {
             $this->_lastRecipientId = intval($objDatabase->SelectLimit('SELECT MAX(`id`) as `max` FROM `'.DBPREFIX.'module_contact_recipient`', 1)->fields['max']);
         }
@@ -51,93 +51,89 @@ class ContactLib
      */
     public function getHighestSortValue($formId)
     {
-    	global $objDatabase;
+        global $objDatabase;
         return intval($objDatabase->SelectLimit('SELECT MAX(`sort`) as `max` FROM `'.DBPREFIX.'module_contact_recipient` WHERE `id_form` = '.$formId, 1)->fields['max']);
     }
 
     /**
-     * load recipient list
-     *
-     * @param integer $formId
-     * @param boolean $refresh
-     * @return array
+     * Read the contact forms 
      */
-    public function getRecipients($formId = 0, $refresh = false)
+    function initContactForms()
     {
         global $objDatabase;
-
-        $formId = intval($formId);
-        if ($formId > 0 && isset($this->_arrRecipients[$formId]) && !$refresh){
-            return $this->_arrRecipients[$formId];
-        }
-        if ($formId == 0 && !empty($this->_arrRecipients) && !$refresh ){
-            return $this->_arrRecipients;
-        }
-		$this->_arrRecipients = array();
-        $objRS = $objDatabase->Execute("
-            SELECT `id`, `id_form`, `name`, `email`, `sort`
-            FROM `".DBPREFIX."module_contact_recipient`".
-            (($formId == 0) ? "" : " WHERE `id_form` = ".$formId).
-            " ORDER BY `sort` ASC");
-        while (!$objRS->EOF){
-            $this->_arrRecipients[$objRS->fields['id']] = array(
-                'id_form' 	=>  $objRS->fields['id_form'],
-                'name'  	=>  $objRS->fields['name'],
-                'email' 	=>  $objRS->fields['email'],
-                'sort'  	=>  $objRS->fields['sort'],
-            );
-            $objRS->MoveNext();
-        }
-        return $this->_arrRecipients;
-    }
-
-    function initContactForms($allLanguages = false)
-    {
-        global $objDatabase, $_FRONTEND_LANGID;
-
-        if ($allLanguages) {
-            $sqlWhere = '';
-        } else {
-            $sqlWhere = "WHERE tblForm.langId=".$_FRONTEND_LANGID;
-        }
-
+        
         $this->arrForms = array();
 
-        $objContactForms = $objDatabase->Execute("SELECT tblForm.id, tblForm.name, tblForm.mails, tblForm.langId,
-                                                    tblForm.subject, tblForm.text, tblForm.feedback, tblForm.showForm, tblForm.`use_captcha`,tblForm.`use_custom_style`,tblForm.`send_copy`,
-                                                    COUNT(tblData.id) AS number, MAX(tblData.time) AS last
-                                                FROM ".DBPREFIX."module_contact_form AS tblForm
-                                                LEFT OUTER JOIN ".DBPREFIX."module_contact_form_data AS tblData ON tblForm.id=tblData.id_form
-                                                ".$sqlWhere."
-                                                GROUP BY tblForm.id
-                                                ORDER BY last DESC");
-        if ($objContactForms !== false) {
-            while (!$objContactForms->EOF) {
-                $this->arrForms[$objContactForms->fields['id']] = array(
-                    'name'  => $objContactForms->fields['name'],
-                    'emails'    => $objContactForms->fields['mails'],
-                    'number'    => intval($objContactForms->fields['number']),
-                    'subject'   => $objContactForms->fields['subject'],
-                    'last'      => intval($objContactForms->fields['last']),
-                    'text'      => $objContactForms->fields['text'],
-                    'lang'      => $objContactForms->fields['langId'],
-                    'feedback'  => $objContactForms->fields['feedback'],
-                    'showForm'  => $objContactForms->fields['showForm'],
-                    'useCaptcha'    => $objContactForms->fields['use_captcha'],
-                    'useCustomStyle'    => $objContactForms->fields['use_custom_style'],
-                    'sendCopy'  => $objContactForms->fields['send_copy'],
-                    'recipients' => $this->getRecipients($objContactForms->fields['id'], true)
+        // load form meta information
+        $query = 'SELECT `id`,
+                         `mails`,
+                         `showForm`,
+                         `use_captcha`,
+                         `use_custom_style`,
+                         `send_copy`,
+                         `html_mail`
+                    FROM `'.DBPREFIX.'module_contact_form`';
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrForms[$objResult->fields['id']] = array(
+                    'emails'            => $objResult->fields['mails'],
+                    'showForm'          => $objResult->fields['showForm'],
+                    'useCaptcha'        => $objResult->fields['use_captcha'],
+                    'useCustomStyle'    => $objResult->fields['use_custom_style'],
+                    'sendCopy'          => $objResult->fields['send_copy'],
+                    'htmlMail'          => $objResult->fields['html_mail'],
+                    'recipients'        => $this->getRecipients($objResult->fields['id'], true),
+                    'number'            => 0,
+                    'last'              => 0
                 );
+                $objResult->MoveNext();
+            }
+        }
 
-                $objContactForms->MoveNext();
+        // load localizations
+        $query = 'SELECT `formID` AS `id`,
+                         `is_active`,
+                         `name`,
+                         `langID`,
+                         `text`,
+                         `feedback`,
+                         `mailTemplate`,
+                         `subject`
+                    FROM `'.DBPREFIX.'module_contact_form_lang`';
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                // $this->arrForms[$formId]['lang'][$langId]
+                $this->arrForms[$objResult->fields['id']]['lang'][$objResult->fields['langID']] = array(
+                    'is_active'     => $objResult->fields['is_active'],
+                    'name'          => $objResult->fields['name'],
+                    'text'          => $objResult->fields['text'],
+                    'feedback'      => $objResult->fields['feedback'],
+                    'mailTemplate'  => $objResult->fields['mailTemplate'],
+                    'subject'       => $objResult->fields['subject']
+                );
+                $objResult->MoveNext();
+            }
+        }
+
+        // load info about submitted data
+        $query = 'SELECT `id_form` AS `id`,
+                         COUNT(id) AS `number`,
+                         MAX(time) AS `last`
+                    FROM `'.DBPREFIX.'module_contact_form_data`
+                   GROUP BY `id_form`
+                   ORDER BY last DESC';
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $this->arrForms[$objResult->fields['id']]['number'] = intval($objResult->fields['number']);
+                $this->arrForms[$objResult->fields['id']]['last'] = intval($objResult->fields['last']);
+                $objResult->MoveNext();
             }
         }
     }
 
-    /**
-     * Sets the regular expressions used to validate the various types of form content.
-     * (one expression per type)
-     */
     function initCheckTypes()
     {
         global $objDatabase;
@@ -194,19 +190,29 @@ class ContactLib
         return $this->_arrSettings;
     }
 
-    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$showForm, &$useCaptcha, &$sendCopy)
+    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$htmlMail)
     {
-        global $objDatabase, $_CONFIG, $_ARRAYLANG;
+        global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
-        $objContactForm = $objDatabase->SelectLimit("SELECT mails, subject, feedback, showForm, use_captcha, send_copy FROM ".DBPREFIX."module_contact_form WHERE id=".$id, 1);
+        $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, l.mailTemplate, f.showForm,
+                                                            f.use_captcha, f.send_copy, f.html_mail
+                                                     FROM ".DBPREFIX."module_contact_form AS f
+                                                     LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
+                                                     ON ( f.id = l.formID )
+                                                     WHERE f.id = ".$id."
+                                                     AND l.langID = ".$_LANGID
+                          , 1);
+
         if ($objContactForm !== false && $objContactForm->RecordCount() == 1) {
             $this->arrForms[$id] = array();
-            $arrEmails = explode(',', $objContactForm->fields['mails']);
-            $subject = !empty($objContactForm->fields['subject']) ? $objContactForm->fields['subject'] : $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
-            $feedback = $objContactForm->fields['feedback'];
-            $showForm = $objContactForm->fields['showForm'];
-            $useCaptcha = $objContactForm->fields['use_captcha'];
-            $sendCopy = $objContactForm->fields['send_copy'];
+            $arrEmails           = explode(',', $objContactForm->fields['mails']);
+            $subject             = !empty($objContactForm->fields['subject']) ? $objContactForm->fields['subject'] : $_ARRAYLANG['TXT_CONTACT_FORM']." ".$_CONFIG['domainUrl'];
+            $feedback            = $objContactForm->fields['feedback'];
+            $mailTemplate        = $objContactForm->fields['mailTemplate'];
+            $showForm            = $objContactForm->fields['showForm'];
+            $useCaptcha          = $objContactForm->fields['use_captcha'];
+            $sendCopy            = $objContactForm->fields['send_copy'];
+            $htmlMail            = $objContactForm->fields['html_mail'];
             return true;
         } else {
             return false;
@@ -225,35 +231,254 @@ class ContactLib
         }
     }
 
-    function getFormFields($id)
+    /**
+     * Get the form fields
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @return      array
+     */
+    function getFormFields($formID)
     {
+        if ($formID <= 0) {
+            return array();
+        }
+
         global $objDatabase;
 
         $arrFields = array();
 
-        if (isset($this->arrForms[$id])) {
-            $objFields  = $objDatabase->Execute("SELECT id, name, type,
-                        attributes, is_required,
-                        check_type
-                        FROM ".DBPREFIX."module_contact_form_field
-                        WHERE id_form=".$id." ORDER BY order_id");
+        if (isset($this->arrForms[$formID])) {
+            $query = "
+                SELECT 
+                    `f`.`id`,
+                    `f`.`type`,
+                    `f`.`special_type`,
+                    `f`.`is_required`,
+                    `f`.`check_type`,
+                    `l`.`name`,
+                    `l`.`langID`,
+                    `l`.`attributes`
+                FROM 
+                    `".DBPREFIX."module_contact_form_field`         AS `f`
 
-            if ($objFields !== false) {
-                while (!$objFields->EOF) {
-                    $arrFields[$objFields->fields['id']] = array(
-                        'name'          => $objFields->fields['name'],
-                        'type'          => $objFields->fields['type'],
-                        'attributes'    => $objFields->fields['attributes'],
-                        'is_required'   => $objFields->fields['is_required'],
-                        'check_type'    => $objFields->fields['check_type']
+                LEFT JOIN
+                    `".DBPREFIX."module_contact_form_field_lang`    AS `l`
+                ON
+                    `f`.`id` = `l`.`fieldID`
+
+                WHERE 
+                    `id_form` = ".$formID."
+
+                ORDER BY 
+                    `f`.`order_id`,
+                    `f`.`id`
+            ";
+            $res  = $objDatabase->Execute($query);
+
+            $lastID = 0;
+            if ($res !== false) {
+                while (!$res->EOF) {
+                    $id = $res->fields['id'];
+                    if ($lastID != $id) {
+                        $lastID = $id;
+
+                        $arrFields[$id] = array(
+                            'type'          => $res->fields['type'],
+                            'special_type'  => $res->fields['special_type'],
+                            'is_required'   => $res->fields['is_required'],
+                            'check_type'    => $res->fields['check_type'],
+                            'editType'     => 'edit'
+                        );
+                    }
+
+                    $arrFields[$id]['lang'][$res->fields['langID']] = array(
+                        'name'  => $res->fields['name'],
+                        'value' => $res->fields['attributes']
                     );
-                    $objFields->MoveNext();
+
+                    $res->MoveNext();
                 }
             }
             return $arrFields;
         } else {
-            return false;
+            return array();
         }
+    }
+
+    /**
+     * Return the recipients of a form
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @return      array
+     */
+    protected function getRecipients($formID, $allLanguages = true)
+    {
+        global $objDatabase;
+
+        $formID = intval($formID);
+
+        if ($formID == 0) {
+            return array();
+        }
+
+        if ($allLanguages == false) {
+            $sqlWhere = "";
+        }
+
+        $query = '
+            SELECT
+                `r`.`id`,
+                `r`.`email`,
+                `r`.`sort`,
+                `l`.`name`,
+                `l`.`langID`
+            FROM
+                `'.DBPREFIX.'module_contact_recipient`      AS `r`
+
+            LEFT JOIN
+                `'.DBPREFIX.'module_contact_recipient_lang` AS `l`
+            ON
+                `l`.`recipient_id` = `r`.`id`
+
+            WHERE
+                `r`.`id_form` = '.$formID.'
+
+            ORDER BY
+                `sort`,
+                `r`.`id`
+        ';
+
+        $res = $objDatabase->execute($query);
+        $lastID = 0;
+        $recipients = array();
+        if ($res !== false) {
+            foreach ($res as $recipient) {
+                if ($lastID != $recipient['id']) {
+                    $recipients[$recipient['id']] = array(
+                        'id'        => $recipient['id'],
+                        'email'     => contrexx_stripslashes($recipient['email']),
+                        'sort'      => $recipient['sort'],
+                        'editType' => 'edit'
+                    );
+                    $lastID = $recipient['id'];
+                }
+
+                $recipients[$lastID]['lang'][$recipient['langID']] = 
+                    contrexx_stripslashes($recipient['name']);
+            }
+        }
+        
+        return $recipients;
+    }
+
+    /**
+     * Add a new recipient
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $recipient
+     */
+    protected function addRecipient($formID, $recipient) 
+    {
+        global $objDatabase;
+
+        $email = contrexx_addslashes($recipient['email']);
+        $sort = intval($recipient['sort']);
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_recipient`
+            (
+                `id_form`,
+                `email`,
+                `sort`
+            )
+            VALUES
+            (
+                '.$formID.',
+                "'.$email.'",
+                '.$sort.'
+            )
+        ';
+
+        $objDatabase->execute($query);
+        $recipientID = $objDatabase->insert_id();
+
+        foreach ($recipient['lang'] as $langID => $name) {
+            $this->setRecipientLang($recipientID, $langID, $name);
+        }
+
+        return $recipientID;
+    }
+
+    /**
+     * Update the recipient
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       array $recipient
+     */
+    protected function updateRecipient($recipient)
+    {
+        global $objDatabase;
+
+        $id = intval($recipient['id']);
+        $email = contrexx_addslashes($recipient['email']);
+        $sort = intval($recipient['sort']);
+
+        $query = '
+            UPDATE
+                `'.DBPREFIX.'module_contact_recipient`
+            SET
+                `email` = "'.$email.'",
+                `sort` = '.$sort.'
+            WHERE
+                `id`  = '.$id.'
+        ';
+
+        $objDatabase->execute($query);
+
+        foreach ($recipient['lang'] as $langID => $name) {
+            $this->setRecipientLang($id, $langID, $name);
+        }
+    }
+
+    /**
+     * Set the recipient name of a lang
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $rcID
+     * @param       int $langID
+     * @param       string $name
+     */
+    private function setRecipientLang($rcID, $langID, $name) 
+    {
+        global $objDatabase;
+
+        $rcID = intval($rcID);
+        $langID = intval($langID);
+        $name = contrexx_addslashes($name);
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_recipient_lang`
+            (
+                `recipient_id`,
+                `name`,
+                `langID`
+            )
+            VALUES
+            (
+                '.$rcID.',
+                "'.$name.'",
+                '.$langID.'
+            )
+            ON DUPLICATE KEY UPDATE
+                `name` = "'.$name.'"';
+
+        $objDatabase->execute($query);
     }
 
     function getFormFieldNames($id)
@@ -261,9 +486,14 @@ class ContactLib
         global $objDatabase;
 
         $arrFieldNames = array();
-
+        
         if (isset($this->arrForms[$id])) {
-            $objFields  = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."module_contact_form_field WHERE id_form=".$id." ORDER BY order_id");
+            $objFields = $objDatabase->Execute("SELECT `f`.`id`, `l`.`name`
+                                                 FROM `".DBPREFIX."module_contact_form_field` as `f`
+                                                 LEFT JOIN `".DBPREFIX."module_contact_form_field_lang` as `l`
+                                                 ON `f`.`id` = `l`.`fieldID`
+                                                 WHERE `f`.`id_form` = ".$id."
+                                                 ORDER BY `f`.`order_id`");
 
             if ($objFields !== false) {
                 while (!$objFields->EOF) {
@@ -277,8 +507,48 @@ class ContactLib
         }
     }
 
-    function isUniqueFormName($name, $id = 0)
+    /**
+     * Check if there already exist a form with this name
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $name
+     * @param       int $id
+     * @param       int $lang
+     * @return      boolean
+     */
+    function isUniqueFormName($name, $lang, $id = 0)
     {
+        global $objDatabase;
+
+        $name = contrexx_addslashes($name);
+
+        $query = "
+            SELECT
+                `f`.`id`
+            FROM
+                `".DBPREFIX."module_contact_form`       AS `f`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_form_lang`  AS `l`
+            ON
+                `f`.`id` = `l`.`formID`
+            AND
+                `l`.`langID` = ".intval($lang)."
+            WHERE
+                `l`.`name` = '".$name."'
+        ";
+
+        $res = $objDatabase->Execute($query);
+
+        if ($id == 0) {
+            return $res->RecordCount() == 0;
+        } else {
+            return $res->RecordCount() == 0 || $res->fields[$id] == $id;
+        }
+
+        // this is crap. Why does it always read all of the forms?
+        // ok, admittedly, t's also crap to query the db for each language
+        // ... but i don't fucking care right now.
+        /*
         if (is_array($this->arrForms)) {
             foreach ($this->arrForms as $formId => $arrForm) {
                 if ($formId != $id && $arrForm['name'] == $name) {
@@ -287,50 +557,182 @@ class ContactLib
             }
         }
         return true;
+         */
     }
 
-    function updateForm($id, $name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
+    /**
+     * Update an existing form
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       string $emails
+     * @param       bool $showForm
+     * @param       bool $useCaptcha
+     * @param       bool $useCustomStyle
+     * @param       bool $sendCopy
+     */
+    function updateForm(
+        $formID,
+        $emails,
+        $showForm,
+        $useCaptcha,
+        $useCustomStyle,
+        $sendCopy,
+        $sendHtmlMail
+    )
     {
         global $objDatabase;
 
-        $objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form SET name='".$name."', mails='".addslashes($emails)."',
-                subject='".$subject."', text='".$text."', feedback='".$feedback."', showForm=".$showForm.", use_captcha=".$useCaptcha.", use_custom_style=".$useCustomStyle.", send_copy=".$sendCopy." WHERE id=".$id);
+        $objDatabase->Execute("
+            UPDATE 
+                `".DBPREFIX."module_contact_form`
+            SET 
+                mails               = '".addslashes($emails)."',
+                showForm            = ".$showForm.",
+                use_captcha         = ".$useCaptcha.",
+                use_custom_style    = ".$useCustomStyle.",
+                send_copy           = ".$sendCopy." ,
+                html_mail           = ".$sendHtmlMail."
+            WHERE 
+                id = ".$formID
+        );
 
-        $arrFormFields = $this->getFormFields($id);
-        $arrRemoveFormFields = array_diff_assoc($arrFormFields, $arrFields);
-
-        foreach ($arrFields as $fieldId => $arrField) {
-            if (isset($arrFormFields[$fieldId])) {
-                $this->_updateFormField($fieldId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
-            } else {
-                $this->_addFormField($id, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
-            }
-        }
-
-        foreach (array_keys($arrRemoveFormFields) as $fieldId) {
-            $this->_deleteFormField($fieldId);
-        }
-
-        $this->initContactForms(true);
+        $this->initContactForms();
     }
 
-    function addForm($name, $emails, $subject, $text, $feedback, $showForm, $useCaptcha, $useCustomStyle, $arrFields, $sendCopy)
+    /**
+     * Add a new form
+     *
+     * @author      Comvation AG <info@Comvation.com>
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       string $emails
+     * @param       bool $showForm
+     * @param       bool $useCaptcha
+     * @param       bool $useCustomStyle
+     * @param       bool $sendCopy
+     */
+    function addForm(
+        $emails,
+        $showForm,
+        $useCaptcha,
+        $useCustomStyle,
+        $sendCopy,
+        $sendHtmlMail
+    )
     {
         global $objDatabase, $_FRONTEND_LANGID;
 
-        if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form
-                                  (`name`,`mails`, `subject`, `text`, `feedback`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `langId`)
-                                  VALUES
-                                  ('".$name."', '".addslashes($emails)."', '".$subject."', '".$text."', '".$feedback."', ".$showForm.", ".$useCaptcha.", ".$useCustomStyle.", ".$sendCopy.", ".$_FRONTEND_LANGID.")") !== false) {
+        $query = "
+            INSERT INTO 
+                ".DBPREFIX."module_contact_form
+            (
+                `mails`,
+                `showForm`,
+                `use_captcha`,
+                `use_custom_style`,
+                `send_copy`,
+                `html_mail`
+            )
+            VALUES
+            (
+                '".addslashes($emails)."',
+                ".$showForm.",
+                ".$useCaptcha.",
+                ".$useCustomStyle.",
+                ".$sendCopy.",
+                ".$sendHtmlMail."
+            )";
+
+        if ($objDatabase->Execute($query) !== false) {
             $formId = $objDatabase->Insert_ID();
 
+            /*
             foreach ($arrFields as $fieldId => $arrField) {
                 $this->_addFormField($formId, $arrField['name'], $arrField['type'], $arrField['attributes'], $arrField['order_id'], $arrField['is_required'], $arrField['check_type']);
             }
+             */
         }
         $_REQUEST['formId'] = $formId;
 
-        $this->initContactForms(true);
+        $this->initContactForms();
+
+        return $formId;
+    }
+
+    /**
+     * Insert the language values, update them if they already exist
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       int $langID
+     * @param       string $name
+     * @param       string $text
+     * @param       string $feedback
+     * @param       string $subject
+     */
+    protected function insertFormLangValues(
+        $formID,
+        $langID,
+        $isActive,
+        $name,
+        $text,
+        $feedback,
+        $mailTemplate,
+        $subject
+    ) {
+        global $objDatabase;
+
+        $formID       = intval($formID);
+        $langID       = intval($langID);
+        $isActive     = intval($isActive);
+        $name         = contrexx_raw2db($name);
+        $text         = contrexx_raw2db($text);
+        $feedback     = contrexx_raw2db($feedback);
+        $mailTemplate = contrexx_raw2db($mailTemplate);
+        $subject      = contrexx_raw2db($subject);
+
+        if ($isActive == 1) {
+            $query = "
+                INSERT INTO
+                    `".DBPREFIX."module_contact_form_lang`
+                (
+                    `formID`,
+                    `langID`,
+                    `is_active`,
+                    `name`,
+                    `text`,
+                    `feedback`,
+                    `mailTemplate`,
+                    `subject`
+                )
+                VALUES
+                (
+                    ".$formID.",
+                    ".$langID.",
+                    ".$isActive.",
+                    '".$name."',
+                    '".$text."',
+                    '".$feedback."',
+                    '".$mailTemplate."',
+                    '".$subject."'
+                )
+                ON DUPLICATE KEY UPDATE
+                    `name`         = '".$name."',
+                    `is_active`    = ".$isActive.",
+                    `text`         = '".$text."',
+                    `feedback`     = '".$feedback."',
+                    `mailTemplate` = '".$mailTemplate."',
+                    `subject`      = '".$subject."'
+            ";
+        } else {
+            /*
+             * Remove Form configurations for inactive language
+             */
+            $query = "DELETE FROM `".DBPREFIX."module_contact_form_lang`
+                        WHERE `formID`  = ".$formID." AND `langID` = ".$langID;
+        }
+        $objDatabase->execute($query);
     }
 
     /**
@@ -341,22 +743,64 @@ class ContactLib
      */
     function _deleteFormRecipients($id){
         global $objDatabase;
-        if($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_recipient WHERE id_form = ".$id)){
+
+        $query = "
+            DELETE
+                `l`
+            FROM
+                `".DBPREFIX."module_contact_recipient_lang`     AS `l`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_recipient`          AS `r`
+            ON
+                `r`.`id` =  `l`.`recipient_id`
+            WHERE
+                `r`.`id_form` = ".$id;
+
+        $objDatabase->query($query);
+
+        $query = "
+            DELETE FROM 
+                ".DBPREFIX."module_contact_recipient 
+            WHERE 
+                id_form = ".$id;
+        if($objDatabase->Execute($query)){
             return true;
         }else{
             return false;
         }
     }
 
-    function deleteForm($id)
+    /**
+     * Delete a form 
+     *
+     * @author      Comvation AG <info@comvation.com>
+     */
+    protected function deleteForm($id)
     {
         global $objDatabase;
 
-        if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form WHERE id=".$id) !== false) {
+        $id = intval($id);
+
+        $query = "
+            DELETE FROM
+                `".DBPREFIX."module_contact_form_lang`
+            WHERE
+                `formID` = ".$id;
+
+        $objDatabase->execute($query);
+
+        $query = "
+            DELETE FROM 
+                ".DBPREFIX."module_contact_form 
+            WHERE 
+                id = ".$id;
+
+        $res = $objDatabase->Execute($query);
+        if ($res !== false) {
             $this->_deleteFormFieldsByFormId($id);
             $this->_deleteFormDataByFormId($id);
             $this->_deleteFormRecipients($id);
-            $this->initContactForms(true);
+            $this->initContactForms();
 
             return true;
         } else {
@@ -364,19 +808,261 @@ class ContactLib
         }
     }
 
-    function _updateFormField($id, $name, $type, $attributes, $orderId, $isRequired, $checkType)
+    /**
+     * Update a form field
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $field
+     */
+    protected function updateFormField($field)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $fieldID = $field['id'];
+        $query = '
+            UPDATE
+                `'.DBPREFIX.'module_contact_form_field`
+            SET
+                `type`          = "'.$field['type'].'",
+                `special_type`  = "'.$field['special_type'].'",
+                `is_required`   = "'.$field['is_required'].'",
+                `check_type`    = "'.$field['check_type'].'",
+                `order_id`      = "'.$field['order_id'].'"
+            WHERE
+                `id` = '.$fieldID;
+
+        $objDatabase->execute($query);
+
+        /* if checkmenu is checked for select menu field, 'please select' option is appended */
+        foreach ($field['lang'] as $langID => $values) {
+            if ($field['type'] == 'select') {
+// TODO: this is bullshit! the option 'please select' must be added dynamically when generating the form!
+                $replaceString = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].',';
+                if ($field['is_required'] == 1) {
+                    if (strpos($values['value'], $replaceString) === false) {
+                        $values['value'] = $replaceString.$values['value'];
+                    }
+                } else {
+                    $values['value'] = str_replace($replaceString, '', $values['value']);
+                }
+            }
+            $this->setFormFieldLang($fieldID, $langID, $values);
+        }
+    }
+
+    /**
+     * Add a form field to the database
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $field
+     * @return      int 
+     */
+    protected function addFormField($formID, $field) 
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_form_field`
+            (
+                `id_form`,
+                `type`,
+                `special_type`,
+                `is_required`,
+                `check_type`,
+                `order_id`
+            )
+            VALUES
+            (
+                "'.$formID.'",
+                "'.$field['type'].'",
+                "'.$field['special_type'].'",
+                "'.$field['is_required'].'",
+                "'.$field['check_type'].'",
+                "'.$field['order_id'].'"
+            )
+            ';
+
+        $objDatabase->execute($query);
+        $fieldID = $objDatabase->insert_id();
+
+        /* if checkmenu is checked for select menu field, 'please select' option is appended */
+        foreach ($field['lang'] as $langID => $values) {
+            if ($field['type'] == 'select' && $field['is_required'] == 1) {
+// TODO: this is bullshit! the option 'please select' must be added dynamically when generating the form!
+                $values['value'] = $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'].','.$values['value'];
+            }
+            $this->setFormFieldLang($fieldID, $langID, $values);
+        }
+
+        return $fieldID;
+    }
+
+    /**
+     * Remove the form fields that are not in the given list
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $formFields
+     */
+    protected function cleanFormFields($formID, $formFields) {
+        global $objDatabase;
+
+        if (count($formFields) == 0) {
+            return;
+        }
+
+        $list = implode(', ', $formFields);
+        $formID = intval($formID);
+
+        $query = '
+            DELETE 
+                `l`
+            FROM
+                `'.DBPREFIX.'module_contact_form_field_lang` AS  `l`
+            LEFT JOIN
+                `'.DBPREFIX.'module_contact_form_field`      AS `f`
+            ON
+                `fieldID` = `f`.`id`
+            WHERE
+                `fieldID` NOT IN ('.$list.')
+            AND
+                `id_Form` = '.$formID;
+
+        $objDatabase->execute($query);
+
+        $query = '
+            DELETE FROM
+                `'.DBPREFIX.'module_contact_form_field`
+            WHERE
+                `id` NOT IN ('.$list.')
+            AND
+                `id_form` = '.$formID;
+
+        $objDatabase->execute($query);
+
+        /*
+         * Deletes language attributes for fields of inactive languages
+         */
+        $langId = array();
+        foreach ($_POST['contactFormLanguages'] as $key => $value) {
+            $langId[] = $key;
+        }
+        $activeLang = implode(', ', $langId);
+        foreach ($formFields as $fieldId) {
+            $query = "DELETE FROM `".DBPREFIX."module_contact_form_field_lang`
+                      WHERE `fieldID` = ".$fieldId."
+                      AND `langID` NOT IN (".$activeLang.")
+                      ";
+            $objDatabase->execute($query);
+        }
+    }
+
+    /**
+     * Delete the recipients that aren't wanted anymore
+     *
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $formID
+     * @param       array $recipients
+     */
+    protected function cleanRecipients($formID, $recipients) {
+        global $objDatabase;
+
+        if (count($recipients) == 0) {
+            return;
+        }
+
+        $list = implode(', ', $recipients);
+        $formID = intval($formID);
+
+        $query = '
+            DELETE
+                `l`
+            FROM
+                `'.DBPREFIX.'module_contact_recipient_lang`  AS `l`
+
+            LEFT JOIN
+                `'.DBPREFIX.'module_contact_recipient`       AS `r`
+            ON
+                `recipient_id` = `r`.`id`
+
+            WHERE
+                `recipient_id` NOT IN ('.$list.')
+
+            AND
+                `id_form` = '.$formID;
+
+        $objDatabase->execute($query);
+
+        $query = '
+            DELETE FROM
+                `'.DBPREFIX.'module_contact_recipient`
+            WHERE
+                `id` NOT IN ('.$list.')
+            AND
+                `id_form` = '.$formID;
+
+        $objDatabase->execute($query);
+
+         /*
+         * Empty fields name and value inactive languages
+         */
+        $langId = array();
+        foreach ($_POST['contactFormLanguages'] as $key => $value) {
+            $langId[] = $key;
+        }
+        $activeLang = implode(', ', $langId);
+        foreach ($recipients as $recipientId) {
+            $query = "UPDATE `".DBPREFIX."module_contact_recipient_lang`
+                      SET `name` = ''
+                      WHERE `recipient_id` = ".$recipientId."
+                      AND `langID` NOT IN (".$activeLang.")
+                      ";
+            $objDatabase->execute($query);
+        }
+    }
+
+    /**
+     * Add a form lang to a field
+     *
+     * In case it already exists, update the value
+     * @author      Stefan Heinemann <sh@adfinis.com>
+     * @param       int $fieldID
+     * @param       array $values
+     */
+    protected function setFormFieldLang($fieldID, $langID, $values) 
     {
         global $objDatabase;
 
-        $objDatabase->Execute("UPDATE ".DBPREFIX."module_contact_form_field SET name='".addslashes($name)."', type='".$type."', attributes='".addslashes($attributes)."', is_required='".$isRequired."', check_type='".$checkType."', order_id=".$orderId." WHERE id=".$id);
+        $name = contrexx_raw2db($values['name']);
+        $value = contrexx_raw2db($values['value']);
+
+        $query = '
+            INSERT INTO
+                `'.DBPREFIX.'module_contact_form_field_lang`
+            (
+                `fieldID`,
+                `name`,
+                `attributes`,
+                `langID`
+            )
+            VALUES
+            (
+                "'.$fieldID.'",
+                "'.$name.'",
+                "'.$value.'",
+                "'.$langID.'"
+            )
+            ON DUPLICATE KEY UPDATE
+                `name` = "'.$name.'",
+                `attributes` = "'.$value.'"
+            ';
+
+        $objDatabase->execute($query);
     }
 
-    function _addFormField($formId, $name, $type, $attributes, $orderId, $isRequired, $checkType)
-    {
-        global $objDatabase;
-
-        $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_field (`id_form`, `name`, `type`, `attributes`, `order_id`, `is_required`, `check_type`) VALUES (".$formId.", '".addslashes($name)."', '".$type."', '".addslashes($attributes)."', ".$orderId.", '".$isRequired."', '".$checkType."')");
-    }
 
     function _deleteFormField($id)
     {
@@ -385,63 +1071,60 @@ class ContactLib
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_field WHERE id=".$id);
     }
 
-    function _deleteFormFieldsByFormId($id)
+    /**
+     * Delete form fields
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @param       int $id
+     */
+    private function _deleteFormFieldsByFormId($id)
     {
         global $objDatabase;
 
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_field WHERE id_form=".$id);
+        $query = "
+            DELETE 
+                `l`
+            FROM
+                `".DBPREFIX."module_contact_form_field_lang`    AS `l`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_form_field`         AS `f`
+            ON
+                `l`.`fieldID` = `f`.`id`
+            WHERE
+                `f`.`id_form` = ".$id;
+
+        $objDatabase->Execute($query);
+
+        $query = "
+            DELETE FROM 
+                ".DBPREFIX."module_contact_form_field 
+            WHERE 
+                id_form = ".$id;
+
+        $objDatabase->Execute($query);
     }
 
-    function _deleteFormDataByFormId($id)
+    /**
+     * Delete form data 
+     *
+     * @author      Comvation AG <info@comvation.com>
+     * @param       int $id
+     */
+    private function _deleteFormDataByFormId($id)
     {
         global $objDatabase;
 
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$id);
+        $query = "
+            DELETE FROM 
+                `".DBPREFIX."module_contact_form_data`
+            WHERE 
+                `id_form` = ".$id;
+        $objDatabase->Execute($query);
     }
 
     function deleteFormEntry($id)
     {
         global $objDatabase;
-
-        //let's search for uploaded files left.
-        $rs = $objDatabase->Execute("SELECT id_form, data FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
-        if(!$rs->EOF) {
-            $data = $rs->fields['data'];
-            $formId = $rs->fields['id_form'];
-
-            //get all form data into arrData
-            $arrData = array();
-            foreach (explode(';', $data) as $keyValue) {
-                $arrTmp = explode(',', $keyValue);
-                $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
-            }
-          
-            //load contact form fields - we need to know which ones have the type 'file'
-            $this->initContactForms();
-            $arrFormFields = $this->getFormFields($formId);
-            
-            foreach($arrFormFields as $arrField) {
-                //see if it's a file field...
-                if($arrField['type'] == 'file') {
-                    //...and delete the files if yes:
-                    $val = $arrData[$arrField['name']];
-                    $arrFiles;
-                    if(substr($val,0,1) == '*') {
-                        //new style entry, multiple files
-                        $arrFiles = explode('*',substr($val,1));
-                    }
-                    else {
-                        //old style entry, single file
-                        $arrFiles = array($val);
-                    }
-                  
-                    //nice, we have all the files. delete them.
-                    foreach($arrFiles as $file) {
-                        @unlink(ASCMS_DOCUMENT_ROOT.$file);
-                    }
-                }
-            }
-        }
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
     }
@@ -451,36 +1134,43 @@ class ContactLib
         global $objDatabase, $_CONFIG;
 
         $arrEntries = array();
-        $arrCols = array();
-
-        $query = "SELECT id, `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$formId." ORDER BY `time` DESC";
+        $arrCols    = array();
+        $query      = "SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`
+                      FROM ".DBPREFIX."module_contact_form_data
+                      WHERE id_form = ".$formId."
+                      ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
 
         $count = $objEntry->RecordCount();
         if ($limit && $count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES']);
+            $paging   = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES']);
             $objEntry = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pagingPos);
         }
 
         if ($objEntry !== false) {
             while (!$objEntry->EOF) {
-                $arrKeyValue = explode(';', $objEntry->fields['data']);
-                $arrData = array();
-                foreach ($arrKeyValue as $keyValue) {
-                    $arrTmp = explode(',', $keyValue);
-                    $decodedKey = base64_decode($arrTmp[0]);
+                $arrData   = array();
+                $objResult = $objDatabase->SelectLimit("SELECT `id_field`, `formlabel`, `formvalue`
+                                                    FROM ".DBPREFIX."module_contact_form_submit_data
+                                                    WHERE id_entry=".$objEntry->fields['id']."
+                                                    ORDER BY id");
 
-                    if($decodedKey == 'unique_id') //skip unique id of each entry, we do not want to display this.
-                        continue;
+                while (!$objResult->EOF) {
+                    $field_id = $objResult->fields['id_field'];
+                    $arrData[$field_id] = $objResult->fields['formvalue'];
 
-                    $arrData[$decodedKey] = base64_decode($arrTmp[1]);
+// TODO: What is this good for?
+//                    if($field_id == 'unique_id') //skip unique id of each entry, we do not want to display this.
+//                        continue;
 
-                    if (!in_array($decodedKey, $arrCols)) {
-                        array_push($arrCols, $decodedKey);
+                    if (!in_array($field_id, $arrCols)) {
+                        array_push($arrCols, $field_id);
                     }
+                    $objResult->MoveNext();
                 }
 
                 $arrEntries[$objEntry->fields['id']] = array(
+                    'langId'    => $objEntry->fields['id_lang'],
                     'time'      => $objEntry->fields['time'],
                     'host'      => $objEntry->fields['host'],
                     'lang'      => $objEntry->fields['lang'],
@@ -490,31 +1180,32 @@ class ContactLib
                 $objEntry->MoveNext();
             }
         }
-
+        
         return $arrEntries;
     }
 
-    function getFormEtry($id)
+    function getFormEntry($id)
     {
         global $objDatabase;
 
         $arrEntry;
-        $arrCols = array();
-        $objEntry = $objDatabase->SelectLimit("SELECT `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id, 1);
+        $objEntry = $objDatabase->SelectLimit("SELECT `id`, `id_lang`, `time`, `host`, `lang`, `ipaddress`
+                                               FROM ".DBPREFIX."module_contact_form_data
+                                               WHERE id=".$id, 1);
 
         if ($objEntry !== false) {
-            $arrKeyValue = explode(';', $objEntry->fields['data']);
+            $objResult = $objDatabase->SelectLimit("SELECT `id_field`, `formlabel`, `formvalue`
+                                                    FROM ".DBPREFIX."module_contact_form_submit_data
+                                                    WHERE id_entry=".$objEntry->fields['id']."
+                                                    ORDER BY id");
             $arrData = array();
-            foreach ($arrKeyValue as $keyValue) {
-                $arrTmp = explode(',', $keyValue);
-                $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
-
-                if (!in_array(base64_decode($arrTmp[0]), $arrCols)) {
-                    array_push($arrCols, base64_decode($arrTmp[0]));
-                }
+            while (!$objResult->EOF){
+                $arrData[$objResult->fields['id_field']] = $objResult->fields['formvalue'];
+                $objResult->MoveNext();
             }
 
             $arrEntry = array(
+                'langId'    => $objEntry->fields['id_lang'],
                 'time'      => $objEntry->fields['time'],
                 'host'      => $objEntry->fields['host'],
                 'lang'      => $objEntry->fields['lang'],
@@ -524,6 +1215,233 @@ class ContactLib
         }
 
         return $arrEntry;
+    }
+
+    /**
+     * Get Javascript Source
+     *
+     * Makes the sourcecode for the javascript based
+     * field checking
+     */
+    function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
+    {
+        global $objInit;
+
+// TODO: change to cx.datepicker
+        $code  = "<script src=\"lib/datepickercontrol/datepickercontrol.js\" type=\"text/javascript\"></script>\n";
+        $code .= "<script type=\"text/javascript\">\n";
+        $code .= "/* <![CDATA[ */\n";
+
+        $code .= "fields = new Array();\n";
+
+        foreach ($formFields as $key => $field) {
+            $modifiers = isset($this->arrCheckTypes[$field['check_type']]['modifiers']) ? $this->arrCheckTypes[$field['check_type']]['modifiers'] : '';
+
+            $code .= "fields[$key] = Array(\n";
+// TODO: do we have to change FRONTEND_LANG_ID to selectedInterfaceLanguage ?
+            $code .= "\t'".contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name'])."',\n";
+            $code .= "\t{$field['is_required']},\n";
+
+            $code .= "\t/". ($this->arrCheckTypes[$field['check_type']]['regex']) ."/".$modifiers.",\n";
+            $code .= "\t'".(($field['type'] != 'special') ? $field['type'] : $field['special_type'])."');\n";
+        }
+
+        $code .= <<<JS_checkAllFields
+function checkAllFields() {
+    var isOk = true;
+    
+    for (var field in fields) {
+        var type = fields[field][3];
+        if (type == 'text' || type == 'password' || type == 'textarea') {
+            value = document.getElementsByName('contactFormField_' + field)[0].value;
+            if (\$J.trim(value) == "" && isRequiredNorm(fields[field][1], value)) {
+                isOk = false;
+                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            } else if (value != "" && !matchType(fields[field][2], value)) {
+                isOk = false;
+                document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            } else {
+                document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+            }
+        } else if (type == 'checkbox') {
+            if (!isRequiredCheckbox(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'checkboxGroup') {
+            if (!isRequiredCheckBoxGroup(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'radio') {
+            if (!isRequiredRadio(fields[field][1], field)) {
+                isOk = false;
+            }
+        } else if (type == 'file') {
+            var required = fields[field][1];
+            var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
+            if(required && folderWidget.isEmpty()) {
+                isOk = false;
+                document.getElementsByName('contactFormField_upload')[0].style.border = "red 1px solid";
+            }
+        } else if (type == 'select' || type == 'country' || type == 'access_country') {
+            if (!isRequiredSelect(fields[field][1], field)) {
+                isOk = false;
+            }
+        }
+    }
+
+    if (!isOk) {
+        document.getElementById('contactFormError').style.display = "block";
+    }
+    return isOk;
+}
+JS_checkAllFields;
+
+        // This is for checking normal text input field if they are required.
+        // If yes, it also checks if the field is set. If it is not set, it returns true.
+        $code .= <<<JS_isRequiredNorm
+function isRequiredNorm(required, value) {
+    if (required == 1) {
+        if (\$J.trim(value) == "") {
+            return true;
+        }
+    }
+    return false;
+}
+
+JS_isRequiredNorm;
+
+        // Matches the type of the value and pattern. Returns true if it matched, false if not.
+        $code .= <<<JS_matchType
+function matchType(pattern, value) {
+    return value.match(pattern) != null;
+}
+
+JS_matchType;
+
+        // Checks if a checkbox is required but not set. Returns false when finding an error.
+        $code .= <<<JS_isRequiredCheckbox
+function isRequiredCheckbox(required, field) {
+    if (required == 1) {
+        if (!document.getElementsByName('contactFormField_' + field)[0].checked) {
+            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            return false;
+        }
+    }
+    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+
+    return true;
+}
+
+JS_isRequiredCheckbox;
+
+        // Checks if a multile checkbox is required but not set. Returns false when finding an error.
+        $code .= <<<JS_isRequiredCheckBoxGroup
+function isRequiredCheckBoxGroup(required, field) {
+    if (required == true) {
+        var boxes = document.getElementsByName('contactFormField_' + field + '[]');
+        var checked = false;
+        for (var i = 0; i < boxes.length; i++) {
+            if (boxes[i].checked) {
+                checked = true;
+            }
+        }
+        if (checked) {
+            setListBorder('contactFormField_' + field + '[]', false);
+            return true;
+        } else {
+            setListBorder('contactFormField_' + field + '[]', '1px red solid');
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+
+JS_isRequiredCheckBoxGroup;
+
+        // Checks if some radio button need to be checked. Returns false if it finds an error
+        $code .= <<<JS_isRequiredRadio
+function isRequiredRadio(required, field) {
+    if (required == 1) {
+        var buttons = document.getElementsByName('contactFormField_' + field);
+        var checked = false;
+        for (var i = 0; i < buttons.length; i++) {
+            if (buttons[i].checked) {
+                checked = true;
+            }
+        }
+        if (checked) {
+            setListBorder('contactFormField_' + field, false);
+            return true;
+        } else {
+            setListBorder('contactFormField_' + field, '1px red solid');
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+
+JS_isRequiredRadio;
+
+        $code .=<<<JS_isRequiredSelect
+function isRequiredSelect(required, field){
+    if(required == 1){
+        menuIndex = document.getElementById('contactFormFieldId_' + field).selectedIndex;
+        if (menuIndex == 0) {
+            document.getElementsByName('contactFormField_' + field)[0].style.border = "red 1px solid";
+            return false;
+        }
+    }
+    document.getElementsByName('contactFormField_' + field)[0].style.borderColor = '';
+    return true;
+}
+
+JS_isRequiredSelect;
+
+        // Sets the border attribute of a group of checkboxes or radiobuttons
+        $code .= <<<JS_setListBorder
+function setListBorder(field, borderColor) {
+    var boxes = document.getElementsByName(field);
+    for (var i = 0; i < boxes.length; i++) {
+        if (borderColor) {
+            boxes[i].style.border = borderColor;
+        } else {
+            boxes[i].style.borderColor = '';
+        }
+    }
+}
+
+
+JS_setListBorder;
+
+        $code .= <<<JS_misc
+/* ]]> */
+</script>
+
+JS_misc;
+        return $code;
+    }
+
+    protected function getUploaderSourceCode() {
+        $source .= <<<EOS
+{UPLOAD_WIDGET_CODE}
+{UPLOADER_CODE}
+<script>
+    cx.include(
+        [
+            'core_modules/contact/js/extendedFileInput.js'
+        ],
+        function() {
+            var ef = new ExtendedFileInput({
+               field:  \$J('#contactFormField_upload')
+            });            
+        }
+    );
+</script>
+EOS;
+
+        return $source;
     }
 }
 ?>

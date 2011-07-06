@@ -782,72 +782,6 @@ CREATE TABLE `contrexx_module_calendar_style` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_contact_form` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  `mails` text NOT NULL,
-  `subject` varchar(255) NOT NULL default '',
-  `text` text NOT NULL,
-  `feedback` text NOT NULL,
-  `showForm` tinyint(1) unsigned NOT NULL default '0',
-  `use_captcha` tinyint(1) unsigned NOT NULL default '1',
-  `use_custom_style` tinyint(1) unsigned NOT NULL default '0',
-  `langId` tinyint(2) unsigned NOT NULL default '1',
-  `send_copy` int(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_contact_form_data` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_form` int(10) unsigned NOT NULL default '0',
-  `time` int(14) unsigned NOT NULL default '0',
-  `host` varchar(255) NOT NULL default '',
-  `lang` varchar(64) NOT NULL default '',
-  `browser` varchar(255) NOT NULL default '',
-  `ipaddress` varchar(15) NOT NULL default '',
-  `data` text NOT NULL,
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_contact_form_field` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_form` int(10) unsigned NOT NULL default '0',
-  `name` varchar(255) NOT NULL default '',
-  `type` enum('text','label','checkbox','checkboxGroup','date','file','hidden','password','radio','select','textarea','recipient') NOT NULL default 'text',
-  `attributes` text NOT NULL,
-  `is_required` set('0','1') NOT NULL default '0',
-  `check_type` int(3) NOT NULL default '1',
-  `order_id` smallint(5) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_contact_recipient` (
-  `id` int(11) NOT NULL auto_increment,
-  `id_form` int(11) NOT NULL default '0',
-  `name` varchar(250) NOT NULL default '',
-  `email` varchar(250) NOT NULL default '',
-  `sort` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_contact_settings` (
-  `setid` int(6) unsigned NOT NULL auto_increment,
-  `setname` varchar(250) NOT NULL default '',
-  `setvalue` text NOT NULL,
-  `status` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`setid`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_data_categories` (
   `category_id` int(4) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
@@ -4030,3 +3964,90 @@ CREATE TABLE `contrexx_voting_system` (
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
+
+
+
+CREATE TABLE `contrexx_module_contact_form` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `mails` text NOT NULL,
+  `showForm` tinyint(1) unsigned NOT NULL default '0',
+  `use_captcha` tinyint(1) unsigned NOT NULL default '1',
+  `use_custom_style` tinyint(1) unsigned NOT NULL default '0',
+  `send_copy` tinyint(1) NOT NULL default '0',
+  `html_mail` tinyint(1) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_contact_form_data` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_form` int(10) unsigned NOT NULL default '0',
+  `id_lang` int(10) unsigned NOT NULL default '1',
+  `time` int(14) unsigned NOT NULL default '0',
+  `host` varchar(255) NOT NULL default '',
+  `lang` varchar(64) NOT NULL default '',
+  `browser` varchar(255) NOT NULL default '',
+  `ipaddress` varchar(15) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_contact_form_field` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_form` int(10) unsigned NOT NULL default '0',
+  `type` enum('text','label','checkbox','checkboxGroup','country','date','file','fieldset','hidden','horizontalLine','password','radio','select','textarea','recipient','special') NOT NULL default 'text',
+  `special_type` varchar(20) NOT NULL,
+  `is_required` set('0','1') NOT NULL default '0',
+  `check_type` int(3) NOT NULL default '1',
+  `order_id` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_contact_form_field_lang` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `fieldID` int(10) unsigned NOT NULL,
+  `langID` int(10) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `attributes` text NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `fieldID` (`fieldID`,`langID`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_contact_form_lang` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `formID` int(10) unsigned NOT NULL,
+  `langID` int(10) unsigned NOT NULL,
+  `is_active` tinyint(1) unsigned NOT NULL default '1',
+  `name` varchar(255) NOT NULL,
+  `text` text NOT NULL,
+  `feedback` text NOT NULL,
+  `mailTemplate` text NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `formID` (`formID`,`langID`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_contact_form_submit_data` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_entry` int(10) unsigned NOT NULL,
+  `id_field` int(10) unsigned NOT NULL,
+  `formlabel` text NOT NULL,
+  `formvalue` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_contact_recipient` (
+  `id` int(11) NOT NULL auto_increment,
+  `id_form` int(11) NOT NULL default '0',
+  `email` varchar(250) NOT NULL default '',
+  `sort` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_contact_recipient_lang` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `recipient_id` int(10) unsigned NOT NULL,
+  `langID` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `recipient_id` (`recipient_id`,`langID`)
+) TYPE=MyISAM ;
+CREATE TABLE `contrexx_module_contact_settings` (
+  `setid` int(6) unsigned NOT NULL auto_increment,
+  `setname` varchar(250) NOT NULL default '',
+  `setvalue` text NOT NULL,
+  `status` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`setid`)
+) TYPE=MyISAM ;
+
