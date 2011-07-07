@@ -599,6 +599,8 @@ class FileBrowser {
 					$arrFilesToRename[$file] = $newName;
 					array_push($arrFiles, $newName);
                 }
+            } else {
+                array_push($arrFiles, $file);
             }
         }
         
@@ -639,7 +641,7 @@ class FileBrowser {
         // replace $change with ''
         $change = array('+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs1 = array(' ', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach ($change as $str) {
