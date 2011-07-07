@@ -1769,7 +1769,7 @@ INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_bloc
 INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_comments_activated','1');
 INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_comments_anonymous','1');
 INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_comments_autoactivate','1');
-INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_comments_editor','wysiwyg');
+INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_comments_editor','textarea');
 INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_comments_notification','1');
 INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_comments_timeout','30');
 INSERT INTO `contrexx_module_blog_settings` (`name`, `value`) VALUES ('blog_general_introduction','400');
