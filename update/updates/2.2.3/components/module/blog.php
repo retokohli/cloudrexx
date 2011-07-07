@@ -108,17 +108,19 @@ function _blogUpdate() {
     }
 
     try { //update to 2.2.3 in this block
-        //we've hidden the wysiwyg - let's default to textare
-        UpdateUtil::sql('UPDATE contrexx_module_blog_settings SET value="textarea" WHERE name="blog_comments_editor"');
+        if(!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.2.3')) {
+            //we've hidden the wysiwyg - let's default to textarea
+            UpdateUtil::sql('UPDATE contrexx_module_blog_settings SET value="textarea" WHERE name="blog_comments_editor"');
 
-        //convert escaped db entries to their unescaped equivalents
-        $rs = UpdateUtil::sql('SELECT id, content FROM contrexx_module_blog');
-        while(!$rs->EOF) {
-            $content = $rs->fields['content'];
-            $id = $rs->fields['id'];
-            $content = contrexx_raw2db(html_entity_decode($content, ENT_QUOTES, CONTREXX_CHARSET));
-            UpdateUtil::sql('UPDATE contrexx_module_blog SET content="'.$content.'" WHERE id='.$id);
-            $rs->MoveNext();
+            //comments: convert escaped db entries to their unescaped equivalents
+            $rs = UpdateUtil::sql('SELECT comment_id, comment FROM contrexx_module_blog_comments');
+            while(!$rs->EOF) {
+                $content = $rs->fields['comment'];
+                $id = $rs->fields['comment_id'];
+                $content = contrexx_raw2db(html_entity_decode($content, ENT_QUOTES, CONTREXX_CHARSET));
+                UpdateUtil::sql('UPDATE contrexx_module_blog_comments SET comment="'.$content.'" WHERE comment_id='.$id);
+                $rs->MoveNext();
+            }
         }
     }
     catch (UpdateException $e) {
