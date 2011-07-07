@@ -1,6 +1,6 @@
 <?php
 function _blogUpdate() {
-	global $objDatabase, $_ARRAYLANG, $_CORELANG;
+	global $objDatabase, $_ARRAYLANG, $_CORELANG, $objUpdate;
 
 	/*
 	* Check for missing setting "blog_comments_editor" in database. In the update-package for 1.2 this value somehow
@@ -108,7 +108,7 @@ function _blogUpdate() {
     }
 
     try { //update to 2.2.3 in this block
-        if(!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.2.3')) {
+        if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.2.3')) {
             //we've hidden the wysiwyg - let's default to textarea
             UpdateUtil::sql('UPDATE contrexx_module_blog_settings SET value="textarea" WHERE name="blog_comments_editor"');
 
