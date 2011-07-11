@@ -24,7 +24,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-//DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
+DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
@@ -36,7 +36,7 @@ $adminPage = true;
 /**
  * Environment repository
  */
-require_once dirname(__FILE__).'/core/Env.class.php';
+require_once dirname(__FILE__).'/../core/Env.class.php';
 /**
  * Path, database, FTP configuration settings
  *
