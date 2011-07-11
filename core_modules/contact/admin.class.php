@@ -46,6 +46,9 @@ class ContactManager extends ContactLib
 
     var $_invalidRecipients = false;
 
+    //Doctrine Entity Manager
+    var $em = null;
+
     
     const formMailTemplate = '<table>
     <tbody>
@@ -68,6 +71,8 @@ class ContactManager extends ContactLib
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
+
+        $this->em = Env::em();
 
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/contact/template');
         CSRF::add_placeholder($this->_objTpl);
@@ -2475,54 +2480,47 @@ class ContactManager extends ContactLib
     {
         global $objDatabase;
 
-        // Check if the thanks page is already active
-        $thxQuery  = "SELECT catid FROM ".DBPREFIX."content_navigation
-                     WHERE module=6 AND lang=".FRONTEND_LANG_ID;
-        $objResult = $objDatabase->SelectLimit($thxQuery, 1);
-        if ($objResult !== false) {
-            if ($objResult->RecordCount() == 0) {
-                // The thanks page doesn't exist, let's change that
-                $thxQuery  = "SELECT `content`,
-                                    `title`, `cmd`, `expertmode`, `parid`,
-                                    `displaystatus`, `displayorder`, `username`,
-                                    `displayorder`
-                                  FROM ".DBPREFIX."module_repository
-                             WHERE `moduleid` = 6 AND `lang`=".FRONTEND_LANG_ID;
-                $objResult = $objDatabase->Execute($thxQuery);
-                if ($objResult !== false) {
-                    $content       = $objResult->fields['content'];
-                    $title         = $objResult->fields['title'];
-                    $cmd           = $objResult->fields['cmd'];
-                    $expertmode    = $objResult->fields['expertmode'];
-                    $displaystatus = $objResult->fields['displaystatus'];
-                    // TODO: Never used
-                    // $displayorder = $objResult->fields['displayorder'];
-                    $username  = $objResult->fields['username'];
-                    $changelog = time();
+        //check if we already have a thanks page
+        $pageRepo = $this->em->getRepository('Page');
+        $nodeRepo = $this->em->getRepository('Node');
 
-                    $thxQuery = "INSERT INTO ".DBPREFIX."content_navigation
-                                 (catname, username, changelog, cmd, displaystatus,
-                                  module, lang)
-                                 VALUES (
-                                 '".$title."',
-                                 '".$username."',
-                                 '".$changelog."',
-                                 '".$cmd."',
-                                 '".$displaystatus."',
-                                 '6',
-                                 '".FRONTEND_LANG_ID."')";
-                    $objDatabase->Execute($thxQuery);
-                    $thxId = $objDatabase->Insert_ID();
+        $thxPage = $pageRepo->findOneBy(array(
+            'module' => 6,
+            'lang' => FRONTEND_LANG_ID
+        ));
 
-                    $thxQuery = "INSERT INTO ".DBPREFIX."content
-                                 (id, content, title, metatitle, metadesc, metakeys, expertmode)
-                                 VALUES
-                                 (".$thxId.", '".$content."', '".$title."', '".$title."', '".$title."', '".$title."',
-                                  '".$expertmode."')";
+        Logger::getInstance()->dump($thxPage); 
 
-                    $objDatabase->Execute($thxQuery);
-                }
-            }
+        if(!$thxPage) {
+            //let's create a thanks page.
+            $page = new \Cx\Model\ContentManager\Page();
+                                 
+            // get page from the module repository
+            $thxQuery  = "SELECT `content`,
+                                `title`, `cmd`, `expertmode`, `parid`,
+                                `displaystatus`, `displayorder`, `username`,
+                                `displayorder`
+                              FROM ".DBPREFIX."module_repository
+                         WHERE `moduleid` = 6 AND `lang`=".FRONTEND_LANG_ID;
+            $objResult = $objDatabase->Execute($thxQuery);
+            if ($objResult !== false) {
+                //query translated from sql, original query in r11848
+                //expertmode not set anymore.
+
+                $page->setContent($objResult->fields['content']);
+                $page->setTitle($objResult->fields['title']);
+                $page->setCmd($objResult->fields['cmd']);
+                $page->setDisplay($objResult->fields['displaystatus']);
+                $page->setUsername($objResult->fields['username']);
+                $page->setLang(FRONTEND_LANG_ID);
+
+                //attach page to top of site
+                $rootNode = $nodeRepo->getRoot();
+                $page->setNode($rootNode);
+                
+                $em->persist($page);
+                $em->flush();
+            }   
         }
     }
 }
