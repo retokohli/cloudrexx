@@ -217,4 +217,26 @@ function alertJS($string){
     evalJS('alert("'.$string.'")');
 }
 
+/**
+ * Sets 'module2id' and 'id2module' via Env::set().
+ * 
+ * Called in both of the index.php files.
+ */
+function createModuleConversionTables() {
+    $db = Env::get('db');
+
+    //an array mapping module names to their id
+    $module2id = array();
+    //above arrays' counterpart
+    $id2module = array();
+    $db = Env::get('db');
+    $rs = $db->Query('SELECT id, name FROM contrexx_modules');
+    while(!$rs->EOF) {
+        $module2id[$rs->fields['name']] = $rs->fields['id'];
+        $id2module[$rs->fields['id']] = $rs->fields['name'];
+        $rs->MoveNext();
+    }
+    Env::set('module2id', $module2id);
+    Env::set('id2module', $id2module);
+}
 ?>
