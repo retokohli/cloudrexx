@@ -24,7 +24,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-//DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+//DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
@@ -34,11 +34,16 @@ $startTime = explode(' ', microtime());
 $adminPage = true;
 
 /**
+ * Environment repository
+ */
+require_once dirname(__FILE__).'/core/Env.class.php';
+/**
  * Path, database, FTP configuration settings
  *
  * Initialises global settings array and constants.
  */
 include_once('../config/configuration.php');
+Env::set('config', $_CONFIG);
 /**
  * User configuration settings
  *
@@ -73,6 +78,8 @@ include_once('../lib/CSRF.php');
 $strOkMessage = '';
 $strErrMessage = '';
 $objDatabase = getDatabaseObject($strErrMessage);
+Env::set('db', $objDatabase);
+
 if ($objDatabase === false) {
     die('Database error: '.$strErrMessage);
 }
@@ -85,15 +92,15 @@ if (DBG::getMode() & DBG_ADODB_TRACE) {
     DBG::disable_adodb_debug();
 }
 
+createModuleConversionTables();
 //-------------------------------------------------------
 // Load settings and configuration
 //-------------------------------------------------------
-
-$objInit = new InitCMS('backend');
+$objInit = new InitCMS('backend', Env::em());
+Env::set('init', $objInit);
 
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
-
 
 $objInit->_initBackendLanguage();
 $objInit->getUserFrontendLangId();
@@ -131,6 +138,7 @@ define('LANG_ID', $_LANGID);
  * @ignore
  */
 $_CORELANG = $objInit->loadLanguageData('core');
+Env::set('coreLang', $_CORELANG);
 
 $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
 
@@ -181,6 +189,7 @@ $intAccessIdOffset = intval(MODULE_INDEX)*1000;
  */
 $_ARRAYLANG = $objInit->loadLanguageData($plainCmd);
 $_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
+Env::set('lang', $_ARRAYLANG);
 
 $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 CSRF::add_placeholder($objTemplate);

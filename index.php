@@ -162,20 +162,7 @@ if (DBG::getMode() & DBG_ADODB_TRACE) {
     DBG::disable_adodb_debug();
 }
 
-//an array mapping module names to their id
-$module2id = array();
-//above arrays' counterpart
-$id2module = array();
-$db = Env::get('db');
-$rs = $db->Query('SELECT id, name FROM contrexx_modules');
-while(!$rs->EOF) {
-    $module2id[$rs->fields['name']] = $rs->fields['id'];
-    $id2module[$rs->fields['id']] = $rs->fields['name'];
-    $rs->MoveNext();
-}
-Env::set('module2id', $module2id);
-Env::set('id2module', $id2module);
-
+createModuleConversionTables();
 //-------------------------------------------------------
 // Initialize base system
 //-------------------------------------------------------
