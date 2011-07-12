@@ -1003,7 +1003,7 @@ class Contact extends ContactLib
      */
     function _sendMail($arrFormData)
     {
-        global $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $_ARRAYLANG, $_CONFIG, $_LANGID, $objDatabase;
         
         $body = '';
         $replyAddress = '';
@@ -1119,9 +1119,11 @@ class Contact extends ContactLib
 
             $result = $objDatabase->Execute($query);
             $textAreaKeys = array();
-            while(!$result->EOF) {
-                $textAreaKeys[] = $result->fields['name'];
-                $result->MoveNext();
+            if($result) {
+                while(!$result->EOF) {
+                    $textAreaKeys[] = $result->fields['name'];
+                    $result->MoveNext();
+                }
             }
 
             $maxlength = 0;
