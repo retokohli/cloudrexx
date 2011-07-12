@@ -2213,9 +2213,28 @@ class ContactManager extends ContactLib
                         $catname = addslashes($objContactForm->fields['name']);
                     }
 
+                    $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+                    $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+
+                    $page = new \Cx\Model\ContentManager\Page();
+
                     $currentTime = time();
                     $content     = addslashes($this->_getSourceCode($formId, $langID));
 
+                    $page->setContent($content);
+                    $page->setTitle($catname);
+                    $page->setUsername($objFWUser->objUser->getUsername());
+                    $page->setCmd($formId);
+                    $page->setModule(6);
+                    $page->setDisplay(true);
+                    $page->setLang($langID);
+
+                    $rootNode = $nodeRepo->getRoot();
+                    $page->setNode($rootNode);
+
+                    $this->em->persist($page);
+                    $this->em->flush();
+                    /*
                     $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
                                             catid,
                                             catname,
@@ -2302,7 +2321,7 @@ class ContactManager extends ContactLib
                         }
                     } else {
                         $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
-                    }
+                        }*/
                 }
             }
             header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
@@ -2478,7 +2497,7 @@ class ContactManager extends ContactLib
 
     function _createContactFeedbackSite()
     {
-        global $objDatabase;
+        $db = Env::get('db');
 
         //check if we already have a thanks page
         $pageRepo = $this->em->getRepository('Page');
@@ -2489,9 +2508,9 @@ class ContactManager extends ContactLib
             'lang' => FRONTEND_LANG_ID
         ));
 
-        Logger::getInstance()->dump($thxPage); 
-
+        Logger::getInstance()->log('hit');
         if(!$thxPage) {
+            Logger::getInstance()->log('creating thanks page');
             //let's create a thanks page.
             $page = new \Cx\Model\ContentManager\Page();
                                  
@@ -2502,7 +2521,7 @@ class ContactManager extends ContactLib
                                 `displayorder`
                               FROM ".DBPREFIX."module_repository
                          WHERE `moduleid` = 6 AND `lang`=".FRONTEND_LANG_ID;
-            $objResult = $objDatabase->Execute($thxQuery);
+            $objResult = $db->Execute($thxQuery);
             if ($objResult !== false) {
                 //query translated from sql, original query in r11848
                 //expertmode not set anymore.
