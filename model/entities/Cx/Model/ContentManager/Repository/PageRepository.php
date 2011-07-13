@@ -19,6 +19,29 @@ class PageRepository extends EntityRepository {
     }
 
     /**
+     * An array of pages sorted by their langID for specified module and cmd.
+     * 
+     * @param string $module
+     * @param string $cmd optional
+     *
+     * @return array ( langId => Page )
+     */
+    public function getFromModuleCmdByLang($module, $cmd = null) {
+        $crit = array( 'module' => $module );
+        if($cmd)
+            $crit['cmd'] = $cmd;
+        
+        $pages = $this->findBy($crit);
+        $ret = array();
+        
+        foreach($pages as $page) {
+            $ret[$page->getLang()] = $page;
+        }
+
+        return $ret;
+    }
+
+    /**
      * Get a tree of all Nodes with their Pages assigned.
      *
      * @param Node $rootNode limit query to subtree.

@@ -241,4 +241,66 @@ class PageRepositoryTest extends DoctrineTestCase
         $this->assertEquals('rootTitle_1',$match['matchedPath']);
         $this->assertInstanceOf('Cx\Model\ContentManager\Page',$match['page']);
     }
+
+    public function testGetFromModuleCmdByLang() {
+        $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        
+        $n1 = new \Cx\Model\ContentManager\Node();
+
+        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1->setLang(1);
+        $p1->setTitle('rootTitle_1');
+        $p1->setNode($n1);
+        $p1->setUsername('user');
+        $p1->setModule('myModule');
+        $p1->setCmd('cmd1');
+
+        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2->setLang(2);
+        $p2->setTitle('rootTitle_1');
+        $p2->setNode($n1);
+        $p2->setUsername('user');
+        $p2->setModule('myModule');
+        $p2->setCmd('cmd1');
+
+
+        $p3 = new \Cx\Model\ContentManager\Page();     
+        $p3->setLang(3);
+        $p3->setTitle('rootTitle_2');
+        $p3->setNode($n1);
+        $p3->setUsername('user');
+        $p3->setModule('myModule');
+        $p3->setCmd('cmd2');
+
+
+        self::$em->persist($n1);
+
+        self::$em->persist($p1);
+        self::$em->persist($p2);
+        self::$em->persist($p3);
+
+        self::$em->flush();
+
+        //make sure we re-fetch a correct state
+        self::$em->clear();
+
+        //test correct fetching
+        $pages = $repo->getFromModuleCmdByLang('myModule');
+
+        $this->assertArrayHasKey(1,$pages);
+        $this->assertArrayHasKey(2,$pages);
+        $this->assertArrayHasKey(3,$pages);
+
+        $this->assertInstanceOf('Cx\Model\ContentManager\Page', $pages[1]);
+        $this->assertInstanceOf('Cx\Model\ContentManager\Page', $pages[2]);
+        $this->assertInstanceOf('Cx\Model\ContentManager\Page', $pages[3]);
+
+        $this->assertEquals(1, $pages[1]->getLang());
+        $this->assertEquals(2, $pages[2]->getLang());
+        $this->assertEquals(3, $pages[3]->getLang());
+
+        //test behaviour on specified cmd
+        $pages = $repo->getFromModuleCmdByLang('myModule', 'cmd1');
+        $this->assertEquals(2, count($pages));
+    }
 }
