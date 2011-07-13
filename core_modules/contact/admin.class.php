@@ -2186,314 +2186,98 @@ class ContactManager extends ContactLib
      */
     function _createContentPage()
     {
-        global $_ARRAYLANG, $objDatabase, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         Permission::checkAccess(5, 'static');
 
-        $formId = intval($_REQUEST['formId']);
-        if ($formId > 0) {
-            $activeLanguages = FWLanguage::getActiveFrontendLanguages();
-            $objFWUser       = FWUser::getFWUserObject();
+        $this->_handleContentPage();
 
-            if (!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
-                $pageId = intval($_REQUEST['pageId']);
-            } else {
-                $objRS  = $objDatabase->SelectLimit('SELECT max(catid)+1 AS `nextId`
-                                                    FROM `'.DBPREFIX.'content_navigation`');
-                $pageId = $objRS->fields['nextId'];
-            }
-
-            foreach ($activeLanguages as $lang) {
-                $langID = $lang['id'];
-
-                $objContactForm = $objDatabase->SelectLimit("SELECT name, is_active FROM ".DBPREFIX."module_contact_form_lang
-                                                            WHERE formID=".$formId." AND langID=".$langID, 1);
-                if ($objContactForm->fields['is_active'] == 1) {
-                    if ($objContactForm !== false) {
-                        $catname = addslashes($objContactForm->fields['name']);
-                    }
-
-                    $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-                    $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-
-                    $page = new \Cx\Model\ContentManager\Page();
-
-                    $currentTime = time();
-                    $content     = addslashes($this->_getSourceCode($formId, $langID));
-
-                    $page->setContent($content);
-                    $page->setTitle($catname);
-                    $page->setUsername($objFWUser->objUser->getUsername());
-                    $page->setCmd($formId);
-                    $page->setModule(6);
-                    $page->setDisplay(true);
-                    $page->setLang($langID);
-
-                    $rootNode = $nodeRepo->getRoot();
-                    $page->setNode($rootNode);
-
-                    $this->em->persist($page);
-                    $this->em->flush();
-                    /*
-                    $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
-                                            catid,
-                                            catname,
-                                            displayorder,
-                                            displaystatus,
-                                            username,
-                                            changelog,
-                                            cmd,
-                                            lang,
-                                            module
-                                            ) VALUES(
-                                            '".$pageId."',
-                                            '".$catname."',
-                                            '1',
-                                            'on',
-                                            '".$objFWUser->objUser->getUsername()."',
-                                            '".$currentTime."',
-                                            '".$formId."',
-                                            '".$langID."',
-                                            '6')";
-                    $objDatabase->Execute($q1);
-
-                    $q2 ="INSERT INTO ".DBPREFIX."content (id,
-                                                    content,
-                                                    title,
-                                                    metatitle,
-                                                    metadesc,
-                                                    metakeys)
-                                            VALUES (".$pageId.",
-                                                    '".$content."',
-                                                    '".$catname."',
-                                                    '".$catname."',
-                                                    '".$catname."',
-                                                    '".$catname."')";
-
-                    if ($objDatabase->Execute($q2) !== false) {
-                        //create backup for history
-                        if (!$this->boolHistoryActivate && $this->boolHistoryEnabled) {
-                            //user is not allowed to validated, so set if "off"
-                            $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
-                                                    SET     is_validated="0",
-                                                            activestatus="0"
-                                                    WHERE   catid='.$pageId.' AND `lang`='.$langID.'
-                                                    LIMIT   1
-                                                ');
-                        }
-
-                        if ($this->boolHistoryEnabled) {
-                            $objDatabase->Execute('SELECT  protected,
-                                                                        frontend_access_id,
-                                                                        backend_access_id
-                                                                FROM    '.DBPREFIX.'content_navigation
-                                                                WHERE   catid='.$pageId.' AND `lang`='.$langID.'
-                                                                LIMIT   1
-                                                            ');
-                            $objDatabase->Execute(' INSERT
-                                                    INTO    '.DBPREFIX.'content_navigation_history
-                                                    SET     is_active="1",
-                                                            catid='.$pageId.',
-                                                            catname="'.$catname.'",
-                                                            displayorder=1,
-                                                            displaystatus="off",
-                                                            username="'.$objFWUser->objUser->getUsername().'",
-                                                            changelog="'.$currentTime.'",
-                                                            cmd="'.$formId.'",
-                                                            lang="'.$langID.'",
-                                                            module="6"');
-                            $intHistoryId = $objDatabase->insert_id();
-                            $objDatabase->Execute(' INSERT
-                                                    INTO    '.DBPREFIX.'content_history
-                                                    SET     id='.$intHistoryId.',
-                                                            page_id='.$pageId.',
-                                                            content="'.$content.'",
-                                                            title="'.$catname.'",
-                                                            metatitle="'.$catname.'",
-                                                            metadesc="'.$catname.'",
-                                                            metakeys="'.$catname.'"');
-                            $objDatabase->Execute(' INSERT
-                                                    INTO    '.DBPREFIX.'content_logfile
-                                                    SET     action="new",
-                                                            history_id='.$intHistoryId.',
-                                                            is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
-                                                ');
-                        }
-                    } else {
-                        $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
-                        }*/
-                }
-            }
-            header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
-            exit;
-        }
+        header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
+        exit;
     }
 
     function _updateContentSite()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         Permission::checkAccess(35, 'static');
+        $this->_handleContentPage();
+    }
+
+    function _handleContentPage() {
+        $objDatabase = Env::get('db');
+
         $formId = intval($_REQUEST['formId']);
-        $pageId = $this->_getContentSiteId($formId);
-        $parcat = $this->_getContentSiteParCat($formId);
-        if ($pageId > 0) {
-            $activeLanguages = FWLanguage::getActiveFrontendLanguages();
+        if ($formId > 0) {
             $objFWUser       = FWUser::getFWUserObject();
 
-            foreach ($activeLanguages as $lang) {
-                $langID = $lang['id'];
+            $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');           
+            $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
 
-                $objContactForm = $objDatabase->SelectLimit("SELECT name, is_active FROM ".DBPREFIX."module_contact_form_lang WHERE formID=".$formId." AND langID=".$langID, 1);
+            $pages = $pageRepo->getFromModuleCmdByLang('contact', $formId);
 
-                if (isset($_POST['contactFormLanguages'][$langID])) {
-                    //if ($objContactForm !== false) {
-                        $catname = addslashes($objContactForm->fields['name']);
-                    //}
-                    $content     = addslashes($this->_getSourceCode($formId, $langID));
-                    $currentTime = time();
-
-                    //make sure the user is allowed to update the content
-                    if ($this->boolHistoryEnabled) {
-                        if ($this->boolHistoryActivate) {
-                            $boolDirectUpdate = true;
-                        } else {
-                            $boolDirectUpdate = false;
-                        }
-                    } else {
-                        $boolDirectUpdate = true;
-                    }
-
-                    if ($boolDirectUpdate) {
-                        $objResult = $objDatabase->Execute("SELECT COUNT(id) As count FROM ".DBPREFIX."content
-                                                WHERE   id=".$pageId);
-                        if ($objResult->fields['count'] == 0) {
-                            $q1 = "INSERT INTO ".DBPREFIX."content_navigation (
-                                            catid,
-                                            catname,
-                                            displayorder,
-                                            displaystatus,
-                                            username,
-                                            changelog,
-                                            cmd,
-                                            lang,
-                                            module
-                                            ) VALUES(
-                                            '".$pageId."',
-                                            '".$catname."',
-                                            '1',
-                                            'on',
-                                            '".$objFWUser->objUser->getUsername()."',
-                                            '".$currentTime."',
-                                            '".$formId."',
-                                            '".$langID."',
-                                            '6')";
-                            $objDatabase->Execute($q1);
-
-                            $q2 ="INSERT INTO ".DBPREFIX."content (id,
-                                                        content,
-                                                        title,
-                                                        metatitle,
-                                                        metadesc,
-                                                        metakeys)
-                                                VALUES (".$pageId.",
-                                                         '".$content."',
-                                                        '".$catname."',
-                                                        '".$catname."',
-                                                        '".$catname."',
-                                                        '".$catname."')";
-                            $objDatabase->Execute($q2);
-                        } else {
-                            $objDatabase->Execute("UPDATE   ".DBPREFIX."content
-                                                   SET      content='".$content."'
-                                                   WHERE   id=".$pageId);
-                            $objDatabase->Execute("UPDATE   ".DBPREFIX."content_navigation
-                                                   SET      activestatus='1'
-                                                   WHERE   catid=".$pageId);
-                        }
-                    }
-
-                    if ($parcat!=$pageId) {
-                        //create copy of parcat (for history)
-                        $intHistoryParcat = $parcat;
-                        if ($boolDirectUpdate) {
-                            $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
-                                                    SET     username='".$objFWUser->objUser->getUsername()."',
-                                                            changelog='".$currentTime."'
-                                                    WHERE catid=".$pageId.' AND `lang`='.$langID);
-                        }
-                    } else {
-                        //create copy of parcat (for history)
-                        $intHistoryParcat = 0;
-                        if ($boolDirectUpdate) {
-                            $objDatabase->Execute(" UPDATE  ".DBPREFIX."content_navigation
-                                                    SET     username='".$objFWUser->objUser->getUsername()."',
-                                                            changelog='".$currentTime."'
-                                                    WHERE   catid=".$pageId.' AND `lang`='.$langID);
-                        }
-                    }
-
-                    if ($boolDirectUpdate) {
-                        $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_CONTENT_PAGE_SUCCESSFULLY_UPDATED']."<br />";
-                    } else {
-                        $this->_statusMessageOk .= $_ARRAYLANG['TXT_CONTACT_DATA_RECORD_UPDATED_SUCCESSFUL_VALIDATE']."<br />";
-                    }
-
-                    //create backup for history
-                    if ($this->boolHistoryEnabled) {
-                        $objDatabase->Execute('SELECT  displayorder,
-                                                                    protected,
-                                                                    frontend_access_id,
-                                                                    backend_access_id
-                                                            FROM    '.DBPREFIX.'content_navigation
-                                                            WHERE   catid='.$pageId.' AND `lang`='.$langID.'
-                                                            LIMIT   1
-                                                        ');
-                        if ($boolDirectUpdate) {
-                            $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
-                                                    SET     is_active="0"
-                                                    WHERE   catid='.$pageId.' AND `lang`='.$langID);
-                        }
-
-                        $objDatabase->Execute(' INSERT
-                                                INTO    '.DBPREFIX.'content_navigation_history
-                                                SET     is_active="'.(($boolDirectUpdate) ? 1 : 0).'",
-                                                        catid='.$pageId.',
-                                                        parcat="'.$intHistoryParcat.'",
-                                                        catname="'.$catname.'",
-                                                        username="'.$objFWUser->objUser->getUsername().'",
-                                                        changelog="'.$currentTime.'",
-                                                        lang="'.$langID.'",
-                                                        cmd="'.$formId.'",
-                                                        module="6"
-                                                   ');
-                        $intHistoryId = $objDatabase->insert_id();
-                        $objDatabase->Execute(' INSERT
-                                                INTO    '.DBPREFIX.'content_history
-                                                SET     id='.$intHistoryId.',
-                                                        page_id='.$pageId.',
-                                                        content="'.$content.'",
-                                                        title="'.$catname.'",
-                                                        metatitle="'.$catname.'",
-                                                        metadesc="'.$catname.'",
-                                                        metakeys="'.$catname.'"'
-                        );
-                        $objDatabase->Execute(' INSERT
-                                                INTO    '.DBPREFIX.'content_logfile
-                                                SET     action="update",
-                                                        history_id='.$intHistoryId.',
-                                                        is_validated="'.(($boolDirectUpdate) ? 1 : 0).'"
-                                            ');
-                    }
-                } else {
-                    /* Deactive pages with disabled languages */
-                    $objDatabase->Execute("UPDATE   ".DBPREFIX."content_navigation
-                                           SET activestatus='0'
-                                           WHERE catid=".$pageId.' AND `lang`='.$langID);
-                }
+//TODO: what's this used for?
+            if (!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
+                $nodeId = intval($_REQUEST['pageId']);
+                $node = $pageRepo->findOneBy(array('id' => $nodeId));
+            } else {
+                $node = $nodeRepo->getRoot();
             }
+//TODO: handle $node == null ( => node not found )
+           
+            $activeLangIds = array_keys(FWLanguage::getActiveFrontendLanguages());
+            $selectedLangIds = array_keys($_POST['contactFormLanguages']);
+            //sort out inactive languages
+            $selectedLangIds = array_intersect($selectedLangIds, $activeLangIds);
+
+            $presentLangIds = array_keys($pages);
+            $updateLangIds = array_intersect($selectedLangIds, $presentLangIds);
+            $newLangIds = array_diff($selectedLangIds, $updateLangIds);
+            $deleteLangIds = array_diff($presentLangIds, $selectedLangIds);
+
+            $activeLangIds = array_merge($newLangIds, $updateLangIds);
+
+            foreach ($activeLangIds as $langId) {
+                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang
+                                                            WHERE formID=".$formId." AND langID=".$langId, 1);
+
+                $page = null;
+                if(isset($pages[$langId])) { //page already exists
+                    //page 
+                    $page = $pages[$langId];
+                }
+                else { //new Page
+                    $page = new \Cx\Model\ContentManager\Page();
+                    $page->setNode($node);
+                }
+                if ($objContactForm !== false) {
+                    $catname = addslashes($objContactForm->fields['name']);
+                }
+
+                $content     = addslashes($this->_getSourceCode($formId, $langId));
+
+                $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+                
+                $page->setContent($content);
+                $page->setTitle($catname);
+                $page->setUsername($objFWUser->objUser->getUsername());
+                $page->setCmd($formId);
+                $page->setModule('contact');
+                $page->setDisplay(true);
+                $page->setLang($langId);
+                
+                $this->em->persist($page);
+            }
+
+            foreach ($deleteLangIds as $langId) {
+                $page = $pages[$langId];
+                $this->em->remove($page);
+            }
+
+            $this->em->flush();
         }
     }
+
 
     function _createContactFeedbackSite()
     {
@@ -2508,9 +2292,7 @@ class ContactManager extends ContactLib
             'lang' => FRONTEND_LANG_ID
         ));
 
-        Logger::getInstance()->log('hit');
         if(!$thxPage) {
-            Logger::getInstance()->log('creating thanks page');
             //let's create a thanks page.
             $page = new \Cx\Model\ContentManager\Page();
                                  
