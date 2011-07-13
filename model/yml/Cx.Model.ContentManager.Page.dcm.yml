@@ -103,10 +103,10 @@ Cx\Model\ContentManager\Page:
       type: string
       length: 255
 
-    #module
-    module: #mising foreign entity
+    module:
       nullable: true
-      type: integer
+      type: string
+      length: 255
       gedmo:
         - versioned
     cmd:
