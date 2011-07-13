@@ -524,7 +524,10 @@ class ContactManager extends ContactLib
             foreach ($this->arrForms as $formId => $arrForm) {
                 $formName = '';
                 $entryCount = '-';
-                $pageId = $this->_getContentSiteId($formId);
+
+                $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
+                $page = $pageRepo->findOneBy(array('module' => 'contact', 'cmd' => $formId, 'lang' => $selectedInterfaceLanguage));
+                $pageExists = $page !== null;
                 
                 $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
 
@@ -553,7 +556,7 @@ class ContactManager extends ContactLib
                         'CONTACT_FORM_NAME'                 => $formName,
                         'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $entryCount,
-                        'CONTACT_DELETE_CONTENT'            => $pageId > 0 ? 'true' : 'false'
+                        'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false'
                 ));
 
                 $this->_objTpl->parse('contact_contact_forms');
@@ -879,7 +882,7 @@ class ContactManager extends ContactLib
             $this->_objTpl->parse('formField');
         }
 
-        if (!$copy && $formId > 0 && $this->_getContentSiteId($formId)) {
+        if (!$copy && $formId > 0) {
             $jsSubmitFunction = "updateContentSite()";
         } else {
             $jsSubmitFunction = "createContentSite()";
@@ -981,45 +984,6 @@ class ContactManager extends ContactLib
 
         // parse the recipients
         $this->_showRecipients($recipients);
-    }
-
-    function _getContentSiteLang($formId)
-    {
-        global $objDatabase;
-
-        $objContentSite = $objDatabase->SelectLimit("SELECT `lang` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
-        if ($objContentSite !== false) {
-            if ($objContentSite->RecordCount() == 1) {
-                return $objContentSite->fields['lang'];
-            }
-        }
-        return false;
-    }
-
-    function _getContentSiteId($formId)
-    {
-        global $objDatabase;
-
-        $objContentSite = $objDatabase->SelectLimit("SELECT `catid` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
-        if ($objContentSite !== false) {
-            if ($objContentSite->RecordCount() == 1) {
-                return $objContentSite->fields['catid'];
-            }
-        }
-        return false;
-    }
-
-    function _getContentSiteParCat($formId)
-    {
-        global $objDatabase;
-
-        $objParentCat = $objDatabase->SelectLimit("SELECT `parcat` FROM `".DBPREFIX."content_navigation` AS `n`, `".DBPREFIX."modules` AS `m` WHERE `m`.`name`='contact' AND `n`.`module`=`m`.`id` AND `n`.`cmd`='".$formId."'", 1);
-        if ($objParentCat !== false) {
-            if ($objParentCat->RecordCount() == 1) {
-                return $objParentCat->fields['parcat'];
-            }
-        }
-        return false;
     }
 
     // added langid as new parameter to support multi-lang
@@ -1310,103 +1274,15 @@ class ContactManager extends ContactLib
         Permission::checkAccess(26, 'static');
 
         $formId = intval($_REQUEST['formId']);
-        $pageId = $this->_getContentSiteId($formId);
-        $langId = $this->_getContentSiteLang($formId);
 
-        if ($pageId != 0) {
-            if ($this->boolHistoryEnabled) {
-                $objResult = $objDatabase->Execute('SELECT  id, lang
-                                                    FROM    '.DBPREFIX.'content_navigation_history
-                                                    WHERE   is_active="1" AND
-                                                            catid='.$pageId
-                                                    );
-                while (!$objResult->EOF) {
-                    $objDatabase->Execute(' INSERT
-                                            INTO    '.DBPREFIX.'content_logfile
-                                            SET     action="delete",
-                                                    history_id='.$objResult->fields['id'].',
-                                                    is_validated="'.(($this->boolHistoryActivate) ? 1 : 0).'"
-                                        ');
-                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation_history
-                                        SET     changelog='.time().'
-                                        WHERE   catid='.$pageId.' AND
-                                                is_active="1" AND
-                                                `lang`='.$objResult->fields['lang'].'
-                                        LIMIT   1
-                                    ');
-
-                    $objResult->MoveNext();
-                }
-            }
-
-            if ($this->boolHistoryEnabled) {
-                if (!$this->boolHistoryActivate) {
-                    $boolDelete = false;
-                    $this->_statusMessageOk .= '<br />'.$_ARRAYLANG['TXT_CONTACT_DATA_RECORD_DELETED_SUCCESSFUL_VALIDATE'];
-                } else {
-                    $boolDelete = true;
-                }
-            } else {
-                $boolDelete = true;
-            }
-
-            if ($boolDelete) {
-                $q1 = "DELETE FROM ".DBPREFIX."content WHERE id=".$pageId;
-                $q2 = "DELETE FROM ".DBPREFIX."content_navigation WHERE catid=".$pageId;
-                if ($objDatabase->Execute($q1) === false || $objDatabase->Execute($q2) === false) {
-                    $this->_statusMessageErr = $_ARRAYLANG['TXT_CONTACT_DATABASE_QUERY_ERROR'];
-                } else {
-                    $this->_statusMessageOk .= '<br />'.$_ARRAYLANG['TXT_CONTACT_DATA_RECORD_DELETED_SUCCESSFUL'];
-                }
-            }
-
-            $this->_collectLostPages();
+        $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
+        $pages->findBy(array('module' => 'contact', 'cmd' => $formId));
+        foreach($pages as $page) {
+            $this->em->remove($page);
         }
+
+        $this->em->flush();
     }
-
-    /**
-     * The function collects all categories without an existing parcat and assigns it to "lost and found"
-     *
-     * @global    ADONewConnection
-     */
-    function _collectLostPages()
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute('    SELECT  catid,
-                                                        parcat,
-                                                        lang
-                                                FROM    '.DBPREFIX.'content_navigation
-                                                WHERE   parcat <> 0
-                                        ');
-        if ($objResult->RecordCount() > 0) {
-            //subcategories have been found
-            while ($row = $objResult->FetchRow()) {
-                $objSubResult = $objDatabase->Execute(' SELECT  catid
-                                                        FROM    '.DBPREFIX.'content_navigation
-                                                        WHERE   catid='.$row['parcat'].' AND `lang`='.$row['lang'].'
-                                                        LIMIT   1
-                                                    ');
-                if ($objSubResult->RecordCount() != 1) {
-                    //this is a "lost" category.. assign it to "lost and found"
-                    $objSubSubResult = $objDatabase->Execute('  SELECT  catid
-                                                                FROM    '.DBPREFIX.'content_navigation
-                                                                WHERE   module=1 AND
-                                                                        cmd="lost_and_found" AND
-                                                                        lang='.$row['lang'].'
-                                                                LIMIT   1
-                                                            ');
-                    $subSubRow = $objSubSubResult->FetchRow();
-                    $objDatabase->Execute(' UPDATE  '.DBPREFIX.'content_navigation
-                                            SET     parcat='.$subSubRow['catid'].'
-                                            WHERE   catid='.$row['catid'].' AND `lang`='.$row['lang'].'
-                                            LIMIT   1
-                                        ');
-                }
-            }
-        }
-    }
-
 
     /**
      * Get the form fields from the post variables
@@ -1649,7 +1525,9 @@ class ContactManager extends ContactLib
                 'TXT_CONTACT_BACK'                  => $_ARRAYLANG['TXT_CONTACT_BACK']
             ));
 
-            $contentSiteExists = $this->_getContentSiteId($formId);
+            $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
+            $page = $pageRepo->findOneBy(array('module' => 'contact', 'cmd' => $formId, 'lang' => $selectedInterfaceLanguage));
+            $contentSiteExists = $page !== null;
 
             $this->_objTpl->setVariable(array(
                 'CONTACT_CONTENT_SITE_ACTION_TXT'   => $contentSiteExists > 0 ? $_ARRAYLANG['TXT_CONTACT_UPDATE_CONTENT_SITE'] : $_ARRAYLANG['TXT_CONTACT_NEW_PAGE'],
@@ -1856,7 +1734,6 @@ class ContactManager extends ContactLib
             if ($this->arrForms[$id]['useCaptcha']) {
                 include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
                 $captcha = new Captcha();
-                $offset  = $captcha->getOffset();
                 $alt     = $captcha->getAlt();
                 $url     = $captcha->getUrl();
 
@@ -2190,9 +2067,14 @@ class ContactManager extends ContactLib
 
         Permission::checkAccess(5, 'static');
 
-        $this->_handleContentPage();
+        $formId = intval($_REQUEST['formId']);;
 
-        header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&pageId=".$pageId."&".CSRF::param());
+        $this->_handleContentPage($formId);
+
+//TODO: needs replacement with url of new cm
+        //header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=content&act=edit&formId=".$formId."&".CSRF::param());
+        header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=contact");
+        
         exit;
     }
 
@@ -2201,13 +2083,12 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG;
 
         Permission::checkAccess(35, 'static');
-        $this->_handleContentPage();
+        $this->_handleContentPage($formId);
     }
 
-    function _handleContentPage() {
+    function _handleContentPage($formId = 0) {
         $objDatabase = Env::get('db');
 
-        $formId = intval($_REQUEST['formId']);
         if ($formId > 0) {
             $objFWUser       = FWUser::getFWUserObject();
 
