@@ -526,7 +526,8 @@ class ContactManager extends ContactLib
                 $entryCount = '-';
 
                 $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
-                $page = $pageRepo->findOneBy(array('module' => 'contact', 'cmd' => $formId, 'lang' => $selectedInterfaceLanguage));
+                $page = $pageRepo->findOneBy(array('module' => 'contact', 'cmd' => $formId));
+
                 $pageExists = $page !== null;
                 
                 $this->_objTpl->setGlobalVariable('CONTACT_FORM_ID', $formId);
@@ -1276,7 +1277,7 @@ class ContactManager extends ContactLib
         $formId = intval($_REQUEST['formId']);
 
         $pageRepo = $this->em->getRepository('\Cx\Model\ContentManager\Page');
-        $pages->findBy(array('module' => 'contact', 'cmd' => $formId));
+        $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId));
         foreach($pages as $page) {
             $this->em->remove($page);
         }
@@ -2068,7 +2069,6 @@ class ContactManager extends ContactLib
         Permission::checkAccess(5, 'static');
 
         $formId = intval($_REQUEST['formId']);;
-
         $this->_handleContentPage($formId);
 
 //TODO: needs replacement with url of new cm
@@ -2083,10 +2083,13 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG;
 
         Permission::checkAccess(35, 'static');
+
+        $formId = intval($_REQUEST['formId']);;
         $this->_handleContentPage($formId);
     }
 
     function _handleContentPage($formId = 0) {
+
         $objDatabase = Env::get('db');
 
         if ($formId > 0) {
