@@ -120,7 +120,7 @@ class FWUser extends User_Setting
                 // store frontend lang_id in cookie
                 if (empty($_COOKIE['langId'])) {
                     $langId = $this->objUser->getFrontendLanguage();
-                    if ($objInit->arrLang[$langId]['frontend']) {
+                    if (isset($objInit->arrLang[$langId]['frontend'])) {
                         setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     }
                 }
