@@ -24,7 +24,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
+//DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
@@ -57,6 +57,10 @@ $incSettingsStatus = include_once('../config/settings.php');
  * Adds version information to the {@link $_CONFIG[]} global array.
  */
 $incVersionStatus = include_once('../config/version.php');
+/**
+ * Doctrine configuration
+ */ 
+include_once('../config/doctrine.php');
 
 //-------------------------------------------------------
 // Check if system is installed

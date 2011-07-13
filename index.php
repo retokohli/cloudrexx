@@ -109,6 +109,10 @@ $incSettingsStatus = include_once(dirname(__FILE__).'/config/settings.php');
  * Adds version information to the {@link $_CONFIG[]} global array.
  */
 $incVersionStatus = include_once(dirname(__FILE__).'/config/version.php');
+/**
+ * Doctrine configuration
+ */ 
+include_once('../config/doctrine.php');
 
 //-------------------------------------------------------
 // Check if system is installed
