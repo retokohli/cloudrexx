@@ -664,8 +664,6 @@ class InitCMS
      */
     function getPageID($page_id=0, $section='', $command='', $history_id=0)
     {
-        global $objDatabase;
-
         switch ($section) {
             case 'home':
                 $this->is_home = true;
@@ -687,72 +685,38 @@ class InitCMS
             }
 
             //doctrine rewrite
-            /*
-            $pageRepo = $this->em->getRepo('Page');
+            $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
             $page = $pageRepo->findOneBy(array(
                 'module' => $section,
                 'cmd' => $command,
                 'lang' => FRONTEND_LANG_ID
             ));
             if(!$page) {
+                //check if we're already trying to display the error page -
+                //redirecting leads to an infinite loop in this case
+                if($section == 'error' && $command == '') {
+                    die('Page not found. Also, no pretty version of this error has been found.');
+                }
+                else { //page not found, redirect to the error page.
+                    CSRF::header('Location: index.php?section=error');
+                    exit;
+                }
+
                 CSRF::header('Location: index.php?section=error');
                 exit;
             }
+
+            $page_id = $page->getId();
             $m2id = Env::get('module2id');
             $this->_setCustomizedThemesId($page->getSkin()); 
+            $this->customContentTemplate = $page->getCustomContent();
             define('MODULE_ID', $m2id[$page->getModule()]);
-            */
-
-            // if the section is given, we need to search the command too,
-            // even if it's empty. Otherwise, on ?section=access it could be
-            // that another "access" page shows up as the cmd is not explicitly
-            // defined as empty.
-            $query = "
-                  SELECT n.catid, n.themes_id, n.module
-                    FROM ".DBPREFIX."modules AS m
-                   INNER JOIN ".DBPREFIX."content_navigation AS n
-                      ON n.module=m.id
-                   WHERE 1
-                   ".(empty($section) ? '' : " AND m.name='$section'")."
-                   ".(empty($section) ? '' : " AND n.cmd ='$command'")."
-                     AND n.lang=".FRONTEND_LANG_ID."
-                   ORDER BY parcat ASC
-            ";
-            $objResult = $objDatabase->SelectLimit($query, 1);
-            if ($objResult && !$objResult->EOF) {
-                $page_id = $objResult->fields['catid'];
-            }
-            if (!$page_id) {
-                CSRF::header('Location: index.php?section=error');
-                exit;
-            }
-            $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-            define('MODULE_ID', $objResult->fields['module']);
         } else {
             define('MODULE_ID', null);
         }
-
-        if (empty($history_id)) {
-            $query = "
-                SELECT themes_id, custom_content
-                  FROM ".DBPREFIX."content_navigation
-                 WHERE catid=$page_id";
-        } else {
-          $query = "
-              SELECT themes_id, custom_content
-                FROM ".DBPREFIX."content_navigation_history
-               WHERE id=$history_id";
-        }
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult) {
-            if (!$objResult->EOF) {
-                $this->_setCustomizedThemesId($objResult->fields['themes_id']);
-                $this->customContentTemplate = $objResult->fields['custom_content'];
-            }
-        }
+//TODO: history id
         return $page_id;
     }
-
 
     /**
      * Sets the customized ThemesId
