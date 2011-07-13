@@ -72,7 +72,7 @@
  * will either activate or deactivate all levels.
  */
 include_once(dirname(__FILE__).'/lib/DBG.php');
-//DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -112,7 +112,7 @@ $incVersionStatus = include_once(dirname(__FILE__).'/config/version.php');
 /**
  * Doctrine configuration
  */ 
-include_once('../config/doctrine.php');
+include_once('config/doctrine.php');
 
 //-------------------------------------------------------
 // Check if system is installed
@@ -340,15 +340,41 @@ $frontEditingContent    = isset($_REQUEST['previewContent']) ? preg_replace('/\[
     $themesPages['content'] = '{CONTENT_TEXT}';
     $themesPages['home']    = '{CONTENT_TEXT}';
 }
-
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
-    /* $em = Env::em(); */
-    /* $pageRepo = $em->getRepo('Page'); */
-    /* $pageRepo->findOneBy(array( */
-        
-    /* )); */
+//TODO: history (empty($history) ? )
+    $em = Env::em();
+    $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+    $page = $pageRepo->findOneBy(array(
+        'id' => $pageId
+                                       ));
     
-    $query = "
+    $qb = $em->createQueryBuilder();
+    $qb->add('select', 'p')
+        ->add('from', 'Cx\Model\ContentManager\Page p')
+        ->add('where', 
+             $qb->expr()->andx(
+                 'p.id = :pageId',
+                  $qb->expr()->orx($qb->expr()->lte('p.start',':now'), 'p.start IS NULL'),
+                  $qb->expr()->orx($qb->expr()->gte('p.end',':now'), 'p.end IS NULL')
+             )
+         )
+        ->setMaxResults(1);
+
+    $qb->setParameter('pageId', $pageId)
+        ->setParameter('now', new DateTime('now'))
+        ->setParameter('now', new DateTime('now'));
+
+    $page = $qb->getQuery()->getResult();    
+    if(!$page) {
+        if ($plainSection == 'error') {
+            // If the error module is not installed, show this
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        }
+        CSRF::header('Location: index.php?section=error&id=404');
+        exit;
+    }
+   
+    /*    $query = "
           SELECT `c`.`content`, `c`.`title`, `c`.`redirect`,
                  `c`.`metatitle`, `c`.`metadesc`,
                  `c`.`metakeys`, `c`.`metarobots`,
@@ -372,7 +398,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         }
         CSRF::header('Location: index.php?section=error&id=404');
         exit;
-    }
+        }*/
 
     // Frontend Editing: content has to be replaced with preview code if needed.
     $page_content   = ($frontEditing) ? ( ($frontEditingContent != '') ? $frontEditingContent : $objResult->fields['content']) : '<div id="fe_PreviewContent">'.$objResult->fields['content'].'</div>';
