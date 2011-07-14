@@ -1333,8 +1333,11 @@ class User_Profile_Attribute
     }
 
 
-    function isCoreAttribute($attributeId)
+    public function isCoreAttribute($attributeId = null)
     {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
         return isset($this->arrCoreAttributes[$attributeId]);
     }
 

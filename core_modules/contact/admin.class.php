@@ -2135,10 +2135,10 @@ class ContactManager extends ContactLib
                     $page->setNode($node);
                 }
                 if ($objContactForm !== false) {
-                    $catname = addslashes($objContactForm->fields['name']);
+                    $catname = $objContactForm->fields['name'];
                 }
 
-                $content     = addslashes($this->_getSourceCode($formId, $langId));
+                $content     = $this->_getSourceCode($formId, $langId);
 
                 $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
                 

@@ -1240,7 +1240,7 @@ class ContactLib
             $code .= "fields[$key] = Array(\n";
 // TODO: do we have to change FRONTEND_LANG_ID to selectedInterfaceLanguage ?
             $code .= "\t'".contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name'])."',\n";
-            $code .= "\t{$field['is_required']},\n";
+            $code .= "\t". ( $field['is_required'] ? 'true' : 'false' ) .',';
 
             $code .= "\t/". ($this->arrCheckTypes[$field['check_type']]['regex']) ."/".$modifiers.",\n";
             $code .= "\t'".(($field['type'] != 'special') ? $field['type'] : $field['special_type'])."');\n";
