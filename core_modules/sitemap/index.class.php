@@ -53,12 +53,21 @@ class sitemap
 
         $this->_objTpl->setTemplate($this->pageContent);
 
-        if (isset($this->_objTpl->_blocks['sitemap'])) {
+        if(isset($this->_objTpl->_blocks['sitemap'])) {
+            require_once(ASCMS_CORE_PATH.'/SitemapPageTree.class.php');
+            $sm = new SitemapPageTree(Env::em(), 0, null, FRONTEND_LANG_ID);
+            $sm->setTemplate($this->_objTpl);
+            $sm->render();
+        }
+
+        return $this->_objTpl->get();
+        
+        /*        if (isset($this->_objTpl->_blocks['sitemap'])) {
             $this->_initialize();
             $this->_doSitemapArray();
         } else {
             $this->_doSitemap = false;
-        }
+            }*/
     }
 
 

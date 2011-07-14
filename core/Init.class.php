@@ -686,11 +686,14 @@ class InitCMS
 
             //doctrine rewrite
             $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-            $page = $pageRepo->findOneBy(array(
+            if($command === '')
+                $command = null;
+            $crit = array(
                 'module' => $section,
                 'cmd' => $command,
                 'lang' => FRONTEND_LANG_ID
-            ));
+            );
+            $page = $pageRepo->findOneBy($crit);
             if(!$page) {
                 //check if we're already trying to display the error page -
                 //redirecting leads to an infinite loop in this case
