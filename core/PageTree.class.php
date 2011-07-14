@@ -50,10 +50,11 @@ abstract class PageTree {
         foreach($elems as $title => &$elem) {
             $hasChilds = isset($elem['__childs']);
             $lang = $elem['lang'];
-            $content += $this->renderElement($title, $level, $hasChilds, $lang, $path);
+            $pathOfThis = $path.'/'.$title;
+            $content += $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis);
 
             if($hasChilds)
-                $content += $this->internalRender($elem['__childs'], $path+'/'+$title, $level+1);
+                $content += $this->internalRender($elem['__childs'], $pathOfThis, $level+1);
         }
         return $content;
 
