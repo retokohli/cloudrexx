@@ -1,4 +1,5 @@
 <?php
+include_once(ASCMS_CORE_PATH.'/SitemapPageTree.class.php');
 /**
  * Sitemapping
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -54,7 +55,6 @@ class sitemap
         $this->_objTpl->setTemplate($this->pageContent);
 
         if(isset($this->_objTpl->_blocks['sitemap'])) {
-            require_once(ASCMS_CORE_PATH.'/SitemapPageTree.class.php');
             $sm = new SitemapPageTree(Env::em(), 0, null, FRONTEND_LANG_ID);
             $sm->setTemplate($this->_objTpl);
             $sm->render();
