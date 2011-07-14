@@ -59,9 +59,7 @@ class sitemap
             $sm->setTemplate($this->_objTpl);
             $sm->render();
         }
-
-        return $this->_objTpl->get();
-        
+       
         /*        if (isset($this->_objTpl->_blocks['sitemap'])) {
             $this->_initialize();
             $this->_doSitemapArray();
@@ -73,7 +71,8 @@ class sitemap
 
 
     function getSitemapContent() {
-        return $this->doSitemap();
+        return $this->_objTpl->get();
+        //        return $this->doSitemap();
     }
 
 
