@@ -124,7 +124,7 @@ class Contact extends ContactLib
     {
         global $_ARRAYLANG, $_LANGID, $objDatabase;
 
-        JS::activate('jquery');
+        JS::activate('cx');
 
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
         $useCaptcha = $this->getContactFormCaptchaStatus($formId);
@@ -320,6 +320,9 @@ class Contact extends ContactLib
                         'TXT_CONTACT_NOT_SPECIFIED' => $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED']
                     ));
                     break;
+                case 'file':
+                    $this->hasFileField = true; 
+                    //break intentionally left out here.
                 default :
                     /*
                      * Set default field value through User profile attribute
@@ -346,7 +349,7 @@ class Contact extends ContactLib
             $this->setCaptcha($useCaptcha);
         }
         
-        if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) {
+        if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
 
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
@@ -642,7 +645,7 @@ class Contact extends ContactLib
             //to remember the target folder for the second call, it is stored in
             //$this->depositionTarget.
             if(!$move) { //first call - create folder
-                //determine where formular uploads are stored
+                //determine where form uploads are stored
                 $arrSettings = $this->getSettings();
                 $depositionTarget = $arrSettings['fileUploadDepositionPath'].'/';
 
@@ -936,10 +939,11 @@ class Contact extends ContactLib
     {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
 
-        if (!empty($this->errorMsg)) return false;
+        if (!empty($this->errorMsg))
+            return false;
        
         //handle files and collect the filenames
-        //for legacy mode. this has already been done in the first
+        //for legacy mode this has already been done in the first
         //_uploadFiles() call in getContactPage().
         if(!$this->legacyMode)
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields'], true);
@@ -960,17 +964,17 @@ class Contact extends ContactLib
         }
 
         $lastInsertId = $objDatabase->insert_id();
+        $hasFiles = false;
+        $fileFieldId = 0;
+        $fileFieldName = null;
         foreach ($arrFormData['fields'] as $key => $arrField) {
             $value = '';
 
             if ($arrField['type'] == 'file' ) {
-                if (isset($arrFormData['uploadedFiles'][$key])) {
-// TODO: What happens if the user uploaded more than one file?
-                    //if($this->legacyMode) {
-                        $value = serialize($arrFormData['uploadedFiles'][$key]);
-                    //} elseif(count($arrFormData['uploadedFiles']) > 0) { //assign all files uploaded to the uploader fields name
-                    //}
-                }
+                $hasFiles = true;
+                $fileFieldId = $key;
+                $fileFieldName = $arrField['lang'][$_LANGID]['name'];
+                continue;
             } else {
                 if (isset($arrFormData['data'][$key])) {
                     $value = $arrFormData['data'][$key];
@@ -987,6 +991,42 @@ class Contact extends ContactLib
                                          '".contrexx_raw2db($value)."')");
             }
         }
+
+        if($hasFiles) {
+            if($fileFieldId === 0)
+                throw new ContactException('could not find file field for form with id ' . $arrFormData['id']);
+
+            $fileData = null;
+            if($this->legacyMode) { //store files according to their inputs name
+                $arrDBEntry = array();
+                foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                    $arrDbEntry[] = base64_encode($key).",".base64_encode(contrexx_strip_tags($file));
+                }
+                $fileData = implode(';', $arrDbEntry);
+            }
+            else if(count($arrFormData['uploadedFiles']) > 0) { //assign all files uploaded to the uploader fields name
+                $arrTmp = array();
+                foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                    $arrTmp[] = $file;
+                }
+                //a * in front of the file names marks a 'new style' entry
+                $files = implode('*', $arrTmp);
+
+                $fileData = $files;
+            }
+
+            if($fileData) {
+                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_submit_data
+                                    (`id_entry`, `id_field`, `formlabel`, `formvalue`)
+                                    VALUES
+                                    (".$lastInsertId.",
+                                     ".$fileFieldId.",
+                                     '".contrexx_raw2db($fileFieldName)."',
+                                     '".contrexx_raw2db($fileData)."')");
+            }
+
+        }
+
         return true;
     }
 
@@ -1376,7 +1416,6 @@ class Contact extends ContactLib
     function _getParams()
     {
         global $objDatabase, $_LANGID;
-
         $arrFields = array();
         if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
             $objFields = $objDatabase->Execute('SELECT `tblField`.`id`, `tblField`.`type`, `tblFieldLang`.`attributes` FROM `'
@@ -1394,6 +1433,7 @@ class Contact extends ContactLib
                         if (!empty($_POST['contactFormField_recipient'])) {
                             $arrFields['SELECTED_'.$objFields->fields['id'].'_'.$_POST['contactFormField_recipient']] = 'selected="selected"';
                         }
+
                     }
                     else if($objFields->fields['type'] == 'file'){ //set hasFileField
                         $this->hasFileField = true;
