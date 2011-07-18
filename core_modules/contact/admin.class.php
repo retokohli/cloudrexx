@@ -424,31 +424,21 @@ class ContactManager extends ContactLib
                     $this->_objTpl->parse('contact_form_entry_data');
 
                     $colNr  = 0;
-                    $langId = $arrEntry['langId'];                    
+                    $langId = $arrEntry['langId']; 
                     foreach ($arrCols as $col) {
                         if ($colNr == $maxFields) {
                             break;
                         }
-                        
+
                         if (isset($arrEntry['data'][$col])) {
                             if (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'file') {
-                                $file = $arrEntry['data'][$col];
-                                if (isset($file)) {
-// TODO: Add support for multiple uploaded files
-                                    if (preg_match('/^a:2:{/', $file)) {
-                                        $file = unserialize($file);
-                                    } else {
-                                        $file = array(
-                                                'path' => $file,
-                                                'name' => basename($file)
-                                        );
+                                $fileData = $arrEntry['data'][$col];
+                                if($fileData) { 
+                                    //new style entry; multiple files and links
+                                    $arrFiles = explode('*', $fileData);
+                                    foreach($arrFiles as $file) {
+                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file).'</a>&nbsp;';
                                     }
-                                    $fileHref = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
-                                    $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
-                                    $fileValue = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                                    $value = '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
-                                } else {
-                                    $value = '&nbsp;';
                                 }
                             } elseif (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'recipient') {
                                 $recipient = $this->getRecipients($formId, false);
@@ -1135,10 +1125,21 @@ class ContactManager extends ContactLib
             
             // do the fields
             $fields = $this->_getFormFieldsFromPost();
+            $fileFieldFound = false;
 
-// TODO: Add a check to prevent the setup of more than one upload field. There is no support for multiple upload fields yet!
             $formFieldIDs = array();
             foreach ($fields as $field) {
+                if($arrField['type'] == 'file') {
+                    if(!$fileFieldFound) { //first time running into a file field
+                        $fileFieldFound = true;
+                    }
+                    else { //multiple file fields in this form - we do not want this
+                        $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_MULTIPLE_UPLOAD_FIELDS'];
+                        $this->_modifyForm();
+                        return;
+                    }
+                }
+
                 if ($field['editType'] == 'new') {
                     $formFieldIDs[] = $this->addFormField($formId, $field);
                 } else {
@@ -1810,22 +1811,20 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'file':
-                    $file = $arrEntry['data'][$key];
-                    if (isset($file)) {
-// TODO: Add support for multiple files
-                        if (preg_match('/^a:2:{/', $file)) {
-                            $file = unserialize($file);
-                        } else {
-                            $file = array(
-                                    'path' => $file,
-                                    'name' => basename($file)
-                            );
+                    if(isset($arrEntry['data'][$key])) {
+                        $fieldData = $arrEntry['data'][$key];
+                        if(substr($fieldData,0,1) == '*') {
+                            $arrFiles = explode('*', substr($fieldData,1)); //the substr kills the leading '*';
+                            foreach($arrFiles as $file) {
+                                $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($file, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                                $sourcecode .= '&nbsp;';
+                            }
                         }
-                        $fileHref    = 'index.php?cmd=media&archive=content&act=download&path='.ASCMS_PATH_OFFSET.dirname(htmlentities($file['path'])).'/&file='.basename(htmlentities($file['path']));
-                        $fileOnclick = 'return confirm(\''.str_replace("\n", '\n', addslashes($_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'])).'\')';
-                        $fileValue   = htmlentities($file['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                        $sourcecode .= '<a href="'.$fileHref.'" onclick="'.$fileOnclick.'">'.$fileValue.'</a>';
-                    } else {
+                        else {
+                            $sourcecode .= '<a href="'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.ASCMS_PATH_OFFSET.htmlentities($fieldData, ENT_QUOTES, CONTREXX_CHARSET).'</a>';
+                        }
+                    }
+                    else {
                         $sourcecode .= '&nbsp;';
                     }
                     break;
