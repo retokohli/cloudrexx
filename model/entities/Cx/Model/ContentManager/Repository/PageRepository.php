@@ -181,4 +181,30 @@ class PageRepository extends EntityRepository {
 
         return $result;
     }
+
+    /**
+     * Get a pages' path. Quite costly
+     * @todo should be rewritten to use a custom query on heavy usage
+     *     
+     * @param \Cx\Model\ContentManager\Page $page
+     * @return string path, e.g. '/This/Is/It'
+     */
+    public function getPath($page) {
+        $lang = $page->getLang();
+        $node = $page->getNode();
+        $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $pathNodes = $nodeRepo->getPath($node);
+        
+        $path = '';
+        foreach($pathNodes as $node) {
+            $pages = $node->getPagesByLang();
+            $thePageInOurLang = $pages[$page->getLang()];
+            
+//TODO: what happens if $thePageInOurLang is still null?
+//      This should be restricted by the content manager.
+            $path .= '/'.$thePageInOurLang->getTitle();
+        }
+
+        return $path;
+    }
 }
