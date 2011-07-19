@@ -4,7 +4,10 @@ include_once('../testCases/DoctrineTestCase.php');
 class PageTest extends DoctrineTestCase
 {
     public function testLoggable() {
+        $root = new \Cx\Model\ContentManager\Node();
         $n = new \Cx\Model\ContentManager\Node();
+
+        $n->setParent($root);
 
         $p = new \Cx\Model\ContentManager\Page();
 
@@ -13,6 +16,7 @@ class PageTest extends DoctrineTestCase
         $p->setNode($n);
         $p->setUsername('user');
 
+        self::$em->persist($root);
         self::$em->persist($n);
 
         self::$em->persist($p);

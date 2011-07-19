@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Navigation
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
@@ -15,7 +14,7 @@
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
-
+require_once ASCMS_CORE_PATH.'/NavigationPageTree.class.php';
 /**
  * Class Navigation
  *
@@ -48,18 +47,22 @@ class Navigation
     public $topLevelPageId;
     public $_menuIndex = 0;
 
+    protected $page = null;
+
 
     /**
     * Constructor
     * @global   integer
     * @param     integer  $pageId
+    * @param Cx\Model\ContentManager\Page $page
     */
-    function __construct($pageId)
+    function __construct($pageId, $page)
     {
         global $_LANGID;
 
         $this->langId = $_LANGID;
         $this->pageId = $pageId;
+        $this->page = $page;
         $this->_initialize();
         $this->_getParents();
         // $parcat is the starting parent id
@@ -218,7 +221,6 @@ class Navigation
                 $objResult->MoveNext();
             }
             ksort($this->table);
-
             // generate page tree
             if (count($this->arrPages)>1) {
                 while (count($this->arrPages) > 1) {
@@ -316,7 +318,10 @@ class Navigation
             $navigation = $this->_buildDropDownNavigation($this->arrPages[0],1, true);
             return  ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $navigation, $templateContent);
         } elseif (isset($this->_objTpl->_blocks['navigation'])) {
-            $this->_buildNavigation();
+            //$this->_buildNavigation();
+            $navi = new NavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi->setTemplate($this->_objTpl);
+            $navi->render();
         } elseif (isset($this->_objTpl->_blocks['nested_navigation'])) {
             // Create a nested list, formatted with ul and li-Tags
             $nestedNavigation = $this->_buildNestedNavigation();
@@ -388,8 +393,7 @@ class Navigation
                         if ($this->data[$id]['status'] == 'on') {
                             // gets the style sheets value for active or inactive
                             $style = ($activeTree) ? $this->styleNameActive : $this->styleNameNormal;
-                            // get information about the next level id -> down or empty
-                            // $levelInfo = (($level > $nextlevel) OR $activeTree AND $id <> $this->pageId) ? $this->levelInfo : "";
+                            // get information about the next level id -> down or empty                            // $levelInfo = (($level > $nextlevel) OR $activeTree AND $id <> $this->pageId) ? $this->levelInfo : "";
 
                             $levelInfo = ($level > $nextlevel) ? $this->levelInfo : "";
                             $target = empty($this->data[$id]['target']) ? "_self" : $this->data[$id]['target'];

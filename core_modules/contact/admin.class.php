@@ -2104,7 +2104,10 @@ class ContactManager extends ContactLib
                 $nodeId = intval($_REQUEST['pageId']);
                 $node = $pageRepo->findOneBy(array('id' => $nodeId));
             } else {
-                $node = $nodeRepo->getRoot();
+                $root = $nodeRepo->getRoot();
+                $node = new \Cx\Model\ContentManager\Node();
+                $node->setParent($root);                
+                $this->em->persist($node);
             }
 //TODO: handle $node == null ( => node not found )
            

@@ -340,13 +340,16 @@ $frontEditingContent    = isset($_REQUEST['previewContent']) ? preg_replace('/\[
     $themesPages['content'] = '{CONTENT_TEXT}';
     $themesPages['home']    = '{CONTENT_TEXT}';
 }
+
+$page = null;
+
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 //TODO: history (empty($history) ? )
     $em = Env::em();
     $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
     $page = $pageRepo->findOneBy(array(
         'id' => $pageId
-                                       ));
+    ));
     
     $qb = $em->createQueryBuilder();
     $qb->add('select', 'p')
@@ -465,8 +468,7 @@ if (!empty($page_redirect)){
 }
 
 // Initialize the navigation
-$objNavbar  = new Navigation($pageId);
-
+$objNavbar  = new Navigation($pageId, $page);
 //-------------------------------------------------------
 // Start page or default page for no section
 //-------------------------------------------------------
@@ -684,7 +686,6 @@ if (MODULE_INDEX < 2) {
         $page_template = str_replace('{EVENTS_FILE}', $calHeadlines, $page_template);
     }
 }
-
 
 //-------------------------------------------------------
 // Get immo headline
@@ -1656,7 +1657,6 @@ switch ($plainSection) {
     default:
         $objTemplate->setVariable('CONTENT_TEXT', $page_content);
 }
-
 //-------------------------------------------------------
 // show shop navbar on each page
 //-------------------------------------------------------
@@ -1843,6 +1843,7 @@ $objTemplate->setVariable(array(
 //$socialNetworkTemplater = new SocialNetworks($_CONFIG['domainUrl'].$objInit->getCurrentPageUri());
 //set Social Network template variables
 $objTemplate->setVariable('SN_FACEBOOK_LIKE', 'aaaa');
+
 
 if ($objTemplate->blockExists('access_logged_in')) {
     $objFWUser = FWUser::getFWUserObject();

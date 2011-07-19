@@ -65,6 +65,7 @@ class PageRepository extends EntityRepository {
 
         //join the pages
         $qb->leftJoin('node.pages', 'p', $joinConditionType, $joinCondition);
+        $qb->andWhere($qb->expr()->gt('node.lvl', 0)); //exclude root node
 
         //get all nodes
         $tree = $repo->children($rootNode, false, 'lft', 'ASC', $qb);
@@ -83,28 +84,45 @@ class PageRepository extends EntityRepository {
 
         $result = array();
 
-        $this->treeByTitle($tree[0], $result);
+        $isRootQuery = !$rootNode || ( isset($rootNode) && $rootNode->getLvl() == 0); 
+
+        if($isRootQuery) {
+            /*
+              special case: there are several childs of rootNode, but the rootNode itself is not in the resultset - we need to build the tree with all direct childs in mind
+             */
+            foreach($tree as $node) {
+                $lang2arr = null;
+                if($node->getLvl() == 1) {
+                    echo "calling....\n\n";
+                    $this->treeByTitle($node, $result);
+                    DoctrineDebug::dump($result);
+                    echo "\n\n...finished.";
+                }
+            }
+        }
+        else { //the root node is at $tree[0]
+            $this->treeByTitle($tree[0], $result);
+        }
 
         return $result;
     }
 
     protected function treeByTitle($root, &$result, &$lang2arr = null) {
-        if(!$lang2arr)
+        if(!$lang2arr) //may not be set on first call
             $lang2arr = $result;
 
         $myLang2arr = array();
-
         //(I) get titles of all Pages linked to this Node
         $pages = $root->getPages();
         foreach($pages as $page) {
             $title = $page->getTitle();
             $lang = $page->getLang();
-
-            if($lang2arr) //this won't be set for the root node
+            
+            if($lang2arr) //this won't be set for the first node
                 $target = &$lang2arr[$lang];
             else
                 $target = &$result;
-
+            
             if(isset($target[$title])) { //another language's Page has the same title
                 //add the language
                 $target[$title]['__data']['lang'][] = $lang;
@@ -112,15 +130,15 @@ class PageRepository extends EntityRepository {
             else {
                 $target[$title] = array();
                 $target[$title]['__data'] = array(
-                    'lang' => array($lang),
-                    'page' => $page,
-                    'node' => $root,
-                );
+                                                  'lang' => array($lang),
+                                                  'page' => $page,
+                                                  'node' => $root,
+                                                  );
             }
             //remember mapping for recursion
             $myLang2arr[$lang] = &$target[$title];
         }
-
+        
         //(II) recursion for child Nodes
         foreach($root->getChildren() as $child) {
             $this->treeByTitle($child, $result, $myLang2arr);

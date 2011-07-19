@@ -7,6 +7,8 @@ class PageRepositoryTest extends DoctrineTestCase
 {
     public function testTree() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+
+        $root = new \Cx\Model\ContentManager\Node();
         
         $n1 = new \Cx\Model\ContentManager\Node();
         $n2 = new \Cx\Model\ContentManager\Node();
@@ -14,6 +16,7 @@ class PageRepositoryTest extends DoctrineTestCase
         $n4 = new \Cx\Model\ContentManager\Node();
         $n5 = new \Cx\Model\ContentManager\Node();
 
+        $n1->setParent($root);
         $n2->setParent($n1);
         $n3->setParent($n2);
         $n4->setParent($n1);
@@ -49,6 +52,7 @@ class PageRepositoryTest extends DoctrineTestCase
         $p5->setNode($n3);
         $p5->setUsername('user');
 
+        self::$em->persist($root);
         self::$em->persist($n1);
         self::$em->persist($n2);
         self::$em->persist($n3);
@@ -76,13 +80,13 @@ class PageRepositoryTest extends DoctrineTestCase
         //(I) check if we got the correct translation
         $lang1Page = $tree[0]->getPages();
         $lang1Page = $lang1Page[0];
-        $this->assertEquals($lang1Page->getTitle(), 'testpage1');
+        $this->assertEquals('testpage1', $lang1Page->getTitle());
         //(II) do the same for childs
-        $childNode = $tree[0]->getChildren();
+        $childNode = $lang1Page->getNode()->getChildren();
         $childNode = $childNode[0];
         $lang1Page = $childNode->getPages();
         $lang1Page = $lang1Page[0];
-        $this->assertEquals($lang1Page->getTitle(), 'testpage1_child');        
+        $this->assertEquals('testpage1_child', $lang1Page->getTitle());        
                 
         //page count as expected?
         $this->assertEquals(1, count($tree[0]->getPages()));
@@ -104,10 +108,14 @@ class PageRepositoryTest extends DoctrineTestCase
     public function testTreeByTitle() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         
+        $root = new \Cx\Model\ContentManager\Node();
         $n1 = new \Cx\Model\ContentManager\Node();
         $n2 = new \Cx\Model\ContentManager\Node();
+        $n3 = new \Cx\Model\ContentManager\Node();
 
+        $n1->setParent($root);
         $n2->setParent($n1);
+        $n3->setParent($root);
 
         $p1 = new \Cx\Model\ContentManager\Page();     
         $p1->setLang(1);
@@ -133,20 +141,34 @@ class PageRepositoryTest extends DoctrineTestCase
         $p4->setNode($n2);
         $p4->setUsername('user');
 
+        $p5 = new \Cx\Model\ContentManager\Page();     
+        $p5->setLang(1);
+        $p5->setTitle('otherRootChild');
+        $p5->setNode($n3);
+        $p5->setUsername('user');
+
+        self::$em->persist($root);
+
         self::$em->persist($n1);
         self::$em->persist($n2);
+        self::$em->persist($n3);
 
         self::$em->persist($p1);
         self::$em->persist($p2);
         self::$em->persist($p3);
         self::$em->persist($p4);
+        self::$em->persist($p5);
 
         self::$em->flush();
 
         //make sure we re-fetch a correct state
         self::$em->clear();
 
+        echo "start\n\n\n";
         $tree = $repo->getTreeByTitle();
+        echo "\n\n\nend";
+        DoctrineDebug::dump($tree);
+        echo "\n\n\nend";
 
         //check node assigning
         $this->assertInstanceOf('Cx\Model\ContentManager\Node', $tree['rootTitle_1'][$repo::DataProperty]['node']);
@@ -157,15 +179,23 @@ class PageRepositoryTest extends DoctrineTestCase
 
         //check children
         $this->assertInstanceOf('Cx\Model\ContentManager\Node', $tree['rootTitle_2']['childTitle'][$repo::DataProperty]['node']);
+
+        //check child of second node attached to root (special case in algorithm)
+        $this->assertInstanceOf('Cx\Model\ContentManager\Node', $tree['otherRootChild'][$repo::DataProperty]['node']);
     }
 
     public function testPagesAtPath() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        
+
+        $root = new \Cx\Model\ContentManager\Node();
+
         $n1 = new \Cx\Model\ContentManager\Node();
         $n2 = new \Cx\Model\ContentManager\Node();
+        $n3 = new \Cx\Model\ContentManager\Node();
 
+        $n1->setParent($root);
         $n2->setParent($n1);
+        $n3->setParent($root);
 
         $p1 = new \Cx\Model\ContentManager\Page();     
         $p1->setLang(1);
@@ -191,13 +221,23 @@ class PageRepositoryTest extends DoctrineTestCase
         $p4->setNode($n2);
         $p4->setUsername('user');
 
+        $p5 = new \Cx\Model\ContentManager\Page();     
+        $p5->setLang(1);
+        $p5->setTitle('otherRootChild');
+        $p5->setNode($n3);
+        $p5->setUsername('user');
+
+
+        self::$em->persist($root);
         self::$em->persist($n1);
         self::$em->persist($n2);
+        self::$em->persist($n3);
 
         self::$em->persist($p1);
         self::$em->persist($p2);
         self::$em->persist($p3);
         self::$em->persist($p4);
+        self::$em->persist($p5);
 
         self::$em->flush();
 
@@ -239,6 +279,11 @@ class PageRepositoryTest extends DoctrineTestCase
         //given lang matching
         $match = $repo->getPagesAtPath('rootTitle_1', null, 1);
         $this->assertEquals('rootTitle_1',$match['matchedPath']);
+        $this->assertInstanceOf('Cx\Model\ContentManager\Page',$match['page']);
+
+        //second other child of root node
+        $match = $repo->getPagesAtPath('otherRootChild', null, 1);
+        $this->assertEquals('otherRootChild',$match['matchedPath']);        
         $this->assertInstanceOf('Cx\Model\ContentManager\Page',$match['page']);
     }
 
@@ -333,10 +378,10 @@ class PageRepositoryTest extends DoctrineTestCase
 
         //make sure we re-fetch a correct state
         self::$em->clear();
+        self::$em->getRepository('Cx\Model\ContentManager\Node')->verify();
 
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
 
-        self::$em->getRepository('Cx\Model\ContentManager\Node')->verify();
 
         $page = $pageRepo->findOneById($p2->getId());
       
