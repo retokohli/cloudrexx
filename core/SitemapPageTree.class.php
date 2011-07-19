@@ -1,22 +1,11 @@
 <?php
-require_once(ASCMS_CORE_PATH.'/PageTree.class.php');
-
-class SitemapPageTree extends PageTree {
-    
-    protected $template = null;
-
+require_once(ASCMS_CORE_PATH.'/SigmaPageTree.class.php');
+class SitemapPageTree extends SigmaPageTree {
     protected $spacer = null;
     const cssPrefix = "sitemap_level";
     const subTagStart = "<ul>";
     const subTagEnd = "</ul>";
    
-    /**
-     * @param $template the PEAR template.
-     */
-    public function setTemplate($template) {
-        $this->template = $template;
-    }
-
     protected function renderHeader() {
     }
     protected function renderElement($title, $level, $hasChilds, $lang, $path) {
