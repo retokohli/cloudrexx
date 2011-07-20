@@ -259,8 +259,6 @@ class PageRepository extends EntityRepository {
                   )
             );
         $qb->setParameter('searchString', '%'.$string.'%');
-        
-        $pages = $qb->getQuery()->getResult();
 
         $config = \Env::get('config');
 
@@ -274,5 +272,7 @@ class PageRepository extends EntityRepository {
                 'Link' => $this->getPath($page)
             );
         }
+
+        return $results;
     }
 }
