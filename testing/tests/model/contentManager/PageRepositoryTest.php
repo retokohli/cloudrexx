@@ -164,11 +164,7 @@ class PageRepositoryTest extends DoctrineTestCase
         //make sure we re-fetch a correct state
         self::$em->clear();
 
-        echo "start\n\n\n";
         $tree = $repo->getTreeByTitle();
-        echo "\n\n\nend";
-        DoctrineDebug::dump($tree);
-        echo "\n\n\nend";
 
         //check node assigning
         $this->assertInstanceOf('Cx\Model\ContentManager\Node', $tree['rootTitle_1'][$repo::DataProperty]['node']);
@@ -259,6 +255,8 @@ class PageRepositoryTest extends DoctrineTestCase
         //3 levels, 2 in tree
         $match = $repo->getPagesAtPath('rootTitle_2/childTitle/asdfasdf');        
         $this->assertEquals('rootTitle_2/childTitle/',$match['matchedPath']);
+        // check unmatched path too
+        $this->assertEquals('asdfasdf',$match['unmatchedPath']);
         $this->assertInstanceOf('Cx\Model\ContentManager\Page',$match['pages'][3]);
         $this->assertEquals(array(3),$match['lang']);
 
