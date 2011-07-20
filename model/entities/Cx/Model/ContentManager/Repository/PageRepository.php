@@ -93,10 +93,7 @@ class PageRepository extends EntityRepository {
             foreach($tree as $node) {
                 $lang2arr = null;
                 if($node->getLvl() == 1) {
-                    echo "calling....\n\n";
                     $this->treeByTitle($node, $result);
-                    DoctrineDebug::dump($result);
-                    echo "\n\n...finished.";
                 }
             }
         }
@@ -108,9 +105,6 @@ class PageRepository extends EntityRepository {
     }
 
     protected function treeByTitle($root, &$result, &$lang2arr = null) {
-        if(!$lang2arr) //may not be set on first call
-            $lang2arr = $result;
-
         $myLang2arr = array();
         //(I) get titles of all Pages linked to this Node
         $pages = $root->getPages();
@@ -153,7 +147,8 @@ class PageRepository extends EntityRepository {
      * @param int $lang
      * @param boolean $exact if true, returns null on partially matched path
      * @return array ( 
-     *     matchedPath => string (e.g. 'Hello/APage'),
+     *     matchedPath => string (e.g. 'Hello/APage/'),
+     *     unmatchedPath => string (e.g. 'AModuleObject') | null,
      *     node => Node,
      *     lang => array (the langIds where this matches)
      * )
@@ -184,8 +179,14 @@ class PageRepository extends EntityRepository {
         if($matchedLen == 0)
             return null;
 
+        $unmatchedPath = substr($path, $matchedLen);
+        if(!$unmatchedPath) { //beautify the FALSE to null
+            $unmatchedPath = null;
+        }
+
         $result = array(
             'matchedPath' => substr($path, 0, $matchedLen),
+            'unmatchedPath' => $unmatchedPath
         );
         if(!$lang) {
             $result['pages'] = $treePointer['__data']['node']->getPagesByLang();
