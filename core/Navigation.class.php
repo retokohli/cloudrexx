@@ -335,7 +335,6 @@ class Navigation
             $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();            
-            Logger::getInstance()->dump($renderedNavi);
 
             return ereg_replace('<!-- BEGIN nested_navigation -->.*<!-- END nested_navigation -->', $renderedNavi, $templateContent);
         }
