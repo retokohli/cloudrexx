@@ -226,4 +226,53 @@ class PageRepository extends EntityRepository {
 
         return $path;
     }
+
+    /**
+     * Searches the content and returns an array that is built as needed by the search module.
+     *
+     * Please do not use this anywhere else, write a search method with proper results instead. Ideally, this
+     * method would then be invoked by searchResultsForSearchModule().
+     *
+     * @param string $string the string to match against.
+     * @return array (
+     *     'Score' => int 
+     *     'Title' => string
+     *     'Content' => string
+     *     'Link' => string
+     * )
+     */
+    public function searchResultsForSearchModule($string) {
+        if($string == '')
+            return array();
+
+//TODO: use MATCH AGAINST for score 
+//      Doctrine can be extended as mentioned in http://groups.google.com/group/doctrine-user/browse_thread/thread/69d1f293e8000a27
+//TODO: shorten content in query rather than in php
+
+        $qb = $this->em->createQueryBuilder();
+        $qb->add('select', 'p')
+            ->add('from', 'Cx\Model\ContentManager\Page p')
+            ->add('where', 
+                  $qb->expr()->orx(
+                      $qb->expr()->like('p.content', ':searchString'),
+                      $qb->expr()->like('p.title', ':searchString')
+                  )
+            );
+        $qb->setParameter('searchString', '%'.$string.'%');
+        
+        $pages = $qb->getQuery()->getResult();
+
+        $config = \Env::get('config');
+
+        $results = array();        
+        foreach($pages as $page) {
+            $results[] = array(
+                'Score' => 100,
+                'Title' => $page->getTitle(),
+                'Content' => substr($page->getTitle(),0, $config['searchDescriptionLength']),
+//TODO: awww this is sooo costly. @see getPath()
+                'Link' => $this->getPath($page)
+            );
+        }
+    }
 }

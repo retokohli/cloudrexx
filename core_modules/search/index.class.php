@@ -49,7 +49,7 @@ function search_getSearchPage($pos, $page_content)
 
 		$term = contrexx_addslashes(trim($_REQUEST['term']));
 		$querynews=search_searchQuery("news",$term);
-		$query=search_searchQuery("content",$term);
+		//$query=search_searchQuery("content",$term);
 
 		if (in_array('docsys', $arrActiveModules)) {
 			$querydocsys = search_searchQuery("docsys",$term);
@@ -82,7 +82,10 @@ function search_getSearchPage($pos, $page_content)
     }
 
     //Prm: Query,Section,Cmd,PageVar
-    $arrayContent=search_getResultArray($query,"","","page=",$term);
+    //$arrayContent=search_getResultArray($query,"","","page=",$term);
+    $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+    $arrayContent = $pageRepo->searchResultsForSearchModule($term);
+    
     $arrayNews=search_getResultArray($querynews,"news","details","newsid=",$term);
     $arrayDocsys = array();
     $arrayShopProducts = array();
@@ -491,7 +494,7 @@ function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
 	        //$shortcontent = preg_replace("'$term'i","<b><i>\\0</i></b>",$shortcontent);
 	        $score=$objResult->fields['score'];
 	        $score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
-	        //Muss noch ge�ndert werden, sobald das Ranking bei News funktioniert!!!
+//TODO: Muss noch geändert werden, sobald das Ranking bei News funktioniert!!!
 	        $score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
 		$date = isset($objResult->fields['date']) ? $objResult->fields['date'] : null;
 	        $searchtitle=!empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];

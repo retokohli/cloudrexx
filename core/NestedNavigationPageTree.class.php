@@ -83,7 +83,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
     }
     protected function renderFooter() {
         //append closing tags for last element
-        $output = $this->getClosingTags($level);
+        $output = $this->getClosingTags();
         //wrap everything in an <ul>
         $output .= "</ul>";
 
@@ -94,6 +94,6 @@ class NestedNavigationPageTree extends SigmaPageTree {
         if($this->lastLevel == 0 || $level >= $this->lastLevel)
             return '';
 
-        return str_repeat("\n</ul>\n</li>", $level - $this->lastLevel);
+        return str_repeat("\n</ul>\n</li>", $this->lastLevel - $level);
     }
 }
