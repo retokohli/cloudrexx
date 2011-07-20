@@ -47,7 +47,8 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
      * @return string
      */
     public function render() {
-        $content = $this->addContentIfPresent($this->renderHeader($this->lang)); 
+        $content = $this->addContentIfPresent($this->preRender($this->lang));
+        $content .= $this->addContentIfPresent($this->renderHeader($this->lang)); 
         $content .= $this->addContentIfPresent($this->internalRender($this->tree, ''));
         $content .= $this->addContentIfPresent($this->renderFooter($this->lang));
         $content .= $this->addContentIfPresent($this->postRender($this->lang));
@@ -73,7 +74,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
                 $current = substr($this->currentPagePath, 0, strlen($pathOfThis)) == $pathOfThis;                
             }
 
-            $content += $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current);
+            $content .= $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current);
 
             if($hasChilds)
                 $content += $this->internalRender($elem['__childs'], $pathOfThis, $level+1);
@@ -102,6 +103,9 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         return '';
     }
     protected function renderFooter($lang) {
+        return '';
+    }
+    protected function preRender($lang) {
         return '';
     }
     protected function postRender($lang) {
