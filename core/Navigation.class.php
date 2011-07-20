@@ -15,6 +15,7 @@
  */
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 require_once ASCMS_CORE_PATH.'/NavigationPageTree.class.php';
+require_once ASCMS_CORE_PATH.'/DropdownNavigationPageTree.class.php';
 /**
  * Class Navigation
  *
@@ -315,8 +316,13 @@ class Navigation
                 $templateContent = ereg_replace('<!-- BEGIN sub_menu -->.*<!-- END sub_menu -->', NULL, $templateContent);
             }
 
-            $navigation = $this->_buildDropDownNavigation($this->arrPages[0],1, true);
-            return  ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $navigation, $templateContent);
+            //$this->_buildDropDownNavigation($this->arrPages[0],1, true);
+
+            $navi = new DropdownNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi->setTemplate($this->_objTpl);
+            $renderedNavi = $navi->render();
+
+            return  ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
         } elseif (isset($this->_objTpl->_blocks['navigation'])) {
             //$this->_buildNavigation();
             $navi = new NavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);

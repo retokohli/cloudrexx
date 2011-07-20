@@ -47,14 +47,20 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
      * @return string
      */
     public function render() {
-        $content = $this->renderHeader($this->lang); 
-        $content += $this->internalRender($this->tree, '');
-        $content += $this->renderFooter($this->lang);
-        $content += $this->postRender($this->lang);
+        $content = $this->addContentIfPresent($this->renderHeader($this->lang)); 
+        $content .= $this->addContentIfPresent($this->internalRender($this->tree, ''));
+        $content .= $this->addContentIfPresent($this->renderFooter($this->lang));
+        $content .= $this->addContentIfPresent($this->postRender($this->lang));
         return $content;
     }
 
-    private function internalRender(&$elems, $path, $level = 0) {
+    private function addContentIfPresent($content) {
+        if($content)
+            return $content;
+        return null;
+    }
+
+    private function internalRender(&$elems, $path, $level = 1) {
         $content = '';
         foreach($elems as $title => &$elem) {
             $hasChilds = isset($elem['__childs']);
