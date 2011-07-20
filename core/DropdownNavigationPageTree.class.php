@@ -41,6 +41,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
 //TODO: target
 //TODO: cssName
 
+            $output = str_replace('{TARGET}', '_self', $output);
             $output = str_replace('{STYLE}', $style, $output);
             $output = str_replace('{URL}', $path, $output);
             $output = str_replace('{NAME}', $title, $output);

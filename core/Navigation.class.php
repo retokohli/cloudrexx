@@ -16,6 +16,7 @@
 require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 require_once ASCMS_CORE_PATH.'/NavigationPageTree.class.php';
 require_once ASCMS_CORE_PATH.'/DropdownNavigationPageTree.class.php';
+require_once ASCMS_CORE_PATH.'/NestedNavigationPageTree.class.php';
 /**
  * Class Navigation
  *
@@ -329,10 +330,14 @@ class Navigation
             $navi->setTemplate($this->_objTpl);
             $navi->render();
         } elseif (isset($this->_objTpl->_blocks['nested_navigation'])) {
-            // Create a nested list, formatted with ul and li-Tags
-            $nestedNavigation = $this->_buildNestedNavigation();
+            // Creae a nested list, formatted with ul and li-Tags
+            //$nestedNavigation = $this->_buildNestedNavigation();
+            $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi->setTemplate($this->_objTpl);
+            $renderedNavi = $navi->render();            
+            Logger::getInstance()->dump($renderedNavi);
 
-            return ereg_replace('<!-- BEGIN nested_navigation -->.*<!-- END nested_navigation -->', $nestedNavigation, $templateContent);
+            return ereg_replace('<!-- BEGIN nested_navigation -->.*<!-- END nested_navigation -->', $renderedNavi, $templateContent);
         }
         return $this->_objTpl->get();
     }
