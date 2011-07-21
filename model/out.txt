@@ -1,9 +1,0 @@
-Processing entity "Cx\Model\ContentManager\Skin"
-Processing entity "Cx\Model\ContentManager\Page"
-Processing entity "Cx\Model\ContentManager\Node"
-Processing entity "Gedmo\Loggable\Entity\AbstractLogEntry"
-Processing entity "Gedmo\Loggable\Entity\LogEntry"
-Processing entity "Gedmo\Translatable\Entity\AbstractTranslation"
-Processing entity "Gedmo\Translatable\Entity\Translation"
-
-Entity classes generated to "/home/srz/buegu/cm_2_3/model/entities"
