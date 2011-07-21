@@ -652,6 +652,19 @@ if ($_CONFIG['blockStatus'] == '1') {
                 $objBlock->setBlockRandom($themesPages['sidebar'], 3);
             }
 
+            //randomizer block 4
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_4}/', $page_content)) {
+                $objBlock->setBlockRandom($page_content, 4);
+            }
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_4}/', $page_template)) {
+                $objBlock->setBlockRandom($page_template, 4);
+            }
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_4}/', $themesPages['index'])) {
+                $objBlock->setBlockRandom($themesPages['index'], 4);
+            }
+            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_}/', $themesPages['sidebar'])) {
+                $objBlock->setBlockRandom($themesPages['sidebar'], 4);
+            }
         }
     }
 }
