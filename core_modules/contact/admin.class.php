@@ -508,7 +508,7 @@ class ContactManager extends ContactLib
                 'TXT_CONTACT_GET_CSV'                       => $_ARRAYLANG['TXT_CONTACT_GET_CSV'],
                 'TXT_CONTACT_DOWNLOAD'                      => $_ARRAYLANG['TXT_CONTACT_DOWNLOAD']
         ));
-
+        
         $rowNr = 0;
         if (is_array($this->arrForms)) {
             foreach ($this->arrForms as $formId => $arrForm) {
@@ -661,6 +661,7 @@ class ContactManager extends ContactLib
         $useCustomStyle = 0;
         $sendCopy       = 0;
         $sendHtmlMail   = 1;
+        $sendAttachment = 0;
         $emails         = '';
 
         $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
@@ -673,6 +674,7 @@ class ContactManager extends ContactLib
             $useCustomStyle = $this->arrForms[$formId]['useCustomStyle'];
             $sendCopy       = $this->arrForms[$formId]['sendCopy'];
             $sendHtmlMail   = $this->arrForms[$formId]['htmlMail'];
+            $sendAttachment = $this->arrForms[$formId]['sendAttachment'];
             $emails         = $this->arrForms[$formId]['emails'];
         }
 
@@ -890,6 +892,7 @@ class ContactManager extends ContactLib
             'CONTACT_MAIL_TEMPLATE_STYLE'                   => $sendHtmlMail    ? 'table-row' : 'none',
             'CONTACT_FORM_SEND_COPY_YES'                    => $sendCopy        ? 'checked="checked"' : '',
             'CONTACT_FORM_SEND_COPY_NO'                     => $sendCopy        ? '' : 'checked="checked"',
+            'CONTACT_FORM_SEND_ATTACHMENT'                  => $sendAttachment  ? 'checked="checked"' : '',
             'CONTACT_FORM_EMAIL'                            => contrexx_raw2xhtml($emails),
             'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
             'FORM_COPY'                                     => intval($copy),
@@ -916,6 +919,7 @@ class ContactManager extends ContactLib
             'TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'      => $_ARRAYLANG['TXT_CONTACT_RECEIVER_ADDRESSES_SELECTION'],
             'TXT_CONTACT_SAVE'                              => $_ARRAYLANG['TXT_CONTACT_SAVE'],
             'TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA'],
+            'TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'       => $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'],
             'TXT_CONTACT_FORM_DESC'                         => $_ARRAYLANG['TXT_CONTACT_FORM_DESC'],
             'TXT_CONTACT_FEEDBACK'                          => $_ARRAYLANG['TXT_CONTACT_FEEDBACK'],
             'TXT_CONTACT_VALUE_S'                           => $_ARRAYLANG['TXT_CONTACT_VALUE_S'],
@@ -933,6 +937,7 @@ class ContactManager extends ContactLib
             'TXT_CONTACT_CAPTCHA_DESCRIPTION'               => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
             'TXT_CONTACT_SEND_COPY_DESCRIPTION'             => $_ARRAYLANG['TXT_CONTACT_SEND_COPY_DESCRIPTION'],
             'TXT_CONTACT_SEND_COPY'                         => $_ARRAYLANG['TXT_CONTACT_SEND_COPY'],
+            'TXT_CONTACT_SEND_ATTACHMENT'                   => $_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT'],
             'TXT_CONTACT_SEND_HTML_MAIL'                    => $_ARRAYLANG['TXT_CONTACT_SEND_HTML_MAIL'],
             'TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'          => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION'],
             'TXT_CONTACT_CUSTOM_STYLE'                      => $_ARRAYLANG['TXT_CONTACT_CUSTOM_STYLE'],
@@ -1056,6 +1061,7 @@ class ContactManager extends ContactLib
             $useCustomStyle = !empty($_POST['contactFormUseCustomStyle']) ? 1 : 0;
             $sendCopy       = !empty($_POST['contactFormSendCopy']) ? 1 : 0;
             $sendHtmlMail   = !empty($_POST['contactFormHtmlMail']) ? 1 : 0;
+            $sendAttachment = !empty($_POST['contactFormSendAttachment']) ? 1 : 0;
             
             if (!$adding) {
                 // This updates the database
@@ -1066,7 +1072,8 @@ class ContactManager extends ContactLib
                         $useCaptcha,
                         $useCustomStyle,
                         $sendCopy,
-                        $sendHtmlMail
+                        $sendHtmlMail,
+                        $sendAttachment
                 );
             } else {
                 $formId = $this->addForm(
@@ -1075,7 +1082,8 @@ class ContactManager extends ContactLib
                         $useCaptcha,
                         $useCustomStyle,
                         $sendCopy,
-                        $sendHtmlMail
+                        $sendHtmlMail,
+                        $sendAttachment
                 );
             }
 

@@ -3975,6 +3975,7 @@ CREATE TABLE `contrexx_module_contact_form` (
   `use_custom_style` tinyint(1) unsigned NOT NULL default '0',
   `send_copy` tinyint(1) NOT NULL default '0',
   `html_mail` tinyint(1) unsigned NOT NULL default '1',
+  `send_attachment` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`)
 ) TYPE=MyISAM ;
 CREATE TABLE `contrexx_module_contact_form_data` (
