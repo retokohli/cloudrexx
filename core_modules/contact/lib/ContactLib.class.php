@@ -71,7 +71,8 @@ class ContactLib
                          `use_captcha`,
                          `use_custom_style`,
                          `send_copy`,
-                         `html_mail`
+                         `html_mail`,
+                         `send_attachment`
                     FROM `'.DBPREFIX.'module_contact_form`';
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
@@ -83,6 +84,7 @@ class ContactLib
                     'useCustomStyle'    => $objResult->fields['use_custom_style'],
                     'sendCopy'          => $objResult->fields['send_copy'],
                     'htmlMail'          => $objResult->fields['html_mail'],
+                    'sendAttachment'    => $objResult->fields['send_attachment'],
                     'recipients'        => $this->getRecipients($objResult->fields['id'], true),
                     'number'            => 0,
                     'last'              => 0
@@ -190,12 +192,12 @@ class ContactLib
         return $this->_arrSettings;
     }
 
-    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$htmlMail)
+    function getContactFormDetails($id, &$arrEmails, &$subject, &$feedback, &$mailTemplate, &$showForm, &$useCaptcha, &$sendCopy, &$htmlMail, &$sendAttachment)
     {
         global $objDatabase, $_CONFIG, $_ARRAYLANG, $_LANGID;
 
         $objContactForm = $objDatabase->SelectLimit("SELECT f.mails, l.subject, l.feedback, l.mailTemplate, f.showForm,
-                                                            f.use_captcha, f.send_copy, f.html_mail
+                                                            f.use_captcha, f.send_copy, f.html_mail, f.send_attachment
                                                      FROM ".DBPREFIX."module_contact_form AS f
                                                      LEFT JOIN ".DBPREFIX."module_contact_form_lang AS l
                                                      ON ( f.id = l.formID )
@@ -213,6 +215,7 @@ class ContactLib
             $useCaptcha          = $objContactForm->fields['use_captcha'];
             $sendCopy            = $objContactForm->fields['send_copy'];
             $htmlMail            = $objContactForm->fields['html_mail'];
+            $sendAttachment      = $objContactForm->fields['send_attachment'];
             return true;
         } else {
             return false;
@@ -579,7 +582,8 @@ class ContactLib
         $useCaptcha,
         $useCustomStyle,
         $sendCopy,
-        $sendHtmlMail
+        $sendHtmlMail,
+        $sendAttachment
     )
     {
         global $objDatabase;
@@ -592,8 +596,9 @@ class ContactLib
                 showForm            = ".$showForm.",
                 use_captcha         = ".$useCaptcha.",
                 use_custom_style    = ".$useCustomStyle.",
-                send_copy           = ".$sendCopy." ,
-                html_mail           = ".$sendHtmlMail."
+                send_copy           = ".$sendCopy.",
+                html_mail           = ".$sendHtmlMail.",
+                send_attachment     = ".$sendAttachment." 
             WHERE 
                 id = ".$formID
         );
@@ -618,7 +623,8 @@ class ContactLib
         $useCaptcha,
         $useCustomStyle,
         $sendCopy,
-        $sendHtmlMail
+        $sendHtmlMail,
+        $sendAttachment
     )
     {
         global $objDatabase, $_FRONTEND_LANGID;
@@ -632,7 +638,8 @@ class ContactLib
                 `use_captcha`,
                 `use_custom_style`,
                 `send_copy`,
-                `html_mail`
+                `html_mail`,
+                `send_attachment`
             )
             VALUES
             (
@@ -641,7 +648,8 @@ class ContactLib
                 ".$useCaptcha.",
                 ".$useCustomStyle.",
                 ".$sendCopy.",
-                ".$sendHtmlMail."
+                ".$sendHtmlMail.",
+                ".$sendAttachment."
             )";
 
         if ($objDatabase->Execute($query) !== false) {

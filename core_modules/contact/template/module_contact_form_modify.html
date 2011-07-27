@@ -7,6 +7,7 @@
     Text[2]=["","{TXT_CONTACT_SEND_COPY_DESCRIPTION}"];
     Text[3]=["","{TXT_CONTACT_CUSTOM_STYLE_DESCRIPTION}"];
     Text[4]=["","{TXT_CONTACT_SEPARATE_MULTIPLE_VALUES_BY_COMMA}"];
+    Text[5]=["","{TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION}"];
 
     var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
     var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
@@ -804,6 +805,10 @@
             <tr class="row2">
                 <td>{TXT_CONTACT_SEND_HTML_MAIL}</td>
                 <td><input type="checkbox" name="contactFormHtmlMail" id="contactFormHtmlMail" {CONTACT_FORM_SEND_HTML_MAIL} /></td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_CONTACT_SEND_ATTACHMENT}&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[5],Style[0])" /></td>
+                <td><input type="checkbox" value="1" name="contactFormSendAttachment" {CONTACT_FORM_SEND_ATTACHMENT}/></td>
             </tr>
             <tr class="mailTemplateBlock" style="display:{CONTACT_MAIL_TEMPLATE_STYLE}"><td><br/></td></tr>
             <tr class="mailTemplateBlock" style="display:{CONTACT_MAIL_TEMPLATE_STYLE}">

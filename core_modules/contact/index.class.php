@@ -550,7 +550,7 @@ class Contact extends ContactLib
         if (isset($_POST) && !empty($_POST)) {
             $arrFormData = array();
             $arrFormData['id'] = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['htmlMail'])) {
+            if ($this->getContactFormDetails($arrFormData['id'], $arrFormData['emails'], $arrFormData['subject'], $arrFormData['feedback'], $arrFormData['mailTemplate'], $arrFormData['showForm'], $arrFormData['useCaptcha'], $arrFormData['sendCopy'], $arrFormData['htmlMail'], $arrFormData['sendAttachment'])) {
                 $arrFormData['fields'] = $this->getFormFields($arrFormData['id']);
                 foreach ($arrFormData['fields'] as $field) {
                     $this->arrFormFields[] = $field['lang'][$_LANGID]['name'];
@@ -1250,6 +1250,11 @@ class Contact extends ContactLib
                     $objMail->AddAddress($replyAddress);
                 }
 
+            }
+            if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
+                foreach ($arrFormData['uploadedFiles'] as $file) {     
+                    $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file, basename($file));
+                }
             }
             $objMail->Subject = $arrFormData['subject'];
 

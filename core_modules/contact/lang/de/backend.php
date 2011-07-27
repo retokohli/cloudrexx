@@ -191,4 +191,6 @@ $_ARRAYLANG['TXT_CONTACT_PROFESSION'] = "Beruf";
 $_ARRAYLANG['TXT_CONTACT_INTERESTS'] = "Interessen";
 $_ARRAYLANG['TXT_CONTACT_SIGNATURE'] = "Unterschrift";
 $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Nicht angegeben";
+$_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT_DESCRIPTION'] = "Bei Aktivierung dieser Option hochgeladene Datei wird als Anhang versendet werden in Benachrichtigungs-E-Mail.";
+$_ARRAYLANG['TXT_CONTACT_SEND_ATTACHMENT'] = "Send Anlage";
 ?>
