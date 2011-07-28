@@ -1251,11 +1251,6 @@ class Contact extends ContactLib
                 }
 
             }
-            if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
-                foreach ($arrFormData['uploadedFiles'] as $file) {     
-                    $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file, basename($file));
-                }
-            }
             $objMail->Subject = $arrFormData['subject'];
 
             if ($isHtml) {
@@ -1266,7 +1261,7 @@ class Contact extends ContactLib
                 $objMail->Body = $message;
             }
 
-            if (count($arrFormData['uploadedFiles']) > 0) {
+            if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
                 foreach ($arrFormData['uploadedFiles'] as $key => $file) {
                     $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file['path'], $file['name']);
                 }
