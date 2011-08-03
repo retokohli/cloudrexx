@@ -162,8 +162,8 @@ function votingShowCurrent($page_content){
 
 		while (!$objResult->EOF) {
 			if ($votingStatus==1 && (($votingMethod == 'email' && !$voted) || ($votingMethod == 'cookie' && $_COOKIE['votingcookie']!='1'))){
-				$votingOptionText .="<input type='radio' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
-			    $votingOptionText .= stripslashes($objResult->fields['question'])."<br />";
+                            $votingOptionText .="<div><input type='radio' id='votingoption_".$objResult->fields['id']."' name='votingoption' value='".$objResult->fields['id']."' ".($_POST["votingoption"] == $objResult->fields['id'] ? 'checked="checked"' : '')." /> ";
+                            $votingOptionText .= "<label for='votingoption_".$objResult->fields['id']."'>".stripslashes($objResult->fields['question'])."</label></div>";
 			}
 			$objResult->MoveNext();
 		}
