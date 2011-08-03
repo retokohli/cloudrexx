@@ -77,6 +77,4 @@ class Contrexx_Content_migration
         }       
     }    
 }
-$obj = new Contrexx_Content_migration();
-$obj->migrate();
 ?>
