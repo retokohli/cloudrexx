@@ -655,6 +655,7 @@ EOF;
 /* <![CDATA[ */                
 
 var \$J = jQuery.noConflict();  
+Shadowbox.loadSkin("classic","lib/javascript/shadowbox/src/skin/");
 EOF;
 
         $strJavascript .= $this->strJavascript;
