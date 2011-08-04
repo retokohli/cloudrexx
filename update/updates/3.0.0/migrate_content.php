@@ -24,7 +24,7 @@ class Contrexx_Content_migration
         self::$em = Env::em();        
         
     }
-    
+   
     public function migrate() 
     {
         global $objDatabase;
@@ -35,8 +35,8 @@ class Contrexx_Content_migration
                                             FROM `'.DBPREFIX.'content` AS content 
                                             INNER JOIN `'.DBPREFIX.'content_navigation` AS nav
                                             ON content.id = nav.catid
-                                            ORDER BY nav.parcat ASC, nav.displayorder ASC');
-
+                                            ORDER BY nav.parcat ASC, nav.displayorder ASC');        
+        
         while (!$objResult->EOF) {
             $n    = new \Cx\Model\ContentManager\Node(); 
             
@@ -51,9 +51,13 @@ class Contrexx_Content_migration
 
             $p = new \Cx\Model\ContentManager\Page();
             
+            // Convert the changelog value from Unix time stamp to date for UpdatedAt function
+            $updatedDate = Date('Y-m-d H:i:s',$objResult->fields['changelog']);
+
             $p->setNode($n); 
             $p->setLang($objResult->fields['lang']);
             $p->setCaching($objResult->fields['cachingstatus']);
+            $p->setUpdatedAt(new DateTime($updatedDate));
             $p->setTitle($objResult->fields['title']);
             $p->setContent($objResult->fields['content']);            
             $p->setCustomContent($objResult->fields['custom_content']);
@@ -62,6 +66,8 @@ class Contrexx_Content_migration
             $p->setMetadesc($objResult->fields['metadesc']);
             $p->setMetakeys($objResult->fields['metakeys']);
             $p->setMetarobots($objResult->fields['metarobots']);
+            $p->setStart(new DateTime($objResult->fields['startdate']));
+            $p->setEnd(new DateTime($objResult->fields['enddate']));
             $p->setUsername($objResult->fields['username']);
             $p->setDisplay(($objResult->fields['displaystatus'] === 'on' ? 1 : 0));
             $p->setActive($objResult->fields['activestatus']);
@@ -72,7 +78,7 @@ class Contrexx_Content_migration
             self::$em->persist($p);
             
             self::$em->flush();
-
+            
             $objResult->MoveNext();
         }       
     }    
