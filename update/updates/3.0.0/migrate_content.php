@@ -21,7 +21,7 @@ class Contrexx_Content_migration
         if (!$objDatabase) {
             die($errorMsg);
         }
-        self::$em = Env::em();        
+        self::$em = Env::em();
         
     }
    
@@ -31,6 +31,8 @@ class Contrexx_Content_migration
         $nodeArr = array ();
         $root = new \Cx\Model\ContentManager\Node();
         
+        $objDatabase->Execute('TRUNCATE TABLE `pages`');
+        $objDatabase->Execute('TRUNCATE TABLE `nodes`');        
         $objResult = $objDatabase->Execute('SELECT content.*, nav.* 
                                             FROM `'.DBPREFIX.'content` AS content 
                                             INNER JOIN `'.DBPREFIX.'content_navigation` AS nav
@@ -76,9 +78,9 @@ class Contrexx_Content_migration
             
             self::$em->persist($n);            
             self::$em->persist($p);
-            
+
             self::$em->flush();
-            
+
             $objResult->MoveNext();
         }       
     }    
