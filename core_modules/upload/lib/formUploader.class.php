@@ -21,13 +21,10 @@ class FormUploader extends Uploader
         //create a file manager
         require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
         $fm = new File();
-
         //make sure target directory exists
         if(!file_exists($tempPath.$targetDir))
             $fm->mkdir($tempPath, $webTempPath, $targetDir);
 
-        $targetDir = $tempPath.$targetDir;
-        
         //move all uploaded file to this upload's temp directory
         foreach($_FILES["uploaderFiles"]["error"] as $key => $error) {
             if($error == UPLOAD_ERR_OK) {
@@ -46,8 +43,11 @@ class FormUploader extends Uploader
                 $originalFileNames[$name] = $originalFileName;
                 $_SESSION[$sessionKey] = $originalFileNames;
                 //end of TODO-region
-                @move_uploaded_file($tmpName,$targetDir.'/'.$name);
                 
+                //move file somewhere we know both the web- and normal path...
+                @move_uploaded_file($tmpName,ASCMS_TEMP_PATH.'/'.$name);    
+                //...then do a safe-mode-safe (yeah) move operation
+                $fm->moveFile(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$name, $tempPath.$targetDir, $webTempPath.$targetDir);
             }
         }
 
