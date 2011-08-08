@@ -157,11 +157,11 @@ class ContactLib
                 'name'  => 'TXT_CONTACT_REGEX_URL'
             ),
 	    /*a bit redundant, because we want a minimum of one non-space character.
-	      the query does a [spaceorchar]*[char]+[spaceorchar]* to ensure this. */
+	      the query does a ^[spaceorchar]*[char]+[spaceorchar]*$ to ensure this. */
             4   => array(
-	        'regex' => '^[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*'.
-        	'[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').']+'.
-	        '[A-Za-z'.(strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_encode('äàáüâûôñèöéè') : 'äàáüâûôñèöéè').'\ ]*$',
+	        'regex' => '^[A-Za-zäàáüâûôñèöéè\ ]*'.
+        	'[A-Za-zäàáüâûôñèöéè]+'.
+	        '[A-Za-zäàáüâûôñèöéè\ ]*$',
                 'name'  => 'TXT_CONTACT_REGEX_TEXT'
             ),
             5   => array(
