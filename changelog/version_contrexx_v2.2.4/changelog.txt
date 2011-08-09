@@ -9,6 +9,9 @@
 Systemkern:
 - Debug-Fehlermeldungen bei fehlgeschlagener FTP-Verbindung
 
+Modul: Shop
+- Das cmd 'terms' heisst nun 'shipment'.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
