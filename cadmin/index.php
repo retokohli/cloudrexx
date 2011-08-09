@@ -24,7 +24,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-//DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
+DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
@@ -531,6 +531,19 @@ switch ($plainCmd) {
         $objContent = new ContentManager();
         $objContent->getPage();
         break;
+
+    //-------------------------------------------------------
+    // new content manager
+    //-------------------------------------------------------
+    case 'contentmanager':
+	$cmpath = ASCMS_CORE_PATH.'/ContentManager2.class.php';
+	if (file_exists($cmpath)) require_once($cmpath);
+        else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+	$subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
+	$cm = new ContentManager();
+	$cm->renderTree();
+        break;
+
 
     //-------------------------------------------------------
     // content workflow
