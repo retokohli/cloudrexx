@@ -53,19 +53,19 @@ class File
 
         if ($this->ftp_is_activated == true) {
             $this->conn_id = ftp_connect($this->ftpHost);
-        }
-        if ($this->conn_id) {
-            //logon with user and password
-            $this->login_result = ftp_login($this->conn_id, $this->ftpUserName, $this->ftpUserPass);
-        }
-        else {
-            // We can't connect to FTP, so we try
-            // falling back to "normal" file mode.
-            //FIXME: notify user in a useful manner.
-            $this->ftp_is_activated = false;
-        }
 
-        $this->checkConnection();
+            if ($this->conn_id) {
+                //logon with user and password
+                $this->login_result = ftp_login($this->conn_id, $this->ftpUserName, $this->ftpUserPass);
+                $this->checkConnection();
+            }
+            else {
+                // We can't connect to FTP, so we try
+                // falling back to "normal" file mode.
+                DBG::log("FRAMEWORK-File: Could not connect to FTP server '" . $this->ftpHost . "', falling back to normal mode. WARNING: This could cause troubles if safe mode is on. You may want to try to insert your server name (e.g. example.com) instead of localhost in your configuration.php.");
+                $this->ftp_is_activated = false;
+            }
+        }
     }
 
 
@@ -74,6 +74,7 @@ class File
         //check connection
         if ((!$this->conn_id) || (!$this->login_result)) {
             $status = 'FTP: disabled - ';
+            DBG::log("FRAMEWORK-File: Authentication against FTP server '" . $this->ftpHost . "' failed (user: '".$this->ftpUserName."'), falling back to normal mode. WARNING: This could cause troubles if safe mode is on. You may want to check FTP user and password provided in your configuration.php. ");
             $this->ftp_is_activated = false;
         } else {
             $status = 'FTP: enabled - ';
