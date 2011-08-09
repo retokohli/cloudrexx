@@ -74,7 +74,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
                 $current = substr($this->currentPagePath, 0, strlen($pathOfThis)) == $pathOfThis;                
             }
 
-            $content .= $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current);
+            $content .= $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current, $elem['__data']['page']);
 
             if($hasChilds)
                 $content += $this->internalRender($elem['__childs'], $pathOfThis, $level+1);
@@ -95,7 +95,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
      *
      * @return string your string representation of the element.
      */           
-    /*abstract */protected function renderElement($title, $level, $hasChilds, $lang, $path, $current){
+    /*abstract */protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page){
         return ''; //workaround, abstract fucks things up somehow
     }
 
