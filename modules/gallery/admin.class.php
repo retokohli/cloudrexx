@@ -2359,6 +2359,8 @@ class galleryManager extends GalleryLibrary
     {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
 
+        JS::activate('jquery');
+
         $this->_objTpl->loadTemplateFile('module_gallery_validate_main.html',true,true);
          $this->_objTpl->setVariable(array(
             'TXT_TITLE'                        => $_ARRAYLANG['TXT_GALLERY_MENU_VALIDATE'],
@@ -2744,7 +2746,8 @@ class galleryManager extends GalleryLibrary
                         $this->_objTpl->hideBlock('showNameFields');
                     }
 
-                    for ($i=1;$i<=7;$i++) {
+                    //blocks 1 and 2 were removed
+                    for ($i=3;$i<=7;$i++) {
                         $this->_objTpl->setVariable('JS_IMAGE_ID'.$i,$intIdKey);
                         $this->_objTpl->parse('javascriptBlock'.$i);
                     }
