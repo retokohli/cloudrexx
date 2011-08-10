@@ -16,3 +16,12 @@ Modul: Shop
 * Behobene Fehler **********************
 ****************************************
 
+Modul: Bildergalerie
+- Es ist nicht mehr möglich, den Bildnamen zu ändern, wenn das Häckchen "Name aus Datei übernehmen" gesetzt ist.
+
+Modul: Newsletter
+- Auch E-Mail-Adressen mit Umlauten können eingetragen werden.
+
+Systemkern:
+- Auch auf Windows-Servern werden alle Sonderzeichen aus den Dateinamen gefiltert.
+
