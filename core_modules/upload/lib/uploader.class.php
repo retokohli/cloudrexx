@@ -358,6 +358,7 @@ abstract class Uploader
         // remember the "raw" file name, we want to store all original
         // file names in the session.
         $originalFileName = $fileName;
+
         // Clean the fileName for security reasons
         // we're using a-zA-Z0-9 instead of \w because of the umlauts.
         // linux excludes them from \w, windows includes them. we do not want different
