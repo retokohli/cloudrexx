@@ -22,6 +22,12 @@ Modul: Bildergalerie
 Modul: Newsletter
 - Auch E-Mail-Adressen mit Umlauten können eingetragen werden.
 
+Modul: Medienverzeichnis
+- Shadowbox funktioniert im Standardinhalt.
+
+Modul: Linkverzeichnis
+- Beispielcode für Headlines in der Administrationsoberfläche korrigiert.
+
 Systemkern:
 - Auch auf Windows-Servern werden alle Sonderzeichen aus den Dateinamen gefiltert.
 
