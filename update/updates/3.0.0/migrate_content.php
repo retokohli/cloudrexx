@@ -55,7 +55,7 @@ class Contrexx_Content_migration
                INNER JOIN `'.DBPREFIX.'content_navigation_history` AS nav
                ON cn.id=nav.id
                INNER JOIN `'.DBPREFIX.'content_logfile` AS cnlog
-               ON cn.id = cnlog.history_id ORDER BY cnlog.history_id ASC');
+               ON cn.id = cnlog.history_id ORDER BY cnlog.id ASC');
         
         while (!$objResult->EOF) {
 
