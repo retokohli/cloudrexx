@@ -145,7 +145,6 @@ class Shop extends ShopLibrary
     private static $inactiveStyleName = 'inactive';
     private static $activeStyleName = 'active';
     private static $defaultImage = '';
-    private static $uploadDir = false;
 
     /**
      * Currency navbar indicator
@@ -195,7 +194,6 @@ class Shop extends ShopLibrary
     {
         $this->pageContent = $pageContent;
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.self::noPictureName;
-        $this->uploadDir = ASCMS_PATH_OFFSET.'/upload';
 
         // PEAR Sigma template
         $this->objTemplate = new HTML_Template_Sigma('.');
@@ -219,7 +217,7 @@ class Shop extends ShopLibrary
 
         // Payment processing object
         $this->objProcessing = new PaymentProcessing($this->arrConfig);
-   }
+    }
 
 
     function getPage()
@@ -2516,9 +2514,12 @@ sendReq('', 1);
                         if (!is_array($arrValue)) continue;
                         $optionValue = ShopLibrary::stripUniqidFromFilename($arrValue['value']);
                         if (   $optionValue != $arrValue['value']
-                            && file_exists(ASCMS_PATH.'/'.$this->uploadDir.'/'.$arrValue['value'])) {
+                            && file_exists(
+                                  ASCMS_DOCUMENT_ROOT.'/'.Order::UPLOAD_FOLDER.
+                                  $arrValue['value'])) {
                                 $optionValue =
-                                    '<a href="'.$this->uploadDir.'/'.$arrValue['value'].
+                                    '<a href="'.
+                                    Order::UPLOAD_FOLDER.$arrValue['value'].
                                     '" target="uploadimage">'.$optionValue.'</a>';
                         }
                         $productOptions .=
@@ -4006,9 +4007,11 @@ right after the customer logs in!
                                     } else {
                                         $optionValue = ShopLibrary::stripUniqidFromFilename($value_id);
                                         if (   $optionValue != $value_id
-                                            && file_exists(ASCMS_PATH.'/'.$this->uploadDir.'/'.$value_id)) {
+                                            && file_exists(
+                                                  ASCMS_DOCUMENT_ROOT.'/'.
+                                                  Order::UPLOAD_FOLDER.$value_id)) {
                                                 $optionValue =
-                                                    '<a href="'.$this->uploadDir.'/'.$value_id.
+                                                    '<a href="'.Order::UPLOAD_FOLDER.$value_id.
                                                     '" target="uploadimage">'.$optionValue.'</a>';
                                         }
                                     }
@@ -4614,7 +4617,9 @@ right after the customer logs in!
                     // verify their presence and use the original name
                     $optionValueStripped = ShopLibrary::stripUniqidFromFilename($optionValue);
                     if (   $optionValue != $optionValueStripped
-                        && file_exists(ASCMS_PATH.'/'.self::$uploadDir.'/'.$optionValue)) {
+                        && file_exists(
+                              ASCMS_DOCUMENT_ROOT.'/'.Order::UPLOAD_FOLDER.
+                              $optionValue)) {
                             $optionValue = $optionValueStripped;
                     }
                     if ($optionPrice != 0) {
@@ -5061,9 +5066,9 @@ right after the customer logs in!
         if (   $fileext == '.jpg'
             || $fileext == '.gif'
             || $fileext == '.png') {
-            $newFileDir = ASCMS_PATH.'/'.$this->uploadDir;
+            $newFileDir = ASCMS_DOCUMENT_ROOT.'/'.Order::UPLOAD_FOLDER;
             $newFileName = $filename.'['.uniqid().']'.$fileext;
-            $newFilePath = $newFileDir.'/'.$newFileName;
+            $newFilePath = $newFileDir.$newFileName;
             if (move_uploaded_file($uploadFileName, $newFilePath)) {
                 return $newFileName;
             }
