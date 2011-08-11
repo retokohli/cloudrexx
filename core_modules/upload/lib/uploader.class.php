@@ -289,7 +289,10 @@ abstract class Uploader
      * Cleans up the session - unsets the callback data stored for this upload
      */
     protected function cleanupCallbackData() {
+        global $sessionObj;
+
         unset($_SESSION['upload_callback_'.$this->uploadId]);
+        $sessionObj->cleanTempPaths();
     }
 
     /**
