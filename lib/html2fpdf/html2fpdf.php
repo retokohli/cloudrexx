@@ -146,6 +146,8 @@ var $usecss; //! bool
 var $usepre; //! bool
 var $usetableheader; //! bool
 var $shownoimg; //! bool
+var $noimgsrc;
+var $noimgtype;
 
 function HTML2FPDF($orientation='P',$unit='mm',$format='A4')
 {
@@ -248,6 +250,9 @@ function ShowNOIMG_GIF($opt=true)
 //! @desc Enable/Disable Displaying the no_img.gif when an image is not found. No-Parameter: Enable
 //! @return void
   $this->shownoimg=$opt;
+  $this->noimgsrc = str_replace("\\","/",dirname(__FILE__)) . "/";
+  $this->noimgsrc .= 'no_img.gif';
+  $this->noimgtype = 'gif';
 }
 
 function UseCSS($opt=true)
@@ -430,6 +435,7 @@ function WriteHTML($html)
             //Get link info and obtain its absolute path
             $regexp = '|^./|';
             $path = preg_replace($regexp,'',$path);
+
             if($path{0} != '#') //It is not an Internal Link
             { 
               if (strpos($path,"../") !== false ) //It is a Relative Link
@@ -446,6 +452,10 @@ function WriteHTML($html)
               }
               elseif( strpos($path,":/") === false) //It is a Local Link
               {
+                    if (strpos($path, '/') === 0) {
+                    $path = substr($path, 1);
+                    }
+
                 $path = $this->basepath . $path; 
               }
               //Do nothing if it is an Absolute Link
@@ -494,735 +504,730 @@ function WriteHTML($html)
 
 function OpenTag($tag,$attr)
 {
-//! @return void
-// What this gets: < $tag $attr['WIDTH']="90px" > does not get content here </closeTag here>
+    //! @return void
+    // What this gets: < $tag $attr['WIDTH']="90px" > does not get content here </closeTag here>
 
-  $align = array('left'=>'L','center'=>'C','right'=>'R','top'=>'T','middle'=>'M','bottom'=>'B','justify'=>'J');
+    $align = array('left'=>'L','center'=>'C','right'=>'R','top'=>'T','middle'=>'M','bottom'=>'B','justify'=>'J');
 
-  $this->blockjustfinished=false;
-	//Opening tag
-	switch($tag){
-	  case 'PAGE_BREAK': //custom-tag
-	  case 'NEWPAGE': //custom-tag
-			$this->blockjustfinished = true;
-	    $this->AddPage();
-	    break;
-	  case 'OUTLINE': //custom-tag (CSS2 property - browsers don't support it yet - Jan2005)
-  	  //Usage: (default: width=normal color=white)
-  	  //<outline width="(thin|medium|thick)" color="(usualcolorformat)" >Text</outline>
-  	  //Mix this tag with the <font color="(usualcolorformat)"> tag to get mixed colors on outlined text!
-	    $this->buffer_on = true;
-	    if (isset($attr['COLOR'])) $this->outlineparam['COLOR'] = ConvertColor($attr['COLOR']);
-	    else $this->outlineparam['COLOR'] = array('R'=>255,'G'=>255,'B'=>255); //white
-      $this->outlineparam['OLDWIDTH'] = $this->LineWidth;
-	    if (isset($attr['WIDTH']))
-	    {
-	       switch(strtoupper($attr['WIDTH']))
-	       {
-	           case 'THIN': $this->outlineparam['WIDTH'] = 0.75*$this->LineWidth; break;
-	           case 'MEDIUM': $this->outlineparam['WIDTH'] = $this->LineWidth; break;
-	           case 'THICK': $this->outlineparam['WIDTH'] = 1.75*$this->LineWidth; break;
-         }
-      }
-      else $this->outlineparam['WIDTH'] = $this->LineWidth; //width == oldwidth
-	    break;
-	  case 'BDO':
-  	  if (isset($attr['DIR']) and (strtoupper($attr['DIR']) == 'RTL' )) $this->divrevert = true;
-	    break;
-	  case 'S':
-	  case 'STRIKE':
-	  case 'DEL':
-	    $this->strike=true;
-	    break;
-		case 'SUB':
-		  $this->SUB=true;
-		  break;
-		case 'SUP':
-		  $this->SUP=true;
-      break;
-    case 'CENTER':
-      $this->buffer_on = true;
-      if ($this->tdbegin)	$this->cell[$this->row][$this->col]['a'] = $align['center'];
-      else 
-      {
-   			$this->divalign = $align['center'];
-        if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
-      }
-      break;
-    case 'ADDRESS': 
-      $this->buffer_on = true;
-  		$this->SetStyle('I',true);
-      if (!$this->tdbegin and $this->x != $this->lMargin) $this->Ln($this->lineheight);
-      break;
-		case 'TABLE': // TABLE-BEGIN
-    	if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
-      $this->tablestart = true;
-   		$this->table['nc'] = $this->table['nr'] = 0;
-   		if (isset($attr['REPEAT_HEADER']) and $attr['REPEAT_HEADER'] == true) $this->UseTableHeader(true);
-			if (isset($attr['WIDTH'])) $this->table['w']	= ConvertSize($attr['WIDTH'],$this->pgwidth);
-			if (isset($attr['HEIGHT']))	$this->table['h']	= ConvertSize($attr['HEIGHT'],$this->pgwidth);
-			if (isset($attr['ALIGN']))	$this->table['a']	= $align[strtolower($attr['ALIGN'])];
-			if (isset($attr['BORDER']))	$this->table['border']	= $attr['BORDER'];
-			if (isset($attr['BGCOLOR'])) $this->table['bgcolor'][-1]	= $attr['BGCOLOR'];
-			break;
-		case 'TR':
-			$this->row++;
-			$this->table['nr']++;
-			$this->col = -1;
-			if (isset($attr['BGCOLOR']))$this->table['bgcolor'][$this->row]	= $attr['BGCOLOR'];
-  		break;
-		case 'TH':
-			$this->SetStyle('B',true);
-     	if (!isset($attr['ALIGN'])) $attr['ALIGN'] = "center";
-		case 'TD':
-		  $this->tdbegin = true;
-			$this->col++;
-      while (isset($this->cell[$this->row][$this->col])) $this->col++;
-			//Update number column
-  		if ($this->table['nc'] < $this->col+1) $this->table['nc'] = $this->col+1;
-			$this->cell[$this->row][$this->col] = array();
-			$this->cell[$this->row][$this->col]['text'] = array();
-			$this->cell[$this->row][$this->col]['s'] = 3;
-			if (isset($attr['WIDTH'])) $this->cell[$this->row][$this->col]['w'] = ConvertSize($attr['WIDTH'],$this->pgwidth);
-			if (isset($attr['HEIGHT'])) $this->cell[$this->row][$this->col]['h']	= ConvertSize($attr['HEIGHT'],$this->pgwidth);
-			if (isset($attr['ALIGN'])) $this->cell[$this->row][$this->col]['a'] = $align[strtolower($attr['ALIGN'])];
-			if (isset($attr['VALIGN'])) $this->cell[$this->row][$this->col]['va'] = $align[strtolower($attr['VALIGN'])];
-			if (isset($attr['BORDER'])) $this->cell[$this->row][$this->col]['border'] = $attr['BORDER'];
-			if (isset($attr['BGCOLOR'])) $this->cell[$this->row][$this->col]['bgcolor'] = $attr['BGCOLOR'];
-			$cs = $rs = 1;
-			if (isset($attr['COLSPAN']) && $attr['COLSPAN']>1)	$cs = $this->cell[$this->row][$this->col]['colspan']	= $attr['COLSPAN'];
-			if (isset($attr['ROWSPAN']) && $attr['ROWSPAN']>1)	$rs = $this->cell[$this->row][$this->col]['rowspan']	= $attr['ROWSPAN'];
-			//Chiem dung vi tri de danh cho cell span (¿mais hein?)
-			for ($k=$this->row ; $k < $this->row+$rs ;$k++)
-        for($l=$this->col; $l < $this->col+$cs ;$l++)
-        {
-  				if ($k-$this->row || $l-$this->col)	$this->cell[$k][$l] = 0;
-  			}
-			if (isset($attr['NOWRAP'])) $this->cell[$this->row][$this->col]['nowrap']= 1;
-  		break;
-		case 'OL':
-      if ( !isset($attr['TYPE']) or $attr['TYPE'] == '' ) $this->listtype = '1'; //OL default == '1'
-      else $this->listtype = $attr['TYPE']; // ol and ul types are mixed here
-		case 'UL':
-      if ( (!isset($attr['TYPE']) or $attr['TYPE'] == '') and $tag=='UL')
-      {
-         //Insert UL defaults
-         if ($this->listlvl == 0) $this->listtype = 'disc';
-         elseif ($this->listlvl == 1) $this->listtype = 'circle';
-         else $this->listtype = 'square';
-      }
-      elseif (isset($attr['TYPE']) and $tag=='UL') $this->listtype = $attr['TYPE'];
-      $this->buffer_on = false;
-      if ($this->listlvl == 0)
-      {
-        //First of all, skip a line
-        if (!$this->pjustfinished)
-        {
+    $this->blockjustfinished=false;
+    //Opening tag
+    switch($tag){
+        case 'PAGE_BREAK': //custom-tag
+        case 'NEWPAGE': //custom-tag
+            $this->blockjustfinished = true;
+            $this->AddPage();
+            break;
+        case 'OUTLINE': //custom-tag (CSS2 property - browsers don't support it yet - Jan2005)
+            //Usage: (default: width=normal color=white)
+            //<outline width="(thin|medium|thick)" color="(usualcolorformat)" >Text</outline>
+            //Mix this tag with the <font color="(usualcolorformat)"> tag to get mixed colors on outlined text!
+            $this->buffer_on = true;
+            if (isset($attr['COLOR'])) $this->outlineparam['COLOR'] = ConvertColor($attr['COLOR']);
+            else $this->outlineparam['COLOR'] = array('R'=>255,'G'=>255,'B'=>255); //white
+            $this->outlineparam['OLDWIDTH'] = $this->LineWidth;
+            if (isset($attr['WIDTH']))
+            {
+                switch(strtoupper($attr['WIDTH']))
+                {
+                    case 'THIN': $this->outlineparam['WIDTH'] = 0.75*$this->LineWidth; break;
+                    case 'MEDIUM': $this->outlineparam['WIDTH'] = $this->LineWidth; break;
+                    case 'THICK': $this->outlineparam['WIDTH'] = 1.75*$this->LineWidth; break;
+                }
+            }
+            else $this->outlineparam['WIDTH'] = $this->LineWidth; //width == oldwidth
+            break;
+        case 'BDO':
+            if (isset($attr['DIR']) and (strtoupper($attr['DIR']) == 'RTL' )) $this->divrevert = true;
+            break;
+        case 'S':
+        case 'STRIKE':
+        case 'DEL':
+            $this->strike=true;
+            break;
+        case 'SUB':
+            $this->SUB=true;
+            break;
+        case 'SUP':
+            $this->SUP=true;
+            break;
+        case 'CENTER':
+            $this->buffer_on = true;
+            if ($this->tdbegin)	$this->cell[$this->row][$this->col]['a'] = $align['center'];
+            else 
+            {
+                $this->divalign = $align['center'];
+                if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
+            }
+            break;
+        case 'ADDRESS': 
+            $this->buffer_on = true;
+            $this->SetStyle('I',true);
+            if (!$this->tdbegin and $this->x != $this->lMargin) $this->Ln($this->lineheight);
+            break;
+        case 'TABLE': // TABLE-BEGIN
             if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
-            $this->Ln($this->lineheight);
-        }
-        $this->oldx = $this->x;
-        $this->listlvl++; // first depth level
-        $this->listnum = 0; // reset
-        $this->listoccur[$this->listlvl] = 1;
-        $this->listlist[$this->listlvl][1] = array('TYPE'=>$this->listtype,'MAXNUM'=>$this->listnum);
-      }
-      else
-      {
-        if (!empty($this->textbuffer))
-        {
-          $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
-          $this->listnum++;
-        }
-  		  $this->textbuffer = array();
-  		  $occur = $this->listoccur[$this->listlvl];
-        $this->listlist[$this->listlvl][$occur]['MAXNUM'] = $this->listnum; //save previous lvl's maxnum
-        $this->listlvl++;
-        $this->listnum = 0; // reset
+            $this->tablestart = true;
+            $this->table['nc'] = $this->table['nr'] = 0;
+            if (isset($attr['REPEAT_HEADER']) and $attr['REPEAT_HEADER'] == true) $this->UseTableHeader(true);
+            if (isset($attr['WIDTH'])) $this->table['w']	= ConvertSize($attr['WIDTH'],$this->pgwidth);
+            if (isset($attr['HEIGHT']))	$this->table['h']	= ConvertSize($attr['HEIGHT'],$this->pgwidth);
+            if (isset($attr['ALIGN']))	$this->table['a']	= $align[strtolower($attr['ALIGN'])];
+            if (isset($attr['BORDER']))	$this->table['border']	= $attr['BORDER'];
+            if (isset($attr['BGCOLOR'])) $this->table['bgcolor'][-1]	= $attr['BGCOLOR'];
+            break;
+        case 'TR':
+            $this->row++;
+            $this->table['nr']++;
+            $this->col = -1;
+            if (isset($attr['BGCOLOR']))$this->table['bgcolor'][$this->row]	= $attr['BGCOLOR'];
+            break;
+        case 'TH':
+            $this->SetStyle('B',true);
+            if (!isset($attr['ALIGN'])) $attr['ALIGN'] = "center";
+        case 'TD':
+            $this->tdbegin = true;
+            $this->col++;
+            while (isset($this->cell[$this->row][$this->col])) $this->col++;
+            //Update number column
+            if ($this->table['nc'] < $this->col+1) $this->table['nc'] = $this->col+1;
+            $this->cell[$this->row][$this->col] = array();
+            $this->cell[$this->row][$this->col]['text'] = array();
+            $this->cell[$this->row][$this->col]['s'] = 3;
+            if (isset($attr['WIDTH'])) $this->cell[$this->row][$this->col]['w'] = ConvertSize($attr['WIDTH'],$this->pgwidth);
+            if (isset($attr['HEIGHT'])) $this->cell[$this->row][$this->col]['h']	= ConvertSize($attr['HEIGHT'],$this->pgwidth);
+            if (isset($attr['ALIGN'])) $this->cell[$this->row][$this->col]['a'] = $align[strtolower($attr['ALIGN'])];
+            if (isset($attr['VALIGN'])) $this->cell[$this->row][$this->col]['va'] = $align[strtolower($attr['VALIGN'])];
+            if (isset($attr['BORDER'])) $this->cell[$this->row][$this->col]['border'] = $attr['BORDER'];
+            if (isset($attr['BGCOLOR'])) $this->cell[$this->row][$this->col]['bgcolor'] = $attr['BGCOLOR'];
+            $cs = $rs = 1;
+            if (isset($attr['COLSPAN']) && $attr['COLSPAN']>1)	$cs = $this->cell[$this->row][$this->col]['colspan']	= $attr['COLSPAN'];
+            if (isset($attr['ROWSPAN']) && $attr['ROWSPAN']>1)	$rs = $this->cell[$this->row][$this->col]['rowspan']	= $attr['ROWSPAN'];
+            //Chiem dung vi tri de danh cho cell span (¿mais hein?)
+            for ($k=$this->row ; $k < $this->row+$rs ;$k++)
+            for($l=$this->col; $l < $this->col+$cs ;$l++)
+            {
+                if ($k-$this->row || $l-$this->col)	$this->cell[$k][$l] = 0;
+            }
+            if (isset($attr['NOWRAP'])) $this->cell[$this->row][$this->col]['nowrap']= 1;
+            break;
+        case 'OL':
+            if ( !isset($attr['TYPE']) or $attr['TYPE'] == '' ) $this->listtype = '1'; //OL default == '1'
+            else $this->listtype = $attr['TYPE']; // ol and ul types are mixed here
+        case 'UL':
+            if ( (!isset($attr['TYPE']) or $attr['TYPE'] == '') and $tag=='UL')
+            {
+                //Insert UL defaults
+                if ($this->listlvl == 0) $this->listtype = 'disc';
+                elseif ($this->listlvl == 1) $this->listtype = 'circle';
+                else $this->listtype = 'square';
+            }
+            elseif (isset($attr['TYPE']) and $tag=='UL') $this->listtype = $attr['TYPE'];
+            $this->buffer_on = false;
+            if ($this->listlvl == 0)
+            {
+                //First of all, skip a line
+                if (!$this->pjustfinished)
+                {
+                    if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
+                    $this->Ln($this->lineheight);
+                }
+                $this->oldx = $this->x;
+                $this->listlvl++; // first depth level
+                $this->listnum = 0; // reset
+                $this->listoccur[$this->listlvl] = 1;
+                $this->listlist[$this->listlvl][1] = array('TYPE'=>$this->listtype,'MAXNUM'=>$this->listnum);
+            }
+            else
+            {
+                if (!empty($this->textbuffer))
+                {
+                    $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
+                    $this->listnum++;
+                }
+                $this->textbuffer = array();
+                $occur = $this->listoccur[$this->listlvl];
+                $this->listlist[$this->listlvl][$occur]['MAXNUM'] = $this->listnum; //save previous lvl's maxnum
+                $this->listlvl++;
+                $this->listnum = 0; // reset
 
-        if ($this->listoccur[$this->listlvl] == 0) $this->listoccur[$this->listlvl] = 1;
-        else $this->listoccur[$this->listlvl]++;
-  		  $occur = $this->listoccur[$this->listlvl];
-        $this->listlist[$this->listlvl][$occur] = array('TYPE'=>$this->listtype,'MAXNUM'=>$this->listnum);
-      }
-      break;
-		case 'LI':
-		  //Observation: </LI> is ignored
-      if ($this->listlvl == 0) //in case of malformed HTML code. Example:(...)</p><li>Content</li><p>Paragraph1</p>(...)
-      {
-        //First of all, skip a line
-        if (!$this->pjustfinished and $this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
-        $this->oldx = $this->x;
-        $this->listlvl++; // first depth level
-        $this->listnum = 0; // reset
-        $this->listoccur[$this->listlvl] = 1;
-        $this->listlist[$this->listlvl][1] = array('TYPE'=>'disc','MAXNUM'=>$this->listnum);
-      }
-      if ($this->listnum == 0)
-      {
-        $this->buffer_on = true; //activate list 'bufferization'
-        $this->listnum++;
-  		  $this->textbuffer = array();
-      }
-      else
-      {
-        $this->buffer_on = true; //activate list 'bufferization'
-        if (!empty($this->textbuffer))
-        {
-          $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
-          $this->listnum++;
-        }
-  		  $this->textbuffer = array();
-      }
-      break;
-		case 'H1': // 2 * fontsize
-		case 'H2': // 1.5 * fontsize
-		case 'H3': // 1.17 * fontsize
-		case 'H4': // 1 * fontsize
-		case 'H5': // 0.83 * fontsize
-		case 'H6': // 0.67 * fontsize
-  		//Values obtained from: http://www.w3.org/TR/REC-CSS2/sample.html
-		  if(isset($attr['ALIGN'])) $this->divalign = $align[strtolower($attr['ALIGN'])];
-      $this->buffer_on = true;
-			if ($this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
-			elseif (!$this->pjustfinished) $this->Ln($this->lineheight);
-			$this->SetStyle('B',true);
-      switch($tag)
-      {
-          case 'H1': 
-              $this->SetFontSize(2*$this->FontSizePt); 
-              $this->lineheight *= 2;
-              break;
-          case 'H2': 
-              $this->SetFontSize(1.5*$this->FontSizePt); 
-              $this->lineheight *= 1.5;
-              break;
-          case 'H3':
-              $this->SetFontSize(1.17*$this->FontSizePt);
-              $this->lineheight *= 1.17;
-              break;
-          case 'H4':
-              $this->SetFontSize($this->FontSizePt); 
-              break;
-          case 'H5': 
-              $this->SetFontSize(0.83*$this->FontSizePt); 
-              $this->lineheight *= 0.83;
-              break;
-          case 'H6': 
-              $this->SetFontSize(0.67*$this->FontSizePt); 
-              $this->lineheight *= 0.67;
-              break;
-      }
-		  break;
-		case 'HR': //Default values: width=100% align=center color=gray
-		  //Skip a line, if needed
-			if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
-			$this->Ln(0.2*$this->lineheight);
-		  $hrwidth = $this->pgwidth;
-		  $hralign = 'C';
-		  $hrcolor = array('R'=>200,'G'=>200,'B'=>200);
-		  if($attr['WIDTH'] != '') $hrwidth = ConvertSize($attr['WIDTH'],$this->pgwidth);
-		  if($attr['ALIGN'] != '') $hralign = $align[strtolower($attr['ALIGN'])];
-		  if($attr['COLOR'] != '') $hrcolor = ConvertColor($attr['COLOR']);
-      $this->SetDrawColor($hrcolor['R'],$hrcolor['G'],$hrcolor['B']);
-      $x = $this->x;
-      $y = $this->y;
-      switch($hralign)
-      {
-          case 'L':
-          case 'J':
-              break;
-          case 'C':
-              $empty = $this->pgwidth - $hrwidth;
-              $empty /= 2;
-              $x += $empty;
-              break;
-          case 'R':
-              $empty = $this->pgwidth - $hrwidth;
-              $x += $empty;
-              break;
-      }
-      $oldlinewidth = $this->LineWidth;
-			$this->SetLineWidth(0.3);
-			$this->Line($x,$y,$x+$hrwidth,$y);
-			$this->SetLineWidth($oldlinewidth);
-			$this->Ln(0.2*$this->lineheight);
-		  $this->SetDrawColor(0);
-      $this->blockjustfinished = true; //Eliminate exceeding left-side spaces
-			break;
-		case 'INS':
-			$this->SetStyle('U',true);
-		  break;
-		case 'SMALL':
-		  $newsize = $this->FontSizePt - 1;
-		  $this->SetFontSize($newsize);
-		  break;
-		case 'BIG':
-		  $newsize = $this->FontSizePt + 1;
-		  $this->SetFontSize($newsize);
-		case 'STRONG':
-			$this->SetStyle('B',true);
-			break;
-		case 'CITE':
-		case 'EM':
-			$this->SetStyle('I',true);
-			break;
-		case 'TITLE':
-			$this->titulo = true;
-			break;
-		case 'B':
-		case 'I':
-		case 'U':
-			if( isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
-      {
-   			$this->cssbegin=true;
- 				if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
-				elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
-				//Read Inline CSS
-				if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
-				//Look for name in the $this->CSS array
-				$this->backupcss = $properties;
-				if (!empty($properties)) $this->setCSS($properties); //name found in the CSS array!
-		  }
-			$this->SetStyle($tag,true);
-			break;
-		case 'A':
-      if (isset($attr['NAME']) and $attr['NAME'] != '') $this->textbuffer[] = array('','','',array(),'',false,false,$attr['NAME']); //an internal link (adds a space for recognition)
-			if (isset($attr['HREF'])) $this->HREF=$attr['HREF'];
-			break;
-		case 'DIV':
-      //in case of malformed HTML code. Example:(...)</div><li>Content</li><div>DIV1</div>(...)
-  	  if ($this->listlvl > 0) // We are closing (omitted) OL/UL tag(s)
-   	  {
-	        $this->buffer_on = false;
-          if (!empty($this->textbuffer)) $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
-	        $this->textbuffer = array();
-	        $this->listlvl--;
-	        $this->printlistbuffer();
-	        $this->pjustfinished = true; //act as if a paragraph just ended
-      }
-			$this->divbegin=true;
-      if ($this->x != $this->lMargin)	$this->Ln($this->lineheight);
-			if( isset($attr['ALIGN']) and  $attr['ALIGN'] != '' ) $this->divalign = $align[strtolower($attr['ALIGN'])];
-			if( isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
-      {
-   			$this->cssbegin=true;
- 				if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
-				elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
-				//Read Inline CSS
-				if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
-				//Look for name in the $this->CSS array
-				if (!empty($properties)) $this->setCSS($properties); //name found in the CSS array!
-		  }
-			break;
-		case 'IMG':
-		  if(!empty($this->textbuffer) and !$this->tablestart)
-		  {
-		    //Output previously buffered content and output image below
-        //Set some default values
-        $olddivwidth = $this->divwidth;
-        $olddivheight = $this->divheight;
-        if ( $this->divwidth == 0) $this->divwidth = $this->pgwidth - $x + $this->lMargin;
-        if ( $this->divheight == 0) $this->divheight = $this->lineheight;
-        //Print content
-    	  $this->printbuffer($this->textbuffer,true/*is out of a block (e.g. DIV,P etc.)*/);
-        $this->textbuffer=array(); 
-      	//Reset values
-        $this->divwidth = $olddivwidth;
-        $this->divheight = $olddivheight;
-		    $this->textbuffer=array();
-		    $this->Ln($this->lineheight);
-      }
-			if(isset($attr['SRC']))
-      {
-          $srcpath = $attr['SRC'];
-  				if(!isset($attr['WIDTH'])) $attr['WIDTH'] = 0;
-				  else $attr['WIDTH'] = ConvertSize($attr['WIDTH'],$this->pgwidth);//$attr['WIDTH'] /= 4;
-				  if(!isset($attr['HEIGHT']))	$attr['HEIGHT'] = 0;
-				  else $attr['HEIGHT'] = ConvertSize($attr['HEIGHT'],$this->pgwidth);//$attr['HEIGHT'] /= 4;
-				  if ($this->tdbegin) 
-				  {
-  				  $bak_x = $this->x;
-            $bak_y = $this->y;
-            //Check whether image exists locally or on the URL
-            $f_exists = @fopen($srcpath,"rb");
-            if (!$f_exists) //Show 'image not found' icon instead
-            {
-                if(!$this->shownoimg) break;
-                $srcpath = str_replace("\\","/",dirname(__FILE__)) . "/";
-                $srcpath .= 'no_img.gif';
+                if ($this->listoccur[$this->listlvl] == 0) $this->listoccur[$this->listlvl] = 1;
+                else $this->listoccur[$this->listlvl]++;
+                $occur = $this->listoccur[$this->listlvl];
+                $this->listlist[$this->listlvl][$occur] = array('TYPE'=>$this->listtype,'MAXNUM'=>$this->listnum);
             }
-            $sizesarray = $this->Image($srcpath, $this->GetX(), $this->GetY(), $attr['WIDTH'], $attr['HEIGHT'],'','',false);
-            $this->y = $bak_y;
-            $this->x = $bak_x;
-          }
-				  elseif($this->pbegin or $this->divbegin)
-				  {
-            //In order to support <div align='center'><img ...></div>
-            $ypos = 0;
-  				  $bak_x = $this->x;
-            $bak_y = $this->y;
-            //Check whether image exists locally or on the URL
-            $f_exists = @fopen($srcpath,"rb");
-            if (!$f_exists) //Show 'image not found' icon instead
+            break;
+        case 'LI':
+            //Observation: </LI> is ignored
+            if ($this->listlvl == 0) //in case of malformed HTML code. Example:(...)</p><li>Content</li><p>Paragraph1</p>(...)
             {
-                if(!$this->shownoimg) break;
-                $srcpath = str_replace("\\","/",dirname(__FILE__)) . "/";
-                $srcpath .= 'no_img.gif';
+                //First of all, skip a line
+                if (!$this->pjustfinished and $this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
+                $this->oldx = $this->x;
+                $this->listlvl++; // first depth level
+                $this->listnum = 0; // reset
+                $this->listoccur[$this->listlvl] = 1;
+                $this->listlist[$this->listlvl][1] = array('TYPE'=>'disc','MAXNUM'=>$this->listnum);
             }
-            $sizesarray = $this->Image($srcpath, $this->GetX(), $this->GetY(), $attr['WIDTH'], $attr['HEIGHT'],'','',false);
-            $this->y = $bak_y;
-            $this->x = $bak_x;
-            $xpos = '';
-            switch($this->divalign)
+            if ($this->listnum == 0)
             {
-                case "C":
-                     $spacesize = $this->CurrentFont[ 'cw' ][ ' ' ] * ( $this->FontSizePt / 1000 );
-                     $empty = ($this->pgwidth - $sizesarray['WIDTH'])/2;
-                     $xpos = 'xpos='.$empty.',';
-                     break;
-                case "R":
-                     $spacesize = $this->CurrentFont[ 'cw' ][ ' ' ] * ( $this->FontSizePt / 1000 );
-                     $empty = ($this->pgwidth - $sizesarray['WIDTH']);
-                     $xpos = 'xpos='.$empty.',';
-                     break;
-                default: break;
+                $this->buffer_on = true; //activate list 'bufferization'
+                $this->listnum++;
+                $this->textbuffer = array();
             }
-     				$numberoflines = (integer)ceil($sizesarray['HEIGHT']/$this->lineheight) ;
-     				$ypos = $numberoflines * $this->lineheight;
-     				$this->textbuffer[] = array("»¤¬"/*identifier*/."type=image,ypos=$ypos,{$xpos}width=".$sizesarray['WIDTH'].",height=".$sizesarray['HEIGHT']."»¤¬".$sizesarray['OUTPUT']);
-            while($numberoflines) {$this->textbuffer[] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);$numberoflines--;}
-          }
-          else
-          {
-            $imgborder = 0;
-            if (isset($attr['BORDER'])) $imgborder = ConvertSize($attr['BORDER'],$this->pgwidth);
-            //Check whether image exists locally or on the URL
-            $f_exists = @fopen($srcpath,"rb");
-            if (!$f_exists) //Show 'image not found' icon instead
+            else
             {
-                $srcpath = str_replace("\\","/",dirname(__FILE__)) . "/";
-                $srcpath .= 'no_img.gif';
-            }
-            $sizesarray = $this->Image($srcpath, $this->GetX(), $this->GetY(), $attr['WIDTH'], $attr['HEIGHT'],'',$this->HREF); //Output Image
-  				  $ini_x = $sizesarray['X'];
-            $ini_y = $sizesarray['Y'];
-            if ($imgborder)
-            {
-                $oldlinewidth = $this->LineWidth;
-			          $this->SetLineWidth($imgborder);
-                $this->Rect($ini_x,$ini_y,$sizesarray['WIDTH'],$sizesarray['HEIGHT']);
-			          $this->SetLineWidth($oldlinewidth);
-            }
-          }
-  				if ($sizesarray['X'] < $this->x) $this->x = $this->lMargin;
-  				if ($this->tablestart)
-  				{
-     				$this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=image,width=".$sizesarray['WIDTH'].",height=".$sizesarray['HEIGHT']."»¤¬".$sizesarray['OUTPUT']);
-            $this->cell[$this->row][$this->col]['s'] += $sizesarray['WIDTH'] + 1;// +1 == margin
-            $this->cell[$this->row][$this->col]['form'] = true; // in order to make some width adjustments later
-            if (!isset($this->cell[$this->row][$this->col]['w'])) $this->cell[$this->row][$this->col]['w'] = $sizesarray['WIDTH'] + 3;
-            if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $sizesarray['HEIGHT'] + 3;
-  				}
-			}
-			break;
-		case 'BLOCKQUOTE':
-		case 'BR':
-		  if($this->tablestart)
-		  {
-		    $this->cell[$this->row][$this->col]['textbuffer'][] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
-      	$this->cell[$this->row][$this->col]['text'][] = "\n";
-        if (!isset($this->cell[$this->row][$this->col]['maxs'])) $this->cell[$this->row][$this->col]['maxs'] = $this->cell[$this->row][$this->col]['s'] +2; //+2 == margin
-        elseif($this->cell[$this->row][$this->col]['maxs'] < $this->cell[$this->row][$this->col]['s']) $this->cell[$this->row][$this->col]['maxs'] = $this->cell[$this->row][$this->col]['s']+2;//+2 == margin
-        $this->cell[$this->row][$this->col]['s'] = 0;// reset
-      }
-			elseif($this->divbegin or $this->pbegin or $this->buffer_on)  $this->textbuffer[] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
-			else {$this->Ln($this->lineheight);$this->blockjustfinished = true;}
-			break;
-		case 'P':
-      //in case of malformed HTML code. Example:(...)</p><li>Content</li><p>Paragraph1</p>(...)
-  	  if ($this->listlvl > 0) // We are closing (omitted) OL/UL tag(s)
-   	  {
-	        $this->buffer_on = false;
-          if (!empty($this->textbuffer)) $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
-	        $this->textbuffer = array();
-	        $this->listlvl--;
-	        $this->printlistbuffer();
-	        $this->pjustfinished = true; //act as if a paragraph just ended
-      }
-      if ($this->tablestart)
-      {
-          $this->cell[$this->row][$this->col]['textbuffer'][] = array($e,$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
-          $this->cell[$this->row][$this->col]['text'][] = "\n";
-          break;
-      }
-		  $this->pbegin=true;
-			if ($this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
-			elseif (!$this->pjustfinished) $this->Ln($this->lineheight);
-		  //Save x,y coords in case we need to print borders...
-		  $this->oldx = $this->x;
-		  $this->oldy = $this->y;
-			if(isset($attr['ALIGN'])) $this->divalign = $align[strtolower($attr['ALIGN'])];
-			if(isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
-      {
-   			$this->cssbegin=true;
- 				if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
-				elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
-				//Read Inline CSS
-				if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
-				//Look for name in the $this->CSS array
-				$this->backupcss = $properties;
-				if (!empty($properties)) $this->setCSS($properties); //name(id/class/style) found in the CSS array!
-		  }
-			break;
-		case 'SPAN':
-		  $this->buffer_on = true;
- 		  //Save x,y coords in case we need to print borders...
- 		  $this->oldx = $this->x;
- 		  $this->oldy = $this->y;
-			if( isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
-      {
-   			$this->cssbegin=true;
- 				if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
-				elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
-				//Read Inline CSS
-				if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
-				//Look for name in the $this->CSS array
-				$this->backupcss = $properties;
-				if (!empty($properties)) $this->setCSS($properties); //name found in the CSS array!
-		  }
-      break;
-		case 'PRE':
-		  if($this->tablestart)
-		  {
-		    $this->cell[$this->row][$this->col]['textbuffer'][] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
-      	$this->cell[$this->row][$this->col]['text'][] = "\n";
-      }
-			elseif($this->divbegin or $this->pbegin or $this->buffer_on)  $this->textbuffer[] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
-      else
-      {
-      	if ($this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
-			  elseif (!$this->pjustfinished) $this->Ln($this->lineheight);
-		    $this->buffer_on = true;
-		    //Save x,y coords in case we need to print borders...
-		    $this->oldx = $this->x;
-		    $this->oldy = $this->y;
-			  if(isset($attr['ALIGN'])) $this->divalign = $align[strtolower($attr['ALIGN'])];
-			  if(isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
-        {
-       			$this->cssbegin=true;
-            if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
-				    elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
-				    //Read Inline CSS
-				    if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
-				    //Look for name in the $this->CSS array
-				    $this->backupcss = $properties;
-				    if (!empty($properties)) $this->setCSS($properties); //name(id/class/style) found in the CSS array!
-  		  }
-			}
-    case 'TT':
-    case 'KBD':
-    case 'SAMP':
-		case 'CODE':
-			$this->SetFont('courier');
-  		$this->currentfont='courier';
-		  break;
-		case 'TEXTAREA':
-		  $this->buffer_on = true;
-      $colsize = 20; //HTML default value 
-      $rowsize = 2; //HTML default value
-  		if (isset($attr['COLS'])) $colsize = $attr['COLS'];
-  		if (isset($attr['ROWS'])) $rowsize = $attr['ROWS'];
-  		if (!$this->tablestart)
-  		{
-		    if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
-		    $this->col = $colsize;
-		    $this->row = $rowsize;
-		  }
-		  else //it is inside a table
-		  {
-  		  $this->specialcontent = "type=textarea,lines=$rowsize,width=".((2.2*$colsize) + 3); //Activate form info in order to paint FORM elements within table
-        $this->cell[$this->row][$this->col]['s'] += (2.2*$colsize) + 6;// +6 == margin
-        if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = 1.1*$this->lineheight*$rowsize + 2.5;
-      }
-		  break;
-		case 'SELECT':
-		  $this->specialcontent = "type=select"; //Activate form info in order to paint FORM elements within table
-		  break;
-		case 'OPTION':
-      $this->selectoption['ACTIVE'] = true;
-		  if (empty($this->selectoption))
-      {
-  		  $this->selectoption['MAXWIDTH'] = '';
-        $this->selectoption['SELECTED'] = '';
-      }
-      if (isset($attr['SELECTED'])) $this->selectoption['SELECTED'] = '';
-		  break;
-		case 'FORM':
-		  if($this->tablestart)
-		  {
-		    $this->cell[$this->row][$this->col]['textbuffer'][] = array($e,$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
-      	$this->cell[$this->row][$this->col]['text'][] = "\n";
-      }
-		  elseif ($this->x != $this->lMargin) $this->Ln($this->lineheight); //Skip a line, if needed
-		  break;
-    case 'INPUT':
-      if (!isset($attr['TYPE'])) $attr['TYPE'] == ''; //in order to allow default 'TEXT' form (in case of malformed HTML code)
-      if (!$this->tablestart)
-      {
-        switch(strtoupper($attr['TYPE'])){
-          case 'CHECKBOX': //Draw Checkbox
-                $checked = false;
-                if (isset($attr['CHECKED'])) $checked = true;
-        			  $this->SetFillColor(235,235,235);
-        			  $this->x += 3;
-                $this->Rect($this->x,$this->y+1,3,3,'DF');
-                if ($checked) 
+                $this->buffer_on = true; //activate list 'bufferization'
+                if (!empty($this->textbuffer))
                 {
-                  $this->Line($this->x,$this->y+1,$this->x+3,$this->y+1+3);
-                  $this->Line($this->x,$this->y+1+3,$this->x+3,$this->y+1);
+                    $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
+                    $this->listnum++;
                 }
-        			  $this->SetFillColor(255);
-        			  $this->x += 3.5;
-                break;
-          case 'RADIO': //Draw Radio button
-                $checked = false;
-                if (isset($attr['CHECKED'])) $checked = true;
-                $this->x += 4;
-                $this->Circle($this->x,$this->y+2.2,1,'D');
-                $this->_out('0.000 g');
-                if ($checked) $this->Circle($this->x,$this->y+2.2,0.4,'DF');
-                $this->Write(5,$texto,$this->x);
-                $this->x += 2;
-                break;
-          case 'BUTTON': // Draw a button
-          case 'SUBMIT':
-          case 'RESET':
-                $texto='';
-                if (isset($attr['VALUE'])) $texto = $attr['VALUE'];
-                $nihil = 2.5;
-                $this->x += 2;
-        			  $this->SetFillColor(190,190,190);
-                $this->Rect($this->x,$this->y,$this->GetStringWidth($texto)+2*$nihil,4.5,'DF'); // 4.5 in order to avoid overlapping
-        			  $this->x += $nihil;
-                $this->Write(5,$texto,$this->x);
-        			  $this->x += $nihil;
-        			  $this->SetFillColor(255);
-                break;
-          case 'PASSWORD':
-                if (isset($attr['VALUE']))
+                $this->textbuffer = array();
+            }
+            break;
+        case 'H1': // 2 * fontsize
+        case 'H2': // 1.5 * fontsize
+        case 'H3': // 1.17 * fontsize
+        case 'H4': // 1 * fontsize
+        case 'H5': // 0.83 * fontsize
+        case 'H6': // 0.67 * fontsize
+            //Values obtained from: http://www.w3.org/TR/REC-CSS2/sample.html
+            if(isset($attr['ALIGN'])) $this->divalign = $align[strtolower($attr['ALIGN'])];
+            $this->buffer_on = true;
+            if ($this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
+            elseif (!$this->pjustfinished) $this->Ln($this->lineheight);
+            $this->SetStyle('B',true);
+            switch($tag)
+            {
+                case 'H1': 
+                    $this->SetFontSize(2*$this->FontSizePt); 
+                    $this->lineheight *= 2;
+                    break;
+                case 'H2': 
+                    $this->SetFontSize(1.5*$this->FontSizePt); 
+                    $this->lineheight *= 1.5;
+                    break;
+                case 'H3':
+                    $this->SetFontSize(1.17*$this->FontSizePt);
+                    $this->lineheight *= 1.17;
+                    break;
+                case 'H4':
+                    $this->SetFontSize($this->FontSizePt); 
+                    break;
+                case 'H5': 
+                    $this->SetFontSize(0.83*$this->FontSizePt); 
+                    $this->lineheight *= 0.83;
+                    break;
+                case 'H6': 
+                    $this->SetFontSize(0.67*$this->FontSizePt); 
+                    $this->lineheight *= 0.67;
+                    break;
+            }
+            break;
+        case 'HR': //Default values: width=100% align=center color=gray
+            //Skip a line, if needed
+            if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
+            $this->Ln(0.2*$this->lineheight);
+            $hrwidth = $this->pgwidth;
+            $hralign = 'C';
+            $hrcolor = array('R'=>200,'G'=>200,'B'=>200);
+            if($attr['WIDTH'] != '') $hrwidth = ConvertSize($attr['WIDTH'],$this->pgwidth);
+            if($attr['ALIGN'] != '') $hralign = $align[strtolower($attr['ALIGN'])];
+            if($attr['COLOR'] != '') $hrcolor = ConvertColor($attr['COLOR']);
+            $this->SetDrawColor($hrcolor['R'],$hrcolor['G'],$hrcolor['B']);
+            $x = $this->x;
+            $y = $this->y;
+            switch($hralign)
+            {
+                case 'L':
+                case 'J':
+                    break;
+                case 'C':
+                    $empty = $this->pgwidth - $hrwidth;
+                    $empty /= 2;
+                    $x += $empty;
+                    break;
+                case 'R':
+                    $empty = $this->pgwidth - $hrwidth;
+                    $x += $empty;
+                    break;
+            }
+            $oldlinewidth = $this->LineWidth;
+            $this->SetLineWidth(0.3);
+            $this->Line($x,$y,$x+$hrwidth,$y);
+            $this->SetLineWidth($oldlinewidth);
+            $this->Ln(0.2*$this->lineheight);
+            $this->SetDrawColor(0);
+            $this->blockjustfinished = true; //Eliminate exceeding left-side spaces
+            break;
+        case 'INS':
+            $this->SetStyle('U',true);
+            break;
+        case 'SMALL':
+            $newsize = $this->FontSizePt - 1;
+            $this->SetFontSize($newsize);
+            break;
+        case 'BIG':
+            $newsize = $this->FontSizePt + 1;
+            $this->SetFontSize($newsize);
+        case 'STRONG':
+            $this->SetStyle('B',true);
+            break;
+        case 'CITE':
+        case 'EM':
+            $this->SetStyle('I',true);
+            break;
+        case 'TITLE':
+            $this->titulo = true;
+            break;
+        case 'B':
+        case 'I':
+        case 'U':
+            if( isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
+            {
+                $this->cssbegin=true;
+                if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
+                elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
+                //Read Inline CSS
+                if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
+                //Look for name in the $this->CSS array
+                $this->backupcss = $properties;
+                if (!empty($properties)) $this->setCSS($properties); //name found in the CSS array!
+            }
+            $this->SetStyle($tag,true);
+            break;
+        case 'A':
+            if (isset($attr['NAME']) and $attr['NAME'] != '') $this->textbuffer[] = array('','','',array(),'',false,false,$attr['NAME']); //an internal link (adds a space for recognition)
+            if (isset($attr['HREF'])) $this->HREF=$attr['HREF'];
+            break;
+        case 'DIV':
+            //in case of malformed HTML code. Example:(...)</div><li>Content</li><div>DIV1</div>(...)
+            if ($this->listlvl > 0) // We are closing (omitted) OL/UL tag(s)
+            {
+                $this->buffer_on = false;
+                if (!empty($this->textbuffer)) $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
+                $this->textbuffer = array();
+                $this->listlvl--;
+                $this->printlistbuffer();
+                $this->pjustfinished = true; //act as if a paragraph just ended
+            }
+            $this->divbegin=true;
+            if ($this->x != $this->lMargin)	$this->Ln($this->lineheight);
+            if( isset($attr['ALIGN']) and  $attr['ALIGN'] != '' ) $this->divalign = $align[strtolower($attr['ALIGN'])];
+            if( isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
+            {
+                $this->cssbegin=true;
+                if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
+                elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
+                //Read Inline CSS
+                if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
+                //Look for name in the $this->CSS array
+                if (!empty($properties)) $this->setCSS($properties); //name found in the CSS array!
+            }
+            break;
+        case 'IMG':
+            if(!empty($this->textbuffer) and !$this->tablestart)
+            {
+                //Output previously buffered content and output image below
+                //Set some default values
+                $olddivwidth = $this->divwidth;
+                $olddivheight = $this->divheight;
+                if ( $this->divwidth == 0) $this->divwidth = $this->pgwidth - $this->x + $this->lMargin;
+                if ( $this->divheight == 0) $this->divheight = $this->lineheight;
+                //Print content
+                $this->printbuffer($this->textbuffer,true/*is out of a block (e.g. DIV,P etc.)*/);
+                $this->textbuffer=array(); 
+                //Reset values
+                $this->divwidth = $olddivwidth;
+                $this->divheight = $olddivheight;
+                $this->textbuffer=array();
+                $this->Ln($this->lineheight);
+            }
+            if(isset($attr['SRC']))
+            {
+                $srcpath = html_entity_decode($attr['SRC'], ENT_QUOTES, CONTREXX_CHARSET);
+                if(!isset($attr['WIDTH'])) $attr['WIDTH'] = 0;
+                else $attr['WIDTH'] = ConvertSize($attr['WIDTH'],$this->pgwidth);//$attr['WIDTH'] /= 4;
+                if(!isset($attr['HEIGHT']))	$attr['HEIGHT'] = 0;
+                else $attr['HEIGHT'] = ConvertSize($attr['HEIGHT'],$this->pgwidth);//$attr['HEIGHT'] /= 4;
+                if ($this->tdbegin) 
                 {
-                    $num_stars = strlen($attr['VALUE']);
-                    $attr['VALUE'] = str_repeat('*',$num_stars);
+                    $bak_x = $this->x;
+                    $bak_y = $this->y;
+                    //Check whether image exists locally or on the URL
+                    if (!FWValidator::isUri($srcpath) && !fopen($srcpath, 'rb')) //Show 'image not found' icon instead
+                    {
+                        if(!$this->shownoimg) break;
+                        $srcpath = $this->noimgsrc;
+                    }
+                    $sizesarray = $this->Image($srcpath, $this->GetX(), $this->GetY(), $attr['WIDTH'], $attr['HEIGHT'],'','',false);
+                    $this->y = $bak_y;
+                    $this->x = $bak_x;
                 }
-          case 'TEXT': //Draw TextField
-          default: //default == TEXT
-                $texto='';
-                if (isset($attr['VALUE'])) $texto = $attr['VALUE'];
-                $tamanho = 20;
-                if (isset($attr['SIZE']) and ctype_digit($attr['SIZE']) ) $tamanho = $attr['SIZE'];
-        			  $this->SetFillColor(235,235,235);
-                $this->x += 2;
-                $this->Rect($this->x,$this->y,2*$tamanho,4.5,'DF');// 4.5 in order to avoid overlapping
-                if ($texto != '')
+                elseif($this->pbegin or $this->divbegin)
                 {
-                  $this->x += 1;
-                  $this->Write(5,$texto,$this->x);
-                  $this->x -= $this->GetStringWidth($texto);
+                    //In order to support <div align='center'><img ...></div>
+                    $ypos = 0;
+                    $bak_x = $this->x;
+                    $bak_y = $this->y;
+                    //Check whether image exists locally or on the URL
+                    if (!FWValidator::isUri($srcpath) && !fopen($srcpath, 'rb')) //Show 'image not found' icon instead
+                    {
+                        if(!$this->shownoimg) break;
+                        $srcpath = $this->noimgsrc;
+                    }
+                    $sizesarray = $this->Image($srcpath, $this->GetX(), $this->GetY(), $attr['WIDTH'], $attr['HEIGHT'],'','',false);
+                    $this->y = $bak_y;
+                    $this->x = $bak_x;
+                    $xpos = '';
+                    switch($this->divalign)
+                    {
+                        case "C":
+                            $spacesize = $this->CurrentFont[ 'cw' ][ ' ' ] * ( $this->FontSizePt / 1000 );
+                            $empty = ($this->pgwidth - $sizesarray['WIDTH'])/2;
+                            $xpos = 'xpos='.$empty.',';
+                            break;
+                        case "R":
+                            $spacesize = $this->CurrentFont[ 'cw' ][ ' ' ] * ( $this->FontSizePt / 1000 );
+                            $empty = ($this->pgwidth - $sizesarray['WIDTH']);
+                            $xpos = 'xpos='.$empty.',';
+                            break;
+                        default: break;
+                    }
+                    $numberoflines = (integer)ceil($sizesarray['HEIGHT']/$this->lineheight) ;
+                    $ypos = $numberoflines * $this->lineheight;
+                    $this->textbuffer[] = array("»¤¬"/*identifier*/."type=image,ypos=$ypos,{$xpos}width=".$sizesarray['WIDTH'].",height=".$sizesarray['HEIGHT']."»¤¬".$sizesarray['OUTPUT']);
+                    while($numberoflines) {$this->textbuffer[] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);$numberoflines--;}
                 }
-        		    $this->SetFillColor(255);
-        		    $this->x += 2*$tamanho;
-                break;
-        }
-      }
-      else //we are inside a table
-      {
-        $this->cell[$this->row][$this->col]['form'] = true; // in order to make some width adjustments later
-        $type = '';
-        $text = '';
-        $height = 0;
-        $width = 0;
-        switch(strtoupper($attr['TYPE'])){
-          case 'CHECKBOX': //Draw Checkbox
-                $checked = false;
-                if (isset($attr['CHECKED'])) $checked = true;
-                $text = $checked;
-                $type = 'CHECKBOX';
-                $width = 4;
-   			        $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
-                $this->cell[$this->row][$this->col]['s'] += $width;
-                if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight;
-                break;
-          case 'RADIO': //Draw Radio button
-                $checked = false;
-                if (isset($attr['CHECKED'])) $checked = true;
-                $text = $checked;
-                $type = 'RADIO';
-                $width = 3;
-                $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
-                $this->cell[$this->row][$this->col]['s'] += $width;
-                if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight;
-                break;
-          case 'BUTTON': $type = 'BUTTON'; // Draw a button
-          case 'SUBMIT': if ($type == '') $type = 'SUBMIT';
-          case 'RESET': if ($type == '') $type = 'RESET';
-                $texto='';
-                if (isset($attr['VALUE'])) $texto = " " . $attr['VALUE'] . " ";
-                $text = $texto;
-                $width = $this->GetStringWidth($texto)+3;
-                $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
-                $this->cell[$this->row][$this->col]['s'] += $width;
-                if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight + 2;
-                break;
-          case 'PASSWORD':
-                if (isset($attr['VALUE']))
+                else
                 {
-                    $num_stars = strlen($attr['VALUE']);
-                    $attr['VALUE'] = str_repeat('*',$num_stars);
+                    $imgborder = 0;
+                    if (isset($attr['BORDER'])) $imgborder = ConvertSize($attr['BORDER'],$this->pgwidth);
+                    //Check whether image exists locally or on the URL
+                    if (!FWValidator::isUri($srcpath) && !fopen($srcpath, 'rb')) //Show 'image not found' icon instead
+                    {
+                        if(!$this->shownoimg) break;
+                        $srcpath = $this->noimgsrc;
+                    }
+                    $sizesarray = $this->Image($srcpath, $this->GetX(), $this->GetY(), $attr['WIDTH'], $attr['HEIGHT'],'',$this->HREF); //Output Image
+                    $ini_x = $sizesarray['X'];
+                    $ini_y = $sizesarray['Y'];
+                    if ($imgborder)
+                    {
+                        $oldlinewidth = $this->LineWidth;
+                        $this->SetLineWidth($imgborder);
+                        $this->Rect($ini_x,$ini_y,$sizesarray['WIDTH'],$sizesarray['HEIGHT']);
+                        $this->SetLineWidth($oldlinewidth);
+                    }
                 }
-                $type = 'PASSWORD';
-          case 'TEXT': //Draw TextField
-          default: //default == TEXT
-                $texto='';
-                if (isset($attr['VALUE'])) $texto = $attr['VALUE'];
-                $tamanho = 20;
-                if (isset($attr['SIZE']) and ctype_digit($attr['SIZE']) ) $tamanho = $attr['SIZE'];
-                $text = $texto;
-                $width = 2*$tamanho;
-                if ($type == '') $type = 'TEXT';
-                $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
-                $this->cell[$this->row][$this->col]['s'] += $width;
-                if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight + 2;
+                if ($sizesarray['X'] < $this->x) $this->x = $this->lMargin;
+                if ($this->tablestart)
+                {
+                    $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=image,width=".$sizesarray['WIDTH'].",height=".$sizesarray['HEIGHT']."»¤¬".$sizesarray['OUTPUT']);
+                    $this->cell[$this->row][$this->col]['s'] += $sizesarray['WIDTH'] + 1;// +1 == margin
+                    $this->cell[$this->row][$this->col]['form'] = true; // in order to make some width adjustments later
+                    if (!isset($this->cell[$this->row][$this->col]['w'])) $this->cell[$this->row][$this->col]['w'] = $sizesarray['WIDTH'] + 3;
+                    if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $sizesarray['HEIGHT'] + 3;
+                }
+            }
+            break;
+        case 'BLOCKQUOTE':
+        case 'BR':
+            if($this->tablestart)
+            {
+                $this->cell[$this->row][$this->col]['textbuffer'][] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
+                $this->cell[$this->row][$this->col]['text'][] = "\n";
+                if (!isset($this->cell[$this->row][$this->col]['maxs'])) $this->cell[$this->row][$this->col]['maxs'] = $this->cell[$this->row][$this->col]['s'] +2; //+2 == margin
+                elseif($this->cell[$this->row][$this->col]['maxs'] < $this->cell[$this->row][$this->col]['s']) $this->cell[$this->row][$this->col]['maxs'] = $this->cell[$this->row][$this->col]['s']+2;//+2 == margin
+                $this->cell[$this->row][$this->col]['s'] = 0;// reset
+            }
+            elseif($this->divbegin or $this->pbegin or $this->buffer_on)  $this->textbuffer[] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
+            else {$this->Ln($this->lineheight);$this->blockjustfinished = true;}
+            break;
+        case 'P':
+            //in case of malformed HTML code. Example:(...)</p><li>Content</li><p>Paragraph1</p>(...)
+            if ($this->listlvl > 0) // We are closing (omitted) OL/UL tag(s)
+            {
+                $this->buffer_on = false;
+                if (!empty($this->textbuffer)) $this->listitem[] = array($this->listlvl,$this->listnum,$this->textbuffer,$this->listoccur[$this->listlvl]);
+                $this->textbuffer = array();
+                $this->listlvl--;
+                $this->printlistbuffer();
+                $this->pjustfinished = true; //act as if a paragraph just ended
+            }
+            if ($this->tablestart)
+            {
+                $this->cell[$this->row][$this->col]['textbuffer'][] = array($e,$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
+                $this->cell[$this->row][$this->col]['text'][] = "\n";
                 break;
-        }
-      }
-      break;
-		case 'FONT':
-//Font size is ignored for now
-			if (isset($attr['COLOR']) and $attr['COLOR']!='')
-      {
-				$cor = ConvertColor($attr['COLOR']);
-				//If something goes wrong switch color to black
-			  $cor['R'] = (isset($cor['R'])?$cor['R']:0);
-        $cor['G'] = (isset($cor['G'])?$cor['G']:0);
-        $cor['B'] = (isset($cor['B'])?$cor['B']:0);
-			  $this->colorarray = $cor;
-				$this->SetTextColor($cor['R'],$cor['G'],$cor['B']);
-				$this->issetcolor = true;
-			}
-			if (isset($attr['FACE']) and in_array(strtolower($attr['FACE']), $this->fontlist))
-      {
-				$this->SetFont(strtolower($attr['FACE']));
-				$this->issetfont=true;
-			}
-			//'If' disabled in this version due lack of testing (you may enable it if you want)
-//			if (isset($attr['FACE']) and in_array(strtolower($attr['FACE']), $this->fontlist) and isset($attr['SIZE']) and $attr['SIZE']!='') {
-//				$this->SetFont(strtolower($attr['FACE']),'',$attr['SIZE']);
-//				$this->issetfont=true;
-//			}
-			break;
-	}//end of switch
-  $this->pjustfinished=false;
+            }
+            $this->pbegin=true;
+            if ($this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
+            elseif (!$this->pjustfinished) $this->Ln($this->lineheight);
+            //Save x,y coords in case we need to print borders...
+            $this->oldx = $this->x;
+            $this->oldy = $this->y;
+            if(isset($attr['ALIGN'])) $this->divalign = $align[strtolower($attr['ALIGN'])];
+            if(isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
+            {
+                $this->cssbegin=true;
+                if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
+                elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
+                //Read Inline CSS
+                if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
+                //Look for name in the $this->CSS array
+                $this->backupcss = $properties;
+                if (!empty($properties)) $this->setCSS($properties); //name(id/class/style) found in the CSS array!
+            }
+            break;
+        case 'SPAN':
+            $this->buffer_on = true;
+            //Save x,y coords in case we need to print borders...
+            $this->oldx = $this->x;
+            $this->oldy = $this->y;
+            if( isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
+            {
+                $this->cssbegin=true;
+                if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
+                elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
+                //Read Inline CSS
+                if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
+                //Look for name in the $this->CSS array
+                $this->backupcss = $properties;
+                if (!empty($properties)) $this->setCSS($properties); //name found in the CSS array!
+            }
+            break;
+        case 'PRE':
+            if($this->tablestart)
+            {
+                $this->cell[$this->row][$this->col]['textbuffer'][] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
+                $this->cell[$this->row][$this->col]['text'][] = "\n";
+            }
+            elseif($this->divbegin or $this->pbegin or $this->buffer_on)  $this->textbuffer[] = array("\n",$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
+            else
+            {
+                if ($this->x != $this->lMargin) $this->Ln(2*$this->lineheight);
+                elseif (!$this->pjustfinished) $this->Ln($this->lineheight);
+                $this->buffer_on = true;
+                //Save x,y coords in case we need to print borders...
+                $this->oldx = $this->x;
+                $this->oldy = $this->y;
+                if(isset($attr['ALIGN'])) $this->divalign = $align[strtolower($attr['ALIGN'])];
+                if(isset($attr['CLASS']) or isset($attr['ID']) or isset($attr['STYLE']) )
+                {
+                    $this->cssbegin=true;
+                    if (isset($attr['CLASS'])) $properties = $this->CSS[$attr['CLASS']];
+                    elseif (isset($attr['ID'])) $properties = $this->CSS[$attr['ID']];
+                    //Read Inline CSS
+                    if (isset($attr['STYLE'])) $properties = $this->readInlineCSS($attr['STYLE']);
+                    //Look for name in the $this->CSS array
+                    $this->backupcss = $properties;
+                    if (!empty($properties)) $this->setCSS($properties); //name(id/class/style) found in the CSS array!
+                }
+            }
+        case 'TT':
+        case 'KBD':
+        case 'SAMP':
+        case 'CODE':
+            $this->SetFont('courier');
+            $this->currentfont='courier';
+            break;
+        case 'TEXTAREA':
+            $this->buffer_on = true;
+            $colsize = 20; //HTML default value 
+            $rowsize = 2; //HTML default value
+            if (isset($attr['COLS'])) $colsize = $attr['COLS'];
+            if (isset($attr['ROWS'])) $rowsize = $attr['ROWS'];
+            if (!$this->tablestart)
+            {
+                if ($this->x != $this->lMargin) $this->Ln($this->lineheight);
+                $this->col = $colsize;
+                $this->row = $rowsize;
+            }
+            else //it is inside a table
+            {
+                $this->specialcontent = "type=textarea,lines=$rowsize,width=".((2.2*$colsize) + 3); //Activate form info in order to paint FORM elements within table
+                $this->cell[$this->row][$this->col]['s'] += (2.2*$colsize) + 6;// +6 == margin
+                if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = 1.1*$this->lineheight*$rowsize + 2.5;
+            }
+            break;
+        case 'SELECT':
+            $this->specialcontent = "type=select"; //Activate form info in order to paint FORM elements within table
+            break;
+            case 'OPTION':
+            $this->selectoption['ACTIVE'] = true;
+            if (empty($this->selectoption))
+            {
+                $this->selectoption['MAXWIDTH'] = '';
+                $this->selectoption['SELECTED'] = '';
+            }
+            if (isset($attr['SELECTED'])) $this->selectoption['SELECTED'] = '';
+            break;
+        case 'FORM':
+            if($this->tablestart)
+            {
+                $this->cell[$this->row][$this->col]['textbuffer'][] = array($e,$this->HREF,$this->currentstyle,$this->colorarray,$this->currentfont,$this->SUP,$this->SUB,''/*internal link*/,$this->strike,$this->outlineparam,$this->bgcolorarray);
+                $this->cell[$this->row][$this->col]['text'][] = "\n";
+            }
+            elseif ($this->x != $this->lMargin) $this->Ln($this->lineheight); //Skip a line, if needed
+            break;
+        case 'INPUT':
+            if (!isset($attr['TYPE'])) $attr['TYPE'] == ''; //in order to allow default 'TEXT' form (in case of malformed HTML code)
+            if (!$this->tablestart)
+            {
+                switch(strtoupper($attr['TYPE'])){
+                    case 'CHECKBOX': //Draw Checkbox
+                        $checked = false;
+                        if (isset($attr['CHECKED'])) $checked = true;
+                        $this->SetFillColor(235,235,235);
+                        $this->x += 3;
+                        $this->Rect($this->x,$this->y+1,3,3,'DF');
+                        if ($checked) 
+                        {
+                            $this->Line($this->x,$this->y+1,$this->x+3,$this->y+1+3);
+                            $this->Line($this->x,$this->y+1+3,$this->x+3,$this->y+1);
+                        }
+                        $this->SetFillColor(255);
+                        $this->x += 3.5;
+                        break;
+                    case 'RADIO': //Draw Radio button
+                        $checked = false;
+                        if (isset($attr['CHECKED'])) $checked = true;
+                        $this->x += 4;
+                        $this->Circle($this->x,$this->y+2.2,1,'D');
+                        $this->_out('0.000 g');
+                        if ($checked) $this->Circle($this->x,$this->y+2.2,0.4,'DF');
+                        $this->Write(5,$texto,$this->x);
+                        $this->x += 2;
+                        break;
+                    case 'BUTTON': // Draw a button
+                    case 'SUBMIT':
+                    case 'RESET':
+                        $texto='';
+                        if (isset($attr['VALUE'])) $texto = $attr['VALUE'];
+                        $nihil = 2.5;
+                        $this->x += 2;
+                        $this->SetFillColor(190,190,190);
+                        $this->Rect($this->x,$this->y,$this->GetStringWidth($texto)+2*$nihil,4.5,'DF'); // 4.5 in order to avoid overlapping
+                        $this->x += $nihil;
+                        $this->Write(5,$texto,$this->x);
+                        $this->x += $nihil;
+                        $this->SetFillColor(255);
+                        break;
+                    case 'PASSWORD':
+                        if (isset($attr['VALUE']))
+                        {
+                            $num_stars = strlen($attr['VALUE']);
+                            $attr['VALUE'] = str_repeat('*',$num_stars);
+                        }
+                    case 'TEXT': //Draw TextField
+                    default: //default == TEXT
+                        $texto='';
+                        if (isset($attr['VALUE'])) $texto = $attr['VALUE'];
+                        $tamanho = 20;
+                        if (isset($attr['SIZE']) and ctype_digit($attr['SIZE']) ) $tamanho = $attr['SIZE'];
+                        $this->SetFillColor(235,235,235);
+                        $this->x += 2;
+                        $this->Rect($this->x,$this->y,2*$tamanho,4.5,'DF');// 4.5 in order to avoid overlapping
+                        if ($texto != '')
+                        {
+                            $this->x += 1;
+                            $this->Write(5,$texto,$this->x);
+                            $this->x -= $this->GetStringWidth($texto);
+                        }
+                        $this->SetFillColor(255);
+                        $this->x += 2*$tamanho;
+                        break;
+                }
+            }
+            else //we are inside a table
+            {
+                $this->cell[$this->row][$this->col]['form'] = true; // in order to make some width adjustments later
+                $type = '';
+                $text = '';
+                $height = 0;
+                $width = 0;
+                switch(strtoupper($attr['TYPE'])){
+                    case 'CHECKBOX': //Draw Checkbox
+                        $checked = false;
+                        if (isset($attr['CHECKED'])) $checked = true;
+                        $text = $checked;
+                        $type = 'CHECKBOX';
+                        $width = 4;
+                        $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
+                        $this->cell[$this->row][$this->col]['s'] += $width;
+                        if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight;
+                        break;
+                    case 'RADIO': //Draw Radio button
+                        $checked = false;
+                        if (isset($attr['CHECKED'])) $checked = true;
+                        $text = $checked;
+                        $type = 'RADIO';
+                        $width = 3;
+                        $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
+                        $this->cell[$this->row][$this->col]['s'] += $width;
+                        if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight;
+                        break;
+                    case 'BUTTON': $type = 'BUTTON'; // Draw a button
+                    case 'SUBMIT': if ($type == '') $type = 'SUBMIT';
+                    case 'RESET': if ($type == '') $type = 'RESET';
+                        $texto='';
+                        if (isset($attr['VALUE'])) $texto = " " . $attr['VALUE'] . " ";
+                        $text = $texto;
+                        $width = $this->GetStringWidth($texto)+3;
+                        $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
+                        $this->cell[$this->row][$this->col]['s'] += $width;
+                        if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight + 2;
+                        break;
+                    case 'PASSWORD':
+                        if (isset($attr['VALUE']))
+                        {
+                            $num_stars = strlen($attr['VALUE']);
+                            $attr['VALUE'] = str_repeat('*',$num_stars);
+                        }
+                        $type = 'PASSWORD';
+                    case 'TEXT': //Draw TextField
+                    default: //default == TEXT
+                        $texto='';
+                        if (isset($attr['VALUE'])) $texto = $attr['VALUE'];
+                        $tamanho = 20;
+                        if (isset($attr['SIZE']) and ctype_digit($attr['SIZE']) ) $tamanho = $attr['SIZE'];
+                        $text = $texto;
+                        $width = 2*$tamanho;
+                        if ($type == '') $type = 'TEXT';
+                        $this->cell[$this->row][$this->col]['textbuffer'][] = array("»¤¬"/*identifier*/."type=input,subtype=$type,width=$width,height=$height"."»¤¬".$text);
+                        $this->cell[$this->row][$this->col]['s'] += $width;
+                        if (!isset($this->cell[$this->row][$this->col]['h'])) $this->cell[$this->row][$this->col]['h'] = $this->lineheight + 2;
+                        break;
+                }
+            }
+        break;
+        case 'FONT':
+            //Font size is ignored for now
+            if (isset($attr['COLOR']) and $attr['COLOR']!='')
+            {
+                $cor = ConvertColor($attr['COLOR']);
+                //If something goes wrong switch color to black
+                $cor['R'] = (isset($cor['R'])?$cor['R']:0);
+                $cor['G'] = (isset($cor['G'])?$cor['G']:0);
+                $cor['B'] = (isset($cor['B'])?$cor['B']:0);
+                $this->colorarray = $cor;
+                $this->SetTextColor($cor['R'],$cor['G'],$cor['B']);
+                $this->issetcolor = true;
+            }
+            if (isset($attr['FACE']) and in_array(strtolower($attr['FACE']), $this->fontlist))
+            {
+                $this->SetFont(strtolower($attr['FACE']));
+                $this->issetfont=true;
+            }
+            //'If' disabled in this version due lack of testing (you may enable it if you want)
+            //			if (isset($attr['FACE']) and in_array(strtolower($attr['FACE']), $this->fontlist) and isset($attr['SIZE']) and $attr['SIZE']!='') {
+            //				$this->SetFont(strtolower($attr['FACE']),'',$attr['SIZE']);
+            //				$this->issetfont=true;
+            //			}
+            break;
+    }//end of switch
+    $this->pjustfinished=false;
 }
 
 function CloseTag($tag)
