@@ -18,12 +18,23 @@ Text[14]=["","{TXT_GOOGLE_MAPS_API_KEY_HELP}"];
 Text[15]=["","{TXT_FRONTEND_EDITING_STATUS_HELP}"];
 Text[16]=["","{TXT_CORE_LIST_PROTECTED_PAGES_HELP}"];
 Text[17]=["","{TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP}"];
+Text[18]=["","{TXT_DEBUGGING_EXPLANATION}"];
 // -->
+
+function toggleDebuggingFlags(show) {
+    var target = $J('#debugging_flags');
+    if(show)
+        target.show();
+    else
+        target.hide();
+}
+
 </script>
 
 <ul id="tabmenu">
     <li><a id="setTab_Settings1" class="active" href="javascript:{}" onclick="selectTab('Settings1')" title="{TXT_TITLE_SET1}">{TXT_TITLE_SET1}</a></li>
     <li><a id="setTab_Settings2" href="javascript:{}" onclick="selectTab('Settings2')" title="{TXT_TITLE_SET2}">{TXT_TITLE_SET2}</a></li>
+    <li><a id="setTab_Settings3" href="javascript:{}" onclick="selectTab('Settings3')" title="{TXT_TITLE_SET3}">{TXT_TITLE_SET3}</a></li>
 </ul>
 <form name="settings_form" method="post" action="index.php?cmd=settings&amp;act=update">
     <div id="Settings1" class="setTab" style="display:block;">
@@ -163,6 +174,46 @@ Text[17]=["","{TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP}"];
             <tr class="row2">
                 <td>{TXT_CONTACT_EMAIL}&nbsp;</td>
                 <td><input type="text" name="setvalue[29]" value="{SETTINGS_CONTACT_EMAIL}" size="70" maxlength="250" />&nbsp;<img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[4],Style[0])" alt="" /></td>
+            </tr>
+        </table>
+    </div>
+    <div id="Settings3" class="setTab" style="display:none;">
+        <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_TITLE_SET3}</th>
+            </tr>
+            <tr class="row2">
+                <td width="25%">{TXT_DEBUGGING_STATUS}&nbsp;</td>
+                <td width="75%">
+                  <input type="radio" id="debugging_status_on" name="debugging[status]" {SETTINGS_DEBUGGING_ON} value="on" onclick="toggleDebuggingFlags(true);"/><label for="debugging_status">{TXT_RADIO_ON}</label>&nbsp;
+                    <input type="radio" id="debugging_status_off" name="debugging[status]" {SETTINGS_DEBUGGING_OFF} value="off" onclick="toggleDebuggingFlags(false);"/><label for="debugging_status">{TXT_RADIO_OFF}</label>&nbsp;
+                    <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[18],Style[0])" alt="" />
+                </td>
+            </tr>
+            <tr class="row1" id="debugging_flags" {DEBUGGING_HIDE_FLAGS}>
+                <td>{TXT_DEBUGGING_FLAGS}&nbsp;</td>
+                <td>
+                    <table>
+                        <tr><td>
+                            <input type="checkbox" id="debugging_flag_php" name="debugging[flag_php]" {SETTINGS_DEBUGGING_FLAG_PHP}/><label for="debugging_flag_php">{TXT_DEBUGGING_FLAG_PHP}</label>&nbsp;
+                        </td></tr>
+                        <tr><td>
+                            <input type="checkbox" id="debugging_flag_adodb" name="debugging[flag_adodb]" {SETTINGS_DEBUGGING_FLAG_ADODB}/><label for="debugging_flag_adodb">{TXT_DEBUGGING_FLAG_ADODB}</label>&nbsp;
+                        </td></tr>
+                        <tr><td>
+                            <input type="checkbox" id="debugging_flag_adodb_trace" name="debugging[flag_adodb_trace]" {SETTINGS_DEBUGGING_FLAG_ADODB_TRACE}/><label for="debugging_flag_adodb_trace">{TXT_DEBUGGING_FLAG_ADODB_TRACE}</label>&nbsp;
+                        </td></tr>
+                        <tr><td>
+                            <input type="checkbox" id="debugging_flag_adodb_error" name="debugging[flag_adodb_error]" {SETTINGS_DEBUGGING_FLAG_ADODB_ERROR}/><label for="debugging_flag_adodb_error">{TXT_DEBUGGING_FLAG_ADODB_ERROR}</label>&nbsp;
+                        </td></tr>
+                        <tr><td>
+                            <input type="checkbox" id="debugging_log_file" name="debugging[flag_log_file]" {SETTINGS_DEBUGGING_FLAG_LOG_FILE}/><label for="debugging_flag_log_file">{TXT_DEBUGGING_FLAG_LOG_FILE}</label>&nbsp;
+                        </td></tr>
+                        <tr><td>
+                            <input type="checkbox" id="debugging_flag_log_firephp" name="debugging[flag_log_firephp]" {SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}/><label for="debugging_flag_log_firephp">{TXT_DEBUGGING_FLAG_LOG_FIREPHP}</label>&nbsp;
+                        </td></tr>
+                    </table>
+                </td>
             </tr>
         </table>
     </div>

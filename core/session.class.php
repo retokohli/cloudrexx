@@ -59,24 +59,44 @@ class cmsSession
         	array(& $this, 'cmsSessionGc')))
         {
 	       	$this->status=$status;
+
 	       	$errorMsg = '';
 	        $this->_objDb = getDatabaseObject($errorMsg, true);
-            if (DBG::getMode() & DBG_ADODB_TRACE) {
-                $this->_objDb->debug=99;
-            } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
-                $this->_objDb->debug=1;
-            } else {
-                $this->_objDb->debug=0;
-            }
+
+            $this->setAdodbDebugMode();
 	        $this->compatibelitiyMode = ($arrColumns = $this->_objDb->MetaColumnNames(DBPREFIX.'sessions')) && in_array('username', $arrColumns);
 
 // TODO: there should be an option to limit the session to the browser's session
             @ini_set('session.gc_maxlifetime', $this->lifetime);
 	        session_start();
+
+            //earliest possible point to set debugging according to session.
+            $this->restoreDebuggingParams();
+
             $this->cmsSessionExpand();
 	    }
         else {
         	$this->cmsSessionError();
+        }
+    }
+
+    function setAdodbDebugMode() {
+        if (DBG::getMode() & DBG_ADODB_TRACE) {
+            $this->_objDb->debug=99;
+        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
+            $this->_objDb->debug=1;
+        } else {
+            $this->_objDb->debug=0;
+        }
+    }
+
+    /**
+     * Expands debugging behaviour with behaviour stored in session if specified and active.
+     */
+    function restoreDebuggingParams() {
+        if(isset($_SESSION['debugging']) && $_SESSION['debugging']) {
+            DBG::activate(DBG::getMode() | $_SESSION['debugging_flags']);
+            $this->setAdodbDebugMode(); //might have changed
         }
     }
 
