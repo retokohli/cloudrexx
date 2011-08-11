@@ -161,6 +161,8 @@ class settingsManager
     {
         global $objDatabase, $_CORELANG, $objTemplate, $_CONFIG, $_FRONTEND_LANGID;
 
+        JS::activate('jquery');
+
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings', 'settings.html');
         $this->strPageTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
 
@@ -183,6 +185,16 @@ class settingsManager
         $objTemplate->setVariable(array(
             'TXT_TITLE_SET1'                  => $_CORELANG['TXT_SETTINGS_TITLE_MISC'],
             'TXT_TITLE_SET2'                  => $_CORELANG['TXT_SETTINGS_TITLE_CONTACT'],
+            'TXT_TITLE_SET3'                  => $_CORELANG['TXT_SETTINGS_TITLE_DEVELOPMENT'],
+            'TXT_DEBUGGING_STATUS'            => $_CORELANG['TXT_DEBUGGING_STATUS'],
+            'TXT_DEBUGGING_FLAGS'             => $_CORELANG['TXT_DEBUGGING_FLAGS'],
+            'TXT_DEBUGGING_FLAG_PHP'             => $_CORELANG['TXT_DEBUGGING_FLAG_PHP'],
+            'TXT_DEBUGGING_FLAG_ADODB'             => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB'],
+            'TXT_DEBUGGING_FLAG_ADODB_TRACE'             => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_TRACE'],
+            'TXT_DEBUGGING_FLAG_ADODB_ERROR'             => $_CORELANG['TXT_DEBUGGING_FLAG_ADODB_ERROR'],
+            'TXT_DEBUGGING_FLAG_LOG_FILE'             => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FILE'],
+            'TXT_DEBUGGING_FLAG_LOG_FIREPHP'             => $_CORELANG['TXT_DEBUGGING_FLAG_LOG_FIREPHP'],
+            'TXT_DEBUGGING_EXPLANATION'       => $_CORELANG['TXT_DEBUGGING_EXPLANATION'],
             'TXT_SAVE_CHANGES'                => $_CORELANG['TXT_SAVE'],
             'TXT_SYSTEM_STATUS'               => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS'],
             'TXT_SYSTEM_STATUS_HELP'          => $_CORELANG['TXT_SETTINGS_SYSTEMSTATUS_HELP'],
@@ -270,8 +282,42 @@ class settingsManager
             'SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON'           => ($arrSettings['advancedUploadFrontend'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF'           => ($arrSettings['advancedUploadFrontend'] == 'off') ? 'checked="checked"' : ''
         ));
+
+        $this->setDebuggingVariables($objTemplate);
     }
 
+    /**
+     * Sets debugging related template variables according to session state.
+     *
+     * @param template the Sigma tpl
+     */
+    protected function setDebuggingVariables($template) {
+        $status = $_SESSION['debugging'];
+        $flags = $_SESSION['debugging_flags'];
+
+        $flags = $this->debuggingFlagArrayFromFlags($flags);
+
+        $template->setVariable(array(
+            'DEBUGGING_HIDE_FLAGS' => $this->stringIfTrue(!$status,'style="display:none;"'),
+            'SETTINGS_DEBUGGING_ON' => $this->stringIfTrue($status,'checked="checked"'),
+            'SETTINGS_DEBUGGING_OFF' => $this->stringIfTrue(!$status,'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_PHP' => $this->stringIfTrue($flags['php'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_ADODB' => $this->stringIfTrue($flags['adodb'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_ADODB_TRACE' => $this->stringIfTrue($flags['adodb_trace'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_ADODB_ERROR' => $this->stringIfTrue($flags['adodb_error'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP' => $this->stringIfTrue($flags['log_firephp'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_LOG_FILE' => $this->stringIfTrue($flags['log_file'],'checked="checked"')
+        ));
+    }
+
+    /**
+     * returns $str if $check is true, else ''
+     */
+    protected function stringIfTrue($check, $str) {
+        if($check)
+            return $str;
+        return '';
+    }
 
     /**
      * Update settings
@@ -334,11 +380,70 @@ class settingsManager
                                     WHERE setid='.intval($intId));
         }
 
+        $this->updateDebugSettings($_POST['debugging']);
+
         if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
             $this->strErrMessage[] = $result;
         }
 
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
+    }
+
+    /**
+     * Calculates a flag value as passed to DBG::activate() from an array.
+     * @param array flags array('php' => bool, 'adodb' => bool, 'adodb_error' => bool, 'log_firephp' => bool
+     * @return int an int with the flags set.
+     */
+    protected function debuggingFlagsFromFlagArray($flags) {
+        $ret = 0;
+        if($flags['php'])
+            $ret |= DBG_PHP;
+        if($flags['adodb'])
+            $ret |= DBG_ADODB;
+        if($flags['adodb_error'])
+            $ret |= DBG_ADODB_ERROR;
+        if($flags['adodb_trace'])
+            $ret |= DBG_ADODB_TRACE;
+        if($flags['log_file'])
+            $ret |= DBG_LOG_FILE;
+        if($flags['log_firephp'])
+            $ret |= DBG_LOG_FIREPHP;
+
+        return $ret;
+    }
+
+    /**
+     * Analyzes an int as passed to DBG::activate() and yields an array containing information about the flags.
+     * @param int $flags
+     * @return array('php' => bool, 'adodb' => bool, 'adodb_error' => bool, 'log_firephp' => bool
+     */
+    protected function debuggingFlagArrayFromFlags($flags) {
+        return array(
+            'php' => (bool)($flags & DBG_PHP),
+            'adodb' => (bool)($flags & DBG_ADODB),
+            'adodb_error' => (bool)($flags & DBG_ADODB_ERROR),
+            'adodb_trace' => (bool)($flags & DBG_ADODB_TRACE),
+            'log_firephp' => (bool)($flags & DBG_LOG_FIREPHP),
+            'log_file' => (bool)($flags & DBG_LOG_FILE)
+        );
+    }
+
+    protected function updateDebugSettings($settings) {
+        $status = $settings['status'] == "on";
+
+        $flags = array(
+            'php' => $settings['flag_php'],
+            'adodb' => $settings['flag_adodb'],
+            'adodb_error' => $settings['flag_adodb_error'],
+            'adodb_trace' => $settings['flag_adodb_trace'],
+            'log_firephp' => $settings['flag_log_firephp'],
+            'log_file' => $settings['flag_log_file']
+        );
+
+        $flags = $this->debuggingFlagsFromFlagArray($flags);
+
+        $_SESSION['debugging'] = $status;
+        $_SESSION['debugging_flags'] = $flags;
     }
 
     /**
