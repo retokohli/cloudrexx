@@ -3,9 +3,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+require_once '../../../lib/DBG.php';
 require_once '../../../config/configuration.php';
 require_once '../../../core/API.php';
 require_once '../../../config/doctrine.php';
+
+DBG::activate();
 
 class Contrexx_Content_migration
 {
@@ -79,7 +82,7 @@ class Contrexx_Content_migration
             }
                         
             $this->_setPageRecords($objResult, $nodeArr[$objResult->fields['catid']], $page);
-            
+
             self::$em->persist($page);
 
             self::$em->flush();
