@@ -110,7 +110,6 @@ class shopmanager extends ShopLibrary
     private static $pageTitle = '';
     private static $arrCategoryTreeName = array();
     private static $defaultImage = '';
-    private static $uploadDir = false;
 
     /**
      * Settings object
@@ -3876,11 +3875,12 @@ class shopmanager extends ShopLibrary
                 $optionValue = ShopLibrary::stripUniqidFromFilename($optionValueOriginal);
                 // Link an uploaded image name to its file
                 if (   $optionValue != $optionValueOriginal
-                    && file_exists(ASCMS_PATH.'/'.$this->uploadDir.'/'.$optionValueOriginal)) {
+                    && file_exists(
+                          ASCMS_DOCUMENT_ROOT.'/'.Order::UPLOAD_FOLDER.
+                          $optionValueOriginal)) {
                     $optionValue =
-                        '<a href="'.$this->uploadDir.'/'.
-                        $optionValueOriginal.'" target="uploadimage">'.
-                        $optionValue.'</a>';
+                        '<a href="'.Order::UPLOAD_FOLDER.$optionValueOriginal.
+                        '" target="uploadimage">'.$optionValue.'</a>';
                 }
 
                 array_push(
@@ -4272,7 +4272,7 @@ class shopmanager extends ShopLibrary
                 } else {
                     while (!$objResult->EOF) {
                         $filename =
-                            ASCMS_PATH.'/'.$this->uploadDir.'/'.
+                            ASCMS_DOCUMENT_ROOT.'/'.Order::UPLOAD_FOLDER.
                             $objResult->fields['product_option_value'];
                         if (file_exists($filename)) {
                             if (!@unlink($filename)) {

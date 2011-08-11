@@ -621,7 +621,7 @@ class ShopLibrary
             }
             while (!$objResult->EOF) {
                 $filename =
-                    ASCMS_PATH.'/'.$this->uploadDir.'/'.
+                    ASCMS_DOCUMENT_ROOT.'/'.$this->uploadDir.
                     $objResult->fields['product_option_value'];
                 if (file_exists($filename)) {
                     if (@unlink($filename)) {
@@ -775,14 +775,15 @@ class ShopLibrary
      * /var/www/mydomain/images/shop/test.jpg becomes images/shop/test.jpg
      * /var/www/mydomain/images/shop/folder/test.jpg becomes images/shop/folder/test.jpg
      * @param   string    $imageFileSource    The absolute image path, by reference
-     * @return  boolean                       True on success, false otherwise
+     * @return  boolean                       True on success, null on noop,
+     *                                        false otherwise
      * @todo    The message on successful renaming cannot be displayed yet
      */
     static function moveImage(&$imageFileSource)
     {
         global $_ARRAYLANG;
 
-        if ($imageFileSource == '') return;
+        if ($imageFileSource == '') return null;
         $arrMatch = array();
         $shopImageFolderRe = '/^'.preg_quote(ASCMS_SHOP_IMAGES_WEB_PATH.'/', '/').'/';
         $imageFileTarget = $imageFileSource;
