@@ -222,6 +222,16 @@ class DBG
         self::$enable_trace = 1;
     }
 
+    static function set_adodb_debug_mode()
+    {
+        if (DBG::getMode() & DBG_ADODB_TRACE) {
+            DBG::enable_adodb_debug(true);
+        } elseif (DBG::getMode() & DBG_ADODB || DBG::getMode() & DBG_ADODB_ERROR) {
+            DBG::enable_adodb_debug();
+        } else {
+            DBG::disable_adodb_debug();
+        }
+    }
 
     // Redirect ADODB output to us instead of STDOUT.
     static function enable_adodb()
