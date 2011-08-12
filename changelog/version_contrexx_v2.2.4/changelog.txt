@@ -18,6 +18,7 @@ Modul: Shop
 
 Modul: Bildergalerie
 - Es ist nicht mehr möglich, den Bildnamen zu ändern, wenn das Häckchen "Name aus Datei übernehmen" gesetzt ist.
+- Das Ändern der Bildeigenschaften funktioniert unabhängig vom DBPREFIX.
 
 Modul: Newsletter
 - Auch E-Mail-Adressen mit Umlauten können eingetragen werden.
