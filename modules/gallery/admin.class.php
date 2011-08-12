@@ -2344,7 +2344,7 @@ class galleryManager extends GalleryLibrary
                                                (picture_id, lang_id, name)
                                             SELECT
                                                '.$intPictureId.', id, "'.$imageName.'"
-                                            FROM contrexx_languages');
+                                            FROM '.DBPREFIX.'languages');
     }
 
 
