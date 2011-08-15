@@ -109,9 +109,6 @@ class JS
             'dependencies'  => array(
                 'jquery'
             ),
-            'cssfiles'      => array(
-                'lib/javascript/shadowbox/shadowbox.css'
-            ),
             'specialcode'  => '$J(\'document\').ready(function(){Shadowbox.init()})'
         ),
         'jquery'     => array(
