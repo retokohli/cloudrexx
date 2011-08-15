@@ -183,36 +183,33 @@ function toggleDebuggingFlags(show) {
                 <th colspan="2">{TXT_TITLE_SET3}</th>
             </tr>
             <tr class="row2">
-                <td width="25%">{TXT_DEBUGGING_STATUS}&nbsp;</td>
+                <td width="25%" style="vertical-align:top; padding-top:5px;">{TXT_DEBUGGING_STATUS}&nbsp;</td>
                 <td width="75%">
-                  <input type="radio" id="debugging_status_on" name="debugging[status]" {SETTINGS_DEBUGGING_ON} value="on" onclick="toggleDebuggingFlags(true);"/><label for="debugging_status">{TXT_RADIO_ON}</label>&nbsp;
+                  <div>
+                    <input type="radio" id="debugging_status_on" name="debugging[status]" {SETTINGS_DEBUGGING_ON} value="on" onclick="toggleDebuggingFlags(true);"/><label for="debugging_status">{TXT_RADIO_ON}</label>&nbsp;
                     <input type="radio" id="debugging_status_off" name="debugging[status]" {SETTINGS_DEBUGGING_OFF} value="off" onclick="toggleDebuggingFlags(false);"/><label for="debugging_status">{TXT_RADIO_OFF}</label>&nbsp;
                     <img src="images/icons/note.gif" width="12" height="12" onmouseout="htm()" onmouseover="stm(Text[18],Style[0])" alt="" />
-                </td>
-            </tr>
-            <tr class="row1" id="debugging_flags" {DEBUGGING_HIDE_FLAGS}>
-                <td>{TXT_DEBUGGING_FLAGS}&nbsp;</td>
-                <td>
-                    <table>
-                        <tr><td>
-                            <input type="checkbox" id="debugging_flag_php" name="debugging[flag_php]" {SETTINGS_DEBUGGING_FLAG_PHP}/><label for="debugging_flag_php">{TXT_DEBUGGING_FLAG_PHP}</label>&nbsp;
-                        </td></tr>
-                        <tr><td>
-                            <input type="checkbox" id="debugging_flag_adodb" name="debugging[flag_adodb]" {SETTINGS_DEBUGGING_FLAG_ADODB}/><label for="debugging_flag_adodb">{TXT_DEBUGGING_FLAG_ADODB}</label>&nbsp;
-                        </td></tr>
-                        <tr><td>
-                            <input type="checkbox" id="debugging_flag_adodb_trace" name="debugging[flag_adodb_trace]" {SETTINGS_DEBUGGING_FLAG_ADODB_TRACE}/><label for="debugging_flag_adodb_trace">{TXT_DEBUGGING_FLAG_ADODB_TRACE}</label>&nbsp;
-                        </td></tr>
-                        <tr><td>
-                            <input type="checkbox" id="debugging_flag_adodb_error" name="debugging[flag_adodb_error]" {SETTINGS_DEBUGGING_FLAG_ADODB_ERROR}/><label for="debugging_flag_adodb_error">{TXT_DEBUGGING_FLAG_ADODB_ERROR}</label>&nbsp;
-                        </td></tr>
-                        <tr><td>
-                            <input type="checkbox" id="debugging_log_file" name="debugging[flag_log_file]" {SETTINGS_DEBUGGING_FLAG_LOG_FILE}/><label for="debugging_flag_log_file">{TXT_DEBUGGING_FLAG_LOG_FILE}</label>&nbsp;
-                        </td></tr>
-                        <tr><td>
-                            <input type="checkbox" id="debugging_flag_log_firephp" name="debugging[flag_log_firephp]" {SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}/><label for="debugging_flag_log_firephp">{TXT_DEBUGGING_FLAG_LOG_FIREPHP}</label>&nbsp;
-                        </td></tr>
-                    </table>
+                  </div>
+                  <div id="debugging_flags" {DEBUGGING_HIDE_FLAGS}>
+                    <div>
+                      <input type="checkbox" id="debugging_flag_php" name="debugging[flag_php]" {SETTINGS_DEBUGGING_FLAG_PHP}/><label for="debugging_flag_php">{TXT_DEBUGGING_FLAG_PHP}</label>&nbsp;
+                    </div>
+                    <div>
+                      <input type="checkbox" id="debugging_flag_adodb" name="debugging[flag_adodb]" {SETTINGS_DEBUGGING_FLAG_ADODB}/><label for="debugging_flag_adodb">{TXT_DEBUGGING_FLAG_ADODB}</label>&nbsp;
+                    </div>
+                    <div>
+                      <input type="checkbox" id="debugging_flag_adodb_trace" name="debugging[flag_adodb_trace]" {SETTINGS_DEBUGGING_FLAG_ADODB_TRACE}/><label for="debugging_flag_adodb_trace">{TXT_DEBUGGING_FLAG_ADODB_TRACE}</label>&nbsp;
+                    </div>
+                    <div>
+                      <input type="checkbox" id="debugging_flag_adodb_error" name="debugging[flag_adodb_error]" {SETTINGS_DEBUGGING_FLAG_ADODB_ERROR}/><label for="debugging_flag_adodb_error">{TXT_DEBUGGING_FLAG_ADODB_ERROR}</label>&nbsp;
+                    </div>
+                    <div>
+                      <input type="checkbox" id="debugging_log_file" name="debugging[flag_log_file]" {SETTINGS_DEBUGGING_FLAG_LOG_FILE}/><label for="debugging_flag_log_file">{TXT_DEBUGGING_FLAG_LOG_FILE}</label>&nbsp;
+                    </div>
+                        <div>
+                          <input type="checkbox" id="debugging_flag_log_firephp" name="debugging[flag_log_firephp]" {SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP}/><label for="debugging_flag_log_firephp">{TXT_DEBUGGING_FLAG_LOG_FIREPHP}</label>&nbsp;
+                        </div>
+                  </div>
                 </td>
             </tr>
         </table>

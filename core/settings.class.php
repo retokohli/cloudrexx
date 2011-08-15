@@ -301,10 +301,10 @@ class settingsManager
             'DEBUGGING_HIDE_FLAGS' => $this->stringIfTrue(!$status,'style="display:none;"'),
             'SETTINGS_DEBUGGING_ON' => $this->stringIfTrue($status,'checked="checked"'),
             'SETTINGS_DEBUGGING_OFF' => $this->stringIfTrue(!$status,'checked="checked"'),
-            'SETTINGS_DEBUGGING_FLAG_PHP' => $this->stringIfTrue($flags['php'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_PHP' => $this->stringIfTrue($flags['php'] || !$status,'checked="checked"'),
             'SETTINGS_DEBUGGING_FLAG_ADODB' => $this->stringIfTrue($flags['adodb'],'checked="checked"'),
-            'SETTINGS_DEBUGGING_FLAG_ADODB_TRACE' => $this->stringIfTrue($flags['adodb_trace'],'checked="checked"'),
-            'SETTINGS_DEBUGGING_FLAG_ADODB_ERROR' => $this->stringIfTrue($flags['adodb_error'],'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_ADODB_TRACE' => $this->stringIfTrue($flags['adodb_trace'] || !$status,'checked="checked"'),
+            'SETTINGS_DEBUGGING_FLAG_ADODB_ERROR' => $this->stringIfTrue($flags['adodb_error'] || !$status,'checked="checked"'),
             'SETTINGS_DEBUGGING_FLAG_LOG_FIREPHP' => $this->stringIfTrue($flags['log_firephp'],'checked="checked"'),
             'SETTINGS_DEBUGGING_FLAG_LOG_FILE' => $this->stringIfTrue($flags['log_file'],'checked="checked"')
         ));
