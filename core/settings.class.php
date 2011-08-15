@@ -380,7 +380,8 @@ class settingsManager
                                     WHERE setid='.intval($intId));
         }
 
-        $this->updateDebugSettings($_POST['debugging']);
+        $debugging = isset($_POST['debugging']) ? $_POST['debugging'] : null;
+        $this->updateDebugSettings($debugging);
 
         if ($_CONFIG['xmlSitemapStatus'] == 'on' && ($result = XMLSitemap::write()) !== true) {
             $this->strErrMessage[] = $result;
@@ -396,17 +397,17 @@ class settingsManager
      */
     protected function debuggingFlagsFromFlagArray($flags) {
         $ret = 0;
-        if($flags['php'])
+        if(isset($flags['php']) && $flags['php'])
             $ret |= DBG_PHP;
-        if($flags['adodb'])
+        if(isset($flags['adodb']) && $flags['adodb'])
             $ret |= DBG_ADODB;
-        if($flags['adodb_error'])
+        if(isset($flags['adodb_error']) && $flags['adodb_error'])
             $ret |= DBG_ADODB_ERROR;
-        if($flags['adodb_trace'])
+        if(isset($flags['adodb_trace']) && $flags['adodb_trace'])
             $ret |= DBG_ADODB_TRACE;
-        if($flags['log_file'])
+        if(isset($flags['log_file']) && $flags['log_file'])
             $ret |= DBG_LOG_FILE;
-        if($flags['log_firephp'])
+        if(isset($flags['log_firephp']) && $flags['log_firephp'])
             $ret |= DBG_LOG_FIREPHP;
 
         return $ret;
@@ -431,14 +432,26 @@ class settingsManager
     protected function updateDebugSettings($settings) {
         $status = $settings['status'] == "on";
 
-        $flags = array(
-            'php' => $settings['flag_php'],
-            'adodb' => $settings['flag_adodb'],
-            'adodb_error' => $settings['flag_adodb_error'],
-            'adodb_trace' => $settings['flag_adodb_trace'],
-            'log_firephp' => $settings['flag_log_firephp'],
-            'log_file' => $settings['flag_log_file']
-        );
+        $flags = array();
+        
+        if(isset($settings['flag_php'])) {
+            $flags['php'] = $settings['flag_php'];
+        }
+        if(isset($settings['flag_adodb'])) {
+            $flags['adodb'] = $settings['flag_adodb'];
+        }
+        if(isset($settings['flag_adodb_error'])) {
+            $flags['adodb_error'] = $settings['flag_adodb_error'];
+        }
+        if(isset($settings['flag_adodb_trace'])) {
+            $flags['adodb_trace'] = $settings['flag_adodb_trace'];
+        }
+        if(isset($settings['flag_log_firephp'])) {
+            $flags['log_firephp'] = $settings['flag_log_firephp'];
+        }
+        if(isset($settings['flag_log_file'])) {
+            $flags['log_file'] = $settings['flag_log_file'];
+        }
 
         $flags = $this->debuggingFlagsFromFlagArray($flags);
 
