@@ -8,6 +8,7 @@
 
 Systemkern:
 - Debug-Fehlermeldungen bei fehlgeschlagener FTP-Verbindung
+- Debugging nun via Grundeinstellungen => Entwicklerwerkzeuge für die aktuelle Session aktivierbar.
 
 Modul: Shop
 - Das cmd 'terms' heisst nun 'shipment'.
