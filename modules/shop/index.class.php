@@ -389,7 +389,9 @@ class Shop extends ShopLibrary
                     $product_id = $_SESSION['shop']['cart']['products'][$product_id]['id'];
                 }
                 $objProduct = Product::getById($product_id);
-                $selectedCatId = $objProduct->getShopCategoryId();
+                if ($objProduct) {
+                    $selectedCatId = $objProduct->getShopCategoryId();
+                }
             }
 
             // Array of all visible ShopCategories
