@@ -30,6 +30,9 @@ Modul: Medienverzeichnis
 Modul: Linkverzeichnis
 - Beispielcode für Headlines in der Administrationsoberfläche korrigiert.
 
+Modul: Shop
+- SQL-Injection-Lücke geschlossen.
+
 Systemkern:
 - Auch auf Windows-Servern werden alle Sonderzeichen aus den Dateinamen gefiltert.
 
