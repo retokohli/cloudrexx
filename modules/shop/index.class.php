@@ -830,17 +830,17 @@ class Shop extends ShopLibrary
         $flagLastFive =
             (isset($_REQUEST['lastFive'])  ? true                   : false);
         $productId =
-            (isset($_REQUEST['productId']) ? $_REQUEST['productId'] : 0);
+            (isset($_REQUEST['productId']) ? intval($_REQUEST['productId']) : 0);
         $catId =
-            (isset($_REQUEST['catId'])     ? $_REQUEST['catId']     : 0);
+            (isset($_REQUEST['catId'])     ? intval($_REQUEST['catId'])     : 0);
         $manufacturerId =
-            (isset($_REQUEST['manId'])     ? $_REQUEST['manId']     : 0);
+            (isset($_REQUEST['manId'])     ? intval($_REQUEST['manId'])     : 0);
         $term =
             (isset($_REQUEST['term'])
                 ? stripslashes(trim($_REQUEST['term'])) : ''
             );
         $pos =
-            (isset($_REQUEST['pos'])       ? $_REQUEST['pos']       : 0);
+            (isset($_REQUEST['pos'])       ? intval($_REQUEST['pos'])       : 0);
 
         if ($catId && $term == '') {
             $this->showCategories($catId);
@@ -1542,8 +1542,7 @@ class Shop extends ShopLibrary
              WHERE p.is_special_offer=1
                AND p.status=1
                AND c.catstatus=1
-             ORDER BY p.sort_order
-        ";
+             ORDER BY p.sort_order";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
             $this->errorHandling();
@@ -1627,14 +1626,14 @@ class Shop extends ShopLibrary
             }
             $this->objTemplate->setCurrentBlock('shopProductRow1');
             $this->objTemplate->setVariable(array(
-                'SHOP_PRODUCT_TITLE'                => str_replace('"', '&quot;', $arrTitle[$i]),
-                'SHOP_PRODUCT_THUMBNAIL'            => $arrThumbnailPath[$i],
+                'SHOP_PRODUCT_TITLE'              => str_replace('"', '&quot;', $arrTitle[$i]),
+                'SHOP_PRODUCT_THUMBNAIL'          => $arrThumbnailPath[$i],
                 'SHOP_PRODUCT_THUMBNAIL_SIZE'     => $arrThumbnailSize[$i],
-                'SHOP_PRODUCT_PRICE'                => $arrPrice[$i],
-                'SHOP_PRODUCT_DISCOUNTPRICE'        => $arrDiscountPrice[$i],
-                'SHOP_PRODUCT_PRICE_UNIT'           => Currency::getActiveCurrencySymbol(),
-                'SHOP_PRODUCT_DISCOUNTPRICE_UNIT'   => Currency::getActiveCurrencySymbol(),
-                'SHOP_PRODUCT_DETAILLINK'           => $arrDetailLink[$i],
+                'SHOP_PRODUCT_PRICE'              => $arrPrice[$i],
+                'SHOP_PRODUCT_DISCOUNTPRICE'      => $arrDiscountPrice[$i],
+                'SHOP_PRODUCT_PRICE_UNIT'         => Currency::getActiveCurrencySymbol(),
+                'SHOP_PRODUCT_DISCOUNTPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
+                'SHOP_PRODUCT_DETAILLINK'         => $arrDetailLink[$i],
                 'SHOP_PRODUCT_DISCOUNT_COUNT'     =>
                     Shop::getDiscountCountString($objResult->fields['group_id']),
             ));
