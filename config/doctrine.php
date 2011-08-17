@@ -22,6 +22,9 @@ $classLoader->register();
 $classLoader = new \Doctrine\Common\ClassLoader('Cx\Model\Proxies', ASCMS_MODEL_PROXIES_PATH);
 $classLoader->register();
 
+$classLoader = new \Doctrine\Common\ClassLoader('DoctrineExtension', ASCMS_MODEL_PATH.'/extensions');
+$classLoader->register();
+
 $classLoader = new \Doctrine\Common\ClassLoader('Gedmo', $doctrineDir);
 $classLoader->register();
 
@@ -67,6 +70,10 @@ $evm->addEventSubscriber($loggableListener);
 $treeListener = new \Gedmo\Tree\TreeListener();
 $evm->addEventSubscriber($treeListener);
 $config->setMetadataDriverImpl($chainDriverImpl);
+
+//table prefix
+$prefixListener = new \DoctrineExtension\TablePrefixListener($_DBCONFIG['tablePrefix']);
+$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener);
 
 //$config->setSqlLogger(new Doctrine\DBAL\Logging\EchoSQLLogger());
 
