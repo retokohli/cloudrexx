@@ -24,7 +24,7 @@
  * will either activate or deactivate all levels.
  */
 include_once('../lib/DBG.php');
-DBG::activate(DBG_PHP | DBG_ADODB_ERROR);
+DBG::deactivate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
@@ -544,6 +544,13 @@ switch ($plainCmd) {
 	$cm->renderTree();
         break;
 
+// TODO cleanup
+    case 'cm-ajax':
+	$cmpath = ASCMS_CORE_PATH.'/ContentManager2.class.php';
+	require_once($cmpath);
+	$cm = new ContentManager();
+	echo $cm->renderTree();
+	die();
 
     //-------------------------------------------------------
     // content workflow
