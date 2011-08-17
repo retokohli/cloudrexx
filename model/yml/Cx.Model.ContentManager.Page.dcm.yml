@@ -90,8 +90,8 @@ Cx\Model\ContentManager\Page:
       type: string
       length: 64
 
-    protected:
-      type: boolean
+    protection:
+      type: integer
 
     #visibility
     display:

@@ -116,7 +116,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->active = false;
         $this->display = true;
         $this->caching = false;
-        $this->protected = false;
+        $this->protection = 0;
         $this->setUpdatedAtToNow();
 
         $typeValidator = new \Zend_Validate();
@@ -675,29 +675,70 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->updatedAt;
     }
+    
     /**
-     * @var boolean $protected
+     * @var integer $protection
      */
-    private $protected;
+    private $protection;
 
+    const FRONTEND_PROTECTION = 1;
+    const BACKEND_PROTECTION = 2;    
 
     /**
-     * Set protected
-     *
-     * @param boolean $protected
+     * Whether page access from frontend is protected.
+     * @return boolean
      */
-    public function setProtected($protected)
-    {
-        $this->protected = $protected;
+    public function isFrontendProtected() {
+        return (bool) ($this->protection & self::FRONTEND_PROTECTION);
     }
 
     /**
-     * Get protected
-     *
-     * @return boolean $protected
+     * Whether page access from backend is protected.
+     * @return boolean
      */
-    public function getProtected()
+    public function isBackendProtected() {
+        return (bool) ($this->protection & self::BACKEND_PROTECTION);
+    }
+
+    /**
+     * Set page access from frontend.
+     * @param boolean $val
+     */
+    public function setFrontendProtected($val) {
+        if($val)
+            $this->protection = $this->protection & self::FRONTEND_PROTECTION;
+        else
+            $this->protection = $this->protection ^ self::FRONTEND_PROTECTION;
+    }
+
+    /**
+     * Set page access from backend.
+     * @param boolean $val
+     */
+    public function setBackendProtected($val) {
+        if($val)
+            $this->protection = $this->protection & self::BACKEND_PROTECTION;
+        else
+            $this->protection = $this->protection ^ self::BACKEND_PROTECTION;
+    }
+
+    /**
+     * Set protection
+     *
+     * @param integer $protection
+     */
+    public function setProtection($protection)
     {
-        return $this->protected;
+        $this->protection = $protection;
+    }
+
+    /**
+     * Get protection
+     *
+     * @return integer $protection
+     */
+    public function getProtection()
+    {
+        return $this->protection;
     }
 }
