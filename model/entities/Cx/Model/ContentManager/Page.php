@@ -116,6 +116,7 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->active = false;
         $this->display = true;
         $this->caching = false;
+        $this->protected = false;
         $this->setUpdatedAtToNow();
 
         $typeValidator = new \Zend_Validate();
@@ -673,5 +674,30 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+    /**
+     * @var boolean $protected
+     */
+    private $protected;
+
+
+    /**
+     * Set protected
+     *
+     * @param boolean $protected
+     */
+    public function setProtected($protected)
+    {
+        $this->protected = $protected;
+    }
+
+    /**
+     * Get protected
+     *
+     * @return boolean $protected
+     */
+    public function getProtected()
+    {
+        return $this->protected;
     }
 }
