@@ -10,59 +10,72 @@ class ContentManager {
 		$this->em = Env::em();
 	}
 
-	function renderTree() { /*echo '<pre>';
+	function renderTree() {
 		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');           
 		$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
 
-		$tree = $pageRepo->getTree();
+		$root = $nodeRepo->getRoot();
 
-		$previousLevel = 1;
-		$indent = "";
+		$jsondata = $this->tree_to_json($root);
 
-		echo "[{\r";
+		global $objTemplate;
+		$objTemplate->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
+		$objTemplate->touchBlock('content_manager');
 
-		foreach ($tree as $leaf) {
-			$indent = str_repeat("  ", $leaf->getLvl());
+		return $jsondata;
+	}
 
-			// close child element container
-			if ($previousLevel > $leaf->getLvl()) {
-				echo "]--\r";
-			}
-			// open child element container
-			if ($previousLevel < $leaf->getLvl()) {
-				echo ", \"children\": [\r";
-			}
+	function tree_to_json($tree, $level=0) {
+		$indent = str_repeat("  ", $level);
+		$output = "";
 
-			$previousLevel = $leaf->getLvl();
+		$output .= "[\n";
 
-			echo $indent."\"attr\": { \"id\" : \"node_12
-			echo $indent."\"data\": {\r";
-			echo $indent."  \"data\": ".$leaf->getId().",\r";
-			echo $indent."  \"metadata\": \"...\"";
-			
-			$children = $leaf->getChildren();
-			if ($children[0]) {
-				echo ",\r";
-				echo $indent."  \"children\": [\r";
+		$firstrun = true;
+
+		foreach($tree->getChildren() as $node) {
+			if ($firstrun) {
+				$firstrun = false;
 			}
 			else {
-				echo "\r";
+				$output .= ",\n";
 			}
 
-			echo $indent."}\r";
+			$output .= $indent." {\"attr\" : { \"id\" : \"node_".$node->getId()."\" },\n";
 
+			$output .= $indent."  \"data\" : [\n";
 
-			// $pages = $leaf->getPages();
-			
-			//echo '- '.$leaf->getId().'['.$leaf->getParent()->getId().', '.$leaf->getLvl()."]\r";
+			$languages = array();
+			foreach ($node->getPages() as $page) {
+				if (in_array($page->getLang(), $languages)) continue;
+
+				if (!empty($languages))	$output .= ",\n";
+// TODO: do langs right (affects next 2 lines)
+$langs = array("", "de", "en");
+				$output .= $indent."    { \"language\" : \"".$langs[$page->getLang()]."\", \"title\" : \"".$page->getTitle()."\" }";
+				$languages[] = $page->getLang();
+			}
+			$output .= $indent."\n".$indent."  ],\n";
+
+			if (sizeof($node->getChildren())) {
+				$output .= $indent."  \"children\" : ";
+				$output .= $this->tree_to_json($node, $level+1);				
+			}
+
+			$output .= $indent."  \"icon\" : \"page\",\n";
+			$output .= $indent."  \"metadata\" : {\n";
+			$output .= $indent."    \"status\" : \"active\",\n";
+			$output .= $indent."    \"emblem\" : [\"redirect\"]\n";
+			$output .= $indent."  }\n";
+			$output .= $indent." }";
 		}
 
-		echo "}]\r";
-echo '</pre>';
-*/
-		include('JsonPageTree.class.php');
-		$pt = new JsonPageTree($this->em);
-		echo $pt->render();
+		$output .= "\n".$indent."]";
+
+		if ($level > 0) $output .= ",";
+		$output .= "\n";
+
+		return $output;
 	}
 }
 
