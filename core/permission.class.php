@@ -43,9 +43,9 @@ class Permission
                 $type == 'static' && in_array($accessId, $objFWUser->objUser->getStaticPermissionIds()) ||
                 $type == 'dynamic' && in_array($accessId, $objFWUser->objUser->getDynamicPermissionIds())
                 ||
-                $type == 'node_frontend' && in_array($accessId, $objFWUser->objUser->getNodePermissionIds(true))
+                $type == 'page_frontend' && in_array($accessId, $objFWUser->objUser->getPagePermissionIds(true))
                 ||
-                $type == 'node_backend' && in_array($accessId, $objFWUser->objUser->getNodePermissionIds(false))
+                $type == 'page_backend' && in_array($accessId, $objFWUser->objUser->getPagePermissionIds(false))
             )
         ) {
             return true;
