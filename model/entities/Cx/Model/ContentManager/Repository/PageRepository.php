@@ -216,12 +216,14 @@ class PageRepository extends EntityRepository {
         
         $path = '';
         foreach($pathNodes as $node) {
-            $pages = $node->getPagesByLang();
-            $thePageInOurLang = $pages[$page->getLang()];
+            if($node->getLvl() > 0) { //all but top node (it's pageless).
+                $pages = $node->getPagesByLang();
+                $thePageInOurLang = $pages[$page->getLang()];
             
 //TODO: what happens if $thePageInOurLang is still null?
 //      This should be restricted by the content manager.
-            $path .= '/'.$thePageInOurLang->getTitle();
+                $path .= '/'.$thePageInOurLang->getTitle();
+            }
         }
 
         return $path;

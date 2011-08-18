@@ -317,9 +317,11 @@ else if ($section == 'captcha') {
 }
 
 
+/*
+  commented out during doctrine rewrite by srz
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $pageId  = $objInit->getPageID($page, $section, $command, $history);
-}
+    }*/
 
 $is_home = $objInit->is_home;
 
@@ -345,32 +347,16 @@ $page = null;
 
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 //TODO: history (empty($history) ? )
-    $em = Env::em();
-    $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
-    $page = $pageRepo->findOneBy(array(
-        'id' => $pageId
-    ));
-    
-    $qb = $em->createQueryBuilder();
-    $qb->add('select', 'p')
-        ->add('from', 'Cx\Model\ContentManager\Page p')
-        ->add('where', 
-             $qb->expr()->andx(
-                 'p.id = :pageId',
-                  $qb->expr()->orx($qb->expr()->lte('p.start',':now'), 'p.start IS NULL'),
-                  $qb->expr()->orx($qb->expr()->gte('p.end',':now'), 'p.end IS NULL')
-             )
-         )
-        ->setMaxResults(1);
 
-    $qb->setParameter('pageId', $pageId)
-        ->setParameter('now', new DateTime('now'), \Doctrine\DBAL\Types\Type::DATETIME)
-        ->setParameter('now', new DateTime('now'), \Doctrine\DBAL\Types\Type::DATETIME);
-    $page = $qb->getQuery()->getResult();    
+    require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
+    require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
-    $page = $page[0];
-
-    if(!$page) {
+    $url = \Cx\Core\Routing\URL::fromServerArray($_SERVER);
+    try {
+        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em());
+        $page = $resolver->getPage();
+    }
+    catch (\Cx\Core\Routing\ResolverException $e) { //page not found
         if ($plainSection == 'error') {
             // If the error module is not installed, show this
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -378,7 +364,24 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         CSRF::header('Location: index.php?section=error&id=404');
         exit;
     }
-   
+    
+    //check whether the page is active
+    $now = new DateTime('now');
+    $start = $page->getStart();
+    $end = $page->getEnd();
+
+    $pageId = $page->getId();
+    
+    //404 for inactive pages
+    if(($start > $now && $start != null) || ($now > $end && $end != null)) {
+        if ($plainSection == 'error') {
+            // If the error module is not installed, show this
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        }
+        CSRF::header('Location: index.php?section=error&id=404');
+        exit;
+    }
+       
     // Frontend Editing: content has to be replaced with preview code if needed.
     $page_content   = null;
     if($frontEditing) {
