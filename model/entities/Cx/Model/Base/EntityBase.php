@@ -46,7 +46,7 @@ class EntityBase {
 
     /**
      * @throws ValidationException
-     * @prePersis
+     * @prePersist
      */
     public function validate() {
         if(!$this->validators)

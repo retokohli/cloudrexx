@@ -78,4 +78,22 @@ class URL {
         return $this->params;
     }
 
+    /**
+     * takes $_SERVER as argument and returns the corresponding url
+     *
+     * @param array $server
+     */
+    public static function fromServerArray(&$server) {
+        $host = $server['HTTP_HOST'];
+        $uri = $server['REQUEST_URI'];
+//TODO: correct rewrite
+        $cutted = array();
+        preg_match('/.*index.php\?(.*)$/', $uri, $cutted);
+        $uri = $cutted[1];
+
+//TODO: implement correct protocol finder
+        $protocol = 'http';
+
+        return new URL($protocol.'://'.$host.'/'.$uri);
+    }
 }
