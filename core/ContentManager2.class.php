@@ -52,7 +52,7 @@ class ContentManager {
 				if (!empty($languages))	$output .= ",\n";
 // TODO: do langs right (affects next 2 lines)
 $langs = array("", "de", "en");
-				$output .= $indent."    { \"language\" : \"".$langs[$page->getLang()]."\", \"title\" : \"".$page->getTitle()."\" }";
+				$output .= $indent."    { \"language\" : \"".$langs[$page->getLang()]."\", \"title\" : \"".addslashes($page->getTitle())."\" }";
 				$languages[] = $page->getLang();
 			}
 			$output .= $indent."\n".$indent."  ],\n";
