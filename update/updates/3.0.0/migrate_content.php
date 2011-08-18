@@ -7,8 +7,11 @@ require_once '../../../lib/DBG.php';
 require_once '../../../config/configuration.php';
 require_once '../../../core/API.php';
 require_once '../../../config/doctrine.php';
-
 DBG::activate();
+
+$m = new Contrexx_Content_migration;
+$m->migrate();
+print 'DONE';
 
 class Contrexx_Content_migration
 {
@@ -34,9 +37,9 @@ class Contrexx_Content_migration
         $root = new \Cx\Model\ContentManager\Node();
         self::$em->persist($root);
         
-        $objDatabase->Execute('TRUNCATE TABLE `pages`');
-        $objDatabase->Execute('TRUNCATE TABLE `nodes`');          
-        $objDatabase->Execute('TRUNCATE TABLE `ext_log_entries`');
+        $objDatabase->Execute('TRUNCATE TABLE `contrexx_pages`');
+        $objDatabase->Execute('TRUNCATE TABLE `contrexx_nodes`');          
+        $objDatabase->Execute('TRUNCATE TABLE `contrexx_ext_log_entries`');
         
         $objNodeResult = $objDatabase->Execute('SELECT DISTINCT catid
                                                 FROM `'.DBPREFIX.'content_navigation_history`
@@ -50,7 +53,10 @@ class Contrexx_Content_migration
             
             $objNodeResult->MoveNext();
         }
-        
+
+        // flush nodes to db
+        self::$em->flush();
+
         $objResult = $objDatabase->Execute('SELECT cn.*,
                nav.*,
                cnlog.*
@@ -97,9 +103,9 @@ class Contrexx_Content_migration
                                              ON cn.id = nav.catid
                                              WHERE cn.id
                                              NOT IN (
-                                                SELECT pages.id
-                                                FROM pages
-                                                WHERE cn.id = pages.id)'
+                                                SELECT contrexx_pages.id
+                                                FROM contrexx_pages
+                                                WHERE cn.id = contrexx_pages.id)'
                                             );
         
         if ($objRecords->RecordCount() > 0) {            
