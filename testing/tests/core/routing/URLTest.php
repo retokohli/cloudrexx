@@ -2,8 +2,8 @@
 include_once ASCMS_CORE_PATH.'/routing/URL.class.php';
 use Cx\Core\Routing\URL as URL;
 
-class URLTestCase extends \PHPUnit_Framework_TestCase {
-    public function testConstruction() {
+class URLTest extends \PHPUnit_Framework_TestCase {
+    public function testDomainAndPath() {
         $url = new URL('http://example.com/');
         $this->assertEquals('http://example.com/', $url->getDomain());
         $this->assertEquals('', $url->getPath());
@@ -18,10 +18,20 @@ class URLTestCase extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testSuggestions() {
+        $url = new URL('http://example.com/Test');
+        $this->assertEquals('Test', $url->getSuggestedTargetPath());
+        $this->assertEquals('', $url->getSuggestedParams());
+
+        $url = new URL('http://example.com/Test?foo=bar');
+        $this->assertEquals('Test', $url->getSuggestedTargetPath());
+        $this->assertEquals('?foo=bar', $url->getSuggestedParams());
+    }
+
     /**
      * @expectedException \Cx\Core\Routing\URLException
      */
-    public function testMalformedConstruction1() {
+    public function testMalformedConstruction() {
         $url = new URL('htp://example.com/');
     }
     

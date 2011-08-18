@@ -48,7 +48,7 @@ class ParameterParser {
         $matches = array();
         $matchCount = preg_match($this->regex, $params, $matches);
         if($matchCount == 0)
-            throw new ParameterParserException(\get_class($this) . ' couldn\'t extract parameters from parameter string ' . $params);
+            throw new ParameterParserException(\get_class($this) . ' couldn\'t extract parameters from parameter string "' . $params .'"');
         
         /*
           matches now holds 

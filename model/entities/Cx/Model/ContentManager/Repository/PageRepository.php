@@ -180,8 +180,8 @@ class PageRepository extends EntityRepository {
             return null;
 
         $unmatchedPath = substr($path, $matchedLen);
-        if(!$unmatchedPath) { //beautify the FALSE to null
-            $unmatchedPath = null;
+        if(!$unmatchedPath) { //beautify the to empty string
+            $unmatchedPath = '';
         }
 
         $result = array(

@@ -38,7 +38,7 @@ class Resolver {
      * Does the resolving work, extends $this->url with targetPath and params.
      */
     protected function resolve() {
-        $path = $this->url->getPath();
+        $path = $this->url->getSuggestedTargetPath();
 
         //(I) see what the model has for us.
         $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
@@ -53,7 +53,7 @@ class Resolver {
 
         //(III) extend our url object with matched path / params
         $this->url->setTargetPath($result['matchedPath']);
-        $this->url->setParams($result['unmatchedPath']);
+        $this->url->setParams($result['unmatchedPath'] . $this->url->getSuggestedParams());
 
         $this->page = $result['page'];
 
