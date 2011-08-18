@@ -249,6 +249,7 @@ class PageRepositoryTest extends DoctrineTestCase
         //2 levels
         $match = $repo->getPagesAtPath('rootTitle_2/childTitle');
         $this->assertEquals('rootTitle_2/childTitle',$match['matchedPath']);
+        $this->assertEquals('',$match['unmatchedPath']);
         $this->assertInstanceOf('Cx\Model\ContentManager\Page',$match['pages'][3]);
         $this->assertEquals(array(3),$match['lang']);
 

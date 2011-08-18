@@ -19,6 +19,20 @@ class URL {
      * @var string
      */
     protected $path = null;
+    /**
+     * /The/Module
+     * /index.php
+     * /The/Special/Module/With/Params
+     * @var string
+     */
+    protected $suggestedTargetPath = '';
+    /**
+     * ?a=10&b=foo
+     * ?section=x&cmd=y
+     *
+     * @var string
+     */
+    protected $suggestedParams = '';
 
     /**
      * /The/Module
@@ -30,7 +44,8 @@ class URL {
     /**
      * ?a=10&b=foo
      * 
-     * /With/Params
+     * /With/Param
+     * @var string
      */
     protected $params = null;
 
@@ -40,14 +55,31 @@ class URL {
      */
     public function __construct($url) {
         $matches = array();
-        $matchCount = preg_match('/^(http:\/\/[^\/]+\/)((.+)?)?/', $url, $matches);
+        $matchCount = preg_match('/^(http:\/\/[^\/]+\/)(.*)?/', $url, $matches);
         if($matchCount == 0) {
             throw new URLException('Malformed URL: ' . $url);
         }
 
         $this->domain = $matches[1];
-        if(count($matches) == 4)
+        if(count($matches) > 2) {
             $this->path = $matches[2];
+        }
+
+        $this->suggest();
+    }
+
+    /**
+     * sets $this->suggestedParams and $this->suggestedTargetPath
+     */
+    protected function suggest() {
+        $matches = array();
+        $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
+
+        if($matchCount == 0) //seemingly, no parameters are set.
+            return;
+
+        $this->suggestedTargetPath = $matches[1];
+        $this->suggestedParams = $matches[2];
     }
 
     public function getDomain() {
@@ -60,6 +92,7 @@ class URL {
 
     public function setPath($path) {
         $this->path = $path;
+        $this->suggest();
     }
 
     public function setTargetPath($path) {
@@ -77,6 +110,23 @@ class URL {
     public function getParams() {
         return $this->params;
     }
+
+    public function getSuggestedTargetPath() {
+        return $this->suggestedTargetPath;
+    }
+
+    public function setSuggestedTargetPath($path) {
+        $this->suggestedTargetPath = $path;
+    }
+
+    public function setSuggestedParams($params) {
+        $this->suggestedParams = $params;
+    }
+
+    public function getSuggestedParams() {
+        return $this->suggestedParams;
+    }
+
 
     /**
      * takes $_SERVER as argument and returns the corresponding url
