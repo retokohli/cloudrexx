@@ -348,7 +348,10 @@ class PageRepositoryTest extends DoctrineTestCase
     }
 
     public function testGetPathToPage() {
+        $root = new \Cx\Model\ContentManager\Node();
+
         $n1 = new \Cx\Model\ContentManager\Node();
+        $n1->setParent($root);
         $n2 = new \Cx\Model\ContentManager\Node();
         $n2->setParent($n1);
 
@@ -363,6 +366,8 @@ class PageRepositoryTest extends DoctrineTestCase
         $p2->setTitle('child');
         $p2->setNode($n2);
         $p2->setUsername('user');
+
+        self::$em->persist($root);
 
         self::$em->persist($n1);
         self::$em->persist($n2);
