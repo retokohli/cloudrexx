@@ -42,7 +42,7 @@ class URL {
         $matches = array();
         $matchCount = preg_match('/^(http:\/\/[^\/]+)(\/(.+)?)?/', $url, $matches);
         if($matchCount == 0) {
-            throw new URLException('Malformed URL');
+            throw new URLException('Malformed URL: ' . $url);
         }
 
         $this->domain = $matches[1];
@@ -67,11 +67,11 @@ class URL {
     }
 
     public function getTargetPath() {
-        return $path;
+        return $this->targetPath;
     }
 
     public function getParams() {
-        return $params;
+        return $this->params;
     }
 
 }
