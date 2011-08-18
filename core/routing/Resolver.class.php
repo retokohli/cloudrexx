@@ -41,22 +41,33 @@ class Resolver {
         $path = $this->url->getPath();
 
         //(I) see what the model has for us.
-        $path = substr($path, 1); //cut leading '/'
         $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $result = $pageRepo->getPagesAtPath($path, null, $this->lang);
 
         //(II) sort out errors
         if(!$result)
-            throw new ResolverException('Unable to locate page.');
+            throw new ResolverException('Unable to locate page (tried path ' . $path .').');
 
         if(!$result['page'])
-            throw new ResolverException('Unable to locate page for this language.');
+            throw new ResolverException('Unable to locate page for this language. (tried path ' . $path .').');
 
         //(III) extend our url object with matched path / params
         $this->url->setTargetPath($result['matchedPath']);
         $this->url->setParams($result['unmatchedPath']);
 
         $this->page = $result['page'];
+
+        /*
+          the page we found could be a redirection.
+          in this case, the URL object is overwritten with the target details and
+          resolving starts over again.
+         */
+        $target = $this->page->getTarget();
+        if($target) {
+//TODO: add check for endless/circular redirection (a -> b -> a -> b ... and more complex)
+            $this->url->setPath($target);
+            $this->resolve();
+        }
     }
 
     public function getPage() {

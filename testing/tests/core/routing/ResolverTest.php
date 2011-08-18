@@ -16,14 +16,12 @@ class ResolverTest extends DoctrineTestCase
         $n1 = new \Cx\Model\ContentManager\Node();
         $n2 = new \Cx\Model\ContentManager\Node();
         $n3 = new \Cx\Model\ContentManager\Node();
-        $n4 = new \Cx\Model\ContentManager\Node();
-        $n5 = new \Cx\Model\ContentManager\Node();
+        $n4 = new \Cx\Model\ContentManager\Node(); //redirection
 
         $n1->setParent($root);
         $n2->setParent($n1);
         $n3->setParent($n2);
-        $n4->setParent($n1);
-        $n5->setParent($n2);
+        $n4->setParent($root);
 
         $p1 = new \Cx\Model\ContentManager\Page();     
         $p1->setLang(1);
@@ -32,16 +30,11 @@ class ResolverTest extends DoctrineTestCase
         $p1->setUsername('user');
 
         $p2 = new \Cx\Model\ContentManager\Page();     
-        $p2->setLang(2);
-        $p2->setTitle('testpage2');
-        $p2->setNode($n1);
+        $p2->setLang(1);
+        $p2->setTitle('redirection');
+        $p2->setNode($n4);
+        $p2->setTarget('testpage1/testpage1_child/?foo=test');
         $p2->setUsername('user');
-
-        $p3 = new \Cx\Model\ContentManager\Page();     
-        $p3->setLang(3);
-        $p3->setTitle('testpage3');
-        $p3->setNode($n1);
-        $p3->setUsername('user');
 
         $p4 = new \Cx\Model\ContentManager\Page();     
         $p4->setLang(1);
@@ -60,11 +53,9 @@ class ResolverTest extends DoctrineTestCase
         self::$em->persist($n2);
         self::$em->persist($n3);
         self::$em->persist($n4);
-        self::$em->persist($n5);
 
         self::$em->persist($p1);
         self::$em->persist($p2);
-        self::$em->persist($p3);
         self::$em->persist($p4);
         self::$em->persist($p5);
 
@@ -110,5 +101,17 @@ class ResolverTest extends DoctrineTestCase
         $resolver = new Resolver($url, $lang, self::$em);
 
         $page = $resolver->getPage();
+    }
+
+    public function testRedirection() {
+        $this->insertFixtures();
+
+        $lang = 1;
+
+        $url = new URL('http://example.com/redirection/');
+        $resolver = new Resolver($url, $lang, self::$em);
+
+        $page = $resolver->getPage();
+        $this->assertEquals('testpage1_child', $page->getTitle());
     }
 }

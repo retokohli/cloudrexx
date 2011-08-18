@@ -40,7 +40,7 @@ class URL {
      */
     public function __construct($url) {
         $matches = array();
-        $matchCount = preg_match('/^(http:\/\/[^\/]+)(\/(.+)?)?/', $url, $matches);
+        $matchCount = preg_match('/^(http:\/\/[^\/]+\/)((.+)?)?/', $url, $matches);
         if($matchCount == 0) {
             throw new URLException('Malformed URL: ' . $url);
         }
@@ -56,6 +56,10 @@ class URL {
 
     public function getPath() {
         return $this->path;
+    }
+
+    public function setPath($path) {
+        $this->path = $path;
     }
 
     public function setTargetPath($path) {
