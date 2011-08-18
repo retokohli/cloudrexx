@@ -351,7 +351,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
-    $url = \Cx\Core\Routing\URL::fromServerArray($_SERVER);
+    $url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET);
+
     try {
         $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em());
         $page = $resolver->getPage();
@@ -371,7 +372,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $end = $page->getEnd();
 
     $pageId = $page->getId();
-    
+    /*
     //404 for inactive pages
     if(($start > $now && $start != null) || ($now > $end && $end != null)) {
         if ($plainSection == 'error') {
@@ -380,7 +381,12 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         }
         CSRF::header('Location: index.php?section=error&id=404');
         exit;
-    }
+        }*/
+
+//TODO: this can throw ParameterParserExceptions.
+    //parse parameters, fill $_GET and $_POST
+    require_once ASCMS_CORE_PATH.'/routing/PopulatingLegacyParameterParser.class.php';
+    $paramParser = new \Cx\Core\Routing\PopulatingLegacyParameterParser($url, $_GET, $_REQUEST);
        
     // Frontend Editing: content has to be replaced with preview code if needed.
     $page_content   = null;

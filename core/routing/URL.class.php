@@ -129,21 +129,21 @@ class URL {
 
 
     /**
-     * takes $_SERVER as argument and returns the corresponding url
-     *
-     * @param array $server
+     * @param $string request the captured request
+     * @param $string pathOffset ASCMS_PATH_OFFSET
      */
-    public static function fromServerArray(&$server) {
-        $host = $server['HTTP_HOST'];
-        $uri = $server['REQUEST_URI'];
-//TODO: correct rewrite
-        $cutted = array();
-        preg_match('/.*index.php\?(.*)$/', $uri, $cutted);
-        $uri = $cutted[1];
+    public static function fromCapturedRequest($request, $pathOffset) {
+        if(substr($request, 0, strlen($pathOffset)) != $pathOffset)
+            throw new URLException("'$request' doesn't seem to start with provided offset '$pathOffset'");
+
+        //cut offset
+        $request = substr($request, strlen($pathOffset)+1);
+//TODO: correct host
+        $host = 'example.com';
 
 //TODO: implement correct protocol finder
         $protocol = 'http';
 
-        return new URL($protocol.'://'.$host.'/'.$uri);
+        return new URL($protocol.'://'.$host.'/'.$request);
     }
 }
