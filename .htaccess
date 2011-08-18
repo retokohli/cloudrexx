@@ -1,0 +1,24 @@
+RewriteEngine On
+
+#RewriteLog "logs/rewrite.log"
+#RewriteLogLevel 9
+
+# Note: This is a quick hack.  The rules may be improved.
+
+# This is ASCMS_PATH_OFFSET, i.e.
+#RewriteBase   /cms
+
+# Skip requests to index.php
+RewriteCond   %{REQUEST_FILENAME}  !^index.php
+# Folders that may be accessed by page requests are NO ALIASES by design
+RewriteCond   %{REQUEST_FILENAME}  !^(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)
+# Exclude "stuff" -- add more if desired
+RewriteCond   %{REQUEST_FILENAME}  !^favicon.ico
+# Anything that is neither a directory nor a file *might* be an alias.
+# Append the entire request to the query string.
+# See core/Dispatcher.class.php, look for "CONTREXX_ALIAS_PARAMETER"
+# The Dispatcher will decide.
+# Warning: Overhead!
+RewriteCond   %{REQUEST_FILENAME}  !-d
+RewriteCond   %{REQUEST_FILENAME}  !-f
+RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
