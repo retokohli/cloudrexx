@@ -327,7 +327,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 
 $objCounter = new statsLibrary();
 $objCounter->checkForSpider();
-$themesPages = $objInit->getTemplates();
 
 require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
 $sessionObj = null;
@@ -337,16 +336,10 @@ $shopObj = null;
 //-------------------------------------------------------
 $frontEditing           = isset($_REQUEST['frontEditing']) ? intval($_GET['frontEditing']) : 0;
 $frontEditingContent    = isset($_REQUEST['previewContent']) ? preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}' , html_entity_decode(stripslashes($_GET['previewContent']), ENT_QUOTES, CONTREXX_CHARSET)) : '';
- if ($frontEditing) {
-    $themesPages['index']   = '{CONTENT_FILE}';
-    $themesPages['content'] = '{CONTENT_TEXT}';
-    $themesPages['home']    = '{CONTENT_TEXT}';
-}
-
 $page = null;
 
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
-//TODO: history (empty($history) ? )
+    //TODO: history (empty($history) ? )
 
     require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
@@ -358,8 +351,11 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $module = $page->getModule();
-        $section = $page->getModule();
-        
+//TODO: the module2id conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
+        $m2i = Env::get('module2id');
+        $module = $m2i[$module];
+        $section = $module;
+      
         if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
             // The plain section/module name, used below
             $plainSection = $arrMatch[1];
@@ -413,7 +409,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             }
         }
     }
-    
+  
     //check whether the page is active
     $now = new DateTime('now');
     $start = $page->getStart();
@@ -431,6 +427,16 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         exit;
         }*/
 
+
+    $objInit->setCustomizedThemesId($page->getSkin());
+    
+    $themesPages = $objInit->getTemplates();
+    
+    if ($frontEditing) {
+        $themesPages['index']   = '{CONTENT_FILE}';
+        $themesPages['content'] = '{CONTENT_TEXT}';
+        $themesPages['home']    = '{CONTENT_TEXT}';
+    }
        
     // Frontend Editing: content has to be replaced with preview code if needed.
     $page_content   = null;
@@ -526,7 +532,7 @@ $objNavbar  = new Navigation($pageId, $page);
 // Start page or default page for no section
 //-------------------------------------------------------
 
-if ($section == 'home' || empty($section)){
+if ($section == 'home' || empty($section)) {
     if (!$objInit->hasCustomContent()){
         $page_template = $themesPages['home'];}
     else

@@ -644,7 +644,7 @@ class InitCMS
         return $_CORELANG;
     }
 
-
+    
     /**
      * Returns the current page ID
      *
@@ -661,7 +661,7 @@ class InitCMS
      * @return  integer           $page_id      The page ID
      * @author  Reto Kohli <reto.kohli@comvation.com> (Version 2.1)
      * @version 2.1
-     */
+     *//*
     function getPageID($page_id=0, $section='', $command='', $history_id=0)
     {
         switch ($section) {
@@ -720,6 +720,7 @@ class InitCMS
 //TODO: history id
         return $page_id;
     }
+*/
 
     /**
      * Sets the customized ThemesId
@@ -729,7 +730,7 @@ class InitCMS
      * @access private
      * @param optional string $themesId
      */
-    function _setCustomizedThemesId($themesId='')
+    function setCustomizedThemesId($themesId='')
     {
         global $objDatabase;
 
