@@ -356,6 +356,15 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     try {
         $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em());
         $page = $resolver->getPage();
+        $command = $page->getCmd();
+        $module = $page->getModule();
+        $section = $page->getModule();
+        
+        if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
+            // The plain section/module name, used below
+            $plainSection = $arrMatch[1];
+        }        
+        $_ARRAYLANG = $objInit->loadLanguageData($section);
     }
     catch (\Cx\Core\Routing\ResolverException $e) {
         /*
@@ -387,10 +396,11 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             $page = $pageRepo->findOneBy($crit);
         }
 
-        //we do now know whether we found the page requested
+        //we now know whether we found the page requested
         $pageNotFound = $page === NULL;
         
-        if ($pageNotFound) { // c: show error page for inexistant pages
+        // c: show error page for inexistant pages
+        if ($pageNotFound) { 
             //fallback for inexistant error page
             if($plainSection == 'error') {
                 // If the error module is not installed, show this
