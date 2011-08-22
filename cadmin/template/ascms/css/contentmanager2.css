@@ -55,7 +55,7 @@ h1{
     display: none;
     float: left;
     overflow: hidden;
-    width: 80%;
+    width: 81%;
     margin: 0 -1px
 }
 #site-language{
@@ -276,7 +276,7 @@ select.chzn-select{
     -moz-background-clip: padding;
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
-    border: 1px solid #aaa;
+    border: 1px solid #CCCCCC;
     display: block;
     overflow: hidden;
     white-space: nowrap;
@@ -310,7 +310,7 @@ select.chzn-select{
     background-image: -ms-linear-gradient(top, #cccccc 0%, #eeeeee 60%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#cccccc', endColorstr = '#eeeeee', GradientType = 0);
     background-image: linear-gradient(top, #cccccc 0%, #eeeeee 60%);
-    border-left: 1px solid #aaa;
+    border-left: 1px solid #CCCCCC;
     position: absolute;
     right: 0;
     top: 0;
