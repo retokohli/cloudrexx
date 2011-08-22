@@ -9,7 +9,7 @@ RewriteEngine On
 #RewriteBase   /cms
 
 # Skip requests to index.php
-RewriteCond   %{REQUEST_FILENAME}  !^index.php
+#RewriteCond   %{REQUEST_FILENAME}  !^index.php
 # Folders that may be accessed by page requests are NO ALIASES by design
 RewriteCond   %{REQUEST_FILENAME}  !^(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)
 # Exclude "stuff" -- add more if desired
