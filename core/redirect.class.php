@@ -39,8 +39,6 @@ class redirect
 
     function __construct()
     {
-    	global  $_CORELANG, $objDatabase;
-
     	if (substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.') {
     		$this->host = strtolower(substr($_SERVER['HTTP_HOST'], 4));
 
@@ -54,8 +52,6 @@ class redirect
 
     function changeLocation()
     {
-    	global  $_CORELANG, $objDatabase;
-
     	if (empty($_SERVER['argv'])) {
     		if (!empty($this->locations[$this->host])) {
 	    		if (!empty($this->locations[$this->host]['lid'])) {
