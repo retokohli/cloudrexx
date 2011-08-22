@@ -4512,6 +4512,7 @@ INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VA
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (72,'useKnowledgePlaceholders','1',56);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (73,'advancedUploadFrontend','off',52);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (74,'advancedUploadBackend','on',52);
+INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (75,'installationId','',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (1,'printview','printview',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (2,'pdf','pdf',1);
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (14,'contrexx_theme_2_1','contrexx_theme_2_1',1);
