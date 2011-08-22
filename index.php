@@ -221,7 +221,7 @@ if (   isset($_GET['handler'])
 }
 
 
-$section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section']) : '';
+$section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
 // To clone any module, use an optional integer cmd suffix.
 // E.g.: "shop2", "gallery5", etc.
 // Mind that you *MUST* copy all necessary database tables, and fix any
@@ -230,7 +230,7 @@ $section = isset($_REQUEST['section']) ? contrexx_addslashes($_REQUEST['section'
 // *AND* templates!
 // See the Shop module for an example.
 $arrMatch = array();
-$plainSection = $section;
+$plainSection = contrexx_addslashes($section);
 if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
     // The plain section/module name, used below
     $plainSection = $arrMatch[1];
@@ -322,8 +322,8 @@ else if ($section == 'captcha') {
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $pageId  = $objInit->getPageID($page, $section, $command, $history);
     }*/
+//$is_home = $objInit->is_home;
 
-$is_home = $objInit->is_home;
 
 $objCounter = new statsLibrary();
 $objCounter->checkForSpider();
@@ -357,13 +357,51 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em());
         $page = $resolver->getPage();
     }
-    catch (\Cx\Core\Routing\ResolverException $e) { //page not found
-        if ($plainSection == 'error') {
-            // If the error module is not installed, show this
-            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+    catch (\Cx\Core\Routing\ResolverException $e) {
+        /*
+          The Resolver couldn't find a page.
+          We're looking at one of the following situations, which are treated in the listed order:
+           a) Request for the 'home' page
+           b) Legacy request with section / cmd
+           c) Request for inexistant page
+          We try to locate a module page via cmd and section (if provided).
+          If that doesn't work, an error is shown.
+        */
+
+        // a: 'home' page
+        if(!$section && $url->getSuggestedTargetPath() === 'index.php') {
+            $section = 'home';
         }
-        CSRF::header('Location: index.php?section=error&id=404');
-        exit;
+
+        // b(, a): fallback if section and cmd are specified
+        if($section) {
+            $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+//TODO: the module2id conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
+            $m2i = Env::get('module2id');
+            $crit = array(
+                'module' => $m2i[$section]
+            );
+            if(isset($_REQUEST['cmd']))
+                $crit['cmd'] = $_REQUEST['cmd'];
+
+            $page = $pageRepo->findOneBy($crit);
+        }
+
+        //we do now know whether we found the page requested
+        $pageNotFound = $page === NULL;
+        
+        if ($pageNotFound) { // c: show error page for inexistant pages
+            //fallback for inexistant error page
+            if($plainSection == 'error') {
+                // If the error module is not installed, show this
+                die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+            }
+            else {
+                //page not found, redirect to error page.
+                CSRF::header('Location: index.php?section=error&id=404');
+                exit;
+            }
+        }
     }
     
     //check whether the page is active
@@ -383,10 +421,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         exit;
         }*/
 
-//TODO: this can throw ParameterParserExceptions.
-    //parse parameters, fill $_GET and $_POST
-    require_once ASCMS_CORE_PATH.'/routing/PopulatingLegacyParameterParser.class.php';
-    $paramParser = new \Cx\Core\Routing\PopulatingLegacyParameterParser($url, $_GET, $_REQUEST);
        
     // Frontend Editing: content has to be replaced with preview code if needed.
     $page_content   = null;
@@ -481,7 +515,8 @@ $objNavbar  = new Navigation($pageId, $page);
 //-------------------------------------------------------
 // Start page or default page for no section
 //-------------------------------------------------------
-if ($is_home){
+
+if ($section == 'home' || empty($section)){
     if (!$objInit->hasCustomContent()){
         $page_template = $themesPages['home'];}
     else
@@ -1804,7 +1839,7 @@ if ($_CONFIG['frontendEditingStatus'] == 'on'
     && @include_once(ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php')) {
     $strFeInclude   = frontendEditingLib::getIncludeCode();
     $strFeLink      = frontendEditingLib::getLinkCode();
-    $strFeContent   = frontendEditingLib::getContentCode($pageId, $section, $command);
+    $strFeContent   = frontendEditingLib::getContentCode($pageId, contrexx_addslashes($section), $command);
 }
 
 
