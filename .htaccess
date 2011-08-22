@@ -22,3 +22,6 @@ RewriteCond   %{REQUEST_FILENAME}  !^favicon.ico
 RewriteCond   %{REQUEST_FILENAME}  !-d
 RewriteCond   %{REQUEST_FILENAME}  !-f
 RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
+
+RewriteCond   %{REQUEST_FILENAME} [^(cadmin)]/index.php
+RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
