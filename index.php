@@ -376,7 +376,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         // a: 'home' page
         if(!$section && $url->getSuggestedTargetPath() === 'index.php') {
             $section = 'home';
-        }
+        }throw($e);die();
 
         // b(, a): fallback if section and cmd are specified
         if($section) {

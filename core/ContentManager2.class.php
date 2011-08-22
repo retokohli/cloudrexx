@@ -10,19 +10,35 @@ class ContentManager {
 		$this->em = Env::em();
 	}
 
+	function renderCM() {
+		global $objTemplate;
+
+		$objTemplate->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
+		$objTemplate->touchBlock('content_manager');
+	}
+
+	function jsondata() {
+		if ($_GET['operation'] == 'get_children') {
+			return $this->renderTree();
+		}
+		else {
+		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+		$pageArray = $pageRepo->find($_GET['id']);
+			echo $pageArray->getContent();
+		}
+	}
+
 	function renderTree() {
-		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');           
+		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 		$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
 
 		$root = $nodeRepo->getRoot();
 
 		$jsondata = $this->tree_to_json($root);
 
-		global $objTemplate;
-		$objTemplate->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
-		$objTemplate->touchBlock('content_manager');
+		
 
-		return $jsondata;
+		return utf8_encode($jsondata);
 	}
 
 	function tree_to_json($tree, $level=0) {
@@ -41,7 +57,7 @@ class ContentManager {
 				$output .= ",\n";
 			}
 
-			$output .= $indent." {\"attr\" : { \"id\" : \"node_".$node->getId()."\" },\n";
+			$output .= $indent." {\"attr\" : { \"id\" : \"node_".$node->getId()."\"},\n";
 
 			$output .= $indent."  \"data\" : [\n";
 
@@ -52,7 +68,7 @@ class ContentManager {
 				if (!empty($languages))	$output .= ",\n";
 // TODO: do langs right (affects next 2 lines)
 $langs = array("", "de", "en");
-				$output .= $indent."    { \"language\" : \"".$langs[$page->getLang()]."\", \"title\" : \"".addslashes($page->getTitle())."\" }";
+				$output .= $indent."    { \"language\" : \"".$langs[$page->getLang()]."\", \"title\" : \"".addslashes($page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
 				$languages[] = $page->getLang();
 			}
 			$output .= $indent."\n".$indent."  ],\n";
