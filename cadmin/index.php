@@ -541,15 +541,15 @@ switch ($plainCmd) {
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
 	$subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
 	$cm = new ContentManager();
-	$cm->renderTree();
+	$cm->renderCM();
         break;
 
 // TODO cleanup
-    case 'cm-ajax':
+    case 'jsondata':
 	$cmpath = ASCMS_CORE_PATH.'/ContentManager2.class.php';
 	require_once($cmpath);
 	$cm = new ContentManager();
-	echo $cm->renderTree();
+	echo $cm->jsondata();
 	die();
 
     //-------------------------------------------------------
