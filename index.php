@@ -1,5 +1,4 @@
 <?php
-include_once('/home/srz/buegu/phptools/profiler.class.php');
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1868,6 +1867,11 @@ $contrexxCmsName[9] = ' ';
 //-------------------------------------------------------
 // set global template variables
 //-------------------------------------------------------
+$subNavbarNode = $page->getNode();
+while($subNavbarNode->getLvl() > 1) {
+    $subNavbarNode = $subNavbarNode->getParent();
+}
+
 $objTemplate->setVariable(array(
     'CHARSET'              => $objInit->getFrontendLangCharset(),
     'TITLE'                => $page_title,
@@ -1888,9 +1892,9 @@ $objTemplate->setVariable(array(
     'DATE'                 => showFormattedDate(),
     'TIME'                 => date('H:i', time()),
     'NAVTREE'              => $objNavbar->getTrail(),
-    'SUBNAVBAR_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop),
-    'SUBNAVBAR2_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop),
-    'SUBNAVBAR3_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar3'],$boolShop),
+    'SUBNAVBAR_FILE'       => $objNavbar->getNavigation($themesPages['subnavbar'],$boolShop, $subNavbarNode),
+    'SUBNAVBAR2_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar2'],$boolShop, $subNavbarNode),
+    'SUBNAVBAR3_FILE'      => $objNavbar->getNavigation($themesPages['subnavbar3'],$boolShop, $subNavbarNode),
     'NAVBAR_FILE'          => $objNavbar->getNavigation($themesPages['navbar'],$boolShop),
     'ONLINE_USERS'         => $objCounter->getOnlineUsers(),
     'VISITOR_NUMBER'       => $objCounter->getVisitorNumber(),
