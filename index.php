@@ -1,4 +1,5 @@
 <?php
+include_once('/home/srz/buegu/phptools/profiler.class.php');
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -351,9 +352,9 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $module = $page->getModule();
-//TODO: the module2id conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
-        $m2i = Env::get('module2id');
-        $module = $m2i[$module];
+//TODO: the id2module conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
+        $i2m = Env::get('id2module');      
+        $module = $i2m[intval($module)];
         $section = $module;
       
         if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
@@ -376,15 +377,15 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         // a: 'home' page
         if(!$section && $url->getSuggestedTargetPath() === 'index.php') {
             $section = 'home';
-        }throw($e);die();
+        }
 
         // b(, a): fallback if section and cmd are specified
         if($section) {
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-//TODO: the module2id conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
+//TODO: the id2module conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
             $m2i = Env::get('module2id');
             $crit = array(
-                'module' => $m2i[$section]
+                'module' => ''.$m2i[$section]
             );
             if(isset($_REQUEST['cmd']))
                 $crit['cmd'] = $_REQUEST['cmd'];
@@ -532,7 +533,7 @@ $objNavbar  = new Navigation($pageId, $page);
 // Start page or default page for no section
 //-------------------------------------------------------
 
-if ($section == 'home' || empty($section)) {
+if ($section == 'home') {
     if (!$objInit->hasCustomContent()){
         $page_template = $themesPages['home'];}
     else
