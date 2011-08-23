@@ -7,7 +7,7 @@ class NavigationPageTree extends SigmaPageTree {
     const styleNameActive = "active";
     const styleNameNormal = "inactive";
 
-    protected function renderElement($title, $level, $hasChilds, $lang, $path, $current) {
+    protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $blockName = 'level_'.$level;
         $hideLevel = false;
         $hasCustomizedBlock = $this->template->blockExists($blockName);
@@ -27,21 +27,24 @@ class NavigationPageTree extends SigmaPageTree {
         }
 
         if($this->topLevelBlockName && !$hideLevel) {
-            $style = $current ? self::styleNameActive : self::styleNameNormal;
-//TODO: target
-//TODO: display
+            if($page->isVisible()) {
+//TODO: invisible childs
+//      maybe the return value of this function could set whether the childs
+//      are rendered.
+                $style = $current ? self::styleNameActive : self::styleNameNormal;
 //TODO: navigation_id
-//TODO: css_name
-            $this->template->setCurrentBlock($blockName);
-            $this->template->setVariable(array(
-                                               'URL' => $path,
-                                               'NAME' => $title,
-                                               'TARGET' => '_self',
-                                               'LEVEL_INFO' => $hasChilds ? '' : 'down',
-                                               'STYLE' => $style
-            ));
-            $this->template->parse($blockName);
-            $this->output .= $this->template->get($blockName, true);
+                $this->template->setCurrentBlock($blockName);
+                $this->template->setVariable(array(
+                    'URL' => ASCMS_PATH_OFFSET.$path,
+                    'NAME' => $title,
+                    'TARGET' => $page->getTarget(),
+                    'LEVEL_INFO' => $hasChilds ? '' : 'down',
+                    'STYLE' => $style,
+                    'CSS_NAME' => $page->getCssName()
+                ));
+                $this->template->parse($blockName);
+                $this->output .= $this->template->get($blockName, true);
+            }
         }
     }
 
