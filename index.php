@@ -73,7 +73,7 @@
  */
 include_once(dirname(__FILE__).'/lib/DBG.php');
 //DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
-DBG::activate();
+DBG::deactivate();
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
