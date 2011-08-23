@@ -64,7 +64,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     private function internalRender(&$elems, $path, $level = 1) {
         $content = '';
         foreach($elems as $title => &$elem) {
-            $hasChilds = isset($elem['__childs']);
+            $hasChilds = count($elem) > 1; //__data is always set
             $lang = $elem['__data']['lang'];
             $pathOfThis = $path.'/'.$elem['__data']['page']->getSlug();
             $current = false;
@@ -76,8 +76,10 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
             $content .= $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current, $elem['__data']['page']);
 
-            if($hasChilds)
-                $content += $this->internalRender($elem['__childs'], $pathOfThis, $level+1);
+            if($hasChilds) {
+                unset($elem['__data']);
+                $content += $this->internalRender($elem, $pathOfThis, $level+1);
+            }
         }
         return $content;
 

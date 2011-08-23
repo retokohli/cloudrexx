@@ -12,7 +12,7 @@ class SitemapPageTree extends SigmaPageTree {
         $width = $level*25;
         $spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />";
         $this->template->setVariable(array(
-            'STYLE'     => self::cssPrefix . $level,
+            'STYLE'     => self::cssPrefix .'_' . $level,
             'SPACER'    => $spacer,
             'NAME'      => $title,
 //TODO: set TARGET
