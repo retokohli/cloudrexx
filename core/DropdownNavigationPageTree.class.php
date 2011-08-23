@@ -12,7 +12,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     protected $menuIndex = 0;
     protected $navigationIds = array();
 
-    protected function renderElement($title, $level, $hasChilds, $lang, $path, $current) {
+    protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $output = '';
 
         if (!isset($this->navigationIds[$level])) 
@@ -38,12 +38,11 @@ class DropdownNavigationPageTree extends SigmaPageTree {
                     $style = self::StyleNameNormal;
             }
 
-//TODO: target
-//TODO: cssName
-
-            $output = str_replace('{TARGET}', '_self', $output);
+//TODO: Display
+            $output = str_replace('{CSS_NAME}', $page->getCssName(), $output);
+            $output = str_replace('{TARGET}', $page->getTarget(), $output);
             $output = str_replace('{STYLE}', $style, $output);
-            $output = str_replace('{URL}', $path, $output);
+            $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$path, $output);
             $output = str_replace('{NAME}', $title, $output);
             //            $output = str_replace('{TARGET}', $target, $output);
             $output = str_replace('{NAVIGATION_ID}', $this->navigationIds[$level], $output);

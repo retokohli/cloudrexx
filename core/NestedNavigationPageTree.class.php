@@ -63,7 +63,6 @@ class NestedNavigationPageTree extends SigmaPageTree {
             $this->lastLevel = $level;
 
             $style = $current ? self::StyleNameActive : self::StyleNameNormal;
-
             $output = str_replace('{NAME}', $title, $output);
             $output = str_replace('<li>', '<li class="'.$style.'">', $output);
             $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$path, $output);

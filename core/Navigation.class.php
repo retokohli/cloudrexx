@@ -318,7 +318,6 @@ class Navigation
             }
 
             //$this->_buildDropDownNavigation($this->arrPages[0],1, true);
-
             $navi = new DropdownNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
