@@ -206,7 +206,7 @@ class Page extends \Cx\Model\Base\EntityBase
     protected function getSlugProposal() {
         $slug = $this->getTitle();
         $slug = preg_replace('/\s/', '-', $slug);
-        $slug = preg_replace('/[^a-zA-Z0-9-]/', '', $slug);
+        $slug = preg_replace('/[^a-zA-Z0-9-_]/', '', $slug);
         return $slug;
     }
 

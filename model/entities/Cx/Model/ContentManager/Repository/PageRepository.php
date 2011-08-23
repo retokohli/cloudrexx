@@ -79,7 +79,7 @@ class PageRepository extends EntityRepository {
      * @see getTree()
      * @return array ( title => array( lang => langId, page => Page, __childs => array ) recursively array-mapped tree.
      */
-    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false) {
+    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugAsTitle=false) {
         $tree = $this->getTree($rootNode, $lang, true);
 
         $result = array();
@@ -93,7 +93,7 @@ class PageRepository extends EntityRepository {
             foreach($tree as $node) {
                 $lang2arr = null;
                 if($node->getLvl() == 1) {
-                    $this->treeByTitle($node, $result);
+                    $this->treeByTitle($node, $result, $useSlugAsTitle);
                 }
             }
         }
@@ -104,12 +104,16 @@ class PageRepository extends EntityRepository {
         return $result;
     }
 
-    protected function treeByTitle($root, &$result, &$lang2arr = null) {
+    protected function treeByTitle($root, &$result, $useSlugAsTitle=false, &$lang2arr = null) {
         $myLang2arr = array();
         //(I) get titles of all Pages linked to this Node
         $pages = $root->getPages();
         foreach($pages as $page) {
             $title = $page->getTitle();
+
+            if($useSlugAsTitle)
+                $title = $page->getSlug();
+
             $lang = $page->getLang();
             
             if($lang2arr) //this won't be set for the first node
@@ -135,7 +139,7 @@ class PageRepository extends EntityRepository {
         
         //(II) recursion for child Nodes
         foreach($root->getChildren() as $child) {
-            $this->treeByTitle($child, $result, $myLang2arr);
+            $this->treeByTitle($child, $result, $useSlugAsTitle, $myLang2arr);
         }
     }
 
@@ -154,7 +158,7 @@ class PageRepository extends EntityRepository {
      * )
      */
     public function getPagesAtPath($path, $root = null, $lang = null, $exact = false) {
-        $tree = $this->getTreeByTitle($root, $lang, true);
+        $tree = $this->getTreeByTitle($root, $lang, true, true);
         
         //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
         $pathParts = explode('/', $path);
@@ -206,9 +210,10 @@ class PageRepository extends EntityRepository {
      * @todo should be rewritten to use a custom query on heavy usage
      *     
      * @param \Cx\Model\ContentManager\Page $page
+     * @param boolean $useSlugsAsTitle use this to get a navigation page
      * @return string path, e.g. '/This/Is/It'
      */
-    public function getPath($page) {
+    public function getPath($page, $useSlugsAsTitle=false) {
         $lang = $page->getLang();
         $node = $page->getNode();
         $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
@@ -222,7 +227,10 @@ class PageRepository extends EntityRepository {
             
 //TODO: what happens if $thePageInOurLang is still null?
 //      This should be restricted by the content manager.
-                $path .= '/'.$thePageInOurLang->getTitle();
+                if(!$useSlugsAsTitle)
+                    $path .= '/'.$thePageInOurLang->getTitle();
+                else
+                    $path .= '/'.$thePageInOurLang->getSlug();
             }
         }
 

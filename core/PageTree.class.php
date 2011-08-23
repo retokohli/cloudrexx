@@ -33,7 +33,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
         $this->fetchTree();
         if($this->currentPage)
-            $this->currentPagePath = $this->pageRepo->getPath($currentPage);
+            $this->currentPagePath = $this->pageRepo->getPath($currentPage, true);
         $this->init(); //user initializations
     }
 
@@ -66,7 +66,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         foreach($elems as $title => &$elem) {
             $hasChilds = isset($elem['__childs']);
             $lang = $elem['__data']['lang'];
-            $pathOfThis = $path.'/'.$title;
+            $pathOfThis = $path.'/'.$elem['__data']['page']->getSlug();
             $current = false;
 
             if($this->currentPagePath) { //current flag requested
