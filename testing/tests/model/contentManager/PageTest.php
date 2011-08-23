@@ -45,4 +45,20 @@ class PageTest extends DoctrineTestCase
         $repo->revert($p,1);
         $this->assertEquals('testpage',$p->getTitle());
     }
+
+    public function testSlugGeneration() {
+        $p = new \Cx\Model\ContentManager\Page();
+
+        $p->setTitle('test');
+        $this->assertEquals('test', $p->getSlug());
+
+        $p->setTitle('test with space');
+        $this->assertEquals('test-with-space', $p->getSlug());
+
+        $p->setTitle('test ümläut');
+        $this->assertEquals('test-mlut', $p->getSlug());
+
+        $p->setTitle('123');
+        $this->assertEquals('123', $p->getSlug());
+    }
 }

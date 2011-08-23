@@ -112,7 +112,6 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->type = 'content';
         $this->content = '';
         $this->editingStatus = '';
-        $this->visibility = true;
         $this->active = false;
         $this->display = true;
         $this->caching = false;
@@ -185,6 +184,30 @@ class Page extends \Cx\Model\Base\EntityBase
     public function setTitle($title)
     {
         $this->title = $title;
+        $this->refreshSlug();
+    }
+
+    /**
+     * Sets a correct slug based on the current title.
+     */
+    protected function refreshSlug() {
+        $slug = $this->getSlugProposal();
+//TODO: we do not want double slug names please, suffix it.
+        $this->setSlug($slug);
+    }
+
+    /**
+     * Proposes a version of the title that can be used as slug.
+     * The result may need a suffix if titles of pages on sibling nodes
+     * result in the same slug.
+     *
+     * @return string
+     */
+    protected function getSlugProposal() {
+        $slug = $this->getTitle();
+        $slug = preg_replace('/\s/', '-', $slug);
+        $slug = preg_replace('/[^a-zA-Z0-9-]/', '', $slug);
+        return $slug;
     }
 
     /**
@@ -740,5 +763,39 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getProtection()
     {
         return $this->protection;
+    }
+
+    /**
+     * Alias for getDisplay()
+     *
+     * @return boolean
+     */
+    public function isVisible() {
+        return $this->display;
+    }
+    /**
+     * @var string $slug
+     */
+    private $slug;
+
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string $slug
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }
