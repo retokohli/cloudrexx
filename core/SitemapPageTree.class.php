@@ -17,7 +17,7 @@ class SitemapPageTree extends SigmaPageTree {
             'NAME'      => $title,
 //TODO: set TARGET
             //            'TARGET'    => $this->_sitemapPageTarget[$key],
-            'URL'       => $path
+            'URL'       => ASCMS_PATH_OFFSET.$path
         ));
         
         $this->template->parse('sitemap');
