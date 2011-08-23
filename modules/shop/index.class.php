@@ -2058,7 +2058,10 @@ function sendReq(data, type)
     request_active = true;
     if (type == 1) {
         // add product
-        objHttp.open('get', 'index.php?section=shop".MODULE_INDEX."&".htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)."&cmd=cart&remoteJs=addProduct'+data, true);
+        objHttp.open('get', 'index.php?section=shop".MODULE_INDEX.
+//        "&".htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET).
+//        "=".htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET).
+        "&cmd=cart&remoteJs=addProduct'+data, true);
         objHttp.onreadystatechange = shopUpdateCart;
     }
     // elseif ..
