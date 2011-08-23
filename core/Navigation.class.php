@@ -298,7 +298,7 @@ class Navigation
      *                                    into {SHOPNAVBAR_FILE}
     * @return mixed parsed navigation
     */
-    function getNavigation($templateContent,$boolShop=false)
+    function getNavigation($templateContent,$boolShop=false, $rootNode=null)
     {
         $this->_objTpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
@@ -318,20 +318,20 @@ class Navigation
             }
 
             //$this->_buildDropDownNavigation($this->arrPages[0],1, true);
-            $navi = new DropdownNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
 
             return  ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
         } elseif (isset($this->_objTpl->_blocks['navigation'])) {
             //$this->_buildNavigation();
-            $navi = new NavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi = new NavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
             $navi->render();
         } elseif (isset($this->_objTpl->_blocks['nested_navigation'])) {
             // Creae a nested list, formatted with ul and li-Tags
             //$nestedNavigation = $this->_buildNestedNavigation();
-            $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi = new NestedNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();            
 

@@ -29,6 +29,12 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         $this->em = $entityManager;
         $this->currentPage = $currentPage;
 
+        $this->startLevel = 1;
+        $this->startPath = '';
+        if($this->rootNode) {
+            $this->startLevel = $this->rootNode->getLvl() + 1;
+        }
+
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 
         $this->fetchTree();
@@ -49,7 +55,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     public function render() {
         $content = $this->addContentIfPresent($this->preRender($this->lang));
         $content .= $this->addContentIfPresent($this->renderHeader($this->lang)); 
-        $content .= $this->addContentIfPresent($this->internalRender($this->tree, ''));
+        $content .= $this->addContentIfPresent($this->internalRender($this->tree, $this->startPath, $this->startLevel));
         $content .= $this->addContentIfPresent($this->renderFooter($this->lang));
         $content .= $this->addContentIfPresent($this->postRender($this->lang));
         return $content;
@@ -61,7 +67,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         return null;
     }
 
-    private function internalRender(&$elems, $path, $level = 1) {
+    private function internalRender(&$elems, $path, $level) {
         $content = '';
         foreach($elems as $title => &$elem) {
             $hasChilds = count($elem) > 1; //__data is always set
