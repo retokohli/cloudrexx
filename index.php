@@ -447,7 +447,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             $page_content = $page->getContent(); 
     }
     else {
-        $page_content = '<div id="fe_PreviewContent">'. $page->getContent();'</div>';
+        $page_content = '<div id="fe_PreviewContent">'. $page->getContent().'</div>';
     }
 
     $page_catname = '';
