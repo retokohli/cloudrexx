@@ -81,24 +81,20 @@ class PageRepository extends EntityRepository {
      */
     public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugAsTitle=false) {
         $tree = $this->getTree($rootNode, $lang, true);
-
         $result = array();
 
         $isRootQuery = !$rootNode || ( isset($rootNode) && $rootNode->getLvl() == 0); 
 
-        if($isRootQuery) {
-            /*
-              special case: there are several childs of rootNode, but the rootNode itself is not in the resultset - we need to build the tree with all direct childs in mind
-             */
-            foreach($tree as $node) {
-                $lang2arr = null;
-                if($node->getLvl() == 1) {
-                    $this->treeByTitle($node, $result, $useSlugAsTitle);
-                }
+        foreach($tree as $node) {
+            $lang2arr = null;
+            $rightLevel = false;
+            if($isRootQuery)
+                $rightLevel = $node->getLvl() == 1;
+            else
+                $rightLevel = $node->getLvl() == $rootNode->getLvl() + 1;
+            if($rightLevel) {
+                $this->treeByTitle($node, $result, $useSlugAsTitle);
             }
-        }
-        else { //the root node is at $tree[0]
-            $this->treeByTitle($tree[0], $result);
         }
 
         return $result;
@@ -136,7 +132,6 @@ class PageRepository extends EntityRepository {
             //remember mapping for recursion
             $myLang2arr[$lang] = &$target[$title];
         }
-        
         //(II) recursion for child Nodes
         foreach($root->getChildren() as $child) {
             $this->treeByTitle($child, $result, $useSlugAsTitle, $myLang2arr);

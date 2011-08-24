@@ -112,10 +112,14 @@ class PageRepositoryTest extends DoctrineTestCase
         $n1 = new \Cx\Model\ContentManager\Node();
         $n2 = new \Cx\Model\ContentManager\Node();
         $n3 = new \Cx\Model\ContentManager\Node();
+        $n4 = new \Cx\Model\ContentManager\Node();
+        $n5 = new \Cx\Model\ContentManager\Node();
 
         $n1->setParent($root);
         $n2->setParent($n1);
         $n3->setParent($root);
+        $n4->setParent($n3);
+        $n5->setParent($n3);        
 
         $p1 = new \Cx\Model\ContentManager\Page();     
         $p1->setLang(1);
@@ -147,17 +151,33 @@ class PageRepositoryTest extends DoctrineTestCase
         $p5->setNode($n3);
         $p5->setUsername('user');
 
+        $p6 = new \Cx\Model\ContentManager\Page();     
+        $p6->setLang(1);
+        $p6->setTitle('partialFetchTarget1');
+        $p6->setNode($n4);
+        $p6->setUsername('user');
+
+        $p7 = new \Cx\Model\ContentManager\Page();     
+        $p7->setLang(1);
+        $p7->setTitle('partialFetchTarget2');
+        $p7->setNode($n5);
+        $p7->setUsername('user');
+
         self::$em->persist($root);
 
         self::$em->persist($n1);
         self::$em->persist($n2);
         self::$em->persist($n3);
+        self::$em->persist($n4);
+        self::$em->persist($n5);
 
         self::$em->persist($p1);
         self::$em->persist($p2);
         self::$em->persist($p3);
         self::$em->persist($p4);
         self::$em->persist($p5);
+        self::$em->persist($p6);
+        self::$em->persist($p7);
 
         self::$em->flush();
 
@@ -178,6 +198,13 @@ class PageRepositoryTest extends DoctrineTestCase
 
         //check child of second node attached to root (special case in algorithm)
         $this->assertInstanceOf('Cx\Model\ContentManager\Node', $tree['otherRootChild'][$repo::DataProperty]['node']);
+
+        //check partial fetching of tree
+        $myRoot = $repo->findOneBy(array('title' => 'otherRootChild'));
+        $tree = $repo->getTreeByTitle($myRoot->getNode());
+
+        $this->assertArrayHasKey('partialFetchTarget1', $tree);
+        $this->assertArrayHasKey('partialFetchTarget2', $tree);
     }
 
     public function testPagesAtPath() {
@@ -185,7 +212,7 @@ class PageRepositoryTest extends DoctrineTestCase
 
         $root = new \Cx\Model\ContentManager\Node();
 
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Model\ContentManager\Node(); 
         $n2 = new \Cx\Model\ContentManager\Node();
         $n3 = new \Cx\Model\ContentManager\Node();
 
