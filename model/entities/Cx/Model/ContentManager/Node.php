@@ -176,6 +176,19 @@ class Node extends \Cx\Model\Base\EntityBase
         return $result;
     }
 
+    public function getPage($lang)
+    {
+        $pages = $this->getPages();
+
+        foreach($pages as $page){
+            if($page->getLang() == $lang)
+                return $page;
+        }
+
+        return null;
+    }
+
+
     /**
      * Set parent
      *
