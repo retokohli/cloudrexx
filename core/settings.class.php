@@ -219,7 +219,8 @@ class settingsManager
             'TXT_CORE_LIST_PROTECTED_PAGES_HELP'    => $_CORELANG['TXT_CORE_LIST_PROTECTED_PAGES_HELP'],
             'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'    => $_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH'],
             'TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'   => sprintf($_CORELANG['TXT_CORE_USE_VIRTUAL_LANGUAGE_PATH_HELP'], htmlentities(FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'name'), ENT_QUOTES, CONTREXX_CHARSET), ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'/').($arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : '<br /><strong>'.$_CORELANG['TXT_CORE_APACHE_MOD_REWRITE_REQUIRED'].'</strong>'),
-            'TXT_INSTALLATIONID'               => $_CORELANG['TXT_INSTALLATIONID'],
+            'TXT_LICENSE_KEY'               => $_CORELANG['TXT_LICENSE_KEY'],
+            'TXT_LICENSE_KEY_HELP'          => $_CORELANG['TXT_LICENSE_KEY_HELP'],
         ));
 
         if ($this->isWritable()) {
@@ -261,7 +262,7 @@ class settingsManager
             'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_ON' => ($arrSettings['useVirtualLanguagePath'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_OFF'    => ($arrSettings['useVirtualLanguagePath'] == 'off') ? 'checked="checked"' : '',
             'SETTINGS_USE_VIRTUAL_LANGUAGE_PATH_DISABLED'   => $arrSettings['useVirtualLanguagePath'] == 'on' || $this->checkForVirtualLanguagePathSupport() ? '' : 'disabled="disabled"',
-            'SETTINGS_INSTALLATIONID'             => stripslashes($arrSettings['installationId']),
+            'SETTINGS_LICENSE_KEY'             => stripslashes($arrSettings['licenseKey']),
         ));
 
         $objTemplate->setVariable(array(
