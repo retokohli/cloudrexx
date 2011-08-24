@@ -647,5 +647,6 @@ $_ARRAYLANG['TXT_MEDIADIR_MANAGE_CATEGORIES'] = 'Manage categories';
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable media directory.';
-$_ARRAYLANG['TXT_INSTALLATIONID'] = 'Installation ID';
+$_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
+$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
 ?>

@@ -1077,5 +1077,6 @@ $_ARRAYLANG['TXT_MEDIADIR_MANAGE_CATEGORIES'] = 'Kategorien verwalten';
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Einstellungen';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexibel konfigurierbares Medienverzeichnis.';
-$_ARRAYLANG['TXT_INSTALLATIONID'] = 'Installations-ID';
+$_ARRAYLANG['TXT_LICENSE_KEY'] = 'Lizenzschlüssel';
+$_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Geben Sie hier Ihren Lizenzschlüssel ein, um diese Contrexx© Installation zu aktivieren.';
 ?>
