@@ -3,6 +3,22 @@ include_once('../testCases/DoctrineTestCase.php');
 
 class PageTest extends DoctrineTestCase
 {
+    public function testValidation() {
+        $node = new \Cx\Model\ContentManager\Node();
+        $p = new \Cx\Model\ContentManager\Page();
+
+        $p->setLang(1);
+        $p->setTitle('testpage');
+        $p->setNode($node);
+        $p->setUsername('user');
+        $p->setCmd('should_be_valid');
+
+        //shouldn't raise a ValidationException
+        self::$em->persist($node);
+        self::$em->persist($p);
+        self::$em->flush();
+    }
+
     public function testLoggable() {
         $root = new \Cx\Model\ContentManager\Node();
         $n = new \Cx\Model\ContentManager\Node();
