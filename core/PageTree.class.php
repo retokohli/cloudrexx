@@ -19,7 +19,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
      * @param $entityManager the doctrine em
      * @param int $maxDepth maximum depth to fetch, 0 means everything
      * @param \Cx\Model\ContentManager\Node $rootNode node to use as root
-     * @param int $lang the language. will render all if unset
+     * @param int $lang the language
      * @param \Cx\Model\ContentManager\Node $currentPage if set, renderElement() will receive a correctly set $current flag.
      */
     public function __construct($entityManager, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null) {
@@ -31,15 +31,23 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
         $this->startLevel = 1;
         $this->startPath = '';
-        if($this->rootNode) {
-            $this->startLevel = $this->rootNode->getLvl() + 1;
-        }
 
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 
+        /*
+          If a root node was specified, the all calls to internalRender() need a correct startpath.
+          Further, a correct startLevel must be provided.
+         */
+        if($this->rootNode) {
+            $this->startLevel = $this->rootNode->getLvl() + 1;
+
+            $page = $this->rootNode->getPage($lang);
+            $this->startPath = $this->pageRepo->getPath($page);
+        }
+
         $this->fetchTree();
         if($this->currentPage)
-            $this->currentPagePath = $this->pageRepo->getPath($currentPage, true);
+            $this->currentPagePath = $this->pageRepo->getPath($this->currentPage, true);
         $this->init(); //user initializations
     }
 
@@ -64,7 +72,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     private function addContentIfPresent($content) {
         if($content)
             return $content;
-        return null;
+        return '';
     }
 
     private function internalRender(&$elems, $path, $level) {
