@@ -142,7 +142,7 @@ class Page extends \Cx\Model\Base\EntityBase
             //active is boolean, not checked
             'target' => new \Zend_Validate_StringLength(array('max' => 255)),
             'module' => new \Zend_Validate_Alnum(),
-            'cmd' => new \Zend_Validate_Alnum(),            
+            'cmd' => new \Zend_Validate_Regex(array('pattern' => '/^[A-Za-z0-9_]+$/')),            
         );
     }
 
