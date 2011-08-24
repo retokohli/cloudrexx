@@ -456,7 +456,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $ppages = $parent->getPages();
         foreach($ppages as $ppage) {
             if($ppage->getLang() == $page->getLang())
-                $page_catname = contrexx_raw2xhtml($page->getTitle);
+                $page_catname = contrexx_raw2xhtml($page->getTitle());
         }
     }
 
