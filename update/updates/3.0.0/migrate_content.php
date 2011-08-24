@@ -36,17 +36,15 @@ class Contrexx_Content_migration
         $nodeArr = array ();
         $root = new \Cx\Model\ContentManager\Node();
         self::$em->persist($root);
-        
         $objDatabase->Execute('TRUNCATE TABLE `contrexx_pages`');
-        $objDatabase->Execute('TRUNCATE TABLE `contrexx_nodes`');          
+        $objDatabase->Execute('TRUNCATE TABLE `contrexx_nodes`');
         $objDatabase->Execute('TRUNCATE TABLE `contrexx_ext_log_entries`');
-        
+
         $objNodeResult = $objDatabase->Execute('SELECT DISTINCT catid
                                                 FROM `'.DBPREFIX.'content_navigation_history`
                                                 ORDER BY catid ASC');
 
         while (!$objNodeResult->EOF) {
-            
             $nodeArr[$objNodeResult->fields['catid']] = new \Cx\Model\ContentManager\Node();             
             
             self::$em->persist($nodeArr[$objNodeResult->fields['catid']]);
@@ -142,30 +140,35 @@ class Contrexx_Content_migration
     
     function _setPageRecords($objResult, $node, $page)
     {
-
-            // Convert the changelog value from Unix time stamp to date for UpdatedAt function
-            $updatedDate = Date('Y-m-d H:i:s',$objResult->fields['changelog']);
-
-            $page->setNode($node); 
-            $page->setLang($objResult->fields['lang']);
-            $page->setCaching($objResult->fields['cachingstatus']);
-            $page->setUpdatedAt(new DateTime($updatedDate));
-            $page->setTitle($objResult->fields['title']);
-            $page->setContent($objResult->fields['content']);            
-            $page->setCustomContent($objResult->fields['custom_content']);
-            $page->setCssName($objResult->fields['css_name']);
-            $page->setMetatitle($objResult->fields['metatitle']);
-            $page->setMetadesc($objResult->fields['metadesc']);
-            $page->setMetakeys($objResult->fields['metakeys']);
-            $page->setMetarobots($objResult->fields['metarobots']);
-            $page->setStart(new DateTime($objResult->fields['startdate']));
-            $page->setEnd(new DateTime($objResult->fields['enddate']));
-            $page->setUsername($objResult->fields['username']);
-            $page->setDisplay(($objResult->fields['displaystatus'] === 'on' ? 1 : 0));
-            $page->setActive($objResult->fields['activestatus']);
-            $page->setTarget($objResult->fields['target']);
-            $page->setModule($objResult->fields['module']);     
-            
+        global $objDatabase;
+        
+        // Convert the changelog value from Unix time stamp to date for UpdatedAt function
+        $updatedDate = Date('Y-m-d H:i:s',$objResult->fields['changelog']);
+        // Get the corresponding module name
+        $objModules = $objDatabase->Execute('SELECT `name` as `moduleName`
+                                             FROM `'.DBPREFIX.'modules`
+                                             WHERE id = '.$objResult->fields['module']);
+        
+        $page->setNode($node); 
+        $page->setLang($objResult->fields['lang']);
+        $page->setCaching($objResult->fields['cachingstatus']);
+        $page->setUpdatedAt(new DateTime($updatedDate));
+        $page->setTitle($objResult->fields['title']);
+        $page->setContent($objResult->fields['content']);            
+        $page->setCustomContent($objResult->fields['custom_content']);
+        $page->setCssName($objResult->fields['css_name']);
+        $page->setMetatitle($objResult->fields['metatitle']);
+        $page->setMetadesc($objResult->fields['metadesc']);
+        $page->setMetakeys($objResult->fields['metakeys']);
+        $page->setMetarobots($objResult->fields['metarobots']);
+        $page->setStart(new DateTime($objResult->fields['startdate']));
+        $page->setEnd(new DateTime($objResult->fields['enddate']));
+        $page->setUsername($objResult->fields['username']);
+        $page->setDisplay(($objResult->fields['displaystatus'] === 'on' ? 1 : 0));
+        $page->setActive($objResult->fields['activestatus']);
+        $page->setTarget($objResult->fields['target']);
+        $page->setModule($objModules->fields['moduleName']);
+        $page->setCmd($objResult->fields['cmd']);
     }
 }
 ?>
