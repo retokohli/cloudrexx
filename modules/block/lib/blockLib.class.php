@@ -162,10 +162,10 @@ class blockLibrary
         $query = "INSERT INTO ".DBPREFIX."module_block_blocks
                          (cat, start, end,
                           random, random_2, random_3, random_4,
-                          global, active)
+                          global, active, content)
                   VALUES (".intval($cat).", $start, $end,
                           ".$blockRandom.", ".$blockRandom2.", ".$blockRandom3.", ".$blockRandom4." ,
-                          ".$blockGlobal.", 1)";
+                          ".$blockGlobal.", 1, '')";
 
         if ($objDatabase->Execute($query) !== false) {
             $blockId = $objDatabase->Insert_ID();
