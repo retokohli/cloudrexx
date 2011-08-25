@@ -149,7 +149,9 @@ class PageRepository extends EntityRepository {
      *     matchedPath => string (e.g. 'Hello/APage/'),
      *     unmatchedPath => string (e.g. 'AModuleObject') | null,
      *     node => Node,
-     *     lang => array (the langIds where this matches)
+     *     lang => array (the langIds where this matches),
+     *     [ pages = array ( all pages ) ] #langId = null only
+     *     [ page => Page ] #langId != null only
      * )
      */
     public function getPagesAtPath($path, $root = null, $lang = null, $exact = false) {
