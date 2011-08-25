@@ -1,4 +1,5 @@
 <?php
+set_time_limit(0);
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -93,7 +94,7 @@ class Contrexx_Content_migration
 
             $objResult->MoveNext();
         }             
-        
+
         // Check for unmatched record in contents table and pages table
         $objRecords = $objDatabase->Execute('SELECT * 
                                              FROM `'.DBPREFIX.'content` AS cn
@@ -103,24 +104,27 @@ class Contrexx_Content_migration
                                              NOT IN (
                                                 SELECT contrexx_pages.id
                                                 FROM contrexx_pages
-                                                WHERE cn.id = contrexx_pages.id)'
+                                                WHERE cn.id = contrexx_pages.id)
+                                             ORDER BY nav.parcat ASC, nav.displayorder ASC'
                                             );
         
-        if ($objRecords->RecordCount() > 0) {            
-            $objNodeResult = $objDatabase->Execute('SELECT catid FROM `'.DBPREFIX.'content_navigation` ORDER BY catid ASC');
+        if ($objRecords->RecordCount() > 0) {
+            $objNodeResult = $objDatabase->Execute('SELECT catid 
+                                                    FROM `'.DBPREFIX.'content_navigation`
+                                                    ORDER BY parcat ASC, displayorder ASC');
 
             while (!$objNodeResult->EOF) {
                 if (empty ($nodeArr[$objNodeResult->fields['catid']])) {
                     $nodeArr[$objNodeResult->fields['catid']] = new \Cx\Model\ContentManager\Node();             
             
                     self::$em->persist($nodeArr[$objNodeResult->fields['catid']]);
-                }            
+                }
                 $objNodeResult->MoveNext();
             }
         }
 
         while (!$objRecords->EOF) {
-
+            
             if ($objRecords->fields['parcat'] == 0) { 
                 $nodeArr[$objRecords->fields['catid']]->setParent($root);                
             } else {
