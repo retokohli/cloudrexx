@@ -265,16 +265,19 @@ class PageRepository extends EntityRepository {
             );
         $qb->setParameter('searchString', '%'.$string.'%');
 
+        $pages = $qb->getQuery()->getResult();
+
         $config = \Env::get('config');
 
-        $results = array();        
+        $results = array();
+
         foreach($pages as $page) {
             $results[] = array(
                 'Score' => 100,
                 'Title' => $page->getTitle(),
                 'Content' => substr($page->getTitle(),0, $config['searchDescriptionLength']),
 //TODO: awww this is sooo costly. @see getPath()
-                'Link' => $this->getPath($page)
+                'Link' => ASCMS_PATH_OFFSET.$this->getPath($page, true)
             );
         }
 
