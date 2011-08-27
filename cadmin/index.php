@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  admin
  */
-
+c
 /**
  * Debug level, see lib/DBG.php
  *   DBG_PHP             - show PHP errors/warnings/notices
@@ -375,7 +375,15 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             'CONTREXX_CHARSET'    => CONTREXX_CHARSET
         )
     );
-    $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+// Skip the nav/language bar for modules which don't make use of either.
+// TODO: Remove language selector for modules which require navigation but bring their own language management.
+    $skipMaster = array('contentmanager');
+    if (in_array($plainCmd, $skipMaster)) {
+        $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
+    }
+    else {
+        $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+    }
 }
 
 // CSRF protection. From this point on, we can assume that
@@ -539,12 +547,12 @@ switch ($plainCmd) {
 	$cmpath = ASCMS_CORE_PATH.'/ContentManager2.class.php';
 	if (file_exists($cmpath)) require_once($cmpath);
         else die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-	$subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
-	$cm = new ContentManager();
-	$cm->renderCM();
+    	$subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
+	    $cm = new ContentManager();
+	    $cm->renderCM();
         break;
 
-// TODO cleanup
+// TODO move this to it's destination
     case 'jsondata':
 	$cmpath = ASCMS_CORE_PATH.'/ContentManager2.class.php';
 	require_once($cmpath);

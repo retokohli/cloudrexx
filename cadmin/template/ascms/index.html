@@ -25,6 +25,13 @@
 
 <script type="text/javascript" src="../lib/javascript/jquery/jquery-1.6.1.min.js"></script>
 <script type="text/javascript" src="../lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js"></script>
+<script type="text/javascript" src="../lib/javascript/jquery/jquery.includeMany-1.2.2.js"></script> 
+
+<script type="text/javascript" src="../lib/javascript/cx/contrexxJs.js"></script>
+<script type="text/javascript" src="../lib/javascript/cx/contrexxJs-tools.js"></script>
+<script type="text/javascript">
+    {CXJS_INIT_JS}
+</script>
 
 <script type="text/javascript" src="../lib/javascript/jquery/jstree/jquery.jstree.js"></script>
 <script type="text/javascript" src="../lib/javascript/jquery/hotkeys/jquery.hotkeys.js"></script>
@@ -51,6 +58,7 @@
 </head>
 <body>
 <div id="tipMessageLayer" style="visibility:hidden;position:absolute;z-index:1000;top:-100;"></div>
+<div id="notificationLayer" style="position: absolute; opacity: .8; right: 10px; margin-left: -150px; z-index: 1000; width: 300px; height: 25px; background-color: #fff; float: left; border: 1px solid #69f; border-top: none; padding: 8px; display: none;"><img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" />&nbsp;&nbsp;Loading...</div>
 <script language="JavaScript1.2" type="text/javascript">
 <!--
 var TipId="tipMessageLayer"
