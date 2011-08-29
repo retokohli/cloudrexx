@@ -17,8 +17,15 @@ class PageEventListener {
      */
     private function addSortedPage($entity, &$sortedPages, $delete = false) {
         if($entity instanceof Page) {
-            echo get_class($entity)."\n";
-            $parentNodeId = $entity->getNode()->getParent()->getId();
+            $node = $entity->getNode();
+            if(!$node) //un-linked page. ugly, but not our problem
+                return;
+
+            $node = $node->getParent(); //un-linked node. ugly, but not our problem
+            if(!$node)
+                return;
+
+            $parentNodeId = $node->getId();
             if(!$sortedPages[$parentNodeId])
                 $sortedPages[$parentNodeId] = array();
 
@@ -80,7 +87,7 @@ class PageEventListener {
         $nodeIds = array_keys($sortedPages);
 
         $repo = $em->getRepository('Cx\Model\ContentManager\Node');
-        $nodes = $em->getByNode($nodeIds);
+        $nodes = $em->getById($nodeIds);
 
         foreach($nodes as $node) {
             $usedSlugs = array();
