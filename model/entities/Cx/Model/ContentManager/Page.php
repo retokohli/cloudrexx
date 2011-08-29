@@ -105,12 +105,12 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * @var int $slugSuffix
      */
-    private $slugSuffx;
+    private $slugSuffx = 0;
 
     /**
      * @var int $slugBase
      */
-    private $slugBase;
+    private $slugBase = '';
 
     /**
      * @var Cx\Model\ContentManager\Skin
@@ -201,6 +201,9 @@ class Page extends \Cx\Model\Base\EntityBase
      * Sets a correct slug based on the current title.
      */
     protected function refreshSlug() {
+        $this->slugSuffix = 0;
+        $this->slugBase = $this->getSlug();
+
         $slug = $this->getSlugProposal();
         $this->setSlug($slug);
     }
