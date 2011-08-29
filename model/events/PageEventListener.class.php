@@ -3,7 +3,7 @@
  * This listener ensures slug consistency on Page objects.
  * On Flushing, all entities are scanned and changed where needed.
  */
-namespace \Cx\Model\Events;
+namespace Cx\Model\Events;
 use \Cx\Model\ContentManager\Page as Page;
 
 class PageEventListener {
@@ -17,6 +17,7 @@ class PageEventListener {
      */
     private function addSortedPage($entity, &$sortedPages, $delete = false) {
         if($entity instanceof Page) {
+            echo get_class($entity)."\n";
             $parentNodeId = $entity->getNode()->getParent()->getId();
             if(!$sortedPages[$parentNodeId])
                 $sortedPages[$parentNodeId] = array();
@@ -111,11 +112,13 @@ class PageEventListener {
         }
     }
     
-    public function onFlush(OnFlushEventArgs $eventArgs) {
+    public function onFlush($eventArgs) {
         $em = $eventArgs->getEntityManager();
 
         //array ( parent-node-id => array( lang => array( array( pages ), deletedAndFreeSlugs => array( slugs ) ) )
         $sortedPages = array();
+
+        $uow = $em->getUnitOfWork();
 
         /*
           deleted entities' slugs will be available, set them to null
