@@ -34,7 +34,6 @@ class PageEventListenerTest extends DoctrineTestCase
         self::$em->persist($root);
         self::$em->persist($n1);
         self::$em->persist($n2);
-        self::$em->flush();return;
         self::$em->persist($p1);
         self::$em->persist($p2);
         self::$em->persist($p3);

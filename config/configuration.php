@@ -21,20 +21,20 @@ define('CONTEXX_INSTALLED', true);
 * -------------------------------------------------------------------------
 */
 $_DBCONFIG['host'] = 'localhost'; // This is normally set to localhost
-$_DBCONFIG['database'] = 'cm2'; // Database name
+$_DBCONFIG['database'] = 'cm_2_3';
 $_DBCONFIG['tablePrefix'] = 'contrexx_'; // Database table prefix
-$_DBCONFIG['user'] = 'root'; // Database username
-$_DBCONFIG['password'] = ''; // Database password
+$_DBCONFIG['user'] = 'root';
+$_DBCONFIG['password'] = '1234';
 $_DBCONFIG['dbType'] = 'mysql';	// Database type (e.g. mysql,postgres ..)
-$_DBCONFIG['charset'] = 'default'; // Charset (default, latin1, utf8, ..)
+$_DBCONFIG['charset'] = 'utf8';
 
 /**
 * -------------------------------------------------------------------------
 * Site path specific configuration
 * -------------------------------------------------------------------------
 */
-$_PATHCONFIG['ascms_root'] = 'C:/xampp/htdocs';
-$_PATHCONFIG['ascms_root_offset'] = '/cm2/cm_2_3'; // example: '/cms';
+$_PATHCONFIG['ascms_root'] = '/home/srz/web/root';
+$_PATHCONFIG['ascms_root_offset'] = '/cm_2_3';
 
 /**
 * -------------------------------------------------------------------------
@@ -61,8 +61,8 @@ $_CONFIGURATION['custom']['shopJsCart'] = false; // true|false
 /**
 * Set character encoding
 */
-$_CONFIG['coreCharacterEncoding'] = ''; // example 'UTF-8'
-@ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
+$_CONFIG['coreCharacterEncoding'] = 'UTF-8';
+$_CONFIG['coreCharacterEncoding'] = 'UTF-8';
 
 /**
 * Set output url seperator
@@ -80,9 +80,4 @@ $_CONFIG['coreCharacterEncoding'] = ''; // example 'UTF-8'
 * -------------------------------------------------------------------------
 */
 require_once dirname(__FILE__).'/set_constants.php';
-/**
- * Initialize doctrine
- */
-require_once dirname(__FILE__).'/doctrine.php';
-
 ?>
