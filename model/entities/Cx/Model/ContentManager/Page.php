@@ -103,6 +103,16 @@ class Page extends \Cx\Model\Base\EntityBase
     private $node;
 
     /**
+     * @var int $slugSuffix
+     */
+    private $slugSuffx;
+
+    /**
+     * @var int $slugBase
+     */
+    private $slugBase;
+
+    /**
      * @var Cx\Model\ContentManager\Skin
      */
     private $skin;
@@ -192,7 +202,6 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     protected function refreshSlug() {
         $slug = $this->getSlugProposal();
-//TODO: we do not want double slug names please, suffix it.
         $this->setSlug($slug);
     }
 
@@ -208,6 +217,10 @@ class Page extends \Cx\Model\Base\EntityBase
         $slug = preg_replace('/\s/', '-', $slug);
         $slug = preg_replace('/[^a-zA-Z0-9-_]/', '', $slug);
         return $slug;
+    }
+
+    protected function nextSlug() {
+        $this->setSlug($this->slugBase . '-' . ++$this->slugSuffix, true);
     }
 
     /**
@@ -783,10 +796,13 @@ class Page extends \Cx\Model\Base\EntityBase
      * Set slug
      *
      * @param string $slug
+     * @param boolean $nextSlugCall set by { @see nextSlug() }
      */
-    public function setSlug($slug)
+    public function setSlug($slug, $nextSlugCall=false)
     {
         $this->slug = $slug;
+        $this->slugSuffix = 0;
+        $this->slugBase = $slug;
     }
 
     /**
