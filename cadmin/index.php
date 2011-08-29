@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  admin
  */
-c
+
 /**
  * Debug level, see lib/DBG.php
  *   DBG_PHP             - show PHP errors/warnings/notices
