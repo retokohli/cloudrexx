@@ -9,9 +9,11 @@
         <div id="tabs-1">
             <form class="clearfix" action="." enctype="multipart/form-data">
                 <div class="clearfix">
-                    <div id="additionalInfo">
+                    <div class="additionalInfo">
                         <label class="dontShow" for="input1">[[txt-pagetitle]]</label><input id="input1" type="text" value="[[pagetitle]]"/>
-
+                        <a href="#" id="showHideInfo">Show</a>
+                    </div>
+                    <div id="additionalInfo" class="additionalInfo">
                         <div class="clearfix">
                             <h2>[[txt-active-from-to]]</h2>
 
@@ -44,7 +46,7 @@
                             <input id="meta-robots" class="meta" type="checkbox" value="[[meta-robots]]"/>
                         </div>
                     </div>
-                    <a href="#" id="showHideInfo">Show</a>
+
                 </div>
                 <textarea id="cm_ckeditor" rows="15" cols="45"></textarea>
 
