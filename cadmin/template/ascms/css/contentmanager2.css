@@ -11,7 +11,7 @@
 /* 1) Reset */
 body{ font-family: Arial, sans-serif;}
 ol, ul{ list-style: none }
-table{ border-collapse: collapse; border-spacing: 0 }
+table{ border-collapse: collapse; border-spacing: 0; padding: 0; margin: 0; }
 html{ overflow-y: scroll; }
 .clearfix:before, .clearfix:after{ content: "\0020"; display: block; height: 0; overflow: hidden }
 .clearfix:after{ clear: both }
@@ -34,10 +34,19 @@ h1{ font-size: 20px }
     width: auto
 }
 
+/*#content-manager.ie7{
+    top: -5px;
+    left: -5px;
+}*/
+
+.ie7 #input1{ float:left; }
+.ie7 .space{ margin-bottom: 10px; }
+
 #site-structure{
     border-right: 1px solid #d3d3d3; /* grey */
     float: left;
-    width: 19%
+    width: 19%;
+    overflow: hidden;
 }
 
 .toplevel{
@@ -299,6 +308,7 @@ select.chzn-select{
     height: 100%;
 }
 .chzn-container-single .chzn-search{
+    display:none;
     padding: 3px 4px;
     margin: 0;
     white-space: nowrap;
