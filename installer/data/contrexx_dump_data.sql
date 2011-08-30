@@ -1621,51 +1621,6 @@ INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `descript
 INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (7,'editEntry','0','TXT_AUCTION_SET_EDIT_ENTRY',2);
 INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (8,'indexview','1','TXT_AUCTION_SET_INDEXVIEW',2);
 INSERT INTO `contrexx_module_auction_settings` (`id`, `name`, `value`, `description`, `type`) VALUES (12,'codeMode','0','TXT_AUCTION_SET_CODE_MODE',2);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (14,'<span style=\"font-size: large;\"><strong>Contrexx&reg; Software</strong></span><br />\r\nMit Contrexx&reg; werden dynamische Portale f&uuml;r Intranet, Extranet, Internet und E-Commerce Anwendungen schnell, benutzerfreundlich und sicher erstellt.<br />\r\n<br />','DE - Eyecatcher Text',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (24,'<script type=\"text/javascript\" src=\"http://www.contrexx.com/contrexx_ads/get.js\"></script>\r\n<div id=\"contrexx_ads_content\"><script type=\"text/javascript\">\r\ncontrexx_ads_work();\r\n</script></div>','Werbebanner Beispiel',1,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (17,'<span style=\"font-size: large;\"><strong>Contrexx&reg; Software</strong></span><br />\r\nContrexx provides you a fast, user friendly and safe way in creating intranet, extranet and internet websites.<br />\r\n<br />','EN - Eyecatcher text',0,0,0,0,1,5);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (18,'<em>Ich bin der Musterblock &laquo;Hallo Welt&raquo;. Mich kann man im </em><a href=\"./cadmin/\">Contrexx Administration UI</a> unter Content Management, Block System editieren.','DE - Hallo Welt ',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (19,'<em>This is a sample &laquo;Hello World&raquo; block. You can change it in the </em><a href=\"./cadmin/\"><em>Contrexx Administration UI</em></a><em> under Content Management, Block System.</em>','EN - Hello world',0,0,0,0,1,5);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (20,'<ul>\r\n    <li><a href=\"index.php?section=sitemap\">Sitemap</a></li>\r\n    <li><a href=\"index.php?section=contact&amp;cmd=4\">Kontakt</a></li>\r\n    <li><a id=\"select_lang\" href=\"javascript:popdown(\'lang_navigation\');\">language</a></li>\r\n    <!-- BEGIN access_logged_out -->\r\n    <li id=\"n-register\"><a title=\"Registrieren\" class=\"register inactive\" href=\"index.php?section=access&amp;cmd=signup\">Registrieren</a></li>\r\n    <li id=\"n-login\"><a title=\"Login\" class=\"login inactive\" href=\"index.php?section=login\">Login</a></li>\r\n    <!-- END access_logged_out -->     <!-- BEGIN access_logged_in -->\r\n    <li id=\"n-user\"><a title=\"angemeldet als {ACCESS_USER_USERNAME}\" class=\"user inactive\" href=\"index.php?section=access\">{ACCESS_USER_USERNAME}</a></li>\r\n    <li id=\"n-logout\"><a title=\"Logout\" class=\"logout inactive\" href=\"index.php?section=logout\">Logout</a></li>\r\n    <!-- END access_logged_in --> <!-- Loginbox END --> </ul>','DE - Topnavi',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (21,'<ul>\r\n    <li><a href=\"index.php?section=sitemap\">sitemap</a></li>\r\n    <li><a href=\"index.php?section=contact&amp;cmd=4\">contact</a></li>\r\n    <li><a id=\"select_lang\" href=\"javascript:popdown(\'lang_navigation\');\">language</a></li>\r\n    <!-- BEGIN access_logged_out -->\r\n    <li id=\"n-register\"><a title=\"register\" class=\"register inactive\" href=\"index.php?section=access&amp;cmd=signup\">register</a></li>\r\n    <li id=\"n-login\"><a title=\"login\" class=\"login inactive\" href=\"index.php?section=login\">login</a></li>\r\n    <!-- END access_logged_out --> <!-- BEGIN access_logged_in -->\r\n    <li id=\"n-user\"><a title=\"logged in as {ACCESS_USER_USERNAME}\" class=\"user inactive\" href=\"index.php?section=access\">{ACCESS_USER_USERNAME}</a></li>\r\n    <li id=\"n-logout\"><a title=\"logout\" class=\"logout inactive\" href=\"index.php?section=logout\">logout</a></li>\r\n    <!-- END access_logged_in --> <!-- Loginbox END --> </ul>','EN - Topnavi',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (22,'<ul>\r\n    <li><a href=\"{PRINT_URL}\">Druckansicht</a></li>\r\n    <li><a href=\"index.php?section=agb\">AGB</a></li>\r\n    <li><a href=\"index.php?section=imprint\">Impressum</a></li>\r\n    <li><a href=\"index.php?section=recommend\">Seite weiterempfehlen</a></li>\r\n    <li><a href=\"index.php?section=login\">Login</a></li>\r\n    <li id=\"totop\"><a href=\"#page\">Seitenanfang</a></li>\r\n</ul>\r\n<p id=\"facebook\"><a href=\"http://www.facebook.com/home.php?#!/pages/Contrexx-Open-Source-CMS/297013832485?ref=ts\">Contrexx auf Facebook</a></p>','DE - Bottomnavi',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (23,'<ul>\r\n    <li><a href=\"{PRINT_URL}\">print view</a></li>\r\n    <li><a href=\"index.php?section=agb\">GTC</a></li>\r\n    <li><a href=\"index.php?section=imprint\">site notice</a></li>\r\n    <li><a href=\"index.php?section=recommend\">recommend page</a></li>\r\n    <li><a href=\"index.php?section=login\">login</a></li>\r\n    <li id=\"totop\"><a href=\"#page\">top</a></li>\r\n</ul>\r\n<p id=\"facebook\"><a href=\"http://www.facebook.com/home.php?#!/pages/Contrexx-Open-Source-CMS/297013832485?ref=ts\">Contrexx on Facebook</a></p>','EN - Bottomnavi',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (25,'<!-- START Hotelcard Advertising --> <object width=\"300\" height=\"250\">\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"wmode\" value=\"transparent\" />\r\n<param name=\"movie\" value=\"http://www.hotelcard.com/media/banners/Rectangle.swf?clickTAG=http://www.hotelcard.com\" />\r\n<param name=\"quality\" value=\"high\" />\r\n<param name=\"wmode\" value=\"opaque\" />\r\n<param name=\"swfversion\" value=\"6.0.65.0\" />                 <!-- Dieses param-Tag fordert Benutzer von Flash Player 6.0 r65 und höher auf, die aktuelle Version von Flash Player herunterzuladen. Wenn Sie nicht wünschen, dass die Benutzer diese Aufforderung sehen, löschen Sie dieses Tag. -->\r\n<param name=\"expressinstall\" value=\"Scripts/expressInstall.swf\" />                 <!-- Das nächste Objekt-Tag ist für Nicht-IE-Browser vorgesehen. Blenden Sie es daher mit IECC in IE aus. -->                 <!--[if !IE]>-->                 <object width=\"300\" height=\"250\" type=\"application/x-shockwave-flash\" data=\"http://www.hotelcard.com/media/banners/Rectangle.swf?clickTAG=http://www.hotelcard.com\">                 <!--<![endif]-->\r\n<param name=\"quality\" value=\"high\" />\r\n<param name=\"wmode\" value=\"opaque\" />\r\n<param name=\"swfversion\" value=\"6.0.65.0\" />\r\n<param name=\"expressinstall\" value=\"http://www.hotelcard.com/media/banners/expressInstall.swf\" />                     <!-- Im Browser wird für Benutzer von Flash Player 6.0 und älteren Versionen der folgende alternative Inhalt angezeigt. -->\r\n<div>\r\n<h4>F&uuml;r den Inhalt dieser Seite ist eine neuere Version von Adobe Flash Player erforderlich.</h4>\r\n<p><a href=\"http://www.adobe.com/go/getflashplayer\">                                 <img width=\"112\" height=\"33\" src=\"http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif\" alt=\"Adobe Flash Player herunterladen\" />                             </a></p>\r\n</div>\r\n<!--[if !IE]>-->                 </object>                 <!--<![endif]-->             </object> <!-- END Hotelcard Advertising -->','Werbebanner Beispiel - Hotelcard',1,0,0,0,0,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (26,'themes/polished/images/searchform-button-de.gif','DE - Bild Suchbutton',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_blocks` (`id`, `content`, `name`, `random`, `random_2`, `random_3`, `global`, `active`, `order`) VALUES (27,'themes/polished/images/searchform-button-en.gif','EN - Bild Suchbutton',0,0,0,0,1,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (25,6,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (25,5,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (25,4,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (25,3,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (14,1,1);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (24,5,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (24,2,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (17,2,1);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (26,1,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (25,2,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (25,1,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (18,6,1);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (18,5,1);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (18,4,1);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (18,3,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (18,2,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (18,1,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (24,1,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (19,2,0);
-INSERT INTO `contrexx_module_block_rel_lang` (`block_id`, `lang_id`, `all_pages`) VALUES (27,2,0);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,82,1);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,2,1);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,1296,2);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,1297,2);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,1284,2);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,1443,3);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,1444,3);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,1431,3);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (18,83,1);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (19,1284,2);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (19,1297,2);
-INSERT INTO `contrexx_module_block_rel_pages` (`block_id`, `page_id`, `lang_id`) VALUES (19,1296,2);
-INSERT INTO `contrexx_module_block_settings` (`id`, `name`, `value`) VALUES (1,'blockGlobalSeperator','<br /><br />');
 INSERT INTO `contrexx_module_blog_categories` (`category_id`, `lang_id`, `is_active`, `name`) VALUES (1,1,'1','Allgemein');
 INSERT INTO `contrexx_module_blog_categories` (`category_id`, `lang_id`, `is_active`, `name`) VALUES (1,2,'1','General');
 INSERT INTO `contrexx_module_blog_categories` (`category_id`, `lang_id`, `is_active`, `name`) VALUES (1,3,'1','General');
@@ -4528,6 +4483,9 @@ INSERT INTO contrexx_access_users (id, is_admin, username, password, regdate, ex
 
 
 
+####################################################################################################
+############# NEW CONTENT MANAGER (Doctrine) #######################################################
+####################################################################################################
 INSERT INTO `contrexx_module_contact_form` (`id`, `mails`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `html_mail`, `send_attachment`) VALUES (4,'info@example.com',0,1,0,0,1,0);
 INSERT INTO `contrexx_module_contact_form` (`id`, `mails`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `html_mail`, `send_attachment`) VALUES (5,'info@example.com',0,1,0,1,1,0);
 INSERT INTO `contrexx_module_contact_form` (`id`, `mails`, `showForm`, `use_captcha`, `use_custom_style`, `send_copy`, `html_mail`, `send_attachment`) VALUES (6,'info@example.com',0,1,0,1,1,0);
@@ -4606,3 +4564,27 @@ INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, 
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (4,'fieldMetaHost','0',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (5,'fieldMetaLang','0',1);
 INSERT INTO `contrexx_module_contact_settings` (`setid`, `setname`, `setvalue`, `status`) VALUES (6,'fieldMetaIP','0',1);
+
+
+
+
+####################################################################################################
+############# NEW BLOCK SYSTEM #####################################################################
+####################################################################################################
+INSERT INTO `contrexx_module_block_blocks` (`id`, `start`, `end`, `name`, `random`, `random_2`, `random_3`, `random_4`, `global`, `active`, `order`, `cat`) VALUES (14,0,0,'Eyecatcher Text',0,0,0,0,0,1,0,0);
+INSERT INTO `contrexx_module_block_blocks` (`id`, `start`, `end`, `name`, `random`, `random_2`, `random_3`, `random_4`, `global`, `active`, `order`, `cat`) VALUES (18,0,0,'Hallo Welt ',0,0,0,0,0,1,0,0);
+INSERT INTO `contrexx_module_block_blocks` (`id`, `start`, `end`, `name`, `random`, `random_2`, `random_3`, `random_4`, `global`, `active`, `order`, `cat`) VALUES (24,0,0,'Werbebanner Beispiel',1,0,0,0,0,1,0,0);
+INSERT INTO `contrexx_module_block_blocks` (`id`, `start`, `end`, `name`, `random`, `random_2`, `random_3`, `random_4`, `global`, `active`, `order`, `cat`) VALUES (26,0,0,'Bild Suchbutton',0,0,0,0,0,1,0,0);
+INSERT INTO `contrexx_module_block_categories` (`id`, `parent`, `name`, `order`, `status`) VALUES (1,0,'Allgemein',1,1);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (14,3,'',0);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (26,2,'themes/polished/images/searchform-button-en.gif',1);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (26,3,'',0);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (18,3,'',0);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (18,3,'',0);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (18,3,'',0);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (24,1,'<script type=\"text/javascript\" src=\"http://www.contrexx.com/contrexx_ads/get.js\"></script>\r\n<div id=\"contrexx_ads_content\"><script type=\"text/javascript\">\r\ncontrexx_ads_work();\r\n</script></div>',1);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (24,2,'<script type=\"text/javascript\" src=\"http://www.contrexx.com/contrexx_ads/get.js\"></script>\r\n<div id=\"contrexx_ads_content\"><script type=\"text/javascript\">\r\ncontrexx_ads_work();\r\n</script></div>',1);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (26,1,'themes/polished/images/searchform-button-de.gif',1);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (14,3,'',0);
+INSERT INTO `contrexx_module_block_rel_lang_content` (`block_id`, `lang_id`, `content`, `active`) VALUES (14,3,'',0);
+INSERT INTO `contrexx_module_block_settings` (`id`, `name`, `value`) VALUES (1,'blockGlobalSeperator','<br /><br />');

@@ -508,46 +508,6 @@ CREATE TABLE `contrexx_module_auction_spez_fields` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_block_blocks` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `content` text NOT NULL,
-  `name` varchar(255) NOT NULL default '',
-  `random` int(1) NOT NULL default '0',
-  `random_2` int(1) NOT NULL default '0',
-  `random_3` int(1) NOT NULL default '0',
-  `global` int(1) NOT NULL default '0',
-  `active` int(1) NOT NULL default '0',
-  `order` int(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_block_rel_lang` (
-  `block_id` int(10) unsigned NOT NULL default '0',
-  `lang_id` int(10) unsigned NOT NULL default '0',
-  `all_pages` int(1) NOT NULL default '0'
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_block_rel_pages` (
-  `block_id` int(7) NOT NULL default '0',
-  `page_id` int(7) NOT NULL default '0',
-  `lang_id` int(7) NOT NULL default '0'
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_block_settings` (
-  `id` int(7) NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `value` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_blog_categories` (
   `category_id` int(4) unsigned NOT NULL default '0',
   `lang_id` int(2) unsigned NOT NULL default '0',
@@ -3967,6 +3927,9 @@ SET character_set_client = @saved_cs_client;
 
 
 
+####################################################################################################
+############# NEW CONTACT MANAGER ##################################################################
+####################################################################################################
 CREATE TABLE `contrexx_module_contact_form` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `mails` text NOT NULL,
@@ -4118,3 +4081,50 @@ CREATE TABLE `contrexx_pages` (
 
 ALTER TABLE `contrexx_pages`
   ADD CONSTRAINT `contrexx_pages_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_nodes` (`id`);
+
+
+
+
+
+####################################################################################################
+############# NEW BLOCK SYSTEM #####################################################################
+####################################################################################################
+CREATE TABLE `contrexx_module_block_blocks` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `start` int(10) NOT NULL DEFAULT '0',
+  `end` int(10) NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `random` int(1) NOT NULL DEFAULT '0',
+  `random_2` int(1) NOT NULL DEFAULT '0',
+  `random_3` int(1) NOT NULL DEFAULT '0',
+  `random_4` int(1) NOT NULL DEFAULT '0',
+  `global` int(1) NOT NULL DEFAULT '0',
+  `active` int(1) NOT NULL DEFAULT '0',
+  `order` int(1) NOT NULL DEFAULT '0',
+  `cat` int(10) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM8;
+CREATE TABLE `contrexx_module_block_categories` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent` int(10) NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `order` int(10) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_block_rel_lang_content` (
+  `block_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `lang_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `content` mediumtext NOT NULL,
+  `active` int(1) NOT NULL DEFAULT '0'
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_block_rel_pages` (
+  `block_id` int(7) NOT NULL DEFAULT '0',
+  `page_id` int(7) NOT NULL DEFAULT '0'
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_block_settings` (
+  `id` int(7) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `value` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
