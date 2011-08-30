@@ -39,7 +39,7 @@
 .jstree-classic .jstree-undetermined > a > .jstree-checkbox:hover { background-position:-20px -37px; }
 
 #vakata-dragged.jstree-classic ins { background:transparent !important; }
-#vakata-dragged.jstree-classic .jstree-ok { background:url("d.png") -2px -53px no-repeat !important; }
+#vakata-dragged.jstree-classic .jstree-ok { background: url("d.png") -2px -53px no-repeat !important; }
 #vakata-dragged.jstree-classic .jstree-invalid { background:url("d.png") -18px -53px no-repeat !important; }
 #jstree-marker.jstree-classic { background:url("d.png") -41px -57px no-repeat !important; text-indent:-100px; }
 
