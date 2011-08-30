@@ -379,7 +379,7 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_LOGIN_CANCEL'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_CANCEL'],
 												'TXT_LOGIN_PASSWORD_FORGOTTON'	=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD_FORGOTTON']
 									));
-$_POST['USERNAME'] : '';
+        $loginUsername = isset($_POST['USERNAME']) ? $_POST['USERNAME'] : '';
 
 		$this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=>	$this->intPageId,
 												'LOGIN_PAGE_SECTION'	=>	$this->strPageSection,
