@@ -219,11 +219,18 @@ class blockManager extends blockLibrary
     * @global array
     * @global ADONewConnection
     * @global array
-    * @see blockLibrary::_getBlocks(), blockLibrary::blockNamePrefix
+    * @see blockLibrary::getBlocks(), blockLibrary::blockNamePrefix
     */
     function _showOverview()
     {
         global $_ARRAYLANG, $objDatabase, $_CORELANG;
+
+        if (isset($_POST['displaysubmit'])) {
+            foreach ($_POST['displayorder'] as $blockId => $value){
+                $query = "UPDATE ".DBPREFIX."module_block_blocks SET `order`='".intval($value)."' WHERE id='".intval($blockId)."'";
+                $objDatabase->Execute($query);
+            }
+        }
 
         $this->_pageTitle = $_ARRAYLANG['TXT_BLOCK_BLOCKS'];
         $this->_objTpl->loadTemplateFile('module_block_overview.html');
@@ -260,7 +267,7 @@ class blockManager extends blockLibrary
             'CSRF_CODE'                         => CSRF::code(),
         ));
 
-        $arrBlocks = &$this->_getBlocks($catId);
+        $arrBlocks = $this->getBlocks($catId);
         if (count($arrBlocks)>0) {
             $rowNr = 0;
             foreach ($arrBlocks as $blockId => $arrBlock) {
@@ -310,25 +317,16 @@ class blockManager extends blockLibrary
                     'BLOCK_GLOBAL'          => $global,
                     'BLOCK_ORDER'           => $arrBlock['order'],
                     'BLOCK_PLACEHOLDER'     => $this->blockNamePrefix.$blockId,
-                    'BLOCK_NAME'            => htmlentities($arrBlock['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'BLOCK_MODIFY'          => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], htmlentities($arrBlock['name'], ENT_QUOTES, CONTREXX_CHARSET)),
-                    'BLOCK_COPY'            => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], htmlentities($arrBlock['name'], ENT_QUOTES, CONTREXX_CHARSET)),
-                    'BLOCK_DELETE'          => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], htmlentities($arrBlock['name'], ENT_QUOTES, CONTREXX_CHARSET)),
+                    'BLOCK_NAME'            => contrexx_raw2xhtml($arrBlock['name']),
+                    'BLOCK_MODIFY'          => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                    'BLOCK_COPY'            => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                    'BLOCK_DELETE'          => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                     'BLOCK_STATUS'          => $status
                 ));
                 $this->_objTpl->parse('blockBlockList');
 
                 $rowNr ++;
             }
-        }
-
-        if (isset($_POST['displaysubmit'])) {
-            foreach ($_POST['displayorder'] as $blockId => $value){
-                $query = "UPDATE ".DBPREFIX."module_block_blocks SET `order`='".intval($value)."' WHERE id='".$blockId."'";
-                $objDatabase->Execute($query);
-            }
-
-            CSRF::header('Location: index.php?cmd=block');
         }
     }
 
@@ -561,26 +559,25 @@ class blockManager extends blockLibrary
     *
     * @access private
     * @global array
-    * @global ADONewConnection
     * @see blockLibrary::_getBlockContent(), blockLibrary::blockNamePrefix
     */
-    function _showModifyBlock($copy = false)
+    private function _showModifyBlock($copy = false)
     {
-        global $_ARRAYLANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG;
 
-        $today                  = strtotime(date('Y-m-d'));
-        $blockId                = isset($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
+        $blockId                = !empty($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
         $blockName              = '';
-        $blockStart             = $today;
-        $blockEnd               = $today+3600*24*365;
+        $blockStart             = time();
+        $blockEnd               = time()+3600*24*365;
         $blockRandom            = 0;
         $blockRandom2           = 0;
         $blockRandom3           = 0;
         $blockRandom4           = 0;
         $blockGlobal            = 0;
-        $blockContent           = '';
+        $blockContent           = array();
         $blockAssociatedPageIds = array();
+        $blockLangActive        = array();
 
         $this->_objTpl->loadTemplateFile('module_block_modify.html');
 
@@ -601,34 +598,25 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_SHOW_UNTIL'              => $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'],
             'TXT_BLOCK_SHOW_TIMED'              => $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'],
             'TXT_BLOCK_SHOW_ALWAYS'             => $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'],
-            'BLOCK_FORM_ONSUBMIT'               => $formOnSubmit,
             'TXT_BLOCK_FRONTEND_PAGES'          => $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'],
             'TXT_BLOCK_LANG_SHOW'               => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'],
         ));
 
         if (isset($_POST['block_save_block'])) {
-            $blockCat               = isset($_POST['blockCat']) ? $_POST['blockCat'] : 0;
-            $blockContent           = array();
-            $blockContent           = isset($_POST['blockBlockContent']) ? $_POST['blockBlockContent'] : '';
-            //$blockName              = array();
-            $blockName              = isset($_POST['blockName']) ? $_POST['blockName'] : '';
+            $blockCat               = !empty($_POST['blockCat']) ? intval($_POST['blockCat']) : 0;
+            $blockContent           = isset($_POST['blockBlockContent']) ? array_map('contrexx_input2raw', $_POST['blockBlockContent']) : array();
+            $blockName              = !empty($_POST['blockName']) ? contrexx_input2raw($_POST['blockName']) : $_ARRAYLANG['TXT_BLOCK_NO_NAME'];
             $blockStart             = $this->_parseTimestamp('inputStart');
             $blockEnd               = $this->_parseTimestamp('inputEnd');
-            $blockRandom            = isset($_POST['blockRandom']) ? intval($_POST['blockRandom']) : 0;
-            $blockRandom2           = isset($_POST['blockRandom2']) ? intval($_POST['blockRandom2']) : 0;
-            $blockRandom3           = isset($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
-            $blockRandom4           = isset($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
-            $blockGlobal            = isset($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
-            $blockAssociatedPageIds = array();
-            $blockAssociatedPageIds = $_POST['selectedPages'];
-            $blockLangActive        = array();
-            $blockLangActive        = $_POST['block_activate_language'];
+            $blockRandom            = !empty($_POST['blockRandom']) ? intval($_POST['blockRandom']) : 0;
+            $blockRandom2           = !empty($_POST['blockRandom2']) ? intval($_POST['blockRandom2']) : 0;
+            $blockRandom3           = !empty($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
+            $blockRandom4           = !empty($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
+            $blockGlobal            = !empty($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
+            $blockAssociatedPageIds = isset($_POST['selectedPages']) ? array_map('intval', $_POST['selectedPages']) : array();
+            $blockLangActive        = isset($_POST['block_activate_language']) ? array_map('intval', $_POST['block_activate_language']) : array();
 
-            if (empty($blockName)) {
-                $blockName = $_ARRAYLANG['TXT_BLOCK_NO_NAME'];
-            }
-
-            if ($blockId != 0) {
+            if ($blockId) {
                 if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
                     $this->_strOkMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_UPDATED_SUCCESSFULLY'];
                     return $this->_showOverview();
@@ -636,14 +624,14 @@ class blockManager extends blockLibrary
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
                 }
             } else {
-                if ($this->_addBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
-                    $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], $blockName);
+                if ($this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
+                    $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_BLOCK_BLOCK_ADDED_SUCCESSFULLY'], contrexx_raw2xhtml($blockName));
                     return $this->_showOverview();
                 } else {
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_ADDED'];
                 }
             }
-        } elseif (($arrBlock = &$this->_getBlock($blockId)) !== false) {
+        } elseif (($arrBlock = $this->_getBlock($blockId)) !== false) {
             $blockStart         = $arrBlock['start'];
             $blockEnd           = $arrBlock['end'];
             $blockCat           = $arrBlock['cat'];
@@ -657,11 +645,9 @@ class blockManager extends blockLibrary
             $blockLangActive    = $arrBlock['lang_active'];
             $blockName          = $arrBlock['name'];
             $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId);
-        } else {
-            $blockAssociatedPageIds = array();
         }
 
-        $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), htmlentities($blockName, ENT_QUOTES, CONTREXX_CHARSET)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
+        $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), contrexx_raw2xhtml($blockName)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
         $this->_pageTitle = $pageTitle;
 
         if ($copy) {
@@ -671,7 +657,7 @@ class blockManager extends blockLibrary
         $this->_objTpl->setVariable(array(
             'BLOCK_ID'                          => $blockId,
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
-            'BLOCK_NAME'                        => htmlentities($blockName[$_LANGID], ENT_QUOTES, CONTREXX_CHARSET),
+            'BLOCK_NAME'                        => contrexx_raw2xhtml($blockName),
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
             'BLOCK_START'                       => strftime('%Y-%m-%d', $blockStart),
             'BLOCK_END'                         => strftime('%Y-%m-%d', $blockEnd),
@@ -690,7 +676,8 @@ class blockManager extends blockLibrary
         ));
 
         // create new ContentTree instance
-        $objContentTree = new ContentTree($langId);
+// TODO: replace with nodes
+        /*$objContentTree = new ContentTree($langId);
         $strSelectedPages   = '';
         $strUnselectedPages = '';
 
@@ -713,36 +700,38 @@ class blockManager extends blockLibrary
         $this->_objTpl->setVariable(array(
             'BLOCK_RELATION_PAGES_UNSELECTED'   => $strUnselectedPages,
             'BLOCK_RELATION_PAGES_SELECTED'     => $strSelectedPages,
-        ));
+        ));*/
 
-        $arrLanguages = &FWLanguage::getLanguageArray();
+        $arrLanguages = FWLanguage::getLanguageArray();
         $i=0;
         foreach ($arrLanguages as $langId => $arrLanguage) {
-            if($arrLanguage['frontend'] == 1) {
-                $tmpBlockContent       = $blockContent[$langId];
-                $tmpBlockLangActive    = $blockLangActive[$langId];
-                $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
-
-                $this->_objTpl->setVariable(array(
-                    'BLOCK_LANG_TAB_LANG_ID'        => intval($langId),
-                    'BLOCK_LANG_TAB_CLASS'          => $i == 0 ? 'active' : '',
-                    'TXT_BLOCK_LANG_TAB_LANG_NAME'  => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                ));
-                $this->_objTpl->parse('block_language_tabs');
-
-                $this->_objTpl->setVariable(array(
-                    'BLOCK_LANG_ID'                 => intval($langId),
-                    'BLOCK_SHOW_CONTENT_EDITOR'     => $tmpBlockLangActive == 1 ? 'block' : $blockId == 0 && $i == 0 ? 'block' : 'none',
-                    'BLOCK_LANG_ASSOCIATED'         => $blockId == 0 && $i == 0 ? 'checked="checked"' : $tmpBlockLangActive == 1 ? 'checked="checked"' : '',
-                    'BLOCK_LANG_NOT_ASSOCIATED'     => $blockId == 0 && $i == 0 ? '' : $tmpBlockLangActive == 0 ? 'checked="checked"' : '',
-                    'BLOCK_SHOW_CONTENT'            => $i == 0 ? 'block' : 'none',
-                    'TXT_BLOCK_CONTENT_LANG_NAME'   => htmlentities($arrLanguage['name'], ENT_QUOTES, CONTREXX_CHARSET),
-                    'BLOCK_CONTENT'                 => get_wysiwyg_editor('blockBlockContent['.$langId.']', $tmpBlockContent),
-                ));
-                $this->_objTpl->parse('block_language_content');
-
-                $i++;
+            if($arrLanguage['frontend'] != 1) {
+                continue;
             }
+
+            $tmpBlockContent       = isset($blockContent[$langId]) ? $blockContent[$langId] : '';
+            $tmpBlockLangActive    = isset($blockLangActive[$langId]) ? $blockLangActive[$langId] : 0;
+            $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
+
+            $this->_objTpl->setVariable(array(
+                'BLOCK_LANG_TAB_LANG_ID'        => intval($langId),
+                'BLOCK_LANG_TAB_CLASS'          => $i == 0 ? 'active' : '',
+                'TXT_BLOCK_LANG_TAB_LANG_NAME'  => contrexx_raw2xhtml($arrLanguage['name']),
+            ));
+            $this->_objTpl->parse('block_language_tabs');
+
+            $this->_objTpl->setVariable(array(
+                'BLOCK_LANG_ID'                 => intval($langId),
+                'BLOCK_SHOW_CONTENT_EDITOR'     => $tmpBlockLangActive == 1 ? 'block' : ($blockId == 0 && $i == 0 ? 'block' : 'none'),
+                'BLOCK_LANG_ASSOCIATED'         => $blockId == 0 && $i == 0 ? 'checked="checked"' : ($tmpBlockLangActive == 1 ? 'checked="checked"' : ''),
+                'BLOCK_LANG_NOT_ASSOCIATED'     => $blockId == 0 && $i == 0 ? '' : ($tmpBlockLangActive == 0 ? 'checked="checked"' : ''),
+                'BLOCK_SHOW_CONTENT'            => $i == 0 ? 'block' : 'none',
+                'TXT_BLOCK_CONTENT_LANG_NAME'   => contrexx_raw2xhtml($arrLanguage['name']),
+                'BLOCK_CONTENT'                 => get_wysiwyg_editor('blockBlockContent['.$langId.']', $tmpBlockContent),
+            ));
+            $this->_objTpl->parse('block_language_content');
+
+            $i++;
         }
     }
 
