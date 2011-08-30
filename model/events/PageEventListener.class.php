@@ -5,6 +5,7 @@
  */
 namespace Cx\Model\Events;
 use \Cx\Model\ContentManager\Page as Page;
+use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 class PageEventListener {
 
@@ -25,19 +26,17 @@ class PageEventListener {
             if(!$node)
                 return;
 
-            $parentNodeId = $node->getId();
-            if(!$sortedPages[$parentNodeId])
-                $sortedPages[$parentNodeId] = array();
+            $key = $node->getUniqueIdentifier();
+            if(!isset($sortedPages[$key]))
+                $sortedPages[$key] = array();
 
-            $mySortedPages = &$sortedPages[$parentNodeId];
+            $mySortedPages = &$sortedPages[$key];
             $lang = $entity->getLang();
 
-            if(!isset($mySortedPages['lang'])) {
-                $mySortedPages['lang'] = array();
-                if(!isset($mySortedPages['lang'][$lang]))
-                    $mySortedPages['lang'][$lang] = array();
-            }
-            $mySortedPages = &$mySortedPages['lang'][$lang];
+            if(!isset($mySortedPages[$lang]))
+                $mySortedPages[$lang] = array();
+
+            $mySortedPages = &$mySortedPages[$lang];
 
             if(!isset($mySortedPages['pages'])) {
                 $mySortedPages['pages'] = array();
@@ -57,14 +56,14 @@ class PageEventListener {
      * @param array $sortedPages
      */
     private function checkSlugsLocal(&$sortedPages) {
-        foreach($sortedPages as $nodeId => $languages) {
+        foreach($sortedPages as $identifier => $languages) {
             foreach($languages as $language => $entries) {
                 $deletedAndFreeSlugs = &$entries['deletedAndFreeSlugs'];
-                $pages = &$entries['pages'];
-                
+                $pages = &$entries['pages'];            
+
                 $usedSlugs = array();
                 foreach($pages as $page) {
-                    while(in_array($usedSlugs, $page->getSlug())) {
+                    while(in_array($page->getSlug(), $usedSlugs)) {
                         $page->nextSlug();
                     }
                     $usedSlugs[] = $page->getSlug();
@@ -84,10 +83,23 @@ class PageEventListener {
         $uow = $em->getUnitOfWork();
         $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
 
-        $nodeIds = array_keys($sortedPages);
+        $identifiers = array_keys($sortedPages);
+        //sort out ids - nodes who do not have an id as identifier do
+        //not need to get checked against the database, since they
+        //are not persisted yet.
+        $nodeIds = array();
+        foreach($identifiers as $identifier) {
+            if(substr($identifier,0,1) != 'i')
+                $nodeIds[] = intval($identifier);
+        }
+
+        if(count($nodeIds) == 0)
+            return;
 
         $repo = $em->getRepository('Cx\Model\ContentManager\Node');
-        $nodes = $em->getById($nodeIds);
+
+        $query = 'select n from Cx\Model\ContentManager\Node n where n.id in (' . join(',', $nodeIds) . ')';
+        $nodes = $em->createQuery($query)->getResult();
 
         foreach($nodes as $node) {
             $usedSlugs = array();
@@ -105,7 +117,7 @@ class PageEventListener {
                 $freeSlugs = $data['deletedAndFreeSlugs'];
                 foreach($data['pages'] as $page) {
                     $changed = false;
-                    while(in_array($usedSlugs, $page->getSlug()) && !in_array($freeSlugs, $page->getSlug())) {
+                    while(in_array($page->getSlug(), $usedSlugs) && !in_array($page->getSlug(), $freeSlugs)) {
                         $page->nextSlug();
                         $changed = true;
                     }

@@ -222,7 +222,7 @@ class Page extends \Cx\Model\Base\EntityBase
         return $slug;
     }
 
-    protected function nextSlug() {
+    public function nextSlug() {
         $this->setSlug($this->slugBase . '-' . ++$this->slugSuffix, true);
     }
 
@@ -793,7 +793,6 @@ class Page extends \Cx\Model\Base\EntityBase
      * @var string $slug
      */
     private $slug;
-
 
     /**
      * Set slug

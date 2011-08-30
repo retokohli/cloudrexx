@@ -42,11 +42,33 @@ class Node extends \Cx\Model\Base\EntityBase
      */
     private $parent;
 
+    private static $instanceCounter = 0;
+    private $instance = 0;
+
     public function __construct()
     {
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
         $this->pages = new \Doctrine\Common\Collections\ArrayCollection();      
+
+        //instance counter to provide unique ids
+        $this->instance = ++self::$instanceCounter;
     }
+
+    /**
+     * Returns an unique identifier that is usable even if 
+     * no id is set yet.
+     * The Cx\Model\Events\PageEventListener uses this.
+     *
+     * @return string
+     */
+    public function getUniqueIdentifier() {
+        $id = $this->getId();
+        if($id)
+            return ''.$id;
+        else
+            return 'i'.$this->instance;
+    }
+
     
     /**
      * Get id
