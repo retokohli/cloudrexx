@@ -4052,3 +4052,69 @@ CREATE TABLE `contrexx_module_contact_settings` (
   PRIMARY KEY  (`setid`)
 ) TYPE=MyISAM ;
 
+
+
+####################################################################################################
+############# NEW CONTENT MANAGER (Doctrine) #######################################################
+####################################################################################################
+CREATE TABLE `contrexx_ext_log_entries` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `action` varchar(8) NOT NULL,
+  `logged_at` datetime NOT NULL,
+  `version` int(11) NOT NULL,
+  `object_id` varchar(32) DEFAULT NULL,
+  `object_class` varchar(255) NOT NULL,
+  `data` longtext,
+  `username` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `log_class_lookup_idx` (`object_class`),
+  KEY `log_date_lookup_idx` (`logged_at`),
+  KEY `log_user_lookup_idx` (`username`)
+) TYPE=InnoDB;
+
+CREATE TABLE `contrexx_nodes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) DEFAULT NULL,
+  `lft` int(11) NOT NULL,
+  `rgt` int(11) NOT NULL,
+  `lvl` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_E5A18FDD727ACA70` (`parent_id`)
+) TYPE=InnoDB;
+
+ALTER TABLE `contrexx_nodes`
+  ADD CONSTRAINT `contrexx_nodes_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_nodes` (`id`) ON DELETE SET NULL;
+
+CREATE TABLE `contrexx_pages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `node_id` int(11) DEFAULT NULL,
+  `lang` int(11) NOT NULL,
+  `type` varchar(16) NOT NULL,
+  `caching` tinyint(1) NOT NULL,
+  `updatedAt` datetime NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `content` longtext NOT NULL,
+  `customContent` varchar(64) DEFAULT NULL,
+  `cssName` varchar(255) DEFAULT NULL,
+  `skin` int(11) DEFAULT NULL,
+  `metatitle` varchar(255) DEFAULT NULL,
+  `metadesc` varchar(255) DEFAULT NULL,
+  `metakeys` varchar(255) DEFAULT NULL,
+  `metarobots` varchar(7) DEFAULT NULL,
+  `start` date DEFAULT NULL,
+  `end` date DEFAULT NULL,
+  `editingStatus` varchar(16) NOT NULL,
+  `username` varchar(64) NOT NULL,
+  `protection` int(11) NOT NULL,
+  `display` tinyint(1) NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  `target` varchar(255) DEFAULT NULL,
+  `module` varchar(255) DEFAULT NULL,
+  `cmd` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_D8E86F54460D9FD7` (`node_id`)
+) TYPE=InnoDB;
+
+ALTER TABLE `contrexx_pages`
+  ADD CONSTRAINT `contrexx_pages_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_nodes` (`id`);
