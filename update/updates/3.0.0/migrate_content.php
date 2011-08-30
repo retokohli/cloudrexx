@@ -12,6 +12,7 @@ DBG::activate();
 
 $m = new Contrexx_Content_migration;
 $m->migrate();
+$m->pageGrouping();
 print 'DONE';
 
 class Contrexx_Content_migration
@@ -174,5 +175,23 @@ class Contrexx_Content_migration
         $page->setModule($objModules->fields['moduleName']);
         $page->setCmd($objResult->fields['cmd']);
     }
+    
+    function pageGrouping()
+    {
+        // fetch all pages
+        $pages = self::$em->getRepository('Cx\Model\ContentManager\Page')->findAll();
+        $group = Array();
+        foreach ($pages as $page) {
+            if (!isset ($group[$page->getModule()][$page->getCmd()])) {
+                 $group[$page->getModule()][$page->getCmd()] = $page->getNode();
+            } else {
+                $page->setNode($group[$page->getModule()][$page->getCmd()]);                
+            }     
+            self::$em->persist($page);
+        }
+        self::$em->flush();
+    }
 }
 ?>
+
+
