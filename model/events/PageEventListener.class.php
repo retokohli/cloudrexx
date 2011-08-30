@@ -54,8 +54,11 @@ class PageEventListener {
      * Makes sure Slugs in sortedPages are unique level-widely.
      *
      * @param array $sortedPages
+     * @param EntityManager $em
      */
-    private function checkSlugsLocal(&$sortedPages) {
+    private function checkSlugsLocal(&$sortedPages, $em) {
+        $uow = $em->getUnitOfWork();
+
         foreach($sortedPages as $identifier => $languages) {
             foreach($languages as $language => $entries) {
                 $deletedAndFreeSlugs = &$entries['deletedAndFreeSlugs'];
@@ -63,10 +66,16 @@ class PageEventListener {
 
                 $usedSlugs = array();
                 foreach($pages as $page) {
+                    $changed = false;
                     while(in_array($page->getSlug(), $usedSlugs)) {
                         $page->nextSlug();
+                        $changed = true;
                     }
                     $usedSlugs[] = $page->getSlug();
+
+                    if($changed) {
+                        $uow->recomputeSingleEntityChangeSet($em->getClassMetadata(get_class($page)), $page);
+                    }
                 }            
             }
         }
@@ -81,7 +90,6 @@ class PageEventListener {
      */
     private function checkSlugsDb(&$sortedPages, $em) {
         $uow = $em->getUnitOfWork();
-        $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
 
         $identifiers = array_keys($sortedPages);
         //sort out ids - nodes who do not have an id as identifier do
@@ -97,6 +105,7 @@ class PageEventListener {
             return;
 
         $repo = $em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
 
         $query = 'select n from Cx\Model\ContentManager\Node n where n.id in (' . join(',', $nodeIds) . ')';
         $nodes = $em->createQuery($query)->getResult();
@@ -105,27 +114,39 @@ class PageEventListener {
             $usedSlugs = array();
             $childs = $node->getChildren();
             foreach($childs as $child) {
-                $pages = $repo->findByParent($node);
+                $pages = $pageRepo->findBy(array('node' => $child->getId()));
                 foreach($pages as $page) {
-                    $usedSlugs[] = $page->getSlug();
+                    $lang = $page->getLang();
+                    if(!isset($usedSlugs[$lang]))
+                        $usedSlugs[$lang] = array();
+                    $usedSlugs[$lang][] = $page->getSlug();
                 }
             }
             
-            $persistData = $sortedPages[$node->getId()];
+            $persistData = &$sortedPages[$node->getId()];
 
             foreach($persistData as $lang => $data) {
                 $freeSlugs = $data['deletedAndFreeSlugs'];
                 foreach($data['pages'] as $page) {
+                    if(!isset($usedSlugs[$lang]))
+                        $usedSlugs[$lang] = array();
+
                     $changed = false;
-                    while(in_array($page->getSlug(), $usedSlugs) && !in_array($page->getSlug(), $freeSlugs)) {
+                    while(in_array($page->getSlug(), $usedSlugs[$lang]) && !in_array($page->getSlug(), $freeSlugs)) {
                         $page->nextSlug();
                         $changed = true;
                     }
-                    $usedSlugs[] = $page->getSlug();
+
+                    $usedSlugs[$lang][] = $page->getSlug();
+
+                    $key = array_search($page->getSlug(), $freeSlugs);
+                    if($key)
+                        unset($freeSlugs[$key]);
 
                     //tell doctrine to recompute the changes if any.
-                    if($changed)
-                        $uow->computeChangeSet($pageRepo->getClassMetadata(), $page);
+                    if($changed) {
+                        $uow->recomputeSingleEntityChangeSet($em->getClassMetadata(get_class($page)), $page);
+                    }
                 }
             }
         }
@@ -158,7 +179,7 @@ class PageEventListener {
             $this->addSortedPage($entity, $sortedPages);
         }
 
-        $this->checkSlugsLocal($sortedPages);
+        $this->checkSlugsLocal($sortedPages, $em);
 
         /*
           we know all slugs taken by the new / changed pages now. 

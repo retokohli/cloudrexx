@@ -201,9 +201,6 @@ class Page extends \Cx\Model\Base\EntityBase
      * Sets a correct slug based on the current title.
      */
     protected function refreshSlug() {
-        $this->slugSuffix = 0;
-        $this->slugBase = $this->getSlug();
-
         $slug = $this->getSlugProposal();
         $this->setSlug($slug);
     }
@@ -806,7 +803,7 @@ class Page extends \Cx\Model\Base\EntityBase
 
         if(!$nextSlugCall) {
             $this->slugSuffix = 0;
-            $this->slugBase = $slug;
+            $this->slugBase = $this->slug;
         }
     }
 
