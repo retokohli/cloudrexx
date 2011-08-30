@@ -75,7 +75,7 @@ $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener)
 
 //page listener for unique slugs
 $pageListener = new PageEventListener();
-//$evm->addEventListener(\Doctrine\ORM\Events::onFlush, $pageListener);
+$evm->addEventListener(\Doctrine\ORM\Events::onFlush, $pageListener);
 
 //$config->setSqlLogger(new Doctrine\DBAL\Logging\EchoSQLLogger());
 
