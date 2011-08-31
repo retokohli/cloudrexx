@@ -119,4 +119,48 @@ class PageEventListenerTest extends DoctrineTestCase
         $this->assertEquals('testpage', $p3->getSlug());
         $this->assertEquals('testpage-2', $p4->getSlug());
     }
+
+    public function testSlugReleasing() {
+        $root = new \Cx\Model\ContentManager\Node();
+
+        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1->setParent($root);
+        $n2 = new \Cx\Model\ContentManager\Node();
+        $n2->setParent($root);
+
+        $p1 = new \Cx\Model\ContentManager\Page();
+        $p1->setLang(1);
+        $p1->setTitle('testpage');
+        $p1->setNode($n1);
+        $p1->setUsername('user');
+
+        self::$em->persist($root);
+        self::$em->persist($n1);
+        self::$em->persist($n2);
+        self::$em->persist($p1);
+        self::$em->flush();
+
+        $idp1 = $p1->getId();
+        $idn2 = $n2->getId();
+       
+        self::$em->clear();
+
+        $this->assertEquals('testpage', $p1->getSlug());
+
+        $p1 = self::$em->find('Cx\Model\ContentManager\Page', $idp1);
+        $n2 = self::$em->find('Cx\Model\ContentManager\Node', $idn2);
+
+        //shouldn't provocate a slug conflict, since we delete the other page below
+        $p2 = new \Cx\Model\ContentManager\Page();
+        $p2->setLang(1);
+        $p2->setTitle('testpage');
+        $p2->setNode($n2);
+        $p2->setUsername('user');
+
+        self::$em->remove($p1);
+        self::$em->persist($p2);
+        self::$em->flush();
+
+        $this->assertEquals('testpage', $p2->getSlug());
+   }
 }
