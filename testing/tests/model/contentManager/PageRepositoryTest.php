@@ -416,6 +416,6 @@ class PageRepositoryTest extends DoctrineTestCase
 
         $page = $pageRepo->findOneById($p2->getId());
       
-        $this->assertEquals('/root/child', $pageRepo->getPath($page));
+        $this->assertEquals('root/child', $pageRepo->getPath($page));
     }
 }
