@@ -1,4 +1,5 @@
 <?php
+require_once('/home/srz/web/root/phptools/profiler.class.php');
 /**
  * Frontend Edition
  *
@@ -196,19 +197,22 @@ class frontendEditing extends frontendEditingLib {
         /*
           Find out whether there's a page in our language at the path specified
          */
-        $pap = $this->pageRepo->getPagesAtPath($this->strPagePath);
-        if(!$pap) //path is invalid
-            return;
+        Logger::getInstance()->log("pagePath ".$this->strPagePath);
+        $pap = $this->pageRepo->getPagesAtPath($this->strPagePath, null, FRONTEND_LANG_ID, true);
 
-        if(!in_array($this->strPageLangId, $pap['lang'])) //page is not available in the desired language
+        if(!$pap) //path is invalid
             return;
 
         /*
           We've got a set of pages and we know our desired page exists - get it.
          */
         //get the right page object.
-        $pages = $pap['node']->getPagesByLang();
-        $this->page = $pages[$this->strPageLangId];
+        $page = $pap['page'];
+        if(!$page)
+            return;
+        
+        $this->page = $page;
+        Logger::getInstance()->log("page is ".get_class($this->page));
 
         //remember interesting properties.
         $this->strTitle = $this->page->getTitle();
