@@ -197,7 +197,6 @@ class frontendEditing extends frontendEditingLib {
         /*
           Find out whether there's a page in our language at the path specified
          */
-        Logger::getInstance()->log("pagePath ".$this->strPagePath);
         $pap = $this->pageRepo->getPagesAtPath($this->strPagePath, null, FRONTEND_LANG_ID, true);
 
         if(!$pap) //path is invalid
@@ -212,7 +211,6 @@ class frontendEditing extends frontendEditingLib {
             return;
         
         $this->page = $page;
-        Logger::getInstance()->log("page is ".get_class($this->page));
 
         //remember interesting properties.
         $this->strTitle = $this->page->getTitle();
@@ -511,14 +509,13 @@ class frontendEditing extends frontendEditingLib {
 	 *
 	 * @global 	ADONewConnection
 	 */
-	private function updatePage() {       
+	private function updatePage() {
         $this->page->setTitle(strip_tags($_POST['title']));
         $this->page->setContent(preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $_POST['content']));
         $this->page->setUser(strip_tags($this->objUser->objUser->getUsername()));
-        $this->page->setUpdatedToNow();
+        $this->page->setUpdatedAtToNow();
 
-        $this->page->save();
-        $this->em->persist($page);
+        $this->em->persist($this->page);
         $this->em->flush();
 	}
 }
