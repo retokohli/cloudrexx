@@ -119,7 +119,7 @@ class PageEventListener {
                     $lang = $page->getLang();
                     if(!isset($usedSlugs[$lang]))
                         $usedSlugs[$lang] = array();
-                    $usedSlugs[$lang][] = $page->getSlug();
+                    $usedSlugs[$lang][$page->getSlug()] = $page->getId();
                 }
             }
             
@@ -132,12 +132,20 @@ class PageEventListener {
                         $usedSlugs[$lang] = array();
 
                     $changed = false;
-                    while(in_array($page->getSlug(), $usedSlugs[$lang]) && !in_array($page->getSlug(), $freeSlugs)) {
+
+                    while(
+                          isset($usedSlugs[$lang][$page->getSlug()]) && 
+                          $usedSlugs[$lang][$page->getSlug()] != $page->getId() &&
+                          !in_array($page->getSlug(), $freeSlugs)) {
+
                         $page->nextSlug();
                         $changed = true;
                     }
 
-                    $usedSlugs[$lang][] = $page->getSlug();
+                    //remember this slug is taken
+                    //the -1 makes sure pages without id (those not yet persisted) do not produce a
+                    //match in the while loop above
+                    $usedSlugs[$lang][$page->getSlug()] = -1;
 
                     $key = array_search($page->getSlug(), $freeSlugs);
                     if($key)
