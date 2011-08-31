@@ -185,13 +185,13 @@ class Contrexx_Content_migration
             if (!isset ($group[$page->getModule()][$page->getCmd()])) {
                  $group[$page->getModule()][$page->getCmd()] = $page->getNode();
             } else {
-                $page->setNode($group[$page->getModule()][$page->getCmd()]);                
-            }     
+                $nodeToRemove = $page->getNode();                     
+                $page->setNode($group[$page->getModule()][$page->getCmd()]);
+                self::$em->getRepository('Cx\Model\ContentManager\Page')->removeFromTree($nodeToRemove);
+            }
             self::$em->persist($page);
         }
         self::$em->flush();
     }
 }
 ?>
-
-
