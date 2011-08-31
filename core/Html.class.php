@@ -39,6 +39,14 @@ define('HTML_ATTRIBUTE_MULTIPLE', ' multiple="multiple"');
 // more...?
 
 /**
+ * Some basic and frequently used (and often misspelt) CSS properties
+ */
+define('HTML_CSS_DISPLAY_NONE', 'display:none;');
+define('HTML_CSS_DISPLAY_INLINE', 'display:inline;');
+define('HTML_CSS_DISPLAY_BLOCK', 'display:block;');
+// more...?
+
+/**
  * HTML class
  *
  * Provides some commonly used HTML elements
@@ -230,7 +238,7 @@ class Html
     static function getForm(
         $name, $action, $content, $id=false, $method='post', $attribute=''
     ) {
-//echo("Html::getForm(): action ".htmlentities($action)."<br />");
+//echo("Html::getForm(): action ".contrexx_raw2xhtml($action)."<br />");
         return
             '<form name="'.$name.'"'.
             ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
@@ -263,7 +271,7 @@ class Html
         return
             '<input type="text" name="'.$name.'"'.
             ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
-            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ' value="'.contrexx_raw2xhtml($value).'"'.
 // TODO: Add this exeption to other elements
             (preg_match('/\btabindex\b/', $attribute)
               ? '' : ' tabindex="'.++self::$index_tab.'"').
@@ -298,7 +306,7 @@ class Html
         return
             '<input type="number" name="'.$name.'"'.
             ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
-            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ' value="'.contrexx_raw2xhtml($value).'"'.
 // TODO: Add this exeption to other elements
             (preg_match('/\btabindex\b/', $attribute)
               ? '' : ' tabindex="'.++self::$index_tab.'"').
@@ -334,7 +342,7 @@ class Html
         return
             '<input type="range" name="'.$name.'"'.
             ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
-            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ' value="'.contrexx_raw2xhtml($value).'"'.
 // TODO: Add this exeption to other elements
             (preg_match('/\btabindex\b/', $attribute)
               ? '' : ' tabindex="'.++self::$index_tab.'"').
@@ -362,7 +370,7 @@ class Html
     {
         return
             '<input type="password" name="'.$name.'" id="'.$name.'"'.
-            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ' value="'.contrexx_raw2xhtml($value).'"'.
             ' tabindex="'.++self::$index_tab.'"'.
             ($attribute ? ' '.$attribute : '').
             " />\n";
@@ -455,7 +463,7 @@ class Html
             ($cols ? ' cols="'.$cols.'"' : '').
             ($rows ? ' rows="'.$rows.'"' : '').
             ($attribute ? ' '.$attribute : '').
-            '>'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).
+            '>'.contrexx_raw2xhtml($value).
             "</textarea>\n";
     }
 
@@ -481,7 +489,7 @@ class Html
         return
             '<input type="hidden" name="'.$name.'"'.
             $id.
-            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ' value="'.htmlspecialchars($value).'"'.
             ($attribute ? ' '.$attribute : '')." />\n";
     }
 
@@ -513,7 +521,7 @@ class Html
             '<input type="'.$type.'" name="'.$name.'"'.
             ($id ? ' id="'.$id.'"' : '').
             ' tabindex="'.++self::$index_tab.'"'.
-            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ' value="'.contrexx_raw2xhtml($value).'"'.
             ($attribute ? ' '.$attribute : '')." />\n".
             ($label
               ? self::getLabel($id, $label, $label_attribute) : '');
@@ -576,7 +584,7 @@ class Html
             ($onchange ? ' onchange="'.$onchange.'"' : '').
             ($attribute ? ' '.$attribute : '').
             ">\n".$strOptions."</select>\n";
-//echo("getSelectCustom(): made menu: ".htmlentities($menu)."<br />");
+//echo("getSelectCustom(): made menu: ".contrexx_raw2xhtml($menu)."<br />");
         return $menu;
     }
 
@@ -597,7 +605,9 @@ class Html
     static function getOptions($arrOptions, $selected='', $attribute=null)
     {
         $options = '';
+//DBG::log("Html::getOptions(): Array: ".var_export($arrOptions, true));
         foreach ($arrOptions as $key => $value) {
+//DBG::log("Html::getOptions(): Value: $value, nonempty: ".intval($value != ''));
             $options .=
                 '<option value="'.$key.'"'.
                 (is_array($selected)
@@ -605,7 +615,9 @@ class Html
                     : ("$selected" === "$key"  ? HTML_ATTRIBUTE_SELECTED : '')
                 ).
                 ($attribute ? ' '.$attribute : '').
-                '>'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+                '>'.
+                ($value != '' ? contrexx_raw2xhtml($value) : '&nbsp;').
+                "</option>\n";
         }
         return $options;
     }
@@ -661,7 +673,7 @@ class Html
                     $attributeLabel
                 );
         }
-//echo("getRadioGroup(): Made ".htmlentities($radiogroup, ENT_QUOTES, CONTREXX_CHARSET)."<br />");
+//echo("getRadioGroup(): Made ".contrexx_raw2xhtml($radiogroup)."<br />");
         return $radiogroup;
     }
 
@@ -691,7 +703,7 @@ class Html
         if (empty($name)) return '';
         return
             '<input type="radio" name="'.$name.
-            '" value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            '" value="'.contrexx_raw2xhtml($value).'"'.
             ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
             ($checked ? ' checked="checked"' : '').
 // TODO: Add this exeption to other elements
@@ -774,7 +786,7 @@ class Html
      * Returns HTML code for a checkbox
      *
      * If the name is empty, the empty string is returned.
-     * The $value is htmlentities()d to prevent side effects.
+     * The $value is contrexx_raw2xhtml()d to prevent side effects.
      * If the $id parameter is false, the id attribute is not set.
      * If it's empty (but not false), the name is used instead.
      * @param   string    $name         The element name
@@ -795,7 +807,7 @@ class Html
         if (empty($name)) return '';
         return
             '<input type="checkbox" name="'.$name.'"'.
-            ' value="'.htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET).'"'.
+            ' value="'.contrexx_raw2xhtml($value).'"'.
             ($id === false ? '' : ' id="'.($id ? $id : $name).'"').
             ($checked ? ' checked="checked"' : '').
             ' tabindex="'.++self::$index_tab.'"'.
@@ -808,7 +820,7 @@ class Html
     /**
      * Wraps the content in a label
      *
-     * The $text is htmlentities()d to prevent side effects.
+     * The $text is contrexx_raw2xhtml()d to prevent side effects.
      * Mind that the $for parameter must match the id attribute of the
      * contained element in $content.
      * @param   string    $for          The for attribute of the label
@@ -823,7 +835,7 @@ class Html
         return
             '<label for="'.$for.'"'.
             ($attribute ? ' '.$attribute : '').
-            '>'.htmlentities($text, ENT_QUOTES, CONTREXX_CHARSET)."</label>\n";
+            '>'.contrexx_raw2xhtml($text)."</label>\n";
     }
 
 
@@ -1311,13 +1323,14 @@ class Html
         $strOptions = '';
         foreach ($options as $option => $value) {
 //DBG::log("Html::getDatePicker(): Option $option => value $value");
-            $strOptions .= '
-            '.$option.': '.
+            $strOptions .=
+            ($strOptions ? ', ' : '').
+            $option.': '.
             (is_numeric($value)
               ? $value
               : (is_bool($value)
                   ? ($value ? 'true' : 'false')
-                  : '"'.$value.'"')).",";
+                  : '"'.$value.'"'));
             if ($option == 'defaultDate') {
                 $date = $value;
             }
@@ -1325,9 +1338,7 @@ class Html
 //DBG::log("Html::getDatePicker(): Options: $strOptions");
         JS::registerCode('
 jQuery(document).ready(function($) {
-  $("#'.$id.'").datepicker({'.
-    $strOptions.'
-  });
+  $("#'.$id.'").datepicker({'.$strOptions.'});
 });
 ');
         return self::getInputText($name, $date, $id, $attribute);
@@ -1536,14 +1547,6 @@ function select_options(element, on_or_off) {
     }
 
 
-
-
-
-
-
-
-
-
     /**
      * Returns HMTL code for displaying a group of Text fields
      * @param   array   $options    The options array, by reference
@@ -1662,9 +1665,6 @@ function itg_add_'.$index_tab.'(container_id) {
 
         return $return;
     }
-
-
-
 
 
     /**
@@ -1888,7 +1888,7 @@ jQuery(document).ready(function($) {
                     $objImage, 'border="0" alt="'.$text.
                     '" title="'.$text.'"').'</a>';
         }
-//echo("Backend function: ".htmlentities($function_html)."<hr />");
+//echo("Backend function: ".contrexx_raw2xhtml($function_html)."<hr />");
 // No longer needed
 //        JS::registerCode(self::getJavascript_Function());
 
@@ -1965,6 +1965,34 @@ jQuery(document).ready(function($) {
         $objImage->setHeight(16);
         $checkmark_html = self::getImageOriginal($objImage, 'border="0"');
         return $checkmark_html;
+    }
+
+
+    /**
+     * Returns HTML code that provides a hint or information message icon
+     *
+     * The given text is displayed as a tootip on the icon.
+     * Note that the code includes no leading nor trailing whitespace nor
+     * linebreaks.
+     * Note that this method calls {@see contrexx_raw2xhtml()} on the $text
+     * in order to ensure it doesn't break the enclosing javascript,
+     * so don't do that yourself.
+     * @param   string    $text         The hint text
+     * @return  string                  The HTML code for the hint element
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getHint($text)
+    {
+        JS::registerJS('lib/tipmessage1.5/main15.js');
+        JS::registerCode(
+            'tipmessage_style = '.
+            '["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];'."\n".
+            'TipId = "tipMessageLayer";'."\n".
+            'jQuery(document).ready(function($){mig_clay();})'."\n");
+        return
+            '<span class="note" onmouseout="htm()" '.
+            'onmouseover="stm(\''.contrexx_raw2xhtml($text).'\','.
+              'tipmessage_style);">&nbsp;</span>';
     }
 
 
@@ -2380,7 +2408,7 @@ alert("change: ID mismatch: "+id);
      */
     static function getRelativeUri_entities()
     {
-        return htmlentities(self::getRelativeUri());
+        return contrexx_raw2xhtml(self::getRelativeUri());
     }
 
 
@@ -2391,7 +2419,7 @@ alert("change: ID mismatch: "+id);
      * but only the script file name and query string.
      * //including the current CSRF parameter.
      * This is ready for use with javascript.
-     * Apply htmlentities() before using it in any href or action attribute.
+     * Apply contrexx_raw2xhtml() before using it in any href or action attribute.
      * @see     getRelativeUri_entities()
      * @return  string                  The URI
      */
@@ -2422,7 +2450,7 @@ alert("change: ID mismatch: "+id);
     static function stripUriParam(&$uri, $parameter_name)
     {
         $match = array();
-//DBG::log("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): Entered");
+//DBG::log("Html::stripUriParam(".contrexx_raw2xhtml($uri).", ".contrexx_raw2xhtml($parameter_name)."): Entered");
 
         // Match the parameter *WITH* equal sign and value (possibly empty)
         $uri = preg_match_replace(
@@ -2438,12 +2466,12 @@ alert("change: ID mismatch: "+id);
             '(?:\&amp;|\&(?!amp;)|$)/',
             '$1', $uri
         );
-//echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): regex ".htmlentities($re)."<br />");
+//echo("Html::stripUriParam(".contrexx_raw2xhtml($uri).", ".contrexx_raw2xhtml($parameter_name)."): regex ".contrexx_raw2xhtml($re)."<br />");
         // Remove trailing '?', '&', or '&amp;'.
         // At least one of those will be left over when the last parameter
         // was removed from the URI!
         $uri = preg_replace('/(?:\?|\&amp;|\&(?!amp;))*$/', '', $uri);
-//echo("Html::stripUriParam(".htmlentities($uri).", ".htmlentities($parameter_name)."): stripped $count times ".var_export($match, true)."<br />");
+//echo("Html::stripUriParam(".contrexx_raw2xhtml($uri).", ".contrexx_raw2xhtml($parameter_name)."): stripped $count times ".var_export($match, true)."<br />");
         if (empty($match[1])) return '';
         return $match[1];
     }
@@ -2473,16 +2501,16 @@ alert("change: ID mismatch: "+id);
 //        if (preg_match('/^(.*)\?(.+)$/', $parameter, $match)) {
 //            $bogus_index = $match[1];
             $parameter = $match[1];
-//DBG::log("Html::replaceUriParameter(): Split parameter in bogus index /$bogus_index/ and parameter /".htmlentities($parameter)."/");
+//DBG::log("Html::replaceUriParameter(): Split parameter in bogus index /$bogus_index/ and parameter /".contrexx_raw2xhtml($parameter)."/");
         }
         $arrParts = preg_split('/\&(?:amp;)?/', $parameter, -1, PREG_SPLIT_NO_EMPTY);
 
 //DBG::log("Html::replaceUriParameter(): parts: ".var_export($arrParts, true));
         foreach ($arrParts as $parameter) {
-//DBG::log("Html::replaceUriParameter(): processing parameter ".htmlentities($parameter));
+//DBG::log("Html::replaceUriParameter(): processing parameter ".contrexx_raw2xhtml($parameter));
 
             if (!preg_match('/^([^=]+)\=?(.*)$/', $parameter, $match)) {
-//DBG::log("Html::replaceUriParameter(): skipped illegal parameter ".htmlentities($parameter));
+//DBG::log("Html::replaceUriParameter(): skipped illegal parameter ".contrexx_raw2xhtml($parameter));
                 continue;
             }
             self::stripUriParam($uri, $match[1]);
@@ -2501,7 +2529,7 @@ alert("change: ID mismatch: "+id);
 
     /**
      * Shortens text and appends an optional link to "more...".
-     * Mind: the returned string is htmlentities()d for the current charset!
+     * Mind: the returned string is contrexx_raw2xhtml()d for the current charset!
      * @param   string    $text         The text
      * @param   integer   $max_length   The maximum length
      * @param   string    $more_uri     The optional URI
@@ -2521,10 +2549,10 @@ alert("change: ID mismatch: "+id);
                 '$1',
                 $text
             );
-// TODO: I should probably wrap this in htmlentities()
+// TODO: I should probably wrap this in contrexx_raw2xhtml()
             $text = sprintf(
                 $_CORELANG['TXT_CORE_HTML_ETC'],
-                htmlentities($text, ENT_QUOTES, CONTREXX_CHARSET));
+                contrexx_raw2xhtml($text));
         }
         return
             $text.

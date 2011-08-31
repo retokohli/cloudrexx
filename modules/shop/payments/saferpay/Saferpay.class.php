@@ -381,8 +381,8 @@ class Saferpay
         $SIGNATURE = '';
         parse_str($_SERVER['QUERY_STRING']);
         // Note: parse_str()'s results comply with the magic quotes setting!
-        $this->arrShopOrder['DATA']      = urlencode(contrexx_stripslashes($DATA));
-        $this->arrShopOrder['SIGNATURE'] = urlencode(contrexx_stripslashes($SIGNATURE));
+        $this->arrShopOrder['DATA'] = urlencode(contrexx_input2raw($DATA));
+        $this->arrShopOrder['SIGNATURE'] = urlencode(contrexx_input2raw($SIGNATURE));
         $this->attributes = $this->getAttributeList('payConfirm');
 
         // This won't work without allow_url_fopen
@@ -426,7 +426,7 @@ class Saferpay
             // Business account *ONLY*, like the test account
             // There is no password setting (yet), so this is for
             // future testing porposes *ONLY*
-            (Settings::getStatusByName('saferpay_use_test_account')
+            (SettingDb::getValue('saferpay_use_test_account')
               ? '&spPassword=XAjc3Kna'
               : '');
         // This won't work without allow_url_fopen

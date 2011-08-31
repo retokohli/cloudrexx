@@ -1,15 +1,16 @@
 <!-- START shop_pricelist_overview.html -->
-<script language="JavaScript" type="text/javascript">
+<script type="text/javascript">
 <!-- //
 function deleteList(plid)
 {
-  if (confirm('{TXT_DELETE_PRICELIST_MSG}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelist_delete&id="+plid);
+  if (confirm('{TXT_DELETE_PRICELIST_MSG}')) {
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelists&delete_list_id="+plid);
+  }
 }
 
 function newPricelist()
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelist_new");
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=pricelist_edit");
 }
 
 function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
@@ -18,7 +19,7 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
     switch (strAct) {
       case 'del':
         if (confirm('{TXT_DELETE_PRICELIST_MSG}')) {
-          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=pricelist_delete";
+          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=pricelists";
           document.forms[strForm].submit();
         }
         break;
@@ -30,8 +31,8 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
 }
 // -->
 </script>
-<!-- BEGIN shopPricelistOverview -->
-<form name="shopSelectPricelist" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist">
+<!-- BEGIN shop_pricelist_overview -->
+<form name="form_pricelist" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelists">
   <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
       <th width="1%"nowrap="nowrap" style="text-align:center;">#</th>
@@ -40,28 +41,28 @@ function shopPricelistDoAction(strForm, strCheckbox, objSelect, strAct)
       <th nowrap="nowrap" width="70%">{TXT_PDF_LINK}</th>
       <th nowrap="nowrap" width="5%" style="text-align:right;">{TXT_ACTION}</th>
     </tr>
-    <!-- BEGIN showPricelists -->
-    <tr class="{PRICELIST_OVERVIEW_ROWCOLOR}">
-      <td nowrap="nowrap"><input type="checkbox" name="selectedPricelistId[]" value="{PRICELIST_OVERVIEW_ID}" /></td>
-      <td nowrap="nowrap">{PRICELIST_OVERVIEW_ID}</td>
-      <td nowrap="nowrap">{PRICELIST_OVERVIEW_NAME}</td>
-      <td nowrap="nowrap">{PRICELIST_OVERVIEW_PDFLINK}</td>
+<!-- BEGIN shop_pricelist -->
+    <tr class="{SHOP_PRICELIST_ROWCLASS}">
+      <td nowrap="nowrap"><input type="checkbox" name="list_id" value="{SHOP_PRICELIST_ID}" /></td>
+      <td nowrap="nowrap">{SHOP_PRICELIST_ID}</td>
+      <td nowrap="nowrap">{SHOP_PRICELIST_NAME}</td>
+      <td nowrap="nowrap">{SHOP_PRICELIST_LINK_PDF}</td>
       <td nowrap="nowrap"><div style="text-align:right;">
-        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist_edit&amp;id={PRICELIST_OVERVIEW_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
-        <a href="javascript:deleteList({PRICELIST_OVERVIEW_ID})" target="_self" title="{TXT_DELETE}"><img border="0" src="images/icons/delete.gif" width="16" height="16" alt="{TXT_DELETE}" /></a>
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=pricelist_edit&amp;list_id={SHOP_PRICELIST_ID}" target="_self" title="{TXT_EDIT}"><img border="0" src="images/icons/edit.gif" width="16" height="16" alt="{TXT_EDIT}" /></a>
+        <a href="javascript:deleteList({SHOP_PRICELIST_ID})" target="_self" title="{TXT_DELETE}"><img border="0" src="images/icons/delete.gif" width="16" height="16" alt="{TXT_DELETE}" /></a>
       </div></td>
     </tr>
-    <!-- END showPricelists -->
+<!-- END shop_pricelist -->
   </table>
   <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
-  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectPricelist','selectedPricelistId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
-  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectPricelist','selectedPricelistId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
-  <select name="selectAction" onchange="shopPricelistDoAction('shopSelectPricelist','selectedPricelistId[]',this,this.value)">
+  <a href="javascript:{}" onclick="changeCheckboxes('form_pricelist','list_id',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('form_pricelist','list_id',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <select name="multi_action" onchange="shopPricelistDoAction('form_pricelist','list_id',this,this.value)">
     <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
     <option value="del">{TXT_DELETE}</option>
   </select>
 </form>
-<!-- END shopPricelistOverview -->
+<!-- END shop_pricelist_overview -->
 <br />
 <input type="button" name="newPricelist" value="{TXT_MAKE_NEW_PRICELIST}" onclick="newPricelist()" />
 <!-- END shop_pricelist_overview.html -->

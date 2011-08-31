@@ -276,7 +276,7 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
         return
             '<img src="'.ASCMS_ADMIN_WEB_PATH.'/images/icons/'.
                 strtolower($this->orderDirection).
-            '.png" border=0 alt="'.$orderDirectionString.
+            '.png" border="0" alt="'.$orderDirectionString.
             '" title="'.$orderDirectionString.'" />';
     }
 

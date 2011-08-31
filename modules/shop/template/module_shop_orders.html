@@ -1,10 +1,10 @@
 <!-- START shop_orders.html -->
 <script type="text/javascript">
 <!--
-function deleteOrder(orderId)
+function deleteOrder(order_id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delorder&orderId="+orderId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delorder&order_id="+order_id);
 }
 
 function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
@@ -13,7 +13,7 @@ function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
     switch (strAct) {
       case 'del':
         if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delorder";
+          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delorder";
           document.forms[strForm].submit();
         }
         break;
@@ -26,25 +26,26 @@ function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
 
 function sendForm(letter)
 {
-  document.formSearchOrders.shopListLetter.value = letter;
+  document.formSearchOrders.searchterm.value = '';
+  document.formSearchOrders.listletter.value = letter;
   document.formSearchOrders.submit();
 }
 
-function changeOrderStatus(orderId, orderStatus, newOrderStatus)
+function changeOrderStatus(order_id, status, new_status)
 {
   if (confirm('{TXT_CONFIRM_CHANGE_STATUS}')) {
-    var strURI = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=orders&orderId="+orderId+"&changeOrderStatus="+newOrderStatus;
-    if (   newOrderStatus == 1
-        || newOrderStatus == 4
-        || newOrderStatus == 5
-        || newOrderStatus == 6) {
-      if (confirm('{TXT_SEND_TEMPLATE_TO_CUSTOMER}?')) {
+    var strURI = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=orders&order_id="+order_id+"&changeOrderStatus="+new_status;
+    if (   new_status == 1
+        || new_status == 4
+        || new_status == 5
+        || new_status == 6) {
+      if (confirm('{SHOP_SEND_TEMPLATE_TO_CUSTOMER}?')) {
         strURI += "&shopSendMail=1";
       }
     }
     window.location.replace(strURI);
   } else {
-    document.getElementById("shopOrderStatusId["+orderId+"]").setAttribute("value", orderStatus);
+    document.getElementById("orderstatusid["+order_id+"]").setAttribute("value", status);
   }
 }
 
@@ -55,6 +56,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 //-->
 </script>
 <form name="formSearchOrders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
+  <input type="hidden" name="listletter" value="{SHOP_CUSTOMER_LISTLETTER}" />
+  <input type="hidden" name="{SHOP_ORDERS_ORDER_NAME}" value="{SHOP_ORDERS_ORDER_VALUE}" />
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th style="text-align: left">
@@ -63,101 +66,85 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     </tr>
     <tr class=row1>
       <td>
-        <input type="text" name="shopSearchTerm" size="40" maxlength="255"
+        <input type="text" name="searchterm" size="40" maxlength="255"
           value="{SHOP_SEARCH_TERM}" />
-        <select name="shopCustomerType">
+        <select name="customer_type">
           {SHOP_CUSTOMER_TYPE_MENUOPTIONS}
         </select>
-        <select name="shopOrderStatus">
+        <select name="status">
           {SHOP_ORDER_STATUS_MENUOPTIONS}
         </select>
-        <input type="submit" name="shopSearchOrders" value="{TXT_SEARCH}" />
+        <input type="submit" name="searchOrders" value="{TXT_SEARCH}" />
       </td>
     </tr>
-    <tr class=row1>
-      <td>{TXT_SORT_ORDER}
-        <select name="shopListSort"
-          onchange="document.formSearchOrders.submit();">
-          {SHOP_CUSTOMER_SORT_MENUOPTIONS}
-        </select>
-        &nbsp;&nbsp;&nbsp;
-        <label for="shopShowPendingOrders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
+    <tr class=row2>
+      <td>
+        <label for="show_pending_orders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
         <input type="checkbox"{SHOP_SHOW_PENDING_ORDERS_CHECKED}
-          id="shopShowPendingOrders" name="shopShowPendingOrders"
-          onchange="document.formSearchOrders.submit();" />
+            id="show_pending_orders" name="show_pending_orders"
+            onchange="document.formSearchOrders.submit();" />
       </td>
     </tr>
     <tr class=row1>
       <td>
-        [ <a href="javascript:sendForm('A')" title="A">A</a> ]
-        [ <a href="javascript:sendForm('B')" title="B">B</a> ]
-        [ <a href="javascript:sendForm('C')" title="C">C</a> ]
-        [ <a href="javascript:sendForm('D')" title="D">D</a> ]
-        [ <a href="javascript:sendForm('E')" title="E">E</a> ]
-        [ <a href="javascript:sendForm('F')" title="F">F</a> ]
-        [ <a href="javascript:sendForm('G')" title="G">G</a> ]
-        [ <a href="javascript:sendForm('H')" title="H">H</a> ]
-        [ <a href="javascript:sendForm('I')" title="I">I</a> ]
-        [ <a href="javascript:sendForm('J')" title="J">J</a> ]
-        [ <a href="javascript:sendForm('K')" title="K">K</a> ]
-        [ <a href="javascript:sendForm('L')" title="L">L</a> ]
-        [ <a href="javascript:sendForm('M')" title="M">M</a> ]
-        [ <a href="javascript:sendForm('N')" title="N">N</a> ]
-        [ <a href="javascript:sendForm('O')" title="O">O</a> ]
-        [ <a href="javascript:sendForm('P')" title="P">P</a> ]
-        [ <a href="javascript:sendForm('Q')" title="Q">Q</a> ]
-        [ <a href="javascript:sendForm('R')" title="R">R</a> ]
-        [ <a href="javascript:sendForm('S')" title="S">S</a> ]
-        [ <a href="javascript:sendForm('T')" title="T">T</a> ]
-        [ <a href="javascript:sendForm('U')" title="U">U</a> ]
-        [ <a href="javascript:sendForm('V')" title="V">V</a> ]
-        [ <a href="javascript:sendForm('W')" title="W">W</a> ]
-        [ <a href="javascript:sendForm('X')" title="X">X</a> ]
-        [ <a href="javascript:sendForm('Y')" title="Y">Y</a> ]
-        [ <a href="javascript:sendForm('Z')" title="Z">Z</a> ]
-        [ <a href="javascript:sendForm('')" title="Alle">Alle</a> ]
-        <input type="hidden" name="shopListLetter" value="{SHOP_CUSTOMER_LISTLETTER}" />
-        <!--{SHOP_LISTLETTER_MENUOPTIONS}-->
+        {SHOP_LISTLETTER_LINKS}
       </td>
     </tr>
   </table>
   <br />
 </form>
 <!-- BEGIN orderTable -->
-{SHOP_ORDER_PAGING}
-<form name="shopSelectOrders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
+<p>{SHOP_ORDER_PAGING}</p>
+<form name="form_orders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
   <table class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
     <tr>
-      <th nowrap="nowrap" style="text-align:center;">#</th>
-      <th nowrap="nowrap" width="2%">{TXT_ID}&nbsp;</th>
-      <th nowrap="nowrap" width="11%">{TXT_DATE}&nbsp;</th>
-      <th nowrap="nowrap" width="7%"> {TXT_STATUS}&nbsp;</th>
-      <th nowrap="nowrap" width="22%">{TXT_NAME}&nbsp;</th>
-      <th nowrap="nowrap" width="5%">&nbsp;</th>
-      <th style="text-align:left;">{TXT_ORDER_SUM}&nbsp;</th>
-      <th nowrap="nowrap" width="56%" style="text-align:right;">{TXT_ACTION}</th>
-    </tr>
-    <!-- BEGIN orderRow -->
-      <tr class="{SHOP_ROWCLASS}">
-        <td nowrap="nowrap"><input type="checkbox" name="selectedOrderId[]" value="{SHOP_ORDERID}" /></td>
-        <td nowrap="nowrap">{SHOP_ORDERID}&nbsp;</td>
-        <td nowrap="nowrap">{SHOP_DATE}&nbsp;&nbsp;</td>
-        <td nowrap="nowrap">{SHOP_ORDER_STATUS}&nbsp;&nbsp;</td>
-        <td nowrap="nowrap"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a></td>
-        <td nowrap="nowrap">{SHOP_TIP_LINK}&nbsp;</td>
-        <td nowrap="nowrap"><div style="text-align:left;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
-        <td><div style="text-align:right;"><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;orderid={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}"><img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" /></a>&nbsp;<a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=editorder&amp;orderid={SHOP_ORDERID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a><a href="javascript:deleteOrder('{SHOP_ORDERID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div></td>
-      </tr>
-    <!-- END orderRow -->
+      <th nowrap="nowrap" width="01%" style="text-align: center;">#</th>
+      <th nowrap="nowrap" width="02%" style="text-align: right;">{SHOP_HEADER_ID}&nbsp;</th>
+      <th nowrap="nowrap" width="05%">{SHOP_HEADER_DATE_TIME}&nbsp;</th>
+      <th nowrap="nowrap" width="03%">{SHOP_HEADER_STATUS}&nbsp;</th>
+      <th nowrap="nowrap" width="22%">{SHOP_HEADER_CUSTOMER_NAME}&nbsp;</th>
+      <th nowrap="nowrap" width="05%" style="text-align: center;">{SHOP_HEADER_NOTES}&nbsp;</th>
+      <th nowrap="nowrap" width="05%" style="text-align: right;">{SHOP_HEADER_SUM}&nbsp;</th>
+      <th nowrap="nowrap" width="10%" style="text-align: right;">{TXT_ACTION}</th>
+    </tr><!-- BEGIN orderRow -->
+    <tr class="{SHOP_ROWCLASS}">
+      <td nowrap="nowrap" style="text-align: center;">
+        <input type="checkbox" name="selectedOrderId[]" value="{SHOP_ORDERID}" />
+      </td>
+      <td nowrap="nowrap" style="text-align: right;">{SHOP_ORDERID}&nbsp;</td>
+      <td nowrap="nowrap">{SHOP_DATE}&nbsp;&nbsp;</td>
+      <td nowrap="nowrap">{SHOP_ORDER_STATUS}&nbsp;&nbsp;</td>
+      <td nowrap="nowrap">
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a>
+      </td>
+      <td nowrap="nowrap" style="text-align: center;">{SHOP_TIP_LINK}&nbsp;</td>
+      <td nowrap="nowrap" style="text-align: right;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</td>
+      <td nowrap="nowrap" style="text-align: right;">
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDERID}"
+            title="{TXT_VIEW_DETAILS}">
+          <img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" />
+        </a>
+        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=editorder&amp;order_id={SHOP_ORDERID}"
+            title="{TXT_EDIT}">
+          <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
+        </a>
+        <a href="javascript:deleteOrder('{SHOP_ORDERID}')" title="{TXT_DELETE}">
+          <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+        </a>
+      </td>
+    </tr><!-- END orderRow -->
   </table>
-  <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
-  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOrders','selectedOrderId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
-  <a href="javascript:{}" onclick="changeCheckboxes('shopSelectOrders','selectedOrderId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
-  <select name="selectAction" onchange="shopOrdersDoAction('shopSelectOrders','selectedOrderId[]',this,this.value)">
+  <img src="images/icons/arrow.gif" border="0" width="38" height="22"
+      title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+  <a href="javascript:{}" onclick="changeCheckboxes('form_orders','selectedOrderId[]',true)"
+      title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+  <a href="javascript:{}" onclick="changeCheckboxes('form_orders','selectedOrderId[]',false)"
+      title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+  <select name="multi_action" onchange="shopOrdersDoAction('form_orders','selectedOrderId[]',this,this.value)">
     <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
     <option value="del">{TXT_DELETE}</option>
   </select>
 </form>
 <!-- END orderTable -->
-<p>{SHOP_ORDER_PAGING}&nbsp;</p>
+<p>{SHOP_ORDER_PAGING}</p>
 <!-- END shop_orders.html -->

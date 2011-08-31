@@ -1,19 +1,19 @@
 <!-- START shop_categories.html -->
-<script language="javascript" type="text/javascript">
-<!--
-function deleteCategory(catId)
+<script type="text/javascript">
+// <![CDATA[
+function deleteCategory(id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=delcat&{CSRF_PARAM}&id="+catId);
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=categories&delete_category_id="+id);
 }
 
-function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
+function shopCatDoAction(strForm, strCheckbox, objSelect, strAct)
 {
-  if (checkboxIsChecked(strForm,strCheckbox) == true) {
+  if (checkboxIsChecked(strForm, strCheckbox)) {
     switch (strAct) {
       case 'del':
         if (confirm('{TXT_CONFIRM_DELETE_SHOP_CATEGORIES}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=delcat";
+//          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&act=categories";
           document.forms[strForm].submit();
         }
         break;
@@ -24,9 +24,11 @@ function shopCatDoAction(strForm,strCheckbox,objSelect,strAct)
   objSelect.value = 0;
 }
 
-
+var current_id = false;
+var browserPopup = { "closed": true };
 function openBrowser(url, id, attrs)
 {
+  current_id = id;
   try {
     if (!browserPopup.closed) {
       return browserPopup.focus();
@@ -40,211 +42,231 @@ function openBrowser(url, id, attrs)
   return false;
 }
 
-imageMaxWidth  = {SHOP_IMAGE_WIDTH};
-imageMaxHeight = {SHOP_IMAGE_HEIGHT};
+var imageMaxWidth  = {SHOP_IMAGE_WIDTH};
+var imageMaxHeight = {SHOP_IMAGE_HEIGHT};
 
 function SetUrl(url, width, height, alt)
 {
-  var elInput = document.getElementById("imgHref");
+  var elInput = document.getElementById(current_id);
   elInput.setAttribute('value', url);
   url = url.substring(1);
   var fileRegExp = /.+\/(.+)$/;
   fileRegExp.exec(url);
   var fileName = RegExp.$1;
-  var img = document.getElementById("img");
-  img.src = '/'+url;
-  // Compute width/height ratio in order to set the correct size.
-  // i.e.  2 =       200/100
-  var imgRatioWidth = width/imageMaxWidth;
-  // i.e.  3 =       240/80
-  var imgRatioHeight = height/imageMaxHeight;
-  // Now the higher ratio determines the scale factor
-  var factor = imgRatioHeight;
-  if (imgRatioWidth > imgRatioHeight) {
-    factor = imgRatioWidth;
+  var img = document.getElementById(current_id+'_img');
+  if (img) {
+    img.src = '/'+url;
+    // Compute width/height ratio in order to set the correct size.
+    // i.e.  2 =       200/100
+    var imgRatioWidth = width/imageMaxWidth;
+    // i.e.  3 =       240/80
+    var imgRatioHeight = height/imageMaxHeight;
+    // Now the higher ratio determines the scale factor
+    var factor = imgRatioHeight;
+    if (imgRatioWidth > imgRatioHeight) {
+      factor = imgRatioWidth;
+    }
+    img.style.width = (width/factor)+"px";
+    img.style.height = (height/factor)+"px";
+    if ( navigator.userAgent.indexOf("MSIE") > -1 ){
+      var elName = img.nextSibling;
+    } else {
+      var elName = img.nextSibling.nextSibling.nextSibling;
+    }
+    elName.replaceData(0, 999, fileName);
   }
-  img.style.width = (width/factor)+"px";
-  img.style.height = (height/factor)+"px";
-
-  if (navigator.userAgent.indexOf("MSIE") > -1) {
-    var elName = img.nextSibling;
-  } else {
-    var elName = img.nextSibling.nextSibling.nextSibling;
-  }
-
-  elName.replaceData(0, 999, fileName);
 }
 
 function cancelEdit()
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=cat");
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&act=categories");
 }
-// -->
+// ]]>
 </script>
 <ul id="tabmenu">
-<li><a id="categoryTab_shopContent1" class="{SHOP_CATEGORY_LIST_ACTIVE}" href="javascript:void(0);" onclick="selectTab('shopContent1')" title="{TXT_SHOP_CATEGORY_LIST}">{TXT_SHOP_CATEGORY_LIST}</a></li>
-<li><a id="categoryTab_shopContent2" class="{SHOP_CATEGORY_EDIT_ACTIVE}" href="javascript:void(0);" onclick="selectTab('shopContent2')" title="{TXT_SHOP_CATEGORY_EDIT}">{TXT_SHOP_CATEGORY_EDIT}</a></li>
+<li><a id="categoryTab_content1" class="{SHOP_CATEGORY_LIST_ACTIVE}" href="javascript:void(0);" onclick="selectTab('content1')" title="{TXT_SHOP_CATEGORY_LIST}">{TXT_SHOP_CATEGORY_LIST}</a></li>
+<li><a id="categoryTab_content2" class="{SHOP_CATEGORY_EDIT_ACTIVE}" href="javascript:void(0);" onclick="selectTab('content2')" title="{TXT_SHOP_CATEGORY_ADD_OR_EDIT}">{TXT_SHOP_CATEGORY_ADD_OR_EDIT}</a></li>
 </ul>
-<div id="shopContent1" class="categoryTab"
+<div id="content1" class="categoryTab"
   style="display:{SHOP_CATEGORY_LIST_DISPLAY};">
-  <form name="shopSelectCat" method="post" action="?cmd=shop{MODULE_INDEX}&amp;act=modAllCategories">
+  <form name="selectCat" method="post"
+      action="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories">
     <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
       <tr>
-        <th colspan="6">{TXT_ARTICLEGROUPS}:&nbsp;({TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES})</th>
+        <th colspan="6">{TXT_CATEGORIES}&nbsp;({TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES})</th>
       </tr>
-      <tr class="row2">
-        <td width=" 1%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
-        <td width=" 3%" nowrap="nowrap"><b>{TXT_ID}</b></td>
+      <tr class="row3">
+        <td width="01%" nowrap="nowrap"><div style="text-align:center;"><b>#</b></div></td>
+        <td width="03%" nowrap="nowrap" style="text-align: right;"><b>{TXT_ID}</b>&nbsp;&nbsp;</td>
+        <td width="03%" nowrap="nowrap"><b>{TXT_ACTIVE}</b></td>
         <td width="92%" nowrap="nowrap"><b>{TXT_NAME}&nbsp;&nbsp;&nbsp;</b></td>
         <!-- This feature isn't ready to use yet: td width=" 3%" nowrap="nowrap"><b>{TXT_SHOP_CATEGORY_VIRTUAL}</b></td-->
-        <td width=" 3%" nowrap="nowrap"><b>{TXT_ACTIVE}</b></td>
-        <td width=" 1%" nowrap="nowrap"><div style="text-align:right;"><b>{TXT_ACTION}</b></div></td>
+        <td width="01%" nowrap="nowrap"><div style="text-align:right;"><b>{TXT_ACTION}</b></div></td>
       </tr>
-      <!-- BEGIN catRow -->
+      <!-- BEGIN category_row -->
       <tr class="{SHOP_ROWCLASS}">
         <td nowrap="nowrap">
-          <input type="checkbox" name="selectedCatId[]" value="{SHOP_CAT_ID}" />
+          <input type="checkbox" name="selected_category_id[]" value="{SHOP_CATEGORY_ID}" />
         </td>
-        <td nowrap="nowrap">{SHOP_CAT_ID}</td>
+        <td nowrap="nowrap" style="text-align: right;">
+          <input type="hidden" value="{SHOP_CATEGORY_ID}" name="update_category_id[]" />
+          {SHOP_CATEGORY_ID}&nbsp;&nbsp;
+        </td>
         <td nowrap="nowrap">
-          <img src="images/icons/{SHOP_CAT_STATUS_PICTURE}"
-            alt="{SHOP_CAT_STATUS}" title="{SHOP_CAT_STATUS}" />
+          <input type="checkbox" name="active[{SHOP_CATEGORY_ID}]"
+              value="1" {SHOP_CATEGORY_ACTIVE_CHECKED} />
+          <input type="hidden" value="{SHOP_CATEGORY_ACTIVE_VALUE}"
+              name="active_old[{SHOP_CATEGORY_ID}]" />
+          <img src="images/icons/{SHOP_CATEGORY_ACTIVE_PICTURE}"
+              alt="{SHOP_CATEGORY_ACTIVE}" title="{SHOP_CATEGORY_ACTIVE}" />
           &nbsp;&nbsp;
-          {SHOP_CAT_LEVELSPACE}<input type="text"
-            name="catSorting[{SHOP_CAT_ID}]"
-            value="{SHOP_CAT_SORTING}" size="3" maxlength="4" />
+        </td>
+        <td nowrap="nowrap">
+          {SHOP_CATEGORY_LEVELSPACE}<input type="text" name="ord[{SHOP_CATEGORY_ID}]"
+              value="{SHOP_CATEGORY_ORD}" size="3" maxlength="4" />
           &nbsp;
           <b>
-            <a href="?cmd=shop{MODULE_INDEX}&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
-              title="{SHOP_CAT_NAME}">
-              {SHOP_CAT_NAME}
+            <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
+                title="{SHOP_CATEGORY_NAME}">
+              {SHOP_CATEGORY_NAME}
             </a>
           </b>
           &nbsp;
-          <a href="?cmd=shop{MODULE_INDEX}&amp;act=products&amp;catId={SHOP_CAT_ID}"
+          <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;category_id={SHOP_CATEGORY_ID}"
             title="{TXT_PREVIEW}">
-            <img src="images/icons/details.gif"
-              width="14" height="16" border="0"
-              alt="{TXT_PREVIEW}" />
+            <img src="images/icons/details.gif" width="14" height="16"
+                border="0" alt="{TXT_PREVIEW}" />
           </a>
-          <input type="hidden" value="{SHOP_CAT_SORTING}"
-            name="catSorting_old[{SHOP_CAT_ID}]" />
-          <input type="hidden" value="{SHOP_CAT_ID}"
-            name="catId[{SHOP_CAT_ID}]" />
+          <input type="hidden" value="{SHOP_CATEGORY_ORD}"
+              name="ord_old[{SHOP_CATEGORY_ID}]" />
         </td>
         <!--td nowrap="nowrap">
-          <input type="checkbox" name="catVirtual[{SHOP_CAT_ID}]"
-            value="1" {SHOP_CAT_VIRTUAL_CHECKED} />
-          <input type="hidden" value="{SHOP_CAT_VIRTUAL_CHECKED}"
-            name="catVirtual_old[{SHOP_CAT_ID}]" />
+          <input type="checkbox" name="virtual[{SHOP_CATEGORY_ID}]"
+              value="1" {SHOP_CATEGORY_VIRTUAL_CHECKED} />
+          <input type="hidden" value="{SHOP_CATEGORY_VIRTUAL_CHECKED}"
+              name="virtual_old[{SHOP_CATEGORY_ID}]" />
         </td-->
         <td nowrap="nowrap">
-          <input type="checkbox" name="catStatus[{SHOP_CAT_ID}]"
-            value="1" {SHOP_CAT_STATUS_CHECKED} />
-          <input type="hidden" value="{SHOP_CAT_STATUS_CHECKED}"
-            name="catStatus_old[{SHOP_CAT_ID}]" />
-        </td>
-        <td nowrap="nowrap">
           <div style="text-align:right;">
-            <a href="?cmd=shop{MODULE_INDEX}&amp;act=cat&amp;modCatId={SHOP_CAT_ID}"
-              title="{TXT_EDIT}">
-              <img src="images/icons/edit.gif" alt="{TXT_EDIT}"
-                border="0" />
+            <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
+                title="{TXT_EDIT}">
+              <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
             </a>
-            <a href="javascript:deleteCategory('{SHOP_CAT_ID}')"
-              title="{TXT_DELETE}">
-              <img src="images/icons/delete.gif"
-                alt="{TXT_DELETE}" border="0" />
+            <a href="javascript:deleteCategory('{SHOP_CATEGORY_ID}')"
+                title="{TXT_DELETE}">
+              <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
             </a>
           </div>
         </td>
-      </tr>
-      <!-- END catRow -->
+      </tr><!-- END category_row -->
     </table>
     <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
-    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectCat','selectedCatId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
-    <a href="javascript:{}" onclick="changeCheckboxes('shopSelectCat','selectedCatId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
-    <select name="selectAction" onchange="shopCatDoAction('shopSelectCat','selectedCatId[]',this,this.value)">
+    <a href="javascript:{}" onclick="changeCheckboxes('selectCat','selected_category_id[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
+    <a href="javascript:{}" onclick="changeCheckboxes('selectCat','selected_category_id[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
+    <select name="multi_action" onchange="shopCatDoAction('selectCat','selected_category_id[]',this,this.value)">
       <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
       <option value="del">{TXT_DELETE_MARKED}</option>
     </select>
     <br /><br />
-    <input type="submit" name="store" value="{TXT_ACCEPT_CHANGES}" />
+    <input type="submit" name="bcategories" value="{TXT_ACCEPT_CHANGES}" />
   </form>
 </div>
-<div id="shopContent2" class="categoryTab"
-  style="display:{SHOP_CATEGORY_EDIT_DISPLAY};">
-  <form name="shopForm1" method="post" action="?cmd=shop{MODULE_INDEX}&amp;act=newcat">
+
+<!-- BEGIN category_edit -->
+<div id="content2" class="categoryTab" style="display:{SHOP_CATEGORY_EDIT_DISPLAY};">
+  <form name="categoryForm" method="post"
+      action="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories">
+    <input type="hidden" name="category_id" value="{SHOP_CATEGORY_ID}" />
     <table summary="" width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
       <tr>
         <th colspan="2">{TXT_ADD_NEW_SHOP_GROUP}</th>
       </tr>
       <tr class="row1">
         <td width="20%">
-          <label for="modCatName">{TXT_NAME}</label>
+          <label for="name">{TXT_NAME}</label>
         </td>
         <td width="80%">
-          <input type="text" name="modCatName" size="40" maxlength="255"
-            value="{SHOP_SELECTED_CAT_NAME}" />
+          <input type="text" id="name" name="name" size="40" maxlength="255"
+              value="{SHOP_CATEGORY_NAME}" />
         </td>
       </tr>
       <tr class="row2">
         <td nowrap="nowrap">
-          <label for="modCatParentId">{TXT_SHOP_CATEGORY_PARENT}</label>
+          <label for="parent_id">{TXT_SHOP_CATEGORY_PARENT}</label>
         </td>
         <td>
-          <select name="modCatParentId" size="1" style="width: 220px;">
+          <select id="parent_id" name="parent_id" size="1" style="width: 220px;">
             <option value="0">{TXT_NEW_MAIN_ARTICLE_GROUP}</option>
-            {SHOP_CAT_MENUOPTIONS}
+            {SHOP_CATEGORY_MENUOPTIONS}
           </select>
         </td>
       </tr>
       <tr class="row1">
         <td>
-          <label for="modCatStatus">{TXT_ACTIVE}</label>
+          <label for="active">{TXT_ACTIVE}</label>
         </td>
         <td>
-          <input type="checkbox" name="modCatStatus" value="1"
-            {SHOP_SELECTED_CATEGORY_STATUS_CHECKED} />
+          <input type="checkbox" id="active" name="active" value="1"
+              {SHOP_CATEGORY_ACTIVE_CHECKED} />
         </td>
       </tr>
       <!--tr class="row1">
         <td>
-          <label for="modCatVirtual">{TXT_SHOP_CATEGORY_VIRTUAL}</label>
+          <label for="virtual">{TXT_SHOP_CATEGORY_VIRTUAL}</label>
         </td>
         <td>
-          <input type="checkbox" name="modCatVirtual" value="1"
-            {SHOP_SELECTED_CATEGORY_VIRTUAL_CHECKED} />
+          <input type="checkbox" id="virtual" name="virtual" value="1"
+              {SHOP_CATEGORY_VIRTUAL_CHECKED} />
         </td>
       </tr-->
-      <tr>
+      <tr class="row2">
         <td valign="top">
           {TXT_SHOP_CATEGORY_IMAGE}
         </td>
         <td>
           <!-- Note: Do not modify the content of the link below!
                This may corrupt the image selection and update process. -->
-          <a href="javascript:void(0);" name="modCatImageLink" id="lnk"
+          <a href="javascript:void(0);" name="image_link"
               title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
-              onclick="openBrowser('index.php?cmd=fileBrowser&{CSRF_PARAM}&amp;standalone=true&amp;type=shop{MODULE_INDEX}', '1', 'width=800,height=640,resizable=yes,status=no,scrollbars=yes');">
+              onclick="openBrowser('index.php?cmd=fileBrowser&amp;{CSRF_PARAM}&amp;standalone=true&amp;type=shop{MODULE_INDEX}','img','width=800,height=640,resizable=yes,status=no,scrollbars=yes');">
             {TXT_SHOP_EDIT_OR_ADD_IMAGE}<br />
-            <img id="img"
+            <img id="img_img"
                 style="border:none;"
-                src="{SHOP_PICTURE_IMG_HREF}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
+                src="{SHOP_THUMB_IMG_HREF}" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
                 alt="{TXT_SHOP_EDIT_OR_ADD_IMAGE}" />
             <br />
             {SHOP_CATEGORY_IMAGE_FILENAME}
           </a>
-          <input type="hidden" id="imgHref" name="modCatImageHref"
-            value="{SHOP_PICTURE_IMG_HREF}" />
+          <input type="hidden" id="img" name="image_href"
+              value="{SHOP_PICTURE_IMG_HREF}" />
         </td>
       </tr>
+      <tr class="row1">
+        <td valign="top">
+          <label for="desc">{TXT_SHOP_CATEGORY_DESCRIPTION}</label>
+        </td>
+        <td>
+          <textarea rows="5" id="desc" name="desc" style="width: 300px;"
+          >{SHOP_CATEGORY_DESCRIPTION}</textarea>
+        </td>
+      </tr>
+      <!--tr class="row2">
+        <td valign="top">
+          {TXT_SHOP_CATEGORY_DOCUMENT}
+        </td>
+        <td>
+          <input type="text" name="document" maxlength="255" id="doc"
+              style="width: 300px;" value="{SHOP_CATEGORY_DOCUMENT}" />
+          <input type="button" value="{TXT_SHOP_CATEGORY_DOCUMENT_CHOOSE}"
+              onclick="openBrowser('index.php?cmd=fileBrowser&amp;{CSRF_PARAM}&amp;standalone=true&amp;type=shop{MODULE_INDEX}','doc','width=800,height=640,resizable=yes,status=no,scrollbars=yes');" />
+        </td>
+      </tr-->
     </table>
     <br /><br />
-    <input type="hidden" name="modCatId" value="{SHOP_MOD_CAT_ID}" />
-    <input type="button" name="cancel" value="{TXT_SHOP_CANCEL}"
-      onclick="cancelEdit();" />
-    <input type="submit" name="submit" value="{TXT_STORE}" />
+    <input type="button" name="bcancel" value="{TXT_SHOP_CANCEL}"
+        onclick="cancelEdit();" />
+    <input type="submit" name="bcategory" value="{TXT_STORE}" />
   </form>
 </div>
+<!-- END category_edit -->
 <!-- END shop_categories.html -->

@@ -336,7 +336,7 @@ class File
             if(!rename($sourcePath.$sourceName, $targetPath.$targetName))
                 $errorOccurred = true;
         }
-  
+
         return !$errorOccurred;
     }
 
@@ -463,6 +463,37 @@ class File
         return true;
     }
 
+
+    /**
+     * Takes the path given by reference and removes any leading
+     * folders up to and including the ASCMS_PATH_OFFSET, including
+     * path separators (\ and /).
+     *
+     * Important note: The regex used to cut away the excess path
+     * is non-greedy and works fine in most cases.  However, there
+     * is a small risk that it may go wrong if two things occur at the
+     * same time, namely:
+     * - the ASCMS_PATH_OFFSET is not part of the path provided, and
+     * - the path contains a folder or file with the same name.
+     * If this is the case, you can either change the offset or the
+     * name of the subfolder or file, whichever is acceptable.
+     * @param   string    $target_path    Any absolute or relative path
+     * @return  void
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   2.2.0
+     */
+    static function pathRelativeToRoot(&$path)
+    {
+        // If ASCMS_PATH_OFFSET is empty this won't work, so test that
+        if (!preg_match('/[\\\\\\/]\w+/', ASCMS_PATH_OFFSET)) {
+            return;
+        }
+        $path = preg_replace(
+            '/^(?:.*'.preg_quote(ASCMS_PATH_OFFSET, '/').')?[\\\\\\/]*/',
+             '', $path);
+    }
+
+
     /**
      * Determines the file size of a given file by $file and returns its size in bytes.
      *
@@ -482,5 +513,3 @@ class File
         return $size;
     }
 }
-
-?>

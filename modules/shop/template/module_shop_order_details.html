@@ -1,9 +1,9 @@
 <!-- START shop_order_details.html -->
 <script type="text/javascript">
 <!--
-function edit(orderId)
+function edit(order_id)
 {
-  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=editorder&orderid="+orderId);
+  window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=editorder&order_id="+order_id);
 }
 //-->
 </script>
@@ -49,25 +49,25 @@ function edit(orderId)
   </tr>
   <tr class="row1">
     <td nowrap='nowrap'>{TXT_COMPANY}</td>
-    <td nowrap='nowrap'><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_COMPANY}</a>&nbsp;</td>
+    <td nowrap='nowrap'><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customer_id={SHOP_CUSTOMER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_COMPANY}</a>&nbsp;</td>
     <td nowrap='nowrap'>{TXT_COMPANY}</td>
     <td nowrap='nowrap'>{SHOP_SHIP_COMPANY}&nbsp;</td>
   </tr>
   <tr class="row2">
-    <td nowrap='nowrap'>{TXT_PREFIX}</td>
-    <td nowrap='nowrap'>{SHOP_PREFIX}&nbsp;</td>
-    <td nowrap='nowrap'>{TXT_PREFIX}</td>
-    <td nowrap='nowrap'>{SHOP_SHIP_PREFIX}&nbsp;</td>
+    <td nowrap='nowrap'>{TXT_SHOP_TITLE}</td>
+    <td nowrap='nowrap'>{SHOP_GENDER}&nbsp;</td>
+    <td nowrap='nowrap'>{TXT_SHOP_TITLE}</td>
+    <td nowrap='nowrap'>{SHOP_SHIP_TITLE}&nbsp;</td>
   </tr>
   <tr class="row1">
     <td nowrap='nowrap'>{TXT_LAST_NAME}</td>
-    <td nowrap='nowrap'><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_LASTNAME}</a>&nbsp;</td>
+    <td nowrap='nowrap'><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customer_id={SHOP_CUSTOMER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_LASTNAME}</a>&nbsp;</td>
     <td nowrap='nowrap'>{TXT_LAST_NAME}</td>
     <td nowrap='nowrap'>{SHOP_SHIP_LASTNAME}&nbsp;</td>
   </tr>
   <tr class="row2">
     <td nowrap='nowrap'>{TXT_FIRST_NAME}</td>
-    <td nowrap='nowrap'><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customerid={SHOP_CUSTOMER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
+    <td nowrap='nowrap'><a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=customerdetails&amp;customer_id={SHOP_CUSTOMER_ID}" title="{TXT_VIEW_DETAILS}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
     <td nowrap='nowrap'>{TXT_FIRST_NAME}</td>
     <td nowrap='nowrap'>{SHOP_SHIP_FIRSTNAME}&nbsp;</td>
   </tr>

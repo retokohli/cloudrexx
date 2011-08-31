@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Image manager
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -58,7 +59,7 @@ class ImageManager
 
 
     /**
-     * Loads an image
+     * Loads an existing image into a variable
      * @access   public
      * @param    string [$file] path and filename of the existing image
      * @return   bool
@@ -85,6 +86,39 @@ class ImageManager
 
 
     /**
+     * Add Background Layer
+     *
+     * This scales the image to a size that it fits into the rectangle defined by width $width and height $height.
+     * Spaces at the edges will be padded with the color $bgColor.
+     * @param   array   $bgColor is an array containing 3 values, representing the red, green and blue portion (0-255) of the desired color.
+     * @param   integer The width of the rectangle
+     * @param   integer The height of the rectangle
+     */
+    function addBackgroundLayer($bgColor, $width =  null, $height = null)
+    {
+        if (function_exists ("imagecreatetruecolor")) {
+            $this->newImage = imagecreatetruecolor($width, $height);
+            // GD > 2 check
+            if (!$this->newImage) {
+                $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
+            }
+        } else {
+            $this->newImage = ImageCreate($width, $height);
+        }
+        imagefill($this->newImage, 0, 0, imagecolorallocate($this->newImage, $bgColor[0], $bgColor[1], $bgColor[2]));
+        $ratio =  max($this->orgImageWidth / $width, $this->orgImageHeight / $height);
+        $scaledWidth = $this->orgImageWidth / $ratio;
+        $scaledHeight = $this->orgImageHeight / $ratio;
+        $offsetWidth = ($width - $scaledWidth) / 2;
+        $offsetHeight = ($height - $scaledHeight) / 2;
+        imagecopyresized($this->newImage, $this->orgImage, $offsetWidth, $offsetHeight, 0, 0, $scaledWidth, $scaledHeight, $this->orgImageWidth, $this->orgImageHeight);
+        $this->imageCheck = 1;
+        $this->newImageQuality=100;
+        $this->newImageType    = $this->orgImageType;
+    }
+
+
+    /**
      * Creates a thumbnail of a picture
      * @param   string  $strPath
      * @param   string  $strWebPath
@@ -98,8 +132,7 @@ class ImageManager
         $objFile   = new File();
         $_objImage = new ImageManager();
         $file      = basename($file);
-        $tmpSize   = getimagesize($strPath.$file);
-
+        $tmpSize   = getimagesize($strPath.'/'.$file);
         if ($tmpSize[0] > $tmpSize[1]) {
            $factor = $maxSize / $tmpSize[0];
         } else {
@@ -107,10 +140,10 @@ class ImageManager
         }
         $thumbWidth  = $tmpSize[0] * $factor;
         $thumbHeight = $tmpSize[1] * $factor;
-        if (!$_objImage->loadImage($strPath.$file)) return false;
+        if (!$_objImage->loadImage($strPath.'/'.$file)) return false;
         if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
         $thumb_name = self::getThumbnailFilename($file);
-        if (!$_objImage->saveNewImage($strPath.$thumb_name)) return false;
+        if (!$_objImage->saveNewImage($strPath .'/'.$thumb_name)) return false;
         if (!$objFile->setChmod($strPath, $strWebPath, $thumb_name)) return false;
         return true;
     }
@@ -148,18 +181,15 @@ class ImageManager
         if (empty($fileNew))       $fileNew       = $file;
         if (empty($strPathNew))    $strPathNew    = $strPath;
         if (empty($strWebPathNew)) $strWebPathNew = $strWebPath;
-        $tmpSize = getimagesize($strPath.$file);
-
+        $tmpSize = getimagesize($strPath.'/'.$file);
         // reset the ImageManager
         $this->imageCheck = 1;
-
         $width       = $tmpSize[0];
         $height      = $tmpSize[1];
         $widthRatio  = $width/$maxWidth;
         $heightRatio = $height/$maxHeight;
         $thumbWidth  = 0;
         $thumbHeight = 0;
-
         if ($widthRatio < $heightRatio) {
             $thumbHeight = $maxHeight;
             $thumbWidth  = $width*$maxHeight/$height;
@@ -167,16 +197,14 @@ class ImageManager
             $thumbWidth  = $maxWidth;
             $thumbHeight = $height*$maxWidth/$width;
         }
-
-        if (!$this->loadImage($strPath.$file)) return false;
+        if (!$this->loadImage($strPath.'/'.$file)) return false;
         if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
-        if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
-            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) return false;
+        if (is_file($strPathNew.'/'.$fileNew.$thumbNailSuffix)) {
+            if (!unlink($strPathNew.'/'.$fileNew.$thumbNailSuffix)) return false;
         }
-        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) return false;
+        if (!$this->saveNewImage($strPathNew.'/'.$fileNew.$thumbNailSuffix)) return false;
         $objFile = new File();
         if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) return false;
-//echo("_createThumbWhq($strPath, $strWebPath, $file, $maxWidth, $maxHeight, $quality, $thumbNailSuffix, $strPathNew, $strWebPathNew, $fileNew): saved file $strPathNew$fileNew$thumbNailSuffix<br />");
         return true;
     }
 
@@ -196,7 +224,6 @@ class ImageManager
             $this->newImageHeight  = $height;
             $this->newImageQuality = $quality;
             $this->newImageType    = $this->orgImageType;
-
             if (function_exists ("imagecreatetruecolor")) {
                 $this->newImage = @imagecreatetruecolor($this->newImageWidth, $this->newImageHeight);
                 // GD > 2 check
@@ -208,10 +235,9 @@ class ImageManager
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
-            if(function_exists("imagecopyresampled")) { //resampled is gd2 only
+            if (function_exists("imagecopyresampled")) { //resampled is gd2 only
                 imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
-            }
-            else {
+            } else {
                 imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
             }
             return true;
@@ -339,8 +365,7 @@ class ImageManager
             && !empty($this->newImage)
             && (!file_exists($file) || $forceOverwrite)) {
             $this->newImageFile = $file;
-
-            switch($this->newImageType) {
+            switch ($this->newImageType) {
                 case self::IMG_TYPE_GIF:
                     $function = 'imagegif';
                     if (!function_exists($function)) {
@@ -357,7 +382,6 @@ class ImageManager
                 default:
                     return false;
             }
-
             $function($this->newImage, $this->newImageFile, $this->newImageQuality);
             return true;
         }
@@ -373,7 +397,7 @@ class ImageManager
     function showNewImage()
     {
         if ($this->imageCheck == 1 && !empty($this->newImage)) {
-            switch($this->newImageType) {
+            switch ($this->newImageType) {
                 case self::IMG_TYPE_GIF:
                     header("Content-type: image/gif");
                     $function = 'imagegif';
@@ -482,7 +506,7 @@ class ImageManager
         if (!is_array($arrSizeInfo)) return false;
         $type = $this->_isImage($file);
         $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * 1.8;
-        switch($type) {
+        switch ($type) {
             case self::IMG_TYPE_GIF:
                 $function = 'imagecreatefromgif';
                 break;
@@ -499,27 +523,24 @@ class ImageManager
                 return '';
         }
 
-        @include_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
+        require_once(ASCMS_FRAMEWORK_PATH.'/System.class.php');
         $objSystem = new FWSystem();
         if ($objSystem === false) return false;
-
         $memoryLimit = $objSystem->_getBytes(@ini_get('memory_limit'));
         if (empty($memoryLimit)) {
             // set default php memory limit of 8 MBytes
             $memoryLimit = 8 * pow(1024, 2);
         }
-
         if (function_exists('memory_get_usage')) {
             $potentialRequiredMemory += memory_get_usage();
         } else {
             // add a default of 3 MBytes
             $potentialRequiredMemory += 3 * pow(1024, 2);
         }
-
         if ($potentialRequiredMemory > $memoryLimit) {
             // try to set a higher memory_limit
             if (   !ini_set('memory_limit', $potentialRequiredMemory)
-                || $memoryLimit == $objSystem->_getBytes(ini_get('memory_limit'))) 
+                || $memoryLimit == $objSystem->_getBytes(ini_get('memory_limit')))
                 return '';
         }
         return $function($file);

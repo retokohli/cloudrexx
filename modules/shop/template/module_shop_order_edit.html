@@ -321,9 +321,9 @@ function calcPrice(orderItemId)
   document.forms.shopOrderEdit.shopTaxPrice.value = totalVat.toFixed(2);
 }
 
-function swapSendToStatus(orderId)
+function swapSendToStatus(order_id)
 {
-  if (orderId == 4) {
+  if (order_id == 4) {
     document.getElementById("shopSendMailDiv").style.display = 'inline';
   } else {
     document.getElementById("shopSendMailDiv").style.display = 'none';
@@ -332,7 +332,7 @@ function swapSendToStatus(orderId)
 // -->
 </script>
 <br />
-<form id="shopOrderEdit" name="shopOrderEdit" method="post" action="?cmd=shop&amp;act=editorder">
+<form id="shopOrderEdit" name="shopOrderEdit" method="post" action="index.php?cmd=shop&amp;act=editorder">
   <table width="100%" border="0" class="adminlist" cellpadding="2" cellspacing="0">
     <colgroup><col width="15%" /><col width="35%" /><col width="15%" /><col width="35%" /></colgroup>
     <tr>
@@ -340,7 +340,7 @@ function swapSendToStatus(orderId)
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_ORDERNUMBER}</td>
-      <td nowrap="nowrap">{SHOP_ORDERID}<input type="hidden" name="orderid" value="{SHOP_ORDERID}" /></td>
+      <td nowrap="nowrap">{SHOP_ORDERID}<input type="hidden" name="order_id" value="{SHOP_ORDERID}" /></td>
       <td nowrap="nowrap">{TXT_IP_ADDRESS}</td>
       <td nowrap="nowrap">{SHOP_CUSTOMER_IP}</td>
     </tr>
@@ -355,7 +355,7 @@ function swapSendToStatus(orderId)
       <td nowrap="nowrap">
         {SHOP_ORDER_STATUS}
         <div id="shopSendMailDiv" style="{SHOP_SEND_MAIL_STYLE}">
-          {TXT_SEND_TEMPLATE_TO_CUSTOMER}&nbsp;
+          {SHOP_SEND_TEMPLATE_TO_CUSTOMER}&nbsp;
           <input type="checkbox" name="shopSendMail" value="1" {SHOP_SEND_MAIL_STATUS}/>
         </div>
       </td>
@@ -376,25 +376,25 @@ function swapSendToStatus(orderId)
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_COMPANY}</td>
-      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_COMPANY}</a>&nbsp;</td>
+      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_COMPANY}</a>&nbsp;</td>
       <td nowrap="nowrap">{TXT_COMPANY}</td>
       <td nowrap="nowrap"><input type="text" name="shopShipCompany" value="{SHOP_SHIP_COMPANY}" /></td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_PREFIX}</td>
-      <td nowrap="nowrap">{SHOP_PREFIX}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_PREFIX}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipPrefix" value="{SHOP_SHIP_PREFIX}" /></td>
+      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
+      <td nowrap="nowrap">{SHOP_GENDER}&nbsp;</td>
+      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
+      <td nowrap="nowrap"><input type="text" name="shopShipPrefix" value="{SHOP_SHIP_TITLE}" /></td>
     </tr>
     <tr class="row1">
       <td nowrap="nowrap">{TXT_LAST_NAME}</td>
-      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_LASTNAME}</a>&nbsp;</td>
+      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_LASTNAME}</a>&nbsp;</td>
       <td nowrap="nowrap">{TXT_LAST_NAME}</td>
       <td nowrap="nowrap"><input type="text" name="shopShipLastname" value="{SHOP_SHIP_LASTNAME}" /></td>
     </tr>
     <tr class="row2">
       <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
-      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customerid={SHOP_CUSTOMER_ID}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
+      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
       <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
       <td nowrap="nowrap"><input type="text" name="shopShipFirstname" value="{SHOP_SHIP_FIRSTNAME}" /></td>
     </tr>

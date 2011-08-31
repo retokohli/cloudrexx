@@ -30,6 +30,7 @@ class FWLanguage
      */
     private static $defaultLangId;
 
+
     /**
      * Loads the language config from the database
      *
@@ -46,8 +47,7 @@ class FWLanguage
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default
               FROM ".DBPREFIX."languages
-             ORDER BY id ASC
-         ");
+             ORDER BY id ASC");
          if ($objResult) {
              while (!$objResult->EOF) {
                 self::$arrLanguages[$objResult->fields['id']] = array(
@@ -60,11 +60,9 @@ class FWLanguage
                     'backend'    => $objResult->fields['backend'],
                     'is_default' => $objResult->fields['is_default'],
                 );
-
                 if ($objResult->fields['is_default'] == 'true') {
                     self::$defaultLangId = $objResult->fields['id'];
                 }
-
                 $objResult->MoveNext();
             }
         }
@@ -72,10 +70,10 @@ class FWLanguage
 
 
     /**
-     * Returns the array of all enabled languages indexed by language ID
+     * Returns an array of active language names, indexed by language ID
      * @param   string  $mode     'frontend' or 'backend' languages.
      *                            Defaults to 'frontend'
-     * @return  array             The array of enabled languages
+     * @return  array             The array of enabled language names
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getNameArray($mode='frontend')
@@ -91,6 +89,28 @@ class FWLanguage
 
 
     /**
+     * Returns an array of active language IDs
+     *
+     * Note that the array returned contains the language ID both as
+     * key and value, for your convenience.
+     * @param   string  $mode     'frontend' or 'backend' languages.
+     *                            Defaults to 'frontend'
+     * @return  array             The array of enabled language IDs
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getIdArray($mode='frontend')
+    {
+        if (!isset(self::$arrLanguages)) self::init();
+        $arrId = array();
+        foreach (self::$arrLanguages as $lang_id => $arrLanguage) {
+            if (empty($arrLanguage[$mode])) continue;
+            $arrId[$lang_id] = $lang_id;
+        }
+        return $arrId;
+    }
+
+
+    /**
      * Returns the ID of the default language
      * @return integer Language ID
      */
@@ -99,7 +119,6 @@ class FWLanguage
         if (empty(self::$defaultLangId)) {
             self::init();
         }
-
         return self::$defaultLangId;
     }
 
@@ -148,10 +167,8 @@ class FWLanguage
     static function getLanguageParameter($id, $index)
     {
         if (empty(self::$arrLanguages)) self::init();
-        return
-            (isset(self::$arrLanguages[$id][$index])
-                ? self::$arrLanguages[$id][$index] : false
-            );
+        return (isset(self::$arrLanguages[$id][$index])
+            ? self::$arrLanguages[$id][$index] : false);
     }
 
 
@@ -165,7 +182,7 @@ class FWLanguage
      * @param   string  $onchange   The optional onchange code
      * @return  string              The dropdown menu HTML code
      * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @todo    Use Html class instead
+     * @todo    Use the Html class instead
      */
     static function getMenu($selectedId=0, $menuName='', $onchange='')
     {
@@ -191,7 +208,7 @@ class FWLanguage
      * @param   string  $onchange   The optional onchange code
      * @return  string              The dropdown menu HTML code
      * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @todo    Use Html class instead
+     * @todo    Use the Html class instead
      */
     static function getMenuActiveOnly($selectedId=0, $menuName='', $onchange='')
     {
@@ -213,7 +230,7 @@ class FWLanguage
      *                                only the active ones otherwise
      * @return  string                The menu options HTML code
      * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @todo    Use Html class instead
+     * @todo    Use the Html class instead
      */
     static function getMenuoptions($selectedId=0, $flagInactive=false)
     {
@@ -303,7 +320,7 @@ class FWLanguage
     /**
      * Return the language code from the database for the given ID
      *
-     * Returns false on failure, or false if the ID is invalid
+     * Returns false on failure, or if the ID is invalid
      * @global  ADONewConnection
      * @param   integer $langId         The language ID
      * @return  mixed                   The two letter code, or false
@@ -319,7 +336,7 @@ class FWLanguage
     /**
      * Return the language ID for the given code
      *
-     * Returns false on failure, or if the code is invalid
+     * Returns false on failure, or if the code is unknown
      * @global  ADONewConnection
      * @param   string                    The two letter code
      * @return  integer   $langId         The language ID, or false
@@ -333,5 +350,5 @@ class FWLanguage
         }
         return false;
     }
+
 }
-?>

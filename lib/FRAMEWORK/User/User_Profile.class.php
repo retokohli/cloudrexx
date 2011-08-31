@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Profile
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -7,6 +8,9 @@
  * @package     contrexx
  * @subpackage  lib_framework
  */
+
+require_once(ASCMS_FRAMEWORK_PATH.'/User/User_Profile_Attribute.class.php');
+
 /**
  * User Profile
  *
@@ -23,23 +27,27 @@ class User_Profile
     /**
      * @var User_Profile_Attribute
      */
-    var $objAttribute;
+    public $objAttribute;
+    public $arrAttributeHistories;
+    public $arrUpdatedAttributeHistories;
 
-    var $arrAttributeHistories;
-    var $arrUpdatedAttributeHistories;
 
     public function __construct()
     {
         $this->initAttributes();
     }
 
+
     private function initAttributes()
     {
         $this->objAttribute = new User_Profile_Attribute();
     }
 
+
     public function setProfile($arrProfile)
     {
+        $arrDate = array();
+        $arrDateFormat = array();
         foreach ($arrProfile as $attributeId => $arrValue) {
             $objAttribute = $this->objAttribute->getById($attributeId);
             if (in_array($objAttribute->getType(), array('menu_option', 'group', 'frame', 'history'))) {
@@ -121,6 +129,7 @@ class User_Profile
         return true;
     }
 
+
     public function checkMandatoryCompliance()
     {
         global $_CORELANG;
@@ -144,7 +153,6 @@ class User_Profile
 
         return true;
     }
-
 
 
     protected function storeProfile()
@@ -187,6 +195,7 @@ class User_Profile
         return !$error;
     }
 
+
     /**
      * Create a profile for the loaded user
      *
@@ -208,6 +217,7 @@ class User_Profile
             return false;
         }
     }
+
 
     /**
      * Load custom attribute profile data
@@ -253,6 +263,7 @@ class User_Profile
         }
     }
 
+
     /**
      * Parse core attribute filter conditions
      *
@@ -273,7 +284,7 @@ class User_Profile
         }
 
         $arrConditions = array();
-
+        $pattern = array();
         foreach ($arrFilter as $attribute => $condition) {
             /**
              * $attribute is the account attribute like 'firstname' or 'username'
@@ -353,6 +364,7 @@ class User_Profile
         return $arrConditions;
     }
 
+
     /**
      * Parse custom attribute filter conditions
      *
@@ -383,7 +395,6 @@ class User_Profile
                     case 'int':
                         $arrConditions[] = "tblA.`attribute_id` = ".$attribute." AND (tblA.`value` = '".(is_array($condition) ? implode("' OR tblA.`value` = '", array_map('intval', $condition)) : intval($condition))."')";
                         break;
-
                     case 'array':
                         if (count($this->objAttribute->getChildren())) {
                             foreach ($this->objAttribute->getChildren() as $childAttributeId) {
@@ -395,14 +406,13 @@ class User_Profile
                 }
             }
         }
-
         return $arrConditions;
     }
+
 
     protected function parseAttributeSearchConditions($search, $core = false, $attributeId = 0)
     {
         $arrConditions = array();
-
         if (empty($this->objAttribute)) {
             $this->initAttributes();
         }
@@ -476,14 +486,9 @@ class User_Profile
                         $arrConditions = array_merge($arrConditions, $this->parseAttributeSearchConditions($search, $core, $childAttributeId));
                     }
                     break;*/
-
-                default:
-                    continue;
-                    break;
             }
         }
-
         return $arrConditions;
     }
+
 }
-?>
