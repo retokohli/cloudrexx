@@ -225,7 +225,7 @@ class Image
     {
 // Necessary, as the path may be posted from the backend, with the
 // ASCMS_PATH_OFFSET prepended!
-        File::path_relative_to_root($path);
+        File::pathRelativeToRoot($path);
 // TODO: Use the inverse of self::getThumbnailPath()
         $path = preg_replace('/\.thumb$/', '', $path);
         if ($path == self::PATH_NO_IMAGE) {
@@ -842,7 +842,7 @@ class Image
     ) {
         if (empty($source_path) || empty($target_path)) return false;
 //DBG::log("Image::scale(): Source path $source_path");
-        File::path_relative_to_root($source_path);
+        File::pathRelativeToRoot($source_path);
 //DBG::log("Image::scale(): Fixed Source path $source_path");
         if (!File::exists($source_path)) return false;
         $original_size = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
@@ -889,7 +889,7 @@ class Image
         $force=false, $quality=90
     ) {
 //DBG::log("crop($source_path, $target_path, $x1, $y1, $x2, $y2, $force, $quality): Entered");
-        File::path_relative_to_root($source_path);
+        File::pathRelativeToRoot($source_path);
         list($xs, $ys) = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
         // Fix coordinates that are out of range:
         // - Reset negative and too large values to the original size
@@ -988,7 +988,7 @@ class Image
         // 1: GIF, 2: JPG, 3: PNG, others are not accepted
         if (   $arrInfo[2] == 1
             && !function_exists('imagecreatefromgif')) return false;
-        switch($arrInfo[2]) {
+        switch ($arrInfo[2]) {
             case 1:
                 $function = 'imagecreatefromgif';
                 break;

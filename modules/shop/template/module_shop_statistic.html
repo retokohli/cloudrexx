@@ -1,8 +1,11 @@
-<!-- START news_list.html -->
+<!-- start module_shop_statistic.html -->
 <table class="adminlist" cellspacing="0" cellpadding="2" width="100%" border="0">
   <tr>
-    <th nowrap="nowrap" colspan="4">{TXT_OVERVIEW}</th>
-  </tr>
+    <th nowrap="nowrap" colspan="4">{TXT_SHOP_STATISTIC_OVERVIEW}</th>
+  </tr><!-- BEGIN no_order -->
+  <tr class="row3">
+    <td colspan="4"><b>{TXT_SHOP_STATISTIC_NO_ORDER}</b></td>
+  </tr><!-- END no_order --><!-- BEGIN statistic -->
   <tr>
     <td nowrap="nowrap">{TXT_TOTAL_TURNOVER}:&nbsp;{SHOP_TOTAL_SUM}</td>
     <td nowrap="nowrap">{TXT_BEST_MONTH}:&nbsp;{SHOP_MONTH}&nbsp;{TXT_TURNOVER}:&nbsp;{SHOP_MONTH_SUM}</td>
@@ -19,7 +22,7 @@
     </tr>
     <tr>
       <td width="20%">
-        <select name="shopSelectStats" size="1">
+        <select name="selectstats" size="1">
           <option value="1" {SHOP_ORDERS_SELECTED}>{TXT_ORDERS}</option>
           <option value="2" {SHOP_ARTICLES_SELECTED}>{TXT_COUNT_ARTICLES}</option>
           <option value="3" {SHOP_CUSTOMERS_SELECTED}>{TXT_CUSTOMERS_PARTNERS}</option>
@@ -52,23 +55,21 @@
     <th nowrap="nowrap">{TXT_COLUMN_2_DESC}</th>
     <th nowrap="nowrap">{TXT_COLUMN_3_DESC}</th>
     <th nowrap="nowrap" style="text-align:right;">{TXT_ORDER_SUM}</th>
-  </tr>
-  <!-- BEGIN statisticRow -->
+  </tr><!-- BEGIN statisticRow -->
     <tr class="{SHOP_ROWCLASS}">
       <td nowrap="nowrap">{SHOP_COLUMN_1}</td>
       <td nowrap="nowrap">{SHOP_COLUMN_2}</td>
       <td nowrap="nowrap">{SHOP_COLUMN_3}</td>
       <td nowrap="nowrap"><div style="text-align:right;">{SHOP_COLUMN_4}</div></td>
-    </tr>
-  <!-- END statisticRow -->
+    </tr><!-- END statisticRow -->
   <tr class="{SHOP_ROWCLASS}">
     <td nowrap="nowrap"><b>{TXT_SUM}</b></td>
     <td nowrap="nowrap"><b>{SHOP_SUM_COLUMN_2}</b></td>
     <td nowrap="nowrap"><b>{SHOP_SUM_COLUMN_3}</b></td>
     <td nowrap="nowrap"><div style="text-align:right;"><b>{SHOP_SUM_COLUMN_4}</b></div></td>
-  </tr>
+  </tr><!-- END statistic -->
 </table>
 <br />
 {SHOP_STATISTIC_PAGING}
 <br />
-<!-- END news_list.html -->
+<!-- end module_shop_statistic.html -->

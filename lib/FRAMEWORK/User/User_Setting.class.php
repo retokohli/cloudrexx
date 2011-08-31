@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User Settings Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -7,6 +8,9 @@
  * @package     contrexx
  * @subpackage  lib_framework
  */
+
+require_once(ASCMS_FRAMEWORK_PATH.'/User/User_Setting_Mail.class.php');
+
 /**
  * User Settings Object
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -99,6 +103,5 @@ class User_Setting
         }
         return $arrValidityPeriod;
     }
-}
 
-?>
+}

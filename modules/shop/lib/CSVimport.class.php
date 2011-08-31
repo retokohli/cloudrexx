@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CSV Import
  * @author Comvation Development Team <info@comvation.com>
@@ -31,7 +32,6 @@ class CSVimport
         global $_ARRAYLANG;
 
         $this->arrName2Fieldname = array(
-            $_ARRAYLANG['TXT_SHOP_ID'] => 'id',
             $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] => 'product_id',
             $_ARRAYLANG['TXT_SHOP_IMAGE'] => 'picture',
             $_ARRAYLANG['TXT_PRODUCT_NAME'] => 'title',
@@ -39,9 +39,9 @@ class CSVimport
             $_ARRAYLANG['TXT_CUSTOMER_PRICE'] => 'normalprice',
             $_ARRAYLANG['TXT_RESELLER_PRICE'] => 'resellerprice',
             $_ARRAYLANG['TXT_SHOP_PRICE_SPECIAL_OFFER'] => 'discountprice',
-            $_ARRAYLANG['TXT_SPECIAL_OFFER'] => 'is_special_offer',
-            $_ARRAYLANG['TXT_SHORT_DESCRIPTION'] => 'shortdesc',
-            $_ARRAYLANG['TXT_DESCRIPTION'] => 'description',
+            $_ARRAYLANG['TXT_SPECIAL_OFFER'] => 'discount_active',
+            $_ARRAYLANG['TXT_SHORT_DESCRIPTION'] => 'short',
+            $_ARRAYLANG['TXT_DESCRIPTION'] => 'long',
             $_ARRAYLANG['TXT_STOCK'] => 'stock',
             $_ARRAYLANG['TXT_B2B'] => 'b2b',
             $_ARRAYLANG['TXT_B2C'] => 'b2c',
@@ -64,8 +64,7 @@ class CSVimport
         $query = "
             SELECT img_id, img_name, img_cats, img_fields_file, img_fields_db
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_importimg
-             ORDER BY img_id
-        ";
+             ORDER BY img_id";
         $objResult = $objDatabase->Execute($query);
         $this->arrTemplateArray = array();
         while ($objResult && !$objResult->EOF) {
@@ -121,8 +120,7 @@ class CSVimport
      * @return  array           The available names
      * @static
      */
-    //static
-    function getAvailableNamesMenuOptions()
+    static function getAvailableNamesMenuOptions()
     {
         $strOptions = '';
         foreach (array_keys($this->arrName2Fieldname) as $name) {
@@ -143,6 +141,7 @@ class CSVimport
         $FileContent = $csv_source->csv2Array();
         return $FileContent;
     }
+
 
     function GetImageChoice($Noimg)
     {
@@ -179,29 +178,19 @@ class CSVimport
      * @static
      * @param   string      $catName    The ShopCategory name
      * @param   mixed       $catParent  The optional parent ShopCategory ID,
-     *                                  or false to ignore it (default)
+     *                                  or null to ignore it (default)
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
-    //static
-    function getCategoryId($catName, $catParent=false)
+    static function getCategoryId($catName, $catParent=null)
     {
-        global $objDatabase;
-        $query = "
-            SELECT catid
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
-             WHERE catname='$catName'
-               ".($catParent === false ? '' : "AND parentid=".intval($catParent));
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
-            if ($objResult->RecordCount() > 0) {
-                return $objResult->fields['catid'];
-            }
-            return CSVimport::InsertNewCat($catName, intval($catParent));
+        $objCategory = ShopCategories::getChildNamed($catName, $catParent);
+        if ($objCategory) {
+            return $objCategory->id();
         }
-        return 0;
+        return CSVimport::InsertNewCat($catName, $catParent);
     }
 
 
@@ -215,19 +204,11 @@ class CSVimport
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Added creation of default ShopCategory, made static)
      */
-    //static
-    function GetFirstCat()
+    static function GetFirstCat()
     {
-        global $objDatabase;
-        $query = "SELECT catid FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult !== false) {
-            if ($objResult->RecordCount() > 0) {
-                return $objResult->fields["catid"];
-            } else {
-                return CSVimport::InsertNewCat('Import', 0);
-            }
-        }
+        $category_id = ShopCategory::getNextShopCategoryId();
+        if ($category_id) return $category_id;
+        return CSVimport::InsertNewCat('Import', 0);
     }
 
 
@@ -242,19 +223,15 @@ class CSVimport
      * @author  Unknown <info@comvation.com> (Original author)
      * @author  Reto Kohli <reto.kohli@comvation.com> (Made static)
      */
-    //static
-    function InsertNewCat($catName, $catParent)
+    static function InsertNewCat($catName, $catParent)
     {
-        global $objDatabase;
-        $query =
-            "INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_categories ".
-            "(catname, parentid) VALUES ('".$catName."','".$catParent."')";
-        $objResult = $objDatabase->Execute($query);
-        if ($objResult) {
-            return $objDatabase->Insert_ID();
+        $objCategory = new ShopCategory($catName, '', $catParent);
+        if ($objCategory->store()) {
+            return $objCategory->id();
         }
         return 0;
     }
+
 }
 
 ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Framework user
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -64,9 +65,7 @@ class FWUser extends User_Setting
     function __construct($backend = false)
     {
         parent::__construct();
-
         $this->setMode($backend);
-
         $this->objUser = new User();
         $this->objGroup = new UserGroup();
     }
@@ -81,6 +80,7 @@ class FWUser extends User_Setting
     {
         $this->backendMode = $backend;
     }
+
 
     /**
      * Get the backend mode flag
@@ -104,11 +104,11 @@ class FWUser extends User_Setting
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
-        $validationCode = isset($_POST['secid2']) && $_POST['secid2'] != '' ? contrexx_stripslashes($_POST['secid2']) : false;
+// TODO: Unused
+//        $validationCode = isset($_POST['secid2']) && $_POST['secid2'] != '' ? contrexx_stripslashes($_POST['secid2']) : false;
 
         if (isset($username) && isset($password)) {
-            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
-
+            if (empty($sessionObj)) $sessionObj = new cmsSession();
             if ($this->objUser->auth($username, $password, $this->isBackendMode())) {
                 if ($this->isBackendMode()) {
                     // sets cookie for 30 days
@@ -116,22 +116,22 @@ class FWUser extends User_Setting
                     $this->log();
                 }
                 $sessionObj->cmsSessionUserUpdate($this->objUser->getId());
-
-                // store frontend lang_id in cookie
+                // Store frontend lang_id in cookie
                 if (empty($_COOKIE['langId'])) {
+// TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
                     $langId = $this->objUser->getFrontendLanguage();
-                    if (isset($objInit->arrLang[$langId]['frontend'])) {
+// Temporary fix:
+if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
+                    if ($objInit->arrLang[$langId]['frontend']) {
                         setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
                     }
                 }
                 return true;
             }
-
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
             $sessionObj->cmsSessionUserUpdate();
             $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         }
-
         return false;
     }
 
@@ -199,6 +199,7 @@ class FWUser extends User_Setting
     {
         return implode('<br />', $this->arrStatusMsg['error']);
     }
+
 
     /**
      * Checks the code from the security image.
@@ -434,6 +435,10 @@ class FWUser extends User_Setting
     }
 
 
+    /**
+     * Returns the static FWUser object
+     * @return  FWUser
+     */
     public static function getFWUserObject()
     {
         global $objInit;
@@ -443,6 +448,26 @@ class FWUser extends User_Setting
             $objFWUser = new FWUser($objInit->mode == 'backend');
         }
         return $objFWUser;
+    }
+
+
+    /**
+     * Return the number of registered users.
+     * Only users with an active and valid account are counted.
+     * global ADONewConnection
+     * Return integer
+     */
+    public static function getUserCount()
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute('
+            SELECT COUNT(`id`) AS user_count FROM `'.DBPREFIX.'access_users` WHERE `active` = 1');
+        if ($objResult !== false) {
+            return $objResult->fields['user_count'];
+        }
+
+        return 0;
     }
 
 
@@ -496,11 +521,15 @@ class FWUser extends User_Setting
                 }
             }
             $unit =
+// TODO: Seems that these language entries do not exist:
                 $_CORELANG['TXT_USERS_'.$unit.
+// Instead, there are:
+//                $_CORELANG['TXT_CORE_'.$unit.
                 ($validity > 1 ? 'S' : '')];
         }
         return "$validity $unit";
     }
+
 
     /**
      * Returns a SECID for logging in (Backend, Frontend editing)
@@ -511,12 +540,10 @@ class FWUser extends User_Setting
         $chars = 'ACDEFGHJKLMNPRTUWXZ345679';
         $max   = strlen($chars) -1;
         $ret = '';
-        for ($i=0;$i<4;$i++) {
-
-            $ret .= $chars{rand(0,$max)};
+        for ($i = 0; $i < 4; ++$i) {
+            $ret .= $chars{rand(0, $max)};
         }
         return $ret;
     }
-}
 
-?>
+}

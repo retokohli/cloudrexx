@@ -1,9 +1,11 @@
 <?php
+
 /**
+ * OBSOLETE -- For a long time already
  * Exports and Imports CSV data
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Thomas Däppen <thomas.daeppen@comvation.com>
+ * @author       Thomas Daeppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @version      0.1
  * @subpackage  module_shop
@@ -14,7 +16,7 @@
  * Exports and Imports CSV data
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author       Thomas Däppen <thomas.daeppen@comvation.com>
+ * @author       Thomas Daeppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @version      0.1
  * @subpackage  module_shop
@@ -28,7 +30,7 @@ class Exchange
     * @var object
     * @see __construct(), selectExchangeContent(), export(), import(), selectPage(), checkStep()
     */
-    var $_objTpl;
+    public $_objTpl;
 
     /**
     * The exchange method
@@ -36,7 +38,7 @@ class Exchange
     * @var string
     * @see selectExchangeContent(), selectPage()
     */
-    var $strMethod;
+    public $strMethod;
 
     /**
     * Path to the export script
@@ -44,7 +46,7 @@ class Exchange
     * @var string
     * @see __construct(), export()
     */
-    var $strExportLink;
+    public $strExportLink;
 
     /**
     * Path of the temporary directory for the upload files
@@ -52,7 +54,7 @@ class Exchange
     * @var string
     * @see __construct(), import()
     */
-    var $strImportPath;
+    public $strImportPath;
 
     /**
     * Contains the step of each exchange method
@@ -60,7 +62,7 @@ class Exchange
     * @var array
     * @see __construct(), selectExchangeContent(), selectPage(), checkStep()
     */
-    var $arrExchangeStep = array();
+    public $arrExchangeStep = array();
 
     /**
     * Contains the predefined steps of each exchange method
@@ -68,20 +70,21 @@ class Exchange
     * @var array
     * @see __construct(), selectPage(), checkStep()
     */
-    var $arrExchangeSteps = array(
-                'export'    => array(
-                                'selectTable',
-                                'selectCategories',
-                                'selectCols',
-                                'download'
-                                ),
-                'import'    => array(
-                                'selectTable',
-                                'selectFiletype',
-                                'importOptions',
-                                'importRecords'
-                                )
-                );
+    public $arrExchangeSteps = array(
+        'export'    => array(
+            'selectTable',
+            'selectCategories',
+            'selectCols',
+            'download',
+        ),
+        'import'    => array(
+            'selectTable',
+            'selectFiletype',
+            'importOptions',
+            'importRecords',
+        ),
+    );
+
 
     /**
     * The supported Filetypes
@@ -89,38 +92,27 @@ class Exchange
     * @var array
     * @see import()
     */
-    var $arrFileTypes = array(
-            'csv'    => array(
-                                "text/comma-separated-values",
-                                "application/vnd.ms-excel"
-                                ),
-            'xml'    => array(
-                                "text/xml"
-                                )
-            );
+    public $arrFileTypes = array(
+        'csv'    => array(
+            "text/comma-separated-values",
+            "application/vnd.ms-excel",
+        ),
+        'xml'    => array("text/xml"),
+    );
 
-    /**
-    * Constructor:
-    */
-    function Exchange()
-    {
-        $this->__construct();
-    }
 
     function __construct()
     {
         $this->_objTpl = new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/shop/template/');
-        CSRF::add_placeholder($this->_objTpl);
-        $this->_objTpl->loadTemplateFile('module_shop_exchange.html', true, true);
-
+        $this->_objTpl->loadTemplateFile('module_shop_exchange.html');
         $this->arrExchangeStep = array(
-                'export' => $this->arrExchangeSteps['export'][0],
-                'import' => $this->arrExchangeSteps['import'][0]
-                );
-
+            'export' => $this->arrExchangeSteps['export'][0],
+            'import' => $this->arrExchangeSteps['import'][0]
+        );
         $this->strExportLink = "/modules/shop/export.php";
         $this->strImportPath = ASCMS_PATH.'/modules/shop/tmp/';
     }
+
 
     /**
     * Select exchange content
@@ -178,7 +170,8 @@ class Exchange
     function export_DEV($step)
     {
         global $objDatabase, $_ARRAYLANG;
-        print "EXPORT";
+
+//        print "EXPORT";
 //        $this->selectPage('export',$this->arrExchangeStep['export']);
         switch ($step) {
             case 'none':
@@ -225,17 +218,18 @@ class Exchange
                 }
                 unset($_SESSION['shop_exchange_export']['tables']);
 
-                switch ($_SESSION['shop_exchange_export']['table']['name']) {
+                switch ($_SESSION['shop_exchange_export']['table']['name'])
+                {
                     case DBPREFIX."module_shop".MODULE_INDEX."_products":
                         // Gets the product selection list
-                        $query = "SELECT catid, parentid, catname
+                        $query = "SELECT catid, parent_id, catname
                                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories";
                         if (!($objResult = $objDatabase->Execute($query))) {
                             $i=0;
                             while (!$objResult->EOF) {
                                 $arrCategorie[$i] = array(
                                                         'catid'        => $objResult->fields['catid'],
-                                                        'parentid'    => $objResult->fields['parentid'],
+                                                        'parent_id'    => $objResult->fields['parent_id'],
                                                         'catname'    => $objResult->fields['catname']
                                                           );
                                 $i++;
@@ -244,8 +238,8 @@ class Exchange
 
                             // Generates the categorie lists
                             for ($i=0;$i<count($arrCategorie);$i++) {
-                                if ($arrCategorie[$i]['parentid'] != 0) {
-                                    $arrCategorie[$i]['catname'] = $arrCategorie[$arrCategorie[$i]['parentid']]['catname']."_".$arrCategorie[$i]['catname'];
+                                if ($arrCategorie[$i]['parent_id'] != 0) {
+                                    $arrCategorie[$i]['catname'] = $arrCategorie[$arrCategorie[$i]['parent_id']]['catname']."_".$arrCategorie[$i]['catname'];
                                 }
                                 $this->_objTpl->setCurrentBlock('categorieList_selectCategories');
                                 $this->_objTpl->setVariable(array(
@@ -298,8 +292,8 @@ class Exchange
                 $objDatabase->Execute($query);
 
                 // FIXME
-                // Replace $objDb->metadata() with $objDatabase-> and the corresponding method
-                $arrMetadata = $objDb->metadata();
+                // Replace $objDatabase->metadata() with $objDatabase-> and the corresponding method
+                $arrMetadata = $objDatabase->metadata();
 
                 $this->_objTpl->setCurrentBlock('Cols');
                 for ($i=0;$i<count($arrMetadata);$i++) {
@@ -489,8 +483,8 @@ class Exchange
                 $objResult = $objDatabase->Execute($query);
 
                 // FIXME
-                // Replace $objDb->metadata() with $objDatabase-> and the corresponding method
-                $arrMetadata = $objDb->metadata();
+                // Replace $objDatabase->metadata() with $objDatabase-> and the corresponding method
+                $arrMetadata = $objDatabase->metadata();
 
                 // Gets the content of the file to import
                 $fileContent = file_get_contents($this->strImportPath.$_SESSION['shop_exchange_import']['file']['name']);

@@ -161,7 +161,7 @@ class CSRF {
      * Adds a placeholder for the CSRF code to the given template.
      * This is so you can easily patch javascript code that handles
      * URLs, as this cannot be done by add_code().
-     * @param $tpl Template object
+     * @param   HTML_Template_Sigma     $tpl    Template object
      */
     public static function add_placeholder($tpl)
     {
@@ -235,7 +235,7 @@ class CSRF {
             : (isset($_POST[self::$formkey]) ? $_POST[self::$formkey] : '');
 
         self::__cleanup();
-        if(! self::__getkey($code)) {
+        if (! self::__getkey($code)) {
             self::__kill();
         } else {
             self::__reduce($code);
@@ -250,35 +250,36 @@ class CSRF {
     {
         global $_CORELANG;
 
-        $data = ($_SERVER['REQUEST_METHOD'] == 'GET'
-            ? $_GET
-            : $_POST
-        );
+        $data = ($_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET : $_POST);
         self::add_code();
-       	$tpl = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $tpl = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         $tpl->loadTemplateFile('csrfprotection.html');
         $form = '';
         foreach ($data as $key => $value) {
-            if ($key == self::$formkey or $key == 'amp;'.self::$formkey) {
+            if ($key == self::$formkey || $key == 'amp;'.self::$formkey) {
+                continue;
+            }
+            // There *MUST NOT* be any form element with a name attribute
+            // value of "submit" -- this will break the form's submit() method!
+            if ($key == 'submit') {
                 continue;
             }
             $form .= self::parseRequestParametersForForm($key, $value);
         }
-
+        $action = $_SERVER['REQUEST_URI'];
         $tpl->setGlobalVariable(array(
-	        'TXT_CSRF_TITLE' => $_CORELANG['TXT_CSRF_TITLE'],
-    	    'TXT_CSRF_DESCR' => $_CORELANG['TXT_CSRF_DESCR'],
-        	'TXT_CSRF_ABORT' => $_CORELANG['TXT_CSRF_ABORT'],
+            'TXT_CSRF_TITLE' => $_CORELANG['TXT_CSRF_TITLE'],
+            'TXT_CSRF_DESCR' => $_CORELANG['TXT_CSRF_DESCR'],
+            'TXT_CSRF_ABORT' => $_CORELANG['TXT_CSRF_ABORT'],
             'TXT_CSRF_CONTINUE' => $_CORELANG['TXT_CSRF_CONTINUE'],
-            'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'],
+            'REQUEST_METHOD' => strtolower($_SERVER['REQUEST_METHOD']),
             'SAFE_CMD' => 'index.php?cmd='.$_GET['cmd'],
-    	    'FORM_ELEMENTS' => $form,
+            'ACTION' => $action,
+            'FORM_ELEMENTS' => $form,
             'IMAGES_PATH' => ASCMS_ADMIN_WEB_PATH.'/images/csrfprotection',
         ));
         $tpl->parse();
-
-        
         die($tpl->get());
     }
 

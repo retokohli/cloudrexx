@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Navigation
  * Note: modified 27/06/2006 by Sébastien Perret => sva.perret@bluewin.ch
@@ -17,6 +18,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/System.class.php';
 require_once ASCMS_CORE_PATH.'/NavigationPageTree.class.php';
 require_once ASCMS_CORE_PATH.'/DropdownNavigationPageTree.class.php';
 require_once ASCMS_CORE_PATH.'/NestedNavigationPageTree.class.php';
+
 /**
  * Class Navigation
  *
@@ -37,14 +39,14 @@ class Navigation
     public $tree = array();
     public $parents = array();
     public $pageId;
-    public $styleNameActive = "active";
-    public $styleNameNormal = "inactive";
-    public $separator = " > ";
-    public $spacer = "&nbsp;";
-    public $levelInfo = "down";
-    public $subNavSign = "&nbsp;&raquo;";
+    public $styleNameActive = 'active';
+    public $styleNameNormal = 'inactive';
+    public $separator = ' > ';
+    public $spacer = '&nbsp;';
+    public $levelInfo = 'down';
+    public $subNavSign = '&nbsp;&raquo;';
     public $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
-    public $_cssPrefix = "menu_level_";
+    public $_cssPrefix = 'menu_level_';
     public $_objTpl;
     public $topLevelPageId;
     public $_menuIndex = 0;
@@ -141,40 +143,34 @@ class Navigation
 
         if ($objDatabase->Affected_Rows() > 0) {
             while (!$objResult->EOF) {
+                $catid = $objResult->fields['catid'];
                 // generate array $this->table
                 if (!isset($this->table[$objResult->fields['parcat']])) {
                     $this->table[$objResult->fields['parcat']] = array();
                 }
-                $this->table[$objResult->fields['parcat']][$objResult->fields['catid']] = stripslashes($objResult->fields['catname']);
-
+                $this->table[$objResult->fields['parcat']][$catid] = stripslashes($objResult->fields['catname']);
                 // generate array $this->parentId
-                $this->parentId[$objResult->fields['catid']] = $objResult->fields['parcat'];
-
+                $this->parentId[$catid] = $objResult->fields['parcat'];
                 // generate array $this->arrPages
                 if (!isset($this->arrPages[$objResult->fields['parcat']])) {
                     $this->arrPages[$objResult->fields['parcat']] = array();
                 }
-                array_push($this->arrPages[$objResult->fields['parcat']], $objResult->fields['catid']);
-
-                if ($objResult->fields['catid'] == $this->pageId && !isset($this->topLevelPageId)) {
-                    $this->topLevelPageId = ($objResult->fields['parcat'] == 0 ? $objResult->fields['catid'] :$objResult->fields['parcat']);
+                array_push($this->arrPages[$objResult->fields['parcat']], $catid);
+                if ($catid == $this->pageId && !isset($this->topLevelPageId)) {
+                    $this->topLevelPageId = ($objResult->fields['parcat'] == 0 ? $catid : $objResult->fields['parcat']);
                 }
-
                 // generate array $this->data
-                $s=$objResult->fields['section'];
-                $c=$objResult->fields['cmd'];
-                $section = ($s=="") ? "" : "&amp;section=$s";
-                $cmd = ($c=="") ? "" : "&amp;cmd=$c";
+                $s = $objResult->fields['section'];
+                $c = $objResult->fields['cmd'];
+                $section = ($s == '') ? '' : "&amp;section=$s";
+                $cmd = ($c == '') ? '' : "&amp;cmd=$c";
                 $useAlias = false;
-
-                if ($_CONFIG['aliasStatus']
-                    && ($objResult->fields['alias_url']
-                        || $_CONFIG['useVirtualLanguagePath'] == 'on' && $s == 'home'
-                    )
+                if (   $_CONFIG['aliasStatus']
+                    && (   $objResult->fields['alias_url']
+                        || $_CONFIG['useVirtualLanguagePath'] == 'on' && $s == 'home')
                 ) {
                     $useAlias = true;
                 }
-
                 // Create alias link if alias is present for this page...
                 if ($useAlias) {
                     if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
@@ -210,8 +206,6 @@ class Navigation
                         .$link
                         .(($currentThemesId && !strpos($this->data[$id]['url'],'preview')) ? '&amp;preview='.$currentThemesId : '');
                 }
-
-
                 $this->data[$objResult->fields['catid']]= array(
                     'catid'    => $objResult->fields['catid'],
                     'url'      => $menu_url,
@@ -236,7 +230,6 @@ class Navigation
                                     break;
                                 }
                             }
-
                             if ($mount) {
                                 $position = false;
                                 foreach ($this->arrPages as $mainPageId => $arrSubPages2) {
@@ -248,7 +241,6 @@ class Navigation
                                         }
                                     }
                                 }
-
                                 if ($position !== false) {
                                     if ($position != 0 && $this->topLevelPageId == $pageId) {
                                         $this->topLevelPageId = $position;
@@ -283,7 +275,7 @@ class Navigation
                 if (   isset($this->table[$id])
                     && (   $maxlevel >= $level+1
                         || $maxlevel == 0)) {
-                  $this->_buildTree($id,$maxlevel,$level+1);
+                    $this->_buildTree($id,$maxlevel,$level+1);
                 }
             }
         }
@@ -291,14 +283,14 @@ class Navigation
 
 
     /**
-    * Gets the parsed navigation
-    * @access private
-    * @param string  $templateContent
-     * @param   boolean $boolShop         If "true", parse the shop navigation
+     * Gets the parsed navigation
+     * @access private
+     * @param string  $templateContent
+     * @param   boolean $boolShop         If true, parse the shop navigation
      *                                    into {SHOPNAVBAR_FILE}
     * @return mixed parsed navigation
     */
-    function getNavigation($templateContent,$boolShop=false, $rootNode=null)
+    function getNavigation($templateContent, $boolShop=false, $rootNode=null)
     {
         $this->_objTpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
@@ -306,8 +298,7 @@ class Navigation
         $this->_objTpl->setTemplate($templateContent);
 
         if ($boolShop) {
-            global $shopObj, $themesPages;
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', $shopObj->getNavbar($themesPages['shopnavbar']));
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', Shop::getNavbar());
         }
 
         if (isset($this->_objTpl->_blocks['navigation_dropdown'])) {
@@ -316,12 +307,10 @@ class Navigation
                 $this->subNavTag = trim($this->_objTpl->_blocks['sub_menu']);
                 $templateContent = ereg_replace('<!-- BEGIN sub_menu -->.*<!-- END sub_menu -->', NULL, $templateContent);
             }
-
             //$this->_buildDropDownNavigation($this->arrPages[0],1, true);
             $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
-
             return  ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
         } elseif (isset($this->_objTpl->_blocks['navigation'])) {
             //$this->_buildNavigation();
@@ -329,12 +318,11 @@ class Navigation
             $navi->setTemplate($this->_objTpl);
             $navi->render();
         } elseif (isset($this->_objTpl->_blocks['nested_navigation'])) {
-            // Creae a nested list, formatted with ul and li-Tags
+            // Create a nested list, formatted with ul and li-Tags
             //$nestedNavigation = $this->_buildNestedNavigation();
             $navi = new NestedNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
-            $renderedNavi = $navi->render();            
-
+            $renderedNavi = $navi->render();
             return ereg_replace('<!-- BEGIN nested_navigation -->.*<!-- END nested_navigation -->', $renderedNavi, $templateContent);
         }
         return $this->_objTpl->get();
@@ -403,10 +391,8 @@ class Navigation
                             // gets the style sheets value for active or inactive
                             $style = ($activeTree) ? $this->styleNameActive : $this->styleNameNormal;
                             // get information about the next level id -> down or empty                            // $levelInfo = (($level > $nextlevel) OR $activeTree AND $id <> $this->pageId) ? $this->levelInfo : "";
-
                             $levelInfo = ($level > $nextlevel) ? $this->levelInfo : "";
                             $target = empty($this->data[$id]['target']) ? "_self" : $this->data[$id]['target'];
-
                             $this->_objTpl->setCurrentBlock($blockName);
                             $this->_objTpl->setVariable('URL',$this->data[$id]['url']);
                             $this->_objTpl->setVariable('NAME',htmlentities($this->data[$id]['catname'], ENT_QUOTES, CONTREXX_CHARSET));
@@ -452,7 +438,6 @@ class Navigation
      *    examples: [[levels_24]] means navigation levels 2 to 4;
      *              [[levels_3+]] means any navigation levels starting from 3;
      *              [[levels_1]] means navigation level 1 only;
-     *
      * @return   string   $result
      */
     function _buildNestedNavigation()
@@ -484,18 +469,14 @@ class Navigation
 
         // Build nested menu list
         $navigationId = array();
-        foreach( $array_visible_ids as $key => $id ) {
-
+        foreach ($array_visible_ids as $key => $id) {
             $level = $this->tree[$id];
             $nextLevel = $this->tree[$array_visible_ids[$key+1]];
-
             if (!isset($navigationId[$level])) {
                 $navigationId[$level] = 0;
             }
             $navigationId[$level]++;
-
             if ($nextLevel == NULL) $nextLevel = $match[1];
-
             $closingTags = '';
             for ($i=1; $i<=($level - $nextLevel); $i++) {
                 $closingTags .= "\n</ul>\n</li>";
@@ -507,6 +488,7 @@ class Navigation
             // Build menu structure
             if ($level < $nextLevel) {
                 $cssStyle = $this->_cssPrefix.($nextLevel);
+// TODO: Must not use the "id" attribute here!
                 $nestedRow = "<li>".$this->_rowBlock."\n<ul id='$cssStyle'>";
             } elseif ($level > $match[1] && $level > $nextLevel) {
                 $nestedRow = "<li>".$this->_rowBlock."</li>".$closingTags;
@@ -516,9 +498,7 @@ class Navigation
 
             // Checks if this is an active menu item
             $style = (in_array($id, $this->parents)) ? $this->styleNameActive : $this->styleNameNormal;
-
             $target = empty($this->data[$id]['target']) ? "_self" : $this->data[$id]['target'];
-
             $tmpNavigationBlock = str_replace('{NAME}', $this->data[$id]['catname'], $nestedRow);
             $tmpNavigationBlock = str_replace('<li>', '<li class="'.$style.'">', $tmpNavigationBlock);
             $tmpNavigationBlock = str_replace('{URL}', $this->data[$id]['url'], $tmpNavigationBlock);
@@ -528,7 +508,6 @@ class Navigation
 
             $navigationBlock .= $tmpNavigationBlock."\n";
         }
-
         if ($navigationBlock != "") {
             // Return nested menu
             return "<ul id='".$this->_cssPrefix.$match[1]."'>\n".$navigationBlock."</ul>";
@@ -557,8 +536,7 @@ class Navigation
                 $navigationId[$level] = 0;
             }
             ++$navigationId[$level];
-
-            // page has childs
+            // page has children
             if (is_array($page)) {
                 // get page id
                 $keys = array_keys($page);
@@ -612,9 +590,14 @@ class Navigation
 
 
     /**
-    * Get an array with all parentids
-    * @access  private
-    */
+     * Builds the array containing all parent IDs of the current page
+     *
+     * The array starts with the ID of the parent of the current page, and
+     * continues up the hierarchy up to and including the root (ID 0).
+     * The array contains the page ID as keys, and their respective parents
+     * as values.  {@see get_parent_id()} relies on that structure.
+     * @access  private
+     */
     function _getParents()
     {
         $parentId = !empty($this->parentId[$this->pageId]) ? $this->parentId[$this->pageId] : 0;
@@ -662,30 +645,29 @@ class Navigation
 
 
     /**
-    * getFrontendLangNavigation()
-    * @access public
-    * @global InitCMS
-	* @global array
-    */
+     * getFrontendLangNavigation()
+     * @access public
+     * @global InitCMS
+     * @global array
+     */
     function getFrontendLangNavigation()
     {
         global $objInit, $_CONFIG;
 
         $this->arrLang = $objInit->getLanguageArray();
-        $langNavigation = "";
-          if (count($this->arrLang)>1) {
-                foreach ($this->arrLang as $id=>$value) {
-                    if ($this->arrLang[$id]['frontend']==1) {
-                        if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
-                            $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
-                        } else {
-                            $uri = CONTREXX_SCRIPT_PATH."?setLang=".$id;
-                        }
-
-                        $langNavigation .= " [ <a href='".$uri."' title='".$value['name']."' >".$value['name']."</a> ] ";
+        $langNavigation = '';
+        if (count($this->arrLang)>1) {
+            foreach ($this->arrLang as $id => $value) {
+                if ($this->arrLang[$id]['frontend'] == 1) {
+                    if ($_CONFIG['useVirtualLanguagePath'] == 'on') {
+                        $uri = ASCMS_PATH_OFFSET.'/'.$this->arrLang[$id]['lang'].'/';
+                    } else {
+                        $uri = CONTREXX_SCRIPT_PATH."?setLang=".$id;
                     }
+                    $langNavigation .= " [ <a href='".$uri."' title='".$value['name']."' >".$value['name']."</a> ] ";
                 }
-          }
+            }
+        }
         return $langNavigation;
     }
 
@@ -696,16 +678,15 @@ class Navigation
         if (strpos($url, 'http://' ) === 0) return false;
         if (strpos($url, 'https://') === 0) return false;
         if (strpos($url, '/'       ) === 0) return false;
-
         return true;
     }
 
 
     function _debug($obj)
     {
-          echo "<pre>";
-          print_r($obj);
-          echo "</pre>";
+        echo "<pre>";
+        print_r($obj);
+        echo "</pre>";
     }
 
 }

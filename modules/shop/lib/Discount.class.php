@@ -8,15 +8,15 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.ch>
  * @access      public
- * @version     2.1.0
+ * @version     2.2.0
  * @package     contrexx
  * @subpackage  module_shop
  */
 
-/**
- * Product class with database layer.
- */
-require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
+///**
+// * Product class with database layer.
+// */
+//require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
 
 /**
  * Discount
@@ -33,11 +33,172 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
 class Discount
 {
     /**
-     * Constructor
-     * @return  Discount
+     * Text keys
      */
-    function __construct()
+    const TEXT_NAME_GROUP_COUNT = 'discount_group_name';
+    const TEXT_UNIT_GROUP_COUNT = 'discount_group_unit';
+    const TEXT_NAME_GROUP_ARTICLE = 'discount_group_article';
+    const TEXT_NAME_GROUP_CUSTOMER = 'discount_group_customer';
+
+    /**
+     * Array of count type discount group names
+     * @var   array
+     */
+    private static $arrDiscountCountName = null;
+    /**
+     * Array of count type discount group units
+     * @var   array
+     */
+    private static $arrDiscountCountRate = null;
+    /**
+     * Array of Customer groups
+     * @var   array
+     */
+    private static $arrCustomerGroup = null;
+    /**
+     * Array of Article groups
+     * @var   array
+     */
+    private static $arrArticleGroup = null;
+    /**
+     * Array of Article/Customer group discount rates
+     * @var   array
+     */
+    private static $arrDiscountRateCustomer = null;
+
+
+    /**
+     * Initializes all static Discount data
+     * @return  boolean             True on success, false otherwise
+     */
+    static function init()
     {
+        global $objDatabase;
+
+        $arrSql = Text::getSqlSnippets('`discount`.`id`',
+            FRONTEND_LANG_ID, 'shop', array(
+                self::TEXT_NAME_GROUP_COUNT, self::TEXT_UNIT_GROUP_COUNT));;
+        $query = "
+            SELECT `discount`.`id`, ".$arrSql['field']."
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_name` AS `discount`
+                   ".$arrSql['join']."
+             ORDER BY `id` ASC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        self::$arrDiscountCountName = array();
+        while (!$objResult->EOF) {
+            $group_id = $objResult->fields['id'];
+            $strName = $objResult->fields[$arrSql['alias'][self::TEXT_NAME_GROUP_COUNT]];
+            if (is_null($strName)) {
+                $strName = Text::getById($group_id, 'shop',
+                    self::TEXT_NAME_GROUP_COUNT)->content();
+            }
+            $strUnit = $objResult->fields[$arrSql['alias'][self::TEXT_UNIT_GROUP_COUNT]];
+            if (is_null($strUnit)) {
+                $strUnit = Text::getById($group_id, 'shop',
+                    self::TEXT_UNIT_GROUP_COUNT)->content();
+            }
+            self::$arrDiscountCountName[$group_id] = array(
+                'name' => $strName,
+                'unit' => $strUnit,
+            );
+            $objResult->MoveNext();
+        }
+
+        // Note that the ordering is significant here.
+        // Some methods rely on it to find the applicable rate.
+        $query = "
+            SELECT `group_id`, `count`, `rate`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_rate`
+             ORDER by `count` DESC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        self::$arrDiscountCountRate = array();
+        while (!$objResult->EOF) {
+            $group_id = $objResult->fields['group_id'];
+            $count = $objResult->fields['count'];
+            $rate = $objResult->fields['rate'];
+            self::$arrDiscountCountRate[$group_id][$count] = $rate;
+            $objResult->MoveNext();
+        }
+
+        $arrSqlName = Text::getSqlSnippets(
+            '`discount`.`id`', FRONTEND_LANG_ID, 'shop',
+            self::TEXT_NAME_GROUP_CUSTOMER);
+        $query = "
+            SELECT `discount`.`id`, ".$arrSqlName['field']."
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_customer_group` AS `discount`
+                   ".$arrSqlName['join']."
+             ORDER BY `id` ASC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        self::$arrCustomerGroup = array();
+        while (!$objResult->EOF) {
+            $group_id = $objResult->fields['id'];
+            $strName = $objResult->fields[$arrSqlName['alias'][self::TEXT_NAME_GROUP_CUSTOMER]];
+            if (is_null($strName)) {
+                $strName = Text::getById($group_id, 'shop',
+                    self::TEXT_NAME_GROUP_CUSTOMER)->content();
+            }
+            self::$arrCustomerGroup[$group_id] = array(
+                'name' => $strName,
+            );
+            $objResult->MoveNext();
+        }
+
+        $arrSqlName = Text::getSqlSnippets(
+            '`discount`.`id`', FRONTEND_LANG_ID, 'shop',
+            self::TEXT_NAME_GROUP_ARTICLE);
+        $query = "
+            SELECT `discount`.`id`, ".$arrSqlName['field']."
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_article_group` AS `discount`
+                   ".$arrSqlName['join']."
+             ORDER BY `id` ASC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        self::$arrArticleGroup = array();
+        while (!$objResult->EOF) {
+            $group_id = $objResult->fields['id'];
+            $strName = $objResult->fields[$arrSqlName['alias'][self::TEXT_NAME_GROUP_ARTICLE]];
+            if (is_null($strName)) {
+                $strName = Text::getById($group_id, 'shop',
+                    self::TEXT_NAME_GROUP_ARTICLE)->content();
+            }
+            self::$arrArticleGroup[$group_id] = array(
+                'name' => $strName,
+            );
+            $objResult->MoveNext();
+        }
+//DBG::log("Discount::init(): Made \$arrArticleGroup: ".var_export(self::$arrArticleGroup, true));
+
+        $query = "
+            SELECT `customer_group_id`, `article_group_id`, `rate`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_discount_group`";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        self::$arrDiscountRateCustomer = array();
+        while (!$objResult->EOF) {
+            $groupCustomerId = $objResult->fields['customer_group_id'];
+            $groupArticleId = $objResult->fields['article_group_id'];
+            $rate = $objResult->fields['rate'];
+            self::$arrDiscountRateCustomer[$groupCustomerId][$groupArticleId] = $rate;
+            $objResult->MoveNext();
+        }
+        return true;
+    }
+
+
+    /**
+     * Flushes all static Discount data
+     * @return  void
+     */
+    static function flush()
+    {
+        self::$arrDiscountCountName = null;
+        self::$arrDiscountCountRate = null;
+        self::$arrCustomerGroup = null;
+        self::$arrArticleGroup = null;
+        self::$arrDiscountRateCustomer = null;
     }
 
 
@@ -50,27 +211,21 @@ class Discount
      * @return  string                  The HTML dropdown menu options
      *                                  on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getMenuOptionsGroupCount($selectedId=0)
     {
         global $_ARRAYLANG;
 
-        $arrGroup = Discount::getDiscountCountArray();
-        if ($arrGroup === false) return false;
-        $strMenuOptions =
-            '<option value="0">'.
-            $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
-            '</option>';
-        foreach ($arrGroup as $id => $arrDiscount) {
-            $name = $arrDiscount['name'];
-            $unit = $arrDiscount['unit'];
-            $strMenuOptions .=
-                '<option value="'.$id.'"'.
-                ($selectedId == $id ? ' selected="selected"' : '').
-                '>'.$name.' ('.$unit.')</option>';
+        if (is_null(self::$arrDiscountCountName)) self::init();
+        $arrName = array();
+        foreach (self::$arrDiscountCountName as $group_id => $arrGroup) {
+            $arrName[$group_id] = $arrGroup['name'].' ('.$arrGroup['unit'].')';
         }
-        return $strMenuOptions;
+        return Html::getOptions(
+            array(
+                0 => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE']
+            ) + $arrName, $selectedId);
     }
 
 
@@ -79,32 +234,17 @@ class Discount
      * indexed by their ID.
      *
      * Backend use only.
-     * @return  array         The discount name array on success,
-     *                        false otherwise
+     * @return  array                   The discount name array on success,
+     *                                  null otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getDiscountCountArray()
     {
         global $objDatabase;
 
-        $query = "
-            SELECT *
-              FROM `".DBPREFIX."module_shop_discountgroup_count_name`
-             ORDER BY id ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrDiscount = array();
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $arrDiscount[$id] = array(
-                'name' => $objResult->fields['name'],
-                'unit' => $objResult->fields['unit']
-            );
-            $objResult->MoveNext();
-        }
-        return $arrDiscount;
+        if (is_null(self::$arrDiscountCountName)) self::init();
+        return self::$arrDiscountCountName;
     }
 
 
@@ -113,32 +253,21 @@ class Discount
      * discount selected by its ID.
      *
      * Backend use only.
-     * @param   integer   $id     The count type discount ID
-     * @return  array             The array with counts and rates on success,
-     *                            false otherwise
+     * Note that on success, the array returned contains at least one entry,
+     * namely that for "no discount".
+     * @param   integer   $group_id     The count type discount group ID
+     * @return  array                   The array with counts and rates
+     *                                  on success, null otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getDiscountCountRateArray($id)
+    static function getDiscountCountRateArray($group_id)
     {
         global $objDatabase;
 
-        if (empty($id)) return '';
-        $query = "
-            SELECT count, rate
-              FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
-             WHERE group_id=".intval($id);
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        // Default to no discount
-        $arrDiscount = array(0 => 0);
-        while (!$objResult->EOF) {
-            $count = $objResult->fields['count'];
-            $rate = $objResult->fields['rate'];
-            $arrDiscount[$count] = $rate;
-            $objResult->MoveNext();
-        }
-        return $arrDiscount;
+        if (empty($group_id)) return null;
+        if (is_null(self::$arrDiscountCountRate)) self::init();
+        return self::$arrDiscountCountRate;
     }
 
 
@@ -147,52 +276,50 @@ class Discount
      * the given ID and the given count.
      *
      * Frontend use only.
-     * @param   integer   $id           The discount group ID
+     * @param   integer   $group_id     The discount group ID
      * @param   integer   $count        The number of Products
-     * @return  double                  The discount rate in percent
+     * @return  float                   The discount rate in percent
      *                                  to be applied, if any,
      *                                  0 (zero) otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getDiscountRateCount($id, $count=1)
+    static function getDiscountRateCount($group_id, $count=1)
     {
         global $objDatabase;
 
-        if (empty($id)) return '';
-        $query = "
-            SELECT `count`, `rate`
-              FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
-             WHERE `group_id`=$id
-               AND `count`<=$count
-             ORDER BY `count` DESC
-        ";
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if (!$objResult || $objResult->EOF) return 0;
-        return $objResult->fields['rate'];
+        // Unknown group ID.  No discount.
+        if (empty($group_id)) return 0;
+        if (is_null(self::$arrDiscountCountRate)) self::init();
+        // Unknown group, or no counts defined.  No discount.
+        if (empty(self::$arrDiscountCountRate[$group_id])) return 0;
+        // Mind that the order of the elements is significant; they must
+        // be ordered by descending count.  See init().
+        foreach (self::$arrDiscountCountRate[$group_id] as $count_min => $rate) {
+            if ($count >= $count_min) return $rate;
+        }
+        // Quantity too small.  No discount.
+        return 0;
     }
 
 
     /**
      * Returns the unit used for the count type discount group
      * with the given ID
-     * @param   integer   $id       The count type discount group ID
-     * @return  string              The unit used for this group on success,
-     *                              the empty string otherwise
+     * @param   integer   $group_id   The count type discount group ID
+     * @return  string                The unit used for this group on success,
+     *                                the empty string otherwise
      */
-    static function getUnit($id)
+    static function getUnit($group_id)
     {
         global $objDatabase;
 
-        if (empty($id)) return '';
-        $query = "
-            SELECT unit
-              FROM `".DBPREFIX."module_shop_discountgroup_count_name`
-             WHERE id=$id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) return '';
-        return $objResult->fields['unit'];
+        $group_id = intval($group_id);
+        if (empty($group_id)) return '';
+        if (is_null(self::$arrDiscountCountName)) self::init();
+        return (isset(self::$arrDiscountCountName[$group_id])
+            ? self::$arrDiscountCountName[$group_id]['unit']
+            : '');
     }
 
 
@@ -200,7 +327,7 @@ class Discount
      * Store the count type discount settings
      *
      * Backend use only.
-     * @param   integer   $id         The ID of the discount group,
+     * @param   integer   $group_id   The ID of the discount group,
      *                                if known, or 0 (zero)
      * @param   string    $groupName  The group name
      * @param   string    $groupUnit  The group unit
@@ -210,69 +337,56 @@ class Discount
      *                                the elements of the count array
      * @return  boolean               True on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function storeDiscountCount(
-        $id, $groupName, $groupUnit, $arrCount, $arrRate
+        $group_id, $groupName, $groupUnit, $arrCount, $arrRate
     ) {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        if (empty($id)) $id = 0;
+        if (is_null(self::$arrDiscountCountName)) self::init();
+        $group_id = intval($group_id);
         $query = "
-            SELECT 1
-              FROM `".DBPREFIX."module_shop_discountgroup_count_name`
-             WHERE id=$id
-        ";
+            REPLACE INTO `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_name` (
+                `id`
+            ) VALUES (
+                $group_id
+            )";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        if ($objResult->RecordCount() == 1) {
-            // Exists, update
-            $query = "
-                UPDATE `".DBPREFIX."module_shop_discountgroup_count_name`
-                   SET name='$groupName',
-                       unit='$groupUnit'
-                 WHERE id=$id
-            ";
-        } else {
-            // Insert
-            $query = "
-                INSERT INTO `".DBPREFIX."module_shop_discountgroup_count_name` (
-                    name, unit
-                ) VALUES (
-                    '".addslashes($groupName)."',
-                    '".addslashes($groupUnit)."'
-                )
-            ";
+        if (!$objResult) return self::errorHandler();
+        if (empty($group_id)) {
+            $group_id = $objDatabase->Insert_Id();
         }
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        if (empty($id)) {
-            $id = $objDatabase->Insert_Id();
+        if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+            self::TEXT_NAME_GROUP_COUNT, $groupName)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_ERROR_STORING']);
         }
-
+        if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+            self::TEXT_UNIT_GROUP_COUNT, $groupUnit)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_ERROR_STORING']);
+        }
         // Remove old counts and rates
         $query = "
-            DELETE FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
-             WHERE group_id=$id
-        ";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_rate`
+             WHERE `group_id`=$group_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
+        if (!$objResult) return self::errorHandler();
         // Insert new counts and rates
         foreach ($arrCount as $index => $count) {
             $rate = $arrRate[$index];
             if ($count <= 0 || $rate <= 0) continue;
             $query = "
-                INSERT INTO `".DBPREFIX."module_shop_discountgroup_count_rate` (
-                    group_id, count, rate
+                INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_rate` (
+                    `group_id`, `count`, `rate`
                 ) VALUES (
-                    $id, $count, $rate
-                )
-            ";
+                    $group_id, $count, $rate
+                )";
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult) return false;
+            if (!$objResult) {
+                return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_ERROR_STORING']);
+            }
         }
-        return true;
+        return Message::ok($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_STORED_SUCCESSFULLY']);
     }
 
 
@@ -280,32 +394,39 @@ class Discount
      * Delete the count type discount group seleted by its ID from the database
      *
      * Backend use only.
-     * @param   integer   $id     The discount group ID
-     * @return  boolean           True on success, false otherwise
+     * @param   integer   $group_id     The discount group ID
+     * @return  boolean                 True on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function deleteDiscountCount($id)
+    static function deleteDiscountCount($group_id)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        if (empty($id)) return false;
+        if (empty($group_id)) return false;
+        if (is_null(self::$arrDiscountCountName)) self::init();
+        if (empty(self::$arrDiscountCountName[$group_id])) return true;
         // Remove counts and rates
         $query = "
-            DELETE FROM `".DBPREFIX."module_shop_discountgroup_count_rate`
-             WHERE group_id=$id
-        ";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_rate`
+             WHERE `group_id`=$group_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-
-        // Remove the group itself
+        if (!$objResult) return self::errorHandler();
+        // Remove the group
+        if (!Text::deleteById($group_id, 'shop', self::TEXT_NAME_GROUP_COUNT)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_ERROR_DELETING']);
+        }
+        if (!Text::deleteById($group_id, 'shop', self::TEXT_UNIT_GROUP_COUNT)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_ERROR_DELETING']);
+        }
         $query = "
-            DELETE FROM `".DBPREFIX."module_shop_discountgroup_count_name`
-             WHERE id=$id
-        ";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_name`
+             WHERE `id`=$group_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        return true;
+        if (!$objResult) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_ERROR_DELETING']);
+        }
+        return Message::ok($_ARRAYLANG['TXT_SHOP_DISCOUNT_COUNT_DELETED_SUCCESSFULLY']);
     }
 
 
@@ -316,58 +437,47 @@ class Discount
      * Backend use only.
      * @param   integer   $selectedId   The optional preselected ID
      * @return  string                  The HTML dropdown menu options
-     *                                  on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getMenuOptionsGroupCustomer($selectedId=0)
     {
         global $_ARRAYLANG;
 
-        $arrGroup = Discount::getCustomerGroupArray();
-        if ($arrGroup === false) return false;
-        $strMenuOptions =
-            '<option value="0">'.
-            $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
-            '</option>';
-        foreach ($arrGroup as $id => $name) {
-            $strMenuOptions .=
-                '<option value="'.$id.'"'.
-                ($selectedId == $id ? ' selected="selected"' : '').
-                '>'.$name.'</option>';
-        }
-        return $strMenuOptions;
+        if (is_null(self::$arrCustomerGroup)) self::init();
+        return Html::getOptions(
+            array(
+                0 => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE']
+            ) + self::getCustomerGroupNameArray(), $selectedId);
     }
 
 
     /**
      * Returns the HTML dropdown menu options with all of the
-     * article group names
+     * article group names, plus a null option prepended
      *
      * Backend use only.
      * @param   integer   $selectedId   The optional preselected ID
      * @return  string                  The HTML dropdown menu options
-     *                                  on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getMenuOptionsGroupArticle($selectedId=0)
     {
         global $_ARRAYLANG;
+        static $arrArticleGroupName = null;
 
-        $arrGroup = Discount::getArticleGroupArray();
-        if ($arrGroup === false) return false;
-        $strMenuOptions =
-            '<option value="0">'.
-            $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'].
-            '</option>';
-        foreach ($arrGroup as $id => $name) {
-            $strMenuOptions .=
-                '<option value="'.$id.'"'.
-                ($selectedId == $id ? ' selected="selected"' : '').
-                '>'.$name.'</option>';
+//DBG::log("Discount::getMenuOptionsGroupArticle($selectedId): Entered");
+        if (is_null(self::$arrArticleGroup)) self::init();
+        if (is_null($arrArticleGroupName)) {
+            foreach (self::$arrArticleGroup as $id => $arrArticleGroup) {
+                $arrArticleGroupName[$id] = $arrArticleGroup['name'];
+//DBG::log("Discount::getMenuOptionsGroupArticle($selectedId): Adding ID $id => {$arrArticleGroup['name']}");
+            }
         }
-        return $strMenuOptions;
+        return Html::getOptions(
+            array(0 => $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'], )
+          + $arrArticleGroupName, $selectedId);
     }
 
 
@@ -376,58 +486,35 @@ class Discount
      * indexed by their ID
      *
      * Backend use only.
-     * @return  array         The group name array on success,
-     *                        false otherwise
+     * @return  array                 The group name array on success,
+     *                                null otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getCustomerGroupArray()
     {
         global $objDatabase;
 
-        $query = "
-            SELECT *
-              FROM `".DBPREFIX."module_shop_customer_group`
-             ORDER BY id ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrGroup = array();
-        while (!$objResult->EOF) {
-            $arrGroup[$objResult->fields['id']] = $objResult->fields['name'];
-            $objResult->MoveNext();
-        }
-        return $arrGroup;
+        if (is_null(self::$arrCustomerGroup)) self::init();
+        return self::$arrCustomerGroup;
     }
 
 
     /**
-     * Returns an array with all the article group names
-     * indexed by their ID
+     * Returns an array with all the article group names indexed by their ID
      *
      * Backend use only.
-     * @return  array         The group name array on success,
-     *                        false otherwise
+     * @return  array                 The group name array on success,
+     *                                null otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getArticleGroupArray()
     {
         global $objDatabase;
 
-        $query = "
-            SELECT *
-              FROM `".DBPREFIX."module_shop_article_group`
-             ORDER BY id ASC
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrGroup = array();
-        while (!$objResult->EOF) {
-            $arrGroup[$objResult->fields['id']] = $objResult->fields['name'];
-            $objResult->MoveNext();
-        }
-        return $arrGroup;
+        if (is_null(self::$arrArticleGroup)) self::init();
+        return self::$arrArticleGroup;
     }
 
 
@@ -442,28 +529,16 @@ class Discount
      *    ),
      *    ...
      *  );
-     * @return  array             The discount rate array
+     * @return  array                 The discount rate array on success,
+     *                                null otherwise
      * @static
      */
     static function getDiscountRateCustomerArray()
     {
         global $objDatabase;
 
-        $query = "
-            SELECT *
-              FROM `".DBPREFIX."module_shop_rel_discount_group`
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $arrRate = array();
-        while (!$objResult->EOF) {
-            $groupCustomerId = $objResult->fields['customer_group_id'];
-            $groupArticleId = $objResult->fields['article_group_id'];
-            $rate = $objResult->fields['rate'];
-            $arrRate[$groupCustomerId][$groupArticleId] = $rate;
-            $objResult->MoveNext();
-        }
-        return $arrRate;
+        if (is_null(self::$arrDiscountRateCustomer)) self::init();
+        return self::$arrDiscountRateCustomer;
     }
 
 
@@ -474,25 +549,22 @@ class Discount
      * Frontend use only.
      * @param   integer   $groupCustomerId    The customer group ID
      * @param   integer   $groupArticleId     The article group ID
-     * @return  double                        The discount rate, if applicable,
+     * @return  float                         The discount rate, if applicable,
      *                                        0 (zero) otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getDiscountRateCustomer($groupCustomerId, $groupArticleId)
     {
         global $objDatabase;
 
-        if (empty($groupCustomerId) || empty($groupArticleId)) return 0;
-        $query = "
-            SELECT `rate`
-              FROM `".DBPREFIX."module_shop_rel_discount_group`
-             WHERE `customer_group_id`=$groupCustomerId
-               AND `article_group_id`=$groupArticleId
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) return 0;
-        return $objResult->fields['rate'];
+        if (is_null(self::$arrDiscountRateCustomer)) self::init();
+        $groupCustomerId = intval($groupCustomerId);
+        $groupArticleId = intval($groupArticleId);
+        if (isset(self::$arrDiscountRateCustomer[$groupCustomerId][$groupArticleId])) {
+            return self::$arrDiscountRateCustomer[$groupCustomerId][$groupArticleId];
+        }
+        return 0;
     }
 
 
@@ -501,26 +573,42 @@ class Discount
      * for the given ID
      *
      * Backend use only.
-     * @return  string        The group name on success,
-     *                        false otherwise
+     * @param   integer   $group_id     The Customer group ID
+     * @return  string                  The group name on success,
+     *                                  the string for "none" otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getCustomerGroupName($id)
+    static function getCustomerGroupName($group_id)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
-        if (empty($id) || !is_numeric($id))
-            return $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'];
-        $query = "
-            SELECT `name`
-              FROM `".DBPREFIX."module_shop_customer_group`
-             WHERE `id`=$id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        if (!$objResult->EOF) return $objResult->fields['name'];
-        return '';
+        if (is_null(self::$arrCustomerGroup)) self::init();
+        if (isset(self::$arrCustomerGroup[$group_id])) {
+            return self::$arrCustomerGroup[$group_id]['name'];
+        }
+        return $_ARRAYLANG['TXT_SHOP_DISCOUNT_GROUP_NONE'];
+    }
+
+
+    /**
+     * Returns an array with the customer group names, indexed by ID
+     *
+     * Backend use only.
+     * Note that the array returned may be empty.
+     * @return  array                   The group name array on success,
+     *                                  null otherwise
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getCustomerGroupNameArray()
+    {
+        if (is_null(self::$arrCustomerGroup)) self::init();
+        $arrGroupname = array();
+        foreach (self::$arrCustomerGroup as $id => $arrGroup) {
+            $arrGroupname[$id] = $arrGroup['name'];
+        }
+        return $arrGroupname;
     }
 
 
@@ -539,124 +627,110 @@ class Discount
      * @param   array     $arrDiscountRate  The array of discount rates
      * @return  boolean                     True on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function storeDiscountCustomer($arrDiscountRate)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         $query = "
-            TRUNCATE TABLE `".DBPREFIX."module_shop_rel_discount_group`
-        ";
+            TRUNCATE TABLE `".DBPREFIX."module_shop".MODULE_INDEX."_rel_discount_group`";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (!$objResult) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_ERROR_STORING']);
+        }
         foreach ($arrDiscountRate as $groupCustomerId => $arrArticleRow) {
             foreach ($arrArticleRow as $groupArticleId => $rate) {
-                // No need to insert "no discount" records.
-                if ($rate == 0) continue;
+                // No need to insert invalid and "no discount" records.
+                if ($rate <= 0) continue;
                 // Insert
                 $query = "
-                    INSERT INTO `".DBPREFIX."module_shop_rel_discount_group` (
+                    INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_rel_discount_group` (
                         `customer_group_id`, `article_group_id`, `rate`
                     ) VALUES (
                         $groupCustomerId, $groupArticleId, $rate
-                    )
-                ";
+                    )";
                 $objResult = $objDatabase->Execute($query);
-                if (!$objResult) return false;
+                if (!$objResult) {
+                    return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_ERROR_STORING']);
+                }
             }
         }
-        return true;
+        return Message::ok($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_STORED_SUCCESSFULLY']);
     }
 
 
     /**
      * Store a customer group in the database
      * @param   string    $groupName    The group name
-     * @param   integer   $id           The optional group ID
+     * @param   integer   $group_id     The optional group ID
      * @return  integer                 The (new) group ID on success,
-     *                                  0 (zero) otherwise
+     *                                  false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function storeCustomerGroup($groupName, $id=0)
+    static function storeCustomerGroup($groupName, $group_id=0)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        // Default to inserting the group
+        if (is_null(self::$arrCustomerGroup)) self::init();
+        $group_id = intval($group_id);
         $query = "
-            INSERT INTO `".DBPREFIX."module_shop_customer_group` (
-                name
+            REPLACE INTO `".DBPREFIX."module_shop".MODULE_INDEX."_customer_group` (
+                `id`
             ) VALUES (
-                '".addslashes($groupName)."'
-            )
-        ";
-        // Maybe the record exists if the ID is not zero
-        if ($id > 0) {
-            $query_exists = "
-                SELECT 1
-                  FROM `".DBPREFIX."module_shop_customer_group`
-                 WHERE id=$id
-            ";
-            $objResult = $objDatabase->Execute($query_exists);
-            if (!$objResult) return false;
-            if ($objResult->RecordCount() == 1) {
-                // Exists, update
-                $query = "
-                    UPDATE `".DBPREFIX."module_shop_customer_group`
-                       SET name='$groupName'
-                     WHERE id=$id
-                ";
-            }
-        }
+                $group_id
+            )";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        return true;
+        if (!$objResult) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_GROUP_ERROR_STORING']);
+        }
+        if (empty($group_id)) {
+            $group_id = $objDatabase->Insert_Id();
+        }
+        if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+            self::TEXT_NAME_GROUP_CUSTOMER, $groupName)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_GROUP_ERROR_STORING']);
+        }
+        Message::ok($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_GROUP_STORED_SUCCESSFULLY']);
+        return $group_id;
     }
 
 
     /**
      * Store an article group in the database
      * @param   string    $groupName    The group name
-     * @param   integer   $id           The optional group ID
+     * @param   integer   $group_id     The optional group ID
      * @return  integer                 The (new) group ID on success,
-     *                                  0 (zero) otherwise
+     *                                  false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function storeArticleGroup($groupName, $id=0)
+    static function storeArticleGroup($groupName, $group_id=0)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        // Default to inserting the group
+        if (is_null(self::$arrArticleGroup)) self::init();
+        $group_id = intval($group_id);
         $query = "
-            INSERT INTO `".DBPREFIX."module_shop_article_group` (
-                name
+            REPLACE INTO `".DBPREFIX."module_shop".MODULE_INDEX."_article_group` (
+                `id`
             ) VALUES (
-                '".addslashes($groupName)."'
-            )
-        ";
-        // Maybe the record exists if the ID is not zero
-        if ($id > 0) {
-            $query_exists = "
-                SELECT 1
-                  FROM `".DBPREFIX."module_shop_article_group`
-                 WHERE id=$id
-            ";
-            $objResult = $objDatabase->Execute($query_exists);
-            if (!$objResult) return false;
-            if ($objResult->RecordCount() == 1) {
-                // Exists, update
-                $query = "
-                    UPDATE `".DBPREFIX."module_shop_article_group`
-                       SET name='$groupName'
-                     WHERE id=$id
-                ";
-            }
-        }
+                $group_id
+            )";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        return true;
+        if (!$objResult) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_ARTICLE_GROUP_ERROR_STORING']);
+        }
+        if (empty($group_id)) {
+            $group_id = $objDatabase->Insert_Id();
+        }
+        if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+            self::TEXT_NAME_GROUP_ARTICLE, $groupName)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_ARTICLE_GROUP_ERROR_STORING']);
+        }
+        Message::ok($_ARRAYLANG['TXT_SHOP_DISCOUNT_ARTICLE_GROUP_STORED_SUCCESSFULLY']);
+        return $group_id;
     }
 
 
@@ -664,31 +738,39 @@ class Discount
      * Delete the customer group from the database
      *
      * Backend use only.
-     * @param   integer   $id           The group ID
+     * @param   integer   $group_id     The group ID
      * @return  boolean                 True on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function deleteCustomerGroup($id)
+    static function deleteCustomerGroup($group_id)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        if (empty($id)) return false;
-        // Remove the group itself
-        $query = "
-            DELETE FROM `".DBPREFIX."module_shop_customer_group`
-             WHERE id=$id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (empty($group_id)) return false;
+        if (is_null(self::$arrCustomerGroup)) self::init();
+        if (empty(self::$arrCustomerGroup[$group_id])) return true;
         // Remove related rates
         $query = "
-            DELETE FROM `".DBPREFIX."module_shop_rel_discount_group`
-             WHERE customer_group_id=$id
-        ";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_discount_group`
+             WHERE `customer_group_id`=$group_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        return true;
+        if (!$objResult) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_GROUP_ERROR_DELETING']);
+        }
+        // Remove the group
+        if (!Text::deleteById($group_id, 'shop',
+            self::TEXT_NAME_GROUP_CUSTOMER)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_GROUP_ERROR_DELETING']);
+        }
+        $query = "
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_customer_group`
+             WHERE `id`=$group_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_GROUP_ERROR_DELETING']);
+        }
+        return Message::ok($_ARRAYLANG['TXT_SHOP_DISCOUNT_CUSTOMER_GROUP_DELETED_SUCCESSFULLY']);
     }
 
 
@@ -696,33 +778,176 @@ class Discount
      * Delete the article group from the database
      *
      * Backend use only.
-     * @param   integer   $id           The group ID
+     * @param   integer   $group_id     The group ID
      * @return  boolean                 True on success, false otherwise
      * @static
-     * @author  Reto Kohli <reto.kohli@astalavista.ch>
+     * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function deleteArticleGroup($id)
+    static function deleteArticleGroup($group_id)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        if (empty($id)) return false;
-        // Remove the group itself
-        $query = "
-            DELETE FROM `".DBPREFIX."module_shop_article_group`
-             WHERE id=$id
-        ";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
+        if (empty($group_id)) return false;
+        if (is_null(self::$arrArticleGroup)) self::init();
+        if (empty(self::$arrArticleGroup[$group_id])) return true;
         // Remove related rates
         $query = "
-            DELETE FROM `".DBPREFIX."module_shop_rel_discount_group`
-             WHERE article_group_id=$id
-        ";
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_discount_group`
+             WHERE `article_group_id`=$group_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        return true;
+        if (!$objResult) return self::errorHandler();
+        // Remove the group
+        if (!Text::deleteById(
+            $group_id, 'shop', self::TEXT_NAME_GROUP_ARTICLE)) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_ARTICLE_GROUP_ERROR_DELETING']);
+        }
+        $query = "
+            DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_article_group`
+             WHERE `id`=$group_id";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return Message::error($_ARRAYLANG['TXT_SHOP_DISCOUNT_ARTICLE_GROUP_ERROR_DELETING']);
+        }
+        return Message::ok($_ARRAYLANG['TXT_SHOP_DISCOUNT_ARTICLE_GROUP_DELETED_SUCCESSFULLY']);
     }
 
+
+    /**
+     * Tries to fix any database problems
+     * @return  boolean           False.  Always.
+     */
+    static function errorHandler()
+    {
+//die("Discount::errorHandler(): Disabled!<br />");
+
+        require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_article_group';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+        );
+        $table_index = array();
+        if (!UpdateUtil::table_exist($table_name)) {
+            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+                throw new Update_DatabaseException(
+                   "Failed to create article group table");
+            }
+        }
+        if (UpdateUtil::column_exist($table_name, 'name')) {
+            Text::deleteByKey('shop', self::TEXT_NAME_GROUP_ARTICLE);
+            $query = "
+                SELECT `id`, `name`
+                  FROM `$table_name`";
+            $objResult = UpdateUtil::sql($query);
+            if (!$objResult) {
+                throw new Update_DatabaseException(
+                   "Failed to query article group names", $query);
+            }
+            while (!$objResult->EOF) {
+                $group_id = $objResult->fields['id'];
+                $name = $objResult->fields['name'];
+                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                    self::TEXT_NAME_GROUP_ARTICLE, $name)) {
+                    throw new Update_DatabaseException(
+                       "Failed to migrate article group names");
+                }
+                $objResult->MoveNext();
+            }
+            UpdateUtil::table($table_name, $table_structure, $table_index);
+        }
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_customer_group';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+        );
+        $table_index = array();
+        if (!UpdateUtil::table_exist($table_name)) {
+            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+                throw new Update_DatabaseException(
+                   "Failed to create customer group table");
+            }
+        }
+        if (UpdateUtil::column_exist($table_name, 'name')) {
+            Text::deleteByKey('shop', self::TEXT_NAME_GROUP_CUSTOMER);
+            $query = "
+                SELECT `id`, `name`
+                  FROM `$table_name`";
+            $objResult = UpdateUtil::sql($query);
+            if (!$objResult) {
+                throw new Update_DatabaseException(
+                   "Failed to query customer group names", $query);
+            }
+            while (!$objResult->EOF) {
+                $group_id = $objResult->fields['id'];
+                $name = $objResult->fields['name'];
+                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                    self::TEXT_NAME_GROUP_CUSTOMER, $name)) {
+                throw new Update_DatabaseException(
+                   "Failed to migrate customer group names");
+                }
+                $objResult->MoveNext();
+            }
+            UpdateUtil::table($table_name, $table_structure, $table_index);
+        }
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_discount_group';
+        $table_structure = array(
+            'customer_group_id' => array('type' => 'int(10)', 'unsigned' => true, 'notnull' => true, 'default' => 0, 'primary' => true),
+            'article_group_id' => array('type' => 'int(10)', 'unsigned' => true, 'notnull' => true, 'default' => 0, 'primary' => true),
+            'rate' => array('type' => 'decimal(9,2)', 'notnull' => true, 'default' => '0.00'),
+        );
+        $table_index = array();
+        if (!UpdateUtil::table_exist($table_name)) {
+            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+                throw new Update_DatabaseException(
+                   "Failed to create customer group table");
+            }
+        }
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_discountgroup_count_name';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+        );
+        $table_index = array();
+        if (!UpdateUtil::table_exist($table_name)) {
+            if (!UpdateUtil::create_table($table_name, $table_structure, $table_index)) {
+                throw new Update_DatabaseException(
+                   "Failed to create count group table");
+            }
+        }
+        if (UpdateUtil::column_exist($table_name, 'name')) {
+            Text::deleteByKey('shop', self::TEXT_NAME_GROUP_COUNT);
+            Text::deleteByKey('shop', self::TEXT_UNIT_GROUP_COUNT);
+            $query = "
+                SELECT `id`, `name`, `unit`
+                  FROM `$table_name`";
+            $objResult = UpdateUtil::sql($query);
+            if (!$objResult) {
+                throw new Update_DatabaseException(
+                   "Failed to query count group names", $query);
+            }
+            while (!$objResult->EOF) {
+                $group_id = $objResult->fields['id'];
+                $name = $objResult->fields['name'];
+                $unit = $objResult->fields['unit'];
+                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                    self::TEXT_NAME_GROUP_COUNT, $name)) {
+                    throw new Update_DatabaseException(
+                       "Failed to migrate count group names");
+                }
+                if (!Text::replace($group_id, FRONTEND_LANG_ID, 'shop',
+                    self::TEXT_UNIT_GROUP_COUNT, $unit)) {
+                    throw new Update_DatabaseException(
+                       "Failed to migrate count group units");
+                }
+                $objResult->MoveNext();
+            }
+            UpdateUtil::table($table_name, $table_structure, $table_index);
+        }
+
+        // Always
+        return false;
+    }
 
 }
 
