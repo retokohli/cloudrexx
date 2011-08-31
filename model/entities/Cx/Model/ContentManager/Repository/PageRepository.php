@@ -231,7 +231,8 @@ class PageRepository extends EntityRepository {
             }
         }
 
-        return $path;
+        //cut leading /
+        return substr($path,1);
     }
 
     /**
