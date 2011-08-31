@@ -16,7 +16,7 @@ mv configuration_testing.php configuration.php
 echo "starting unit testing"
 cd $dir
 cd PHPUnit
-php ../cx_bootstrap.php $dir/tests
+php ../cx_bootstrap.php $dir/tests $1 $2
 
 cd $dir
 cd ../config
