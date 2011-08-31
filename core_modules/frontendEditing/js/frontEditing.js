@@ -249,7 +249,18 @@ function fe_loadEditor(showSelectionIfNeeded) {
 	  						onSuccess: function(transport) {
 	  							fe_loadEditorResponse(transport.responseText);
 	  						},
-	  						onComplete: fe_stopLoading()
+	  						onComplete: function() {
+                                CKEDITOR.replace(fe_editorFormContentName, {
+                                    width: '100%',
+                                    height: 400,
+                                    toolbar: 'Default',
+                                    customConfig: CKEDITOR.getUrl('config.contrexx.js.php')
+                                });
+                                CKEDITOR.on("instanceReady", function(event){
+                                    $J("#cke_message").css({marginLeft:"0px"});
+                                });
+                                fe_stopLoading();
+                            }
 						}
 					);		
 	} else {
@@ -399,7 +410,7 @@ function fe_updatePage() {
 											section: fe_pageSection,
 											cmd: fe_pageCommand,
 											title: $F(fe_editorFormTitleName),
-											content: FCKeditorAPI.GetInstance(fe_editorFormContentName).GetData()
+											content: CKEDITOR.instances[fe_editorFormContentName].getData()
 										},
 	  						onSuccess: function(transport) {
 	  							fe_loadPreview(false);
