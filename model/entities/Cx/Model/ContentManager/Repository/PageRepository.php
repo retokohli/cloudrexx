@@ -77,7 +77,7 @@ class PageRepository extends EntityRepository {
      * Get a tree mapping titles to Page, Node and language.
      *
      * @see getTree()
-     * @return array ( title => array( lang => langId, page => Page, __childs => array ) recursively array-mapped tree.
+     * @return array ( title => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
      */
     public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugAsTitle=false) {
         $tree = $this->getTree($rootNode, $lang, true);
