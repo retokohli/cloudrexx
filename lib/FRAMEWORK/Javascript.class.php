@@ -107,11 +107,15 @@ class JS
                 'lib/javascript/shadowbox/shadowbox.js'
             ),
             'dependencies'  => array(
+                'jquery'
             ),
-            'cssfiles'      => array(
-                'lib/javascript/shadowbox/shadowbox.css'
-            ),
-            'specialcode'  => '$J(\'document\').ready(function(){Shadowbox.init()})'
+            'specialcode'  => "
+    Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
+    Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
+    Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+jQuery(document).ready(function(){
+    Shadowbox.init();
+})"
         ),
         'jquery'     => array(
             'jsfiles'       => array(
@@ -250,7 +254,7 @@ Coming soon
      * @var array associative array ( '/regexstring/' => 'componentToIncludeInstead' )
      */
     protected static $alternatives = array(
-        '/^jquery(-\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery'
+        '/^jquery([-_]\d\.\d(\.\d)?)?(\.custom)?(\.m(in|ax))?\.js$/i' => 'jquery'
     );
 
     /**
