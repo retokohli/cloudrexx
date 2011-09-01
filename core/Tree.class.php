@@ -1,5 +1,15 @@
 <?php
 /**
+ * Content Tree
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author             Comvation Development Team <info@comvation.com>
+ * @version            1.0.0
+ * @package     contrexx
+ * @subpackage  core
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
  * This class creates a tree structure as an indexed array object
  *
  * content array provider
