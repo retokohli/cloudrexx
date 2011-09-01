@@ -676,8 +676,7 @@ class blockManager extends blockLibrary
         ));
 
         // create new ContentTree instance
-// TODO: replace with nodes
-        /*$objContentTree = new ContentTree($langId);
+        $objContentTree = new ContentTree($langId);
         $strSelectedPages   = '';
         $strUnselectedPages = '';
 
@@ -700,7 +699,7 @@ class blockManager extends blockLibrary
         $this->_objTpl->setVariable(array(
             'BLOCK_RELATION_PAGES_UNSELECTED'   => $strUnselectedPages,
             'BLOCK_RELATION_PAGES_SELECTED'     => $strSelectedPages,
-        ));*/
+        ));
 
         $arrLanguages = FWLanguage::getLanguageArray();
         $i=0;
