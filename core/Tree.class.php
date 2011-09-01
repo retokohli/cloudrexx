@@ -1,15 +1,5 @@
 <?php
 /**
- * Content Tree
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @version		1.0.0
- * @package     contrexx
- * @subpackage  core
- * @todo        Edit PHP DocBlocks!
- */
-
-/**
  * This class creates a tree structure as an indexed array object
  *
  * content array provider
@@ -25,25 +15,14 @@ class ContentTree
 {
 /**
 * Dev.status / Public methods for Tree class:
-*   1 getTree()               Retrieves an indexed array of the nodes from top to bottom, left to right
-*   1 getThisNode()          Retrieves an array of the current nodes
-*   0 getPrevious()           Returns the previous Tree_Node object if any
-*   0 getNext()               Returns the next Tree_Node object if any
-*   0 getParent()             Returns the parent Tree_Node object if any
-*   0 hasChildren()           Returns whether this node has child nodes or not
-*   0 depth()                 Returns the depth of this node in the tree (zero based)
-*   0 isChildOf()             Returns whether this node is a direct child of the given node/tree
-*   1 getNodeCount()          Retreives the number of nodes in the collection, optionally recursing
-*   0 getThisTree()           Retreives an indexed array of the current node
-*/
-
+*   1 getTree()               Retrieves an indexed array of the nodes from top to bottom*/
 
   var $table   = array();
   var $node   = array();
   var $tree   = array();
   var $index = 0;
 
-
+  var $em = null;
 
     /**
     * Constructor
@@ -53,10 +32,12 @@ class ContentTree
 	{
 		global $objDatabase, $_FRONTEND_LANGID;
 
+        $this->em = Env::em();
+
 		if (!isset($langId)) {
 			$langId = $_FRONTEND_LANGID;
 		}
-
+        /*
 		$modules = array();
 		$objResult = $objDatabase->Execute("SELECT id, name FROM ".DBPREFIX."modules");
 		if ($objResult !== false) {
@@ -98,7 +79,7 @@ class ContentTree
 		           ORDER BY parcat ASC, displayorder ASC";
 		$objResult = $objDatabase->Execute($sql);
 		if ($objResult !== false) {
-			while (!$objResult->EOF) {
+   		while (!$objResult->EOF) {
 				$this->node[$objResult->fields['catid']]= array(
 					'catid' => $objResult->fields['catid'],
 				    'parcat' => stripslashes($objResult->fields['parcat']),
@@ -140,14 +121,53 @@ class ContentTree
 				$objResult->MoveNext();
 			}
 		}
+        */
+        $this->srcTree = $this->em->getRepository('Cx\Model\ContentManager\Page')->getTreeByTitle(null, $langId);
 		// $parcat is the starting parent id
-		// optional $maxLevel is the maximum level, set to 0 to show all levels
-		$this->buildTree($parcat=0,$maxlevel=0,$level=0);
-	}
+		$this->buildTree($this->srcTree);
+    }
 
+    function convert($page, $alias) {
+//TODO: this conversion is a hack. in the final dump, we'll have module names instead of ids in the module attribute.
+//TODO: this means we will need to do exactly the opposite conversion (module2id)
+        $i2m = Env::get('id2module');
+        return array(
+            'catname' => $page->getTitle(),
+//TODO:
+            'catid' => 0,
+//TODO:
+            'parcat' => 0,
+            'node_id' => $page->getNode()->getId(),
+            'displaystatus' => $page->getDisplay(),
+            'cmd' => $page->getCmd(),
+            'modulename' => $i2m[$page->getModule()],
+            'moduleid' => $page->getModule(),
+            'lang' => $page->getLang(),
+            'startdate' => $page->getStart(),
+            'enddate' => $page->getEnd(),
+            'protected' => $page->getProtection(),
+//TODO:
+            'frontend_access_id' => 0,
+//TODO:
+            'backend_access_id' => 0,
+            'alias' => $alias
+        );
+    }
 
-	function buildTree($parcat=0,$maxlevel=0,$level=0)
+	function buildTree(&$node, $level = 0, $pathSoFar = '')
 	{
+        foreach($node as $title => $entry) {
+            $page = $entry['__data']['page'];
+            $alias = $pathSoFar.$page->getSlug();
+            $this->tree[$this->index] = $this->convert($page, $alias);
+            $this->tree[$this->index]['level']=$level;
+            $this->index++;
+            
+            unset($entry['__data']);
+            $this->buildTree($entry, $level+1, $alias.'/');
+        }
+
+        /*
 		$list=$this->table[$parcat];
 		foreach( $list AS $key => $data )
 	    {
@@ -159,22 +179,8 @@ class ContentTree
 			  $this->buildTree($key,$maxlevel,$level+1);
 			}
 	    }
+        */
 	}
-
-
-	function getNodeCount()
-	{
-		return count($this->table);
-	}
-
-
-
-	function getThisNode($nodeId)
-	{
-		if(!empty($nodeId))
-		return $this->node[$nodeId];
-	}
-
 
 	function getTree()
 	{
