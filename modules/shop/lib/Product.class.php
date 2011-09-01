@@ -7,7 +7,6 @@
  * @subpackage  module_shop
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
- * @todo        Test!
  */
 
 /**
@@ -67,10 +66,10 @@ class Product
      */
     private $code = null;
     /**
-     * @var     integer         $category_id         Category of the Product
+     * @var     string          $category_id         ShopCategory ID or IDs of the Product
      * @access  private
      */
-    private $category_id = null;
+    private $category_id = '';
     /**
      * @var     string          $name               Product name
      * @access  private
@@ -225,7 +224,8 @@ class Product
      * access methods.
      * @access  public
      * @param   string  $code           The Product code
-     * @param   integer $category_id     The Category ID of the Product
+     * @param   string  $category_id    The ShopCategory ID or IDs of the Product
+     *                                  (comma separated)
      * @param   string  $name           The Product name
      * @param   string  $distribution   The Distribution type
      * @param   double  $price          The Product price
@@ -241,10 +241,10 @@ class Product
         $active, $ord, $weight, $id=0
     ) {
         // Assign & check
-        $this->code         = strip_tags($code);
-        $this->category_id  = intval($category_id);
-        $this->name         = strip_tags($name);
-        $this->distribution = strip_tags($distribution);
+        $this->code         = trim(strip_tags($code));
+        $this->category_id  = trim(strip_tags($category_id));
+        $this->name         = trim(strip_tags($name));
+        $this->distribution = trim(strip_tags($distribution));
         $this->price        = floatval($price);
         $this->ord = intval($ord);
         $this->weight       = intval($weight);
@@ -306,14 +306,16 @@ class Product
 
     /**
      * The Category ID
-     * @return  integer   $category_id  The optional Category ID
-     * @param   integer                 The Category ID
+     * @param   string    $category_id  The optional Category ID or comma
+     *                                  separated list of IDs
+     * @return  string                  The Category ID or comma separated
+     *                                  list of IDs
      * @author      Reto Kohli <reto.kohli@comvation.com>
      */
     function category_id($category_id=null)
     {
         if (isset($category_id)) {
-            $this->category_id = intval($category_id);
+            $this->category_id = trim(strip_tags($category_id));
         }
         return $this->category_id;
     }
@@ -1003,7 +1005,7 @@ class Product
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
             SET picture='$this->pictures',
-                category_id=$this->category_id,
+                category_id='".addslashes($this->category_id)."',
                 distribution='$this->distribution',
                 normalprice=$this->price,
                 resellerprice=$this->resellerprice,
@@ -1053,7 +1055,9 @@ class Product
                 manufacturer_id, ord, vat_id, weight,
                 flags, usergroup_ids, group_id, article_id
             ) VALUES (
-                '$this->pictures', $this->category_id, '$this->distribution',
+                '$this->pictures',
+                '".addslashes($this->category_id)."',
+                '$this->distribution',
                 $this->price, $this->resellerprice,
                 $this->stock, ".($this->stock_visible ? 1 : 0).",
                 $this->discountprice, ".($this->discount_active ? 1 : 0).", ".
@@ -1282,6 +1286,7 @@ class Product
         $discount_active = $this->discount_active();
         $groupCountId = $this->group_id();
         $groupArticleId = $this->article_id();
+        $price = $normalPrice;
         if (   !$ignore_special_offer
             && $discount_active == 1
             && $discountPrice != 0) {
@@ -1291,8 +1296,6 @@ class Product
                 && $objCustomer->is_reseller()
                 && $resellerPrice != 0) {
                 $price = $resellerPrice;
-            } else {
-                $price = $normalPrice;
             }
         }
         $price += $price_options;
@@ -1321,9 +1324,10 @@ class Product
 
 //DBG::activate(DBG_DB_FIREPHP);
 
-        // Fix the Text and Discount tables first
+        // Fix the Text, Discount, and Manufacturer tables first
         Text::errorHandler();
         Discount::errorHandler();
+        Manufacturer::errorHandler();
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_products';
         $table_structure = array(
@@ -1340,7 +1344,7 @@ class Product
             'date_start' => array('type' => 'DATETIME', 'default' => '0000-00-00 00:00:00', 'renamefrom' => 'startdate'),
             'date_end' => array('type' => 'DATETIME', 'default' => '0000-00-00 00:00:00', 'renamefrom' => 'enddate'),
             'weight' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
-            'category_id' => array('type' => 'INT(10)', 'unsigned' => true, 'renamefrom' => 'catid'),
+            'category_id' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'catid'),
             'vat_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
             'manufacturer_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'manufacturer'),
             'group_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),

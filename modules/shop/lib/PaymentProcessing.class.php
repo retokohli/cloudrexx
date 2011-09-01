@@ -7,7 +7,6 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @version     2.1.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
