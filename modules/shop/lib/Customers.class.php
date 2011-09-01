@@ -32,14 +32,6 @@ class Customers
 
 
     /**
-     * Create a Customers helper object (PHP5)
-     */
-    function __construct()
-    {
-    }
-
-
-    /**
      * Returns the Users matching the given parameter values
      *
      * Parameters are like for {@see User::getUsers()}, without the attributes
@@ -90,7 +82,7 @@ class Customers
 DBG::log("Customers::getCount(): ERROR: Failed to get Usergroup for ID $usergroup_id");
                 continue;
             }
-DBG::log("Customers::getCount(): Group ID $usergroup_id: Count ".$objGroup->getUserCount());
+//DBG::log("Customers::getCount(): Group ID $usergroup_id: Count ".$objGroup->getUserCount());
             $user_count += $objGroup->getUserCount();
         }
         return $user_count;

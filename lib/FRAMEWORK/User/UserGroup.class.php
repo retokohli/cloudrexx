@@ -127,24 +127,21 @@ class UserGroup
                 : '')
             .(count($arrSortExpressions)
                 ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
-
         if (empty($limit)) {
-            $objGroup = $objDatabase->Execute($query);
+            $objResult = $objDatabase->Execute($query);
         } else {
-            $objGroup = $objDatabase->SelectLimit($query, $limit, intval($offset));
+            $objResult = $objDatabase->SelectLimit($query, $limit, intval($offset));
         };
-
-        if ($objGroup !== false && $objGroup->RecordCount() > 0) {
-            while (!$objGroup->EOF) {
-                $this->arrCache[$objGroup->fields['group_id']] = $this->arrLoadedGroups[$objGroup->fields['group_id']] = $objGroup->fields;
-                $objGroup->MoveNext();
+        if ($objResult && $objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                $this->arrCache[$objResult->fields['group_id']] = $this->arrLoadedGroups[$objResult->fields['group_id']] = $objResult->fields;
+                $objResult->MoveNext();
             }
             $this->first();
             return true;
-        } else {
-            $this->clean();
-            return false;
         }
+        $this->clean();
+        return false;
     }
 
 
@@ -214,13 +211,17 @@ class UserGroup
     }
 
 
+    /**
+     * Returns an array of IDs of Users associated with this group
+     * @global ADOConnection    $objDatabase
+     * @return array                            The array of User IDs on
+     *                                          success, false otherwise
+     */
     private function loadUsers()
     {
         global $objDatabase;
 
-        $arrUsers = array();
-
-        $objUser = $objDatabase->Execute('
+        $objResult = $objDatabase->Execute('
             SELECT
                 tblRel.`user_id`
             FROM
@@ -228,18 +229,14 @@ class UserGroup
             INNER JOIN `'.DBPREFIX.'access_users` AS tblUser
             ON tblUser.`id` = tblRel.`user_id`
             WHERE tblRel.`group_id` = '.$this->id.'
-            ORDER BY tblUser.`username`'
-        );
-        if ($objUser) {
-            while (!$objUser->EOF) {
-                array_push($arrUsers, $objUser->fields['user_id']);
-                $objUser->MoveNext();
-            }
-
-            return $arrUsers;
-        } else {
-            return false;
+            ORDER BY tblUser.`username`');
+        if (!$objResult) return false;
+        $arrUsers = array();
+        while (!$objResult->EOF) {
+            array_push($arrUsers, $objResult->fields['user_id']);
+            $objResult->MoveNext();
         }
+        return $arrUsers;
     }
 
 
@@ -692,4 +689,3 @@ DBG::log("Group name /$this->name/ invalid");
 
 }
 
-?>

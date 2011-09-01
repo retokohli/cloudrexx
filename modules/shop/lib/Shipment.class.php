@@ -98,16 +98,15 @@ class Shipment
         }
         // Now get the associated shipment conditions from shipment_cost
         $objResult = $objDatabase->Execute("
-            SELECT `c`.`id`, `c`.`shipper_id`,
-                   `c`.`max_weight`, `c`.`fee`, `c`.`free_from`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost` AS `c`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
-                ON `s`.`id`=`shipper_id`");
+            SELECT `shipment`.`id`, `shipment`.`shipper_id`,
+                   `shipment`.`max_weight`, `shipment`.`fee`, `shipment`.`free_from`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost` AS `shipment`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `shipper`
+                ON `shipper`.`id`=`shipper_id`");
         if (!$objResult) return false;
         while (!$objResult->EOF) {
-            $shipper_id = $objResult->fields['shipper_id'];
-            $shipment_id = $objResult->fields['id'];
-            self::$arrShipments[$shipper_id][$shipment_id] = array(
+            self::$arrShipments[$objResult->fields['shipper_id']]
+                    [$objResult->fields['id']] = array(
                 'max_weight' => Weight::getWeightString($objResult->fields['max_weight']),
                 'free_from'  => $objResult->fields['free_from'],
                 'fee'        => $objResult->fields['fee'],
@@ -230,17 +229,17 @@ class Shipment
         if (empty(self::$arrShippers)) self::init();
         // Mind that s.shipment_id actually points to a shipper, not a shipment!
         $query = "
-            SELECT `r`.`shipper_id`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                ON `c`.`zone_id`=`z`.`id`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `r`
-                ON `z`.`id`=`r`.`zone_id`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
-                ON `r`.`shipper_id`=`s`.`id`
-             WHERE `z`.`active`=1
-               AND `s`.`active`=1".
-              ($countryId ? " AND `c`.`country_id`=$countryId" : '');
+            SELECT DISTINCT `relation`.`shipper_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `country`
+              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
+                ON `country`.`zone_id`=`zone`.`id`
+              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `relation`
+                ON `zone`.`id`=`relation`.`zone_id`
+              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `shipper`
+                ON `relation`.`shipper_id`=`shipper`.`id`
+             WHERE `zone`.`active`=1
+               AND `shipper`.`active`=1".
+              ($countryId ? " AND `country`.`country_id`=$countryId" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         $arrShipperId = array();
@@ -285,6 +284,7 @@ class Shipment
             $selectedId = current($arrId);
         }
 */
+DBG::log("Shipment::getShipperMenu($countryId, $selectedId, $onchange): ".var_export($arrId, true));
         foreach ($arrId as $shipper_id) {
             // Only show suitable shipments in the menu if the user is on the payment page,
             // check the availability of the shipment in her country,
@@ -324,7 +324,10 @@ class Shipment
         }
         if ($onchange) {
             $menu =
-                '<select name="shipperId" onchange="'.$onchange.'">'.$menu.'</select>';
+                '<select name="shipperId" id="shipperId"
+                onchange="'.$onchange.'">'.
+                $menu.
+                '</select>';
         }
         return $menu;
     }
@@ -739,19 +742,19 @@ class Shipment
             $query ="
                 SELECT DISTINCT `country`.`id`".
                        $arrSqlName['field']."
-                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `s`
-                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `rs`
-                    ON `s`.`id`=`rs`.`shipment_id`
-                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                    ON `rs`.`zone_id`=`z`.`id`
-                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `rc`
-                    ON `z`.`id`=`rc`.`zone_id`
+                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `shipper`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `rel_shipper`
+                    ON `shipper`.`id`=`rel_shipper`.`shipment_id`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
+                    ON `rel_shipper`.`zone_id`=`zone`.`id`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `rel_country`
+                    ON `zone`.`id`=`rel_country`.`zone_id`
                  INNER JOIN `".DBPREFIX."core_country` AS `country`
-                    ON `rc`.`country_id`=`country`.`id`".
+                    ON `rel_country`.`country_id`=`country`.`id`".
                        $arrSqlName['join']."
-                 WHERE `s`.`shipment_id`=$shipper_id
-                   AND `z`.`active`=1
-                   AND `s`.`active`=1
+                 WHERE `shipper`.`shipment_id`=$shipper_id
+                   AND `zone`.`active`=1
+                   AND `shipper`.`active`=1
                  ORDER BY ".$arrSqlName['name']." ASC";
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) return self::errorHandler();
@@ -830,6 +833,9 @@ class Shipment
         $break = true;
 
 //die("Shipment::errorHandler(): Disabled!<br />");
+
+        // Fix the Zones table first
+        Zones::errorHandler();
 
         $table_name = DBPREFIX.'module_shop_shipper';
         $table_structure = array(

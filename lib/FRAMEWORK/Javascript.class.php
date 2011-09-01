@@ -107,14 +107,14 @@ class JS
                 'lib/javascript/shadowbox/shadowbox.js'
             ),
             'dependencies'  => array(
-                'jquery'
+                'jquery',
             ),
             'specialcode'  => "
-    Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-    Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-    Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+  Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
+  Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
+  Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
 jQuery(document).ready(function(){
-    Shadowbox.init();
+  Shadowbox.init();
 })"
         ),
         'jquery'     => array(
@@ -423,9 +423,7 @@ Coming soon
      */
     public static function getCode()
     {
-        $jsfiles = array();
         $cssfiles = array();
-        $specialcode = array();
         $retstring  = '';
         if (count(self::$active) > 0) {
             foreach (self::$active as $name) {
@@ -448,7 +446,7 @@ Coming soon
                 if ($name == 'cx') {
                     $retstring .= self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
-                }                  
+                }
             }
         }
         $retstring .= self::makeJSFiles(self::$customJS);
@@ -614,4 +612,3 @@ Coming soon
 
 }
 
-?>

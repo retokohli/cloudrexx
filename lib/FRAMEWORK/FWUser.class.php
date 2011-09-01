@@ -179,17 +179,18 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
             $httpAcceptLanguage = get_magic_quotes_gpc() ? strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']) : addslashes(strip_tags($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 
             $objFWUser = FWUser::getFWUserObject();
-            $objDatabase->Execute("INSERT INTO ".DBPREFIX."log
-                                        SET userid=".$objFWUser->objUser->getId().",
-                                            datetime = ".$objDatabase->DBTimeStamp(time()).",
-                                            useragent = '".substr($httpUserAgent, 0, 250)."',
-                                            userlanguage = '".substr($httpAcceptLanguage, 0, 250)."',
-                                            remote_addr = '".substr(strip_tags($_SERVER['REMOTE_ADDR']), 0, 250)."',
-                                            remote_host = '".substr($remote_host, 0, 250)."',
-                                            http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? substr(strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']), 0, 250) : '')."',
-                                            http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
-                                            http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
-                                            referer ='".substr($referer, 0, 250)."'");
+            $objDatabase->Execute("
+                INSERT INTO ".DBPREFIX."log
+                   SET userid=".$objFWUser->objUser->getId().",
+                       datetime = ".$objDatabase->DBTimeStamp(time()).",
+                       useragent = '".substr($httpUserAgent, 0, 250)."',
+                       userlanguage = '".substr($httpAcceptLanguage, 0, 250)."',
+                       remote_addr = '".substr(strip_tags($_SERVER['REMOTE_ADDR']), 0, 250)."',
+                       remote_host = '".substr($remote_host, 0, 250)."',
+                       http_x_forwarded_for = '".(isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? substr(strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']), 0, 250) : '')."',
+                       http_via = '".(isset($_SERVER['HTTP_VIA']) ? substr(strip_tags($_SERVER['HTTP_VIA']), 0, 250) : '')."',
+                       http_client_ip = '".(isset($_SERVER['HTTP_CLIENT_IP']) ? substr(strip_tags($_SERVER['HTTP_CLIENT_IP']), 0, 250) : '')."',
+                       referer ='".substr($referer, 0, 250)."'");
             $_SESSION['auth']['log']=true;
         }
     }
@@ -259,97 +260,99 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
             array('email' => array('REGEXP' => '^(shop_customer_[0-9]+_[0-9]+_[0-9]-)?'.str_replace('.', '\.', $email).'$'), 'is_active' => true), null, null, null
         );
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
+        $status = false;
         if ($objUser) {
 // TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
 // workaround code:
             while (!$objUser->EOF) {
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
-            $objUserMail = $this->getMail();
-            $objUser->setRestoreKey();
-            if ($objUser->store() &&
-                (
-                    $objUserMail->load('reset_pw', $_LANGID) ||
-                    $objUserMail->load('reset_pw')
-                ) &&
-                (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
-                ($objMail = new PHPMailer()) !== false
-            ) {
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
+                $objUserMail = $this->getMail();
+                $objUser->setRestoreKey();
+                if ($objUser->store() &&
+                    (
+                        $objUserMail->load('reset_pw', $_LANGID) ||
+                        $objUserMail->load('reset_pw')
+                    ) &&
+                    (include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') &&
+                    ($objMail = new PHPMailer()) !== false
+                ) {
+                    if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
+                        if (($arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer'])) !== false) {
+                            $objMail->IsSMTP();
+                            $objMail->Host = $arrSmtp['hostname'];
+                            $objMail->Port = $arrSmtp['port'];
+                            $objMail->SMTPAuth = true;
+                            $objMail->Username = $arrSmtp['username'];
+                            $objMail->Password = $arrSmtp['password'];
+                        }
                     }
-                }
 
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $objUserMail->getSenderMail();
-                $objMail->FromName = $objUserMail->getSenderName();
-                $objMail->AddReplyTo($objUserMail->getSenderMail());
-                $objMail->Subject = $objUserMail->getSubject();
+                    $objMail->CharSet = CONTREXX_CHARSET;
+                    $objMail->From = $objUserMail->getSenderMail();
+                    $objMail->FromName = $objUserMail->getSenderName();
+                    $objMail->AddReplyTo($objUserMail->getSenderMail());
+                    $objMail->Subject = $objUserMail->getSubject();
 
-                if ($this->isBackendMode()) {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
-                } else {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
-                }
+                    $restoreLink = null;
+                    if ($this->isBackendMode()) {
+                        $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
+                    } else {
+                        $restoreLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getUsername())."&restoreKey=".$objUser->getRestoreKey();
+                    }
 
-                if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
-                    $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
-                    $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
-                        array(
-                            '[[USERNAME]]',
-                            '[[URL]]',
-                            '[[SENDER]]'
-                        ),
-                        array(
-                            $objUser->getUsername(),
-                            $restorLink,
-                            $objUserMail->getSenderName()
-                        ),
-                        $objUserMail->getBodyText()
-                    );
-                }
-                if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
-                    $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
-                    $objMail->Body = str_replace(
-                        array(
-                            '[[USERNAME]]',
-                            '[[URL]]',
-                            '[[SENDER]]'
-                        ),
-                        array(
-                            htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                            $restorLink,
-                            htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
-                        ),
-                        $objUserMail->getBodyHtml()
-                    );
-                }
+                    if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {
+                        $objUserMail->getFormat() == 'text' ? $objMail->IsHTML(false) : false;
+                        $objMail->{($objUserMail->getFormat() == 'text' ? '' : 'Alt').'Body'} = str_replace(
+                            array(
+                                '[[USERNAME]]',
+                                '[[URL]]',
+                                '[[SENDER]]'
+                            ),
+                            array(
+                                $objUser->getUsername(),
+                                $restoreLink,
+                                $objUserMail->getSenderName()
+                            ),
+                            $objUserMail->getBodyText()
+                        );
+                    }
+                    if (in_array($objUserMail->getFormat(), array('multipart', 'html'))) {
+                        $objUserMail->getFormat() == 'html' ? $objMail->IsHTML(true) : false;
+                        $objMail->Body = str_replace(
+                            array(
+                                '[[USERNAME]]',
+                                '[[URL]]',
+                                '[[SENDER]]'
+                            ),
+                            array(
+                                htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
+                                $restoreLink,
+                                htmlentities($objUserMail->getSenderName(), ENT_QUOTES, CONTREXX_CHARSET)
+                            ),
+                            $objUserMail->getBodyHtml()
+                        );
+                    }
 
-                $objMail->AddAddress($objUser->getEmail());
+                    $objMail->AddAddress($objUser->getEmail());
 
 
-                if ($objMail->Send()) {
+                    if ($objMail->Send()) {
 // TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
 // original code:
 //                    return true;
 // workaround code:
-                    $status = true;
+                        $status = true;
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
+                    } else {
+                        $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
+                    }
                 } else {
                     $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
                 }
-            } else {
-                $this->arrStatusMsg['error'][] = str_replace("%EMAIL%", $email, $_CORELANG['TXT_EMAIL_NOT_SENT']);
-            }
 // TODO: START: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
 // workaround code:
-            $objUser->next();
-        }
+                $objUser->next();
+            }
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         } else {
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_ACCOUNT_WITH_EMAIL_DOES_NOT_EXIST']."<br />";
@@ -442,7 +445,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
     public static function getFWUserObject()
     {
         global $objInit;
-        static $objFWUser;
+        static $objFWUser = null;
 
         if (!isset($objFWUser)) {
             $objFWUser = new FWUser($objInit->mode == 'backend');
