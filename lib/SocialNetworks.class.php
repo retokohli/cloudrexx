@@ -17,7 +17,6 @@ class SocialNetworks
      */
     protected $url;
 
-
     /**
      * Constructor.
      * @access public
@@ -29,7 +28,6 @@ class SocialNetworks
         $this->setUrl($url);
     }
 
-
     /**
      * Set the URL.
      * @access public
@@ -39,12 +37,13 @@ class SocialNetworks
     public function setURL($url)
     {
         //remove leading http:// if present
-        if (substr($url, 0, 7) == "http://") {
+        if(substr($url,0,7) == "http://")
+        {
             $url = substr($url,7);
         }
+
         $this->url = $url;
     }
-
 
     /**
      * Get a Facebook "Like"-Button.
@@ -62,9 +61,8 @@ class SocialNetworks
         return $xhtml;
     }
 
-
     /**
-     * Get a Facebook "Share"-Button.
+     * Get a Facebook "Share"-Button. 
      * This is not the way to do it, facebook suggests using the "Like"-Button (you can write a comment there too).
      * @param String $type 'icon', 'button' or 'icon_link' (defaults to 'icon')
      * @access public
@@ -73,15 +71,16 @@ class SocialNetworks
      */
     public function getFacebookShareButton($type='icon')
     {
-        $xhtml =
-            '<a name="fb_share" share_url="'.$this->url.
-            '" type="'.$type.'"></a> 
-            <script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" 
-              type="text/javascript">
-            </script>';
-        return $xhtml;
+	$xhtml = '<a name="fb_share"
+                    share_url="'.$this->url.'"
+                    type="'.$type.'"
+                    >
+                  </a> 
+                  <script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" 
+                    type="text/javascript">
+                  </script>';
+	return $xhtml;
     }
-
 
     /**
      * Gets an Array of all Placeholders with their respective Content for the URL set.
@@ -98,6 +97,4 @@ class SocialNetworks
 
         return $arr;
     }
-
 }
-

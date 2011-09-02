@@ -6,6 +6,7 @@
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -148,7 +149,7 @@ class Vat
             '`vat`.`id`', FRONTEND_LANG_ID, 'shop',
             array('name' => self::TEXT_CLASS));
         $query = "
-            SELECT `vat`.`id`, `vat`.`rate`, ".$arrSqlClass['field']."
+            SELECT `vat`.`id`, `percent`, ".$arrSqlClass['field']."
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat as `vat`".
             $arrSqlClass['join'];
         $objResult = $objDatabase->Execute($query);
@@ -164,7 +165,7 @@ class Vat
             }
             self::$arrVat[$id] = array(
                 'id'    => $id,
-                'rate'  => $objResult->fields['rate'],
+                'rate'  => $objResult->fields['percent'],
                 'class' => $strClass,
             );
             $objResult->MoveNext();
@@ -521,16 +522,13 @@ class Vat
                 }
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_vat
-                       SET `rate`=$rate,
+                       SET `percent`=$rate,
                      WHERE `id`=$id";
                 $objResult = $objDatabase->Execute($query);
                 if (!$objResult) return false;
             }
         }
-        if ($changed) {
-            self::init();
-            return true;
-        }
+        if ($changed) return true;
         return null;
     }
 
@@ -556,27 +554,23 @@ class Vat
     {
         global $objDatabase;
 
-        $vatRate = number_format($vatRate, 2);
-        if ($vatRate < 0) return false;
-        $query = "
-            INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
-                `rate`
-            ) VALUES (
-                $vatRate
-            )";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        $id = $objDatabase->Insert_ID();
-        if (!Text::replace($id, BACKEND_LANG_ID,
-            'shop', self::TEXT_CLASS, $vatClass)) {
-            // Rollback
-            $objDatabase->Execute("
-                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat
-                WHERE `id`=$id");
-            return false;
+        $vatRate = doubleval($vatRate);
+        if ($vatRate >= 0) {
+            $text_id = Text::replace(
+                0, BACKEND_LANG_ID, $vatClass, MODULE_ID, self::TEXT_CLASS);
+            if (!$text_id) return false;
+            $query = "
+                INSERT INTO ".DBPREFIX."module_shop".MODULE_INDEX."_vat (
+                    percent
+                ) VALUES (
+                    $vatRate
+                )";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) return true;
+//            // Rollback and delete the Text
+//            Text::deleteById($text_id, BACKEND_LANG_ID);
         }
-        self::init();
-        return true;
+        return false;
     }
 
 
@@ -600,16 +594,16 @@ class Vat
 
         if (!is_array(self::$arrVat)) self::init();
         $vatId = intval($vatId);
-        if (!$vatId > 0) return false;
-        if (!Text::deleteById($vatId, 'shop', self::TEXT_CLASS))
-            return false;
-        $query = "
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat
-             WHERE id=$vatId";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        self::init();
-        return true;
+        if ($vatId > 0) {
+            if (!Text::deleteById($vatId, 'shop', self::TEXT_CLASS))
+                return false;
+            $query = "
+                DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_vat
+                 WHERE id=$vatId";
+            $objResult = $objDatabase->Execute($query);
+            if ($objResult) return true;
+        }
+        return false;
     }
 
 
@@ -726,7 +720,7 @@ class Vat
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_vat';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-            'rate' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00', 'renamefrom' => 'percent'),
+            'percent' => array('type' => 'DECIMAL(5,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.00'),
         );
         $table_index =  array();
         if (UpdateUtil::table_exist($table_name, 'class')) {

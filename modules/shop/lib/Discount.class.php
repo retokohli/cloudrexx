@@ -115,8 +115,10 @@ class Discount
         if (!$objResult) return self::errorHandler();
         self::$arrDiscountCountRate = array();
         while (!$objResult->EOF) {
-            self::$arrDiscountCountRate[$objResult->fields['group_id']]
-                [$objResult->fields['count']] = $objResult->fields['rate'];
+            $group_id = $objResult->fields['group_id'];
+            $count = $objResult->fields['count'];
+            $rate = $objResult->fields['rate'];
+            self::$arrDiscountCountRate[$group_id][$count] = $rate;
             $objResult->MoveNext();
         }
 
@@ -176,9 +178,10 @@ class Discount
         if (!$objResult) return self::errorHandler();
         self::$arrDiscountRateCustomer = array();
         while (!$objResult->EOF) {
-            self::$arrDiscountRateCustomer[$objResult->fields['customer_group_id']]
-                [$objResult->fields['article_group_id']] =
-                    $objResult->fields['rate'];
+            $groupCustomerId = $objResult->fields['customer_group_id'];
+            $groupArticleId = $objResult->fields['article_group_id'];
+            $rate = $objResult->fields['rate'];
+            self::$arrDiscountRateCustomer[$groupCustomerId][$groupArticleId] = $rate;
             $objResult->MoveNext();
         }
         return true;
@@ -462,7 +465,7 @@ class Discount
     static function getMenuOptionsGroupArticle($selectedId=0)
     {
         global $_ARRAYLANG;
-        static $arrArticleGroupName = array();
+        static $arrArticleGroupName = null;
 
 //DBG::log("Discount::getMenuOptionsGroupArticle($selectedId): Entered");
         if (is_null(self::$arrArticleGroup)) self::init();

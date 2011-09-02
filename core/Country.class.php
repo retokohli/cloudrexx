@@ -807,8 +807,8 @@ class Country
             'HEAD_SETTINGS_COUNTRY_ISO2' => $objSorting->getHeaderForField('alpha2'),
             'HEAD_SETTINGS_COUNTRY_ISO3' => $objSorting->getHeaderForField('alpha3'),
             'CORE_SETTINGDB_TAB_INDEX' => SettingDb::tab_index(),
-            'SETTINGS_COUNTRY_PAGING' => Paging::get($uri_paging, '',
-                $count, $limit),
+            'SETTINGS_COUNTRY_PAGING' =>
+                Paging::get($count, null, $uri_paging, '', true, $limit),
         ));
         // Note:  Optionally disable the block 'settings_country_submit'
         // to disable storing changes

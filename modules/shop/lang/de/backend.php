@@ -1,5 +1,5 @@
 <?php
-global $_ARRAYLANG;
+
 $_ARRAYLANG['SHOP_SHIPMENT_TOO_HEAVY'] = "Das Gesamtgewicht der Bestellung übersteigt die verfügbaren Versandmöglichkeiten.";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
 $_ARRAYLANG['TXT_ACCOUNT_BANK'] = "Kreditinstitut";
@@ -306,7 +306,7 @@ $_ARRAYLANG['TXT_SENDER'] = "Absender";
 $_ARRAYLANG['TXT_SEND_LOGIN_DATA'] = "Zugangsdaten an Kunden senden";
 $_ARRAYLANG['TXT_SEND_MAIL_TO_ADDRESS'] = "Eine Nachricht an diese Adresse schicken";
 $_ARRAYLANG['TXT_SEND_TEMPLATE'] = "Vorlage senden";
-$_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'] = "E-Mail \"TXT_ORDER_COMPLETE\" an Kunde senden?";
+$_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'] = "E-Mail Vorlage \"TXT_ORDER_COMPLETE\" an Kunde senden";
 $_ARRAYLANG['TXT_SEPARATED_WITH_COMMAS'] = "durch Kommas getrennt";
 $_ARRAYLANG['TXT_SEPERATE_PRODUCTS'] = "Seperate Selektierung";
 $_ARRAYLANG['TXT_SEQUENCE'] = "Reihenfolge";
@@ -876,18 +876,3 @@ $_ARRAYLANG['TXT_ZONE_NAME'] = "Zonenname";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI'] = "Link zum Shop für Kunden";
 //$_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT'] = "+\"*ç%&/()='?^´~\\nKlicken Sie in ein Textfeld, um die URI zu markieren.\\nSie können sie kopieren oder mit der Maus auf das gewünschte Ziel ziehen.";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_URI_HINT'] = "dsgsdfgdfsg";
-
-// 20110901
-$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INSERTING'] = "Fehler beim Einfügen des Produkts in die Bestellung";
-$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_UPDATING'] = "Fehler beim Aktualisieren des Produkts in der Bestellung";
-
-$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_ITEM_ID'] = "Ungültige Item ID";
-$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_PRODUCT_ID'] = "Ungültige Produkt ID";
-$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_QUANTITY'] = "Ungültige Menge";
-$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_WEIGHT'] = "Ungültiges Gewicht";
-$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_DELETING_ATTRIBUTES'] = "Fehler beim Löschen alter Merkmale aus der Bestellung";
-$_ARRAYLANG['TXT_SHOP_ORDER_ERROR_INVALID_ORDER_ID'] = "Ungültige oder fehlende Bestellungs-ID";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_MENU_FORMAT']= "%1\$u - %2\$s";
-$_ARRAYLANG['TXT_SHOP_PRODUCT']= "Produkt";
-$_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'] = "-- Bitte wählen --";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'] = "Das Produkt mit der ID %1\$u wurde nicht gefunden";

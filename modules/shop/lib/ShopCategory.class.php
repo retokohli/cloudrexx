@@ -580,6 +580,7 @@ class ShopCategory
             $objText = Text::getById($id, 'shop', self::TEXT_DESCRIPTION);
             if ($objText) $strDescription = $objText->content();
         }
+DBG::log("ShopCategory::getById($category_id): Loaded '$strName' / '$strDescription'");
         $objCategory = new ShopCategory(
             $strName,
             $strDescription,
