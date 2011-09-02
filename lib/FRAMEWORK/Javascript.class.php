@@ -9,10 +9,6 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-// TODO: This is awkward here!  Find a way to include it just when it's needed.
-// Required by ContrexxJS (activated with 'cx')
-require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/cxjs/ContrexxJavascript.class.php';
-
 /**
  * Javascript
  * @author      Stefan Heinemann <sh@comvation.com>
@@ -34,7 +30,7 @@ class JS
      * @static
      * @var string
      */
-    private static $offset = "";
+    private static $offset = '';
 
     /**
      * The array containing all the registered stuff
@@ -109,13 +105,13 @@ class JS
             'dependencies'  => array(
                 'jquery',
             ),
-            'specialcode'  => "
-  Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-  Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-  Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+            'specialcode'  => '
+Shadowbox.loadSkin("classic", "ASCMS_PATH_OFFSET/lib/javascript/shadowbox/src/skin/");
+Shadowbox.loadLanguage("en", "ASCMS_PATH_OFFSET/lib/javascript/shadowbox/src/lang");
+Shadowbox.loadPlayer(["flv", "html", "iframe", "img", "qt", "swf", "wmp"], "ASCMS_PATH_OFFSET/lib/javascript/shadowbox/src/player");
 jQuery(document).ready(function(){
   Shadowbox.init();
-})"
+})',
         ),
         'jquery'     => array(
             'jsfiles'       => array(
@@ -134,7 +130,6 @@ jQuery(document).ready(function(){
                 'editor/ckeditor/ckeditor.js'
             ),
         ),
-
 /*
 Coming soon
         'jqueryui'     => array(
@@ -357,13 +352,14 @@ Coming soon
     {
         // $basename = strtolower(preg_replace("/\.[^\.]+$/", "", basename($file)));
         // we assume, every javascript files ends with .js
-        $basename = strtolower(str_replace(".js", "", basename($file)));
+        $basename = strtolower(str_replace('.js', '', basename($file)));
         if (array_search($basename, array_keys(self::$available)) !== false) {
             self::activate($basename);
             return true;
         }
         if (!preg_match('#^https?://#', $file)) {
-            if (!file_exists(($file[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/').$file)) {
+            $folder = ($file[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/');
+            if (!file_exists($folder.$file)) {
                 self::$error .= "The file ".$file." doesn't exist\n";
                 return false;
             }
@@ -444,6 +440,9 @@ Coming soon
                 }
                 // Special case contrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {
+                    require_once
+                        ASCMS_LIBRARY_PATH.
+                        '/FRAMEWORK/cxjs/ContrexxJavascript.class.php';
                     $retstring .= self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
                 }
@@ -490,14 +489,15 @@ Coming soon
      */
     private static function makeJSFiles($files)
     {
-        $code = "";
-
+        $code = '';
         foreach ($files as $file) {
             // The file has already been added to the js list
             if (array_search($file, self::$registeredJsFiles) !== false)
                 continue;
             self::$registeredJsFiles[] = $file;
-            $code .= "<script type=\"text/javascript\" src=\"".self::$offset.$file."\"></script>\n\t";
+            $code .=
+                '<script type="text/javascript" src="'.
+                self::$offset.$file.'"></script>'."\n";
         }
         return $code;
     }
@@ -512,9 +512,11 @@ Coming soon
      */
     private static function makeCSSFiles($files)
     {
-        $code = "";
+        $code = '';
         foreach ($files as $file) {
-            $code .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"".self::$offset.$file."\" />\n\t";
+            $code .=
+                '<link rel="stylesheet" type="text/css" href="'.
+                self::$offset.$file.'" />'."\n";
         }
         return $code;
     }
@@ -529,13 +531,16 @@ Coming soon
      */
     private static function makeSpecialCode($code)
     {
-        $retcode = "";
+        $retcode = '';
         if (!empty($code)) {
-            $retcode .= "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
+            $retcode .=
+                '<script type="text/javascript">//<![CDATA['."\n";
             foreach ($code as $segment) {
+                $segment = preg_replace('/ASCMS_PATH_OFFSET/',
+                    ASCMS_PATH_OFFSET, $segment);
                 $retcode .= $segment."\n";
             }
-            $retcode .= "\n/* ]]> */\n</script>\n";
+            $retcode .= '//]]></script>'."\n";
         }
         return $retcode;
     }
@@ -544,18 +549,15 @@ Coming soon
     public static function registerFromRegex($matchinfo)
     {
         $script = $matchinfo[1];
-        $alternativeFound = false;
-        //make sure we include the alternative if provided
+        // Include the alternative if available
         foreach(self::$alternatives as $pattern => $alternative) {
-            if(preg_match($pattern, basename($script)) > 0) {
-                $alternativeFound = true;
+            if(preg_match($pattern, basename($script))) {
                 self::activate($alternative);
-                break;
+                return;
             }
         }
-        //only register the js if we didn't activate the alternative
-        if(!$alternativeFound)
-            self::registerJS($script);
+        // Register the JS if there was no alternative
+        self::registerJS($script);
     }
 
 
@@ -569,7 +571,7 @@ Coming soon
     public function findJavascripts(&$content)
     {
         JS::grabComments($content);
-        $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
+        $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?\\n?/i', array('JS', 'registerFromRegex'), $content);
         JS::restoreComments($content);
     }
 
@@ -611,4 +613,3 @@ Coming soon
     }
 
 }
-

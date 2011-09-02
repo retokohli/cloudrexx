@@ -864,7 +864,7 @@ $objTemplate->setVariable(array(
     'MODULE_INDEX' => MODULE_INDEX,
     // The Shop module for one heavily uses custom JS code that is properly
     // handled by that class -- finally
-    'JAVASCRIPT' => JS::getCode(),
+    'JAVASCRIPT' => 'javascript_inserting_here',
 ));
 
 // TODO: This would better be handled by the Message class
@@ -905,4 +905,11 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
 }
 
 CSRF::add_placeholder($objTemplate);
-$objTemplate->show();
+$objTemplate->setVariable(array(
+    'JAVASCRIPT' => 'javascript_inserting_here',
+));
+$endcode = $objTemplate->get();
+JS::findJavascripts($endcode);
+$endcode = str_replace('javascript_inserting_here', JS::getCode(), $endcode);
+die($endcode);
+
