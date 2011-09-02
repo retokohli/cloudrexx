@@ -186,7 +186,7 @@ class User extends User_Profile
      * @var array
      * @access protected
      */
-    protected $arrCachedUsers = array();
+    protected  $arrCachedUsers = array();
 
     /**
      * @access private
@@ -546,7 +546,6 @@ class User extends User_Profile
             }
 
             if (in_array('group_id', array_keys($arrFilter)) && !empty($arrFilter['group_id'])) {
-                $arrGroupConditions = array();
                 if (is_array($arrFilter['group_id'])) {
                     foreach ($arrFilter['group_id'] as $groupId) {
                         $arrGroupConditions[] = 'tblG.`group_id` = '.intval($groupId);
@@ -633,11 +632,7 @@ class User extends User_Profile
 
         $menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').'>';
         foreach ($this->arrPrivacyAccessTypes as $type => $arrDesc) {
-            $menu .=
-                "<option value='".$type."'".
-                ($type == $this->{$option.'_access'}
-                    ? ' selected="selected"' : '').">".
-                $_ARRAYLANG[$arrDesc[$option]]."</option>";
+            $menu .= "<option value='".$type."'".($type == $this->{$option.'_access'} ? ' selected="selected"' : '').">".$_ARRAYLANG[$arrDesc[$option]]."</option>";
         }
         $menu .= '</select>';
         return $menu;
@@ -807,14 +802,14 @@ class User extends User_Profile
     }
 
 
-    protected function loadUsers(
+    private function loadUsers(
         $filter=null, $search=null, $arrSort=null, $arrAttributes=null,
         $limit=null, $offset=0
     ) {
         global $objDatabase;
 
         if ($this->isLoggedIn()) {
-            $arrDebugBackTrace = debug_backtrace();
+            $arrDebugBackTrace =  debug_backtrace();
             die("User->loadUsers(): Illegal method call in {$arrDebugBackTrace[0]['file']} on line {$arrDebugBackTrace[0]['line']}!");
         }
         $this->arrLoadedUsers = array();
@@ -823,6 +818,7 @@ class User extends User_Profile
         $arrSelectCustomExpressions = null;
         $this->filtered_search_count = 0;
         $sqlCondition = '';
+
         // set filter
         if (isset($filter) && is_array($filter) && count($filter) || !empty($search)) {
             $sqlCondition = $this->getFilteredUserIdList($filter, $search);
@@ -832,11 +828,13 @@ class User extends User_Profile
             $sqlCondition['group_tables'] = false;
             $limit = 1;
         }
+
         // set sort order
         if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset))) {
             $this->clean();
             return false;
         }
+
         // set field list
         if (is_array($arrAttributes)) {
             foreach ($arrAttributes as $attribute) {
@@ -848,6 +846,7 @@ class User extends User_Profile
                     $arrSelectCustomExpressions[] = $attribute;
                 }
             }
+
             if (!in_array('id', $arrSelectMetaExpressions)) {
                 $arrSelectMetaExpressions[] = 'id';
             }
@@ -856,6 +855,7 @@ class User extends User_Profile
             $arrSelectCoreExpressions = $this->objAttribute->getCoreAttributeIds();
             $arrSelectCustomExpressions = array();
         }
+
         $query = 'SELECT tblU.`'.implode('`, tblU.`', $arrSelectMetaExpressions).'`'
             .(count($arrSelectCoreExpressions) ? ', tblP.`'.implode('`, tblP.`', $arrSelectCoreExpressions).'`' : '')
             .'FROM `'.DBPREFIX.'access_users` AS tblU'
@@ -868,23 +868,25 @@ class User extends User_Profile
             .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
             .($arrQuery['group_tables'] ? ' GROUP BY tblU.`id`' : '')
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
-        $objResult = null;
+
         if (empty($limit)) {
-            $objResult = $objDatabase->Execute($query);
+            $objUser = $objDatabase->Execute($query);
         } else {
-            $objResult = $objDatabase->SelectLimit($query, $limit, $offset);
+            $objUser = $objDatabase->SelectLimit($query, $limit, $offset);
         };
-        if ($objResult && $objResult->RecordCount()) {
-            while (!$objResult->EOF) {
-                foreach ($objResult->fields as $attributeId => $value) {
+
+        if ($objUser !== false && $objUser->RecordCount() > 0) {
+            while (!$objUser->EOF) {
+                foreach ($objUser->fields as $attributeId => $value) {
                     if ($this->objAttribute->isCoreAttribute($attributeId)) {
-                        $this->arrCachedUsers[$objResult->fields['id']]['profile'][$attributeId][0] = $this->arrLoadedUsers[$objResult->fields['id']]['profile'][$attributeId][0] = $value;
+                        $this->arrCachedUsers[$objUser->fields['id']]['profile'][$attributeId][0] = $this->arrLoadedUsers[$objUser->fields['id']]['profile'][$attributeId][0] = $value;
                     } else {
-                        $this->arrCachedUsers[$objResult->fields['id']][$attributeId] = $this->arrLoadedUsers[$objResult->fields['id']][$attributeId] = $value;
+                        $this->arrCachedUsers[$objUser->fields['id']][$attributeId] = $this->arrLoadedUsers[$objUser->fields['id']][$attributeId] = $value;
                     }
                 }
-                $objResult->MoveNext();
+                $objUser->MoveNext();
             }
+
             isset($arrSelectCustomExpressions) ? $this->loadCustomAttributeProfileData($arrSelectCustomExpressions) : false;
             $this->first();
             return true;
@@ -1020,28 +1022,32 @@ class User extends User_Profile
             (count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '').
             (count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
         if (empty($limit)) {
-            $objResultId = $objDatabase->Execute($query);
-            $this->filtered_search_count = $objResultId->RecordCount();
+            $objUserId = $objDatabase->Execute($query);
+            $this->filtered_search_count = $objUserId->RecordCount();
         } else {
-            $objResultId = $objDatabase->SelectLimit($query, $limit, intval($offset));
-            $objResultCount = $objDatabase->Execute('SELECT FOUND_ROWS()');
-            $this->filtered_search_count = $objResultCount->fields['FOUND_ROWS()'];
+            $objUserId = $objDatabase->SelectLimit($query, $limit, intval($offset));
+            $objUserCount = $objDatabase->Execute('SELECT FOUND_ROWS()');
+            $this->filtered_search_count = $objUserCount->fields['FOUND_ROWS()'];
         }
-        if ($objResultId) {
-            while (!$objResultId->EOF) {
-                $arrUserIds[$objResultId->fields['id']] = '';
-                $objResultId->MoveNext();
+
+        if ($objUserId !== false) {
+            while (!$objUserId->EOF) {
+                $arrUserIds[$objUserId->fields['id']] = '';
+                $objUserId->MoveNext();
             }
         }
+
         $this->arrLoadedUsers = $arrUserIds;
+
         if (!count($arrUserIds)) {
             return false;
         }
+
         return array(
             'tables' => array(
                 'core'      => $joinCoreTbl,
                 'custom'    => $joinCustomTbl,
-                'group'     => $joinGroupTbl,
+                'group'     => $joinGroupTbl
             ),
             'joins'         => $arrCustomJoins,
             'conditions'    => $arrCustomSelection,
@@ -1260,13 +1266,11 @@ class User extends User_Profile
         global $objDatabase, $_CORELANG;
 
         if (!$this->validateUsername()) {
-            $this->error_msg[] =
-                $_CORELANG['TXT_ACCESS_INVALID_USERNAME'];
+DBG::log("User::store(): Invalid username ($this->username)");
             return false;
         }
         if (!$this->validateEmail()) {
-            $this->error_msg[] =
-                $_CORELANG['TXT_ACCESS_INVALID_EMAIL'];
+DBG::log("User::store(): Invalid e-mail ($this->email)");
             return false;
         }
 
@@ -1289,8 +1293,8 @@ class User extends User_Profile
                     `restore_key_time` = ".$this->restore_key_time."
                 WHERE `id` = ".$this->id
             )) {
-                $this->error_msg[] =
-                    $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
+DBG::log("User::store(): Failed to update: ".var_export($this, true));
+                return Message::error($_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT']);
             }
         } else {
             if ($objDatabase->Execute("
@@ -1493,7 +1497,7 @@ class User extends User_Profile
     private function loadPermissionIds($type)
     {
         global $objDatabase;
-
+        
         if(substr($type, 0, 4) != 'page') {
             $query = '
                 SELECT tblI.`access_id`
@@ -1514,7 +1518,7 @@ class User extends User_Profile
                     $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
                     $objAccessId->MoveNext();
                 }
-            }
+            }    
         }
         else { // page_backend or page_frontend
             $backOrFrontend = substr($type, 5);
@@ -2104,4 +2108,3 @@ class User extends User_Profile
     }
 
 }
-

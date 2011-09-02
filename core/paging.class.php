@@ -44,11 +44,11 @@ require_once ASCMS_CORE_PATH.'/Html.class.php';
  * @todo      Change the system to use the new, static class method,
  *            then remove this one.
  */
-function getPaging($numof_rows, $pos, $uri_parameter, $paging_text,
+function getPaging($numof_rows, $pos=null, $uri_parameter, $paging_text,
     $showeverytime=false, $results_per_page=null
 ) {
-    return Paging::get($uri_parameter, $paging_text, $numof_rows,
-        $results_per_page, $showeverytime, $pos, 'pos');
+    return Paging::get($numof_rows, $pos, $uri_parameter, $paging_text,
+        $showeverytime, $results_per_page, 'pos');
 }
 
 
@@ -89,8 +89,8 @@ class Paging
      * @return  string                    HTML code for the paging
      */
     static function get(
-        &$uri_parameter, $paging_text, $numof_rows, $results_per_page=0,
-        $showeverytime=false, $position=null, $parameter_name=null
+        $numof_rows, $position=null, &$uri_parameter, $paging_text,
+        $showeverytime=false, $results_per_page=0, $parameter_name=null
     ) {
         global $_CONFIG, $_CORELANG;
 

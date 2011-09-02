@@ -5,6 +5,7 @@
  *
  * @package     contrexx
  * @subpackage  module_shop
+ * @todo        Test!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @version     3.0.0
@@ -194,7 +195,7 @@ class Products
             ? $count
             : (!empty($_CONFIG['corePagingLimit'])
                 ? $_CONFIG['corePagingLimit'] : 10));
-        $querySpecialOffer = '';
+
         if (   $flagLastFive
             || $flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_LASTFIVE) {
             // Select last five (or so) products added to the database
@@ -222,13 +223,11 @@ class Products
             // Limit Products by ShopCategory ID or IDs, if any
             // (Pricelists use comma separated values, for example)
             if ($category_id) {
-                $queryCategories = '';
-                foreach (preg_split('//', $category_id) as $id) {
-                    $queryCategories .=
-                        ($queryCategories ? ' OR ' : '')."
-                        FIND_IN_SET($id, `product`.`category_id`)";
+                if (is_numeric($category_id)) {
+                    $queryWhere .= ' AND `product`.`category_id`='.$category_id;
+                } else {
+                    $queryWhere .= ' AND `product`.`category_id` IN ('.$category_id.')';
                 }
-                $queryWhere .= 'AND ('.$queryCategories.')';
             }
             // Limit Products by search pattern, if any
             if ($pattern != '') {
@@ -347,25 +346,12 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
             } else {
                 // Normal, non-virtual ShopCategory.
                 // Remove all Products having the same Product code.
-// TODO: Don't delete Products having more than one Category assigned.
-// Instead, remove them from the chosen Category only.
-                $arrCategoryId = array_flip(
-                    preg_split('/\s*,\s*/',
-                        $objProduct->getShopCategoryId(), null,
-                        PREG_SPLIT_NO_EMPTY));
-                if (count($arrCategoryId) > 1) {
-                    unset($arrCategoryId[$category_id]);
-                    $objProduct->setShopCategoryId(
-                        join(',', array_keys($arrCategoryId)));
-                    if (!$objProduct->store()) {
-                        return false;
-                    }
-                } else {
-//                    if (!Products::deleteByCode(
-//                        $objProduct->getCode(),
-//                        $flagDeleteImages)
-//                    ) return false;
-                    if (!$objProduct->delete()) return false;
+                if (!Products::deleteByCode(
+                    $objProduct->code(),
+                    $flagDeleteImages)
+                ) {
+DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to delete Products by code ".$objProduct->code());
+                    return false;
                 }
             }
         }
@@ -443,11 +429,10 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
     {
         global $objDatabase;
 
-// TODO: TEST!
         $query = "
             SELECT `id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products`
-             WHERE FIND_IN_SET($category_id, `category_id`)
+             WHERE `category_id`=$category_id
           ORDER BY `ord` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
@@ -474,19 +459,18 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
     {
         global $objDatabase;
 
-// TODO: TEST!
         $query = "
             SELECT `picture`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products`
-             WHERE FIND_IN_SET($category_id, `category_id`)
+             WHERE `category_id`=$category_id
                AND `picture`!=''
           ORDER BY `ord` ASC";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture
-            $arrImages = null;
             $arrImages = Products::get_image_array_from_base64(
-                $objResult->fields['picture']);
+                $objResult->fields['picture']
+            );
             $imageName = $arrImages[1]['img'];
             return $imageName;
         }
@@ -517,14 +501,10 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
         if (!$objResult) return false;
         $arrShopCategoryId = array();
         while (!$objResult->EOF) {
-            $arrCategoryId = preg_split('/\s*,\s*/',
-                $objResult->Fields['catid'], null, PREG_SPLIT_NO_EMPTY);
-            foreach ($arrCategoryId as $category_id) {
-                $arrShopCategoryId[$category_id] = null;
-            }
+            $arrShopCategoryId[] = $objResult->fields['category_id'];
             $objResult->MoveNext();
         }
-        return array_flip($arrShopCategoryId);
+        return $arrShopCategoryId;
     }
 
 
@@ -854,7 +834,6 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
             return $arrPictures;
         $i = 0;
         foreach (explode(':', $base64Str) as $imageData) {
-            $shopImage = $shopImage_width = $shopImage_height = null;
             list($shopImage, $shopImage_width, $shopImage_height) = explode('?', $imageData);
             $shopImage        = base64_decode($shopImage);
             $shopImage_width  = base64_decode($shopImage_width);
@@ -905,7 +884,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
         // we need the VAT rate in there as well in order to be able to correctly change the products,
         // and the flag indicating whether the VAT is included in the prices already.
         $strJsArrProduct =
-            'var vat_included = '.intval(Vat::isIncluded()).
+            'var vat_included = '.Vat::isIncluded().
             ";\nvar arrProducts = new Array();\n";
         $arrSql = Text::getSqlSnippets('`product`.`id`', FRONTEND_LANG_ID,
             'shop', array(
@@ -919,7 +898,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                    `product`.`discountprice`, `product`.`discount_active`,
                    `product`.`weight`, `product`.`vat_id`,
                    `product`.`distribution`,
-                   `product`.`group_id`, `product`.`article_id`, ".
+                   `product`.`group_id`, `product`.`article_id`".
                    $arrSql['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products` AS `product`".
                    $arrSql['join']."
@@ -953,7 +932,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
             // Determine prices for various count discounts, if any
             $arrDiscountCountRate = Discount::getDiscountCountRateArray(
                 $objResult->fields['group_id']);
-//DBG::log("Products::getJavascriptArray($groupCustomerId, $isReseller): Discount rate array: ".var_export($arrDiscountCountRate, true));
+DBG::log("Products::getJavascriptArray($groupCustomerId, $isReseller): Discount rate array: ".var_export($arrDiscountCountRate, true));
             // Order the counts in reverse, from highest to lowest
             $strJsArrPrice = '';
             if (is_array($arrDiscountCountRate)) {
@@ -966,23 +945,20 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                         $count.','.Currency::getCurrencyPrice($discountPrice);
                 }
             }
-            $strJsArrPrice .=
-                ($strJsArrPrice ? ',' : '').
-                '0,'.Currency::getCurrencyPrice($price);
             $strJsArrProduct .=
                 'arrProducts['.$id.'] = {'.
                 'id:'.$id.','.
                 'code:"'.$strCode.'",'.
-                'title:"'.htmlspecialchars($strName, ENT_QUOTES, CONTREXX_CHARSET).'",'.
+                'title:"'.$strName.'",'.
                 'percent:'.
                     // Use the VAT rate, not the ID, as it is not modified here
                     Vat::getRate($objResult->fields['vat_id']).','.
                 'weight:'.($distribution == 'delivery'
                     ? '"'.Weight::getWeightString($objResult->fields['weight']).'"'
                     : '0' ).','.
-//                'group_id:'.intval($objResult->fields['group_id']).','.
-//                'article_id:'.intval($objResult->fields['article_id']).','.
-                'price:['.$strJsArrPrice."]};\n";
+                'group_id:'.$objResult->fields['group_id'].','.
+                'article_id:'.$objResult->fields['article_id'].','.
+                'price:['.$strJsArrPrice.']};';
             $objResult->MoveNext();
         }
         return $strJsArrProduct;
@@ -1011,11 +987,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
      */
     static function getMenuoptions($selected=null, $active=null, $format='%2$s')
     {
-        global $_ARRAYLANG;
-
-        $arrName =
-            array(0 => $_ARRAYLANG['TXT_SHOP_PRODUCT_NONE']) +
-            self::getNameArray($active, $format);
+        $arrName = self::getNameArray($active, $format);
         if ($arrName === false) return null;
         return Html::getOptions($arrName, $selected);
     }
@@ -1061,33 +1033,35 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
     static function getNameArray($activeonly=false, $format='%2$s')
     {
         global $objDatabase;
+        static $arrName = null;
 
-        $arrSqlName = Text::getSqlSnippets(
-            '`product`.`id`', FRONTEND_LANG_ID, 'shop',
-            array('name' => Product::TEXT_NAME));
-        $query = "
-            SELECT `product`.`id`, ".
-                   $arrSqlName['field']."
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products` AS `product`".
-                   $arrSqlName['join'].
-            (isset($activeonly)
-              ? ' WHERE `product`.`active`='.($activeonly ? 1 : 0) : '')."
-             ORDER BY `name` ASC, `product`.`id` ASC";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return Product::errorHandler();
-        $arrName = array();
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            $strName = $objResult->fields['name'];
-            if ($strName === null) {
-                $objText = Text::getById($id, 'shop', Product::TEXT_NAME);
-                if ($objText) $strName = $objText->content();
+        if (is_null($arrName)) {
+            $arrSqlName = Text::getSqlSnippets(
+                '`product`.`id`', FRONTEND_LANG_ID, 'shop',
+                array('name' => Product::TEXT_NAME));
+            $query = "
+                SELECT `product`.`id`, ".
+                       $arrSqlName['field']."
+                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products` AS `product`".
+                       $arrSqlName['join'].
+                (isset($activeonly)
+                  ? ' WHERE `product`.`active`='.($activeonly ? 1 : 0) : '')."
+                 ORDER BY `name` ASC, `product`.`id` ASC";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) return Product::errorHandler();
+            $arrName = array();
+            while (!$objResult->EOF) {
+                $id = $objResult->fields['id'];
+                $strName = $objResult->fields['name'];
+                if ($strName === null) {
+                    $objText = Text::getById($id, 'shop', Product::TEXT_NAME);
+                    if ($objText) $strName = $objText->content();
+                }
+                $arrName[$objResult->fields['id']] =
+                    sprintf($format, $id, $strName);
+                $objResult->MoveNext();
             }
-            $arrName[$objResult->fields['id']] =
-                sprintf($format, $id, $strName);
-            $objResult->MoveNext();
         }
-//DBG::log("Products::getNameArray(): Made ".var_export($arrName, true));
         return $arrName;
     }
 

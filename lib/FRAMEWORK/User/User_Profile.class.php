@@ -53,30 +53,34 @@ class User_Profile
             if (in_array($objAttribute->getType(), array('menu_option', 'group', 'frame', 'history'))) {
                 continue;
             }
-            $arrStoredAttributeData = array();
+
             if (isset($this->arrLoadedUsers[$this->id]['profile'][$attributeId])) {
                 $arrStoredAttributeData = $this->arrLoadedUsers[$this->id]['profile'][$attributeId];
+            } else {
+                $arrStoredAttributeData = array();
             }
             $this->arrLoadedUsers[$this->id]['profile'][$attributeId] = array();
             foreach ($arrValue as $historyId => $value) {
                 if ($this->objAttribute->isHistoryChild($attributeId) && !$historyId) {
                     continue;
                 }
-                $arrValues = null;
+
                 if ($this->objAttribute->isHistoryChild($attributeId) && $historyId === 'new') {
                     $historyId = 0;
                     $arrValues = $value;
                 } else {
                     $arrValues = array($value);
                 }
+
                 foreach ($arrValues as $nr => $value) {
                     $value = trim(contrexx_stripslashes($value));
+
                     if ($objAttribute->getType() === 'date') {
                         if (preg_match_all('#([djmnYy])+#', ASCMS_DATE_SHORT_FORMAT, $arrDateFormat, PREG_PATTERN_ORDER) && preg_match_all('#([0-9]+)#', $value, $arrDate)) {
-                            $arrDateCombined = array();
                             foreach ($arrDateFormat[1] as $charNr => $char) {
                                 $arrDateCombined[$char] = $arrDate[1][$charNr];
                             }
+
                             $value = mktime(1, 0, 0,
                                 (isset($arrDateCombined['m']) ? $arrDateCombined['m'] : $arrDateCombined['n']), // month
                                 (isset($arrDateCombined['d']) ? $arrDateCombined['d'] : $arrDateCombined['j']), // day
@@ -88,6 +92,7 @@ class User_Profile
                             continue;
                         }
                     }
+
                     if ($objAttribute->getId() &&
                         (
                             !$objAttribute->isProtected() ||
@@ -102,6 +107,7 @@ class User_Profile
                         if ($this->objAttribute->isHistoryChild($attributeId) && !$historyId) {
                             $historyId = (isset($this->arrAttributeHistories[$this->id][$this->objAttribute->getHistoryAttributeId($attributeId)]) ? max($this->arrAttributeHistories[$this->id][$this->objAttribute->getHistoryAttributeId($attributeId)]) : 0)+1;
                         }
+
                         $this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId+$nr] = $value;
                         if ($historyId+$nr &&
                             (!isset($this->arrUpdatedAttributeHistories[$this->id][$this->objAttribute->getHistoryAttributeId($attributeId)]) ||
@@ -116,8 +122,10 @@ class User_Profile
                 }
             }
         }
-        // synchronize history IDs
+
+        // synchronize history-ID's
         $this->arrAttributeHistories[$this->id] = $this->arrUpdatedAttributeHistories[$this->id];
+
         return true;
     }
 
@@ -134,6 +142,7 @@ class User_Profile
             } elseif (isset($this->arrUpdatedAttributeHistories[$this->id][$historyAttributeId])) {
                 $arrHistoryIds = $this->arrUpdatedAttributeHistories[$this->id][$historyAttributeId];
             }
+
             foreach ($arrHistoryIds as $historyId) {
                 if (empty($this->arrLoadedUsers[$this->id]['profile'][$attributeId][$historyId])) {
                     $this->error_msg[] = $_CORELANG['TXT_ACCESS_FILL_OUT_ALL_REQUIRED_FIELDS'];
@@ -141,6 +150,7 @@ class User_Profile
                 }
             }
         }
+
         return true;
     }
 
@@ -162,6 +172,7 @@ class User_Profile
                             "INSERT INTO `".DBPREFIX."access_user_attribute_value` (`user_id`, `attribute_id`, `history_id`, `value`) VALUES (".$this->id.", ".$attributeId.", ".$historyId.", '".addslashes($value)."')" :
                             "UPDATE `".DBPREFIX."access_user_attribute_value` SET `value` = '".addslashes($value)."' WHERE `user_id` = ".$this->id." AND `attribute_id` = ".$attributeId." AND `history_id` = ".$historyId
                         );
+
                     if ($objDatabase->Execute($query) === false) {
                         $objAttribute = $this->objAttribute->getById($attributeId);
                         $error = true;
@@ -372,6 +383,7 @@ class User_Profile
         if (empty($this->objAttribute)) {
             $this->initAttributes();
         }
+
         $arrConditions = array();
         foreach ($arrFilter as $attribute => $condition) {
             if ($this->objAttribute->load($attribute) && !$this->objAttribute->isCoreAttribute($attribute)) {
@@ -379,12 +391,12 @@ class User_Profile
                     case 'string':
                         $arrConditions[] = "tblA.`attribute_id` = ".$attribute." AND (tblA.`value` LIKE '%".(is_array($condition) ? implode("%' OR tblA.`value` LIKE '%", array_map('addslashes', $condition)) : addslashes($condition))."%')";
                         break;
+
                     case 'int':
                         $arrConditions[] = "tblA.`attribute_id` = ".$attribute." AND (tblA.`value` = '".(is_array($condition) ? implode("' OR tblA.`value` = '", array_map('intval', $condition)) : intval($condition))."')";
                         break;
                     case 'array':
                         if (count($this->objAttribute->getChildren())) {
-                            $arrSubFilter = array();
                             foreach ($this->objAttribute->getChildren() as $childAttributeId) {
                                 $arrSubFilter[$childAttributeId] = $condition;
                             }
@@ -406,12 +418,13 @@ class User_Profile
         }
         $objParentAttribute = $this->objAttribute->getById($attributeId);
 
-        $attributeKeyClausePrefix = '';
-        $attributeKeyClauseSuffix = '';
-        $attributeValueColumn = '';
-        if (!$core) {
+        if ($core) {
+            $attributeKeyClausePrefix = '';
+            $attributeKeyClauseSuffix = '';
+        } else {
             $attributeValueColumn = 'tblA.`value`';
         }
+
         foreach ($objParentAttribute->{'get'.($core ? 'Core' : 'Custom').'AttributeIds'}() as $attributeId) {
             $objAttribute = $objParentAttribute->getById($attributeId);
 
@@ -443,7 +456,6 @@ class User_Profile
 
                 case 'menu':
                     $arrMatchedChildren = array();
-                    $pattern = null;
                     foreach ($objAttribute->getChildren() as $childAttributeId) {
                         $objChildAttribute = $objAttribute->getById($childAttributeId);
                         if (is_array($search)) {
@@ -480,4 +492,3 @@ class User_Profile
     }
 
 }
-

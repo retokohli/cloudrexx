@@ -12,6 +12,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -44,6 +45,7 @@ define('_PAYPAL_IPN_LOG', 0);
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
  */
 class PayPal
 {
@@ -335,7 +337,6 @@ if (_PAYPAL_IPN_LOG) {
         $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
                   WHERE `name`='paypal_account_email'";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult) die("Error querying PayPal account e-mail address");
         $paypalAccountEmail = $objResult->fields['value'];
 
 /*

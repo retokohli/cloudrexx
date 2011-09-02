@@ -8,6 +8,7 @@
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
+ * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -465,7 +466,7 @@ DBG::log("Yellowpay::setFields(): Failed to add '$name' (value '$value')");
                 if (preg_match('/.*/', $value)) return $value;
                 break;
             case 'EMAIL':
-                if (FWValidator::isEmail($value)) return $value;
+                if (isEmail($value)) return $value;
                 break;
             case 'PMLIST':
                 if (preg_match('/.*/', $value)) return $value;
