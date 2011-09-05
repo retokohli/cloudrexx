@@ -537,7 +537,7 @@ class ContactManager extends ContactLib
                     $entryCount = $arrForm['number'];
                     $formName = "<a href='index.php?cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId."' title='".$_ARRAYLANG['TXT_CONTACT_SHOW_ENTRIES']."'>".$formName."</a>";
 
-                    $this->_objTpl->parse('contact_export');
+                    $this->_objTpl->touchBlock('contact_export');
                 } else {
                     $this->_objTpl->hideBlock('contact_export');
                 }
