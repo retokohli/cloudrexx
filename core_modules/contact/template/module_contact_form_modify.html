@@ -150,20 +150,28 @@
             //var number = parseInt(name.match(/\[(\d+)\](?:\[\d+\])?$/)[1]);
             // this regex was quite bitchy... (especially because the page reload
             // took up to 35 seconds... nice testing)
-            $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + formFieldNumber + "]$3"));
+            if (typeof(name) != 'undefined') {
+                $J(elem).attr('name', name.replace(/([^\[\]]+)\[(\d+)\](\[\d+\])?$/, "$1[" + formFieldNumber + "]$3"));
+            }
 
             // do the id too
-            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            if (typeof(id) != 'undefined') {
+                $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            }
         });
 
-        //Increment the class name of td on add each new fieldform
+        //Increment the class name and id of div on add each new fieldform
         $J(copy).find('div').each(function(key, elem) {
             var className = $J(elem).attr('class');
             var id = $J(elem).attr('id');
             // do the class too
-            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            if (typeof(className) != 'undefined') {
+                $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            }
             // do the id too
-            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)_(\d+)?$/, "$1_" + formFieldNumber + "_$3"));
+            if (typeof(id) != 'undefined') {
+                $J(elem).attr('id', id.replace(/^(.*?)_(\d+)_(\d+)?$/, "$1_" + formFieldNumber + "_$3"));
+            }
         });
 
         //Increment the class name of td on add each new fieldform
@@ -171,9 +179,13 @@
             var className = $J(elem).attr('class');
             var id = $J(elem).attr('id');
             // do the class too
-            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            if (typeof(className) != 'undefined') {
+                $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            }
             // do the id too
-            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            if (typeof(id) != 'undefined') {
+                $J(elem).attr('id', id.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
+            }
         });
 
         /**
