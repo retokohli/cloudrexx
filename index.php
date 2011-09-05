@@ -348,10 +348,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         // b(, a): fallback if section and cmd are specified
         if($section) {
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
-//TODO: the id2module conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
-            $m2i = Env::get('module2id');
             $crit = array(
-                'module' => ''.$m2i[$section]
+                'module' => $section
             );
             if(isset($_REQUEST['cmd']))
                 $crit['cmd'] = $_REQUEST['cmd'];
