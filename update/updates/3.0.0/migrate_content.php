@@ -29,7 +29,8 @@ class Contrexx_Content_migration
             die($errorMsg);
         }
         self::$em = Env::em();
-        
+
+
     }
    
     public function migrate()
@@ -180,21 +181,33 @@ class Contrexx_Content_migration
     {
         // fetch all pages
         $pages = self::$em->getRepository('Cx\Model\ContentManager\Page')->findAll();
-        $group = Array();
+        $group = array();
+        $nodeToRemove = array();
         foreach ($pages as $page) {
+            // don't group regular pages
+            if (!$page->getModule()) continue;
+
+            // group module pages
             if (!isset ($group[$page->getModule()][$page->getCmd()])) {
                  $group[$page->getModule()][$page->getCmd()] = $page->getNode();
             } else {
-                $nodeToRemove[] = $page->getNode();
-                $page->setNode($group[$page->getModule()][$page->getCmd()]);                
+                if ($page->getNode()->getId() != $group[$page->getModule()][$page->getCmd()]->getId()) {
+                    $nodeToRemove[] = $page->getNode()->getId();
+                    $page->setNode($group[$page->getModule()][$page->getCmd()]);
+                    self::$em->persist($group[$page->getModule()][$page->getCmd()]);
+                }
             }
-            self::$em->persist($page);
         }
-        self::$em->flush();        
-        
-        foreach ($nodeToRemove as $node) {
-            $node->getId();
+        self::$em->flush();
+
+        // prevent the system from trying to remove the same node more than once
+        $nodeToRemove = array_unique($nodeToRemove);
+        foreach ($nodeToRemove as $nodeId) {
+            $node = self::$em->getRepository('Cx\Model\ContentManager\Node')->find($nodeId);
             self::$em->getRepository('Cx\Model\ContentManager\Node')->removeFromTree($node);
+
+            // reset node cache - this is required for the tree to reload its new structure after a node had been removed
+            self::$em->clear();
         }
     }
 }
