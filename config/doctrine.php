@@ -83,6 +83,7 @@ $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
 
 //resolve enum, set errors
 $conn = $em->getConnection();
+$conn->setCharset($_DBCONFIG['charset']); 
 $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
 

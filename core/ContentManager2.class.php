@@ -121,8 +121,7 @@ class ContentManager {
 
 		$jsondata = $this->tree_to_json($root);
 
-    // TODO: I feel we should be able to cerce doctrine to handle utf8 automagically, right?
-		return utf8_encode($jsondata);
+		return $jsondata;
 	}
 
 	function tree_to_json($tree, $level=0) {
@@ -153,9 +152,7 @@ class ContentManager {
 				if (in_array($page->getLang(), $languages)) continue;
 
 				if (!empty($languages))	$output .= ",\n";
-    // TODO: do langs right (affects next 2 lines)
-    $langs = array("", "de", "en");
-				$output .= $indent."    { \"language\" : \"".$langs[$page->getLang()]."\", \"title\" : \"".addslashes($page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
+				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"title\" : \"".addslashes($page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
 				$languages[] = $page->getLang();
 			}
 			$output .= $indent."\n".$indent."  ],\n";
