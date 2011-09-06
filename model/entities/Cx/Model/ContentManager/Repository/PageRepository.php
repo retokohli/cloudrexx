@@ -93,17 +93,28 @@ class PageRepository extends EntityRepository {
             else
                 $rightLevel = $node->getLvl() == $rootNode->getLvl() + 1;
             if($rightLevel) {
-                $this->treeByTitle($node, $result, $useSlugAsTitle);
+                $this->treeByTitle($node, $result, $useSlugAsTitle, $lang2arr, $lang);
             }
         }
 
         return $result;
     }
 
-    protected function treeByTitle($root, &$result, $useSlugAsTitle=false, &$lang2arr = null) {
+    protected function treeByTitle($root, &$result, $useSlugAsTitle=false, &$lang2arr = null, $lang = null) {
         $myLang2arr = array();
         //(I) get titles of all Pages linked to this Node
-        $pages = $root->getPages();
+        $pages = null;
+
+        if(!$lang) {
+            $pages = $root->getPages();
+        }
+        else {
+            $pages = array();
+            $page = $root->getPage($lang);
+            if($page)
+                $pages[] = $page;
+        }
+
         foreach($pages as $page) {
             $title = $page->getTitle();
 
@@ -134,7 +145,7 @@ class PageRepository extends EntityRepository {
         }
         //(II) recursion for child Nodes
         foreach($root->getChildren() as $child) {
-            $this->treeByTitle($child, $result, $useSlugAsTitle, $myLang2arr);
+            $this->treeByTitle($child, $result, $useSlugAsTitle, $myLang2arr, $lang);
         }
     }
 
