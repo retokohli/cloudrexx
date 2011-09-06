@@ -20,6 +20,8 @@ class ContentManager {
 	}
 
 	function renderCM() {
+        JS::activate('jquery');
+
         // Render the Content Manager within our old backend template.
 		global $objTemplate;
 
