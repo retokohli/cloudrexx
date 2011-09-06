@@ -370,7 +370,7 @@ class FileBrowser {
                 $url = "'".$link."'".($getPageId ? ','.$arrPage['catid'] : '')."";
 
                 if($arrPage['alias'] && !$noAliases) {
-                    $url = "'" . $scriptPath . $arrPage['alias'] . "'";
+                    $url = "'" . '[[NODE_' . $arrPage['node_id'] . '_' . $this->_frontendLanguageId . "]]'";
                 }
 
                 $this->_objTpl->setVariable(array(
