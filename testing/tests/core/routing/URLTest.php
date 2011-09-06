@@ -2,7 +2,9 @@
 include_once ASCMS_CORE_PATH.'/routing/URL.class.php';
 use Cx\Core\Routing\URL as URL;
 
-class URLTest extends \PHPUnit_Framework_TestCase {
+include_once('../testCases/ContrexxTestCase.php');
+
+class URLTest extends \ContrexxTestCase {
     public function testDomainAndPath() {
         $url = new URL('http://example.com/');
         $this->assertEquals('http://example.com/', $url->getDomain());

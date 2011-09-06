@@ -2,10 +2,12 @@
 include_once ASCMS_CORE_PATH.'/routing/URL.class.php';
 include_once ASCMS_CORE_PATH.'/routing/PopulatingLegacyParameterParser.class.php';
 
+include_once('../testCases/ContrexxTestCase.php');
+
 use Cx\Core\Routing\PopulatingLegacyParameterParser as PopulatingLegacyParameterParser;
 use Cx\Core\Routing\URL as URL;
 
-class PopulatingLegacyParameterParserTest extends \PHPUnit_Framework_TestCase {
+class PopulatingLegacyParameterParserTest extends \ContrexxTestCase {
     public function testPopulating() {
         $url = new URL('http://example.com/Test/?foo=bar');
         //mock the resolver (he'd normally set the params)

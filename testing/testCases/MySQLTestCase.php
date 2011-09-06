@@ -1,5 +1,7 @@
 <?php
-class MySQLTestCase extends PHPUnit_Framework_TestCase {
+require_once('ContrexxTestCase.php');
+
+class MySQLTestCase extends ContrexxTestCase {
     public static function setUpBeforeClass() {
         $errMsg = '';
         self::$database = getDatabaseObject($errMsg);
