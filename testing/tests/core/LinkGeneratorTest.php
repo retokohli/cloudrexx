@@ -31,14 +31,13 @@ class LinkGeneratorTest extends DoctrineTestCase {
         self::$em->flush();
 
         $this->nodeId = $node->getId();
-
     }
     
     public function testScanning() {
         $this->insertFixtures();
 
-        $testContent = 'asdf{{NODE_'.$this->nodeId.'_1}}';
-        $testContent .= ' asdf{{NODE_'.$this->nodeId.'_2}}';
+        $testContent = 'asdf{NODE_'.$this->nodeId.'_1}';
+        $testContent .= ' asdf{NODE_'.$this->nodeId.'_2}';
 
         $lg = new LinkGenerator('example.com/offset/');
         $lg->scan($testContent);

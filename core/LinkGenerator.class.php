@@ -9,7 +9,7 @@ class LinkGenerator {
      *
      * @var array stores the placeholders found by scan()
      */
-    protected $placeholders = null;
+    protected $placeholders = array();
     /**
      * @var boolean whether fetch() ran.
      */
@@ -27,10 +27,9 @@ class LinkGenerator {
      * @param string $content
      */
     public function scan(&$content) {
-        $this->placeholders = array();
         $this->fetchingDone = false;
         
-        $regex = '{{(NODE_(\d+)_(\d+))}}';
+        $regex = '/\{(NODE_(\d+)_(\d+))\}/';
 
         $matches = array();
         preg_match_all($regex, $content, $matches);
@@ -53,7 +52,7 @@ class LinkGenerator {
      */
     public function fetch($em) {
         if($this->placeholders === null)
-            throw new LinkGeneratorException('Seems like scan() was not called before calling fetch().');
+            throw new LinkGeneratorException('Seems like scan() was never called before calling fetch().');
 
         $qb = $em->createQueryBuilder();
         $qb->add('select', new Doctrine\ORM\Query\Expr\Select(array('p')));
@@ -104,15 +103,17 @@ class LinkGenerator {
     }
 
     /**
-     * Sets all variables on the given template.
-     * @param SigmaTemplate $template
+     * Replaces all variables in the given string
+     * @var string $string
      */
-    public function replace($template) {
+    public function replaceIn(&$string) {
         if($this->placeholders === null)
             throw new LinkGeneratorException('Usage: scan(), then fetch(), then replace().');
         if($this->fetchingDone === false)
             throw new LinkGeneratorException('Seems like fetch() was not called before calling replace().');
 
-        $template->setVariable($this->placeholders);   
+        foreach($this->placeholders as $placeholder => $link) {
+            $string = str_replace('{'.$placeholder.'}', $link, $string);
+        }
     }
 }
