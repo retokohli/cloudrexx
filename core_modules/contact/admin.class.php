@@ -1957,7 +1957,7 @@ class ContactManager extends ContactLib
         print $csvFormat[$format]['BOM'];
 
         foreach ($arrFormFields as $arrField) {
-            print $this->_escapeCsvValue($arrField['name']).$this->_csvSeparator;
+            print $this->_escapeCsvValue($arrField['lang'][$selectedInterfaceLanguage]['name']).$this->_csvSeparator;
         }
 
         $arrSettings = $this->getSettings();
@@ -1968,24 +1968,27 @@ class ContactManager extends ContactLib
                 .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_IP_ADDRESS']) : '')
                 .$this->_csvLFB;
 
-        $query    = "SELECT id, `time`, `host`, `lang`, `ipaddress`, data FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$formId." ORDER BY `time` DESC";
+        $query    = "SELECT `id`, `id_form`, `id_lang`, `time`, `host`, `ipaddress` FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$formId." ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
         if ($objEntry !== false) {
-            while (!$objEntry->EOF) {
-                $arrData = array();
-                foreach (explode(';', $objEntry->fields['data']) as $keyValue) {
-                    $arrTmp                             = explode(',', $keyValue);
-                    $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
-                }
+            while (!$objEntry->EOF) {          
+                
+                $query = "SELECT `id_entry`,
+                                 `id_field`,
+                                 `formlabel`,
+                                 `formvalue`                                    
+                                FROM ".DBPREFIX."module_contact_form_submit_data
+                                WHERE id_entry=".$objEntry->fields['id']."";
+                $arrFormValues = $objDatabase->Execute($query);
 
-                foreach ($arrFormFields as $arrField) {
-                    switch ($arrField['type']) {
+                while (!$arrFormValues->EOF) {
+                    switch ($arrFormFields[$arrFormValues->fields['id_field']]['type']) {
                     case 'checkbox':
-                            print $this->_escapeCsvValue(isset($arrData[$arrField['name']]) && $arrData[$arrField['name']] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
+                            print $this->_escapeCsvValue(isset($arrFormValues->fields['formvalue']) && $arrFormValues->fields['formvalue'] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
                         break;
 
                     case 'file':
-                            print $this->_escapeCsvValue(isset($arrData[$arrField['name']]) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrData[$arrField['name']] : '');
+                            print $this->_escapeCsvValue(isset($arrFormValues->fields['formvalue']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormValues->fields['formvalue'] : '');
                         break;
 
                     case 'text':
@@ -1995,16 +1998,17 @@ class ContactManager extends ContactLib
                     case 'radio':
                     case 'select':
                     case 'textarea':
-                        print isset($arrData[$arrField['name']]) ? $this->_escapeCsvValue($arrData[$arrField['name']]) : '';
+                        print isset($arrFormValues->fields['formvalue']) ? $this->_escapeCsvValue($arrFormValues->fields['formvalue']) : '';
                         break;
                     }
 
                     print $this->_csvSeparator;
+                    $arrFormValues->MoveNext();
                 }
 
                 print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT, $objEntry->fields['time'])).$this->_csvSeparator : '')
                         .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($objEntry->fields['host']).$this->_csvSeparator : '')
-                        .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($objEntry->fields['lang']).$this->_csvSeparator : '')
+                        .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($objEntry->fields['id_lang']).$this->_csvSeparator : '')
                     .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($objEntry->fields['ipaddress']) : '')
                     .$this->_csvLFB;
 
