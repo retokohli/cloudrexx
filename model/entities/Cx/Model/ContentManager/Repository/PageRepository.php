@@ -219,7 +219,7 @@ class PageRepository extends EntityRepository {
      *     
      * @param \Cx\Model\ContentManager\Page $page
      * @param boolean $useSlugsAsTitle use this to get a navigation page
-     * @return string path, e.g. '/This/Is/It'
+     * @return string path, e.g. 'This/Is/It'
      */
     public function getPath($page, $useSlugsAsTitle=false) {
         $lang = $page->getLang();
