@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The main page for the CMS
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -1054,6 +1053,13 @@ $page_content = str_replace('{PRINT_URL}', $objInit->getPrintUri(), $page_conten
 $page_content = str_replace('{PDF_URL}', $objInit->getPDFUri(), $page_content);
 $page_content = str_replace('{TITLE}', $page_title, $page_content);
 
+//replace the {{NODE_<ID>_<LANG>}}- placeholders
+require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
+$lg = new LinkGenerator($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/');
+$lg->scan($page_content);
+$lg->fetch(Env::em());
+$lg->replaceIn($page_content);
+
 $boolShop = false;
 // start module switches
 switch ($plainSection) {
@@ -1585,7 +1591,9 @@ if ($_CONFIG['frontendEditingStatus'] == 'on'
     && @include_once ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php') {
     $strFeInclude   = frontendEditingLib::getIncludeCode();
     $strFeLink      = frontendEditingLib::getLinkCode();
-    $strFeContent   = frontendEditingLib::getContentCode($pageId, contrexx_addslashes($section), $command);
+
+    $pagePath = Env::em()->getRepository('Cx\Model\ContentManager\Page')->getPath($page, true);
+    $strFeContent   = frontendEditingLib::getContentCode($pagePath, contrexx_addslashes($section), $command);
 }
 
 
@@ -1641,7 +1649,7 @@ $objTemplate->setVariable(array(
     'TXT_CORE_LAST_MODIFIED_PAGE' => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE' => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
     'FACEBOOK_LIKE_IFRAME' => '<iframe src="http://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>',
-    'GOOGLE_PLUSONE' => '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script> <g:plusone></g:plusone>',
+    'GOOGLE_PLUSONE' => '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script> <g:plusone></g:plusone>'
 ));
 
 // Include and initialize handler to fill Social Network template variables
