@@ -5,7 +5,9 @@ include_once ASCMS_CORE_PATH.'/routing/ParameterParser.class.php';
 use Cx\Core\Routing\ParameterParser as ParameterParser;
 use Cx\Core\Routing\URL as URL;
 
-class ParameterParserTest extends \PHPUnit_Framework_TestCase {
+include_once('../testCases/ContrexxTestCase.php');
+
+class ParameterParserTest extends \ContrexxTestCase {
     public function testExtracting() {
         $url = new URL('http://example.com/Test/?foo=bar');
         //mock the resolver (he'd normally set the params)

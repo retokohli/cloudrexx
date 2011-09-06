@@ -1,5 +1,7 @@
 <?php
-class DoctrineTestCase extends PHPUnit_Framework_TestCase {
+require_once('ContrexxTestCase.php');
+
+class DoctrineTestCase extends ContrexxTestCase {
     protected static $em;
 
     public static function setUpBeforeClass() {
