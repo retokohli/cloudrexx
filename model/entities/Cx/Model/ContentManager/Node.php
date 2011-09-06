@@ -161,9 +161,10 @@ class Node extends \Cx\Model\Base\EntityBase
      *
      * @return Doctrine\Common\Collections\Collection $children
      */
-    public function getChildren()
+    public function getChildren($lang = null)
     {
         return $this->children;
+
     }
 
     /**
@@ -186,6 +187,7 @@ class Node extends \Cx\Model\Base\EntityBase
         return $this->pages;
     }
 
+
     public function getPagesByLang()
     {
         $pages = $this->getPages();
@@ -198,6 +200,12 @@ class Node extends \Cx\Model\Base\EntityBase
         return $result;
     }
 
+    /**
+     * Get a certain Page 
+     *
+     * @param integer $lang
+     * @return \Cx\Model\ContentManager\Page
+     */
     public function getPage($lang)
     {
         $pages = $this->getPages();
