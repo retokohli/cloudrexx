@@ -49,6 +49,11 @@ class ContactManager extends ContactLib
     //Doctrine Entity Manager
     var $em = null;
 
+    var $_exculdeFieldTypes = array(
+            'horizontalLine',
+            'fieldset',
+            'label',
+        );    
     
     const formMailTemplate = '<table>
     <tbody>
@@ -1804,12 +1809,11 @@ class ContactManager extends ContactLib
             /*
              * Fieldset and Horizontal Field Type need not be displayed in the details page
              */
-            if ($arrField['type'] != 'horizontalLine' && $arrField['type'] != 'fieldset') {
+            if (!in_array($arrField['type'], $this->_exculdeFieldTypes)) {
                 $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
                 $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
                                 contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']).
-                                ($arrField['type'] == 'hidden' ? ' (hidden)' : '').
-                                ($arrField['type'] == 'label' ? ' (label)' : '').
+                                ($arrField['type'] == 'hidden' ? ' (hidden)' : '').                                
                                 "</td>\n";
                 $sourcecode .= "<td width=\"85%\">";
                 
@@ -1835,9 +1839,6 @@ class ContactManager extends ContactLib
                     else {
                         $sourcecode .= '&nbsp;';
                     }
-                    break;
-                case 'label':
-                    $sourcecode .= isset($arrField['lang'][$langId]['name']) ? nl2br(contrexx_raw2xhtml($arrField['lang'][$langId]['value'])) : '&nbsp;';
                     break;
                 case 'recipient':
                     $recipientId = $arrEntry['data'][$key];
@@ -1922,7 +1923,7 @@ class ContactManager extends ContactLib
                 'LFB'           => "\r\n"
             )
         );
-
+        
         if (empty($formId)) {
             CSRF::header("Location: index.php?cmd=contact");
             return;
@@ -1957,7 +1958,11 @@ class ContactManager extends ContactLib
         print $csvFormat[$format]['BOM'];
 
         foreach ($arrFormFields as $arrField) {
-            print $this->_escapeCsvValue($arrField['lang'][$selectedInterfaceLanguage]['name']).$this->_csvSeparator;
+            
+            // Fieldset and Horizontal Field Type need not be displayed in the details page
+            if (!in_array($arrField['type'], $this->_exculdeFieldTypes)) {
+                print $this->_escapeCsvValue($arrField['lang'][$selectedInterfaceLanguage]['name']).$this->_csvSeparator;
+            }                        
         }
 
         $arrSettings = $this->getSettings();
@@ -1968,50 +1973,46 @@ class ContactManager extends ContactLib
                 .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($_ARRAYLANG['TXT_CONTACT_IP_ADDRESS']) : '')
                 .$this->_csvLFB;
 
-        $query    = "SELECT `id`, `id_form`, `id_lang`, `time`, `host`, `ipaddress` FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$formId." ORDER BY `time` DESC";
+        $query    = "SELECT `id` FROM ".DBPREFIX."module_contact_form_data WHERE id_form=".$formId." ORDER BY `time` DESC";
         $objEntry = $objDatabase->Execute($query);
         if ($objEntry !== false) {
-            while (!$objEntry->EOF) {          
-                
-                $query = "SELECT `id_entry`,
-                                 `id_field`,
-                                 `formlabel`,
-                                 `formvalue`                                    
-                                FROM ".DBPREFIX."module_contact_form_submit_data
-                                WHERE id_entry=".$objEntry->fields['id']."";
-                $arrFormValues = $objDatabase->Execute($query);
+            while (!$objEntry->EOF) {
+                $formEntriesValues = $this->getFormEntry($objEntry->fields['id']);
 
-                while (!$arrFormValues->EOF) {
-                    switch ($arrFormFields[$arrFormValues->fields['id_field']]['type']) {
-                    case 'checkbox':
-                            print $this->_escapeCsvValue(isset($arrFormValues->fields['formvalue']) && $arrFormValues->fields['formvalue'] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
-                        break;
+                foreach ($arrFormFields as $fieldId => $value) {
 
-                    case 'file':
-                            print $this->_escapeCsvValue(isset($arrFormValues->fields['formvalue']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormValues->fields['formvalue'] : '');
-                        break;
+                    if (!in_array($arrFormFields[$fieldId]['type'], $this->_exculdeFieldTypes)) {
+                        if (!empty ($formEntriesValues['data'][$fieldId])) {
+                            switch ($arrFormFields[$fieldId]['type']) {
+                            case 'checkbox':
+                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]) && $formEntriesValues['data'][$fieldId] ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO']);
+                                break;
 
-                    case 'text':
-                    case 'checkboxGroup':
-                    case 'hidden':
-                    case 'password':
-                    case 'radio':
-                    case 'select':
-                    case 'textarea':
-                        print isset($arrFormValues->fields['formvalue']) ? $this->_escapeCsvValue($arrFormValues->fields['formvalue']) : '';
-                        break;
+                            case 'file':
+                                print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$formEntriesValues['data'][$fieldId] : '');
+                                break;
+
+                            case 'text':
+                            case 'checkboxGroup':
+                            case 'hidden':
+                            case 'password':
+                            case 'radio':
+                            case 'select':
+                            case 'textarea':
+                                print isset($formEntriesValues['data'][$fieldId]) ? $this->_escapeCsvValue($formEntriesValues['data'][$fieldId]) : '';
+                                break;
+                            }                             
+                        } 
+                        print $this->_csvSeparator;                            
                     }
-
-                    print $this->_csvSeparator;
-                    $arrFormValues->MoveNext();
                 }
-
-                print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT, $objEntry->fields['time'])).$this->_csvSeparator : '')
-                        .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($objEntry->fields['host']).$this->_csvSeparator : '')
-                        .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($objEntry->fields['id_lang']).$this->_csvSeparator : '')
-                    .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($objEntry->fields['ipaddress']) : '')
+                    
+                print ($arrSettings['fieldMetaDate'] == '1' ? $this->_escapeCsvValue(date(ASCMS_DATE_FORMAT, $formEntriesValues['time'])).$this->_csvSeparator : '')
+                        .($arrSettings['fieldMetaHost'] == '1' ? $this->_escapeCsvValue($formEntriesValues['host']).$this->_csvSeparator : '')
+                        .($arrSettings['fieldMetaLang'] == '1' ? $this->_escapeCsvValue($formEntriesValues['langId']).$this->_csvSeparator : '')
+                    .($arrSettings['fieldMetaIP'] == '1' ? $this->_escapeCsvValue($formEntriesValues['ipaddress']) : '')
                     .$this->_csvLFB;
-
+                
                 $objEntry->MoveNext();
             }
         }
