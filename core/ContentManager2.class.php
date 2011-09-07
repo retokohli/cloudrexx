@@ -20,7 +20,10 @@ class ContentManager {
 	}
 
 	function renderCM() {
-        JS::activate('jquery');
+        JS::activate('cx');
+        JS::activate('ckeditor');
+        JS::activate('jqueryui');
+        JS::activate('jstree');
 
         // Render the Content Manager within our old backend template.
 		global $objTemplate;
