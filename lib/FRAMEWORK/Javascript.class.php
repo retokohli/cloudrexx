@@ -131,26 +131,15 @@ jQuery(document).ready(function(){
         ),
         'ckeditor'     => array(
             'jsfiles'       => array(
-                'editor/ckeditor/ckeditor.js'
+                'editor/ckeditor/ckeditor.js',
+                'editor/ckeditor/adapters/jquery.js'
             ),
+            'dependencies' => array('jquery')
         ),
 
 /*
 Coming soon
-        'jqueryui'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/jqueryUI/js/jquery-ui-1.8.2.custom.min.js'
-            ),
-            'cssfiles'      => array(
-                'lib/javascript/jqueryUI/css/blitzer/jquery-ui-1.8.2.custom.css',
-            ),
-            'dependencies'  => array(
-                'jquery',
-            ),
-        ),
-*/
-/*
-Coming soon
+Caution: JS/ALL files are missing. Also, this should probably be loaded through js:cx now.
         'jcrop' => array(
             'jsfiles'       => array(
                 'lib/javascript/jcrop/js/jquery.Jcrop.min.js'
@@ -188,6 +177,15 @@ Coming soon
             ),
             'dependencies' => array('jquery')
             //we insert the specialCode for the Contrexx-API later in getCode()
+        ),
+
+        'jstree' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/jstree/jquery.jstree.js',
+                'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
+                'lib/javascript/jquery/cookie/jquery.cookie.js',
+            ),
+            'dependencies' => array('jquery')
         ),
     );
 
