@@ -49,7 +49,7 @@ class ContactManager extends ContactLib
     //Doctrine Entity Manager
     var $em = null;
 
-    var $_exculdeFieldTypes = array(
+    var $_excludeFieldTypes = array(
             'horizontalLine',
             'fieldset',
             'label',
@@ -1809,7 +1809,7 @@ class ContactManager extends ContactLib
             /*
              * Fieldset and Horizontal Field Type need not be displayed in the details page
              */
-            if (!in_array($arrField['type'], $this->_exculdeFieldTypes)) {
+            if (!in_array($arrField['type'], $this->_excludeFieldTypes)) {
                 $sourcecode .= "<tr class=".($rowNr % 2 == 0 ? 'row1' : 'row2').">\n";
                 $sourcecode .= "<td style=\"vertical-align:top;\" width=\"15%\">".
                                 contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']).
@@ -1960,7 +1960,7 @@ class ContactManager extends ContactLib
         foreach ($arrFormFields as $arrField) {
             
             // Fieldset and Horizontal Field Type need not be displayed in the details page
-            if (!in_array($arrField['type'], $this->_exculdeFieldTypes)) {
+            if (!in_array($arrField['type'], $this->_excludeFieldTypes)) {
                 print $this->_escapeCsvValue($arrField['lang'][$selectedInterfaceLanguage]['name']).$this->_csvSeparator;
             }                        
         }
@@ -1981,7 +1981,7 @@ class ContactManager extends ContactLib
 
                 foreach ($arrFormFields as $fieldId => $value) {
 
-                    if (!in_array($arrFormFields[$fieldId]['type'], $this->_exculdeFieldTypes)) {
+                    if (!in_array($arrFormFields[$fieldId]['type'], $this->_excludeFieldTypes)) {
                         if (!empty ($formEntriesValues['data'][$fieldId])) {
                             switch ($arrFormFields[$fieldId]['type']) {
                             case 'checkbox':
