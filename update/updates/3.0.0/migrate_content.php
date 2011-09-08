@@ -8,6 +8,7 @@ require_once '../../../lib/DBG.php';
 require_once '../../../config/configuration.php';
 require_once '../../../core/API.php';
 require_once '../../../config/doctrine.php';
+require_once '../../../../phptools/profiler.class.php';
 DBG::activate();
 
 $m = new Contrexx_Content_migration;
@@ -29,25 +30,33 @@ class Contrexx_Content_migration
             die($errorMsg);
         }
         self::$em = Env::em();
-
-
     }
    
     public function migrate()
     {
         global $objDatabase;
-        $nodeArr = array ();
-        $root = new \Cx\Model\ContentManager\Node();
-        self::$em->persist($root);
         $objDatabase->Execute('TRUNCATE TABLE `contrexx_pages`');
         $objDatabase->Execute('TRUNCATE TABLE `contrexx_nodes`');
         $objDatabase->Execute('TRUNCATE TABLE `contrexx_ext_log_entries`');
+
+        $nodeArr = array ();
+        $root = new \Cx\Model\ContentManager\Node();
+        self::$em->persist($root);
+
+        $visiblePageIDs = $this->getVisiblePageIDs();
+        Logger::getInstance()->log("got ids");
 
         $objNodeResult = $objDatabase->Execute('SELECT DISTINCT catid
                                                 FROM `'.DBPREFIX.'content_navigation_history`
                                                 ORDER BY catid ASC');
 
         while (!$objNodeResult->EOF) {
+            //skip ghosts
+            if (!in_array($objNodeResult->fields['catid'], $visiblePageIDs)) {
+                $objNodeResult->MoveNext();
+                continue;
+            }
+
             $nodeArr[$objNodeResult->fields['catid']] = new \Cx\Model\ContentManager\Node();             
             
             self::$em->persist($nodeArr[$objNodeResult->fields['catid']]);
@@ -58,6 +67,8 @@ class Contrexx_Content_migration
         // flush nodes to db
         self::$em->flush();
 
+        Logger::getInstance()->log( "flösch");
+
         $objResult = $objDatabase->Execute('SELECT cn.*,
                nav.*,
                cnlog.*
@@ -66,14 +77,24 @@ class Contrexx_Content_migration
                ON cn.id=nav.id
                INNER JOIN `'.DBPREFIX.'content_logfile` AS cnlog
                ON cn.id = cnlog.history_id ORDER BY cnlog.id ASC');
-        
+
+        $p = array();
+       
         while (!$objResult->EOF) {
+            //skip ghosts
+            if (!in_array($objResult->fields['catid'], $visiblePageIDs)) {
+                $objResult->MoveNext();
+                continue;
+            }
 
             if ($objResult->fields['parcat'] == 0) {
-                $nodeArr[$objResult->fields['catid']]->setParent($root);                
+                $nodeArr[$objResult->fields['catid']]->setParent($root);
             } else {
                 $nodeArr[$objResult->fields['catid']]->setParent($nodeArr[$objResult->fields['parcat']]);
             }
+
+            $deleted = false;
+            $page = null;
 
             switch ($objResult->fields['action']) {
                 case 'new':
@@ -85,17 +106,22 @@ class Contrexx_Content_migration
                     break;
                 case 'delete':
                     self::$em->remove($p[$objResult->fields['page_id']]);
+                    $deleted = true;
                     break;
-            }
-                        
-            $this->_setPageRecords($objResult, $nodeArr[$objResult->fields['catid']], $page);
+            }                      
 
-            self::$em->persist($page);
+            if(!$deleted) {
+                $this->_setPageRecords($objResult, $nodeArr[$objResult->fields['catid']], $page);
+
+                self::$em->persist($page);
+            }
 
             self::$em->flush();
 
             $objResult->MoveNext();
         }             
+
+        Logger::getInstance()->log( "before unmatched");
 
         // Check for unmatched record in contents table and pages table
         $objRecords = $objDatabase->Execute('SELECT * 
@@ -116,25 +142,39 @@ class Contrexx_Content_migration
                                                     ORDER BY parcat ASC, displayorder ASC');
 
             while (!$objNodeResult->EOF) {
+                //skip ghosts
+                if(!in_array($objNodeResult->fields['catid'], $visiblePageIDs)) {
+                    $objNodeResult->MoveNext();
+                    continue;
+                }
+
                 if (empty ($nodeArr[$objNodeResult->fields['catid']])) {
                     $nodeArr[$objNodeResult->fields['catid']] = new \Cx\Model\ContentManager\Node();             
-            
+
+                    if ($objResult->fields['parcat'] == 0) {
+                        $nodeArr[$objNodeResult->fields['catid']]->setParent($root);                
+                    } else {
+                        $nodeArr[$objNodeResult->fields['catid']]->setParent($nodeArr[$objResult->fields['parcat']]);
+                    }
+
                     self::$em->persist($nodeArr[$objNodeResult->fields['catid']]);
                 }
                 $objNodeResult->MoveNext();
             }
+            self::$em->flush();
         }
 
         while (!$objRecords->EOF) {
-            
-            if ($objRecords->fields['parcat'] == 0) { 
-                $nodeArr[$objRecords->fields['catid']]->setParent($root);                
-            } else {
-                $nodeArr[$objRecords->fields['catid']]->setParent($nodeArr[$objRecords->fields['parcat']]);
+            $catid = $objRecords->fields['catid'];
+            //skip ghosts
+            if(!in_array($catid, $visiblePageIDs)) {
+                $objRecords->MoveNext();
+                continue;
             }
+
             $page = new \Cx\Model\ContentManager\Page();
 
-            $this->_setPageRecords($objRecords, $nodeArr[$objRecords->fields['catid']], $page);
+            $this->_setPageRecords($objRecords, $nodeArr[$catid], $page);
 
             self::$em->persist($page);
 
@@ -142,6 +182,8 @@ class Contrexx_Content_migration
             
             $objRecords->MoveNext();
         }
+
+        Logger::getInstance()->log( "done, merging now");
     }
     
     function _setPageRecords($objResult, $node, $page)
@@ -167,8 +209,10 @@ class Contrexx_Content_migration
         $page->setMetadesc($objResult->fields['metadesc']);
         $page->setMetakeys($objResult->fields['metakeys']);
         $page->setMetarobots($objResult->fields['metarobots']);
-        $page->setStart(new DateTime($objResult->fields['startdate']));
-        $page->setEnd(new DateTime($objResult->fields['enddate']));
+        //$page->setStart(new DateTime($objResult->fields['startdate']));
+        //$page->setEnd(new DateTime($objResult->fields['enddate']));
+        $page->setStart(new DateTime());
+        $page->setEnd(new DateTime());
         $page->setUsername($objResult->fields['username']);
         $page->setDisplay(($objResult->fields['displaystatus'] === 'on' ? 1 : 0));
         $page->setActive($objResult->fields['activestatus']);
@@ -210,5 +254,82 @@ class Contrexx_Content_migration
             self::$em->clear();
         }
     }
+
+    /*
+      there are 'lost' ghost pages in the old content due to bugs, so we need to identify
+      those pages.
+      this simulates a sitemap as the old contentmanager saw it to achieve this.
+      the ids of all 'non-lost' pages are then returned.
+     */
+    function getVisiblePageIDs() {
+        global $objDatabase;
+
+        $query = "SELECT lang FROM ".DBPREFIX."content_navigation GROUP BY lang";
+        $result = $objDatabase->Execute($query);
+
+        Logger::getInstance()->log( "bloop");
+
+        $pageIds = array();
+        while(!$result->EOF) {
+            $pageIds = array_merge($pageIds, $this->getVisiblePageIDsForLang($result->fields['lang']));
+            $result->MoveNext();
+        }
+
+        Logger::getInstance()->log( "aloop");
+
+        return $pageIds;        
+    }
+
+    protected $treeArray = array();
+    protected $navTable = array();
+
+    function getVisiblePageIDsForLang($lang)
+    {
+        global $objDatabase;
+        $query = "SELECT
+                         n.lang,
+                         n.catid AS catid,
+                         n.displayorder AS displayorder,
+                         n.parcat AS parcat
+                    FROM ".DBPREFIX."content_navigation AS n
+                   WHERE n.lang = $lang 
+                ORDER BY n.parcat ASC, n.displayorder ASC";
+
+        Logger::getInstance()->log( $query);
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult === false) {
+            //problem.
+        }
+
+        $this->navtable = array();
+        $this->treeArray = array();
+
+        while (!$objResult->EOF) {
+            $lang = $objResult->fields['lang'];
+            $parcat = $objResult->fields['parcat'];
+            $catid = $objResult->fields['catid'];
+
+            $this->navtable[$parcat][$catid]='title';
+            $objResult->MoveNext();
+        }
+
+        return $this->doAdminTreeArray();
+    }
+
+    //based on old ContentSitemap. magically removes the ghosts.
+    function doAdminTreeArray($parcat=0, $level=0, $maxlevel=0)
+    {
+        $list = $this->navtable[$parcat];
+        if (is_array($list)) {
+            foreach (array_keys($list) as $pageId) {
+                $this->treeArray[$pageId] = $level;
+                if (isset($this->navtable[$pageId]) && ($maxlevel > $level+1 || $maxlevel == '0')) {
+                    $this->doAdminTreeArray($pageId, $level+1, $maxlevel);
+                }
+            }
+        }
+        return array_keys($this->treeArray);
+    }
+
 }
 ?>
