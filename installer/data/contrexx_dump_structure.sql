@@ -4103,7 +4103,7 @@ CREATE TABLE `contrexx_module_block_blocks` (
   `order` int(1) NOT NULL DEFAULT '0',
   `cat` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) TYPE=MyISAM8;
+) TYPE=MyISAM;
 CREATE TABLE `contrexx_module_block_categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `parent` int(10) NOT NULL DEFAULT '0',
