@@ -8,7 +8,6 @@ require_once '../../../lib/DBG.php';
 require_once '../../../config/configuration.php';
 require_once '../../../core/API.php';
 require_once '../../../config/doctrine.php';
-require_once '../../../../phptools/profiler.class.php';
 DBG::activate();
 
 $m = new Contrexx_Content_migration;
