@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+    <head>
+        <title>{METATITLE} | {GLOBAL_TITLE} - powered by {VERSION}</title>
+        <meta name="description" content="{METADESC}"/>
+        <meta name="keywords" content="{METAKEYS}"/>
+        <meta http-equiv="Content-Type" content="text/html; charset={CHARSET}" />
+        <meta name="robots" content="{METAROBOTS}"/>
+        <meta name="generator" content="{VERSION}"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=8"/>
+        <meta http-equiv="pragma" content="no-cache"/>
+        <meta http-equiv="cache-control" content="no-cache"/>
+        <link rel="stylesheet" type="text/css" href="themes/contrexx_theme_3_0/style.css" />
+        <link rel="alternate" type="application/rss+xml" title="{GLOBAL_TITLE}" href="{BASE_URL}/feed/news_headlines_de.xml" />
+        <script language="JavaScript" src="themes/contrexx_theme_3_0/langnavbar.js" type="text/javascript"></script>
+        <script language="JavaScript" src="themes/contrexx_theme_3_0/js/search.js" type="text/javascript"></script>
+        <script language="JavaScript" src="themes/contrexx_theme_3_0/js/maxheight.js" type="text/javascript"></script>
+        <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+        <script type="text/javascript" src="themes/contrexx_theme_3_0/js/cufon-yui.js"></script>
+        <script type="text/javascript" src="themes/contrexx_theme_3_0/js/font.js"></script>
+        {JAVASCRIPT}
+        {STYLE_FILE}    
+        {LOGIN_INCLUDE}
+        <script type="text/javascript">
+            $J(document).ready(function() {
+                Cufon.replace('#main h1');
+                $J('input[type="text"]').addClass('inputText');
+            });
+        </script>
+        <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="themes/contrexx_theme_3_0/ie.css" /><![endif]-->
+        <!--[if IE 6]><link rel="stylesheet" type="text/css" href="themes/contrexx_theme_3_0/ie6.css" /><![endif]-->
+    </head>
+    <body>
+        <div id="page">
+            <div id="header">
+                <div id="logo_part"><a id="logo" href="index.php?section=home" title="Contrexx"></a></div>
+                <div id="nav-add">
+                    <ul>
+                        <li><a href="index.php?section=sitemap" title="Sitemap">Sitemap</a></li>
+                        <li><a href="index.php?section=contact&amp;cmd=7" title="Contact">Contact</a></li>
+                        <li><a href="javascript:popdown('lang_navigation');" id="select_lang" title="Language">Language</a></li>
+                        <!-- BEGIN access_logged_out -->
+                        <li id="n-register"><a href="index.php?section=access&amp;cmd=signup" class="register inactive" title="Register">Register</a></li>
+                        <li id="n-login"><a href="index.php?section=login" class="login inactive" title="Login">Login</a></li>
+                        <!-- END access_logged_out --> <!-- BEGIN access_logged_in -->
+                        <li id="n-user"><a href="index.php?section=access" class="user inactive" title="logged in as {ACCESS_USER_USERNAME}">{ACCESS_USER_USERNAME}</a></li>
+                        <li id="n-logout"><a href="index.php?section=logout" class="logout inactive" title="logout">logout</a></li>
+                        <!-- END access_logged_in --> <!-- Loginbox END --> </ul>
+                </div>
+            </div>
+            <div id="navigation">
+                <div id="nav-main">
+                    <ul class="nav-header">
+                        {NAVBAR_FILE}
+                    </ul>
+                    <div id="search">
+                        <form action="index.php" method="get" id="form-globalsearch">
+                            <div>
+                                <span id="searchField_left"></span>
+                                <input value="search" name="section" type="hidden"/>
+                                <input name="term" onblur="resetText(this)" onfocus="clearText(this)" value="Search..." id="term" type="text"/>
+                                <input class="search-button" type="image" alt="suchen" src="themes/contrexx_theme_3_0/images/search_button.jpg" /></div>
+                        </form>
+                    </div>
+                </div>
+                <div class="ccm-spacer">&nbsp;</div>
+            </div>
+            <div id="container">
+                <div id="content-wrap" class="group">
+                    {CONTENT_FILE}
+                </div>
+            </div>
+            <div id="footer_wrapper">
+                <div id="footer" class="group">
+                    <p id="copyright">Copyright &copy; {DATE_YEAR} your company
+                        <br/>
+                        <span>your company • NewYork 6 , NY-9821 NewYork State • Phone: +1 (0) 44 418 657 6000
+                            • Fax: +1 (0) 44 418 6999 • E-Mail: <a href="#">example@yourcompany.com</a></span>
+                    </p>
+                    <div id="footer_bottom">
+                        <p id="facebook"><a href="http://www.facebook.com/pages/Contrexx/137997176253509">Contrexx on Facebook</a></p>
+                        <p id="twitter"><a href="http://www.twitter.com/contrexx">Contrexx on Twitter</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul id="lang_navigation" style="display: none;">
+            <li><a class="de" href="index.php?setLang=1">Deutsch</a></li>
+            <li><a class="en" href="index.php?setLang=2">English</a></li>
+        </ul>
+        {COUNTER}
+        {LOGIN_CONTENT}
+    </body>
+</html>
