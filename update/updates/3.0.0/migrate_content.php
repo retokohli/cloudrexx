@@ -44,7 +44,6 @@ class Contrexx_Content_migration
         self::$em->persist($root);
 
         $visiblePageIDs = $this->getVisiblePageIDs();
-        Logger::getInstance()->log("got ids");
 
         $objNodeResult = $objDatabase->Execute('SELECT DISTINCT catid
                                                 FROM `'.DBPREFIX.'content_navigation_history`
@@ -67,7 +66,6 @@ class Contrexx_Content_migration
         // flush nodes to db
         self::$em->flush();
 
-        Logger::getInstance()->log( "flösch");
 
         $objResult = $objDatabase->Execute('SELECT cn.*,
                nav.*,
@@ -121,7 +119,6 @@ class Contrexx_Content_migration
             $objResult->MoveNext();
         }             
 
-        Logger::getInstance()->log( "before unmatched");
 
         // Check for unmatched record in contents table and pages table
         $objRecords = $objDatabase->Execute('SELECT * 
@@ -183,7 +180,6 @@ class Contrexx_Content_migration
             $objRecords->MoveNext();
         }
 
-        Logger::getInstance()->log( "done, merging now");
     }
     
     function _setPageRecords($objResult, $node, $page)
@@ -267,7 +263,6 @@ class Contrexx_Content_migration
         $query = "SELECT lang FROM ".DBPREFIX."content_navigation GROUP BY lang";
         $result = $objDatabase->Execute($query);
 
-        Logger::getInstance()->log( "bloop");
 
         $pageIds = array();
         while(!$result->EOF) {
@@ -275,7 +270,6 @@ class Contrexx_Content_migration
             $result->MoveNext();
         }
 
-        Logger::getInstance()->log( "aloop");
 
         return $pageIds;        
     }
@@ -295,7 +289,6 @@ class Contrexx_Content_migration
                    WHERE n.lang = $lang 
                 ORDER BY n.parcat ASC, n.displayorder ASC";
 
-        Logger::getInstance()->log( $query);
         $objResult = $objDatabase->Execute($query);
         if ($objResult === false) {
             //problem.
