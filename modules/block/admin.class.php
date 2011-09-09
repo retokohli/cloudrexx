@@ -564,6 +564,8 @@ class blockManager extends blockLibrary
     private function _showModifyBlock($copy = false)
     {
         global $_ARRAYLANG;
+        
+        JS::activate('cx');
 
         $blockId                = !empty($_REQUEST['blockId']) ? intval($_REQUEST['blockId']) : 0;
         $blockCat               = 0;
@@ -580,13 +582,12 @@ class blockManager extends blockLibrary
         $blockLangActive        = array();
 
         $this->_objTpl->loadTemplateFile('module_block_modify.html');
-
+        
         $this->_objTpl->setGlobalVariable(array(
             'TXT_BLOCK_CONTENT'                 => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
             'TXT_BLOCK_NAME'                    => $_ARRAYLANG['TXT_BLOCK_NAME'],
             'TXT_BLOCK_RANDOM'                  => $_ARRAYLANG['TXT_BLOCK_RANDOM'],
             'TXT_BLOCK_GLOBAL'                  => $_ARRAYLANG['TXT_BLOCK_SHOW_IN_GLOBAL'],
-            'TXT_BLOCK_FRONTEND_LANGUAGES'      => $_ARRAYLANG['TXT_BLOCK_FRONTEND_LANGUAGES'],
             'TXT_BLOCK_SAVE'                    => $_ARRAYLANG['TXT_BLOCK_SAVE'],
             'TXT_BLOCK_DEACTIVATE'              => $_ARRAYLANG['TXT_BLOCK_DEACTIVATE'],
             'TXT_BLOCK_ACTIVATE'                => $_ARRAYLANG['TXT_BLOCK_ACTIVATE'],
@@ -598,8 +599,15 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_SHOW_UNTIL'              => $_ARRAYLANG['TXT_BLOCK_SHOW_UNTIL'],
             'TXT_BLOCK_SHOW_TIMED'              => $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'],
             'TXT_BLOCK_SHOW_ALWAYS'             => $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'],
-            'TXT_BLOCK_FRONTEND_PAGES'          => $_ARRAYLANG['TXT_BLOCK_CONTENT_PAGES'],
             'TXT_BLOCK_LANG_SHOW'               => $_ARRAYLANG['TXT_BLOCK_SHOW_BLOCK_IN_THIS_LANGUAGE'],
+            'TXT_BLOCK_BASIC_DATA'              => $_ARRAYLANG['TXT_BLOCK_BASIC_DATA'],
+            'TXT_BLOCK_ADDITIONAL_OPTIONS'      => $_ARRAYLANG['TXT_BLOCK_ADDITIONAL_OPTIONS'],
+            'TXT_BLOCK_SELECTED_PAGES'          => $_ARRAYLANG['TXT_BLOCK_SELECTED_PAGES'],
+            'TXT_BLOCK_AVAILABLE_PAGES'         => $_ARRAYLANG['TXT_BLOCK_AVAILABLE_PAGES'],
+            'TXT_BLOCK_SELECT_ALL'              => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
+            'TXT_BLOCK_UNSELECT_ALL'            => $_ARRAYLANG['TXT_BLOCK_UNSELECT_ALL'], 
+            'TXT_BLOCK_GLOBAL_PLACEHOLDERS'     => $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'],
+            'TXT_BLOCK_DISPLAY_TIME'            => $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME']
         ));
 
         if (isset($_POST['block_save_block'])) {
@@ -659,12 +667,8 @@ class blockManager extends blockLibrary
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
             'BLOCK_NAME'                        => contrexx_raw2xhtml($blockName),
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
-            'BLOCK_START'                       => strftime('%Y-%m-%d', $blockStart),
+            'BLOCK_START'                       => date('Y-m-d H:i'),
             'BLOCK_END'                         => strftime('%Y-%m-%d', $blockEnd),
-            'BLOCK_START_HOURS'                 => $this->_parseHours($blockStart),
-            'BLOCK_START_MINUTES'               => $this->_parseMinutes($blockStart),
-            'BLOCK_END_HOURS'                   => $this->_parseHours($blockEnd),
-            'BLOCK_END_MINUTES'                 => $this->_parseMinutes($blockEnd),
             'BLOCK_RANDOM'                      => $blockRandom == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_2'                    => $blockRandom2 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_3'                    => $blockRandom3 == '1' ? 'checked="checked"' : '',
@@ -701,6 +705,29 @@ class blockManager extends blockLibrary
             'BLOCK_RELATION_PAGES_SELECTED'     => $strSelectedPages,
         ));
 
+        $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+        if (count($arrActiveSystemFrontendLanguages) > 0) {
+            $intLanguageCounter = 0;
+            $boolFirstLanguage  = true;
+            $arrLanguages       = array(0 => '', 1 => '', 2 => '');
+            $strJsTabToDiv      = '';
+
+            foreach($arrActiveSystemFrontendLanguages as $langId => $arrLanguage) {
+                $boolLanguageIsActive = $langId == FRONTEND_LANG_ID;                
+
+                $arrLanguages[$intLanguageCounter%3] .= '<input id="languagebar_'.$langId.'" '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$langId.']" value="1" onclick="switchBoxAndTab(this, \'addFrom_'.$langId.'\');" /><label for="languagebar_'.$langId.'">'.contrexx_raw2xhtml($arrLanguage['name']).' ['.$arrLanguage['lang'].']</label><br />';
+                $strJsTabToDiv .= 'arrTabToDiv["addFrom_'.$langId.'"] = "langTab_'.$langId.'";'."\n";
+                ++$intLanguageCounter;
+            }
+
+            $this->_objTpl->setVariable(array(
+                'TXT_BLOCK_LANGUAGE'      => $_ARRAYLANG['TXT_BLOCK_LANGUAGE'],
+                'EDIT_LANGUAGES_1'          => $arrLanguages[0],
+                'EDIT_LANGUAGES_2'          => $arrLanguages[1],
+                'EDIT_LANGUAGES_3'          => $arrLanguages[2]                
+            ));
+        }        
+        
         $arrLanguages = FWLanguage::getLanguageArray();
         $i=0;
         foreach ($arrLanguages as $langId => $arrLanguage) {
