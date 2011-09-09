@@ -157,75 +157,24 @@ define('ASCMS_DATE_FORMAT_DATE',     'Y-m-d');
 define('ASCMS_DATE_FORMAT_DATETIME', 'Y-m-d H:i:s');
 define('ASCMS_DATE_FORMAT_TIME',     'H:i:s');
 
-// TODO: Determine the locale somewhere else (Init probably) from the request
-// header, the user profile, or the settings.  Clients should be able to
-// customize their locale and store it in the session and/or their account.
-define('LOCALE', 'de-CH');
-if (!defined('LOCALE')) {
-  // Whatever is the default
-  define('LOCALE', 'en-US');
-}
-// Localized date and time formats
-switch (LOCALE) {
-/*
-  case 'en-US':
-    define('ASCMS_DATE_FORMAT',           'H:i:s m/d/Y');
-    define('ASCMS_DATE_SHORT_FORMAT',     'm/d/Y');
-    define('ASCMS_DATE_FILE_FORMAT',      'm/d/Y H:i:s');
-    define('ASCMS_DATE_FORMAT_UI_DATE',   'mm/dd/yy');  // jqueryui.datepicker
-    break;
-  case 'en':
-  case 'en-GB':
-  case 'fr':
-  case 'it':
-    define('ASCMS_DATE_FORMAT',           'H:i:s d/m/Y');
-    define('ASCMS_DATE_SHORT_FORMAT',     'd/m/Y');
-    define('ASCMS_DATE_FILE_FORMAT',      'd/m/Y H:i:s');
-    define('ASCMS_DATE_FORMAT_UI_DATE',   'dd/mm/yy');  // jqueryui.datepicker
-    break;
-// And so on
-*/
-  case 'de-CH':
-  case 'de-DE':
-  case 'de-AT':
-  case 'fr-CH':
-  case 'it-CH':
-  default:
-    define('ASCMS_DATE_FORMAT',           'H:i:s d.m.Y');
-    define('ASCMS_DATE_SHORT_FORMAT',     'd.m.Y');
-    define('ASCMS_DATE_FILE_FORMAT',      'd.m.Y H:i:s');
-    define('ASCMS_DATE_FORMAT_UI_DATE',   'dd.mm.yy');  // jqueryui.datepicker
-    // Like "Mo, 09.10.2011"
-    define('ASCMS_DATE_FORMAT_DOW_D_M_Y', 'w, d.m.Y');
+// TODO: Localize.  See https://217.150.245.101/wiki/index.php/Lokalisierung
+define('ASCMS_DATE_FORMAT',           'H:i:s d.m.Y');
+define('ASCMS_DATE_SHORT_FORMAT',     'd.m.Y');
+define('ASCMS_DATE_FILE_FORMAT',      'd.m.Y H:i:s');
+define('ASCMS_DATE_FORMAT_UI_DATE',   'dd.mm.yy');  // jqueryui.datepicker
+// Like "Mo, 09.10.2011"
+define('ASCMS_DATE_FORMAT_DOW_D_M_Y', 'w, d.m.Y');
 // TODO: More localized formats for numbers, currencies, etc.
 // Use with sprintf() in your methods, i.e.:
-    define('ASCMS_CURRENCY_FORMAT_UNIT', '%2$s %1$.2f');
+define('ASCMS_CURRENCY_FORMAT_UNIT', '%2$s %1$.2f');
 // Use the above with
 //  sprintf(ASCMS_CURRENCY_FORMAT_UNIT, (float)$amount, (string)$unit)
 // where $unit is something like "sFr.", "$", or "€"
-    define('ASCMS_CURRENCY_FORMAT_CODE', '%2$s %1$.2f');
+define('ASCMS_CURRENCY_FORMAT_CODE', '%2$s %1$.2f');
 // Use the above with
 //  sprintf(ASCMS_CURRENCY_FORMAT_CODE, (float)$amount, (string)$code)
 // where $code is something like "CHF", "USD", or "EUR"
-    define('ASCMS_CURRENCY_SEPARATOR_THOUSANDS', '\'');
-    define('ASCMS_CURRENCY_SEPARATOR_DECIMALS', '.');
-    define('ASCMS_NUMBER_SEPARATOR_THOUSANDS', '\'');
-    define('ASCMS_NUMBER_SEPARATOR_DECIMALS', '.');
-// In effect, you should hardly ever use these constants yourself, but call
-//  Currency::format($amount)
-// or
-//  Number::format($float)
-}
-// Note:  These might be well stored in a database table of their own
-// (Hint: class Locale), so that ugly switch () can be avoided:
-//Locale::set('ab-CD');
-// Now the constants themselves would be obsolete, but still faster
-// if Locales are used a lot:
-//define('ASCMS_DATE_FORMAT',         Locale::format('time_date'));
-//define('ASCMS_DATE_SHORT_FORMAT',   Locale::format('date'));
-//define('ASCMS_DATE_FILE_FORMAT',    Locale::format('date_time'));
-//define('ASCMS_DATE_FORMAT_UI_DATE', Locale::format('ui_date'));
-// Also note that this approach does not prevent custom settings on a
-// per-User basis.  Class Locale may override the defaults.
-
-?>
+define('ASCMS_CURRENCY_SEPARATOR_THOUSANDS', '\'');
+define('ASCMS_CURRENCY_SEPARATOR_DECIMALS', '.');
+define('ASCMS_NUMBER_SEPARATOR_THOUSANDS', '\'');
+define('ASCMS_NUMBER_SEPARATOR_DECIMALS', '.');
