@@ -157,7 +157,7 @@ define('ASCMS_DATE_FORMAT_DATE',     'Y-m-d');
 define('ASCMS_DATE_FORMAT_DATETIME', 'Y-m-d H:i:s');
 define('ASCMS_DATE_FORMAT_TIME',     'H:i:s');
 
-// TODO: Localize.  See https://217.150.245.101/wiki/index.php/Lokalisierung
+// TODO: Localize.
 define('ASCMS_DATE_FORMAT',           'H:i:s d.m.Y');
 define('ASCMS_DATE_SHORT_FORMAT',     'd.m.Y');
 define('ASCMS_DATE_FILE_FORMAT',      'd.m.Y H:i:s');
@@ -169,7 +169,7 @@ define('ASCMS_DATE_FORMAT_DOW_D_M_Y', 'w, d.m.Y');
 define('ASCMS_CURRENCY_FORMAT_UNIT', '%2$s %1$.2f');
 // Use the above with
 //  sprintf(ASCMS_CURRENCY_FORMAT_UNIT, (float)$amount, (string)$unit)
-// where $unit is something like "sFr.", "$", or "€"
+// where $unit is something like "sFr.", "$", or "ï¿½"
 define('ASCMS_CURRENCY_FORMAT_CODE', '%2$s %1$.2f');
 // Use the above with
 //  sprintf(ASCMS_CURRENCY_FORMAT_CODE, (float)$amount, (string)$code)
