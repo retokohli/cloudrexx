@@ -1108,11 +1108,12 @@ class Html
         JS::registerCode(self::getJavascript_Image($path_default));
         if (empty($objImage)) $objImage = new Image(0);
         $path = $objImage->getPath();
+        $path_thumb = $path_default;
+        $width = $height = null;
         if ($path) {
             $path_thumb = ($path ? Image::getThumbnailPath($path) : '');
             list ($width, $height) = $objImage->getSizeArrayThumbnail();
         } else {
-            $path_thumb = $path_default;
             if (empty($width) && empty($height)) {
                 $key = (is_array($imagetype_key)
                     ? '' : $imagetype_key);
@@ -2055,6 +2056,9 @@ jQuery(document).ready(function($) {
         $name, $arrStatus, $id='', $hidden_id='', $init=false, $arrTitle=false
     ) {
 //DBG::log("getToggle($name, $arrStatus, $init, $arrTitle): Entered");
+
+        $key_off = $class_off = $key_on = $class_on = $key_nop =
+        $class_nop = $title_off = $title_on = $title_nop = null;
         list ($key_off, $class_off) = each($arrStatus);
         list ($key_on, $class_on) = each($arrStatus);
         list ($key_nop, $class_nop) = each($arrStatus);
@@ -2775,5 +2779,3 @@ function cloneElement(id)
     }
 
 }
-
-?>
