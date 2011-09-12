@@ -19,6 +19,7 @@ class Contrexx_Content_migration
 {
 
     protected static $em;
+    protected $nodeArr = array();
     
     public function __construct()
     {
@@ -30,6 +31,29 @@ class Contrexx_Content_migration
         }
         self::$em = Env::em();
     }
+
+    protected function createNodesFromResults($resultSet, &$visiblePageIDs) {
+        while (!$resultSet->EOF) {
+            //skip ghosts
+            if (!in_array($resultSet->fields['catid'], $visiblePageIDs)) {
+                $resultSet->MoveNext();
+                continue;
+            }
+
+            $catId = $resultSet->fields['catid'];
+
+            //skip existing noeds
+            if(isset($this->nodeArr[$catId]))
+                continue;
+
+            $this->nodeArr[$catId] = new \Cx\Model\ContentManager\Node();             
+            
+            self::$em->persist($this->nodeArr[$catId]);
+            
+            $resultSet->MoveNext();
+        }
+       
+    }
    
     public function migrate()
     {
@@ -38,7 +62,7 @@ class Contrexx_Content_migration
         $objDatabase->Execute('TRUNCATE TABLE `contrexx_nodes`');
         $objDatabase->Execute('TRUNCATE TABLE `contrexx_ext_log_entries`');
 
-        $nodeArr = array ();
+        $this->nodeArr = array ();
         $root = new \Cx\Model\ContentManager\Node();
         self::$em->persist($root);
 
@@ -48,23 +72,10 @@ class Contrexx_Content_migration
                                                 FROM `'.DBPREFIX.'content_navigation_history`
                                                 ORDER BY catid ASC');
 
-        while (!$objNodeResult->EOF) {
-            //skip ghosts
-            if (!in_array($objNodeResult->fields['catid'], $visiblePageIDs)) {
-                $objNodeResult->MoveNext();
-                continue;
-            }
-
-            $nodeArr[$objNodeResult->fields['catid']] = new \Cx\Model\ContentManager\Node();             
-            
-            self::$em->persist($nodeArr[$objNodeResult->fields['catid']]);
-            
-            $objNodeResult->MoveNext();
-        }
+        $this->createNodesFromResults($objNodeResult, $visiblePageIDs);
 
         // flush nodes to db
         self::$em->flush();
-
 
         $objResult = $objDatabase->Execute('SELECT cn.*,
                nav.*,
@@ -85,9 +96,9 @@ class Contrexx_Content_migration
             }
 
             if ($objResult->fields['parcat'] == 0) {
-                $nodeArr[$objResult->fields['catid']]->setParent($root);
+                $this->nodeArr[$objResult->fields['catid']]->setParent($root);
             } else {
-                $nodeArr[$objResult->fields['catid']]->setParent($nodeArr[$objResult->fields['parcat']]);
+                $this->nodeArr[$objResult->fields['catid']]->setParent($this->nodeArr[$objResult->fields['parcat']]);
             }
 
             $deleted = false;
@@ -108,7 +119,7 @@ class Contrexx_Content_migration
             }                      
 
             if(!$deleted) {
-                $this->_setPageRecords($objResult, $nodeArr[$objResult->fields['catid']], $page);
+                $this->_setPageRecords($objResult, $this->nodeArr[$objResult->fields['catid']], $page);
 
                 self::$em->persist($page);
             }
@@ -133,9 +144,14 @@ class Contrexx_Content_migration
                                             );
         
         if ($objRecords->RecordCount() > 0) {
-            $objNodeResult = $objDatabase->Execute('SELECT catid 
+            $objNodeResult = $objDatabase->Execute('SELECT catid, parcat  
                                                     FROM `'.DBPREFIX.'content_navigation`
                                                     ORDER BY parcat ASC, displayorder ASC');
+
+            $this->createNodesFromResults($objNodeResult, $visiblePageIDs);
+            self::$em->flush();
+
+            $objNodeResult->MoveFirst();
 
             while (!$objNodeResult->EOF) {
                 //skip ghosts
@@ -144,17 +160,16 @@ class Contrexx_Content_migration
                     continue;
                 }
 
-                if (empty ($nodeArr[$objNodeResult->fields['catid']])) {
-                    $nodeArr[$objNodeResult->fields['catid']] = new \Cx\Model\ContentManager\Node();             
+                $node = $this->nodeArr[$objNodeResult->fields['catid']];
 
-                    if ($objResult->fields['parcat'] == 0) {
-                        $nodeArr[$objNodeResult->fields['catid']]->setParent($root);                
-                    } else {
-                        $nodeArr[$objNodeResult->fields['catid']]->setParent($nodeArr[$objResult->fields['parcat']]);
-                    }
-
-                    self::$em->persist($nodeArr[$objNodeResult->fields['catid']]);
+                if ($objNodeResult->fields['parcat'] == 0) {
+                    $node->setParent($root);                
+                } else {
+                    $node->setParent($this->nodeArr[$objNodeResult->fields['parcat']]);
                 }
+
+                self::$em->persist($node);
+
                 $objNodeResult->MoveNext();
             }
             self::$em->flush();
@@ -170,7 +185,7 @@ class Contrexx_Content_migration
 
             $page = new \Cx\Model\ContentManager\Page();
 
-            $this->_setPageRecords($objRecords, $nodeArr[$catid], $page);
+            $this->_setPageRecords($objRecords, $this->nodeArr[$catid], $page);
 
             self::$em->persist($page);
 
