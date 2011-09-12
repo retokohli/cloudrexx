@@ -1,6 +1,6 @@
 #!/bin/bash
 user="root"
-pass="1234"
+pass=""
 
 cd $(dirname $0)
 dir=$(pwd)
@@ -16,10 +16,10 @@ if [ "$?" != "0" ]; then
 fi
 
 echo "creating test db..."
-mysql -uroot -p1234 -e"DROP DATABASE $testdb" 2>/dev/null
-mysql -uroot -p1234 -e"CREATE DATABASE $testdb"
+mysql -uroot -p$pass -e"DROP DATABASE $testdb" 2>/dev/null
+mysql -uroot -p$pass -e"CREATE DATABASE $testdb"
 echo "initializing test db..."
-mysql -uroot -p1234 $testdb < /tmp/cxdb.sql
+mysql -uroot -p$pass $testdb < /tmp/cxdb.sql
 rm /tmp/cxdb.sql
 echo "truncating pages, nodes, log entries..."
 mysql -u$user -p$pass $testdb -e'truncate contrexx_pages; truncate contrexx_nodes; truncate contrexx_ext_log_entries;'
