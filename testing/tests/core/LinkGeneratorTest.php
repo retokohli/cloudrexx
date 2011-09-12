@@ -1,5 +1,5 @@
 <?php
-include_once('../testCases/ContrexxTestCase.php');
+include_once('../testCases/DoctrineTestCase.php');
 include_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
 
 class LinkGeneratorTest extends DoctrineTestCase {
