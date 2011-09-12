@@ -348,7 +348,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         if($section) {
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
             $crit = array(
-                'module' => $section
+                 'module' => $section,
+                 'lang' => FRONTEND_LANG_ID                          
             );
             if(isset($_REQUEST['cmd']))
                 $crit['cmd'] = $_REQUEST['cmd'];
