@@ -816,4 +816,31 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->slug;
     }
+
+    /**
+     * Copies data from another Page.
+     *
+     * @param \Cx\Model\ContentManager\Page $source
+     * @param boolean $includeContent whether to copy content. defaults to true.
+     * @param boolean $includeModuleAndCmd whether to copy module and cmd. defaults to true.
+     */
+    public function copyFrom($source, $includeContent=true, $includeModuleAndCmd=true) {
+        $this->setTitle($source->getTitle());
+
+        if($includeContent)
+            $this->setContent($source->getContent());
+
+        if($includeModuleAndCmd) {
+            $this->setModule($source->getModule());
+            $this->setCmd($source->getCmd());
+        }
+
+        $this->setNode($source->getNode());
+
+        $this->setActive($source->getActive());
+        $this->setDisplay($source->getDisplay());
+
+        $this->setLang($source->getLang());
+        $this->setUsername($source->getUsername());
+    }
 }

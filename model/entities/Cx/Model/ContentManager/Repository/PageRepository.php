@@ -8,6 +8,9 @@ use Doctrine\ORM\EntityRepository,
     Doctrine\ORM\Mapping\ClassMetadata,
     Doctrine\ORM\Query\Expr;
 
+class PageRepositoryException extends \Exception {};
+class TranslateException extends \Exception {};
+
 class PageRepository extends EntityRepository {
     protected $em = null;
     const DataProperty = '__data';
@@ -235,6 +238,10 @@ class PageRepository extends EntityRepository {
             
 //TODO: what happens if $thePageInOurLang is still null?
 //      This should be restricted by the content manager.
+//      Throwing below is a first attempt to react in this case.
+                if(!$thePageInOurLang)
+                    throw new PageRepositoryException('getPath(): Missing Page while moving up the tree to collect Path for Page with title "' . $page->getTitle() . '". Node ' . $node->getId() . ' at level ' . $node->getLvl() . ' has no Page in language ' . $page->getLang());
+
                 if(!$useSlugsAsTitle)
                     $path .= '/'.$thePageInOurLang->getTitle();
                 else
@@ -296,5 +303,63 @@ class PageRepository extends EntityRepository {
         }
 
         return $results;
+    }
+
+    /**
+     * Creates a copy of $source in the desired language and returns it.
+     *
+     * Does not flush EntityManager.
+     *
+     * This function takes care of maintaining the tree.
+     * It creates empty Pages in the desired language where the parent Nodes do not have such associated Pages.
+     *
+     * @param \Cx\Model\ContentManager\Page $source the source page
+     * @param int $targetLang target language id
+     * @param boolean $display whether the copy should be displayed. defaults to false.
+     * @param boolean $copyContent whether the page content should be copied. defaults to false.
+     * @param boolean $copyModuleAndCmd whether module and cmd should be copied. defaults to false.
+     * @throws \Cx\Model\ContentManager\Repository\PageRepository\TranslateException if the page is already translated
+     *
+     * @returns \Cx\Model\ContentManager\Page the copy
+     */
+    public function translate($source, $targetLang, $display = false, $copyContent = false, $copyModuleAndCmd = false) {
+        //copy data.
+        $page = new \Cx\Model\ContentManager\Page();
+
+        $page->copyFrom($source, $copyContent, $copyModuleAndCmd);
+
+        $page->setLang($targetLang);
+        $page->setDisplay($display);
+
+        /*
+          sanitize tree.
+          for all parent Nodes without a Page in the desired target language,
+          the Page with the sources' language id is copied.
+        */
+        $sourceLanguage = $source->getLang();      
+
+        $node = $page->getNode()->getParent();
+        
+        //             below root level
+        while($node && $node->getLvl() > 0) {
+            $pages = $node->getPagesByLang();
+            if(!isset($pages[$targetLang])) {
+                $newPage = new \Cx\Model\ContentManager\Page();
+                $newPage->copyFrom($pages[$sourceLanguage], false, false);
+                $newPage->setLang($targetLang);
+                $newPage->setDisplay(false);
+
+                $this->em->persist($newPage);
+
+                $node = $node->getParent();
+            }
+            else { //we have a parent in targetLang, tree is ok from here upwards
+                $node = null;
+            }
+        }
+
+        $this->em->persist($page);
+        
+        return $page;
     }
 }
