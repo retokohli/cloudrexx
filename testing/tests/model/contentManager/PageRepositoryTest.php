@@ -408,14 +408,65 @@ class PageRepositoryTest extends DoctrineTestCase
         self::$em->flush();
 
         //make sure we re-fetch a correct state
-        self::$em->clear();
         self::$em->getRepository('Cx\Model\ContentManager\Node')->verify();
 
         $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
 
-
         $page = $pageRepo->findOneById($p2->getId());
       
         $this->assertEquals('root/child', $pageRepo->getPath($page));
+    }
+    
+    public function testTranslate() {
+        $root = new \Cx\Model\ContentManager\Node();
+
+        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1->setParent($root);
+        $n2 = new \Cx\Model\ContentManager\Node();
+        $n2->setParent($n1);
+
+        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1->setLang(1);
+        $p1->setTitle('root');
+        $p1->setNode($n1);
+        $p1->setUsername('user');
+
+        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2->setLang(1);
+        $p2->setTitle('child');
+        $p2->setNode($n2);
+        $p2->setUsername('user');
+
+        self::$em->persist($root);
+
+        self::$em->persist($n1);
+        self::$em->persist($n2);
+
+        self::$em->persist($p1);
+        self::$em->persist($p2);
+
+        $idOfP2 = $p2->getId();
+
+        self::$em->flush();
+
+        //make sure we re-fetch a correct state
+        self::$em->getRepository('Cx\Model\ContentManager\Node')->verify();
+
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+
+        $page = $pageRepo->findOneById($p2->getId());
+
+        $t = $pageRepo->translate($page, 2);
+
+        self::$em->flush();
+        self::$em->getRepository('Cx\Model\ContentManager\Node')->verify();
+
+        $this->assertEquals('root/child', $pageRepo->getPath($t));
+        $this->assertEquals(2, $t->getLang());
+
+        //see if the parent node is really, really there.
+        $parentPages = $t->getNode()->getParent()->getPagesByLang();
+        $this->assertArrayHasKey(2, $parentPages);
+        $this->assertEquals('root', $parentPages[2]->getTitle());
     }
 }
