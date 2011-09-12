@@ -315,21 +315,21 @@ class PageRepository extends EntityRepository {
      *
      * @param \Cx\Model\ContentManager\Page $source the source page
      * @param int $targetLang target language id
-     * @param boolean $display whether the copy should be displayed. defaults to false.
+     * @param boolean $activate whether the copy should be activated. defaults to false.
      * @param boolean $copyContent whether the page content should be copied. defaults to false.
      * @param boolean $copyModuleAndCmd whether module and cmd should be copied. defaults to false.
      * @throws \Cx\Model\ContentManager\Repository\PageRepository\TranslateException if the page is already translated
      *
      * @returns \Cx\Model\ContentManager\Page the copy
      */
-    public function translate($source, $targetLang, $display = false, $copyContent = false, $copyModuleAndCmd = false) {
+    public function translate($source, $targetLang, $activate = false, $copyContent = false, $copyModuleAndCmd = false) {
         //copy data.
         $page = new \Cx\Model\ContentManager\Page();
 
         $page->copyFrom($source, $copyContent, $copyModuleAndCmd);
 
         $page->setLang($targetLang);
-        $page->setDisplay($display);
+        $page->setActive($activate);
 
         /*
           sanitize tree.
@@ -347,6 +347,7 @@ class PageRepository extends EntityRepository {
                 $newPage = new \Cx\Model\ContentManager\Page();
                 $newPage->copyFrom($pages[$sourceLanguage], false, false);
                 $newPage->setLang($targetLang);
+                $newPage->setActive(false);
                 $newPage->setDisplay(false);
 
                 $this->em->persist($newPage);

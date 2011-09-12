@@ -234,7 +234,8 @@ class Contrexx_Content_migration
     function pageGrouping()
     {
         // fetch all pages
-        $pages = self::$em->getRepository('Cx\Model\ContentManager\Page')->findAll();
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $pages = $pageRepo->findAll();
         $group = array();
         $nodeToRemove = array();
         foreach ($pages as $page) {
@@ -243,12 +244,18 @@ class Contrexx_Content_migration
 
             // group module pages
             if (!isset ($group[$page->getModule()][$page->getCmd()])) {
-                 $group[$page->getModule()][$page->getCmd()] = $page->getNode();
+                $group[$page->getModule()][$page->getCmd()] = $page;
             } else {
-                if ($page->getNode()->getId() != $group[$page->getModule()][$page->getCmd()]->getId()) {
+                if ($page->getNode()->getId() != $group[$page->getModule()][$page->getCmd()]->getNode()->getId()) {
                     $nodeToRemove[] = $page->getNode()->getId();
-                    $page->setNode($group[$page->getModule()][$page->getCmd()]);
-                    self::$em->persist($group[$page->getModule()][$page->getCmd()]);
+                    $src = $group[$page->getModule()][$page->getCmd()];
+                    
+                    $t = $pageRepo->translate($src, $page->getLang(), true, false, true);
+                    $t->setContent($page->getContent());
+                    $t->setTitle($page->getTitle());
+
+                    self::$em->remove($page);
+                    self::$em->persist($t);
                 }
             }
         }
