@@ -95,21 +95,20 @@ require_once dirname(__FILE__).'/core/Env.class.php';
  *
  * Initialises global settings array and constants.
  */
-require_once dirname(__FILE__).'/config/configuration.php';
-Env::set('config', $_CONFIG);
+include_once dirname(__FILE__).'/config/configuration.php';
 /**
  * User configuration settings
  *
  * This file is re-created by the CMS itself. It initializes the
  * {@link $_CONFIG[]} global array.
  */
-$incSettingsStatus = require_once dirname(__FILE__).'/config/settings.php';
+$incSettingsStatus = include_once dirname(__FILE__).'/config/settings.php';
 /**
  * Version information
  *
  * Adds version information to the {@link $_CONFIG[]} global array.
  */
-$incVersionStatus = require_once dirname(__FILE__).'/config/version.php';
+$incVersionStatus = include_once dirname(__FILE__).'/config/version.php';
 /**
  * Doctrine configuration
  */
@@ -128,6 +127,7 @@ if ($_CONFIG['systemStatus'] != 'on') {
     header('location: offline.html');
     die(1);
 }
+Env::set('config', $_CONFIG);
 
 /**
  * Include all the required files.
@@ -346,7 +346,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
             $crit = array(
                  'module' => $section,
-                 'lang' => FRONTEND_LANG_ID                          
+                 'lang' => FRONTEND_LANG_ID,
             );
             if(isset($_REQUEST['cmd']))
                 $crit['cmd'] = $_REQUEST['cmd'];
@@ -451,8 +451,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     */
 }
 
-$sessionObj = null;
-$objShop = null;
 // Authentification for protected pages
 if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_REQUEST['section']) || $_REQUEST['section'] != 'login')) {
     $sessionObj = new cmsSession();
@@ -509,7 +507,7 @@ $arrMatches = array();
 // Set news teasers
 if ($_CONFIG['newsTeasersStatus'] == '1') {
     // set news teasers in the content
-    if (preg_match('/{TEASERS_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
+    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
         /** @ignore */
         if (@include_once ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php') {
             $objTeasers = new Teasers();
@@ -517,7 +515,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
         }
     }
     // set news teasers in the page design
-    if (preg_match('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
+    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
         /** @ignore */
         if (@include_once ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php') {
             $objTeasers = new Teasers();
@@ -525,7 +523,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
         }
     }
     // set news teasers in the website design
-    if (preg_match('/{TEASERS_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
+    if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
         /** @ignore */
         if (@include_once ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php') {
             $objTeasers = new Teasers();
@@ -535,7 +533,7 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
 }
 
 // Set download groups
-if (preg_match('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) {
+if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) {
     /** @ignore */
     if (@include_once ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php') {
         $objDownloadLib = new DownloadsLibrary();
@@ -545,21 +543,21 @@ if (preg_match('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) {
 
 // Set NewsML messages
 if ($_CONFIG['feedNewsMLStatus'] == '1') {
-    if (preg_match('/{NEWSML_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
+    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
         /** @ignore */
         if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_content);
         }
     }
-    if (preg_match('/{NEWSML_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
+    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
         /** @ignore */
         if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
             $objNewsML = new NewsML();
             $objNewsML->setNews($arrMatches[1], $page_template);
         }
     }
-    if (preg_match('/{NEWSML_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
+    if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
         /** @ignore */
         if (@include_once ASCMS_MODULE_PATH.'/feed/newsML.class.php') {
             $objNewsML = new NewsML();
@@ -586,16 +584,16 @@ if ($_CONFIG['blockStatus'] == '1') {
     /** @ignore */
     if (@include_once ASCMS_MODULE_PATH.'/block/index.class.php') {
         $objBlock = new block();
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_content, $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_content, $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $page_content);
         }
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_template, $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_template, $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $page_template);
         }
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['index'], $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['index'], $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $themesPages['index']);
         }
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['sidebar'], $arrMatches)) {
+        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['sidebar'], $arrMatches)) {
             $objBlock->setBlock($arrMatches[1], $themesPages['sidebar']);
         }
 
@@ -1647,7 +1645,7 @@ $objTemplate->setVariable(array(
     'TXT_CORE_LAST_MODIFIED_PAGE' => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
     'LAST_MODIFIED_PAGE' => date(ASCMS_DATE_SHORT_FORMAT, $page_modified),
     'FACEBOOK_LIKE_IFRAME' => '<iframe src="http://www.facebook.com/plugins/like.php?href='.urlencode('http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri()).'&amp;layout=standard&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:80px;" allowTransparency="true"></iframe>',
-    'GOOGLE_PLUSONE' => '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script> <g:plusone></g:plusone>'
+    'GOOGLE_PLUSONE' => '<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script> <g:plusone></g:plusone>',
 ));
 
 // Include and initialize handler to fill Social Network template variables
@@ -1820,5 +1818,3 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     echo $endcode;
 }
 $objCache->endCache();
-
-?>
