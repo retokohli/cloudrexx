@@ -73,7 +73,7 @@
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
 //DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
-DBG::deactivate();
+DBG::deactivate(DBG_PHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -317,9 +317,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $module = $page->getModule();
-//TODO: the id2module conversion is a hack. remove as soon as the dump boasts sexy cmd and module entries.
-        $i2m = Env::get('id2module');
-        $module = $i2m[intval($module)];
         $section = $module;
 
         if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
