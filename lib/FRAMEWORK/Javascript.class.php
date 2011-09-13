@@ -187,6 +187,14 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             ),
             'dependencies' => array('jquery')
         ),
+
+        // jQ UI input select enhancer. used in Content Manager 2
+        'chosen' => array(
+            'jsfiles' => array(
+                'lib/javascript/jquery/chosen/jquery.chosen.js'
+            ),
+            'dependencies' => array('cx')
+        ),
     );
 
     /**
