@@ -347,7 +347,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     );
 // Skip the nav/language bar for modules which don't make use of either.
 // TODO: Remove language selector for modules which require navigation but bring their own language management.
-    $skipMaster = array('contentmanager');
+    $skipMaster = array('content');
     if (in_array($plainCmd, $skipMaster)) {
         $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
     }
@@ -447,27 +447,27 @@ switch ($plainCmd) {
         $objSkins = new skins();
         $objSkins->getPage();
         break;
-    case 'content':
+// TODO: Remove this and cleanup other remnants of old CM
+    case 'content_old':
         if (!include_once ASCMS_CORE_PATH.'/ContentManager.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
         $objContent = new ContentManager();
         $objContent->getPage();
         break;
-    case 'contentmanager':
+    case 'content':
         if (!include_once ASCMS_CORE_PATH.'/ContentManager2.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
         $cm = new ContentManager();
         $cm->renderCM();
         break;
-// TODO move this to its destination
     case 'jsondata':
-        if (!include_once ASCMS_CORE_PATH.'/ContentManager2.class.php')
+        if (!include_once ASCMS_CORE_PATH.'/JSONData.class.php')
 // TODO: This probably doesn't handle an error message very well?
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-        $cm = new ContentManager();
-        echo $cm->jsondata();
+        $json = new JSONData();
+        echo $json->jsondata();
         die();
     case 'workflow':
         if (!include_once ASCMS_CORE_PATH.'/ContentWorkflow.class.php')
