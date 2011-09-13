@@ -624,7 +624,7 @@ class blockManager extends blockLibrary
             $blockRandom4           = !empty($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
             $blockGlobal            = !empty($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
             $blockAssociatedPageIds = isset($_POST['selectedPages']) ? array_map('intval', $_POST['selectedPages']) : array();
-            $blockLangActive        = isset($_POST['block_activate_language']) ? array_map('intval', $_POST['block_activate_language']) : array();
+            $blockLangActive        = isset($_POST['blockFormLanguages']) ? array_map('intval', $_POST['blockFormLanguages']) : array();
 
             if ($blockId) {
                 if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $blockLangActive)) {
@@ -663,14 +663,14 @@ class blockManager extends blockLibrary
         if ($copy) {
             $blockId = 0;
         }
-
+        
         $this->_objTpl->setVariable(array(
             'BLOCK_ID'                          => $blockId,
             'BLOCK_MODIFY_TITLE'                => $pageTitle,
             'BLOCK_NAME'                        => contrexx_raw2xhtml($blockName),
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
-            'BLOCK_START'                       => isset($blockStart) ? $blockStart : date('Y-m-d H:i'),
-            'BLOCK_END'                         => strftime('%Y-%m-%d', $blockEnd),
+            'BLOCK_START'                       => strftime('%Y-%m-%d %H:%M', $blockStart),
+            'BLOCK_END'                         => strftime('%Y-%m-%d %H:%M', $blockEnd),
             'BLOCK_RANDOM'                      => $blockRandom == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_2'                    => $blockRandom2 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_3'                    => $blockRandom3 == '1' ? 'checked="checked"' : '',
@@ -708,7 +708,6 @@ class blockManager extends blockLibrary
         ));
 
         $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
-        $selectedInterfaceLanguage = FRONTEND_LANG_ID;
         if (count($arrActiveSystemFrontendLanguages) > 0) {
             $intLanguageCounter = 0;
             $boolFirstLanguage  = true;
@@ -716,13 +715,9 @@ class blockManager extends blockLibrary
             $strJsTabToDiv      = '';
 
             foreach($arrActiveSystemFrontendLanguages as $langId => $arrLanguage) {
-                if ($blockId) {
-                    $boolLanguageIsActive = $langId == isset($blockLangActive[$langId]) ? TRUE : FALSE;
-                } else {
-                    $boolLanguageIsActive = $langId == FRONTEND_LANG_ID;                
-                }
-
-                $arrLanguages[$intLanguageCounter%3] .= '<input id="languagebar_'.$langId.'" '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="contactFormLanguages['.$langId.']" value="1" onclick="switchBoxAndTab(this, \'lang_blockContent_'.$langId.'\');" /><label for="languagebar_'.$langId.'">'.contrexx_raw2xhtml($arrLanguage['name']).' ['.$arrLanguage['lang'].']</label><br />';
+                $boolLanguageIsActive = $blockId == 0 && $intLanguageCounter == 0 ? true : (($blockLangActive[$langId] == 1) ? true : false);
+                
+                $arrLanguages[$intLanguageCounter%3] .= '<input id="languagebar_'.$langId.'" '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="blockFormLanguages['.$langId.']" value="1" onclick="switchBoxAndTab(this, \'lang_blockContent_'.$langId.'\');" /><label for="languagebar_'.$langId.'">'.contrexx_raw2xhtml($arrLanguage['name']).' ['.$arrLanguage['lang'].']</label><br />';
                 $strJsTabToDiv .= 'arrTabToDiv["lang_blockContent_'.$langId.'"] = "langTab_'.$langId.'";'."\n";
                 ++$intLanguageCounter;
             }
@@ -735,11 +730,12 @@ class blockManager extends blockLibrary
                 'EDIT_JS_TAB_TO_DIV'      => $strJsTabToDiv
             ));
         }        
-        $this->_objTpl->setVariable('BLOCK_ACTIVE_LANG_NAME', contrexx_raw2xhtml($arrActiveSystemFrontendLanguages[$selectedInterfaceLanguage]['name']));        
+        
         $arrLanguages = FWLanguage::getLanguageArray();
-        $i=0;
-        foreach ($arrLanguages as $langId => $arrLanguage) {
-            $boolLanguageIsActive = $langId == FRONTEND_LANG_ID;                
+        $i=0;    
+        $activeFlag = 0;
+        foreach ($arrLanguages as $langId => $arrLanguage) {            
+            
             if($arrLanguage['frontend'] != 1) {
                 continue;
             }
@@ -747,26 +743,26 @@ class blockManager extends blockLibrary
             $tmpBlockContent       = isset($blockContent[$langId]) ? $blockContent[$langId] : '';
             $tmpBlockLangActive    = isset($blockLangActive[$langId]) ? $blockLangActive[$langId] : 0;
             $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
-
+            
+            if ($blockId != 0 && $activeFlag == 0 && $activeClass == '') {
+                $activeClass = $blockLangActive[$langId] == 1 ? 'active' : '';
+                $activeFlag = 1;
+            }            
+            
             $this->_objTpl->setVariable(array(
                 'BLOCK_LANG_TAB_LANG_ID'        => intval($langId),
-                'BLOCK_LANG_TAB_CLASS'          => ($boolLanguageIsActive) ? 'active' : '',
+                'BLOCK_LANG_TAB_CLASS'          => $blockId == 0 && $i == 0 ? 'active' : $activeClass,
                 'TXT_BLOCK_LANG_TAB_LANG_NAME'  => contrexx_raw2xhtml($arrLanguage['name']),            
-                'BLOCK_LANGTAB_DISPLAY'         => ($boolLanguageIsActive) ? 'display:inline;' : 'display:none;'
+                'BLOCK_LANGTAB_DISPLAY'         => $tmpBlockLangActive == 1 ? 'display:inline;' : ($blockId == 0 && $i == 0 ? 'display:inline;' : 'display:none;')
             ));
             $this->_objTpl->parse('block_language_tabs');
 
             $this->_objTpl->setVariable(array(
-                'BLOCK_LANG_ID'                 => intval($langId),
-                'BLOCK_SHOW_CONTENT_EDITOR'     => $tmpBlockLangActive == 1 ? 'block' : ($blockId == 0 && $i == 0 ? 'block' : 'none'),
-                'BLOCK_LANG_ASSOCIATED'         => $blockId == 0 && $i == 0 ? 'checked="checked"' : ($tmpBlockLangActive == 1 ? 'checked="checked"' : ''),
-                'BLOCK_LANG_NOT_ASSOCIATED'     => $blockId == 0 && $i == 0 ? '' : ($tmpBlockLangActive == 0 ? 'checked="checked"' : ''),
-                'BLOCK_SHOW_CONTENT'            => $i == 0 ? 'block' : 'none',
-                'TXT_BLOCK_CONTENT_LANG_NAME'   => contrexx_raw2xhtml($arrLanguage['name']),                
+                'BLOCK_LANG_ID'                 => intval($langId),                           
                 'BLOCK_CONTENT_TEXT_HIDDEN'     => $tmpBlockContent,                
             ));
             $this->_objTpl->parse('block_language_content');
-
+            $activeClass = '';
             $i++;
         }
     }
