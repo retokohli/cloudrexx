@@ -12,6 +12,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     protected $depth = null;
     protected $em = null;
     protected $currentPage = null;
+    protected $currentPageOnRootNode = false;
     protected $currentPagePath = null;
     protected $pageRepo = null;
     
@@ -49,6 +50,12 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         if($this->currentPage)
             $this->currentPagePath = '/'.$this->pageRepo->getPath($this->currentPage, true);
 
+        //determine whether the current page is attached to the user-provided
+        //root node. in this case, internalRender needs to be called with
+        //dontDescend = true to make sure we do not open any submenus.
+        if($this->rootNode && $this->currentPage)
+            $this->currentPageOnRootNode = $this->rootNode->getId() ==  $this->currentPage->getNode()->getId();
+
         $this->init(); //user initializations
     }
 
@@ -64,7 +71,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     public function render() {
         $content = $this->addContentIfPresent($this->preRender($this->lang));
         $content .= $this->addContentIfPresent($this->renderHeader($this->lang)); 
-        $content .= $this->addContentIfPresent($this->internalRender($this->tree, $this->startPath, $this->startLevel));
+        $content .= $this->addContentIfPresent($this->internalRender($this->tree, $this->startPath, $this->startLevel, $this->currentPageOnRootNode));
         $content .= $this->addContentIfPresent($this->renderFooter($this->lang));
         $content .= $this->addContentIfPresent($this->postRender($this->lang));
         return $content;
@@ -76,24 +83,37 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         return '';
     }
 
-    private function internalRender(&$elems, $path, $level) {
+    private function internalRender(&$elems, $path, $level, $dontDescend = false) {
         $content = '';
         foreach($elems as $title => &$elem) {
+            $page = $elem['__data']['page'];
+
+            if(!$page->isVisible() || !$page->isActive())
+                continue;
+
             $hasChilds = count($elem) > 1; //__data is always set
             $lang = $elem['__data']['lang'];
-            $pathOfThis = $path.'/'.$elem['__data']['page']->getSlug();
+            $pathOfThis = $path . '/' . $page->getSlug();
             $current = false;
 
+            $dontDescendNext = false;
+            $weWantTheChildren = true;
             if($this->currentPagePath) { //current flag requested
                 //are we rendering a parent page of currentPage or the currenPage itself?
-                $current = substr($this->currentPagePath, 0, strlen($pathOfThis)) == $pathOfThis;                
+                $current = substr($this->currentPagePath, 0, strlen($pathOfThis)) == $pathOfThis;               
+                //do not display children outside of current branch 
+                if($this->rootNode && !$current) {
+                    $weWantTheChildren = false;
+                }
+                  
+                $dontDescendNext = $this->currentPagePath == $pathOfThis;
             }
 
-            $content .= $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current, $elem['__data']['page']);
+            $content .= $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current, $page);
 
-            if($hasChilds) {
+            if($hasChilds && !$dontDescend && $weWantTheChildren) {
                 unset($elem['__data']);
-                $content += $this->internalRender($elem, $pathOfThis, $level+1);
+                $content += $this->internalRender($elem, $pathOfThis, $level+1, $dontDescendNext);
             }
         }
         return $content;
