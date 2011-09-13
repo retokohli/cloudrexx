@@ -218,7 +218,6 @@ class Node extends \Cx\Model\Base\EntityBase
         return null;
     }
 
-
     /**
      * Set parent
      *

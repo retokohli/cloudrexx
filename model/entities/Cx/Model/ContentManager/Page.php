@@ -786,6 +786,16 @@ class Page extends \Cx\Model\Base\EntityBase
     public function isVisible() {
         return $this->display;
     }
+
+    /**
+     * Alias for getActive()
+     *
+     * @return boolean
+     */
+    public function isActive() {
+        return $this->display;
+    }
+
     /**
      * @var string $slug
      */

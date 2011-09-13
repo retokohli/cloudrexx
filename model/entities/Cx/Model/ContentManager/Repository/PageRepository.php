@@ -71,7 +71,7 @@ class PageRepository extends EntityRepository {
         $qb->andWhere($qb->expr()->gt('node.lvl', 0)); //exclude root node
 
         //get all nodes
-        $tree = $repo->children($rootNode, false, 'lft', 'DESC', $qb);
+        $tree = $repo->children($rootNode, false, 'lft', 'ASC', $qb);
 
         return $tree;
     }
