@@ -694,11 +694,11 @@ class blockManager extends blockLibrary
                 $strSpacer .= '&nbsp;&nbsp;';
             }
 
-            if (in_array($arrData['catid'],$blockAssociatedPageIds)) {
+            if (in_array($arrData['node_id'],$blockAssociatedPageIds)) {
                 $langStatus .= $arrData['catname'].", ";
-                $strSelectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['catid'].') </option>'."\n";
+                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
             } else {
-                $strUnselectedPages .= '<option value="'.$arrData['catid'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['catid'].') </option>'."\n";
+                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
             }
         }
 
