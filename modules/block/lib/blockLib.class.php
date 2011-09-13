@@ -234,7 +234,7 @@ class blockLibrary
     private function storeBlockContent($blockId, $arrContent, $arrLangActive)
     {
         global $objDatabase;
-
+        
         $arrPresentLang = array();
         $objResult = $objDatabase->Execute('SELECT lang_id FROM '.DBPREFIX.'module_block_rel_lang_content WHERE block_id='.$blockId);
         if ($objResult) {
@@ -244,9 +244,9 @@ class blockLibrary
             }
         }
 
-        foreach ($arrContent as $langId => $content) {
+        foreach ($arrContent as $langId => $content) {            
             if (in_array($langId, $arrPresentLang)) {
-                $query = 'UPDATE `%1$s` SET %2$s WHERE `block_id` = %3$s';
+                $query = 'UPDATE `%1$s` SET %2$s WHERE `block_id` = %3$s AND `lang_id`='.intval($langId);
             } else {
                 $query = 'INSERT INTO `%1$s` SET %2$s, `block_id` = %3$s';
             }
@@ -257,7 +257,7 @@ class blockLibrary
                                                    content='".contrexx_raw2db($content)."',
                                                    active='".intval($arrLangActive[$langId])."'",
                                                   $blockId));
-        }
+        }        
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrContent))).")");
     }
 

@@ -5,10 +5,11 @@
     
     // <![CDATA[
     function switchBoxAndTab(objElement, strTabId) {
+        
         if (countActiveLanguages() == 0) {
             //We just "unchecked" the last language, disallow this
             objElement.checked = true;
-        } else {
+        } else {            
             //There are more active languages, hide the tab
             switchTabVisibility(strTabId);
         }
@@ -22,23 +23,34 @@
             document.getElementById(strTabId).style.display = 'inline';
         } else {
             document.getElementById(strTabId).style.display = 'none';
-        }
+        }        
     }
 
     function countActiveLanguages() {
         var activeLanguages = 0;
-	activeLanguages = $J("input[name*=contactFormLanguages]:checked").length;
+        activeLanguages = $J("input[name*=blockFormLanguages]:checked").length;
         return activeLanguages;
     }
 
     function activateAnyActiveDiv() { 
-        for (var TabName in arrTabToDiv) {
+        for (var TabName in arrTabToDiv) { 
             if (document.getElementById(TabName).style.display == 'inline') {
                 updateCKeditorContent(TabName.split('_')[2]);
                 break;
             }
         }
+        //Deactivate every div first first
+        for (var TabName in arrTabToDiv) {
+            document.getElementById(TabName).className = 'inactive';
+        }
 
+        //Activate the first possible div with an acitvated checkbox
+        for (var TabName in arrTabToDiv) {
+            if (document.getElementById(TabName).style.display == 'inline') {
+                document.getElementById(TabName).className = 'active';                
+                break;
+            }
+        }
         swapHeaderLangName();
     }
     /**
@@ -46,7 +58,7 @@
 
     @author  Stefan Heinemann <sh@adfinis.com>
     @param   string name
-    */
+     */
     function superTab(ele, name) {
         $J('.tabs').hide();
         $J('#tab_' + name).show();
@@ -63,10 +75,10 @@
     }    
     function swapHeaderLangName(){
         $J('form[name=blockFormModifyBlock] table.blog_lang th:first-child').each(
-            function(){
-                $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#blockLanguages li a.active').text()+')')
-            }
-        )
+        function(){
+            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#blockLanguages li a.active').text()+')')
+        }
+    )
     }  
     function updateCKeditorContent(CurrentLangId){        
         activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];
@@ -97,8 +109,8 @@
         }
         disableButtons(from, dest, add, remove);
     }
-    function onSubmit(){
-        activeLang = $J('ul#blockLanguages a.active').attr('id').split('_')[2];        
+    function onSubmit() {
+        activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];        
         $J('#blogFormText_'+activeLang).val(CKEDITOR.instances.blockTextEditor.getData());
         return true;
     }
@@ -149,7 +161,7 @@
     //adds the datetimepicker to the date fields
     cx.ready(function() {
         var dpOptions = {
-            dateFormat: 'dd-mm-yy',
+            dateFormat: 'yy-mm-dd',
             timeFormat: 'hh:mm' 
         };
 
@@ -157,7 +169,7 @@
         $J('input[name=inputEndDate]').datetimepicker(dpOptions);
     
     }, true);
-// <![CDATA[
+    // <![CDATA[
     (function(){
         $J(function(){
             
@@ -194,20 +206,31 @@
                     var now = new Date();
                     var today = now.getFullYear()+'-'+now.getMonth()+'-'+now.getDate();
                     $inputDateEnd.val('2038-01-19');
-                    $inputDateStart.val(today);
+                    $inputDateStart.val(today);                    
                 }
             });
+            
+            /**
+            Load content in Textarea from hidden field while page load
+             */
+            if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances){
+                activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];
+                form_text = $J('#blogFormText_'+activeLang).val();
+                CKEDITOR.instances.blockTextEditor.setData(form_text);
+
+            }        
+            swapHeaderLangName();            
         });
     })();
-// ]]>    
+    // ]]>    
 </script>
 
-<form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="">
+<form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="selectAll(document.getElementById('SelectedPages'));">
     <input type="hidden" name="blockId" value="{BLOCK_ID}" size="50" />
 
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist blog_lang">
         <tr>
-            <th colspan="4">{TXT_BLOCK_LANGUAGE} ({BLOCK_ACTIVE_LANG_NAME})</th>
+            <th colspan="4">{TXT_BLOCK_LANGUAGE}</th>
         </tr>
         <tr class="row1">
             <td width="10%">{TXT_BLOCK_LANGUAGE}</td>
@@ -251,104 +274,104 @@
                 <!-- END block_language_tabs -->
             </ul>
             <!-- BEGIN block_language_content -->            
-                <input id="blogFormText_{BLOCK_LANG_ID}" type="hidden" name="blogFormText_[{BLOCK_LANG_ID}]" value="{BLOCK_CONTENT_TEXT_HIDDEN}" />
+            <input id="blogFormText_{BLOCK_LANG_ID}" type="hidden" name="blogFormText_[{BLOCK_LANG_ID}]" value="{BLOCK_CONTENT_TEXT_HIDDEN}" />
             <!-- END block_language_content -->
-                <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist blog_lang">
-                    <tbody>
-                        <tr>
-                            <th>{TXT_BLOCK_FORM_DESC} ({BLOCK_ACTIVE_LANG_NAME})</th>
-                        </tr>
-                        <tr class="row2">
-                            <td>{BLOCK_CONTENT_TEXT}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>            
-            <br />        
-        </div>
+            <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist blog_lang">
+                <tbody>
+                    <tr>
+                        <th>{TXT_BLOCK_FORM_DESC}</th>
+                    </tr>
+                    <tr class="row2">
+                        <td>{BLOCK_CONTENT_TEXT}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>            
+        <br />        
     </div>
-    <div id="{TXT_BLOCK_ADDITIONAL_OPTIONS}" class="data" style="display:none;{BLOCK_SHOW_CONTENT}">
-        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
-            <tbody>
-                <tr>
-                    <th colspan="2">{TXT_BLOCK_ADDITIONAL_OPTIONS}</th>
-                </tr>
-                <tr class="row1">
-                    <td valign="top" width="250px">{TXT_BLOCK_RANDOM}:</td>
-                    <td>
-                        <input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/>[[BLOCK_RANDOMIZER]]<br />
-                        <input type="checkbox" name="blockRandom2" value="1" {BLOCK_RANDOM_2}/>[[BLOCK_RANDOMIZER_2]]<br />                      
-                        <input type="checkbox" name="blockRandom3" value="1" {BLOCK_RANDOM_3}/>[[BLOCK_RANDOMIZER_3]]<br />
-                        <input type="checkbox" name="blockRandom4" value="1" {BLOCK_RANDOM_4}/>[[BLOCK_RANDOMIZER_4]]<br />
-                    </td>
-                </tr>   
-                <tr class="row2">
-                    <td valign="top">{TXT_BLOCK_DISPLAY_TIME}</td>
-                    <td>
-                        <span id="startTime">
+</div>
+<div id="{TXT_BLOCK_ADDITIONAL_OPTIONS}" class="data" style="display:none;">
+    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
+        <tbody>
+            <tr>
+                <th colspan="2">{TXT_BLOCK_ADDITIONAL_OPTIONS}</th>
+            </tr>
+            <tr class="row1">
+                <td valign="top" width="250px">{TXT_BLOCK_RANDOM}:</td>
+                <td>
+                    <input type="checkbox" name="blockRandom" value="1" {BLOCK_RANDOM}/>[[BLOCK_RANDOMIZER]]<br />
+                    <input type="checkbox" name="blockRandom2" value="1" {BLOCK_RANDOM_2}/>[[BLOCK_RANDOMIZER_2]]<br />                      
+                    <input type="checkbox" name="blockRandom3" value="1" {BLOCK_RANDOM_3}/>[[BLOCK_RANDOMIZER_3]]<br />
+                    <input type="checkbox" name="blockRandom4" value="1" {BLOCK_RANDOM_4}/>[[BLOCK_RANDOMIZER_4]]<br />
+                </td>
+            </tr>   
+            <tr class="row2">
+                <td valign="top">{TXT_BLOCK_DISPLAY_TIME}</td>
+                <td>
+                    <span id="startTime">
                         <span style="float: left;width:40px">
                             <label name="{TXT_BLOCK_SHOW_FROM}">{TXT_BLOCK_SHOW_FROM}</label>&nbsp;:&nbsp;
                         </span>                            
-                        <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START} {BLOCK_START_HOURS}:{BLOCK_START_MINUTES}" />                        
-                        </span>
-                        
-                        <span id="startTimeAlways" style="display:none;">
+                        <input type="text" name="inputStartDate" id="DPC_edit1_YYYY-MM-DD" value="{BLOCK_START}" />                        
+                    </span>
+
+                    <span id="startTimeAlways" style="display:none;">
                         {TXT_BLOCK_SHOW_ALWAYS}
-                        </span>&nbsp;<a style="margin-left: 15px;" href="#" id="blockShowAlways">{TXT_BLOCK_SHOW_ALWAYS}</a>
-                        <br />
-                        <span id="endTime">
+                    </span>&nbsp;<a style="margin-left: 15px;" href="#" id="blockShowAlways">{TXT_BLOCK_SHOW_ALWAYS}</a>
+                    <br />
+                    <span id="endTime">
                         <span style="float: left;width:40px">
                             <label name="{TXT_BLOCK_SHOW_UNTIL}">{TXT_BLOCK_SHOW_UNTIL}</label>&nbsp;:&nbsp;
                         </span>                            
-                        <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END} {BLOCK_START_HOURS}:{BLOCK_END_MINUTES}" /><br />
-                        </span>
-                        <span id="endTimeAlways" style="display:none;">
+                        <input type="text" name="inputEndDate" id="DPC_edit2_YYYY-MM-DD" value="{BLOCK_END}" /><br />
+                    </span>
+                    <span id="endTimeAlways" style="display:none;">
                         {TXT_BLOCK_SHOW_ALWAYS}
-                        </span>
-                    </td>
-                </tr>
-                <tr class="row1">
-                    <td width="250px" valign="top">{TXT_BLOCK_GLOBAL_PLACEHOLDERS}:</td>
-                    <td nowrap="nowrap">
-                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="0" {BLOCK_GLOBAL_0} />&nbsp;{TXT_DONT_SHOW}Auf keiner Seite&nbsp;&nbsp;&nbsp;<br />
-                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="1" {BLOCK_GLOBAL_1} />&nbsp;{TXT_SHOW_ON_ALL_PAGES}&nbsp;&nbsp;&nbsp;<br />
-                        <input onclick="showOrHide('pageSelector', '1');" type="radio" name="blockGlobal" value="2" {BLOCK_GLOBAL_2} />&nbsp;{TXT_SHOW_ON_SELECTED_PAGES}<br /><br />
-                        <div id="pageSelector" class="blockLangTab"  style="display:{BLOCK_SHOW_PAGE_SELECTOR};">
-                            <div style="float: left;width: 41%">
-                                <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>
-                                <select id="notSelectedPages" name="notSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
-                                    {BLOCK_RELATION_PAGES_UNSELECTED}
-                                </select>
-                                <br />                                  
-                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
-                                </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>                                    
-                            </div>
-                            <div style="padding-top: 18px;float: left;width:5%;"align="center">
-                                <input type="button" value=" &gt;&gt; " name="addpages" onclick="move(document.getElementById('notSelectedPages'),document.getElementById('SelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" />
-                                <br />
-                                <input type="button" value=" &lt;&lt; " name="removepages" onclick="move(document.getElementById('SelectedPages'),document.getElementById('notSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" />
-                                <br /><br />
-                            </div>                                
-                            <div style="float: left;width: 45%;">
-                                <label name="{TXT_BLOCK_SELECTED_PAGES}">{TXT_BLOCK_SELECTED_PAGES}</label><br />
-                                <div align="left">
-                                    <select id="SelectedPages" name="selectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
-                                        {BLOCK_RELATION_PAGES_SELECTED}
-                                    </select>
-                                    <br />                                                                    
-                                    <a href="javascript:selectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
-                                    </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
-                                </div>                                    
-                            </div>
+                    </span>
+                </td>
+            </tr>
+            <tr class="row1">
+                <td width="250px" valign="top">{TXT_BLOCK_GLOBAL_PLACEHOLDERS}:</td>
+                <td nowrap="nowrap">
+                    <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="0" {BLOCK_GLOBAL_0} />&nbsp;{TXT_DONT_SHOW}Auf keiner Seite&nbsp;&nbsp;&nbsp;<br />
+                    <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" value="1" {BLOCK_GLOBAL_1} />&nbsp;{TXT_SHOW_ON_ALL_PAGES}&nbsp;&nbsp;&nbsp;<br />
+                    <input onclick="showOrHide('pageSelector', '1');" type="radio" name="blockGlobal" value="2" {BLOCK_GLOBAL_2} />&nbsp;{TXT_SHOW_ON_SELECTED_PAGES}<br /><br />
+                    <div id="pageSelector" class="blockLangTab"  style="display:{BLOCK_SHOW_PAGE_SELECTOR};">
+                        <div style="float: left;width: 41%">
+                            <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>
+                            <select id="notSelectedPages" name="notSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                {BLOCK_RELATION_PAGES_UNSELECTED}
+                            </select>
+                            <br />                                  
+                            <a href="javascript:selectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
+                            </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>                                    
                         </div>
-                        </div>                            
-                    </td>
-                </tr>
-            </tbody>
-        </table>     
-        <br />        
-    </div>
-    <br />
-    <input type="submit" onclick="onSubmit()" name="block_save_block" value="{TXT_BLOCK_SAVE}" />
+                        <div style="padding-top: 18px;float: left;width:5%;"align="center">
+                            <input type="button" value=" &gt;&gt; " name="addpages" onclick="move(document.getElementById('notSelectedPages'),document.getElementById('SelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" />
+                            <br />
+                            <input type="button" value=" &lt;&lt; " name="removepages" onclick="move(document.getElementById('SelectedPages'),document.getElementById('notSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" />
+                            <br /><br />
+                        </div>                                
+                        <div style="float: left;width: 45%;">
+                            <label name="{TXT_BLOCK_SELECTED_PAGES}">{TXT_BLOCK_SELECTED_PAGES}</label><br />
+                            <div align="left">
+                                <select id="SelectedPages" name="selectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                    {BLOCK_RELATION_PAGES_SELECTED}
+                                </select>
+                                <br />                                                                    
+                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}<br />
+                                </a><a href="javascript:deselectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" style="color:blue;" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                            </div>                                    
+                        </div>
+                    </div>
+                    </div>                            
+                </td>
+            </tr>
+        </tbody>
+    </table>     
+    <br />        
+</div>
+<br />
+<input type="submit" onclick="onSubmit()" name="block_save_block" value="{TXT_BLOCK_SAVE}" />
 </form>
 <!-- END module_block_block.html -->
