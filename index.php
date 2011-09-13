@@ -316,13 +316,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em());
         $page = $resolver->getPage();
         $command = $page->getCmd();
-        $module = $page->getModule();
-        $section = $module;
-
-        if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
-            // The plain section/module name, used below
-            $plainSection = $arrMatch[1];
-        }
+        $section = $page->getModule();
+        $plainSection = contrexx_addslashes($section);
         $_ARRAYLANG = $objInit->loadLanguageData($section);
     }
     catch (\Cx\Core\Routing\ResolverException $e) {
@@ -370,6 +365,12 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
                 exit;
             }
         }
+    }
+    
+    $plainSection = contrexx_addslashes($section);
+    if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
+        // The plain section/module name, used below
+        $plainSection = $arrMatch[1];
     }
 
     //check whether the page is active
@@ -493,7 +494,6 @@ if ($section == 'home') {
     else
         $page_template = $themesPages['content'];
 }
-
 // make the replacements for the data module
 if (@include_once ASCMS_MODULE_PATH.'/data/dataBlocks.class.php') {
     $lang = $objInit->loadLanguageData('data');
@@ -531,7 +531,6 @@ if ($_CONFIG['newsTeasersStatus'] == '1') {
         }
     }
 }
-
 // Set download groups
 if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) {
     /** @ignore */
@@ -1039,7 +1038,10 @@ if (@include_once ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php') {
     }
 }
 
-// Load design template
+//link conversion & generating dependencies
+require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
+require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
+
 $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 
@@ -1050,7 +1052,6 @@ $page_content = str_replace('{PDF_URL}', $objInit->getPDFUri(), $page_content);
 $page_content = str_replace('{TITLE}', $page_title, $page_content);
 
 //replace the {{NODE_<ID>_<LANG>}}- placeholders
-require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
 $lg = new LinkGenerator($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/');
 $lg->scan($page_content);
 $lg->fetch(Env::em());
@@ -1793,7 +1794,9 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     require_once ASCMS_CORE_PATH.'/pdf.class.php';
     $objPDF = new PDF();
     $objPDF->title = $page_title.(empty($page_title) ? null : '.pdf');
-    $objPDF->content = $objTemplate->get();
+    // replace links from before contrexx 3
+    $ls = new LinkSanitizer(ASCMS_PATH_OFFSET.'/', $objTemplate->get());
+    $objPDF->content = $ls->replace();
     $objPDF->Create();
 } else {
     /**
@@ -1815,6 +1818,12 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
      */
     // i know this is ugly, but is there another way
     $endcode = str_replace('javascript_inserting_here', JS::getCode(), $endcode);
+
+
+    // replace links from before contrexx 3
+    $ls = new LinkSanitizer(ASCMS_PATH_OFFSET.'/', $endcode);
+    $endcode = $ls->replace();
+
     echo $endcode;
 }
 $objCache->endCache();
