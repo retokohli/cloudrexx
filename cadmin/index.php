@@ -26,6 +26,7 @@
  */
 require_once '../lib/DBG.php';
 DBG::deactivate();
+//DBG::activate(DBG_ERROR_FIREPHP);
 
 $startTime = explode(' ', microtime());
 
@@ -44,7 +45,7 @@ require_once dirname(__FILE__).'/../core/Env.class.php';
  *
  * Initialises global settings array and constants.
  */
-require_once '../config/configuration.php';
+include_once('../config/configuration.php');
 Env::set('config', $_CONFIG);
 /**
  * User configuration settings
