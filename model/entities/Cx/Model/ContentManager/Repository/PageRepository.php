@@ -71,7 +71,7 @@ class PageRepository extends EntityRepository {
         $qb->andWhere($qb->expr()->gt('node.lvl', 0)); //exclude root node
 
         //get all nodes
-        $tree = $repo->children($rootNode, false, 'lft', 'ASC', $qb);
+        $tree = $repo->children($rootNode, false, 'lft', 'DESC', $qb);
 
         return $tree;
     }
@@ -129,7 +129,7 @@ class PageRepository extends EntityRepository {
             if($lang2arr) //this won't be set for the first node
                 $target = &$lang2arr[$lang];
             else
-                $target = &$result;
+                $target = &$result; 
             
             if(isset($target[$title])) { //another language's Page has the same title
                 //add the language
@@ -146,6 +146,7 @@ class PageRepository extends EntityRepository {
             //remember mapping for recursion
             $myLang2arr[$lang] = &$target[$title];
         }
+
         //(II) recursion for child Nodes
         foreach($root->getChildren() as $child) {
             $this->treeByTitle($child, $result, $useSlugAsTitle, $myLang2arr, $lang);
