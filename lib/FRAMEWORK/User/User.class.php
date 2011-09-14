@@ -49,10 +49,10 @@ class User extends User_Profile
 
     /**
      * Password of user
-     * @var string
-     * @access private
+     * @var     string
+     * @access  protected
      */
-    private $password;
+    protected $password;
 
     /**
      * Language ID of user
@@ -281,7 +281,7 @@ class User extends User_Profile
      *                                if true, false otherwise
      * @return  boolean               True on success, false otherwise
      */
-    public function auth($username, $password, $backend=false)
+    public function auth($username, $password, $backend = false)
     {
         global $objDatabase;
 
@@ -320,8 +320,8 @@ class User extends User_Profile
     /**
      * Returns TRUE if the given password matches the current user,
      * FALSE otherwise.
-     * @param   string    $password
-     * @return  boolean
+     * @param string $password
+     * @return boolean
      */
     public function checkPassword($password)
     {
@@ -381,32 +381,35 @@ class User extends User_Profile
      * Returns TRUE on success or FALSE on failure.
      * @param   boolean       $deleteOwnAccount
      * @see     isLastAdmin()
-     * @return  boolean
+     * @return boolean
      */
-    public function delete($deleteOwnAccount=false)
+    public function delete($deleteOwnAccount = false)
     {
         global $objDatabase, $_CORELANG;
 
         $objFWUser = FWUser::getFWUserObject();
-        if ($this->id == $objFWUser->objUser->getId() && !$deleteOwnAccount) {
-            return Message::error($_CORELANG['TXT_ACCESS_UNABLE_DELETE_YOUR_USER']);
+        if ($deleteOwnAccount || $this->id != $objFWUser->objUser->getId()) {
+            if (!$this->isLastAdmin()) {
+                if ($objDatabase->Execute(
+                'DELETE tblU, tblP, tblG, tblA
+                FROM `'.DBPREFIX.'access_users` AS tblU
+                INNER JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id` = tblU.`id`
+                LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id` = tblU.`id`
+                WHERE tblU.`id` = '.$this->id) !== false
+            ) {
+                    return true;
+                } else {
+                    $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'], $this->username);
+                }
+            } else {
+                $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_LAST_ADMIN_USER'], $this->username);
+            }
+        } else {
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_UNABLE_DELETE_YOUR_USER'];
         }
-        if ($this->isLastAdmin()) {
-            return Message::error(sprintf(
-                $_CORELANG['TXT_ACCESS_LAST_ADMIN_USER'], $this->username));
-        }
-        $objResult = $objDatabase->Execute('
-            DELETE tblU, tblP, tblG, tblA
-              FROM `'.DBPREFIX.'access_users` AS tblU
-              JOIN `'.DBPREFIX.'access_user_profile` AS tblP ON tblP.`user_id`=tblU.`id`
-              LEFT JOIN `'.DBPREFIX.'access_rel_user_group` AS tblG ON tblG.`user_id`=tblU.`id`
-              LEFT JOIN `'.DBPREFIX.'access_user_attribute_value` AS tblA ON tblA.`user_id`=tblU.`id`
-             WHERE tblU.`id`='.$this->id);
-        if (!$objResult) {
-            return Message::error(sprintf(
-                $_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'], $this->username));
-        }
-        return true;
+
+        return false;
     }
 
 
@@ -690,7 +693,6 @@ class User extends User_Profile
         if (!isset($this->arrCachedUsers[$this->id][$key]) || $reload) {
             $this->loadPermissionIds('page_'.$frontendOrBackend);
         }
-
         return $this->arrCachedUsers[$this->id][$key];
     }
 
@@ -708,20 +710,6 @@ class User extends User_Profile
     public function getUsername()
     {
         return $this->username;
-    }
-
-
-    /**
-     * Returns the MD5 hash of the current User's password
-     *
-     * Used internally by the Shop Customer class.  Note that you should
-     * preferrably *NOT* use this if you can avoid it.  Use {@see auth()}
-     * instead.
-     * @return    string      The MD5 hash of the current User's password
-     */
-    function getMd5Password()
-    {
-        return $this->password;
     }
 
 
@@ -802,7 +790,7 @@ class User extends User_Profile
     }
 
 
-    private function loadUsers(
+    protected function loadUsers(
         $filter=null, $search=null, $arrSort=null, $arrAttributes=null,
         $limit=null, $offset=0
     ) {
@@ -967,7 +955,6 @@ class User extends User_Profile
         $arrSortExpressions = array();
         $groupTables = false;
         $nr = 0;
-
         if (!empty($sqlCondition)) {
             if (isset($sqlCondition['tables'])) {
                 if (in_array('core', $sqlCondition['tables'])) {
@@ -1036,13 +1023,10 @@ class User extends User_Profile
                 $objUserId->MoveNext();
             }
         }
-
         $this->arrLoadedUsers = $arrUserIds;
-
         if (!count($arrUserIds)) {
             return false;
         }
-
         return array(
             'tables' => array(
                 'core'      => $joinCoreTbl,
@@ -1266,16 +1250,14 @@ class User extends User_Profile
         global $objDatabase, $_CORELANG;
 
         if (!$this->validateUsername()) {
-DBG::log("User::store(): Invalid username ($this->username)");
             return false;
         }
         if (!$this->validateEmail()) {
-DBG::log("User::store(): Invalid e-mail ($this->email)");
             return false;
         }
 
         if ($this->id) {
-            if (!$objDatabase->Execute("
+            if ($objDatabase->Execute("
                 UPDATE `".DBPREFIX."access_users`
                 SET
                     `username` = '".addslashes($this->username)."',
@@ -1292,9 +1274,9 @@ DBG::log("User::store(): Invalid e-mail ($this->email)");
                     `restore_key` = '".$this->restore_key."',
                     `restore_key_time` = ".$this->restore_key_time."
                 WHERE `id` = ".$this->id
-            )) {
-DBG::log("User::store(): Failed to update: ".var_export($this, true));
-                return Message::error($_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT']);
+            ) === false) {
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
+                return false;
             }
         } else {
             if ($objDatabase->Execute("
@@ -1428,12 +1410,16 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
         global $_CORELANG;
 
         if (!self::isValidUsername($this->username)) {
-            return Message::error($_CORELANG['TXT_ACCESS_INVALID_USERNAME']);
+            if (self::isUniqueUsername($this->username, $this->id)) {
+                return true;
+            } else {
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_USERNAME_ALREADY_USED'];
+            }
+        } else {
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_USERNAME'];
         }
-        if (!$this->isUniqueUsername($this->username, $this->id)) {
-            return Message::error($_CORELANG['TXT_ACCESS_USERNAME_ALREADY_USED']);
-        }
-        return true;
+
+        return false;
     }
 
 
@@ -1443,12 +1429,12 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
     }
 
 
-    public function login($backend=false)
+    public function login($backend = false)
     {
         global $sessionObj;
 
         if ($this->loggedIn) return true;
-        if (   isset($sessionObj)
+        if(isset($sessionObj)
             && is_object($sessionObj)
             && $sessionObj->userId
             && $this->load($sessionObj->userId)
@@ -1469,10 +1455,14 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
         if (FWValidator::isEmail($this->email)) {
             if ($this->isUniqueEmail($this->email, $this->id)) {
                 return true;
+            } else {
+                $this->error_msg[] = $_CORELANG['TXT_ACCESS_EMAIL_ALREADY_USED'];
             }
-            return Message::error($_CORELANG['TXT_ACCESS_EMAIL_ALREADY_USED']);
+        } else {
+            $this->error_msg[] = $_CORELANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS'];
         }
-        return Message::error($_CORELANG['TXT_ACCESS_INVALID_EMAIL_ADDRESS']);
+
+        return false;
     }
 
 
@@ -1497,7 +1487,7 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
     private function loadPermissionIds($type)
     {
         global $objDatabase;
-        
+
         if(substr($type, 0, 4) != 'page') {
             $query = '
                 SELECT tblI.`access_id`
@@ -1518,7 +1508,7 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
                     $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
                     $objAccessId->MoveNext();
                 }
-            }    
+            }
         }
         else { // page_backend or page_frontend
             $backOrFrontend = substr($type, 5);
@@ -1548,12 +1538,11 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
     }
 
 
-    public function hasModeAccess($backend=false)
+    public function hasModeAccess($backend = false)
     {
         global $objDatabase;
 
         if ($this->getAdminStatus()) {
-//DBG::log("User::hasModeAccess($backend): Admin, okay");
             return true;
         }
         $query = "
@@ -1567,11 +1556,9 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
                 OR tblG.`type`='backend')";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if (!$objResult) {
-//DBG::log("User::hasModeAccess($backend): Query error: $query");
             return false;
         }
         if ($objResult->EOF) {
-//DBG::log("User::hasModeAccess($backend): EOF, fail");
             return false;
         }
         return true;
@@ -1652,8 +1639,8 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
      *
      * This will set the attribute email of this object to $email
      * if the parameter $email is valid and isn't yet used by an other user.
-     * @param   string    $email
-     * @return  boolean
+     * @param string $email
+     * @return boolean
      */
     public function setEmail($email)
     {
@@ -1750,9 +1737,9 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
      * This will set the attribute is_admin of this object to $status.
      * If $status is FALSE then it will only be accepted if this object
      * isn't the only administrator.
-     * @param   boolean   $status
-     * @global  array
-     * @return  boolean
+     * @param boolean $status
+     * @global array
+     * @return boolean
      */
     public function setAdminStatus($status)
     {
@@ -1771,7 +1758,7 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
      * Set ID's of groups to which this user should belong to
      * @see     UserGroup, UserGroup::getGroups(), UserGroup::getId()
      * @param   array   $arrGroups
-     * @return  void
+     * @return void
      */
     public function setGroups($arrGroups)
     {
@@ -1862,7 +1849,7 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
      * @return  boolean               True if the username is available,
      *                                false otherwise
      */
-    function isUniqueUsername($username, $id=0)
+    protected function isUniqueUsername($username, $id=0)
     {
         global $objDatabase;
 
@@ -1892,10 +1879,8 @@ DBG::log("User::store(): Failed to update: ".var_export($this, true));
 // e-mail addresses
 // TODO: Maybe this should be restricted to MODULE_ID == 16 (Shop)?
         if (FWValidator::isEmail($username)) {
-//DBG::log("User::isValidUsername($username): is an e-mail address");
             return true;
         }
-//DBG::log("User::isValidUsername($username): is *NOT* an e-mail address");
         return false;
     }
 

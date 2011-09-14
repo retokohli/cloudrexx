@@ -47,7 +47,7 @@ class User_Profile_Attribute
 
     private $arrCoreAttributes = array(
         'picture' => array(
-            'type' => 'image',
+            'type'                => 'image',
             'multiline' => false,
             'mandatory' => false,
             'sort_type' => 'asc',
@@ -1204,7 +1204,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function hasChildren($attributeId=null)
+    function hasChildren($attributeId = null)
     {
         if (empty($attributeId)) {
             $attributeId = $this->id;
@@ -1348,8 +1348,11 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function isCoreAttribute($attributeId)
+    public function isCoreAttribute($attributeId=null)
     {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
         return isset($this->arrCoreAttributes[$attributeId]);
     }
 
@@ -1716,38 +1719,15 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
 
 
     /**
-     * Returns the attribute value for the given attribute and user ID
-     * @param     integer   $attributeId    The attribute ID
-     * @param     integer   $userId         The user ID
-     * @return    string                    The attribute value on success,
-     *                                      false otherwise
-     * @global    mixed     $objDatabase    Database connection object
-     * @static
-     * @author    Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function getAttributeValue($attributeId, $userId)
-    {
-        global $objDatabase;
-
-        if (empty($attributeId) || empty($userId)) return false;
-        $objResult = $objDatabase->Execute("
-            SELECT `value`
-              FROM `contrexx_access_user_attribute_value`
-             WHERE attribute_id=$attributeId
-               AND user_id=$userId");
-        if (!$objResult || $objResult->EOF) return false;
-        return $objResult->fields['value'];
-    }
-
-
-    /**
      * Returns an array of all custom attribute names in the selected language
      *
      * If the $langId parameter is empty, the language is taken from the
      * global LANG_ID constant.
-     * @param     integer   $langId         The optional language ID
-     * @return    array                     An array with attribute names indexed
-     *                                      by their IDs on success,
+     * Used by {@see SettingDb::show()},
+     * {@see Shopmanager::view_settings_general()}
+     * @param   integer     $langId         The optional language ID
+     * @return  array                       An array with attribute names
+     *                                      indexed by their IDs on success,
      *                                      false otherwise
      * @global    mixed     $objDatabase    Database connection object
      * @static
@@ -1775,5 +1755,3 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 }
-
-?>
