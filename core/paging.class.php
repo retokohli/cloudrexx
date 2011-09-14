@@ -34,7 +34,7 @@ require_once ASCMS_CORE_PATH.'/Html.class.php';
  * @version   1.0.0
  * @global    array       $_CONFIG        Configuration
  * @global    array       $_CORELANG      Core language
- * @param     int         $numof_rows     The number of rows being displayed
+ * @param     int         $numof_rows     The number of rows available
  * @param     int         $pos            The offset from the first row
  * @param     string      $uri_parameter
  * @param     string      $paging_text
@@ -44,11 +44,11 @@ require_once ASCMS_CORE_PATH.'/Html.class.php';
  * @todo      Change the system to use the new, static class method,
  *            then remove this one.
  */
-function getPaging($numof_rows, $pos=null, $uri_parameter, $paging_text,
+function getPaging($numof_rows, $pos, $uri_parameter, $paging_text,
     $showeverytime=false, $results_per_page=null
 ) {
-    return Paging::get($numof_rows, $pos, $uri_parameter, $paging_text,
-        $showeverytime, $results_per_page, 'pos');
+    return Paging::get($uri_parameter, $paging_text, $numof_rows,
+        $results_per_page, $showeverytime, $pos, 'pos');
 }
 
 
@@ -88,9 +88,9 @@ class Paging
      *                                    automatically if empty.
      * @return  string                    HTML code for the paging
      */
-    static function get(
-        $numof_rows, $position=null, &$uri_parameter, $paging_text,
-        $showeverytime=false, $results_per_page=0, $parameter_name=null
+    static function get(&$uri_parameter, $paging_text, $numof_rows,
+        $results_per_page=0, $showeverytime=false,
+        $position=null, $parameter_name=null
     ) {
         global $_CONFIG, $_CORELANG;
 
@@ -253,5 +253,3 @@ class Paging
         return $name;
     }
 }
-
-?>

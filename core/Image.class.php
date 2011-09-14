@@ -771,6 +771,7 @@ class Image
         if ($maxwidth == 0 && $maxheight == 0) return $size;
         if ($maxwidth == 0) $maxwidth = 1e9;
         if ($maxheight == 0) $maxheight = 1e9;
+        $width = $height = null;
         if ($size[0] && $size[1]) {
             $ratio    = $size[0] / $size[1];
             $maxratio = $maxwidth / $maxheight;
@@ -890,6 +891,7 @@ class Image
     ) {
 //DBG::log("crop($source_path, $target_path, $x1, $y1, $x2, $y2, $force, $quality): Entered");
         File::pathRelativeToRoot($source_path);
+        $xs = $ys = null;
         list($xs, $ys) = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
         // Fix coordinates that are out of range:
         // - Reset negative and too large values to the original size
@@ -1469,5 +1471,3 @@ die("Image::errorHandler(): Fixed core_image table field names<br />");
     }
 
 }
-
-?>

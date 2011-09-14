@@ -1,7 +1,5 @@
 <?php
 
-//Text::errorHandler();
-
 /**
  * Text (core version)
  * @version     2.3.0
@@ -924,5 +922,3 @@ die("Obsolete method Text::getIdArrayBySearch() called");
     }
 
 }
-
-?>
