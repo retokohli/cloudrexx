@@ -292,31 +292,23 @@ class Customer extends User
     function is_reseller($is_reseller=null)
     {
         $group_reseller = SettingDb::getValue('usergroup_id_reseller');
-if (empty($group_reseller)) {
-    self::errorHandler();
-    $group_reseller = SettingDb::getValue('usergroup_id_reseller');
-}
-        $arrGroupId = $this->getAssociatedGroupIds();
-        if (isset($is_reseller)) {
-            $group_customer = SettingDb::getValue('usergroup_id_customer');
-            if ($is_reseller) {
-                $group_remove = $group_customer;
-                $group_add = $group_reseller;
-            } else {
-                $group_remove = $group_reseller;
-                $group_add = $group_customer;
-            }
-            if (!($group_remove && $group_add)) return false;
-            $key = array_search($group_remove, $arrGroupId);
-            if ($key !== false) {
-                unset($arrGroupId[$key]);
-            }
-            if (!in_array($group_add, $arrGroupId)) {
-                $arrGroupId[] = $group_add;
-            }
-            $this->setGroups($arrGroupId);
+        if (empty($group_reseller)) {
+            self::errorHandler();
+            $group_reseller = SettingDb::getValue('usergroup_id_reseller');
         }
-        return (in_array($group_reseller, $arrGroupId));
+        if (isset($is_reseller)) {
+            if ($is_reseller) {
+                $this->setGroups(array($group_reseller));
+            } else {
+                $group_customer = SettingDb::getValue('usergroup_id_customer');
+                if (empty($group_customer)) {
+                    self::errorHandler();
+                    $group_customer = SettingDb::getValue('usergroup_id_customer');
+                }
+                $this->setGroups(array($group_customer));
+            }
+        }
+        return (in_array($group_reseller, $this->getAssociatedGroupIds()));
     }
 
     /**
@@ -403,6 +395,51 @@ if (empty($group_reseller)) {
         if (!$objCustomer) return null;
 //DBG::log("Customer::getById($id): Usergroups: ".var_export($objCustomer->getAssociatedGroupIds(), true));
         return $objCustomer;
+    }
+
+
+    /**
+     * Returns a Customer object according to the given criteria
+     *
+     * This extends the parent method by resolving the "group" index in
+     * the $filter array to User IDs.  These are in turn passed to the
+     * User class.
+     * @param   array   $filter
+     * @param   string  $search
+     * @param   array   $arrSort
+     * @param   array   $arrAttributes
+     * @param   integer $limit
+     * @param   integer $offset
+     * @return  Customer                The Customer object on success,
+     *                                  false otherwise
+     */
+    public function getUsers(
+        $filter=null, $search=null, $arrSort=null, $arrAttributes=null,
+        $limit=null, $offset=0
+    ) {
+        if (!empty($filter) && is_array($filter)) {
+            if (isset($filter['group']) && is_array($filter['group'])) {
+                $arrUserId = array();
+                foreach ($filter['group'] as $group_id) {
+                    $objGroup = FWUser::getFWUserObject()->objGroup;
+                    $objGroup = $objGroup->getGroup($group_id);
+                    if ($objGroup) {
+                        $_arrUserId = $objGroup->getAssociatedUserIds();
+//DBG::log("Customer::getUsers(): Group ID $group_id, User IDs: ".var_export($_arrUserId, true));
+
+                        $arrUserId += array_flip($_arrUserId);
+//DBG::log("Customer::getUsers(): Merged: ".var_export($arrUserId, true));
+                    }
+                }
+                $filter['id'] = ($arrUserId ? array_flip($arrUserId) : array(0));
+                unset($filter['group']);
+            }
+        }
+//DBG::log("Customer::getUsers(): Filter: ".var_export($filter, true));
+        if ($this->loadUsers($filter, $search, $arrSort, $arrAttributes, $limit, $offset)) {
+            return $this;
+        }
+        return false;
     }
 
 
@@ -572,6 +609,7 @@ DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID "
         // are ready first!
 DBG::log("Customer::errorHandler(): Adding settings");
         ShopSettings::errorHandler();
+        Country::errorHandler();
         Order::errorHandler();
         Discount::errorHandler();
 
@@ -662,19 +700,33 @@ DBG::log("Customer::errorHandler(): Adding notes attribute...");
         $objResult = UpdateUtil::sql($query);
         while (!$objResult->EOF) {
             $old_customer_id = $objResult->fields['customerid'];
+            if (empty($objResult->fields['email'])) {
+                $objResult->fields['email'] = $objResult->fields['username'];
+            }
             $email = $objResult->fields['email'];
             $objUser = $objFWUser->objUser->getUsers(array('email' => array(0 => $email)));
             $objCustomer = null;
             if ($objUser) {
-                $customer_id = $objUser->getId();
-                $objCustomer = self::getById($customer_id);
+                $objCustomer = self::getById($objUser->getId());
             }
             if (!$objCustomer) {
                 $lang_id = Order::getLanguageIdByCustomerId($old_customer_id);
                 $lang_id = FWLanguage::getLangIdByIso639_1($lang_id);
                 if (!$lang_id) $lang_id = FRONTEND_LANG_ID;
                 $objCustomer = new Customer();
-                $objCustomer->gender($objResult->fields['prefix']);
+                if (preg_match('/^(?:frau|mad|mme|signora|miss)/i',
+                    $objResult->fields['prefix'])) {
+                    $objCustomer->gender('gender_female');
+                } elseif (preg_match('/^(?:herr|mon|signore|mister|mr)/i',
+                    $objResult->fields['prefix'])) {
+                    $objCustomer->gender('gender_male');
+//                } else {
+// Other "genders", like "family", "thing", or "it" won't be matched
+// and are left on "gender_unknown".
+//DBG::log("*** Prefix {$objResult->fields['prefix']}, UNKNOWN GENDER!");
+                }
+//DBG::log("Prefix {$objResult->fields['prefix']}, made gender ".$objCustomer->gender());
+
                 $objCustomer->company($objResult->fields['company']);
                 $objCustomer->firstname($objResult->fields['firstname']);
                 $objCustomer->lastname($objResult->fields['lastname']);
@@ -698,14 +750,20 @@ DBG::log("Customer::errorHandler(): Adding notes attribute...");
                 $objCustomer->password = $objResult->fields['password'];
                 $objCustomer->setFrontendLanguage($lang_id);
             }
+            if (!$objCustomer->store()) {
+DBG::log(var_export($objCustomer, true));
+                throw new Update_DatabaseException(
+                   "Failed to migrate existing Customer ID ".
+                   $old_customer_id.
+                   " to Users (Messages: ".
+                   join(', ', $objCustomer->error_msg).")");
+            }
             if ($objResult->fields['is_reseller']) {
                 $arrResellerId[$objCustomer->id()] = true;
+//DBG::log("Customer::errorHandler(): Added reseller: ".$objCustomer->id());
             } else {
                 $arrCustomerId[$objCustomer->id()] = true;
-            }
-            if (!$objCustomer->store()) {
-                throw new Update_DatabaseException(
-                   "Failed to migrate existing Customer ID $old_customer_id to Users");
+//DBG::log("Customer::errorHandler(): Added customer: ".$objCustomer->id());
             }
             // Update the Orders table with the new Customer ID.
             // Note that we use the ambiguous old customer ID that may
@@ -785,6 +843,7 @@ DBG::log("Customer::errorHandler(): Adding notes attribute...");
                "Failed to create UserGroup for resellers");
         }
         $objGroup->setUsers(array_keys($arrResellerId));
+//DBG::log("Customer::errorHandler(): Made reseller usergroup: ".var_export($objGroup, true));
         if (!$objGroup->store() || !$objGroup->getId()) {
             throw new Update_DatabaseException(
                 "Failed to store UserGroup for resellers");
@@ -803,7 +862,3 @@ DBG::log("Updated Customer table and related stuff");
     }
 
 }
-
-//Customer::errorHandler();
-
-?>

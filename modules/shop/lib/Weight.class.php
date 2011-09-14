@@ -40,7 +40,7 @@ class Weight
      * Return a string with the weight converted from grams to an appropriate unit.
      *
      * The weight is converted, and the unit chosen as follows:
-     * - weight in  [        0 ..         1'000[ -> 0 .. 999.999 grams,
+     * - weight in  [        0 ..         1'000[ -> 0 .. 999     grams,
      * - weight in  [    1'000 ..     1'000'000[ -> 0 .. 999.999 kilograms,
      * - weight in  [1'000'000 .. 1'000'000'000[ -> 0 .. 999.999 tonnes.
      * If the weight argument is outside of the valid range as specified above,
@@ -62,7 +62,7 @@ class Weight
             return '';
         // scale weight and append unit
         $weight = $grams/pow(1000, $unit_index);
-        $unit   = self::$arrUnits[$unit_index];
+        $unit = self::$arrUnits[$unit_index];
         return "$weight $unit";
     }
 
@@ -81,8 +81,8 @@ class Weight
      * Note that, as weights are stored as integers, they are
      * rounded *down* to whole grams.
      * @access  public
-     * @param   string  $weight The weight in another unit
-     * @return  integer         The weight in grams, or 'NULL' on error.
+     * @param   string  $weight The weight with any or no unit
+     * @return  integer         The weight in grams, or null on error
      */
     static function getWeight($weightString)
     {
@@ -90,39 +90,37 @@ class Weight
         $arrMatch = array();
         // numeric result value
         $grams = 0;
-
-        if (preg_match('/^(\d*\.?\d+)\s*(\w*)$/', $weightString, $arrMatch)) {
-            $weight = $arrMatch[1];
-            $unit   = $arrMatch[2];
-            // if the number is missing, return NULL
-            if ($weight == '') {
-                return 'NULL';
-            }
-            // if the unit is missing, default to 'g' (grams)
-            if (empty($unit)) {
-                $grams = intval($weight+1e-8);
-            } else {
-                // unit is set, look if it's known
-                $unit_index = array_search($unit, self::$arrUnits);
-                // if the unit is set, but unknown, return NULL
-                if ($unit_index === false) {
-                    return 'NULL';
-                }
-                // have to correct and cast to integer here, because there are precision issues
-                // for some numbers otherwise (i.e. "1.001 kg" yields 1000 instead of 1001 grams)!
-                $grams = intval($weight*pow(1000, $unit_index)+1e-8);
-            }
-            // $grams is set to an integer now, in any case.
-            // check whether the weight is too small, or too big
-            if ($grams < 0 || $grams >= 1000000000) {
-                return 'NULL';
-            }
-            // return weight in grams
-            return $grams;
+        if (!preg_match('/^(\d*\.?\d+)\s*(\w*)$/', $weightString, $arrMatch)) {
+            return null;
         }
-        // no match -- may be both invalid format or empty string
-        return 'NULL';
+        $weight = $arrMatch[1];
+        $unit = $arrMatch[2];
+        // if the number is missing, return NULL
+        if ($weight == '') {
+            return null;
+        }
+        // if the unit is missing, default to 'g' (grams)
+        if (empty($unit)) {
+            $grams = intval($weight+1e-8);
+        } else {
+            // unit is set, look if it's known
+            $unit_index = array_search($unit, self::$arrUnits);
+            // if the unit is set, but unknown, return NULL
+            if ($unit_index === false) {
+                return null;
+            }
+            // have to correct and cast to integer here, because there are
+            // precision issues for some numbers otherwise (i.e. "1.001 kg"
+            // yields 1000 instead of 1001 grams)!
+            $grams = intval($weight*pow(1000, $unit_index)+1e-8);
+        }
+        // $grams is set to an integer now, in any case.
+        // check whether the weight is too small, or too big
+        if ($grams < 0 || $grams >= 1e9) {
+            return null;
+        }
+        // return weight in grams
+        return $grams;
     }
-}
 
-?>
+}

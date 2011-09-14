@@ -161,6 +161,11 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     function getPage($template)
     {
+// TODO: Temporary, for developing only. Remove for production.
+if (isset ($_REQUEST['content'])) {
+    self::update_content();
+}
+
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
 
@@ -278,18 +283,16 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
                 $arrMailTemplate['substitution'] += $objCustomer->getSubstitutionArray();
                 echo(nl2br(htmlentities(var_export($arrMailTemplate, true), ENT_QUOTES, CONTREXX_CHARSET)));
                 die(MailTemplate::send($arrMailTemplate));
-
             case 'pricelist':
                 self::send_pricelist();
                 break;
-
             case 'destroy':
                 self::destroyCart();
                 // No break on purpose
             case 'lastFive':
             case 'products':
             default:
-                self::products();
+                self::view_product_overview();
         }
 
         // Note that the Shop Navbar *MUST* be set up *after* the request
@@ -326,14 +329,11 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
         if ($strContent) {
             return $strContent;
         }
-
         $objTpl = new HTML_Template_Sigma('.');
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate($themesPages['shopnavbar']);
         $objTpl->setGlobalVariable($_ARRAYLANG);
-
-        $loginInfo = '';
-        $redirect = '';
+        $loginInfo = $loginStatus = $redirect = '';
 //DBG::log("Shop::getNavbar(): Customer: ".(self::$objCustomer ? "Logged in" : "nada"));
         if (self::$objCustomer) {
             if (self::$objCustomer->company()) {
@@ -365,8 +365,7 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
             'SHOP_LOGIN_STATUS' => $loginStatus,
             'SHOP_LOGIN_INFO' => $loginInfo,
         ));
-
-        // start currencies
+        // Currencies
         if (self::$show_currency_navbar) {
             if ($objTpl->blockExists('shopCurrencies')) {
                 $objTpl->setCurrentBlock('shopCurrencies');
@@ -379,8 +378,6 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
                 $objTpl->parseCurrentBlock('shopCurrencies');
             }
         }
-        // end currencies
-
         if ($objTpl->blockExists('shopNavbar')) {
             $selectedCatId = 0;
             if (isset($_REQUEST['catId'])) {
@@ -396,27 +393,28 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
                 $objProduct = Product::getById($product_id);
                 if ($objProduct) {
                     $selectedCatId = $objProduct->category_id();
+                    $selectedCatId = preg_replace('/,.+$/', '', $selectedCatId);
                 }
             }
-
-            // Array of all visible ShopCategories
+            // If there is no distinct Category ID, use the previous one, if any
+            if (is_numeric($selectedCatId)) {
+                $_SESSION['shop']['previous_category_id'] = $selectedCatId;
+            } else {
+                if (isset($_SESSION['shop']['previous_category_id']))
+                    $selectedCatId = $_SESSION['shop']['previous_category_id'];
+            }
+            // Only the visible ShopCategories are present
             $arrShopCategoryTree = ShopCategories::getTreeArray(
                 false, true, true, $selectedCatId, 0, 0
             );
-            // The trail of IDs to the selected ShopCategory,
+            // The trail of IDs from root to the selected ShopCategory,
             // built along with the tree array when calling getTreeArray().
             $arrTrail = ShopCategories::getTrailArray($selectedCatId);
-
-            // Build the display of ShopCategories
+            // Display the ShopCategories
             foreach ($arrShopCategoryTree as $arrShopCategory) {
                 $level = $arrShopCategory['level'];
                 // Skip levels too deep: if ($level >= 2) { continue; }
                 $id = $arrShopCategory['id'];
-
-                // Only the visible ShopCategories are stored in
-                // $arrShopCategoryTree.  $arrTrail contains the full list
-                // of IDs from root to selected, however.
-
                 $style = 'shopnavbar'.($level+1);
                 if (in_array($id, $arrTrail)) {
                     $style .= '_active';
@@ -474,6 +472,7 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
         $objTemplate = new HTML_Template_Sigma('.');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $match = null;
+        $div_cart = $div_product = '';
         foreach ($themesPages as $index => $content) {
 //DBG::log("Shop::setJsCart(): Section $index");
             $objTemplate->setTemplate($content, false, false);
@@ -484,7 +483,6 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
             $objTemplate->setCurrentBlock('shopJsCart');
             // Set all language entries and replace formats
             $objTemplate->setGlobalVariable($_ARRAYLANG);
-            $div_product = '';
             if ($objTemplate->blockExists('shopJsCartProducts')) {
                 $objTemplate->parse('shopJsCartProducts');
                 $div_product = $objTemplate->get('shopJsCartProducts');
@@ -529,7 +527,7 @@ DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
               $div_product)."';\n"
 //            "if (typeof(objCart) != 'undefined') { shopGenerateCart(); };\n"
         );
-        JS::registerJS('lib/javascript/html2dom.js');
+        JS::registerJS('modules/shop/lib/html2dom.js');
         self::registerJavascriptCode();
     }
 
@@ -797,18 +795,17 @@ die("Failed to update the Cart!");
                     self::scaleImageSizeToThumbnail($arrSize);
                 }
             }
-
             self::$objTemplate->setVariable(array(
-                'SHOP_PRODUCT_TITLE' => htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET),
-                'SHOP_PRODUCT_THUMBNAIL' => $thumbnailPath,
-                'SHOP_PRODUCT_THUMBNAIL_SIZE' => $arrSize[3],
-                'TXT_ADD_TO_CARD' => $_ARRAYLANG['TXT_SHOP_GO_TO_CATEGORY'],
-                'SHOP_PRODUCT_DETAILLINK_IMAGE' => 'index.php?section=shop'.MODULE_INDEX.'&amp;catId='.$id,
-                'SHOP_PRODUCT_SUBMIT_FUNCTION' => 'location.replace("index.php?section=shop'.MODULE_INDEX.'&catId='.$id.'")',
-                'SHOP_PRODUCT_SUBMIT_TYPE' => "button",
-                'SHOP_PRODUCT_CAT_ID' => $id,
-                'SHOP_PRODUCT_CAT_DESCRIPTION' => $description,
-
+                'SHOP_CATEGORY_ID' => $id,
+                'SHOP_CATEGORY_NAME' => htmlentities($catName, ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_CATEGORY_THUMBNAIL' => $thumbnailPath,
+                'SHOP_CATEGORY_THUMBNAIL_SIZE' => $arrSize[3],
+                'SHOP_CATEGORY_DESCRIPTION' => $description,
+// OBSOLETE since V3.0.0, as are any placeholders for Categories
+// containing "PRODUCT"!
+//                'SHOP_CATEGORY_DETAILLINK_IMAGE' => 'index.php?section=shop'.MODULE_INDEX.'&amp;catId={SHOP_CATEGORY_ID}',
+//                'SHOP_CATEGORY_SUBMIT_FUNCTION' => 'location.replace("index.php?section=shop'.MODULE_INDEX.'&catId='.$id.'")',
+//                'SHOP_CATEGORY_SUBMIT_TYPE' => "button",
             ));
             // Add flag images for flagged ShopCategories
             $strImage = '';
@@ -825,7 +822,6 @@ die("Failed to update the Cart!");
                     'SHOP_CATEGORY_FLAG_IMAGE', $strImage
                 );
             }
-
             if (self::$objTemplate->blockExists('subCategories')) {
                 self::$objTemplate->parse('subCategories');
                 if (++$cell % 4 == 0) {
@@ -846,7 +842,7 @@ die("Failed to update the Cart!");
      * @global  array       $_CONFIG        Core configuration array, see {@link /config/settings.php}
      * @global  string(?)   $themesPages    Themes pages(?)
      */
-    function products()
+    function view_product_overview()
     {
         global $_ARRAYLANG;
 
@@ -867,11 +863,10 @@ die("Failed to update the Cart!");
         }
         $category_id = (isset($_REQUEST['catId'])
             ? intval($_REQUEST['catId']) : null);
-        $manufacturer_id = (isset($_REQUEST['manufacturer_id'])
-            ? intval($_REQUEST['manufacturer_id']) : null);
+        $manufacturer_id = (isset($_REQUEST['manufacturerId'])
+            ? intval($_REQUEST['manufacturerId']) : null);
         $term = (isset($_REQUEST['term'])
             ? trim(contrexx_input2raw($_REQUEST['term'])) : null);
-
         $shopMenu =
             '<form action="index.php?section=shop" method="post">'.
             '<input type="text" name="term" value="'.
@@ -881,7 +876,7 @@ die("Failed to update the Cart!");
             '<option value="0">'.$_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'].
             '</option>'.ShopCategories::getMenuoptions($category_id).
             '</select>&nbsp;'.Manufacturer::getMenu(
-                'manufacturer_id', $manufacturer_id, true).
+                'manufacturerId', $manufacturer_id, true).
             '<input type="submit" name="bsubmit" value="'.$_ARRAYLANG['TXT_SEARCH'].
             '" style="width:66px;" />'.
             '</form>';
@@ -897,13 +892,12 @@ die("Failed to update the Cart!");
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
                 Manufacturer::getMenuoptions($manufacturer_id, true),
         ));
-
+// TODO: showCategories() touches the product block! fix!
         if ($category_id && $term == '') {
             self::showCategories($category_id);
         } elseif ($term == '') {
             self::showCategories(0);
         }
-
         if (self::$objTemplate->blockExists('shopNextCategoryLink')) {
             $nextCat = ShopCategory::getNextShopCategoryId($category_id);
             $objCategory = ShopCategory::getById($nextCat);
@@ -911,13 +905,11 @@ die("Failed to update the Cart!");
                 'SHOP_NEXT_CATEGORY_ID' => $nextCat,
                 'SHOP_NEXT_CATEGORY_TITLE' => str_replace('"', '&quot;', $objCategory->name()),
             ));
-            self::$objTemplate->parse('shopNextCategoryLink');
         }
 // Moved to index.php
 //        self::$objTemplate->setVariable(
 //            'SHOPNAVBAR_FILE',
 //            self::getNavbar($themesPages['shopnavbar']));
-
         $pagingCatId = '';
         $pagingManId = '';
         $pagingTerm = '';
@@ -935,12 +927,10 @@ die("Failed to update the Cart!");
             $pagingTerm =
                 '&amp;term='.htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET);
         }
-
         // The Product count is passed by reference and set to the total
         // number of records, though only as many as specified by the core
         // paging limit are returned in the array.
         $limit = SettingDb::getValue('numof_products_per_page_frontend');
-
 // TODO: Use Sorting class for the Product order
         $order = SettingDb::getValue('product_sorting');
         $count = $limit;
@@ -951,38 +941,39 @@ die("Failed to update the Cart!");
             $order,
             self::$objCustomer && self::$objCustomer->is_reseller()
         );
-
         $objCategory = ShopCategory::getById($category_id);
 DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
         if ($objCategory) {
             self::$objTemplate->setVariable(array(
-                'SHOP_CATEGORY_NAME' =>
-                    str_replace('"', '&quot;', $objCategory->name()),
+                // Old, kept for convenience
+                'SHOP_CATEGORY_CURRENT_NAME' =>
+                contrexx_input2xhtml($objCategory->name()),
                 // New (3.0.0)
                 'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
                     $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
-                    htmlentities($objCategory->name(),
+                    contrexx_input2xhtml($objCategory->name(),
                         ENT_QUOTES, CONTREXX_CHARSET)),
             ));
         }
-
-        if ($count == 0) {
+        if ($count == 0
+         && ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer)) {
             self::$objTemplate->touchBlock('no_product');
             return true;
         }
-
+DBG::log("Count: $count");
         $uri =
             '&amp;section=shop'.MODULE_INDEX.
             $pagingCatId.$pagingManId.$pagingTerm;
         self::$objTemplate->setVariable(array(
-            'SHOP_PRODUCT_PAGING' => Paging::get(
-                $count, null, $uri, '', true, $limit),
+            'SHOP_PRODUCT_PAGING' => Paging::get($uri, '',
+                $count, $limit, ($count > 0)),
             'SHOP_PRODUCT_TOTAL' => $count,
         ));
-
-
         $formId = 0;
-        $arrDefaultImageSize = false;
+        $arrDefaultImageSize = $arrSize = null;
+//            array(3 =>
+//                'height="'.SettingDb::getValue('thumbnail_max_height').
+//                '" width="'.SettingDb::getValue('thumbnail_max_width').'"');
         /** @var   Product $objProduct = null; */
 //        $flagUpload = false;
         foreach ($arrProduct as $objProduct) {
@@ -993,6 +984,7 @@ DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
             $havePicture = false;
             $arrProductImages = array();
             foreach ($arrPictures as $index => $image) {
+                $thumbnailPath = $pictureLink = '';
                 if (   empty($image['img'])
                     || $image['img'] == ShopLibrary::noPictureName) {
                     // We have at least one picture on display already.
@@ -1012,12 +1004,12 @@ DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
                         $pictureLink =
                             contrexx_raw2encodedUrl(ASCMS_SHOP_IMAGES_WEB_PATH.'/'.$image['img']).
                             // Hack ahead!
-                            '" rel="shadowbox[1]';
-                            // Thumbnail display size
-                            $arrSize = array($image['width'], $image['height']);
+                            '" rel="shadowbox['.($formId+1).']';
+                        // Thumbnail display size
+                        $arrSize = array($image['width'], $image['height']);
                     } else {
                         $pictureLink = '';
-                            $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
+                        $arrSize = getimagesize(ASCMS_PATH.$thumbnailPath);
                     }
                     self::scaleImageSizeToThumbnail($arrSize);
                 }
@@ -1073,6 +1065,7 @@ DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
                 true  // Ignore special offers
             );
             // If there is a discountprice and it's enabled
+            $discountPrice = '';
             if (   $objProduct->discountprice() > 0
                 && $objProduct->discount_active()) {
                 $price = '<s>'.$price.'</s>';
@@ -1082,8 +1075,6 @@ DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
                     1,    // Apply discount for one article
                     false // Consider special offers
                 );
-            } else {
-                $discountPrice = '';
             }
 
             $groupCountId = $objProduct->group_id();
@@ -1132,6 +1123,7 @@ DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
             // to the appropriate encoding type for the form if
             // any upload fields are in use.
             $flagMultipart = false;
+            $productSubmitName = $productSubmitFunction = '';
             if (isset($_GET['cmd']) && $_GET['cmd'] == 'details'
              && isset($_GET['referer']) && $_GET['referer'] == 'cart') {
                 $productSubmitName = "updateProduct[$cart_id]";
@@ -1564,13 +1556,13 @@ DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
     /**
      * The view of the discounted Products only
      *
-     * Calls {@see products()}, which in turn checks the value of the cmd
+     * Calls {@see view_product_overview()}, which in turn checks the value of the cmd
      * request parameter, and sets up Product query parameters accordingly.
      * @return  boolean             True on success, false otherwise
      */
     function discounts()
     {
-        return self::products();
+        return self::view_product_overview();
     }
 
 
@@ -2897,6 +2889,7 @@ right after the customer logs in!
                             Attribute::getNameById($attribute_id).': ';
                         $productOptionsValues = '';
                         foreach ($arrOptionIds as $option_id) {
+                            $optionValue = '';
                             if (intval($option_id)) {
                                 $optionValue =
                                     Attributes::getOptionNameById($option_id);
@@ -3930,6 +3923,50 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
         }
 //DBG::log("Shop::use_session(): Order view => true");
         return true;
+    }
+
+
+    /**
+     * Temporary -- for developing whilst the content manager is broken
+     */
+    static function update_content()
+    {
+        global $objDatabase;
+
+        $folder = ASCMS_DOCUMENT_ROOT.'/customizing/template/';
+        $dh = opendir($folder);
+        if (!$dh) {
+            die('Failed to open directory '.$folder);
+        }
+        $arrFiles = array();
+        while (true) {
+            $file = readdir($dh);
+            if ($file === false) break;
+            $arrFiles[] = $file;
+        }
+        closedir($dh);
+
+        $match = null;
+        foreach ($arrFiles as $file) {
+            if (!preg_match('/^(shop)_?(\w*)\.html/', $file, $match)) {
+DBG::log('File name '.$file.' does not match; skipped<br />');
+                continue;
+            }
+            $section = $match[1];
+            if (empty($match[2])) $match[2] = '';
+            $cmd = $match[2];
+            $content = file_get_contents($folder.$file);
+
+            $query = "
+                UPDATE `".DBPREFIX."pages`
+                   SET `content`='".addslashes($content)."'
+                 WHERE `module`='".addslashes($section)."'
+                   AND `cmd`='".addslashes($cmd)."'";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult) {
+                die('Query error: '.$query);
+            }
+        }
     }
 
 }

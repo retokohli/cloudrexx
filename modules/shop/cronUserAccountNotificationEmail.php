@@ -23,7 +23,7 @@
  * for autocreated user accounts.  Leave it untouched at all times!
  *
  */
-require_once '../config/configuration.php';
+require_once '../../config/configuration.php';
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
 require_once ASCMS_CORE_PATH.'/database.php';
 
@@ -157,5 +157,3 @@ Body: $mailbody
 }
 
 //echo("All done.");
-
-?>

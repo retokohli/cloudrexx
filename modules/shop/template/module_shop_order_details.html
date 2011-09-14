@@ -39,7 +39,7 @@ function edit(order_id)
   </tr>
   <tr class="row1">
     <td nowrap='nowrap'>{TXT_ORDER_SUM}</td>
-    <td nowrap='nowrap' colspan="3">{SHOP_ORDER_SUM}&nbsp;{SHOP_DEFAULT_CURRENCY}</td>
+    <td nowrap='nowrap' colspan="3">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 <!-- </table> <br /> <table width="100%" cellspacing="0" cellpadding="2" class="adminlist" border="0"> -->
 <tr><td>&nbsp;</td></tr>
@@ -57,7 +57,7 @@ function edit(order_id)
     <td nowrap='nowrap'>{TXT_SHOP_TITLE}</td>
     <td nowrap='nowrap'>{SHOP_GENDER}&nbsp;</td>
     <td nowrap='nowrap'>{TXT_SHOP_TITLE}</td>
-    <td nowrap='nowrap'>{SHOP_SHIP_TITLE}&nbsp;</td>
+    <td nowrap='nowrap'>{SHOP_SHIP_GENDER}&nbsp;</td>
   </tr>
   <tr class="row1">
     <td nowrap='nowrap'>{TXT_LAST_NAME}</td>
@@ -156,64 +156,64 @@ function edit(order_id)
     <th colspan="9">{TXT_BILL}</th>
   </tr>
   <tr class="row1">
-    <td nowrap='nowrap' width="5%"><b>{TXT_NUMBER}</b></td>
-    <td nowrap='nowrap' width="10%"><b>{TXT_PRODUCT_ID}</b></td>
+    <td nowrap='nowrap' width="05%"><b>{TXT_NUMBER}</b></td>
+    <td nowrap='nowrap' width="05%"><b>{TXT_PRODUCT_ID}</b></td>
     <td nowrap='nowrap' width="10%"><b>{TXT_SHOP_PRODUCT_CUSTOM_ID}</b></td>
     <td nowrap='nowrap' width="40%"><b>{TXT_PRODUCT_NAME}</b></td>
-    <td nowrap='nowrap' width="10%"><div style="text-align:right;"><b>{TXT_WEIGHT}</b></div></td>
-    <td nowrap='nowrap' width="15%"><div style="text-align:right;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
-    <td colspan="2" nowrap='nowrap' width="10%"><div style="text-align:left;"><b>{TXT_TAX_RATE}</b></div></td>
-    <td nowrap='nowrap' width="10%"><div style="text-align:right;"><b>{TXT_SUM}</b></div></td>
+    <td nowrap='nowrap' width="05%" class="number"><b>{TXT_WEIGHT}</b></td>
+    <td nowrap='nowrap' width="10%" class="number"><b>{TXT_PRODUCT_PRICE}</b></td>
+    <td colspan="2" nowrap='nowrap' width="10%" class="number"><b>{TXT_TAX_RATE}</b></td>
+    <td nowrap='nowrap' width="10%" class="number"><b>{TXT_SUM}</b></td>
   </tr>
 <!-- BEGIN orderdetailsRow -->
-  <tr class="{SHOP_ROWCLASS}" style="vertical-align: top;">
+  <tr class="{SHOP_ROWCLASS}">
     <td nowrap='nowrap'>{SHOP_QUANTITY}&nbsp;</td>
     <td nowrap='nowrap'>{SHOP_P_ID}&nbsp;</td>
-    <td nowrap='nowrap'>{SHOP_PRODUCT_CUSTOM_ID}&nbsp;</td>
+    <td nowrap='nowrap'>{SHOP_PRODUCT_CODE}&nbsp;</td>
     <td nowrap='nowrap'>{SHOP_PRODUCT_NAME}&nbsp;</td>
-    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_WEIGHT}&nbsp;</div></td>
-    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
-    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_TAX_RATE}</div></td>
-    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_TAX_AMOUNT}&nbsp;{SHOP_CURRENCY}</div></td>
-    <td nowrap='nowrap'><div style="text-align:right;">{SHOP_PRODUCT_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td nowrap='nowrap' class="number">{SHOP_PRODUCT_WEIGHT}&nbsp;</td>
+    <td nowrap='nowrap' class="number">{SHOP_PRODUCT_PRICE}&nbsp;{SHOP_CURRENCY}</td>
+    <td nowrap='nowrap' width="05%" class="number">{SHOP_PRODUCT_TAX_RATE}</td>
+    <td nowrap='nowrap' width="05%" class="number">{SHOP_PRODUCT_TAX_AMOUNT}&nbsp;{SHOP_CURRENCY}</td>
+    <td nowrap='nowrap' class="number">{SHOP_PRODUCT_SUM}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 <!-- END orderdetailsRow -->
 <!-- BEGIN shopNetPrice -->
   <tr>
     <td colspan="7">&nbsp;</td>
-    <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_NET_PRICE}</b></div></td>
-    <td nowrap="nowrap"><div style="text-align:right;">{SHOP_NET_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td nowrap="nowrap" class="number"><b>{TXT_NET_PRICE}</b></td>
+    <td nowrap="nowrap" class="number">{SHOP_NET_PRICE}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 <!-- END shopNetPrice -->
 <!-- BEGIN shopTaxPrice -->
   <tr>
     <td colspan="7">&nbsp;</td>
-    <td><div style="text-align:right;"><b>{SHOP_PART_TAX_PROCENTUAL}</b></div></td>
-    <td><div style="text-align:right;">{SHOP_TAX_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td class="number"><b>{SHOP_PART_TAX_PROCENTUAL}</b></td>
+    <td class="number">{SHOP_TAX_PRICE}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 <!-- END shopTaxPrice -->
 <!-- BEGIN shopShipmentPrice -->
   <tr><td colspan="9">&nbsp;</td></tr>
   <tr>
     <td colspan="3">&nbsp;</td>
-    <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL_WEIGHT}</b>&nbsp;</div></td>
-    <td nowrap="nowrap"><div style="text-align:right;">{SHOP_TOTAL_WEIGHT}</div></td>
+    <td nowrap="nowrap" class="number"><b>{TXT_TOTAL_WEIGHT}</b>&nbsp;</td>
+    <td nowrap="nowrap" class="number">{SHOP_TOTAL_WEIGHT}</td>
     <td colspan="2">&nbsp;</td>
-    <td><div style="text-align:right;"><b>{TXT_SHIPPING_PRICE}</b></div></td>
-    <td><div style="text-align:right;">{SHOP_SHIPPING_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td class="number"><b>{TXT_SHIPPING_PRICE}</b></td>
+    <td class="number">{SHOP_SHIPPING_PRICE}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 <!-- END shopShipmentPrice -->
 <!-- BEGIN shopPaymentPrice -->
   <tr>
     <td colspan="7">&nbsp;</td>
-    <td><div style="text-align:right;"><b>{TXT_PAYMENT_COSTS}</b></div></td>
-    <td><div style="text-align:right;">{SHOP_PAYMENT_PRICE}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td class="number"><b>{TXT_PAYMENT_COSTS}</b></td>
+    <td class="number">{SHOP_PAYMENT_PRICE}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 <!-- END shopPaymentPrice -->
   <tr>
     <td colspan="7">&nbsp;</td>
-    <td><div style="text-align:right;"><b>{TXT_TOTAL}</b></div></td>
-    <td><div style="text-align:right;">{SHOP_CURRENCY_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</div></td>
+    <td class="number"><b>{TXT_TOTAL}</b></td>
+    <td class="number">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 </table>
 <br />
@@ -222,9 +222,14 @@ function edit(order_id)
     <th>{TXT_CUSTOMER_REMARKS}</th>
   </tr>
   <tr>
-    <td><div style="vertical-align:top;">{SHOP_CUSTOMER_NOTE}&nbsp;</div></td>
+    <td>{SHOP_CUSTOMER_NOTE}&nbsp;</td>
   </tr>
 </table>
 <br />
+<!-- BEGIN order_edit -->
 <input type="button" name="editOrder" value="{TXT_EDIT}" onclick="edit({SHOP_ORDERID})" />
+<!-- END order_edit -->
+<!-- BEGIN order_no_edit -->
+{TXT_SHOP_ORDER_NOT_EDITABLE}
+<!-- END order_no_edit -->
 <!-- END shop_order_details.html -->

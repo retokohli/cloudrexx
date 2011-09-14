@@ -102,7 +102,6 @@ class Csv_bv
         $this->mFldQuote = $quote;
         $this->mFldEscape = $escape;
         if (empty($file)) return;
-
         // Try to convert the file to the system charset CONTREXX_CHARSET,
         // if necessary
         if (function_exists("mb_detect_encoding")) {
@@ -113,7 +112,6 @@ class Csv_bv
                 file_put_contents($file, $content);
             }
         }
-
         // Open file if the filename is non-empty
         $this->mHandle = @fopen($file, 'r');
         if (!$this->mHandle) trigger_error('Unable to open csv file', E_USER_ERROR);

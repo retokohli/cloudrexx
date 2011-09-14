@@ -8,7 +8,6 @@
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -27,8 +26,7 @@ require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
- * @internal    Yellowpay must be configured to return to the Shop with
- * one of the follwing requests:
+ * @internal    Yellowpay must be configured to return with the follwing requests:
  * POST after payment was made:
  *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=-1
  * GET after payment has completed successfully:
@@ -168,19 +166,20 @@ class Yellowpay
         'orderID',
         'amount',
         'currency',
-        // check before the payment: see chapter 6.2
-//        'SHASign',
-    );
-
-    private static $arrFieldOptional = array(
-        'language',
+        // Not mandatory, but needed for SHA-1 anyway
         'Operation',
+        // check before the payment: see chapter 6.2
+        'SHASign',
+        // The following  parameters are not mandatory, but we're being nice to customers
+        'language',
         // post payment redirection: see chapter 8.2
         'accepturl',
         'declineurl',
         'exceptionurl',
         'cancelurl',
+    );
 
+    private static $arrFieldOptional = array(
         // optional customer details, highly recommended for fraud prevention: see chapter 5.2
         'CN',
         'EMAIL',
@@ -204,8 +203,6 @@ class Yellowpay
         'PARAMPLUS',
         // post payment parameters: see chapter 8.3
         'PARAMVAR',
-        // optional operation field: see chapter 9.2
-        'operation',
         // optional extra login field: see chapter 9.3
         'USERID',
         // Alias details: see Alias Management documentation
@@ -466,7 +463,7 @@ DBG::log("Yellowpay::setFields(): Failed to add '$name' (value '$value')");
                 if (preg_match('/.*/', $value)) return $value;
                 break;
             case 'EMAIL':
-                if (isEmail($value)) return $value;
+                if (FWValidator::isEmail($value)) return $value;
                 break;
             case 'PMLIST':
                 if (preg_match('/.*/', $value)) return $value;
@@ -686,5 +683,3 @@ DBG::log("Yellowpay::concatenateFields($out): ERROR: Empty value for name $name!
     }
 
 }
-
-?>

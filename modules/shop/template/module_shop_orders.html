@@ -39,13 +39,13 @@ function changeOrderStatus(order_id, status, new_status)
         || new_status == 4
         || new_status == 5
         || new_status == 6) {
-      if (confirm('{SHOP_SEND_TEMPLATE_TO_CUSTOMER}?')) {
+      if (confirm('{SHOP_SEND_TEMPLATE_TO_CUSTOMER}')) {
         strURI += "&shopSendMail=1";
       }
     }
     window.location.replace(strURI);
   } else {
-    document.getElementById("orderstatusid["+order_id+"]").setAttribute("value", status);
+    document.getElementById("order_status["+order_id+"]").setAttribute("value", status);
   }
 }
 
