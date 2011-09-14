@@ -110,11 +110,11 @@ class JS
                 'jquery'
             ),
             'specialcode'  => "
-    Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-    Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-    Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
+Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
+Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
 jQuery(document).ready(function(){
-    Shadowbox.init();
+  Shadowbox.init();
 })"
         ),
         'jquery'     => array(
@@ -136,7 +136,19 @@ jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery')
         ),
-
+        // Required by HTML::getDatepicker() (modules/shop)!
+        // (Though other versions will do just as well)
+        'jqueryui'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js'
+            ),
+            'cssfiles'      => array(
+                'lib/javascript/jquery/ui/css/jquery-ui.css',
+            ),
+            'dependencies'  => array(
+                'jquery',
+            ),
+        ),
 /*
 Coming soon
 Caution: JS/ALL files are missing. Also, this should probably be loaded through js:cx now.
@@ -178,14 +190,13 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'dependencies' => array('jquery')
             //we insert the specialCode for the Contrexx-API later in getCode()
         ),
-
         'jstree' => array(
             'jsfiles' => array(
                 'lib/javascript/jquery/jstree/jquery.jstree.js',
                 'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
                 'lib/javascript/jquery/cookie/jquery.cookie.js',
             ),
-            'dependencies' => array('jquery')
+            'dependencies' => array('jquery'),
         ),
 
         // jQ UI input select enhancer. used in Content Manager 2
@@ -429,9 +440,10 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     public static function getCode()
     {
-        $jsfiles = array();
         $cssfiles = array();
-        $specialcode = array();
+// TODO: Unused
+//        $jsfiles = array();
+//        $specialcode = array();
         $retstring  = '';
         if (count(self::$active) > 0) {
             foreach (self::$active as $name) {
@@ -454,7 +466,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 if ($name == 'cx') {
                     $retstring .= self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
-                }                  
+                }
             }
         }
         $retstring .= self::makeJSFiles(self::$customJS);
@@ -619,5 +631,3 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     }
 
 }
-
-?>
