@@ -13,11 +13,6 @@
  * @subpackage  module_shop
  */
 
-///**
-// * Product class with database layer.
-// */
-//require_once ASCMS_MODULE_PATH.'/shop/lib/Product.class.php';
-
 /**
  * Discount
  *
@@ -77,23 +72,24 @@ class Discount
 
         $arrSql = Text::getSqlSnippets('`discount`.`id`',
             FRONTEND_LANG_ID, 'shop', array(
-                self::TEXT_NAME_GROUP_COUNT, self::TEXT_UNIT_GROUP_COUNT));;
+                'name' => self::TEXT_NAME_GROUP_COUNT,
+                'unit' => self::TEXT_UNIT_GROUP_COUNT));
         $query = "
             SELECT `discount`.`id`, ".$arrSql['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discountgroup_count_name` AS `discount`
                    ".$arrSql['join']."
-             ORDER BY `id` ASC";
+             ORDER BY `discount`.`id` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         self::$arrDiscountCountName = array();
         while (!$objResult->EOF) {
             $group_id = $objResult->fields['id'];
-            $strName = $objResult->fields[$arrSql['alias'][self::TEXT_NAME_GROUP_COUNT]];
+            $strName = $objResult->fields['name'];
             if (is_null($strName)) {
                 $strName = Text::getById($group_id, 'shop',
                     self::TEXT_NAME_GROUP_COUNT)->content();
             }
-            $strUnit = $objResult->fields[$arrSql['alias'][self::TEXT_UNIT_GROUP_COUNT]];
+            $strUnit = $objResult->fields['unit'];
             if (is_null($strUnit)) {
                 $strUnit = Text::getById($group_id, 'shop',
                     self::TEXT_UNIT_GROUP_COUNT)->content();
@@ -115,27 +111,25 @@ class Discount
         if (!$objResult) return self::errorHandler();
         self::$arrDiscountCountRate = array();
         while (!$objResult->EOF) {
-            $group_id = $objResult->fields['group_id'];
-            $count = $objResult->fields['count'];
-            $rate = $objResult->fields['rate'];
-            self::$arrDiscountCountRate[$group_id][$count] = $rate;
+            self::$arrDiscountCountRate[$objResult->fields['group_id']]
+                [$objResult->fields['count']] = $objResult->fields['rate'];
             $objResult->MoveNext();
         }
 
         $arrSqlName = Text::getSqlSnippets(
             '`discount`.`id`', FRONTEND_LANG_ID, 'shop',
-            self::TEXT_NAME_GROUP_CUSTOMER);
+            array('customer' => self::TEXT_NAME_GROUP_CUSTOMER));
         $query = "
             SELECT `discount`.`id`, ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_customer_group` AS `discount`
                    ".$arrSqlName['join']."
-             ORDER BY `id` ASC";
+             ORDER BY `discount`.`id` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         self::$arrCustomerGroup = array();
         while (!$objResult->EOF) {
             $group_id = $objResult->fields['id'];
-            $strName = $objResult->fields[$arrSqlName['alias'][self::TEXT_NAME_GROUP_CUSTOMER]];
+            $strName = $objResult->fields['customer'];
             if (is_null($strName)) {
                 $strName = Text::getById($group_id, 'shop',
                     self::TEXT_NAME_GROUP_CUSTOMER)->content();
@@ -148,18 +142,18 @@ class Discount
 
         $arrSqlName = Text::getSqlSnippets(
             '`discount`.`id`', FRONTEND_LANG_ID, 'shop',
-            self::TEXT_NAME_GROUP_ARTICLE);
+            array('article' => self::TEXT_NAME_GROUP_ARTICLE));
         $query = "
             SELECT `discount`.`id`, ".$arrSqlName['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_article_group` AS `discount`
                    ".$arrSqlName['join']."
-             ORDER BY `id` ASC";
+             ORDER BY `discount`.`id` ASC";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
         self::$arrArticleGroup = array();
         while (!$objResult->EOF) {
             $group_id = $objResult->fields['id'];
-            $strName = $objResult->fields[$arrSqlName['alias'][self::TEXT_NAME_GROUP_ARTICLE]];
+            $strName = $objResult->fields['article'];
             if (is_null($strName)) {
                 $strName = Text::getById($group_id, 'shop',
                     self::TEXT_NAME_GROUP_ARTICLE)->content();
@@ -170,7 +164,6 @@ class Discount
             $objResult->MoveNext();
         }
 //DBG::log("Discount::init(): Made \$arrArticleGroup: ".var_export(self::$arrArticleGroup, true));
-
         $query = "
             SELECT `customer_group_id`, `article_group_id`, `rate`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_discount_group`";
@@ -178,10 +171,9 @@ class Discount
         if (!$objResult) return self::errorHandler();
         self::$arrDiscountRateCustomer = array();
         while (!$objResult->EOF) {
-            $groupCustomerId = $objResult->fields['customer_group_id'];
-            $groupArticleId = $objResult->fields['article_group_id'];
-            $rate = $objResult->fields['rate'];
-            self::$arrDiscountRateCustomer[$groupCustomerId][$groupArticleId] = $rate;
+            self::$arrDiscountRateCustomer[$objResult->fields['customer_group_id']]
+                [$objResult->fields['article_group_id']] =
+                    $objResult->fields['rate'];
             $objResult->MoveNext();
         }
         return true;
@@ -470,6 +462,7 @@ class Discount
 //DBG::log("Discount::getMenuOptionsGroupArticle($selectedId): Entered");
         if (is_null(self::$arrArticleGroup)) self::init();
         if (is_null($arrArticleGroupName)) {
+            $arrArticleGroupName = array();
             foreach (self::$arrArticleGroup as $id => $arrArticleGroup) {
                 $arrArticleGroupName[$id] = $arrArticleGroup['name'];
 //DBG::log("Discount::getMenuOptionsGroupArticle($selectedId): Adding ID $id => {$arrArticleGroup['name']}");
@@ -950,5 +943,3 @@ class Discount
     }
 
 }
-
-?>

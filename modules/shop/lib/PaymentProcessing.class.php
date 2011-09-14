@@ -7,7 +7,6 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @version     2.1.0
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
- * @todo        Edit PHP DocBlocks!
  */
 
 /**
@@ -440,8 +439,7 @@ DBG::log($error);
         $yellowpayForm = Yellowpay::getForm(
             $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']
         );
-        if (   _PAYMENT_DEBUG
-            && count(Yellowpay::$arrError) > 0) {
+        if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
             $strError =
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
@@ -522,7 +520,6 @@ DBG::log($error);
 //                    }
                 }
                 return $transaction;
-
             case 'paypal':
                 return PayPal::ipnCheck();
 
@@ -581,6 +578,8 @@ DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification fa
                     $result = $_REQUEST['result'];
                 // Returns the order ID on success, false otherwise
                 return Dummy::commit($result);
+            default:
+                break;
         }
         // Anything else is wrong.
         return false;
@@ -644,5 +643,3 @@ DBG::log("PaymentProcessing::checkIn(): mobilesolutions: Payment verification fa
     }
 
 }
-
-?>

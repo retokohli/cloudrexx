@@ -102,7 +102,7 @@ class ShopCategories
      * @param   integer $maxlevel           The optional maximum nesting level.
      *                                      0 (zero) means all.
      *                                      Defaults to 0 (zero).
-     * @return  mixed                       The array of ShopCategories on
+     * @return  array                       The array of ShopCategories on
      *                                      success, false on failure.
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
@@ -215,15 +215,15 @@ die("ShopCategories::getTreeIndexArray(): Obsolete method called");
 //        self::$arrCategoryIndex = array();
         // Set up the trail from the root (0, zero) to the selected ShopCategory
         if (!self::buildTrailArray($selected_id)) {
-die("Failed to build trail");
-//            return false;
+//die("Failed to build trail");
+            return false;
         }
         if (!self::buildTreeArrayRecursive(
             $flagFull, $active, $flagVirtual,
             $selected_id, $parent_id, $maxlevel
         )) {
-die("Failed to build tree");
-//            return false;
+//die("Failed to build tree");
+            return false;
         }
         return true;
     }
@@ -461,6 +461,7 @@ die("Failed to build tree");
 //        if (!isset(self::$arrCategoryIndex[$id])) return false;
 //        $index = self::$arrCategoryIndex[$id];
 //        return self::$arrCategory[$index];
+// TODO: Check existence!
         return self::$arrCategory[$id];
     }
 
@@ -500,7 +501,8 @@ die("Failed to build tree");
         foreach ($arrChildCategoryId as $id) {
             $objCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
             // delete siblings and Products as well; delete images if desired.
-            if (!$objCategory->delete($flagDeleteImages)) return false;
+// TODO: Add deleteById() method
+            if (!$objShopCategory->delete($flagDeleteImages)) return false;
         }
         return true;
     }
@@ -756,6 +758,51 @@ die("Failed to build tree");
 
 
     /**
+     * Returns the HTML code for options of two separate menus of available
+     * and assigned ShopCategories.
+     *
+     * The <select> tag pair is not included, nor the option for the root
+     * ShopCategory.
+     * Includes all ShopCategories in one list or the other.
+     * @param   string  $assigned_category_ids   An optional comma separated
+     *                                  list of ShopCategory IDs assigned to a
+     *                                  Product
+     * @return  string                  The HTML code with all <option> tags,
+     *                                  or the empty string on failure.
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getAssignedShopCategoriesMenuoptions($assigned_category_ids=null)
+    {
+//DBG::log("Getting menuoptions for Category IDs $assigned_category_ids");
+        self::buildTreeArray(true, false, false, 0, 0, 0);
+        $strOptionsAssigned = '';
+        $strOptionsAvailable = '';
+        foreach (self::$arrCategory as $arrCategory) {
+            $level = $arrCategory['level'];
+            $id = $arrCategory['id'];
+            $name = $arrCategory['name'];
+            $option =
+                '<option value="'.$id.'">'.
+                str_repeat('...', $level).
+                contrexx_raw2xhtml($name).
+                "</option>\n";
+            if (preg_match('/(?:^|,)'.$id.'(?:,|$)/', $assigned_category_ids)) {
+//DBG::log("Assigned: $id");
+                $strOptionsAssigned .= $option;
+            } else {
+//DBG::log("Available: $id");
+                $strOptionsAvailable .= $option;
+            }
+        }
+        return array(
+            'assigned' => $strOptionsAssigned,
+            'available' => $strOptionsAvailable,
+        );
+    }
+
+
+    /**
      * Returns an array of IDs of children of this ShopCategory.
      *
      * Note that this includes virtual children of ShopCategories,
@@ -851,6 +898,37 @@ die("Failed to build tree");
         $arrCategory = self::getArrayById($shopCategoryId);
         if (!$arrCategory) return false;
         return $arrCategory['parent_id'];
+    }
+
+
+    /**
+     * Get the next ShopCategories ID after $shopCategoryId according to
+     * the sorting order.
+     * @param   integer $shopCategoryId     The ShopCategories ID
+     * @return  integer                     The next ShopCategories ID
+     * @static
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function getNextShopCategoriesId($shopCategoryId=0)
+    {
+        // Get the parent ShopCategories ID
+        $parentShopCategoryId =
+            ShopCategories::getParentCategoryId($shopCategoryId);
+        if (!$parentShopCategoryId) {
+            $parentShopCategoryId = 0;
+        }
+        // Get the IDs of all active children
+        $arrChildShopCategoriesId =
+            ShopCategories::getChildCategoryIdArray($parentShopCategoryId, true);
+        return
+            (isset($arrChildShopCategoriesId[
+                array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+             ])
+                ? $arrChildShopCategoriesId[
+                    array_search($parentShopCategoryId, $arrChildShopCategoriesId)+1
+                  ]
+                : $arrChildShopCategoriesId[0]
+            );
     }
 
 
@@ -1033,8 +1111,8 @@ die("Failed to build tree");
         // Deleting the old thumb beforehand is integrated into
         // _createThumbWhq().
         if (!$objImageManager->_createThumbWhq(
-            SHOP_CATEGORY_IMAGE_PATH,
-            SHOP_CATEGORY_IMAGE_WEB_PATH,
+            SHOP_CATEGORY_IMAGE_PATH.'/',
+            SHOP_CATEGORY_IMAGE_WEB_PATH.'/',
             $imageName,
             $maxWidth, $maxHeight, $quality
         )) {
@@ -1068,5 +1146,3 @@ die("Failed to build tree");
     }
 
 }
-
-?>

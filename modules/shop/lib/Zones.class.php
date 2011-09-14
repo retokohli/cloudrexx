@@ -80,9 +80,8 @@ class Zones
             if (!$objResult) return false;
             self::$arrRelation = array();
             while (!$objResult->EOF) {
-                $zone_id   = $objResult->fields['zone_id'];
-                $countryId = $objResult->fields['country_id'];
-                self::$arrRelation[$zone_id][] = $countryId;
+                self::$arrRelation[$objResult->fields['zone_id']][] =
+                    $objResult->fields['country_id'];
                 $objResult->MoveNext();
             }
         }
@@ -344,14 +343,17 @@ class Zones
         global $objDatabase;
 
         $query = "
-            SELECT `r`.`zone_id`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `r`,
-                   `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-             WHERE `z`.`active`=1
-               AND `z`.`id`=`r`.`zone_id`
-               AND `r`.`shipper_id`=$shipper_id";
+            SELECT `relation`.`zone_id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `relation`
+              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
+                ON `zone`.`id`=`relation`.`zone_id`
+             WHERE `zone`.`active`=1
+               AND `relation`.`shipper_id`=$shipper_id";
         $objResult = $objDatabase->Execute($query);
-        if (!$objResult || $objResult->EOF) {
+        if (!$objResult) {
+            return self::errorHandler();
+        }
+        if ($objResult->EOF) {
             return null;
         }
         return $objResult->fields['zone_id'];
@@ -414,7 +416,7 @@ class Zones
         }
         UpdateUtil::table($table_name, $table_structure, $table_index);
 
-        $table_name = DBPREFIX.'module_shop_rel_shipment';
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipment';
         $table_structure = array(
             'shipper_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'shipment_id'),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'zones_id'),
@@ -422,7 +424,7 @@ class Zones
         $table_index = array();
         UpdateUtil::table($table_name, $table_structure, $table_index);
 
-        $table_name = DBPREFIX.'module_shop_rel_countries';
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_countries';
         $table_structure = array(
             'country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'countries_id'),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
@@ -435,5 +437,3 @@ class Zones
     }
 
 }
-
-?>

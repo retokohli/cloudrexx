@@ -32,6 +32,8 @@ class CSVimport
         global $_ARRAYLANG;
 
         $this->arrName2Fieldname = array(
+// TODO: Optional.  Include it?
+//            $_ARRAYLANG['TXT_SHOP_ID'] => 'id',
             $_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] => 'product_id',
             $_ARRAYLANG['TXT_SHOP_IMAGE'] => 'picture',
             $_ARRAYLANG['TXT_PRODUCT_NAME'] => 'title',
@@ -177,7 +179,7 @@ class CSVimport
      * with the given name is inserted and its ID returned.
      * @static
      * @param   string      $catName    The ShopCategory name
-     * @param   mixed       $catParent  The optional parent ShopCategory ID,
+     * @param   integer     $catParent  The optional parent ShopCategory ID,
      *                                  or null to ignore it (default)
      * @return  integer                 The ID of the ShopCategory,
      *                                  or 0 on failure.
@@ -233,5 +235,3 @@ class CSVimport
     }
 
 }
-
-?>

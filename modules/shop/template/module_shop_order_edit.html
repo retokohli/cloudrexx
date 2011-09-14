@@ -1,7 +1,355 @@
 <!-- START shop_order_edit.html -->
-<script type="text/javascript">
-<!--
+<br />
+<form id="orderEdit" name="orderEdit" method="post"
+    action="index.php?cmd=shop&amp;act=editorder">
+  <table width="100%" border="0" class="adminlist" cellpadding="2" cellspacing="0">
+    <colgroup><col width="15%" /><col width="35%" /><col width="15%" /><col width="35%" /></colgroup>
+    <tr>
+      <th colspan="4">{TXT_ORDER}</th>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_ORDERNUMBER}</td>
+      <td nowrap="nowrap">{SHOP_ORDERID}
+        <input type="hidden" name="order_id" value="{SHOP_ORDERID}" />
+      </td>
+      <td nowrap="nowrap">{TXT_IP_ADDRESS}</td>
+      <td nowrap="nowrap">{SHOP_CUSTOMER_IP}</td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_ORDERDATE}</td>
+      <td nowrap="nowrap">{SHOP_DATE}&nbsp;</td>
+      <td nowrap="nowrap">{TXT_CLIENT_HOST}</td>
+      <td nowrap="nowrap">{SHOP_CUSTOMER_HOST}</td>
+    </tr>
+    <tr class="row1" style="vertical-align:top;">
+      <td nowrap="nowrap">{TXT_ORDERSTATUS}</td>
+      <td nowrap="nowrap">
+        {SHOP_ORDER_STATUS}
+        <div id="sendMailDiv" style="{SHOP_SEND_MAIL_STYLE}">
+          <br />
+          <input type="checkbox" name="sendMail" id="sendMail" value="1"
+              onclick="swapSendToStatus();" {SHOP_SEND_MAIL_STATUS} />
+          <label for="sendMail">
+            {SHOP_SEND_TEMPLATE_TO_CUSTOMER}
+          </label>
+        </div>
+      </td>
+      <td nowrap="nowrap">{TXT_BROWSER_VERSION}</td>
+      <td nowrap="nowrap">{SHOP_CUSTOMER_BROWSER}</td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_LAST_EDIT}</td>
+      <td nowrap="nowrap">
+        {SHOP_LAST_MODIFIED}
+        <input type="hidden" name="lastModified" value="{SHOP_LAST_MODIFIED_DATE}" />
+      </td>
+      <td nowrap="nowrap">{TXT_BROWSER_LANGUAGE}</td>
+      <td nowrap="nowrap">{SHOP_CUSTOMER_LANG}</td>
+    </tr>
+<!-- see below <tr class="row1"> <td nowrap="nowrap" width="15%">{TXT_ORDER_SUM}</td> <td nowrap="nowrap" width="85%" colspan="3">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</td> </tr> -->
+    <tr><td colspan="4">&nbsp;</td></tr>
+    <tr>
+      <th nowrap="nowrap" colspan="2">{TXT_BILLING_ADDRESS}</th>
+      <th nowrap="nowrap" colspan="2">{TXT_SHIPPING_ADDRESS}</th>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_COMPANY}</td>
+      <td nowrap="nowrap">
+        <a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">
+          {SHOP_COMPANY}
+        </a>
+        &nbsp;
+      </td>
+      <td nowrap="nowrap">{TXT_COMPANY}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="shipCompany" value="{SHOP_SHIP_COMPANY}" />
+      </td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
+      <td nowrap="nowrap">{SHOP_GENDER}&nbsp;</td>
+      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="shipPrefix" value="{SHOP_SHIP_GENDER}" />
+      </td>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_LAST_NAME}</td>
+      <td nowrap="nowrap">
+        <a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_LASTNAME}</a>&nbsp;</td>
+      <td nowrap="nowrap">{TXT_LAST_NAME}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="shipLastname" value="{SHOP_SHIP_LASTNAME}" /></td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
+      <td nowrap="nowrap">
+        <a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
+      <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="shipFirstname" value="{SHOP_SHIP_FIRSTNAME}" /></td>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_ADDRESS}</td>
+      <td nowrap="nowrap">{SHOP_ADDRESS}&nbsp;</td>
+      <td nowrap="nowrap">{TXT_ADDRESS}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="shipAddress" value="{SHOP_SHIP_ADDRESS}" /></td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
+      <td nowrap="nowrap">{SHOP_ZIP}&nbsp;{SHOP_CITY}</td>
+      <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="shipZip" size="8" maxlength="8" value="{SHOP_SHIP_ZIP}" />&nbsp;<input type="text" name="shipCity" value="{SHOP_SHIP_CITY}" /></td>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_COUNTRY}</td>
+      <td nowrap="nowrap">{SHOP_COUNTRY}&nbsp;</td>
+      <td nowrap="nowrap">{TXT_COUNTRY}</td>
+      <td nowrap="nowrap">{SHOP_SHIP_COUNTRY}</td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_PHONE}</td>
+      <td nowrap="nowrap">{SHOP_PHONE}&nbsp;</td>
+      <td nowrap="nowrap">{TXT_PHONE}</td>
+      <td nowrap="nowrap">
+        <input type="text" name="shipPhone" value="{SHOP_SHIP_PHONE}" /></td>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_FAX}</td>
+      <td nowrap="nowrap">{SHOP_FAX}&nbsp;</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">
+        {TXT_EMAIL}<input type="hidden" name="mailTo" value="{SHOP_EMAIL}" /></td>
+      <td nowrap="nowrap">
+        <a href="index.php?cmd=shop&amp;act=settings&amp;tpl=mail&amp;strTab=mailSend&amp;mailTo={SHOP_EMAIL}">{SHOP_EMAIL}</a>&nbsp;</td>
+      <td nowrap="nowrap">
+        {TXT_SHIPPING_METHOD}</td>
+      <td nowrap="nowrap">
+        {SHOP_SHIPPING_TYP_MENU}</td>
+    </tr>
+  </table>
+  <br />
+  <table border="0" width="100%" cellspacing="0" cellpadding="2" class="adminlist">
+    <tr>
+      <th colspan="2">{TXT_PAYMENT_INFORMATIONS}</th>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap" width="15%">{TXT_PAYMENT_TYPE}</td>
+    <td nowrap='nowrap'>{SHOP_PAYMENTTYPE}&nbsp;({SHOP_PAYMENT_HANDLER})</td>
+    </tr>
 
+<!-- BEGIN creditCard -->
+<!-- Obsolete! -->
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_CREDIT_CARD_OWNER}</td>
+      <td nowrap="nowrap">{SHOP_CCNAME}&nbsp;</td>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_CARD_NUMBER}</td>
+      <td nowrap="nowrap">{SHOP_CCNUMBER}&nbsp;</td>
+    </tr>
+    <tr class="row2">
+      <td nowrap="nowrap">{TXT_CVC_CODE}</td>
+      <td nowrap="nowrap">{SHOP_CVC_CODE}&nbsp;</td>
+    </tr>
+    <tr class="row1">
+      <td nowrap="nowrap">{TXT_EXPIRY_DATE}</td>
+      <td nowrap="nowrap">{SHOP_CCDATE}&nbsp;</td>
+    </tr>
+<!-- END creditCard -->
+
+<!-- BEGIN lsv -->
+    <tr class="row2">
+    <td nowrap='nowrap'>{TXT_ACCOUNT_HOLDER}</td>
+    <td nowrap='nowrap'>{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
+    </tr>
+    <tr class="row1">
+    <td nowrap='nowrap'>{TXT_ACCOUNT_BANK}</td>
+    <td nowrap='nowrap'>{SHOP_ACCOUNT_BANK}&nbsp;</td>
+    </tr>
+    <tr class="row2">
+    <td nowrap='nowrap'>{TXT_ACCOUNT_BLZ}</td>
+    <td nowrap='nowrap'>{SHOP_ACCOUNT_BLZ}&nbsp;</td>
+    </tr>
+<!-- END lsv -->
+
+  </table>
+  <br />
+  <table border="0" width="100%" class="adminlist" cellspacing="0" cellpadding="2">
+    <tr>
+      <th colspan="6">{TXT_BILL}</th>
+    </tr>
+    <tr class="row1">
+      <td width="10%" nowrap="nowrap"><b>{TXT_NUMBER}</b></td>
+      <td width="10%" nowrap="nowrap"><b>{TXT_SHOP_PRODUCT}</b></td>
+      <!--td width="40%" nowrap="nowrap"><b>{TXT_PRODUCT_NAME}</b></td-->
+      <td width="10%" nowrap='nowrap'><b>{TXT_WEIGHT}</b></td>
+      <td width="10%" nowrap="nowrap"><b>{TXT_PRODUCT_PRICE}</b></td>
+      <td width="10%" nowrap="nowrap"><b>{TXT_TAX_RATE}</b></td>
+      <td width="10%" nowrap="nowrap"><b>{TXT_SUM}</b></td>
+    </tr>
+<!-- BEGIN orderdetailsRow -->
+    <!--tr id="{SHOP_P_ID}" class="{SHOP_ROWCLASS}"-->
+    <tr class="{SHOP_ROWCLASS}">
+      <td nowrap="nowrap">
+        <input type="text" id="productQuantity-{SHOP_P_ID}"
+            name="productQuantity[{SHOP_P_ID}]" value="{SHOP_QUANTITY}"
+            size="5" maxlength="5" onchange="calcPrice({SHOP_P_ID});" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="hidden" name="product_id_old[{SHOP_P_ID}]" value="{SHOP_P_ID}" />
+        <input type="hidden" name="product_id[{SHOP_P_ID}]" id="product_id-{SHOP_P_ID}" value="{SHOP_P_ID}" />
+        <select id="product_list-{SHOP_P_ID}" name="product_list[{SHOP_P_ID}]" size="1" onchange="changeProduct({SHOP_P_ID},this.value);">
+          {SHOP_PRODUCT_IDS_MENU}
+        </select>
+      </td>
+      <!--td nowrap="nowrap"><div style="text-align:left;">
+        <input type="text" size="50" id="product_name-{SHOP_P_ID}"
+            name="product_name[{SHOP_P_ID}]" value="{SHOP_PRODUCT_NAME}" />
+      </div></td-->
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="productWeight-{SHOP_P_ID}"
+            name="productWeight[{SHOP_P_ID}]" value="{SHOP_PRODUCT_WEIGHT}"
+            onchange="calcPrice({SHOP_P_ID});" />
+      </td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="productPrice-{SHOP_P_ID}"
+            name="productPrice[{SHOP_P_ID}]" value="{SHOP_PRODUCT_PRICE}"
+            onchange="calcPrice({SHOP_P_ID});" />
+        &nbsp;{SHOP_CURRENCY}
+      </td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text"
+            id="productTaxPercent-{SHOP_P_ID}"
+            name="productTaxPercent[{SHOP_P_ID}]"
+            value="{SHOP_PRODUCT_TAX_RATE}"
+            onchange="calcPrice({SHOP_P_ID});" />
+        &nbsp;%
+      </td>
+      <td nowrap="nowrap">
+        <input readonly="readonly" class="inputCurrency" type="text"
+            id="productSum-{SHOP_P_ID}" name="productSum[{SHOP_P_ID}]"
+            value="{SHOP_PRODUCT_SUM}" />
+        &nbsp;{SHOP_CURRENCY}
+      </td>
+    </tr>
+<!-- END orderdetailsRow -->
+    <!--tr id="0" class="{SHOP_ROWCLASS_NEW}"-->
+    <tr class="{SHOP_ROWCLASS_NEW}">
+      <td nowrap="nowrap">
+        <input type="text" id="productQuantity-0" name="productQuantity[0]"
+            value="0" size="5" maxlength="5" onchange="calcPrice(0);" />
+      </td>
+      <td nowrap="nowrap">
+        <input type="hidden" id="product_id-0" name="product_id[0]"
+            value="0" />
+        <select id="product_list-0" name="product_list[0]" size="1"
+            onchange="changeProduct(0,this.value);">
+          {SHOP_PRODUCT_IDS_MENU_NEW}
+        </select>
+      </td>
+      <!--td nowrap="nowrap"><div style="text-align:left;">
+        <input type="text" size="50" id="product_name-0" name="product_name[0]" value="" />
+      </div></td-->
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="productWeight-0"
+            name="productWeight[0]" value="0 g" onchange="calcPrice(0);" />
+      </td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="productPrice-0"
+            name="productPrice[0]" onchange="calcPrice(0);"
+            value="0.00" />
+        &nbsp;{SHOP_CURRENCY}
+      </td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="productTaxPercent-0"
+            name="productTaxPercent[0]" onchange="calcPrice(0);"
+            value="0.00" />
+        &nbsp;%
+      </td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="productSum-0"
+            name="productSum[0]" value="0.00" onchange="calcPrice(0);" />
+        &nbsp;{SHOP_CURRENCY}
+      </td>
+    </tr>
+<!-- BEGIN netPrice -->
+    <tr class="row1">
+      <td colspan="4">&nbsp;</td>
+      <td nowrap="nowrap" style="text-align:right;">
+        <b>{TXT_NET_PRICE}</b>&nbsp;
+      </td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="netPrice"
+            name="netPrice" value="{SHOP_NET_PRICE}"
+            onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
+      </td>
+    </tr>
+<!-- END netPrice -->
+<!-- BEGIN taxPrice -->
+    <tr>
+      <td colspan="4">&nbsp;</td>
+      <td nowrap="nowrap"><div style="text-align:right;"><b>{SHOP_PART_TAX_PROCENTUAL}</b>&nbsp;</div></td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="taxPrice"
+            name="taxPrice" value="{SHOP_TAX_PRICE}"
+            onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
+      </td>
+    </tr>
+<!-- END taxPrice -->
+    <tr><td colspan="6">&nbsp;</td></tr>
+    <tr>
+      <td colspan="1">&nbsp;</td>
+      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL_WEIGHT}</b>&nbsp;</div></td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="totalWeight"
+            name="totalWeight" value="{SHOP_TOTAL_WEIGHT}"
+            onchange="calcPrice(0);" />
+      </td>
+      <td colspan="1">&nbsp;</td>
+      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_SHIPPING_PRICE}</b>&nbsp;</div></td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="shippingPrice"
+            name="shippingPrice" value="{SHOP_SHIPPING_PRICE}"
+            onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4">&nbsp;</td>
+      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_PAYMENT_COSTS}</b>&nbsp;</div></td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="paymentPrice"
+            name="paymentPrice" value="{SHOP_PAYMENT_PRICE}"
+            onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}</td>
+    </tr>
+    <tr>
+      <td colspan="4">&nbsp;</td>
+      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL}</b>&nbsp;</div></td>
+      <td nowrap="nowrap">
+        <input class="inputCurrency" type="text" id="currencyOrderSum"
+            name="currencyOrderSum" value="{SHOP_ORDER_SUM}"
+            onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
+      </td>
+    </tr>
+  </table>
+  <br />
+  <table border="0" width="100%" cellpadding="2" cellspacing="0" class="adminlist">
+    <tr>
+      <th>{TXT_CUSTOMER_REMARKS}</th>
+    </tr>
+    <tr>
+      <td>{SHOP_CUSTOMER_NOTE}&nbsp;</td>
+    </tr>
+  </table>
+  <br />
+  <input type="submit" name="saveOrderChanges" value="{TXT_STORE}" />
+</form>
+<script type="text/javascript">//<![CDATA[
 // Array with information about all products
 {SHOP_JS_ARR_PRODUCT}
 
@@ -21,31 +369,31 @@
 // taxes only included if applicable
 total_items_price = 0;
 
-// get an array of all product ids from the order
+// get an array of all product IDs from the order
 // index => array ('id' => order_item_id, 'value' => product_id)
 function getArrProduct()
 {
   var arrProductId = new Array();
   var indexId = 0;
-  // loop through input tags
-  for (var i = 0; i < document.getElementsByTagName("input").length; ++i) {
+  // Loop through all input tags
+  var arrElements = document.getElementsByTagName("input");
+  for (var i = 0; i < arrElements.length; i++) {
+    var element = arrElements[i];
     // input tags' id attribute
-    var elementId = document.getElementsByTagName("input")[i].getAttribute("id");
-    if (elementId) {
-      // only go on with "shopProductId[]" IDs
-      if (elementId.substr(0, 14) == "shopProductId-") {
-        // the containing row has the product ID
-        if (document.getElementById(elementId).value != "0") {
-          arrProductId[indexId] = new Array();
-          // Order item ID
-          var orderItemId = elementId.substr(14, elementId.length);
-          arrProductId[indexId]['id'] = orderItemId;
-          // Product ID
-          arrProductId[indexId]['value'] = document.getElementById("shopProductList-"+orderItemId).value;
-          ++indexId;
-        }
-      }
-    }
+    var elementId = element.getAttribute("id");
+    if (!elementId) continue;
+    var match = elementId.match(/product_id-(\d+)/);
+    if (!match) continue;
+    var orderItemId = Number(match[1]);
+    // the containing row has the product ID
+    if (element.value == "0") continue;
+    arrProductId[indexId] = new Array();
+    // Order item ID
+    arrProductId[indexId]['id'] = orderItemId;
+    // Product ID
+    arrProductId[indexId]['value'] =
+      document.getElementById("product_list-"+orderItemId).value;
+    ++indexId;
   }
   return arrProductId;
 }
@@ -57,69 +405,67 @@ function changeProduct(orderItemId, newProductId)
 {
   // list of product items in the order
   var arrProductId = getArrProduct();
-  var anzorderItemId = 0;
   // try to find the new product id in the order array.
   // if newProductId is zero, an item is about to be removed.
   if (newProductId != 0) {
     for (i = 0; i < arrProductId.length; ++i) {
-      if (newProductId == arrProductId[i]['value'] && orderItemId != arrProductId[i]['id']) {
-        ++anzorderItemId;
+      if (newProductId == arrProductId[i]['value']
+       && orderItemId != arrProductId[i]['id']) {
+        alert("{TXT_PRODUCT_ALREADY_PRESENT}");
+        document.getElementById("product_list-"+orderItemId).selectedIndex =
+          document.getElementById("product_id-"+orderItemId).value;
+        return;
       }
     }
   }
-  // check if the product is already present in the order list
-  if (anzorderItemId == 0) {
+  if (newProductId == "0") {
     // the new product ID is zero, so an item is to be deleted
-    if (newProductId == "0") {
-// TODO: What's this condition good for?
-      if (orderItemId == 0) {
-        document.getElementById("shopProductId-"+orderItemId).value = "0";
-      }
-      document.getElementById("shopProductQuantity-"+orderItemId).value   = 0;
-      document.getElementById("shopProductName-"+orderItemId).value       = "";
-      document.getElementById("shopProductPrice-"+orderItemId).value      = '0.00';
-      document.getElementById("shopProductTaxPercent-"+orderItemId).value = '0.00';
-      document.getElementById("shopProductWeight-"+orderItemId).value     = '0 g';
-    } else {
-      // An existing items' id has been changed to another product id.
-      // There has to be at least one
-      var quantity = document.getElementById("shopProductQuantity-"+orderItemId).value;
-      if (quantity < 1) {
-        quantity = 1;
-        document.getElementById("shopProductQuantity-"+orderItemId).value = quantity;
-      }
-      document.getElementById("shopProductId-"+orderItemId).value         = newProductId;
-      document.getElementById("shopProductName-"+orderItemId).value       = arrProducts[newProductId]['title'];
-      document.getElementById("shopProductTaxPercent-"+orderItemId).value = arrProducts[newProductId]['percent'];
-      document.getElementById("shopProductWeight-"+orderItemId).value     = weightToString(
-        getWeightGrams(arrProducts[newProductId]['weight'])
-        * Number(document.getElementById("shopProductQuantity-"+orderItemId).value)
-      );
-// Deduct count type discount -- unused
-//      price = arrProducts[newProductId]['price'];
-//      discountGroupId = arrProducts[newProductId]['discount_group_id'];
-//      if (   discountGroupId > 0
-//          && arrDiscountCount[discountGroupId].length > 0) {
-//        discountRate = 0;
-//        for (count in arrDiscountCount[discountGroupId]) {
-//          if (count < quantity) continue;
-//          discountRate = arrDiscountCount[discountGroupId][count];
-//          break;
-//        }
-//        price -= (price * discountRate * 0.01).toFixed(2);
-//      }
-//      document.getElementById("shopProductPrice-"+orderItemId).value = price;
+// TODO: What exactly does this condition do?
+    if (orderItemId == 0) {
+      document.getElementById("product_id-"+orderItemId).value = "0";
     }
-    // Store the current product id
-    document.getElementById("shopProductId-"+orderItemId).value =
-    document.getElementById("shopProductList-"+orderItemId).selectedIndex;
-    // Calculate the product price, row sum and the total order sum
-    calcPrice(orderItemId);
+    document.getElementById("productQuantity-"+orderItemId).value = 0;
+//    document.getElementById("product_name-"+orderItemId).value = "";
+    document.getElementById("productPrice-"+orderItemId).value = '0.00';
+    document.getElementById("productTaxPercent-"+orderItemId).value = '0.00';
+    document.getElementById("productWeight-"+orderItemId).value = '0 g';
   } else {
-    alert("{TXT_PRODUCT_ALREADY_PRESENT}");
-    document.getElementById("shopProductList-"+orderItemId).selectedIndex =
-      document.getElementById("shopProductId-"+orderItemId).value;
+    // An existing items' id has been changed to another product id.
+    // There has to be at least one
+    var quantity = document.getElementById("productQuantity-"+orderItemId).value;
+    if (quantity < 1) {
+      quantity = 1;
+      document.getElementById("productQuantity-"+orderItemId).value = quantity;
+    }
+    document.getElementById("product_id-"+orderItemId).value = newProductId;
+//    document.getElementById("product_name-"+orderItemId).value = arrProducts[newProductId]['title'];
+    document.getElementById("productTaxPercent-"+orderItemId).value =
+      arrProducts[newProductId]['percent'].toFixed(2);
+    document.getElementById("productWeight-"+orderItemId).value =
+      weightToString(
+          getWeightGrams(arrProducts[newProductId]['weight'])
+        * Number(document.getElementById("productQuantity-"+orderItemId).value)
+    );
+// TODO: Deduct count type discount
+    var prices = arrProducts[newProductId]['price'];
+    var price = null;
+    for (var count = 0; count < prices.length; count += 2) {
+      var quantity_min = prices[count];
+      if (quantity >= quantity_min) {
+        price = prices[count+1];
+//alert("TOOK\nCount: "+count+", min. Quantity: "+quantity_min+" (price: "+(prices[count+1])+")");
+        break;
+      }
+    }
+//alert("Price: "+price);
+    document.getElementById("productPrice-"+orderItemId).value =
+      price.toFixed(2);
   }
+  // Store the current product id
+  document.getElementById("product_id-"+orderItemId).value =
+    document.getElementById("product_list-"+orderItemId).selectedIndex;
+  // Calculate the product price, row sum and the total order sum
+  calcPrice(orderItemId);
 }
 
 // weight settings
@@ -132,17 +478,26 @@ facts = new Array(1, 1000, 1000000, 1);
 function getWeightGrams(strWeight)
 {
   // match positive float value
-  var number = strWeight.match(/^[\d+\.]+/);
-  var unit = 0; // default is grams
+  var match = /(\d*\.?\d*)/.exec(strWeight);
+  if (!match) {
+//alert("getWeightGrams("+strWeight+"): No match");
+    return 0;
+  }
+  var number = Number(match[1]);
+//alert("getWeightGrams("+strWeight+"): number "+number);
+  var factor = 1; // default is grams
   for (var unit_index = 0; unit_index < facts.length; ++unit_index) {
-    // try to match one of the units
-    var regex = new RegExp('[\\s\\d]'+units[unit_index]);
+    // Match one of the units after a decimal point, digit, or whitespace
+    var regex = new RegExp("[\\.\\d\\s]"+units[unit_index]);
     if (regex.test(strWeight)) {
-      unit = unit_index;
+      factor = facts[unit_index];
+//alert("getWeightGrams("+strWeight+"): factor "+factor);
       break;
     }
   }
-  return number * facts[unit];
+  var weight = number * factor;
+//alert("getWeightGrams("+strWeight+"): Out "+weight);
+  return weight;
 }
 
 // convert weight in grams (integer) to bigger unit, if appropriate (string)
@@ -154,8 +509,11 @@ function weightToString(intWeight)
     ++unit_index;
     intWeight /= 1000;
   }
+  if (unit_index == 0) return parseInt(intWeight)+" "+units[0];
   // round weight to three significant digits, add unit
-  return intWeight.toPrecision(3)+' '+units[unit_index];
+  var weight = intWeight.toPrecision(3)+' '+units[unit_index];
+//alert("weightToString("+intWeight+"): "+weight);
+  return weight;
 }
 
 // update the total order weight
@@ -164,24 +522,35 @@ function updateWeight()
   // total weight
   var totalWeight = 0;
   // loop through input tags, search for all product weights
-  for (var element_index = 0; element_index < document.getElementsByTagName("input").length; ++element_index) {
+  var elements = document.getElementsByTagName("input");
+  for (var i = 0; i < elements.length; ++i) {
     // input tags' id attribute
-    var elementId = document.getElementsByTagName("input")[element_index].getAttribute("id");
-    if (elementId && elementId.substr(0, 18) == "shopProductWeight-") {
-      var orderItemId = elementId.substr(18)
-      // pick number of items
-      var quantity = document.getElementById("shopProductQuantity-"+orderItemId).value
-      // pick weight string from order item
-      var weight = document.getElementsByTagName("input")[element_index].value.toLowerCase();
-      // convert to grams (integer) and multiply
-      var grams = getWeightGrams(weight) * quantity;
-      // sum of products' weights
-      totalWeight += grams;
+    var element = elements[i];
+    var elementId = element.getAttribute("id");
+    if (!elementId) continue;
+    var match = /productWeight-(\d+)/.exec(elementId);
+    if (!match) {
+//alert("updateWeight(): No match: "+elementId);
+      continue;
     }
+//alert("updateWeight(): Match: "+elementId);
+    var orderItemId = match[1];
+//alert("updateWeight(): Item "+orderItemId);
+    // pick number of items
+    var quantity = document.getElementById("productQuantity-"+orderItemId).value
+    // pick weight string from order item
+    var weight = element.value.toLowerCase();
+    // convert to grams (integer)
+    var grams = getWeightGrams(weight);
+    // Write formatted weight
+    element.value = weightToString(grams);
+    // sum of all items' weights
+    totalWeight += grams * quantity;
+//alert("updateWeight(): Item "+orderItemId+", quantity: "+quantity+", weight: "+weight+", grams: "+grams+", totalWeight: "+totalWeight);
   }
   // convert total weight to appropriate unit
   totalWeight = weightToString(totalWeight);
-  document.forms.shopOrderEdit.shopTotalWeight.value = totalWeight;
+  document.getElementById("totalWeight").value = totalWeight;
 }
 
 // set the price of the selected shipment method
@@ -190,17 +559,17 @@ function updateWeight()
 function updateShipment()
 {
   // who's shipping it?
-  var sid = document.forms.shopOrderEdit.shipperId.value;
+  var sid = document.getElementById("shipperId").value;
   // Bail out if sid is not valid -- that means that no shipment is
   // selected, and possibly not needed anyway.
   if (sid == 0) {
-    document.forms.shopOrderEdit.shopShippingPrice.value = 0;
+    document.getElementById("shippingPrice").value = 0;
     return;
   }
   // copy the price from the global variable
-  var price = Number(document.forms.shopOrderEdit.shopNetPrice.value);
+  var price = Number(document.getElementById("netPrice").value);
   // get the total weight
-  var weight = getWeightGrams(document.forms.shopOrderEdit.shopTotalWeight.value);
+  var weight = getWeightGrams(document.getElementById("totalWeight").value);
   // check shipments available by this shipper
   var shipments = arrShipments[sid];
   // find the best match for the current order weight and shipment cost.
@@ -244,9 +613,9 @@ function updateShipment()
   if (found != -1) {
     // after checking all the shipments, we found the lowest cost for the
     // given weight and order price. - update the shipping cost
-    document.forms.shopOrderEdit.shopShippingPrice.value = lowest_cost; //.toFixed(2);
+    document.getElementById("shippingPrice").value =
+      Number(lowest_cost).toFixed(2);
   } else {
-    // alert the user
     alert("{TXT_WARNING_SHIPPER_WEIGHT}");
   }
 }
@@ -254,7 +623,8 @@ function updateShipment()
 // set the price of the selected payment method
 function updatePayment(paymentId)
 {
-  document.getElementById("shopPaymentPrice").value = arrPayment[paymentId];
+  document.getElementById("paymentPrice").value =
+    Number(arrPayment[paymentId]).toFixed(2);
   calcPrice(0);
 }
 
@@ -263,49 +633,43 @@ function updatePayment(paymentId)
 function calcPrice(orderItemId)
 {
   var arrProductId = getArrProduct();
-  // Recalculate the row of the selected product;
-  // defaults to the new product row
-
-// Determine price according to the quantity.
-// By default, a product is removed.
+  // Recalculate the row of the selected product:
+  // Determine the row price according to the quantity
   var price = 0;
   var quantity = 0;
-  if (orderItemId > 0) {
-    var newProductId = document.getElementById("shopProductList-"+orderItemId).value;
-    if (newProductId > 0) {
-      // Note that the price array is ordered descending, from highest to lowest count.
-      var arrPrice = arrProducts[newProductId]['price'];
-      var quantity = document.getElementById("shopProductQuantity-"+orderItemId).value;
-      for (var count in arrPrice) {
-        // At least so many products to get this discount rate
-        if (count <= quantity) {
-          price = arrPrice[count];
-          break;
-        }
-      }
-    }
+  var newProductId =
+    document.getElementById("product_list-"+orderItemId).value;
+  if (newProductId > 0) {
+    var price =
+      document.getElementById("productPrice-"+orderItemId).value;
+    var quantity =
+      document.getElementById("productQuantity-"+orderItemId).value;
+//alert("Quantity: "+quantity+", Price: "+price);
   }
-  document.getElementById("shopProductPrice-"+orderItemId).value = Number(price).toFixed(2);
-  document.getElementById("shopProductSum-"+orderItemId).value = (quantity * price).toFixed(2);
-
-  // totals
+  document.getElementById("productPrice-"+orderItemId).value =
+    Number(price).toFixed(2);
+  document.getElementById("productSum-"+orderItemId).value =
+    (quantity * price).toFixed(2);
+  // Totals
   var totalVat = 0;
   var totalSum = 0;
   for (var i = 0; i < arrProductId.length; ++i) {
     // update the total VAT amount
-    totalVat += Number(document.getElementById("shopProductTaxPercent-"+arrProductId[i]['id']).value)
-          * Number(document.getElementById("shopProductSum-"+arrProductId[i]['id']).value) / 100;
+    totalVat +=
+        Number(document.getElementById(
+          "productTaxPercent-"+arrProductId[i]['id']).value)
+      * Number(document.getElementById(
+          "productSum-"+arrProductId[i]['id']).value) / 100;
     // update the total order value
-    totalSum += Number(document.getElementById("shopProductSum-"+arrProductId[i]['id']).value);
+    totalSum += Number(document.getElementById(
+      "productSum-"+arrProductId[i]['id']).value);
   }
-
   // store totalSum as net total before adding VAT
-  document.forms.shopOrderEdit.shopNetPrice.value = (Math.round(totalSum*100)/100).toFixed(2);
-
+  document.getElementById("netPrice").value =
+    (Math.round(totalSum*100)/100).toFixed(2);
   updateWeight();
   // if the total weight changes, so may the shipping conditions
   updateShipment();
-
   // round prices to cents
   totalVat = Math.round(totalVat*100)/100;
   if (vat_included == 0) {
@@ -313,290 +677,21 @@ function calcPrice(orderItemId)
   }
   // add shipping and payment cost
   totalSum +=
-      Number(document.getElementById("shopShippingPrice").value)
-    + Number(document.getElementById("shopPaymentPrice").value);
-
+      Number(document.getElementById("shippingPrice").value)
+    + Number(document.getElementById("paymentPrice").value);
   totalSum = Math.round(totalSum*100)/100;
-  document.forms.shopOrderEdit.shopCurrencyOrderSum.value = totalSum.toFixed(2);
-  document.forms.shopOrderEdit.shopTaxPrice.value = totalVat.toFixed(2);
+  document.getElementById("currencyOrderSum").value = totalSum.toFixed(2);
+  document.getElementById("taxPrice").value = totalVat.toFixed(2);
 }
 
-function swapSendToStatus(order_id)
+function swapSendToStatus()
 {
-  if (order_id == 4) {
-    document.getElementById("shopSendMailDiv").style.display = 'inline';
+  if (document.getElementById("order_status").selectedIndex == 4) {
+    document.getElementById("sendMailDiv").style.display = 'inline';
   } else {
-    document.getElementById("shopSendMailDiv").style.display = 'none';
+    document.getElementById("sendMailDiv").style.display = 'none';
   }
 }
-// -->
-</script>
-<br />
-<form id="shopOrderEdit" name="shopOrderEdit" method="post" action="index.php?cmd=shop&amp;act=editorder">
-  <table width="100%" border="0" class="adminlist" cellpadding="2" cellspacing="0">
-    <colgroup><col width="15%" /><col width="35%" /><col width="15%" /><col width="35%" /></colgroup>
-    <tr>
-      <th colspan="4">{TXT_ORDER}</th>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_ORDERNUMBER}</td>
-      <td nowrap="nowrap">{SHOP_ORDERID}<input type="hidden" name="order_id" value="{SHOP_ORDERID}" /></td>
-      <td nowrap="nowrap">{TXT_IP_ADDRESS}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_IP}</td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_ORDERDATE}</td>
-      <td nowrap="nowrap">{SHOP_DATE}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_CLIENT_HOST}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_HOST}</td>
-    </tr>
-    <tr class="row1" style="vertical-align:top;">
-      <td nowrap="nowrap">{TXT_ORDERSTATUS}</td>
-      <td nowrap="nowrap">
-        {SHOP_ORDER_STATUS}
-        <div id="shopSendMailDiv" style="{SHOP_SEND_MAIL_STYLE}">
-          {SHOP_SEND_TEMPLATE_TO_CUSTOMER}&nbsp;
-          <input type="checkbox" name="shopSendMail" value="1" {SHOP_SEND_MAIL_STATUS}/>
-        </div>
-      </td>
-      <td nowrap="nowrap">{TXT_BROWSER_VERSION}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_BROWSER}</td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_LAST_EDIT}</td>
-      <td nowrap="nowrap">{SHOP_LAST_MODIFIED}<input type="hidden" name="shopLastModified" value="{SHOP_LAST_MODIFIED_DATE}" /></td>
-      <td nowrap="nowrap">{TXT_BROWSER_LANGUAGE}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_LANG}</td>
-    </tr>
-<!-- see below <tr class="row1"> <td nowrap="nowrap" width="15%">{TXT_ORDER_SUM}</td> <td nowrap="nowrap" width="85%" colspan="3">{SHOP_ORDER_SUM}&nbsp;{SHOP_DEFAULT_CURRENCY}</td> </tr> -->
-    <tr><td></td></tr>
-    <tr>
-      <th nowrap colspan="2">{TXT_BILLING_ADDRESS}</th>
-      <th nowrap colspan="2">{TXT_SHIPPING_ADDRESS}</th>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_COMPANY}</td>
-      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_COMPANY}</a>&nbsp;</td>
-      <td nowrap="nowrap">{TXT_COMPANY}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipCompany" value="{SHOP_SHIP_COMPANY}" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
-      <td nowrap="nowrap">{SHOP_GENDER}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipPrefix" value="{SHOP_SHIP_TITLE}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_LAST_NAME}</td>
-      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_LASTNAME}</a>&nbsp;</td>
-      <td nowrap="nowrap">{TXT_LAST_NAME}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipLastname" value="{SHOP_SHIP_LASTNAME}" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
-      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMER_ID}">{SHOP_FIRSTNAME}</a>&nbsp;</td>
-      <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipFirstname" value="{SHOP_SHIP_FIRSTNAME}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_ADDRESS}</td>
-      <td nowrap="nowrap">{SHOP_ADDRESS}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_ADDRESS}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipAddress" value="{SHOP_SHIP_ADDRESS}" /></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
-      <td nowrap="nowrap">{SHOP_ZIP}&nbsp;{SHOP_CITY}</td>
-      <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipZip" size="8" maxlength="8" value="{SHOP_SHIP_ZIP}" />&nbsp;<input type="text" name="shopShipCity" value="{SHOP_SHIP_CITY}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_COUNTRY}</td>
-      <td nowrap="nowrap">{SHOP_COUNTRY}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_COUNTRY}</td>
-      <td nowrap="nowrap">{SHOP_SHIP_COUNTRY}</td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_PHONE}</td>
-      <td nowrap="nowrap">{SHOP_PHONE}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_PHONE}</td>
-      <td nowrap="nowrap"><input type="text" name="shopShipPhone" value="{SHOP_SHIP_PHONE}" /></td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_FAX}</td>
-      <td nowrap="nowrap">{SHOP_FAX}&nbsp;</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_EMAIL}<input type="hidden" name="shopMailTo" value="{SHOP_EMAIL}" /></td>
-      <td nowrap="nowrap"><a href="index.php?cmd=shop&amp;act=settings&amp;tpl=mail&amp;strTab=shopMailSend&amp;shopMailTo={SHOP_EMAIL}">{SHOP_EMAIL}</a>&nbsp;</td>
-      <td nowrap="nowrap">{TXT_SHIPPING_METHOD}</td>
-      <td nowrap="nowrap">{SHOP_SHIPPING_TYP_MENU}</td>
-    </tr>
-  </table>
-  <br />
-  <table border="0" width="100%" cellspacing="0" cellpadding="2" class="adminlist">
-    <tr>
-      <th colspan="2">{TXT_PAYMENT_INFORMATIONS}</th>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap" width="15%">{TXT_PAYMENT_TYPE}</td>
-    <td nowrap='nowrap'>{SHOP_PAYMENTTYPE}&nbsp;({SHOP_PAYMENT_HANDLER})</td>
-    </tr>
-
-<!-- BEGIN creditCard -->
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_CREDIT_CARD_OWNER}</td>
-      <td nowrap="nowrap">{SHOP_CCNAME}&nbsp;</td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_CARD_NUMBER}</td>
-      <td nowrap="nowrap">{SHOP_CCNUMBER}&nbsp;</td>
-    </tr>
-    <tr class="row2">
-      <td nowrap="nowrap">{TXT_CVC_CODE}</td>
-      <td nowrap="nowrap">{SHOP_CVC_CODE}&nbsp;</td>
-    </tr>
-    <tr class="row1">
-      <td nowrap="nowrap">{TXT_EXPIRY_DATE}</td>
-      <td nowrap="nowrap">{SHOP_CCDATE}&nbsp;</td>
-    </tr>
-<!-- END creditCard -->
-
-<!-- BEGIN lsv -->
-    <tr class="row2">
-    <td nowrap='nowrap'>{TXT_ACCOUNT_HOLDER}</td>
-    <td nowrap='nowrap'>{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
-    </tr>
-    <tr class="row1">
-    <td nowrap='nowrap'>{TXT_ACCOUNT_BANK}</td>
-    <td nowrap='nowrap'>{SHOP_ACCOUNT_BANK}&nbsp;</td>
-    </tr>
-    <tr class="row2">
-    <td nowrap='nowrap'>{TXT_ACCOUNT_BLZ}</td>
-    <td nowrap='nowrap'>{SHOP_ACCOUNT_BLZ}&nbsp;</td>
-    </tr>
-<!-- END lsv -->
-
-  </table>
-  <br />
-  <table border="0" width="100%" class="adminlist" cellspacing="0" cellpadding="2">
-    <tr>
-      <th colspan="7">{TXT_BILL}</th>
-    </tr>
-    <tr class="row1">
-      <td width="10%" nowrap="nowrap"><b>{TXT_NUMBER}</b></td>
-      <td width="10%" nowrap="nowrap"><b>{TXT_PRODUCT_ID}</b></td>
-      <td width="40%" nowrap="nowrap"><b>{TXT_PRODUCT_NAME}</b></td>
-      <td width="10%" nowrap='nowrap'><div style="text-align:center;"><b>{TXT_WEIGHT}</b></div></td>
-      <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_PRODUCT_PRICE}</b></div></td>
-      <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_TAX_RATE}</b></div></td>
-      <td width="10%" nowrap="nowrap"><div style="text-align:center;"><b>{TXT_SUM}</b></div></td>
-    </tr>
-<!-- BEGIN orderdetailsRow -->
-    <!--tr id="{SHOP_P_ID}" class="{SHOP_ROWCLASS}"-->
-    <tr class="{SHOP_ROWCLASS}">
-      <td nowrap="nowrap">
-        <input type="text" id="shopProductQuantity-{SHOP_P_ID}" name="shopProductQuantity[{SHOP_P_ID}]" value="{SHOP_QUANTITY}" size="5" maxlength="5" onchange="javascript:calcPrice({SHOP_P_ID})" />
-      </td>
-      <td nowrap="nowrap">
-        <input type="hidden" name="shopProductIdOld[{SHOP_P_ID}]" value="{SHOP_P_ID}" />
-        <input type="hidden" name="shopProductId[{SHOP_P_ID}]" id="shopProductId-{SHOP_P_ID}" value="{SHOP_P_ID}" />
-        <select id="shopProductList-{SHOP_P_ID}" name="shopProductList[{SHOP_P_ID}]" size="1" onchange="javascript:changeProduct({SHOP_P_ID}, this.value)">
-          <option value="0">none</option>
-          {SHOP_PRODUCT_IDS_MENU}
-        </select>
-      </td>
-      <td nowrap="nowrap"><div style="text-align:left;">
-        <input type="text" size="50" id="shopProductName-{SHOP_P_ID}" name="shopProductName[{SHOP_P_ID}]" value="{SHOP_PRODUCT_NAME}" />
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input class="inputCurrency" type="text" id="shopProductWeight-{SHOP_P_ID}" name="shopProductWeight[{SHOP_P_ID}]" value="{SHOP_PRODUCT_WEIGHT}" onchange="javascript:calcPrice({SHOP_P_ID})" />&nbsp;
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input class="inputCurrency" type="text" id="shopProductPrice-{SHOP_P_ID}" name="shopProductPrice[{SHOP_P_ID}]" value="{SHOP_PRODUCT_PRICE}" onchange="javascript:calcPrice({SHOP_P_ID})" />&nbsp;{SHOP_CURRENCY}
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input class="inputCurrency" type="text" id="shopProductTaxPercent-{SHOP_P_ID}" name="shopProductTaxPercent[{SHOP_P_ID}]" value="{SHOP_PRODUCT_TAX_RATE}" onchange="javascript:calcPrice({SHOP_P_ID})" />&nbsp;%
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input readonly class="inputCurrency" type="text" id="shopProductSum-{SHOP_P_ID}" name="shopProductSum[{SHOP_P_ID}]" value="{SHOP_PRODUCT_SUM}" />&nbsp;{SHOP_CURRENCY}
-      </div></td>
-    </tr>
-<!-- END orderdetailsRow -->
-    <!--tr id="0" class="{SHOP_ROWCLASS_NEW}"-->
-    <tr class="{SHOP_ROWCLASS_NEW}">
-      <td nowrap="nowrap">
-        <input type="text" id="shopProductQuantity-0" name="shopProductQuantity[0]" value="0" size="5" maxlength="5" onchange="javascript:calcPrice(0)" />
-      </td>
-      <td nowrap="nowrap">
-        <input type="hidden" id="shopProductId-0" name="shopProductId[0]" value="0" />
-        <select id="shopProductList-0" name="shopProductList[0]" size="1" onchange="javascript:changeProduct(0, this.value)">
-          <option value="0">none</option>
-          {SHOP_PRODUCT_IDS_MENU_NEW}
-        </select>
-      </td>
-      <td nowrap="nowrap"><div style="text-align:left;">
-        <input type="text" size="50" id="shopProductName-0" name="shopProductName[0]" value="" />
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input class="inputCurrency" type="text" id="shopProductWeight-0" name="shopProductWeight[0]" value="0 g" onchange="javascript:calcPrice(0)" />&nbsp;
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input class="inputCurrency" type="text" id="shopProductPrice-0" name="shopProductPrice[0]" onchange="javascript:calcPrice(0)" value="0.00" />&nbsp;{SHOP_CURRENCY}
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input class="inputCurrency" type="text" id="shopProductTaxPercent-0" name="shopProductTaxPercent[0]" onchange="javascript:calcPrice(0)" value="0.00" />&nbsp;%
-      </div></td>
-      <td nowrap="nowrap"><div style="text-align:right;">
-        <input class="inputCurrency" type="text" id="shopProductSum-0" name="shopProductSum[0]" value="0.00" onchange="javascript:calcPrice(0)" />&nbsp;{SHOP_CURRENCY}
-      </div></td>
-    </tr>
-<!-- BEGIN shopNetPrice -->
-    <tr>
-      <td colspan="5">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_NET_PRICE}</b></div></td>
-      <td nowrap="nowrap"><div style="text-align:right;"><input class="inputCurrency" type="text" id="shopNetPrice" name="shopNetPrice" value="{SHOP_NET_PRICE}" onchange="javascript:calcPrice(0)" />&nbsp;{SHOP_CURRENCY}</div></td>
-    </tr>
-<!-- END shopNetPrice -->
-<!-- BEGIN shopTaxPrice -->
-    <tr>
-      <td colspan="5">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{SHOP_PART_TAX_PROCENTUAL}</b></div></td>
-      <td nowrap="nowrap"><div style="text-align:right;"><input class="inputCurrency" type="text" id="shopTaxPrice" name="shopTaxPrice" value="{SHOP_TAX_PRICE}" onchange="javascript:calcPrice(0)" />&nbsp;{SHOP_CURRENCY}</div></td>
-    </tr>
-<!-- END shopTaxPrice -->
-    <tr><td>&nbsp;</td></tr>
-    <tr>
-      <td colspan="2">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL_WEIGHT}</b>&nbsp;</div></td>
-      <td nowrap="nowrap"><div style="text-align:right;"><input class="inputCurrency" type="text" id="shopTotalWeight" name="shopTotalWeight" value="{SHOP_TOTAL_WEIGHT}" onchange="javascript:calcPrice(0)" />&nbsp;</div></td>
-      <td colspan="1">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_SHIPPING_PRICE}</b></div></td>
-      <td nowrap="nowrap"><div style="text-align:right;"><input class="inputCurrency" type="text" id="shopShippingPrice" name="shopShippingPrice" value="{SHOP_SHIPPING_PRICE}" onchange="javascript:calcPrice(0)" />&nbsp;{SHOP_CURRENCY}</div></td>
-    </tr>
-    <tr>
-      <td colspan="5">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_PAYMENT_COSTS}</b></div></td>
-      <td nowrap="nowrap"><div style="text-align:right;"><input class="inputCurrency" type="text" id="shopPaymentPrice" name="shopPaymentPrice" value="{SHOP_PAYMENT_PRICE}" onchange="javascript:calcPrice(0)" />&nbsp;{SHOP_CURRENCY}</div></td>
-    </tr>
-    <tr>
-      <td colspan="5">&nbsp;</td>
-      <td nowrap="nowrap"><div style="text-align:right;"><b>{TXT_TOTAL}</b></div></td>
-      <td nowrap="nowrap"><div style="text-align:right;"><input class="inputCurrency" type="text" id="shopCurrencyOrderSum" name="shopCurrencyOrderSum" value="{SHOP_CURRENCY_ORDER_SUM}" onchange="javascript:calcPrice(0)" />&nbsp;{SHOP_CURRENCY}</div></td>
-    </tr>
-  </table>
-  <br />
-  <table border="0" width="100%" cellpadding="2" cellspacing="0" class="adminlist">
-    <tr>
-      <th>{TXT_CUSTOMER_REMARKS}</th>
-    </tr>
-    <tr>
-      <td><div style="vertical-align:top;">{SHOP_CUSTOMER_NOTE}&nbsp;</div></td>
-    </tr>
-  </table>
-  <br />
-  <input type="submit" name="shopSaveOrderChanges" value="{TXT_STORE}" />
-</form>
+swapSendToStatus();
+//]]></script>
 <!-- END shop_order_edit.html -->

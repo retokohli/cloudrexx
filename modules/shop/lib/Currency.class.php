@@ -81,7 +81,8 @@ class Currency
         global $objDatabase;
 
         $arrSqlName = Text::getSqlSnippets(
-            '`currency`.`id`', FRONTEND_LANG_ID, 'shop', self::TEXT_NAME);
+            '`currency`.`id`', FRONTEND_LANG_ID, 'shop',
+            array('name' => self::TEXT_NAME));
         $query = "
             SELECT `currency`.`id`, `currency`.`code`, `currency`.`symbol`,
                    `currency`.`rate`, `currency`.`ord`,
@@ -94,7 +95,7 @@ class Currency
         if (!$objResult) return self::errorHandler();
         while (!$objResult->EOF) {
             $id = $objResult->fields['id'];
-            $strName = $objResult->fields[$arrSqlName['alias'][self::TEXT_NAME]];
+            $strName = $objResult->fields['name'];
             if ($strName === null) {
                 $strName = Text::getById($id, 'shop', self::TEXT_NAME)->content();
             }

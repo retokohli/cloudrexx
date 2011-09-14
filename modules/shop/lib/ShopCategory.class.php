@@ -580,7 +580,7 @@ class ShopCategory
             $objText = Text::getById($id, 'shop', self::TEXT_DESCRIPTION);
             if ($objText) $strDescription = $objText->content();
         }
-DBG::log("ShopCategory::getById($category_id): Loaded '$strName' / '$strDescription'");
+//DBG::log("ShopCategory::getById($category_id): Loaded '$strName' / '$strDescription'");
         $objCategory = new ShopCategory(
             $strName,
             $strDescription,
@@ -873,6 +873,7 @@ DBG::log("ShopCategory::getById($category_id): Loaded '$strName' / '$strDescript
     static function errorHandler()
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+        require_once(ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php');
 
 //DBG::activate(DBG_DB_FIREPHP);
 
@@ -925,5 +926,3 @@ DBG::log("ShopCategory::errorHandler(): Migrated Category $name (ID $id)");
     }
 
 }
-
-?>

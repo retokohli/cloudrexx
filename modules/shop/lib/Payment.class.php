@@ -9,8 +9,8 @@
  * @version     2.1.0
  */
 
-require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/PaymentProcessing.class.php';
+require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
 
 /**
  * Payment service manager
@@ -158,6 +158,7 @@ class Payment
             $payment_id = $_SESSION['shop']['paymentId'];
             $processor_id = self::getPaymentProcessorId($payment_id);
             if ($processor_id == 2) {
+                require_once ASCMS_MODULE_PATH.'/shop/payments/paypal/Paypal.class.php';
                 $arrPaypalAcceptedCurrencyCodes =
                    PayPal::getAcceptedCurrencyCodeArray();
                 foreach ($arrCurrencies as $index => $arrCurrency) {
@@ -170,17 +171,17 @@ class Payment
         }
         $arrPaymentId = array();
         $query = "
-            SELECT DISTINCT `p`.`id`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `c`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `z`
-                ON `c`.`zone_id`=`z`.`id`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `r`
-                ON `z`.`id`=`r`.`zone_id`
-             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_payment` AS `p`
-                ON `p`.`id`=`r`.`payment_id`
-             WHERE `c`.`country_id`=".intval($countryId)."
-               AND `p`.`active`=1
-               AND `z`.`active`=1";
+            SELECT DISTINCT `payment`.`id`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `country`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
+                ON `country`.`zone_id`=`zone`.`id`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment` AS `rel_payment`
+                ON `zone`.`id`=`rel_payment`.`zone_id`
+             INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_payment` AS `payment`
+                ON `payment`.`id`=`rel_payment`.`payment_id`
+             WHERE `country`.`country_id`=".intval($countryId)."
+               AND `payment`.`active`=1
+               AND `zone`.`active`=1";
         $objResult = $objDatabase->Execute($query);
         while ($objResult && !$objResult->EOF) {
             if (   isset(self::$arrPayments[$objResult->fields['id']])
@@ -485,8 +486,9 @@ class Payment
 
 //DBG::activate(DBG_DB_FIREPHP);
 
-        // Fix the Text table first
+        // Fix the Text and Zones tables first
         Text::errorHandler();
+        Zones::errorHandler();
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_payment';
         $table_structure = array(
@@ -540,5 +542,3 @@ class Payment
     }
 
 }
-
-?>
