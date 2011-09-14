@@ -74,7 +74,7 @@
         swapHeaderLangName();
     }    
     function swapHeaderLangName(){
-        $J('form[name=blockFormModifyBlock] table.blog_lang th:first-child').each(
+        $J('form[name=blockFormModifyBlock] table.block_lang th:first-child').each(
         function(){
             $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#blockLanguages li a.active').text()+')')
         }
@@ -83,9 +83,9 @@
     function updateCKeditorContent(CurrentLangId){        
         activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];
         
-        $J('#blogFormText_'+activeLang).val(CKEDITOR.instances.blockTextEditor.getData());
+        $J('#blockFormText_'+activeLang).val(CKEDITOR.instances.blockTextEditor.getData());
         
-        form_text = $J('#blogFormText_'+CurrentLangId).val();
+        form_text = $J('#blockFormText_'+CurrentLangId).val();
         CKEDITOR.instances.blockTextEditor.setData(form_text);
 
     }    
@@ -111,7 +111,7 @@
     }
     function onSubmit() {
         activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];        
-        $J('#blogFormText_'+activeLang).val(CKEDITOR.instances.blockTextEditor.getData());
+        $J('#blockFormText_'+activeLang).val(CKEDITOR.instances.blockTextEditor.getData());
         return true;
     }
     function disableButtons(from,dest,add,remove)
@@ -154,6 +154,22 @@
         } else {
             elm.style.display = 'none';
         }
+    }
+    function selectDataTab(tabName) {  
+	if(document.getElementById(tabName).style.display != "block")
+	{
+		document.getElementById(tabName).style.display = "block";
+		strClass = document.getElementById(tabName).className;		
+		
+		arrTags = document.getElementsByTagName("*");
+		for (i=0;i<arrTags.length;i++)
+		{
+			if(arrTags[i].className == strClass && arrTags[i] != document.getElementById(tabName))
+			{
+				arrTags[i].style.display = "none";
+			}
+		}
+	}
     }
     // ]]>
 </script>
@@ -215,9 +231,8 @@
              */
             if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances){
                 activeLang = $J('ul.blockLang a.active').attr('id').split('_')[2];
-                form_text = $J('#blogFormText_'+activeLang).val();
+                form_text = $J('#blockFormText_'+activeLang).val();
                 CKEDITOR.instances.blockTextEditor.setData(form_text);
-
             }        
             swapHeaderLangName();            
         });
@@ -228,7 +243,7 @@
 <form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="selectAll(document.getElementById('SelectedPages'));">
     <input type="hidden" name="blockId" value="{BLOCK_ID}" size="50" />
 
-    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist blog_lang">
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist block_lang">
         <tr>
             <th colspan="4">{TXT_BLOCK_LANGUAGE}</th>
         </tr>
@@ -241,8 +256,8 @@
     </table>  
     <br />
     <ul class="tabmenu">      
-        <li><a href="javascript:{}" id="data_{TXT_BLOCK_BASIC_DATA}" class="active" onclick="selectTab('{TXT_BLOCK_BASIC_DATA}')" title="{TXT_BLOCK_BASIC_DATA}">{TXT_BLOCK_BASIC_DATA}</a></li>  
-        <li><a href="javascript:{}" id="data_{TXT_BLOCK_ADDITIONAL_OPTIONS}" onclick="selectTab('{TXT_BLOCK_ADDITIONAL_OPTIONS}')" title="{TXT_BLOCK_ADDITIONAL_OPTIONS}">{TXT_BLOCK_ADDITIONAL_OPTIONS}</a></li>  
+        <li><a href="javascript:{}" id="data_{TXT_BLOCK_BASIC_DATA}" onclick="selectDataTab('{TXT_BLOCK_BASIC_DATA}')" title="{TXT_BLOCK_BASIC_DATA}">{TXT_BLOCK_BASIC_DATA}</a></li>  
+        <li><a href="javascript:{}" id="data_{TXT_BLOCK_ADDITIONAL_OPTIONS}" onclick="selectDataTab('{TXT_BLOCK_ADDITIONAL_OPTIONS}')" title="{TXT_BLOCK_ADDITIONAL_OPTIONS}">{TXT_BLOCK_ADDITIONAL_OPTIONS}</a></li>  
     </ul>
     <div id="{TXT_BLOCK_BASIC_DATA}" class="data">   
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
@@ -274,9 +289,9 @@
                 <!-- END block_language_tabs -->
             </ul>
             <!-- BEGIN block_language_content -->            
-            <input id="blogFormText_{BLOCK_LANG_ID}" type="hidden" name="blogFormText_[{BLOCK_LANG_ID}]" value="{BLOCK_CONTENT_TEXT_HIDDEN}" />
+            <input id="blockFormText_{BLOCK_LANG_ID}" type="hidden" name="blockFormText_[{BLOCK_LANG_ID}]" value="{BLOCK_CONTENT_TEXT_HIDDEN}" />
             <!-- END block_language_content -->
-            <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist blog_lang">
+            <table  border="0" cellpadding="0" cellspacing="0" width="100%" class="adminlist block_lang">
                 <tbody>
                     <tr>
                         <th>{TXT_BLOCK_FORM_DESC}</th>

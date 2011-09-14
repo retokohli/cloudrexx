@@ -93,7 +93,7 @@ $_ARRAYLANG['TXT_BLOCK_UNSELECT_ALL'] = "Auswahl entfernen";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'] = "Immer anzeigen";
 $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'] = "Zeitgesteuertes Anzeigen";
 $_ARRAYLANG['TXT_BLOCK_LANGUAGE'] = "Sprache";
-$_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'] = "Block im  Platzhalter anzeigen";
+$_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'] = "Block im globalen Platzhalter anzeigen";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'] = "Anzeigedauer";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Inhalt";
 ?>
