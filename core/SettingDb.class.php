@@ -1100,5 +1100,3 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     }
 
 }
-
-?>

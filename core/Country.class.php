@@ -919,16 +919,6 @@ class Country
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
         require_once(ASCMS_CORE_PATH.'/Text.class.php');
 
-        static $break = false;
-
-        if ($break) {
-            die("
-                Country::errorHandler(): Recursion detected while handling an error.<br /><br />
-                This should not happen.  We are very sorry for the inconvenience.<br />
-                Please contact customer support: support@comvation.com");
-        }
-        $break = true;
-
         $table_name = DBPREFIX.'core_country';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
@@ -1039,5 +1029,3 @@ class Country
     }
 
 }
-
-?>

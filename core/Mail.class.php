@@ -290,5 +290,3 @@ class OBOLETE_Mail
     }
 
 }
-
-?>

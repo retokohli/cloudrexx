@@ -529,5 +529,3 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
     }
 
 }
-
-?>
