@@ -1187,6 +1187,20 @@ form#contactForm .contactFormClass_uploadWidget span{
 	height:auto !important;
 }
 
+/* Inner block for the toggable shipment address */
+#shop .shipping_address {
+  clear: both;
+}
+
+/* Right align prices etc. */
+#shop .right {
+  text-align: right;
+}
+/* Center quantities etc. */
+#shop .center {
+  text-align: center;
+}
+
 #shop div.message_error {
 	color:#FF0000;
 }
@@ -2204,8 +2218,8 @@ outline-style:none;
 #mediadir .map{
     margin-top: 10px;
     border: 1px solid #CFCFCF;
-    width: 489px; 
-    height: 250px; 
+    width: 489px;
+    height: 250px;
 }
 
 #mediadir table.list{
@@ -2230,8 +2244,8 @@ outline-style:none;
 #mediadir .mapLarge{
     margin-top: 10px;
     border: 0px solid #CFCFCF;
-    width: 620px; 
-    height: 600px; 
+    width: 620px;
+    height: 600px;
 }
 
 #mediadir input[type="button"].active {
@@ -2249,8 +2263,8 @@ outline-style:none;
 }
 
 #mediadir input.mediadirVoteButton {
-       font-weight:normal;  
-       min-width:1px; 
+       font-weight:normal;
+       min-width:1px;
        width: 30px !important;
 }
 
