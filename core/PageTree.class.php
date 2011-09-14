@@ -85,9 +85,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
     private function internalRender(&$elems, $path, $level, $dontDescend = false) {
         $content = '';
-        foreach($elems as $title => &$elem) {
-            Logger::getInstance()->log($title);
-            
+        foreach($elems as $title => &$elem) {        
             $page = $elem['__data']['page'];
 
             if(!$page->isVisible() || !$page->isActive())
