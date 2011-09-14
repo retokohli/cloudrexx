@@ -35,7 +35,7 @@ class NavigationPageTree extends SigmaPageTree {
 //TODO: navigation_id
                 $this->template->setCurrentBlock($blockName);
                 $this->template->setVariable(array(
-                    'URL' => ASCMS_PATH_OFFSET.$path,
+                    'URL' => ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path,
                     'NAME' => $title,
                     'TARGET' => $page->getTarget(),
                     'LEVEL_INFO' => $hasChilds ? '' : 'down',

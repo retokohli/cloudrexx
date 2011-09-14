@@ -166,15 +166,54 @@ createModuleConversionTables();
 $objInit = new InitCMS('frontend', Env::em());
 Env::set('init', $objInit);
 
+
+/** @ignore */
+require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
+/** @ignore */
+require_once ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
 /**
  * Frontend language ID
  * @global integer $_LANGID
  * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
  */
 $_LANGID = $objInit->getFrontendLangId();
+
+//try to find the language in the url
+$url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET);
+$le = new \Cx\Core\Routing\LanguageExtractor($objDatabase, DBPREFIX);
+$extractedLanguage = 0;
+
+$redirectToCorrectLanguageDir = function() use ($le, $url, $_LANGID, $_CONFIG) {
+    $le->addLanguageDir($url, $_LANGID);
+    CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath());
+    die();
+};
+
+try {    
+    $extractedLanguage = $le->extractLanguage($url);
+}
+catch(\Cx\Core\Routing\LanguageExtractorException $e) {
+    //we could not extract any language information - rely on $_LANGID
+    //to redirect the user to an url with prepended virtual language directory
+    $redirectToCorrectLanguageDir();
+}
+
+//only set langid according to url if the user has not explicitly requested a language change.
+if(!isset($_REQUEST['setLang'])) {
+    $_LANGID = $extractedLanguage;
+}
+else if($_LANGID != $extractedLanguage) { //the user wants to change the language, but we're still inside the wrong language directory.
+    $redirectToCorrectLanguageDir();
+}
+
 // Post-2.1
 define('FRONTEND_LANG_ID', $_LANGID);
 define('LANG_ID', $_LANGID);
+
+//expose the virtual language directory to the rest of the cms
+//please do not access this variable directly, use Env::get().
+$virtualLanguageDirectory = '/'.$le->getShortNameOfLanguage($_LANGID);
+Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 
 // Caching-System
 /**
@@ -307,10 +346,8 @@ $page = null;
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // TODO: history (empty($history) ? )
 
-    require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
+    /** @ignore */
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
-
-    $url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET);
 
     try {
         $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em());

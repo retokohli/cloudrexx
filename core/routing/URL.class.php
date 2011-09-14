@@ -71,7 +71,7 @@ class URL {
     /**
      * sets $this->suggestedParams and $this->suggestedTargetPath
      */
-    protected function suggest() {
+    public function suggest() {
         $matches = array();
         $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
 

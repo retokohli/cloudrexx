@@ -83,7 +83,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
             $style = $current ? self::StyleNameActive : self::StyleNameNormal;
             $output = str_replace('{NAME}', $title, $output);
             $output = str_replace('<li>', '<li class="'.$style.'">', $output);
-            $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$path, $output);
+            $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path, $output);
             $output = str_replace('{TARGET}', $page->getTarget(), $output);
             $output = str_replace('{CSS_NAME}',  $page->getCssName(), $output);
             $output = str_replace('{NAVIGATION_ID}', $this->navigationIds[$level], $output);

@@ -15,6 +15,12 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     protected $currentPageOnRootNode = false;
     protected $currentPagePath = null;
     protected $pageRepo = null;
+
+    /**
+     * The virtual language directory. Might be of use for the inheriting classes (Link generation).
+     * @param string
+     */
+    protected $virtualLanguageDirectory = '';
     
     /**
      * @param $entityManager the doctrine em
@@ -81,6 +87,10 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
         if($content)
             return $content;
         return '';
+    }
+
+    public function setVirtualLanguageDirectory($dir) {
+        $this->virtualLanguageDirectory = $dir;
     }
 
     private function internalRender(&$elems, $path, $level, $dontDescend = false) {
