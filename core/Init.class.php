@@ -626,7 +626,7 @@ class InitCMS
             require($path);
             // remove escape characters
             foreach (array_keys($_ARRAYLANG) as $langTxtId) {
-                $_ARRAYLANG[$langTxtId] = ereg_replace("\\\"", "\"", $_ARRAYLANG[$langTxtId]);
+                $_ARRAYLANG[$langTxtId] = preg_replace("/\\\"/", "/\"/", $_ARRAYLANG[$langTxtId]);
                 if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
                     $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
                     $moduleID = $objRS->fields['id'];
