@@ -3,8 +3,8 @@
 /**
  * Image manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Paulo M. Santos <pmsantos@astalavista.net>
- * @version       1.0
+ * @author      Paulo M. Santos <pmsantos@astalavista.net>
+ * @version     1.0
  * @package     contrexx
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
@@ -18,9 +18,9 @@ require_once(ASCMS_FRAMEWORK_PATH."/File.class.php");
 /**
  * Image manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Paulo M. Santos <pmsantos@astalavista.net>
- * @version       1.0
- * @access        public
+ * @author      Paulo M. Santos <pmsantos@astalavista.net>
+ * @version     1.0
+ * @access      public
  * @package     contrexx
  * @subpackage  lib_framework
  */
@@ -120,6 +120,9 @@ class ImageManager
 
     /**
      * Creates a thumbnail of a picture
+     *
+     * Note that all "Path" parameters are required to bring along their
+     * own trailing slash.
      * @param   string  $strPath
      * @param   string  $strWebPath
      * @param   string  $file
@@ -132,7 +135,8 @@ class ImageManager
         $objFile   = new File();
         $_objImage = new ImageManager();
         $file      = basename($file);
-        $tmpSize   = getimagesize($strPath.'/'.$file);
+        $tmpSize   = getimagesize($strPath.$file);
+        $factor = 1;
         if ($tmpSize[0] > $tmpSize[1]) {
            $factor = $maxSize / $tmpSize[0];
         } else {
@@ -140,10 +144,10 @@ class ImageManager
         }
         $thumbWidth  = $tmpSize[0] * $factor;
         $thumbHeight = $tmpSize[1] * $factor;
-        if (!$_objImage->loadImage($strPath.'/'.$file)) return false;
+        if (!$_objImage->loadImage($strPath.$file)) return false;
         if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
         $thumb_name = self::getThumbnailFilename($file);
-        if (!$_objImage->saveNewImage($strPath .'/'.$thumb_name)) return false;
+        if (!$_objImage->saveNewImage($strPath.$thumb_name)) return false;
         if (!$objFile->setChmod($strPath, $strWebPath, $thumb_name)) return false;
         return true;
     }
@@ -158,6 +162,8 @@ class ImageManager
      * sizes while keeping the original width/height ratio.
      * In addition to that, this method tries to delete an existing
      * thumbnail before attempting to write the new one.
+     * Note that all "Path" parameters are required to bring along their
+     * own trailing slash.
      * @param   string  $strPath        The image file folder
      * @param   string  $strWebPath     The image file web folder
      * @param   string  $file           The image file name
@@ -181,7 +187,7 @@ class ImageManager
         if (empty($fileNew))       $fileNew       = $file;
         if (empty($strPathNew))    $strPathNew    = $strPath;
         if (empty($strWebPathNew)) $strWebPathNew = $strWebPath;
-        $tmpSize = getimagesize($strPath.'/'.$file);
+        $tmpSize = getimagesize($strPath.$file);
         // reset the ImageManager
         $this->imageCheck = 1;
         $width       = $tmpSize[0];
@@ -197,12 +203,12 @@ class ImageManager
             $thumbWidth  = $maxWidth;
             $thumbHeight = $height*$maxWidth/$width;
         }
-        if (!$this->loadImage($strPath.'/'.$file)) return false;
+        if (!$this->loadImage($strPath.$file)) return false;
         if (!$this->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
-        if (is_file($strPathNew.'/'.$fileNew.$thumbNailSuffix)) {
-            if (!unlink($strPathNew.'/'.$fileNew.$thumbNailSuffix)) return false;
+        if (is_file($strPathNew.$fileNew.$thumbNailSuffix)) {
+            if (!unlink($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         }
-        if (!$this->saveNewImage($strPathNew.'/'.$fileNew.$thumbNailSuffix)) return false;
+        if (!$this->saveNewImage($strPathNew.$fileNew.$thumbNailSuffix)) return false;
         $objFile = new File();
         if (!$objFile->setChmod($strPathNew, $strWebPathNew, $fileNew.$thumbNailSuffix)) return false;
         return true;
@@ -235,7 +241,7 @@ class ImageManager
             } else {
                 $this->newImage = ImageCreate($this->newImageWidth, $this->newImageHeight);
             }
-            if (function_exists("imagecopyresampled")) { //resampled is gd2 only
+            if(function_exists("imagecopyresampled")) { //resampled is gd2 only
                 imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
             } else {
                 imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
@@ -365,7 +371,7 @@ class ImageManager
             && !empty($this->newImage)
             && (!file_exists($file) || $forceOverwrite)) {
             $this->newImageFile = $file;
-            switch ($this->newImageType) {
+            switch($this->newImageType) {
                 case self::IMG_TYPE_GIF:
                     $function = 'imagegif';
                     if (!function_exists($function)) {
@@ -397,7 +403,7 @@ class ImageManager
     function showNewImage()
     {
         if ($this->imageCheck == 1 && !empty($this->newImage)) {
-            switch ($this->newImageType) {
+            switch($this->newImageType) {
                 case self::IMG_TYPE_GIF:
                     header("Content-type: image/gif");
                     $function = 'imagegif';
@@ -464,7 +470,8 @@ class ImageManager
      * @param   string  $webPath    The file path relative to the document root
      * @param   string  $fileName   The file name
      * @param   integer $max        The maximum size for both width and height
-     * @return  mixed               An array on success, false otherwise
+     * @return  array               An array of image dimensions on success,
+     *                              null otherwise
      * @author  reto.kohli@comvation.com (Added proper documentation, fixed)
      */
     function getImageDim($path, $webPath, $fileName, $max=60)
@@ -474,6 +481,7 @@ class ImageManager
             $size   = getimagesize($path.$fileName);
             $height = $size[1];
             $width  = $size[0];
+            $imgdim = null;
             if ($height > $max && $height > $width) {
                 $height = $max;
                 $ratio  = ($size[1] / $height);
@@ -506,7 +514,7 @@ class ImageManager
         if (!is_array($arrSizeInfo)) return false;
         $type = $this->_isImage($file);
         $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * 1.8;
-        switch ($type) {
+        switch($type) {
             case self::IMG_TYPE_GIF:
                 $function = 'imagecreatefromgif';
                 break;
@@ -609,5 +617,3 @@ class ImageManager
     }
 
 }
-
-?>
