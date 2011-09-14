@@ -23,7 +23,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
      * @param int $lang the language
      * @param \Cx\Model\ContentManager\Node $currentPage if set, renderElement() will receive a correctly set $current flag.
      */
-    public function __construct($entityManager, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null) {
+    public function __construct($entityManager, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null){ 
         $this->lang = $lang;
         $this->rootNode = $rootNode;
         $this->depth = $maxDepth;
@@ -86,6 +86,8 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
     private function internalRender(&$elems, $path, $level, $dontDescend = false) {
         $content = '';
         foreach($elems as $title => &$elem) {
+            Logger::getInstance()->log($title);
+            
             $page = $elem['__data']['page'];
 
             if(!$page->isVisible() || !$page->isActive())
@@ -113,7 +115,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
             if($hasChilds && !$dontDescend && $weWantTheChildren) {
                 unset($elem['__data']);
-                $content += $this->internalRender($elem, $pathOfThis, $level+1, $dontDescendNext);
+                $content .= $this->internalRender($elem, $pathOfThis, $level+1, $dontDescendNext);
             }
         }
         return $content;

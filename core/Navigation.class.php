@@ -320,7 +320,7 @@ class Navigation
         } elseif (isset($this->_objTpl->_blocks['nested_navigation'])) {
             // Create a nested list, formatted with ul and li-Tags
             //$nestedNavigation = $this->_buildNestedNavigation();
-            $navi = new NestedNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
+            $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
             return ereg_replace('<!-- BEGIN nested_navigation -->.*<!-- END nested_navigation -->', $renderedNavi, $templateContent);

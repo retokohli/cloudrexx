@@ -27,6 +27,19 @@ class NestedNavigationPageTree extends SigmaPageTree {
     protected $navigationIds = array();
 
     protected $lastLevel = 0; //level of last item, used to remember how much closing tags we need.
+
+    protected $branchNodeIds = array(); //holds all ids of the $currentPage's Node and it's parents
+
+    public function __construct($entityManager, $maxDepth = 0, $activeNode = null, $lang = null, $currentPage = null) { 
+        parent::__construct($entityManager, $maxDepth, $activeNode, $lang, $currentPage);
+
+        //go up the branch and collect all node ids. used later in renderElement().
+        $node = $currentPage->getNode();        
+        while($node) {
+            $this->branchNodeIds[] = $node->getId();
+            $node = $node->getParent();
+        }
+    }
     
     protected function preRender() {
         // checks which levels to use
@@ -40,6 +53,10 @@ class NestedNavigationPageTree extends SigmaPageTree {
     }
    
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
+        //make sure the page to render is inside our branch
+        if(!in_array($page->getNode()->getParent()->getId(), $this->branchNodeIds))
+            return '';
+
         $output = '';
         //are we inside the layer bounds?
         if($level >= $this->levelFrom && ($level <= $this->levelTo || $this->levelTo == 0)) {
@@ -50,16 +67,17 @@ class NestedNavigationPageTree extends SigmaPageTree {
             
             $block = trim($this->template->_blocks['level']);
             
-            if($hasChilds) {
+            //only do uls for childs in current branch
+            if($hasChilds && in_array($page->getNode()->getId(), $this->branchNodeIds)) {
                 $cssStyle = self::CssPrefix.($level+1);
-                $output = "<li>".$block."\n<ul id='".$cssStyle."'>";
+                $output = "  <li>".$block."\n<ul id='".$cssStyle."'>";
             }
             else {
-                $output = "<li>".$block."</li>";
+                $output = "  <li>".$block."</li>\n";
             }
 
             //check if we need to close any <ul>'s
-            $output .= $this->getClosingTags($level);
+            $output = $this->getClosingTags($level) . $output;
             $this->lastLevel = $level;
 
             $style = $current ? self::StyleNameActive : self::StyleNameNormal;
@@ -82,7 +100,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
         //append closing tags for last element
         $output = $this->getClosingTags();
         //wrap everything in an <ul>
-        $output .= "</ul>";
+        $output .= "</ul>\n";
 
         return $output;
     }
