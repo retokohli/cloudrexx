@@ -258,7 +258,8 @@ class blockLibrary
                                                    active='".intval($arrLangActive[$langId])."'",
                                                   $blockId));
         }        
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrContent))).")");
+        
+        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$blockId." AND lang_id NOT IN (".join(',', array_map('intval', array_keys($arrLangActive))).")");
     }
 
 

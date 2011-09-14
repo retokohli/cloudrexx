@@ -614,7 +614,7 @@ class blockManager extends blockLibrary
 
         if (isset($_POST['block_save_block'])) {
             $blockCat               = !empty($_POST['blockCat']) ? intval($_POST['blockCat']) : 0;
-            $blockContent           = isset($_POST['blogFormText_']) ? array_map('contrexx_input2raw', $_POST['blogFormText_']) : array();
+            $blockContent           = isset($_POST['blockFormText_']) ? array_map('contrexx_input2raw', $_POST['blockFormText_']) : array();
             $blockName              = !empty($_POST['blockName']) ? contrexx_input2raw($_POST['blockName']) : $_ARRAYLANG['TXT_BLOCK_NO_NAME'];
             $blockStart             = strtotime($_POST['inputStartDate']);
             $blockEnd               = strtotime($_POST['inputEndDate']);
@@ -696,9 +696,9 @@ class blockManager extends blockLibrary
 
             if (in_array($arrData['node_id'],$blockAssociatedPageIds)) {
                 $langStatus .= $arrData['catname'].", ";
-                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
+                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
             } else {
-                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
+                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
             }
         }
 
@@ -745,7 +745,7 @@ class blockManager extends blockLibrary
             $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
             
             if ($blockId != 0 && $activeFlag == 0 && $activeClass == '') {
-                $activeClass = $blockLangActive[$langId] == 1 ? 'active' : '';
+                $activeClass = $blockLangActive[$langId] == 1 ? 'active' : '';                
                 $activeFlag = 1;
             }            
             
