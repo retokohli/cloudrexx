@@ -309,18 +309,21 @@ class Navigation
             }
             //$this->_buildDropDownNavigation($this->arrPages[0],1, true);
             $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
+            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
             return  ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
         } elseif (isset($this->_objTpl->_blocks['navigation'])) {
             //$this->_buildNavigation();
             $navi = new NavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
+            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $navi->render();
         } elseif (isset($this->_objTpl->_blocks['nested_navigation'])) {
             // Create a nested list, formatted with ul and li-Tags
             //$nestedNavigation = $this->_buildNestedNavigation();
             $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
+            $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
             return ereg_replace('<!-- BEGIN nested_navigation -->.*<!-- END nested_navigation -->', $renderedNavi, $templateContent);
