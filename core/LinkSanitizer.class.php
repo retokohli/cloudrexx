@@ -21,6 +21,6 @@ class LinkSanitizer {
      * Calculates and returns the content with all replacements done.
      */
     function replace() {
-        return preg_replace("#( (src|href)\s*=\s*['\"])(?=[^/])(?!(http|ftp)://)#", '\1'.$this->offset, $this->content);
+        return preg_replace("#( (src|href)\s*=\s*['\"])(?=[^/])(?!((http|ftp|)://|javascript:))#", '\1'.$this->offset, $this->content);
     }
 }
