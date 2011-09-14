@@ -317,6 +317,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $section = $page->getModule();
+//TODO: check if addslashes is needed (caution: $plainSection used several times below.
+//      furthermore, addslashes is also intialized above using addslashes.
         $plainSection = contrexx_addslashes($section);
         $_ARRAYLANG = $objInit->loadLanguageData($section);
     }
@@ -1039,7 +1041,9 @@ if (@include_once ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php') {
 }
 
 //link conversion & generating dependencies
+/** @ignore */
 require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
+/** @ignore */
 require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
 
 $objTemplate->setTemplate($themesPages['index']);
