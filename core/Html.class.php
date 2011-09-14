@@ -495,6 +495,23 @@ class Html
 
 
     /**
+     *
+     * Returns HTML code for the hidden field
+     * @return type
+     */
+    static function getHidden_activetab()
+    {
+        JS::activate('jquery');
+        JS::registerCode(
+'// The index of the currently active tab on this page
+var _active_tab = '.
+            (isset($_REQUEST['active_tab'])
+                ? intval($_REQUEST['active_tab']) : 1).';');
+        return Html::getHidden('active_tab', 1);
+    }
+
+
+    /**
      * Returns HTML code for a button
      *
      * If the $id parameter is false, the id attribute is not set.
