@@ -214,6 +214,12 @@ class UserGroup
     }
 
 
+    /**
+     * Returns an array of IDs of Users associated with this group
+     * @global ADOConnection    $objDatabase
+     * @return array                            The array of User IDs on
+     *                                          success, false otherwise
+     */
     private function loadUsers()
     {
         global $objDatabase;
@@ -248,7 +254,6 @@ class UserGroup
         global $objDatabase;
 
         $arrRightIds = array();
-
         $objResult = $objDatabase->Execute('SELECT `access_id` FROM `'.DBPREFIX.'access_group_'.$type.'_ids` WHERE `group_id`='.$this->id);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
@@ -290,12 +295,6 @@ class UserGroup
         global $objDatabase, $_CORELANG;
 
         if (!$this->isUniqueGroupName() || !$this->isValidGroupName()) {
-if (!$this->isUniqueGroupName()) {
-DBG::log("Group name /$this->name/ not unique");
-}
-if (!$this->isValidGroupName()) {
-DBG::log("Group name /$this->name/ invalid");
-}
             $this->error_msg = $_CORELANG['TXT_ACCESS_GROUP_NAME_INVALID'];
             return false;
         }
@@ -691,5 +690,3 @@ DBG::log("Group name /$this->name/ invalid");
     }
 
 }
-
-?>
