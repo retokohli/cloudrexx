@@ -1405,7 +1405,7 @@ class User extends User_Profile
      * @return  boolean       True if the User name is valid and unique,
      *                        false otherwise
      */
-    function validateUsername()
+    protected function validateUsername()
     {
         global $_CORELANG;
 
@@ -1674,7 +1674,7 @@ class User extends User_Profile
         if (empty($password) && empty($confirmedPassword) && $this->id && !$reset) {
             return true;
         }
-        if ($this->isValidPassword($password)) {
+        if (self::isValidPassword($password)) {
             if (isset($confirmedPassword) && $password != $confirmedPassword) {
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_PASSWORD_NOT_CONFIRMED'];
                 return false;
@@ -1869,7 +1869,7 @@ class User extends User_Profile
      * @return  boolean
      * @static
      */
-    static function isValidUsername($username)
+    public static function isValidUsername($username)
     {
         if (preg_match('/^[a-zA-Z0-9-_]+$/', $username)) {
             return true;
@@ -1890,7 +1890,7 @@ class User extends User_Profile
      * @param   string    $password
      * @return  boolean
      */
-    static function isValidPassword($password)
+    private static function isValidPassword($password)
     {
         return strlen($password) >= 6;
     }

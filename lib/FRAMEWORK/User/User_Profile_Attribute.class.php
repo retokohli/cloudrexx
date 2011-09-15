@@ -1128,7 +1128,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function checkModifyPermission($currentValue=null, $newValue=null)
+    public function checkModifyPermission($currentValue=null, $newValue=null)
     {
         switch ($this->getType()) {
           case 'menu':
@@ -1733,7 +1733,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
      * @static
      * @author    Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getCustomAttributeNameArray($langId=0)
+    public static function getCustomAttributeNameArray($langId=0)
     {
         global $objDatabase;
 

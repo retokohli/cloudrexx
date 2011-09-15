@@ -19,16 +19,16 @@
  */
 class UserGroup
 {
-    public $id;
-    public $name;
-    public $description;
-    public $is_active;
-    public $type;
+    private $id;
+    private $name;
+    private $description;
+    private $is_active;
+    private $type;
 
-    public $arrLoadedGroups = array();
-    public $arrCache = array();
+    private $arrLoadedGroups = array();
+    private $arrCache = array();
 
-    public $arrAttributes = array(
+    private $arrAttributes = array(
         'group_id',
         'group_name',
         'group_description',
@@ -36,16 +36,16 @@ class UserGroup
         'type'
     );
 
-    public $arrTypes = array(
+    private $arrTypes = array(
         'frontend',
         'backend'
     );
 
-    public $arrUsers;
-    public $arrStaticPermissions;
-    public $arrDynamicPermissions;
+    private $arrUsers;
+    private $arrStaticPermissions;
+    private $arrDynamicPermissions;
 
-    public $defaultType = 'frontend';
+    private $defaultType = 'frontend';
 
     public $EOF;
 
@@ -54,7 +54,7 @@ class UserGroup
      *
      * @var unknown_type
      */
-    public $error_msg;
+    private $error_msg;
 
 
     function __construct()
@@ -387,7 +387,7 @@ class UserGroup
         foreach ($arrType as $type) {
             $arrCurrentIds = $this->{'load'.$type.'Permissions'}();
             $ids = 'arr'.$type.'Permissions';
-            if (empty($$ids)) continue;
+            if (!is_array($this->$ids)) continue;
             $arrAddedRightIds = array_diff($this->$ids, $arrCurrentIds);
             $arrRemovedRightIds = array_diff($arrCurrentIds, $this->$ids);
             $table = DBPREFIX.'access_group_'.strtolower($type).'_ids';
