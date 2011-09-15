@@ -4,6 +4,7 @@
   2 Layout
     2.1 Fonts
     2.2 Content Manager
+    2.2.1 Type Tab
   3 Helpers
   4 Chosen Plugin
  */
@@ -196,12 +197,47 @@ div.date img{
     width: 40px
 }
 
+/* 2.2.1 Type Tabs */
+.types {
+}
 
+.types .info {
+    width: 100%;
+    background-color: #aaf;
+    padding: 50px;
+}
+
+.types div.type {
+    width: 100%;  
+    height: 100px;
+    border: 1px solid gray;
+    margin-top: 10px;
+}
+
+.types div.type .wrapper{
+    padding: 20px;
+    height: 100%;
+}
+
+.types div.type .left {
+    height: 100%;
+    width: 150px;
+    float: left;
+}
+
+.types div.type .left input{
+    margin-top: 25px;
+}
+
+.types h1 {
+    font-size: 2em;
+}
 
 /* 3) Helpers */
 .left{
     float: left
 }
+
 .right{
     float: right;
     margin: 0 0 0 10px
@@ -542,3 +578,5 @@ select.chzn-select{
 }
 
 /* @end */
+
+
