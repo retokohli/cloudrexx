@@ -6,8 +6,54 @@
             <li><a href="#tabs-5" class="tab site-history">[[txt-site-history]]</a></li>
         </ul>
 
-        <div id="tabs-1">
-            type
+        <div id="tabs-1" class="types">
+            <!-- type: content -->
+            <form name="typeForm">
+              <p class="info">
+                [[txt-type-explanation]]
+              </p>
+              <div class="type content">
+                <div class="wrapper">
+                  <div class="left">
+                    <input type="radio" name="type" id="typeContent" value="content"></input>
+                  </div>
+                  <label for="typeContent">
+                    <h1> [[txt-type-content]] </h1>
+                  </label>
+                  <p>
+                    [[txt-type-content-description]]
+                  </p>
+                </div>
+              </div>
+              <!-- type: redirection -->
+              <div class="type redirection">
+                <div class="wrapper">
+                  <div class="left">
+                    <input type="radio" name="type" id="typeRedirection" value="redirection"></input>
+                  </div>
+                  <label for="typeRedirection">
+                    <h1> [[txt-type-redirection]] </h1>
+                  </label>
+                  <p>
+                    [[txt-type-redirection-description]]
+                  </p>
+                </div>
+              </div>
+              <!-- type: app -->
+              <div class="type app">
+                <div class="wrapper">
+                  <div class="left">
+                    <input type="radio" name="type" id="typeApp" value="app"></input>
+                  </div>
+                  <label for="typeApp">
+                    <h1> [[txt-type-app]] </h1>
+                  </label>
+                  <p>
+                    [[txt-type-app-description]]
+                  </p>
+                </div>
+              </div>
+            </form>
         </div>
         <div id="tabs-2">
             <form class="clearfix" action="." enctype="multipart/form-data" id="cm_form">
@@ -52,14 +98,15 @@
 
                 </div>
                 <textarea id="cm_ckeditor" rows="15" cols="45" name="content"></textarea>
-
-                <div id="buttons">
-                    <button id="preview" class="btn left"><span>[[preview]]</span></button>
-                    <button id="publish" class="btn right"><span>[[save-publish]]</span></button>
-                    <button id="save" class="btn right"><span>[[save]]</span></button>
-                </div>
             </form>
         </div>
         <div id="tabs-3">Test Tab3</div>
         <div id="tabs-4">Test Tab4</div>
         <div id="tabs-5">Test Tab5</div>
+
+        <div id="buttons">
+          <button id="preview" class="btn left"><span>[[preview]]</span></button>
+          <button id="publish" class="btn right"><span>[[save-publish]]</span></button>
+          <button id="save" class="btn right"><span>[[save]]</span></button>
+        </div>
+
