@@ -641,7 +641,7 @@ class blockManager extends blockLibrary
                     $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_ADDED'];
                 }
             }
-        } elseif (($arrBlock = $this->_getBlock($blockId)) !== false) {
+        } elseif (($arrBlock = $this->_getBlock($blockId)) !== false) {            
             $blockStart         = $arrBlock['start'];
             $blockEnd           = $arrBlock['end'];
             $blockCat           = $arrBlock['cat'];
@@ -696,9 +696,9 @@ class blockManager extends blockLibrary
 
             if (in_array($arrData['node_id'],$blockAssociatedPageIds)) {
                 $langStatus .= $arrData['catname'].", ";
-                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
+                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
             } else {
-                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
+                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
             }
         }
 
