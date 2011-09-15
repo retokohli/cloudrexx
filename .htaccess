@@ -6,12 +6,13 @@ RewriteEngine On
 # Note: This is a quick hack.  The rules may be improved.
 
 # This is ASCMS_PATH_OFFSET, i.e.
-#RewriteBase   /cms
+RewriteBase   /cm_2_3
+
+# Folders that may be accessed by page requests are NO ALIASES by design
+RewriteRule ^\w\w\/(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)(.*) $1$2$3 [L,QSA]
 
 # Skip requests to index.php
 #RewriteCond   %{REQUEST_FILENAME}  !^index.php
-# Folders that may be accessed by page requests are NO ALIASES by design
-RewriteCond   %{REQUEST_FILENAME}  !^(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)
 # Exclude "stuff" -- add more if desired
 RewriteCond   %{REQUEST_FILENAME}  !^favicon.ico
 # Anything that is neither a directory nor a file *might* be an alias.
