@@ -462,6 +462,7 @@ switch ($plainCmd) {
         $cm = new ContentManager();
         $cm->renderCM();
         break;
+// TODO: handle expired sessions in any xhr callers.
     case 'jsondata':
         if (!include_once ASCMS_CORE_PATH.'/JSONData.class.php')
 // TODO: This probably doesn't handle an error message very well?
