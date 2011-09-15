@@ -57,9 +57,10 @@
         </div>
         <div id="tabs-2">
           <form class="clearfix" action="." enctype="multipart/form-data" id="cm_form">
+            <input type="hidden" name="id" id="pageId" value="new" />
             <div class="clearfix">
               <div class="additionalInfo">
-                <label class="dontShow" for="input1">[[TXT_PAGETITLE]]</label><input id="input1" type="text" value="[[PAGETITLE]]" name="title" />
+                <label class="dontShow" for="input1">[[TXT_PAGETITLE]]</label><input id="title" type="text" value="[[PAGETITLE]]" name="title" />
                 <a href="#" id="showHideInfo">Show</a>
               </div>
               <div id="additionalInfo" class="additionalInfo">
@@ -67,32 +68,32 @@
                   <h2>[[TXT_ACTIVE_FROM_TO]]</h2>
 
                   <div class="twoCols">
-                    <label for="active-from" class="twoCols">[[TXT_ACTIVE_FROM]]</label>
-                    <input id="active-from" class="twoCols date" type="text" value="[[ACTIVE_FROM]]" name="start" />
+                    <label for="start" class="twoCols">[[TXT_ACTIVE_FROM]]</label>
+                    <input id="start" class="twoCols date" type="text" value="[[ACTIVE_FROM]]" name="start" />
                   </div>
 
                   <div class="twoCols">
-                    <label for="active-to" class="twoCols">[[TXT_ACTIVE_TO]]</label>
-                    <input id="active-to" class="twoCols date" type="text" value="[[ACTIVE_TO]]" name="end" />
+                    <label for="end" class="twoCols">[[TXT_ACTIVE_TO]]</label>
+                    <input id="end" class="twoCols date" type="text" value="[[ACTIVE_TO]]" name="end" />
                   </div>
                 </div>
                 <h2>[[TXT_META_INFORMATION]]</h2>
 
                 <div class="clearfix space">
-                  <label for="meta-title" class="oneCol">[[TXT_META_TITLE]]</label>
-                  <input id="meta-title" class="oneCol" type="text" value="[[META_TITLE]]" nameg="metatitle" />
+                  <label for="metatitle" class="oneCol">[[TXT_META_TITLE]]</label>
+                  <input id="metatitle" class="oneCol" type="text" value="[[META_TITLE]]" nameg="metatitle" />
                 </div>
                 <div class="clearfix space">
-                  <label for="meta-kwords" class="oneCol">[[TXT_META_KWORDS]]</label>
-                  <input id="meta-kwords" class="oneCol" type="text" value="[[META_KWORDS]]" name="metakeys" />
+                  <label for="metakeys" class="oneCol">[[TXT_META_KWORDS]]</label>
+                  <input id="metakeys" class="oneCol" type="text" value="[[META_KWORDS]]" name="metakeys" />
                 </div>
                 <div class="clearfix space">
-                  <label for="meta-desc" class="oneCol">[[TXT_META_DESC]]</label>
-                  <input id="meta-desc" class="oneCol" type="text" value="[[META_DESC]]" name="metadesc" />
+                  <label for="metadesc" class="oneCol">[[TXT_META_DESC]]</label>
+                  <input id="metadesc" class="oneCol" type="text" value="[[META_DESC]]" name="metadesc" />
                 </div>
                 <div class="clearfix">
-                  <label for="meta-robots" class="oneCol">[[TXT_META_ROBOTS]]</label>
-                  <input id="meta-robots" class="oneCol" type="checkbox" value="[[META_ROBOTS]]" name="metarobots" />
+                  <label for="metarobots" class="oneCol">[[TXT_META_ROBOTS]]</label>
+                  <input id="metarobots" class="oneCol" type="checkbox" value="[[META_ROBOTS]]" name="metarobots" />
                 </div>
               </div>
 
