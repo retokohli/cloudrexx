@@ -7,10 +7,13 @@
         </ul>
 
         <div id="tabs-1">
+            type
+        </div>
+        <div id="tabs-2">
             <form class="clearfix" action="." enctype="multipart/form-data" id="cm_form">
                 <div class="clearfix">
                     <div class="additionalInfo">
-                        <label class="dontShow" for="input1">[[txt-pagetitle]]</label><input id="input1" type="text" value="[[pagetitle]]"/>
+                        <label class="dontShow" for="input1">[[txt-pagetitle]]</label><input id="input1" type="text" value="[[pagetitle]]" name="title" />
                         <a href="#" id="showHideInfo">Show</a>
                     </div>
                     <div id="additionalInfo" class="additionalInfo">
@@ -19,36 +22,36 @@
 
                             <div class="date">
                                 <label for="active-from" class="date">[[txt-active-from]]</label>
-                                <input id="active-from" class="date" type="text" value="[[active-from]]"/>
+                                <input id="active-from" class="date" type="text" value="[[active-from]]" name="start" />
                             </div>
 
                             <div class="date">
                                 <label for="active-to" class="date">[[txt-active-to]]</label>
-                                <input id="active-to" class="date" type="text" value="[[active-to]]"/>
+                                <input id="active-to" class="date" type="text" value="[[active-to]]" name="end" />
                             </div>
                         </div>
                         <h2>[[txt-meta-information]]</h2>
 
                         <div class="clearfix space">
                             <label for="meta-title" class="meta">[[txt-meta-title]]</label>
-                            <input id="meta-title" class="meta" type="text" value="[[meta-title]]"/>
+                            <input id="meta-title" class="meta" type="text" value="[[meta-title]]" name="metatitle" />
                         </div>
                         <div class="clearfix space">
                             <label for="meta-kwords" class="meta">[[txt-meta-kwords]]</label>
-                            <input id="meta-kwords" class="meta" type="text" value="[[meta-kwords]]"/>
+                            <input id="meta-kwords" class="meta" type="text" value="[[meta-kwords]]" name="metakeys" />
                         </div>
                         <div class="clearfix space">
                             <label for="meta-desc" class="meta">[[txt-meta-desc]]</label>
-                            <input id="meta-desc" class="meta" type="text" value="[[meta-desc]]"/>
+                            <input id="meta-desc" class="meta" type="text" value="[[meta-desc]]" name="metadesc" />
                         </div>
                         <div class="clearfix">
                             <label for="meta-robots" class="meta">[[txt-meta-robots]]</label>
-                            <input id="meta-robots" class="meta" type="checkbox" value="[[meta-robots]]"/>
+                            <input id="meta-robots" class="meta" type="checkbox" value="[[meta-robots]]" name="metarobots" />
                         </div>
                     </div>
 
                 </div>
-                <textarea id="cm_ckeditor" rows="15" cols="45"></textarea>
+                <textarea id="cm_ckeditor" rows="15" cols="45" name="content"></textarea>
 
                 <div id="buttons">
                     <button id="preview" class="btn left"><span>[[preview]]</span></button>
@@ -57,7 +60,6 @@
                 </div>
             </form>
         </div>
-        <div id="tabs-2">Test Tab2</div>
         <div id="tabs-3">Test Tab3</div>
         <div id="tabs-4">Test Tab4</div>
         <div id="tabs-5">Test Tab5</div>
