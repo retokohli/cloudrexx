@@ -124,7 +124,7 @@ h1{ font-size: 20px }
     cursor: pointer;
     padding: 0 0 10px
 }
-.additionalInfo div.date{
+.additionalInfo div.twoCols{
     margin: 0 30px 0 0;
     overflow: hidden;
     width: 340px;
@@ -137,13 +137,13 @@ div.date img{
     left: 3px;
     top: 1px;
 }
-.additionalInfo label.date{
+.additionalInfo label.twoCols{
     display:block;
     width: 150px;
     line-height: 22px;
     float: left;
 }
-.additionalInfo  input.date{
+.additionalInfo  input.twoCols{
     display:block;
     float: left;
     width: 140px;
@@ -152,15 +152,15 @@ div.date img{
     font-size: 12px;
 }
 
-.additionalInfo div.meta{
+.additionalInfo div.oneCol{
     
 }
-.additionalInfo label.meta{
+.additionalInfo label.oneCol{
     display:block;
     width: 150px;
     float:left;
 }
-.additionalInfo input.meta{
+.additionalInfo input.oneCol{
     font-size: 12px;
     height: 22px;
     line-height: 22px;
@@ -168,7 +168,17 @@ div.date img{
     display:block;
     width: 702px;
 }
-.additionalInfo input.meta[type="checkbox"]{
+.additionalInfo select.oneCol{
+    font-size: 12px;
+    height: 22px;
+    line-height: 22px;
+    float:left;
+    display:block;
+    width: 702px;
+}
+
+
+.additionalInfo input.oneCol[type="checkbox"]{
     width: 20px;
 }
 
