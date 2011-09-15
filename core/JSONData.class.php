@@ -62,9 +62,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 */
             die();
         }
-		else {
-
-    // TODO: This part should surely be moved to a unified json interface to/fro doctrine.
+		elseif ($_GET['class'] == 'page' && $_GET['action'] == 'get') {
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 		    $page = $pageRepo->find($_GET['id']);
 
@@ -78,8 +76,8 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
                 'metadesc'      =>  $page->getMetadesc(),
                 'metakeys'      =>  $page->getMetakeys(),
                 'metarobots'    =>  $page->getMetarobots(),
-                'start'         =>  $page->getStart(),
-                'end'           =>  $page->getEnd(),
+                'start'         =>  $page->getStart()->format('d.m.Y H:i:s'),
+                'end'           =>  $page->getEnd()->format('d.m.Y H:i:s'),
                 'editingStatus' =>  $page->getEditingStatus(),
                 'display'       =>  $page->getDisplay(),
                 'active'        =>  $page->getActive(),
@@ -96,22 +94,31 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
                 'protection'    =>  $page->getProtection(),
                 'slug'          =>  $page->getSlug()
             );
-            
-    // browsers will pass rendering of application/* MIMEs to other applications, usually.
-    // Skip the following line for debugging, if so desired
+                    
+            // browsers will pass rendering of application/* MIMEs to other applications, usually.
+            // Skip the following line for debugging, if so desired
             header('Content-Type: application/json');
 
-    // CSRF protection adds CSRF info to anything it's able to find. Disable it whenever
-    // outputting json
+            // CSRF protection adds CSRF info to anything it's able to find. Disable it whenever
+            // outputting json
             $csrf_tags = ini_get('url_rewriter.tags');
             ini_set('url_rewriter.tags', '');
 
             die(json_encode($page));
 
-    // Just a reminder to switch csrf prot back on after being done outputting json. This
-    // will never get called
+            // Just a reminder to switch csrf prot back on after being done outputting json. This
+            // will never get called
             ini_set('url_rewriter.tags', $csrf_tags);
 		}
+        elseif ($_POST['id'] == 'new') {
+            echo "CREATING ".$_POST['id']." PAGE:\n";
+            print_r($_POST);
+        }
+        else {
+            echo "STORING DATA FOR PAGE ".$_POST['id'].":\n";
+            print_r($_POST);
+
+        }
 	}
 
     // Renders a jsTree friendly representation of the Node tree (in json)
