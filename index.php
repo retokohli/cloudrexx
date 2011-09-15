@@ -185,7 +185,18 @@ $extractedLanguage = 0;
 
 $redirectToCorrectLanguageDir = function() use ($le, $url, $_LANGID, $_CONFIG) {
     $le->addLanguageDir($url, $_LANGID);
-    CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath());
+
+    //re-build get parameters, otherwise they're lost.
+    $getParams = '';
+    foreach($_GET as $k => $v) {
+        if($k == '__cap') //skip captured request from mod_rewrite
+            continue; 
+        $joiner='&';
+        if($getParams == '')
+            $joiner='?';
+        $getParams .= $joiner.urlencode($k).'='.urlencode($v);
+    }
+    CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath() . $getParams);
     die();
 };
 
