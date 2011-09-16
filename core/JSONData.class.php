@@ -83,7 +83,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
                 'active'        =>  $page->getActive(),
                 'target'        =>  $page->getTarget(),
                 'module'        =>  $page->getModule(),
-                'cmd'           =>  $page->getCmd(),
+                'cm_cmd'        =>  $page->getCmd(),
                 'node'          =>  $page->getNode()->getId(),
                 'skin'          =>  $page->getSkin(),
                 'caching'       =>  $page->getCaching(),
@@ -111,13 +111,71 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             ini_set('url_rewriter.tags', $csrf_tags);
 		}
         elseif ($_POST['id'] == 'new') {
-            echo "CREATING ".$_POST['id']." PAGE:\n";
-            print_r($_POST);
-        }
-        else {
-            echo "STORING DATA FOR PAGE ".$_POST['id'].":\n";
-            print_r($_POST);
 
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+
+    		$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+            $node = new \Cx\Model\ContentManager\Node();
+            $node->setParent($nodeRepo->getRoot());
+
+            $this->em->persist($node);
+
+            $page = new \Cx\Model\ContentManager\Page();
+            $page->setNode($node);
+
+            //$page->setType($_POST['type']);
+            $page->setTitle($_POST['title']);
+            // Start/End
+            $page->setMetakeys($_POST['metakeys']);
+            $page->setMetadesc($_POST['metadesc']);
+            $page->setContent($_POST['content']);
+            //$page->setModule($_POST['module']);
+            //$page->setCmd($_POST['cm_cmd']);
+            $page->setTarget($_POST['target']);
+            $page->setSlug($_POST['slug']);
+
+            $this->em->persist($page);
+            $this->em->flush();
+
+            DoctrineDebug::dump($page);
+            die();
+        }
+        elseif (intval($_POST['id'])) {
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+
+    		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+            $page = $pageRepo->find($_POST['id']);
+
+            $page->setType($_POST['type']);
+            $page->setTitle($_POST['title']);
+            // Start/End
+            $page->setMetakeys($_POST['metakeys']);
+            $page->setMetadesc($_POST['metadesc']);
+            $page->setContent($_POST['content']);
+            $page->setModule($_POST['module']);
+            $page->setCmd($_POST['cm_cmd']);
+            $page->setTarget($_POST['target']);
+            $page->setSlug($_POST['slug']);
+
+            $this->em->persist($page);
+            $this->em->flush();
+
+            DoctrineDebug::dump($page);
+            die();
+        }
+        elseif ($_GET['class'] == 'node') {
+            $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+            $node = $nodeRepo->find($_GET['id']);
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+
+
+            $node->setStatus($_POST['status']);
+            die('done');
         }
 	}
 
