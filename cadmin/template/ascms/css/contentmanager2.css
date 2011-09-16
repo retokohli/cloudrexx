@@ -46,9 +46,25 @@ h1{ font-size: 20px }
 #site-structure{
     border-right: 1px solid #d3d3d3; /* grey */
     float: left;
-    width: 19%;
+    width: 23%;
     overflow: hidden;
 }
+
+#site-structure li:hover > select {
+    display: inline !important;
+}
+#site-structure li:hover ul select {
+    display: none;
+}
+
+#site-structure li select {
+    border: none;
+    padding: 2px;
+    display: none;
+    position: absolute;
+    left: 17.5%;
+}
+
 
 .toplevel{
     background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
@@ -59,7 +75,7 @@ h1{ font-size: 20px }
     border-top: 1px solid #cccccc;
     float: left;
     overflow: hidden;
-    width: 80%;
+    width: 76%;
     margin: 0 -1px
 }
 #site-language{
