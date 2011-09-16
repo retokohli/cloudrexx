@@ -135,34 +135,6 @@ class ShopCategories
 
 
     /**
-     * OBSOLETE
-     * Returns an array representing the index for the tree of ShopCategories
-     * {@link $arrCategory}.
-     *
-     * See {@link ShopCategories::buildTreeArray()} for a detailed explanation
-     * of the array structure.
-     * Note that you *MUST* call either {@link ShopCategories::getTreeArray()}
-     * or {@link ShopCategories::buildTreeArray()} in order for the index
-     * to be initialized.
-     * @version 2.1.0
-     * @return  mixed                       The ShopCategoriy index array on
-     *                                      success, false on failure.
-     * @static
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     */
-    static function getTreeIndexArray()
-    {
-die("ShopCategories::getTreeIndexArray(): Obsolete method called");
-/*
-        // Return the same array if it's already been initialized
-        if (is_array(self::$arrCategoryIndex))
-            return self::$arrCategoryIndex;
-        return false;
-*/
-    }
-
-
-    /**
      * Builds the $arrCategory array as returned by
      * {@link ShopCategories::getTreeArray()}, representing a tree of
      * ShopCategories, not including the root chosen.
@@ -396,7 +368,7 @@ die("ShopCategories::getTreeIndexArray(): Obsolete method called");
         while ($shopCategoryId != 0) {
             $objCategory = ShopCategory::getById($shopCategoryId, FRONTEND_LANG_ID);
             if (!$objCategory) {
-                // Probably du to an illegal or unknown ID.
+                // Probably due to an illegal or unknown ID.
                 // Use a dummy array so the work can go on anyway.
                 self::$arrTrail = array(0, $shopCategoryId);
                 return false;
@@ -436,12 +408,9 @@ die("ShopCategories::getTreeIndexArray(): Obsolete method called");
      */
     static function getTreeNodeCount()
     {
-//DBG::log("ShopCategories::getTreeNodeCount(): Categories: ".var_export(self::$arrCategory, true));
         if (!is_array(self::$arrCategory)) {
-//DBG::log("ShopCategories::getTreeNodeCount(): No Categories, false");
             return false;
         }
-//DBG::log("ShopCategories::getTreeNodeCount(): Count: ".count(self::$arrCategory));
         return count(self::$arrCategory);
     }
 
@@ -450,19 +419,16 @@ die("ShopCategories::getTreeIndexArray(): Obsolete method called");
      * Returns the array of ShopCategory data for the given ID.
      *
      * If the ShopCategory array is not initialized, or if an invalid ID
-     * is provided, returns boolean false.
+     * is provided, returns null.
      * @param   integer     $id         The ShopCategory ID
-     * @return  mixed                   The ShopCategory data array, or false.
+     * @return  array                   The ShopCategory data array on
+     *                                  success, null otherwise
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
     static function getArrayById($id)
     {
-//        if (!isset(self::$arrCategoryIndex[$id])) return false;
-//        $index = self::$arrCategoryIndex[$id];
-//        return self::$arrCategory[$index];
-// TODO: Check existence!
-        return self::$arrCategory[$id];
+        return (empty(self::$arrCategory[$id]) ? null : self::$arrCategory[$id]);
     }
 
 
@@ -476,11 +442,11 @@ die("ShopCategories::getTreeIndexArray(): Obsolete method called");
      * @return  boolean                 True on success, false on failure,
      *                                  or null otherwise
      */
-    static function deleteById($id)
+    static function deleteById($id, $flagDeleteImages=false)
     {
         $objCategory = ShopCategory::getById($id);
         if ($objCategory === null) return null;
-        return $objCategory->delete();
+        return $objCategory->delete($flagDeleteImages);
     }
 
 
@@ -490,8 +456,9 @@ die("ShopCategories::getTreeIndexArray(): Obsolete method called");
      * Also removes associated subcategories and Products.
      * Images will only be erased from the disc if the optional
      * $flagDeleteImages parameter evaluates to true.
+     * @param   boolean $flagDeleteImages   Delete associated image files if
+     *                          true.  Defaults to false
      * @return  boolean         True on success, false otherwise
-     * @todo    Adopt this to using the $arrCategories object variable
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -499,10 +466,8 @@ die("ShopCategories::getTreeIndexArray(): Obsolete method called");
     {
         $arrChildCategoryId = self::getChildCategoryIdArray(0, false);
         foreach ($arrChildCategoryId as $id) {
-            $objCategory = ShopCategory::getById($id, FRONTEND_LANG_ID);
-            // delete siblings and Products as well; delete images if desired.
-// TODO: Add deleteById() method
-            if (!$objShopCategory->delete($flagDeleteImages)) return false;
+            // Delete siblings and Products as well; delete images if desired.
+            if (self::deleteById($id, $flagDeleteImages) === false) return false;
         }
         return true;
     }

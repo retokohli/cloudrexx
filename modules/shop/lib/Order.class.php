@@ -771,6 +771,28 @@ class Order
             return Message::error(
                 $_ARRAYLANG['TXT_SHOP_ERROR_DELETING_ORDER_LSV']);
         }
+        // Remove accounts autocreated for downloads
+// TODO: TEST!
+        $objOrder = self::getById($order_id);
+        if ($objOrder) {
+            $customer_id = $objOrder->customer_id();
+            $objCustomer = Customer::getById($customer_id);
+            if ($objCustomer) {
+                $customer_email =
+                    Orders::usernamePrefix."_${order_id}_%-".
+                    $objCustomer->email();
+                $objUser = FWUser::getFWUserObject()->objUser->getUsers(
+                    array('email' => $customer_email));
+                if ($objUser) {
+                    while (!$objUser->EOF) {
+                        if (!$objUser->delete()) {
+                            return false;
+                        }
+                        $objUser->next();
+                    }
+                }
+            }
+        }
         $query = "
             DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_orders`
              WHERE `id`=$order_id";

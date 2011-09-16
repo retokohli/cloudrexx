@@ -27,9 +27,6 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  * @version     2.1.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        From time to time, do something like this:
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories");
- *              $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
  */
 class ShopCategory
 {
@@ -492,12 +489,10 @@ class ShopCategory
                 return false;
             }
         }
-
 // TEST: Delete pictures, if requested
         if ($flagDeleteImages) {
             File::delete_file($this->picture());
         }
-
         // Delete Category
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories
@@ -505,6 +500,8 @@ class ShopCategory
         if (!$objResult) {
             return false;
         }
+        $objDatabase->Execute("
+            OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_categories");
         return true;
     }
 

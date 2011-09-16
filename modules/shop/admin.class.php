@@ -1313,9 +1313,6 @@ DBG::activate(DBG_ERROR_FIREPHP);
                     $zone_id, 'zone_id['.$shipper_id.']'),
                 'SHOP_SHIPPER_STATUS' => ($arrShipper['active']
                     ? HTML_ATTRIBUTE_CHECKED : ''),
-                // field not used anymore
-                //'SHOP_SHIPMENT_LANG_ID' => $this->_getLanguageMenu(
-//                    "shipmentLanguage[$shipper_id]", $val['lang_id']),
             ));
             self::$objTemplate->parse('shopShipper');
         }
@@ -1718,7 +1715,6 @@ DBG::activate(DBG_ERROR_FIREPHP);
             'SHOP_TOTAL_CATEGORIES' => $count,
         ));
         self::$objTemplate->parseCurrentBlock();
-
         self::$objTemplate->setCurrentBlock('category_row');
 // TODO: Add controls to fold parent categories
 //        $level_prev = null;

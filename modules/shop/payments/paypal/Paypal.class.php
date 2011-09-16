@@ -186,15 +186,7 @@ if (_PAYPAL_IPN_LOG) {
 }
             exit;
         }
-
-// TODO: Update to use SettingDb!
-        $query = "
-            SELECT `value`
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-             WHERE `name`='paypal_account_email'";
-        $objResult = $objDatabase->Execute($query);
-        $paypalAccountEmail = $objResult->fields['value'];
-
+        $paypalAccountEmail = SettingDb::getValue('paypal_account_email');
         $query = "
             SELECT sum, currency_id
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
@@ -309,7 +301,6 @@ if (_PAYPAL_IPN_LOG) {
         // The IPN may be received after the customer has left both
         // the PayPal site and the Shop!
 if (_PAYPAL_IPN_LOG) DBG::log("Updating Order ID $order_id status, new value $newOrderStatus");
-// TODO: See whether Orders::update_status()' signature is correct!
         $order_status = Orders::update_status(
             $order_id, $newOrderStatus, 'PaypalIPN');
 if (_PAYPAL_IPN_LOG) {
@@ -332,14 +323,9 @@ if (_PAYPAL_IPN_LOG) {
     {
         global $objDatabase;
 
-        $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                  WHERE `name`='paypal_account_email'";
-        $objResult = $objDatabase->Execute($query);
-if (!$objResult) die("Error querying PayPal account e-mail address");
-        $paypalAccountEmail = $objResult->fields['value'];
-
+        $paypalAccountEmail = SettingDb::getValue('paypal_account_email');
 /*
-TODO: Fix for version 2.3
+TODO: Fix for version 3
 $log = @fopen(ASCMS_DOCUMENT_ROOT.'/testIpn.txt', 'w');
 
         $currencyId = 1; // CHF
@@ -447,13 +433,7 @@ die('
 $log = @fopen(ASCMS_DOCUMENT_ROOT.'/ipnValidateLog.txt', 'w');
 
         $order_id = $_POST['custom'];
-
-        $query = "SELECT `value` FROM ".DBPREFIX."module_shop".MODULE_INDEX."_config
-                  WHERE `name`='paypal_account_email'";
-        $objResult = $objDatabase->Execute($query);
-@fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }
-        $paypalAccountEmail = $objResult->fields['value'];
-
+        $paypalAccountEmail = SettingDb::getValue('paypal_account_email');
         $query = "SELECT sum, currency_id FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders WHERE id=$order_id";
         $objResult = $objDatabase->Execute($query);
 @fwrite($log, "query $query\r\nresult ".($objResult ? 'true' : 'false')."\r\n"); if (!$objResult) { @fwrite($log, "Query failed:\r\n$query\r\n"); }

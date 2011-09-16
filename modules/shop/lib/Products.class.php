@@ -202,8 +202,7 @@ class Products
         if (   $flagLastFive
             || $flagSpecialoffer === SHOP_PRODUCT_DEFAULT_VIEW_LASTFIVE) {
             // Select last five (or so) products added to the database
-// TODO: This could (and maybe should) be extended so the Customer can
-// ask for the last modified Products as well
+// TODO: Extend for searching for most recently modified Products
             $limit = ($flagLastFive === true ? 5 : $flagLastFive);
             $queryOrder = ' ORDER BY `id` DESC';
             $queryCount = "SELECT $limit AS `numof_products`";
@@ -248,7 +247,6 @@ class Products
                 $querySelect .= ', '.$arrSqlPattern['field'];
                 $queryJoin .= $arrSqlPattern['join'];
                 $pattern = addslashes($pattern);
-// TODO: Unresolved: Test whether this filter acutally works
                 $queryWhere .= "
                     AND (   `product`.`id` LIKE '%$pattern%'
                          OR ".$arrSql['alias']['name']." LIKE '%$pattern%'
@@ -256,14 +254,6 @@ class Products
                          OR ".$arrSqlPattern['alias']['long']." LIKE '%$pattern%'
                          OR ".$arrSqlPattern['alias']['short']." LIKE '%$pattern%'
                          OR ".$arrSqlPattern['alias']['keys']." LIKE '%$pattern%')";
-// Old, won't work with aliased fields for some odd reason
-//                $queryWhere .= "
-//                    AND (   `product`.`id` LIKE '%$pattern%'
-//                         OR `name` LIKE '%$pattern%'
-//                         OR `code` LIKE '%$pattern%'
-//                         OR `long` LIKE '%$pattern%'
-//                         OR `short` LIKE '%$pattern%'
-//                         OR `keys` LIKE '%$pattern%')";
             }
         }
         $queryTail =
@@ -423,22 +413,29 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
      */
     static function set_active($arrId, $active)
     {
+        global $_ARRAYLANG;
+
         if (empty($arrId) || !is_array($arrId)) return null;
         $success = true;
         foreach ($arrId as $product_id) {
             $objProduct = Product::getById($product_id);
             if (!$objProduct) {
-// TODO: Error message
                 $success = false;
                 continue;
             }
             $objProduct->active($active);
             if (!$objProduct->store()) {
-// TODO: Error message
                 $success = false;
             }
         }
-        return $success;
+        if ($success) {
+            return Message::ok(
+                $_ARRAYLANG['TXT_SHOP_PRODUCTS_'.
+                    ($active ? '' : 'DE').'ACTIVATED']);
+        }
+        return Message::error(
+                $_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_'.
+                    ($active ? '' : 'DE').'ACTIVATING']);
     }
 
 
@@ -482,7 +479,6 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @todo    Apply the order setting!
      */
     static function getPictureByCategoryId($category_id)
     {
@@ -494,7 +490,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_products`
              WHERE FIND_IN_SET($category_id, `category_id`)
                AND `picture`!=''
-          ORDER BY `ord` ASC";
+             ORDER BY `ord` ASC";
         $objResult = $objDatabase->SelectLimit($query, 1);
         if ($objResult && $objResult->RecordCount() > 0) {
             // Got a picture

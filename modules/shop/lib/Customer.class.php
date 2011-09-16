@@ -521,7 +521,7 @@ DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID "
 //            'CUSTOMER_NOTE'       => $this->getProfileAttribute($index_notes),
 //            'CUSTOMER_TYPE'       => $this->getProfileAttribute($index_type),
 //            'CUSTOMER_RESELLER'   => $this->getProfileAttribute($index_reseller),
-//            'CUSTOMER_GROUP_ID'   => $this->group_id(),
+//            'CUSTOMER_GROUP_ID'   => current($this->getAssociatedGroupIds()),
         );
         if (isset($_SESSION['shop']['password'])) {
             $arrSubstitution['CUSTOMER_LOGIN'] = array(0 => array(

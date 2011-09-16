@@ -172,7 +172,7 @@ class Zones
              WHERE zone_id=$zone_id");
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("
-            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment
+            UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper
                SET zone_id=1
              WHERE zone_id=$zone_id");
         if (!$objResult) return false;
@@ -186,7 +186,7 @@ class Zones
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_zones");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_payment");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper");
         return true;
     }
 
@@ -293,15 +293,13 @@ class Zones
      * @param   integer   $zone_id      The Zone ID
      * @param   integer   $shipper_id   The Shipper ID
      * @return  boolean                 True on success, false otherwise
-     * @todo    Rename this method to update_shipper_relation
-     * @todo    Rename the table to -rel_*shipper*
      */
-    static function storeShipmentRelation($zone_id, $shipper_id)
+    static function update_shipper_relation($zone_id, $shipper_id)
     {
         global $objDatabase;
 
         $objResult = $objDatabase->Execute("
-            REPLACE INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment (
+            REPLACE INTO ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper (
                `zone_id`, `shipper_id`
              ) VALUES (
                $zone_id, $shipper_id
@@ -344,7 +342,7 @@ class Zones
 
         $query = "
             SELECT `relation`.`zone_id`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `relation`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper` AS `relation`
               JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
                 ON `zone`.`id`=`relation`.`zone_id`
              WHERE `zone`.`active`=1
@@ -416,13 +414,15 @@ class Zones
         }
         UpdateUtil::table($table_name, $table_structure, $table_index);
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipment';
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
+        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
         $table_structure = array(
             'shipper_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'shipment_id'),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'zones_id'),
         );
         $table_index = array();
         UpdateUtil::table($table_name, $table_structure, $table_index);
+        UpdateUtil::table_rename($table_name, $table_name_new);
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_countries';
         $table_structure = array(

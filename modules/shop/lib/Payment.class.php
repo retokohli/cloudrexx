@@ -5,7 +5,6 @@
  * @package     contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  * @version     2.1.0
  */
 
@@ -17,7 +16,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Zones.class.php';
  * @package     contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
  * @subpackage  module_shop
- * @todo        Edit PHP DocBlocks!
  * @version     2.1.0
  */
 class Payment
@@ -152,9 +150,8 @@ class Payment
         global $objDatabase;
 
         if (is_null(self::$arrPayments)) self::init();
-// TODO: Rewrite to only test this when it's selected,
-// and to include any currency otherwise.
-        if (   isset($_SESSION['shop']['paymentId'])) {
+// TODO: TEST
+        if (isset($_SESSION['shop']['paymentId'])) {
             $payment_id = $_SESSION['shop']['paymentId'];
             $processor_id = self::getPaymentProcessorId($payment_id);
             if ($processor_id == 2) {
@@ -531,10 +528,7 @@ class Payment
             'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'zones_id'),
         );
-        $table_index = array(
-// TODO: Verify primary key!
-//            'primary' => array('zone_id', 'payment_id'),
-        );
+        $table_index = array();
         UpdateUtil::table($table_name, $table_structure, $table_index);
 
         // Always

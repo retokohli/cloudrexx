@@ -695,6 +695,8 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('numof_products_per_page_frontend', 25, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('numof_orders_per_page_backend', 25, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('numof_customers_per_page_backend', 25, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('numof_manufacturers_per_page_backend', 25, ++$i,
@@ -712,9 +714,8 @@ DBG::log("ShopSettings::errorHandler(): Migrating");
         SettingDb::add('user_profile_attribute_notes', 0, 352,
             SettingDb::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE, null, 'config');
         // Note that the Settings *MUST* be reinited after adding new entries!
-// TODO: Add more new/missing settings?
-/*
-*/
+
+        // Add more new/missing settings here
 
 DBG::log("ShopSettings::errorHandler(): Done adding");
 
