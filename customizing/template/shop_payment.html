@@ -1,0 +1,132 @@
+<div id="shop">
+<!-- BEGIN core_message -->
+  <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
+<!-- END core_message -->
+  <form action="index.php?section=shop&amp;cmd=payment" name="shopForm" method="post">
+    <div class="payment">
+      <table summary="" cellspacing="1" cellpadding="2" width="100%" border="0">
+      <colgroup><col width="25%" /><col width="50%" /><col width="25%" /></colgroup>
+        <tr>
+          <th nowrap="nowrap" colspan="3">{TXT_PRODUCTS}</th>
+        </tr>
+        <tr class="row1">
+          <td valign="top" nowrap="nowrap">
+            <strong>{TXT_TOTALLY_GOODS}</strong>&nbsp;{SHOP_TAX_PRODUCTS_TXT}
+          </td>
+          <td nowrap="nowrap">
+            {SHOP_TOTALITEM}&nbsp;{TXT_PRODUCT_S}
+          </td>
+          <td nowrap="nowrap" align="right">
+            <strong>{SHOP_TOTALPRICE}&nbsp;{SHOP_UNIT}</strong>
+          </td>
+        </tr>
+<!-- BEGIN shopCouponTotal -->
+        <tr valign="top" class="row3">
+          <td>
+            <strong>{SHOP_DISCOUNT_COUPON_TOTAL}</strong>
+          </td>
+          <td>&nbsp;</td>
+          <td align="right">
+            <strong>{SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT}&nbsp;{SHOP_UNIT}</strong>
+          </td>
+        </tr>
+<!-- END shopCouponTotal -->
+<!-- BEGIN shopShipment -->
+        <tr class="row2">
+          <td>
+            <strong>{TXT_SHIPPING_METHODS}</strong>
+<!-- BEGIN shopWeight -->
+            &nbsp;({TXT_TOTAL_WEIGHT}&nbsp;{SHOP_TOTAL_WEIGHT})
+<!-- END shopWeight -->
+          </td>
+          <td>
+            {SHOP_SHIPMENT_MENU}
+<!-- BEGIN no_shipper -->
+            {TXT_SHIPPER_NO_GOOD}
+<!-- END no_shipper -->
+          </td>
+          <td align="right">
+            {SHOP_SHIPMENT_PRICE}&nbsp;{SHOP_UNIT}
+          </td>
+        </tr>
+<!-- END shopShipment -->
+<!-- BEGIN shopPayment -->
+        <tr class="row1">
+          <td>
+            <strong>{TXT_PAYMENT_TYPES}</strong>
+          </td>
+          <td>
+            {SHOP_PAYMENT_MENU}
+          </td>
+          <td align="right">
+            {SHOP_PAYMENT_PRICE}&nbsp;{SHOP_UNIT}
+          </td>
+        </tr>
+<!-- END shopPayment -->
+<!-- BEGIN lsv -->
+        <tr class="row1">
+          <td><strong>{TXT_PAYMENT_LSV}</strong></td>
+          <td colspan="2">
+            <p><label>{TXT_ACCOUNT_HOLDER}</label><input type="text" value="{SHOP_ACCOUNT_HOLDER}" name="account_holder" /></p>
+            <p><label>{TXT_ACCOUNT_BANK}</label><input type="text" value="{SHOP_ACCOUNT_BANK}" name="account_bank" /></p>
+            <p><label>{TXT_ACCOUNT_BLZ}</label><input type="text" value="{SHOP_ACCOUNT_BLZ}" name="account_blz" /></p>
+          </td>
+        </tr>
+<!-- END lsv -->
+<!-- BEGIN shopTax -->
+        <tr class="row2">
+          <td colspan="2">
+            <strong>{TXT_TAX_PREFIX}</strong>
+          </td>
+          <td align="right">
+            {SHOP_TAX_PRICE}
+          </td>
+        </tr>
+<!-- END shopTax -->
+
+<!-- BEGIN shopCoupon -->
+        <tr class="row2">
+          <td>
+            <strong>{TXT_SHOP_DISCOUNT_COUPON_CODE}</strong>
+          </td>
+          <td>
+            <input type="text" maxlength="20" name="coupon_code"
+                value="{SHOP_DISCOUNT_COUPON_CODE}"
+                onchange="document.forms['shopForm'].submit();" />
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+<!-- END shopCoupon -->
+
+        <tr class="row3">
+          <td colspan="2">
+            <strong>{TXT_TOTAL_PRICE}</strong>&nbsp;{SHOP_TAX_GRAND_TXT}
+          </td>
+          <td align="right">
+            <strong>{SHOP_GRAND_TOTAL} {SHOP_UNIT}</strong>
+          </td>
+        </tr>
+
+        <tr class="row1">
+          <td colspan="3">&nbsp;</td>
+        </tr>
+
+        <tr class="row1">
+          <td valign="top">{TXT_COMMENTS}</td>
+          <td colspan="2">
+            <textarea name="customer_note" rows="4" cols="52">{SHOP_CUSTOMERNOTE}</textarea>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="message">
+      <p>
+        <input type="checkbox" value="checked" name="agb" id="agb" {SHOP_AGB} />
+        <label for="agb" class="description">{TXT_ACCEPT_TAC}</label>
+      </p>
+      <p>
+        <input type="submit" value="{TXT_UPDATE}" name="refresh" />&nbsp;<input type="submit" value="{TXT_NEXT}" name="check" />
+      </p>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,60 @@
+[CUSTOMER_SALUTATION],
+
+Herzlichen Dank f&uuml;r Ihre Bestellung im Contrexx Online Shop.
+
+Ihre Auftrags-Nr. lautet: [ORDER_ID]
+Ihre Kunden-Nr. lautet: [CUSTOMER_ID]
+Bestellungszeit: [ORDER_TIME]
+
+------------------------------------------------------------------------
+Bestellinformationen
+------------------------------------------------------------------------[[ORDER_ITEM]
+ID:             [PRODUCT_ID]
+Artikel Nr.:    [PRODUCT_CODE]
+Menge:          [PRODUCT_QUANTITY]
+Beschreibung:   [PRODUCT_TITLE] [PRODUCT_OPTIONS]
+Stückpreis:      [PRODUCT_ITEM_PRICE] [CURRENCY]                       Total [PRODUCT_TOTAL_PRICE] [CURRENCY][[USER_DATA]
+Benutzername:   [USER_NAME]
+Passwort:       [USER_PASS][USER_DATA]][[COUPON_DATA]
+Gutschein Code: [COUPON_CODE][COUPON_DATA]][ORDER_ITEM]]
+------------------------------------------------------------------------
+Zwischensumme:    [ORDER_ITEM_COUNT] Artikel                             [ORDER_ITEM_SUM] [CURRENCY][[DISCOUNT_COUPON]
+Gutschein Code: [DISCOUNT_COUPON_CODE]   [DISCOUNT_COUPON_AMOUNT] [CURRENCY][DISCOUNT_COUPON]]
+------------------------------------------------------------------------
+Versandart:     [SHIPPING_NAME]   [SHIPPING_PRICE] [CURRENCY]
+Bezahlung:      [PAYMENT_NAME]   [PAYMENT_PRICE] [CURRENCY]
+[TAX_TEXT]                   [TAX_PRICE] [CURRENCY]
+------------------------------------------------------------------------
+Gesamtsumme                                                [ORDER_SUM] [CURRENCY]
+------------------------------------------------------------------------
+
+Ihre Kundenadresse:
+[CUSTOMER_COMPANY]
+[CUSTOMER_PREFIX] [CUSTOMER_FIRSTNAME] [CUSTOMER_LASTNAME]
+[CUSTOMER_ADDRESS]
+[CUSTOMER_ZIP] [CUSTOMER_CITY]
+[CUSTOMER_COUNTRY][[SHIPPING_ADDRESS]
+
+
+Lieferadresse:
+[SHIPPING_COMPANY]
+[SHIPPING_PREFIX] [SHIPPING_FIRSTNAME] [SHIPPING_LASTNAME]
+[SHIPPING_ADDRESS]
+[SHIPPING_ZIP] [SHIPPING_CITY]
+[SHIPPING_COUNTRY][SHIPPING_ADDRESS]]
+
+Ihr Link zum Online Store: http://www.contrexx.com/[[CUSTOMER_LOGIN]
+
+Ihre Zugangsdaten zum Shop:
+Benutzername:   [CUSTOMER_USERNAME]
+Passwort:       [CUSTOMER_PASSWORD][CUSTOMER_LOGIN]]
+
+Wir freuen uns auf Ihren nächsten Besuch im Contrexx Online Store und
+wünschen Ihnen noch einen schönen Tag.
+
+P.S. Diese Auftragsbestätigung wurde gesendet an: [CUSTOMER_EMAIL]
+
+Mit freundlichen Grüssen
+Ihr Contrexx Online Shop Team
+
+http://www.contrexx.com/
