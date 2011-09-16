@@ -1,0 +1,24 @@
+<!-- BEGIN message -->
+[[ACCESS_SETTINGS_MESSAGE]]
+<br /><br />
+<!-- END message -->
+
+<p>[[TXT_ACCESS_NEWSLETTERS_SUBSCRIBE_COLON]]</p>
+
+<form action="index.php?section=access&cmd=settings_newsletter" method="post">
+  <ul style="list-style: none; margin: 0; padding: 0">
+<!-- BEGIN newsletter_row -->
+    <li style="display: block; margin-top: 1px;">
+      <input type="checkbox" [[ACCESS_NEWSLETTER_SELECTED]]
+          name="newsletter_categories[]"
+          id="newsletter_categories-[[ACCESS_NEWSLETTER_ID]]"
+          value="[[ACCESS_NEWSLETTER_ID]]" />
+      <label for="newsletter_categories-[[ACCESS_NEWSLETTER_ID]]">
+        [[ACCESS_NEWSLETTER_NAME]]
+      </label>
+    </li>
+<!-- END newsletter_row -->
+  </ul>
+  <br />
+  [[ACCESS_SET_NEWSLETTER_BUTTON]]
+</form>
