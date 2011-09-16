@@ -220,7 +220,6 @@ class Shipment
      * @return  array                   Array of shipment IDs on success,
      *                                  false otherwise
      * @static
-     * @todo    Rename shipment_id to shipper_id in all affected relations
      */
     static function getCountriesRelatedShippingIdArray($countryId=0)
     {
@@ -233,7 +232,7 @@ class Shipment
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `country`
               JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
                 ON `country`.`zone_id`=`zone`.`id`
-              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `relation`
+              JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper` AS `relation`
                 ON `zone`.`id`=`relation`.`zone_id`
               JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `shipper`
                 ON `relation`.`shipper_id`=`shipper`.`id`
@@ -355,7 +354,7 @@ class Shipment
              WHERE shipper_id=".$shipper_id);
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("
-            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment
+            DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper
              WHERE shipper_id=".$shipper_id);
         if (!$objResult) return false;
         $objResult = $objDatabase->Execute("
@@ -363,7 +362,7 @@ class Shipment
              WHERE id=".$shipper_id);
         if (!$objResult) return false;
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipment_cost");
-        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment");
+        $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper");
         $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_shipper");
         return true;
     }
@@ -482,7 +481,7 @@ class Shipment
             !empty($_POST['active_new']),
             intval($_POST['zone_id_new']));
         if (!$shipper_id) return false;
-        return Zones::storeShipmentRelation(
+        return Zones::update_shipper_relation(
             intval($_POST['zone_id_new']), $shipper_id);
     }
 
@@ -566,7 +565,7 @@ class Shipment
             $success &= self::_update_shipper($shipper_id, $active);
             $success &= self::_rename_shipper(
                 $shipper_id, $shipper_name);
-            $success &= Zones::storeShipmentRelation($zone_id, $shipper_id);
+            $success &= Zones::update_shipper_relation($zone_id, $shipper_id);
         }
         if ($changed) return $success;
         return null;
@@ -742,7 +741,7 @@ class Shipment
                 SELECT DISTINCT `country`.`id`".
                        $arrSqlName['field']."
                   FROM `".DBPREFIX."module_shop".MODULE_INDEX."_shipper` AS `shipper`
-                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipment` AS `rel_shipper`
+                 INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_shipper` AS `rel_shipper`
                     ON `shipper`.`id`=`rel_shipper`.`shipment_id`
                  INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_zones` AS `zone`
                     ON `rel_shipper`.`zone_id`=`zone`.`id`

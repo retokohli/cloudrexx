@@ -910,3 +910,7 @@ $_ARRAYLANG['TXT_SHOP_ORDERS_NONE_FOUND'] = "Für die gewählten Kriterien sind 
 $_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM'] = "Der Bestellung sind keine Artikel zugeordnet";
 $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_EXCL'] = "exkl. MwSt.";
 $_ARRAYLANG['TXT_SHOP_VAT_PREFIX_INCL'] = "inkl. MwSt.";
+$_ARRAYLANG['TXT_SHOP_PRODUCTS_DEACTIVATED'] = "Die ausgewählten Artikel wurden deaktiviert";
+$_ARRAYLANG['TXT_SHOP_PRODUCTS_ACTIVATED'] = "Die ausgewählten Artikel wurden aktiviert";
+$_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_DEACTIVATING'] = "Beim Deaktivieren der Artikel ist ein Fehler aufgetreten";
+$_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_ACTIVATING'] = "Beim Aktivieren der Artikel ist ein Fehler aufgetreten";

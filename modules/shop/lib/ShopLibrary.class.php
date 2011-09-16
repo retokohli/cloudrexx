@@ -25,7 +25,6 @@ class ShopLibrary
 {
     const noPictureName = 'no_picture.gif';
     const thumbnailSuffix = '.thumb';
-    const usernamePrefix = 'user';
 
     /**
      * Payment result constant values
@@ -40,51 +39,6 @@ class ShopLibrary
     const REGISTER_MANDATORY = 'mandatory';
     const REGISTER_OPTIONAL = 'optional';
     const REGISTER_NONE = 'none';
-
-    /**
-     * Returns HTML dropdown menu code for all active frontend languages.
-     * See {@link /lib/FRAMEWORK/Language.class.php}.
-     * @param   string  $menuName   Optional name of the menu
-     * @param   string  $selectedId Optional preselected language ID
-     * @return  string  $menu       The dropdown menu string
-     */
-    function _getLanguageMenu($menuName='language', $selectedId=null)
-    {
-        return Html::getSelectCustom(
-            $menuName, FWLanguage::getMenuoptions($selectedId));
-    }
-
-
-    /**
-     * gets a select box with all the payment handlers
-     * @param   string  $menuName
-     * @param   string  $selectedId
-     * @return  string  $menu
-     */
-    function _getPaymentHandlerMenu($menuName='paymentHandler', $selectedId=0)
-    {
-        global $objDatabase;
-
-        $menu = "\n<select name=\"".$menuName."\">\n";
-        $query = "
-            SELECT id, name
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_payment_processors
-             WHERE status=1
-             ORDER BY name
-        ";
-        $objResult = $objDatabase->Execute($query);
-        while (!$objResult->EOF) {
-
-            $menu .=
-                '<option value="'.$objResult->fields['id'].'"'.
-                ($selectedId == $objResult->fields['id']
-                    ? ' selected="selected"' : ''
-                ).'>'.$objResult->fields['name']."</option>\n";
-            $objResult->MoveNext();
-        }
-        $menu .= "</select>\n";
-        return $menu;
-    }
 
 
     /**
@@ -172,114 +126,6 @@ class ShopLibrary
 
 
     /**
-     * Validate the email address
-     *
-     * Does an extensive syntax check to determine whether the string argument
-     * is a real email address.
-     * Note that this doesn't mean that the address is necessarily valid,
-     * but only that it isn't just an arbitrary character sequence.
-     * @todo    Some valid addresses are rejected by this method,
-     * such as *%+@mymail.com.
-     * Valid (atom) characters are: "!#$%&'*+-/=?^_`{|}~" (without the double quotes),
-     * see {@link http://rfc.net/rfc2822.html RFC 2822} for details.
-     * @todo    The rules applied to host names are not correct either, see
-     * {@link http://rfc.net/rfc1738.html RFC 1738} and {@link http://rfc.net/rfc3986.html}.
-     * Excerpt from RFC 1738:
-     * - hostport       = host [ ":" port ]
-     * - host           = hostname | hostnumber
-     * - hostname       = *[ domainlabel "." ] toplabel
-     * - domainlabel    = alphadigit | alphadigit *[ alphadigit | "-" ] alphadigit
-     * - toplabel       = alpha | alpha *[ alphadigit | "-" ] alphadigit
-     * - alphadigit     = alpha | digit
-     * Excerpt from RFC 3986:
-     * "Non-ASCII characters must first be encoded according to UTF-8 [STD63],
-     * and then each octet of the corresponding UTF-8 sequence must be percent-
-     * encoded to be represented as URI characters".
-     * @todo    This doesn't really belong here.  Should be placed into a
-     *          proper core e-mail class as a static method.
-     * @version 1.0
-     * @param   string  $string
-     * @return  boolean
-     */
-    function shopCheckEmail($string)
-    {
-        if (preg_match(
-            '/^[a-z0-9]+([-_\.a-z0-9]+)*'.  // user
-            '@([a-z0-9]+([-\.a-z0-9]+)*)+'. // domain
-            '\.[a-z]{2,4}$/',               // sld, tld
-            $string
-        )) {
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * OBSOLETE
-     *
-     * Checks that the email address isn't already used by an other customer
-     * @access  private
-     * @global          $objDatabase    Database object
-     * @param   string  $email          The users' email address
-     * @param   integer $customer_id    The customers' ID
-     * @return  boolean                 True if the email address is unique, false otherwise
-     */
-    function _checkEmailIntegrity($email, $customer_id=0)
-    {
-        ++$email;
-        ++$customer_id;
-die("ShopLibrary::_checkEmailIntegrity(): Obsolete method called!");
-/*
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT customerid
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-             WHERE email='$email'
-               ".($customer_id > 0 ? "AND customerid!=$customer_id" : '')
-        );
-        if ($objResult && $objResult->RecordCount() == 0) {
-            return true;
-        }
-        return false;
-*/
-    }
-
-
-    /**
-     * OBSOLETE
-     *
-     * Checks that the username isn't already used by an other customer
-     * @access  private
-     * @global          $objDatabase    Database object
-     * @param   string  $username       The user name
-     * @param   integer $customer_id    The customers' ID
-     * @return  boolean                 True if the user name is unique, false otherwise
-     */
-    function _checkUsernameIntegrity($username, $customer_id=0)
-    {
-        ++$username;
-        ++$customer_id;
-die("ShopLibrary::_checkUsernameIntegrity(): Obsolete method called!");
-/*
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT customerid
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_customers
-             WHERE username='$username'
-               ".($customer_id > 0 ? "AND customerid!=$customer_id" : '')
-        );
-        if ($objResult && $objResult->RecordCount() == 0) {
-            return true;
-        }
-        return false;
-*/
-    }
-
-
-    /**
      * Convert the order ID and date to a custom order ID of the form
      * "lastnameYYY", where YYY is the order ID.
      *
@@ -363,118 +209,6 @@ die("ShopLibrary::_checkUsernameIntegrity(): Obsolete method called!");
 
 
     /**
-     * OBSOLETE -- REMOVE
-     * Deletes the order with the given ID.
-     *
-     * If no valid ID is specified, looks in the GET and POST request
-     * arrays for parameters called order_id and selectedOrderId, respectively.
-     * Also removes related order items, attributes, uploaded files, and the
-     * user accounts created for the downloads.
-     * @todo    Fix user account deletion
-     * @param   integer   $order_id       The optional order ID
-     * @return  boolean                   True on success, false otherwise
-     * @global  mixed     $objDatabase    Database object
-     */
-    function deleteOrder($order_id=0)
-    {
-        ++$order_id;
-die("OBSOLETE: ShopLibrary::deleteOrder()");
-/*
-        global $objDatabase, $_ARRAYLANG;
-
-        $arrOrderId = array();
-        // Prepare the array with the IDs of the orders to delete
-        if (empty($order_id)) {
-            if (isset($_GET['order_id']) && !empty($_GET['order_id'])) {
-                array_push($arrOrderId, $_GET['order_id']);
-            } elseif (isset($_POST['selectedOrderId']) && !empty($_POST['selectedOrderId'])) {
-                $arrOrderId = $_POST['selectedOrderId'];
-            }
-        } else {
-            array_push($arrOrderId, $order_id);
-        }
-        if (empty($arrOrderId)) {
-            return true;
-        }
-
-        // Delete selected orders
-        foreach ($arrOrderId as $order_id) {
-            // Delete files uploaded with the order
-            $query = "
-                SELECT product_option_value
-                  FROM ".DBPREFIX."module_shop_order_items_attributes
-                 WHERE order_id=$order_id";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                self::errorHandling();
-                return false;
-            }
-            while (!$objResult->EOF) {
-                $filename =
-                    ASCMS_PATH.'/'.$this->uploadDir.'/'.
-                    $objResult->fields['product_option_value'];
-                if (file_exists($filename)) {
-                    if (@unlink($filename)) {
-                        //self::addMessage("Datei $filename geloescht");
-                    } else {
-                        self::addError(sprintf($_ARRAYLANG['TXT_SHOP_ERROR_DELETING_FILE'], $filename));
-                    }
-                }
-                $objResult->MoveNext();
-            }
-
-// Nope... see below.
-//            $customer_id = $objResult->fields['customer_id'];
-//            $orderDate = $objResult->fields['date_time'];
-
-            $query = "
-                DELETE FROM ".DBPREFIX."module_shop_order_items_attributes
-                 WHERE order_id=$order_id";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                self::errorHandling();
-                return false;
-            }
-
-            $query = "
-                DELETE FROM ".DBPREFIX."module_shop_order_items
-                 WHERE order_id=$order_id";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                self::errorHandling();
-                return false;
-            }
-
-            $query = "
-                DELETE FROM ".DBPREFIX."module_shop_orders
-                 WHERE id=$order_id";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                self::errorHandling();
-                return false;
-            }
-
-// This needs a fix for the new account name format
-//            // Remove automatically created accounts for downloads
-//            $orderIdCustom = ShopLibrary::getCustomOrderId($order_id, $orderDate);
-//            $objFWUser = FWUser::getFWUserObject();
-//            $objUser = $objFWUser->objUser->getUsers(array('username' => $orderIdCustom.'-%'));
-//            if ($objUser) {
-//                while (!$objUser->EOF) {
-//                    if (!$objUser->delete()) {
-//                        return false;
-//                    }
-//                    $objUser->next();
-//                }
-//            }
-        }
-//        self::addMessage($_ARRAYLANG['TXT_ORDER_DELETED']);
-        return true;
-*/
-    }
-
-
-    /**
      * Moves Product or Category images to the shop image folder if necessary
      * and changes the given file path from absolute to relative to the
      * shop image folder
@@ -493,7 +227,6 @@ die("OBSOLETE: ShopLibrary::deleteOrder()");
      * /var/www/mydomain/images/shop/folder/test.jpg becomes images/shop/folder/test.jpg
      * @param   string    $imageFileSource    The absolute image path, by reference
      * @return  boolean                       True on success, false otherwise
-     * @todo    The message on successful renaming cannot be displayed yet
      */
     static function moveImage(&$imageFileSource)
     {
@@ -507,15 +240,13 @@ die("OBSOLETE: ShopLibrary::deleteOrder()");
         // If the image is situated in or below the shop image folder,
         // don't bother to copy it.
         if (!preg_match($shopImageFolderRe, $imageFileSource)) {
-            if (   file_exists(ASCMS_PATH.$imageFileTarget)
-                && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
+            if (file_exists(ASCMS_PATH.$imageFileTarget)
+             && preg_match('/(\.\w+)$/', $imageFileSource, $arrMatch)) {
                 $imageFileTarget = preg_replace('/\.\w+$/', uniqid().$arrMatch[1], $imageFileTarget);
-//                self::addMessage(
-//                    sprintf(
-//                        $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'],
-//                        basename($imageFileSource), basename($imageFileTarget)
-//                    )
-//                );
+                Message::information(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_IMAGE_RENAMED_FROM_TO'],
+                    basename($imageFileSource), basename($imageFileTarget)
+                ));
             }
             if (!copy(ASCMS_PATH.$imageFileSource, ASCMS_PATH.$imageFileTarget)) {
                 self::addError(
@@ -559,7 +290,7 @@ die("OBSOLETE: ShopLibrary::deleteOrder()");
             return false;
         }
 
-// TODO: Test/fix mail with login data!
+// TODO: Test mail with login data!
 
         $arrSubstitution += $objCustomer->getSubstitutionArray();
 //die("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_export($arrSubstitution, true));
@@ -611,5 +342,3 @@ die("OBSOLETE: ShopLibrary::deleteOrder()");
     }
 
 }
-
-?>

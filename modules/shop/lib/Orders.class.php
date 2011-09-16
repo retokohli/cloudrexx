@@ -7,7 +7,6 @@
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        Test!
  */
 
 require_once(ASCMS_CORE_PATH.'/Sorting.class.php');
@@ -23,6 +22,8 @@ require_once(ASCMS_MODULE_PATH.'/shop/lib/Coupon.class.php');
  */
 class Orders
 {
+    const usernamePrefix = 'shop_customer';
+
     /**
      * Returns an array of Orders for the given parameters
      *
@@ -74,7 +75,7 @@ DBG::log("Orders::getArray(count $count, order $order, filter ".var_export($filt
      *                  phone, and email (shipping address).
      * - letter         A letter (or string) that will be matched at the
      *                  beginning of the fields company, firstname, or lastname.
-     * #todo    Add more fields as needed
+     * Add more fields when needed.
      *
      * The $order parameter value may be one of the table field names plus
      * an optional SQL order direction.
@@ -356,9 +357,8 @@ DBG::log("Order complete: $txt_order_complete");
         $limit = SettingDb::getValue('numof_orders_per_page_backend');
 // TODO: Obsolete ASAP
 if (!$limit) {
+    ShopSettings::errorHandler();
     $limit = 25;
-    SettingDb::add('numof_orders_per_page_backend', $limit, 205, '', '', 'config');
-    SettingDb::init('shop', 'config');
 }
         $tries = 2;
         $arrOrders = null;
@@ -1360,12 +1360,12 @@ die("Product ID $product_id not found");
                     if (count($arrUsergroupId) > 0) {
                         // The login names are created separately for
                         // each product instance
-                        $username = self::usernamePrefix."-$order_id-$product_id-$instance";
-                        $userpass = User::make_password();
+                        $username =
+                            self::usernamePrefix.
+                            "_${order_id}_${product_id}_${instance}";
                         $userEmail =
-                            "shop_customer_${order_id}_${product_id}_${instance}-".
-                            $arrSubstitution['CUSTOMER_EMAIL'];
-
+                            $username.'-'.$arrSubstitution['CUSTOMER_EMAIL'];
+                        $userpass = User::make_password();
                         $objUser = new User();
                         $objUser->setUsername($username);
                         $objUser->setPassword($userpass);

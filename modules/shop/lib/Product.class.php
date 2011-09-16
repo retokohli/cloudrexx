@@ -909,6 +909,8 @@ class Product
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
              WHERE id=$this->id");
         if (!$objResult) return false;
+        $objDatabase->Execute("
+            OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
         return true;
     }
 
@@ -1359,13 +1361,10 @@ class Product
 //`property2` varchar(100) COLLATE utf8_unicode_ci DEFAULT '',
 //`manufacturer_url` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
         );
-// TODO: Test whether the index array structure is ok here!
         $table_index =  array(
             'group_id' => array('fields' => array('group_id')),
             'article_id' => array('fields' => array('article_id')),
             'flags' => array('fields' => array('flags'), 'type' => 'FULLTEXT', ),
-// Obsolete; keywords are Text only now
-//            'keywords' => array('fields' => array('keywords'), 'type' => 'FULLTEXT', ),
         );
         if (UpdateUtil::table_exist($table_name)) {
             if (UpdateUtil::column_exist($table_name, 'title')) {

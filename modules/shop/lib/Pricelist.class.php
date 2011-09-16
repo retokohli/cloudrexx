@@ -9,8 +9,6 @@
  * @version     2.3.0
  * @package     contrexx
  * @subpackage  module_shop
- * @todo        This class does not support multiple shop instances using the
- *              MODULE_INDEX constant.  This needs to be fixed somehow.
  */
 
 //require_once realpath(dirname(__FILE__)."/../../").'/config/configuration.php';
