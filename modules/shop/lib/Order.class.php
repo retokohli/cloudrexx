@@ -55,7 +55,7 @@ class Order
     protected $vat_amount = 0.00;
     protected $shipment_amount = 0.00;
     protected $payment_amount = 0.00;
-    protected $prefix = '';
+    protected $gender = '';
     protected $company = '';
     protected $firstname = '';
     protected $lastname = '';
@@ -196,15 +196,15 @@ class Order
         return $this->payment_amount;
     }
 
-    function prefix($prefix=null)
+    function gender($gender=null)
     {
-        if (isset($prefix)) {
-            $prefix = trim(strip_tags($prefix));
-            if ($prefix != '') {
-                $this->prefix = $prefix;
+        if (isset($gender)) {
+            $gender = trim(strip_tags($gender));
+            if ($gender != '') {
+                $this->gender = $gender;
             }
         }
-        return $this->prefix;
+        return $this->gender;
     }
 
     function company($company=null)
@@ -391,7 +391,7 @@ class Order
                    `status`,
                    `sum`,
                    `vat_amount`, `shipment_amount`, `payment_amount`,
-                   `prefix`, `company`, `firstname`, `lastname`,
+                   `gender`, `company`, `firstname`, `lastname`,
                    `address`, `city`, `zip`, `country_id`, `phone`,
                    `ip`, `host`, `browser`,
                    `note`,
@@ -418,7 +418,7 @@ class Order
         $objOrder->vat_amount($objResult->fields['vat_amount']);
         $objOrder->shipment_amount($objResult->fields['shipment_amount']);
         $objOrder->payment_amount($objResult->fields['payment_amount']);
-        $objOrder->prefix($objResult->fields['prefix']);
+        $objOrder->gender($objResult->fields['gender']);
         $objOrder->company($objResult->fields['company']);
         $objOrder->firstname($objResult->fields['firstname']);
         $objOrder->lastname($objResult->fields['lastname']);
@@ -467,7 +467,7 @@ class Order
                 `ip`, `host`, `lang_id`,
                 `browser`, `note`".
             ($this->shipment_id ? ',
-                `company`, `prefix`,
+                `company`, `gender`,
                 `firstname`, `lastname`,
                 `address`, `city`,
                 `zip`, `country_id`, `phone`,
@@ -485,7 +485,7 @@ class Order
                 '".addslashes($this->note)."'".
             ($this->shipment_id ? ",
                 '".addslashes($this->company)."',
-                '".addslashes($this->prefix)."',
+                '".addslashes($this->gender)."',
                 '".addslashes($this->firstname)."',
                 '".addslashes($this->lastname)."',
                 '".addslashes($this->address)."',
@@ -649,7 +649,7 @@ class Order
                    shipment_amount=".floatval($_POST['shippingPrice']).",
                    payment_amount=".floatval($_POST['paymentPrice']).",
                    status ='".intval($_POST['order_status'])."',
-                   prefix='".contrexx_input2db($_POST['shipPrefix'])."',
+                   gender='".contrexx_input2db($_POST['shipPrefix'])."',
                    company='".contrexx_input2db($_POST['shipCompany'])."',
                    firstname='".contrexx_input2db($_POST['shipFirstname'])."',
                    lastname='".contrexx_input2db($_POST['shipLastname'])."',
@@ -696,7 +696,7 @@ class Order
         $this->firstname = null;
         $this->lastname = null;
         $this->phone = null;
-        $this->prefix = null;
+        $this->gender = null;
         $this->shipment_amount = 0;
         $this->shipment_id = null;
         $this->zip = null;
@@ -1083,7 +1083,7 @@ class Order
                 strtotime($objOrder->date_time())),
             'SHOP_ORDER_STATUS' => ($edit
                 ? Orders::getStatusMenu(
-                    $objOrder->status(), false, 'order_status',
+                    $objOrder->status(), false, null,
                     'swapSendToStatus(this.value)')
                 : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objOrder->status()]),
             'SHOP_SEND_MAIL_STYLE' =>
@@ -1095,7 +1095,8 @@ class Order
                 : ''),
             'SHOP_ORDER_SUM' => Currency::formatPrice($objOrder->sum()),
             'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
-            'SHOP_GENDER' => $_ARRAYLANG['TXT_SHOP_'.strtoupper($objCustomer->gender())],
+            'SHOP_GENDER' =>
+                $_ARRAYLANG['TXT_SHOP_'.strtoupper($objCustomer->gender())],
             'SHOP_COMPANY' => $objCustomer->company(),
             'SHOP_FIRSTNAME' => $objCustomer->firstname(),
             'SHOP_LASTNAME' => $objCustomer->lastname(),
@@ -1103,7 +1104,10 @@ class Order
             'SHOP_ZIP' => $objCustomer->zip(),
             'SHOP_CITY' => $objCustomer->city(),
             'SHOP_COUNTRY' => Country::getNameById($objCustomer->country_id()),
-            'SHOP_SHIP_GENDER' => $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->prefix())],
+            'SHOP_SHIP_GENDER' => ($edit
+                ? Customer::getGenderMenu($objOrder->gender(), 'shipPrefix')
+                : $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())]),
+            $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())],
             'SHOP_SHIP_COMPANY' => $objOrder->company(),
             'SHOP_SHIP_FIRSTNAME' => $objOrder->firstname(),
             'SHOP_SHIP_LASTNAME' => $objOrder->lastname(),
@@ -1166,10 +1170,9 @@ class Order
             $strJsArrShipment = Shipment::getJSArrays();
             $objTemplate->setVariable(array(
                 'SHOP_SEND_TEMPLATE_TO_CUSTOMER' =>
-                    str_replace(
-                        'TXT_ORDER_COMPLETE',
-                        $_ARRAYLANG['TXT_ORDER_COMPLETE'],
-                        $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']),
+                    sprintf(
+                        $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'],
+                        $_ARRAYLANG['TXT_ORDER_COMPLETE']),
                 'SHOP_SHIPPING_TYP_MENU' => Shipment::getShipperMenu(
                     $objOrder->country_id(),
                     $objOrder->shipment_id(),
@@ -1332,6 +1335,14 @@ class Order
 // See above
 //            'SHOP_ORDER_SUM' => Currency::formatPrice($order_sum),
         ));
+        // Coupon
+        $objCoupon = Coupon::getByOrderId($order_id);
+        if ($objCoupon) {
+            $objTemplate->setVariable(array(
+                'SHOP_COUPON_CODE' => $objCoupon->code(),
+                'SHOP_COUPON_DISCOUNT_AMOUNT' => $objCoupon->discount_amount(),
+            ));
+        }
         $objTemplate->setVariable(array(
             'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
             // inserted VAT, weight here
@@ -1342,11 +1353,12 @@ class Order
             'TXT_SHOP_ACCOUNT_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
         ));
         // Disable the "edit" button when there are Attributes
-        if (!edit && $have_option) {
-            $objTemplate->touchBlock('order_no_edit');
-        } else {
-            if ($objTemplate->blockExists('order_edit'))
+        if (!$edit) {
+            if ($have_option) {
+                $objTemplate->touchBlock('order_no_edit');
+            } else {
                 $objTemplate->touchBlock('order_edit');
+            }
         }
         return true;
     }
@@ -1407,7 +1419,7 @@ class Order
             'vat_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'tax_price'),
             'shipment_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_ship_price'),
             'payment_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_payment_price'),
-            'prefix' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_prefix'),
+            'gender' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_prefix'),
             'company' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_company'),
             'firstname' => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_firstname'),
             'lastname' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_lastname'),

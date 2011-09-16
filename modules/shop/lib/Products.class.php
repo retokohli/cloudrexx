@@ -220,8 +220,8 @@ class Products
             if ($manufacturer_id > 0) {
                 $queryJoin .= '
                     INNER JOIN `'.DBPREFIX.'module_shop'.MODULE_INDEX.'_manufacturer` AS `m`
-                       ON `m`.`id`=`product`.`manufacturer`';
-                $queryWhere .= ' AND `product`.`manufacturer`='.$manufacturer_id;
+                       ON `m`.`id`=`product`.`manufacturer_id`';
+                $queryWhere .= ' AND `product`.`manufacturer_id`='.$manufacturer_id;
             }
             // Limit Products by ShopCategory ID or IDs, if any
             // (Pricelists use comma separated values, for example)
@@ -256,6 +256,14 @@ class Products
                          OR ".$arrSqlPattern['alias']['long']." LIKE '%$pattern%'
                          OR ".$arrSqlPattern['alias']['short']." LIKE '%$pattern%'
                          OR ".$arrSqlPattern['alias']['keys']." LIKE '%$pattern%')";
+// Old, won't work with aliased fields for some odd reason
+//                $queryWhere .= "
+//                    AND (   `product`.`id` LIKE '%$pattern%'
+//                         OR `name` LIKE '%$pattern%'
+//                         OR `code` LIKE '%$pattern%'
+//                         OR `long` LIKE '%$pattern%'
+//                         OR `short` LIKE '%$pattern%'
+//                         OR `keys` LIKE '%$pattern%')";
             }
         }
         $queryTail =
@@ -263,11 +271,11 @@ class Products
             $queryWhere.
             $querySpecialOffer;
         $count = 0;
-//DBG::activate(DBG_ADODB);
+DBG::activate(DBG_ADODB);
         $objResult = $objDatabase->SelectLimit(
             $querySelect.$queryTail.$queryOrder, $limit, $offset);
         if (!$objResult) return Product::errorHandler();
-//DBG::deactivate(DBG_ADODB);
+DBG::deactivate(DBG_ADODB);
         $arrProduct = array();
         while (!$objResult->EOF) {
             $product_id = $objResult->fields['id'];

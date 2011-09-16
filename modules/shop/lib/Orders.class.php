@@ -11,6 +11,7 @@
  */
 
 require_once(ASCMS_CORE_PATH.'/Sorting.class.php');
+require_once(ASCMS_MODULE_PATH.'/shop/lib/Coupon.class.php');
 
 /**
  * Shop Order Helpers
@@ -42,7 +43,7 @@ class Orders
     static function getArray(
         &$count, $order=null, $filter=null, $offset=0, $limit=-1
     ) {
-//DBG::log("Orders::getArray(count $count, order $order, filter ".var_export($filter, true).", offset $offset, limit $limit): Entered");
+DBG::log("Orders::getArray(count $count, order $order, filter ".var_export($filter, true).", offset $offset, limit $limit): Entered");
 
         $arrId = self::getIdArray($count, $order, $filter, $offset, $limit);
 //DBG::log("Orders::getArray(): Got IDs: ".var_export($arrId, true));
@@ -112,11 +113,11 @@ class Orders
                   : (is_array($filter['id'])
                       ? " AND `order`.`id` IN (".join(',', $filter['id']).")"
                       : " AND `order`.`id`=".intval($filter['id']))).
-              (empty($filter['customer_id'])
-                  ? ''
-                  : (is_array($filter['customer_id'])
+              (isset($filter['customer_id'])
+                  ? (is_array($filter['customer_id'])
                       ? " AND `order`.`customer_id` IN (".join(',', $filter['customer_id']).")"
-                      : " AND `order`.`customer_id`=".intval($filter['customer_id']))).
+                      : " AND `order`.`customer_id`=".intval($filter['customer_id']))
+                  : '').
               (empty($filter['status'])
                   ? ''
                   // Include status
@@ -239,9 +240,12 @@ class Orders
 //DBG::log("Orders::view_list(): loaded Template: ".$objTemplate->get());
         }
         $uri = Html::getRelativeUri_entities();
+        Html::stripUriParam($uri, 'act');
         Html::stripUriParam($uri, 'searchterm');
         Html::stripUriParam($uri, 'listletter');
         Html::stripUriParam($uri, 'customer_type');
+        Html::stripUriParam($uri, 'status');
+        Html::stripUriParam($uri, 'show_pending_orders');
         $filter = array(
             'term' => null,
             'letter' => null,
@@ -270,29 +274,44 @@ class Orders
             $objGroup = $objFWUser->objGroup->getGroup($usergroup_id);
             if ($objGroup) {
                 $filter['customer_id'] = $objGroup->getAssociatedUserIds();
+                // No customers of that type, so suppress all results
+                if (empty($filter['customer_id']))
+                    $filter['customer_id'] = array(0);
+//DBG::log("Orders::view_list(): Group ID $usergroup_id, Customers: ".var_export($filter['customer_id'], true));
             }
         }
         $status = null; // Ignore
-        $arrStatus = self::getStatusArray();
-        // Let the user choose whether to see pending orders
-        if (empty($_REQUEST['show_pending_orders'])) {
-            unset($arrStatus[Order::STATUS_PENDING]);
-        }
-        if (   isset($_REQUEST['status'])
-            && $_REQUEST['status'] !== '') {
+        $arrStatus = null;
+        if (isset($_REQUEST['status'])
+         && $_REQUEST['status'] !== '') {
             $status = intval($_REQUEST['status']);
             if (   $status >= Order::STATUS_PENDING
                 && $status < Order::STATUS_MAX) {
-                $arrStatus = array($status => 'dummy');
+                $arrStatus = array($status => true);
+                Html::replaceUriParameter($uri, 'status='.$status);
+                if ($status == Order::STATUS_PENDING) {
+                    $_REQUEST['show_pending_orders'] = true;
+                }
             }
         }
-        if (empty($arrStatus)) {
-            // Exclude pending orders: Mind the "!"
-            $filter['!status'] = array(Order::STATUS_PENDING);
+        // Let the user choose whether to see pending orders, too
+        $show_pending_orders = false;
+        if (empty($_REQUEST['show_pending_orders'])) {
+            if (empty($arrStatus)) {
+                $arrStatus = self::getStatusArray();
+                unset($arrStatus[Order::STATUS_PENDING]);
+            }
         } else {
-            // Exclude unselected, but don't limit to pending only
+            if ($arrStatus) {
+                $arrStatus[Order::STATUS_PENDING] = true;
+            }
+            $show_pending_orders = true;
+            Html::replaceUriParameter($uri, 'show_pending_orders=1');
+        }
+        if ($arrStatus) {
             $filter['status'] = array_keys($arrStatus);
         }
+DBG::log("URI for Sorting: $uri, decoded ".html_entity_decode($uri));
 
         $arrSorting = array(
             // Too long
@@ -305,22 +324,31 @@ class Orders
             'status' => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS'],
         );
         $objSorting = new Sorting($uri, $arrSorting, false, 'order_shop_orders');
+        $uri_search = $uri;
+        Html::stripUriParam($uri_search, 'searchterm');
+        Html::stripUriParam($uri_search, 'customer_type');
+        Html::stripUriParam($uri_search, 'status');
+        Html::stripUriParam($uri_search, 'show_pending_orders');
 
         $objTemplate->setGlobalVariable($_ARRAYLANG);
-        $objTemplate->setVariable(array(
-            'SHOP_SEND_TEMPLATE_TO_CUSTOMER' => str_replace('TXT_ORDER_COMPLETE',
-                $_ARRAYLANG['TXT_ORDER_COMPLETE'],
-                $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER']),
+        $txt_order_complete = sprintf(
+            $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'],
+            $_ARRAYLANG['TXT_ORDER_COMPLETE']);
+DBG::log("Order complete: $txt_order_complete");
+        $objTemplate->setGlobalVariable(array(
+            'SHOP_SEND_TEMPLATE_TO_CUSTOMER' => $txt_order_complete,
             'SHOP_SEARCH_TERM' => $filter['term'],
             'SHOP_ORDER_STATUS_MENUOPTIONS' => self::getStatusMenuoptions($status, true),
             'SHOP_CUSTOMER_TYPE_MENUOPTIONS' => Customers::getTypeMenuoptions($customer_type, true),
             'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getSortMenuoptions(
                 $objSorting->getOrderField()),
             'SHOP_SHOW_PENDING_ORDERS_CHECKED' =>
-                (isset($arrStatus[Order::STATUS_PENDING])
-                    ? HTML_ATTRIBUTE_CHECKED : ''),
+                ($show_pending_orders ? HTML_ATTRIBUTE_CHECKED : ''),
             'SHOP_ORDERS_ORDER_NAME' => $objSorting->getOrderParameterName(),
             'SHOP_ORDERS_ORDER_VALUE' => $objSorting->getOrderUriEncoded(),
+            'SHOP_ACTION_URI_SEARCH_ENCODED' => $uri_search,
+            'SHOP_ACTION_URI_ENCODED' => $uri,
+            'SHOP_ACTION_URI' => html_entity_decode($uri),
         ));
         $objTemplate->setGlobalVariable(
             'SHOP_CURRENCY', Currency::getDefaultCurrencySymbol());
@@ -357,7 +385,10 @@ if (!$limit) {
         ));
 
         if (empty($arrOrders)) {
-            $objTemplate->hideBlock('orderTable');
+//            $objTemplate->hideBlock('orderTable');
+            $objTemplate->setVariable(
+                'SHOP_ORDER_NONE_FOUND',
+                $_ARRAYLANG['TXT_SHOP_ORDERS_NONE_FOUND']);
             return true;
         }
 //        $objTemplate->setCurrentBlock('orderRow');
@@ -400,16 +431,15 @@ if (!$limit) {
                     ? 'rowwarn' : 'row'.(++$i % 2 + 1)),
                 'SHOP_ORDERID' => $order_id,
                 'SHOP_TIP_ID' => $order_id,
-                'SHOP_TIP_NOTE' => nl2br(htmlentities(strip_tags($tipNote),
-                        ENT_QUOTES, CONTREXX_CHARSET)),
+                'SHOP_TIP_NOTE' => preg_replace('/[\n\r]+/', '<br />',
+                    nl2br(contrexx_raw2xhtml($tipNote))),
                 'SHOP_TIP_LINK' => $tipLink,
                 'SHOP_DATE' => $objOrder->date_time(),
                 'SHOP_NAME' => $customer_name,
                 'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice(
                     $objOrder->sum()),
                 'SHOP_ORDER_STATUS' => self::getStatusMenu(
-                    intval($status), false,
-                    'status['.$order_id.']',
+                    intval($status), false, $order_id,
                     'changeOrderStatus('.
                       $order_id.','.$status.',this.value)'),
                 // Protected download account validity end date
@@ -1035,11 +1065,15 @@ DBG::log("User: ".var_export($objUser, true));
      * @global  array
      */
     static function getStatusMenu(
-        $selected='', $flagFilter=false, $menuName='status', $onchange=''
+        $selected='', $flagFilter=false, $order_id=null, $onchange=''
     ) {
-        return Html::getSelect(
-            $menuName, self::getStatusArray($flagFilter),
-            $selected, $menuName, $onchange);
+        return ($order_id
+            ? Html::getSelect(
+                'order_status['.$order_id.']', self::getStatusArray($flagFilter),
+                $selected, 'order_status-'.$order_id, $onchange)
+            : Html::getSelect(
+                'order_status', self::getStatusArray($flagFilter),
+                $selected, 'order_status', $onchange));
     }
 
 
@@ -1145,7 +1179,8 @@ DBG::log("User: ".var_export($objUser, true));
             // Must be present in the Order, so the Customer can be found
             'CUSTOMER_ID'         => $customer_id,
             'SHIPMENT_COMPANY'    => $objOrder->company(),
-            'SHIPMENT_TITLE'      => $objOrder->prefix(),
+            'SHIPMENT_TITLE'      =>
+                $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())],
             'SHIPMENT_FIRSTNAME'  => $objOrder->firstname(),
             'SHIPMENT_LASTNAME'   => $objOrder->lastname(),
             'SHIPMENT_ADDRESS'    => $objOrder->address(),
@@ -1166,8 +1201,6 @@ DBG::log("User: ".var_export($objUser, true));
             'ORDER_SUM'           => sprintf('% 9.2f', $objOrder->sum()),
             'CURRENCY'            => Currency::getCodeById($objOrder->currency_id()),
         );
-
-// yantramatte
         $coupon_code = '';
         $objCoupon = null;
         // Pick the Coupon, if any
@@ -1190,12 +1223,8 @@ DBG::log("User: ".var_export($objUser, true));
              WHERE `order_id`=$order_id";
         $objResultItem = $objDatabase->Execute($query);
         if (!$objResultItem || $objResultItem->EOF) {
-            // Order not found
-die("Order not found");
-//            return false;
+            Message::warning($_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM']);
         }
-
-// yantramatte
         // Deduct Order discounts for Coupons from each Product price
         $objCoupon = Coupon::available(
             $coupon_code, $arrSubstitution['ORDER_SUM'], $customer_id,

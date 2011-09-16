@@ -2039,7 +2039,7 @@ DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['sh
                 // Initialize the Customer data in the session, so that the account
                 // page may be skipped
                 $_SESSION['shop']['company'] = self::$objCustomer->company();
-                $_SESSION['shop']['prefix'] = self::$objCustomer->gender();
+                $_SESSION['shop']['gender'] = self::$objCustomer->gender();
                 $_SESSION['shop']['lastname'] = self::$objCustomer->lastname();
                 $_SESSION['shop']['firstname'] = self::$objCustomer->firstname();
                 $_SESSION['shop']['address'] = self::$objCustomer->address();
@@ -2052,7 +2052,7 @@ DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['sh
                 // Optionally also initialize the shipment address
                 /*
                 $_SESSION['shop']['company2'] = self::$objCustomer->company();
-                $_SESSION['shop']['prefix2'] = self::$objCustomer->gender();
+                $_SESSION['shop']['gender2'] = self::$objCustomer->gender();
                 $_SESSION['shop']['lastname2'] = self::$objCustomer->lastname();
                 $_SESSION['shop']['firstname2'] = self::$objCustomer->firstname();
                 $_SESSION['shop']['address2'] = self::$objCustomer->address();
@@ -2130,8 +2130,8 @@ DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['sh
         $company = (isset($_SESSION['shop']['company'])
             ? $_SESSION['shop']['company']
             : (self::$objCustomer ? self::$objCustomer->company() : ''));
-        $gender = (isset($_SESSION['shop']['prefix'])
-            ? $_SESSION['shop']['prefix']
+        $gender = (isset($_SESSION['shop']['gender'])
+            ? $_SESSION['shop']['gender']
             : (self::$objCustomer ? self::$objCustomer->gender() : ''));
         $lastname = (isset($_SESSION['shop']['lastname'])
             ? $_SESSION['shop']['lastname']
@@ -2245,8 +2245,8 @@ DBG::log("Shop::view_account(): block_password ".var_export($block_password, tru
             'SHOP_ACCOUNT_COMPANY2' => (empty($_SESSION['shop']['company2'])
                 ? '' : htmlentities($_SESSION['shop']['company2'], ENT_QUOTES, CONTREXX_CHARSET)),
             'SHOP_ACCOUNT_PREFIX2' => Customers::getGenderMenuoptions(
-                empty($_SESSION['shop']['prefix2'])
-                    ? '' : $_SESSION['shop']['prefix2']),
+                empty($_SESSION['shop']['gender2'])
+                    ? '' : $_SESSION['shop']['gender2']),
             'SHOP_ACCOUNT_LASTNAME2' => (empty($_SESSION['shop']['lastname2'])
                 ? '' : htmlentities($_SESSION['shop']['lastname2'], ENT_QUOTES, CONTREXX_CHARSET)),
             'SHOP_ACCOUNT_FIRSTNAME2' => (empty($_SESSION['shop']['firstname2'])
@@ -2287,7 +2287,7 @@ DBG::log("Shop::view_account(): block_password ".var_export($block_password, tru
             $_SESSION['shop'][$key] =
                 trim(strip_tags(contrexx_input2raw($value)));
         }
-        if (   empty($_SESSION['shop']['prefix2'])
+        if (   empty($_SESSION['shop']['gender2'])
             || empty($_SESSION['shop']['lastname2'])
             || empty($_SESSION['shop']['firstname2'])
             || empty($_SESSION['shop']['address2'])
@@ -2300,7 +2300,7 @@ DBG::log("Shop::view_account(): block_password ".var_export($block_password, tru
         } elseif (!empty($_POST['equal_address'])) {
             // Copy address
             $_SESSION['shop']['company2'] = $_SESSION['shop']['company'];
-            $_SESSION['shop']['prefix2'] = $_SESSION['shop']['prefix'];
+            $_SESSION['shop']['gender2'] = $_SESSION['shop']['gender'];
             $_SESSION['shop']['lastname2'] = $_SESSION['shop']['lastname'];
             $_SESSION['shop']['firstname2'] = $_SESSION['shop']['firstname'];
             $_SESSION['shop']['address2'] = $_SESSION['shop']['address'];
@@ -2316,7 +2316,7 @@ DBG::log("Shop::view_account(): block_password ".var_export($block_password, tru
         }
         // Fill missing arguments with empty strings
         if (empty($_SESSION['shop']['company2']))   $_SESSION['shop']['company2'] = '';
-        if (empty($_SESSION['shop']['prefix2']))    $_SESSION['shop']['prefix2'] = '';
+        if (empty($_SESSION['shop']['gender2']))    $_SESSION['shop']['gender2'] = '';
         if (empty($_SESSION['shop']['lastname2']))  $_SESSION['shop']['lastname2'] = '';
         if (empty($_SESSION['shop']['firstname2'])) $_SESSION['shop']['firstname2'] = '';
         if (empty($_SESSION['shop']['address2']))   $_SESSION['shop']['address2'] = '';
@@ -2715,7 +2715,7 @@ This information should be read and stored in the session
 right after the customer logs in!
         // fill in the address for known customers
         if (self::$objCustomer) {
-            $_SESSION['shop']['prefix'] = ...
+            $_SESSION['shop']['gender'] = ...
             $_SESSION['shop']['firstname'] =
             $_SESSION['shop']['lastname'] =
             $_SESSION['shop']['address'] =
@@ -2728,7 +2728,7 @@ right after the customer logs in!
 */
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
-            'SHOP_CUSTOMER_TITLE' => (isset($_SESSION['shop']['prefix'])     ? stripslashes($_SESSION['shop']['prefix'])    : ''),
+            'SHOP_CUSTOMER_TITLE' => (isset($_SESSION['shop']['gender'])     ? stripslashes($_SESSION['shop']['gender'])    : ''),
             'SHOP_CUSTOMER_FIRST_NAME' => (isset($_SESSION['shop']['firstname']) ? stripslashes($_SESSION['shop']['firstname']) : ''),
             'SHOP_CUSTOMER_LAST_NAME' => (isset($_SESSION['shop']['lastname'])  ? stripslashes($_SESSION['shop']['lastname'])  : ''),
             'SHOP_CUSTOMER_ADDRESS' => (isset($_SESSION['shop']['address'])   ? stripslashes($_SESSION['shop']['address'])   : ''),
@@ -2983,9 +2983,9 @@ Version for shops without products having text or file upload attributes
                   $_SESSION['shop']['grand_total_price']),
             'SHOP_COMPANY' => stripslashes($_SESSION['shop']['company']),
 // Old
-            'SHOP_TITLE' => stripslashes($_SESSION['shop']['prefix']),
+            'SHOP_TITLE' => stripslashes($_SESSION['shop']['gender']),
 // New
-            'SHOP_GENDER' => stripslashes($_SESSION['shop']['prefix']),
+            'SHOP_GENDER' => stripslashes($_SESSION['shop']['gender']),
             'SHOP_LASTNAME' => stripslashes($_SESSION['shop']['lastname']),
             'SHOP_FIRSTNAME' => stripslashes($_SESSION['shop']['firstname']),
             'SHOP_ADDRESS' => stripslashes($_SESSION['shop']['address']),
@@ -2996,7 +2996,7 @@ Version for shops without products having text or file upload attributes
             'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
             'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
             'SHOP_COMPANY2' => stripslashes($_SESSION['shop']['company2']),
-            'SHOP_TITLE2' => stripslashes($_SESSION['shop']['prefix2']),
+            'SHOP_TITLE2' => stripslashes($_SESSION['shop']['gender2']),
             'SHOP_LASTNAME2' => stripslashes($_SESSION['shop']['lastname2']),
             'SHOP_FIRSTNAME2' => stripslashes($_SESSION['shop']['firstname2']),
             'SHOP_ADDRESS2' => stripslashes($_SESSION['shop']['address2']),
@@ -3102,7 +3102,7 @@ die("Trouble! No Shipper ID defined");
         }
         // Update the Customer object from the session array
         // (whether new or not -- it may have been edited)
-        self::$objCustomer->gender($_SESSION['shop']['prefix']);
+        self::$objCustomer->gender($_SESSION['shop']['gender']);
         self::$objCustomer->firstname($_SESSION['shop']['firstname']);
         self::$objCustomer->lastname($_SESSION['shop']['lastname']);
         self::$objCustomer->company($_SESSION['shop']['company']);
@@ -3163,7 +3163,7 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
         $objOrder->date_time(date(ASCMS_DATE_FORMAT_DATETIME));
         $objOrder->status(0);
         $objOrder->company($_SESSION['shop']['company2']);
-        $objOrder->prefix($_SESSION['shop']['prefix2']);
+        $objOrder->gender($_SESSION['shop']['gender2']);
         $objOrder->firstname($_SESSION['shop']['firstname2']);
         $objOrder->lastname($_SESSION['shop']['lastname2']);
         $objOrder->address($_SESSION['shop']['address2']);
@@ -3788,7 +3788,7 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
         // Note that the Country IDs are either set already, or chosen in a
         // dropdown menu, so if everything else is set, so are they.
         // They may thus be disabled entirely without affecting this.
-        if (   empty($_SESSION['shop']['prefix'])
+        if (   empty($_SESSION['shop']['gender'])
             || empty($_SESSION['shop']['lastname'])
             || empty($_SESSION['shop']['firstname'])
             || empty($_SESSION['shop']['address'])
@@ -3798,7 +3798,7 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
             || (empty($_SESSION['shop']['email']) && !self::$objCustomer)
             || (empty($_SESSION['shop']['password']) && !self::$objCustomer)
             || (Cart::needs_shipment()
-            && (   empty($_SESSION['shop']['prefix2'])
+            && (   empty($_SESSION['shop']['gender2'])
                 || empty($_SESSION['shop']['lastname2'])
                 || empty($_SESSION['shop']['firstname2'])
                 || empty($_SESSION['shop']['address2'])
