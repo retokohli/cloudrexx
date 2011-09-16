@@ -1033,7 +1033,7 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
-DBG::activate(DBG_DB_FIREPHP);
+//DBG::activate(DBG_DB_FIREPHP);
 
         $table_name = DBPREFIX.'core_setting';
         $table_structure = array(
@@ -1105,6 +1105,3 @@ DBG::activate(DBG_DB_FIREPHP);
     }
 
 }
-
-
-SettingDb::errorHandler();
