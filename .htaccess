@@ -9,12 +9,14 @@ RewriteEngine On
 RewriteBase   /cm_2_3
 
 # Folders that may be accessed by page requests are NO ALIASES by design
-RewriteRule ^\w\w\/(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)(.*) $1$2$3 [L,QSA]
+RewriteRule ^(\w\w\/)?(favicon.ico|cadmin|core_modules|modules|images|media|themes|tmp|lib\/javascript)(\/|$)(.*) $2$3$4 [L,QSA]
+
+# Exclude "stuff" -- add more if desired
+#RewriteCond   %{REQUEST_FILENAME}  !^(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)
+#RewriteCond   %{REQUEST_FILENAME}  !^
 
 # Skip requests to index.php
 #RewriteCond   %{REQUEST_FILENAME}  !^index.php
-# Exclude "stuff" -- add more if desired
-RewriteCond   %{REQUEST_FILENAME}  !^favicon.ico
 # Anything that is neither a directory nor a file *might* be an alias.
 # Append the entire request to the query string.
 # See core/Dispatcher.class.php, look for "CONTREXX_ALIAS_PARAMETER"
@@ -22,7 +24,4 @@ RewriteCond   %{REQUEST_FILENAME}  !^favicon.ico
 # Warning: Overhead!
 RewriteCond   %{REQUEST_FILENAME}  !-d
 RewriteCond   %{REQUEST_FILENAME}  !-f
-RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
-
-RewriteCond   %{REQUEST_FILENAME} [^(cadmin)]/index.php
 RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]

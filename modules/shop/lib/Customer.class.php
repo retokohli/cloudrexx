@@ -567,6 +567,34 @@ DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID "
 
 
     /**
+     * Returns the HTML dropdown menu code for selecting the gender/title
+     *
+     * @global  array   $_ARRAYLANG     The language array
+     * @param   string  $selected       The optional select tag name attribute
+     *                                  value.  Defaults to 'shipPrefix'
+     * @param   string  $name           The optional
+     * @return  string                  The HTML menu code
+     */
+    static function getGenderMenu($selected, $name='gender')
+    {
+        global $_ARRAYLANG;
+//die("Customer::getGenderMenu(): HERE");
+        $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute;
+        if (!$objAttribute) return null;
+        $objAttribute = $objAttribute->getById('gender');
+//die("Customer::getGenderMenu(): Attribute: ".var_export($objAttribute, true));
+        $arrAttribute = array();
+//die("Customer::getGenderMenu(): Attribute Menu: ".var_export($arrAttribute, true));
+        foreach ($objAttribute->getChildren() as $attribute_id) {
+            $arrAttribute[$attribute_id] =
+                $_ARRAYLANG['TXT_SHOP_'.strtoupper($attribute_id)];
+        }
+//DBG::log("Customer::getGenderMenu(): Attribute Array: ".var_export($arrAttribute, true));
+        return Html::getSelect($name, $arrAttribute, $selected);
+    }
+
+
+    /**
      * Updates the password of the Customer with the given e-mail address
      * @param   string    $email        The e-mail address
      * @param   string    $password     The new password

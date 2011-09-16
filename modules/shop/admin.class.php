@@ -559,6 +559,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
             }
         }
 // TODO: !!! OBSOLETE AND DYSFUNCT !!!
+/*
         // Export groups -- hardcoded
         $content_location = '';
         if (isset($_REQUEST['group'])) {
@@ -773,7 +774,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
             self::$objTemplate->parse('groupRow');
             $tipText .= 'Text['.$i.']=["","'.$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_'.strtoupper($arrGroups[$i]).'_TIP'].'"];';
         }
-
+*/
         $imageChoice = $objCSVimport->GetImageChoice($noimg);
         $arrTemplateArray = $objCSVimport->getTemplateArray();
         self::$objTemplate->setCurrentBlock('imgRow');

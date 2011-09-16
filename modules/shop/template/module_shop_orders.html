@@ -1,10 +1,9 @@
-<!-- START shop_orders.html -->
-<script type="text/javascript">
-<!--
+<!-- start shop_orders.html -->
+<script type="text/javascript">//<![CDATA[
 function deleteOrder(order_id)
 {
   if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}'))
-    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delorder&order_id="+order_id);
+    window.location.replace("{SHOP_ACTION_URI}&act=delorder&order_id="+order_id);
 }
 
 function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
@@ -13,7 +12,7 @@ function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
     switch (strAct) {
       case 'del':
         if (confirm('{TXT_CONFIRM_DELETE_ORDER}\n{TXT_ACTION_IS_IRREVERSIBLE}')) {
-          document.forms[strForm].action = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delorder";
+          document.forms[strForm].action = "{SHOP_ACTION_URI}&act=delorder";
           document.forms[strForm].submit();
         }
         break;
@@ -26,26 +25,27 @@ function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
 
 function sendForm(letter)
 {
-  document.formSearchOrders.searchterm.value = '';
-  document.formSearchOrders.listletter.value = letter;
-  document.formSearchOrders.submit();
+  document.forms.search_orders.searchterm.value = '';
+  document.forms.search_orders.listletter.value = letter;
+  document.forms.search_orders.submit();
 }
 
 function changeOrderStatus(order_id, status, new_status)
 {
   if (confirm('{TXT_CONFIRM_CHANGE_STATUS}')) {
-    var strURI = "index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=orders&order_id="+order_id+"&changeOrderStatus="+new_status;
-    if (   new_status == 1
-        || new_status == 4
-        || new_status == 5
-        || new_status == 6) {
+    var strURI = "{SHOP_ACTION_URI}&act=orders&order_id="+order_id+"&changeOrderStatus="+new_status;
+    if (new_status == 4
+//     || new_status == 1
+//     || new_status == 5
+//     || new_status == 6
+    ) {
       if (confirm('{SHOP_SEND_TEMPLATE_TO_CUSTOMER}')) {
         strURI += "&shopSendMail=1";
       }
     }
     window.location.replace(strURI);
   } else {
-    document.getElementById("order_status["+order_id+"]").setAttribute("value", status);
+    document.getElementById("order_status-"+order_id).setAttribute("value", status);
   }
 }
 
@@ -53,18 +53,15 @@ function changeOrderStatus(order_id, status, new_status)
 Text[{SHOP_TIP_ID}]=["","{SHOP_TIP_NOTE}"];
 <!-- END tipMessageRow -->
 Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,10,-20];
-//-->
-</script>
-<form name="formSearchOrders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
-  <input type="hidden" name="listletter" value="{SHOP_CUSTOMER_LISTLETTER}" />
-  <input type="hidden" name="{SHOP_ORDERS_ORDER_NAME}" value="{SHOP_ORDERS_ORDER_VALUE}" />
+//]]></script>
+<form name="search_orders" method="post" action="{SHOP_ACTION_URI_SEARCH_ENCODED}&amp;act=orders">
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th style="text-align: left">
         {TXT_SEARCH}
       </th>
     </tr>
-    <tr class=row1>
+    <tr class="row1">
       <td>
         <input type="text" name="searchterm" size="40" maxlength="255"
           value="{SHOP_SEARCH_TERM}" />
@@ -77,15 +74,15 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
         <input type="submit" name="searchOrders" value="{TXT_SEARCH}" />
       </td>
     </tr>
-    <tr class=row2>
+    <tr class="row2">
       <td>
         <label for="show_pending_orders">{TXT_SHOP_SHOW_PENDING_ORDERS}</label>
         <input type="checkbox"{SHOP_SHOW_PENDING_ORDERS_CHECKED}
             id="show_pending_orders" name="show_pending_orders"
-            onchange="document.formSearchOrders.submit();" />
+            onchange="document.forms.search_orders.submit();" />
       </td>
     </tr>
-    <tr class=row1>
+    <tr class="row1">
       <td>
         {SHOP_LISTLETTER_LINKS}
       </td>
@@ -95,8 +92,8 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
 </form>
 <!-- BEGIN orderTable -->
 <p>{SHOP_ORDER_PAGING}</p>
-<form name="form_orders" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=orders">
-  <table class="adminlist" border=0 width="100%" cellpadding="2" cellspacing="0">
+<form name="form_orders" method="post" action="{SHOP_ACTION_URI_ENCODED}&amp;act=orders">
+  <table class="adminlist" border="0" width="100%" cellpadding="2" cellspacing="0">
     <tr>
       <th nowrap="nowrap" width="01%" style="text-align: center;">#</th>
       <th nowrap="nowrap" width="02%" style="text-align: right;">{SHOP_HEADER_ID}&nbsp;</th>
@@ -115,16 +112,16 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
       <td nowrap="nowrap">{SHOP_DATE}&nbsp;&nbsp;</td>
       <td nowrap="nowrap">{SHOP_ORDER_STATUS}&nbsp;&nbsp;</td>
       <td nowrap="nowrap">
-        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a>
+        <a href="{SHOP_ACTION_URI_ENCODED}&amp;act=orderdetails&amp;order_id={SHOP_ORDERID}" title="{TXT_VIEW_DETAILS}">{SHOP_NAME}</a>
       </td>
       <td nowrap="nowrap" style="text-align: center;">{SHOP_TIP_LINK}&nbsp;</td>
       <td nowrap="nowrap" style="text-align: right;">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</td>
       <td nowrap="nowrap" style="text-align: right;">
-        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=orderdetails&amp;order_id={SHOP_ORDERID}"
+        <a href="{SHOP_ACTION_URI_ENCODED}&amp;act=orderdetails&amp;order_id={SHOP_ORDERID}"
             title="{TXT_VIEW_DETAILS}">
           <img src="images/icons/press.gif" alt="{TXT_VIEW_DETAILS}" border="0" />
         </a>
-        <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=editorder&amp;order_id={SHOP_ORDERID}"
+        <a href="{SHOP_ACTION_URI_ENCODED}&amp;act=editorder&amp;order_id={SHOP_ORDERID}"
             title="{TXT_EDIT}">
           <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
         </a>
@@ -132,7 +129,12 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
           <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
         </a>
       </td>
-    </tr><!-- END orderRow -->
+    </tr><!-- END orderRow --><!-- BEGIN no_order -->
+    <tr class="{SHOP_ROWCLASS}">
+      <td colspan="8" nowrap="nowrap">
+        {SHOP_ORDER_NONE_FOUND}
+      </td>
+    </tr><!-- END no_order -->
   </table>
   <img src="images/icons/arrow.gif" border="0" width="38" height="22"
       title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
@@ -145,6 +147,6 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,
     <option value="del">{TXT_DELETE}</option>
   </select>
 </form>
-<!-- END orderTable -->
 <p>{SHOP_ORDER_PAGING}</p>
-<!-- END shop_orders.html -->
+<!-- END orderTable -->
+<!-- end shop_orders.html -->

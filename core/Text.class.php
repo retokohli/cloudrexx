@@ -695,12 +695,13 @@ DBG::log("Text::getSqlSnippets(): ERROR: Empty keys");
         $arrSql = array();
         foreach ($keys as $alias => $key) {
             $table_alias = 'text_'.++$table_alias_index;
-            $field_id_name = $table_alias.'_id';
-            $field_text_name = ($alias ? $alias : $table_alias.'_text');
+            $field_id_alias = $table_alias.'_id';
+            $field_text_alias = ($alias ? $alias : $table_alias.'_text');
+            $field_text_name = "`$table_alias`.`text`";
             $query_field .=
                 ($query_field ? ', ' : '')."
-                `$table_alias`.`id` AS `$field_id_name`,
-                `$table_alias`.`text` AS `$field_text_name`";
+                `$table_alias`.`id` AS `$field_id_alias`,
+                $field_text_name AS `$field_text_alias`";
             $query_join .= "
                 LEFT JOIN `".DBPREFIX."core_text` as `$table_alias`
                   ON `$table_alias`.`id`=$field_id
@@ -708,7 +709,7 @@ DBG::log("Text::getSqlSnippets(): ERROR: Empty keys");
                  AND `$table_alias`.`section`".
                 (isset($section) ? "='".addslashes($section)."'" : ' IS NULL')."
                  AND `$table_alias`.`key`='".addslashes($key)."'";
-            $arrSql['alias'][$key] = $field_text_name;
+            $arrSql['alias'][$alias] = $field_text_name;
         }
         $arrSql['field'] = $query_field;
         $arrSql['join'] = $query_join;
