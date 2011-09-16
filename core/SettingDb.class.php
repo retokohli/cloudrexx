@@ -1033,12 +1033,12 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
-//DBG::activate(DBG_DB_FIREPHP);
+DBG::activate(DBG_DB_FIREPHP);
 
         $table_name = DBPREFIX.'core_setting';
         $table_structure = array(
-            'section' => array('type' => 'TINYTEXT', 'default' => '', 'primary' => 32),
-            'name' => array('type' => 'TINYTEXT', 'default' => '', 'primary' => 32),
+            'section' => array('type' => 'TINYTEXT', 'default' => ''),
+            'name' => array('type' => 'TINYTEXT', 'default' => ''),
             'group' => array('type' => 'TINYTEXT', 'default' => ''),
             'type' => array('type' => 'VARCHAR(32)', 'default' => 'text'),
             'value' => array('type' => 'TEXT', 'default' => ''),
@@ -1047,8 +1047,13 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
         );
 // TODO: The index array structure is wrong here!
         $table_index =  array(
-//            'id' => array('fields' => array('section' => 32, 'name' => 32), 'type' => 'primary'),
-            'group' => array('fields' => array('group' => 32)),
+            'id' => array(
+                'type' => 'primary',
+                'fields' => array('section' => 32, 'name' => 32, 'group' => 32),
+            ),
+//            'test' => array(
+//                'fields' => array('type'),
+//            ),
         );
         UpdateUtil::table($table_name, $table_structure, $table_index);
 //echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
@@ -1100,3 +1105,6 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     }
 
 }
+
+
+SettingDb::errorHandler();
