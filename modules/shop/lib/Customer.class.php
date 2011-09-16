@@ -25,13 +25,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Order.class.php';
 class Customer extends User
 {
     /**
-     * The group ID associated with this Customer
-     * @var   integer
-     */
-    private $group_id = null;
-
-
-    /**
      * Creates a Customer
      * @access  public
      * @return  Customer            The Customer
