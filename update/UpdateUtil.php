@@ -267,6 +267,7 @@ class UpdateUtil
 
         if (!isset($col_info[strtoupper($col)])) {
             $colspec = self::_colspec($spec);
+            $query = '';
             // check if we need to rename the column
             if (isset($spec['renamefrom']) and isset($col_info[strtoupper($spec['renamefrom'])])) {
                 // rename requested and possible.
@@ -392,6 +393,7 @@ class UpdateUtil
 
     private function _keyspec($table, $name, $spec)
     {
+        $arrFields = array();
         foreach ($spec['fields'] as $fieldInfo1 => $fieldInfo2) {
             if (intval($fieldInfo1) !== $fieldInfo1) {
                 $arrFields[] = '`'.$fieldInfo1.'`('.$fieldInfo2.')';
@@ -400,11 +402,15 @@ class UpdateUtil
             }
         }
         $fields = join(',', $arrFields);
-        $type   = array_key_exists('type', $spec) ? $spec['type'] : '';
+        $type = array_key_exists('type', $spec) ? $spec['type'] : '';
+        $descr = null;
         if (isset($spec['force']) && $spec['force']) {
-            $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)";
+//            $descr = "ALTER IGNORE TABLE `$table` ADD $type INDEX `$name` ($fields)";
+            $descr = "ALTER IGNORE TABLE `$table` ADD $type KEY `$name` ($fields)";
         } else {
-            $descr  = "ALTER TABLE `$table` ADD $type INDEX `$name` ($fields)";
+// TODO "INDEX" instead of "KEY" produces an error for type "PRIMARY"? -- RK
+  //          $descr  = "ALTER TABLE `$table` ADD $type INDEX `$name` ($fields)";
+            $descr  = "ALTER TABLE `$table` ADD $type KEY `$name` ($fields)";
         }
         return $descr;
     }
@@ -543,8 +549,9 @@ class UpdateUtil
                 INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
                 WHERE n.`module` = $moduleId ".($cmd === null ? '' : "AND n.`cmd` = '$cmd'")." AND n.`username` != 'contrexx_update_$changeVersion'";
             $objContent = self::sql($query);
-            $orig_loopy_query = $query;
-            $arrFailedPages = array();
+// TODO: Unused
+//            $orig_loopy_query = $query;
+//            $arrFailedPages = array();
             while (!$objContent->EOF) {
                 $newContent = str_replace(
                     $search,
