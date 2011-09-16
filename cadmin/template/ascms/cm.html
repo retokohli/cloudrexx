@@ -5,10 +5,9 @@
             <li><a href="#tabs-4" class="tab site-settings">[[TXT_SITE_SETTINGS]]</a></li>
             <li><a href="#tabs-5" class="tab site-history">[[TXT_SITE_HISTORY]]</a></li>
         </ul>
-
+      <form class="clearfix" action="." enctype="multipart/form-data" id="cm_form">
         <div id="tabs-1" class="types">
             <!-- type: content -->
-            <form name="typeForm">
               <p class="info">
                 [[TXT_TYPE_EXPLANATION]]
               </p>
@@ -53,10 +52,8 @@
                   </p>
                 </div>
               </div>
-            </form>
         </div>
         <div id="tabs-2">
-          <form class="clearfix" action="." enctype="multipart/form-data" id="cm_form">
             <input type="hidden" name="id" id="pageId" value="new" />
             <div class="clearfix">
               <div class="additionalInfo">
@@ -99,11 +96,9 @@
 
             </div>
             <textarea id="cm_ckeditor" rows="15" cols="45" name="content"></textarea>
-          </form>
         </div>
         <div id="tabs-3">Test Tab3</div>
         <div id="tabs-4">
-          <form name="settingsForm">
             <div class="additionalInfo">
               <div class="clearfix">
                 <h2>[[TXT_MODULE_CMD]]</h2>
@@ -114,7 +109,7 @@
 
                 <div class="twoCols">
                   <label for="cmd" class="twoCols">[[TXT_CMD]]</label>
-                  <input id="cmd" class="twoCols" type="text" value="[[CMD]]" name="cmd" />
+                  <input id="cmd" class="twoCols" type="text" value="[[CMD]]" name="cm_cmd" />
                 </div>
               </div>
               <div class="clearfix space">
@@ -147,9 +142,9 @@
                 <input id="slug" class="oneCol" type="text" value="[[SLUG]]" name="slug" />
               </div>
             </div>
-          </form>
           <div class="clearfix"></div>
         </div>
+      </form>
         <div id="tabs-5">Test Tab5</div>
 
         <div id="buttons">
