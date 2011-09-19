@@ -1080,4 +1080,49 @@ $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_MEDIADIR_MODULE_DESCRIPTION'] = 'Flexible and customizable media directory.';
 $_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
 $_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
-?>
+
+//content manager
+$_ARRAYLANG['TXT_GERMAN'] = "German";
+$_ARRAYLANG['TXT_FRENCH'] = "French";
+$_ARRAYLANG['TXT_ENGLISH'] = "English";
+
+$_ARRAYLANG['TXT_SITE_TYPE'] = "Page type";
+$_ARRAYLANG['TXT_SITE_CONTENT'] = "Content";
+$_ARRAYLANG['TXT_SITE_ACCESS'] = "Access";
+$_ARRAYLANG['TXT_SITE_SETTINGS'] = "Page settings";
+$_ARRAYLANG['TXT_SITE_HISTORY'] = "History";
+
+$_ARRAYLANG['TXT_TYPE_EXPLANATION'] = "Please choose one of the page types available below to specify this page's functionality.";
+$_ARRAYLANG['TXT_TYPE_CONTENT'] = "Content";
+$_ARRAYLANG['TXT_TYPE_CONTENT_DESCRIPTION'] = "A content page.";
+$_ARRAYLANG['TXT_TYPE_REDIRECTION'] = "Redirection";
+$_ARRAYLANG['TXT_TYPE_REDIRECTION_DESCRIPTION'] = "If the visitor requests this page, he will be redirected to another page.";
+$_ARRAYLANG['TXT_TYPE_APP'] = "Application";
+$_ARRAYLANG['TXT_TYPE_APP_DESCRIPTION'] = "Content page enhanced by an application.";
+
+$_ARRAYLANG['TXT_ACTIVE_FROM_TO'] = "Publishment time range";
+$_ARRAYLANG['TXT_ACTIVE_FROM'] = "from";
+$_ARRAYLANG['TXT_ACTIVE_TO'] = "to";
+$_ARRAYLANG['TXT_META_INFORMATION'] = "Meta informations";
+$_ARRAYLANG['TXT_META_TITLE'] = "Title";
+$_ARRAYLANG['TXT_META_KWORDS'] = "Keywords";
+$_ARRAYLANG['TXT_META_DESC'] = "Description";
+$_ARRAYLANG['TXT_META_ROBOTS'] = "Allow indexing by search engines";
+
+$_ARRAYLANG['TXT_MODULE_CMD'] = "Application specific";
+$_ARRAYLANG['TXT_MODULE'] = "Application";
+$_ARRAYLANG['TXT_CMD'] = "Section";
+$_ARRAYLANG['TXT_OPTICS_STYLE'] = "Design & style";
+$_ARRAYLANG['TXT_SKIN'] = "Design";
+$_ARRAYLANG['TXT_SPECIAL_CONTENT_PAGE'] = "Special content template";
+$_ARRAYLANG['TXT_CUSTOMCONTENT'] = "Template";
+$_ARRAYLANG['TXT_REDIRECTION'] = "Redirection";
+$_ARRAYLANG['TXT_TARGET'] = "Target";
+$_ARRAYLANG['TXT_PERFORMANCE_OPTIMIZATION'] = "Performance Optimization";
+$_ARRAYLANG['TXT_CACHING'] = "Cache this page";
+$_ARRAYLANG['TXT_LINK'] = "Link specific";
+$_ARRAYLANG['TXT_SLUG'] = "Name";
+
+$_ARRAYLANG['TXT_PREVIEW'] = "Preview";
+$_ARRAYLANG['TXT_SAVE_PUBLISH'] = "Save & publish";
+$_ARRAYLANG['TXT_SAVE'] = "Save";
