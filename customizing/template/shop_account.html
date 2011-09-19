@@ -9,7 +9,7 @@
       <p><label>{TXT_COMPANY}</label>
         <input type="text" tabindex="1" name="company" value="{SHOP_ACCOUNT_COMPANY}" /></p>
       <p><label>{TXT_GREETING}<font color="#ff0000">&nbsp;*</font></label>
-        <select tabindex="2" name="prefix">{SHOP_ACCOUNT_PREFIX}</select></p>
+        <select tabindex="2" name="gender">{SHOP_ACCOUNT_PREFIX}</select></p>
       <p><label>{TXT_SURNAME}<font color="#ff0000">&nbsp;*</font></label>
         <input type="text" tabindex="3" name="lastname" value="{SHOP_ACCOUNT_LASTNAME}" /></p>
       <p><label>{TXT_FIRSTNAME}<font color="#ff0000">&nbsp;*</font></label>
@@ -41,7 +41,7 @@
       <p><label>{TXT_COMPANY}</label>
         <input type="text" tabindex="31" name="company2" value="{SHOP_ACCOUNT_COMPANY2}" /></p>
       <p><label>{TXT_GREETING}<font color="#ff0000">&nbsp;*</font></label>
-        <select tabindex="32" name="prefix2">{SHOP_ACCOUNT_PREFIX2}</select></p>
+        <select tabindex="32" name="gender2">{SHOP_ACCOUNT_PREFIX2}</select></p>
       <p><label>{TXT_SURNAME}<font color="#ff0000">&nbsp;*</font></label>
         <input type="text" tabindex="33" name="lastname2" value="{SHOP_ACCOUNT_LASTNAME2}" /></p>
       <p><label>{TXT_FIRSTNAME}<font color="#ff0000">&nbsp;*</font></label>
@@ -96,7 +96,7 @@ function copy_address() {
   with (document.account) {
     var disp = "block";
     if (equal_address && equal_address.checked) {
-      prefix2.value = prefix.value;
+      gender2.value = gender.value;
       company2.value = company.value;
       lastname2.value = lastname.value;
       firstname2.value = firstname.value;
@@ -108,7 +108,7 @@ function copy_address() {
       disp = "none";
 /* Optionally clear the shipment address
     } else {
-      prefix2.value = "";
+      gender2.value = "";
       company2.value = "";
       lastname2.value = "";
       firstname2.value = "";
