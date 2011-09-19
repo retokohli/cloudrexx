@@ -582,7 +582,7 @@ class InitCMS
 // NOTE: This method is called on the (global) Init object, so
 // there's no need to "global" that!
 //        global $objInit;
-        global $_CORELANG, $_CONFIG, $objDatabase;
+        global $_CORELANG, $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         $_ARRAYLANG = array();
         if ($this->mode == 'backend') {
@@ -606,42 +606,52 @@ class InitCMS
         if (!array_key_exists($module, $this->arrModulePath) && $module != 'media') {
             $module = '';
         } else {
-            // check whether the language file exists
-            $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
-               if (!file_exists($path)) {
-                $langId = $this->mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
-                $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
-                if (!file_exists($path)) {
-                    $path = '';
-                }
-            }
-        }
-        // load variables
-        if (empty($module)) {
-            return $_CORELANG;
-        }
-        if (!empty($path)) {
-            //require_once($path);
-            require($path);
-            // remove escape characters
-            foreach (array_keys($_ARRAYLANG) as $langTxtId) {
-                $_ARRAYLANG[$langTxtId] = preg_replace("/\\\"/", "/\"/", $_ARRAYLANG[$langTxtId]);
-                if (isset($_CONFIG['langDebugIds']) && $_CONFIG['langDebugIds'] == 'on') {
-                    $objRS = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."modules WHERE name = '$module' LIMIT 1");
-                    $moduleID = $objRS->fields['id'];
-                    $objRS = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."language_variable_names
-                                                    WHERE module_id = $moduleID
-                                                    AND name = '$langTxtId'", 1);
-                    if ($objRS){
-                        $_ARRAYLANG[$langTxtId] .= " ( ".$objRS->fields['id']." )";
-                    }
+            //load english language file first...
+            $path = $this->getLangFilePath($module, 2);
+            if (!empty($path)) {
+                $this->loadLangFile($path);
+            }          
+            //...and overwrite with actual language where translated.
+            if($langId != 2) { //don't do it for english, already loaded.
+                $path = $this->getLangFilePath($module, $langId);
+                if (!empty($path)) {
+                    $this->loadLangFile($path);
                 }
             }
             return $_ARRAYLANG;
         }
+
+        // load variables
+        if (empty($module)) {
+            return $_CORELANG;
+        }
         return $_CORELANG;
     }
 
+    protected function getLangFilePath($module, $langId) {
+        // check whether the language file exists
+        $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+        if (!file_exists($path)) {
+            $path = '';
+            $langId = $this->mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
+            $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$this->mode.'.php';
+            if (!file_exists($path)) {
+                $path = '';
+            }
+        }
+        return $path;
+    }
+
+    protected function loadLangFile($path) {
+        global $_ARRAYLANG;
+        //require_once($path);
+        require($path);
+        // remove escape characters
+        foreach (array_keys($_ARRAYLANG) as $langTxtId) {
+            $_ARRAYLANG[$langTxtId] = preg_replace("/\\\"/", "/\"/", $_ARRAYLANG[$langTxtId]);
+        }
+        return $_ARRAYLANG;
+    }
 
     /**
      * Returns the current page ID
