@@ -226,7 +226,8 @@ class Shipment
         global $objDatabase;
 
         if (empty(self::$arrShippers)) self::init();
-        // Mind that s.shipment_id actually points to a shipper, not a shipment!
+//DBG::log("Shipment::getCountriesRelatedShippingIdArray($countryId): Shippers: ".var_export(self::$arrShippers, true));
+//DBG::activate(DBG_ADODB);
         $query = "
             SELECT DISTINCT `relation`.`shipper_id`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_countries` AS `country`
@@ -241,11 +242,14 @@ class Shipment
               ($countryId ? " AND `country`.`country_id`=$countryId" : '');
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return self::errorHandler();
+//DBG::deactivate(DBG_ADODB);
         $arrShipperId = array();
         while ($objResult && !$objResult->EOF) {
             $shipper = $objResult->fields['shipper_id'];
-            if (isset(self::$arrShippers[$shipper]))
+            if (isset(self::$arrShippers[$shipper])) {
                 $arrShipperId[] = $shipper;
+//DBG::log("Shipment::getCountriesRelatedShippingIdArray($countryId): Shipper ID $shipper OK");
+            }
             $objResult->MoveNext();
         }
         return $arrShipperId;

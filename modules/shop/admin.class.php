@@ -125,7 +125,7 @@ class Shopmanager extends ShopLibrary
         global $objTemplate, $_ARRAYLANG;
 
 //DBG::activate(DBG_DB_FIREPHP);
-DBG::activate(DBG_ERROR_FIREPHP);
+//DBG::activate(DBG_ERROR_FIREPHP);
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
@@ -1841,9 +1841,7 @@ DBG::activate(DBG_ERROR_FIREPHP);
             $active_old = intval($_POST['active_old'][$category_id]);
 //            $virtual = isset($_POST['virtual'][$category_id]);
 //            $virtual_old = isset($_POST['virtual_old'][$category_id]);
-
-DBG::log("Shopmanager::update_categories(): ord $ord, ord_old $ord_old, active $active, active_old $active_old"); // virtual $virtual, virtual_old $virtual_old,
-
+//DBG::log("Shopmanager::update_categories(): ord $ord, ord_old $ord_old, active $active, active_old $active_old"); // virtual $virtual, virtual_old $virtual_old,
             if ($ord != $ord_old
              || $active != $active_old
 //             || $virtual != $virtual_old

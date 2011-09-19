@@ -261,11 +261,11 @@ class Products
             $queryWhere.
             $querySpecialOffer;
         $count = 0;
-DBG::activate(DBG_ADODB);
+//DBG::activate(DBG_ADODB);
         $objResult = $objDatabase->SelectLimit(
             $querySelect.$queryTail.$queryOrder, $limit, $offset);
         if (!$objResult) return Product::errorHandler();
-DBG::deactivate(DBG_ADODB);
+//DBG::deactivate(DBG_ADODB);
         $arrProduct = array();
         while (!$objResult->EOF) {
             $product_id = $objResult->fields['id'];
@@ -277,7 +277,7 @@ DBG::deactivate(DBG_ADODB);
         $objResult = $objDatabase->Execute($queryCount.$queryTail);
         if (!$objResult) return false;
         $count = $objResult->fields['numof_products'];
-DBG::log("Products::getByShopParams(): Set count to $count");
+//DBG::log("Products::getByShopParams(): Set count to $count");
         return $arrProduct;
     }
 
@@ -306,7 +306,7 @@ DBG::log("Products::getByShopParams(): Set count to $count");
 
         $arrProductId = Products::getIdArrayByShopCategory($category_id);
         if (!is_array($arrProductId)) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs in that Category");
+//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs in that Category");
             return false;
         }
         // Look whether this is within a virtual ShopCategory
@@ -315,7 +315,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
         do {
             $objShopCategory = ShopCategory::getById($parent_id);
             if (!$objShopCategory) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get parent Category");
+//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get parent Category");
                 return false;
             }
             if ($objShopCategory->virtual()) {
@@ -331,7 +331,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
         foreach ($arrProductId as $product_id) {
             $objProduct = Product::getById($product_id);
             if (!$objProduct) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs $product_id");
+//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to get Product IDs $product_id");
                 return false;
             }
             if ($virtualContainer != ''
@@ -344,7 +344,7 @@ DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Faile
                         $objProduct->code(),
                         $objProduct->flags()
                     )) {
-DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to update Product flags for ID ".$objProduct->id());
+//DBG::log("Products::deleteByShopCategory($category_id, $flagDeleteImages): Failed to update Product flags for ID ".$objProduct->id());
                         return false;
                     }
                 }

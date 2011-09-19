@@ -341,31 +341,29 @@ class Attribute
              WHERE `option_id` IN (
                 SELECT `id`
                   FROM `".DBPREFIX."module_shop".MODULE_INDEX."_option`
-                 WHERE `attribute_id`=$this->id
-             )";
+                 WHERE `attribute_id`=$this->id)";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
 
         // Delete values' Text records
         foreach (array_keys($this->arrValues) as $id) {
             if (!Text::deleteById($id, 'shop', self::TEXT_OPTION_NAME)) {
-DBG::log("Attribute::delete(): Error deleting Text for Option ID $id");
+//DBG::log("Attribute::delete(): Error deleting Text for Option ID $id");
                 return false;
             }
         }
-        // Delete values
+        // Delete option
         $query = "
             DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_option`
              WHERE `attribute_id`=$this->id";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
-
         // Delete names' Text records
         if (!Text::deleteById($this->id, 'shop', self::TEXT_ATTRIBUTE_NAME)) {
-DBG::log("Attribute::delete(): Error deleting Text for Attribute ID $id");
+//DBG::log("Attribute::delete(): Error deleting Text for Attribute ID $id");
             return false;
         }
-        // Delete name
+        // Delete Attribute
         $query = "
             DELETE FROM `".DBPREFIX."module_shop".MODULE_INDEX."_attribute`
              WHERE `id`=$this->id";

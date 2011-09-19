@@ -375,3 +375,11 @@ $_ARRAYLANG['TXT_WEIGHT'] = "Gewicht";
 $_ARRAYLANG['TXT_WEIGHT_INVALID_IGNORED'] = "Ungültiges Gewicht; Änderung ignoriert!";
 $_ARRAYLANG['TXT_YOUR_ACCOUNT_DETAILS'] = "Ihre persönlichen Zugangsdaten";
 $_ARRAYLANG['TXT_ZONE'] = "Zone";
+
+// 20110919
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INSERTING'] = "Fehler beim Einfügen des Produkts in die Bestellung";
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_ITEM_ID'] = "Ungültige Item ID";
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_PRODUCT_ID'] = "Ungültige Produkt ID";
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_QUANTITY'] = "Ungültige Menge";
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_WEIGHT'] = "Ungültiges Gewicht";
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_UPDATING'] = "Fehler beim Aktualisieren des Produkts in der Bestellung";

@@ -44,7 +44,7 @@ class Orders
     static function getArray(
         &$count, $order=null, $filter=null, $offset=0, $limit=-1
     ) {
-DBG::log("Orders::getArray(count $count, order $order, filter ".var_export($filter, true).", offset $offset, limit $limit): Entered");
+//DBG::log("Orders::getArray(count $count, order $order, filter ".var_export($filter, true).", offset $offset, limit $limit): Entered");
 
         $arrId = self::getIdArray($count, $order, $filter, $offset, $limit);
 //DBG::log("Orders::getArray(): Got IDs: ".var_export($arrId, true));
@@ -312,7 +312,7 @@ DBG::log("Orders::getArray(count $count, order $order, filter ".var_export($filt
         if ($arrStatus) {
             $filter['status'] = array_keys($arrStatus);
         }
-DBG::log("URI for Sorting: $uri, decoded ".html_entity_decode($uri));
+//DBG::log("URI for Sorting: $uri, decoded ".html_entity_decode($uri));
 
         $arrSorting = array(
             // Too long
@@ -335,7 +335,7 @@ DBG::log("URI for Sorting: $uri, decoded ".html_entity_decode($uri));
         $txt_order_complete = sprintf(
             $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'],
             $_ARRAYLANG['TXT_ORDER_COMPLETE']);
-DBG::log("Order complete: $txt_order_complete");
+//DBG::log("Order complete: $txt_order_complete");
         $objTemplate->setGlobalVariable(array(
             'SHOP_SEND_TEMPLATE_TO_CUSTOMER' => $txt_order_complete,
             'SHOP_SEARCH_TERM' => $filter['term'],
@@ -723,7 +723,7 @@ if (!$limit) {
                     SettingDb::getValue('usergroup_id_customer'),
                     SettingDb::getValue('usergroup_id_reseller'),
             )));
-DBG::log("User: ".var_export($objUser, true));
+//DBG::log("User: ".var_export($objUser, true));
             while (!$objResult->EOF) {
                 Currency::setActiveCurrencyId($objResult->fields['currency_id']);
                 $key = $objResult->fields['id'];
@@ -841,7 +841,9 @@ DBG::log("User: ".var_export($objUser, true));
         if (!$match) {
             $link = '<b>'.$link.'</b>';
         }
-        $links .= $link;
+        $links .=
+            $link.
+            Html::getHidden('listletter', '');
         return $links;
 
     }
@@ -1206,13 +1208,13 @@ DBG::log("User: ".var_export($objUser, true));
         // Pick the Coupon, if any
         $objCoupon = Coupon::getByOrderId($order_id);
         if ($objCoupon) {
-            $coupon_code = $objCouponobjResult->fields['product_option_value'];
+            $coupon_code = $objCoupon->code();
             $arrSubstitution['DISCOUNT_COUPON'][] = array(
                 'DISCOUNT_COUPON_CODE' => sprintf('%-40s',
                     $coupon_code),
                 // Note that the price is stored with a negative sign already
                 'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f',
-                    $objResult->fields['product_option_values_price']),
+                    $objCoupon->discount_amount()),
             );
         }
 
@@ -1245,7 +1247,7 @@ DBG::log("User: ".var_export($objUser, true));
         while (!$objResultItem->EOF) {
             $orderItemId = $objResultItem->fields['id'];
             $product_id = $objResultItem->fields['product_id'];
-DBG::log("Item: Product ID $product_id");
+//DBG::log("Item: Product ID $product_id");
             $product_name = substr($objResultItem->fields['product_name'], 0, 40);
             $item_price = $objResultItem->fields['price'];
 
@@ -1413,12 +1415,16 @@ die("Product ID $product_id not found");
                     }
                 }
                 // "Use" the Coupon, if possible for the Product
+                // Product Coupon
                 if ($coupon_code) {
-                    $objCoupon = Coupon::useCoupon(
-                        $coupon_code, $arrSubstitution['ORDER_SUM'],
-                        $item_price*$quantity,
-                        $product_id, $customer_id, $order_id, $payment_id);
-                    if ($objCoupon) $coupon_code = '';
+                    $objCoupon = Coupon::available($coupon_code,
+                        $item_price*$quantity, $customer_id, $product_id,
+                        $payment_id);
+                    if ($objCoupon) {
+                        $objCoupon->redeem($order_id, $customer_id,
+                            $item_price*$quantity);
+                        $coupon_code = null;
+                    }
                 }
             }
             if (empty($arrSubstitution['ORDER_ITEM']))
@@ -1431,12 +1437,15 @@ die("Product ID $product_id not found");
         $arrSubstitution['ORDER_ITEM_COUNT'] = sprintf('% 4u', $orderItemCount);
 
         // "Use" the Coupon, if possible for the Order
+        // Global Coupon
         if ($coupon_code) {
-            $objCoupon = Coupon::useCoupon(
-                $coupon_code, $arrSubstitution['ORDER_ITEM_SUM'],
-                $customer_id, $order_id, 0, $payment_id);
+            $objCoupon = Coupon::available($coupon_code, $priceTotalItems,
+                $customer_id, null, $payment_id);
+            if ($objCoupon) {
+                $objCoupon->redeem($order_id, self::$objCustomer->id(),
+                    $priceTotalItems);
+            }
         }
-
         if (Vat::isEnabled()) {
             $arrSubstitution['TAX_TEXT'] =
                 sprintf('%-40s',
