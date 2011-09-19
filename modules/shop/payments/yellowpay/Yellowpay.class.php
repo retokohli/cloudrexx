@@ -360,20 +360,20 @@ class Yellowpay
     {
         self::$arrField = array();
         if (empty($arrField)) {
-DBG::log("Yellowpay::setFields(): Empty field array");
+//DBG::log("Yellowpay::setFields(): Empty field array");
             return false;
         }
 //die("Field array: ".var_export($arrField, true));
         foreach (self::$arrFieldMandatory as $name) {
             if (empty($arrField[$name])) {
-DBG::log("Yellowpay::setFields(): Missing mandatory name '$name'");
+//DBG::log("Yellowpay::setFields(): Missing mandatory name '$name'");
                 self::$arrError[] = "Missing mandatory name '$name'";
                 return false;
             }
         }
         foreach ($arrField as $name => $value) {
             if (!self::addField($name, $value)) {
-DBG::log("Yellowpay::setFields(): Failed to add '$name' (value '$value')");
+//DBG::log("Yellowpay::setFields(): Failed to add '$name' (value '$value')");
                 return false;
             }
         }

@@ -1015,7 +1015,6 @@ class Order
     }
 
 
-// TODO -- From admin.class
     /**
      * Set up details of the selected order
      * @access  public
@@ -1055,9 +1054,6 @@ class Order
             return Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_ORDER_NOT_FOUND'], $order_id));
         }
-
-// TODO FROM HERE
-
         // lsv data
         $query = "
             SELECT `holder`, `bank`, `blz`
@@ -1077,7 +1073,6 @@ class Order
                     $objResult->fields['blz']),
             ));
         }
-
         $customer_id = $objOrder->customer_id();
         if (!$customer_id) {
 //DBG::log("Shop::shopShowOrderdetails(): Invalid Customer ID $customer_id");
@@ -1228,6 +1223,20 @@ class Order
         while (!$objResult->EOF) {
             $item_id = $objResult->fields['id'];
             $name = $objResult->fields['product_name'];
+            $price = $objResult->fields['price'];
+            $quantity = $objResult->fields['quantity'];
+            $vat_rate = $objResult->fields['vat_rate'];
+            $product_id = $objResult->fields['product_id'];
+            // Get missing product details
+            $objProduct = Product::getById($product_id);
+            if (!$objProduct) {
+                Message::warning(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'], $product_id));
+                $objProduct = new Product('', 0, $name, '', $price,
+                    0, 0, 0, $product_id);
+            }
+            $code = $objProduct->code();
+            $distribution = $objProduct->distribution();
             if (isset($arrProductOptions[$item_id])) {
                 if ($edit) {
 // TODO: Edit options
@@ -1247,23 +1256,9 @@ class Order
                     }
                 }
             }
-            $product_id = $objResult->fields['product_id'];
-            // Get missing product details
-            $objProduct = Product::getById($product_id);
-            if (!$objProduct) {
-// TODO: Add error message
-                return false;
-            }
-            $code = $objProduct->code();
-            $distribution = $objProduct->distribution();
-
-            $price = $objResult->fields['price'];
-            $quantity = $objResult->fields['quantity'];
-            $vat_rate = $objResult->fields['vat_rate'];
             $row_net_price = $price * $quantity;
             $row_price = $row_net_price; // VAT added later, if applicable
             $total_net_price += $row_net_price;
-
             // Here, the VAT has to be recalculated before setting up the
             // fields.  If the VAT is excluded, it must be added here.
             // Note: the old Order.vat_amount field is no longer valid,
@@ -1273,12 +1268,10 @@ class Order
             // country_id can be ignored, as they are considered when the
             // order is placed and the VAT is applied to the order
             // accordingly.
-
-            // calculate the VAT amount per row, included or excluded
+            // Calculate the VAT amount per row, included or excluded
             $row_vat_amount = Vat::amount($vat_rate, $row_net_price);
             // and add it to the total VAT amount
             $total_vat_amount += $row_vat_amount;
-
             if (!Vat::isIncluded()) {
                 // Add tax to price
                 $row_price += $row_vat_amount;
@@ -1350,6 +1343,19 @@ class Order
             //$objTemplate->hideBlock('taxprice');
             //$tax_part_percentaged = $_ARRAYLANG['TXT_NO_TAX'];
         //}
+// TODO: Parse Coupon if applicable to this product
+        // Coupon
+        $objCoupon = Coupon::getByOrderId($order_id);
+        if ($objCoupon) {
+            $objTemplate->setVariable(array(
+                'SHOP_COUPON_NAME' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE'],
+                'SHOP_COUPON_CODE' => $objCoupon->code(),
+                'SHOP_COUPON_AMOUNT' => Currency::formatPrice(
+                    -$objCoupon->discount_amount()),
+            ));
+            $total_net_price -= $objCoupon->discount_amount();
+//DBG::log("Order::view_detail(): Coupon: ".var_export($objCoupon, true));
+        }
         $objTemplate->setVariable(array(
             'SHOP_ROWCLASS_NEW' => 'row'.(++$i % 2 + 1),
             'SHOP_TOTAL_WEIGHT' => Weight::getWeightString($total_weight),
@@ -1357,14 +1363,6 @@ class Order
 // See above
 //            'SHOP_ORDER_SUM' => Currency::formatPrice($order_sum),
         ));
-        // Coupon
-        $objCoupon = Coupon::getByOrderId($order_id);
-        if ($objCoupon) {
-            $objTemplate->setVariable(array(
-                'SHOP_COUPON_CODE' => $objCoupon->code(),
-                'SHOP_COUPON_DISCOUNT_AMOUNT' => $objCoupon->discount_amount(),
-            ));
-        }
         $objTemplate->setVariable(array(
             'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
             // inserted VAT, weight here

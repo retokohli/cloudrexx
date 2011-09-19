@@ -1,8 +1,5 @@
 <?php
 
-DBG::activate(DBG_ERROR_FIREPHP);
-//unset($_SESSION['shop']['order_id']);
-
 /**
  * The Shop
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -78,7 +75,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @static
      */
-    private static $objTemplate;
+    private static $objTemplate = null;
 
     /**
      * The Customer object
@@ -87,7 +84,7 @@ class Shop extends ShopLibrary
      * @static
      * @see     lib/Customer.class.php
      */
-    private static $objCustomer;
+    private static $objCustomer = null;
 
     /**
      * The Payment Processing object
@@ -95,7 +92,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/PaymentProcessing.class.php
      */
-    private static $objProcessing;
+    private static $objProcessing = null;
 
     /**
      * The Shipment object
@@ -103,7 +100,7 @@ class Shop extends ShopLibrary
      * @access  private
      * @see     lib/Shipment.class.php
      */
-    private static $objShipment;
+    private static $objShipment = null;
 
 
     /**
@@ -196,7 +193,7 @@ if (isset ($_REQUEST['content'])) {
         if (isset($_REQUEST['coupon_code'])) {
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
-DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
+//DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
         }
 
 //DBG::log("Shop::getPage(): Entered");
@@ -942,7 +939,7 @@ die("Failed to update the Cart!");
             self::$objCustomer && self::$objCustomer->is_reseller()
         );
         $objCategory = ShopCategory::getById($category_id);
-DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
+//DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
         if ($objCategory) {
             self::$objTemplate->setVariable(array(
                 // Old, kept for convenience
@@ -960,7 +957,7 @@ DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
             self::$objTemplate->touchBlock('no_product');
             return true;
         }
-DBG::log("Count: $count");
+//DBG::log("Count: $count");
         $uri =
             '&amp;section=shop'.MODULE_INDEX.
             $pagingCatId.$pagingManId.$pagingTerm;
@@ -1988,17 +1985,17 @@ function centerY(height)
             && isset($_SESSION['shop']['password'])) {
             $username = $_SESSION['shop']['username'];
             $password = md5($_SESSION['shop']['password']);
-DBG::log("Shop::_authenticate(): Trying to authenticate $username/{$_SESSION['shop']['password']} ($password)");
+//DBG::log("Shop::_authenticate(): Trying to authenticate $username/{$_SESSION['shop']['password']} ($password)");
             $objCustomer = new Customer();
             if ($objCustomer->auth($username, $password)) {
-DBG::log("Shop::_authenticate(): This ID: ".$objCustomer->getId()
+//DBG::log("Shop::_authenticate(): This ID: ".$objCustomer->getId()
 //." -> ".var_export($objCustomer, true)
-.", Usergroups: ".var_export($objCustomer->getAssociatedGroupIds(), true));
+//.", Usergroups: ".var_export($objCustomer->getAssociatedGroupIds(), true));
                 $_SESSION['shop']['email'] = $objCustomer->email();
                 self::$objCustomer = &$objCustomer;
                 return true;
             }
-DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['shop']['password']} ($password)");
+//DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['shop']['password']} ($password)");
         }
         return false;
     }
@@ -2218,21 +2215,21 @@ DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['sh
             self::$objTemplate->setVariable(
                 'SHOP_ACCOUNT_EMAIL', contrexx_raw2xhtml($email));
             if ($register == ShopLibrary::REGISTER_OPTIONAL) {
-DBG::log("Shop::view_account(): Optional -> e-mail, dont_register");
+//DBG::log("Shop::view_account(): Optional -> e-mail, dont_register");
                 self::$objTemplate->touchBlock('dont_register');
                 if (empty($_SESSION['shop']['dont_register'])) {
-DBG::log("Shop::view_account(): Register -> block password");
+//DBG::log("Shop::view_account(): Register -> block password");
                     $block_password = true;
                 }
             }
             if ($register == ShopLibrary::REGISTER_MANDATORY) {
-DBG::log("Shop::view_account(): Mandatory/None -> div password");
+//DBG::log("Shop::view_account(): Mandatory/None -> div password");
                 $block_password = true;
             }
         } else {
-DBG::log("Shop::view_account(): Got Customer -> no block");
+//DBG::log("Shop::view_account(): Got Customer -> no block");
         }
-DBG::log("Shop::view_account(): block_password ".var_export($block_password, true));
+//DBG::log("Shop::view_account(): block_password ".var_export($block_password, true));
         self::$objTemplate->setGlobalVariable(array(
             'SHOP_ACCOUNT_PASSWORD_DISPLAY' => ($block_password
               ? HTML_CSS_DISPLAY_BLOCK : HTML_CSS_DISPLAY_NONE),
@@ -2384,7 +2381,10 @@ DBG::log("Shop::view_account(): block_password ".var_export($block_password, tru
             $_SESSION['shop']['agb'] = '';
         }
 //DBG::activate(DBG_ADODB);
-        if (InitCMS::page_count(null, 'shop', 'payment', true)) {
+        $page_repository = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+        if ($page_repository->existsModuleCmd(
+            FRONTEND_LANG_ID, 'shop', 'payment')) {
+//if (InitCMS::page_count(null, 'shop', 'payment', true)) {
 //die("Shop::_gotoPaymentPage(): Redirect to payment");
             header("Location: index.php?section=shop".MODULE_INDEX."&cmd=payment");
         } else {
@@ -2473,7 +2473,7 @@ DBG::log("Shop::view_account(): block_password ".var_export($block_password, tru
                 $_SESSION['shop']['paymentId'],
                 $cart_amount
             );
-//        Cart::update();
+        Cart::update();
         self::update_session();
     }
 
@@ -2657,7 +2657,7 @@ DBG::log("Shop::view_account(): block_password ".var_export($block_password, tru
     {
         global $_ARRAYLANG;
 
-DBG::log("Shop::viewpart_lsv(): Entered");
+//DBG::log("Shop::viewpart_lsv(): Entered");
 
         if (self::processor_name() != 'Internal_LSV') return;
         if (!empty($_POST['account_holder']))
@@ -3155,7 +3155,10 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
         if (!Cart::needs_shipment()) {
             $_SESSION['shop']['countryId2'] = 0;
         }
-
+        $shipper_id = (empty($_SESSION['shop']['shipperId'])
+            ? null : $_SESSION['shop']['shipperId']);
+        $payment_id = (empty($_SESSION['shop']['paymentId'])
+            ? null : $_SESSION['shop']['paymentId']);
         $objOrder = new Order();
         $objOrder->customer_id(self::$objCustomer->id());
         $objOrder->currency_id($_SESSION['shop']['currencyId']);
@@ -3173,18 +3176,14 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
         $objOrder->phone($_SESSION['shop']['phone2']);
         $objOrder->vat_amount($_SESSION['shop']['vat_price']);
         $objOrder->shipment_amount($_SESSION['shop']['shipment_price']);
-        $objOrder->shipment_id(
-               isset($_SESSION['shop']['shipperId'])
-            && $_SESSION['shop']['shipperId']
-                ? $_SESSION['shop']['shipperId'] : null);
-        $objOrder->payment_id($_SESSION['shop']['paymentId']);
+        $objOrder->shipment_id($shipper_id);
+        $objOrder->payment_id($payment_id);
         $objOrder->payment_amount($_SESSION['shop']['payment_price']);
         $objOrder->ip($customer_ip);
         $objOrder->host($customer_host);
         $objOrder->lang_id(FRONTEND_LANG_ID);
         $objOrder->browser($customer_browser);
         $objOrder->note($_SESSION['shop']['note']);
-
         if (!$objOrder->insert()) {
             // $order_id is unset!
             return Message::error($_ARRAYLANG['TXT_ERROR_STORING_CUSTOMER_DATA']);
@@ -3197,6 +3196,11 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
         // This is used to determine the order status at the
         // end of the shopping process.
         $_SESSION['shop']['isDelivery'] = false;
+        // Try to redeem the Coupon, if any
+        $coupon_code = (isset($_SESSION['shop']['coupon_code'])
+            ? $_SESSION['shop']['coupon_code'] : null);
+//DBG::log("Cart::update(): Coupon Code: $coupon_code");
+        $items_total = 0;
 
         foreach (Cart::get_products_array() as $arrProduct) {
             $objProduct = Product::getById($arrProduct['id']);
@@ -3213,6 +3217,8 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
                 self::$objCustomer,
                 $priceOptions,
                 $quantity);
+            $item_total = $price*$quantity;
+            $items_total += $item_total;
             $productVatId = $objProduct->vat_id();
             $vat_rate = ($productVatId && Vat::getRate($productVatId)
                 ? Vat::getRate($productVatId) : '0.00');
@@ -3226,23 +3232,48 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
             if ($weight == '') { $weight = 0; }
             // Add to order items table
             $result = $objOrder->insertItem(
-                $product_id, $name, $price, $quantity,
+                $order_id, $product_id, $name, $price, $quantity,
                 $vat_rate, $weight, $arrProduct['options']);
             if (!$result) {
                 unset($_SESSION['shop']['order_id']);
 // TODO: Verify error message set by Order::insertItem()
                 return false;
             }
+            // Store the Product Coupon, if applicable.
+            // Note that it is not redeemed yet!
+            if ($coupon_code) {
+                $objCoupon = Coupon::available($coupon_code, $item_total,
+                    self::$objCustomer->id(), $product_id, $payment_id);
+                if ($objCoupon) {
+//DBG::log("Shop::process(): Got Coupon for Product ID $product_id: ".var_export($objCoupon, true));
+                    if (!$objCoupon->redeem($order_id, self::$objCustomer->id(),
+                        $price*$quantity, 0)) {
+DBG::log("Shop::process(): ERROR: Failed to store Coupon for Product ID $product_id");
+                    }
+                    $coupon_code = null;
+                }
+            }
         } // foreach product in cart
+        // Store the Global Coupon, if applicable.
+        // Note that it is not redeemed yet!
+        if ($coupon_code) {
+            $objCoupon = Coupon::available($coupon_code, $items_total,
+                self::$objCustomer->id(), null, $payment_id);
+//DBG::log("Shop::process(): Got global Coupon: ".var_export($objCoupon, true));
+            if ($objCoupon) {
+                if (!$objCoupon->redeem($order_id, self::$objCustomer->id(),
+                    $items_total, 0))
+DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
+            }
+        }
 
         $processor_id = Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id');
         $processor_name = PaymentProcessing::getPaymentProcessorName($processor_id);
          // other payment methods
         PaymentProcessing::initProcessor($processor_id);
 // TODO: These arguments are no longer valid.  Set them up later?
-//                Currency::getActiveCurrencyCode(),
-//                FWLanguage::getLanguageParameter(FRONTEND_LANG_ID, 'lang'));
-
+//            Currency::getActiveCurrencyCode(),
+//            FWLanguage::getLanguageParameter(FRONTEND_LANG_ID, 'lang'));
         // if the processor is Internal_LSV, and there is account information,
         // store the information.
         if ($processor_name == 'Internal_LSV') {
@@ -3418,7 +3449,7 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
             && $_REQUEST['result'] < 0) die('');
         self::$objTemplate->setVariable($_ARRAYLANG);
         // Comment this for testing, so you can reuse the same account and cart
-//        self::destroyCart();
+        self::destroyCart();
         // Clear the Order ID instead, so you can do it again
         unset($_SESSION['shop']['order_id']);
         // Clear backup ID, avoid success() from being run again
@@ -3949,7 +3980,7 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
         $match = null;
         foreach ($arrFiles as $file) {
             if (!preg_match('/^(shop)_?(\w*)\.html/', $file, $match)) {
-DBG::log('File name '.$file.' does not match; skipped<br />');
+//DBG::log('File name '.$file.' does not match; skipped<br />');
                 continue;
             }
             $section = $match[1];

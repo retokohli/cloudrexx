@@ -159,15 +159,15 @@ class Cart
      */
     static function add_product($arrNewProduct, $old_cart_id=null)
     {
-DBG::log("Cart::add_product(): Entered, Items: ".var_export($_SESSION['shop']['cart']['items'], true));
+//DBG::log("Cart::add_product(): Entered, Items: ".var_export($_SESSION['shop']['cart']['items'], true));
         if (empty($arrNewProduct['id'])) {
-DBG::log("Cart::add_product(): No ID");
+//DBG::log("Cart::add_product(): No ID");
             return;
         }
         // Do not add zero or negative quantities
         if (   empty($arrNewProduct['quantity'])
             || intval($arrNewProduct['quantity']) <= 0) {
-DBG::log("Cart::add_product(): Invalid quantity");
+//DBG::log("Cart::add_product(): Invalid quantity");
             return;
         }
         $quantity = intval($arrNewProduct['quantity']);
@@ -179,28 +179,28 @@ DBG::log("Cart::add_product(): Invalid quantity");
             foreach ($products as $cart_id => $arrProduct) {
                 // Check whether the same product is already in the cart
                 if ($arrProduct['id'] != $arrNewProduct['id']) {
-DBG::log("Cart::add_product(): Different ID, skipping");
+//DBG::log("Cart::add_product(): Different ID, skipping");
                     continue;
                 }
-DBG::log("Cart::add_product(): Comparing options: New: ".var_export($arrNewProduct['options'], true).", Old: ".var_export($arrProduct['options'], true));
+//DBG::log("Cart::add_product(): Comparing options: New: ".var_export($arrNewProduct['options'], true).", Old: ".var_export($arrProduct['options'], true));
                 // Same ID from here, compare the options
                 if (empty($arrNewProduct['options'])) {
                     if (empty($arrProduct['options'])) {
                         // Both got no options, so must be identical
                         $new = false;
-DBG::log("Cart::add_product(): Both no options, match");
+//DBG::log("Cart::add_product(): Both no options, match");
                         break;
                     }
                 } else {
                     if (empty($arrProduct['options'])) {
                         // The new one's got options, while the old one does not
-DBG::log("Cart::add_product(): Only new options, skipping");
+//DBG::log("Cart::add_product(): Only new options, skipping");
                         continue;
                     }
                 }
                 // Refuse invalid options
                 if (!is_array($arrNewProduct['options'])) {
-DBG::log("Cart::add_product(): Invalid options: {$arrNewProduct['options']}, exiting");
+//DBG::log("Cart::add_product(): Invalid options: {$arrNewProduct['options']}, exiting");
                     return;
                 }
                 $old_attribute_ids = array_keys($arrProduct['options']);
@@ -208,14 +208,14 @@ DBG::log("Cart::add_product(): Invalid options: {$arrNewProduct['options']}, exi
                 $new_attribute_ids = array();
                 foreach ($arrNewProduct['options'] as $attribute_id => $value) {
                     if (empty($value)) {
-DBG::log("Cart::add_product(): New: no options for Attribute ID $attribute_id");
+//DBG::log("Cart::add_product(): New: no options for Attribute ID $attribute_id");
                         continue;
                     }
                     $new_attribute_ids[] = $attribute_id;
                 }
                 sort($new_attribute_ids);
                 if (!$old_attribute_ids === $new_attribute_ids) {
-DBG::log("Cart::add_product(): Different Attributes: New: ".var_export($new_attribute_ids, true).", Old: ".var_export($old_attribute_ids, true));
+//DBG::log("Cart::add_product(): Different Attributes: New: ".var_export($new_attribute_ids, true).", Old: ".var_export($old_attribute_ids, true));
                     continue;
                 }
 
@@ -223,7 +223,7 @@ DBG::log("Cart::add_product(): Different Attributes: New: ".var_export($new_attr
                 // check for the same option values
                 foreach ($arrNewProduct['options'] as $attribute_id => $value) {
                     if (empty($value)) {
-DBG::log("Cart::add_product(): New: Empty option value for Attribute ID $attribute_id");
+//DBG::log("Cart::add_product(): New: Empty option value for Attribute ID $attribute_id");
                         continue;
                     }
                     if (is_array($arrProduct['options'][$attribute_id])) {
@@ -234,30 +234,30 @@ DBG::log("Cart::add_product(): New: Empty option value for Attribute ID $attribu
                             array_push($arrPostValues, $value);
                         }
                         if ($arrPostValues !== $arrProduct['options'][$attribute_id]) {
-DBG::log("Cart::add_product(): Different options: New: ".var_export($arrPostValues, true).", Old: ".var_export($arrProduct['options'][$attribute_id], true));
+//DBG::log("Cart::add_product(): Different options: New: ".var_export($arrPostValues, true).", Old: ".var_export($arrProduct['options'][$attribute_id], true));
                             continue 2;
                         }
                     } else {
                         if (!isset($arrProduct['options'][$attribute_id][$value])) {
-DBG::log("Cart::add_product(): Missing option");
+//DBG::log("Cart::add_product(): Missing option");
                             continue 2;
                         }
                     }
                 }
                 // All options identical
                 $new = false;
-DBG::log("Cart::add_product(): Identical options as Cart ID $cart_id: New: ".var_export($arrNewProduct['options'], true).", Old: ".var_export($arrProduct['options'], true));
+//DBG::log("Cart::add_product(): Identical options as Cart ID $cart_id: New: ".var_export($arrNewProduct['options'], true).", Old: ".var_export($arrProduct['options'], true));
                 break;
             }
-DBG::log("Cart::add_product(): No match!");
+//DBG::log("Cart::add_product(): No match!");
         }
-DBG::log("Cart::add_product(): Comparing done, cart ID $cart_id");
+//DBG::log("Cart::add_product(): Comparing done, cart ID $cart_id");
         if ($new) {
             if (isset($old_cart_id)) {
-DBG::log("Cart::add_product(): New Product: Replacing cart ID with old $old_cart_id");
+//DBG::log("Cart::add_product(): New Product: Replacing cart ID with old $old_cart_id");
                 $cart_id = $old_cart_id;
             } else {
-DBG::log("Cart::add_product(): New Product: Creating new cart ID");
+//DBG::log("Cart::add_product(): New Product: Creating new cart ID");
 // TODO: True? // $arrNewProduct['id'] may be undefined!
                 $arrProduct = array(
                     'id' => $arrNewProduct['id'],
@@ -269,27 +269,27 @@ DBG::log("Cart::add_product(): New Product: Creating new cart ID");
             }
         } else {
             if (isset($old_cart_id)) {
-DBG::log("Cart::add_product(): Old Product: Have cart ID...");
+//DBG::log("Cart::add_product(): Old Product: Have cart ID...");
                 if ($old_cart_id != $cart_id) {
-DBG::log("Cart::add_product(): Old Product: Merging");
+//DBG::log("Cart::add_product(): Old Product: Merging");
                     $products[$cart_id]['quantity'] +=
                         $products[$old_cart_id]['quantity'];
                     unset($products[$old_cart_id]);
                 } else {
-DBG::log("Cart::add_product(): Old Product: Same cart ID, not merged!");
+//DBG::log("Cart::add_product(): Old Product: Same cart ID, not merged!");
                 }
             } else {
-DBG::log("Cart::add_product(): Old Product: Adding quantity $quantity to {$products[$cart_id]['quantity']} in cart ID $cart_id (old ID $old_cart_id)");
+//DBG::log("Cart::add_product(): Old Product: Adding quantity $quantity to {$products[$cart_id]['quantity']} in cart ID $cart_id (old ID $old_cart_id)");
                 $products[$cart_id]['quantity'] +=
                     $quantity;
-DBG::log("Cart::add_product(): Old Product: Updated quantity to {$_SESSION['shop']['cart']['items'][$cart_id]['quantity']}");
+//DBG::log("Cart::add_product(): Old Product: Updated quantity to {$_SESSION['shop']['cart']['items'][$cart_id]['quantity']}");
             }
         }
         // Add options
 // TODO: I suspect that this could be completely skipped when $new === false!?
         $products[$cart_id]['options'] = array();
         if (isset($arrNewProduct['options']) && count($arrNewProduct['options']) > 0) {
-DBG::log("Cart::add_product(): Adding options: New: ".var_export($arrNewProduct['options'], true));
+//DBG::log("Cart::add_product(): Adding options: New: ".var_export($arrNewProduct['options'], true));
             foreach ($arrNewProduct['options'] as $attribute_id => $option_id) {
                 // Get Attribute
                 $objAttribute = Attribute::getById($attribute_id);
@@ -319,8 +319,8 @@ DBG::log("Cart::add_product(): Adding options: New: ".var_export($arrNewProduct[
                 }
             }
         }
-DBG::log("Cart::add_product(): New options: ".var_export($products[$cart_id]['options'], true));
-DBG::log("Cart::add_product(): Leaving");
+//DBG::log("Cart::add_product(): New options: ".var_export($products[$cart_id]['options'], true));
+//DBG::log("Cart::add_product(): Leaving");
     }
 
 
@@ -489,33 +489,37 @@ DBG::log("Cart::add_product(): Leaving");
                 'group_id' => $objProduct->group_id(),
                 'article_id' => $objProduct->article_id(),
             );
+//DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
         // Loop 2: Calculate Coupon discounts and VAT
         $objCoupon = null;
-        foreach ($products as $cart_id => &$product) {
+        foreach (self::$products as $cart_id => &$product) {
             // Coupon:  Either the payment ID or the code are needed
             if ($payment_id || $coupon_code) {
                 $objCoupon = Coupon::available(
                     $coupon_code, $total_price, $customer_id,
                     $product['id'], $payment_id);
                 if ($objCoupon) {
+//DBG::log("Cart::update(): Loop 2: Product: ".var_export($product, true));
                     $discount_amount = $objCoupon->getDiscountAmount(
                         $product['price']);
                     if ($objCoupon->discount_amount()
                      &&   ($total_discount_amount + $discount_amount)
                         > $objCoupon->discount_amount()) {
+//DBG::log("Cart::update(): COUPON prelimit: PRODUCT: price ".$product['price'].", coupon discount amount ".$objCoupon->discount_amount().", discount_amount $discount_amount, total discount amount $total_discount_amount");
                         $discount_amount =
                             $objCoupon->discount_amount()
                           - $total_discount_amount;
+//DBG::log("Cart::update(): COUPON postlimit: PRODUCT: price ".$product['price'].", coupon discount amount ".$objCoupon->discount_amount().", discount_amount $discount_amount, total discount amount $total_discount_amount");
                     }
                     $total_discount_amount += $discount_amount;
-                    $product['price'] = Currency::formatPrice(
-                        $product['price'] - $discount_amount);
+//                    $product['price'] = Currency::formatPrice(
+//                        $product['price'] - $discount_amount);
                     $product['discount_amount'] = $discount_amount;
 // UNUSED
 //                        $arrProduct['coupon_string'] =
 //                            $objCoupon->getString($discount_amount);
-//DBG::log("Cart::update(): PRODUCT: price ".$product['price'].", total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
+//DBG::log("Cart::update(): PRODUCT: price ".$product['price'].", discount_amount $discount_amount, total discount $total_discount_amount");
                 }
             }
             // Calculate the amount if it's excluded; we might add it later:
@@ -537,11 +541,11 @@ DBG::log("Cart::add_product(): Leaving");
                 $total_discount_amount = $discount_amount;
 //DBG::log("Cart::update(): GLOBAL; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
             }
-            if ($objCoupon) {
+        }
+        if ($objCoupon) {
 //DBG::log("Cart::update(): Got Coupon ".var_export($objCoupon, true));
-                $total_price -= $discount_amount;
+            $total_price -= $discount_amount;
 //DBG::log("Cart::update(): COUPON; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
-            }
         }
 
         $_SESSION['shop']['cart']['total_discount_amount'] =

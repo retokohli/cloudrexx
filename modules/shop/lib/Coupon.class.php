@@ -278,7 +278,7 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
         }
         // Not found
         if ($objResult->EOF) {
-DBG::log("Coupon::get($code): Note: None found");
+//DBG::log("Coupon::get($code): Note: None found");
             return null;
         }
         $objCoupon = new Coupon();
@@ -304,7 +304,7 @@ DBG::log("Coupon::get($code): Note: None found");
      * If the code is valid, returns the Coupon.
      * If the code is unknown, or limited and already exhausted, returns false.
      * Also note that no counter is changed upon verification; to update
-     * a coupon after use see {@see useCoupon()}.
+     * a coupon after use see {@see redeem()}.
      * Use {@see getByOrderId()} to get a (used) Coupon that was used in
      * conjunction with any partivcular Order, without any verification.
      * @param   string    $code           The coupon code
@@ -324,47 +324,54 @@ DBG::log("Coupon::get($code): Note: None found");
         // See if the code exists and is still valid
         $objCoupon = self::get($code);
         if ($objCoupon === false) {
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): ERROR getting the Coupon");
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): ERROR getting the Coupon");
             return false;
         }
         if (!$objCoupon) return null;
         if ($objCoupon->minimum_amount() > $order_amount) {
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Order amount too low");
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Order amount too low");
             return null;
         }
         if ($objCoupon->customer_id()
          && $objCoupon->customer_id() != $customer_id) {
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Customer ID");
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Customer ID");
             return null;
         }
         if ($objCoupon->product_id()
          && $objCoupon->product_id() != $product_id) {
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID");
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID");
             return null;
         }
         if ($objCoupon->payment_id()
          && $objCoupon->payment_id() != $payment_id) {
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Payment ID");
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Payment ID");
             return null;
         }
         if ($objCoupon->start_time()
          && $objCoupon->start_time() > time()) {
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Not valid yet");
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Not valid yet");
             return null;
         }
         if ($objCoupon->end_time()
          && $objCoupon->end_time() < time()) {
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): No longer valid");
-           return null;
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): No longer valid");
+            return null;
         }
-        if ($customer_id
-         && $objCoupon->uses < 1e9) {
-            $objCoupon->uses(
-                $objCoupon->uses()
-              - $objCoupon->getUsedCount($customer_id));
+        // Unlimited uses
+        if ($objCoupon->uses > 1e9) return $objCoupon;
+        // Deduct the number of times the Coupon has been redeemed already:
+        // - If the Coupon's customer_id is empty, subtract all uses
+        // - Otherwise, subtract the current customer's uses only
+        $objCoupon->uses(
+            $objCoupon->uses()
+          - $objCoupon->getUsedCount(
+              ($objCoupon->customer_id()
+                ? $customer_id : null)));
+        if ($objCoupon->uses() <= 0) {
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Fully redeemed");
+            return null;
         }
-        if ($objCoupon->uses() <= 0) return null;
-DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Found ".(var_export($objCoupon, true)));
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Found ".(var_export($objCoupon, true)));
         return $objCoupon;
     }
 
@@ -386,11 +393,20 @@ DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $pa
         global $objDatabase;
 
         $order_id = intval($order_id);
-        if (!$order_id) return false;
+        if (!$order_id) {
+//DBG::log("Coupon::getByOrderId($order_id): Invalid Order ID $order_id");
+            return false;
+        }
         $objOrder = Order::getById($order_id);
-        if (!$objOrder) return false;
+        if (!$objOrder) {
+//DBG::log("Coupon::getByOrderId($order_id): Failed to get Order ID $order_id");
+            return false;
+        }
         $customer_id = $objOrder->customer_id();
-        if (!$customer_id) return false;
+        if (!$customer_id) {
+//DBG::log("Coupon::getByOrderId($order_id): Invalid Customer ID $customer_id");
+            return false;
+        }
         $query = "
             SELECT `coupon`.`code`, `coupon`.`payment_id`,
                    `coupon`.`start_time`, `coupon`.`end_time`,
@@ -409,7 +425,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             return self::errorHandler();
         }
         if ($objResult->EOF) {
-//DBG::log("Coupon::getByOrderId($order_id): None found");
+//DBG::log("Coupon::getByOrderId($order_id): No Coupon for Order ID $order_id found");
             return null;
         }
         $objCoupon = new Coupon();
@@ -448,26 +464,40 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
      * Mind that you *MUST* decide which amount(Order or Product) to provide:
      *  - the Product amount if the Coupon has a non-empty Product ID, or
      *  - the Order amount otherwise
+     * Provide a zero $uses count (but not null!) when you are storing the
+     * Order.  Omit it, or set it to 1 (one) when the Order is complete.
+     * The latter is usually the case on the success page, after the Customer
+     * has returned to the Shop after paying.
+     * Mind that the amount cannot be changed once the record has been
+     * created, so only the use count will ever be updated.
+     * $uses is never interpreted as anything other than 0 or 1!
      * @param   integer   $order_id         The Order ID
      * @param   integer   $customer_id      The Customer ID
      * @param   double    $amount           The Order- or the Product amount
      *                                      (if $this->product_id is non-empty)
+     * @param   integer   $uses             The redeem count.  Set to 0 (zero)
+     *                                      when storing the Order, omit or
+     *                                      set to 1 (one) when redeeming
+     *                                      Defaults to 1.
      * @return  Coupon                      The Coupon on success,
      *                                      false otherwise
      */
-    function redeem($order_id, $customer_id, $amount)
+    function redeem($order_id, $customer_id, $amount, $uses=1)
     {
         global $objDatabase;
 
         // Discount the lower of the discount available and the amount
-        $amount = min($this->discount_amount(), $amount);
+        $amount = floatval(min($this->discount_amount(), $amount));
+        $uses = intval((boolean)$uses);
         // Insert that use
         $query = "
             INSERT `".DBPREFIX."module_shop".MODULE_INDEX."_rel_customer_coupon` (
               `code`, `customer_id`, `order_id`, `count`, `amount`
             ) VALUES (
-              '".addslashes($this->code)."', $customer_id, $order_id, 1, $amount
-            )";
+              '".addslashes($this->code)."', ".intval($customer_id).",
+              ".intval($order_id).", $uses, $amount
+            )
+            ON DUPLICATE KEY UPDATE `count`=$uses";
         if (!$objDatabase->Execute($query)) {
 //echo("incrementUse($code, $customer_id, $amount): Added count 1, amount<br />");
             return false;
@@ -495,6 +525,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             SELECT SUM(`count`) AS `numof_uses`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_customer_coupon`
              WHERE `code`='".addslashes($this->code)."'
+               AND `count`!=0
              ".($customer_id ? " AND `customer_id`=$customer_id" : '');
         $objResult = $objDatabase->Execute($query);
         // Failure or none found
@@ -526,6 +557,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             SELECT SUM(`amount`) AS `amount`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_customer_coupon`
              WHERE `code`='".addslashes($this->code)."'
+               AND `count`!=0
             ".($customer_id ? " AND `customer_id`=$customer_id" : '');
         $objResult = $objDatabase->Execute($query);
         // Failure or none found
@@ -797,35 +829,40 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 
         $result = true;
         if (isset($_GET['delete'])) {
-            $result &= self::delete($_GET['delete']);
+            $result &= self::delete(contrexx_input2raw($_GET['delete']));
         }
-        $edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
+        $edit = isset($_REQUEST['edit'])
+            ? contrexx_input2raw($_REQUEST['edit']) : null;
 //DBG::log("Edit: ".($edit ? $edit : 'NULL'));
-        $code = isset($_POST['code']) ? $_POST['code'] : null;
-        $payment_id = empty($_POST['payment_id']) ? 0 : $_POST['payment_id'];
-        $start_time = empty($_POST['start_date']) ? 0 : strtotime($_POST['start_date']);
+        $code = isset($_POST['code'])
+            ? contrexx_input2raw($_POST['code']) : null;
+        $payment_id = empty($_POST['payment_id'])
+            ? 0 : intval($_POST['payment_id']);
+        $start_time = empty($_POST['start_date'])
+            ? 0 : strtotime(contrexx_input2raw($_POST['start_date']));
         $end_time = empty($_POST['end_date_unlimited'])
             ? (empty($_POST['end_date'])
-                ? 0 : strtotime($_POST['end_date']))
+                ? 0 : strtotime(contrexx_input2raw($_POST['end_date'])))
             : 0;
         $discount_rate = intval(
             empty($_POST['discount_rate'])
-                ? 0 : $_POST['discount_rate']);
+                ? 0 : floatval($_POST['discount_rate']));
         $discount_amount = Currency::formatPrice(
             empty($_POST['discount_amount'])
-                ? 0 : $_POST['discount_amount']);
+                ? 0 : floatval($_POST['discount_amount']));
         $minimum_amount = Currency::formatPrice(
             empty($_POST['minimum_amount'])
-                ? 0 : $_POST['minimum_amount']);
+                ? 0 : floatval($_POST['minimum_amount']));
         $uses = empty($_POST['unlimited'])
             ? (empty($_POST['uses']) ? 1 : intval($_POST['uses']))
             : 1e10;
-        $customer_id = empty($_POST['customer_id']) ? 0 : $_POST['customer_id'];
-        $product_id = empty($_POST['product_id']) ? 0 : $_POST['product_id'];
-        $global =
-               empty($customer_id)
-            && (   empty($_POST['global_or_customer'])
-                || $_POST['global_or_customer'] == 'global');
+        $customer_id = empty($_POST['customer_id'])
+            ? 0 : intval($_POST['customer_id']);
+        $product_id = empty($_POST['product_id'])
+            ? 0 : intval($_POST['product_id']);
+        $global = empty($customer_id)
+         && (   empty($_POST['global_or_customer'])
+             || contrexx_input2raw($_POST['global_or_customer']) == 'global');
 //DBG::log("code $code, start_time $start_time, end_time $end_time, minimum amount $minimum_amount, discount_rate $discount_rate, discount_amount $discount_amount, uses $uses, customer_id $customer_id");
         if (isset($code)) {
             $result &= self::storeCode(
@@ -838,7 +875,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         }
         // Reset the end time if it's in the past
         if ($end_time < time()) $end_time = 0;
-
         // Abbreviations for day of the week
         $arrDow2 = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         // Months of the year
@@ -887,10 +923,10 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'SHOP_DISCOUNT_COUPON_VIEW_DISPLAY' => $edit ? 'none' : 'block',
             'SHOP_DISCOUNT_COUPON_EDIT_DISPLAY' => $edit ? 'block' : 'none',
             // Datepicker language and settings
-            'DPC_DEFAULT_FORMAT' => 'DD.MM.YYYY',
-            'DPC_TODAY_TEXT' => $_CORELANG['TXT_CORE_TODAY'],
-            'DPC_BUTTON_TITLE' => $_CORELANG['TXT_CORE_CALENDAR_OPEN'],
-            'DPC_MONTH_NAMES' => "'".join("','", $arrMoy)."'",
+//            'DPC_DEFAULT_FORMAT' => 'DD.MM.YYYY',
+//            'DPC_TODAY_TEXT' => $_CORELANG['TXT_CORE_TODAY'],
+//            'DPC_BUTTON_TITLE' => $_CORELANG['TXT_CORE_CALENDAR_OPEN'],
+//            'DPC_MONTH_NAMES' => "'".join("','", $arrMoy)."'",
             // Format the weekday string as "'Su','Mo','Tu','We','Th','Fr','Sa'"
             'DPC_DAY_NAMES' => "'".join("','", $arrDow2)."'",
             'HEADER_SHOP_DISCOUNT_COUPON_CODE' =>

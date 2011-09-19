@@ -471,10 +471,10 @@ class Customer extends User
             'group_id' => $usergroup_id,
         ));
         if (!$objUser) {
-DBG::log("Customer::getUnregisteredByEmail($email): Found no such unregistered User");
+//DBG::log("Customer::getUnregisteredByEmail($email): Found no such unregistered User");
             return null;
         }
-DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID ".$objUser->getId()." (".$objUser->getEmail().")");
+//DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID ".$objUser->getId()." (".$objUser->getEmail().")");
         return self::getById($objUser->getId());
     }
 

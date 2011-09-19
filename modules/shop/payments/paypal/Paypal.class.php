@@ -272,7 +272,7 @@ DBG::log("PayPal IPN successfully VERIFIED");
                 if (   $receiver_email == $paypalAccountEmail
                     && $payment_amount == $amount
                     && $payment_currency == $currencyCode) {
-DBG::log("INFO: Data identical");
+//DBG::log("INFO: Data identical");
                 } else {
 DBG::log("NOTE: Differing data:");
 DBG::log("Account:  Expected /$paypalAccountEmail/, got /$receiver_email/");
