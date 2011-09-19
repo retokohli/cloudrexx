@@ -1,15 +1,15 @@
         <ul id="cm-tabs" class="clearfix">
-            <li><a href="#tabs-1" class="tab site-type">[[TXT_SITE_TYPE]]</a></li>
-            <li><a href="#tabs-2" class="tab site-content">[[TXT_SITE_CONTENT]]</a></li>
-            <li><a href="#tabs-3" class="tab site-access">[[TXT_SITE_ACCESS]]</a></li>
-            <li><a href="#tabs-4" class="tab site-settings">[[TXT_SITE_SETTINGS]]</a></li>
-            <li><a href="#tabs-5" class="tab site-history">[[TXT_SITE_HISTORY]]</a></li>
+            <li><a href="#tabs-1" class="tab site-type">{TXT_SITE_TYPE}</a></li>
+            <li><a href="#tabs-2" class="tab site-content">{TXT_SITE_CONTENT}</a></li>
+            <li><a href="#tabs-3" class="tab site-access">{TXT_SITE_ACCESS}</a></li>
+            <li><a href="#tabs-4" class="tab site-settings">{TXT_SITE_SETTINGS}</a></li>
+            <li><a href="#tabs-5" class="tab site-history">{TXT_SITE_HISTORY}</a></li>
         </ul>
       <form class="clearfix" action="." enctype="multipart/form-data" id="cm_form">
         <div id="tabs-1" class="types">
             <!-- type: content -->
               <p class="info">
-                [[TXT_TYPE_EXPLANATION]]
+                {TXT_TYPE_EXPLANATION}
               </p>
               <div class="type content">
                 <div class="wrapper">
@@ -17,10 +17,10 @@
                     <input type="radio" name="type" id="typeContent" value="content"></input>
                   </div>
                   <label for="typeContent">
-                    <h1> [[TXT_TYPE_CONTENT]] </h1>
+                    <h1> {TXT_TYPE_CONTENT} </h1>
                   </label>
                   <p>
-                    [[TXT_TYPE_CONTENT_DESCRIPTION]]
+                    {TXT_TYPE_CONTENT_DESCRIPTION}
                   </p>
                 </div>
               </div>
@@ -31,10 +31,10 @@
                     <input type="radio" name="type" id="typeRedirection" value="redirection"></input>
                   </div>
                   <label for="typeRedirection">
-                    <h1> [[TXT_TYPE_REDIRECTION]] </h1>
+                    <h1> {TXT_TYPE_REDIRECTION} </h1>
                   </label>
                   <p>
-                    [[TXT_TYPE_REDIRECTION_DESCRIPTION]]
+                    {TXT_TYPE_REDIRECTION_DESCRIPTION}
                   </p>
                 </div>
               </div>
@@ -45,10 +45,10 @@
                     <input type="radio" name="type" id="typeApp" value="app"></input>
                   </div>
                   <label for="typeApp">
-                    <h1> [[TXT_TYPE_APP]] </h1>
+                    <h1> {TXT_TYPE_APP} </h1>
                   </label>
                   <p>
-                    [[TXT_TYPE_APP_DESCRIPTION]]
+                    {TXT_TYPE_APP_DESCRIPTION}
                   </p>
                 </div>
               </div>
@@ -57,40 +57,40 @@
             <input type="hidden" name="id" id="pageId" value="new" />
             <div class="clearfix">
               <div class="additionalInfo">
-                <label class="dontShow" for="input1">[[TXT_PAGETITLE]]</label><input id="title" type="text" value="[[PAGETITLE]]" name="title" />
+                <label class="dontShow" for="input1">{TXT_PAGETITLE}</label><input id="title" type="text" value="{PAGETITLE}" name="title" />
                 <a href="#" id="showHideInfo">Show</a>
               </div>
               <div id="additionalInfo" class="additionalInfo">
                 <div class="clearfix">
-                  <h2>[[TXT_ACTIVE_FROM_TO]]</h2>
+                  <h2>{TXT_ACTIVE_FROM_TO}</h2>
 
                   <div class="twoCols">
-                    <label for="start" class="twoCols">[[TXT_ACTIVE_FROM]]</label>
-                    <input id="start" class="twoCols date" type="text" value="[[ACTIVE_FROM]]" name="start" />
+                    <label for="start" class="twoCols">{TXT_ACTIVE_FROM}</label>
+                    <input id="start" class="twoCols date" type="text" value="{ACTIVE_FROM}" name="start" />
                   </div>
 
                   <div class="twoCols">
-                    <label for="end" class="twoCols">[[TXT_ACTIVE_TO]]</label>
-                    <input id="end" class="twoCols date" type="text" value="[[ACTIVE_TO]]" name="end" />
+                    <label for="end" class="twoCols">{TXT_ACTIVE_TO}</label>
+                    <input id="end" class="twoCols date" type="text" value="{ACTIVE_TO}" name="end" />
                   </div>
                 </div>
-                <h2>[[TXT_META_INFORMATION]]</h2>
+                <h2>{TXT_META_INFORMATION}</h2>
 
                 <div class="clearfix space">
-                  <label for="metatitle" class="oneCol">[[TXT_META_TITLE]]</label>
-                  <input id="metatitle" class="oneCol" type="text" value="[[META_TITLE]]" nameg="metatitle" />
+                  <label for="metatitle" class="oneCol">{TXT_META_TITLE}</label>
+                  <input id="metatitle" class="oneCol" type="text" value="{META_TITLE}" nameg="metatitle" />
                 </div>
                 <div class="clearfix space">
-                  <label for="metakeys" class="oneCol">[[TXT_META_KWORDS]]</label>
-                  <input id="metakeys" class="oneCol" type="text" value="[[META_KWORDS]]" name="metakeys" />
+                  <label for="metakeys" class="oneCol">{TXT_META_KWORDS}</label>
+                  <input id="metakeys" class="oneCol" type="text" value="{META_KWORDS}" name="metakeys" />
                 </div>
                 <div class="clearfix space">
-                  <label for="metadesc" class="oneCol">[[TXT_META_DESC]]</label>
-                  <input id="metadesc" class="oneCol" type="text" value="[[META_DESC]]" name="metadesc" />
+                  <label for="metadesc" class="oneCol">{TXT_META_DESC}</label>
+                  <input id="metadesc" class="oneCol" type="text" value="{META_DESC}" name="metadesc" />
                 </div>
                 <div class="clearfix">
-                  <label for="metarobots" class="oneCol">[[TXT_META_ROBOTS]]</label>
-                  <input id="metarobots" class="oneCol" type="checkbox" value="[[META_ROBOTS]]" name="metarobots" />
+                  <label for="metarobots" class="oneCol">{TXT_META_ROBOTS}</label>
+                  <input id="metarobots" class="oneCol" type="checkbox" value="{META_ROBOTS}" name="metarobots" />
                 </div>
               </div>
 
@@ -101,45 +101,45 @@
         <div id="tabs-4">
             <div class="additionalInfo">
               <div class="clearfix">
-                <h2>[[TXT_MODULE_CMD]]</h2>
+                <h2>{TXT_MODULE_CMD}</h2>
                 <div class="twoCols">
-                  <label for="module" class="twoCols">[[TXT_MODULE]]</label>
-                  <input id="module" class="twoCols" type="text" value="[[MODULE]]" name="module" />
+                  <label for="module" class="twoCols">{TXT_MODULE}</label>
+                  <input id="module" class="twoCols" type="text" value="{MODULE}" name="module" />
                 </div>
 
                 <div class="twoCols">
-                  <label for="cmd" class="twoCols">[[TXT_CMD]]</label>
-                  <input id="cmd" class="twoCols" type="text" value="[[CMD]]" name="cm_cmd" />
+                  <label for="cmd" class="twoCols">{TXT_CMD}</label>
+                  <input id="cmd" class="twoCols" type="text" value="{CMD}" name="cm_cmd" />
                 </div>
               </div>
               <div class="clearfix space">
-                <h2>[[TXT_OPTICS_STYLE]]</h2>
-                <label for="skin" class="oneCol">[[TXT_SKIN]]</label>
-                <select id="skin" class="oneCol" value="[[SKIN]]" name="skin" />
+                <h2>{TXT_OPTICS_STYLE}</h2>
+                <label for="skin" class="oneCol">{TXT_SKIN}</label>
+                <select id="skin" class="oneCol" value="{SKIN}" name="skin" />
               </div>
               <div class="clearfix space">
-                <label for="cssName" class="oneCol">[[TXT_CSSNAME]]</label>
-                <select id="cssName" class="oneCol" value="[[CSSNAME]]" name="cssName" />
+                <label for="cssName" class="oneCol">{TXT_CSSNAME}</label>
+                <select id="cssName" class="oneCol" value="{CSSNAME}" name="cssName" />
               </div>
               <div class="clearfix space">
-                <h2>[[TXT_SPECIAL_CONTENT_PAGE]]</h2>
-                <label for="customContent" class="oneCol">[[TXT_CUSTOMCONTENT]]</label>
-                <select id="customContent" class="oneCol" value="[[CUSTOMCONTENT]]" name="customContent"></select>
+                <h2>{TXT_SPECIAL_CONTENT_PAGE}</h2>
+                <label for="customContent" class="oneCol">{TXT_CUSTOMCONTENT}</label>
+                <select id="customContent" class="oneCol" value="{CUSTOMCONTENT}" name="customContent"></select>
               </div>
               <div class="clearfix space">
-                <h2>[[TXT_REDIRECTION]]</h2>
-                <label for="target" class="oneCol">[[TXT_TARGET]]</label>
-                <input id="target" class="oneCol" type="text" value="[[TARGET]]" name="target" />
+                <h2>{TXT_REDIRECTION}</h2>
+                <label for="target" class="oneCol">{TXT_TARGET}</label>
+                <input id="target" class="oneCol" type="text" value="{TARGET}" name="target" />
               </div>
               <div class="clearfix space">
-                <h2>[[TXT_PERFORMANCE_OPTIMIZATION]]</h2>
-                <label for="caching" class="oneCol">[[TXT_CACHING]]</label>
-                <input id="caching" class="oneCol" type="checkbox" value="[[CACHING]]" name="caching" />
+                <h2>{TXT_PERFORMANCE_OPTIMIZATION}</h2>
+                <label for="caching" class="oneCol">{TXT_CACHING}</label>
+                <input id="caching" class="oneCol" type="checkbox" value="{CACHING}" name="caching" />
               </div>
               <div class="clearfix">
-                <h2>[[TXT_LINK]]</h2>
-                <label for="slug" class="oneCol">[[TXT_SLUG]]</label>
-                <input id="slug" class="oneCol" type="text" value="[[SLUG]]" name="slug" />
+                <h2>{TXT_LINK}</h2>
+                <label for="slug" class="oneCol">{TXT_SLUG}</label>
+                <input id="slug" class="oneCol" type="text" value="{SLUG}" name="slug" />
               </div>
             </div>
           <div class="clearfix"></div>
@@ -148,8 +148,8 @@
         <div id="tabs-5">Test Tab5</div>
 
         <div id="buttons">
-          <button id="preview" class="btn left"><span>[[PREVIEW]]</span></button>
-          <button id="publish" class="btn right"><span>[[SAVE_PUBLISH]]</span></button>
-          <button id="save" class="btn right"><span>[[SAVE]]</span></button>
+          <button id="preview" class="btn left"><span>{TXT_PREVIEW}</span></button>
+          <button id="publish" class="btn right"><span>{TXT_SAVE_PUBLISH}</span></button>
+          <button id="save" class="btn right"><span>{TXT_SAVE}</span></button>
         </div>
 
