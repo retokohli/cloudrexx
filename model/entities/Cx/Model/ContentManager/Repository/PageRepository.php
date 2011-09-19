@@ -23,7 +23,7 @@ class PageRepository extends EntityRepository {
 
     /**
      * An array of pages sorted by their langID for specified module and cmd.
-     * 
+     *
      * @param string $module
      * @param string $cmd optional
      *
@@ -33,10 +33,10 @@ class PageRepository extends EntityRepository {
         $crit = array( 'module' => $module );
         if($cmd)
             $crit['cmd'] = $cmd;
-        
+
         $pages = $this->findBy($crit);
         $ret = array();
-        
+
         foreach($pages as $page) {
             $ret[$page->getLang()] = $page;
         }
@@ -86,7 +86,7 @@ class PageRepository extends EntityRepository {
         $tree = $this->getTree($rootNode, $lang, true);
         $result = array();
 
-        $isRootQuery = !$rootNode || ( isset($rootNode) && $rootNode->getLvl() == 0); 
+        $isRootQuery = !$rootNode || ( isset($rootNode) && $rootNode->getLvl() == 0);
 
         foreach($tree as $node) {
             $lang2arr = null;
@@ -125,12 +125,12 @@ class PageRepository extends EntityRepository {
                 $title = $page->getSlug();
 
             $lang = $page->getLang();
-            
+
             if($lang2arr) //this won't be set for the first node
                 $target = &$lang2arr[$lang];
             else
-                $target = &$result; 
-            
+                $target = &$result;
+
             if(isset($target[$title])) { //another language's Page has the same title
                 //add the language
                 $target[$title]['__data']['lang'][] = $lang;
@@ -160,7 +160,7 @@ class PageRepository extends EntityRepository {
      * @param Node $root
      * @param int $lang
      * @param boolean $exact if true, returns null on partially matched path
-     * @return array ( 
+     * @return array (
      *     matchedPath => string (e.g. 'Hello/APage/'),
      *     unmatchedPath => string (e.g. 'AModuleObject') | null,
      *     node => Node,
@@ -171,12 +171,12 @@ class PageRepository extends EntityRepository {
      */
     public function getPagesAtPath($path, $root = null, $lang = null, $exact = false) {
         $tree = $this->getTreeByTitle($root, $lang, true, true);
-        
+
         //this is a mock strategy. if we use this method, it should be rewritten to use bottom up
         $pathParts = explode('/', $path);
         $matchedLen = 0;
         $treePointer = &$tree;
-        
+
         foreach($pathParts as $part) {
             if(isset($treePointer[$part])) {
                 $treePointer = &$treePointer[$part];
@@ -220,7 +220,7 @@ class PageRepository extends EntityRepository {
     /**
      * Get a pages' path. Quite costly
      * @todo should be rewritten to use a custom query on heavy usage
-     *     
+     *
      * @param \Cx\Model\ContentManager\Page $page
      * @param boolean $useSlugsAsTitle use this to get a navigation page
      * @return string path, e.g. 'This/Is/It'
@@ -230,13 +230,13 @@ class PageRepository extends EntityRepository {
         $node = $page->getNode();
         $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $pathNodes = $nodeRepo->getPath($node);
-        
+
         $path = '';
         foreach($pathNodes as $node) {
             if($node->getLvl() > 0) { //all but top node (it's pageless).
                 $pages = $node->getPagesByLang();
                 $thePageInOurLang = $pages[$page->getLang()];
-            
+
 //TODO: what happens if $thePageInOurLang is still null?
 //      This should be restricted by the content manager.
 //      Throwing below is a first attempt to react in this case.
@@ -262,7 +262,7 @@ class PageRepository extends EntityRepository {
      *
      * @param string $string the string to match against.
      * @return array (
-     *     'Score' => int 
+     *     'Score' => int
      *     'Title' => string
      *     'Content' => string
      *     'Link' => string
@@ -272,14 +272,14 @@ class PageRepository extends EntityRepository {
         if($string == '')
             return array();
 
-//TODO: use MATCH AGAINST for score 
+//TODO: use MATCH AGAINST for score
 //      Doctrine can be extended as mentioned in http://groups.google.com/group/doctrine-user/browse_thread/thread/69d1f293e8000a27
 //TODO: shorten content in query rather than in php
 
         $qb = $this->em->createQueryBuilder();
         $qb->add('select', 'p')
             ->add('from', 'Cx\Model\ContentManager\Page p')
-            ->add('where', 
+            ->add('where',
                   $qb->expr()->orx(
                       $qb->expr()->like('p.content', ':searchString'),
                       $qb->expr()->like('p.title', ':searchString')
@@ -337,10 +337,10 @@ class PageRepository extends EntityRepository {
           for all parent Nodes without a Page in the desired target language,
           the Page with the sources' language id is copied.
         */
-        $sourceLanguage = $source->getLang();      
+        $sourceLanguage = $source->getLang();
 
         $node = $page->getNode()->getParent();
-        
+
         //             below root level
         while($node && $node->getLvl() > 0) {
             $pages = $node->getPagesByLang();
@@ -361,7 +361,31 @@ class PageRepository extends EntityRepository {
         }
 
         $this->em->persist($page);
-        
+
         return $page;
     }
+
+
+    /**
+     * Returns true if the page selected by its language, module name (section)
+     * and optional cmd parameters exists
+     * @param   integer     $lang       The language ID
+     * @param   string      $module     The module (aka section) name
+     * @param   string      $cmd        The optional cmd parameter value
+     * @return  boolean                 True if the page exists, false
+     *                                  otherwise
+     * @author  Reto Kohli <reto.kohli@comvation.com>
+     * @since   3.0.0
+     * @internal    Required by the Shop module
+     */
+    public function existsModuleCmd($lang, $module, $cmd=null)
+    {
+        $crit = array(
+            'module' => $module,
+            'lang' => $lang,
+        );
+        if (isset($cmd)) $crit['cmd'] = $cmd;
+        return (boolean)$this->findOneBy($crit);
+    }
+
 }
