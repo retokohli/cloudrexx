@@ -1353,49 +1353,49 @@ $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_OPEN'] = "öffnen";
 $_ARRAYLANG['TXT_CORE_HTML_VIEW'] = "Details";
 
 //content manager
-$_ARRAYLANG['TXT_GERMAN'] = "Deutsch";
-$_ARRAYLANG['TXT_FRENCH'] = "Französisch";
-$_ARRAYLANG['TXT_ENGLISH'] = "Englisch";
+$_ARRAYLANG['TXT_CORE_GERMAN'] = "Deutsch";
+$_ARRAYLANG['TXT_CORE_FRENCH'] = "Französisch";
+$_ARRAYLANG['TXT_CORE_ENGLISH'] = "Englisch";
 
-$_ARRAYLANG['TXT_SITE_TYPE'] = "Seitentyp";
-$_ARRAYLANG['TXT_SITE_CONTENT'] = "Inhalt";
-$_ARRAYLANG['TXT_SITE_ACCESS'] = "Zugriff";
-$_ARRAYLANG['TXT_SITE_SETTINGS'] = "Seiteneinstellungen";
-$_ARRAYLANG['TXT_SITE_HISTORY'] = "Verlauf";
+$_ARRAYLANG['TXT_CORE_SITE_TYPE'] = "Seitentyp";
+$_ARRAYLANG['TXT_CORE_SITE_CONTENT'] = "Inhalt";
+$_ARRAYLANG['TXT_CORE_SITE_ACCESS'] = "Zugriff";
+$_ARRAYLANG['TXT_CORE_SITE_SETTINGS'] = "Seiteneinstellungen";
+$_ARRAYLANG['TXT_CORE_SITE_HISTORY'] = "Verlauf";
 
-$_ARRAYLANG['TXT_TYPE_EXPLANATION'] = "Bitte wählen Sie einen der untenstehenden Seitentypen aus, um die Funktionalität dieser Seite festzulegen.";
-$_ARRAYLANG['TXT_TYPE_CONTENT'] = "Inhalt";
-$_ARRAYLANG['TXT_TYPE_CONTENT_DESCRIPTION'] = "Eine normale Inhaltsseite.";
-$_ARRAYLANG['TXT_TYPE_REDIRECTION'] = "Weiterleitung";
-$_ARRAYLANG['TXT_TYPE_REDIRECTION_DESCRIPTION'] = "Wenn der Besucher diese Seite ansurft, wird er auf eine andere Seite weitergeleitet.";
-$_ARRAYLANG['TXT_TYPE_APP'] = "Anwendung";
-$_ARRAYLANG['TXT_TYPE_APP_DESCRIPTION'] = "Um Funktionalität einer Anwendung erweiterte Inhaltsseite.";
+$_ARRAYLANG['TXT_CORE_TYPE_EXPLANATION'] = "Bitte wählen Sie einen der untenstehenden Seitentypen aus, um die Funktionalität dieser Seite festzulegen.";
+$_ARRAYLANG['TXT_CORE_TYPE_CONTENT'] = "Inhalt";
+$_ARRAYLANG['TXT_CORE_TYPE_CONTENT_DESCRIPTION'] = "Eine normale Inhaltsseite.";
+$_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION'] = "Weiterleitung";
+$_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION_DESCRIPTION'] = "Wenn der Besucher diese Seite ansurft, wird er auf eine andere Seite weitergeleitet.";
+$_ARRAYLANG['TXT_CORE_TYPE_APP'] = "Anwendung";
+$_ARRAYLANG['TXT_CORE_TYPE_APP_DESCRIPTION'] = "Um Funktionalität einer Anwendung erweiterte Inhaltsseite.";
 
-$_ARRAYLANG['TXT_ACTIVE_FROM_TO'] = "Veröffentlichungszeitraum";
-$_ARRAYLANG['TXT_ACTIVE_FROM'] = "von";
-$_ARRAYLANG['TXT_ACTIVE_TO'] = "bis";
-$_ARRAYLANG['TXT_META_INFORMATION'] = "Meta-Informationen";
-$_ARRAYLANG['TXT_META_TITLE'] = "Titel";
-$_ARRAYLANG['TXT_META_KWORDS'] = "Stichworte";
-$_ARRAYLANG['TXT_META_DESC'] = "Beschreibung";
-$_ARRAYLANG['TXT_META_ROBOTS'] = "Durch Suchmaschinen erfassen lassen";
+$_ARRAYLANG['TXT_CORE_ACTIVE_FROM_TO'] = "Veröffentlichungszeitraum";
+$_ARRAYLANG['TXT_CORE_ACTIVE_FROM'] = "von";
+$_ARRAYLANG['TXT_CORE_ACTIVE_TO'] = "bis";
+$_ARRAYLANG['TXT_CORE_META_INFORMATION'] = "Meta-Informationen";
+$_ARRAYLANG['TXT_CORE_META_TITLE'] = "Titel";
+$_ARRAYLANG['TXT_CORE_META_KWORDS'] = "Stichworte";
+$_ARRAYLANG['TXT_CORE_META_DESC'] = "Beschreibung";
+$_ARRAYLANG['TXT_CORE_META_ROBOTS'] = "Durch Suchmaschinen erfassen lassen";
 
-$_ARRAYLANG['TXT_MODULE_CMD'] = "Anwendungsspezifisches";
-$_ARRAYLANG['TXT_MODULE'] = "Anwendung";
-$_ARRAYLANG['TXT_CMD'] = "Bereich";
-$_ARRAYLANG['TXT_OPTICS_STYLE'] = "Optisches";
-$_ARRAYLANG['TXT_SKIN'] = "Design";
-$_ARRAYLANG['TXT_SPECIAL_CONTENT_PAGE'] = "Spezielle Inhaltsvorlage";
-$_ARRAYLANG['TXT_CUSTOMCONTENT'] = "Inhaltsvorlage";
-$_ARRAYLANG['TXT_REDIRECTION'] = "Weiterleitung";
-$_ARRAYLANG['TXT_TARGET'] = "Ziel";
-$_ARRAYLANG['TXT_PERFORMANCE_OPTIMIZATION'] = "Geschwindigkeitsoptimierung";
-$_ARRAYLANG['TXT_CACHING'] = "Seite zwischenspeichern (cachen)";
-$_ARRAYLANG['TXT_LINK'] = "Linkspezifisches";
-$_ARRAYLANG['TXT_SLUG'] = "Linkname";
+$_ARRAYLANG['TXT_CORE_APPLICATION_AREA'] = "Anwendungsspezifisches";
+$_ARRAYLANG['TXT_CORE_APPLICATION'] = "Anwendung";
+$_ARRAYLANG['TXT_CORE_AREA'] = "Bereich";
+$_ARRAYLANG['TXT_CORE_OPTICS_STYLE'] = "Optisches";
+$_ARRAYLANG['TXT_CORE_SKIN'] = "Design";
+$_ARRAYLANG['TXT_CORE_SPECIAL_CONTENT_PAGE'] = "Spezielle Inhaltsvorlage";
+$_ARRAYLANG['TXT_CORE_CUSTOMCONTENT'] = "Inhaltsvorlage";
+$_ARRAYLANG['TXT_CORE_REDIRECTION'] = "Weiterleitung";
+$_ARRAYLANG['TXT_CORE_TARGET'] = "Ziel";
+$_ARRAYLANG['TXT_CORE_PERFORMANCE_OPTIMIZATION'] = "Geschwindigkeitsoptimierung";
+$_ARRAYLANG['TXT_CORE_CACHING'] = "Seite zwischenspeichern (cachen)";
+$_ARRAYLANG['TXT_CORE_LINK'] = "Linkspezifisches";
+$_ARRAYLANG['TXT_CORE_SLUG'] = "Linkname";
 
-$_ARRAYLANG['TXT_PREVIEW'] = "Seitenvorschau";
-$_ARRAYLANG['TXT_SAVE_PUBLISH'] = "Speichern & veröffentlichen";
-$_ARRAYLANG['TXT_SAVE'] = "Speichern";
+$_ARRAYLANG['TXT_CORE_PREVIEW'] = "Seitenvorschau";
+$_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Speichern & veröffentlichen";
+$_ARRAYLANG['TXT_CORE_SAVE'] = "Speichern";
 
 
