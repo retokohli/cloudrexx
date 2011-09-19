@@ -694,11 +694,10 @@ class blockManager extends blockLibrary
                 $strSpacer .= '&nbsp;&nbsp;';
             }
 
-            if (in_array($arrData['node_id'],$blockAssociatedPageIds)) {
-                $langStatus .= $arrData['catname'].", ";
-                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
+            if (in_array($arrData['node_id'], $blockAssociatedPageIds)) {                
+                $strSelectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
             } else {
-                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.$arrData['catname'].' ('.$arrData['node_id'].') </option>'."\n";
+                $strUnselectedPages .= '<option value="'.$arrData['node_id'].'">'.$strSpacer.contrexx_raw2xhtml($arrData['catname']).' ('.$arrData['node_id'].') </option>'."\n";
             }
         }
 
@@ -759,7 +758,7 @@ class blockManager extends blockLibrary
 
             $this->_objTpl->setVariable(array(
                 'BLOCK_LANG_ID'                 => intval($langId),                           
-                'BLOCK_CONTENT_TEXT_HIDDEN'     => $tmpBlockContent,                
+                'BLOCK_CONTENT_TEXT_HIDDEN'     => contrexx_raw2xhtml($tmpBlockContent),                
             ));
             $this->_objTpl->parse('block_language_content');
             $activeClass = '';
