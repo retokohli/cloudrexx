@@ -287,8 +287,8 @@ class blockLibrary
             $objBlockContent = $objDatabase->Execute("SELECT lang_id, content, active FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$id);
             if ($objBlockContent !== false) {
                 while (!$objBlockContent->EOF) {
-                    $arrContent[$objBlockContent->fields['lang_id']] = contrexx_raw2xhtml($objBlockContent->fields['content']);
-                    $arrActive[$objBlockContent->fields['lang_id']] = $objBlockContent->fields['active'];
+                    $arrContent[$objBlockContent->fields['lang_id']] = $objBlockContent->fields['content'];
+                    $arrActive[$objBlockContent->fields['lang_id']]  = $objBlockContent->fields['active'];
                     $objBlockContent->MoveNext();
                 }
             }
