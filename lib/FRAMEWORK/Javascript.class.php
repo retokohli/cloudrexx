@@ -107,12 +107,13 @@ class JS
                 'lib/javascript/shadowbox/shadowbox.js'
             ),
             'dependencies'  => array(
-                'jquery'
+                'jquery',
+                'cx',
             ),
             'specialcode'  => "
-Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
+Shadowbox.loadSkin('classic', cx.variables.get('cmsPath', 'contrexx')+'/lib/javascript/shadowbox/src/skin/');
+Shadowbox.loadLanguage('en', cx.variables.get('cmsPath', 'contrexx')+'/lib/javascript/shadowbox/src/lang');
+Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], cx.variables.get('cmsPath', 'contrexx')+'/lib/javascript/shadowbox/src/player');
 jQuery(document).ready(function(){
   Shadowbox.init();
 })"
@@ -138,6 +139,7 @@ jQuery(document).ready(function(){
         ),
         // Required by HTML::getDatepicker() (modules/shop)!
         // (Though other versions will do just as well)
+// TODO: remove & replace by cx call
         'jqueryui'     => array(
             'jsfiles'       => array(
                 'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js'
