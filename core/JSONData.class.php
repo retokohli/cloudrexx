@@ -26,7 +26,7 @@ class JSONData {
     // get_children will probably have to stick with the json format from renderTree, for reasonable
     // jsTree compat.
 	function jsondata() {
-		if ($_GET['operation'] == 'get_children') {
+		if (isset($_GET['operation']) && $_GET['operation'] == 'get_children') {
 			return $this->renderTree();
 		}
     // Data source is in /lib/javascript/jquery/jstree/contrexx.js
@@ -34,7 +34,7 @@ class JSONData {
     //  id = id of the moved node
     //  ref = id of the new parent node
     //  position = new position of id as ref's Nth child
-        elseif ($_GET['operation'] == 'move_node') {
+        elseif (isset($_GET['operation']) && $_GET['operation'] == 'move_node') {
 
             $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
             $moved_node = $nodeRepo->find($_POST['id']);
