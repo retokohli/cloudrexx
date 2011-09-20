@@ -12,39 +12,20 @@
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 require ASCMS_CORE_PATH.'/BackendTable.class.php';
+require ASCMS_CORE_PATH.'/Module.class.php';
 
-class ContentManager {
-	
+class ContentManager extends Module {
 	var $em = null;
     protected $act = '';
     protected $template = null;
 
 	public function __construct($act, $template) {
+        parent::__construct($act, $template);
 		$this->em = Env::em();
-        $this->act = $act;
-        $this->template = $template;
+        $this->defaultAct = 'actRenderCM';
 	}
 
-    public function getPage() {
-        if($this->act == '') {
-            $this->renderCM();
-            return;
-        }
-
-        //prevent execution of non-act methods.
-        if(substr($this->act, 0, 3) != 'act') {
-            die('acts start with "act", "' . $this->act . '" given');
-        }
-
-        //call the right act.
-        $act = $this->act;
-        if(method_exists($this, $act))
-            $this->$act();
-        else
-            die('unknown act: "' . $this->act . '"');
-    }
-
-	protected function renderCM() {
+	protected function actRenderCM() {
         JS::activate('cx');
         JS::activate('ckeditor');
         JS::activate('jqueryui');
@@ -82,8 +63,12 @@ class ContentManager {
         }
     }
 
-    protected function actAjaxGetHistoryTable($template) {
-        $table = new BackendTable();       
+    protected function actAjaxGetHistoryTable() {
+        $table = new BackendTable();
+        
+        $id = $_GET['pageId'];
+        
+        die($table->toHtml());
     }
 
 }
