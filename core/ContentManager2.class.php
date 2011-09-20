@@ -104,16 +104,17 @@ class ContentManager extends Module {
         $table->setCellContents($row, 1, $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT));
         $table->setCellContents($row, 2, $page->getTitle());
         $table->setCellContents($row, 3, $page->getUsername());
+        $table->setCellContents($row, 4, '<a href="javascript:revert('.$page->getId().','.$version.')">revert to this version</a>');
     }
 
     protected function actAjaxRevert() {       
-        if(!isset($_GET['pageId']))
+        if(!isset($_POST['pageId']))
             throw new ContentManagerException('please provide a pageId');
-        if(!isset($_GET['version']))
+        if(!isset($_POST['version']))
             throw new ContentManagerException('please provide a version you want to revert to');
 
-        $id = $_GET['pageId'];
-        $version = $_GET['version'];
+        $id = $_POST['pageId'];
+        $version = $_POST['version'];
         $page = $this->pageRepository->findOneById($id);
 
         if(!$page) {
