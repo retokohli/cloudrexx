@@ -22,6 +22,9 @@ RewriteRule ^(\w\w\/)?(favicon.ico|cadmin|core_modules|modules|images|media|them
 # See core/Dispatcher.class.php, look for "CONTREXX_ALIAS_PARAMETER"
 # The Dispatcher will decide.
 # Warning: Overhead!
+RewriteCond   %{REQUEST_FILENAME}  index.php
+RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
+
 RewriteCond   %{REQUEST_FILENAME}  !-d
 RewriteCond   %{REQUEST_FILENAME}  !-f
 RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
