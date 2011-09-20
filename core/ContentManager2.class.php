@@ -11,28 +11,50 @@
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
+require ASCMS_CORE_PATH.'/BackendTable.class.php';
+
 class ContentManager {
 	
 	var $em = null;
+    protected $act = '';
+    protected $template = null;
 
-	public function __construct() {
+	public function __construct($act, $template) {
 		$this->em = Env::em();
+        $this->act = $act;
+        $this->template = $template;
 	}
 
-	public function renderCM() {
+    public function getPage() {
+        if($this->act == '') {
+            $this->renderCM();
+            return;
+        }
+
+        //prevent execution of non-act methods.
+        if(substr($this->act, 0, 3) != 'act') {
+            die('acts start with "act", "' . $this->act . '" given');
+        }
+
+        //call the right act.
+        $act = $this->act;
+        if(method_exists($this, $act))
+            $this->$act();
+        else
+            die('unknown act: "' . $this->act . '"');
+    }
+
+	protected function renderCM() {
         JS::activate('cx');
         JS::activate('ckeditor');
         JS::activate('jqueryui');
         JS::activate('jstree');
         JS::activate('chosen');
 
-        // Render the Content Manager within our old backend template.
-		global $objTemplate;
-
-		$objTemplate->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
-		$objTemplate->touchBlock('content_manager');
-		$objTemplate->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
-		$objTemplate->touchBlock('content_manager_meat');
+		$this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'content_manager.html');
+		$this->template->touchBlock('content_manager');
+		$this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'cm.html');
+		$this->template->touchBlock('content_manager_meat');
 
         $this->setLanguageVars(array(
             //langs
@@ -50,15 +72,18 @@ class ContentManager {
         ));
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
-        $objTemplate->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
+        $this->template->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
 	}
 
     protected function setLanguageVars($ids) {
         global $_CORELANG;
-        global $objTemplate;
         foreach($ids as $id) {
-            $objTemplate->setVariable($id, $_CORELANG[$id]);
+            $this->template->setVariable($id, $_CORELANG[$id]);
         }
+    }
+
+    protected function actAjaxGetHistoryTable($template) {
+        $table = new BackendTable();       
     }
 
 }
