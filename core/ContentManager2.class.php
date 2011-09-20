@@ -14,14 +14,18 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 require ASCMS_CORE_PATH.'/BackendTable.class.php';
 require ASCMS_CORE_PATH.'/Module.class.php';
 
+class ContentManagerException extends ModuleException {}
+
 class ContentManager extends Module {
 	var $em = null;
     protected $act = '';
     protected $template = null;
+    protected $pageRepository = null;
 
 	public function __construct($act, $template) {
         parent::__construct($act, $template);
 		$this->em = Env::em();
+        $this->pageRepository = $this->em->getRepository('Cx\Model\ContentManager\Page');
         $this->defaultAct = 'actRenderCM';
 	}
 
@@ -63,14 +67,65 @@ class ContentManager extends Module {
         }
     }
 
-    protected function actAjaxGetHistoryTable() {
-        $table = new BackendTable();
-        
+    protected function actAjaxGetHistoryTable() {       
+        if(!isset($_GET['pageId']))
+            throw new ContentManagerException('please provide a pageId');
+
         $id = $_GET['pageId'];
+        $page = $this->pageRepository->findOneById($id);
+
+        if(!$page) {
+            throw new ContentManagerException("could not find page with id $id");
+        }
+
+        $table = new BackendTable(array('border' => '1'));
+        $table->setAutoGrow(true);
+
+        $table->setHeaderContents(0,0,'Version');
+        $table->setHeaderContents(0,1,'Date');
+        $table->setHeaderContents(0,2,'Title');
+        $table->setHeaderContents(0,3,'Author');
         
+        $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        $logs = $logRepo->getLogEntries($page);
+        
+        $this->addHistoryEntries($page, $table, 1, 'current');
+
+        for($i = 0 ; $i < count($logs); $i++) {
+            $logRepo->revert($page, $i+1);
+            $this->addHistoryEntries($page, $table, $i+2, $i+1);
+        }
+       
         die($table->toHtml());
     }
 
-}
+    protected function addHistoryEntries($page, $table, $row, $version) {
+        $table->setCellContents($row, 0, $version);
+        $table->setCellContents($row, 1, $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT));
+        $table->setCellContents($row, 2, $page->getTitle());
+        $table->setCellContents($row, 3, $page->getUsername());
+    }
 
+    protected function actAjaxRevert() {       
+        if(!isset($_GET['pageId']))
+            throw new ContentManagerException('please provide a pageId');
+        if(!isset($_GET['version']))
+            throw new ContentManagerException('please provide a version you want to revert to');
+
+        $id = $_GET['pageId'];
+        $version = $_GET['version'];
+        $page = $this->pageRepository->findOneById($id);
+
+        if(!$page) {
+            throw new ContentManagerException("could not find page with id $id");
+        }
+       
+        $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        
+        $logRepo->revert($page, $version);
+
+        $this->em->persist($page);
+        $this->em->flush();
+    }
+}
 ?>
