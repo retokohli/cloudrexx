@@ -125,6 +125,11 @@ ini_set('display_errors', true);
             $page->setNode($node);
 
             //$page->setType($_POST['type']);
+// STUBS!
+            $page->setLang(1);
+            $page->setUsername('system');
+            $page->setStart(new DateTime('0000-00-00'));
+            $page->setEnd(new DateTime('0000-00-00'));
             $page->setTitle($_POST['title']);
             // Start/End
             $page->setMetakeys($_POST['metakeys']);
