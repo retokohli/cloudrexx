@@ -78,13 +78,14 @@ class ContentManager extends Module {
             throw new ContentManagerException("could not find page with id $id");
         }
 
-        $table = new BackendTable(array('border' => '1'));
+        $table = new BackendTable(array('width' => '100%'));
         $table->setAutoGrow(true);
 
         $table->setHeaderContents(0,0,'Version');
         $table->setHeaderContents(0,1,'Date');
         $table->setHeaderContents(0,2,'Title');
         $table->setHeaderContents(0,3,'Author');
+        $table->setHeaderContents(0,4,'');
         
         $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $logs = $logRepo->getLogEntries($page);
@@ -104,7 +105,8 @@ class ContentManager extends Module {
         $table->setCellContents($row, 1, $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT));
         $table->setCellContents($row, 2, $page->getTitle());
         $table->setCellContents($row, 3, $page->getUsername());
-        $table->setCellContents($row, 4, '<a href="javascript:revert('.$page->getId().','.$version.')">revert to this version</a>');
+        if($row > 1) //not the current page
+            $table->setCellContents($row, 4, '<a href="javascript:revert('.$page->getId().','.$version.')">revert to this version</a>');
     }
 
     protected function actAjaxRevert() {       
@@ -117,9 +119,8 @@ class ContentManager extends Module {
         $version = $_POST['version'];
         $page = $this->pageRepository->findOneById($id);
 
-        if(!$page) {
-            throw new ContentManagerException("could not find page with id $id");
-        }
+        if(!$page)
+            new ContentManagerException("could not find page with id $id");
        
         $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         
