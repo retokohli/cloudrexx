@@ -62,7 +62,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 */
             die();
         }
-		elseif (isset($_GET['class'])$_GET['class'] == 'page' && $_GET['action'] == 'get') {
+		elseif (isset($_GET['class']) && $_GET['class'] == 'page' && $_GET['action'] == 'get') {
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 		    $page = $pageRepo->find($_GET['id']);
 
