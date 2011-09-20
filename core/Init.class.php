@@ -584,7 +584,9 @@ class InitCMS
 //        global $objInit;
         global $_CORELANG, $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        $_ARRAYLANG = array();
+        if(!isset($_ARRAYLANG))
+            $_ARRAYLANG = array();
+
         if ($this->mode == 'backend') {
             $langId = $this->backendLangId;
         } else {
