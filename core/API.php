@@ -26,6 +26,7 @@
  * @uses /lib/FRAMEWORK/framework.php
  * @uses /lib/adodb/adodb.inc.php
  * @uses /lib/PEAR/HTML/Template/Sigma/Sigma.php
+ * @uses /lib/PEAR/HTML/Table.php
  * @todo Add comment for all require_once()s
  */
 
@@ -49,6 +50,10 @@ require_once ASCMS_CORE_PATH.'/validator.inc.php';
  * @ignore
  */
 require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_LIBRARY_PATH.'/PEAR/HTML/Table.php';
 
 /**
  * @ignore
