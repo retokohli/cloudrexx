@@ -429,6 +429,12 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $end = $page->getEnd();
 
     $pageId = $page->getId();
+
+    //revert the page if a history param has been given
+    if($history) {
+        $logRepo = Env::em()->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        $logRepo->revert($page, $history);
+    }
     /*
     //404 for inactive pages
     if(($start > $now && $start != null) || ($now > $end && $end != null)) {
