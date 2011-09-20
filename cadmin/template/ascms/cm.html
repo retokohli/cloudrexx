@@ -1,7 +1,7 @@
         <ul id="cm-tabs" class="clearfix">
             <li><a href="#tabs-1" class="tab site-type">{TXT_CORE_SITE_TYPE}</a></li>
             <li><a href="#tabs-2" class="tab site-content">{TXT_CORE_SITE_CONTENT}</a></li>
-            <li><a href="#tabs-3" class="tab site-access">{TXT_CORE_SITE_ACCESS}</a></li>
+            <!-- tab contents are below (#tabs-3)<li><a href="#tabs-3" class="tab site-access">{TXT_CORE_SITE_ACCESS}</a></li>-->
             <li><a href="#tabs-4" class="tab site-settings">{TXT_CORE_SITE_SETTINGS}</a></li>
             <li><a href="#tabs-5" class="tab site-history">{TXT_CORE_SITE_HISTORY}</a></li>
         </ul>
@@ -28,7 +28,7 @@
               <div class="type redirection">
                 <div class="wrapper">
                   <div class="left">
-                    <input type="radio" name="type" id="typeRedirection" value="redirection"></input>
+                    <input type="radio" name="type" id="typeRedirection" value="redirect"></input>
                   </div>
                   <label for="typeRedirection">
                     <h1> {TXT_CORE_TYPE_REDIRECTION} </h1>
@@ -36,19 +36,30 @@
                   <p>
                     {TXT_CORE_TYPE_REDIRECTION_DESCRIPTION}
                   </p>
+                  <p class="additionalSettings">
+                      <label style="width: 100px; display: block; float: left;" for="target">{TXT_CORE_TARGET}</label>
+                      <input id="target" type="text" value="{TARGET}" name="target" maxlength="255" size="40" />
+                  </p>
                 </div>
               </div>
               <!-- type: app -->
-              <div class="type app">
+              <div class="activeType type app">
                 <div class="wrapper">
                   <div class="left">
-                    <input type="radio" name="type" id="typeApp" value="app"></input>
+                    <input type="radio" name="type" id="typeApp" value="application"></input>
                   </div>
                   <label for="typeApp">
                     <h1> {TXT_CORE_TYPE_APP} </h1>
                   </label>
                   <p>
                     {TXT_CORE_TYPE_APP_DESCRIPTION}
+                  </p>
+                  <p class="additionalSettings">
+                      <label style="width: 100px; display: block; float: left;" for="module" class="twoCols">{TXT_CORE_APPLICATION}</label>
+                      <input id="module" class="twoCols" type="text" value="{MODULE}" name="module" />
+                      <br />
+                      <label style="width: 100px; display: block; float: left;" for="cm_cmd" class="twoCols">{TXT_CORE_AREA}</label>
+                      <input id="cm_cmd" class="twoCols" type="text" value="{CMD}" name="cm_cmd" />
                   </p>
                 </div>
               </div>
@@ -97,20 +108,11 @@
             </div>
             <textarea id="cm_ckeditor" rows="15" cols="45" name="content"></textarea>
         </div>
-        <div id="tabs-3">Test Tab3</div>
+        <!--<div id="tabs-3">Test Tab3</div>-->
         <div id="tabs-4">
             <div class="additionalInfo">
               <div class="clearfix">
                 <h2>{TXT_CORE_APPLICATION_AREA}</h2>
-                <div class="twoCols">
-                  <label for="module" class="twoCols">{TXT_CORE_APPLICATION}</label>
-                  <input id="module" class="twoCols" type="text" value="{MODULE}" name="module" />
-                </div>
-
-                <div class="twoCols">
-                  <label for="cmd" class="twoCols">{TXT_CORE_AREA}</label>
-                  <input id="cmd" class="twoCols" type="text" value="{CMD}" name="cm_cmd" />
-                </div>
               </div>
               <div class="clearfix space">
                 <h2>{TXT_CORE_OPTICS_STYLE}</h2>
@@ -125,11 +127,6 @@
                 <h2>{TXT_CORE_SPECIAL_CONTENT_PAGE}</h2>
                 <label for="customContent" class="oneCol">{TXT_CORE_CUSTOMCONTENT}</label>
                 <select id="customContent" class="oneCol" value="{CUSTOMCONTENT}" name="customContent"></select>
-              </div>
-              <div class="clearfix space">
-                <h2>{TXT_CORE_REDIRECTION}</h2>
-                <label for="target" class="oneCol">{TXT_CORE_TARGET}</label>
-                <input id="target" class="oneCol" type="text" value="{TARGET}" name="target" />
               </div>
               <div class="clearfix space">
                 <h2>{TXT_CORE_PERFORMANCE_OPTIMIZATION}</h2>
