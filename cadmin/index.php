@@ -24,10 +24,8 @@
  * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
-require_once '../lib/DBG.php';
-DBG::deactivate();
-//DBG::activate(DBG_ERROR_FIREPHP);
-
+include_once '../lib/DBG.php';
+DBG::deactivate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
@@ -136,6 +134,8 @@ $_CORELANG = $objInit->loadLanguageData('core');
 Env::set('coreLang', $_CORELANG);
 
 $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+$act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
+
 
 // Load the JS helper class and set the offset
 require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
@@ -459,8 +459,8 @@ switch ($plainCmd) {
         if (!include_once ASCMS_CORE_PATH.'/ContentManager2.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
-        $cm = new ContentManager();
-        $cm->renderCM();
+        $cm = new ContentManager($act, $objTemplate);
+        $cm->getPage();
         break;
 // TODO: handle expired sessions in any xhr callers.
     case 'jsondata':
