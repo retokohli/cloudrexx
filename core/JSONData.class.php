@@ -69,7 +69,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $page = Array(
                 'id'            =>  $page->getId(),
                 'title'         =>  $page->getTitle(),
-                'content'       =>  $page->getContent(),
+                'content'       =>  str_replace('{', '[[', $page->getContent()),
                 'customContent' =>  $page->getCustomContent(),
                 'cssName'       =>  $page->getCssName(),
                 'metatitle'     =>  $page->getMetatitle(),
@@ -134,7 +134,7 @@ ini_set('display_errors', true);
             // Start/End
             $page->setMetakeys($_POST['metakeys']);
             $page->setMetadesc($_POST['metadesc']);
-            $page->setContent($_POST['content']);
+            $page->setContent(str_replace('[[', '{', $_POST['content']));
             //$page->setModule($_POST['module']);
             //$page->setCmd($_POST['cm_cmd']);
             $page->setTarget($_POST['target']);
