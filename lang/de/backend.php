@@ -1392,4 +1392,11 @@ $_ARRAYLANG['TXT_CORE_PREVIEW'] = "Seitenvorschau";
 $_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Speichern & veröffentlichen";
 $_ARRAYLANG['TXT_CORE_SAVE'] = "Speichern";
 
-
+$_ARRAYLANG['TXT_CACHING_STATUS'] = "Caching aktiviert";
+$_ARRAYLANG['TXT_CONTENT_TYPE_REDIRECT'] = "Weiterleitung";
+$_ARRAYLANG['TXT_CUSTOM_CONTENT'] = "Benutzerdefinierte Inhaltsvorlage";
+$_ARRAYLANG['TXT_FILE_ERROR_OPENING_FOR_WRITING'] = "Fehler: Konnte Datei '%1\$s' nicht zum schreiben öffnen";
+$_ARRAYLANG['TXT_GENERAL_OPTIONS'] = "Datumsgesteuerte Veröffentlichung";
+$_ARRAYLANG['TXT_MENU_NAME'] = "Linkname (für die Navigation)";
+$_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_UPDATING'] = "Fehler beim Aktualisieren des Benutzerkontos %1\$s";
+$_ARRAYLANG['TXT_THEMES'] = "Design Vorlage";
