@@ -483,8 +483,10 @@ function disableButtons(from, dest, add, remove) {
         <td nowrap="nowrap">{TXT_STOCK}</td>
         <td>
           <input maxlength=10 name="stock" size="10" value="{SHOP_STOCK}" />
-          {TXT_ACTIVE}
-          <input type="checkbox" name="stock_visible" value="1" {SHOP_STOCK_VISIBILITY} />
+          &nbsp;
+          <input type="checkbox" {SHOP_STOCK_VISIBILITY}
+              name="stock_visible" id="stock_visible" value="1" />
+          <label for="stock_visible">{TXT_SHOP_PRODUCT_STOCK_ACTIVE}</label>
         </td>
       </tr>
     </table>

@@ -4001,5 +4001,3 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
     }
 
 }
-
-?>

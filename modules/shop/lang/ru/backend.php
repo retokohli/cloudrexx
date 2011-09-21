@@ -900,3 +900,4 @@ $_ARRAYLANG['TXT_SHOP_PRODUCTS_DEACTIVATED'] = "Die ausgewählten Artikel wurden
 $_ARRAYLANG['TXT_SHOP_PRODUCTS_ACTIVATED'] = "Die ausgewählten Artikel wurden aktiviert";
 $_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_DEACTIVATING'] = "Beim Deaktivieren der Artikel ist ein Fehler aufgetreten";
 $_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_ACTIVATING'] = "Beim Aktivieren der Artikel ist ein Fehler aufgetreten";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_STOCK_ACTIVE'] = "Automatisch deaktivieren, wenn ausverkauft";
