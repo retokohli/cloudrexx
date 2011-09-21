@@ -71,20 +71,33 @@ class Order
     protected $date_time = '0000-00-00 00:00:00';
     protected $modified_on = '0000-00-00 00:00:00';
     protected $modified_by = '';
-
 /*  OBSOLETE
     ccNumber
     ccDate
     ccName
-    ccCode
-*/
+    ccCode */
 
 
+    /**
+     * Returns the Order ID
+     *
+     * This value is null unless it has been stored before.
+     * @return  integer         The Order ID
+     */
     function id()
     {
         return $this->id;
     }
 
+    /**
+     * Returns the Customer ID
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than zero
+     * This value is null unless it has been set before.
+     * @param   integer $customer_id    The optional Customer ID
+     * @return  integer                 The Customer ID
+     */
     function customer_id($customer_id=null)
     {
         if (isset($customer_id)) {
@@ -96,6 +109,15 @@ class Order
         return $this->customer_id;
     }
 
+    /**
+     * Returns the Currency ID
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than zero
+     * This value is null unless it has been set before.
+     * @param   integer $currency_id    The optional Currency ID
+     * @return  integer                 The Currency ID
+     */
     function currency_id($currency_id=null)
     {
         if (isset($currency_id)) {
@@ -107,11 +129,22 @@ class Order
         return $this->currency_id;
     }
 
+    /**
+     * Returns the Shipment ID
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than or equal to zero.
+     * A zero Shipper ID represents "no shipment required".
+     * This value is null unless it has been set before.
+     * @param   integer $shipment_id    The optional Shipment ID
+     * @return  integer                 The Shipment ID
+     * @todo    Must be properly named "shipper_id"
+     */
     function shipment_id($shipment_id=null)
     {
         if (isset($shipment_id)) {
             $shipment_id = intval($shipment_id);
-            // May be empty (no shipment)!
+            // May be empty (zero for no shipment)!
             if ($shipment_id >= 0) {
                 $this->shipment_id = $shipment_id;
             }
@@ -119,6 +152,15 @@ class Order
         return $this->shipment_id;
     }
 
+    /**
+     * Returns the Payment ID
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than zero
+     * This value is null unless it has been set before.
+     * @param   integer $payment_id     The optional Payment ID
+     * @return  integer                 The Payment ID
+     */
     function payment_id($payment_id=null)
     {
         if (isset($payment_id)) {
@@ -130,6 +172,15 @@ class Order
         return $this->payment_id;
     }
 
+    /**
+     * Returns the language ID
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than zero
+     * This value is zero unless it has been set before.
+     * @param   integer $lang_id    The optional language ID
+     * @return  integer             The language ID
+     */
     function lang_id($lang_id=null)
     {
         if (isset($lang_id)) {
@@ -141,6 +192,16 @@ class Order
         return $this->lang_id;
     }
 
+    /**
+     * Returns the status
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than or equal to zero.
+     * Note that the value is not verified other than that.
+     * This value is zero unless it has been set before.
+     * @param   integer $status     The optional status
+     * @return  integer             The status
+     */
     function status($status=null)
     {
         if (isset($status)) {
@@ -152,6 +213,18 @@ class Order
         return $this->status;
     }
 
+    /**
+     * Returns the total sum, including fees and tax
+     *
+     * Optionally sets the value first if the parameter value is a float
+     * greater than or equal to zero.
+     * Note that the value is not verified other than that.
+     * This value is zero unless it has been set before.
+     * It is interpreted as an amount in the Currency specified by
+     * the Currency ID.
+     * @param   float   $sum    The optional sum
+     * @return  float           The sum
+     */
     function sum($sum=null)
     {
         if (isset($sum)) {
@@ -163,6 +236,18 @@ class Order
         return $this->sum;
     }
 
+    /**
+     * Returns the VAT amount
+     *
+     * Optionally sets the value first if the parameter value is a float
+     * greater than or equal to zero.
+     * Note that the value is not verified other than that.
+     * This value is zero unless it has been set before.
+     * It is interpreted as an amount in the Currency specified by
+     * the Currency ID.
+     * @param   float   $vat_amount     The optional VAT amount
+     * @return  float                   The VAT amount
+     */
     function vat_amount($vat_amount=null)
     {
         if (isset($vat_amount)) {
@@ -174,28 +259,65 @@ class Order
         return $this->vat_amount;
     }
 
+    /**
+     * Returns the shipment fee
+     *
+     * Optionally sets the value first if the parameter value is a float
+     * greater than or equal to zero.
+     * Note that the value is not verified other than that.
+     * This value is zero unless it has been set before.
+     * It is interpreted as an amount in the Currency specified by
+     * the Currency ID.
+     * @param   float   $shipment_amount    The optional shipment fee
+     * @return  float                       The shipment fee
+     */
     function shipment_amount($shipment_amount=null)
     {
         if (isset($shipment_amount)) {
             $shipment_amount = floatval($shipment_amount);
             if ($shipment_amount >= 0) {
-                $this->shipment_amount = number_format($shipment_amount, 2, '.', '');
+                $this->shipment_amount =
+                    number_format($shipment_amount, 2, '.', '');
             }
         }
         return $this->shipment_amount;
     }
 
+    /**
+     * Returns the payment fee
+     *
+     * Optionally sets the value first if the parameter value is a float
+     * greater than or equal to zero.
+     * Note that the value is not verified other than that.
+     * This value is zero unless it has been set before.
+     * It is interpreted as an amount in the Currency specified by
+     * the Currency ID.
+     * @param   float   $payment_amount     The optional payment fee
+     * @return  float                       The payment fee
+     */
     function payment_amount($payment_amount=null)
     {
         if (isset($payment_amount)) {
             $payment_amount = floatval($payment_amount);
             if ($payment_amount >= 0) {
-                $this->payment_amount = number_format($payment_amount, 2, '.', '');
+                $this->payment_amount =
+                    number_format($payment_amount, 2, '.', '');
             }
         }
         return $this->payment_amount;
     }
 
+    /**
+     * Returns the gender (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * Valid values are defined by the User_Profile_Attribute class.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $gender     The optional gender
+     * @return  string              The gender
+     */
     function gender($gender=null)
     {
         if (isset($gender)) {
@@ -207,6 +329,16 @@ class Order
         return $this->gender;
     }
 
+    /**
+     * Returns the company (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $company    The optional company
+     * @return  string              The company
+     */
     function company($company=null)
     {
         if (isset($company)) {
@@ -215,6 +347,16 @@ class Order
         return $this->company;
     }
 
+    /**
+     * Returns the first name (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $firstname  The optional first name
+     * @return  string              The first name
+     */
     function firstname($firstname=null)
     {
         if (isset($firstname)) {
@@ -226,6 +368,16 @@ class Order
         return $this->firstname;
     }
 
+    /**
+     * Returns the last name (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $lastname   The optional last name
+     * @return  string              The last name
+     */
     function lastname($lastname=null)
     {
         if (isset($lastname)) {
@@ -237,6 +389,16 @@ class Order
         return $this->lastname;
     }
 
+    /**
+     * Returns the address (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $address    The optional address
+     * @return  string              The address
+     */
     function address($address=null)
     {
         if (isset($address)) {
@@ -248,6 +410,16 @@ class Order
         return $this->address;
     }
 
+    /**
+     * Returns the city (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $city   The optional city
+     * @return  string          The city
+     */
     function city($city=null)
     {
         if (isset($city)) {
@@ -259,6 +431,16 @@ class Order
         return $this->city;
     }
 
+    /**
+     * Returns the zip (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $zip    The optional zip
+     * @return  string          The zip
+     */
     function zip($zip=null)
     {
         if (isset($zip)) {
@@ -270,6 +452,16 @@ class Order
         return $this->zip;
     }
 
+    /**
+     * Returns the Country ID (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than zero.
+     * Note that the value is not verified other than that.
+     * This value is zero unless it has been set before.
+     * @param   integer country_id  The optional Country ID
+     * @return  integer             The Country ID
+     */
     function country_id($country_id=null)
     {
         if (isset($country_id)) {
@@ -281,6 +473,16 @@ class Order
         return $this->country_id;
     }
 
+    /**
+     * Returns the phone number (shipment address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $phone  The optional phone number
+     * @return  string          The phone number
+     */
     function phone($phone=null)
     {
         if (isset($phone)) {
@@ -292,6 +494,16 @@ class Order
         return $this->phone;
     }
 
+    /**
+     * Returns the IP address
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $ip     The optional IP address
+     * @return  string          The IP address
+     */
     function ip($ip=null)
     {
         if (isset($ip)) {
@@ -303,6 +515,16 @@ class Order
         return $this->ip;
     }
 
+    /**
+     * Returns the host name
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $host   The optional host name
+     * @return  string          The host name
+     */
     function host($host=null)
     {
         if (isset($host)) {
@@ -314,6 +536,16 @@ class Order
         return $this->host;
     }
 
+    /**
+     * Returns the browser identification
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $browser    The optional browser identification
+     * @return  string              The browser identification
+     */
     function browser($browser=null)
     {
         if (isset($browser)) {
@@ -325,6 +557,16 @@ class Order
         return $this->browser;
     }
 
+    /**
+     * Returns the order note
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $note   The optional order note
+     * @return  string          The order note
+     */
     function note($note=null)
     {
         if (isset($note)) {
@@ -336,6 +578,18 @@ class Order
         return $this->note;
     }
 
+    /**
+     * Returns the date and time the Order was placed
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is verified and interpreted using strtotime().
+     * If the resulting time is non-zero, it is accepted and converted
+     * to DATETIME format.
+     * This value is '0000-00-00 00:00:00' unless it has been set before.
+     * @param   string  $date_time  The optional order date and time
+     * @return  string              The order date and time, in DATETIME format
+     */
     function date_time($date_time=null)
     {
         if (isset($date_time)) {
@@ -348,6 +602,19 @@ class Order
         return $this->date_time;
     }
 
+    /**
+     * Returns the date and time the Order was last edited
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is verified and interpreted using strtotime().
+     * If the resulting time is non-zero, it is accepted and converted
+     * to DATETIME format.
+     * This value is '0000-00-00 00:00:00' unless it has been set before.
+     * @param   string  $modified_on    The optional edit date and time
+     * @return  string                  The edit date and time,
+     *                                  in DATETIME format
+     */
     function modified_on($modified_on=null)
     {
         if (isset($modified_on)) {
@@ -360,6 +627,16 @@ class Order
         return $this->modified_on;
     }
 
+    /**
+     * Returns the user name of the User that last edited this Order
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $modified_by    The optional user name
+     * @return  string                  The user name
+     */
     function modified_by($modified_by=null)
     {
         if (isset($modified_by)) {
@@ -566,11 +843,13 @@ class Order
     }
 
 
-// TODO
     /**
-     * Stores the Order as Posted
-     * @global  array             $_ARRAYLANG     Language array
-     * @global  ADONewConnection  $objDatabase    Database connection object
+     * Stores the Order
+     *
+     * Takes all values as found in the POST array
+     * @global  array             $_ARRAYLANG   Language array
+     * @global  ADONewConnection  $objDatabase  Database connection object
+     * @return  boolean                         True on success, false otherwise
      * @static
      */
     static function storeFromPost()
@@ -854,7 +1133,28 @@ class Order
     }
 
 
-    function insertItem($order_id, $product_id, $name, $price, $quantity,
+    /**
+     * Inserts a single item into the database
+     *
+     * Note that all parameters are mandatory.
+     * All of $order_id, $product_id, and $quantity must be greater than zero.
+     * The $weight must not be negative.
+     * If there are no options, set $arrOptions to the empty array.
+     * Sets an error Message in case there is anything wrong.
+     * @global  ADONewConnection    $objDatabase
+     * @global  array   $_ARRAYLANG
+     * @param   integer $order_id       The Order ID
+     * @param   integer $product_id     The Product ID
+     * @param   string  $name           The item name
+     * @param   float   $price          The item price (one unit)
+     * @param   integer $quantity       The quantity (in units)
+     * @param   float   $vat_rate       The applicable VAT rate
+     * @param   integer $weight         The item weight (in grams, one unit)
+     * @param   array   $arrOptions     The array of selected options
+     * @return  boolean                 True on success, false otherwise
+     * @static
+     */
+    static function insertItem($order_id, $product_id, $name, $price, $quantity,
         $vat_rate, $weight, $arrOptions
     ) {
         global $objDatabase, $_ARRAYLANG;
@@ -894,6 +1194,27 @@ class Order
     }
 
 
+    /**
+     * Updates a single item in the database
+     *
+     * Note that all parameters are mandatory.
+     * All of $item_id, $product_id, and $quantity must be greater than zero.
+     * The $weight must not be negative.
+     * If there are no options, set $arrOptions to the empty array.
+     * Sets an error Message in case there is anything wrong.
+     * @global  ADONewConnection    $objDatabase
+     * @global  array   $_ARRAYLANG
+     * @param   integer $item_id        The item ID
+     * @param   integer $product_id     The Product ID
+     * @param   string  $name           The item name
+     * @param   float   $price          The item price (one unit)
+     * @param   integer $quantity       The quantity (in units)
+     * @param   float   $vat_rate       The applicable VAT rate
+     * @param   integer $weight         The item weight (in grams, one unit)
+     * @param   array   $arrOptions     The array of selected options
+     * @return  boolean                 True on success, false otherwise
+     * @static
+     */
     function updateItem($item_id, $product_id, $name, $price, $quantity,
         $vat_rate, $weight, $arrOptions
     ) {
@@ -939,17 +1260,18 @@ class Order
 
 
     /**
-     * Add the chosen option(s) of the given Attribute ID to the Order item
+     * Add the option IDs of the given Attribute ID to the Order item
      *
      * Will add error messages using {@see Message::error()}, if any.
-     * The $arrOptionIds array has the form
+     * The $arrOptionIds array must have the form
      *  array(attribute_id => array(option_id, ...))
      * @param   integer   $item_id        The Order item ID
      * @param   integer   $attribute_id   The Attribute ID
      * @param   array     $arrOptionIds   The array of option IDs
      * @return  boolean                   True on success, false otherwise
+     * @static
      */
-    function insertAttribute($item_id, $attribute_id, $arrOptionIds)
+    static function insertAttribute($item_id, $attribute_id, $arrOptionIds)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -991,7 +1313,7 @@ class Order
 
 
     /**
-     * Deleted the options associated with the Order item with the given ID
+     * Delete the options associated with the given item ID
      *
      * Will add error messages using {@see Message::error()}, if any.
      * @param   integer   $item_id        The Order item ID
@@ -1016,7 +1338,7 @@ class Order
 
 
     /**
-     * Set up details of the selected order
+     * Set up the detail view of the selected order
      * @access  public
      * @param   HTML_Template_Sigma $objTemplate    The Template, by reference
      * @param   boolean             $edit           Edit if true, view otherwise
@@ -1384,7 +1706,6 @@ class Order
     }
 
 
-// Frontend-only methods from here
     /**
      * Returns the most recently used language ID found in the order table
      * for the given Customer ID
