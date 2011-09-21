@@ -21,6 +21,18 @@ class LinkSanitizer {
      * Calculates and returns the content with all replacements done.
      */
     function replace() {
-        return preg_replace("#( (src|href)\s*=\s*['\"])(?=[^/])(?!((http|ftp|)://|javascript:))#", '\1'.$this->offset, $this->content);
+        return preg_replace("/
+                (     # match all SRC and HREF attributes 
+                      \s(src|href)\s*=\s*['\"]
+
+                   |  # or match all CSS @import statements
+                      @import\s+url\s*\(                             )
+
+                # but only those who's values don't start with a slash..
+                (?=[^\/])
+
+                # ..and neither start with a protocol or javascript
+                (?!(([a-z]+):\/\/|javascript:))
+            /x", '\1'.$this->offset, $this->content);
     }
 }
