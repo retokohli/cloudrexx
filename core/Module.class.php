@@ -5,6 +5,9 @@ class ModuleException extends Exception {}
 class Module {
     protected $defaultAct = '';
 
+    protected $act = '';
+    protected $template = null;
+
     public function __construct($act, $template) {
         $this->act = $act;
         $this->template = $template;
