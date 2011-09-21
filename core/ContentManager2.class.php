@@ -135,15 +135,12 @@ class ContentManager extends Module {
     }
 
     protected function actAjaxGetCustomContentTemplates() {
-        if(!isset($_GET['forAct']))
-            throw new ContentManagerException('please provide a value for "forAct".');
-
         if(!isset($_GET['themeId']))
             throw new ContentManagerException('please provide a value for "themeId".');
 
-        $forAct = $_GET['forAct'];
+        $module = isset($_GET['module']) ? $_GET['module'] : '';
         $themeId = intval($_GET['themeId']);
-        $isHomeRequest = $forAct == 'home';
+        $isHomeRequest = $module == 'home';
 
         $templates = $this->init->getCustomContentTemplatesForTheme($themeId);
         $matchingTemplates = array();
