@@ -1102,6 +1102,28 @@ class Products
 
 
     /**
+     * Deactivate Products that are no longer available
+     *
+     * Affects Product records with stock_visible enabled and zero (or less,
+     * which may happen, unfortunately) stock
+     * @return  boolean                 True on success, false otherwise
+     * @since   3.0.0
+     * @static
+     */
+    static function deactivate_soldout()
+    {
+        global $objDatabase;
+
+        return (boolean)$objDatabase->Execute("
+            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_products`
+               SET `active`=0
+             WHERE `active`=1
+               AND `stock_visible`=1
+               AND `stock`<=0");
+    }
+
+
+    /**
      * Returns -1, 0, or 1 if the first Product title is smaller, equal to,
      * or greater than the second, respectively
      * @param   Product   $objProduct1    Product #1
@@ -1136,5 +1158,3 @@ class Products
     }
 
 }
-
-?>

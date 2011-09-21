@@ -331,7 +331,7 @@ class Manufacturer
      * @global  array
      */
     static function getMenu(
-        $menu_name='manufacturer_id', $selected_id=0, $include_none=false
+        $menu_name='manufacturerId', $selected_id=0, $include_none=false
     ) {
 //DBG::log("Manufacturer::getMenu($selected_id): Manufacturers: ".var_export(self::$arrManufacturer, true));
         return Html::getSelectCustom(

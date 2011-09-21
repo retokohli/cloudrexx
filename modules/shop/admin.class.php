@@ -797,7 +797,7 @@ class Shopmanager extends ShopLibrary
             'IMAGE_CHOICE' => $imageChoice,
             'IMPORT_BUTTON_STYLE' => $importButtonStyle,
             // Export: instructions added
-            'SHOP_EXPORT_TIPS' => $tipText,
+//            'SHOP_EXPORT_TIPS' => $tipText,
         ));
     }
 
@@ -2041,9 +2041,8 @@ class Shopmanager extends ShopLibrary
         $objProduct = null;
         self::$objTemplate->addBlockfile('SHOP_PRODUCTS_FILE',
             'shop_products_block', 'module_shop_product_manage.html');
-        self::$objTemplate->setVariable(
-            $_ARRAYLANG
-          + array(
+        self::$objTemplate->setGlobalVariable($_ARRAYLANG);
+        self::$objTemplate->setVariable(array(
             'SHOP_DELETE_ICON' => ASCMS_PATH_OFFSET.'/cadmin/images/icons/delete.gif',
             'SHOP_NO_PICTURE_ICON' => self::$defaultImage
         ));

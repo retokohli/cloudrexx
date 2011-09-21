@@ -410,6 +410,17 @@ class Cart
                 unset($products[$cart_id]);
                 continue;
             }
+            // Limit Products in the cart to the stock available if the
+            // stock_visibility is enabled.
+            if ($objProduct->stock_visible()
+             && $product['quantity'] > $objProduct->stock()) {
+                $product['quantity'] = $objProduct->stock();
+            }
+            // Remove Products with quatities of zero or less
+            if ($product['quantity'] <= 0) {
+                unset($products[$cart_id]);
+                continue;
+            }
             $options = '';
             $options_price =  0;
             foreach ($product['options'] as $attribute_id => $arrOptionIds) {

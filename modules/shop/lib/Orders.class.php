@@ -1446,6 +1446,7 @@ die("Product ID $product_id not found");
                     $priceTotalItems);
             }
         }
+        Products::deactivate_soldout();
         if (Vat::isEnabled()) {
             $arrSubstitution['TAX_TEXT'] =
                 sprintf('%-40s',
