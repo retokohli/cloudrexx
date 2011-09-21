@@ -1853,35 +1853,41 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     $objPDF = new PDF();
     $objPDF->title = $page_title.(empty($page_title) ? null : '.pdf');
     // replace links from before contrexx 3
-    $ls = new LinkSanitizer(ASCMS_PATH_OFFSET.'/', $objTemplate->get());
+    $ls = new LinkSanitizer(
+        ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/',
+        $objTemplate->get());
     $objPDF->content = $ls->replace();
     $objPDF->Create();
-} else {
-    /**
-     * Get all javascripts in the code, replace them with nothing, and register the js file
-     * to the javascript lib. This is because we don't want something twice, and there could be
-     * a theme that requires a javascript, which then could be used by a module too and therefore would
-     * be loaded twice.
-     */
-    $endcode = $objTemplate->get();
-    /* Finds all uncommented script tags, strips them out of the HTML and
-     * stores them internally so we can put them in the placeholder later
-     * (see JS::getCode() below)
-     */
-    JS::findJavascripts($endcode);
-    /*
-     * Proposal:  Use this
-     *     $endcode = preg_replace_callback('/<script\s.*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
-     * and change JS::registerFromRegex to use index 2
-     */
-    // i know this is ugly, but is there another way
-    $endcode = str_replace('javascript_inserting_here', JS::getCode(), $endcode);
-
-
-    // replace links from before contrexx 3
-    $ls = new LinkSanitizer(ASCMS_PATH_OFFSET.'/', $endcode);
-    $endcode = $ls->replace();
-
-    echo $endcode;
+    exit;
 }
+
+/**
+ * Get all javascripts in the code, replace them with nothing, and register the js file
+ * to the javascript lib. This is because we don't want something twice, and there could be
+ * a theme that requires a javascript, which then could be used by a module too and therefore would
+ * be loaded twice.
+ */
+$endcode = $objTemplate->get();
+/* Finds all uncommented script tags, strips them out of the HTML and
+ * stores them internally so we can put them in the placeholder later
+ * (see JS::getCode() below)
+ */
+JS::findJavascripts($endcode);
+/*
+ * Proposal:  Use this
+ *     $endcode = preg_replace_callback('/<script\s.*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
+ * and change JS::registerFromRegex to use index 2
+ */
+// i know this is ugly, but is there another way
+$endcode = str_replace('javascript_inserting_here', JS::getCode(), $endcode);
+
+
+// replace links from before contrexx 3
+$ls = new LinkSanitizer(
+    ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/',
+    $endcode);
+$endcode = $ls->replace();
+
+echo $endcode;
+
 $objCache->endCache();

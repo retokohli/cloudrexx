@@ -6,17 +6,17 @@ class LinkSanitizerTest extends ContrexxTestCase {
     public function testReplace() {
         //src, "
         $content = '<img src="index.php?cmd=a&module=b" />';      
-        $result = '<img src="/cms/index.php?cmd=a&module=b" />';
+        $result = '<img src="/cms/de/index.php?cmd=a&module=b" />';
         $this->checkSanitizing($content, $result);
 
         //href, '
         $content = "<a href='index.php' />";      
-        $result = "<a href='/cms/index.php' />";
+        $result = "<a href='/cms/de/index.php' />";
         $this->checkSanitizing($content, $result);
 
         //multiple matches
         $content = '<img src="first" /><img src="second" />';
-        $result = '<img src="/cms/first" /><img src="/cms/second" />';
+        $result = '<img src="/cms/de/first" /><img src="/cms/de/second" />';
         $this->checkSanitizing($content, $result);
 
         //absolute links preserval
@@ -38,8 +38,9 @@ class LinkSanitizerTest extends ContrexxTestCase {
 
     protected function checkSanitizing($in, $expectedOut) {
         $offset = '/cms/';
+        $langDir = 'de/';
        
-        $ls = new LinkSanitizer($offset, $in);
+        $ls = new LinkSanitizer($offset.$langDir, $in);
         $this->assertEquals($expectedOut, $ls->replace());      
     }
 }
