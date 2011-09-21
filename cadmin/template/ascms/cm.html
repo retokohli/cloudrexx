@@ -117,16 +117,20 @@
               <div class="clearfix space">
                 <h2>{TXT_CORE_OPTICS_STYLE}</h2>
                 <label for="skin" class="oneCol">{TXT_CORE_SKIN}</label>
-                <select id="skin" class="oneCol" value="{SKIN}" name="skin" />
+                <select id="skin" class="oneCol" value="{SKIN}" name="skin">
+                {SKIN_OPTIONS}
+                </select>
               </div>
               <div class="clearfix space">
                 <label for="cssName" class="oneCol">{TXT_CORE_CSSNAME}</label>
-                <select id="cssName" class="oneCol" value="{CSSNAME}" name="cssName" />
+                <input id="cssName" class="oneCol" value="{CSSNAME}" name="cssName" />
               </div>
               <div class="clearfix space">
                 <h2>{TXT_CORE_SPECIAL_CONTENT_PAGE}</h2>
                 <label for="customContent" class="oneCol">{TXT_CORE_CUSTOMCONTENT}</label>
-                <select id="customContent" class="oneCol" value="{CUSTOMCONTENT}" name="customContent"></select>
+                <select id="customContent" class="oneCol" value="{CUSTOMCONTENT}" name="customContent">
+                {CUSTOMCONTENT_OPTIONS}
+                </select>
               </div>
               <div class="clearfix space">
                 <h2>{TXT_CORE_PERFORMANCE_OPTIMIZATION}</h2>
