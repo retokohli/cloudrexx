@@ -459,7 +459,7 @@ switch ($plainCmd) {
         if (!include_once ASCMS_CORE_PATH.'/ContentManager2.class.php')
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
-        $cm = new ContentManager($act, $objTemplate);
+        $cm = new ContentManager($act, $objTemplate, $objDatabase, $objInit);
         $cm->getPage();
         break;
 // TODO: handle expired sessions in any xhr callers.
