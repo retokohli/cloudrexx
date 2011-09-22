@@ -113,8 +113,12 @@ class NestedTreeRepository extends AbstractTreeRepository
             throw new InvalidArgumentException("Node is not managed by UnitOfWork");
         }
         $config = $this->listener->getConfiguration($this->_em, $meta->name);
+        //workaround by srz: force fetching of node data
+        $node->getLft();
+
         $left = $meta->getReflectionProperty($config['left'])->getValue($node);
         $right = $meta->getReflectionProperty($config['right'])->getValue($node);
+
         $qb = $this->_em->createQueryBuilder();
         $qb->select('node')
             ->from($config['useObjectClass'], 'node')
