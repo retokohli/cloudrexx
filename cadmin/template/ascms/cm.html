@@ -14,7 +14,7 @@
               <div class="type content">
                 <div class="wrapper">
                   <div class="left">
-                    <input type="radio" name="type" id="typeContent" value="content"></input>
+                    <input type="radio" name="page[type]" id="typeContent" value="content"></input>
                   </div>
                   <label for="typeContent">
                     <h1> {TXT_CORE_TYPE_CONTENT} </h1>
@@ -28,7 +28,7 @@
               <div class="type redirection">
                 <div class="wrapper">
                   <div class="left">
-                    <input type="radio" name="type" id="typeRedirection" value="redirect"></input>
+                    <input type="radio" name="page[type]" id="typeRedirection" value="redirect"></input>
                   </div>
                   <label for="typeRedirection">
                     <h1> {TXT_CORE_TYPE_REDIRECTION} </h1>
@@ -38,15 +38,15 @@
                   </p>
                   <p class="additionalSettings">
                       <label style="width: 100px; display: block; float: left;" for="target">{TXT_CORE_TARGET}</label>
-                      <input id="target" type="text" value="{TARGET}" name="target" maxlength="255" size="40" />
+                      <input id="target" type="text" value="{TARGET}" name="page[target]" maxlength="255" size="40" />
                   </p>
                 </div>
               </div>
               <!-- type: app -->
-              <div class="activeType type app">
+              <div class="type app">
                 <div class="wrapper">
                   <div class="left">
-                    <input type="radio" name="type" id="typeApp" value="application"></input>
+                    <input type="radio" name="page[type]" id="typeApp" value="application"></input>
                   </div>
                   <label for="typeApp">
                     <h1> {TXT_CORE_TYPE_APP} </h1>
@@ -56,19 +56,19 @@
                   </p>
                   <p class="additionalSettings">
                       <label style="width: 100px; display: block; float: left;" for="module" class="twoCols">{TXT_CORE_APPLICATION}</label>
-                      <input id="module" class="twoCols" type="text" value="{MODULE}" name="module" />
+                      <input id="module" class="twoCols" type="text" value="{MODULE}" name="page[module]" />
                       <br />
                       <label style="width: 100px; display: block; float: left;" for="cm_cmd" class="twoCols">{TXT_CORE_AREA}</label>
-                      <input id="cm_cmd" class="twoCols" type="text" value="{CMD}" name="cm_cmd" />
+                      <input id="cm_cmd" class="twoCols" type="text" value="{CMD}" name="page[cm_cmd]" />
                   </p>
                 </div>
               </div>
         </div>
         <div id="tabs-2">
-            <input type="hidden" name="id" id="pageId" value="new" />
+            <input type="hidden" name="page[id]" id="pageId" value="new" />
             <div class="clearfix">
               <div class="additionalInfo">
-                <label class="dontShow" for="input1">{TXT_CORE_PAGETITLE}</label><input id="title" type="text" value="{PAGETITLE}" name="title" />
+                <label class="dontShow" for="input1">{TXT_CORE_PAGETITLE}</label><input id="title" type="text" value="{PAGETITLE}" name="page[title]" />
                 <a href="#" id="showHideInfo">Show</a>
               </div>
               <div id="additionalInfo" class="additionalInfo">
@@ -77,36 +77,36 @@
 
                   <div class="twoCols">
                     <label for="start" class="twoCols">{TXT_CORE_ACTIVE_FROM}</label>
-                    <input id="start" class="twoCols date" type="text" value="{ACTIVE_FROM}" name="start" />
+                    <input id="start" class="twoCols date" type="text" value="{ACTIVE_FROM}" name="page[start]" />
                   </div>
 
                   <div class="twoCols">
                     <label for="end" class="twoCols">{TXT_CORE_ACTIVE_TO}</label>
-                    <input id="end" class="twoCols date" type="text" value="{ACTIVE_TO}" name="end" />
+                    <input id="end" class="twoCols date" type="text" value="{ACTIVE_TO}" name="page[end]" />
                   </div>
                 </div>
                 <h2>{TXT_CORE_META_INFORMATION}</h2>
 
                 <div class="clearfix space">
                   <label for="metatitle" class="oneCol">{TXT_CORE_META_TITLE}</label>
-                  <input id="metatitle" class="oneCol" type="text" value="{META_TITLE}" nameg="metatitle" />
+                  <input id="metatitle" class="oneCol" type="text" value="{META_TITLE}" name="page[metatitle]" />
                 </div>
                 <div class="clearfix space">
                   <label for="metakeys" class="oneCol">{TXT_CORE_META_KWORDS}</label>
-                  <input id="metakeys" class="oneCol" type="text" value="{META_KWORDS}" name="metakeys" />
+                  <input id="metakeys" class="oneCol" type="text" value="{META_KWORDS}" name="page[metakeys]" />
                 </div>
                 <div class="clearfix space">
                   <label for="metadesc" class="oneCol">{TXT_CORE_META_DESC}</label>
-                  <input id="metadesc" class="oneCol" type="text" value="{META_DESC}" name="metadesc" />
+                  <input id="metadesc" class="oneCol" type="text" value="{META_DESC}" name="page[metadesc]" />
                 </div>
                 <div class="clearfix">
                   <label for="metarobots" class="oneCol">{TXT_CORE_META_ROBOTS}</label>
-                  <input id="metarobots" class="oneCol" type="checkbox" value="{META_ROBOTS}" name="metarobots" />
+                  <input id="metarobots" class="oneCol" type="checkbox" value="{META_ROBOTS}" name="page[metarobots]" />
                 </div>
               </div>
 
             </div>
-            <textarea id="cm_ckeditor" rows="15" cols="45" name="content"></textarea>
+            <textarea id="cm_ckeditor" rows="15" cols="45" name="page[content]"></textarea>
         </div>
         <!--<div id="tabs-3">Test Tab3</div>-->
         <div id="tabs-4">
@@ -117,30 +117,32 @@
               <div class="clearfix space">
                 <h2>{TXT_CORE_OPTICS_STYLE}</h2>
                 <label for="skin" class="oneCol">{TXT_CORE_SKIN}</label>
-                <select id="skin" class="oneCol" value="{SKIN}" name="skin">
+                <select id="skin" class="oneCol" value="{SKIN}" name="page[skin]">
+                    <option value="">(Standard)</option>
                 {SKIN_OPTIONS}
                 </select>
               </div>
               <div class="clearfix space">
                 <label for="cssName" class="oneCol">{TXT_CORE_CSSNAME}</label>
-                <input id="cssName" class="oneCol" value="{CSSNAME}" name="cssName" />
+                <input id="cssName" class="oneCol" value="{CSSNAME}" name="page[cssName]" />
               </div>
               <div class="clearfix space">
                 <h2>{TXT_CORE_SPECIAL_CONTENT_PAGE}</h2>
                 <label for="customContent" class="oneCol">{TXT_CORE_CUSTOMCONTENT}</label>
-                <select id="customContent" class="oneCol" value="{CUSTOMCONTENT}" name="customContent">
+                <select id="customContent" class="oneCol" value="{CUSTOMCONTENT}" name="page[customContent]">
+                    <option value="">(Standard)</option>
                 {CUSTOMCONTENT_OPTIONS}
                 </select>
               </div>
               <div class="clearfix space">
                 <h2>{TXT_CORE_PERFORMANCE_OPTIMIZATION}</h2>
                 <label for="caching" class="oneCol">{TXT_CORE_CACHING}</label>
-                <input id="caching" class="oneCol" type="checkbox" value="{CACHING}" name="caching" />
+                <input id="caching" class="oneCol" type="checkbox" value="{CACHING}" name="page[caching]" />
               </div>
               <div class="clearfix">
                 <h2>{TXT_CORE_LINK}</h2>
                 <label for="slug" class="oneCol">{TXT_CORE_SLUG}</label>
-                <input id="slug" class="oneCol" type="text" value="{SLUG}" name="slug" />
+                <input id="slug" class="oneCol" type="text" value="{SLUG}" name="page[slug]" />
               </div>
             </div>
           <div class="clearfix"></div>
@@ -152,8 +154,8 @@
       </div>
       
       <div id="buttons">
-        <button id="preview" class="btn left"><span>{TXT_CORE_PREVIEW}</span></button>
+        <!--<button id="preview" class="btn left"><span>{TXT_CORE_PREVIEW}</span></button>-->
         <button id="publish" class="btn right"><span>{TXT_CORE_SAVE_PUBLISH}</span></button>
-        <button id="save" class="btn right"><span>{TXT_CORE_SAVE}</span></button>
+        <!--<button id="save" class="btn right"><span>{TXT_CORE_SAVE}</span></button>-->
       </div>
 
