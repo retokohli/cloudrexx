@@ -506,10 +506,9 @@ DBG::log("MailTemplate::send(): ERROR: Failed to load phpMailer");
         if (empty($arrField['key'])) {
             $arrTemplate = self::getEmpty();
         } else {
-            $arrTemplate = self::get(
-                $arrField['key'], $lang_id, $section);
+            $arrTemplate = self::get($section, $arrField['key'], $lang_id);
             if (empty($arrTemplate)) {
-DBG::log("MailTemplate::send(): WARNING: No Template for key {$arrField['key']}");
+DBG::log("MailTemplate::send(): WARNING: No Template for key {$arrField['key']} (section $section)");
                 return false;
             }
         }
