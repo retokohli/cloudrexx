@@ -76,6 +76,9 @@ class DateTimeTools
         JS::activate('jqueryui');
         $language_code = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
 //DBG::log("Language ID ".FRONTEND_LANG_ID.", code $language_code");
+        // Must load timepicker as well, because the region file accesses it
+        JS::registerJS(
+            'lib/javascript/jquery/ui/jquery-ui-timepicker-addon.js');
 // TODO: Add more languages to the i18n folder!
         JS::registerJS(
             'lib/javascript/jquery/ui/i18n/'.
@@ -196,5 +199,3 @@ jQuery(document).ready(function($) {
     }
 
 }
-
-?>
