@@ -69,7 +69,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $page = Array(
                 'id'            =>  $page->getId(),
                 'title'         =>  $page->getTitle(),
-                'content'       =>  str_replace('{', '[[', $page->getContent()),
+                'content'       =>  str_replace(array('{', '}'), array('[[', ']]'), $page->getContent()),
                 'customContent' =>  $page->getCustomContent(),
                 'cssName'       =>  $page->getCssName(),
                 'metatitle'     =>  $page->getMetatitle(),
@@ -133,7 +133,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             // Start/End
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
-            $page->setContent(str_replace('[[', '{', $updated_page['content']));
+            $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
             //$page->setModule($_POST['module']);
             //$page->setCmd($_POST['cm_cmd']);
             $page->setTarget($updated_page['target']);
