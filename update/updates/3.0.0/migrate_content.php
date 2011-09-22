@@ -229,6 +229,10 @@ class Contrexx_Content_migration
         $page->setTarget($objResult->fields['target']);
         $page->setModule($objModules->fields['moduleName']);
         $page->setCmd($objResult->fields['cmd']);
+
+        //set the type the way the type is supposed to be set. 
+        if($page->getModule())
+            $page->setType('module');
     }
     
     function pageGrouping()
