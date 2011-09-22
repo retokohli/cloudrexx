@@ -43,18 +43,11 @@ h1{ font-size: 20px }
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
 
-#site-structure{
+#site-structure {
     border-right: 1px solid #d3d3d3; /* grey */
     float: left;
     width: 23%;
     overflow: hidden;
-}
-
-#site-structure li:hover > select {
-    display: inline !important;
-}
-#site-structure li:hover ul select {
-    display: none;
 }
 
 #site-structure li select {
@@ -63,13 +56,6 @@ h1{ font-size: 20px }
     display: none;
     position: absolute;
     left: 17%;
-}
-
-#site-structure li:hover > a.delete {
-    display: inline !important;
-}
-#site-structure li:hover ul a.delete {
-    display: none;
 }
 
 #site-structure li a.delete {
