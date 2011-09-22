@@ -905,8 +905,8 @@ die("Obsolete method Text::getIdArrayBySearch() called");
                   `id` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                   `lang_id` INT(10) UNSIGNED NOT NULL DEFAULT 1,
                   `section` TINYTEXT NULL DEFAULT NULL,
-                  `key` TINYTEXT NOT NULL DEFAULT '',
-                  `text` TEXT NOT NULL DEFAULT '',
+                  `key` TINYTEXT NOT NULL,
+                  `text` TEXT NOT NULL,
                   PRIMARY KEY `id` (`id`, `lang_id`, `section`(32), `key`(32)),
                   FULLTEXT `text` (`text`)
                 ) ENGINE=MyISAM";
