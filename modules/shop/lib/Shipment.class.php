@@ -462,8 +462,9 @@ class Shipment
      * if any
      * @return  boolean                 True on success, false on failure,
      *                                  or null on noop
+     * @static
      */
-    function delete_shipment()
+    static function delete_shipment()
     {
         if (empty($_GET['delete_shipment_id'])) return null;
         return self::_delete_shipment(intval($_GET['delete_shipment_id']));
@@ -476,8 +477,9 @@ class Shipment
      * Backend use only.
      * @return  boolean                 True on success, false on failure,
      *                                  or null on noop
+     * @static
      */
-    function add_shipper()
+    static function add_shipper()
     {
         if (empty($_POST['bshipper_add']) || empty($_POST['name_new'])) return null;
         $shipper_id = self::_add_shipper(
@@ -496,8 +498,9 @@ class Shipment
      * Backend use only.
      * @return  boolean                 True on success, false on failure,
      *                                  or null on noop
+     * @static
      */
-    function add_shipments()
+    static function add_shipments()
     {
         if (empty($_POST['bshipment'])) return null;
         $success = true;
@@ -531,8 +534,9 @@ class Shipment
      * Backend use only.
      * @return  boolean                     True on success, false an failure,
      *                                      null on noop.
+     * @static
      */
-    function update_shipments_from_post()
+    static function update_shipments_from_post()
     {
         if (empty($_POST['bshipment'])) return null;
         $success = true;

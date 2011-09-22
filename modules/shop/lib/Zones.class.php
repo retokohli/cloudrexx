@@ -151,8 +151,9 @@ class Zones
 
     /**
      * Delete Zone
+     * @static
      */
-    function deleteZone()
+    static function deleteZone()
     {
         global $objDatabase;
 
@@ -193,8 +194,9 @@ class Zones
 
     /**
      * Add a new zone
+     * @static
      */
-    function addZone()
+    static function addZone()
     {
         global $objDatabase;
 
@@ -231,8 +233,9 @@ class Zones
      * Updates the Zones with data posted from the form
      * @return  boolean             True on success, false on failure,
      *                              null on noop
+     * @static
      */
-    function updateZones()
+    static function updateZones()
     {
         global $objDatabase;
 

@@ -318,8 +318,9 @@ class Payment
      *
      * Returns null if no new Payment is present.
      * @return    boolean           True on success, false on failure, or null
+     * @static
      */
-    function add()
+    static function add()
     {
         global $objDatabase;
 
@@ -358,8 +359,9 @@ class Payment
      *
      * Returns null if no Payment data is present.
      * @return    boolean           True on success, false on failure, or null
+     * @static
      */
-    function update()
+    static function update()
     {
         global $objDatabase;
 

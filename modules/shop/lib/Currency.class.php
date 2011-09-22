@@ -516,8 +516,9 @@ class Currency
      * @return  boolean             Null if nothing was added,
      *                              boolean true upon adding the currency
      *                              successfully, or false otherwise
+     * @static
      */
-    function add()
+    static function add()
     {
         global $objDatabase;
 
@@ -559,8 +560,9 @@ class Currency
      * @return  boolean             Null if nothing was changed,
      *                              boolean true upon storing everything
      *                              successfully, or false otherwise
+     * @static
      */
-    function update()
+    static function update()
     {
         global $objDatabase;
 
