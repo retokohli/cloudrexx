@@ -1392,6 +1392,8 @@ $_ARRAYLANG['TXT_CORE_PREVIEW'] = "Seitenvorschau";
 $_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Speichern & veröffentlichen";
 $_ARRAYLANG['TXT_CORE_SAVE'] = "Speichern";
 
+$_ARRAYLANG['TXT_CORE_LOAD'] = "Laden";
+
 $_ARRAYLANG['TXT_CACHING_STATUS'] = "Caching aktiviert";
 $_ARRAYLANG['TXT_CONTENT_TYPE_REDIRECT'] = "Weiterleitung";
 $_ARRAYLANG['TXT_CUSTOM_CONTENT'] = "Benutzerdefinierte Inhaltsvorlage";

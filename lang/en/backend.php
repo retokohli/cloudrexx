@@ -1120,6 +1120,7 @@ $_ARRAYLANG['TXT_CORE_LINK'] = "Link specific";
 $_ARRAYLANG['TXT_CORE_PREVIEW'] = "Preview";
 $_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Save & publish";
 $_ARRAYLANG['TXT_CORE_SAVE'] = "Save";
+$_ARRAYLANG['TXT_CORE_LOAD'] = "Load";
 
 $_ARRAYLANG['TXT_ACCESS_GROUP_NAME_INVALID'] = "Der gewählte Gruppenname ist nicht gültig! Wählen Sie bitte einen anderen Namen für die Gruppe.";
 $_ARRAYLANG['TXT_ACCESS_MENU_MULTI'] = "Menu mit Mehrfachauswahl";
