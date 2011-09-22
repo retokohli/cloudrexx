@@ -584,8 +584,14 @@ class Product
     function date_start($date_start=null)
     {
         if (isset($date_start)) {
-            $this->date_start =
-                date(ASCMS_DATE_FORMAT_DATETIME, strtotime($date_start));
+            $time_start = strtotime($date_start);
+            if ($time_start) {
+                $this->date_start =
+                    date(ASCMS_DATE_FORMAT_DATETIME, $time_start);
+            } else {
+// TODO: Unused DATETIME should be NULL
+                $this->date_start = '0000-00-00 00:00:00';
+            }
         }
         return $this->date_start;
     }
@@ -599,8 +605,14 @@ class Product
     function date_end($date_end=null)
     {
         if (isset($date_end)) {
-            $this->date_end =
-                date(ASCMS_DATE_FORMAT_DATETIME, strtotime($date_end));
+            $time_end = strtotime($date_end);
+            if ($time_end) {
+                $this->date_end =
+                    date(ASCMS_DATE_FORMAT_DATETIME, $time_end);
+            } else {
+// TODO: Unused DATETIME should be NULL
+                $this->date_end = '0000-00-00 00:00:00';
+            }
         }
         return $this->date_end;
     }

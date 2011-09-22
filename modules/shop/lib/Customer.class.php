@@ -102,7 +102,7 @@ class Customer extends User
             if (!$this->setPassword($password, $password)) return null;
         }
         // md5!
-        return $this->getMd5Password();
+        return $this->password;
     }
 
     /**

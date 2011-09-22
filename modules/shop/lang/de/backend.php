@@ -70,7 +70,7 @@ $_ARRAYLANG['TXT_CONTACT_ADDRESS'] = "Adresse";
 $_ARRAYLANG['TXT_CONTACT_COMPANY'] = "Firma";
 $_ARRAYLANG['TXT_COPY_TO_NEW_LANGUAGE'] = "Inhalt in neue Sprache kopieren";
 $_ARRAYLANG['TXT_COSTS'] = "Kosten";
-$_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS'] = "Es konnten nicht alle Produkte gelöscht werden, da es noch verbundene Bestellungen hat.";
+$_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS'] = "Mindestens ein Produkt konnte nicht gelöscht werden, da es in einer vorhandenen Bestellung enthalten ist.  Tipp: Versuchen Sie zuerst alle Produkte in der zu löschenden Kategorie zu entfernen, um die betroffenen herauszufinden.";
 $_ARRAYLANG['TXT_COUNTRY'] = "Land";
 $_ARRAYLANG['TXT_COUNTRY_LIST'] = "Länderliste";
 $_ARRAYLANG['TXT_COUNT_ARTICLES'] = "Anz. Artikel";
@@ -915,3 +915,6 @@ $_ARRAYLANG['TXT_SHOP_PRODUCTS_ACTIVATED'] = "Die ausgewählten Artikel wurden a
 $_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_DEACTIVATING'] = "Beim Deaktivieren der Artikel ist ein Fehler aufgetreten";
 $_ARRAYLANG['TXT_SHOP_PRODUCTS_ERROR_ACTIVATING'] = "Beim Aktivieren der Artikel ist ein Fehler aufgetreten";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_STOCK_ACTIVE'] = "Automatisch deaktivieren, wenn ausverkauft";
+
+// 20110922
+$_ARRAYLANG['TXT_SHOP_CATEGORY_ID_FORMAT'] = "Kategorie ID %1\$u";

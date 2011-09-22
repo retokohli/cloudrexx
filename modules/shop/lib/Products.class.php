@@ -131,6 +131,8 @@ class Products
     ) {
         global $objDatabase, $_CONFIG;
 
+DBG::activate(DBG_ADODB);
+
         // Do not show any Products if no selection is made at all
         if (   empty($product_id)
             && empty($category_id)
@@ -156,7 +158,7 @@ class Products
             return false;
         }
         if (empty($orderSetting))
-            $orderSetting = 'p.sort_order ASC, p.id DESC';
+            $orderSetting = '`product`.`ord` ASC, `product`.`id` DESC';
 
         // The name and code fields may be used for sorting.
         // Include them in the field list in order to introduce the alias
@@ -355,7 +357,7 @@ class Products
                 // Instead, remove them from the chosen Category only.
                 $arrCategoryId = array_flip(
                     preg_split('/\s*,\s*/',
-                        $objProduct->getShopCategoryId(), null,
+                        $objProduct->category_id(), null,
                         PREG_SPLIT_NO_EMPTY));
                 if (count($arrCategoryId) > 1) {
                     unset($arrCategoryId[$category_id]);

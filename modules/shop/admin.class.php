@@ -125,7 +125,7 @@ class Shopmanager extends ShopLibrary
         global $objTemplate, $_ARRAYLANG;
 
 //DBG::activate(DBG_DB_FIREPHP);
-//DBG::activate(DBG_ERROR_FIREPHP);
+DBG::activate(DBG_ERROR_FIREPHP);
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
@@ -558,7 +558,7 @@ class Shopmanager extends ShopLibrary
                 }
             }
         }
-// TODO: !!! OBSOLETE AND DYSFUNCT !!!
+// TODO: !!! CSV EXPORT IS OBSOLETE AND DYSFUNCT !!!
 /*
         // Export groups -- hardcoded
         $content_location = '';
@@ -1892,8 +1892,8 @@ class Shopmanager extends ShopLibrary
         if (empty($category_id)) {
             if (!empty($_GET['delete_category_id'])) {
                 array_push($arrCategoryId, $_GET['delete_category_id']);
-            } elseif (   !empty($_POST['selected_category_id'])
-                      && is_array($_POST['selected_category_id'])) {
+            } elseif (!empty($_POST['selected_category_id'])
+                   && is_array($_POST['selected_category_id'])) {
                 $arrCategoryId = $_POST['selected_category_id'];
             }
         } else {
@@ -1905,10 +1905,12 @@ class Shopmanager extends ShopLibrary
         // When multiple IDs are posted, the list must be reversed,
         // so subcategories are removed first
         $arrCategoryId = array_reverse($arrCategoryId);
+DBG::log("delete_categories($category_id): Got ".var_export($arrCategoryId, true));
         foreach ($arrCategoryId as $category_id) {
             // Check whether this category has subcategories
             $arrChildId =
                 ShopCategories::getChildCategoryIdArray($category_id, false);
+DBG::log("delete_categories($category_id): Children of $category_id: ".var_export($arrChildId, true));
             if (count($arrChildId)) {
                 Message::warning(
                     $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'].
@@ -1917,8 +1919,9 @@ class Shopmanager extends ShopLibrary
             }
             // Get Products in this category
             $count = 1e9;
-            $arrProducts = Products::getByShopParams(
-                $count, 0, 0, $category_id, 0, '', false, false, '', null, true);
+            $arrProducts = Products::getByShopParams($count, 0, null,
+                $category_id, null, null, false, false, '', null, true);
+DBG::log("delete_categories($category_id): Products in $category_id: ".var_export($arrProducts, true));
             // Delete the products in the category
             foreach ($arrProducts as $objProduct) {
                 // Check whether there are orders with this Product ID
@@ -1926,12 +1929,14 @@ class Shopmanager extends ShopLibrary
                 $query = "
                     SELECT 1
                       FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items
-                     WHERE productid=".$product_id;
+                     WHERE product_id=$product_id";
                 $objResult = $objDatabase->Execute($query);
-                if ($objResult->RecordCount()) {
+                if (!$objResult || $objResult->RecordCount()) {
                     Message::error(
                         $_ARRAYLANG['TXT_COULD_NOT_DELETE_ALL_PRODUCTS'].
-                        "&nbsp;(".$_ARRAYLANG['TXT_CATEGORY']."&nbsp;".$category_id.")");
+                        "&nbsp;(".
+                        sprintf($_ARRAYLANG['TXT_SHOP_CATEGORY_ID_FORMAT'],
+                            $category_id).")");
                     continue 2;
                 }
             }
@@ -1955,7 +1960,7 @@ class Shopmanager extends ShopLibrary
             $objDatabase->Execute("OPTIMIZE TABLE ".DBPREFIX."module_shop".MODULE_INDEX."_products");
             return Message::ok($_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']);
         }
-        return false;
+        return null;
     }
 
 
@@ -2092,6 +2097,14 @@ class Shopmanager extends ShopLibrary
         $arrAssignedCategories =
             ShopCategories::getAssignedShopCategoriesMenuoptions(
                 $objProduct->category_id());
+        // Date format for Datepicker:
+        // Clear the date if none is set; there's no point in displaying
+        // "01/01/1970" instead
+        $start_date = $end_date = '';
+        $start_time = strtotime($objProduct->date_start());
+        if ($start_time) $start_date = date(ASCMS_DATE_SHORT_FORMAT, $start_time);
+        $end_time = strtotime($objProduct->date_end());
+        if ($end_time) $end_date = date(ASCMS_DATE_SHORT_FORMAT, $end_time);
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->id()),
             'SHOP_PRODUCT_CODE' => $objProduct->code(),
@@ -2113,8 +2126,13 @@ class Shopmanager extends ShopLibrary
             'SHOP_MANUFACTURER_URL' => htmlentities(
                 $objProduct->uri(),
                 ENT_QUOTES, CONTREXX_CHARSET),
-            'SHOP_DATE_START' => $objProduct->date_start(),
-            'SHOP_DATE_END' => $objProduct->date_end(),
+// TODO: Any attributes for the datepicker input?
+            'SHOP_DATE_START' => Html::getDatepicker('date_start',
+                array('defaultDate' => $start_date),
+                ''),
+            'SHOP_DATE_END' => Html::getDatepicker('date_end',
+                array('defaultDate' => $end_date),
+                ''),
             'SHOP_ARTICLE_ACTIVE' => ($objProduct->active() ? HTML_ATTRIBUTE_CHECKED : ''),
             'SHOP_B2B' => ($objProduct->b2b() ? HTML_ATTRIBUTE_CHECKED : ''),
             'SHOP_B2C' => ($objProduct->b2c() ? HTML_ATTRIBUTE_CHECKED : ''),
@@ -2539,11 +2557,19 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
     $group_id_customer = SettingDb::getValue('usergroup_id_customer');
     $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
 }
+        $uri = Html::getRelativeUri_entities();
+// TODO: Strip what URI parameters?
+        Html::stripUriParam($uri, 'active');
+        Html::stripUriParam($uri, 'customer_type');
+        Html::stripUriParam($uri, 'searchterm');
+        Html::stripUriParam($uri, 'listletter');
+        $uri_sorting = $uri;
         $arrFilter = array();
         if (   isset($_REQUEST['active'])
             && $_REQUEST['active'] != '') {
             $customer_active = intval($_REQUEST['active']);
             $arrFilter['active'] = $customer_active;
+            Html::replaceUriParameter($uri_sorting, "active=$customer_active");
         }
         if (   isset($_REQUEST['customer_type'])
             && $_REQUEST['customer_type'] != '') {
@@ -2556,27 +2582,21 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
                 $arrFilter['group'] = array($group_id_reseller);
                 break;
             }
+            Html::replaceUriParameter($uri_sorting, "customer_type=$customer_type");
         } else {
             $arrFilter['group'] = array($group_id_customer, $group_id_reseller);
         }
 //DBG::log("Group filter: ".var_export($arrFilter, true));
         if (!empty($_REQUEST['searchterm'])) {
             $searchterm = trim(strip_tags(contrexx_input2raw($_REQUEST['searchterm'])));
+            Html::replaceUriParameter($uri_sorting, "searchterm=$searchterm");
         }
         if (!empty($_REQUEST['listletter'])) {
             $listletter = $_REQUEST['listletter'];
 // TODO: Like that?
             $searchterm = $listletter.'%';
+            Html::replaceUriParameter($uri_sorting, "listletter=$listletter");
         }
-        $uri = Html::getRelativeUri_entities();
-// TODO: Strip what URI parameters?
-//        Html::stripUriParam($uri, '');
-/*
-($customer_active != '' ? '&amp;active='.$customer_active : '').
-($customer_type != '' ? '&amp;is_reseller='.$customer_type : '').
-($searchterm ? '&amp;searchterm='.$searchterm : '').
-($listletter ? '&amp;listletter='.$listletter : '').
-*/
         $arrSorting = array(
             'id' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_ID'],
             'company' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_COMPANY'],
@@ -2589,7 +2609,8 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'email' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_EMAIL'],
             'active' => $_ARRAYLANG['TXT_SHOP_CUSTOMER_ACTIVE'],
         );
-        $objSorting = new Sorting($uri, $arrSorting, false, 'order_shop_customer');
+        $objSorting = new Sorting($uri_sorting, $arrSorting, false,
+            'order_shop_customer');
         self::$objTemplate->setVariable(array(
             'SHOP_HEADING_CUSTOMER_ID' => $objSorting->getHeaderForField('id'),
             'SHOP_HEADING_CUSTOMER_COMPANY' => $objSorting->getHeaderForField('company'),
@@ -2629,8 +2650,8 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             $objCustomer->next();
         }
 //        if ($count == 0) self::$objTemplate->hideBlock('shop_customers');
-        $paging = Paging::get($uri, $_ARRAYLANG['TXT_CUSTOMERS_ENTRIES'],
-            $count, $limit);
+        $paging = Paging::get($uri_sorting,
+            $_ARRAYLANG['TXT_CUSTOMERS_ENTRIES'], $count, $limit);
         self::$objTemplate->setVariable(array(
             'SHOP_CUSTOMER_PAGING' => $paging,
             'SHOP_CUSTOMER_TERM' => htmlentities($searchterm),
@@ -2915,7 +2936,9 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
     /**
      * Store a customer
      *
-     * Sets okay or error messages according to the outcome.
+     * Sets a Message according to the outcome.
+     * Note that failure to send the e-mail with login data is not
+     * considered an error and will only produce a warning.
      * @return  integer       The Customer ID on success, null otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
@@ -2979,13 +3002,14 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             // Select template for sending login data
             $arrMailTemplate = array(
                 'key' => 'customer_login',
+                'section' => 'shop',
                 'lang_id' => $lang_id,
                 'to' => $email,
                 'substitution' => $objCustomer->getSubstitutionArray(),
             );
             if (!MailTemplate::send($arrMailTemplate)) {
-                Message::error($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
-                return null;
+                Message::warning($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                return $objCustomer->id();
             }
             Message::ok(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],
                 $email));

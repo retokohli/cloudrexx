@@ -51,8 +51,9 @@ class ShopSettings
      * here (yet), so you should not rely on the result of this method.
      * @return  mixed               True on success, false on failure,
      *                              null if no change is detected.
+     * @static
      */
-    function storeSettings()
+    static function storeSettings()
     {
         global $_CORELANG;
         self::$success = true;
@@ -87,8 +88,9 @@ class ShopSettings
      * Store general settings
      *
      * @return  boolean     true on success, false otherwise.
+     * @static
      */
-    function storeGeneral()
+    static function storeGeneral()
     {
         if (empty($_POST['general'])) return;
 
@@ -353,7 +355,13 @@ class ShopSettings
     }
 
 
-    function storeVat()
+    /**
+     * Stores all VAT settings
+     *
+     * Takes all values from the POST array.
+     * @static
+     */
+    static function storeVat()
     {
 //DBG::log("start of storeVat: ".self::$success.", changed: ".self::$changed);
         if (empty($_POST['bvat'])) {
@@ -424,8 +432,9 @@ class ShopSettings
      *
      * Takes the ID of the record to be deleted from $_GET['vatid']
      * and passes it on the {@link Vat::deleteVat()} static method.
+     * @static
      */
-    function deleteVat()
+    static function deleteVat()
     {
         if (empty($_GET['vatid'])) return;
         self::$changed = true;
@@ -441,8 +450,9 @@ class ShopSettings
      * variable and passes them on to {@link addVat()}.
      * Takes the IDs, classes and rates of the records to be updated from the
      * $_POST array variable and passes them on to {@link updateVat()}.
+     * @static
      */
-    function update_vat()
+    static function update_vat()
     {
 //DBG::log("update_vat: ".self::$success.", changed: ".self::$changed);
         if (!empty($_POST['vatratenew'])) {
@@ -474,8 +484,9 @@ class ShopSettings
      * @todo    Add possibility to choose some products to change,
      *          and add a parameter for this list of IDs
      * @global  ADONewConnection
+     * @static
      */
-    function setProductsVat()
+    static function setProductsVat()
     {
         global $objDatabase;
 

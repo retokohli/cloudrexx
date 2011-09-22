@@ -20,6 +20,7 @@ function reloadPage()
   document.formShopProduct.submit();
 }
 
+/* OBSOLETE
 function setDateToday(element)
 {
   with (document.formShopProduct) {
@@ -28,6 +29,7 @@ function setDateToday(element)
     }
   }
 }
+*/
 
 function openWindow(theURL, winName, features)
 {
@@ -639,11 +641,17 @@ function disableButtons(from, dest, add, remove) {
       </tr>
       <tr valign="top" class="row2">
         <td>{TXT_START_DATE}</td>
-        <td><input type="text" name="date_start" size="20" maxlength="20" onClick="setDateToday(date_start)" value="{SHOP_DATE_START}" /></td>
+        <td>
+          {SHOP_DATE_START}
+          <!--input type="text" name="date_start" size="20" maxlength="20" onClick="setDateToday(date_start)" value="{SHOP_DATE_START}" /-->
+        </td>
       </tr>
       <tr valign="top" class="row1">
         <td>{TXT_END_DATE}</td>
-        <td><input type="text" name="date_end" size="20" maxlength="20" onClick="setDateToday(date_end)" value="{SHOP_DATE_END}" /></td>
+        <td>
+          {SHOP_DATE_END}
+          <!--input type="text" name="date_end" size="20" maxlength="20" onClick="setDateToday(date_end)" value="{SHOP_DATE_END}" /-->
+        </td>
       </tr>
     </table>
   </div>
