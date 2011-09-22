@@ -76,8 +76,8 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
                 'metadesc'      =>  $page->getMetadesc(),
                 'metakeys'      =>  $page->getMetakeys(),
                 'metarobots'    =>  $page->getMetarobots(),
-                'start'         =>  $page->getStart()->format('d.m.Y H:i:s'),
-                'end'           =>  $page->getEnd()->format('d.m.Y H:i:s'),
+                'start'         =>  $page->getStart()->format('d.m.Y H:i'),
+                'end'           =>  $page->getEnd()->format('d.m.Y H:i'),
                 'editingStatus' =>  $page->getEditingStatus(),
                 'display'       =>  $page->getDisplay(),
                 'active'        =>  $page->getActive(),
@@ -110,10 +110,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             // will never get called
             ini_set('url_rewriter.tags', $csrf_tags);
 		}
-        elseif ($_POST['id'] == 'new') {
-
-error_reporting(E_ALL);
-ini_set('display_errors', true);
+        elseif ($_POST['page']['id'] == 'new') {
 
     		$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
             $node = new \Cx\Model\ContentManager\Node();
@@ -124,46 +121,57 @@ ini_set('display_errors', true);
             $page = new \Cx\Model\ContentManager\Page();
             $page->setNode($node);
 
-            //$page->setType($_POST['type']);
-// STUBS!
+            $updated_page = $_POST['page'];
+
+            $page->setType($updated_page['type']);
+
             $page->setLang(1);
             $page->setUsername('system');
-            $page->setStart(new DateTime('0000-00-00'));
-            $page->setEnd(new DateTime('0000-00-00'));
-            $page->setTitle($_POST['title']);
+            $page->setStart(new DateTime($updated_page['start']));
+            $page->setEnd(new DateTime($updated_page['end']));
+            $page->setTitle($updated_page['title']);
             // Start/End
-            $page->setMetakeys($_POST['metakeys']);
-            $page->setMetadesc($_POST['metadesc']);
-            $page->setContent(str_replace('[[', '{', $_POST['content']));
+            $page->setMetakeys($updated_page['metakeys']);
+            $page->setMetadesc($updated_page['metadesc']);
+            $page->setContent(str_replace('[[', '{', $updated_page['content']));
             //$page->setModule($_POST['module']);
             //$page->setCmd($_POST['cm_cmd']);
-            $page->setTarget($_POST['target']);
-            $page->setSlug($_POST['slug']);
+            $page->setTarget($updated_page['target']);
+            $page->setSlug($updated_page['slug']);
 
             $this->em->persist($page);
             $this->em->flush();
 
-            DoctrineDebug::dump($page);
             die();
         }
-        elseif (intval($_POST['id'])) {
-
-error_reporting(E_ALL);
-ini_set('display_errors', true);
+        elseif (intval($_POST['page']['id'])) {
+            $updated_page = $_POST['page'];
 
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-            $page = $pageRepo->find($_POST['id']);
 
-            $page->setType($_POST['type']);
-            $page->setTitle($_POST['title']);
-            // Start/End
-            $page->setMetakeys($_POST['metakeys']);
-            $page->setMetadesc($_POST['metadesc']);
-            $page->setContent($_POST['content']);
-            $page->setModule($_POST['module']);
-            $page->setCmd($_POST['cm_cmd']);
-            $page->setTarget($_POST['target']);
-            $page->setSlug($_POST['slug']);
+            $page = $pageRepo->find($updated_page['id']);
+
+            $page->setType($updated_page['type']);
+            $page->setTitle($updated_page['title']);
+            try {
+                $start = new DateTime($updated_page['start']);
+                $end = new DateTime($updated_page['end']);
+            } catch (Exception $e) {
+                $start = new DateTime('0000-00-00 00:00');
+                $end = new DateTime('0000-00-00 00:00');
+            }
+            $page->setStart($start);
+            $page->setEnd($end);
+            $page->setMetakeys($updated_page['metakeys']);
+            $page->setMetadesc($updated_page['metadesc']);
+            $page->setContent($updated_page['content']);
+            $page->setModule($updated_page['module']);
+            $page->setCmd($updated_page['cm_cmd']);
+            $page->setTarget($updated_page['target']);
+            $page->setSlug($updated_page['slug']);
+
+            $page->setSkin($updated_page['skin']);
+            $page->setCustomContent($updated_page['customContent']);
 
             $this->em->persist($page);
             $this->em->flush();
@@ -171,16 +179,14 @@ ini_set('display_errors', true);
             DoctrineDebug::dump($page);
             die();
         }
-        elseif ($_GET['class'] == 'node') {
+        elseif ($_GET['class'] == 'node' && $_GET['action'] == 'delete') {
             $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
             $node = $nodeRepo->find($_GET['id']);
 
-error_reporting(E_ALL);
-ini_set('display_errors', true);
+            $this->em->remove($node);
+            $this->em->flush();
 
-
-            $node->setStatus($_POST['status']);
-            die('done');
+            echo 'Node deleted.';
         }
 	}
 
@@ -236,7 +242,6 @@ ini_set('display_errors', true);
 
 			$output .= $indent."  \"icon\" : \"page\",\n";
 			$output .= $indent."  \"metadata\" : {\n";
-			$output .= $indent."    \"status\" : \"active\",\n";
 			$output .= $indent."    \"emblem\" : [\"redirect\"]\n";
 			$output .= $indent."  }\n";
 			$output .= $indent." }";
