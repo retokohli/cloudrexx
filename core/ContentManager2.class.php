@@ -160,15 +160,16 @@ class ContentManager extends Module {
     }
 
     protected function addHistoryEntries($page, $table, $row, $version, $path='') {
+        global $_ARRAYLANG;
         $table->setCellContents($row, 0, $version);
         $table->setCellContents($row, 1, $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT));
         $table->setCellContents($row, 2, $page->getTitle());
         $table->setCellContents($row, 3, $page->getUsername());
 
         if($row > 1) { //not the current page
-            $table->setCellContents($row, 4, '<a href="javascript:revert('.$page->getId().','.$version.')">revert to this version</a>');
-            $historyLink = "../$path?history=$version";
-            $table->setCellContents($row, 5, '<a href="'.$historyLink.'" target="_blank">preview</a>');
+            $table->setCellContents($row, 4, '<a href="javascript:loadHistoryVersion('.$page->getId().','.$version.')">'.$_ARRAYLANG['TXT_CORE_LOAD'].'</a>');
+            $historyLink = ASCMS_PATH_OFFSET."/$path?history=$version";
+            $table->setCellContents($row, 5, '<a href="'.$historyLink.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_PREVIEW'].'</a>');
         }
     }
 
