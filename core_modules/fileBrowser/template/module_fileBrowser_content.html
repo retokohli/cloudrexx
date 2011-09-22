@@ -17,8 +17,9 @@ function getParam( name )
 }
 
 function setUrl(url, width, height, alt) {
-    if(window.opener.CKEDITOR) {
-        window.opener.CKEDITOR.tools.callFunction(parseInt(getParam('CKEditorFuncNum')), webPath+url);
+    var ckFuncNum = getParam('CKEditorFuncNum');
+    if(ckFuncNum !== "") {
+        window.opener.CKEDITOR.tools.callFunction(parseInt(ckFuncNum), webPath+url);
     }
     else {
 	    window.opener.SetUrl( webPath+url, width, height, alt );
