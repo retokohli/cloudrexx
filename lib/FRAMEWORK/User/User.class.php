@@ -549,6 +549,7 @@ class User extends User_Profile
             }
 
             if (in_array('group_id', array_keys($arrFilter)) && !empty($arrFilter['group_id'])) {
+                $arrGroupConditions = array();
                 if (is_array($arrFilter['group_id'])) {
                     foreach ($arrFilter['group_id'] as $groupId) {
                         $arrGroupConditions[] = 'tblG.`group_id` = '.intval($groupId);
@@ -856,13 +857,12 @@ class User extends User_Profile
             .(count($arrQuery['conditions']) ? ' WHERE ('.implode(') AND (', $arrQuery['conditions']).')' : '')
             .($arrQuery['group_tables'] ? ' GROUP BY tblU.`id`' : '')
             .(count($arrQuery['sort']) ? ' ORDER BY '.implode(', ', $arrQuery['sort']) : '');
-
+        $objUser = false;
         if (empty($limit)) {
             $objUser = $objDatabase->Execute($query);
         } else {
             $objUser = $objDatabase->SelectLimit($query, $limit, $offset);
         };
-
         if ($objUser !== false && $objUser->RecordCount() > 0) {
             while (!$objUser->EOF) {
                 foreach ($objUser->fields as $attributeId => $value) {
@@ -1008,6 +1008,7 @@ class User extends User_Profile
             (count($arrCustomJoins) ? ' '.implode(' ',$arrCustomJoins) : '').
             (count($arrCustomSelection) ? ' WHERE '.implode(' AND ', $arrCustomSelection) : '').
             (count($arrSortExpressions) ? ' ORDER BY '.implode(', ', $arrSortExpressions) : '');
+        $objUserId = false;
         if (empty($limit)) {
             $objUserId = $objDatabase->Execute($query);
             $this->filtered_search_count = $objUserId->RecordCount();
@@ -1016,7 +1017,6 @@ class User extends User_Profile
             $objUserCount = $objDatabase->Execute('SELECT FOUND_ROWS()');
             $this->filtered_search_count = $objUserCount->fields['FOUND_ROWS()'];
         }
-
         if ($objUserId !== false) {
             while (!$objUserId->EOF) {
                 $arrUserIds[$objUserId->fields['id']] = '';
@@ -1255,7 +1255,6 @@ class User extends User_Profile
         if (!$this->validateEmail()) {
             return false;
         }
-
         if ($this->id) {
             if ($objDatabase->Execute("
                 UPDATE `".DBPREFIX."access_users`
@@ -1409,7 +1408,7 @@ class User extends User_Profile
     {
         global $_CORELANG;
 
-        if (!self::isValidUsername($this->username)) {
+        if (self::isValidUsername($this->username)) {
             if (self::isUniqueUsername($this->username, $this->id)) {
                 return true;
             } else {
