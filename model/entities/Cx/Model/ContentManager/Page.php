@@ -559,7 +559,7 @@ class Page extends \Cx\Model\Base\EntityBase
      *
      * @param Cx\Model\ContentManager\Skin $skin
      */
-    public function setSkin(\Cx\Model\ContentManager\Skin $skin)
+    public function setSkin($skin)
     {
         $this->skin = $skin;
     }
