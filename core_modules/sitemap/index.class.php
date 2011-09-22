@@ -56,6 +56,7 @@ class sitemap
 
         if(isset($this->_objTpl->_blocks['sitemap'])) {
             $sm = new SitemapPageTree(Env::em(), 0, null, FRONTEND_LANG_ID);
+            $sm->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $sm->setTemplate($this->_objTpl);
             $sm->render();
         }
