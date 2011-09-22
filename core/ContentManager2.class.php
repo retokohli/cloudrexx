@@ -13,6 +13,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
 require ASCMS_CORE_PATH.'/BackendTable.class.php';
 require ASCMS_CORE_PATH.'/Module.class.php';
+require ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
 
 class ContentManagerException extends ModuleException {}
 
@@ -104,6 +105,7 @@ class ContentManager extends Module {
         if(!isset($_GET['pageId']))
             throw new ContentManagerException('please provide a pageId');
 
+        //(I) get the right page
         $id = $_GET['pageId'];
         $page = $this->pageRepository->findOneById($id);
 
@@ -111,30 +113,58 @@ class ContentManager extends Module {
             throw new ContentManagerException("could not find page with id $id");
         }
 
+        //(II) build the table with headers
         $table = new BackendTable(array('width' => '100%'));
         $table->setAutoGrow(true);
 
-        $table->setHeaderContents(0,0,'Version');
-        $table->setHeaderContents(0,1,'Date');
-        $table->setHeaderContents(0,2,'Title');
-        $table->setHeaderContents(0,3,'Author');
+        $table->setHeaderContents(0,0,'Date');
+        $table->setHeaderContents(0,1,'Title');
+        $table->setHeaderContents(0,2,'Author');
         //make sure those are th's too
+        $table->setHeaderContents(0,3,'');
         $table->setHeaderContents(0,4,'');
-        $table->setHeaderContents(0,5,'');
 
+        //(III) collect page informations - path, virtual language directory
         $path = $this->pageRepository->getPath($page, true);
-        
+
+        $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
+        $langDir = $le->getShortNameOfLanguage($page->getLang());
+
+        //(IV) add current entry to table
+        $this->addHistoryEntries($page, $table, 1);
+      
+        //(V) add the history entries
         $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $logs = $logRepo->getLogEntries($page);
       
-        $this->addHistoryEntries($page, $table, 1, 'current');
-
         for($i = 0 ; $i < count($logs); $i++) {
-            $logRepo->revert($page, $i+1);
-            $this->addHistoryEntries($page, $table, $i+2, $i+1, $path);
+            $version = $i + 1;
+            $row = $i + 2;
+            $logRepo->revert($page, $version);
+            $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path);
         }
        
+        //(VI) render
         die($table->toHtml());
+    }
+
+    protected function addHistoryEntries($page, $table, $row, $version='', $path='') {
+        global $_ARRAYLANG;
+
+        $dateString = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT);
+
+        if($row > 1) { //not the current page
+            $table->setCellContents($row, 3, '<a href="javascript:loadHistoryVersion('.$page->getId().','.$version.')">'.$_ARRAYLANG['TXT_CORE_LOAD'].'</a>');
+            $historyLink = ASCMS_PATH_OFFSET."/$path?history=$version";
+            $table->setCellContents($row, 4, '<a href="'.$historyLink.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_PREVIEW'].'</a>');
+        }
+        else { //current page state
+            $dateString .= ' ('. $_ARRAYLANG['TXT_CORE_CURRENT'] . ')';
+        }
+
+        $table->setCellContents($row, 0, $dateString);
+        $table->setCellContents($row, 1, $page->getTitle());
+        $table->setCellContents($row, 2, $page->getUsername());
     }
 
     protected function actAjaxGetCustomContentTemplates() {
@@ -157,20 +187,6 @@ class ContentManager extends Module {
         }
         
         die(json_encode($matchingTemplates));
-    }
-
-    protected function addHistoryEntries($page, $table, $row, $version, $path='') {
-        global $_ARRAYLANG;
-        $table->setCellContents($row, 0, $version);
-        $table->setCellContents($row, 1, $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT));
-        $table->setCellContents($row, 2, $page->getTitle());
-        $table->setCellContents($row, 3, $page->getUsername());
-
-        if($row > 1) { //not the current page
-            $table->setCellContents($row, 4, '<a href="javascript:loadHistoryVersion('.$page->getId().','.$version.')">'.$_ARRAYLANG['TXT_CORE_LOAD'].'</a>');
-            $historyLink = ASCMS_PATH_OFFSET."/$path?history=$version";
-            $table->setCellContents($row, 5, '<a href="'.$historyLink.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_PREVIEW'].'</a>');
-        }
     }
 
     protected function actAjaxRevert() {       
