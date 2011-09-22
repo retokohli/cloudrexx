@@ -1057,9 +1057,8 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
             'CORE_MAILTEMPLATE_HTML' => $objSorting->getHeaderForField('html'),
             'CORE_MAILTEMPLATE_PROTECTED' => $objSorting->getHeaderForField('protected'),
             'PAGING' => Paging::get(
-                $count, null, $uri_overview,
-                $_CORELANG['TXT_CORE_MAILTEMPLATE_PAGING'],
-                true, $limit),
+                $uri_overview, $_CORELANG['TXT_CORE_MAILTEMPLATE_PAGING'],
+                $count, $limit, true),
             'URI_BASE' => $uri,
             'CORE_MAILTEMPLATE_COLSPAN' => 5 + count($arrLanguageName),
         ));
