@@ -48,8 +48,44 @@ class Customers
     ) {
         if (is_null(self::$objCustomer))
             self::$objCustomer = new Customer();
+//DBG::log("Customers::get(): Filter ".var_export($filter, true));
+//DBG::log("Customers::get(): Search ".var_export($search, true));
+//DBG::activate(DBG_ADODB);
+        if ($search != '') {
+            // Regular keyword search
+            if (strpos($search, '%') === false) {
+                return self::$objCustomer->getUsers(
+                    $filter, $search, $arrSort, null, $limit, $offset);
+//                $search = preg_quote($search, '/');
+            }
+            // "Listletter" search
+            $search = '^'.$search{0};
+            $filter = array('REGEXP' => $search);
+            $arrCustomerId = array();
+            foreach (array(
+                'firstname', 'lastname', 'company',
+// Unused, analogous to the Orders view
+//                'username', 'email', 'address', 'city', 'zip',
+//                'phone_office', 'phone_private', 'phone_mobile', 'phone_fax'
+                ) as $field) {
+                $objCustomer = self::get(array($field => $filter), null, $arrSort,
+                    $limit, $offset);
+                while ($objCustomer && !$objCustomer->EOF) {
+                    $id = $objCustomer->id();
+                    $arrCustomerId[$id] = $id;
+                    $objCustomer->next();
+//DBG::log("Customers::get(): Field $field, got IDs ".var_export($arrCustomerId, true));
+                }
+            }
+//DBG::log("Customers::get(): Total IDs ".var_export($arrCustomerId, true));
+            $filter = array('id' => array(0));
+            if ($arrCustomerId) {
+                $filter = array('id' => array_flip($arrCustomerId));
+            }
+        }
+//DBG::log("Customers::get(): Final Filter ".var_export($filter, true));
         return self::$objCustomer->getUsers(
-            $filter, $search, $arrSort, null, $limit, $offset);
+            $filter, null, $arrSort, null, $limit, $offset);
     }
 
 

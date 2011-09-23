@@ -131,7 +131,7 @@ class Products
     ) {
         global $objDatabase, $_CONFIG;
 
-DBG::activate(DBG_ADODB);
+//DBG::activate(DBG_ADODB);
 
         // Do not show any Products if no selection is made at all
         if (   empty($product_id)

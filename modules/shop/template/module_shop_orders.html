@@ -25,8 +25,8 @@ function shopOrdersDoAction(strForm, strCheckbox, objSelect, strAct)
 
 function sendForm(letter)
 {
-  document.forms.search_orders.searchterm.value = '';
   document.forms.search_orders.listletter.value = letter;
+  document.forms.search_orders.searchterm.value = "";
   document.forms.search_orders.submit();
 }
 

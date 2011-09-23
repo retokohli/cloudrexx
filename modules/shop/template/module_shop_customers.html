@@ -10,6 +10,7 @@ function deleteCustomer(customer_id)
 function sendForm(letter)
 {
     document.shop_filter.listletter.value = letter;
+    document.shop_filter.searchterm.value = "";
     document.shop_filter.submit();
 }
 
@@ -65,35 +66,7 @@ function customersDoAction(strForm, strCheckbox, objSelect)
     </tr>
     <tr class="row2">
       <td>
-        [ <a href="javascript:sendForm('A')" title="A">A</a> ]
-        [ <a href="javascript:sendForm('B')" title="B">B</a> ]
-        [ <a href="javascript:sendForm('C')" title="C">C</a> ]
-        [ <a href="javascript:sendForm('D')" title="D">D</a> ]
-        [ <a href="javascript:sendForm('E')" title="E">E</a> ]
-        [ <a href="javascript:sendForm('F')" title="F">F</a> ]
-        [ <a href="javascript:sendForm('G')" title="G">G</a> ]
-        [ <a href="javascript:sendForm('H')" title="H">H</a> ]
-        [ <a href="javascript:sendForm('I')" title="I">I</a> ]
-        [ <a href="javascript:sendForm('J')" title="J">J</a> ]
-        [ <a href="javascript:sendForm('K')" title="K">K</a> ]
-        [ <a href="javascript:sendForm('L')" title="L">L</a> ]
-        [ <a href="javascript:sendForm('M')" title="M">M</a> ]
-        [ <a href="javascript:sendForm('N')" title="N">N</a> ]
-        [ <a href="javascript:sendForm('O')" title="O">O</a> ]
-        [ <a href="javascript:sendForm('P')" title="P">P</a> ]
-        [ <a href="javascript:sendForm('Q')" title="Q">Q</a> ]
-        [ <a href="javascript:sendForm('R')" title="R">R</a> ]
-        [ <a href="javascript:sendForm('S')" title="S">S</a> ]
-        [ <a href="javascript:sendForm('T')" title="T">T</a> ]
-        [ <a href="javascript:sendForm('U')" title="U">U</a> ]
-        [ <a href="javascript:sendForm('V')" title="V">V</a> ]
-        [ <a href="javascript:sendForm('W')" title="W">W</a> ]
-        [ <a href="javascript:sendForm('X')" title="X">X</a> ]
-        [ <a href="javascript:sendForm('Y')" title="Y">Y</a> ]
-        [ <a href="javascript:sendForm('Z')" title="Z">Z</a> ]
-        [ <a href="javascript:sendForm('')" title="Alle">Alle</a> ]
-        <input type="hidden" name="listletter" value="{SHOP_CUSTOMER_LISTLETTER}" />
-        <!--{SHOP_LISTLETTER_MENUOPTIONS}-->
+        {SHOP_LISTLETTER_LINKS}
       </td>
     </tr>
   </table>
@@ -151,9 +124,9 @@ function customersDoAction(strForm, strCheckbox, objSelect)
 </form>
 <!-- END shop_customers -->
 <br />
+<p>{SHOP_CUSTOMER_PAGING}&nbsp;</p>
 <br />
 <form name="formNewCustomer" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=neweditcustomer">
   <input type="submit" name="addNewCustomer" value="{TXT_ADD_NEW_CUSTOMER}" />
 </form>
-<p>{SHOP_CUSTOMER_PAGING}&nbsp;</p>
 <!-- END shop_customers.html -->
