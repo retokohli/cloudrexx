@@ -133,11 +133,17 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             // Start/End
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
+            $page->setMetarobots((bool) $updated_page['metarobots']);
             $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
-            //$page->setModule($_POST['module']);
-            //$page->setCmd($_POST['cm_cmd']);
+            $page->setModule($_POST['module']);
+            $page->setCmd($_POST['cm_cmd']);
             $page->setTarget($updated_page['target']);
             $page->setSlug($updated_page['slug']);
+            $page->setCaching((bool) $updated_page['caching']);
+
+            $page->setSkin($updated_page['skin']);
+            $page->setCustomContent($updated_page['customContent']);
+            $page->setCssName($updated_page['cssName']);
 
             $this->em->persist($page);
             $this->em->flush();
@@ -164,14 +170,17 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $page->setEnd($end);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
+            $page->setMetarobots((bool) $updated_page['metarobots']);
             $page->setContent($updated_page['content']);
             $page->setModule($updated_page['module']);
             $page->setCmd($updated_page['cm_cmd']);
             $page->setTarget($updated_page['target']);
             $page->setSlug($updated_page['slug']);
+            $page->setCaching((bool) $updated_page['caching']);
 
             $page->setSkin($updated_page['skin']);
             $page->setCustomContent($updated_page['customContent']);
+            $page->setCssName($updated_page['cssName']);
 
             $this->em->persist($page);
             $this->em->flush();
