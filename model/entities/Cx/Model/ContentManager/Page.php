@@ -23,6 +23,11 @@ class Page extends \Cx\Model\Base\EntityBase
     private $title;
 
     /**
+     * @var string $linktitle
+     */
+    private $linktitle;
+
+    /**
      * @var text $content
      */
     private $content;
@@ -194,8 +199,19 @@ class Page extends \Cx\Model\Base\EntityBase
     public function setTitle($title)
     {
         $this->title = $title;
+    }
+
+    /**
+     * Set linktitle
+     *
+     * @param string $title
+     */
+    public function setLinktitle($title)
+    {
+        $this->linktitle = $title;
         $this->refreshSlug();
     }
+
 
     /**
      * Sets a correct slug based on the current title.
@@ -213,7 +229,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return string
      */
     protected function getSlugProposal() {
-        $slug = $this->getTitle();
+        $slug = $this->getLinktitle();
         $slug = preg_replace('/\s/', '-', $slug);
         $slug = preg_replace('/[^a-zA-Z0-9-_]/', '', $slug);
         return $slug;
@@ -231,6 +247,16 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Get linktitle
+     *
+     * @return string $title
+     */
+    public function getLinktitle()
+    {
+        return $this->linktitle;
     }
 
     /**
