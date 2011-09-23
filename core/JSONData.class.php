@@ -66,8 +66,10 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 		    $page = $pageRepo->find($_GET['id']);
 
-            $page = Array(
+            $page_array = Array(
                 'id'            =>  $page->getId(),
+                'lang'          =>  $page->getLang(),
+                'node'          =>  $page->getNode()->getId(),
                 'title'         =>  $page->getTitle(),
                 'content'       =>  str_replace(array('{', '}'), array('[[', ']]'), $page->getContent()),
                 'customContent' =>  $page->getCustomContent(),
@@ -76,8 +78,6 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
                 'metadesc'      =>  $page->getMetadesc(),
                 'metakeys'      =>  $page->getMetakeys(),
                 'metarobots'    =>  $page->getMetarobots(),
-                'start'         =>  $page->getStart()->format('d.m.Y H:i'),
-                'end'           =>  $page->getEnd()->format('d.m.Y H:i'),
                 'editingStatus' =>  $page->getEditingStatus(),
                 'display'       =>  $page->getDisplay(),
                 'active'        =>  $page->getActive(),
@@ -94,7 +94,13 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
                 'protection'    =>  $page->getProtection(),
                 'slug'          =>  $page->getSlug()
             );
-                    
+
+            $n = new DateTime('0000-00-00');
+            if ($page->getStart())  $page_array['start'] = $page->getStart()->format('d.m.Y H:i');
+            else                    $page_array['start'] = $n->format('d.m.Y H:i');
+            if ($page->getEnd())    $page_array['end'] = $page->getEnd()->format('d.m.Y H:i');
+            else                    $page_array['end'] = $n->format('d.m.Y H:i');
+
             // browsers will pass rendering of application/* MIMEs to other applications, usually.
             // Skip the following line for debugging, if so desired
             header('Content-Type: application/json');
@@ -104,19 +110,23 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $csrf_tags = ini_get('url_rewriter.tags');
             ini_set('url_rewriter.tags', '');
 
-            die(json_encode($page));
+            die(json_encode($page_array));
 
             // Just a reminder to switch csrf prot back on after being done outputting json. This
             // will never get called
             ini_set('url_rewriter.tags', $csrf_tags);
 		}
         elseif ($_POST['page']['id'] == 'new') {
-
     		$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-            $node = new \Cx\Model\ContentManager\Node();
-            $node->setParent($nodeRepo->getRoot());
+            if ($_POST['page']['node']) {
+                $node = $nodeRepo->find($_POST['page']['node']);                
+            }
+            if (!$node) {
+                $node = new \Cx\Model\ContentManager\Node();
+                $node->setParent($nodeRepo->getRoot());
 
-            $this->em->persist($node);
+                $this->em->persist($node);
+            }
 
             $page = new \Cx\Model\ContentManager\Page();
             $page->setNode($node);
@@ -125,15 +135,16 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 
             $page->setType($updated_page['type']);
 
-            $page->setLang(1);
+            $page->setLang(FWLanguage::getLanguageIdByCode($updated_page['lang']));
             $page->setUsername('system');
             $page->setStart(new DateTime($updated_page['start']));
             $page->setEnd(new DateTime($updated_page['end']));
             $page->setTitle($updated_page['title']);
+            $page->setLinktitle($updated_page['title']);
             $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
-            $page->setMetarobots((bool) $updated_page['metarobots']);
+            $page->setMetarobots($updated_page['metarobots']);
 
             $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
             $page->setModule($_POST['module']);
@@ -153,7 +164,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $this->em->persist($page);
             $this->em->flush();
 
-            die();
+            die('new');
         }
         elseif (intval($_POST['page']['id'])) {
             $updated_page = $_POST['page'];
@@ -176,7 +187,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
-            $page->setMetarobots((bool) $updated_page['metarobots']);
+            $page->setMetarobots($updated_page['metarobots']);
             $page->setContent($updated_page['content']);
             $page->setModule($updated_page['module']);
             $page->setCmd($updated_page['cm_cmd']);
@@ -218,20 +229,23 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 	}
 
 	private function tree_to_json($tree, $level=0) {
-    // Hack -- getChildren apparently returns children reversed, so fix that.
-    //$tree = array_reverse($tree);
-
     // This thing can get quite complicated, json's quaint syntax does that to you. Should
     // produce syntactically correct and correctly indented json, though.
     // If unsure about the json ouput, feed it to jQ's parseJSON or jsonlint.com
 		$indent = str_repeat("  ", $level);
 		$output = "";
-
 		$output .= "[\n";
 
-		$firstrun = true;
+        // Sort the tree to its nestedset order.
+        // TODO: avoid recursion, load the whole tree in one query, skip re-sorting.
+        $processed_tree = array();
+        foreach($tree->getChildren() as $node) {
+            $processed_tree[$node->getLft()] = $node;
+        }
+        ksort($processed_tree);
 
-		foreach($tree->getChildren() as $node) {
+		$firstrun = true;
+		foreach($processed_tree as $moo => $node) {
 			if ($firstrun) {
 				$firstrun = false;
 			}
