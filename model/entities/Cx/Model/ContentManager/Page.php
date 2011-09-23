@@ -468,6 +468,40 @@ class Page extends \Cx\Model\Base\EntityBase
      *
      * @return boolean $active
      */
+    public function getStatus()
+    {
+        if ($this->display) return "active";
+        if ($this->active) return "hidden";
+        return "disabled";
+    }
+
+    /**
+     * Set status
+     *
+     * @param boolean $status
+     */
+    public function setStatus($status)
+    {
+        if ($status == "active") {
+            $this->active = true;
+            $this->display = true;
+        }
+        elseif ($status == "hidden") {
+            $this->active = true;
+            $this->display = false;
+        }
+        else {
+            $this->active = false;
+            $this->display = false;
+        }
+        
+    }
+
+    /**
+     * Get status
+     *
+     * @return boolean $status
+     */
     public function getActive()
     {
         return $this->active;

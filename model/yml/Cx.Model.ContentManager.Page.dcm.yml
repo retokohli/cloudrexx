@@ -83,11 +83,11 @@ Cx\Model\ContentManager\Page:
     #publishing
     start:
       nullable: true
-      type: date
+      type: datetime
 
     end:
       nullable: true
-      type: date
+      type: datetime
     
     editingStatus:
       type: string
