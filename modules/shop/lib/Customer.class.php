@@ -363,14 +363,14 @@ class Customer extends User
      * @return  boolean                 True on success, false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function delete()
+    function delete($deleteOwnAccount=false)
     {
         global $_ARRAYLANG;
 
         if (!Orders::deleteByCustomerId($this->id)) {
             return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING_ORDERS']);
         }
-        return parent::delete();
+        return parent::delete($deleteOwnAccount);
     }
 
 

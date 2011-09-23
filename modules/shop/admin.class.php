@@ -125,7 +125,7 @@ class Shopmanager extends ShopLibrary
         global $objTemplate, $_ARRAYLANG;
 
 //DBG::activate(DBG_DB_FIREPHP);
-DBG::activate(DBG_ERROR_FIREPHP);
+//DBG::activate(DBG_ERROR_FIREPHP);
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
@@ -1905,12 +1905,12 @@ DBG::activate(DBG_ERROR_FIREPHP);
         // When multiple IDs are posted, the list must be reversed,
         // so subcategories are removed first
         $arrCategoryId = array_reverse($arrCategoryId);
-DBG::log("delete_categories($category_id): Got ".var_export($arrCategoryId, true));
+//DBG::log("delete_categories($category_id): Got ".var_export($arrCategoryId, true));
         foreach ($arrCategoryId as $category_id) {
             // Check whether this category has subcategories
             $arrChildId =
                 ShopCategories::getChildCategoryIdArray($category_id, false);
-DBG::log("delete_categories($category_id): Children of $category_id: ".var_export($arrChildId, true));
+//DBG::log("delete_categories($category_id): Children of $category_id: ".var_export($arrChildId, true));
             if (count($arrChildId)) {
                 Message::warning(
                     $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'].
@@ -1921,7 +1921,7 @@ DBG::log("delete_categories($category_id): Children of $category_id: ".var_expor
             $count = 1e9;
             $arrProducts = Products::getByShopParams($count, 0, null,
                 $category_id, null, null, false, false, '', null, true);
-DBG::log("delete_categories($category_id): Products in $category_id: ".var_export($arrProducts, true));
+//DBG::log("delete_categories($category_id): Products in $category_id: ".var_export($arrProducts, true));
             // Delete the products in the category
             foreach ($arrProducts as $objProduct) {
                 // Check whether there are orders with this Product ID
@@ -2545,10 +2545,10 @@ DBG::log("delete_categories($category_id): Products in $category_id: ".var_expor
         }
         $i = 0;
         self::$objTemplate->loadTemplateFile("module_shop_customers.html");
-        $customer_active = '';
-        $customer_type = '';
-        $searchterm = '';
-        $listletter = '';
+        $customer_active = null;
+        $customer_type = null;
+        $searchterm = null;
+        $listletter = null;
         $group_id_customer = SettingDb::getValue('usergroup_id_customer');
         $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
 // TODO: Obsolete ASAP
@@ -2588,13 +2588,11 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
         }
 //DBG::log("Group filter: ".var_export($arrFilter, true));
         if (!empty($_REQUEST['searchterm'])) {
-            $searchterm = trim(strip_tags(contrexx_input2raw($_REQUEST['searchterm'])));
+            $searchterm = trim(strip_tags(contrexx_input2raw(
+                $_REQUEST['searchterm'])));
             Html::replaceUriParameter($uri_sorting, "searchterm=$searchterm");
-        }
-        if (!empty($_REQUEST['listletter'])) {
-            $listletter = $_REQUEST['listletter'];
-// TODO: Like that?
-            $searchterm = $listletter.'%';
+        } elseif (!empty($_REQUEST['listletter'])) {
+            $listletter = contrexx_input2raw($_REQUEST['listletter']);
             Html::replaceUriParameter($uri_sorting, "listletter=$listletter");
         }
         $arrSorting = array(
@@ -2623,13 +2621,13 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'SHOP_HEADING_CUSTOMER_EMAIL' => $objSorting->getHeaderForField('email'),
             'SHOP_HEADING_CUSTOMER_ACTIVE' => $objSorting->getHeaderForField('active'),
         ));
-        $count = Customers::getCount($arrFilter['group']);
         $limit = SettingDb::getValue('numof_customers_per_page_backend');
 //DBG::log("view_customers(): limit $limit, count $count");
         $objCustomer = Customers::get(
-            $arrFilter, $searchterm,
+            $arrFilter, ($listletter ? $listletter.'%' : $searchterm),
             array($objSorting->getOrderField() => $objSorting->getOrderDirection()),
             $limit, Paging::getPosition());
+        $count = ($objCustomer ? $objCustomer->getFilteredSearchUserCount() : 0);
         while ($objCustomer && !$objCustomer->EOF) {
 //DBG::log("Customer: ".var_export($objCustomer, true));
             self::$objTemplate->setVariable(array(
@@ -2651,11 +2649,11 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
         }
 //        if ($count == 0) self::$objTemplate->hideBlock('shop_customers');
         $paging = Paging::get($uri_sorting,
-            $_ARRAYLANG['TXT_CUSTOMERS_ENTRIES'], $count, $limit);
+            $_ARRAYLANG['TXT_CUSTOMERS_ENTRIES'], $count, $limit, true);
         self::$objTemplate->setVariable(array(
             'SHOP_CUSTOMER_PAGING' => $paging,
             'SHOP_CUSTOMER_TERM' => htmlentities($searchterm),
-            'SHOP_CUSTOMER_LISTLETTER' => $listletter,
+            'SHOP_LISTLETTER_LINKS' => Orders::getListletterLinks($listletter),
             'SHOP_CUSTOMER_TYPE_MENUOPTIONS' =>
                 Customers::getTypeMenuoptions($customer_type, true),
             'SHOP_CUSTOMER_STATUS_MENUOPTIONS' =>
