@@ -130,20 +130,25 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $page->setStart(new DateTime($updated_page['start']));
             $page->setEnd(new DateTime($updated_page['end']));
             $page->setTitle($updated_page['title']);
-            // Start/End
+            $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
             $page->setMetarobots((bool) $updated_page['metarobots']);
+
             $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
             $page->setModule($_POST['module']);
             $page->setCmd($_POST['cm_cmd']);
             $page->setTarget($updated_page['target']);
-            $page->setSlug($updated_page['slug']);
+
             $page->setCaching((bool) $updated_page['caching']);
 
             $page->setSkin($updated_page['skin']);
             $page->setCustomContent($updated_page['customContent']);
             $page->setCssName($updated_page['cssName']);
+
+            if (strlen($updated_page['slug']) > 0) {
+                $page->setSlug($updated_page['slug']);
+            }
 
             $this->em->persist($page);
             $this->em->flush();
@@ -168,6 +173,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             }
             $page->setStart($start);
             $page->setEnd($end);
+            $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
             $page->setMetarobots((bool) $updated_page['metarobots']);
@@ -212,6 +218,9 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 	}
 
 	private function tree_to_json($tree, $level=0) {
+    // Hack -- getChildren apparently returns children reversed, so fix that.
+    //$tree = array_reverse($tree);
+
     // This thing can get quite complicated, json's quaint syntax does that to you. Should
     // produce syntactically correct and correctly indented json, though.
     // If unsure about the json ouput, feed it to jQ's parseJSON or jsonlint.com
