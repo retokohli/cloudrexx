@@ -27,6 +27,12 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
     }
 
     
+    public function getUniqueIdentifier()
+    {
+        $this->_load();
+        return parent::getUniqueIdentifier();
+    }
+
     public function getId()
     {
         $this->_load();
@@ -81,10 +87,10 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
         return parent::addParsedChild($child);
     }
 
-    public function getChildren()
+    public function getChildren($lang = NULL)
     {
         $this->_load();
-        return parent::getChildren();
+        return parent::getChildren($lang);
     }
 
     public function addPages(\Cx\Model\ContentManager\Page $pages)
@@ -103,6 +109,12 @@ class CxModelContentManagerNodeProxy extends \Cx\Model\ContentManager\Node imple
     {
         $this->_load();
         return parent::getPagesByLang();
+    }
+
+    public function getPage($lang)
+    {
+        $this->_load();
+        return parent::getPage($lang);
     }
 
     public function setParent(\Cx\Model\ContentManager\Node $parent)
