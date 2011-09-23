@@ -29,6 +29,12 @@ Cx\Model\ContentManager\Page:
       gedmo:
         - versioned
 
+    linktitle:
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
     #the title used for navigating
     slug:
       type: string
