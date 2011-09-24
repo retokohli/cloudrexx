@@ -1365,11 +1365,11 @@ $_ARRAYLANG['TXT_CORE_SITE_HISTORY'] = "Verlauf";
 
 $_ARRAYLANG['TXT_CORE_TYPE_EXPLANATION'] = "Bitte wählen Sie einen der untenstehenden Seitentypen aus, um die Funktionalität dieser Seite festzulegen.";
 $_ARRAYLANG['TXT_CORE_TYPE_CONTENT'] = "Inhalt";
-$_ARRAYLANG['TXT_CORE_TYPE_CONTENT_DESCRIPTION'] = "Eine normale Inhaltsseite.";
+$_ARRAYLANG['TXT_CORE_TYPE_CONTENT_DESCRIPTION'] = "Eine normale Inhaltsseite";
 $_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION'] = "Weiterleitung";
-$_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION_DESCRIPTION'] = "Wenn der Besucher diese Seite ansurft, wird er auf eine andere Seite weitergeleitet.";
+$_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION_DESCRIPTION'] = "Eine Weiterleitung auf eine andere Inhaltsseite oder eine externe Website";
 $_ARRAYLANG['TXT_CORE_TYPE_APP'] = "Anwendung";
-$_ARRAYLANG['TXT_CORE_TYPE_APP_DESCRIPTION'] = "Um Funktionalität einer Anwendung erweiterte Inhaltsseite.";
+$_ARRAYLANG['TXT_CORE_TYPE_APP_DESCRIPTION'] = "Ein Bereich einer Anwendung";
 
 $_ARRAYLANG['TXT_CORE_ACTIVE_FROM'] = "von";
 $_ARRAYLANG['TXT_CORE_ACTIVE_TO'] = "bis";
