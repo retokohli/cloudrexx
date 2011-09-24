@@ -1284,6 +1284,7 @@ class galleryManager extends GalleryLibrary
             return;
         }
 
+        JS::activate('shadowbox');
         $objFWUser = FWUser::getFWUserObject();
 
         $this->_objTpl->loadTemplateFile('module_gallery_category_details.html', true, true);

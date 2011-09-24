@@ -843,7 +843,6 @@ die("Failed to update the Cart!");
     {
         global $_ARRAYLANG;
 
-        JS::activate('shadowbox');
         if (!self::$use_js_cart) self::registerJavascriptCode();
 
         $flagSpecialoffer = intval(SettingDb::getValue('show_products_default'));
@@ -1626,13 +1625,6 @@ function viewPicture(picture,features)
 {
   window.open(picture,'',features);
 }
-
-Shadowbox.loadSkin('classic','lib/javascript/shadowbox/src/skin/');
-Shadowbox.loadLanguage('en', 'lib/javascript/shadowbox/src/lang');
-Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], 'lib/javascript/shadowbox/src/player');
-window.onload = function() {
-  Shadowbox.init();
-};
 
 function toggleOptions(productId)
 {
