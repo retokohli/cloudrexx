@@ -9,7 +9,7 @@ RewriteEngine On
 RewriteBase   /cm_2_3
 
 # Folders that may be accessed by page requests are NO ALIASES by design
-RewriteRule ^(\w\w\/)?(favicon.ico|cadmin|core_modules|modules|images|media|themes|tmp|lib\/javascript)(\/|$)(.*) $2$3$4 [L,QSA]
+RewriteRule ^(\w\w\/)?(favicon.ico|cadmin|editor|core_modules|modules|images|media|themes|tmp|lib\/javascript)(\/|$)(.*) $2$3$4 [L,QSA]
 
 # Exclude "stuff" -- add more if desired
 #RewriteCond   %{REQUEST_FILENAME}  !^(cadmin|images|media|themes|tmp|lib\/javascript)(\/|$)
