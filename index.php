@@ -1159,6 +1159,9 @@ $page_content = str_replace('{PRINT_URL}', $objInit->getPrintUri(), $page_conten
 $page_content = str_replace('{PDF_URL}', $objInit->getPDFUri(), $page_content);
 $page_content = str_replace('{TITLE}', $page_title, $page_content);
 
+// ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
+FWUser::parseLoggedInOutBlocks($page_content);
+
 //replace the {{NODE_<ID>_<LANG>}}- placeholders
 $lg = new LinkGenerator($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/');
 $lg->scan($page_content);
@@ -1763,23 +1766,8 @@ $objTemplate->setVariable(array(
 // Set Social Network template variables
 $objTemplate->setVariable('SN_FACEBOOK_LIKE', 'aaaa');
 
-if ($objTemplate->blockExists('access_logged_in')) {
-    $objFWUser = FWUser::getFWUserObject();
-    if ($objFWUser->objUser->login()) {
-        $objFWUser->setLoggedInInfos();
-        $objTemplate->parse('access_logged_in');
-    } else {
-        $objTemplate->hideBlock('access_logged_in');
-    }
-}
-if ($objTemplate->blockExists('access_logged_out')) {
-    $objFWUser = FWUser::getFWUserObject();
-    if ($objFWUser->objUser->login()) {
-        $objTemplate->hideBlock('access_logged_out');
-    } else {
-        $objTemplate->touchBlock('access_logged_out');
-    }
-}
+// ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
+FWUser::parseLoggedInOutBlocks($objTemplate);
 
 // currently online users
 $objAccessBlocks = false;
