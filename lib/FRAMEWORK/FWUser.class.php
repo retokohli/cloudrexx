@@ -33,6 +33,10 @@ require_once ASCMS_FRAMEWORK_PATH.'/User/User.class.php';
  * @ignore
  */
 require_once ASCMS_FRAMEWORK_PATH.'/User/UserGroup.class.php';
+/**
+ * @ignore
+ */
+require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 
 /**
  * Framework user
@@ -104,8 +108,6 @@ class FWUser extends User_Setting
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
-// TODO: Unused
-//        $validationCode = isset($_POST['secid2']) && $_POST['secid2'] != '' ? contrexx_stripslashes($_POST['secid2']) : false;
 
         if (isset($username) && isset($password)) {
             if (empty($sessionObj)) $sessionObj = new cmsSession();
@@ -201,36 +203,103 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
     }
 
 
-    /**
-     * Checks the code from the security image.
-     *
-     * This function compares the security image code with the
-     * code present in the current session.
-     * @access  private
-     * @param   string    $validationCode   The code entered by the user
-     * @return  boolean                     True if the codes are equal,
-     *                                      false otherwise.
-     */
-    function checkCode($validationCode)
+    private function loadTemplate($template)
     {
-        return
-            (   isset($_SESSION['auth']['secid'])
-             && $_SESSION['auth']['secid'] === $validationCode);
+        $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        $objTemplate->setTemplate($template[0]);
+        self::parseLoggedInOutBlocks($objTemplate);
+        return $objTemplate->get();
     }
 
 
-    function setLoggedInInfos()
+    public static function parseLoggedInOutBlocks(&$template)
     {
-        global $_CORELANG, $objTemplate;
+        $accessLoggedInOutBlockIdx = '';
+        $accessLoggedInBlock = 'access_logged_in';
+        $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
+        $accessLoggedOutBlock = 'access_logged_out';
+        $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
 
-        if (!$this->objUser->login()) {
+        if (!is_object($template)) {
+            // content provided instead of HTML_Template_Sigma object
+            $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_in[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', 'self::loadTemplate', $template);
+            return;
+        } else {
+            $objTemplate = $template;
+        }
+
+        while ($accessLoggedInOutBlockIdx < 11) {
+            // parse access_logged_in[_[1-10]] blocks
+            if ($objTemplate->blockExists($accessLoggedInTplBlock)) {
+                $objFWUser = FWUser::getFWUserObject();
+                if ($objFWUser->objUser->login()) {
+                    $objFWUser->setLoggedInInfos($objTemplate, $accessLoggedInTplBlock);
+                    $objTemplate->parse($accessLoggedInTplBlock);
+                } else {
+                    $objTemplate->hideBlock($accessLoggedInTplBlock);
+                }
+            }
+
+            // parse access_logged_out[_[1-10]] blocks
+            if ($objTemplate->blockExists($accessLoggedOutTplBlock)) {
+                $objFWUser = FWUser::getFWUserObject();
+                if ($objFWUser->objUser->login()) {
+                    $objTemplate->hideBlock($accessLoggedOutTplBlock);
+                } else {
+                    $objTemplate->touchBlock($accessLoggedOutTplBlock);
+                }
+            }
+
+            $accessLoggedInOutBlockIdx++;
+            $accessLoggedInTplBlock = $accessLoggedInBlock.$accessLoggedInOutBlockIdx;
+            $accessLoggedOutTplBlock = $accessLoggedOutBlock.$accessLoggedInOutBlockIdx;
+        }
+    }
+
+
+    private function setLoggedInInfos($objTemplate, $blockName = '')
+    {
+        global $_CORELANG;
+
+        $objUser = FWUser::getFWUserObject()->objUser;
+        if (!$objUser->login()) {
             return false;
         }
+
+        $loggedInLabel = $_CORELANG['TXT_LOGGED_IN_AS'].' '.contrexx_raw2xhtml($objUser->getUsername());
+
+        if (empty($blockName) || $blockName == 'access_logged_in') {
+            // this is for backwards compatibility for version pre 3.0
+            $objTemplate->setVariable(array(
+                'LOGGING_STATUS'        => $loggedInLabel,
+                'ACCESS_USER_ID'        => $objUser->getId(),
+                'ACCESS_USER_USERNAME'  => contrexx_raw2xhtml($objUser->getUsername()),
+                'ACCESS_USER_EMAIL'     => contrexx_raw2xhtml($objUser->getEmail()),
+            ));
+
+            $blockName = 'access_logged_in';
+        }
+        $placeholderPrefix = strtoupper($blockName).'_';
+
         $objTemplate->setVariable(array(
-            'LOGGING_STATUS'        => $_CORELANG['TXT_LOGGED_IN_AS'].' '.htmlentities($this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-            'ACCESS_USER_ID'        => $this->objUser->getId(),
-            'ACCESS_USER_USERNAME'  => htmlentities($this->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)
+            $placeholderPrefix.'LOGGING_STATUS' => $loggedInLabel,
+            $placeholderPrefix.'USER_ID'        => $objUser->getId(),
+            $placeholderPrefix.'USER_USERNAME'  => contrexx_raw2xhtml($objUser->getUsername()),
+            $placeholderPrefix.'USER_EMAIL'     => contrexx_raw2xhtml($objUser->getEmail()),
         ));
+
+        $objAccessLib = new AccessLib($objTemplate);
+        $objAccessLib->setModulePrefix($placeholderPrefix);
+        $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+
+        $objUser->objAttribute->first();
+        while (!$objUser->objAttribute->EOF) {
+            $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, FALSE, false, false, false);
+            $objUser->objAttribute->next();
+        }
+
         return true;
     }
 
@@ -362,6 +431,78 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         }
 // END: WORKAROUND FOR ACCOUNTS SOLD IN THE SHOP
         return false;
+    }
+
+
+    /**
+     * Format the author and publisher title
+     * @global array
+     * @param   mixed   Either the ID of the user account to parse or a User object
+     *                  of the user account to parse.
+     * @param   string  User name
+     * @param   boolean Whether or not to add the username to the title
+     * @return  string  Generated user title
+     */
+    public static function getParsedUserTitle($user, $name = '', $showUsername = false)
+    {
+        global $_CORELANG;
+    
+        static $arrTitles = array();
+
+        if ($user) {
+            if (is_object($user)) {
+                $userId = $user->getId();
+            } else {
+                $userId = $user;
+            }
+
+            if (isset($arrTitles[$userId])) {
+                $name = $arrTitles[$userId]['name'];
+                $username = $arrTitles[$userId]['username'];
+            } else {
+                if (!is_object($user)) {
+                    $user = FWUser::getFWUserObject()->objUser->getUser($userId);
+                }
+                
+                if ($user) {
+                    $company   = trim($user->getProfileAttribute('company'));
+                    $lastname  = trim($user->getProfileAttribute('lastname'));
+                    $firstname = trim($user->getProfileAttribute('firstname'));
+                    $username  = $user->getUsername();
+
+                    $nameFragments = array();
+                    if (!empty($company)) {
+                        $nameFragments[] = $company;
+                    }
+                    if (!empty($lastname) || !empty($firstname)) {
+                        $nameFragments[] = trim($lastname.' '.$firstname);
+                    }
+                    $name = join(', ', $nameFragments);
+
+                    $arrTitles[$userId] = array(
+                        'name'      => $name,
+                        'username'  => $username,
+                    );
+                }
+            }
+        }
+
+        if (!empty($name)) {
+            // set name as title
+            $title = $name;
+            if ($showUsername && !empty($username)) {
+                // add username to name if requested
+                $title = $name.' ('.$username.')';
+            }
+        } elseif (empty($name) && !empty($username)) {
+            // no name was set, so lets just use the username instead (in case one had been set)
+            $title = $username;
+        } else {
+            // neither a name, nor a username had been set
+            $title = $_CORELANG['TXT_ACCESS_ANONYMOUS'];
+        }
+
+        return $title;
     }
 
 
@@ -510,7 +651,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         $unit = 'DAY';
         if ($validity == 0) {
             $validity = '';
-            $unit = $_CORELANG['TXT_USERS_UNLIMITED'];
+            $unit = $_CORELANG['TXT_CORE_UNLIMITED'];
         } else {
             if ($validity >= 30) {
                 $unit = 'MONTH';
@@ -521,10 +662,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
                 }
             }
             $unit =
-// TODO: Seems that these language entries do not exist:
-                $_CORELANG['TXT_USERS_'.$unit.
-// Instead, there are:
-//                $_CORELANG['TXT_CORE_'.$unit.
+                $_CORELANG['TXT_CORE_'.$unit.
                 ($validity > 1 ? 'S' : '')];
         }
         return "$validity $unit";

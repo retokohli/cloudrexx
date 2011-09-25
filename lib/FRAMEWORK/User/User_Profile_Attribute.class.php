@@ -47,355 +47,358 @@ class User_Profile_Attribute
 
     private $arrCoreAttributes = array(
         'picture' => array(
-            'type'                => 'image',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_PROFILE_PIC',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'image',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PROFILE_PIC',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'gender' => array(
-            'type' => 'menu',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'custom',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_GENDER',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'menu',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'custom',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_GENDER',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'gender_undefined' => array(
-            'type' => 'menu_option',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 'gender',
-            'desc' => 'TXT_ACCESS_UNKNOWN',
-            'order_id' => 0,
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'gender',
+            'desc'         => 'TXT_ACCESS_NOT_SPECIFIED',
+            'unknown'      => true,
+            'order_id'     => 0,
         ),
         'gender_female' => array(
-            'type' => 'menu_option',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 'gender',
-            'desc' => 'TXT_ACCESS_FEMALE',
-            'order_id' => 1
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'gender',
+            'desc'         => 'TXT_ACCESS_FEMALE',
+            'order_id'     => 1
         ),
         'gender_male' => array(
-            'type' => 'menu_option',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 'gender',
-            'desc' => 'TXT_ACCESS_MALE',
-            'order_id' => 2,
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'gender',
+            'desc'         => 'TXT_ACCESS_MALE',
+            'order_id'     => 2,
         ),
         'title' => array(
-            'type' => 'menu',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'desc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_TITLE',
-            'modifiable' => array('mandatory', 'sort_order', 'access', 'children'),
+            'type'         => 'menu',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'desc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_TITLE',
+            'modifiable'   => array('mandatory', 'sort_order', 'access', 'children'),
         ),
         'title_undefined' => array(
-            'type' => 'menu_option',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 'title',
-            'desc' => 'TXT_ACCESS_UNKNOWN',
-            'value' => '0',
-            'order_id' => 0,
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'title',
+            'desc'         => 'TXT_ACCESS_NOT_SPECIFIED',
+            'value'        => '0',
+            'unknown'      => true,
+            'order_id'     => 0,
         ),
         'firstname' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_FIRSTNAME',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_FIRSTNAME',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'lastname' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_LASTNAME',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_LASTNAME',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'company' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_COMPANY',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_COMPANY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'address' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_ADDRESS',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_ADDRESS',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'city' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_CITY',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_CITY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'zip' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_ZIP',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_ZIP',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'country' => array(
-            'type' => 'menu',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_COUNTRY',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'menu',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_COUNTRY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'country_undefined' => array(
-            'type' => 'menu_option',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 'country',
-            'desc' => 'TXT_ACCESS_UNKNOWN',
-            'value' => '0',
-            'order_id' => 0,
+            'type'         => 'menu_option',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 'country',
+            'desc'         => 'TXT_ACCESS_NOT_SPECIFIED',
+            'value'        => '0',
+            'unknown'      => true,
+            'order_id'     => 0,
         ),
         'phone_office' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_PHONE_OFFICE',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_OFFICE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'phone_private' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_PHONE_PRIVATE',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_PRIVATE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'phone_mobile' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_PHONE_MOBILE',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_MOBILE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'phone_fax' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_PHONE_FAX',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PHONE_FAX',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'birthday' => array(
-            'type' => 'date',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_BIRTHDAY',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'date',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_BIRTHDAY',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'website' => array(
-            'type' => 'uri',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_WEBSITE',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'uri',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_WEBSITE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         /*'skype' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_SKYPE_NAME',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_SKYPE_NAME',
+            'modifiable'   => array('mandatory', 'access'),
         ),*/
         'profession' => array(
-            'type' => 'text',
-            'multiline' => false,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_PREFESSION',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => false,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_PREFESSION',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'interests' => array(
-            'type' => 'text',
-            'multiline' => true,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_INTERESTS',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => true,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_INTERESTS',
+            'modifiable'   => array('mandatory', 'access'),
         ),
         'signature' => array(
-            'type' => 'text',
-            'multiline' => true,
-            'mandatory' => false,
-            'sort_type' => 'asc',
-            'parent_id' => 0,
-            'desc' => 'TXT_ACCESS_SIGNATURE',
-            'modifiable' => array('mandatory', 'access'),
+            'type'         => 'text',
+            'multiline'    => true,
+            'mandatory'    => false,
+            'sort_type'    => 'asc',
+            'parent_id'    => 0,
+            'desc'         => 'TXT_ACCESS_SIGNATURE',
+            'modifiable'   => array('mandatory', 'access'),
         ),
     );
 
     private $arrTypes = array(
         'text' => array(
-            'desc' => 'TXT_ACCESS_TEXT_FIELD',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => true,
-            'children' => false,
-            'multiline' => true,
-            'movable' => true,
-            'protection' => true,
-            'special' => array(),
-            'data_type' => 'string',
+            'desc'         => 'TXT_ACCESS_TEXT_FIELD',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => true,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'mail' => array(
-            'desc' => 'TXT_ACCESS_EMAIL_ADDRESS',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => true,
-            'children' => false,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => true,
-            'special' => array(),
-            'data_type' => 'string',
+            'desc'         => 'TXT_ACCESS_EMAIL_ADDRESS',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'uri' => array(
-            'desc' => 'TXT_ACCESS_WEB_ADDRESS',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => true,
-            'children' => false,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => true,
-            'special' => array(),
-            'data_type' => 'string',
+            'desc'         => 'TXT_ACCESS_WEB_ADDRESS',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'date' => array(
-            'desc' => 'TXT_ACCESS_DATE',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => true,
-            'children' => false,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => true,
-            'special' => array(),
-            'data_type' => 'int',
+            'desc'         => 'TXT_ACCESS_DATE',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'int',
         ),
         'image' => array(
-            'desc' => 'TXT_ACCESS_IMAGE',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => true,
-            'children' => false,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => true,
-            'special' => array(),
-            'data_type' => 'string',
+            'desc'         => 'TXT_ACCESS_IMAGE',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'string',
         ),
         'checkbox' => array(
-            'desc' => 'TXT_ACCESS_CHECKBOX',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => true,
-            'children' => false,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => true,
-            'special' => array(),
-            'data_type' => 'int',
+            'desc'         => 'TXT_ACCESS_CHECKBOX',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'int',
         ),
         'menu' => array(
-            'desc' => 'TXT_ACCESS_MENU',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => false,
-            'children' => true,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => true,
-            'special' => array('', 'menu_select_higher', 'menu_select_lower'),
-            'data_type' => 'int',
+            'desc'         => 'TXT_ACCESS_MENU',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => true,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array('', 'menu_select_higher', 'menu_select_lower'),
+            'data_type'    => 'int',
         ),
         'menu_option' => array(
-            'desc' => 'TXT_ACCESS_MENU_OPTION',
-            'parent' => 'TXT_ACCESS_MENU',
-            'mandatory' => false,
-            'children' => false,
-            'multiline' => false,
-            'movable' => false,
-            'protection' => false,
-            'special' => array(),
-            'data_type' => 'null',
+            'desc'         => 'TXT_ACCESS_MENU_OPTION',
+            'parent'       => 'TXT_ACCESS_MENU',
+            'mandatory'    => false,
+            'children'     => false,
+            'multiline'    => false,
+            'movable'      => false,
+            'protection'   => false,
+            'special'      => array(),
+            'data_type'    => 'null',
         ),
         'group' => array(
-            'desc' => 'TXT_ACCESS_GROUP',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => false,
-            'children' => true,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => false,
-            'special' => array(),
-            'data_type' => 'array',
+            'desc'         => 'TXT_ACCESS_GROUP',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => false,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => false,
+            'special'      => array(),
+            'data_type'    => 'array',
         ),
         'frame' => array(
-            'desc' => 'TXT_ACCESS_FRAME',
-            'parent' => 'TXT_ACCESS_GROUP',
-            'mandatory' => false,
-            'children' => true,
-            'multiline' => false,
-            'movable' => false,
-            'protection' => false,
-            'special' => array(),
-            'data_type' => 'array',
+            'desc'         => 'TXT_ACCESS_FRAME',
+            'parent'       => 'TXT_ACCESS_GROUP',
+            'mandatory'    => false,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => false,
+            'protection'   => false,
+            'special'      => array(),
+            'data_type'    => 'array',
         ),
         'history' => array(
-            'desc' => 'TXT_ACCESS_HISTORY',
-            'parent' => 'TXT_ACCESS_PARENT_ATTRIBUTE',
-            'mandatory' => false,
-            'children' => true,
-            'multiline' => false,
-            'movable' => true,
-            'protection' => true,
-            'special' => array(),
-            'data_type' => 'array',
+            'desc'         => 'TXT_ACCESS_HISTORY',
+            'parent'       => 'TXT_ACCESS_PARENT_ATTRIBUTE',
+            'mandatory'    => false,
+            'children'     => true,
+            'multiline'    => false,
+            'movable'      => true,
+            'protection'   => true,
+            'special'      => array(),
+            'data_type'    => 'array',
         ),
     );
 
@@ -729,14 +732,26 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                 }
                 asort($arrChildren, SORT_NUMERIC);
             } else {
+                $unknownMenuOption = null;
                 foreach ($arrAttributeIds as $childAttributeId) {
-                    $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][$this->langId];
+                    if (empty($unknownMenuOption)
+                        && $this->arrAttributes[$childAttributeId]['type'] == 'menu_option'
+                        && !empty($this->arrAttributes[$childAttributeId]['unknown'])
+                    ) {
+                        $unknownMenuOption = array($childAttributeId => $this->arrAttributes[$childAttributeId]['names'][$this->langId]);
+                    } else {
+                        $arrChildren[$childAttributeId] = $this->arrAttributes[$childAttributeId]['names'][$this->langId];
+                    }
                 }
 
                 if (isset($this->arrAttributes[$attributeId]['sort_type']) && $this->arrAttributes[$attributeId]['sort_type'] == 'desc') {
                     arsort($arrChildren, SORT_STRING);
                 } else {
                     asort($arrChildren, SORT_STRING);
+                }
+
+                if (!empty($unknownMenuOption)) {
+                    $arrChildren = array_merge($unknownMenuOption, $arrChildren);
                 }
             }
             $this->arrAttributeRelations[$attributeId] = array_keys($arrChildren);
@@ -1152,25 +1167,31 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function hasMandatoryOption()
+    public function hasMandatoryOption()
     {
         return !empty($this->arrTypes[$this->type]['mandatory']);
     }
 
 
-    function hasChildOption()
+    public function hasChildOption()
     {
         return !empty($this->arrTypes[$this->type]['children']);
     }
 
 
-    function hasMovableOption()
+    public function hasMovableOption()
     {
         return !empty($this->arrTypes[$this->type]['movable']);
     }
 
 
-    function hasSameParentHistoryAttribute($attributeId)
+    public function hasSortableOption()
+    {
+        return !empty($this->arrTypes[$this->type]['children']);
+    }
+
+
+    private function hasSameParentHistoryAttribute($attributeId)
     {
         $tmpAttributeId = $this->id;
         $parentHistoryId = 0;
@@ -1198,7 +1219,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function hasProtectionOption()
+    public function hasProtectionOption()
     {
         return !empty($this->arrTypes[$this->type]['protection']);
     }
@@ -1222,6 +1243,15 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     function isMandatory()
     {
         return $this->mandatory;
+    }
+
+
+    public function isUnknownOption($attributeId = null)
+    {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
+        return isset($this->arrAttributes[$attributeId]['unknown']) && $this->arrAttributes[$attributeId]['unknown'];
     }
 
 
@@ -1342,7 +1372,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function isProtected()
+    public function isProtected()
     {
         return $this->protected;
     }
@@ -1357,13 +1387,16 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function isCustomAttribute($attributeId)
+    public function isCustomAttribute($attributeId = null)
     {
+        if (is_null($attributeId)) {
+            $attributeId = $this->id;
+        }
         return in_array($attributeId, $this->arrCustomAttributes);
     }
 
 
-    function setNames($arrNames)
+    public function setNames($arrNames)
     {
         $this->arrName = array();
         foreach ($arrNames as $langId => $name) {
@@ -1373,7 +1406,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function setType($type)
+    public function setType($type)
     {
         if (in_array($type, array_keys($this->arrTypes))) {
             $this->type = $type;
@@ -1383,19 +1416,19 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function setMultiline($multiline=false)
+    public function setMultiline($multiline=false)
     {
         $this->multiline = $multiline;
     }
 
 
-    function setMandatory($mandatory = 0)
+    public function setMandatory($mandatory = 0)
     {
         $this->mandatory = intval($mandatory);
     }
 
 
-    function setParent($parentId = 0)
+    public function setParent($parentId = 0)
     {
         global $_ARRAYLANG;
         if (($parentId == 0 || isset($this->arrAttributes[$parentId])) && $this->isAllowedParentType($parentId) && $this->isAllowedParentAttribute($parentId)) {
@@ -1407,7 +1440,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function setSortType($type)
+    public function setSortType($type)
     {
         if (in_array($type, array_keys($this->arrSortTypes))) {
             $this->sort_type = $type;
@@ -1417,7 +1450,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function setChildOrder($arrChildOrder)
+    public function setChildOrder($arrChildOrder)
     {
         $pattern = array();
         foreach ($arrChildOrder as $childId => $orderId) {
@@ -1427,7 +1460,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function setProtection($arrGroups)
+    public function setProtection($arrGroups)
     {
         $this->access_group_ids = array();
         foreach ($arrGroups as $groupId) {
@@ -1437,7 +1470,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function setSpecialProtection($special)
+    public function setSpecialProtection($special)
     {
         if (in_array($special, $this->arrTypes[$this->type]['special'])) {
             $this->access_special = $special;
@@ -1445,7 +1478,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
-    function removeProtection()
+    public function removeProtection()
     {
         $this->access_id = 0;
         $this->protected = false;
@@ -1654,6 +1687,48 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
     }
 
 
+    /**
+     * Get an array containing all types that can be set to mandatory.
+     *
+     * @return array
+     */
+    public function getMandatoryTypes()
+    {
+        static $arrTypes = null;
+
+        if (empty($arrTypes)) {
+            $arrTypes = array();
+            foreach ($this->arrTypes as $type => $arrType) {
+                if ($arrType['mandatory']) {
+                    $arrTypes[] = $type;
+                }
+            }
+        }
+        return $arrTypes;
+    }
+
+
+    /**
+     * Get an array containing all types that can be sorted.
+     *
+     * @return array
+     */
+    public function getSortableTypes()
+    {
+        static $arrTypes = null;
+
+        if (empty($arrTypes)) {
+            $arrTypes = array();
+            foreach ($this->arrTypes as $type => $arrType) {
+                if ($arrType['children']) {
+                    $arrTypes[] = $type;
+                }
+            }
+        }
+        return $arrTypes;
+    }
+
+
     function getSortType()
     {
         return $this->sort_type;
@@ -1750,6 +1825,15 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         while (!$objResult->EOF) {
             $arrNames[$objResult->fields['id']] = $objResult->fields['name'];
             $objResult->MoveNext();
+        }
+        return $arrNames;
+
+// TODO: check if this methods logic could be replaced by the following code
+        $arrNames = array();
+        foreach ($this->getSortedAttributeIds() as $attributeId) {
+            if ($this->isCustomAttribute($attributeId)) {
+                $arrNames[$attributeId] = str_pad('', $this->getLevel($attributeId)*2, '..').htmlentities($this->arrAttributes[$attributeId]['names'][$this->langId], ENT_QUOTES, CONTREXX_CHARSET);
+            }
         }
         return $arrNames;
     }
