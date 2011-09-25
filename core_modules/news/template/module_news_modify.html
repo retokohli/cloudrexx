@@ -265,8 +265,7 @@
         // store text of current language
         // oCKeditor = CKEDITOR.instances['newsText'];
         // jQuery('#news_text\\[' + curLangId + "\\]").attr("value", oCKeditor.getData());
-        oFCKeditor = FCKeditorAPI.GetInstance('newsText');
-        jQuery('#news_text\\[' + curLangId + "\\]").attr("value", oFCKeditor.GetXHTML());
+        jQuery('#news_text\\[' + curLangId + "\\]").attr("value", CKEDITOR.instances.newsText.getData());
 
         // exit if no new language had been requested
         if (typeof(langId) == 'undefined') return true;
@@ -279,7 +278,7 @@
         jQuery("#newsTitle\\[" + langId + "\\]").css("display", "block");
         // change text
         // oCKeditor.setData(jQuery('#news_text\\[' + langId + "\\]").attr("value"));
-        oFCKeditor.SetData(jQuery('#news_text\\[' + langId + "\\]").attr("value"));
+        CKEDITOR.instances.newsText.setData(jQuery('#news_text\\[' + langId + "\\]").attr("value"));
 
         // change teaser_text
         jQuery("#newsTeaserText\\[" + curLangId + "\\]").parent().css("display", "none");
