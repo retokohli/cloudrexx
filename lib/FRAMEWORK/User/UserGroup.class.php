@@ -24,6 +24,7 @@ class UserGroup
     private $description;
     private $is_active;
     private $type;
+    private $homepage;
 
     private $arrLoadedGroups = array();
     private $arrCache = array();
@@ -33,7 +34,8 @@ class UserGroup
         'group_name',
         'group_description',
         'is_active',
-        'type'
+        'type',
+        'homepage',
     );
 
     private $arrTypes = array(
@@ -203,6 +205,7 @@ class UserGroup
             $this->description = isset($this->arrCache[$id]['group_description']) ? $this->arrCache[$id]['group_description'] : '';
             $this->is_active = isset($this->arrCache[$id]['is_active']) ? (bool)$this->arrCache[$id]['is_active'] : false;
             $this->type = isset($this->arrCache[$id]['type']) ? $this->arrCache[$id]['type'] : $this->defaultType;
+            $this->homepage = isset($this->arrCache[$id]['homepage']) ? $this->arrCache[$id]['homepage'] : '';
             $this->arrDynamicPermissions = null;
             $this->arrStaticPermissions = null;
             $this->arrUsers = null;
@@ -304,7 +307,8 @@ class UserGroup
                 SET
                     `group_name` = '".addslashes($this->name)."',
                     `group_description` = '".addslashes($this->description)."',
-                    `is_active` = ".intval($this->is_active)."
+                    `is_active` = ".intval($this->is_active).",
+                    `homepage` = '".addslashes($this->homepage)."'
                 WHERE `group_id`=".$this->id
             )) {
                 $this->error_msg = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_GROUP'];
@@ -316,12 +320,14 @@ class UserGroup
                     `group_name`,
                     `group_description`,
                     `is_active`,
-                    `type`
+                    `type`,
+                    `homepage`
                 ) VALUES (
                     '".addslashes($this->name)."',
                     '".addslashes($this->description)."',
                     ".intval($this->is_active).",
-                    '".$this->type."'
+                    '".$this->type."',
+                    '".addslashes($this->homepage)."'
                 )"
             )) {
                 $this->id = $objDatabase->Insert_ID();
@@ -413,6 +419,7 @@ class UserGroup
         $this->description = '';
         $this->is_active = false;
         $this->type = $this->defaultType;
+        $this->homepage = '';
         $this->arrDynamicPermissions = null;
         $this->arrStaticPermissions = null;
         $this->arrUsers = null;
@@ -480,6 +487,10 @@ class UserGroup
         $this->type = in_array($type, $this->arrTypes) ? $type : $this->defaultType;
     }
 
+    public function setHomepage($homepage)
+    {
+        $this->homepage = $homepage;
+    }
 
     /**
      * Set ID's of users which should belong to this group
@@ -617,6 +628,10 @@ class UserGroup
         return $this->type;
     }
 
+    public function getHomepage()
+    {
+        return $this->homepage;
+    }
 
     public function getTypes()
     {
