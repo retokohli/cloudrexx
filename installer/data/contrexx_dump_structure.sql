@@ -2565,145 +2565,6 @@ CREATE TABLE `contrexx_module_memberdir_values` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter` (
-  `id` int(11) NOT NULL auto_increment,
-  `subject` varchar(255) NOT NULL default '',
-  `template` int(11) NOT NULL default '0',
-  `content` text NOT NULL,
-  `content_text` text NOT NULL,
-  `attachment` enum('0','1') NOT NULL default '0',
-  `format` enum('text','html','html/text') NOT NULL default 'text',
-  `priority` tinyint(1) NOT NULL default '0',
-  `sender_email` varchar(255) NOT NULL default '',
-  `sender_name` varchar(255) NOT NULL default '',
-  `return_path` varchar(255) NOT NULL default '',
-  `smtp_server` int(10) unsigned NOT NULL default '0',
-  `status` int(1) NOT NULL default '0',
-  `count` int(11) NOT NULL default '0',
-  `recipient_count` int(11) unsigned NOT NULL default '0',
-  `date_create` int(14) unsigned NOT NULL default '0',
-  `date_sent` int(14) unsigned NOT NULL default '0',
-  `tmp_copy` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_attachment` (
-  `id` int(11) NOT NULL auto_increment,
-  `newsletter` int(11) NOT NULL default '0',
-  `file_name` varchar(255) NOT NULL default '',
-  `file_nr` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `newsletter` (`newsletter`)
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_category` (
-  `id` int(11) NOT NULL auto_increment,
-  `status` tinyint(1) NOT NULL default '0',
-  `name` varchar(255) NOT NULL default '',
-  `notification_email` varchar(250) NOT NULL default '',
-  PRIMARY KEY  (`id`),
-  KEY `name` (`name`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
-  `id` int(1) NOT NULL auto_increment,
-  `title` varchar(255) NOT NULL default '',
-  `content` longtext NOT NULL,
-  `recipients` mediumtext NOT NULL,
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
-  `newsletter` int(11) NOT NULL default '0',
-  `category` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`newsletter`,`category`)
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
-  `user` int(11) NOT NULL default '0',
-  `category` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`user`,`category`)
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_settings` (
-  `setid` int(6) unsigned NOT NULL auto_increment,
-  `setname` varchar(250) NOT NULL default '',
-  `setvalue` text NOT NULL,
-  `status` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`setid`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_template` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  `description` varchar(255) NOT NULL default '',
-  `html` text NOT NULL,
-  `text` text NOT NULL,
-  `required` int(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
-  `id` int(11) NOT NULL auto_increment,
-  `newsletter` int(11) NOT NULL default '0',
-  `email` varchar(255) NOT NULL default '',
-  `sendt` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `email` (`email`)
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_user` (
-  `id` int(11) NOT NULL auto_increment,
-  `code` varchar(255) NOT NULL default '',
-  `email` varchar(255) NOT NULL default '',
-  `uri` varchar(255) NOT NULL default '',
-  `sex` enum('m','f') default NULL,
-  `title` int(10) unsigned NOT NULL default '0',
-  `lastname` varchar(255) NOT NULL default '',
-  `firstname` varchar(255) NOT NULL default '',
-  `company` varchar(255) NOT NULL default '',
-  `street` varchar(255) NOT NULL default '',
-  `zip` varchar(255) NOT NULL default '',
-  `city` varchar(255) NOT NULL default '',
-  `country` varchar(255) NOT NULL default '',
-  `phone` varchar(255) NOT NULL default '',
-  `birthday` varchar(10) NOT NULL default '00-00-0000',
-  `status` int(1) NOT NULL default '0',
-  `emaildate` int(14) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `email` (`email`),
-  KEY `status` (`status`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_newsletter_user_title` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `title` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `title` (`title`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_partners_categories` (
   `category_id` int(4) unsigned NOT NULL,
   `lang_id` int(2) unsigned NOT NULL,
@@ -4171,4 +4032,159 @@ CREATE TABLE `contrexx_module_news_types_locale` (
   `name` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`lang_id`,`type_id`),
   FULLTEXT KEY `name` (`name`)
+) TYPE=MyISAM;
+
+
+
+
+
+####################################################################################################
+############# NEW NEWSLETTER SYSTEM ################################################################
+####################################################################################################
+CREATE TABLE `contrexx_module_newsletter` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subject` varchar(255) NOT NULL DEFAULT '',
+  `template` int(11) NOT NULL DEFAULT '0',
+  `content` text NOT NULL,
+  `content_text` text NOT NULL,
+  `attachment` enum('0','1') NOT NULL DEFAULT '0',
+  `format` enum('text','html','html/text') NOT NULL DEFAULT 'text',
+  `priority` tinyint(1) NOT NULL DEFAULT '0',
+  `sender_email` varchar(255) NOT NULL DEFAULT '',
+  `sender_name` varchar(255) NOT NULL DEFAULT '',
+  `return_path` varchar(255) NOT NULL DEFAULT '',
+  `smtp_server` int(10) unsigned NOT NULL DEFAULT '0',
+  `status` int(1) NOT NULL DEFAULT '0',
+  `count` int(11) NOT NULL DEFAULT '0',
+  `recipient_count` int(11) unsigned NOT NULL DEFAULT '0',
+  `date_create` int(14) unsigned NOT NULL DEFAULT '0',
+  `date_sent` int(14) unsigned NOT NULL DEFAULT '0',
+  `tmp_copy` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_access_user` (
+  `accessUserID` int(5) unsigned NOT NULL,
+  `newsletterCategoryID` int(11) NOT NULL,
+  UNIQUE KEY `rel` (`accessUserID`,`newsletterCategoryID`),
+  KEY `accessUserID` (`accessUserID`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_attachment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `newsletter` int(11) NOT NULL DEFAULT '0',
+  `file_name` varchar(255) NOT NULL DEFAULT '',
+  `file_nr` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `newsletter` (`newsletter`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `notification_email` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_confirm_mail` (
+  `id` int(1) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `content` longtext NOT NULL,
+  `recipients` text NOT NULL,
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_email_link` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `email_id` int(11) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `email_id` (`email_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `link_id` int(11) unsigned NOT NULL,
+  `email_id` int(11) unsigned NOT NULL,
+  `recipient_id` int(11) unsigned NOT NULL,
+  `recipient_type` enum('access','newsletter') NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `link_id` (`link_id`,`email_id`,`recipient_id`,`recipient_type`),
+  KEY `email_id` (`email_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
+  `newsletter` int(11) NOT NULL DEFAULT '0',
+  `category` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`newsletter`,`category`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_rel_user_cat` (
+  `user` int(11) NOT NULL DEFAULT '0',
+  `category` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user`,`category`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_rel_usergroup_newsletter` (
+  `userGroup` int(10) unsigned NOT NULL,
+  `newsletter` int(10) unsigned NOT NULL,
+  UNIQUE KEY `uniq` (`userGroup`,`newsletter`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_settings` (
+  `setid` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `setname` varchar(250) NOT NULL DEFAULT '',
+  `setvalue` text NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`setid`),
+  UNIQUE KEY `setname` (`setname`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `html` text NOT NULL,
+  `text` text NOT NULL,
+  `required` int(1) NOT NULL DEFAULT '0',
+  `type` enum('e-mail','news') NOT NULL DEFAULT 'e-mail',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_tmp_sending` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `newsletter` int(11) NOT NULL DEFAULT '0',
+  `email` varchar(255) NOT NULL DEFAULT '',
+  `sendt` tinyint(1) NOT NULL DEFAULT '0',
+  `type` enum('access','newsletter') NOT NULL DEFAULT 'newsletter',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_email` (`newsletter`,`email`),
+  KEY `email` (`email`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) NOT NULL DEFAULT '',
+  `email` varchar(255) NOT NULL DEFAULT '',
+  `uri` varchar(255) NOT NULL DEFAULT '',
+  `sex` enum('m','f') DEFAULT NULL,
+  `salutation` int(10) unsigned NOT NULL DEFAULT '0',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `lastname` varchar(255) NOT NULL DEFAULT '',
+  `firstname` varchar(255) NOT NULL DEFAULT '',
+  `position` varchar(255) NOT NULL DEFAULT '',
+  `company` varchar(255) NOT NULL DEFAULT '',
+  `industry_sector` varchar(255) NOT NULL DEFAULT '',
+  `address` varchar(255) NOT NULL DEFAULT '',
+  `zip` varchar(255) NOT NULL DEFAULT '',
+  `city` varchar(255) NOT NULL DEFAULT '',
+  `country_id` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `phone_office` varchar(255) NOT NULL DEFAULT '',
+  `phone_private` varchar(255) NOT NULL DEFAULT '',
+  `phone_mobile` varchar(255) NOT NULL DEFAULT '',
+  `fax` varchar(255) NOT NULL DEFAULT '',
+  `notes` text NOT NULL,
+  `birthday` varchar(10) NOT NULL DEFAULT '00-00-0000',
+  `status` int(1) NOT NULL DEFAULT '0',
+  `emaildate` int(14) unsigned NOT NULL DEFAULT '0',
+  `language` int(3) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `status` (`status`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_newsletter_user_title` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `title` (`title`)
 ) TYPE=MyISAM;
