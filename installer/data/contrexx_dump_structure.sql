@@ -2565,86 +2565,6 @@ CREATE TABLE `contrexx_module_memberdir_values` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_news` (
-  `id` int(6) unsigned NOT NULL auto_increment,
-  `date` int(14) default NULL,
-  `title` varchar(250) NOT NULL default '',
-  `text` mediumtext NOT NULL,
-  `redirect` varchar(250) NOT NULL default '',
-  `source` varchar(250) NOT NULL default '',
-  `url1` varchar(250) NOT NULL default '',
-  `url2` varchar(250) NOT NULL default '',
-  `catid` int(2) unsigned NOT NULL default '0',
-  `lang` int(2) unsigned NOT NULL default '0',
-  `userid` int(6) unsigned NOT NULL default '0',
-  `startdate` datetime NOT NULL default '0000-00-00 00:00:00',
-  `enddate` datetime NOT NULL default '0000-00-00 00:00:00',
-  `status` tinyint(4) NOT NULL default '1',
-  `validated` enum('0','1') NOT NULL default '0',
-  `frontend_access_id` int(10) unsigned NOT NULL default '0',
-  `backend_access_id` int(10) unsigned NOT NULL default '0',
-  `teaser_only` enum('0','1') NOT NULL default '0',
-  `teaser_frames` text NOT NULL,
-  `teaser_text` text NOT NULL,
-  `teaser_show_link` tinyint(1) unsigned NOT NULL default '1',
-  `teaser_image_path` text NOT NULL,
-  `teaser_image_thumbnail_path` text NOT NULL,
-  `changelog` int(14) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  FULLTEXT KEY `newsindex` (`text`,`title`,`teaser_text`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_news_categories` (
-  `catid` int(2) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  `lang` int(2) unsigned NOT NULL default '1',
-  PRIMARY KEY  (`catid`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_news_settings` (
-  `name` varchar(50) NOT NULL default '',
-  `value` varchar(250) NOT NULL default '',
-  KEY `name` (`name`)
-) TYPE=MyISAM;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_news_teaser_frame` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `lang_id` int(3) unsigned NOT NULL default '0',
-  `frame_template_id` int(10) unsigned NOT NULL default '0',
-  `name` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_news_teaser_frame_templates` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `description` varchar(100) NOT NULL default '',
-  `html` text NOT NULL,
-  `source_code_mode` enum('0','1') NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_news_ticker` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL default '',
-  `charset` enum('ISO-8859-1','UTF-8') NOT NULL default 'ISO-8859-1',
-  `urlencode` tinyint(1) unsigned NOT NULL default '0',
-  `prefix` varchar(250) NOT NULL default '',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`)
-) TYPE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_newsletter` (
   `id` int(11) NOT NULL auto_increment,
   `subject` varchar(255) NOT NULL default '',
@@ -4127,4 +4047,128 @@ CREATE TABLE `contrexx_module_block_settings` (
   `name` varchar(100) NOT NULL DEFAULT '',
   `value` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+
+
+
+
+
+####################################################################################################
+############# NEW NEWS SYSTEM ######################################################################
+####################################################################################################
+CREATE TABLE `contrexx_module_news` (
+  `id` int(6) unsigned NOT NULL AUTO_INCREMENT,
+  `date` int(14) DEFAULT NULL,
+  `redirect` varchar(250) NOT NULL DEFAULT '',
+  `source` varchar(250) NOT NULL DEFAULT '',
+  `url1` varchar(250) NOT NULL DEFAULT '',
+  `url2` varchar(250) NOT NULL DEFAULT '',
+  `catid` int(2) unsigned NOT NULL DEFAULT '0',
+  `typeid` int(2) unsigned NOT NULL DEFAULT '0',
+  `publisher` varchar(255) NOT NULL DEFAULT '',
+  `publisher_id` int(5) unsigned NOT NULL DEFAULT '0',
+  `author` varchar(255) NOT NULL DEFAULT '',
+  `author_id` int(5) unsigned NOT NULL DEFAULT '0',
+  `userid` int(6) unsigned NOT NULL DEFAULT '0',
+  `startdate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `enddate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `status` tinyint(4) NOT NULL DEFAULT '1',
+  `validated` enum('0','1') NOT NULL DEFAULT '0',
+  `frontend_access_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `backend_access_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `teaser_only` enum('0','1') NOT NULL DEFAULT '0',
+  `teaser_frames` text NOT NULL,
+  `teaser_show_link` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `teaser_image_path` text NOT NULL,
+  `teaser_image_thumbnail_path` text NOT NULL,
+  `changelog` int(14) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_categories` (
+  `catid` int(2) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`catid`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_categories_locale` (
+  `category_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`category_id`,`lang_id`),
+  FULLTEXT KEY `name` (`name`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_comments` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(250) NOT NULL DEFAULT '',
+  `text` mediumtext NOT NULL,
+  `newsid` int(6) unsigned NOT NULL DEFAULT '0',
+  `date` int(14) DEFAULT NULL,
+  `poster_name` varchar(255) NOT NULL DEFAULT '',
+  `userid` int(5) unsigned NOT NULL DEFAULT '0',
+  `ip_address` varchar(15) NOT NULL DEFAULT '0.0.0.0',
+  `is_active` enum('0','1') NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_locale` (
+  `news_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `is_active` int(1) unsigned NOT NULL DEFAULT '1',
+  `title` varchar(250) NOT NULL DEFAULT '',
+  `text` mediumtext NOT NULL,
+  `teaser_text` text NOT NULL,
+  PRIMARY KEY (`news_id`,`lang_id`),
+  FULLTEXT KEY `title` (`title`),
+  FULLTEXT KEY `text` (`text`),
+  FULLTEXT KEY `teaser_text` (`teaser_text`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_settings` (
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `value` varchar(250) NOT NULL DEFAULT '',
+  KEY `name` (`name`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_settings_locale` (
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `value` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`name`,`lang_id`),
+  FULLTEXT KEY `name` (`name`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_stats_view` (
+  `user_sid` char(32) NOT NULL,
+  `news_id` int(6) unsigned NOT NULL,
+  `time` timestamp NOT NULL,
+  KEY `idx_user_sid` (`user_sid`),
+  KEY `idx_news_id` (`news_id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_teaser_frame` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `lang_id` int(3) unsigned NOT NULL DEFAULT '0',
+  `frame_template_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_teaser_frame_templates` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `description` varchar(100) NOT NULL DEFAULT '',
+  `html` text NOT NULL,
+  `source_code_mode` enum('0','1') NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_ticker` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `charset` enum('ISO-8859-1','UTF-8') NOT NULL DEFAULT 'ISO-8859-1',
+  `urlencode` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `prefix` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_types` (
+  `typeid` int(2) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`typeid`)
+) TYPE=MyISAM;
+CREATE TABLE `contrexx_module_news_types_locale` (
+  `lang_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `type_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`lang_id`,`type_id`),
+  FULLTEXT KEY `name` (`name`)
 ) TYPE=MyISAM;
