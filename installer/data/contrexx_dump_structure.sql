@@ -83,6 +83,7 @@ CREATE TABLE `contrexx_access_user_groups` (
   `group_description` varchar(255) NOT NULL default '',
   `is_active` tinyint(4) NOT NULL default '1',
   `type` enum('frontend','backend') NOT NULL default 'frontend',
+  `homepage` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`group_id`)
 ) TYPE=MyISAM ;
 SET character_set_client = @saved_cs_client;
@@ -103,7 +104,7 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_user_profile` (
-  `user_id` int(10) unsigned NOT NULL default '0',
+  `user_id` int(5) unsigned NOT NULL default '0',
   `gender` enum('gender_undefined','gender_female','gender_male') NOT NULL default 'gender_undefined',
   `title` int(10) unsigned NOT NULL default '0',
   `firstname` varchar(255) NOT NULL default '',
@@ -161,6 +162,7 @@ CREATE TABLE `contrexx_access_users` (
   `frontend_lang_id` int(2) unsigned NOT NULL default '0',
   `backend_lang_id` int(2) unsigned NOT NULL default '0',
   `active` tinyint(1) NOT NULL default '0',
+  `primary_group` int(6) unsigned NOT NULL default '0',
   `profile_access` enum('everyone','members_only','nobody') NOT NULL default 'members_only',
   `restore_key` varchar(32) NOT NULL default '',
   `restore_key_time` int(14) unsigned NOT NULL default '0',
