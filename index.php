@@ -727,37 +727,86 @@ if ($_CONFIG['blockStatus'] == '1') {
 
 
 // Get Headlines
-/** @ignore */
-if (@include_once ASCMS_CORE_MODULE_PATH.'/news/lib/headlines.class.php') {
+$modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/headlines.class.php';
+$headlinesNewsPlaceholder = '{HEADLINES_FILE}';
+if (   file_exists($modulespath)
+    && (   strpos($page_content, $headlinesNewsPlaceholder) !== false
+        || strpos($themesPages['index'], $headlinesNewsPlaceholder) !== false
+        || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
+        || ($section == 'home' && strpos($themesPages['home'], $headlinesNewsPlaceholder) !== false)
+        || strpos($page_template, $headlinesNewsPlaceholder) !== false)
+) {
+    /**
+     * @ignore
+    */
+    include_once $modulespath;
     $newsHeadlinesObj = new newsHeadlines($themesPages['headlines']);
     $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
-    $page_content = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_content);
-    $themesPages['index'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['index']);
-    $themesPages['sidebar'] = str_replace('{HEADLINES_FILE}', $homeHeadlines, $themesPages['sidebar']);
-    $page_template = str_replace('{HEADLINES_FILE}', $homeHeadlines, $page_template);
+    $page_content           = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_content);
+    $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
+    $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
+    $themesPages['home']    = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['home']);
+    $page_template          = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_template);
+}
+
+
+// Get Top news
+$modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/top_news.class.php';
+$topNewsPlaceholder = '{TOP_NEWS_FILE}';
+if (   file_exists($modulespath)
+    && (   strpos($page_content, $topNewsPlaceholder) !== false
+        || strpos($themesPages['index'], $topNewsPlaceholder) !== false
+        || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
+        || ($section == 'home' && strpos($themesPages['home'], $topNewsPlaceholder) !== false)
+        || strpos($page_template, $topNewsPlaceholder) !== false)
+) {
+    /**
+     * @ignore
+    */
+    include_once $modulespath;
+    $newsTopObj = new newsTop($themesPages['top_news']);
+    $homeTopNews = $newsTopObj->getHomeTopNews();
+    $page_content           = str_replace($topNewsPlaceholder, $homeTopNews, $page_content);
+    $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
+    $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
+    $themesPages['home']    = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['home']);
+    $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
 }
 
 
 // Get Calendar Events
-if (MODULE_INDEX < 2) {
-    /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/calendar/headlines.class.php') {
-        $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
-        $calHeadlines = $calHeadlinesObj->getHeadlines();
-        $page_content = str_replace('{EVENTS_FILE}', $calHeadlines, $page_content);
-        $themesPages['index'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['index']);
-            $themesPages['sidebar'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['sidebar']);
-        $themesPages['home'] = str_replace('{EVENTS_FILE}', $calHeadlines, $themesPages['home']);
-        $page_template = str_replace('{EVENTS_FILE}', $calHeadlines, $page_template);
-    }
+$modulespath = ASCMS_MODULE_PATH.'/calendar/headlines.class.php';
+$eventsPlaceholder = '{EVENTS_FILE}';
+if (   MODULE_INDEX < 2 
+    && $_CONFIG['calendarheadlines']
+    && (   strpos($page_content, $eventsPlaceholder) !== false
+        || strpos($themesPages['index'], $eventsPlaceholder) !== false
+        || strpos($themesPages['sidebar'], $eventsPlaceholder) !== false
+        || ($section == 'home' && strpos($themesPages['home'], $eventsPlaceholder) !== false)
+        || strpos($page_template, $eventsPlaceholder) !== false)
+    && file_exists($modulespath)
+) {
+    /**
+     * @ignore
+    */
+    include_once $modulespath;
+    $calHeadlinesObj = new calHeadlines($themesPages['calendar_headlines']);
+    $calHeadlines = $calHeadlinesObj->getHeadlines();
+    $page_content           = str_replace($eventsPlaceholder, $calHeadlines, $page_content);
+    $themesPages['index']   = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
+    $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
+    $themesPages['home']    = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['home']);
+    $page_template          = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
 }
 
 
 // Get immo headline
-/** @ignore */
-// TODO: File does not exist!
-/*
-if (@include_once ASCMS_MODULE_PATH.'/headlines/index.class.php')) {
+$modulespath = ASCMS_MODULE_PATH.'/immo/headlines/index.class.php';
+if (file_exists($modulespath)) {
+    /**
+     * @ignore
+     */
+    include_once($modulespath);
     $immoHeadlines = new immoHeadlines($themesPages['immo']);
     $immoHomeHeadlines = $immoHeadlines->getHeadlines();
     $page_content = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_content);
@@ -765,7 +814,7 @@ if (@include_once ASCMS_MODULE_PATH.'/headlines/index.class.php')) {
     $themesPages['home'] = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $themesPages['home']);
     $page_template = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_template);
 }
-*/
+
 
 // get Newsletter
 /** @ignore */
@@ -868,7 +917,8 @@ if (!empty($_CONFIG['forumTagContent'])) {
         if (   $forumHomeTagCloudInContent
             || $forumHomeTagCloudInTemplate
             || $forumHomeTagCloudInTheme
-            || $forumHomeTagCloudInSidebar) {
+            || $forumHomeTagCloudInSidebar
+        ) {
             $strTagCloudSource = $objForumHome->getHomeTagCloud();
             $page_content = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_content, $forumHomeTagCloudInContent);
             $page_template = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_template, $forumHomeTagCloudInTemplate);
@@ -1854,7 +1904,7 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     $objPDF->title = $page_title.(empty($page_title) ? null : '.pdf');
     // replace links from before contrexx 3
     $ls = new LinkSanitizer(
-        ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/',
+        ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/',
         $objTemplate->get());
     $objPDF->content = $ls->replace();
     $objPDF->Create();
@@ -1884,7 +1934,7 @@ $endcode = str_replace('javascript_inserting_here', JS::getCode(), $endcode);
 
 // replace links from before contrexx 3
 $ls = new LinkSanitizer(
-    ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID).'/',
+    ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/',
     $endcode);
 $endcode = $ls->replace();
 
