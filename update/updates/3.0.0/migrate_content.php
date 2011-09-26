@@ -211,8 +211,8 @@ class Contrexx_Content_migration
         $page->setLang($objResult->fields['lang']);
         $page->setCaching($objResult->fields['cachingstatus']);
         $page->setUpdatedAt(new DateTime($updatedDate));
-        $page->setTitle($objResult->fields['title']);
-        $page->setLinktitle($objResult->fields['catname']);
+        $page->setTitle($objResult->fields['catname']);
+        $page->setContentTitle($objResult->fields['title']);
         $page->setContent($objResult->fields['content']);            
         $page->setCustomContent($objResult->fields['custom_content']);
         $page->setCssName($objResult->fields['css_name']);

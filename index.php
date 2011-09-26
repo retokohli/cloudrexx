@@ -479,7 +479,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         }
     }
 
-    $page_title     = contrexx_raw2xhtml($page->getTitle());
+    $page_title     = contrexx_raw2xhtml($page->getContentTitle());
     $page_metatitle = contrexx_raw2xhtml($page->getMetatitle());
     $page_keywords  = contrexx_raw2xhtml($page->getMetakeys());
     $page_robots    = contrexx_raw2xhtml($page->getMetarobots());
