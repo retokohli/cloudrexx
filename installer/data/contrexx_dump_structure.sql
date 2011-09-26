@@ -3803,20 +3803,6 @@ CREATE TABLE `contrexx_module_contact_settings` (
 ####################################################################################################
 ############# NEW CONTENT MANAGER (Doctrine) #######################################################
 ####################################################################################################
-CREATE TABLE `contrexx_ext_log_entries` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `action` varchar(8) NOT NULL,
-  `logged_at` datetime NOT NULL,
-  `version` int(11) NOT NULL,
-  `object_id` varchar(32) DEFAULT NULL,
-  `object_class` varchar(255) NOT NULL,
-  `data` longtext,
-  `username` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `log_class_lookup_idx` (`object_class`),
-  KEY `log_date_lookup_idx` (`logged_at`),
-  KEY `log_user_lookup_idx` (`username`)
-) TYPE=InnoDB;
 
 CREATE TABLE `contrexx_nodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -3825,11 +3811,9 @@ CREATE TABLE `contrexx_nodes` (
   `rgt` int(11) NOT NULL,
   `lvl` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `IDX_E5A18FDD727ACA70` (`parent_id`)
-) TYPE=InnoDB;
-
-ALTER TABLE `contrexx_nodes`
-  ADD CONSTRAINT `contrexx_nodes_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_nodes` (`id`) ON DELETE SET NULL;
+  KEY `IDX_E5A18FDD727ACA70` (`parent_id`),
+  CONSTRAINT `contrexx_nodes_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_nodes` (`id`) ON DELETE SET NULL
+) TYPE=InnoDB AUTO_INCREMENT=432;
 
 CREATE TABLE `contrexx_pages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -3839,6 +3823,7 @@ CREATE TABLE `contrexx_pages` (
   `caching` tinyint(1) NOT NULL,
   `updatedAt` datetime NOT NULL,
   `title` varchar(255) NOT NULL,
+  `contentTitle` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `content` longtext NOT NULL,
   `customContent` varchar(64) DEFAULT NULL,
@@ -3859,15 +3844,24 @@ CREATE TABLE `contrexx_pages` (
   `module` varchar(255) DEFAULT NULL,
   `cmd` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `IDX_D8E86F54460D9FD7` (`node_id`)
-) TYPE=InnoDB;
+  KEY `IDX_D8E86F54460D9FD7` (`node_id`),
+  CONSTRAINT `contrexx_pages_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_nodes` (`id`)
+) TYPE=InnoDB AUTO_INCREMENT=702;
 
-ALTER TABLE `contrexx_pages`
-  ADD CONSTRAINT `contrexx_pages_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_nodes` (`id`);
-
-
-
-
+CREATE TABLE `contrexx_ext_log_entries` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `action` varchar(8) NOT NULL,
+  `logged_at` datetime NOT NULL,
+  `version` int(11) NOT NULL,
+  `object_id` varchar(32) DEFAULT NULL,
+  `object_class` varchar(255) NOT NULL,
+  `data` longtext,
+  `username` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `log_class_lookup_idx` (`object_class`),
+  KEY `log_date_lookup_idx` (`logged_at`),
+  KEY `log_user_lookup_idx` (`username`)
+) TYPE=InnoDB AUTO_INCREMENT=962;
 
 ####################################################################################################
 ############# NEW BLOCK SYSTEM #####################################################################
