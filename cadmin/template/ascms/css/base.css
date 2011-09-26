@@ -458,9 +458,9 @@ div.tabContainer {
 }
 
 .cx-lock-open {
-    background-position-x: 0px;
+    background-position: 0px 0px;
 }
 
 .cx-lock-closed {
-    background-position-x: 21px;
+    background-position: 21px 0px;
 }

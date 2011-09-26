@@ -92,7 +92,8 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
                 'username'      =>  $page->getUsername(),
                 'updatedAt'     =>  $page->getUpdatedAt(),
                 'protection'    =>  $page->getProtection(),
-                'slug'          =>  $page->getSlug()
+                'slug'          =>  $page->getSlug(),
+                'contentTitle'  =>  $page->getContentTitle()
             );
 
             $n = new DateTime('0000-00-00');
@@ -140,7 +141,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $page->setStart(new DateTime($updated_page['start']));
             $page->setEnd(new DateTime($updated_page['end']));
             $page->setTitle($updated_page['title']);
-            $page->setLinktitle($updated_page['title']);
+            $page->setContentTitle($updated_page['contentTitle']);
             $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
@@ -153,7 +154,10 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 
             $page->setCaching((bool) $updated_page['caching']);
 
-            $page->setSkin($updated_page['skin']);
+            $skin = $updated_page['skin'];
+            if(!$skin)
+                $skin = null;
+            $page->setSkin($skin);
             $page->setCustomContent($updated_page['customContent']);
             $page->setCssName($updated_page['cssName']);
 
@@ -175,6 +179,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 
             $page->setType($updated_page['type']);
             $page->setTitle($updated_page['title']);
+            $page->setContentTitle($updated_page['contentTitle']);
             try {
                 $start = new DateTime($updated_page['start']);
                 $end = new DateTime($updated_page['end']);
@@ -195,7 +200,10 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $page->setSlug($updated_page['slug']);
             $page->setCaching((bool) $updated_page['caching']);
 
-            $page->setSkin($updated_page['skin']);
+            $skin = $updated_page['skin'];
+            if(!$skin)
+                $skin = null;
+            $page->setSkin($skin);
             $page->setCustomContent($updated_page['customContent']);
             $page->setCssName($updated_page['cssName']);
 
