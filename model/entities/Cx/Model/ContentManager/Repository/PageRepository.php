@@ -388,4 +388,14 @@ class PageRepository extends EntityRepository {
         return (boolean)$this->findOneBy($crit);
     }
 
+    public function getLastModifiedPages($from, $count) {
+        $query = $this->em->createQuery("
+            select p from Cx\Model\ContentManager\Page p 
+                 order by p.updatedAt asc
+        ");
+        $query->setFirstResult($from);
+        $query->setMaxResults($count);
+
+        return $query->getResult();
+    }
 }

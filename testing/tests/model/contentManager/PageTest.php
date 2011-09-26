@@ -64,17 +64,31 @@ class PageTest extends DoctrineTestCase
 
     public function testSlugGeneration() {
         $p = new \Cx\Model\ContentManager\Page();
-
         $p->setTitle('test');
         $this->assertEquals('test', $p->getSlug());
 
+        $p = new \Cx\Model\ContentManager\Page();
         $p->setTitle('test with space');
         $this->assertEquals('test-with-space', $p->getSlug());
 
+        $p = new \Cx\Model\ContentManager\Page();
         $p->setTitle('test ümläut');
         $this->assertEquals('test-mlut', $p->getSlug());
 
+        $p = new \Cx\Model\ContentManager\Page();
         $p->setTitle('123');
         $this->assertEquals('123', $p->getSlug());
+    }
+
+    public function testImplicitExplicitSlugSetting() {
+        $p = new \Cx\Model\ContentManager\Page();
+        $p->setTitle('test');
+        $this->assertEquals('test', $p->getSlug());
+
+        $p->setTitle('thisshouldntaffecttheslug');
+        $this->assertEquals('test', $p->getSlug());
+
+        $p->setSlug('butThisShould');
+        $this->assertEquals('butThisShould', $p->getSlug());
     }
 }
