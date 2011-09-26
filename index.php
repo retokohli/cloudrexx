@@ -392,6 +392,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             $crit = array(
                  'module' => $section,
                  'lang' => FRONTEND_LANG_ID,
+                 'cmd' => NULL
             );
             if(isset($_REQUEST['cmd']))
                 $crit['cmd'] = $_REQUEST['cmd'];
