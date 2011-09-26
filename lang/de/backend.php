@@ -1404,3 +1404,6 @@ $_ARRAYLANG['TXT_GENERAL_OPTIONS'] = "Datumsgesteuerte Veröffentlichung";
 $_ARRAYLANG['TXT_MENU_NAME'] = "Linkname (für die Navigation)";
 $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_UPDATING'] = "Fehler beim Aktualisieren des Benutzerkontos %1\$s";
 $_ARRAYLANG['TXT_THEMES'] = "Design Vorlage";
+
+$_ARRAYLANG['TXT_CORE_NAVTITLE'] = "Titel (Navigation)";
+$_ARRAYLANG['TXT_CORE_CONTENTTITLE'] = "Titel (Seite)";
