@@ -199,6 +199,10 @@ class Page extends \Cx\Model\Base\EntityBase
     public function setTitle($title)
     {
         $this->title = $title;
+
+        //set link title too if it hasn't been set yet.
+        if($this->getLinktitle() == null)
+            $this->setLinktitle($this->title);
     }
 
     /**
@@ -209,7 +213,8 @@ class Page extends \Cx\Model\Base\EntityBase
     public function setLinktitle($title)
     {
         $this->linktitle = $title;
-        $this->refreshSlug();
+        if($this->getSlug() == null)
+            $this->refreshSlug();
     }
 
 
