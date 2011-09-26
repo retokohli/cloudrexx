@@ -22,14 +22,14 @@ Cx\Model\ContentManager\Page:
     updatedAt:
       type: datetime    
 
-    #content    
-    title:
+    #content
+    title: #for the navigation
       type: string
       length: 255
       gedmo:
         - versioned
 
-    linktitle:
+    contentTitle:
       type: string
       length: 255
       gedmo:
