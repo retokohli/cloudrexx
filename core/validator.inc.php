@@ -143,7 +143,7 @@ function contrexx_raw2xhtml($raw)
     if (is_array($raw)) {
         $arr = array();
         foreach ($raw as $i => $_raw) {
-            $arr[$i] = &contrexx_raw2xhtml($_raw);
+            $arr[$i] = contrexx_raw2xhtml($_raw);
         }
         return $arr;
     }
@@ -165,7 +165,7 @@ function contrexx_input2raw($input)
     if (is_array($input)) {
         $arr = array();
         foreach ($input as $i => $_input) {
-            $arr[$i] = &contrexx_input2raw($_input);
+            $arr[$i] = contrexx_input2raw($_input);
         }
         return $arr;
     }
@@ -187,7 +187,7 @@ function contrexx_input2int($input)
     if (is_array($input)) {
         $arr = array();
         foreach ($input as $i => $_input) {
-            $arr[$i] = &contrexx_input2int($_input);
+            $arr[$i] = contrexx_input2int($_input);
         }
         return $arr;
     }
@@ -209,7 +209,7 @@ function contrexx_input2float($input)
     if (is_array($input)) {
         $arr = array();
         foreach ($input as $i => $_input) {
-            $arr[$i] = &contrexx_input2float($_input);
+            $arr[$i] = contrexx_input2float($_input);
         }
         return $arr;
     }
@@ -257,7 +257,7 @@ function contrexx_raw2db($raw)
     if (is_array($raw)) {
         $arr = array();
         foreach ($raw as $i => $_raw) {
-            $arr[$i] = &contrexx_raw2db($_raw);
+            $arr[$i] = contrexx_raw2db($_raw);
         }
         return $arr;
     }
@@ -278,7 +278,7 @@ function contrexx_raw2xml($raw)
     if (is_array($raw)) {
         $arr = array();
         foreach ($raw as $i => $_raw) {
-            $arr[$i] = &contrexx_raw2xml($_raw);
+            $arr[$i] = contrexx_raw2xml($_raw);
         }
         return $arr;
     }
@@ -302,7 +302,7 @@ function contrexx_raw2encodedUrl($source, $encodeDash=false)
     if (is_array($source)) {
         $arr = array();
         foreach ($source as $i => $_source) {
-            $arr[$i] = &contrexx_raw2encodedUrl($_source, $encodeDash);
+            $arr[$i] = contrexx_raw2encodedUrl($_source, $encodeDash);
         }
         return $arr;
     }
@@ -332,7 +332,7 @@ function contrexx_remove_script_tags($raw)
     if (is_array($raw)) {
         $arr = array();
         foreach ($raw as $i => $_raw) {
-            $arr[$i] = &contrexx_remove_script_tags($_raw);
+            $arr[$i] = contrexx_remove_script_tags($_raw);
         }
         return $arr;
     }
@@ -342,5 +342,3 @@ function contrexx_remove_script_tags($raw)
     $result = preg_replace('/<\s*script[^>]*>/is', '', $result);
     return $result;
 }
-
-?>
