@@ -228,8 +228,10 @@ class Contrexx_Content_migration
         $page->setDisplay(($objResult->fields['displaystatus'] === 'on' ? 1 : 0));
         $page->setActive($objResult->fields['activestatus']);
         $page->setTarget($objResult->fields['target']);
-        $page->setModule($objModules->fields['moduleName']);
-        $page->setCmd($objResult->fields['cmd']);
+        if($objModules->fields['moduleName'])
+            $page->setModule($objModules->fields['moduleName']);
+        if($objResult->fields['cmd'])
+            $page->setCmd($objResult->fields['cmd']);
 
         //set the type the way the type is supposed to be set. 
         if($page->getModule())
