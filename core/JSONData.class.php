@@ -43,15 +43,13 @@ class JSONData {
             $moved_node->setParent($parent_node);
             $this->em->persist($parent_node);
             $this->em->persist($moved_node);
-            $this->em->flush();
+//            $this->em->flush();
 
-/* following block is for changes in nestedset ordering. needs to be fixed and tested with a known good tree.
+
 $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
 
-//$nodeRepo->verify();
-//$em->clear();
 
-            $nodeRepo->moveDown($moved_node, true);
+            $nodeRepo->moveUp($moved_node, true);
             $nodeRepo->moveDown($moved_node, $_POST['position']);
 
     // TODO: Changes in ordering seemingly aren't persisted
@@ -59,7 +57,7 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
             $this->em->persist($parent_node);
 
             $this->em->flush();
-*/
+
             die();
         }
 		elseif (isset($_GET['class']) && $_GET['class'] == 'page' && $_GET['action'] == 'get') {
