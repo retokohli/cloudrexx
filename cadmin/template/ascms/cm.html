@@ -70,25 +70,17 @@
             <input type="hidden" name="page[node]" id="pageNode" value="" />
             <div class="clearfix">
               <div class="additionalInfo">
-                <label class="dontShow" for="input1">{TXT_CORE_PAGETITLE}</label><input id="title" type="text" value="{PAGETITLE}" name="page[title]" />
-                <a href="#" id="showHideInfo">Show</a>
+                <div class="headerInfo">
+                  <label for="title">{TXT_CORE_NAVTITLE}</label>
+                  <input id="title" type="text" value="{PAGETITLE}" name="page[title]"/>
+                  <input id="headerTitlesLock" type="checkbox" />
+                  <label for="contentTitle">{TXT_CORE_CONTENTTITLE}</label>
+                  <input id="contentTitle" type="text" value="{CONTENTTITLE}" name="page[contentTitle]" />
+                  <a href="#" id="showHideInfo">Show</a>
+                </div>
               </div>
               <div id="additionalInfo" class="additionalInfo">
-                <div class="clearfix">
-                  <h2>{TXT_CORE_ACTIVE_FROM_TO}</h2>
-
-                  <div class="twoCols">
-                    <label for="start" class="twoCols">{TXT_CORE_ACTIVE_FROM}</label>
-                    <input id="start" class="twoCols date" type="text" value="{ACTIVE_FROM}" name="page[start]" />
-                  </div>
-
-                  <div class="twoCols">
-                    <label for="end" class="twoCols">{TXT_CORE_ACTIVE_TO}</label>
-                    <input id="end" class="twoCols date" type="text" value="{ACTIVE_TO}" name="page[end]" />
-                  </div>
-                </div>
                 <h2>{TXT_CORE_META_INFORMATION}</h2>
-
                 <div class="clearfix space">
                   <label for="metatitle" class="oneCol">{TXT_CORE_META_TITLE}</label>
                   <input id="metatitle" class="oneCol" type="text" value="{META_TITLE}" name="page[metatitle]" />
@@ -101,10 +93,19 @@
                   <label for="metadesc" class="oneCol">{TXT_CORE_META_DESC}</label>
                   <input id="metadesc" class="oneCol" type="text" value="{META_DESC}" name="page[metadesc]" />
                 </div>
-                <div class="clearfix">
+                <div class="clearfix space">
                   <label for="metarobots" class="oneCol">{TXT_CORE_META_ROBOTS}</label>
                   <input id="metarobots" class="oneCol" type="checkbox" value="index" name="page[metarobots]" />
                 </div>
+                <h2>{TXT_CORE_ACTIVE_FROM_TO}</h2>
+                <div class="clearfix">
+                  <label for="start" class="twoCols">{TXT_CORE_ACTIVE_FROM}</label>
+                  <input id="start" class="twoCols date" type="text" value="{ACTIVE_FROM}" name="page[start]" />
+
+                  <label for="end" class="twoCols">{TXT_CORE_ACTIVE_TO}</label>
+                  <input id="end" class="twoCols date" type="text" value="{ACTIVE_TO}" name="page[end]" />
+                </div>
+
               </div>
 
             </div>

@@ -120,13 +120,14 @@ h1{ font-size: 20px }
 #publish span, #save span{
     background-position: 0 -28px
 }
+
 #additionalInfo{
     display:none;
 }
 .additionalInfo{
     float: left;
     overflow: hidden;
-    width: 860px;
+    width: 880px;
     padding: 0 0 10px;
 }
 .additionalInfo h2{
@@ -210,6 +211,10 @@ div.date img{
     padding: 0 0 0 5px;
     font-size: 18px;
     border: 1px solid #aaa;
+}
+
+.headerInfo input {
+    width: 300px;
 }
 
 #showHideInfo{

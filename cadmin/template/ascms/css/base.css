@@ -445,3 +445,22 @@ div.tabContainer {
   padding: 0;
   margin-right: 3px;
 }
+
+
+/*
+  styles for javascript helpers.
+*/
+.cx-lock {
+    background-image: url('../../../images/icons/switch_lock.png');
+    width: 21px;
+    height: 16px;
+    display: inline-block;
+}
+
+.cx-lock-open {
+    background-position-x: 0px;
+}
+
+.cx-lock-closed {
+    background-position-x: 21px;
+}
