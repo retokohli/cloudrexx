@@ -233,7 +233,7 @@ class Contrexx_Content_migration
 
         //set the type the way the type is supposed to be set. 
         if($page->getModule())
-            $page->setType('module');
+            $page->setType('application');
     }
     
     function pageGrouping()
