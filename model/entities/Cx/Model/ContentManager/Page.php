@@ -23,11 +23,6 @@ class Page extends \Cx\Model\Base\EntityBase
     private $title;
 
     /**
-     * @var string $linktitle
-     */
-    private $linktitle;
-
-    /**
      * @var text $content
      */
     private $content;
@@ -198,25 +193,16 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setTitle($title)
     {
+        $wasEmpty = $this->getTitle() == '';
+
         $this->title = $title;
-
-        //set link title too if it hasn't been set yet.
-        if($this->getLinktitle() == null)
-            $this->setLinktitle($this->title);
-    }
-
-    /**
-     * Set linktitle
-     *
-     * @param string $title
-     */
-    public function setLinktitle($title)
-    {
-        $this->linktitle = $title;
-        if($this->getSlug() == null)
+        
+        if($wasEmpty)
             $this->refreshSlug();
-    }
 
+        if($this->getContentTitle() == '')
+            $this->setContentTitle($this->title);
+    }
 
     /**
      * Sets a correct slug based on the current title.
@@ -234,7 +220,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return string
      */
     protected function getSlugProposal() {
-        $slug = $this->getLinktitle();
+        $slug = $this->getTitle();
         $slug = preg_replace('/\s/', '-', $slug);
         $slug = preg_replace('/[^a-zA-Z0-9-_]/', '', $slug);
         return $slug;
@@ -252,16 +238,6 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getTitle()
     {
         return $this->title;
-    }
-
-    /**
-     * Get linktitle
-     *
-     * @return string $title
-     */
-    public function getLinktitle()
-    {
-        return $this->linktitle;
     }
 
     /**
@@ -917,5 +893,30 @@ class Page extends \Cx\Model\Base\EntityBase
 
         $this->setLang($source->getLang());
         $this->setUsername($source->getUsername());
+    }
+    /**
+     * @var string $contentTitle
+     */
+    private $contentTitle;
+
+
+    /**
+     * Set contentTitle
+     *
+     * @param string $contentTitle
+     */
+    public function setContentTitle($contentTitle)
+    {
+        $this->contentTitle = $contentTitle;
+    }
+
+    /**
+     * Get contentTitle
+     *
+     * @return string $contentTitle
+     */
+    public function getContentTitle()
+    {
+        return $this->contentTitle;
     }
 }
