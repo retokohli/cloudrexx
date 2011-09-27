@@ -142,7 +142,7 @@ die();
             }
             else {
                 $source_page = $pageRepo->find($_POST['source_page']);
-                $page = $pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($updated_page['lang']), true, true);
+                $page = $pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($updated_page['lang']), true, true, true);
             }
 
             $page->setType($updated_page['type']);
@@ -159,8 +159,8 @@ die();
             $page->setMetarobots($updated_page['metarobots']);
 
             $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
-            $page->setModule($_POST['module']);
-            $page->setCmd($_POST['cm_cmd']);
+            $page->setModule($updated_page['module']);
+            $page->setCmd($updated_page['cm_cmd']);
             $page->setTarget($updated_page['target']);
 
             $page->setCaching((bool) $updated_page['caching']);
