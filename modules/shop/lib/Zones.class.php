@@ -417,15 +417,17 @@ class Zones
         }
         UpdateUtil::table($table_name, $table_structure, $table_index);
 
+        $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipment';
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
-        $table_name_new = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
+        if (UpdateUtil::table_exist($table_name_old)) {
+            UpdateUtil::table_rename($table_name_old, $table_name);
+        }
         $table_structure = array(
             'shipper_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true, 'renamefrom' => 'shipment_id'),
             'zone_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'zones_id'),
         );
         $table_index = array();
         UpdateUtil::table($table_name, $table_structure, $table_index);
-        UpdateUtil::table_rename($table_name, $table_name_new);
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_countries';
         $table_structure = array(
