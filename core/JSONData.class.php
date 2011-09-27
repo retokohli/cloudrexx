@@ -26,6 +26,14 @@ class JSONData {
     // get_children will probably have to stick with the json format from renderTree, for reasonable
     // jsTree compat.
 	function jsondata() {
+        if ($_GET['operation'] == 'foobar') {
+$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+$nodeRepo->verify();
+$this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+print_r($nodeRepo->recover());
+
+die();
+        }
 		if (isset($_GET['operation']) && $_GET['operation'] == 'get_children') {
 			return $this->renderTree();
 		}
@@ -43,14 +51,12 @@ class JSONData {
             $moved_node->setParent($parent_node);
             $this->em->persist($parent_node);
             $this->em->persist($moved_node);
-//            $this->em->flush();
-
-
-$this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+            $this->em->flush();
 
 
             $nodeRepo->moveUp($moved_node, true);
-            $nodeRepo->moveDown($moved_node, $_POST['position']);
+            if ($_POST['position'])
+                $nodeRepo->moveDown($moved_node, $_POST['position']);
 
     // TODO: Changes in ordering seemingly aren't persisted
             $this->em->persist($moved_node);
@@ -117,20 +123,27 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 		}
         elseif ($_POST['page']['id'] == 'new') {
     		$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+      		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+
             if ($_POST['page']['node']) {
                 $node = $nodeRepo->find($_POST['page']['node']);                
             }
+
+            $updated_page = $_POST['page'];
+
             if (!$node) {
                 $node = new \Cx\Model\ContentManager\Node();
                 $node->setParent($nodeRepo->getRoot());
 
                 $this->em->persist($node);
+
+                $page = new \Cx\Model\ContentManager\Page();
+                $page->setNode($node);
             }
-
-            $page = new \Cx\Model\ContentManager\Page();
-            $page->setNode($node);
-
-            $updated_page = $_POST['page'];
+            else {
+                $source_page = $pageRepo->find($_POST['source_page']);
+                $page = $pageRepo->translate($source_page, FWLanguage::getLanguageIdByCode($updated_page['lang']), true, true);
+            }
 
             $page->setType($updated_page['type']);
 
@@ -268,7 +281,8 @@ $this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLo
 				if (in_array($page->getLang(), $languages)) continue;
 
 				if (!empty($languages))	$output .= ",\n";
-				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"title\" : \"".addslashes($page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
+                // str_replace('"', '\"' instead of addslashes because we don't want to catch single quotes
+				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
 				$languages[] = $page->getLang();
 			}
 			$output .= $indent."\n".$indent."  ],\n";
