@@ -187,36 +187,41 @@ die();
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 
             $page = $pageRepo->find($updated_page['id']);
+            
+            if ($updated_page['type']) {
+                $page->setType($updated_page['type']);
+                $page->setTitle($updated_page['title']);
+                $page->setContentTitle($updated_page['contentTitle']);
+                try {
+                    $start = new DateTime($updated_page['start']);
+                    $end = new DateTime($updated_page['end']);
+                } catch (Exception $e) {
+                    $start = new DateTime('0000-00-00 00:00');
+                    $end = new DateTime('0000-00-00 00:00');
+                }
+                $page->setStart($start);
+                $page->setEnd($end);
+                $page->setMetatitle($updated_page['metatitle']);
+                $page->setMetakeys($updated_page['metakeys']);
+                $page->setMetadesc($updated_page['metadesc']);
+                $page->setMetarobots($updated_page['metarobots']);
+                $page->setContent($updated_page['content']);
+                $page->setModule($updated_page['module']);
+                $page->setCmd($updated_page['cm_cmd']);
+                $page->setTarget($updated_page['target']);
+                $page->setSlug($updated_page['slug']);
+                $page->setCaching((bool) $updated_page['caching']);
 
-            $page->setType($updated_page['type']);
-            $page->setTitle($updated_page['title']);
-            $page->setContentTitle($updated_page['contentTitle']);
-            try {
-                $start = new DateTime($updated_page['start']);
-                $end = new DateTime($updated_page['end']);
-            } catch (Exception $e) {
-                $start = new DateTime('0000-00-00 00:00');
-                $end = new DateTime('0000-00-00 00:00');
+                $skin = $updated_page['skin'];
+                if(!$skin)
+                    $skin = null;
+                $page->setSkin($skin);
+                $page->setCustomContent($updated_page['customContent']);
+                $page->setCssName($updated_page['cssName']);
             }
-            $page->setStart($start);
-            $page->setEnd($end);
-            $page->setMetatitle($updated_page['metatitle']);
-            $page->setMetakeys($updated_page['metakeys']);
-            $page->setMetadesc($updated_page['metadesc']);
-            $page->setMetarobots($updated_page['metarobots']);
-            $page->setContent($updated_page['content']);
-            $page->setModule($updated_page['module']);
-            $page->setCmd($updated_page['cm_cmd']);
-            $page->setTarget($updated_page['target']);
-            $page->setSlug($updated_page['slug']);
-            $page->setCaching((bool) $updated_page['caching']);
-
-            $skin = $updated_page['skin'];
-            if(!$skin)
-                $skin = null;
-            $page->setSkin($skin);
-            $page->setCustomContent($updated_page['customContent']);
-            $page->setCssName($updated_page['cssName']);
+            elseif ($updated_page['status']) {
+                $page->setStatus($updated_page['status']);
+            }
 
             $this->em->persist($page);
             $this->em->flush();
@@ -282,7 +287,7 @@ die();
 
 				if (!empty($languages))	$output .= ",\n";
                 // str_replace('"', '\"' instead of addslashes because we don't want to catch single quotes
-				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"icon\" : \"/lib/javascript/jquery/ui/images/page-".$page->getStatus().".png\", \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
+				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"icon\" : \"".$page->getStatus()."\", \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
 				$languages[] = $page->getLang();
 			}
 			$output .= $indent."\n".$indent."  ],\n";
