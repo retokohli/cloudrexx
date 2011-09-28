@@ -282,7 +282,7 @@ die();
 
 				if (!empty($languages))	$output .= ",\n";
                 // str_replace('"', '\"' instead of addslashes because we don't want to catch single quotes
-				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
+				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"icon\" : \"/lib/javascript/jquery/ui/images/page-".$page->getStatus().".png\", \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
 				$languages[] = $page->getLang();
 			}
 			$output .= $indent."\n".$indent."  ],\n";
@@ -292,9 +292,9 @@ die();
 				$output .= $this->tree_to_json($node, $level+1);				
 			}
 
-			$output .= $indent."  \"icon\" : \"page\",\n";
+//			$output .= $indent."  \"icon\" : \"page\",\n";
 			$output .= $indent."  \"metadata\" : {\n";
-			$output .= $indent."    \"emblem\" : [\"redirect\"]\n";
+			$output .= $indent."    \"emblem\" : []\n";
 			$output .= $indent."  }\n";
 			$output .= $indent." }";
 		}
