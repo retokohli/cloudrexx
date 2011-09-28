@@ -92,8 +92,9 @@ $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'] = "Select All";
 $_ARRAYLANG['TXT_BLOCK_UNSELECT_ALL'] = "Unselect all";
 $_ARRAYLANG['TXT_BLOCK_SHOW_ALWAYS'] = "Immer anzeigen";
 $_ARRAYLANG['TXT_BLOCK_SHOW_TIMED'] = "Zeitgesteuertes Anzeigen";
-$_ARRAYLANG['TXT_BLOCK_LANGUAGE'] = "Sprache";
+$_ARRAYLANG['TXT_BLOCK_LANGUAGE'] = "Language";
 $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'] = "Block im globalen Platzhalter anzeigen";
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'] = "Anzeigedauer";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Content";
+$_ARRAYLANG['TXT_BLOCK_ORDER']   = "Order";
 ?>

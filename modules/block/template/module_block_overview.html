@@ -64,30 +64,34 @@ function blockDeleteBlock(blockId, blockName)
   <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
     <tbody>
       <tr>
-        <th colspan="7">{TXT_BLOCK_BLOCKS}</th>
+        <th colspan="9">{TXT_BLOCK_BLOCKS}</th>
       </tr>
       <tr class="row3">
-        <td width="1%" style="text-align:left; font-weight:bold;">#</td>
+        <td width="1%" style="text-align:center;font-weight:bold;">#</td>
         <td width="1%" style="text-align:left; font-weight:bold;">{TXT_BLOCK_STATUS}</td>
-        <td width="23%" style="font-weight:bold;">{TXT_BLOCK_NAME}</td>
-        <td width="20%" style="font-weight:bold;">
+        <td width="2%" style="font-weight:bold;">{TXT_BLOCK_ORDER}</td>
+        <td width="18%" style="font-weight:bold;">{TXT_BLOCK_NAME}</td>
+        <td width="15%" style="font-weight:bold;">
             <select name="blockCategory" onchange="location.href='{DIRECTORY_INDEX}?'+__CSRF__PARAM__+'&cmd=block&catId='+this.options[this.options.selectedIndex].value">
                 <option value="0">{TXT_BLOCK_CATEGORIES_ALL}</option>
                 {BLOCK_CATEGORIES_DROPDOWN}
             </select>
         </td>
+        <td width="10%" style="text-align:left;font-weight:bold;">{TXT_BLOCK_LANGUAGE}</td>
         <td width="10%" style="font-weight:bold;">{TXT_BLOCK_PLACEHOLDER}</td>
-        <td width="40%" style="font-weight:bold;">{TXT_BLOCK_RANDOM}</td>
+        <td width="30%" style="font-weight:bold;">{TXT_BLOCK_RANDOM}</td>
         <td width="5%" style="text-align:right; font-weight:bold;">{TXT_BLOCK_FUNCTIONS}</td>
       </tr>
       <!-- BEGIN blockBlockList -->
         <tr class="{BLOCK_ROW_CLASS}" style="height:20px;">
           <td width="1%" style="text-align:right; font-weight:bold;"><input type="checkbox" name="selectedBlockId[]" id="selectedBlockId" value="{BLOCK_ID}" /></td>
           <td width="1%" style="text-align:center; font-weight:bold;">{BLOCK_STATUS}</td>
-          <td width="23%"><input maxlength="5" size="1" value="{BLOCK_ORDER}" name="displayorder[{BLOCK_ID}]" >&nbsp;<a href="index.php?cmd=block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}">{BLOCK_NAME}</a></td>
-          <td width="20%" style="text-align:left;">{BLOCK_CATEGORY_NAME}</td>
+          <td width="2%"><input maxlength="5" size="1" value="{BLOCK_ORDER}" name="displayorder[{BLOCK_ID}]" /></td>
+          <td width="18%"><a href="index.php?cmd=block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}">{BLOCK_NAME}</a></td>
+          <td width="15%" style="text-align:left;">{BLOCK_CATEGORY_NAME}</td>
+          <td width="10%" style="text-align:left;">{BLOCK_LANGUAGES_NAME}</td>
           <td width="10%">[[{BLOCK_PLACEHOLDER}]]</td>
-          <td width="40%" style="text-align:left;">{BLOCK_RANDOM}&nbsp;{BLOCK_RANDOM_2}&nbsp;{BLOCK_RANDOM_3}</td>
+          <td width="30%" style="text-align:left;">{BLOCK_RANDOM}&nbsp;{BLOCK_RANDOM_2}&nbsp;{BLOCK_RANDOM_3}&nbsp;{BLOCK_RANDOM_4}</td>
           <td width="5%" style="text-align:right;">
             <a href="index.php?cmd=block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}"><img src="images/icons/edit.gif" width="16" height="16" alt="{BLOCK_MODIFY}" border="0" /></a>
             <!-- <a href="index.php?cmd=block&amp;act=copy&amp;blockId={BLOCK_ID}" title="{BLOCK_COPY}"><img src="images/icons/copy.gif" width="16" height="16" alt="{BLOCK_COPY}" border="0" /></a>-->

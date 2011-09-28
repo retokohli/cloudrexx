@@ -110,8 +110,19 @@ class blockLibrary
             $objResult = $objDatabase->Execute(sprintf($query, DBPREFIX.'module_block_blocks',
                                                                $where));
             if ($objResult !== false) {
-                $this->_arrBlocks = array();
-                while (!$objResult->EOF) {
+                $this->_arrBlocks = array();                
+                
+                while (!$objResult->EOF) {  
+                    $langArr          = array();
+                    $objBlockLang = $objDatabase->Execute("SELECT lang_id FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$objResult->fields['id']." ORDER BY lang_id ASC");
+                    
+                    if ($objBlockLang) {
+                        while (!$objBlockLang->EOF) {                        
+                            $langArr[] = $objBlockLang->fields['lang_id'];
+                            $objBlockLang->MoveNext();
+
+                        }
+                    }
                     $this->_arrBlocks[$objResult->fields['id']] = array(
                         'cat'       => $objResult->fields['cat'],
                         'start'     => $objResult->fields['start'],
@@ -124,6 +135,7 @@ class blockLibrary
                         'global'    => $objResult->fields['global'],
                         'active'    => $objResult->fields['active'],
                         'name'      => $objResult->fields['name'],
+                        'lang'      => array_unique($langArr),
                     );
                     $objResult->MoveNext();
                 }
