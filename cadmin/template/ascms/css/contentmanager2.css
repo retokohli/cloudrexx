@@ -85,6 +85,44 @@ h1{ font-size: 20px }
     width: 332px;
     overflow: hidden;
 }
+#site-tree li a {
+    padding-left: 30px;
+}
+#site-tree li a ins {
+    position: absolute;
+    margin-left: -30px;
+    width: 18px;
+    height: 18px;
+    overflow: hidden;
+}
+#site-tree li a ins.active {
+    background-image: url(/lib/javascript/jquery/ui/images/page-active.png);
+}
+#site-tree li a ins.hidden {
+    background-image: url(/lib/javascript/jquery/ui/images/page-hidden.png);
+}
+#site-tree li a ins.disabled {
+    background-image: url(/lib/javascript/jquery/ui/images/page-disabled.png);
+}
+
+#site-tree li a ins:hover {
+    background-color: #999;
+    width: 100px;
+    height: 55px;
+    z-index: 5;
+    background-position: 3px 3px;
+    padding: 3px;
+    margin: -3px 0 0 -34px;
+}
+#site-tree li a ins a {
+    padding-left: 3px;
+    margin-left: 25px;
+}
+#site-tree li a ins a:hover {
+    background-color: #999;
+    width: 100%;
+}
+
 #cm-tabs{
     font-size: 12px;
     left: -1px;
