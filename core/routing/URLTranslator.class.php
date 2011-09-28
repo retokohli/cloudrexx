@@ -101,7 +101,12 @@ class URLTranslator extends LanguageExtractor {
     }
 
     /**
-     * 
+     * Called from index.php, candidate for refactoring.
+     * Takes the current page, the evaluated url and the global template.
+     * Sets the placeholders as described in @link buildPlaceholderArray().
+     * @param Cx\Model\ContentManager\Page $page
+     * @param Cx\Core\Routing\URL $pageURL
+     * @param mixed $template
      */
     public function setPlaceholdersIn($page, $pageURL, $template) {
         $placeholders = $this->buildPlaceholderArray($page, $pageURL);

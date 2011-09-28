@@ -55,7 +55,6 @@ class PageRepository extends EntityRepository {
      *       associations from being destroyed.
      *       naturally, this generates big overhead. this strategy should be rethought.
      * @param Node $rootNode limit query to subtree.
-     * @param int $lang limit query to language.
      * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeByTitle()
      * @return array
      */
