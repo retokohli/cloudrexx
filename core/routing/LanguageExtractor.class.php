@@ -54,7 +54,7 @@ class LanguageExtractor {
         //extract the language
         $path = $url->getPath();
         $matches = array();
-        preg_match('#^(.*?)/#', $path, $matches);
+        preg_match('#^(.*?)(/|$)#', $path, $matches);
 
         if(!isset($matches[1]))
             throw new LanguageExtractorException('No language information found for "' . $url->getDomain() . $url->getPath() . '"');

@@ -47,23 +47,25 @@ class PageRepository extends EntityRepository {
     /**
      * Get a tree of all Nodes with their Pages assigned.
      *
+     * @todo there has once been a $lang param here, but fetching only a certain language fills 
+     *       the pages collection on all nodes with only those fetched pages. this means calling
+     *       getPages() later on said nodes will yield a collection containing only a subset of
+     *       all pages linked to the node. now, we're fetching all pages and sorting those not
+     *       matching the desired language out in @link getTreeByTitle() to prevent the
+     *       associations from being destroyed.
+     *       naturally, this generates big overhead. this strategy should be rethought.
      * @param Node $rootNode limit query to subtree.
      * @param int $lang limit query to language.
      * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeByTitle()
      * @return array
      */
-    public function getTree($rootNode = null, $lang = null, $titlesOnly = false) {
+    public function getTree($rootNode = null, $titlesOnly = false) {
         $repo = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $qb = $this->em->createQueryBuilder();
 
         $joinConditionType = null;
         $joinCondition = null;
 
-        //language filtering
-        if($lang) {
-            $joinConditionType = Expr\Join::WITH;
-            $joinCondition = $qb->expr()->eq('p.lang',$lang);
-        }
         $qb->addSelect('p');
 
         //join the pages
@@ -83,7 +85,8 @@ class PageRepository extends EntityRepository {
      * @return array ( title => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
      */
     public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugAsTitle=false) {
-        $tree = $this->getTree($rootNode, $lang, true);
+        $tree = $this->getTree($rootNode, true);
+
         $result = array();
 
         $isRootQuery = !$rootNode || ( isset($rootNode) && $rootNode->getLvl() == 0);
@@ -323,7 +326,7 @@ class PageRepository extends EntityRepository {
      *
      * @returns \Cx\Model\ContentManager\Page the copy
      */
-    public function translate($source, $targetLang, $activate = false, $copyContent = false, $copyModuleAndCmd = false) {
+    public function translate($source, $targetLang, $activate = false, $copyContent = false, $copyModuleAndCmd = false, $copyOtherProperties = false) {
         //copy data.
         $page = new \Cx\Model\ContentManager\Page();
 

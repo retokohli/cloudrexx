@@ -13,16 +13,16 @@ class URL {
      */
     protected $domain = null;
     /**
-     * /The/Module?a=10&b=foo
-     * /index.php?section=x&cmd=y
-     * /The/Special/Module/With/Params
+     * The/Module?a=10&b=foo
+     * index.php?section=x&cmd=y
+     * The/Special/Module/With/Params
      * @var string
      */
     protected $path = null;
     /**
-     * /The/Module
-     * /index.php
-     * /The/Special/Module/With/Params
+     * The/Module
+     * index.php
+     * The/Special/Module/With/Params
      * @var string
      */
     protected $suggestedTargetPath = '';
@@ -35,9 +35,9 @@ class URL {
     protected $suggestedParams = '';
 
     /**
-     * /The/Module
-     * /Found/Path/To/Module
-     * /The/Special/Module
+     * The/Module
+     * Found/Path/To/Module
+     * The/Special/Module
      * @var string
      */
     protected $targetPath = null;
@@ -145,5 +145,9 @@ class URL {
         $protocol = 'http';
 
         return new URL($protocol.'://'.$host.'/'.$request);
+    }
+
+    public function __toString() {
+        return $this->domain.'://'.$this->path;
     }
 }
