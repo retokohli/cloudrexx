@@ -261,6 +261,8 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_STATUS'                  => $_ARRAYLANG['TXT_BLOCK_STATUS'],
             'TXT_BLOCK_CATEGORY'                => $_ARRAYLANG['TXT_BLOCK_CATEGORY'],
             'TXT_BLOCK_CATEGORIES_ALL'          => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ALL'],
+            'TXT_BLOCK_ORDER'                   => $_ARRAYLANG['TXT_BLOCK_ORDER'],
+            'TXT_BLOCK_LANGUAGE'                => $_ARRAYLANG['TXT_BLOCK_LANGUAGE'],
             'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
             'CSRF_KEY'                          => CSRF::key(),
@@ -296,9 +298,9 @@ class blockManager extends blockLibrary
                 }
 
                 if ($arrBlock['random4'] ==  '1') {
-                    $random3 = "<img src='images/icons/refresh.gif' width='16' height='16' border='0' alt='random 4' title='random 4' />";
+                    $random4 = "<img src='images/icons/refresh4.gif' width='16' height='16' border='0' alt='random 4' title='random 4' />";
                 } else {
-                    $random3 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
+                    $random4 = "<img src='images/icons/pixel.gif' width='16' height='16' border='0' alt='' title='' />";
                 }
 
                 if ($arrBlock['global'] ==  '1') {
@@ -307,12 +309,19 @@ class blockManager extends blockLibrary
                     $global = "&nbsp;";
                 }
 
+                $lang = array();
+                foreach ($arrBlock['lang'] as $langId) {
+                    $lang[] = FWLanguage::getLanguageCodeById($langId);
+                }
+                $langString = implode(', ',$lang);
+                
                 $this->_objTpl->setVariable(array(
                     'BLOCK_ROW_CLASS'       => $rowNr % 2 ? "row1" : "row2",
                     'BLOCK_ID'              => $blockId,
                     'BLOCK_RANDOM'          => $random,
                     'BLOCK_RANDOM_2'        => $random2,
                     'BLOCK_RANDOM_3'        => $random3,
+                    'BLOCK_RANDOM_4'        => $random4,
                     'BLOCK_CATEGORY_NAME'   => $this->_categoryNames[$arrBlock['cat']],
                     'BLOCK_GLOBAL'          => $global,
                     'BLOCK_ORDER'           => $arrBlock['order'],
@@ -321,11 +330,12 @@ class blockManager extends blockLibrary
                     'BLOCK_MODIFY'          => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                     'BLOCK_COPY'            => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                     'BLOCK_DELETE'          => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                    'BLOCK_STATUS'          => $status
+                    'BLOCK_STATUS'          => $status,
+                    'BLOCK_LANGUAGES_NAME'  => $langString
                 ));
                 $this->_objTpl->parse('blockBlockList');
 
-                $rowNr ++;
+                $rowNr ++;                
             }
         }
     }
@@ -608,7 +618,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_UNSELECT_ALL'            => $_ARRAYLANG['TXT_BLOCK_UNSELECT_ALL'], 
             'TXT_BLOCK_GLOBAL_PLACEHOLDERS'     => $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'],
             'TXT_BLOCK_DISPLAY_TIME'            => $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'],
-            'TXT_BLOCK_FORM_DESC'               => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
+            'TXT_BLOCK_FORM_DESC'               => $_ARRAYLANG['TXT_BLOCK_CONTENT'],            
             'BLOCK_CONTENT_TEXT'                => get_wysiwyg_editor('blockTextEditor', '', 'shop'),
         ));
 
