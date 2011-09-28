@@ -1157,6 +1157,7 @@ require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
 
 $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
+$languageExtractor->setPlaceholdersIn($page, $url, $objTemplate);
 
 // set global content variables
 $page_content = str_replace('{PAGE_URL}', htmlspecialchars($objInit->getPageUri()), $page_content);
@@ -1172,8 +1173,6 @@ $lg = new LinkGenerator($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/');
 $lg->scan($page_content);
 $lg->fetch(Env::em());
 $lg->replaceIn($page_content);
-
-$languageExtractor->replaceLanguagePlaceholdersIn($page, $url, $page_content);
 
 $boolShop = false;
 // start module switches

@@ -103,10 +103,8 @@ class URLTranslator extends LanguageExtractor {
     /**
      * 
      */
-    public function replaceLanguagePlaceholdersIn($page, $pageURL, &$string) {
+    public function setPlaceholdersIn($page, $pageURL, $template) {
         $placeholders = $this->buildPlaceholderArray($page, $pageURL);
-        foreach($placeholders as $placeholder => $link) {
-            $string = str_replace('{'.$placeholder.'}', $link, $string);
-        }
+        $template->setVariable($placeholders);
     }
 }
