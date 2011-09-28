@@ -58,7 +58,7 @@
  */
 
 /**
- * Debug level, see lib/DBG.php
+ * Debug level, see lib/DBG.pph
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
@@ -161,6 +161,7 @@ if (DBG::getMode() & DBG_ADODB_TRACE) {
     DBG::disable_adodb_debug();
 }
 
+
 createModuleConversionTables();
 // Initialize base system
 $objInit = new InitCMS('frontend', Env::em());
@@ -171,6 +172,9 @@ Env::set('init', $objInit);
 require_once ASCMS_CORE_PATH.'/routing/URL.class.php';
 /** @ignore */
 require_once ASCMS_CORE_PATH.'/routing/LanguageExtractor.class.php';
+/** @ignore */
+require_once(ASCMS_CORE_PATH.'/routing/URLTranslator.class.php');
+
 /**
  * Frontend language ID
  * @global integer $_LANGID
@@ -180,11 +184,11 @@ $_LANGID = $objInit->getFrontendLangId();
 
 //try to find the language in the url
 $url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET);
-$le = new \Cx\Core\Routing\LanguageExtractor($objDatabase, DBPREFIX);
+$languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
 $extractedLanguage = 0;
 
-$redirectToCorrectLanguageDir = function() use ($le, $url, $_LANGID, $_CONFIG) {
-    $le->addLanguageDir($url, $_LANGID);
+$redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
+    $languageExtractor->addLanguageDir($url, $_LANGID);
 
     //re-build get parameters, otherwise they're lost.
     $getParams = '';
@@ -200,8 +204,8 @@ $redirectToCorrectLanguageDir = function() use ($le, $url, $_LANGID, $_CONFIG) {
     die();
 };
 
-try {    
-    $extractedLanguage = $le->extractLanguage($url);
+try {
+    $extractedLanguage = $languageExtractor->extractLanguage($url);
 }
 catch(\Cx\Core\Routing\LanguageExtractorException $e) {
     //we could not extract any language information - rely on $_LANGID
@@ -223,7 +227,7 @@ define('LANG_ID', $_LANGID);
 
 //expose the virtual language directory to the rest of the cms
 //please do not access this variable directly, use Env::get().
-$virtualLanguageDirectory = '/'.$le->getShortNameOfLanguage($_LANGID);
+$virtualLanguageDirectory = '/'.$languageExtractor->getShortNameOfLanguage($_LANGID);
 Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 
 // Caching-System
@@ -1168,6 +1172,8 @@ $lg = new LinkGenerator($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/');
 $lg->scan($page_content);
 $lg->fetch(Env::em());
 $lg->replaceIn($page_content);
+
+$languageExtractor->replaceLanguagePlaceholdersIn($page, $url, $page_content);
 
 $boolShop = false;
 // start module switches

@@ -893,6 +893,24 @@ class Page extends \Cx\Model\Base\EntityBase
 
         $this->setLang($source->getLang());
         $this->setUsername($source->getUsername());
+
+        $this->setType($source->getType());
+        $this->setCaching($source->getCaching());
+        $this->setContentTitle($source->getContentTitle());
+        $this->setSlug($source->getSlug());
+        $this->setCustomContent($source->getCustomContent());
+        $this->setCssName($source->getCssName());
+        $this->setSkin($source->getSkin());
+        $this->setMetatitle($source->getMetatitle());
+        $this->setMetadesc($source->getMetadesc());
+        $this->setMetakeys($source->getMetakeys());
+        $this->setMetarobots($source->getMetarobots());
+        $this->setStart($source->getStart());
+        $this->setEnd($source->getEnd());
+        $this->setEditingStatus($source->getEditingStatus());
+        $this->setProtection($source->getProtection());
+        $this->setTarget($source->getTarget());
+
     }
     /**
      * @var string $contentTitle

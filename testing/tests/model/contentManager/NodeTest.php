@@ -30,14 +30,14 @@ class NodeTest extends DoctrineTestCase
 
         self::$em->flush();
 
-        $id = $node->getId();
+        $id = $p1->getId();
 
         self::$em->clear();
 
-        $r = self::$em->getRepository('Cx\Model\ContentManager\Node');
-        $n = $r->find($id);
+        $r = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $p = $r->find($id);
 
-        $pages = $n->getPagesByLang();
+        $pages = $p->getNode()->getPagesByLang();
         $this->assertArrayHasKey(2, $pages);
         $this->assertArrayHasKey(1, $pages);
 
