@@ -555,7 +555,9 @@ class Yellowpay
         $passphrase = SettingDb::getValue('postfinance_hash_signature_'.
             ($out ? 'out' : 'in'));
         $hash_string = '';
+        ksort(self::$arrField);
         foreach (self::$arrField as $name => $value) {
+            if ($name == 'SHASIGN') continue;
             if ($value == '') {
                 self::$arrError[] = "ERROR: Empty value for name $name!";
 DBG::log("Yellowpay::concatenateFields($out): ERROR: Empty value for name $name!");
@@ -575,13 +577,14 @@ DBG::log("Yellowpay::concatenateFields($out): ERROR: Empty value for name $name!
      */
     static function checkIn()
     {
-        if (empty($_GET['SHASIGN'])) {
+        if (empty($_POST['SHASIGN'])) {
             self::$arrWarning[] = 'No SHASIGN value in request';
             return false;
         }
-        self::$arrField = contrexx_input2raw($_GET);
+        self::$arrField = contrexx_input2raw($_POST);
+        $shasign_request = self::$arrField['SHASIGN'];
         // If the hash is correct, so is the Order (and ID)
-        return self::computeHash(true);
+        return ($shasign_request == self::signature(true));
     }
 
 

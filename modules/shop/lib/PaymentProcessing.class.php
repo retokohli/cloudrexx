@@ -55,10 +55,10 @@ require_once ASCMS_FRAMEWORK_PATH.'/File.class.php';
  * - Any data needed by the payment service class *MUST* be provided
  *   as arguments to the constructor and/or methods from within the
  *   PaymentProcessing class.
- * - Any code in checkIn() *MUST* return either a valid payment form *OR*
+ * - Any code in checkOut() *MUST* return either a valid payment form *OR*
  *   redirect to a payment page of that provider, supplying all necessary
  *   data for a successful payment.
- * - Any code in checkOut() *MUST* return the original order ID of the order
+ * - Any code in checkIn() *MUST* return the original order ID of the order
  *   being processed on success, false otherwise (both in the case of failure
  *   and upon cancelling the payment).
  * - A payment provider class *MUST NOT* access the database itself, in
@@ -524,7 +524,7 @@ DBG::log($error);
                 return PayPal::ipnCheck();
 
             case 'yellowpay':
-                return Yellowpay::checkin();
+                return Yellowpay::checkIn();
 //                    if (Yellowpay::$arrError || Yellowpay::$arrWarning) {
 //                        global $_ARRAYLANG;
 //                        echo('<font color="red"><b>'.

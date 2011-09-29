@@ -156,8 +156,11 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      * @param   string  $template     The page template
      * @return  string                The page content
      */
-    function getPage($template)
+    static function getPage($template)
     {
+
+//DBG::activate(DBG_ERROR_FIREPHP);
+
 // TODO: Temporary, for developing only. Remove for production.
 if (isset ($_REQUEST['content'])) {
     self::update_content();
@@ -267,6 +270,7 @@ if (isset ($_REQUEST['content'])) {
                 $arrSubstitution =
                     Orders::getSubstitutionArray($order_id);
                 $arrMailTemplate = array(
+                    'section' => 'shop',
                     'key' => 'order_confirmation',
                     'lang_id' => $arrSubstitution['LANG_ID'],
                     'substitution' => &$arrSubstitution,
@@ -278,13 +282,18 @@ if (isset ($_REQUEST['content'])) {
                 $objCustomer = Customer::getById($customer_id);
                 if (!$objCustomer) die("No Customer for ID $customer_id");
                 $arrMailTemplate['substitution'] += $objCustomer->getSubstitutionArray();
-                echo(nl2br(htmlentities(var_export($arrMailTemplate, true), ENT_QUOTES, CONTREXX_CHARSET)));
-                die(MailTemplate::send($arrMailTemplate));
+                DBG::deactivate(DBG_LOG_FIREPHP);
+                DBG::activate(DBG_LOG_FILE);
+                DBG::log(var_export($arrMailTemplate, true));
+                DBG::log(MailTemplate::send($arrMailTemplate) ? "Sent successfully" : "Sending FAILED!");
+                DBG::deactivate(DBG_LOG_FILE);
             case 'pricelist':
                 self::send_pricelist();
                 break;
             case 'destroy':
                 self::destroyCart();
+// TODO: Experimental
+//                self::destroyCart(true);
                 // No break on purpose
             case 'lastFive':
             case 'products':
@@ -301,6 +310,7 @@ if (isset ($_REQUEST['content'])) {
         // The new way
 // TODO: To set the Messages in the global template, just use Message::show(); instead.
         Message::show(self::$objTemplate);
+//DBG::deactivate();
         return self::$objTemplate->get();
     }
 
@@ -342,7 +352,9 @@ if (isset ($_REQUEST['content'])) {
             }
             $loginStatus = $_ARRAYLANG['TXT_LOGGED_IN_AS'];
             // Show link to change the password
-            $objTpl->touchBlock('shop_changepass');
+            if ($objTpl->blockExists('shop_changepass')) {
+                $objTpl->touchBlock('shop_changepass');
+            }
         } else {
             // Show login form if the customer is not logged in already.
             $loginStatus = $_ARRAYLANG['TXT_LOGGED_IN_AS_SHOP_GUEST'];
@@ -559,7 +571,7 @@ if (isset ($_REQUEST['content'])) {
      * @see Cart::receive_json(), Cart::add_product(), Cart::update_quantity(),
      *      _gotoLoginPage(), Cart::update(), view_cart(), Cat::send_json()
      */
-    function cart()
+    static function cart()
     {
 //DBG::log("Shop::cart(): Entered");
         Cart::init();
@@ -603,17 +615,19 @@ die("Failed to update the Cart!");
     /**
      * Empties the shopping cart
      *
-     * If $logout is true, also logs out the Customer and flushes all Shop
-     * data from the session.
+     * Note that $full=true will not log the User off; it just flushes the
+     * static Customer object.  That's somewhat experimental.
+     * @param   boolean   $logout   If true, drops the entire Shop session
+     *                              and the Customer
      * @static
      */
-    static function destroyCart($logout=null)
+    static function destroyCart($full=null)
     {
         Cart::destroy();
         // In case you want to flush everything, including the Customer:
-        if ($logout) {
+        if ($full) {
             unset($_SESSION['shop']);
-            unset(self::$objCustomer);
+            self::$objCustomer = null;
         }
     }
 
@@ -627,7 +641,7 @@ die("Failed to update the Cart!");
      *  'grand_total_price', 'vat_price', 'vat_products_txt',
      *  'vat_grand_txt', and 'vat_procentual'.
      */
-    function update_session()
+    static function update_session()
     {
         global $_ARRAYLANG;
 
@@ -720,7 +734,7 @@ die("Failed to update the Cart!");
      * @return  boolean                 True on success, false otherwise
      * @global  array
      */
-    function showCategories($parent_id=0)
+    static function showCategories($parent_id=0)
     {
         global $_ARRAYLANG;
 
@@ -839,11 +853,11 @@ die("Failed to update the Cart!");
      * @global  array       $_CONFIG        Core configuration array, see {@link /config/settings.php}
      * @global  string(?)   $themesPages    Themes pages(?)
      */
-    function view_product_overview()
+    static function view_product_overview()
     {
         global $_ARRAYLANG;
 
-        if (!self::$use_js_cart) self::registerJavascriptCode();
+        self::registerJavascriptCode();
 
         $flagSpecialoffer = intval(SettingDb::getValue('show_products_default'));
         if (isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'discounts') {
@@ -937,26 +951,31 @@ die("Failed to update the Cart!");
             $order,
             self::$objCustomer && self::$objCustomer->is_reseller()
         );
-        $objCategory = ShopCategory::getById($category_id);
-//DBG::log("Got Category ID $category_id: ".var_export($objCategory, true));
-        if ($objCategory) {
-            self::$objTemplate->setVariable(array(
-                // Old, kept for convenience
-                'SHOP_CATEGORY_CURRENT_NAME' =>
-                contrexx_input2xhtml($objCategory->name()),
-                // New (3.0.0)
-                'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
-                    $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
-                    contrexx_input2xhtml($objCategory->name(),
-                        ENT_QUOTES, CONTREXX_CHARSET)),
-            ));
-        }
+//DBG::log("Count: $count, term $term, manufacturer $manufacturer_id, special$flagSpecialoffer");
         if ($count == 0
-         && ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer)) {
-            self::$objTemplate->touchBlock('no_product');
+        ) {
+            if ($term != '' || $manufacturer_id != 0 || $flagSpecialoffer) {
+                self::$objTemplate->touchBlock('no_product');
+            }
+//DBG::log("No Product");
             return true;
         }
-//DBG::log("Count: $count");
+//DBG::log("Got Category ID $category_id");
+        if ($category_id) {
+            $objCategory = ShopCategory::getById($category_id);
+            if ($objCategory) {
+//DBG::log("Category: ".var_export($objCategory, true));
+                self::$objTemplate->setVariable(array(
+                    // Old, kept for convenience
+                    'SHOP_CATEGORY_CURRENT_NAME' =>
+                        contrexx_raw2xhtml($objCategory->name()),
+                    // New (3.0.0)
+                    'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
+                        $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
+                        contrexx_raw2xhtml($objCategory->name())),
+                ));
+            }
+        }
         $uri =
             '&amp;section=shop'.MODULE_INDEX.
             $pagingCatId.$pagingManId.$pagingTerm;
@@ -970,7 +989,6 @@ die("Failed to update the Cart!");
 //            array(3 =>
 //                'height="'.SettingDb::getValue('thumbnail_max_height').
 //                '" width="'.SettingDb::getValue('thumbnail_max_width').'"');
-        /** @var   Product $objProduct = null; */
 //        $flagUpload = false;
         foreach ($arrProduct as $objProduct) {
             $id = $objProduct->id();
@@ -1320,7 +1338,7 @@ die("Failed to update the Cart!");
      *                                      this parameter will be set to true
      * @return  string                      The string with the HTML code
      */
-    function productOptions($product_id, $formName, $cart_id=null, &$flagUpload=false)
+    static function productOptions($product_id, $formName, $cart_id=null, &$flagUpload=false)
     {
         global $_ARRAYLANG;
 
@@ -1412,6 +1430,16 @@ die("Failed to update the Cart!");
                             '" value="'.$objAttribute->getName().'" />'."\n";
                         $checkOptionIds .= "$attribute_id;";
                         break;
+
+                      case '8': // Multiline text field, optional
+                        break;
+                      case '9': // Multiline text field, mandatory
+                        $selectValues =
+                            '<input type="hidden" id="productOption-'.
+                            $product_id.'-'.$attribute_id.
+                            '" value="'.$objAttribute->getName().'" />'."\n";
+                        $checkOptionIds .= "$attribute_id;";
+                        break;
                     }
 
                     $i = 0;
@@ -1494,6 +1522,18 @@ die("Failed to update the Cart!");
                                 '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
                                 $option_price."</label><br />\n";
                             break;
+                          case '8': // Multiline text field, optional
+                          case '9': // Multiline text field, mandatory
+//                            $valuePrice = '&nbsp;';
+                            $selectValues .=
+                                '<textarea name="productOption['.$attribute_id.
+                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
+                                '" style="width:300px;" />'.
+                                contrexx_input2xhtml($arrOption['value']).
+                                '</textarea>'.
+                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
+                                $option_price."</label><br />\n";
+                            break;
                         }
                         ++$i;
                         ++$domId;
@@ -1512,7 +1552,6 @@ die("Failed to update the Cart!");
                         case '3':
                             $selectValues .= "</select><br />\n";
                             break;
-
 /* Nothing to to
                         case '4': // Text field, optional
                         case '5': // Text field, mandatory
@@ -1522,6 +1561,11 @@ die("Failed to update the Cart!");
                         case '7': // Text field, mandatory
                             // Avoid code analyzer warning
                             $flagUpload = true || $flagUpload;
+                            break;
+/* Nothing to to
+                        case '8': // Multiline text field, optional
+                        case '9': // Multiline text field, mandatory
+*/
                     }
 
                     self::$objTemplate->setVariable(array(
@@ -1613,7 +1657,7 @@ die("Failed to update the Cart!");
      * @global  array   $_CONFIGURATION     Core configuration array, see {@link /config/settings.php}
      *
      */
-    function registerJavascriptCode($flagUpload=false)
+    static function registerJavascriptCode($flagUpload=false)
     {
         global $_ARRAYLANG, $_CONFIGURATION;
 
@@ -1679,6 +1723,11 @@ function checkProductOption(objForm, productId, strProductOptionIds)
                 }
                 break;
               case 'text':
+                if (formElement.value != '') {
+                  checkStatus = true;
+                }
+                break;
+              case 'textarea':
                 if (formElement.value != '') {
                   checkStatus = true;
                 }
@@ -1804,9 +1853,12 @@ function addProductToCart(objForm)
 //  hideCart();
   jQuery.ajax(
     'index.php?".
-// Does not usually work.  Enable only if nothing else helps.
-//      htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
-//      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)."&".
+// It seems that IE9 requires this
+(   isset($_SERVER['HTTP_USER_AGENT'])
+ && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
+    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
+      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
+    : '').
       "section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'
       +updateProduct, {
     data: objProduct,
@@ -1868,8 +1920,12 @@ function showCart(html)
 //hideCart();
 jQuery.ajax(
   'index.php?".
-    htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
-    htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET).
+// It seems that IE9 requires this
+(   isset($_SERVER['HTTP_USER_AGENT'])
+ && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
+    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
+      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
+    : '').
     "&section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct', {
   success: shopUpdateCart,
   error: function() {
@@ -1971,8 +2027,22 @@ function centerY(height)
      *                                  false otherwise.
      * @access private
      */
-    private function _authenticate()
+    private static function _authenticate()
     {
+        if (self::$objCustomer) return true;
+        $objUser = FWUser::getFWUserObject()->objUser;
+        if ($objUser->login()) {
+            self::$objCustomer = Customer::getById($objUser->getId());
+            if (self::$objCustomer) {
+                // This is still required in confirm() (TODO: remove)
+                $_SESSION['shop']['email'] = self::$objCustomer->email();
+//DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().")");
+                return true;
+            }
+        }
+//DBG::log("Shop::_authenticate(): Failed!");
+        return false;
+/* OLD
         if (   isset($_SESSION['shop']['username'])
             && isset($_SESSION['shop']['password'])) {
             $username = $_SESSION['shop']['username'];
@@ -1990,10 +2060,11 @@ function centerY(height)
 //DBG::log("Shop::_authenticate(): Failed to authenticate $username/{$_SESSION['shop']['password']} ($password)");
         }
         return false;
+*/
     }
 
 
-    function _gotoLoginPage()
+    static function _gotoLoginPage()
     {
         // go to the next step
         if (isset($_POST['continue'])) {
@@ -2005,19 +2076,47 @@ function centerY(height)
 
     /**
      * Show the login page
-     *
      * @global  array   $_ARRAYLANG Language array
-     * @see _authenticate(), is_auth(), HTML_Template_Sigma::setVariable()
+     * @see     _authenticate(), is_auth()
+     * @return  boolean             True
      */
-    function login()
+    static function login()
     {
         global $_ARRAYLANG;
 
+        if (isset($_POST['baccount'])) {
+            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
+            HTTP::redirect(
+                CONTREXX_SCRIPT_PATH.
+                '?section=shop&cmd=account');
+        }
+        if (isset($_POST['blogin'])) {
+            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
+            HTTP::redirect(
+                CONTREXX_SCRIPT_PATH.
+                '?section=login&redirect='.
+                base64_encode(
+                    CONTREXX_SCRIPT_PATH.
+                    '?section=shop&cmd=account'));
+        }
+        if (self::_authenticate()) {
+            require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
+            HTTP::redirect(
+                CONTREXX_SCRIPT_PATH.
+                '?section=shop&cmd=account');
+        }
+        self::$objTemplate->setGlobalVariable($_ARRAYLANG
+          + array(
+          'SHOP_LOGIN_REDIRECT' => base64_encode(
+              CONTREXX_SCRIPT_PATH.
+              '?section=shop&cmd=account')
+        ));
+        return true;
+/* OLD
         // Fails and returns when not logged in, redirects otherwise.
         // The default target for the redirect is the account page.
         // Other targets need to be specified in the redirect parameter.
         $redirect = self::processRedirect();
-
         $loginUsername = '';
         if (!(empty($_POST['username']) || empty($_POST['password']))) {
             // check authentification
@@ -2025,6 +2124,8 @@ function centerY(height)
             $_SESSION['shop']['password'] = contrexx_input2raw($_POST['password']);
             $loginUsername = $_SESSION['shop']['username'];
             if (self::_authenticate()) {
+DBG::log("Shop::login(): Success!");
+                self::$objCustomer = &$objUser;
                 // Initialize the Customer data in the session, so that the account
                 // page may be skipped
                 $_SESSION['shop']['company'] = self::$objCustomer->company();
@@ -2039,18 +2140,16 @@ function centerY(height)
                 $_SESSION['shop']['phone'] = self::$objCustomer->phone();
                 $_SESSION['shop']['fax'] = self::$objCustomer->fax();
                 // Optionally also initialize the shipment address
-                /*
-                $_SESSION['shop']['company2'] = self::$objCustomer->company();
-                $_SESSION['shop']['gender2'] = self::$objCustomer->gender();
-                $_SESSION['shop']['lastname2'] = self::$objCustomer->lastname();
-                $_SESSION['shop']['firstname2'] = self::$objCustomer->firstname();
-                $_SESSION['shop']['address2'] = self::$objCustomer->address();
-                $_SESSION['shop']['zip2'] = self::$objCustomer->zip();
-                $_SESSION['shop']['city2'] = self::$objCustomer->city();
-                $_SESSION['shop']['countryId2'] = self::$objCustomer->country_id();
-                $_SESSION['shop']['phone2'] = self::$objCustomer->phone();
-                $_SESSION['shop']['equal_address'] = true;
-                */
+//                $_SESSION['shop']['company2'] = self::$objCustomer->company();
+//                $_SESSION['shop']['gender2'] = self::$objCustomer->gender();
+//                $_SESSION['shop']['lastname2'] = self::$objCustomer->lastname();
+//                $_SESSION['shop']['firstname2'] = self::$objCustomer->firstname();
+//                $_SESSION['shop']['address2'] = self::$objCustomer->address();
+//                $_SESSION['shop']['zip2'] = self::$objCustomer->zip();
+//                $_SESSION['shop']['city2'] = self::$objCustomer->city();
+//                $_SESSION['shop']['countryId2'] = self::$objCustomer->country_id();
+//                $_SESSION['shop']['phone2'] = self::$objCustomer->phone();
+//                $_SESSION['shop']['equal_address'] = true;
                 // The user has just been logged in.
                 // Refresh the cart, considering possible discounts
                 Cart::update(self::$objCustomer);
@@ -2060,7 +2159,6 @@ function centerY(height)
                 Message::error($_ARRAYLANG['TXT_SHOP_UNKNOWN_CUSTOMER_ACCOUNT']);
             }
         }
-        self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
             'SHOP_LOGIN_EMAIL' => $loginUsername,
             'SHOP_LOGIN_ACTION' =>
@@ -2069,10 +2167,12 @@ function centerY(height)
 // TODO:  Replace by the global message placeholder
 //            'SHOP_LOGIN_STATUS' => Message::get(),
         ));
+*/
     }
 
 
     /**
+     * OBSOLETE, use core_modules/login.
      * Redirects to another page iff the Customer is logged in
      *
      * Returns the redirection target when no Customer ist logged in.
@@ -2082,6 +2182,8 @@ function centerY(height)
      */
     function processRedirect()
     {
+die("Shop::processRedirect(): This method is obsolete!");
+/*
         $redirect = (isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : '');
         // The Customer object is initialized upon successful authentication.
         if (!self::$objCustomer) return $redirect;
@@ -2097,6 +2199,7 @@ function centerY(height)
         // Default: Redirect to the account page
         header('Location: index.php?section=shop&cmd=account');
         exit;
+*/
     }
 
 
@@ -2343,7 +2446,8 @@ function centerY(height)
             $objUser = new User();
             $objUser->setUsername($_POST['email']);
             Message::save();
-            // This method sets an error message we don't want here
+            // This method will set an error message we don't want here
+            // (as soon as it uses the Message class, that is)
             if (!$objUser->validateUsername()) {
                 $_POST['email'] = '';
                 Message::restore();
@@ -3323,8 +3427,10 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         // For all payment methods showing a form here:
         // Send the Customer login separately, as the password possibly
         // won't be available later
-        self::sendLogin(
-            self::$objCustomer->email(), $_SESSION['shop']['password']);
+        if (!empty($_SESSION['shop']['password'])) {
+            self::sendLogin(
+                self::$objCustomer->email(), $_SESSION['shop']['password']);
+        }
         // Clear the order ID.
         // The order may be resubmitted and the payment retried.
         unset($_SESSION['shop']['order_id']);
@@ -3533,6 +3639,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         $arrSubstitution['CUSTOMER_PASSWORD'] = $password;
         // Defaults to FRONTEND_LANG_ID
         $arrMailTemplate = array(
+            'section' => 'shop',
             'key' => 'customer_login',
             'substitution' => &$arrSubstitution,
             'to' => $objCustomer->email(),
@@ -3968,27 +4075,27 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
             $arrFiles[] = $file;
         }
         closedir($dh);
-
         $match = null;
         foreach ($arrFiles as $file) {
             if (!preg_match('/^(shop)_?(\w*)\.html/', $file, $match)) {
-//DBG::log('File name '.$file.' does not match; skipped<br />');
+//DBG::log("File name $file does not match; skipped");
                 continue;
             }
             $section = $match[1];
             if (empty($match[2])) $match[2] = '';
             $cmd = $match[2];
             $content = file_get_contents($folder.$file);
-
             $query = "
                 UPDATE `".DBPREFIX."pages`
                    SET `content`='".addslashes($content)."'
                  WHERE `module`='".addslashes($section)."'
-                   AND `cmd`='".addslashes($cmd)."'";
+                   AND `cmd`".($cmd ? "='".addslashes($cmd)."'" : ' IS NULL');
             $objResult = $objDatabase->Execute($query);
             if (!$objResult) {
                 die('Query error: '.$query);
             }
+//DBG::log("Query: $query");
+DBG::log("File $file updated content $section/$cmd");
         }
     }
 

@@ -1278,6 +1278,7 @@ $J(document).ready(function($) {
     private static function errorHandler()
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
+        require_once(ASCMS_MODULE_PATH.'/shop/lib/ShopSettings.class.php');
         global $objDatabase, $_ARRAYLANG;
 
 //die("Coupon::errorHandler(): Disabled");

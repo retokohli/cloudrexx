@@ -1186,7 +1186,7 @@ class Order
         }
         $item_id = $objDatabase->Insert_ID();
         foreach ($arrOptions as $attribute_id => $arrOptionIds) {
-            if (!$this->insertAttribute($item_id, $attribute_id, $arrOptionIds)) {
+            if (!self::insertAttribute($item_id, $attribute_id, $arrOptionIds)) {
                 return false;
             }
         }
@@ -1251,7 +1251,7 @@ class Order
         }
         if (!self::deleteOptions($item_id)) return false;
         foreach ($arrOptions as $attribute_id => $arrOptionIds) {
-            if (!$this->insertAttribute($item_id, $attribute_id, $arrOptionIds)) {
+            if (!self::insertAttribute($item_id, $attribute_id, $arrOptionIds)) {
                 return false;
             }
         }

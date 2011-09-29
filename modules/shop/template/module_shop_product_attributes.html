@@ -283,19 +283,27 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 <!-- start content2 div -->
 <div id="content2" class="attributeTab" style="display:none">
   <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
-    <table summary="" border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
+    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
         <th nowrap="nowrap" width="15%">&nbsp;{TXT_NAME}</th>
         <th nowrap="nowrap" width="200">{TXT_VALUES}</th>
-        <th nowrap="nowrap" width="65%">{TXT_OPTIONS}<th>
+        <th nowrap="nowrap" width="65%">{TXT_OPTIONS}</th>
       </tr>
       <tr class="row1" style="vertical-align:top;">
-        <td nowrap="nowrap" width="15%"><input type="text" id="attribute_name-0" name="attribute_name[0]" size="20" maxlength="32" value="" /></td>
-        <td nowrap="nowrap" width="200"><div style="text-align:center;vertical-align:top;">
-          <select name="option_id[0][]" id="option_id-0" size="10" onchange="setSelectedValue(0)" style="width:200px;"></select>
+        <td nowrap="nowrap" width="15%">
+          <input type="text" id="attribute_name-0" name="attribute_name[0]"
+              size="20" maxlength="32" value="" /></td>
+        <td nowrap="nowrap" width="200">
+          <select name="option_id[0][]" id="option_id-0" size="10"
+              onchange="setSelectedValue(0)" style="width:200px;">
+          </select>
           <br />
-          <a href="javascript:{}" id="optionMenuLink-0" style="display: block;" onclick="removeSelectedValues(0)" title="{TXT_REMOVE_SELECTED_VALUE}">{TXT_REMOVE_SELECTED_VALUE}</a>
-        </div></td>
+          <a href="javascript:{}" id="optionMenuLink-0" style="display: block;"
+              onclick="removeSelectedValues(0)"
+              title="{TXT_REMOVE_SELECTED_VALUE}">
+            {TXT_REMOVE_SELECTED_VALUE}
+          </a>
+        </td>
         <td nowrap="nowrap" width="65%">
           {TXT_DISPLAY_AS}&nbsp;{SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU}<br /><br />
           <table summary="" border="0" cellpadding="0" cellspacing="4" style="vertical-align:top;text-align:right;width:250px;">
