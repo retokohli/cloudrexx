@@ -22,20 +22,26 @@ Cx\Model\ContentManager\Page:
     updatedAt:
       type: datetime    
 
-    #content
-    title: #for the navigation
+    #navigation
+    title:
       type: string
       length: 255
       gedmo:
         - versioned
+        
+    linkTarget:
+      type: string
+      length: 16
+      nullable: true
 
+    #content
     contentTitle:
       type: string
       length: 255
       gedmo:
         - versioned
 
-    #the title used for navigating
+    #the title used for routing / URLs
     slug:
       type: string
       length: 255

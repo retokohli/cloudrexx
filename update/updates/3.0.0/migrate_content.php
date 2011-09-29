@@ -220,7 +220,15 @@ class Contrexx_Content_migration
         $page->setUsername($objResult->fields['username']);
         $page->setDisplay(($objResult->fields['displaystatus'] === 'on' ? 1 : 0));
         $page->setActive($objResult->fields['activestatus']);
-        $page->setTarget($objResult->fields['redirect']);
+
+//TODO: migrate targets
+//        $page->setTarget($objResult->fields['redirect']);
+
+        $linkTarget = $objResult->fields['target'];
+        if(!$linkTarget)
+            $linkTarget = null;
+        
+        $page->setLinkTarget($linkTarget);
         if($objModules->fields['moduleName'])
             $page->setModule($objModules->fields['moduleName']);
         if($objResult->fields['cmd'])
@@ -229,8 +237,9 @@ class Contrexx_Content_migration
         //set the type the way the type is supposed to be set. 
         if($page->getModule())
             $page->setType('application');
-        if($page->getTarget())
-            $page->setType('redirect');
+//TODO: migrate targets
+//        if($page->getTarget())
+//    $page->setType('redirect');
     }
     
     function pageGrouping()
