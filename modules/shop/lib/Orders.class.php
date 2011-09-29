@@ -1158,19 +1158,22 @@ if (!$limit) {
         $status = $objOrder->status();
         $customer_id = $objOrder->customer_id();
         $payment_id = $objOrder->payment_id();
-
+        $shipment_id = $objOrder->shipment_id();
         $arrSubstitution = array (
+            // Must be present in the Order, so the Customer can be found
+            'CUSTOMER_ID'         => $customer_id,
             'LANG_ID'             => $lang_id,
             'NOW'                 => date(ASCMS_DATE_FORMAT),
             'TODAY'               => date(ASCMS_DATE_SHORT_FORMAT),
 //            'DATE'                => date(ASCMS_DATE_SHORT_FORMAT, strtotime($objOrder->date_time())),
             'ORDER_ID'            => $order_id,
             'ORDER_ID_CUSTOM'     => ShopLibrary::getCustomOrderId($order_id),
+// TODO: Use proper localized date formats
             'ORDER_DATE'          =>
                 date(ASCMS_DATE_SHORT_FORMAT,
                     strtotime($objOrder->date_time())),
             'ORDER_TIME'          =>
-                date(ASCMS_DATE_FORMAT,
+                date(ASCMS_DATE_FORMAT_TIME,
                     strtotime($objOrder->date_time())),
             'ORDER_STATUS_ID'     => $status,
             'ORDER_STATUS'        => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status],
@@ -1178,31 +1181,41 @@ if (!$limit) {
                 date(ASCMS_DATE_FORMAT,
                     strtotime($objOrder->modified_on())),
             'REMARKS'             => $objOrder->note(),
-            // Must be present in the Order, so the Customer can be found
-            'CUSTOMER_ID'         => $customer_id,
-            'SHIPMENT_COMPANY'    => $objOrder->company(),
-            'SHIPMENT_TITLE'      =>
-                $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())],
-            'SHIPMENT_FIRSTNAME'  => $objOrder->firstname(),
-            'SHIPMENT_LASTNAME'   => $objOrder->lastname(),
-            'SHIPMENT_ADDRESS'    => $objOrder->address(),
-            'SHIPMENT_ZIP'        => $objOrder->zip(),
-            'SHIPMENT_CITY'       => $objOrder->city(),
-            'SHIPMENT_COUNTRY_ID' => $objOrder->country_id(),
-            'SHIPMENT_COUNTRY'    => Country::getNameById(
-                $objOrder->country_id()),
-            'SHIPMENT_PHONE'      => $objOrder->phone(),
-//            'SHIPPING_ID'         => $objOrder->shipment_id(),
-            'SHIPMENT_ID'         => $objOrder->shipment_id(),
-            'SHIPMENT_NAME'       => sprintf('%-40s', Shipment::getShipperName($objOrder->shipment_id())),
-            'SHIPMENT_PRICE'      => sprintf('% 9.2f', $objOrder->shipment_amount()),
-            'PAYMENT_ID'          => $payment_id,
-            'PAYMENT_NAME'        => sprintf('%-40s', Payment::getProperty($objOrder->payment_id(), 'name')),
-            'PAYMENT_PRICE'       => sprintf('% 9.2f', $objOrder->payment_amount()),
-            'TAX_PRICE'           => sprintf('% 9.2f', $objOrder->vat_amount()),
             'ORDER_SUM'           => sprintf('% 9.2f', $objOrder->sum()),
             'CURRENCY'            => Currency::getCodeById($objOrder->currency_id()),
         );
+        if ($shipment_id) {
+            $arrSubstitution += array (
+                'SHIPMENT' => array(0 => array(
+                    'SHIPMENT_NAME'  => sprintf('%-40s', Shipment::getShipperName($shipment_id)),
+                    'SHIPMENT_PRICE' => sprintf('% 9.2f', $objOrder->shipment_amount()),
+                )),
+// Unused
+//                'SHIPMENT_ID'    => $objOrder->shipment_id(),
+                'SHIPPING_ADDRESS' => array(0 => array(
+                    'SHIPPING_COMPANY'    => $objOrder->company(),
+                    'SHIPPING_TITLE'      =>
+                        $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())],
+                    'SHIPPING_FIRSTNAME'  => $objOrder->firstname(),
+                    'SHIPPING_LASTNAME'   => $objOrder->lastname(),
+                    'SHIPPING_ADDRESS'    => $objOrder->address(),
+                    'SHIPPING_ZIP'        => $objOrder->zip(),
+                    'SHIPPING_CITY'       => $objOrder->city(),
+                    'SHIPPING_COUNTRY_ID' => $objOrder->country_id(),
+                    'SHIPPING_COUNTRY'    => Country::getNameById(
+                        $objOrder->country_id()),
+                    'SHIPPING_PHONE'      => $objOrder->phone(),
+                )),
+            );
+        }
+        if ($payment_id) {
+            $arrSubstitution += array (
+                'PAYMENT' => array(0 => array(
+                    'PAYMENT_NAME'  => sprintf('%-40s', Payment::getNameById($payment_id)),
+                    'PAYMENT_PRICE' => sprintf('% 9.2f', $objOrder->payment_amount()),
+                )),
+            );
+        }
         $coupon_code = '';
         $objCoupon = null;
         // Pick the Coupon, if any
@@ -1459,5 +1472,3 @@ die("Product ID $product_id not found");
     }
 
 }
-
-?>

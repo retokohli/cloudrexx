@@ -42,6 +42,7 @@ class ShopLibrary
 
 
     /**
+     * OBSOLETE
      * Set up and send an email from the shop.
      * @static
      * @param   string    $shopMailTo           Recipient mail address
@@ -53,8 +54,10 @@ class ShopLibrary
      *                                          false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function shopSendmail($shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody)
+    static function shopSendmail()//$shopMailTo, $shopMailFrom, $shopMailFromText, $shopMailSubject, $shopMailBody
     {
+die("ShopLibrary::shopSendmail(): Obsolete method called");
+/*
         global $_CONFIG;
 
         // replace cr/lf by lf only
@@ -87,6 +90,7 @@ class ShopLibrary
             }
         }
         return false;
+ */
     }
 
 
@@ -103,8 +107,10 @@ class ShopLibrary
      *                                      false otherwise
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function shopSetMailTemplate($shopTemplateId, $lang_id)
+    static function shopSetMailTemplate()//$shopTemplateId, $lang_id
     {
+die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
+/*
         global $objDatabase;
 
         $query = "
@@ -122,7 +128,8 @@ class ShopLibrary
         $arrShopMailTemplate['mail_subject'] = $objResult->fields['subject'];
         $arrShopMailTemplate['mail_body'] = $objResult->fields['message'];
         return $arrShopMailTemplate;
-    }
+*/
+}
 
 
     /**
@@ -172,7 +179,7 @@ class ShopLibrary
      * @param   array   $arrSize      The original image size array, by reference
      * @return  array                 The scaled down (thumbnail) image size array
      */
-    function scaleImageSizeToThumbnail(&$arrSize)
+    static function scaleImageSizeToThumbnail(&$arrSize)
     {
         $thumbWidthMax = SettingDb::getValue('thumbnail_max_width');
         $thumbHeightMax = SettingDb::getValue('thumbnail_max_height');
@@ -297,6 +304,7 @@ class ShopLibrary
         if (empty($arrSubstitution)) return false;
         // Prepared template for order confirmation
         $arrMailTemplate = array(
+            'section' => 'shop',
             'key'     => 'order_confirmation',
             'lang_id' => $arrSubstitution['LANG_ID'],
             'to'      =>

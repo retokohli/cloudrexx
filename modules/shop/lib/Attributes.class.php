@@ -709,6 +709,16 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
                     ? ' selected="selected"' : ''
                 ).">".
                 $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_MANDATORY']."</option>\n".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_OPTIONAL."'".
+                ($displayTypeId == Attribute::TYPE_TEXTAREA_OPTIONAL
+                    ? ' selected="selected"' : ''
+                ).">".
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_OPTIONAL']."</option>\n".
+            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_MANDATORY."'".
+                ($displayTypeId == Attribute::TYPE_TEXTAREA_MANDATORY
+                    ? ' selected="selected"' : ''
+                ).">".
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_MANDATORY']."</option>\n".
             "<option value='".Attribute::TYPE_UPLOAD_OPTIONAL."'".
                 ($displayTypeId == Attribute::TYPE_UPLOAD_OPTIONAL
                     ? ' selected="selected"' : ''
@@ -812,7 +822,9 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
             'style="display: none;" '.
             'onclick="removeSelectedValues('.$attribute_id.')" '.
             'title="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'" '.
-            'alt="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'">'.
+// Invalid
+//            'alt="'.$_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'"'.
+            '>'.
             $_ARRAYLANG['TXT_SHOP_REMOVE_SELECTED_VALUE'].'</a>'."\n";
         return $menu;
     }
@@ -855,5 +867,3 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
     }
 
 }
-
-?>

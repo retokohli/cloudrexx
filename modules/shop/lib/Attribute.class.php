@@ -44,16 +44,18 @@ class Attribute
      * Attributes::getDisplayTypeMenu() when you add another
      * type here.
      */
-    const TYPE_MENU_OPTIONAL    = 0;
-    const TYPE_RADIOBUTTON      = 1;
-    const TYPE_CHECKBOX         = 2;
-    const TYPE_MENU_MANDATORY   = 3;
-    const TYPE_TEXT_OPTIONAL    = 4;
-    const TYPE_TEXT_MANDATORY   = 5;
-    const TYPE_UPLOAD_OPTIONAL  = 6;
-    const TYPE_UPLOAD_MANDATORY = 7;
+    const TYPE_MENU_OPTIONAL      = 0;
+    const TYPE_RADIOBUTTON        = 1;
+    const TYPE_CHECKBOX           = 2;
+    const TYPE_MENU_MANDATORY     = 3;
+    const TYPE_TEXT_OPTIONAL      = 4;
+    const TYPE_TEXT_MANDATORY     = 5;
+    const TYPE_UPLOAD_OPTIONAL    = 6;
+    const TYPE_UPLOAD_MANDATORY   = 7;
+    const TYPE_TEXTAREA_OPTIONAL  = 8;
+    const TYPE_TEXTAREA_MANDATORY = 9;
     // Keep this up to date!
-    const TYPE_COUNT            = 8;
+    const TYPE_COUNT              = 10;
 
     /**
      * The Attribute ID
@@ -246,7 +248,9 @@ class Attribute
         if (   $this->type == self::TYPE_UPLOAD_OPTIONAL
             || $this->type == self::TYPE_UPLOAD_MANDATORY
             || $this->type == self::TYPE_TEXT_OPTIONAL
-            || $this->type == self::TYPE_TEXT_MANDATORY) {
+            || $this->type == self::TYPE_TEXT_MANDATORY
+            || $this->type == self::TYPE_TEXTAREA_OPTIONAL
+            || $this->type == self::TYPE_TEXTAREA_MANDATORY) {
             // These types can have exactly one value
             $this->arrValues = array(
                 array(
@@ -814,5 +818,3 @@ class Attribute
     }
 
 }
-
-?>

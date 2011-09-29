@@ -918,3 +918,7 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_STOCK_ACTIVE'] = "Automatisch deaktivieren, wenn a
 
 // 20110922
 $_ARRAYLANG['TXT_SHOP_CATEGORY_ID_FORMAT'] = "Kategorie ID %1\$u";
+
+// 20110927
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_OPTIONAL'] = "Mehrzeiliges Textfeld (Eingabe optional)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_MANDATORY'] = "Mehrzeiliges Textfeld (Eingabe zwingend)";

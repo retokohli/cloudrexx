@@ -628,7 +628,7 @@ class Customer extends User
 
         // Ensure that the ShopSettings (including SettingDb) and Order tables
         // are ready first!
-DBG::log("Customer::errorHandler(): Adding settings");
+//DBG::log("Customer::errorHandler(): Adding settings");
         ShopSettings::errorHandler();
         Country::errorHandler();
         Order::errorHandler();
@@ -640,7 +640,7 @@ DBG::log("Customer::errorHandler(): Adding settings");
         // Create new User_Profile_Attributes
         $index_notes = SettingDb::getValue('user_profile_attribute_notes');
         if (!$index_notes) {
-DBG::log("Customer::errorHandler(): Adding notes attribute...");
+//DBG::log("Customer::errorHandler(): Adding notes attribute...");
 //            $objProfileAttribute = new User_Profile_Attribute();
             $objProfileAttribute = $objUser->objAttribute->getById(0);
 //DBG::log("Customer::errorHandler(): NEW notes attribute: ".var_export($objProfileAttribute, true));
@@ -877,7 +877,7 @@ DBG::log(var_export($objCustomer, true));
 
         UpdateUtil::drop_table($table_name_old);
 
-DBG::log("Updated Customer table and related stuff");
+//DBG::log("Updated Customer table and related stuff");
         // Always
         return false;
     }
