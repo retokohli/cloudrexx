@@ -973,4 +973,29 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->contentTitle;
     }
+    /**
+     * @var string $linkTarget
+     */
+    private $linkTarget;
+
+
+    /**
+     * Set linkTarget
+     *
+     * @param string $linkTarget
+     */
+    public function setLinkTarget($linkTarget)
+    {
+        $this->linkTarget = $linkTarget;
+    }
+
+    /**
+     * Get linkTarget
+     *
+     * @return string $linkTarget
+     */
+    public function getLinkTarget()
+    {
+        return $this->linkTarget;
+    }
 }
