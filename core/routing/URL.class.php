@@ -75,11 +75,14 @@ class URL {
         $matches = array();
         $matchCount = preg_match('/([^\?]+)(.*)/', $this->path, $matches);
 
-        if($matchCount == 0) //seemingly, no parameters are set.
-            return;
-
-        $this->suggestedTargetPath = $matches[1];
-        $this->suggestedParams = $matches[2];
+        if($matchCount == 0) {//seemingly, no parameters are set.
+            $this->suggestedTargetPath = $this->path;
+            $this->suggestedParams = '';
+        }
+        else {
+            $this->suggestedTargetPath = $matches[1];
+            $this->suggestedParams = $matches[2];
+        }
     }
 
     public function getDomain() {

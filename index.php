@@ -386,7 +386,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         */
 
         // a: 'home' page
-        if(!$section && $url->getSuggestedTargetPath() === 'index.php') {
+        $urlPointsToHome = $url->getSuggestedTargetPath() == 'index.php' || $url->getSuggestedTargetPath() == '';
+        if(!$section && $urlPointsToHome) {
             $section = 'home';
         }
 
