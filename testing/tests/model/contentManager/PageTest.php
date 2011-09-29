@@ -96,14 +96,20 @@ class PageTest extends DoctrineTestCase
         $p = new \Cx\Model\ContentManager\Page();
         $p->setTarget('12|querystring');
         $this->assertEquals(true, $p->isTargetInternal());
-        $this->assertEquals(12, $p->getTargetPageId());
+        $this->assertEquals(12, $p->getTargetNodeId());
+        $this->assertEquals(0, $p->getTargetLangId());
+        $this->assertEquals('querystring', $p->getTargetQueryString());
+
+        $p->setTarget('12-1|querystring');
+        $this->assertEquals(true, $p->isTargetInternal());
+        $this->assertEquals(12, $p->getTargetNodeId());
+        $this->assertEquals(1, $p->getTargetLangId());
         $this->assertEquals('querystring', $p->getTargetQueryString());
 
         $p->setTarget('http://www.example.com');
         $this->assertEquals(false, $p->isTargetInternal());
-        $this->assertEquals(0, $p->getTargetPageId());
+        $this->assertEquals(0, $p->getTargetNodeId());
+        $this->assertEquals(0, $p->getTargetLangId());
         $this->assertEquals(null, $p->getTargetQueryString());
-
-        
     }
 }

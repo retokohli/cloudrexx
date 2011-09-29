@@ -57,7 +57,7 @@ class ResolverTest extends DoctrineTestCase
         $p2->setLang(1);
         $p2->setTitle('redirection');
         $p2->setNode($n4);
-        $p2->setTarget($p4->getId().'|?foo=test');
+        $p2->setTarget($n2->getId().'|?foo=test');
         $p2->setUsername('user');
 
         self::$em->persist($p2);
