@@ -27,14 +27,6 @@ class JSONData {
     // get_children will probably have to stick with the json format from renderTree, for reasonable
     // jsTree compat.
 	function jsondata() {
-        if ($_GET['operation'] == 'foobar') {
-$nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
-$nodeRepo->verify();
-$this->em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
-print_r($nodeRepo->recover());
-
-die();
-        }
 		if (isset($_GET['operation']) && $_GET['operation'] == 'get_children') {
 			return $this->renderTree();
 		}
@@ -206,7 +198,7 @@ die();
                 $page->setMetakeys($updated_page['metakeys']);
                 $page->setMetadesc($updated_page['metadesc']);
                 $page->setMetarobots($updated_page['metarobots']);
-                $page->setContent($updated_page['content']);
+                $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
                 $page->setModule($updated_page['module']);
                 $page->setCmd($updated_page['cm_cmd']);
                 $page->setTarget($updated_page['target']);
