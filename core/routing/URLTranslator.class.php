@@ -95,7 +95,7 @@ class URLTranslator extends LanguageExtractor {
             $placeholders[$name] = $content;
             $placeholders[$selectedName] = '';
         }
-        $selectedName = 'LANG_SELECTED_'.strtoupper($this->languageShortNames[$page->getId()]);
+        $selectedName = 'LANG_SELECTED_'.strtoupper($this->languageShortNames[$page->getLang()]);
         $placeholders[$selectedName] = 'selected';
         return $placeholders;
     }
