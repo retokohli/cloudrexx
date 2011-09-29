@@ -476,11 +476,9 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     $page_catname = '';
     $parent = $page->getNode()->getParent();
     if($parent) {
-        $ppages = $parent->getPages();
-        foreach($ppages as $ppage) {
-            if($ppage->getLang() == $page->getLang())
-                $page_catname = contrexx_raw2xhtml($page->getTitle());
-        }
+        $ppage = $parent->getPage($page->getLang());
+        if($ppage)
+            $page_catname = contrexx_raw2xhtml($ppage->getTitle());
     }
 
     $page_title     = contrexx_raw2xhtml($page->getContentTitle());
@@ -1720,7 +1718,6 @@ $subNavbarNode = $page->getNode();
 while($subNavbarNode->getLvl() > 1) {
     $subNavbarNode = $subNavbarNode->getParent();
 }
-
 $objTemplate->setVariable(array(
     'CHARSET' => $objInit->getFrontendLangCharset(),
     'TITLE' => $page_title,
