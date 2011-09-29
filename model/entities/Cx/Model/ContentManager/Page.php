@@ -561,7 +561,7 @@ class Page extends \Cx\Model\Base\EntityBase
 
      * @return string querystring for internal targets, null else
      */
-    public function getTargetPageQueryString() {
+    public function getTargetQueryString() {
         if(!$this->isTargetInternal())
             return null;
         

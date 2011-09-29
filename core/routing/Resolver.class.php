@@ -22,6 +22,11 @@ class Resolver {
     protected $page = null;
 
     /**
+     * Doctrine PageRepository
+     */
+    protected $pageRepo = null;
+
+    /**
      * @param URL $url the url to resolve
      * @param integer $lang the language Id
      * @param $entityManager
@@ -30,6 +35,7 @@ class Resolver {
         $this->url = $url;
         $this->em = $entityManager;
         $this->lang = $lang;
+        $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 
         $this->resolve();
     }
@@ -41,8 +47,7 @@ class Resolver {
         $path = $this->url->getSuggestedTargetPath();
 
         //(I) see what the model has for us.
-        $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-        $result = $pageRepo->getPagesAtPath($path, null, $this->lang);
+        $result = $this->pageRepo->getPagesAtPath($path, null, $this->lang);
 
         //(II) sort out errors
         if(!$result)
@@ -64,9 +69,24 @@ class Resolver {
          */
         $target = $this->page->getTarget();
         if($target) {
+            if($this->page->isTargetInternal()) {
 //TODO: add check for endless/circular redirection (a -> b -> a -> b ... and more complex)
-            $this->url->setPath($target);
-            $this->resolve();
+                $id = $this->page->getTargetPageId();
+                $qs = $this->page->getTargetQueryString();
+
+                $targetPage = $this->pageRepo->find($id);
+                if($targetPage === null)
+                    throw new ResolverException('Found invalid redirection target on page "'.$this->page->getTitle().'" with id "'.$this->page->getId().'": tried to redirect to page with id "'. $id .'", which does not exist.');
+
+                $targetPath = $this->pageRepo->getPath($targetPage);
+
+                $this->url->setPath($targetPath.$qs);
+                $this->resolve();
+            }
+            else { //external target - redirect via HTTP 302
+                header('Location: '.$target);
+                die();
+            }
         }
     }
 
