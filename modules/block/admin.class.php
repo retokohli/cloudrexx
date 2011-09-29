@@ -161,16 +161,6 @@ class blockManager extends blockLibrary
             $this->_showOverview();
             break;
 
-        case 'random':
-            $this->_randomizeBlock();
-            $this->_showOverview();
-            break;
-
-        case 'random_off':
-            $this->_randomizeBlockOff();
-            $this->_showOverview();
-            break;
-
         case 'global':
             $this->_globalBlock();
             $this->_showOverview();
@@ -245,8 +235,6 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_SUBMIT_DELETE'           => $_ARRAYLANG['TXT_BLOCK_SUBMIT_DELETE'],
             'TXT_BLOCK_SUBMIT_ACTIVATE'         => $_ARRAYLANG['TXT_BLOCK_SUBMIT_ACTIVATE'],
             'TXT_BLOCK_SUBMIT_DEACTIVATE'       => $_ARRAYLANG['TXT_BLOCK_SUBMIT_DEACTIVATE'],
-            'TXT_BLOCK_SUBMIT_RANDOM'           => $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM'],
-            'TXT_BLOCK_SUBMIT_RANDOM_OFF'       => $_ARRAYLANG['TXT_BLOCK_SUBMIT_RANDOM_OFF'],
             'TXT_BLOCK_SUBMIT_GLOBAL'           => $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL'],
             'TXT_BLOCK_SUBMIT_GLOBAL_OFF'       => $_ARRAYLANG['TXT_BLOCK_SUBMIT_GLOBAL_OFF'],
             'TXT_BLOCK_SELECT_ALL'              => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
@@ -265,7 +253,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_LANGUAGE'                => $_ARRAYLANG['TXT_BLOCK_LANGUAGE'],
             'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
-            'CSRF_KEY'                          => CSRF::key(),
+            'TXT_CSRF'                          => CSRF::key(),
             'CSRF_CODE'                         => CSRF::code(),
         ));
 
@@ -449,7 +437,7 @@ class blockManager extends blockLibrary
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown($arrCategory['parent'], $catId),
             'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
-            'CSRF_KEY'                              => CSRF::key(),
+            'TXT_CSRF'                              => CSRF::key(),
             'CSRF_CODE'                             => CSRF::code(),
         ));
     }
@@ -754,9 +742,9 @@ class blockManager extends blockLibrary
             $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
             
             if ($blockId != 0 && $activeFlag == 0 && $activeClass == '') {
-                $activeClass = $blockLangActive[$langId] == 1 ? 'active' : '';                
-                $activeFlag = 1;
-            }            
+                $activeClass = $blockLangActive[$langId] == 1 ? 'active' : '';
+                $activeFlag  = $blockLangActive[$langId] == 1 ? 1 : 0;
+            }
             
             $this->_objTpl->setVariable(array(
                 'BLOCK_LANG_TAB_LANG_ID'        => intval($langId),
@@ -888,50 +876,6 @@ class blockManager extends blockLibrary
         }
 
         CSRF::header("Location: index.php?cmd=block");
-    }
-
-    /**
-    * add to random
-    *
-    * change the status from a block
-    *
-    * @access private
-    * @global array
-    * @global ADONewConnection
-    */
-    function _randomizeBlock()
-    {
-        global $_ARRAYLANG, $objDatabase;
-
-        $arrStatusBlocks = $_POST['selectedBlockId'];
-        if($arrStatusBlocks != null){
-            foreach ($arrStatusBlocks as $blockId){
-                $query = "UPDATE ".DBPREFIX."module_block_blocks SET random='1' WHERE id=$blockId";
-                $objDatabase->Execute($query);
-            }
-        }
-    }
-
-    /**
-    * del the random
-    *
-    * change the status from a block
-    *
-    * @access private
-    * @global array
-    * @global ADONewConnection
-    */
-    function _randomizeBlockOff()
-    {
-        global $_ARRAYLANG, $objDatabase;
-
-        $arrStatusBlocks = $_POST['selectedBlockId'];
-        if($arrStatusBlocks != null){
-            foreach ($arrStatusBlocks as $blockId){
-                $query = "UPDATE ".DBPREFIX."module_block_blocks SET random='0' WHERE id=$blockId";
-                $objDatabase->Execute($query);
-            }
-        }
     }
 
     /**

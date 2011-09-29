@@ -1,14 +1,14 @@
 <!-- START module_block_overview.html -->
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
-var __CSRF__ = {key:'{CSRF_KEY}', code:'{CSRF_CODE}'};
+var __CSRF__ = {key:'{TXT_CSRF}', code:'{CSRF_CODE}'};
 var __CSRF__PARAM__ = __CSRF__.key+'='+__CSRF__.code;
 
 function selectMultiAction()
 {
   with (document.frmBlocks) {
     switch (frmBlocksMultiAction.value) {
-      case 'activate':
+      case 'activate':          
         action='{DIRECTORY_INDEX}?cmd=block&act=activate&'+__CSRF__PARAM__;
         submit();
         break;
@@ -16,17 +16,7 @@ function selectMultiAction()
       case 'deactivate':
         action='{DIRECTORY_INDEX}?cmd=block&act=deactivate&'+__CSRF__PARAM__;
         submit();
-        break;
-
-      case 'random':
-        action='{DIRECTORY_INDEX}?cmd=block&act=random&'+__CSRF__PARAM__;
-        submit();
-        break;
-
-      case 'random_off':
-        action='{DIRECTORY_INDEX}?cmd=block&act=random_off&'+__CSRF__PARAM__;
-        submit();
-        break;
+        break;     
 
       case 'global':
         action='{DIRECTORY_INDEX}?cmd=block&act=global&'+__CSRF__PARAM__;
@@ -116,8 +106,6 @@ function blockDeleteBlock(blockId, blockName)
           <option value="delete">{TXT_BLOCK_SUBMIT_DELETE}</option>
           <option value="activate">{TXT_BLOCK_SUBMIT_ACTIVATE}</option>
           <option value="deactivate">{TXT_BLOCK_SUBMIT_DEACTIVATE}</option>
-          <option value="random">{TXT_BLOCK_SUBMIT_RANDOM}</option>
-          <option value="random_off">{TXT_BLOCK_SUBMIT_RANDOM_OFF}</option>
         </select>
       </td>
     </tr>
