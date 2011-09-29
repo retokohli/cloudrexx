@@ -535,6 +535,42 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
+     * Whether target references an internal page
+     * @return boolean
+     */
+    public function isTargetInternal() {
+        //internal targets are formed like <page_id>|<querystring>
+        return is_numeric(substr($this->target,0,1));
+    }
+
+    /**
+     * Gets the target pages' id.
+     * @return integer id for internal targets, 0 else.
+     */
+    public function getTargetPageId() {
+        if(!$this->isTargetInternal())
+            return 0;
+        
+        $t = $this->getTarget();
+        $pipeAt = strpos($t, '|');
+        return intval(substr($t, 0, $pipeAt));
+    }
+
+    /**
+     * Gets the target pages' querystring.
+
+     * @return string querystring for internal targets, null else
+     */
+    public function getTargetPageQueryString() {
+        if(!$this->isTargetInternal())
+            return null;
+        
+        $t = $this->getTarget();
+        $pipeAt = strpos($t, '|');
+        return substr($t, $pipeAt+1);
+    }
+
+    /**
      * Set module
      *
      * @param integer $module
