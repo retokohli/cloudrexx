@@ -625,6 +625,17 @@ class Navigation
      */
     function getTrail()
     {
+        $lang = $this->page->getLang();
+        $node = $this->page->getNode()->getParent();
+        $result = '';
+        while($node->getLvl() > 0) {
+            $page = $node->getPage($lang);
+            $title = $page->getTitle();
+            $path = '../';
+            $result = '<a href="'.$path.'">'.contrexx_raw2xhtml($title).'</a> > $result';
+            $node = $node->getParent();
+        }
+        return $result;
         $return = '';
         $parentId = (isset($this->parentId[$this->pageId])
             ? $this->parentId[$this->pageId] : 0);
