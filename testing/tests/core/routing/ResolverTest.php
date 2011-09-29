@@ -29,13 +29,6 @@ class ResolverTest extends DoctrineTestCase
         $p1->setNode($n1);
         $p1->setUsername('user');
 
-        $p2 = new \Cx\Model\ContentManager\Page();     
-        $p2->setLang(1);
-        $p2->setTitle('redirection');
-        $p2->setNode($n4);
-        $p2->setTarget('testpage1/testpage1_child/?foo=test');
-        $p2->setUsername('user');
-
         $p4 = new \Cx\Model\ContentManager\Page();     
         $p4->setLang(1);
         $p4->setTitle('testpage1_child');
@@ -53,11 +46,21 @@ class ResolverTest extends DoctrineTestCase
         self::$em->persist($n2);
         self::$em->persist($n3);
         self::$em->persist($n4);
-
+        
         self::$em->persist($p1);
-        self::$em->persist($p2);
         self::$em->persist($p4);
         self::$em->persist($p5);
+
+        self::$em->flush();
+
+        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2->setLang(1);
+        $p2->setTitle('redirection');
+        $p2->setNode($n4);
+        $p2->setTarget($p4->getId().'|?foo=test');
+        $p2->setUsername('user');
+
+        self::$em->persist($p2);
 
         self::$em->flush();
 
