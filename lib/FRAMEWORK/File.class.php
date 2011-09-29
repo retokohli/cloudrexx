@@ -512,4 +512,19 @@ class File
 
         return $size;
     }
+
+
+    /**
+     * Wrapper for file_exists()
+     *
+     * Prepends ASCMS_DOCUMENT_ROOT to the (relative) path.
+     * @todo    Maybe clearstatcache() should be called first?
+     * @param   string    $path     The file or folder path
+     * @return  boolean             True if the file exists, false otherwise
+     */
+    static function exists($path)
+    {
+        return file_exists(ASCMS_DOCUMENT_ROOT.'/'.$path);
+    }
+
 }
