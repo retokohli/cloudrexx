@@ -91,4 +91,19 @@ class PageTest extends DoctrineTestCase
         $p->setSlug('butThisShould');
         $this->assertEquals('butThisShould', $p->getSlug());
     }
+
+    public function testTargetProperties() {
+        $p = new \Cx\Model\ContentManager\Page();
+        $p->setTarget('12|querystring');
+        $this->assertEquals(true, $p->isTargetInternal());
+        $this->assertEquals(12, $p->getTargetPageId());
+        $this->assertEquals('querystring', $p->getTargetPageQueryString());
+
+        $p->setTarget('http://www.example.com');
+        $this->assertEquals(false, $p->isTargetInternal());
+        $this->assertEquals(0, $p->getTargetPageId());
+        $this->assertEquals(null, $p->getTargetPageQueryString());
+
+        
+    }
 }
