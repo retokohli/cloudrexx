@@ -741,14 +741,19 @@ class blockManager extends blockLibrary
             $tmpBlockLangActive    = isset($blockLangActive[$langId]) ? $blockLangActive[$langId] : 0;
             $tmpBlockContent       = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]' ,$tmpBlockContent);
             
-            if ($blockId != 0 && $activeFlag == 0 && $activeClass == '') {
-                $activeClass = $blockLangActive[$langId] == 1 ? 'active' : '';
-                $activeFlag  = $blockLangActive[$langId] == 1 ? 1 : 0;
+            if ($blockId != 0) {
+                if (!$activeFlag && $blockLangActive[$langId]) {
+                    $activeClass =  'active';
+                    $activeFlag = 1;
+                }
+            } elseif (!$activeFlag) {
+                $activeClass = 'active';                
+                $activeFlag = 1;
             }
             
             $this->_objTpl->setVariable(array(
                 'BLOCK_LANG_TAB_LANG_ID'        => intval($langId),
-                'BLOCK_LANG_TAB_CLASS'          => $blockId == 0 && $i == 0 ? 'active' : $activeClass,
+                'BLOCK_LANG_TAB_CLASS'          => $activeClass,
                 'TXT_BLOCK_LANG_TAB_LANG_NAME'  => contrexx_raw2xhtml($arrLanguage['name']),            
                 'BLOCK_LANGTAB_DISPLAY'         => $tmpBlockLangActive == 1 ? 'display:inline;' : ($blockId == 0 && $i == 0 ? 'display:inline;' : 'display:none;')
             ));
