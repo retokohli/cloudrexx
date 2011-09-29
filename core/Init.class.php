@@ -612,7 +612,7 @@ class InitCMS
             $path = $this->getLangFilePath($module, 2);
             if (!empty($path)) {
                 $this->loadLangFile($path);
-            }          
+            }
             //...and overwrite with actual language where translated.
             if($langId != 2) { //don't do it for english, already loaded.
                 $path = $this->getLangFilePath($module, $langId);
@@ -644,16 +644,28 @@ class InitCMS
         return $path;
     }
 
-    protected function loadLangFile($path) {
+
+    /**
+     * Loads the language file for the given file path
+     *
+     * Note that no replacements are made to the entries' contents.
+     * If your strings don't work as expected, fix *them*.
+     */
+    protected function loadLangFile($path)
+    {
         global $_ARRAYLANG;
         //require_once($path);
         require($path);
         // remove escape characters
-        foreach (array_keys($_ARRAYLANG) as $langTxtId) {
-            $_ARRAYLANG[$langTxtId] = preg_replace("/\\\"/", "/\"/", $_ARRAYLANG[$langTxtId]);
-        }
+// Pointless IMHO.  If your language entry
+//    $_ARRAYLANG['demo'] = "\"quoted\"";
+// does not look like '"quoted"' after it has been included, fix it!  :)
+//        foreach (array_keys($_ARRAYLANG) as $langTxtId) {
+//            $_ARRAYLANG[$langTxtId] = preg_replace('/\\\\"/', '"', $_ARRAYLANG[$langTxtId]);
+//        }
         return $_ARRAYLANG;
     }
+
 
     /**
      * Returns the current page ID
@@ -734,7 +746,7 @@ class InitCMS
     }
 */
 
-    
+
     /**
      * Sets the customized ThemesId
      *
@@ -867,7 +879,7 @@ class InitCMS
                 FWLanguage::getMenuoptions($this->userFrontendLangId),
                 false,
                 'submitUserFrontendLanguage();',
-                'size="1"')."\n";
+                'size="1"')."\n</form>\n";
     }
 
 
