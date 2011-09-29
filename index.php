@@ -630,7 +630,7 @@ if (preg_match('/{POPUP_JS_FUNCTION}/', $themesPages['index'])) {
     if (@include_once ASCMS_MODULE_PATH.'/popup/index.class.php') {
         $objPopup = new popup();
         if (preg_match('/{POPUP}/', $themesPages['index'])) {
-            $objPopup->setPopup($themesPages['index'], $pageId);
+            $objPopup->setPopup($themesPages['index'], $page->getNode()->getId());
         }
         $objPopup->_setJS($themesPages['index']);
     }
@@ -655,16 +655,16 @@ if ($_CONFIG['blockStatus'] == '1') {
         }
 
         if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $page_content)) {
-            $objBlock->setBlockGlobal($page_content, $pageId);
+            $objBlock->setBlockGlobal($page_content, $page->getNode()->getId());
         }
         if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $page_template)) {
-            $objBlock->setBlockGlobal($page_template, $pageId);
+            $objBlock->setBlockGlobal($page_template, $page->getNode()->getId());
         }
         if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $themesPages['index'])) {
-            $objBlock->setBlockGlobal($themesPages['index'], $pageId);
+            $objBlock->setBlockGlobal($themesPages['index'], $page->getNode()->getId());
         }
         if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $themesPages['sidebar'])) {
-            $objBlock->setBlockGlobal($themesPages['sidebar'], $pageId);
+            $objBlock->setBlockGlobal($themesPages['sidebar'], $page->getNode()->getId());
         }
 
         if ($_CONFIG['blockRandom'] == '1') {
@@ -1663,16 +1663,16 @@ if (   $_CONFIG['bannerStatus']
     && @include_once ASCMS_CORE_MODULE_PATH.'/banner/index.class.php') {
     $objBanner = new Banner();
     $objTemplate->setVariable(array(
-        'BANNER_GROUP_1' => $objBanner->getBannerCode(1, $pageId),
-        'BANNER_GROUP_2' => $objBanner->getBannerCode(2, $pageId),
-        'BANNER_GROUP_3' => $objBanner->getBannerCode(3, $pageId),
-        'BANNER_GROUP_4' => $objBanner->getBannerCode(4, $pageId),
-        'BANNER_GROUP_5' => $objBanner->getBannerCode(5, $pageId),
-        'BANNER_GROUP_6' => $objBanner->getBannerCode(6, $pageId),
-        'BANNER_GROUP_7' => $objBanner->getBannerCode(7, $pageId),
-        'BANNER_GROUP_8' => $objBanner->getBannerCode(8, $pageId),
-        'BANNER_GROUP_9' => $objBanner->getBannerCode(9, $pageId),
-        'BANNER_GROUP_10' => $objBanner->getBannerCode(10, $pageId),
+        'BANNER_GROUP_1' => $objBanner->getBannerCode(1, $page->getNode()->getId()),
+        'BANNER_GROUP_2' => $objBanner->getBannerCode(2, $page->getNode()->getId()),
+        'BANNER_GROUP_3' => $objBanner->getBannerCode(3, $page->getNode()->getId()),
+        'BANNER_GROUP_4' => $objBanner->getBannerCode(4, $page->getNode()->getId()),
+        'BANNER_GROUP_5' => $objBanner->getBannerCode(5, $page->getNode()->getId()),
+        'BANNER_GROUP_6' => $objBanner->getBannerCode(6, $page->getNode()->getId()),
+        'BANNER_GROUP_7' => $objBanner->getBannerCode(7, $page->getNode()->getId()),
+        'BANNER_GROUP_8' => $objBanner->getBannerCode(8, $page->getNode()->getId()),
+        'BANNER_GROUP_9' => $objBanner->getBannerCode(9, $page->getNode()->getId()),
+        'BANNER_GROUP_10' => $objBanner->getBannerCode(10, $page->getNode()->getId()),
     ));
     if (isset($_REQUEST['bannerId'])) {
         $objBanner->updateClicks(intval($_REQUEST['bannerId']));

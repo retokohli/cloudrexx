@@ -80,7 +80,7 @@ class blockLibrary
     */
     public function getBlocks($catId = 0)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $catId = intval($catId);
         $where = array();
@@ -156,9 +156,9 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $arrLangActive)
+    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedNodeIds, $arrLangActive)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $query = "INSERT INTO `".DBPREFIX."module_block_blocks`
                     SET `name`     = '".contrexx_raw2db($name)."',
@@ -177,7 +177,7 @@ class blockLibrary
         $id = $objDatabase->Insert_ID();
 
         $this->storeBlockContent($id, $arrContent, $arrLangActive);
-        $this->storeNodeAssociations($id, $blockAssociatedPageIds, $blockGlobal);
+        $this->storeNodeAssociations($id, $blockAssociatedNodeIds, $blockGlobal);
 
         return true;
     }
@@ -194,7 +194,7 @@ class blockLibrary
     * @global ADONewConnection
     * @return boolean true on success, false on failure
     */
-    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedPageIds, $arrLangActive)
+    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockAssociatedNodeIds, $arrLangActive)
     {
         global $objDatabase;
 
@@ -214,23 +214,23 @@ class blockLibrary
         }
 
         $this->storeBlockContent($id, $arrContent, $arrLangActive);
-        $this->storeNodeAssociations($id, $blockAssociatedPageIds, $blockGlobal);
+        $this->storeNodeAssociations($id, $blockAssociatedNodeIds, $blockGlobal);
 
         return true;
     }
 
 
-    private function storeNodeAssociations($blockId, $blockAssociatedPageIds, $blockGlobal)
+    private function storeNodeAssociations($blockId, $blockAssociatedNodeIds, $blockGlobal)
     {
         global $objDatabase;
 
         switch ($blockGlobal) {
             case 2:
-                foreach ($blockAssociatedPageIds as $pageId) {
-                    $objDatabase->Execute('INSERT IGNORE INTO '.DBPREFIX.'module_block_rel_pages SET  block_id='.intval($blockId).', page_id='.intval($pageId).'');
+                foreach ($blockAssociatedNodeIds as $nodeId) {
+                    $objDatabase->Execute('INSERT IGNORE INTO '.DBPREFIX.'module_block_rel_pages SET  block_id='.intval($blockId).', page_id='.intval($nodeId).'');
                 }
-                if (count($blockAssociatedPageIds)) {
-                    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId." AND page_id NOT IN (".join(',', array_map('intval', $blockAssociatedPageIds)).")");
+                if (count($blockAssociatedNodeIds)) {
+                    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId." AND page_id NOT IN (".join(',', array_map('intval', $blockAssociatedNodeIds)).")");
                     break;
                 }
                 // the missing break is intentionally, so that the system deletes all entries in case no nodes had been selected
@@ -355,7 +355,7 @@ class blockLibrary
     */
     function _setBlock($id, &$code)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $now = time();
         $query = "  SELECT
@@ -368,9 +368,9 @@ class blockLibrary
                     AND
                         tblContent.block_id = tblBlock.id
                     AND
-                        (tblContent.lang_id = ".intval($_LANGID)." AND tblContent.active = 1)
-                    AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
-                    AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
+                        (tblContent.lang_id = ".FRONTEND_LANG_ID." AND tblContent.active = 1)
+                    AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
+                    AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
                     AND
                         tblBlock.active = 1";
 
@@ -395,9 +395,9 @@ class blockLibrary
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlockGlobal(&$code, $pageId)
+    function _setBlockGlobal(&$code, $nodeId)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $objResult = $objDatabase->Execute("SELECT  value
                                             FROM    ".DBPREFIX."module_block_settings
@@ -420,15 +420,15 @@ class blockLibrary
                 ON
                     tblBlock.`id` = tblPage.`block_id`
                 WHERE
-                    (tblPage.page_id = ".intval($pageId).")
+                    (tblPage.page_id = ".intval($nodeId).")
                 AND
                     (tblBlock.`id` = tblContent.`block_id`)
                 AND
-                    (tblContent.`lang_id` = ".intval($_LANGID).")
+                    (tblContent.`lang_id` = ".FRONTEND_LANG_ID.")
                 AND
                     (tblContent.`active` = 1)
-                AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
-                AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
+                AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
+                AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
                 AND
                     (tblBlock.active=1)
                 ORDER BY
@@ -454,13 +454,13 @@ class blockLibrary
                 ON
                     tblBlock.`id` = tblContent.`block_id`
                 WHERE
-                    (tblContent.`lang_id` = ".intval($_LANGID).")
+                    (tblContent.`lang_id` = ".FRONTEND_LANG_ID.")
                 AND
                     (tblContent.`active` = 1)
                 AND
                     (tblBlock.`global` = 1)
-                AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
-                AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
+                AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
+                AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
                 AND
                     (tblBlock.active=1)
                 ORDER BY
@@ -491,7 +491,7 @@ class blockLibrary
     */
     function _setBlockRandom(&$code, $id)
     {
-        global $objDatabase, $_LANGID;
+        global $objDatabase;
 
         $now = time();
         $query = "  SELECT
@@ -502,9 +502,9 @@ class blockLibrary
                     WHERE
                         tblContent.block_id = tblBlock.id
                     AND
-                        (tblContent.lang_id = ".intval($_LANGID)." AND tblContent.active = 1)
-                    AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
-                    AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
+                        (tblContent.lang_id = ".FRONTEND_LANG_ID." AND tblContent.active = 1)
+                    AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
+                    AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
                     AND
                         tblBlock.active = 1 ";
 
@@ -538,7 +538,7 @@ class blockLibrary
 
             $ranId = $arrActiveBlocks[@array_rand($arrActiveBlocks, 1)];
 
-            $objBlock = $objDatabase->SelectLimit("SELECT content FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$ranId." AND lang_id=".intval($_LANGID), 1);
+            $objBlock = $objDatabase->SelectLimit("SELECT content FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$ranId." AND lang_id=".FRONTEND_LANG_ID, 1);
             if ($objBlock !== false) {
                 $code = str_replace("{".$this->blockNamePrefix."RANDOMIZER".$blockNr."}", $objBlock->fields['content'], $code);
                 return true;
