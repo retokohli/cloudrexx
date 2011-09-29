@@ -71,12 +71,33 @@ class Resolver {
         if($target) {
             if($this->page->isTargetInternal()) {
 //TODO: add check for endless/circular redirection (a -> b -> a -> b ... and more complex)
-                $id = $this->page->getTargetPageId();
+                $nId = $this->page->getTargetNodeId();
+                $lId = $this->page->getTargetLangId();
                 $qs = $this->page->getTargetQueryString();
 
-                $targetPage = $this->pageRepo->find($id);
-                if($targetPage === null)
-                    throw new ResolverException('Found invalid redirection target on page "'.$this->page->getTitle().'" with id "'.$this->page->getId().'": tried to redirect to page with id "'. $id .'", which does not exist.');
+                $crit = array(
+                    'node' => $nId
+                );
+                if($lId)
+                    $crit['lang'] = $lId;
+                else
+                    $crit['lang'] = $this->lang;
+
+                $targetPage = $this->pageRepo->findBy($crit);
+                //revert to default language if we could not retrieve the current language
+                if(!isset($targetPage[0])) { 
+                    if($lId != 0) { //make sure we weren't already retrieving the default language
+                        $crit['lang'] = $this->lang;
+                        $targetPage = $this->pageRepo->findBy($crit);
+                    }
+
+                    //check whether we have a page now.
+                    if(!isset($targetPage[0])) {
+                        throw new ResolverException('Found invalid redirection target on page "'.$this->page->getTitle().'" with id "'.$this->page->getId().'": tried to find target page with node '.$nId.' and language '.$lId.', which does not exist.');
+                    }
+                }
+
+                $targetPage = $targetPage[0];
 
                 $targetPath = $this->pageRepo->getPath($targetPage);
 

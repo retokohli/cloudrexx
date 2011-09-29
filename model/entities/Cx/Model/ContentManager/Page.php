@@ -544,16 +544,39 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Gets the target pages' id.
+     * Gets the target nodes' id.
      * @return integer id for internal targets, 0 else.
      */
-    public function getTargetPageId() {
+    public function getTargetNodeId() {
         if(!$this->isTargetInternal())
             return 0;
         
+        $c = $this->cutTarget();
+        return intval($c['nodeId']);
+    }
+
+    protected function cutTarget() {
         $t = $this->getTarget();
-        $pipeAt = strpos($t, '|');
-        return intval(substr($t, 0, $pipeAt));
+        $matches = array();
+        
+        preg_match('#(\d+)(-(\d+))?\|(.*)#', $t, $matches);
+        return array(
+            'nodeId' => $matches[1],
+            'langId' => $matches[3],
+            'queryString' => $matches[4],
+        );
+    }
+
+    /**
+     * Get the target pages' language id.
+     * @return integer id for set language, 0 if it is not set or external target
+     */
+    public function getTargetLangId() {
+        if(!$this->isTargetInternal())
+            return 0;
+
+        $c = $this->cutTarget();
+        return intval($c['langId']);
     }
 
     /**
@@ -564,10 +587,9 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getTargetQueryString() {
         if(!$this->isTargetInternal())
             return null;
-        
-        $t = $this->getTarget();
-        $pipeAt = strpos($t, '|');
-        return substr($t, $pipeAt+1);
+
+        $c = $this->cutTarget();
+        return $c['queryString'];
     }
 
     /**
