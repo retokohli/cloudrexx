@@ -404,21 +404,19 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             $page = $pageRepo->findOneBy($crit);
         }
 
-        //we now know whether we found the page requested
-        $pageNotFound = $page === NULL;
+        // c: inexistant page gets catched below.
+    }
 
-        // c: show error page for inexistant pages
-        if ($pageNotFound) {
-            //fallback for inexistant error page
-            if($plainSection == 'error') {
-                // If the error module is not installed, show this
-                die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-            }
-            else {
-                //page not found, redirect to error page.
-                CSRF::header('Location: index.php?section=error&id=404');
-                exit;
-            }
+    if(!$page || !$page->isActive()) {
+        //fallback for inexistant error page
+        if($plainSection == 'error') {
+            // If the error module is not installed, show this
+            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+        }
+        else {
+            //page not found, redirect to error page.
+            CSRF::header('Location: index.php?section=error&id=404');
+            exit;
         }
     }
     
