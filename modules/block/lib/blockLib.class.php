@@ -369,8 +369,8 @@ class blockLibrary
                         tblContent.block_id = tblBlock.id
                     AND
                         (tblContent.lang_id = ".intval($_LANGID)." AND tblContent.active = 1)
-                    AND
-                        (".$now." BETWEEN `tblBlock`.`start` AND `tblBlock`.`end` )
+                    AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
+                    AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
                     AND
                         tblBlock.active = 1";
 
@@ -427,8 +427,8 @@ class blockLibrary
                     (tblContent.`lang_id` = ".intval($_LANGID).")
                 AND
                     (tblContent.`active` = 1)
-                AND
-                    (".$now." BETWEEN `tblBlock`.`start` AND `tblBlock`.`end`)
+                AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
+                AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
                 AND
                     (tblBlock.active=1)
                 ORDER BY
@@ -459,8 +459,8 @@ class blockLibrary
                     (tblContent.`active` = 1)
                 AND
                     (tblBlock.`global` = 1)
-                AND
-                    (".$now." BETWEEN `tblBlock`.`start` AND `tblBlock`.`end`)
+                AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
+                AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
                 AND
                     (tblBlock.active=1)
                 ORDER BY
@@ -503,8 +503,8 @@ class blockLibrary
                         tblContent.block_id = tblBlock.id
                     AND
                         (tblContent.lang_id = ".intval($_LANGID)." AND tblContent.active = 1)
-                    AND
-                        (".$now." BETWEEN `tblBlock`.`start` AND `tblBlock`.`end` )
+                    AND (tblBlock.`start` <= ".time()." OR tblBlock.`start` = 0)
+                    AND (tblBlock.`end` >= ".time()." OR tblBlock.end = 0)
                     AND
                         tblBlock.active = 1 ";
 
