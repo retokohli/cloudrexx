@@ -892,7 +892,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isActive() {
-        return $this->display;
+        return $this->active;
     }
 
     /**
