@@ -17,6 +17,7 @@ class JSONData {
 
 	function __construct() {
 		$this->em = Env::em();
+        $this->tz = new DateTimeZone('Europe/Berlin');
 	}
 
     // A couple of Stub methods to feed data to/from Doctrine.
@@ -100,7 +101,7 @@ die();
                 'contentTitle'  =>  $page->getContentTitle()
             );
 
-            $n = new DateTime('0000-00-00');
+            $n = new DateTime(null, $this->tz);
             if ($page->getStart())  $page_array['start'] = $page->getStart()->format('d.m.Y H:i');
             else                    $page_array['start'] = $n->format('d.m.Y H:i');
             if ($page->getEnd())    $page_array['end'] = $page->getEnd()->format('d.m.Y H:i');
@@ -149,8 +150,8 @@ die();
 
             $page->setLang(FWLanguage::getLanguageIdByCode($updated_page['lang']));
             $page->setUsername('system');
-            $page->setStart(new DateTime($updated_page['start']));
-            $page->setEnd(new DateTime($updated_page['end']));
+            $page->setStart(new DateTime($updated_page['start'], $this->tz));
+            $page->setEnd(new DateTime($updated_page['end'], $this->tz));
             $page->setTitle($updated_page['title']);
             $page->setContentTitle($updated_page['contentTitle']);
             $page->setMetatitle($updated_page['metatitle']);
@@ -193,11 +194,11 @@ die();
                 $page->setTitle($updated_page['title']);
                 $page->setContentTitle($updated_page['contentTitle']);
                 try {
-                    $start = new DateTime($updated_page['start']);
-                    $end = new DateTime($updated_page['end']);
+                    $start = new DateTime($updated_page['start'], $this->tz);
+                    $end = new DateTime($updated_page['end'], $this->tz);
                 } catch (Exception $e) {
-                    $start = new DateTime('0000-00-00 00:00');
-                    $end = new DateTime('0000-00-00 00:00');
+                    $start = new DateTime('0000-00-00 00:00', $this->tz);
+                    $end = new DateTime('0000-00-00 00:00', $this->tz);
                 }
                 $page->setStart($start);
                 $page->setEnd($end);
