@@ -112,13 +112,16 @@ $incVersionStatus = include_once dirname(__FILE__).'/config/version.php';
 /**
  * Doctrine configuration
  */
-require_once 'config/doctrine.php';
+$incDoctrineStatus = include_once dirname(__FILE__).'/config/doctrine.php';
 
 // Check if system is installed
 if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
     header('Location: installer/index.php');
     die(1);
-} elseif ($incSettingsStatus === false || $incVersionStatus === false) {
+} elseif (   $incSettingsStatus === false
+          || $incVersionStatus === false
+          || $incDoctrineStatus === false
+) {
     die('System halted: Unable to load basic configuration!');
 }
 
@@ -1151,7 +1154,6 @@ if (@include_once ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php') {
 require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
 /** @ignore */
 require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
-
 $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 $languageExtractor->setPlaceholdersIn($page, $url, $objTemplate);
