@@ -558,6 +558,18 @@ if ($section == 'home') {
     else
         $page_template = $themesPages['content'];
 }
+
+// Set Blocks
+if ($_CONFIG['blockStatus'] == '1') {
+    /** @ignore */
+    if (@include_once ASCMS_MODULE_PATH.'/block/index.class.php') {
+        block::setBlocks($page_content, $page);
+        block::setBlocks($themesPages, $page);
+// TODO: this call in unhappy, becase the content/home template already gets parsed just the line above
+        block::setBlocks($page_template, $page);
+    }
+}
+
 // make the replacements for the data module
 if (@include_once ASCMS_MODULE_PATH.'/data/dataBlocks.class.php') {
     $lang = $objInit->loadLanguageData('data');
@@ -639,15 +651,6 @@ if (preg_match('/{POPUP_JS_FUNCTION}/', $themesPages['index'])) {
             $objPopup->setPopup($themesPages['index'], $page->getNode()->getId());
         }
         $objPopup->_setJS($themesPages['index']);
-    }
-}
-
-// Set Blocks
-if ($_CONFIG['blockStatus'] == '1') {
-    /** @ignore */
-    if (@include_once ASCMS_MODULE_PATH.'/block/index.class.php') {
-        block::setBlocks($page_content, $page);
-        block::setBlocks($themesPages, $page);
     }
 }
 
