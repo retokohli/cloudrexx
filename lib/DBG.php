@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Debugging
+ * @version     3.0.0
+ * @since       2.1.3
+ * @package     contrexx
+ * @subpackage  lib
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
+ */
+
 // Basic flags
 define('DBG_NONE',        0);
 define('DBG_PHP',         1<<0);
@@ -21,6 +31,15 @@ define('DBG_DB_FIREPHP',
 
 DBG::deactivate();
 
+/**
+ * Debugging
+ * @version     3.0.0
+ * @since       2.1.3
+ * @package     contrexx
+ * @subpackage  lib
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
+ */
 class DBG
 {
     private static $dbg_fh = null;
@@ -46,6 +65,14 @@ class DBG
     }
 
 
+    /**
+     * Activates debugging according to the bits given in $mode
+     *
+     * See the constants defined early in this file.
+     * An empty $mode defaults to
+     *  DBG_ALL & ~DBG_LOG_FILE & ~DBG_LOG_FIREPHP
+     * @param   integer     $mode       The optional debugging mode bits
+     */
     public static function activate($mode = null)
     {
         if (!self::$fileskiplength) {
@@ -61,6 +88,13 @@ class DBG
     }
 
 
+    /**
+     * Deactivates debugging according to the bits given in $mode
+     *
+     * See the constants defined early in this file.
+     * An empty $mode defaults to DBG_ALL, thus disabling debugging completely
+     * @param   integer     $mode       The optional debugging mode bits
+     */
     public static function deactivate($mode = null)
     {
         if (empty($mode)) {
@@ -73,6 +107,11 @@ class DBG
     }
 
 
+    /**
+     * Set up debugging
+     *
+     * Called by both {@see activate()} and {@see deactivate()}
+     */
     public static function __internal__setup()
     {
         // log to file dbg.log
@@ -102,12 +141,21 @@ class DBG
     }
 
 
+    /**
+     * Returns the current debugging mode bits
+     * @return  integer         The debugging mode bits
+     */
     public static function getMode()
     {
         return self::$mode;
     }
 
 
+    /**
+     * Enables logging to a file
+     *
+     * Disables logging to FirePHP in turn.
+     */
     private static function enable_file()
     {
         if (self::$log_file) return;
@@ -121,6 +169,9 @@ class DBG
     }
 
 
+    /**
+     * Disables logging to a file
+     */
     private static function disable_file()
     {
         if (!self::$log_file) return;
@@ -131,6 +182,11 @@ class DBG
     }
 
 
+    /**
+     * Enables logging to FirePHP
+     *
+     * Disables logging to a file in turn.
+     */
     private static function enable_firephp()
     {
         if (self::$log_firephp) return;
@@ -152,6 +208,9 @@ class DBG
     }
 
 
+    /**
+     * Disables logging to FirePHP
+     */
     private static function disable_firephp()
     {
         if (!self::$log_firephp) return;
@@ -196,6 +255,20 @@ class DBG
     }
 
 
+    /**
+     * Sets up logging to a file
+     *
+     * On each successive call, this will close the current log file handle
+     * if already open.
+     * If logging to FirePHP is enabled, it will then return true.
+     * Otherwise, the log file will be opened using the current parameter
+     * values
+     * @param   string  $file   The file name
+     * @param   string  $mode   The access mode (as with {@see fopen()})
+     * @return  boolean         True
+     * @todo    The result of calling fopen should be verified and be
+     *          reflected in the return value
+     */
     static function setup($file, $mode='a')
     {
         if (self::$dbg_fh) fclose(self::$dbg_fh);
@@ -322,7 +395,7 @@ class DBG
 //          & ~E_DEPRECATED
 // Enable strict warnings
 // (enable this line and fix all warnings before release!)
-//          | E_STRICT
+          | E_STRICT
         ;
         error_reporting(self::$log_php);
         ini_set('display_errors', 1);
@@ -433,6 +506,7 @@ class DBG
             if (!error_reporting()) {
                 $suppressed = ' (suppressed by script)';
             }
+            $type = $errno;
             switch ($errno) {
                 case E_ERROR:
                     $type = 'FATAL ERROR';
@@ -448,9 +522,6 @@ class DBG
                     break;
                 case E_STRICT:
                     $type = 'STRICT';
-                    break;
-                default:
-                    $type = $errno;
                     break;
             }
             if (self::$log_file) {
@@ -475,7 +546,10 @@ class DBG
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
         } elseif (self::$dbg_fh) {
-            fputs(self::$dbg_fh, $text."\n");
+            fputs(self::$dbg_fh,
+// TODO: Add some flag to enable/disable timestamps
+                date(ASCMS_DATE_FORMAT_DATETIME).' '.
+                $text."\n");
         } else {
             echo $text;
         }
