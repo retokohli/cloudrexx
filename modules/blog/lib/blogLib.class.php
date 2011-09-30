@@ -720,7 +720,7 @@ class BlogLibrary {
                     $intKeywordValue = ceil($intKeywordValue * $dblDateFactor); #Include Date (Newer = bigger font)
 
                     //Split tags
-                    $arrEntryTags = split(',',$arrEntryValues['translation'][$this->_intLanguageId]['tags']);
+                    $arrEntryTags = explode(',',$arrEntryValues['translation'][$this->_intLanguageId]['tags']);
                     foreach($arrEntryTags as $strTag) {
                         $strTag = trim($strTag);
 
