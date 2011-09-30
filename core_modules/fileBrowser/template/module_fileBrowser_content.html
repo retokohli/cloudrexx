@@ -21,7 +21,7 @@ function setUrl(url, width, height, alt, type) {
     
     // Check if the user requested the fileBrowser from within the CKeditor
     if(ckFuncNum !== "") {
-        window.opener.CKEDITOR.tools.callFunction(parseInt(ckFuncNum), webPath+url, function() {
+        /*window.opener.CKEDITOR.tools.callFunction(parseInt(ckFuncNum), webPath+url, function() {
             // Get the reference to the CKeditor's dialog window.
             var element, dialog = this.getDialog();
 
@@ -37,7 +37,8 @@ function setUrl(url, width, height, alt, type) {
                     element.setValue('');
                 }
             }
-        });
+        });*/
+        window.opener.CKEDITOR.tools.callFunction(parseInt(ckFuncNum), webPath+url, {width: width, height: height});
     }
     else {
 	    window.opener.SetUrl( webPath+url, width, height, alt );
