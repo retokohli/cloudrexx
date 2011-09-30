@@ -340,23 +340,17 @@ DBG::log($error);
 
 
     /**
-     * Returns the HTML code for the Saferpay payment method.
-     * @return  string  HTML code
+     * Returns the HTML code for the Saferpay payment form.
+     * @param   array   $arrCards     The optional accepted card types
+     * @return  string                The HTML code
      * @static
      */
-    static function _SaferpayProcessor($arrCards=array())
+    static function _SaferpayProcessor($arrCards=null)
     {
         global $_ARRAYLANG;
 
         $objSaferpay = new Saferpay();
-//        if (SettingDb::getValue('saferpay_use_test_account'))
-//            $objSaferpay->isTest = true;
-
-        $serverBase =
-            $_SERVER['SERVER_NAME'].
-            (ASCMS_PATH_OFFSET != '' ? '' : '/').
-            ASCMS_PATH_OFFSET.
-            (ASCMS_PATH_OFFSET != '' ? '/' : '');
+        $serverBase = $_SERVER['SERVER_NAME'].ASCMS_PATH_OFFSET.'/';
         $arrShopOrder = array(
             'AMOUNT'      => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY'    => Currency::getActiveCurrencyCode(),
@@ -367,10 +361,15 @@ DBG::log($error);
             'BACKLINK'    => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=2&handler=saferpay'),
             'DESCRIPTION' => urlencode('"'.$_ARRAYLANG['TXT_ORDER_NR'].' '.$_SESSION['shop']['order_id'].'"'),
             'LANGID'      => FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID),
-            'PROVIDERSET' => $arrCards,
+            'NOTIFYURL'   => urlencode('http://'.$serverBase.'index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=-1&handler=saferpay'),
+            'ALLOWCOLLECT' => 'no',
+            'DELIVERY'     => 'no',
         );
-
+        if ($arrCards) {
+            $arrShopOrder['PROVIDERSET'] = $arrCards;
+        }
         $payInitUrl = $objSaferpay->payInit($arrShopOrder);
+DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
         if (   !$payInitUrl
@@ -502,14 +501,12 @@ DBG::log($error);
         if (empty($_GET['handler'])) return false;
         switch ($_GET['handler']) {
             case 'saferpay':
+//DBG::log("PaymentProcessing::checkIn():");
+//DBG::log("POST: ".var_export($_POST, true));
+//DBG::log("GET: ".var_export($_GET, true));
                 $objSaferpay = new Saferpay();
                 $arrShopOrder = array();
-// Not used
-//                if (SettingDb::getValue('saferpay_use_test_account')) {
-//                    $objSaferpay->isTest = true;
-//                } else {
-                    $arrShopOrder['ACCOUNTID'] = SettingDb::getValue('saferpay_id');
-//                }
+                $arrShopOrder['ACCOUNTID'] = SettingDb::getValue('saferpay_id');
                 $transaction = $objSaferpay->payConfirm();
                 if (SettingDb::getValue('saferpay_finalize_payment')) {
 // payComplete() has been fixed to work
@@ -519,6 +516,7 @@ DBG::log($error);
                         $transaction = $objSaferpay->payComplete($arrShopOrder);
 //                    }
                 }
+//DBG::log("Transaction: ".var_export($transaction, true));
                 return $transaction;
             case 'paypal':
                 return PayPal::ipnCheck();

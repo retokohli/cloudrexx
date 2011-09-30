@@ -1324,7 +1324,7 @@ die("Product ID $product_id not found");
                     // Recognize the names of uploaded files,
                     // verify their presence and use the original name
                     $option_name_stripped = ShopLibrary::stripUniqidFromFilename($option_name);
-                    $path = SHOP_ORDER_UPLOAD_FOLDER.$option_name;
+                    $path = Order::UPLOAD_FOLDER.$option_name;
                     if (   $option_name != $option_name_stripped
                         && File::exists($path)) {
                         $option_name = $option_name_stripped;
