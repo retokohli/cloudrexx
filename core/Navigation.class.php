@@ -326,7 +326,7 @@ class Navigation
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
-            return ereg_replace('<!-- BEGIN nested_navigation -->.*<!-- END nested_navigation -->', $renderedNavi, $templateContent);
+            return preg_replace('/<!--\s+BEGIN\s+nested_navigation\s+-->.*<!--\s+END\s+nested_navigation\s+-->/ms', $renderedNavi, $templateContent);
         }
         return $this->_objTpl->get();
     }
