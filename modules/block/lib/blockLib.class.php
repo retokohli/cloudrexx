@@ -411,69 +411,43 @@ class blockLibrary
         }
 
         $now = time();
-        $query = "SELECT
-                    tblBlock.`id` AS `id`,
-                    tblContent.`content` AS `content`
-                FROM
-                    ".DBPREFIX."module_block_rel_lang_content AS tblContent,
-                    ".DBPREFIX."module_block_blocks AS tblBlock
-                LEFT JOIN
-                    ".DBPREFIX."module_block_rel_pages AS tblPage
-                ON
-                    tblBlock.`id` = tblPage.`block_id`
-                WHERE
-                    (tblPage.page_id = ".intval($nodeId).")
-                AND
-                    (tblBlock.`id` = tblContent.`block_id`)
-                AND
-                    (tblContent.`lang_id` = ".FRONTEND_LANG_ID.")
-                AND
-                    (tblContent.`active` = 1)
-                AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
-                AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
-                AND
-                    (tblBlock.active=1)
-                ORDER BY
-                    tblBlock.`order`
-                ";
+        $query = "
+                SELECT tblBlock.`id` AS `id`,
+                       tblContent.`content` AS `content`,
+                       tblBlock.`order`
+                  FROM ".DBPREFIX."module_block_blocks AS tblBlock
+            INNER JOIN ".DBPREFIX."module_block_rel_lang_content AS tblContent
+                    ON tblContent.`block_id` = tblBlock.`id` 
+            INNER JOIN ".DBPREFIX."module_block_rel_pages AS tblPage
+                    ON tblPage.`block_id` = tblBlock.`id`
+                 WHERE tblBlock.`global` = 2
+                   AND tblPage.page_id = ".intval($nodeId)."
+                   AND tblContent.`lang_id` = ".FRONTEND_LANG_ID."
+                   AND tblContent.`active` = 1
+                   AND tblBlock.active=1
+                   AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
+                   AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
+        UNION DISTINCT
+                SELECT tblBlock.`id` AS `id`,
+                       tblContent.`content` AS `content`,
+                       tblBlock.`order`
+                  FROM ".DBPREFIX."module_block_blocks AS tblBlock
+            INNER JOIN ".DBPREFIX."module_block_rel_lang_content AS tblContent
+                    ON tblContent.`block_id` = tblBlock.`id` 
+                 WHERE tblBlock.`global` = 1
+                   AND tblContent.`lang_id` = ".FRONTEND_LANG_ID."
+                   AND tblContent.`active` = 1
+                   AND tblBlock.active=1
+                   AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
+                   AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
+              ORDER BY `order`";
 
-        $objBlock = $objDatabase->Execute($query);
+        $objResult = $objDatabase->Execute($query);
         $block = '';
-        if ($objBlock !== false) {
-            while (!$objBlock->EOF) {
-                $block .= $objBlock->fields['content'].$seperator;
-                $objBlock->MoveNext();
-            }
-        }
-
-        $queryAllPages ="SELECT
-                    tblBlock.`id` AS `id`,
-                    tblContent.`content` AS `content`
-                FROM
-                    ".DBPREFIX."module_block_blocks AS tblBlock
-                LEFT JOIN
-                    ".DBPREFIX."module_block_rel_lang_content AS tblContent
-                ON
-                    tblBlock.`id` = tblContent.`block_id`
-                WHERE
-                    (tblContent.`lang_id` = ".FRONTEND_LANG_ID.")
-                AND
-                    (tblContent.`active` = 1)
-                AND
-                    (tblBlock.`global` = 1)
-                AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
-                AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
-                AND
-                    (tblBlock.active=1)
-                ORDER BY
-                    tblBlock.`order`
-                ";
-
-        $objBlockAllPages = $objDatabase->Execute($queryAllPages);
-        if ($objBlockAllPages !== false) {
-            while (!$objBlockAllPages->EOF) {
-                $block .= $objBlockAllPages->fields['content'].$seperator;
-                $objBlockAllPages->MoveNext();
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $block .= $objResult->fields['content'].$seperator;
+                $objResult->MoveNext();
             }
         }
 
