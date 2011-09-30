@@ -479,13 +479,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $page_content = '<div id="fe_PreviewContent">'. $page->getContent().'</div>';
     }
 
-    $page_catname = '';
-    $parent = $page->getNode()->getParent();
-    if($parent) {
-        $ppage = $parent->getPage($page->getLang());
-        if($ppage)
-            $page_catname = contrexx_raw2xhtml($ppage->getTitle());
-    }
+    $page_catname = contrexx_raw2xhtml($page->getTitle());
 
     $page_title     = contrexx_raw2xhtml($page->getContentTitle());
     $page_metatitle = contrexx_raw2xhtml($page->getMetatitle());
