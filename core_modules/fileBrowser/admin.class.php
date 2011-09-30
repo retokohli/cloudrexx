@@ -375,7 +375,7 @@ class FileBrowser {
 
                 $this->_objTpl->setVariable(array(
                     'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                    'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url)}",
+                    'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,null,'page')}",
                     'FILEBROWSER_FILE_NAME'         => $arrPage['catname'],
                     'FILEBROWSER_FILESIZE'          => '&nbsp;',
                     'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
