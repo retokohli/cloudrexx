@@ -502,7 +502,8 @@ class ContactManager extends ContactLib
                 'TXT_CONTACT_NAME'                          => $_ARRAYLANG['TXT_CONTACT_NAME'],
                 'TXT_CONTACT_FUNCTIONS'                     => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
                 'TXT_CONTACT_ADD_NEW_CONTACT_FORM'          => $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'],
-                'TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE']
+                'TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'],
+                'TXT_CONTACT_LANGUAGE'                      => $_ARRAYLANG['TXT_CONTACT_LANGUAGE']
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -535,6 +536,12 @@ class ContactManager extends ContactLib
                     $selectedInterfaceLanguage = key($arrForm['lang']);
                 }
 
+                $lang = array();
+                foreach ($arrForm['lang'] as $langId => $value) {
+                    $lang[] = FWLanguage::getLanguageCodeById($langId);
+                }
+                $langString = implode(', ',$lang);
+                
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
 
                 // check if the form contains submitted data
@@ -552,7 +559,8 @@ class ContactManager extends ContactLib
                         'CONTACT_FORM_NAME'                 => $formName,
                         'CONTACT_FORM_LAST_ENTRY'           => $arrForm['last'] ? date(ASCMS_DATE_FORMAT, $arrForm['last']) : '-',
                         'CONTACT_FORM_NUMBER_OF_ENTRIES'    => $entryCount,
-                        'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false'
+                        'CONTACT_DELETE_CONTENT'            => $pageExists ? 'true' : 'false',
+                        'CONTACT_FORM_LANGUAGES'            => $langString
                 ));
 
                 $this->_objTpl->parse('contact_contact_forms');
