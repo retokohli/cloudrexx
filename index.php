@@ -458,6 +458,9 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 
     $themesPages = $objInit->getTemplates();
 
+    //replace the {{NODE_<ID>_<LANG>}}- placeholders
+    LinkGenerator::parseTemplate($themesPages);
+
     if ($frontEditing) {
         $themesPages['index']   = '{CONTENT_FILE}';
         $themesPages['content'] = '{CONTENT_TEXT}';
@@ -1149,11 +1152,6 @@ if (@include_once ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php') {
     }
 }
 
-//link conversion & generating dependencies
-/** @ignore */
-require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
-/** @ignore */
-require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
 $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 $languageExtractor->setPlaceholdersIn($page, $url, $objTemplate);
@@ -1168,10 +1166,7 @@ $page_content = str_replace('{TITLE}', $page_title, $page_content);
 FWUser::parseLoggedInOutBlocks($page_content);
 
 //replace the {{NODE_<ID>_<LANG>}}- placeholders
-$lg = new LinkGenerator($_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/');
-$lg->scan($page_content);
-$lg->fetch(Env::em());
-$lg->replaceIn($page_content);
+LinkGenerator::parseTemplate($page_content);
 
 $boolShop = false;
 // start module switches
