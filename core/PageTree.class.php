@@ -108,6 +108,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
             $dontDescendNext = false;
             $weWantTheChildren = true;
+            $parseChildren = $hasChilds && !$dontDescend && $weWantTheChildren;
             if($this->currentPagePath) { //current flag requested
                 //are we rendering a parent page of currentPage or the currenPage itself?
                 $current = substr($this->currentPagePath, 0, strlen($pathOfThis)) == $pathOfThis;               
@@ -119,12 +120,14 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
                 $dontDescendNext = $this->currentPagePath == $pathOfThis;
             }
 
-            $content .= $this->renderElement($title, $level, $hasChilds, $lang, $pathOfThis, $current, $page);
+            $content .= $this->renderElement($title, $level, $parseChildren, $lang, $pathOfThis, $current, $page);
 
-            if($hasChilds && !$dontDescend && $weWantTheChildren) {
+            if($parseChildren) {
                 unset($elem['__data']);
                 $content .= $this->internalRender($elem, $pathOfThis, $level+1, $dontDescendNext);
             }
+            
+            $content .= $this->postRenderElement($level, $parseChildren, $lang, $page);
         }
         return $content;
 
@@ -144,6 +147,10 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
      */           
     /*abstract */protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page){
         return ''; //workaround, abstract fucks things up somehow
+    }
+
+    protected function postRenderElement($level, $hasChilds, $lang, $page) {
+        return '';
     }
 
     protected function renderHeader($lang) {
