@@ -199,8 +199,10 @@ class JSONData {
                 $page->setMetadesc($updated_page['metadesc']);
                 $page->setMetarobots($updated_page['metarobots']);
                 $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
-                if ($updated_page['module'] != '') 
-                    $page->setModule($updated_page['module']);
+                $page->setModule($updated_page['module']);
+                if ($updated_page['cm_cmd'] == '') { 
+                    $updated_page['cm_cmd'] = null;
+                }
                 $page->setCmd($updated_page['cm_cmd']);
                 $page->setTarget($updated_page['target']);
                 $page->setSlug($updated_page['slug']);
