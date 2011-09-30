@@ -716,6 +716,27 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 
 
     /**
+     * Returns the number of Coupons defined
+     *
+     * @todo    If the $active parameter value is set, limit the number to
+     * Coupons of the given status (not implemented yet)
+     * @return  integer               The number of Coupons
+     */
+    static function count_available()//$active=true)
+    {
+        global $objDatabase;
+
+        $query = "
+            SELECT COUNT(*) AS `numof_records`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_discount_coupon`";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) return self::errorHandler();
+        if ($objResult->EOF) return 0;
+        return $objResult->fields['numof_records'];
+    }
+
+
+    /**
      * Stores a coupon code in the database
      *
      * Returns true on success.

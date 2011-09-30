@@ -159,6 +159,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
     static function getPage($template)
     {
 
+DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
 //DBG::activate(DBG_ERROR_FIREPHP);
 
 // TODO: Temporary, for developing only. Remove for production.
@@ -575,6 +576,9 @@ if (isset ($_REQUEST['content'])) {
     {
 //DBG::log("Shop::cart(): Entered");
         Cart::init();
+        if (!empty($_POST['countryId2'])) {
+            $_SESSION['shop']['countryId2'] = intval($_POST['countryId2']);
+        }
         if (empty($_GET['remoteJs'])) {
 //DBG::log("Shop::cart(): POST");
             Cart::receive_post();
@@ -738,20 +742,15 @@ die("Failed to update the Cart!");
     {
         global $_ARRAYLANG;
 
-        if ($parent_id > 0) {
+        if ($parent_id) {
             $objCategory = ShopCategory::getById($parent_id);
             // If we can't get this ShopCategory, it most probably does
             // not exist.
             if (!$objCategory) {
-                if ($parent_id > 0) {
-                    // Retry using the root.
-                    self::showCategories(0);
-                }
-                // Otherwise, there's no point in looking for its
-                // children either.
-                return false;
+                // Retry using the root.
+                return self::showCategories(0);
             }
-            // Show the parent ShopCategorys' image, if available
+            // Show the parent ShopCategory's image, if available
             $imageName = $objCategory->picture();
             if ($imageName
              && self::$objTemplate->blockExists('shopCategoryImage')) {
@@ -763,7 +762,6 @@ die("Failed to update the Cart!");
                 ));
             }
         }
-
         // Get all active child categories with parent ID $parent_id
         $arrShopCategory =
             ShopCategories::getChildCategoriesById($parent_id, true);
@@ -782,7 +780,6 @@ die("Failed to update the Cart!");
             $description = $objCategory->description();
             $description = nl2br(htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET));
             $description = preg_replace('/[\n\r]/', '', $description);
-
             if (empty($arrDefaultImageSize)) {
                 $arrDefaultImageSize = getimagesize(ASCMS_PATH.self::$defaultImage);
                 self::scaleImageSizeToThumbnail($arrDefaultImageSize);
@@ -877,6 +874,23 @@ die("Failed to update the Cart!");
             ? intval($_REQUEST['manufacturerId']) : null);
         $term = (isset($_REQUEST['term'])
             ? trim(contrexx_input2raw($_REQUEST['term'])) : null);
+        // Validate parameters
+        if ($product_id && empty($category_id)) {
+            if (isset($_SESSION['shop']['previous_category_id'])) {
+                $category_id = $_SESSION['shop']['previous_category_id'];
+            }
+            if (!$category_id) {
+                $category_id = $objProduct->category_id();
+            }
+        }
+//DBG::log("Got Category ID $category_id");
+        $objCategory = null;
+        if ($category_id && empty($product_id)) {
+            $objCategory = ShopCategory::getById($category_id);
+            if (!$objCategory) {
+                $category_id = null;
+            }
+        }
         $shopMenu =
             '<form action="index.php?section=shop" method="post">'.
             '<input type="text" name="term" value="'.
@@ -902,19 +916,20 @@ die("Failed to update the Cart!");
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
                 Manufacturer::getMenuoptions($manufacturer_id, true),
         ));
-// TODO: showCategories() touches the product block! fix!
-        if ($category_id && $term == '') {
+        // Exclude Category list from search results
+        if ($term == '') {
             self::showCategories($category_id);
-        } elseif ($term == '') {
-            self::showCategories(0);
         }
         if (self::$objTemplate->blockExists('shopNextCategoryLink')) {
             $nextCat = ShopCategory::getNextShopCategoryId($category_id);
             $objCategory = ShopCategory::getById($nextCat);
-            self::$objTemplate->setVariable(array(
-                'SHOP_NEXT_CATEGORY_ID' => $nextCat,
-                'SHOP_NEXT_CATEGORY_TITLE' => str_replace('"', '&quot;', $objCategory->name()),
-            ));
+            if ($objCategory) {
+                self::$objTemplate->setVariable(array(
+                    'SHOP_NEXT_CATEGORY_ID' => $nextCat,
+                    'SHOP_NEXT_CATEGORY_TITLE' => str_replace(
+                        '"', '&quot;', $objCategory->name()),
+                ));
+            }
         }
 // Moved to index.php
 //        self::$objTemplate->setVariable(
@@ -923,6 +938,9 @@ die("Failed to update the Cart!");
         $pagingCatId = '';
         $pagingManId = '';
         $pagingTerm = '';
+// TODO: This probably breaks paging in search results!
+// Should only reset the flag conditionally, but add the URL parameters in
+// any case, methinks!
         if ($category_id > 0 && $term == '') {
             $flagSpecialoffer = false;
             $pagingCatId = "&amp;catId=$category_id";
@@ -960,22 +978,23 @@ die("Failed to update the Cart!");
 //DBG::log("No Product");
             return true;
         }
-//DBG::log("Got Category ID $category_id");
-        if ($category_id) {
-            $objCategory = ShopCategory::getById($category_id);
-            if ($objCategory) {
-//DBG::log("Category: ".var_export($objCategory, true));
-                self::$objTemplate->setVariable(array(
-                    // Old, kept for convenience
-                    'SHOP_CATEGORY_CURRENT_NAME' =>
-                        contrexx_raw2xhtml($objCategory->name()),
-                    // New (3.0.0)
-                    'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
-                        $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
-                        contrexx_raw2xhtml($objCategory->name())),
-                ));
-            }
+        if ($objCategory) {
+DBG::log(sprintf($_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'], contrexx_raw2xhtml($objCategory->name())));
+            self::$objTemplate->setVariable(array(
+                // Old, kept for convenience
+                'SHOP_CATEGORY_CURRENT_NAME' =>
+                    contrexx_raw2xhtml($objCategory->name()),
+                // New (3.0.0)
+                'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
+                    $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
+                    contrexx_raw2xhtml($objCategory->name())),
+            ));
+        } else {
+DBG::log("No Category");
+            if (self::$objTemplate->blockExists('products_in_category'))
+                self::$objTemplate->hideBlock('products_in_category');
         }
+
         $uri =
             '&amp;section=shop'.MODULE_INDEX.
             $pagingCatId.$pagingManId.$pagingTerm;
@@ -2894,6 +2913,12 @@ right after the customer logs in!
                     Currency::formatPrice(-$total_discount_amount),
             ));
         }
+        // Show the Coupon code field only if there is at least one defined
+        if (Coupon::count_available()) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_DISCOUNT_COUPON_CODE' => $_SESSION['shop']['coupon_code'],
+            ));
+        }
         self::$objTemplate->setVariable(array(
             'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTALITEM' => Cart::get_item_count(),
@@ -2904,7 +2929,6 @@ right after the customer logs in!
                   $_SESSION['shop']['grand_total_price']),
             'SHOP_CUSTOMERNOTE' => $_SESSION['shop']['note'],
             'SHOP_AGB' => $_SESSION['shop']['agb'],
-            'SHOP_DISCOUNT_COUPON_CODE' => $_SESSION['shop']['coupon_code'],
         ));
         if (Vat::isEnabled()) {
             self::$objTemplate->setVariable(array(

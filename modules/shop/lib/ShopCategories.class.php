@@ -680,7 +680,6 @@ class ShopCategories
             true, $active, true, $selected_id, 0, $maxlevel
         );
 //        }
-
         // Check whether the ShopCategory with the selected ID is missing
         // in the index (and thus in the tree as well)
         $trailIndex = count(self::$arrTrail);
@@ -782,10 +781,11 @@ class ShopCategories
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getChildCategoryIdArray($parent_id=0, $active=true)
+    static function getChildCategoryIdArray($parent_id, $active=true)
     {
         global $objDatabase;
 
+        $parent_id = max(0, intval($parent_id));
         $query = "
            SELECT `id`
              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_categories`
