@@ -378,7 +378,9 @@ class blockLibrary
 
         if ($objRs !== false) {
             if ($objRs->RecordCount()) {
-                $code = str_replace("{".$this->blockNamePrefix.$id."}", $objRs->fields['content'], $code);
+                $content = $objRs->fields['content'];
+                LinkGenerator::parseTemplate($content);
+                $code = str_replace("{".$this->blockNamePrefix.$id."}", $content, $code);
             }
         }
     }
@@ -475,6 +477,7 @@ class blockLibrary
             }
         }
 
+        LinkGenerator::parseTemplate($block);
         $code = str_replace("{".$this->blockNamePrefix."GLOBAL}", $block, $code);
     }
 
@@ -540,7 +543,9 @@ class blockLibrary
 
             $objBlock = $objDatabase->SelectLimit("SELECT content FROM ".DBPREFIX."module_block_rel_lang_content WHERE block_id=".$ranId." AND lang_id=".FRONTEND_LANG_ID, 1);
             if ($objBlock !== false) {
-                $code = str_replace("{".$this->blockNamePrefix."RANDOMIZER".$blockNr."}", $objBlock->fields['content'], $code);
+                $content = $objBlock->fields['content'];
+                LinkGenerator::parseTemplate($content);
+                $code = str_replace("{".$this->blockNamePrefix."RANDOMIZER".$blockNr."}", $content, $code);
                 return true;
             }
         }
@@ -573,7 +578,7 @@ class blockLibrary
         }
 
         require_once(ASCMS_CORE_PATH.'/settings.class.php');
-        $objSettings = &new settingsManager();
+        $objSettings = new settingsManager();
         $objSettings->writeSettingsFile();
     }
 

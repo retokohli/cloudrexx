@@ -646,90 +646,8 @@ if (preg_match('/{POPUP_JS_FUNCTION}/', $themesPages['index'])) {
 if ($_CONFIG['blockStatus'] == '1') {
     /** @ignore */
     if (@include_once ASCMS_MODULE_PATH.'/block/index.class.php') {
-        $objBlock = new block();
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_content, $arrMatches)) {
-            $objBlock->setBlock($arrMatches[1], $page_content);
-        }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $page_template, $arrMatches)) {
-            $objBlock->setBlock($arrMatches[1], $page_template);
-        }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['index'], $arrMatches)) {
-            $objBlock->setBlock($arrMatches[1], $themesPages['index']);
-        }
-        if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $themesPages['sidebar'], $arrMatches)) {
-            $objBlock->setBlock($arrMatches[1], $themesPages['sidebar']);
-        }
-
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $page_content)) {
-            $objBlock->setBlockGlobal($page_content, $page->getNode()->getId());
-        }
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $page_template)) {
-            $objBlock->setBlockGlobal($page_template, $page->getNode()->getId());
-        }
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $themesPages['index'])) {
-            $objBlock->setBlockGlobal($themesPages['index'], $page->getNode()->getId());
-        }
-        if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $themesPages['sidebar'])) {
-            $objBlock->setBlockGlobal($themesPages['sidebar'], $page->getNode()->getId());
-        }
-
-        if ($_CONFIG['blockRandom'] == '1') {
-            //randomizer block 1
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $page_content)) {
-                $objBlock->setBlockRandom($page_content, 1);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $page_template)) {
-                $objBlock->setBlockRandom($page_template, 1);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $themesPages['index'])) {
-                $objBlock->setBlockRandom($themesPages['index'], 1);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER}/', $themesPages['sidebar'])) {
-                $objBlock->setBlockRandom($themesPages['sidebar'], 1);
-            }
-
-            //randomizer block 2
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $page_content)) {
-                $objBlock->setBlockRandom($page_content, 2);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $page_template)) {
-                $objBlock->setBlockRandom($page_template, 2);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $themesPages['index'])) {
-                $objBlock->setBlockRandom($themesPages['index'], 2);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_2}/', $themesPages['sidebar'])) {
-                $objBlock->setBlockRandom($themesPages['sidebar'], 2);
-            }
-
-            //randomizer block 3
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $page_content)) {
-                $objBlock->setBlockRandom($page_content, 3);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $page_template)) {
-                $objBlock->setBlockRandom($page_template, 3);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $themesPages['index'])) {
-                $objBlock->setBlockRandom($themesPages['index'], 3);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_3}/', $themesPages['sidebar'])) {
-                $objBlock->setBlockRandom($themesPages['sidebar'], 3);
-            }
-
-            //randomizer block 4
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_4}/', $page_content)) {
-                $objBlock->setBlockRandom($page_content, 4);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_4}/', $page_template)) {
-                $objBlock->setBlockRandom($page_template, 4);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_4}/', $themesPages['index'])) {
-                $objBlock->setBlockRandom($themesPages['index'], 4);
-            }
-            if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER_}/', $themesPages['sidebar'])) {
-                $objBlock->setBlockRandom($themesPages['sidebar'], 4);
-            }
-        }
+        block::setBlocks($page_content, $page);
+        block::setBlocks($themesPages, $page);
     }
 }
 
@@ -741,7 +659,6 @@ if (   file_exists($modulespath)
     && (   strpos($page_content, $headlinesNewsPlaceholder) !== false
         || strpos($themesPages['index'], $headlinesNewsPlaceholder) !== false
         || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
-        || ($section == 'home' && strpos($themesPages['home'], $headlinesNewsPlaceholder) !== false)
         || strpos($page_template, $headlinesNewsPlaceholder) !== false)
 ) {
     /**
@@ -753,7 +670,6 @@ if (   file_exists($modulespath)
     $page_content           = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_content);
     $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
     $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
-    $themesPages['home']    = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['home']);
     $page_template          = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_template);
 }
 
@@ -765,7 +681,6 @@ if (   file_exists($modulespath)
     && (   strpos($page_content, $topNewsPlaceholder) !== false
         || strpos($themesPages['index'], $topNewsPlaceholder) !== false
         || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
-        || ($section == 'home' && strpos($themesPages['home'], $topNewsPlaceholder) !== false)
         || strpos($page_template, $topNewsPlaceholder) !== false)
 ) {
     /**
@@ -777,7 +692,6 @@ if (   file_exists($modulespath)
     $page_content           = str_replace($topNewsPlaceholder, $homeTopNews, $page_content);
     $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
     $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
-    $themesPages['home']    = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['home']);
     $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
 }
 
@@ -790,7 +704,6 @@ if (   MODULE_INDEX < 2
     && (   strpos($page_content, $eventsPlaceholder) !== false
         || strpos($themesPages['index'], $eventsPlaceholder) !== false
         || strpos($themesPages['sidebar'], $eventsPlaceholder) !== false
-        || ($section == 'home' && strpos($themesPages['home'], $eventsPlaceholder) !== false)
         || strpos($page_template, $eventsPlaceholder) !== false)
     && file_exists($modulespath)
 ) {
@@ -803,7 +716,6 @@ if (   MODULE_INDEX < 2
     $page_content           = str_replace($eventsPlaceholder, $calHeadlines, $page_content);
     $themesPages['index']   = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
     $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
-    $themesPages['home']    = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['home']);
     $page_template          = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
 }
 
@@ -819,7 +731,6 @@ if (file_exists($modulespath)) {
     $immoHomeHeadlines = $immoHeadlines->getHeadlines();
     $page_content = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_content);
     $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $themesPages['index']);
-    $themesPages['home'] = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $themesPages['home']);
     $page_template = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_template);
 }
 
