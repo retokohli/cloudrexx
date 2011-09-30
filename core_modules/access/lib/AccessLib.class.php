@@ -230,9 +230,9 @@ class AccessLib
             case 'date':
                 $value = $objUser->getProfileAttribute($attributeId, $historyId);
                 $arrPlaceholders['_VALUE'] = $value !== false && $value !== '' ? htmlentities(date(ASCMS_DATE_SHORT_FORMAT, intval($value)), ENT_QUOTES, CONTREXX_CHARSET) : '';
-                $arrPlaceholders['_MONTH'] = $this->getDateMonthMenu($attributeName, date('m', $objUser->getProfileAttribute($attributeId, $historyId)));
-                $arrPlaceholders['_DAY'] = $this->getDateDayMenu($attributeName, date('d', $objUser->getProfileAttribute($attributeId, $historyId)));
-                $arrPlaceholders['_YEAR'] = $this->getDateYearMenu($attributeName, date('Y', $objUser->getProfileAttribute($attributeId, $historyId)));
+                $arrPlaceholders['_MONTH'] = $this->getDateMonthMenu($attributeName, date('m', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+                $arrPlaceholders['_DAY'] = $this->getDateDayMenu($attributeName, date('d', intval($objUser->getProfileAttribute($attributeId, $historyId))));
+                $arrPlaceholders['_YEAR'] = $this->getDateYearMenu($attributeName, date('Y', intval($objUser->getProfileAttribute($attributeId, $historyId))));
                 break;
             case 'text':
             case 'mail':
