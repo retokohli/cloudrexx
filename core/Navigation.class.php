@@ -634,7 +634,7 @@ class Navigation
             $page = $node->getPage($lang);
             $title = $page->getTitle();
             $path = $pageRepo->getPath($page);
-            $result = '<a href="'.$path.'" title="'.htmlentities($page->getTitle(), ENT_QUOTES, CONTREXX_CHARSET).'">'.contrexx_raw2xhtml($title).'</a>'.$this->separator.' '.$result;
+            $result = '<a href="'.$path.'" title="'.contrexx_raw2xhtml($title).'">'.contrexx_raw2xhtml($title).'</a>'.$this->separator.' '.$result;
             $node = $node->getParent();
         }
         return $result;
