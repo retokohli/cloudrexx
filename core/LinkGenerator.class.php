@@ -1,7 +1,7 @@
 <?php
 class LinkGeneratorException {}
 /**
- * Handles the [[NODE_<ID>_<LANGID>]] placeholders.
+ * Handles the [[NODE_<ID>]], [[NODE_<ID>_<LANGID>]] placeholders.
  */
 class LinkGenerator {
     /**
@@ -14,14 +14,28 @@ class LinkGenerator {
      * @var boolean whether fetch() ran.
      */
     protected $fetchingDone = false;
-    /**
-     * @var string link prefix (domain/offset)
-     */
-    protected $prefix = '';
 
-    public function __construct($linkPrefix) {
-        $this->prefix = $linkPrefix;
+    public static function parseTemplate(&$content)
+    {
+        $lg = new LinkGenerator();
+
+        if (!is_array($content)) {
+            $arrTemplates = array(&$content);
+        } else {
+            $arrTemplates = &$content;
+        }
+
+        foreach ($arrTemplates as &$template) {
+            $lg->scan($template);
+        }
+
+        $lg->fetch(Env::get('em'));        
+
+        foreach ($arrTemplates as &$template) {
+            $lg->replaceIn($template);
+        }
     }
+
     /**
      * Scans the given string for placeholders and remembers them
      * @param string $content
@@ -29,7 +43,7 @@ class LinkGenerator {
     public function scan(&$content) {
         $this->fetchingDone = false;
         
-        $regex = '/\{(NODE_(\d+)_(\d+))\}/';
+        $regex = '/\{(NODE_(\d+)(?:_(\d+))?)\}/';
 
         $matches = array();
         preg_match_all($regex, $content, $matches);
@@ -38,7 +52,8 @@ class LinkGenerator {
             return;
 
         for($i = 0; $i < count($matches[0]); $i++) {           
-            $this->placeholders[$matches[1][$i]] = array('nodeid' => $matches[2][$i], 'lang' => $matches[3][$i]);
+            $langId = empty($matches[3][$i]) ? FRONTEND_LANG_ID : $matches[3][$i];
+            $this->placeholders[$matches[1][$i]] = array('nodeid' => $matches[2][$i], 'lang' => $langId);
         }
     }
 
@@ -59,35 +74,42 @@ class LinkGenerator {
         $qb->add('from', new Doctrine\ORM\Query\Expr\From('Cx\Model\ContentManager\Page', 'p'));
        
         //build a big or with all the node ids and pages 
-        $expr = null;
+        $arrExprs = null;
+        $fetchedPages = array();
         foreach($this->placeholders as $placeholder => $data) {
-            if($expr) {
-                $expr = $qb->expr()->orx(
-                    $expr,
-                    $qb->expr()->andx(
-                        $qb->expr()->eq('p.node', $data['nodeid']),
-                        $qb->expr()->eq('p.lang', $data['lang'])
-                    )
-                );
+            if (isset($fetchedPages[$data['nodeid']][$data['lang']])) {
+                continue;
             }
-            else {
-                $expr = $qb->expr()->andx(
-                    $qb->expr()->eq('p.node', $data['nodeid']),
-                    $qb->expr()->eq('p.lang', $data['lang'])
-                );
-            }
+
+            $arrExprs[] = $qb->expr()->andx(
+                $qb->expr()->eq('p.node', $data['nodeid']),
+                $qb->expr()->eq('p.lang', $data['lang'])
+            );
+
+            $fetchedPages[$data['nodeid']][$data['lang']] = true;
         }
 
         //fetch the nodes if there are any in the query
-        if($expr) {
+        if($arrExprs) {
             $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
 
-            $qb->add('where', $expr);
+            foreach ($arrExprs as $expr) {
+                $qb->orWhere($expr);
+            }
+
             $pages = $qb->getQuery()->getResult();
             foreach($pages as $page) {
+                $prefix = ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageCodeById($page->getLang()).'/';
+
                 $placeholder = 'NODE_'.$page->getNode()->getId().'_'.$page->getLang();
                 //build placeholder's value
-                $this->placeholders[$placeholder] = $this->prefix . $pageRepo->getPath($page, true);
+                $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page, true);
+
+                if ($page->getLang() == FRONTEND_LANG_ID) {
+                    $placeholder = 'NODE_'.$page->getNode()->getId();
+                    //build placeholder's value
+                    $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page, true);
+                }
             }
         }
 

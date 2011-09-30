@@ -474,13 +474,14 @@ class InitCMS
             }
         }
 
-        $template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
+        // No need for that, right? / TD - 09/30/11
+        /*$template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
         foreach ($template_files as $f) {
             $match = '';
             if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
                 $this->templates['custom_content'][$match[0]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
             }
-        }
+        }*/
 
         return $this->templates;
     }

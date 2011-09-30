@@ -86,6 +86,14 @@ require_once ASCMS_CORE_PATH.'/Init.class.php';
  * @ignore
  */
 require_once ASCMS_CORE_PATH.'/permission.class.php';
+/**
+ * @ignore
+ */
+require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
+/**
+ * @ignore
+ */
+require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
 
 global $adminPage;
 if (isset($adminPage) && $adminPage ) {
