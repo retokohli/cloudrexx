@@ -229,7 +229,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
             $objTemplate = $template;
         }
 
-        while ($accessLoggedInOutBlockIdx < 11) {
+        while ($accessLoggedInOutBlockIdx <= 10) {
             // parse access_logged_in[_[1-10]] blocks
             if ($objTemplate->blockExists($accessLoggedInTplBlock)) {
                 $objFWUser = FWUser::getFWUserObject();
@@ -499,7 +499,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
             $title = $username;
         } else {
             // neither a name, nor a username had been set
-            $title = $_CORELANG['TXT_ACCESS_ANONYMOUS'];
+            $title = $_CORELANG['TXT_ACCESS_UNKNOWN'];
         }
 
         return $title;
