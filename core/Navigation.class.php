@@ -629,32 +629,15 @@ class Navigation
         $node = $this->page->getNode()->getParent();
         $result = '';
         while($node->getLvl() > 0) {
+            $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+
             $page = $node->getPage($lang);
             $title = $page->getTitle();
-            $path = '../';
-            $result = '<a href="'.$path.'">'.contrexx_raw2xhtml($title).'</a> > $result';
+            $path = $pageRepo->getPath($page);
+            $result = '<a href="'.$path.'" title="'.htmlentities($page->getTitle(), ENT_QUOTES, CONTREXX_CHARSET).'">'.contrexx_raw2xhtml($title).'</a>'.$this->separator.' '.$result;
             $node = $node->getParent();
         }
         return $result;
-        $return = '';
-        $parentId = (isset($this->parentId[$this->pageId])
-            ? $this->parentId[$this->pageId] : 0);
-        while ($parentId!=0) {
-            if (!empty($this->data[$parentId])) {
-                if (!is_array($this->table[$parentId])) {
-                    return $return;
-                }
-                $n = $this->data[$parentId]['catname'];
-                if ($n == "") $this->separator = "";
-                $u = $this->data[$parentId]['url'];
-                $trail = "<a href=\"".$u."\" title=\"".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."\">".htmlentities($n, ENT_QUOTES, CONTREXX_CHARSET)."</a>".$this->separator;
-                $return=$trail.$return;
-                $parentId = $this->parentId[$parentId];
-            }  else {
-                $parentId = 0;
-            }
-        }
-        return $return;
     }
 
 
