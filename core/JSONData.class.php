@@ -122,7 +122,7 @@ class JSONData {
                 $node = $nodeRepo->find($_POST['page']['node']);                
             }
 
-            $updated_page = $_POST['page'];
+            $updated_page = array_map('contrexx_input2raw', $_POST['page']);
 
             if (!$node) {
                 $node = new \Cx\Model\ContentManager\Node();
@@ -175,7 +175,7 @@ class JSONData {
             die('new');
         }
         elseif (intval($_POST['page']['id'])) {
-            $updated_page = $_POST['page'];
+            $updated_page = array_map('contrexx_input2raw', $_POST['page']);
 
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 
