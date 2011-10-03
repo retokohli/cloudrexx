@@ -27,7 +27,7 @@ $_ARRAYLANG['TXT_BLOCK_SUBMIT_ACTIVATE'] = "Markierte aktivieren";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_DEACTIVATE'] = "Markierte deaktivieren";
 $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'] = "Alles markieren";
 $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'] = "Markierung löschen";
-$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "Block in folgenden Zufallsplatzhaltern anzeigen";
+$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "Anzeige in den Zufallsplatzhaltern";
 $_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'] = "Möchten Sie die ausgewählten Blöcke wirklich löschen?";
 $_ARRAYLANG['TXT_BLOCK_NO_NAME'] = "[kein Name]";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM'] = "Zufallsgenerator verwenden";
@@ -95,4 +95,7 @@ $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'] = "Block im globalen Platzhalter an
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'] = "Anzeigedauer";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Inhalt";
 $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Reihenfolge";
+$_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'] = "Anzeige im globalen Platzhalter";
+$_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] = "Block wird nur auf den folgenden Seiten angezeigt:";
+$_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Block wird auf jeder Seite angezeigt";
 ?>
