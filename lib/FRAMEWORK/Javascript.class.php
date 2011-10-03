@@ -588,7 +588,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @param string $content - Reference to the HTML content. Note that it
      *                          WILL be modified in-place.
      */
-    public function findJavascripts(&$content)
+    public static function findJavascripts(&$content)
     {
         JS::grabComments($content);
         $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);

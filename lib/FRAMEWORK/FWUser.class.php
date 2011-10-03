@@ -203,7 +203,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
     }
 
 
-    private function loadTemplate($template)
+    private static function loadTemplate($template)
     {
         $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
