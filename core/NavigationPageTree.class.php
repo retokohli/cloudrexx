@@ -48,7 +48,7 @@ class NavigationPageTree extends SigmaPageTree {
         }
     }
 
-    protected function postRender() {
+    protected function postRender($lang) {
         if($this->topLevelBlockName) {
             // replaces the top level block with the complete parsed navigation
             // this is because the Sigma Template system don't support nested blocks
