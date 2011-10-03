@@ -42,7 +42,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
         }
     }
     
-    protected function preRender() {
+    protected function preRender($lang) {
         // checks which levels to use
         // default is 1+ (all)
         $match = array();
@@ -136,11 +136,11 @@ class NestedNavigationPageTree extends SigmaPageTree {
                    || $this->levelTo == 0);
     }
 
-    protected function renderHeader() {
+    protected function renderHeader($lang) {
         //wrap everyting in an <ul>
         return "<ul id='".self::CssPrefix.$this->levelFrom."'>\n";
     }
-    protected function renderFooter() {
+    protected function renderFooter($lang) {
         //wrap everything in an <ul>
         $output .= "</ul>\n";
 

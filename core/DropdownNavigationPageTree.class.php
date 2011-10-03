@@ -57,7 +57,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
         }
     }
 
-    protected function postRender() {
+    protected function postRender($lang) {
         $this->output = str_replace('{SUB_MENU}', '', $this->output); //remove remaining sub_menu tags
         return $this->output;
     }
