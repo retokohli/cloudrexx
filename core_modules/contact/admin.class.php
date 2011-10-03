@@ -1150,7 +1150,7 @@ class ContactManager extends ContactLib
 
             $formFieldIDs = array();
             foreach ($fields as $field) {
-                if($arrField['type'] == 'file') {
+                if($field['type'] == 'file') {
                     if(!$fileFieldFound) { //first time running into a file field
                         $fileFieldFound = true;
                     }
@@ -1174,6 +1174,7 @@ class ContactManager extends ContactLib
             }
 
             $recipients = $this->getRecipientsFromPost();
+            $recipientIDs = array();
             foreach ($recipients as $recipient) {
                 if ($recipient['editType'] == 'new') {
                     $recipientIDs[] = $this->addRecipient($formId, $recipient);
@@ -1369,13 +1370,33 @@ class ContactManager extends ContactLib
             $arrActiveSystemFrontendLanguageIds = array_keys(FWLanguage::getActiveFrontendLanguages());
             foreach ($arrActiveSystemFrontendLanguageIds as $langId) {
                 if (!empty($_POST['contactFormLanguages'][$langId])) {
+                    switch ($fieldType) {
+                        case 'checkbox':
+                        case 'country':
+                        case 'access_country':
+                            $fieldValue = $fieldValues[$id];
+                            break;
+            
+                        case 'label':
+                        case 'date':
+                        case 'file':
+                        case 'fieldset':
+                        case 'horizontalLine':
+                        case 'password':
+                        case 'textarea':
+                        case 'recipient':
+                            $fieldValue = '';
+                            break;
+
+                        default:
+                            $fieldValue = contrexx_input2raw($fieldValues[$id][$langId]);
+                            break;
+                    }
+
                     $arrFields[$id]['lang'][$langId] = array(
                         'name'	=> contrexx_input2raw($fieldNames[$id][$langId]),
-                        'value'	=>    $fieldType != 'checkbox'
-                                   && $fieldType != 'country'
-                                   && $fieldType != 'access_country'
-                                    ? contrexx_input2raw($fieldValues[$id][$langId])
-                                    : $fieldValue = $fieldValues[$id]);
+                        'value'	=> $fieldValue
+                    );
                 }
             }
         }
@@ -1391,9 +1412,9 @@ class ContactManager extends ContactLib
      */
     private function getRecipientsFromPost()
     {
-        $mails      = $_POST['contactFormRecipientEmail'];
-        $names      = $_POST['contactFormRecipientName'];
-        $editTypes  = $_POST['contactFormRecipientEditType'];
+        $mails      = contrexx_input2raw($_POST['contactFormRecipientEmail']);
+        $names      = contrexx_input2raw($_POST['contactFormRecipientName']);
+        $editTypes  = contrexx_input2raw($_POST['contactFormRecipientEditType']);
         $recipients = array();
 
         if (count($mails) == 0) {
@@ -1402,18 +1423,24 @@ class ContactManager extends ContactLib
 
         $sortCounter = 0;
         foreach ($mails as $key => $mail) {
+            $mail = trim($mail);
+
+            if (empty($mail)) {
+                continue;
+            }
+
             $recipients[$key] = array(
                     'id'    => $key,
                     'email' => $mail,
                     'sort'  => $sortCounter++,
                     'editType' => $editTypes[$key]
             );
-            foreach (FWLanguage::getActiveFrontendLanguages() as $langID => $lang) {
-                $name = ($names[$key][$langID])
-                        ? $names[$key][$langID]
-                        : $names[$key][0]
-                ;
-                $recipients[$key]['lang'][$langID] = $name;
+            
+            foreach (array_keys(FWLanguage::getActiveFrontendLanguages()) as $langId) {
+                $name = isset($names[$key][$langId])
+                            ? $names[$key][$langId]
+                            : '';
+                $recipients[$key]['lang'][$langId] = $name;
             }
         }
 
@@ -1557,8 +1584,8 @@ class ContactManager extends ContactLib
                 'CONTACT_CONTENT_SITE_ACTION'       => $contentSiteExists > 0 ? 'updateContent' : 'newContent',
                 'CONTACT_SOURCECODE_OF'             => str_replace('%NAME%', contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$selectedInterfaceLanguage]['name']), $_ARRAYLANG['TXT_CONTACT_SOURCECODE_OF_NAME']),
                 'CONTACT_PREVIEW_OF'                => str_replace('%NAME%', contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$selectedInterfaceLanguage]['name']), $_ARRAYLANG['TXT_CONTACT_PREVIEW_OF_NAME']),
-                'CONTACT_FORM_SOURCECODE'           => contrexx_raw2xhtml($this->_getSourceCode($formId, 0, false, true)),
-                'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, 0, true),
+                'CONTACT_FORM_SOURCECODE'           => contrexx_raw2xhtml($this->_getSourceCode($formId, FRONTEND_LANG_ID, false, true)),
+                'CONTACT_FORM_PREVIEW'              => $this->_getSourceCode($formId, FRONTEND_LANG_ID, true),
                 'FORM_ID'                           => $formId
             ));
         } else {
@@ -1583,10 +1610,8 @@ class ContactManager extends ContactLib
         $sourcecode = array();
         $this->initContactForms();
 
-// TODO: replace FRONTEND_LANG_ID with selectedInterfaceLanguage
-
         $sourcecode[] = "{CONTACT_FEEDBACK_TEXT}";
-        $sourcecode[] = "<!-- BEGIN formText -->". ($preview ? $this->arrForms[$id]['lang'][FRONTEND_LANG_ID]['text'] : "{".$id."_FORM_TEXT}") ."<!-- END formText -->";
+        $sourcecode[] = "<!-- BEGIN formText -->". ($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : "{".$id."_FORM_TEXT}") ."<!-- END formText -->";
         $sourcecode[] = '<div id="contactFormError" style="color: red; display: none;">';
         $sourcecode[] = $preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}';
         $sourcecode[] = "</div>";
@@ -1594,7 +1619,7 @@ class ContactManager extends ContactLib
         $sourcecode[] = '<form action="'.($preview ? '../' : '')."index.php?section=contact&amp;cmd=".$id.'" ';
         $sourcecode[] = 'method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();" id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'">';
         $sourcecode[] = '<fieldset id="contactFrame">';
-        $sourcecode[] = "<legend>". ($preview ? $this->arrForms[$id]['lang'][FRONTEND_LANG_ID]['name'] : "{".$id."_FORM_NAME}")."</legend>";
+        $sourcecode[] = "<legend>". ($preview ? $this->arrForms[$id]['lang'][$lang]['name'] : "{".$id."_FORM_NAME}")."</legend>";
        
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
@@ -1604,147 +1629,147 @@ class ContactManager extends ContactLib
             }
 
             switch ($arrField['type']) {
-            case 'hidden':
-            case 'horizontalLine':
-                $sourcecode[] = '&nbsp;';
-                break;
-            case 'label':
-                $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">&nbsp;</label>';
-                break;
-            case 'fieldset':
-                $sourcecode[] = '</fieldset>';
-                $sourcecode[] = '<fieldset id="contactFormFieldId_'.$fieldId.'">';
-                $sourcecode[] = "<legend>".($preview ? contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']) : "{".$fieldId."_LABEL}")."</legend>";
-                break;
-            case 'checkboxGroup':
-            case 'radio':
-                $sourcecode[] = '<label>'.
-                                ($preview ? contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']) : "{".$fieldId."_LABEL}")
-                                .$required.'</label>';
-                break;
-            case 'date':
-                $sourcecode[] = '<label for="DPC_date'.$fieldId.'_YYYY-MM-DD">'.
-                                ($preview ? contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']) : "{".$fieldId."_LABEL}")
-                                .$required.'</label>';
-                break;
-            default:
-                $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
-                                ($preview ? contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['name']) : "{".$fieldId."_LABEL}")
-                                .$required.'</label>';
+                case 'hidden':
+                case 'horizontalLine':
+                    $sourcecode[] = '&nbsp;';
+                    break;
+                case 'label':
+                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">&nbsp;</label>';
+                    break;
+                case 'fieldset':
+                    $sourcecode[] = '</fieldset>';
+                    $sourcecode[] = '<fieldset id="contactFormFieldId_'.$fieldId.'">';
+                    $sourcecode[] = "<legend>".($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")."</legend>";
+                    break;
+                case 'checkboxGroup':
+                case 'radio':
+                    $sourcecode[] = '<label>'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
+                    break;
+                case 'date':
+                    $sourcecode[] = '<label for="DPC_date'.$fieldId.'_YYYY-MM-DD">'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
+                    break;
+                default:
+                    $sourcecode[] = '<label for="contactFormFieldId_'.$fieldId.'">'.
+                                    ($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['name']) : "{".$fieldId."_LABEL}")
+                                    .$required.'</label>';
             }
 
-            $arrField['lang'][FRONTEND_LANG_ID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][FRONTEND_LANG_ID]['value']);
+            $arrField['lang'][$lang]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$lang]['value']);
             $fieldType                                = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
             switch ($fieldType) {
-            case 'label':
-                $sourcecode[] = $preview ? contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['value']) : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>';
-                break;
+                case 'label':
+                    $sourcecode[] = $preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '<label class="noCaption">{'.$fieldId.'_VALUE}</label>';
+                    break;
 
-            case 'checkbox':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1" {SELECTED_'.$fieldId.'} />';
-                break;
+                case 'checkbox':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="checkbox" name="contactFormField_'.$fieldId.'" value="1" {SELECTED_'.$fieldId.'} />';
+                    break;
 
-            case 'checkboxGroup':
-                $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
-                $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
-                foreach ($options as $index => $option) {
-                    $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.contrexx_raw2xhtml($option).'" {SELECTED_'.$fieldId.'_'.$index.'}/><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label>';
-                }
-                $sourcecode[] = '</div>';
-                break;
-
-            case 'country':
-            case 'access_country':
-                $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
-                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                if ($arrField['is_required'] == 1) {
-                    $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
-                } else {
-                    $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."</option>";
-                }
-                if ($preview) {
-                    while (!$objResult->EOF) {
-                        $sourcecode[] = "<option value=\"".$objResult->fields['name']."\" >".$objResult->fields['name']."</option>";
-                        $objResult->MoveNext();
-                    }
-                } else {
-                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value=\"{".$fieldId."_VALUE}\" {SELECTED_".$fieldId."} >{".$fieldId."_VALUE}</option>";
-                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
-                }
-                $sourcecode[] = "</select>";
-                break;
-
-            case 'date':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
-                break;
-
-            case 'file':
-                $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget"></div>';
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormField_upload" type="file" name="contactFormField_upload" disabled="disabled"/></div>';
-                $hasFileInput = true;
-                //$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
-                break;
-            
-            case 'hidden':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['value']) : "{".$fieldId."_VALUE}").'" />';
-                break;
-
-            case 'horizontalLine':
-                $sourcecode[] = '<hr />';
-                break;
-            
-            case 'password':
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
-                break;
-
-            case 'radio':
-                $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
-                $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
-                $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
-                foreach ($options as $index => $option) {
-                    $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
-                }
-                $sourcecode[] = '</div>';
-                break;
-
-            case 'select':
-                $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
-                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                if ($preview) {
-                    $options = explode(',', $arrField['lang'][$selectedLang]['value']);
+                case 'checkboxGroup':
+                    $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
+                    $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                    $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
                     foreach ($options as $index => $option) {
-                        $sourcecode[] = "<option value='".contrexx_raw2xhtml($option)."'>". contrexx_raw2xhtml($option) ."</option>";
+                        $sourcecode[] = '<input type="checkbox" class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'[]" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.contrexx_raw2xhtml($option).'" {SELECTED_'.$fieldId.'_'.$index.'}/><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label>';
                     }
-                } else {
-                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value='{".$fieldId."_VALUE}' {SELECTED_".$fieldId."}>". '{'.$fieldId.'_VALUE}'."</option>";
-                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
-                }
-                $sourcecode[] = "</select>";
-                break;
+                    $sourcecode[] = '</div>';
+                    break;
 
-            case 'textarea':
-                $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
-                break;
-            case 'recipient':
-                $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
-                if ($preview) {
-                    foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
-                        $sourcecode[] = "<option value='".$index."'>". $arrRecipient['lang'][FRONTEND_LANG_ID] ."</option>";
+                case 'country':
+                case 'access_country':
+                    $objResult    = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                    if ($arrField['is_required'] == 1) {
+                        $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT'] : '{TXT_CONTACT_PLEASE_SELECT}')."</option>";
+                    } else {
+                        $sourcecode[] = "<option value=\"".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."\">".($preview ? $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] : '{TXT_CONTACT_NOT_SPECIFIED}')."</option>";
                     }
-                } else {
-                    $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
-                    $sourcecode[] = "<option value='{".$fieldId."_VALUE_ID}' {SELECTED_".$fieldId."} >". '{'.$fieldId.'_VALUE}'."</option>";
-                    $sourcecode[] = "<!-- END field_".$fieldId." -->";
+                    if ($preview) {
+                        while (!$objResult->EOF) {
+                            $sourcecode[] = "<option value=\"".$objResult->fields['name']."\" >".$objResult->fields['name']."</option>";
+                            $objResult->MoveNext();
+                        }
+                    } else {
+                        $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                        $sourcecode[] = "<option value=\"{".$fieldId."_VALUE}\" {SELECTED_".$fieldId."} >{".$fieldId."_VALUE}</option>";
+                        $sourcecode[] = "<!-- END field_".$fieldId." -->";
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
+
+                case 'date':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" type="text" name="contactFormField_'.$fieldId.'" id="DPC_date'.$fieldId.'_YYYY-MM-DD" />';
+                    break;
+
+                case 'file':
+                    $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget"></div>';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormField_upload" type="file" name="contactFormField_upload" disabled="disabled"/></div>';
+                    $hasFileInput = true;
+                    //$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
+                    break;
+                
+                case 'hidden':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="hidden" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : "{".$fieldId."_VALUE}").'" />';
+                    break;
+
+                case 'horizontalLine':
+                    $sourcecode[] = '<hr />';
+                    break;
+                
+                case 'password':
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="password" name="contactFormField_'.$fieldId.'" value="" />';
+                    break;
+
+                case 'radio':
+                    $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
+                    $sourcecode[] = '<div class="contactFormGroup" id="contactFormFieldId_'.$fieldId.'">';
+                    $options      = explode(',', $arrField['lang'][$selectedLang]['value']);
+                    foreach ($options as $index => $option) {
+                        $sourcecode[] .= '<input class="contactFormClass_'.$arrField['type'].'" type="radio" name="contactFormField_'.$fieldId.'" id="contactFormField_'.$index.'_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'" {SELECTED_'.$fieldId.'_'.$index.'} /><label class="noCaption" for="contactFormField_'.$index.'_'.$fieldId.'">'.($preview ? contrexx_raw2xhtml($option) : '{'.$fieldId.'_'.$index.'_VALUE}').'</label><br />';
+                    }
+                    $sourcecode[] = '</div>';
+                    break;
+
+                case 'select':
+                    $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                    if ($preview) {
+                        $options = explode(',', $arrField['lang'][$selectedLang]['value']);
+                        foreach ($options as $index => $option) {
+                            $sourcecode[] = "<option value='".contrexx_raw2xhtml($option)."'>". contrexx_raw2xhtml($option) ."</option>";
+                        }
+                    } else {
+                        $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                        $sourcecode[] = "<option value='{".$fieldId."_VALUE}' {SELECTED_".$fieldId."}>". '{'.$fieldId.'_VALUE}'."</option>";
+                        $sourcecode[] = "<!-- END field_".$fieldId." -->";
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
+
+                case 'textarea':
+                    $sourcecode[] = '<textarea class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'" rows="5" cols="20">{'.$fieldId.'_VALUE}</textarea>';
+                    break;
+                case 'recipient':
+                    $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
+                    if ($preview) {
+                        foreach ($this->arrForms[$id]['recipients'] as $index => $arrRecipient) {
+                            $sourcecode[] = "<option value='".$index."'>". $arrRecipient['lang'][$lang] ."</option>";
+                        }
+                    } else {
+                        $sourcecode[] = "<!-- BEGIN field_".$fieldId." -->";
+                        $sourcecode[] = "<option value='{".$fieldId."_VALUE_ID}' {SELECTED_".$fieldId."} >". '{'.$fieldId.'_VALUE}'."</option>";
+                        $sourcecode[] = "<!-- END field_".$fieldId." -->";
+                    }
+                    $sourcecode[] = "</select>";
+                    break;
+                default:
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][$lang]['value']) : '{'.$fieldId.'_VALUE}').'" />';
+                    break;
                 }
-                $sourcecode[] = "</select>";
-                break;
-            default:
-                $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="text" name="contactFormField_'.$fieldId.'" value="'.($preview ? contrexx_raw2xhtml($arrField['lang'][FRONTEND_LANG_ID]['value']) : '{'.$fieldId.'_VALUE}').'" />';
-                break;
-            }
         }
 
         if ($preview) {
@@ -2108,128 +2133,143 @@ class ContactManager extends ContactLib
         $this->_handleContentPage($formId);
     }
 
-    function _handleContentPage($formId = 0) {
+    function _handleContentPage($formId = 0)
+    {
+        if (!$formId) {
+            return;
+        }
 
         $objDatabase = Env::get('db');
+        $objFWUser   = FWUser::getFWUserObject();
 
-        if ($formId > 0) {
-            $objFWUser       = FWUser::getFWUserObject();
+        $pages = $this->em->getRepository('Cx\Model\ContentManager\Page')
+                          ->getFromModuleCmdByLang('contact', $formId);
 
-            $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');           
-            $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
+        $frontendLangIds = array_keys(FWLanguage::getActiveFrontendLanguages());
+        $selectedLangIds = array_keys($this->arrForms[$formId]['lang']);
 
-            $pages = $pageRepo->getFromModuleCmdByLang('contact', $formId);
+        // filter out only those languages that are active in the frontent.
+        // we do want to create/update only the content pages of those languages.
+        $selectedLangIds = array_intersect($selectedLangIds, $frontendLangIds);
 
-//TODO: what's this used for?
-            if (!empty($_REQUEST['pageId']) && intval($_REQUEST['pageId']) > 0) {
-                $nodeId = intval($_REQUEST['pageId']);
-                $node = $pageRepo->findOneBy(array('id' => $nodeId));
-            } else {
-                $root = $nodeRepo->getRoot();
-                $node = new \Cx\Model\ContentManager\Node();
-                $node->setParent($root);                
-                $this->em->persist($node);
-            }
-//TODO: handle $node == null ( => node not found )
-           
-            $activeLangIds = array_keys(FWLanguage::getActiveFrontendLanguages());
-            $selectedLangIds = array_keys($_POST['contactFormLanguages']);
-            //sort out inactive languages
-            $selectedLangIds = array_intersect($selectedLangIds, $activeLangIds);
+        $presentLangIds = array_keys($pages);
 
-            $presentLangIds = array_keys($pages);
-            $updateLangIds = array_intersect($selectedLangIds, $presentLangIds);
-            $newLangIds = array_diff($selectedLangIds, $updateLangIds);
-            $deleteLangIds = array_diff($presentLangIds, $selectedLangIds);
+        // define which languages of the content pages have to be updated
+//        $updateLangIds = array_intersect($selectedLangIds, $presentLangIds);
 
-            $activeLangIds = array_merge($newLangIds, $updateLangIds);
+        // define which languages of the content pages have to be created
+//        $newLangIds = array_diff($selectedLangIds, $updateLangIds);
 
-            foreach ($activeLangIds as $langId) {
-                $objContactForm = $objDatabase->SelectLimit("SELECT name FROM ".DBPREFIX."module_contact_form_lang
-                                                            WHERE formID=".$formId." AND langID=".$langId, 1);
+        // define which languages of the content pages have to be removed
+        $deleteLangIds = array_diff($presentLangIds, $selectedLangIds);
 
-                $page = null;
-                if(isset($pages[$langId])) { //page already exists
-                    //page 
-                    $page = $pages[$langId];
-                }
-                else { //new Page
-                    $page = new \Cx\Model\ContentManager\Page();
-                    $page->setNode($node);
-                }
-                if ($objContactForm !== false) {
-                    $catname = $objContactForm->fields['name'];
-                }
+        $langIdsOfAssociatedPagesOfPageNode = array();
+        foreach ($presentLangIds as $langId) {
+            // 
+            $langIdsOfAssociatedPagesOfPageNode[$pages[$langId]->getId()] = array_keys($pages[$langId]->getNode()->getPagesByLang());
+        }
 
-                $content     = $this->_getSourceCode($formId, $langId);
+        foreach ($selectedLangIds as $langId) {
+            $page = null;
+            $node = null;
 
-                $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-                
-                $page->setContent($content);
-                $page->setTitle($catname);
-                $page->setUsername($objFWUser->objUser->getUsername());
-                $page->setCmd($formId);
-                $page->setModule('contact');
-                $page->setDisplay(true);
-                $page->setLang($langId);
-                
-                $this->em->persist($page);
-            }
-
-            foreach ($deleteLangIds as $langId) {
+            if (isset($pages[$langId])) {
+                // Content page already exists, so we will update this very page
                 $page = $pages[$langId];
-                $this->em->remove($page);
+                DBG::msg("Page in lang $langId exists -> Update()");
+            } else {
+                // Content page of the frontend language $langId doesn't exist yet.
+                // Therefore we will either have to create a new node or we will have to
+                // find a node to which we can attach our new page.
+                // We will prefer the latter.
+                DBG::msg("Page doesn't exist in lang $langId -> Create()");
+                
+                // Check if there exists already a content page to who's node we could attach our new page
+                if (count($pages)) {
+                    if (   // In case the language in which we are going to create a new page isn't the default frontend language,
+                           $langId != FWLanguage::getDefaultLangId()
+                           // check if there exists a content page in the default language,
+                        && isset($pages[FWLanguage::getDefaultLangId()])
+                           // if so, check if its node doesn't have a page in the specific language yet
+                        && !in_array($langId, $langIdsOfAssociatedPagesOfPageNode[$pages[FWLanguage::getDefaultLangId()]->getId()])
+                    ) {
+                        // if that is the case, we will attach our new page to this node
+                        $node = $pages[FWLanguage::getDefaultLangId()]->getNode();
+                        DBG::msg("Page does exists in the default language");
+                        DBG::msg("Attach page to node {$node->getId()} of the page of the lang ".FWLanguage::getDefaultLangId());
+                    } else {
+                        foreach ($pages as $langIdOfPage => $page) {
+                            // Skip the language we're going to create a new page
+                            if ($langIdOfPage == $langId) {
+                                continue;
+                            }
+
+                            // Skip the page of the default frontend language - we just checked this page's node before
+                            if ($langIdOfPage == FWLanguage::getDefaultLangId()) {
+                                continue;
+                            }
+
+                            // Check if there exists a node of the pages in the other languages that don't
+                            // have an associated page in the language we're going to create a new page
+                            if (!in_array($langId, $langIdsOfAssociatedPagesOfPageNode[$pages[$langIdOfPage]->getId()])) {
+                                $node = $pages[$langIdOfPage]->getNode();
+                                DBG::msg("Attach page to node {$node->getId()} of the page of the lang $langIdOfPage");
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if ($node === null) {
+                    DBG::msg("No node found -> Create()");
+                    $root = $this->em->getRepository('Cx\Model\ContentManager\Node')->getRoot();
+
+                    // Create a new node 
+                    $node = new \Cx\Model\ContentManager\Node();
+                    $node->setParent($root);                
+                    $this->em->persist($node);
+                }
+
+                // Create a new Page
+                $page = new \Cx\Model\ContentManager\Page();
+                $page->setNode($node);
             }
 
-            $this->em->flush();
+            $content = $this->_getSourceCode($formId, $langId);
+
+            $page->setContent($content);
+            $page->setTitle($this->arrForms[$formId]['lang'][$langId]['name']);
+            $page->setUsername($objFWUser->objUser->getUsername());
+            $page->setCmd($formId);
+            $page->setModule('contact');
+            $page->setDisplay(true);
+            $page->setLang($langId);
+            
+            $this->em->persist($page);
+
+            // Remember newly created pages. We will need this for the creating of other new pages above in this method. 
+            if (!isset($pages[$langId])) {
+                $pages[$langId] = $page;
+                $langIdsOfAssociatedPagesOfPageNode[$pages[$langId]->getId()] = array($langId);
+            }
         }
-    }
+        //$this->em->flush();
 
+        // Delete those content pages of those languages that had been deactivated
+        foreach ($deleteLangIds as $langId) {
+            $page = $pages[$langId];
+            $node = $page->getNode();
 
-    function _createContactFeedbackSite()
-    {
-        $db = Env::get('db');
-
-        //check if we already have a thanks page
-        $pageRepo = $this->em->getRepository('Page');
-        $nodeRepo = $this->em->getRepository('Node');
-
-        $thxPage = $pageRepo->findOneBy(array(
-            'module' => 6,
-            'lang' => FRONTEND_LANG_ID
-        ));
-
-        if(!$thxPage) {
-            //let's create a thanks page.
-            $page = new \Cx\Model\ContentManager\Page();
-                                 
-            // get page from the module repository
-            $thxQuery  = "SELECT `content`,
-                                `title`, `cmd`, `expertmode`, `parid`,
-                                `displaystatus`, `displayorder`, `username`,
-                                `displayorder`
-                              FROM ".DBPREFIX."module_repository
-                         WHERE `moduleid` = 6 AND `lang`=".FRONTEND_LANG_ID;
-            $objResult = $db->Execute($thxQuery);
-            if ($objResult !== false) {
-                //query translated from sql, original query in r11848
-                //expertmode not set anymore.
-
-                $page->setContent($objResult->fields['content']);
-                $page->setTitle($objResult->fields['title']);
-                $page->setCmd($objResult->fields['cmd']);
-                $page->setDisplay($objResult->fields['displaystatus']);
-                $page->setUsername($objResult->fields['username']);
-                $page->setLang(FRONTEND_LANG_ID);
-
-                //attach page to top of site
-                $rootNode = $nodeRepo->getRoot();
-                $page->setNode($rootNode);
-                
-                $em->persist($page);
-                $em->flush();
-            }   
+            DBG::msg("Delete page: $langId");
+            //DBG::dump(count($node->getPages()));
+            $this->em->remove($page);
+            //$this->em->persist($page);
+            //$this->em->flush();
+            //DBG::dump(count($node->getPages()));
+            // TODO: Delete empty nodes
         }
+
+        $this->em->flush();
     }
 }
-?>
+
