@@ -27,7 +27,7 @@ $_ARRAYLANG['TXT_BLOCK_SUBMIT_ACTIVATE'] = "Activate selected";
 $_ARRAYLANG['TXT_BLOCK_SUBMIT_DEACTIVATE'] = "Deactivate selected";
 $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'] = "Select all";
 $_ARRAYLANG['TXT_BLOCK_DESELECT_ALL'] = "Delete selected";
-$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "Include In random generator";
+$_ARRAYLANG['TXT_BLOCK_RANDOM'] = "Included In random generator";
 $_ARRAYLANG['TXT_BLOCK_DELETE_SELECTED_BLOCKS'] = "Do you really want to delete the selected Content Blocks?";
 $_ARRAYLANG['TXT_BLOCK_NO_NAME'] = "[No name]";
 $_ARRAYLANG['TXT_BLOCK_USE_BLOCK_RANDOM'] = "Use random generator";
@@ -95,4 +95,7 @@ $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'] = "Block im globalen Platzhalter an
 $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'] = "Anzeigedauer";
 $_ARRAYLANG['TXT_BLOCK_CONTENT'] = "Content";
 $_ARRAYLANG['TXT_BLOCK_ORDER']   = "Order";
+$_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'] = "Included in global block";
+$_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'] = "Block only gets displayed on the following pages:";
+$_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] = "Block gets displayed on all pages";
 ?>

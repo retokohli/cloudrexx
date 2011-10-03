@@ -251,6 +251,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_CATEGORIES_ALL'          => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ALL'],
             'TXT_BLOCK_ORDER'                   => $_ARRAYLANG['TXT_BLOCK_ORDER'],
             'TXT_BLOCK_LANGUAGE'                => $_ARRAYLANG['TXT_BLOCK_LANGUAGE'],
+            'TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'=> $_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'],
             'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
             'TXT_CSRF'                          => CSRF::key(),
@@ -258,6 +259,10 @@ class blockManager extends blockLibrary
         ));
 
         $arrBlocks = $this->getBlocks($catId);
+
+        // create new ContentTree instance
+        $objContentTree = new ContentTree($langId);
+        
         if (count($arrBlocks)>0) {
             $rowNr = 0;
             foreach ($arrBlocks as $blockId => $arrBlock) {
@@ -303,23 +308,47 @@ class blockManager extends blockLibrary
                 }
                 $langString = implode(', ',$lang);
                 
+                switch ($arrBlock['global']) {
+                    case '1':
+                        $checkImage = "images/icons/check.gif";
+                        break;
+                    case '2':
+                        $checkImage = "images/icons/check_gray.gif";
+                        
+                        $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId);
+                        $selectedPages    = array();
+                        $strSelectedPages = '';
+                        
+                        foreach ($objContentTree->getTree() as $arrData) {
+                            if (in_array($arrData['node_id'], $blockAssociatedPageIds)) {                
+                                $selectedPages[] = contrexx_raw2xhtml($arrData['catname']);
+                            }
+                        } 
+                        $strSelectedPages = implode(',', $selectedPages);                        
+                        break;
+                    default :                        
+                }
+                                
                 $this->_objTpl->setVariable(array(
-                    'BLOCK_ROW_CLASS'       => $rowNr % 2 ? "row1" : "row2",
-                    'BLOCK_ID'              => $blockId,
-                    'BLOCK_RANDOM'          => $random,
-                    'BLOCK_RANDOM_2'        => $random2,
-                    'BLOCK_RANDOM_3'        => $random3,
-                    'BLOCK_RANDOM_4'        => $random4,
-                    'BLOCK_CATEGORY_NAME'   => $this->_categoryNames[$arrBlock['cat']],
-                    'BLOCK_GLOBAL'          => $global,
-                    'BLOCK_ORDER'           => $arrBlock['order'],
-                    'BLOCK_PLACEHOLDER'     => $this->blockNamePrefix.$blockId,
-                    'BLOCK_NAME'            => contrexx_raw2xhtml($arrBlock['name']),
-                    'BLOCK_MODIFY'          => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                    'BLOCK_COPY'            => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                    'BLOCK_DELETE'          => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
-                    'BLOCK_STATUS'          => $status,
-                    'BLOCK_LANGUAGES_NAME'  => $langString
+                    'BLOCK_ROW_CLASS'             => $rowNr % 2 ? "row1" : "row2",
+                    'BLOCK_ID'                    => $blockId,
+                    'BLOCK_RANDOM'                => $random,
+                    'BLOCK_RANDOM_2'              => $random2,
+                    'BLOCK_RANDOM_3'              => $random3,
+                    'BLOCK_RANDOM_4'              => $random4,
+                    'BLOCK_CATEGORY_NAME'         => $this->_categoryNames[$arrBlock['cat']],
+                    'BLOCK_GLOBAL'                => $global,
+                    'BLOCK_ORDER'                 => $arrBlock['order'],
+                    'BLOCK_PLACEHOLDER'           => $this->blockNamePrefix.$blockId,
+                    'BLOCK_NAME'                  => contrexx_raw2xhtml($arrBlock['name']),
+                    'BLOCK_MODIFY'                => sprintf($_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                    'BLOCK_COPY'                  => sprintf($_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                    'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
+                    'BLOCK_STATUS'                => $status,
+                    'BLOCK_LANGUAGES_NAME'        => $langString,
+                    'BLOCK_INCLUDED_GLOBAL_BLOCK' => $checkImage,
+                    'BLOCK_CHECK_IMAGE_DISPLAY'   => ($arrBlock['global'] == 0) ? 'display:none' : 'display:block',
+                    'BLOCK_CHECK_IMAGE_TITLE'     => ($arrBlock['global'] == 1) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] : ($arrBlock['global'] == 2) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'].'/n'.$strSelectedPages : ''
                 ));
                 $this->_objTpl->parse('blockBlockList');
 
