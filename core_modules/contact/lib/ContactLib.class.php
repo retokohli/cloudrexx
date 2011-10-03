@@ -1283,6 +1283,7 @@ class ContactLib
      *
      * Makes the sourcecode for the javascript based
      * field checking
+     * @todo    The javascript code must be loaded using JS:registerCode()
      */
     function _getJsSourceCode($id, $formFields, $preview = false, $show = false)
     {
@@ -1484,8 +1485,11 @@ JS_misc;
         return $code;
     }
 
+// TODO: The uploader code must not be inserted into the sourcecode of the content page
+//       Instead is must be dynamically loaded into the content page whenever the 
+//       requested content page contains a file uploade field.
     protected function getUploaderSourceCode() {
-        $source .= <<<EOS
+        $source = <<<EOS
 {UPLOAD_WIDGET_CODE}
 {UPLOADER_CODE}
 <script>

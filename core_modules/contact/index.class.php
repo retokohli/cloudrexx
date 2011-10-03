@@ -76,6 +76,9 @@ class Contact extends ContactLib
      * we're in legacy mode if true.
      * this means file uploads are coming directly from inputs, rather than being
      * handled by the contrexx upload core-module.
+     * Q: What is the legacyMode for?
+     * A: With legacyMode we support the old submission forms that hadn't
+     *    been migrated to the new fileUploader structure.
      * @var boolean
      */
     protected $legacyMode;
@@ -109,6 +112,9 @@ class Contact extends ContactLib
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
+
+// TODO: This is a huge overhead. We don't really need all forms to get loaded in the frontend!
+//       Solution propoal: Create a new class SubmissionForm to work with (do a Doctrine rewrite to implement a history as well)
         $this->initContactForms();
         $this->hasFileField = false;
     }
@@ -117,7 +123,7 @@ class Contact extends ContactLib
      * Show the contact page
      *
      * Parse a contact form submit request and show the contact page
-     * @see _getContactFormData(), _checkValues(), _insertIntoDatabase(), _sendMail(), _showError(), _showFeedback(), _getParams(), HTML_Template_Sigma::get(), HTML_Template_Sigma::blockExists(), HTML_Template_Sigma::hideBlock(), HTML_Template_Sigma::touchBlock()
+     * @see _getContactFormData(), _checkValues(), _insertIntoDatabase(), sendMail(), _showError(), _showFeedback(), _getParams(), HTML_Template_Sigma::get(), HTML_Template_Sigma::blockExists(), HTML_Template_Sigma::hideBlock(), HTML_Template_Sigma::touchBlock()
      * @return string Parse contact form page
      */
     function getContactPage()
@@ -127,9 +133,9 @@ class Contact extends ContactLib
         JS::activate('cx');
 
         $formId = isset($_GET['cmd']) ? intval($_GET['cmd']) : 0;
-        $useCaptcha = $this->getContactFormCaptchaStatus($formId);
         $arrFields  = $this->getFormFields($formId);
         $isLoggedin = $this->setProfileData();
+        $useCaptcha = !$isLoggedin && $this->getContactFormCaptchaStatus($formId);
         $this->handleUniqueId();
         
         $this->objTemplate->setVariable(array(
@@ -342,22 +348,16 @@ class Contact extends ContactLib
                 }
             }
         }
-
-        if ($isLoggedin) {
-            $useCaptcha = false;
-        } else {
-            $this->setCaptcha($useCaptcha);
-        }
         
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
 
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
            // $this->_getParams();
-            $arrFormData = &$this->_getContactFormData();
+            $arrFormData = $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) { //validation ok
-                    $this->_sendMail($arrFormData);
+                    $this->sendMail($arrFormData);
                     if (isset($arrFormData['showForm']) && !$arrFormData['showForm']) {
                         $this->objTemplate->hideBlock("formText");
                         $this->objTemplate->hideBlock('contact_form');
@@ -415,6 +415,7 @@ class Contact extends ContactLib
      * Inits the uploader when displaying a contact form.
      */
     protected function initUploader() {
+// TODO: uploader gets initialized every time, no matter if he'll be used or required
         try {
             //init the uploader       
             JS::activate('cx'); //the uploader needs the framework
@@ -856,29 +857,64 @@ class Contact extends ContactLib
         $arrSettings = $this->getSettings();
         $arrSpamKeywords = explode(',', $arrSettings['spamProtectionWordList']);
         $this->initCheckTypes();
+
         if (count($arrFields['fields']) > 0) {
-            foreach ($arrFields['fields'] as $field) {
-                $isFile = $field['type'] == 'file';
+            foreach ($arrFields['fields'] as $fieldId => $field) {
+                $value = '';
+                $validationRegex = null;
                 $isRequired = $field['is_required'];
-                $source = $isFile ? 'uploadedFiles' : 'data';
-                if($isFile && !$this->legacyMode && $isRequired) {
-                    //check if the user has uploaded any files
-                    $tup = self::getTemporaryUploadPath($this->submissionId);
-                    $path = $tup[0].'/'.$tup[2];
-                    if(count(@scandir($path)) == 2) { //only . and .. present, directory is empty
-                        //no uploaded files in a mandatory field - no good.
-                        $error = true;
-                    }
-                    continue;
+
+                switch ($field['type']) {
+                    case 'label':
+                    case 'fieldset':
+                    case 'horizontalLine':
+                        // we need to use a 'continue 2' here to first break out of the switch and then move over to the next iteration of the foreach loop
+                        continue 2;
+                        break;
+
+                    case 'select':
+                        $value = $arrFields['data'][$fieldId];
+                        break;
+
+                    case 'file':
+                        if(!$this->legacyMode && $isRequired) {
+                            //check if the user has uploaded any files
+                            $tup = self::getTemporaryUploadPath($this->submissionId);
+                            $path = $tup[0].'/'.$tup[2];
+                            if(count(@scandir($path)) == 2) { //only . and .. present, directory is empty
+                                //no uploaded files in a mandatory field - no good.
+                                $error = true;
+                            }
+                            // we need to use a 'continue 2' here to first break out of the switch and then move over to the next iteration of the foreach loop
+                            continue 2;
+                        }
+                        $value = isset($arrFields['uploadedFiles'][$fieldId]) ? $arrFields['uploadedFiles'][$fieldId] : '';
+                        break;
+
+                    case 'text':
+                    case 'checkbox':
+                    case 'checkboxGroup':
+                    case 'country':
+                    case 'date':
+                    case 'hidden':
+                    case 'password':
+                    case 'radio':
+                    case 'textarea':
+                    case 'recipient':
+                    case 'special': 
+                    default:
+                        $validationRegex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
+                        $value = isset($arrFields['data'][$fieldId]) ? $arrFields['data'][$fieldId] : '';
+                        break;
                 }
-                $regex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
-                if ($isRequired && empty($arrFields[$source][$field['name']])) {
+
+                if ($isRequired && empty($value)) {
                     $error = true;
-                } elseif (empty($arrFields[$source][$field['name']])) {
+                } elseif (empty($value)) {
                     continue;
-                } elseif(!preg_match($regex, $arrFields[$source][$field['name']])) {
+                } elseif($validationRegex && !preg_match($validationRegex, $value)) {
                     $error = true;
-                } elseif ($this->_isSpam($arrFields[$source][$field['name']], $arrSpamKeywords)) {
+                } elseif ($this->_isSpam($value, $arrSpamKeywords)) {
                     $error = true;
                 }
             }
@@ -1041,180 +1077,170 @@ class Contact extends ContactLib
      * @param array Details of the contact request
      * @see _getEmailAdressOfString(), phpmailer::From, phpmailer::FromName, phpmailer::AddReplyTo(), phpmailer::Subject, phpmailer::IsHTML(), phpmailer::Body, phpmailer::AddAddress(), phpmailer::Send(), phpmailer::ClearAddresses()
      */
-    function _sendMail($arrFormData)
+    private function sendMail($arrFormData)
     {
-        global $_ARRAYLANG, $_CONFIG, $_LANGID, $objDatabase;
+        global $_ARRAYLANG, $_CONFIG;
         
-        $body = '';
+        $plaintextBody = '';
         $replyAddress = '';
-        $htmlMessage  = '';
         $isHtml = $arrFormData['htmlMail'] == 1
                   ? true : false;
-        if ($isHtml) {
-            /*
-             * Generate HTML Code For Mail
-             */
-            $htmlTemplate = new HTML_Template_Sigma('.');
-            $htmlTemplate->setErrorHandling(PEAR_ERROR_DIE);
-            $htmlTemplate->setTemplate($arrFormData['mailTemplate']);
 
-            $htmlTemplate->setVariable(array(
+        // stop send process in case no real data had been submitted
+        if (!isset($arrFormData['data']) && !isset($arrFormData['uploadedFiles'])) {
+            return false;
+        }
+
+        // check if we shall send the email as multipart (text/html)
+        if ($isHtml) {
+            // setup html mail template
+            $objTemplate = new HTML_Template_Sigma('.');
+            $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+            $objTemplate->setTemplate($arrFormData['mailTemplate']);
+
+            $objTemplate->setVariable(array(
                 'DATE'              => date(ASCMS_DATE_FORMAT, $arrFormData['meta']['time']),
                 'HOSTNAME'          => contrexx_raw2xhtml($arrFormData['meta']['host']),
                 'IP_ADDRESS'        => contrexx_raw2xhtml($arrFormData['meta']['ipaddress']),
                 'BROWSER_LANGUAGE'  => contrexx_raw2xhtml($arrFormData['meta']['lang']),
-                'BROWSER_VERSION'   => contrexx_raw2xhtml($arrFormData['meta']['browser'])
+                'BROWSER_VERSION'   => contrexx_raw2xhtml($arrFormData['meta']['browser']),
             ));
+        }
 
 // TODO: check if we have to excape $arrRecipients later in the code
-            $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
-            
-            /*
-             * Fetch Field name and values of the whole form
-             */
-            if ($htmlTemplate->blockExists('form_field')) {
-                foreach ($arrFormData['fields'] as $key => $arrField) {
-                    $field_value = '';
-                    switch ($arrField['type']) {
-                    case 'file':
-                        if (isset($arrFormData['uploadedFiles'][$key])) {
-                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$key]['path']."' >".$arrFormData['uploadedFiles'][$key]['name']."</a>";
-                        }
-                        break;
-                    case 'checkbox':
-                        $field_value = ($arrFormData['data'][$key] == 1)
-                                        ? $_ARRAYLANG['TXT_CONTACT_YES']
-                                        : $_ARRAYLANG['TXT_CONTACT_NO'] ;
-                        break;
-                    case 'recipient':
-                        $field_value = $arrRecipients[$arrFormData['data'][$key]]['lang'][$_LANGID];
-                        break;
-                    default :
-                        $field_value = contrexx_raw2xhtml($arrFormData['data'][$key]);
-                        break;
-                    }
-
-                    if ($field_value != "") {
-                        $htmlTemplate->setVariable(array(
-                            'FIELD_LABEL'   => contrexx_raw2xhtml($arrField['lang'][$_LANGID]['name']),
-                            'FIELD_VALUE'   => $field_value
-                        ));
-                        $htmlTemplate->parse('form_field');
-                    }
-                }
-            }
-
-            /*
-             * Block to fetch form field names and values of individual fields
-             */
-            foreach ($arrFormData['fields'] as $key => $arrField) {
-                if ($htmlTemplate->blockExists('field_'.$key)) {
-                    $field_value = '';
-                    switch ($arrField['type']) {
-                    case 'file':
-                        if (isset($arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']])) {
-                            $field_value = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]['path']."' >".$arrFormData['uploadedFiles'][$arrField['lang'][$_LANGID]['name']]['name']."</a>";
-                        }
-                        break;
-                    case 'checkbox':
-                        $field_value = ($arrFormData['data'][$arrField['lang'][$_LANGID]['name']] == 1)
-                                        ? $_ARRAYLANG['TXT_CONTACT_YES']
-                                        : $_ARRAYLANG['TXT_CONTACT_NO'] ;
-                        break;
-                    case 'recipient':
-                        $field_value = $arrRecipients[$arrFormData['data'][$key]]['lang'][$_LANGID];
-                        break;
-                    default :
-                        $field_value = contrexx_raw2xhtml($arrFormData['data'][$arrField['lang'][$_LANGID]['name']]);
-                        break;
-                    }
-
-                    if ($field_value != "") {
-                        $htmlTemplate->setVariable(array(
-                            'FIELD_'.$key.'_LABEL' => contrexx_raw2xhtml($arrField['lang'][$_LANGID]['name']),
-                            'FIELD_'.$key.'_VALUE' => $field_value
-                        ));
-                        $htmlTemplate->parse('field_'.$key);
-                    } else {
-                        $htmlTemplate->hideBlock('field_'.$key);
-                    }
-                }
-            }
-
-            $htmlMessage = $htmlTemplate->get();
-        }
+        $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
         
-        if (!empty($arrFormData['data'])) {
-            if (!empty($arrFormData['fields'])) {
-                foreach ($arrFormData['fields'] as $arrField) {
-                    if ($arrField['check_type'] == '2' && ($mail = trim($arrFormData['data'][$arrField['lang'][$_LANGID]['name']]))  && !empty($mail)) {
+        // calculate the longest field label.
+        // this will be used to correctly align all user submitted data in the plaintext e-mail
+// TODO: check if the label of upload-fields are taken into account as well
+        $maxlength = 0;
+        foreach ($arrFormData['fields'] as $arrField) {
+            $length    = strlen($arrField['lang'][FRONTEND_LANG_ID]['name']);
+            $maxlength = $maxlength < $length ? $length : $maxlength;
+        }
+
+        // try to fetch a user submitted e-mail address to which we will send a copy to
+        if (!empty($arrFormData['fields'])) {
+            foreach ($arrFormData['fields'] as $fieldId => $arrField) {
+                // check if field validation is set to e-mail
+                if ($arrField['check_type'] == '2') {
+                    $mail = trim($arrFormData['data'][$fieldId]);
+                    if (FWValidator::isEmail($mail)) {
                         $replyAddress = $mail;
                         break;
                     }
                 }
             }
+        }
 
-            //we need to know all textareas - they're indented differently
-            $query = 'SELECT name FROM '.DBPREFIX.'module_contact_form_field WHERE type=\'textarea\' AND id_form = ' . intval($arrFormData['id']);
+        // fill the html and plaintext body with the submitted form data
+        foreach ($arrFormData['fields'] as $fieldId => $arrField) {
+            if($fieldId == 'unique_id') //generated for uploader. no interesting mail content.
+                continue;
 
-            $result = $objDatabase->Execute($query);
+            $htmlValue = '';
+            $plaintextValue = '';
             $textAreaKeys = array();
-            if($result) {
-                while(!$result->EOF) {
-                    $textAreaKeys[] = $result->fields['name'];
-                    $result->MoveNext();
-                }
+
+            switch ($arrField['type']) {
+                case 'label':
+                case 'fieldset':
+// TODO: parse TH row instead
+                case 'horizontalLine':
+// TODO: add visual horizontal line
+                    // we need to use a 'continue 2' here to first break out of the switch and then move over to the next iteration of the foreach loop
+                    continue 2;
+                    break;
+
+                case 'file':
+                    if (isset($arrFormData['uploadedFiles'][$fieldId])) {
+                        $htmlValue = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_raw2xhtml($arrFormData['uploadedFiles'][$fieldId]['path'])."' >".contrexx_raw2xhtml($arrFormData['uploadedFiles'][$fieldId]['name'])."</a>";
+                        $plaintextValue  = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$fieldId]['path'];
+                    }
+                    break;
+
+                case 'checkbox':
+                    $plaintextValue = $arrFormData['data'][$fieldId] == 1
+                                        ? $_ARRAYLANG['TXT_CONTACT_YES']
+                                        : $_ARRAYLANG['TXT_CONTACT_NO'];
+                    $htmlValue = $plaintextValue;
+                    break;
+
+                case 'recipient':
+// TODO: check for XSS
+                    $plaintextValue = $arrRecipients[$arrFormData['data'][$fieldId]]['lang'][FRONTEND_LANG_ID];
+                    $htmlValue = $plaintextValue;
+                    break;
+
+                case 'textarea':
+                    //we need to know all textareas - they're indented differently then the rest of the other field types
+                    $textAreaKeys[] = $fieldId;
+                default :
+                    $plaintextValue = isset($arrFormData['data'][$fieldId]) ? $arrFormData['data'][$fieldId] : '';
+                    $htmlValue = contrexx_raw2xhtml($plaintextValue);
+                    break;
             }
 
-            $maxlength = 0;
-            if (!empty($arrFormData['data'])) {
-                foreach ($arrFormData['data'] as $key => $value) {
-                    $length    = strlen($arrFormData['fields'][$key]['lang'][$_LANGID]['name']);
-                    $maxlength = ($maxlength < $length) ? $length : $maxlength;
-                }
-            }
+            $fieldLabel = $arrField['lang'][FRONTEND_LANG_ID]['name'];
 
-            if (count($arrFormData['uploadedFiles']) > 0) {
-                $body .= $_ARRAYLANG['TXT_CONTACT_UPLOADS'].":\n";
-                foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-                    $tabCount = $maxlength - strlen($arrFormData['fields'][$key]['lang'][$_LANGID]['name']);
-                    $tabs     = ($tabCount == 0) ? 1 : $tabCount +1;
-                    $body    .= contrexx_raw2xhtml($arrFormData['fields'][$key]['lang'][$_LANGID]['name']).str_repeat(" ", $tabs).": ".(contrexx_strip_tags($file['name']))."\n";
-                }
-                $body .= "\n";
-            }
-
-            foreach ($arrFormData['data'] as $key => $value) {
-                if($key == 'unique_id') //generated for uploader. no interesting mail content.
-                    continue;
-
-                $name = '';
-                $name = $arrFormData['fields'][$key]['lang'][$_LANGID]['name'];
-                $tabCount = $maxlength - strlen($name);
-                $tabs     = ($tabCount == 0) ? 1 : $tabCount +1;
-                if($arrFormData['fields'][$key]['type'] == 'recipient'){
-                    $value  = $arrRecipients[$value]['lang'][$_LANGID];
-                }
-
-                if(!in_array($key, $textAreaKeys)) { //it's no textarea, indent normally
-                    $body .= contrexx_raw2xhtml($name).str_repeat(" ", $tabs).": ".contrexx_raw2xhtml($value)."\n";
-                } else { //we're dealing with a textearea
-                    $body .= contrexx_raw2xhtml($name).":\n".contrexx_raw2xhtml($value)."\n";
-                }
-
-                if (empty($replyAddress) && ($mail = $this->_getEmailAdressOfString($value))) {
+            // try to fetch an e-mail address from submitted form date in case we were unable to fetch one from an input type with e-mail validation
+            if (empty($replyAddress)) {
+                $mail = $this->_getEmailAdressOfString($plaintextValue);
+                if (FWValidator::isEmail($mail)) {
                     $replyAddress = $mail;
                 }
             }
+
+            // parse html body
+            if ($isHtml) {
+                if (!empty($htmlValue)) {
+                    if ($objTemplate->blockExists('field_'.$fieldId)) {
+                        // parse field specific template block
+                        $objTemplate->setVariable(array(
+                            'FIELD_'.$fieldId.'_LABEL' => contrexx_raw2xhtml($fieldLabel),
+                            'FIELD_'.$fieldId.'_VALUE' => $htmlValue,
+                        ));
+                        $objTemplate->parse('field_'.$fieldId);
+                    } elseif ($objTemplate->blockExists('form_field')) {
+                        // parse regular field template block
+                        $objTemplate->setVariable(array(
+                            'FIELD_LABEL'   => contrexx_raw2xhtml($fieldLabel),
+                            'FIELD_VALUE'   => $htmlValue,
+                        ));
+                        $objTemplate->parse('form_field');
+                    }
+                } elseif ($objTemplate->blockExists('field_'.$fieldId)) {
+                    // hide field specific template block, if present
+                    $objTemplate->hideBlock('field_'.$fieldId);
+                }
+            }
+
+            // parse plaintext body
+            $tabCount = $maxlength - strlen($fieldLabel);
+            $tabs     = ($tabCount == 0) ? 1 : $tabCount +1;
+
+// TODO: what is this all about?
+            if($arrFormData['fields'][$fieldId]['type'] == 'recipient'){
+                $value  = $arrRecipients[$value]['lang'][FRONTEND_LANG_ID];
+            }
+
+            if (in_array($fieldId, $textAreaKeys)) {
+                // we're dealing with a textarea, don't indent value
+                $plaintextBody .= $fieldLabel.":\n".$plaintextValue."\n";
+            } else {
+                $plaintextBody .= $fieldLabel.str_repeat(" ", $tabs).": ".$plaintextValue."\n";
+            }
+
         }
         
         $arrSettings = $this->getSettings();        
         
+// TODO: this is some fixed plaintext message data -> must be ported to html body
         $message  = $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM']." ".$_CONFIG['domainUrl']."\n\n";
         if ($arrSettings['fieldMetaDate']) {
             $message .= $_ARRAYLANG['TXT_CONTACT_DATE']." ".date(ASCMS_DATE_FORMAT, $arrFormData['meta']['time'])."\n\n";
         }
-        $message .= $body."\n\n";
+        $message .= $plaintextBody."\n\n";
         if ($arrSettings['fieldMetaHost']) {
             $message .= $_ARRAYLANG['TXT_CONTACT_HOSTNAME']." : ".contrexx_raw2xhtml($arrFormData['meta']['host'])."\n";
         }
@@ -1254,19 +1280,21 @@ class Contact extends ContactLib
             $objMail->Subject = $arrFormData['subject'];
 
             if ($isHtml) {
-                $objMail->Body = $htmlMessage;
+                $objMail->Body = $objTemplate->get();
                 $objMail->AltBody = $message;
             } else {
                 $objMail->IsHTML(false);
                 $objMail->Body = $message;
             }
 
+            // attach submitted files to email
             if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
                 foreach ($arrFormData['uploadedFiles'] as $key => $file) {
                     $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file['path'], $file['name']);
                 }
             }
 
+// TODO: review recipient stuff
             $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
             if (!empty($arrFormData['data']['contactFormField_recipient'])) {
                 foreach (explode(',', $arrRecipients[intval($arrFormData['data']['contactFormField_recipient'])]['email']) as $sendTo) {
@@ -1286,6 +1314,8 @@ class Contact extends ContactLib
                 }
             }
         }
+
+        return true;
     }
 
     /**
