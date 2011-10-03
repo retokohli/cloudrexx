@@ -1376,7 +1376,7 @@ class User extends User_Profile
                     `validity` = ".intval($this->validity).",
                     `active` = ".intval($this->is_active).",
                     `primary_group` = ".intval($this->primary_group).",
-                   `profile_access` = '".$this->profile_access."',
+                    `profile_access` = '".$this->profile_access."',
                     `restore_key` = '".$this->restore_key."',
                     `restore_key_time` = ".$this->restore_key_time."
                 WHERE `id` = ".$this->id
@@ -1573,8 +1573,9 @@ class User extends User_Profile
      * Returns true if the User name is valid and unique
      * @return  boolean       True if the User name is valid and unique,
      *                        false otherwise
+     * @access  public        Called from the Shop!
      */
-    protected function validateUsername()
+    public function validateUsername()
     {
         global $_CORELANG;
 
