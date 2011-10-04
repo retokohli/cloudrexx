@@ -54,6 +54,7 @@ class PageRepository extends EntityRepository {
      *       matching the desired language out in @link getTreeByTitle() to prevent the
      *       associations from being destroyed.
      *       naturally, this generates big overhead. this strategy should be rethought.
+     * @todo $titlesOnly param is not respected - huge overhead.
      * @param Node $rootNode limit query to subtree.
      * @param boolean $titlesOnly fetch titles only. You may want to use @link getTreeByTitle()
      * @return array
@@ -83,53 +84,84 @@ class PageRepository extends EntityRepository {
      * @see getTree()
      * @return array ( title => array( '__data' => array(lang => langId, page =>), child1Title => array, child2Title => array, ... ) ) recursively array-mapped tree.
      */
-    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugAsTitle=false) {
+    public function getTreeByTitle($rootNode = null, $lang = null, $titlesOnly = false, $useSlugsAsTitle=false) {
         $tree = $this->getTree($rootNode, true);
 
         $result = array();
 
-        $isRootQuery = !$rootNode || ( isset($rootNode) && $rootNode->getLvl() == 0);
+        $isRootQuery = !$rootNode || ( isset($rootNode) && $rootNode->getLvl() == 0 );
 
-        foreach($tree as $node) {
-            $lang2arr = null;
+        for($i = 0; $i < count($tree); $i++) {
+            $lang2Arr = null;
             $rightLevel = false;
+            $node = $tree[$i];
             if($isRootQuery)
                 $rightLevel = $node->getLvl() == 1;
             else
                 $rightLevel = $node->getLvl() == $rootNode->getLvl() + 1;
-            if($rightLevel) {
-                $this->treeByTitle($node, $result, $useSlugAsTitle, $lang2arr, $lang);
+
+            if($rightLevel)
+                $i = $this->treeByTitle($tree, $i, $result, $useSlugsAsTitle, $lang2Arr, $lang);
+            else {
+                $i++;
             }
         }
 
         return $result;
     }
 
-    protected function treeByTitle($root, &$result, $useSlugAsTitle=false, &$lang2arr = null, $lang = null) {
-        $myLang2arr = array();
-        //(I) get titles of all Pages linked to this Node
+    protected function treeByTitle(&$nodes, $startIndex, &$result, $useSlugsAsTitle=false, &$lang2Arr = null, $lang = null) {
+        //first node we treat
+        $index = $startIndex;
+        $node = $nodes[$index];
+        $nodeCount = count($nodes);
+
+        //only treat nodes on this level and higher
+        $minLevel = $node->getLvl();
+
+        $thisLevelLang2Arr = array();
+        do {
+            if($node->getLvl() == $minLevel) {
+                $this->treeByTitlePages($nodes[$index], $result, $useSlugsAsTitle, $lang2Arr, $lang, $thisLevelLang2Arr);
+                $index++;
+            }
+            else {
+                $index = $this->treeByTitle($nodes, $index, $result, $useSlugsAsTitle, $thisLevelLang2Arr, $lang);
+            }
+
+            if($index == $nodeCount) //we traversed all nodes
+                break;
+            $node = $nodes[$index];
+        }
+        while($node->getLvl() >= $minLevel);
+
+        return $index;
+    }
+
+    protected function treeByTitlePages($node, &$result, $useSlugsAsTitle, &$lang2Arr, $lang, &$thisLevelLang2Arr) {
+        //get titles of all Pages linked to this Node
         $pages = null;
 
         if(!$lang) {
-            $pages = $root->getPages();
+            $pages = $node->getPages();
         }
         else {
             $pages = array();
-            $page = $root->getPage($lang);
+            $page = $node->getPage($lang);
             if($page)
-                $pages[] = $page;
+                $pages = array($page);
         }
 
         foreach($pages as $page) {
             $title = $page->getTitle();
 
-            if($useSlugAsTitle)
+            if($useSlugsAsTitle)
                 $title = $page->getSlug();
 
             $lang = $page->getLang();
 
-            if($lang2arr) //this won't be set for the first node
-                $target = &$lang2arr[$lang];
+            if($lang2Arr) //this won't be set for the first node
+                $target = &$lang2Arr[$lang];
             else
                 $target = &$result;
 
@@ -142,16 +174,11 @@ class PageRepository extends EntityRepository {
                 $target[$title]['__data'] = array(
                                                   'lang' => array($lang),
                                                   'page' => $page,
-                                                  'node' => $root,
+                                                  'node' => $node,
                                                   );
             }
             //remember mapping for recursion
-            $myLang2arr[$lang] = &$target[$title];
-        }
-
-        //(II) recursion for child Nodes
-        foreach($root->getChildren() as $child) {
-            $this->treeByTitle($child, $result, $useSlugAsTitle, $myLang2arr, $lang);
+            $thisLevelLang2Arr[$lang] = &$target[$title];
         }
     }
 
