@@ -324,11 +324,12 @@ class blockManager extends blockLibrary
                                 $selectedPages[] = contrexx_raw2xhtml($arrData['catname']);
                             }
                         } 
-                        $strSelectedPages = implode(',', $selectedPages);                        
+                        $strSelectedPages = implode('<br />', $selectedPages);                        
                         break;
-                    default :                        
+                    default :
+                        $checkImage = 'images/icons/pixel.gif';
                 }
-                                
+                    
                 $this->_objTpl->setVariable(array(
                     'BLOCK_ROW_CLASS'             => $rowNr % 2 ? "row1" : "row2",
                     'BLOCK_ID'                    => $blockId,
@@ -346,9 +347,9 @@ class blockManager extends blockLibrary
                     'BLOCK_DELETE'                => sprintf($_ARRAYLANG['TXT_BLOCK_DELETE_BLOCK'], contrexx_raw2xhtml($arrBlock['name'])),
                     'BLOCK_STATUS'                => $status,
                     'BLOCK_LANGUAGES_NAME'        => $langString,
-                    'BLOCK_INCLUDED_GLOBAL_BLOCK' => $checkImage,
+                    'BLOCK_GLOBAL_CHECK_IMAGE'    => $checkImage,
                     'BLOCK_CHECK_IMAGE_DISPLAY'   => ($arrBlock['global'] == 0) ? 'display:none' : 'display:block',
-                    'BLOCK_CHECK_IMAGE_TITLE'     => ($arrBlock['global'] == 1) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] : ($arrBlock['global'] == 2) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'].'/n'.$strSelectedPages : ''
+                    'BLOCK_CHECK_IMAGE_TITLE'     => ($arrBlock['global'] == 1) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_ALL_PAGE'] : (($arrBlock['global'] == 2) ? $_ARRAYLANG['TXT_BLOCK_DISPLAY_SELECTED_PAGE'].'<br />'.$strSelectedPages : '')
                 ));
                 $this->_objTpl->parse('blockBlockList');
 
