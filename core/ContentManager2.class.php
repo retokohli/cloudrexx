@@ -138,11 +138,17 @@ class ContentManager extends Module {
         $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         $logs = $logRepo->getLogEntries($page);
       
-        for($i = 0 ; $i < count($logs); $i++) {
-            $version = $i + 1;
-            $row = $i + 2;
-            $logRepo->revert($page, $version);
-            $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path);
+        $logCount = count($logs);
+        for($i = 0; $i < $logCount; $i++) {
+            try {
+                $version = $logCount - ($i + 1);
+                $row = $i + 2;
+                $logRepo->revert($page, $version);
+                $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path);
+            }
+            catch(\Gedmo\Exception\UnexpectedValueException $e) {
+            }
+                
         }
        
         //(VI) render

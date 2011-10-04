@@ -21,6 +21,8 @@ Cx\Model\ContentManager\Page:
 
     updatedAt:
       type: datetime    
+      gedmo:
+        - versioned
 
     #navigation
     title:

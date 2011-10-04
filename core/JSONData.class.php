@@ -140,6 +140,7 @@ class JSONData {
 
             $page->setType($updated_page['type']);
 
+            $page->setUpdatedAtToNow();
             $page->setLang(FWLanguage::getLanguageIdByCode($updated_page['lang']));
             $page->setUsername('system');
             $page->setStart(new DateTime($updated_page['start'], $this->tz));
@@ -183,6 +184,7 @@ class JSONData {
             
             if ($updated_page['type']) {
                 $page->setType($updated_page['type']);
+                $page->setUpdatedAtToNow();
                 $page->setTitle($updated_page['title']);
                 $page->setContentTitle($updated_page['contentTitle']);
                 try {
