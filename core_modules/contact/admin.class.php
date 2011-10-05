@@ -535,10 +535,13 @@ class ContactManager extends ContactLib
                 } else {
                     $selectedInterfaceLanguage = key($arrForm['lang']);
                 }
-
+                
+                $pages = $this->em->getRepository('Cx\Model\ContentManager\Page')->getFromModuleCmdByLang('contact', $formId);
                 $lang = array();
                 foreach ($arrForm['lang'] as $langId => $value) {
-                    $lang[] = FWLanguage::getLanguageCodeById($langId);
+                    $lang[] = isset($pages[$langId])
+                                ? "<a href='index.php?cmd=content&loadPage=".$pages[$langId]->getId()."'>".FWLanguage::getLanguageCodeById($langId).'</a>'
+                                : FWLanguage::getLanguageCodeById($langId);
                 }
                 $langString = implode(', ',$lang);
                 
