@@ -328,6 +328,7 @@ class blockManager extends blockLibrary
                         break;
                     default :
                         $checkImage = 'images/icons/pixel.gif';
+                        break;
                 }
                     
                 $this->_objTpl->setVariable(array(
@@ -498,6 +499,7 @@ class blockManager extends blockLibrary
                 break;
             default:
                 //do nothing!
+                break;
         }
     }
 
