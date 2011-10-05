@@ -403,7 +403,7 @@ class FileBrowser {
                 foreach ($this->_arrDirectories as $arrDirectory) {
                     $this->_objTpl->setVariable(array(
                         'FILEBROWSER_ROW_CLASS'         => $rowNr%2 == 0 ? "row1" : "row2",
-                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor={contrexx_raw2xhtml($_GET['CKEditor'])}&amp;CKEditorFuncNum={contrexx_raw2xhtml($_GET['CKEditorFuncNum'])}",
+                        'FILEBROWSER_FILE_PATH_CLICK'   => "index.php?cmd=fileBrowser&amp;standalone=true&amp;langId={$this->_frontendLanguageId}&amp;absoluteURIs={$this->_absoluteURIs}&amp;type={$this->_mediaType}&amp;path={$arrDirectory['path']}&amp;CKEditor=".contrexx_raw2xhtml($_GET['CKEditor'])."&amp;CKEditorFuncNum=".contrexx_raw2xhtml($_GET['CKEditorFuncNum']),
                         'FILEBROWSER_FILE_NAME'         => $arrDirectory['name'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
                         'FILEBROWSER_FILE_ICON'         => $arrDirectory['icon'],
