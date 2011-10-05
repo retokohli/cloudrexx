@@ -64,7 +64,7 @@ class ContentManager extends Module {
             //categories
             'TXT_CORE_SITE_TYPE', 'TXT_CORE_SITE_CONTENT', 'TXT_CORE_SITE_ACCESS', 'TXT_CORE_SITE_SETTINGS', 'TXT_CORE_SITE_HISTORY',
             //type tab
-            'TXT_CORE_TYPE_EXPLANATION', 'TXT_CORE_TYPE_CONTENT', 'TXT_CORE_TYPE_CONTENT_DESCRIPTION', 'TXT_CORE_TYPE_REDIRECTION', 'TXT_CORE_TYPE_REDIRECTION_DESCRIPTION', 'TXT_CORE_TYPE_APP', 'TXT_CORE_TYPE_APP_DESCRIPTION', 
+            'TXT_CORE_TYPE_EXPLANATION', 'TXT_CORE_TYPE_CONTENT', 'TXT_CORE_TYPE_CONTENT_DESCRIPTION', 'TXT_CORE_TYPE_REDIRECTION', 'TXT_CORE_TYPE_REDIRECTION_DESCRIPTION', 'TXT_CORE_TYPE_APP', 'TXT_CORE_TYPE_APP_DESCRIPTION', 'TXT_BROWSE',
             //content tab
             'TXT_CORE_NAVTITLE', 'TXT_CORE_CONTENTTITLE', 'TXT_CORE_ACTIVE_FROM_TO', 'TXT_CORE_ACTIVE_FROM', 'TXT_CORE_ACTIVE_TO', 'TXT_CORE_META_INFORMATION', 'TXT_CORE_META_TITLE',  'TXT_CORE_META_KWORDS', 'TXT_CORE_META_DESC', 'TXT_CORE_META_ROBOTS',
             //settings tab
@@ -140,14 +140,15 @@ class ContentManager extends Module {
       
         $logCount = count($logs);
         for($i = 0; $i < $logCount; $i++) {
+            $version = $logCount - ($i + 1);
+            $row = $i + 2;
             try {
-                $version = $logCount - ($i + 1);
-                $row = $i + 2;
                 $logRepo->revert($page, $version);
-                $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path);
             }
             catch(\Gedmo\Exception\UnexpectedValueException $e) {
             }
+            $this->addHistoryEntries($page, $table, $row, $version, $langDir.'/'.$path);
+ 
                 
         }
        

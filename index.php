@@ -440,6 +440,13 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     //revert the page if a history param has been given
     if($history) {
         $logRepo = Env::em()->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        try {
+            $logRepo->revert($page, $version);
+        }
+        catch(\Gedmo\Exception\UnexpectedValueException $e) {
+        }
+
+
         $logRepo->revert($page, $history);
     }
     /*
