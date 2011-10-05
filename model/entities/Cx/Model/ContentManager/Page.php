@@ -539,7 +539,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isTargetInternal() {
-        //internal targets are formed like <page_id>|<querystring>
+        //internal targets are formed like <node_id>[-<lang_id>]|<querystring>
         return is_numeric(substr($this->target,0,1));
     }
 
