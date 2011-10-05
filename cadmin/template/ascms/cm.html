@@ -1,4 +1,4 @@
-        <ul id="cm-tabs" class="clearfix">
+         <ul id="cm-tabs" class="clearfix">
             <li><a href="#tabs-1" class="tab site-type">{TXT_CORE_SITE_TYPE}</a></li>
             <li><a href="#tabs-2" class="tab site-content">{TXT_CORE_SITE_CONTENT}</a></li>
             <!-- tab contents are below (#tabs-3)<li><a href="#tabs-3" class="tab site-access">{TXT_CORE_SITE_ACCESS}</a></li>-->
@@ -37,8 +37,9 @@
                     {TXT_CORE_TYPE_REDIRECTION_DESCRIPTION}
                   </p>
                   <p class="additionalSettings">
-                      <label style="width: 100px; display: block; float: left;" for="target">{TXT_CORE_TARGET}</label>
-                      <input id="target" type="text" value="{TARGET}" name="page[target]" maxlength="255" size="40" />
+                      <label style="width: 100px; display: block; float: left;" for="target" class="twoCols">{TXT_CORE_TARGET}</label>
+                      <input id="target" type="text" value="{TARGET}" name="page[target]" maxlength="255" size="40" class="twoCols" />
+                      <button id="targetBrowseButton">{TXT_BROWSE}</button>
                   </p>
                 </div>
               </div>
