@@ -2236,17 +2236,21 @@ class ContactManager extends ContactLib
                 // Create a new Page
                 $page = new \Cx\Model\ContentManager\Page();
                 $page->setNode($node);
+
+                // Set the following attributes only on new pages
+                $page->setTitle($this->arrForms[$formId]['lang'][$langId]['name']);
+                $page->setCmd($formId);
+                $page->setModule('contact');
+                $page->setType('application');
+                $page->setDisplay(false);
+                $page->setActive(true);
+                $page->setLang($langId);
             }
 
             $content = $this->_getSourceCode($formId, $langId);
 
             $page->setContent($content);
-            $page->setTitle($this->arrForms[$formId]['lang'][$langId]['name']);
             $page->setUsername($objFWUser->objUser->getUsername());
-            $page->setCmd($formId);
-            $page->setModule('contact');
-            $page->setDisplay(true);
-            $page->setLang($langId);
             
             $this->em->persist($page);
 
