@@ -364,8 +364,9 @@ class Contact extends ContactLib
                     }
                 } else { //found errors while validating
                     $this->setCaptcha($useCaptcha);
-                    if ($this->hasFileField) //initUploader costs a lot. only do it if we need it
+                    if ($this->hasFileField) { //initUploader costs a lot. only do it if we need it
                         $this->initUploader();
+                    }
                     return $this->_showError();
                 }
 
@@ -383,8 +384,9 @@ class Contact extends ContactLib
             }
             $this->setCaptcha($useCaptcha);
             //$this->_getParams();
-            if($this->hasFileField)
+            if($this->hasFileField) {
                 $this->initUploader();
+            }
         }
         
         return $this->objTemplate->get();
@@ -622,7 +624,11 @@ class Contact extends ContactLib
          * before the new uploader using the classic input fields or
          * if we have to treat the files already uploaded by the uploader.
          */
-        if(!$this->legacyMode) { //new uploader used
+        if($this->legacyMode) {
+            //legacy function for old uploader
+            return $this->_uploadFilesLegacy($arrFields);
+        } else {
+            //new uploader used
             if(!$this->hasFileField) //nothing to do for us, no files
                 return array();
                 
@@ -693,16 +699,16 @@ class Contact extends ContactLib
                     
                     if($move)
                         rename($tmpUploadDir.$f,ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f);
-                    $arrFiles[$f] = $depositionTarget.$prefix.$f;
+                    $arrFiles[] = array(
+                        'name'  => $f,
+                        'path'  => $depositionTarget.$prefix.$f,
+                    );
                 }                    
             }
             //cleanup
             //TODO: this does not work for certain reloads - add cleanup routine
             //@rmdir($tmpUploadDir);
             return $arrFiles;
-        }
-        else { //legacy function for old uploader
-            return $this->_uploadFilesLegacy($arrFields);
         }
     }
 
@@ -903,7 +909,9 @@ class Contact extends ContactLib
                     case 'recipient':
                     case 'special': 
                     default:
-                        $validationRegex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
+                        if ($field['check_type']) {
+                            $validationRegex = "#".$this->arrCheckTypes[$field['check_type']]['regex'] ."#";
+                        }
                         $value = isset($arrFields['data'][$fieldId]) ? $arrFields['data'][$fieldId] : '';
                         break;
                 }
@@ -1042,8 +1050,8 @@ class Contact extends ContactLib
             }
             else if(count($arrFormData['uploadedFiles']) > 0) { //assign all files uploaded to the uploader fields name
                 $arrTmp = array();
-                foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-                    $arrTmp[] = $file;
+                foreach ($arrFormData['uploadedFiles'] as $file) {
+                    $arrTmp[] = $file['path'];
                 }
                 //a * in front of the file names marks a 'new style' entry
                 $files = implode('*', $arrTmp);
@@ -1153,9 +1161,12 @@ class Contact extends ContactLib
                     break;
 
                 case 'file':
-                    if (isset($arrFormData['uploadedFiles'][$fieldId])) {
-                        $htmlValue = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_raw2xhtml($arrFormData['uploadedFiles'][$fieldId]['path'])."' >".contrexx_raw2xhtml($arrFormData['uploadedFiles'][$fieldId]['name'])."</a>";
-                        $plaintextValue  = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$arrFormData['uploadedFiles'][$fieldId]['path'];
+                    //if (isset($arrFormData['uploadedFiles'][$fieldId])) {
+                    if (isset($arrFormData['uploadedFiles'])) {
+                        foreach ($arrFormData['uploadedFiles'] as $file) {
+                            $htmlValue = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a>";
+                            $plaintextValue  = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$file['path'];
+                        }
                     }
                     break;
 
@@ -1289,7 +1300,7 @@ class Contact extends ContactLib
 
             // attach submitted files to email
             if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
-                foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                foreach ($arrFormData['uploadedFiles'] as $file) {
                     $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file['path'], $file['name']);
                 }
             }

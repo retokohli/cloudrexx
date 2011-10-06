@@ -1301,11 +1301,11 @@ class ContactLib
 
             $code .= "fields[$key] = Array(\n";
 // TODO: do we have to change FRONTEND_LANG_ID to selectedInterfaceLanguage ?
-            $code .= "\t'".contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name'])."',\n";
-            $code .= "\t". ( $field['is_required'] ? 'true' : 'false' ) .',';
+            $code .= "\t'". contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name']) ."',\n";
+            $code .= "\t".  ($field['is_required'] ? 'true' : 'false' ) .",\n";
 
-            $code .= "\t/". ($this->arrCheckTypes[$field['check_type']]['regex']) ."/".$modifiers.",\n";
-            $code .= "\t'".(($field['type'] != 'special') ? $field['type'] : $field['special_type'])."');\n";
+            $code .= "\t'".  ($this->arrCheckTypes[$field['check_type']]['regex']) .$modifiers."',\n";
+            $code .= "\t'". (($field['type'] != 'special') ? $field['type'] : $field['special_type']) ."');\n";
         }
 
         $code .= <<<JS_checkAllFields
@@ -1375,7 +1375,7 @@ JS_isRequiredNorm;
         // Matches the type of the value and pattern. Returns true if it matched, false if not.
         $code .= <<<JS_matchType
 function matchType(pattern, value) {
-    return value.match(pattern) != null;
+    return value.match(new RegExp(pattern)) != null;
 }
 
 JS_matchType;
