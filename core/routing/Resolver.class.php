@@ -27,15 +27,28 @@ class Resolver {
     protected $pageRepo = null;
 
     /**
+     * Remembers if we've come across a redirection while resolving the URL.
+     * This allow to properly redirect via 302.
+     * @var boolean
+     */
+    protected $isRedirection = false;
+
+    /**
      * @param URL $url the url to resolve
      * @param integer $lang the language Id
      * @param $entityManager
+     * @param string $pathOffset ASCMS_PATH_OFFSET
+     * @param boolean $forceInternalRedirection does not redirect by 302 for internal redirections if set to true.
+     *                this is used mainly for testing currently. 
+     *                IMPORTANT: Do insert new parameters before this one if you need to and correct the tests.
      */
-    public function __construct($url, $lang, $entityManager) {
+    public function __construct($url, $lang, $entityManager, $pathOffset, $forceInternalRedirection=false) {
         $this->url = $url;
         $this->em = $entityManager;
         $this->lang = $lang;
+        $this->pathOffset = $pathOffset;
         $this->pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->forceInternalRedirection = $forceInternalRedirection;
 
         $this->resolve();
     }
@@ -102,12 +115,18 @@ class Resolver {
                 $targetPath = $this->pageRepo->getPath($targetPage, true);
 
                 $this->url->setPath($targetPath.$qs);
+                $this->isRedirection = true;
                 $this->resolve();
             }
             else { //external target - redirect via HTTP 302
                 header('Location: '.$target);
                 die();
             }
+        }
+        
+        //if we followed one or more redirections, the user shall be redirected by 302.
+        if($this->isRedirection && !$this->forceInternalRedirection) {
+            header('Location: '.$this->pageRepo->getURL($this->page, $this->pathOffset, $params));
         }
     }
 
