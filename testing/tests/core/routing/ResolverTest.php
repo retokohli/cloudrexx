@@ -74,7 +74,7 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/testpage1/testpage1_child/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em);
+        $resolver = new Resolver($url, $lang, self::$em, '');
 
         $this->assertEquals('testpage1/testpage1_child/', $url->getTargetPath());
         $this->assertEquals('?foo=test', $url->getParams());
@@ -88,7 +88,7 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/testpage1/testpage1_child/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em);
+        $resolver = new Resolver($url, $lang, self::$em, '');
 
         $page = $resolver->getPage();
         $this->assertEquals('testpage1_child', $page->getTitle());
@@ -103,7 +103,7 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/inexistantPage/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em);
+        $resolver = new Resolver($url, $lang, self::$em, '');
 
         $page = $resolver->getPage();
     }
@@ -114,7 +114,7 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/redirection/');
-        $resolver = new Resolver($url, $lang, self::$em);
+        $resolver = new Resolver($url, $lang, self::$em, '', true);
 
         $page = $resolver->getPage();
         $this->assertEquals('testpage1_child', $page->getTitle());

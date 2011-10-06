@@ -284,6 +284,20 @@ class PageRepository extends EntityRepository {
     }
 
     /**
+     * Returns "$protocolAndDomainWithPathOffset/link/to/page$params.
+     * Notice that there is no trailing slash inserted after the link.
+     * If you need one, prepend it to $params.
+     * @param Cx\Model\ContentManager\Page $page
+     * @param string $protocolAndDomain $params 'http://example.com/cms' - will generate absolute link if left empty
+     * @param string $params '?a=b'
+     *
+     */
+    public function getURL($page, $protocolAndDomainWithPathOffset, $params) {
+        $path = $this->getPath($page);
+        return "$protocolAndDomainWithPathOffset/$path$params";
+    }
+
+    /**
      * Searches the content and returns an array that is built as needed by the search module.
      *
      * Please do not use this anywhere else, write a search method with proper results instead. Ideally, this

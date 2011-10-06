@@ -275,6 +275,30 @@ class PageRepositoryTest extends DoctrineTestCase
         $this->assertEquals(2, count($pages));
     }
 
+    public function testGetURL() {
+        $root = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1->setParent($root);
+        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1->setLang(1);
+        $p1->setTitle('root');
+        $p1->setNode($n1);
+        $p1->setUsername('user');
+        self::$em->persist($root);
+        self::$em->persist($n1);
+        self::$em->persist($p1);
+        self::$em->flush();
+        //make sure we re-fetch a correct state
+        self::$em->getRepository('Cx\Model\ContentManager\Node')->verify();
+
+        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $url = $pageRepo->getURL($p1,'http://example.com', '?k=v');
+        $this->assertEquals('http://example.com/root?k=v', $url);
+
+        $url = $pageRepo->getURL($p1, '', '?k=v');
+        $this->assertEquals('/root?k=v', $url);
+    }
+
     public function testGetPathToPage() {
         $root = new \Cx\Model\ContentManager\Node();
 
