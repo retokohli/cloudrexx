@@ -193,7 +193,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setTitle($title)
     {
-        $wasEmpty = $this->getTitle() == '';
+        $wasEmpty = $this->getSlug() == '';
 
         $this->title = $title;
         
@@ -206,24 +206,18 @@ class Page extends \Cx\Model\Base\EntityBase
 
     /**
      * Sets a correct slug based on the current title.
+     * The result may need a suffix if titles of pages on sibling nodes
+     * result in the same slug.
      */
     protected function refreshSlug() {
-        $slug = $this->getSlugProposal();
+        $slug = $this->slugify($this->getTitle());
         $this->setSlug($slug);
     }
 
-    /**
-     * Proposes a version of the title that can be used as slug.
-     * The result may need a suffix if titles of pages on sibling nodes
-     * result in the same slug.
-     *
-     * @return string
-     */
-    protected function getSlugProposal() {
-        $slug = $this->getTitle();
-        $slug = preg_replace('/\s/', '-', $slug);
-        $slug = preg_replace('/[^a-zA-Z0-9-_]/', '', $slug);
-        return $slug;
+    protected function slugify($string) {
+        $string = preg_replace('/\s/', '-', $string);
+        $string = preg_replace('/[^a-zA-Z0-9-_]/', '', $string);
+        return $string;        
     }
 
     public function nextSlug() {
@@ -908,7 +902,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setSlug($slug, $nextSlugCall=false)
     {
-        $this->slug = $slug;
+        $this->slug = $this->slugify($slug);
 
         if(!$nextSlugCall) {
             $this->slugSuffix = 0;
