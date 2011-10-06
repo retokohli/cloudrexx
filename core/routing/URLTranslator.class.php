@@ -67,7 +67,11 @@ class URLTranslator extends LanguageExtractor {
         $targetPage = $pages[0];       
         $targetPath = $this->pageRepo->getPath($targetPage);
 
-        return new URL($pageURL->getDomain().$langDir.$targetPath.$pageURL->getParams());
+        $params = $pageURL->getParams();
+        if(!$pageURL->isRouted())
+            $params = $pageURL->getSuggestedParams();
+
+        return new URL($pageURL->getDomain().$langDir.$targetPath.$params);
     }
 
     /**

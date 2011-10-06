@@ -78,6 +78,8 @@ class ResolverTest extends DoctrineTestCase
 
         $this->assertEquals('testpage1/testpage1_child/', $url->getTargetPath());
         $this->assertEquals('?foo=test', $url->getParams());
+
+        $this->assertEquals(true, $url->isRouted());
     }
 
     public function testFoundPage() {

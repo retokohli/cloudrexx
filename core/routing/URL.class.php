@@ -49,6 +49,12 @@ class URL {
      */
     protected $params = null;
 
+    //the different states of an url
+    const SUGGESTED = 1;
+    const ROUTED = 2;
+
+    protected $state = 0;
+
     /**
      * Initializes $domain and $path.
      * @param string $url http://example.com/Test
@@ -67,6 +73,13 @@ class URL {
 
         $this->suggest();
     }
+    
+    /**
+     * Whether the routing already treated this url
+     */
+    public function isRouted() {
+        return $this->state >= self::ROUTED;
+    }
 
     /**
      * sets $this->suggestedParams and $this->suggestedTargetPath
@@ -83,6 +96,8 @@ class URL {
             $this->suggestedTargetPath = $matches[1];
             $this->suggestedParams = $matches[2];
         }
+
+        $this->state = self::SUGGESTED;
     }
 
     public function getDomain() {
@@ -99,10 +114,12 @@ class URL {
     }
 
     public function setTargetPath($path) {
+        $this->state = self::ROUTED;
         $this->targetPath = $path;
     }
 
     public function setParams($params) {
+        $this->state = self::ROUTED;
         $this->params = $params;
     }
 
@@ -135,7 +152,7 @@ class URL {
      * @param $string request the captured request
      * @param $string pathOffset ASCMS_PATH_OFFSET
      */
-    public static function fromCapturedRequest($request, $pathOffset) {
+    public static function fromCapturedRequest($request, $pathOffset, $get) {
         if(substr($request, 0, strlen($pathOffset)) != $pathOffset)
             throw new URLException("'$request' doesn't seem to start with provided offset '$pathOffset'");
 
@@ -147,7 +164,17 @@ class URL {
 //TODO: implement correct protocol finder
         $protocol = 'http';
 
-        return new URL($protocol.'://'.$host.'/'.$request);
+        $getParams = '';
+        foreach($get as $k => $v) {
+            if($k == '__cap') //skip captured request from mod_rewrite
+                continue; 
+            $joiner='&';
+            if($getParams == '')
+                $joiner='?';
+            $getParams .= $joiner.urlencode($k).'='.urlencode($v);
+        }
+
+        return new URL($protocol.'://'.$host.'/'.$request.$getParams);
     }
 
     public function __toString() {
