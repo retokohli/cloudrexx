@@ -186,24 +186,14 @@ require_once(ASCMS_CORE_PATH.'/routing/URLTranslator.class.php');
 $_LANGID = $objInit->getFrontendLangId();
 
 //try to find the language in the url
-$url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET);
+$url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
 $languageExtractor = new \Cx\Core\Routing\URLTranslator($objDatabase, DBPREFIX, Env::em());
 $extractedLanguage = 0;
 
 $redirectToCorrectLanguageDir = function() use ($languageExtractor, $url, $_LANGID, $_CONFIG) {
     $languageExtractor->addLanguageDir($url, $_LANGID);
 
-    //re-build get parameters, otherwise they're lost.
-    $getParams = '';
-    foreach($_GET as $k => $v) {
-        if($k == '__cap') //skip captured request from mod_rewrite
-            continue; 
-        $joiner='&';
-        if($getParams == '')
-            $joiner='?';
-        $getParams .= $joiner.urlencode($k).'='.urlencode($v);
-    }
-    CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath() . $getParams);
+    CSRF::header('Location: http://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET. '/' . $url->getPath() . $url->getSuggestedParams());
     die();
 };
 

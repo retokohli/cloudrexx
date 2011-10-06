@@ -18,6 +18,7 @@ class URLTest extends \ContrexxTestCase {
         $this->assertEquals('http://example.com/', $url->getDomain());
         $this->assertEquals('Second/Test/?a=asfd', $url->getPath());
 
+        $this->assertEquals(false, $url->isRouted());
     }
 
     public function testSuggestions() {
