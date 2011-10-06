@@ -358,7 +358,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
     try {
-        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em());
+        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET);
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $section = $page->getModule();
