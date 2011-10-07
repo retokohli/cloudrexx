@@ -277,6 +277,11 @@ class Contact extends ContactLib
                                 $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                             }
                         }
+                        if (!empty($_POST['contactFormField_'.$fieldId])) {
+                            if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))) {
+                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+                            }
+                        }
                         $this->objTemplate->parse('field_'.$fieldId);
                     }
                     break;
@@ -353,7 +358,7 @@ class Contact extends ContactLib
             $this->checkLegacyMode();
 
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
-           // $this->_getParams();
+            $this->_getParams();
             $arrFormData = $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) { //validation ok
@@ -1458,6 +1463,7 @@ class Contact extends ContactLib
     {
         global $objDatabase, $_LANGID;
         $arrFields = array();
+
         if (isset($_GET['cmd']) && ($formId = intval($_GET['cmd'])) && !empty($formId)) {
             $objFields = $objDatabase->Execute('SELECT `tblField`.`id`, `tblField`.`type`, `tblFieldLang`.`attributes` FROM `'
                                                     .DBPREFIX.'module_contact_form_field` AS tblField LEFT JOIN `'
@@ -1495,6 +1501,7 @@ class Contact extends ContactLib
                     }
                     $objFields->MoveNext();
                 }
+
                 $this->objTemplate->setVariable($arrFields);
             }
         }
