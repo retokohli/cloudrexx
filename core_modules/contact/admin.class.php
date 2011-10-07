@@ -540,7 +540,7 @@ class ContactManager extends ContactLib
                 $lang = array();
                 foreach ($arrForm['lang'] as $langId => $value) {
                     $lang[] = isset($pages[$langId])
-                                ? "<a href='index.php?cmd=content&loadPage=".$pages[$langId]->getId()."'>".FWLanguage::getLanguageCodeById($langId).'</a>'
+                                ? "<a title='".FWLanguage::getLanguageCodeById($langId)."' href='index.php?cmd=content&loadPage=".$pages[$langId]->getId()."'>".FWLanguage::getLanguageCodeById($langId).'</a>'
                                 : FWLanguage::getLanguageCodeById($langId);
                 }
                 $langString = implode(', ',$lang);
@@ -1742,7 +1742,7 @@ class ContactManager extends ContactLib
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                     if ($preview) {
                         $options = explode(',', $arrField['lang'][$selectedLang]['value']);
-                        foreach ($options as $index => $option) {
+                        foreach ($options as $index => $option) {                            
                             $sourcecode[] = "<option value='".contrexx_raw2xhtml($option)."'>". contrexx_raw2xhtml($option) ."</option>";
                         }
                     } else {
