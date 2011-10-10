@@ -68,7 +68,7 @@ class JSONData {
                 'lang'          =>  $page->getLang(),
                 'node'          =>  $page->getNode()->getId(),
                 'title'         =>  $page->getTitle(),
-                'content'       =>  str_replace(array('{', '}'), array('[[', ']]'), $page->getContent()),
+                'content'       =>  preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $page->getContent()),
                 'customContent' =>  $page->getCustomContent(),
                 'cssName'       =>  $page->getCssName(),
                 'metatitle'     =>  $page->getMetatitle(),
@@ -152,7 +152,7 @@ class JSONData {
             $page->setMetadesc($updated_page['metadesc']);
             $page->setMetarobots($updated_page['metarobots']);
 
-            $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
+            $page->setContent(preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $updated_page['content']));
             $page->setModule($updated_page['module']);
             $page->setCmd($updated_page['cm_cmd']);
             $page->setTarget($updated_page['target']);
@@ -200,7 +200,7 @@ class JSONData {
                 $page->setMetakeys($updated_page['metakeys']);
                 $page->setMetadesc($updated_page['metadesc']);
                 $page->setMetarobots($updated_page['metarobots']);
-                $page->setContent(str_replace(array('[[', ']]'), array('{', '}'), $updated_page['content']));
+                $page->setContent(preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $updated_page['content']));
                 $page->setModule($updated_page['module']);
                 if ($updated_page['cm_cmd'] == '') { 
                     $updated_page['cm_cmd'] = null;
