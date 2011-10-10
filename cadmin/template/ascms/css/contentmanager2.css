@@ -96,13 +96,13 @@ h1{ font-size: 20px }
     overflow: hidden;
 }
 #site-tree li a ins.active {
-    background-image: url(/lib/javascript/jquery/ui/images/page-active.png);
+    background-image: url(../../../../lib/javascript/jquery/ui/images/page-active.png);
 }
 #site-tree li a ins.hidden {
-    background-image: url(/lib/javascript/jquery/ui/images/page-hidden.png);
+    background-image: url(../../../../lib/javascript/jquery/ui/images/page-hidden.png);
 }
 #site-tree li a ins.disabled {
-    background-image: url(/lib/javascript/jquery/ui/images/page-disabled.png);
+    background-image: url(../../../../lib/javascript/jquery/ui/images/page-disabled.png);
 }
 
 #site-tree li a ins:hover {
