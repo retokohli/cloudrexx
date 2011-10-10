@@ -261,9 +261,16 @@ class Contact extends ContactLib
                         } else {
                             $this->objTemplate->setVariable($fieldId.'_'.$index.'_VALUE', contrexx_raw2xhtml($option));
                         }
+                       
+                        if (!empty($_POST['contactFormField_'.$fieldId])) {
+                            if (in_array($option, $_POST['contactFormField_'.$fieldId]) ||
+                                 $option == $_POST['contactFormField_'.$fieldId]) {
+                                $this->objTemplate->setVariable('SELECTED_'.$fieldId.'_'.$index, 'checked="checked"');
+                            }
+                        }                        
                     }
                     break;
-                case 'select':
+                case 'select':                                    
                     $options = explode(',', $arrField['lang'][$_LANGID]['value']);
                     foreach ($options as $index => $option) {
                         if (preg_match($userProfileRegExp, $option)) {
@@ -277,6 +284,7 @@ class Contact extends ContactLib
                                 $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                             }
                         }
+
                         if (!empty($_POST['contactFormField_'.$fieldId])) {
                             if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))) {
                                 $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
@@ -305,7 +313,14 @@ class Contact extends ContactLib
                                     'SELECTED_'.$fieldId => 'selected = "selected"'
                                 ));
                             }
-                        }
+                        }       
+                        if (!empty($_POST['contactFormField_'.$fieldId])) {
+                            if ($recipient['lang'][$_LANGID] == $_POST['contactFormField_'.$fieldId] ) {
+                                $this->objTemplate->setVariable(array(
+                                    'SELECTED_'.$fieldId => 'selected = "selected"'
+                                ));
+                            }
+                        }                        
                         $this->objTemplate->parse('field_'.$fieldId);
                     }
                     break;
@@ -315,13 +330,19 @@ class Contact extends ContactLib
                     if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
                         $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_variables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
                     }
+                    
                     while (!$objResult->EOF) {
 // TODO: where is this 'name' field comming from? do we have to escape it?
                         $this->objTemplate->setVariable($fieldId.'_VALUE', $objResult->fields['name']);
-                        if ((!empty($_GET[$fieldId]) &&
+                            
+                        if ((!empty($_POST['contactFormField_'.$fieldId]))) {
+                          if (strcasecmp($objResult->fields['name'], $_POST['contactFormField_'.$fieldId]) == 0) {
+                              $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+                          }  
+                        } elseif ((!empty($_GET[$fieldId]) &&
                             strcasecmp($objResult->fields['name'], $_GET[$fieldId]) == 0) ||
                             ($objResult->fields['name'] == $arrField['lang'][$_LANGID]['value'])) {
-                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
+                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');                                
                         }
                         $objResult->MoveNext();
                         $this->objTemplate->parse('field_'.$fieldId);
@@ -341,9 +362,11 @@ class Contact extends ContactLib
                     if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
                         $valuePlaceholderBlock = 'contact_value_placeholder_block_'.$fieldId;
                         $this->objTemplate->addBlock($fieldId.'_VALUE', $valuePlaceholderBlock, contrexx_raw2xhtml($arrField['lang'][$_LANGID]['value']));
+                    } elseif (!empty($_POST['contactFormField_'.$fieldId])) { 
+                        $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_stripslashes($_POST['contactFormField_'.$fieldId]));
                     } else {
                         $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($arrField['lang'][$_LANGID]['value']));
-                    }
+                    } 
                 }
                 /*
                  * Parse the blocks created for parsing user profile data using addBlock()
@@ -358,7 +381,7 @@ class Contact extends ContactLib
             $this->checkLegacyMode();
 
             $showThanks = (isset($_GET['cmd']) && $_GET['cmd'] == 'thanks') ? true : false;
-            $this->_getParams();
+            //$this->_getParams();
             $arrFormData = $this->_getContactFormData();
             if ($arrFormData) {
                 if ($this->_checkValues($arrFormData, $useCaptcha) && $this->_insertIntoDatabase($arrFormData)) { //validation ok
@@ -1501,7 +1524,7 @@ class Contact extends ContactLib
                     }
                     $objFields->MoveNext();
                 }
-
+                
                 $this->objTemplate->setVariable($arrFields);
             }
         }
