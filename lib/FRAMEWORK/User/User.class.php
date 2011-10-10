@@ -1695,9 +1695,16 @@ class User extends User_Profile
                 WHERE tblU.`id` = '.$this->id.'
                       AND tblP.`type` = '.$backOrFrontendType.'
                       AND tblG.`is_active`';
+
             $rs = $objDatabase->Execute($query);
             if ($rs !== false) {
-                $key = 'page_'.$backOrFrontendType.'_access_ids';
+                $key = 'page_';
+                if($backOrFrontendType == 0)
+                    $key .= 'frontend';
+                else
+                    $key .= 'backend';
+                
+                $key .= '_access_ids';
                 $this->arrCachedUsers[$this->id][$key] = array();
                 while (!$rs->EOF) {
                     $this->arrCachedUsers[$this->id][$key][] = $rs->fields['page_id'];
