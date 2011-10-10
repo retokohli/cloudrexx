@@ -436,7 +436,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         catch(\Gedmo\Exception\UnexpectedValueException $e) {
         }
 
-
         $logRepo->revert($page, $history);
     }
     /*
@@ -487,7 +486,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 //TODO: analyze those, take action.
     //$page_redirect  = $objResult->fields['redirect'];
     //$page_protected = $objResult->fields['protected'];
-    $page_protected = 0;
+    $page_protected = $page->isFrontendProtected();
+
     //$page_access_id = $objResult->fields['frontend_access_id'];
     $page_template  = $themesPages['content'];
     $page_modified  = $page->getUpdatedAt()->getTimestamp();
@@ -514,7 +514,7 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
     $objFWUser = FWUser::getFWUserObject();
     if ($objFWUser->objUser->login()) {
         if ($page_protected) {
-            if (!Permission::checkAccess($page_access_id, 'dynamic', true)) {
+            if (!Permission::checkAccess($page->getId(), 'page_frontend', true)) {
                 $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
                 CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
                 exit;

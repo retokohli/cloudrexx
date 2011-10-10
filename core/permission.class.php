@@ -37,18 +37,19 @@ class Permission
     public static function checkAccess($accessId, $type, $return=false)
     {
         $objFWUser = FWUser::getFWUserObject();
-        if ($objFWUser->objUser->login() &&
-            (
-                $objFWUser->objUser->getAdminStatus() ||
-                $type == 'static' && in_array($accessId, $objFWUser->objUser->getStaticPermissionIds()) ||
-                $type == 'dynamic' && in_array($accessId, $objFWUser->objUser->getDynamicPermissionIds())
-                ||
-                $type == 'page_frontend' && in_array($accessId, $objFWUser->objUser->getPagePermissionIds(true))
-                ||
-                $type == 'page_backend' && in_array($accessId, $objFWUser->objUser->getPagePermissionIds(false))
+        if ($objFWUser->objUser->login()) {
+            if($objFWUser->objUser->getAdminStatus())
+                return true;
+
+            if(
+               ($type == 'static' && in_array($accessId, $objFWUser->objUser->getStaticPermissionIds())) ||
+               ($type == 'dynamic' && in_array($accessId, $objFWUser->objUser->getDynamicPermissionIds())) || 
+               ($type == 'page_frontend' && in_array($accessId, $objFWUser->objUser->getPagePermissionIds(true))) ||
+               ($type == 'page_backend' && in_array($accessId, $objFWUser->objUser->getPagePermissionIds(false)))
             )
-        ) {
-            return true;
+            {
+                return true;
+            }
         }
         if ($return) {
             return false;
