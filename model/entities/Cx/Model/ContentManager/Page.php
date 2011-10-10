@@ -835,7 +835,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setFrontendProtected($val) {
         if($val)
-            $this->protection = $this->protection & self::FRONTEND_PROTECTION;
+            $this->protection = $this->protection | self::FRONTEND_PROTECTION;
         else
             $this->protection = $this->protection ^ self::FRONTEND_PROTECTION;
     }
@@ -846,7 +846,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setBackendProtected($val) {
         if($val)
-            $this->protection = $this->protection & self::BACKEND_PROTECTION;
+            $this->protection = $this->protection | self::BACKEND_PROTECTION;
         else
             $this->protection = $this->protection ^ self::BACKEND_PROTECTION;
     }
