@@ -26,6 +26,12 @@ class LanguageExtractor {
      */
     protected $languageShortNames = array();
 
+    /**
+     * The ids of all inactive languages.
+     * @var array ( id )
+     */
+    protected $inactiveLanguageIds = array();
+
 
     /**
      * @param $db the $objDatabase.
@@ -33,12 +39,15 @@ class LanguageExtractor {
      */
     public function __construct($db, $dbPrefix) {
         //initialize $this->languageIds
-        $query = "SELECT id, lang FROM ${dbPrefix}languages";
+        $query = "SELECT id, lang, frontend FROM ${dbPrefix}languages";
         $res = $db->Execute($query);
 
         while(!$res->EOF) {
             $this->languageIds[$res->fields['lang']] = $res->fields['id'];
             $this->languageShortNames[$res->fields['id']] = $res->fields['lang'];
+
+            if($res->fields['frontend'] == 0) //language is inactive
+                $this->inactiveLanguageIds[] = $res->fields['id'];
             $res->MoveNext();
         }
     }
@@ -67,7 +76,11 @@ class LanguageExtractor {
         $url->setPath($pathWithoutLang);
         //re-generate suggestions
         $url->suggest();
-        return $this->languageIds[$lang];
+
+        $langId = $this->languageIds[$lang];
+        if(in_array($langId, $this->inactiveLanguageIds))
+            throw new LanguageExtractorException('Language "' + $lang + '" is not active.');
+        return $langId;
     }
 
     /**
