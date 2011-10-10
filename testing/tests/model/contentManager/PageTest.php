@@ -112,4 +112,20 @@ class PageTest extends DoctrineTestCase
         $this->assertEquals(0, $p->getTargetLangId());
         $this->assertEquals(null, $p->getTargetQueryString());
     }
+
+    public function testProtectionProperties() {
+        $p = new \Cx\Model\ContentManager\Page();
+        
+        $this->assertEquals(false, $p->isFrontendProtected());
+        $this->assertEquals(false, $p->isBackendProtected());
+
+        $p->setFrontendProtected(true);
+        $this->assertEquals(true, $p->isFrontendProtected());
+        $this->assertEquals(false, $p->isBackendProtected());
+
+        $p->setFrontendProtected(false);
+        $p->setBackendProtected(true);
+        $this->assertEquals(false, $p->isFrontendProtected());
+        $this->assertEquals(true, $p->isBackendProtected());
+    }
 }
