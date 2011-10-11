@@ -95,13 +95,26 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 
     private function internalRender(&$elems, $path, $level, $dontDescend = false) {
         $content = '';
-        foreach($elems as $title => &$elem) {        
+        foreach($elems as $title => &$elem) {
             $page = $elem['__data']['page'];
 
             if(!$page->isVisible() || !$page->isActive())
                 continue;
 
-            $hasChilds = count($elem) > 1; //__data is always set
+            //determine whether any of the children is to be shown.
+            $hasChilds = false;
+            foreach($elem as $childTitle => $child) {
+                //skip data of current property
+                if($childTitle == '__data')
+                    continue;
+
+                $childPage = $child['__data']['page'];
+                if($childPage->isVisible() && $childPage->isActive()) {
+                    $hasChilds = true;
+                    break;
+                }
+            }
+
             $lang = $elem['__data']['lang'];
             $pathOfThis = $path . '/' . $page->getSlug();
             $current = false;
