@@ -155,7 +155,7 @@
             elm.style.display = 'none';
         }
     }
-    function selectDataTab(tabName) {  
+    function selectDataTab(ele, tabName) {  
 	if(document.getElementById(tabName).style.display != "block")
 	{
 		document.getElementById(tabName).style.display = "block";
@@ -169,6 +169,8 @@
 				arrTags[i].style.display = "none";
 			}
 		}
+                $J('#tabmenu li a').removeClass('active');
+                $J(ele).addClass('active');                
 	}
     }
     // ]]>
@@ -253,11 +255,11 @@
             <td width="12%" valign="top">{EDIT_LANGUAGES_2}</td>
             <td width="66%" valign="top">{EDIT_LANGUAGES_3}</td>
         </tr>
-    </table>  
+    </table>
     <br />
-    <ul class="tabmenu">      
-        <li><a href="javascript:{}" id="data_{TXT_BLOCK_BASIC_DATA}" onclick="selectDataTab('{TXT_BLOCK_BASIC_DATA}')" title="{TXT_BLOCK_BASIC_DATA}">{TXT_BLOCK_BASIC_DATA}</a></li>  
-        <li><a href="javascript:{}" id="data_{TXT_BLOCK_ADDITIONAL_OPTIONS}" onclick="selectDataTab('{TXT_BLOCK_ADDITIONAL_OPTIONS}')" title="{TXT_BLOCK_ADDITIONAL_OPTIONS}">{TXT_BLOCK_ADDITIONAL_OPTIONS}</a></li>  
+    <ul id="tabmenu">
+        <li><a class="active" href="javascript:{}" id="data_{TXT_BLOCK_BASIC_DATA}" onclick="selectDataTab(this, '{TXT_BLOCK_BASIC_DATA}')" title="{TXT_BLOCK_BASIC_DATA}">{TXT_BLOCK_BASIC_DATA}</a></li>  
+        <li><a href="javascript:{}" id="data_{TXT_BLOCK_ADDITIONAL_OPTIONS}" onclick="selectDataTab(this, '{TXT_BLOCK_ADDITIONAL_OPTIONS}')" title="{TXT_BLOCK_ADDITIONAL_OPTIONS}">{TXT_BLOCK_ADDITIONAL_OPTIONS}</a></li>  
     </ul>
     <div id="{TXT_BLOCK_BASIC_DATA}" class="data">   
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" summary="block list">
