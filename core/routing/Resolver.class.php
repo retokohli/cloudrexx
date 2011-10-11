@@ -81,7 +81,8 @@ class Resolver {
           resolving starts over again.
          */
         $target = $this->page->getTarget();
-        if($target) {
+        $isRedirection = $this->page->getType() == 'redirect';
+        if($target && $isRedirection) {
             if($this->page->isTargetInternal()) {
 //TODO: add check for endless/circular redirection (a -> b -> a -> b ... and more complex)
                 $nId = $this->page->getTargetNodeId();
