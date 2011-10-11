@@ -55,6 +55,7 @@ class ResolverTest extends DoctrineTestCase
 
         $p2 = new \Cx\Model\ContentManager\Page();     
         $p2->setLang(1);
+        $p2->setType('redirect');
         $p2->setTitle('redirection');
         $p2->setNode($n4);
         $p2->setTarget($n2->getId().'|?foo=test');
