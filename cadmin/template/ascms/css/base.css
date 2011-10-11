@@ -375,6 +375,7 @@ table.subnavbar {
   padding: 2px 5px 2px 5px;
   margin: 0px;
   text-decoration: none;
+  border-bottom: 0 none;
 }
 
 #tabsubmenu a.active {
