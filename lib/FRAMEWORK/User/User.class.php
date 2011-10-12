@@ -745,16 +745,6 @@ class User extends User_Profile
         return $this->arrCachedUsers[$this->id]['static_access_ids'];
     }
 
-    public function getPagePermissionIds($frontend=true, $reload=false)
-    {
-        $frontendOrBackend = $frontend ? 'frontend' : 'backend';
-        $key = 'page_' . $frontendOrBackend . '_access_ids';
-        if (!isset($this->arrCachedUsers[$this->id][$key]) || $reload) {
-            $this->loadPermissionIds('page_'.$frontendOrBackend);
-        }
-        return $this->arrCachedUsers[$this->id][$key];
-    }
-
     public function getUser($id)
     {
         $objUser = clone $this;
@@ -1658,58 +1648,22 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        if(substr($type, 0, 4) != 'page') {
-            $query = '
-                SELECT tblI.`access_id`
-                FROM `'.DBPREFIX.'access_users` AS tblU
-                INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblR ON tblR.`user_id` = tblU.`id`
-                INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblG ON tblG.`group_id` = tblR.`group_id`
-                INNER JOIN `'.DBPREFIX.'access_group_'.$type.'_ids` AS tblI ON tblI.`group_id` = tblG.`group_id`
-                WHERE tblU.`id` = '.$this->id.'
-                      AND tblG.`is_active`
-                GROUP BY tblI.`access_id`
-                ORDER BY tblI.`access_id`';
-//TODO: is the above GROUP BY necessary?
-//TODO: is the above ORDER BY necessary?
-            $objAccessId = $objDatabase->Execute($query);
-            if ($objAccessId !== false) {
-                $this->arrCachedUsers[$this->id][$type.'_access_ids'] = array();
-                while (!$objAccessId->EOF) {
-                    $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
-                    $objAccessId->MoveNext();
-                }
-            }
-        }
-        else { // page_backend or page_frontend
-            $backOrFrontend = substr($type, 5);
-            $backOrFrontendType = 0; //value for frontend
-            if($backOrFrontend == 'backend')
-                $backOrFrontend = 1;
-
-            $query = '
-                SELECT tblP.`page_id`
-                FROM `'.DBPREFIX.'access_users` AS tblU
-                INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblR ON tblR.`user_id` = tblU.`id`
-                INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblG ON tblG.`group_id` = tblR.`group_id`
-                INNER JOIN `'.DBPREFIX.'access_group_page` AS tblP ON tblP.`group_id` = tblG.`group_id`
-                WHERE tblU.`id` = '.$this->id.'
-                      AND tblP.`type` = '.$backOrFrontendType.'
-                      AND tblG.`is_active`';
-
-            $rs = $objDatabase->Execute($query);
-            if ($rs !== false) {
-                $key = 'page_';
-                if($backOrFrontendType == 0)
-                    $key .= 'frontend';
-                else
-                    $key .= 'backend';
-                
-                $key .= '_access_ids';
-                $this->arrCachedUsers[$this->id][$key] = array();
-                while (!$rs->EOF) {
-                    $this->arrCachedUsers[$this->id][$key][] = $rs->fields['page_id'];
-                    $rs->MoveNext();
-                }
+        $query = '
+            SELECT tblI.`access_id`
+            FROM `'.DBPREFIX.'access_users` AS tblU
+            INNER JOIN `'.DBPREFIX.'access_rel_user_group` AS tblR ON tblR.`user_id` = tblU.`id`
+            INNER JOIN `'.DBPREFIX.'access_user_groups` AS tblG ON tblG.`group_id` = tblR.`group_id`
+            INNER JOIN `'.DBPREFIX.'access_group_'.$type.'_ids` AS tblI ON tblI.`group_id` = tblG.`group_id`
+            WHERE tblU.`id` = '.$this->id.'
+                  AND tblG.`is_active`
+            GROUP BY tblI.`access_id`
+            ORDER BY tblI.`access_id`';
+        $objAccessId = $objDatabase->Execute($query);
+        if ($objAccessId !== false) {
+            $this->arrCachedUsers[$this->id][$type.'_access_ids'] = array();
+            while (!$objAccessId->EOF) {
+                $this->arrCachedUsers[$this->id][$type.'_access_ids'][] = $objAccessId->fields['access_id'];
+                $objAccessId->MoveNext();
             }
         }
     }

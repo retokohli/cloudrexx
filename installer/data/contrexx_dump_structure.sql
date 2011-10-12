@@ -3350,11 +3350,3 @@ CREATE TABLE `contrexx_voting_system` (
   `additional_comment` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) TYPE=MyISAM AUTO_INCREMENT=13;
-
-#new access table
-CREATE TABLE  `cm_2_3`.`contrexx_access_group_page` (
-`group_id` INT NOT NULL ,
-`page_id` INT NOT NULL ,
-`type` INT NOT NULL COMMENT  '0: frontend. 1: backend',
-PRIMARY KEY (  `group_id` ,  `page_id` )
-) ENGINE = MYISAM COMMENT =  'determines which groups can access which page.';

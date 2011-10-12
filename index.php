@@ -351,6 +351,7 @@ $frontEditingContent = isset($_REQUEST['previewContent'])
           ENT_QUOTES, CONTREXX_CHARSET))
     : '';
 $page = null;
+$pageAccessId = 0;
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // TODO: history (empty($history) ? )
 
@@ -427,8 +428,12 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 
     $pageId = $page->getId();
 
+    //access: frontend access id for default requests
+    $pageAccessId = $page->getFrontendAccessId();
     //revert the page if a history param has been given
     if($history) {
+        //access: backend access id for history requests
+        $pageAccessId = $page->getBackendAccessId();
         $logRepo = Env::em()->getRepository('Gedmo\Loggable\Entity\LogEntry');
         try {
             $logRepo->revert($page, $version);
@@ -514,7 +519,7 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
     $objFWUser = FWUser::getFWUserObject();
     if ($objFWUser->objUser->login()) {
         if ($page_protected) {
-            if (!Permission::checkAccess($page->getId(), 'page_frontend', true)) {
+            if (!Permission::checkAccess($pageAccessId, 'dynamic', true)) {
                 $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
                 CSRF::header ('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess&redirect='.$link);
                 exit;
