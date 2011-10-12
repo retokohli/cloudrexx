@@ -32,6 +32,7 @@ $classLoader->register();
 
 $config = new \Doctrine\ORM\Configuration();
 $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
+//$config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache);
 //$config->setMetadataDriverImpl($driverImpl);
 
 $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
