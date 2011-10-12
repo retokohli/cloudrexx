@@ -114,6 +114,12 @@ Cx\Model\ContentManager\Page:
     protection:
       type: integer
 
+    frontendAccessId:
+      type: integer
+
+    backendAccessId:
+      type: integer
+
     #visibility
     display:
       type: boolean

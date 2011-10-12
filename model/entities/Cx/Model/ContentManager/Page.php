@@ -2,6 +2,8 @@
 
 namespace Cx\Model\ContentManager;
 
+class PageException extends \Exception {}
+
 /**
  * Cx\Model\ContentManager\Page
  */
@@ -125,7 +127,6 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->active = false;
         $this->display = true;
         $this->caching = false;
-        $this->protection = 0;
         $this->setUpdatedAtToNow();
 
         $typeValidator = new \Zend_Validate();
@@ -806,19 +807,11 @@ class Page extends \Cx\Model\Base\EntityBase
     }
     
     /**
-     * @var integer $protection
-     */
-    private $protection;
-
-    const FRONTEND_PROTECTION = 1;
-    const BACKEND_PROTECTION = 2;    
-
-    /**
      * Whether page access from frontend is protected.
      * @return boolean
      */
     public function isFrontendProtected() {
-        return (bool) ($this->protection & self::FRONTEND_PROTECTION);
+        return $this->getFrontendAccessId() != 0;
     }
 
     /**
@@ -826,49 +819,58 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isBackendProtected() {
-        return (bool) ($this->protection & self::BACKEND_PROTECTION);
+        return $this->getBackendAccessId() != 0;
+    }
+
+    protected function createAccessId() {
+        $accessId = Permission::createNewDynamicAccessId();
+        if($accessId === false)
+            throw new PageException('protecting Page failed: Permission system could not create a new dynamic access id');
+
+        return $accessId;            
+    }
+    protected function eraseAccessId($id) {
+        Permission::removeAccess($id, 'dynamic');        
     }
 
     /**
-     * Set page access from frontend.
-     * @param boolean $val
+     * Set page protection in frontend.
+     * @param boolean $enabled
      */
-    public function setFrontendProtected($val) {
-        if($val)
-            $this->protection = $this->protection | self::FRONTEND_PROTECTION;
-        else
-            $this->protection = $this->protection ^ self::FRONTEND_PROTECTION;
+    public function setFrontendProtection($enabled) {
+        if($enabled) {
+            //do nothing if we're already safe.
+            if($this->isFrontendProtected())
+                return;
+
+            $accessId = $this->createAccessId();
+            $this->setFrontendAccessId($accessId);
+        }
+        else {
+            $accessId = $this->getFrontendAccessId();
+            $this->eraseAccessId($accessId);
+            $this->setFrontendAccessId(0);
+        }
     }
 
     /**
-     * Set page access from backend.
-     * @param boolean $val
+     * Set page protection in backend.
+     * @param boolean $enabled
      */
-    public function setBackendProtected($val) {
-        if($val)
-            $this->protection = $this->protection | self::BACKEND_PROTECTION;
-        else
-            $this->protection = $this->protection ^ self::BACKEND_PROTECTION;
-    }
+    public function setBackendProtection($enabled) {
+        if($enabled) {
+            //do nothing if we're already safe.
+            if($this->isBackendProtected())
+                return;
 
-    /**
-     * Set protection
-     *
-     * @param integer $protection
-     */
-    public function setProtection($protection)
-    {
-        $this->protection = $protection;
-    }
-
-    /**
-     * Get protection
-     *
-     * @return integer $protection
-     */
-    public function getProtection()
-    {
-        return $this->protection;
+            $accessId = $this->createAccessId();
+            $this->setBackendAccessId($accessId);
+        }
+        else {
+            $accessId = $this->getBackendAccessId();
+            $this->eraseAccessId($accessId);            
+            $this->setFrontendAccessId(0);
+        }
     }
 
     /**
@@ -960,9 +962,8 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->setStart($source->getStart());
         $this->setEnd($source->getEnd());
         $this->setEditingStatus($source->getEditingStatus());
-        $this->setProtection($source->getProtection());
         $this->setTarget($source->getTarget());
-
+//TODO: copy access protection
     }
     /**
      * @var string $contentTitle
@@ -1013,5 +1014,80 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getLinkTarget()
     {
         return $this->linkTarget;
+    }
+    /**
+     * @var integer $frontendAccessId
+     */
+    private $frontendAccessId;
+
+    /**
+     * @var integer $backendAccessId
+     */
+    private $backendAccessId;
+
+
+    /**
+     * Set frontendAccessId
+     *
+     * @param integer $frontendAccessId
+     */
+    public function setFrontendAccessId($frontendAccessId)
+    {
+        $this->frontendAccessId = $frontendAccessId;
+    }
+
+    /**
+     * Get frontendAccessId
+     *
+     * @return integer $frontendAccessId
+     */
+    public function getFrontendAccessId()
+    {
+        return $this->frontendAccessId;
+    }
+
+    /**
+     * Set backendAccessId
+     *
+     * @param integer $backendAccessId
+     */
+    public function setBackendAccessId($backendAccessId)
+    {
+        $this->backendAccessId = $backendAccessId;
+    }
+
+    /**
+     * Get backendAccessId
+     *
+     * @return integer $backendAccessId
+     */
+    public function getBackendAccessId()
+    {
+        return $this->backendAccessId;
+    }
+    /**
+     * @var integer $protection
+     */
+    private $protection;
+
+
+    /**
+     * Set protection
+     *
+     * @param integer $protection
+     */
+    public function setProtection($protection)
+    {
+        $this->protection = $protection;
+    }
+
+    /**
+     * Get protection
+     *
+     * @return integer $protection
+     */
+    public function getProtection()
+    {
+        return $this->protection;
     }
 }
