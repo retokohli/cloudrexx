@@ -3116,6 +3116,8 @@ CREATE TABLE `contrexx_pages` (
   `editingStatus` varchar(16) NOT NULL,
   `username` varchar(64) NOT NULL,
   `protection` int(11) NOT NULL,
+  `frontendAccessId` int(11) NOT NULL,
+  `backendAccessId` int(11) NOT NULL,
   `display` tinyint(1) NOT NULL,
   `active` tinyint(1) NOT NULL,
   `target` varchar(255) DEFAULT NULL,
