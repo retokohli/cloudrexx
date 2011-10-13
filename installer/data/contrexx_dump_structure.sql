@@ -2207,6 +2207,7 @@ CREATE TABLE `contrexx_module_news` (
   `teaser_image_path` text NOT NULL,
   `teaser_image_thumbnail_path` text NOT NULL,
   `changelog` int(14) NOT NULL DEFAULT '0',
+  `activate_comments` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) TYPE=MyISAM AUTO_INCREMENT=2;
 CREATE TABLE `contrexx_module_news_categories` (

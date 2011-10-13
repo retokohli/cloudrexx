@@ -283,4 +283,5 @@ $_ARRAYLANG['TXT_NEWS_LIST_ALL'] = "Liste alle verfügbaren Benutzerkonten";
 $_ARRAYLANG['TXT_NEWS_LIST_SELECTED'] = "Nur Liste von Benutzerkonten einer ausgewählten Benutzergruppe";
 $_ARRAYLANG['TXT_NEWS_AVAILABLE_GROUPS'] = "Erhältlich Benutzergruppen";
 $_ARRAYLANG['TXT_NEWS_ASSIGNED_GROUPS'] = "Assigned Benutzergruppen";
+$_ARRAYLANG['TXT_NEWS_ACTIVATE_COMMENT'] = "Activate Comments";
 ?>

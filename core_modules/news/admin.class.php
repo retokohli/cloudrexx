@@ -797,6 +797,7 @@ class newsManager extends newsLibrary {
         $newsFrontendGroups     = $newsFrontendAccess && isset($_POST['news_read_access_associated_groups']) && is_array($_POST['news_read_access_associated_groups']) ? array_map('intval', $_POST['news_read_access_associated_groups']) : array();
         $newsBackendAccess      = !empty($_POST['news_modify_access']);
         $newsBackendGroups      = $newsBackendAccess && isset($_POST['news_modify_access_associated_groups']) && is_array($_POST['news_modify_access_associated_groups']) ? array_map('intval', $_POST['news_modify_access_associated_groups']) : array();
+        $newsCommentActive      = !empty($_POST['activateComment']) ? intval($_POST['activateComment']) : 0;
 
         if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
             foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
@@ -873,7 +874,8 @@ class newsManager extends newsLibrary {
                                             teaser_image_path="'.$newsTeaserImagePath.'",
                                             teaser_image_thumbnail_path="'.$newsTeaserImageThumbnailPath.'",
                                             userid='.$userid.',
-                                            changelog='.$date
+                                            changelog='.$date.',
+                                            activate_comments='.$newsCommentActive
                                     );
 
             if ($objResult !== false) {
@@ -977,7 +979,13 @@ class newsManager extends newsLibrary {
         if($this->arrSettings['news_use_types'] == 1) {
           $catrow = 'row1';
           $news_type_menu = "<tr class=\"row2\">\n<td nowrap=\"nowrap\">{$_ARRAYLANG['TXT_NEWS_TYPE']}</td><td><select name=\"newsType\"><option value=\"0\">{$_ARRAYLANG['TXT_NO_TYPE']}</option>".$this->getTypeMenu($newstype)."</select></td></tr>";
-
+        }
+        
+        // Activate Comments
+        $news_comment = '';
+        if($this->arrSettings['news_comments_activated'] == 1) {
+          $commentsChecked = ((!empty($_POST) && empty($_POST['activateComment'])) ? '' : 'checked="checked"');
+          $news_comment = "<tr class=\"row2\">\n<td nowrap=\"nowrap\">{$_ARRAYLANG['TXT_NEWS_ACTIVATE_COMMENT']}</td><td><input type='checkbox' name='activateComment' value='1' ".$commentsChecked." /></td></tr>";
         }
 
         $this->_objTpl->setGlobalVariable(array(
@@ -989,6 +997,7 @@ class newsManager extends newsLibrary {
             'TXT_LANGUAGE'                  => $_ARRAYLANG['TXT_LANGUAGE'],
             'NEWS_FORM_CAT_ROW'             => $catrow,
             'NEWS_TYPE_MENU'                => $news_type_menu,
+            'NEWS_COMMENTS_SELECTION'       => $news_comment,
             'TXT_HYPERLINKS'                => $_ARRAYLANG['TXT_HYPERLINKS'],
             'TXT_EXTERNAL_SOURCE'           => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
             'TXT_LINK'                      => $_ARRAYLANG['TXT_LINK'],
@@ -1280,7 +1289,8 @@ class newsManager extends newsLibrary {
                                                         teaser_only,
                                                         teaser_show_link,
                                                         teaser_image_path,
-                                                        teaser_image_thumbnail_path
+                                                        teaser_image_thumbnail_path,
+                                                        activate_comments
                                                 FROM    ".DBPREFIX."module_news
                                                 WHERE   id = '".$newsid."'", 1);
         if ($objResult !== false && !$objResult->EOF && ($this->arrSettings['news_message_protection'] != '1' || Permission::hasAllAccess() || !$objResult->fields['backend_access_id'] || Permission::checkAccess($objResult->fields['backend_access_id'], 'dynamic', true) || $objResult->fields['userid'] == $objFWUser->objUser->getId())) {
@@ -1290,6 +1300,7 @@ class newsManager extends newsLibrary {
             $arrLanguages = FWLanguage::getLanguageArray();
             $langData = $this->getLangData($id);
             $newsText = $langData[FWLanguage::getDefaultLangId()]['text'];
+            $newsComment = $objResult->fields['activate_comments'];
 
             $this->_objTpl->setVariable('NEWS_DEFAULT_LANG', contrexx_raw2xhtml(FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'name')));
 
@@ -1529,8 +1540,16 @@ class newsManager extends newsLibrary {
           $news_type_menu = "<tr class=\"row2\">\n<td nowrap=\"nowrap\">{$_ARRAYLANG['TXT_NEWS_TYPE']}</td><td><select name=\"newsType\"><option value=\"0\">{$_ARRAYLANG['TXT_NO_TYPE']}</option>".$this->getTypeMenu($newsType)."</select></td></tr>";
 
         }
+        
+        // Activate Comments
+        $news_comment = '';
+        if($this->arrSettings['news_comments_activated'] == 1) {
+          $commentsChecked = ($newsComment == 1 ? 'checked="checked"' : '');
+          $news_comment    = "<tr class=\"row2\">\n<td nowrap=\"nowrap\">{$_ARRAYLANG['TXT_NEWS_ACTIVATE_COMMENT']}</td><td><input type='checkbox' name='activateComment' value='1' ".$commentsChecked." /></td></tr>";
+        }        
 
         $this->_objTpl->setVariable('NEWS_TYPE_MENU', $news_type_menu);
+        $this->_objTpl->setVariable('NEWS_COMMENTS_SELECTION', $news_comment);
         $this->_objTpl->setVariable('NEWS_FORM_ACTION',(($copy) ? 'add' : 'update'));
         $this->_objTpl->setVariable('NEWS_STORED_FORM_ACTION','update');
         $this->_objTpl->setVariable('NEWS_TOP_TITLE',$_ARRAYLANG['TXT_EDIT_NEWS_CONTENT']);
@@ -1889,6 +1908,8 @@ class newsManager extends newsLibrary {
             $newsTeaserImageThumbnailPath = contrexx_addslashes($_POST['newsTeaserImageThumbnailPath']);
             $newsTeaserFrames = '';
 
+            $newsComments     = !empty($_POST['activateComment']) ? intval($_POST['activateComment']) : 0;
+
             if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
                 foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
                     intval($frameId) > 0 ? $newsTeaserFrames .= ';'.intval($frameId) : false;
@@ -2073,7 +2094,8 @@ class newsManager extends newsLibrary {
                                                         teaser_show_link = ".$newsTeaserShowLink.",
                                                         teaser_image_path = '".$newsTeaserImagePath."',
                                                         teaser_image_thumbnail_path = '".$newsTeaserImageThumbnailPath."',
-                                                        changelog = '".$changelog."'
+                                                        changelog = '".$changelog."',
+                                                        activate_comments = '".$newsComments."'
                                                 WHERE   id = '".$id."'");
            if ($objResult === false || $localesSaving === false){
                 $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
