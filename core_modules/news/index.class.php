@@ -140,6 +140,7 @@ class news extends newsLibrary {
                                                         news.teaser_image_path  AS newsimage,
                                                         news.typeid             AS typeid,
                                                         news.catid              AS catid,
+                                                        news.activate_comments  AS commentactive,
                                                         locale.text             AS text,
                                                         locale.title            AS title,
                                                         locale.teaser_text,
@@ -226,8 +227,10 @@ class news extends newsLibrary {
         $this->parseUserAccountData($objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
 
         // show comments
-        $this->parseMessageCommentForm($newsid, $newstitle);
-        $this->parseCommentsOfMessage($newsid);
+        if ($objResult->fields['commentactive'] == 1) {
+            $this->parseMessageCommentForm($newsid, $newstitle);
+            $this->parseCommentsOfMessage($newsid);
+        }
 
         // Show related_messages
         $this->parseRelatedMessagesOfMessage($newsid, 'category', $objResult->fields['catid']);
