@@ -297,5 +297,5 @@ $_ARRAYLANG['TXT_NEWS_LIST_ALL'] = "List all available user accounts";
 $_ARRAYLANG['TXT_NEWS_LIST_SELECTED'] = "Only list user accounts from selected user groups";
 $_ARRAYLANG['TXT_NEWS_AVAILABLE_GROUPS'] = "Available User groups";
 $_ARRAYLANG['TXT_NEWS_ASSIGNED_GROUPS'] = "Assigned User groups";
-$_ARRAYLANG['TXT_NEWS_ACTIVATE_COMMENT'] = "Activate Comments";
+$_ARRAYLANG['TXT_NEWS_ALLOW_COMMENTS'] = "Allow comments";
 ?>

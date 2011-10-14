@@ -140,7 +140,7 @@ class news extends newsLibrary {
                                                         news.teaser_image_path  AS newsimage,
                                                         news.typeid             AS typeid,
                                                         news.catid              AS catid,
-                                                        news.activate_comments  AS commentactive,
+                                                        news.allow_comments     AS commentactive,
                                                         locale.text             AS text,
                                                         locale.title            AS title,
                                                         locale.teaser_text,
@@ -227,10 +227,9 @@ class news extends newsLibrary {
         $this->parseUserAccountData($objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
 
         // show comments
-        if ($objResult->fields['commentactive'] == 1) {
-            $this->parseMessageCommentForm($newsid, $newstitle);
-            $this->parseCommentsOfMessage($newsid);
-        }
+        $newsComment = $objResult->fields['commentactive'];        
+        $this->parseMessageCommentForm($newsid, $newstitle, $newsComment);
+        $this->parseCommentsOfMessage($newsid);        
 
         // Show related_messages
         $this->parseRelatedMessagesOfMessage($newsid, 'category', $objResult->fields['catid']);
@@ -388,7 +387,7 @@ class news extends newsLibrary {
      * @return  array   Returns an array of two elements. The first is either TRUE on success or FALSE on failure.
      *                  The second element contains an error message on failure.  
      */
-    private function parseMessageCommentForm($newsMessageId, $newsMessageTitle)
+    private function parseMessageCommentForm($newsMessageId, $newsMessageTitle, $newsCommentActive)
     {
         global $_CORELANG, $_ARRAYLANG;
 
@@ -399,6 +398,11 @@ class news extends newsLibrary {
 
         // abort if comment system is deactivated
         if (!$this->arrSettings['news_comments_activated']) {
+            return;
+        }
+        
+        // abort if comment deactivated for this news
+        if ($newsCommentActive == 0) {
             return;
         }
 

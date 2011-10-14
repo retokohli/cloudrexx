@@ -18,10 +18,12 @@
     }
 </style>
 <script language="JavaScript" type="text/javascript">
+    arrTabToDiv = new Object();
+    {EDIT_JS_TAB_TO_DIV}
     
     Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
     Text[0]=["","{TXT_NEWS_TYPE_REDIRECT_HELP}"];
-
+    
     //adds the datetimepicker to the date fields
     cx.ready(function() {
         var dpOptions = {
@@ -59,7 +61,17 @@
                 (ui.item) ? $J(this).next('input').val(ui.item.id) : $J(this).next('input').val(0);
             }
         });
-
+          
+        /**
+        Load content in Textarea from hidden field while page load
+         */
+        if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances){
+            activeLang = $J('ul.langtabs a.active').attr('id').split('_')[2];
+            form_text = $J('#news_text'+activeLang).val();
+            CKEDITOR.instances.newsText.setData(form_text);
+        }        
+        swapHeaderLangName(); 
+        
     }, true);
 
     function SetUrl(url, width, height, alt) {
@@ -257,7 +269,18 @@
         elLayer.style.display = elDisplay ? 'none' : 'block';
     }
 
-    function newsSwitchLang(langId)
+    function langTab(ele, id) {        
+        updateCKeditorContent(id);
+        $J('.newsText').hide();
+        $J('#newsTitle\\[' + id+'\\]').show();
+        $J('#newsTeaserText\\[' + id+'\\]').show(); 
+        
+        $J('.tabmenu li a').removeClass('active').addClass('inactive');
+        $J(ele).removeClass('inactive').addClass('active');
+        swapHeaderLangName();
+    } 
+    
+    /*function newsSwitchLang(langId)
     {
         // get current lang
         var curLangId = jQuery("a.langtab.active").attr("id").slice(14);
@@ -295,9 +318,9 @@
     catId = jQuery("select[name=newsCat]").find("option:selected").attr("value");
     jQuery("select[name=newsCat]")
         .find("option.selected").removeAttr("selected").end()
-        .find("option.lang" + langId + "[value=" + catId + "]").attr("selected", "selected");*/
+        .find("option.lang" + langId + "[value=" + catId + "]").attr("selected", "selected");
         return true;
-    }
+    }*/
 
     function switchBoxAndTab(objElement, strTabId) {
         if (countActiveLanguages() == 0) {
@@ -309,24 +332,25 @@
         }
 
         //Now make sure that a possible div is shown
-        //activateAnyActiveDiv();
+        activateAnyActiveDiv();
     }
 
     function switchTabVisibility(strTabId) {
         selectedLang = strTabId.split('_')[strTabId.split('_').length - 1];
-        if ($J('#'+strTabId).parent().css('display') == 'none') {
-            $J('#'+strTabId).parent().css('display','inline');
+        if ($J('#'+strTabId).css('display') == 'none') {
+            $J('#'+strTabId).css('display','inline');
             //newsSwitchLang(selectedLang);
         } else {
-            if ($J('#news_lang_tab_'+selectedLang).hasClass('active')) {
+            $J('#'+strTabId).css('display', 'none');
+            /*if ($J('#news_lang_tab_'+selectedLang).hasClass('active')) {
                 var activeLang = [];
                 $J('.langCheckboxes:checked').each(function(i){
                     activeLang[i] = $J(this).attr('id');
                 });
                 activeLangId = activeLang[0].split('_')[activeLang[0].split('_').length - 1];
-                newsSwitchLang(activeLangId);
-            }
-            $J('#'+strTabId).parent().css('display','none');
+                //newsSwitchLang(activeLangId);
+            }*/
+            //$J('#'+strTabId).parent().css('display','none');
         }
     }
 
@@ -335,7 +359,48 @@
         activeLanguages = $J("input[name*=newsManagerLanguages]:checked").length;
         return activeLanguages;
     }
+    
+    function activateAnyActiveDiv() { 
+        for (var TabName in arrTabToDiv) {
+            if (document.getElementById(TabName).style.display == 'inline') {                
+                updateCKeditorContent(TabName.split('_')[2]);
+                $J('.newsText').hide();
+                $J('#newsTitle\\[' + id+'\\]').show();
+                $J('#newsTeaserText\\[' + id+'\\]').show(); 
+                break;
+            }
+        }
+        //Deactivate every div first first
+        for (var TabName in arrTabToDiv) {
+            document.getElementById(TabName).className = 'inactive';
+        }
 
+        //Activate the first possible div with an acitvated checkbox
+        for (var TabName in arrTabToDiv) {
+            if (document.getElementById(TabName).style.display == 'inline') {
+                document.getElementById(TabName).className = 'active';                
+                break;
+            }
+        }
+        swapHeaderLangName();
+    }
+    
+    function swapHeaderLangName(){
+        $J('th.sectionTitle').each(
+        function(){
+            $J(this).text($J(this).text().replace(/\s\(.*?\)$/, '')+' ('+$J('#newsLanguages li a.active').text()+')')            
+        }
+    )
+    }
+
+    function updateCKeditorContent(CurrentLangId) {        
+        activeLang = $J('ul.langtabs a.active').attr('id').split('_')[2];
+        
+        $J('#news_text'+activeLang).val(CKEDITOR.instances.newsText.getData());
+        
+        form_text = $J('#news_text'+CurrentLangId).val();
+        CKEDITOR.instances.newsText.setData(form_text);
+    }  
     //
 </script>
 <ul id="tabmenu">
@@ -405,20 +470,20 @@
             </tr>
         </table>
         <br />
-        <ul class="tabmenu langtabs">
+        <ul class="tabmenu langtabs" id="newsLanguages">
             <!-- BEGIN news_lang_list -->
-            <li style="display:{NEWS_LANG_DISPLAY_STYLE};"><a href="javascript:void(0);" class="langtab {NEWS_LANG_DISPLAY_STATUS}" onclick="newsSwitchLang({NEWS_LANG_ID})" id="news_lang_tab_{NEWS_LANG_ID}">{NEWS_LANG_NAME}</a>
-                <!-- END news_lang_list -->
+            <li ><a href="javascript:void(0);" style="display:{NEWS_LANG_DISPLAY_STYLE};" class="langtab {NEWS_LANG_DISPLAY_STATUS}" onclick="langTab(this, {NEWS_LANG_ID})" id="news_lang_tab_{NEWS_LANG_ID}">{NEWS_LANG_NAME}</a>
+            <!-- END news_lang_list -->
         </ul>
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th class="sectionTitle" colspan="2">{TXT_TITLE} (<span>{NEWS_DEFAULT_LANG}</span>)</th>
+                <th class="sectionTitle" colspan="2">{TXT_TITLE} </th>
             </tr>
             <tr class="row1">
                 <td width="6%" nowrap="nowrap">{TXT_TITLE}</td>
                 <td width="94%">
                     <!-- BEGIN news_title_list -->
-                    <input type="text" name="newsTitle[{NEWS_LANG_ID}]" id="newsTitle[{NEWS_LANG_ID}]" style="width: 400px;display:{NEWS_TITLE_DISPLAY}" value="{NEWS_TITLE}" maxlength="250" />
+                    <input type="text" name="newsTitle[{NEWS_LANG_ID}]" class="newsText" id="newsTitle[{NEWS_LANG_ID}]" style="width: 400px;display:{NEWS_TITLE_DISPLAY}" value="{NEWS_TITLE}" maxlength="250" />
                     <!-- END news_title_list -->
                 </td>
             </tr>
@@ -426,13 +491,13 @@
         <br />
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th class="sectionTitle">{TXT_NEWS_TEASER_TEXT} (<span>{NEWS_DEFAULT_LANG}</span>)</th>
+                <th class="sectionTitle">{TXT_NEWS_TEASER_TEXT} </th>
             </tr>
             <tr class="row1">
                 <td>
                     <!-- BEGIN news_teaser_text_list -->
                     <div style="display:{NEWS_TITLE_DISPLAY}">
-                        <textarea name="newsTeaserText[{NEWS_LANG_ID}]" id="newsTeaserText[{NEWS_LANG_ID}]" onkeyup="document.getElementById('newsTeaserTextCharCount_{NEWS_LANG_ID}').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
+                        <textarea name="newsTeaserText[{NEWS_LANG_ID}]" class="newsText" id="newsTeaserText[{NEWS_LANG_ID}]" onkeyup="document.getElementById('newsTeaserTextCharCount_{NEWS_LANG_ID}').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
                         <div style="padding-right:50px; float:left;">&nbsp;{TXT_NUMBER_OF_CHARS}:&nbsp;<div id="newsTeaserTextCharCount_{NEWS_LANG_ID}" style="display:inline;">{NEWS_TEASER_TEXT_LENGTH}</div></div>
                         <div>&nbsp;<a href="javascript:{}" onclick="newsGetFileBrowser('newsTeaserText[{NEWS_LANG_ID}]', 'link')">{TXT_NEWS_INSERT_LINK}</a></div>
                     </div>
@@ -446,7 +511,7 @@
              <div id="news_content" style="{NEWS_TYPE_MSG_STYLE}">
                 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                     <tr>
-                        <th class="sectionTitle">{TXT_NEWS_NEWS_CONTENT} (<span>{NEWS_DEFAULT_LANG}</span>)</th>
+                        <th class="sectionTitle">{TXT_NEWS_NEWS_CONTENT}</th>
                     </tr>
                     <tr class="row1">
                         <td valign="top">
@@ -508,7 +573,14 @@
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )
                 </td>
             </tr>
-            {NEWS_COMMENTS_SELECTION}
+            <!-- BEGIN news_allow_comments_option -->
+            <tr class="row2">
+                <td nowrap="nowrap">{TXT_NEWS_ALLOW_COMMENTS}</td>
+                <td>
+                    <input type='checkbox' name='allowComment' value='1' {NEWS_COMMENT_CHECKED} />
+                </td>
+            </tr>
+            <!-- END news_allow_comments_option -->
         </table>
         <br />
     </div>
