@@ -2861,7 +2861,7 @@ class newsletter extends NewsletterLib
             'city'      => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
             'country'   => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
             'phone'     => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
-            'brithday'  => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
+            'birthday'  => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
         );
 
         if (isset($_POST['import_cancel'])) {
@@ -2913,7 +2913,12 @@ class newsletter extends NewsletterLib
                             $recipientTitleId = $this->_addRecipientTitle($arrRecipient['title']);
                         }
 
-                        if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientTitleId, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['company'], $arrRecipient['street'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country'],'', '', 1, $arrLists)) {
+                        if (!empty($arrRecipient['birthday'])) {
+                            $arrDate = date_parse($arrRecipient['birthday']);
+                            $recipientBirthday = $arrDate['day'].'-'.$arrDate['month'].'-'.$arrDate['year'];
+                        }
+
+                        if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientTitleId, $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['company'], $arrRecipient['street'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country'], $arrRecipient['phone'], $recipientBirthday, 1, $arrLists)) {
                             array_push($arrBadEmails, $arrRecipient['email']);
                         }
                     }
