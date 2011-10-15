@@ -779,6 +779,7 @@ class newsManager extends newsLibrary {
         $newsurl1               = !empty($_POST['newsUrl1']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsUrl1'])) : '';
         $newsurl2               = !empty($_POST['newsUrl2']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsUrl2'])) : '';
         $newscat                = !empty($_POST['newsCat']) ? intval($_POST['newsCat']) : 0;
+        $newstype               = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
         $newsPublisherName      = !empty($_POST['newsPublisherName']) ? contrexx_input2raw($_POST['newsPublisherName']) : '';
         $newsAuthorName         = !empty($_POST['newsAuthorName']) ? contrexx_input2raw($_POST['newsAuthorName']) : '';
         $newsPublisherId        = !empty($_POST['newsPublisherId']) ? contrexx_input2raw($_POST['newsPublisherId']) : '0';
@@ -1347,6 +1348,7 @@ class newsManager extends newsLibrary {
                         $intLanguageId = $arrLanguage['id'];
 
                         $arrActiveLang[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" class="langCheckboxes" '.((in_array($intLanguageId, $active_lang)) ? 'checked="checked"' : '').' type="checkbox" name="newsManagerLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'news_lang_tab_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['name'].' ['.$arrLanguage['lang'].']</label><br />';
+                        $strJsTabToDiv .= 'arrTabToDiv["news_lang_tab_'.$intLanguageId.'"] = "langTab_'.$intLanguageId.'";'."\n";
                         ++$intLanguageCounter;
                     }
                 }
@@ -1356,6 +1358,7 @@ class newsManager extends newsLibrary {
                     'EDIT_LANGUAGES_1'          => $arrActiveLang[0],
                     'EDIT_LANGUAGES_2'          => $arrActiveLang[1],
                     'EDIT_LANGUAGES_3'          => $arrActiveLang[2],
+                    'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
                 ));
             }
 
@@ -2531,123 +2534,135 @@ class newsManager extends newsLibrary {
 
         require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
 
-        if (intval($this->arrSettings['news_feed_status']) == 1) {
-            $arrNews = array();
+        // languages
+        $arrLanguages = FWLanguage::getLanguageArray(); 
+        
+        if (intval($this->arrSettings['news_feed_status']) == 1) {            
             $objRSSWriter = new RSSWriter();
+            
+            if (count($arrLanguages>0)) {
+                foreach ($arrLanguages as $LangId => $arrLanguage) {
+                    if ($arrLanguage['frontend'] == 1) {          
+                        
+                        $query = "
+                            SELECT      tblNews.id,
+                                        tblNews.date,
+                                        tblNews.redirect,
+                                        tblNews.source,
+                                        tblNews.catid AS categoryId,                                        
+                                        tblNews.teaser_frames AS teaser_frames,
+                                        tblLocale.lang_id,
+                                        tblLocale.title,
+                                        tblLocale.text,
+                                        tblLocale.teaser_text,
+                                        tblCategory.name AS category                                        
+                            FROM        ".DBPREFIX."module_news AS tblNews
+                            INNER JOIN  ".DBPREFIX."module_news_locale AS tblLocale ON tblLocale.news_id = tblNews.id
+                            INNER JOIN  ".DBPREFIX."module_news_categories_locale AS tblCategory ON tblCategory.category_id = tblNews.catid                            
+                            WHERE       tblNews.status=1
+                                AND     tblLocale.is_active = 1
+                                AND     tblLocale.lang_id = " . $LangId . "                                
+                                AND     tblCategory.lang_id = " . $LangId . "                                
+                                AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00 00:00:00')
+                                AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00 00:00:00')"
+                                .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
+                                        ."ORDER BY tblNews.date DESC";
 
-            $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
-            $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$_FRONTEND_LANGID]);
-            $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$_FRONTEND_LANGID]);
-            $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
-            $objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang');
-            $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
+                        $arrNews = array();
+                        if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {                            
+                            while (!$objResult->EOF) {
+                                if (empty($objRSSWriter->channelLastBuildDate)) {
+                                    $objRSSWriter->channelLastBuildDate = date('r', $objResult->fields['date']);
+                                }
+                                $arrNews[$objResult->fields['id']] = array(
+                                    'date'          => $objResult->fields['date'],
+                                    'title'         => $objResult->fields['title'],
+                                    'text'          => empty($objResult->fields['redirect']) ? (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']).'<br /><br />' : '').$objResult->fields['text'] : (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']) : ''),
+                                    'redirect'      => $objResult->fields['redirect'],
+                                    'source'        => $objResult->fields['source'],
+                                    'category'      => $objResult->fields['category'],                                    
+                                    'teaser_frames' => explode(';', $objResult->fields['teaser_frames']),
+                                    'categoryId'    => $objResult->fields['categoryId']                                    
+                                );
+                                $objResult->MoveNext();
+                            }
+                        } else {
+                            continue;
+                        }
 
-            if (!empty($this->arrSettings['news_feed_image'])) {
-                $objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).$this->arrSettings['news_feed_image'];
-                $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
-                $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
-            }
-            $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
+                        $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
+                        $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$LangId]);
+                        $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$LangId]);
+                        $objRSSWriter->channelLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news';
+                        $objRSSWriter->channelLanguage = FWLanguage::getLanguageParameter($LangId, 'lang');
+                        $objRSSWriter->channelCopyright = 'Copyright '.date('Y').', http://'.$_CONFIG['domainUrl'];
 
-            $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
+                        if (!empty($this->arrSettings['news_feed_image'])) {
+                            $objRSSWriter->channelImageUrl = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).$this->arrSettings['news_feed_image'];
+                            $objRSSWriter->channelImageTitle = $objRSSWriter->channelTitle;
+                            $objRSSWriter->channelImageLink = $objRSSWriter->channelLink;
+                        }
+                        $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-            $query = "
-                SELECT      tblNews.id,
-                            tblNews.date,
-                            tblNews.redirect,
-                            tblNews.source,
-                            tblNews.catid AS categoryId,
-                            tblNews.typeid AS typeId,
-                            tblNews.teaser_frames AS teaser_frames,
-                            tblLocale.title,
-                            tblLocale.text,
-                            tblLocale.teaser_text,
-                            tblCategory.name AS category,
-                            tblType.name AS type
-                FROM        ".DBPREFIX."module_news AS tblNews
-                INNER JOIN  ".DBPREFIX."module_news_locale AS tblLocale ON tblLocale.news_id = tblNews.id
-                INNER JOIN  ".DBPREFIX."module_news_categories_locale AS tblCategory ON tblCategory.category_id = tblNews.catid
-                INNER JOIN  ".DBPREFIX."module_news_types_locale AS tblType ON tblType.type_id = tblNews.typeid
-                WHERE       tblNews.status=1
-                    AND     tblLocale.lang_id = " . FRONTEND_LANG_ID . "
-                    AND     tblCategory.lang_id = " . FRONTEND_LANG_ID . "
-                    AND     tblType.lang_id = " . FRONTEND_LANG_ID . "
-                    AND     (tblNews.startdate <= CURDATE() OR tblNews.startdate = '0000-00-00 00:00:00')
-                    AND     (tblNews.enddate >= CURDATE() OR tblNews.enddate = '0000-00-00 00:00:00')"
-                    .($this->arrSettings['news_message_protection'] == '1' ? " AND tblNews.frontend_access_id=0 " : '')
-                            ."ORDER BY tblNews.date DESC";
+                        $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
+                        
+                        // create rss feed
+                        $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+                        foreach ($arrNews as $newsId => $arrNewsItem) {
+                            $objRSSWriter->addItem(
+                                contrexx_raw2xml($arrNewsItem['title']),
+                                (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
+                                contrexx_raw2xml($arrNewsItem['text']),
+                                '',
+                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
+                                '',
+                                '',
+                                '',
+                                $arrNewsItem['date'],
+                                array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2xml($arrNewsItem['title']))
+                            );
+                        }
+                        $status = $objRSSWriter->write();
 
-            if (($objResult = $objDatabase->SelectLimit($query, 20)) !== false && $objResult->RecordCount() > 0) {
-                while (!$objResult->EOF) {
-                    if (empty($objRSSWriter->channelLastBuildDate)) {
-                        $objRSSWriter->channelLastBuildDate = date('r', $objResult->fields['date']);
+                        // create headlines rss feed
+                        $objRSSWriter->removeItems();
+                        $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
+                        foreach ($arrNews as $newsId => $arrNewsItem) {
+                            $objRSSWriter->addItem(
+                                contrexx_raw2xml($arrNewsItem['title']),
+                                $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : ''),
+                                '',
+                                '',
+                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($LangId, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
+                                '',
+                                '',
+                                '',
+                                $arrNewsItem['date']
+                            );
+                        }
+                        $statusHeadlines = $objRSSWriter->write();
+
+                        $objRSSWriter->feedType = 'js';
+                        $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.js';
+                        $objRSSWriter->write();
+
+                        if (count($objRSSWriter->arrErrorMsg) > 0) {
+                            $this->strErrMessage .= implode('<br />', $objRSSWriter->arrErrorMsg);
+                        }
+                        if (count($objRSSWriter->arrWarningMsg) > 0) {
+                            $this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
+                        }
                     }
-                    $arrNews[$objResult->fields['id']] = array(
-                        'date'          => $objResult->fields['date'],
-                        'title'         => $objResult->fields['title'],
-                        'text'          => empty($objResult->fields['redirect']) ? (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']).'<br /><br />' : '').$objResult->fields['text'] : (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']) : ''),
-                        'redirect'      => $objResult->fields['redirect'],
-                        'source'        => $objResult->fields['source'],
-                        'category'      => $objResult->fields['category'],
-                        'type'          => $objResult->fields['type'],
-                        'teaser_frames' => explode(';', $objResult->fields['teaser_frames']),
-                        'categoryId'    => $objResult->fields['categoryId'],
-                        'typeId'        => $objResult->fields['typeId']
-                    );
-                    $objResult->MoveNext();
-                }
-            }
-
-            // create rss feed
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
-            foreach ($arrNews as $newsId => $arrNewsItem) {
-                $objRSSWriter->addItem(
-                    contrexx_raw2xml($arrNewsItem['title']),
-                    (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
-                    contrexx_raw2xml($arrNewsItem['text']),
-                    '',
-                    array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
-                    '',
-                    '',
-                    '',
-                    $arrNewsItem['date'],
-                    array('url' => htmlspecialchars($arrNewsItem['source'], ENT_QUOTES, CONTREXX_CHARSET), 'title' => contrexx_raw2xml($arrNewsItem['title']))
-                );
-            }
-            $status = $objRSSWriter->write();
-
-            // create headlines rss feed
-            $objRSSWriter->removeItems();
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml';
-            foreach ($arrNews as $newsId => $arrNewsItem) {
-                $objRSSWriter->addItem(
-                    contrexx_raw2xml($arrNewsItem['title']),
-                    $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : ''),
-                    '',
-                    '',
-                    array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.($_CONFIG['useVirtualLanguagePath'] == 'on' ? '/'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang') : null).'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
-                    '',
-                    '',
-                    '',
-                    $arrNewsItem['date']
-                );
-            }
-            $statusHeadlines = $objRSSWriter->write();
-
-            $objRSSWriter->feedType = 'js';
-            $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js';
-            $objRSSWriter->write();
-
-            if (count($objRSSWriter->arrErrorMsg) > 0) {
-                $this->strErrMessage .= implode('<br />', $objRSSWriter->arrErrorMsg);
-            }
-            if (count($objRSSWriter->arrWarningMsg) > 0) {
-                $this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
+                }                
             }
         } else {
-            @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
-            @unlink(ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.xml');
-            @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($_FRONTEND_LANGID, 'lang').'.js');
+            if (count($arrLanguages>0)) {
+                foreach ($arrLanguages as $LangId => $arrLanguage) {
+                    @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    @unlink(ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                    @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.js');                    
+                } 
+            }
         }
     }
 

@@ -66,8 +66,9 @@
         Load content in Textarea from hidden field while page load
          */
         if(typeof CKEDITOR != 'undefined' && CKEDITOR.instances){
-            activeLang = $J('ul.langtabs a.active').attr('id').split('_')[2];
-            form_text = $J('#news_text'+activeLang).val();
+            activeLang = $J('ul.langtabs a.active').attr('id').split('_')[3];
+            
+            form_text = $J("#news_text\\["+activeLang+"\\]").val();
             CKEDITOR.instances.newsText.setData(form_text);
         }        
         swapHeaderLangName(); 
@@ -271,57 +272,15 @@
 
     function langTab(ele, id) {        
         updateCKeditorContent(id);
-        $J('.newsText').hide();
-        $J('#newsTitle\\[' + id+'\\]').show();
-        $J('#newsTeaserText\\[' + id+'\\]').show(); 
+        $J('.newsText').hide();        
+        $J("#newsTitle\\[" + id+"\\]").show();
+        $J("#newsTeaserText\\["+ id+"\\]").parent().show(); 
         
         $J('.tabmenu li a').removeClass('active').addClass('inactive');
         $J(ele).removeClass('inactive').addClass('active');
         swapHeaderLangName();
     } 
     
-    /*function newsSwitchLang(langId)
-    {
-        // get current lang
-        var curLangId = jQuery("a.langtab.active").attr("id").slice(14);
-
-        // store text of current language
-        // oCKeditor = CKEDITOR.instances['newsText'];
-        // jQuery('#news_text\\[' + curLangId + "\\]").attr("value", oCKeditor.getData());
-        jQuery('#news_text\\[' + curLangId + "\\]").attr("value", CKEDITOR.instances.newsText.getData());
-
-        // exit if no new language had been requested
-        if (typeof(langId) == 'undefined') return true;
-
-        // change tab
-        jQuery("#news_lang_tab_" + curLangId).removeClass("active").addClass("inactive");
-        jQuery("#news_lang_tab_" + langId).removeClass("inactive").addClass("active");
-        // change title
-        jQuery("#newsTitle\\[" + curLangId + "\\]").css("display", "none");
-        jQuery("#newsTitle\\[" + langId + "\\]").css("display", "block");
-        // change text
-        // oCKeditor.setData(jQuery('#news_text\\[' + langId + "\\]").attr("value"));
-        CKEDITOR.instances.newsText.setData(jQuery('#news_text\\[' + langId + "\\]").attr("value"));
-
-        // change teaser_text
-        jQuery("#newsTeaserText\\[" + curLangId + "\\]").parent().css("display", "none");
-        jQuery("#newsTeaserText\\[" + langId + "\\]").parent().css("display", "block");
-
-        // change language name in brackets
-        jQuery("th.sectionTitle").find("span").text(jQuery("#news_lang_tab_" + langId).text());
-
-        // change category list
-        /*jQuery("select[name=newsCat]")
-        .find("option.lang" + curLangId).hide().end()
-        .find("option.lang" + langId).show();
-
-    catId = jQuery("select[name=newsCat]").find("option:selected").attr("value");
-    jQuery("select[name=newsCat]")
-        .find("option.selected").removeAttr("selected").end()
-        .find("option.lang" + langId + "[value=" + catId + "]").attr("selected", "selected");
-        return true;
-    }*/
-
     function switchBoxAndTab(objElement, strTabId) {
         if (countActiveLanguages() == 0) {
             //We just "unchecked" the last language, disallow this
@@ -338,19 +297,9 @@
     function switchTabVisibility(strTabId) {
         selectedLang = strTabId.split('_')[strTabId.split('_').length - 1];
         if ($J('#'+strTabId).css('display') == 'none') {
-            $J('#'+strTabId).css('display','inline');
-            //newsSwitchLang(selectedLang);
+            $J('#'+strTabId).css('display','inline');            
         } else {
             $J('#'+strTabId).css('display', 'none');
-            /*if ($J('#news_lang_tab_'+selectedLang).hasClass('active')) {
-                var activeLang = [];
-                $J('.langCheckboxes:checked').each(function(i){
-                    activeLang[i] = $J(this).attr('id');
-                });
-                activeLangId = activeLang[0].split('_')[activeLang[0].split('_').length - 1];
-                //newsSwitchLang(activeLangId);
-            }*/
-            //$J('#'+strTabId).parent().css('display','none');
         }
     }
 
@@ -362,11 +311,12 @@
     
     function activateAnyActiveDiv() { 
         for (var TabName in arrTabToDiv) {
-            if (document.getElementById(TabName).style.display == 'inline') {                
-                updateCKeditorContent(TabName.split('_')[2]);
-                $J('.newsText').hide();
-                $J('#newsTitle\\[' + id+'\\]').show();
-                $J('#newsTeaserText\\[' + id+'\\]').show(); 
+            if (document.getElementById(TabName).style.display == 'inline') {                  
+                langId = TabName.split('_')[3];
+                updateCKeditorContent(langId);
+                $J('.newsText').hide();                
+                $J("#newsTitle\\["+langId+"\\]").show();
+                $J("#newsTeaserText\\["+langId+"\\]").parent().show();
                 break;
             }
         }
@@ -394,13 +344,18 @@
     }
 
     function updateCKeditorContent(CurrentLangId) {        
-        activeLang = $J('ul.langtabs a.active').attr('id').split('_')[2];
+        activeLang = $J('ul.langtabs a.active').attr('id').split('_')[3];        
+        $J("#news_text\\["+activeLang+"\\]").val(CKEDITOR.instances.newsText.getData());
         
-        $J('#news_text'+activeLang).val(CKEDITOR.instances.newsText.getData());
-        
-        form_text = $J('#news_text'+CurrentLangId).val();
+        form_text = $J("#news_text\\["+CurrentLangId+"\\]").val();
         CKEDITOR.instances.newsText.setData(form_text);
-    }  
+    } 
+    
+    function onSubmit() {
+        activeLang = $J('ul.langtabs a.active').attr('id').split('_')[3];        
+        $J("#news_text\\["+activeLang+"\\]").val(CKEDITOR.instances.newsText.getData());
+        return true;
+    }    
     //
 </script>
 <ul id="tabmenu">
@@ -409,7 +364,7 @@
     <li><a id="messageTab_news3" href="javascript:{}" onclick="selectTab('news3')" title="{NEWS_HEADLINES_TEASERS_TXT}">{NEWS_HEADLINES_TEASERS_TXT}</a></li>
     <!-- BEGIN news_permission_tab --><li><a id="messageTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_NEWS_PERMISSIONS}">{TXT_NEWS_PERMISSIONS}</a></li><!-- END news_permission_tab -->
 </ul>
-<form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}" onSubmit="newsSwitchLang();SelectAllList(document.news.elements['newsTeaserFramesAsso[]']);SelectAllList(document.news.elements['news_read_access_associated_groups[]']);SelectAllList(document.news.elements['news_modify_access_associated_groups[]']);">
+<form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}" onSubmit="SelectAllList(document.news.elements['newsTeaserFramesAsso[]']);SelectAllList(document.news.elements['news_read_access_associated_groups[]']);SelectAllList(document.news.elements['news_modify_access_associated_groups[]']);">
     <!-- start news1 div -->
     <div id="news1" class="messageTab" style="display:block">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -430,6 +385,7 @@
                     </select>
                 </td>
             </tr>
+            {NEWS_TYPE_MENU}
             <tr class="row1">
                 <td nowrap="nowrap">{TXT_NEWS_PUBLISHER}</td>
                 <td nowrap="nowrap">
@@ -443,8 +399,7 @@
                     <input id="newsAuthorName" class="newsAutoComplete" type="text" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" />
                     <input id="newsAuthorId" type="hidden" name="newsAuthorId" value="{NEWS_AUTHOR_ID}" />
                 </td>
-            </tr>
-            {NEWS_TYPE_MENU}
+            </tr>            
             <tr class="row1">
                 <td nowrap="nowrap">{TXT_DATE}</td>
                 <td><input type="text" name="newsDate" value="{NEWS_CREATE_DATE}" style="width:400px;" /></td>
@@ -496,8 +451,8 @@
             <tr class="row1">
                 <td>
                     <!-- BEGIN news_teaser_text_list -->
-                    <div style="display:{NEWS_TITLE_DISPLAY}">
-                        <textarea name="newsTeaserText[{NEWS_LANG_ID}]" class="newsText" id="newsTeaserText[{NEWS_LANG_ID}]" onkeyup="document.getElementById('newsTeaserTextCharCount_{NEWS_LANG_ID}').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
+                    <div class="newsText" style="display:{NEWS_TITLE_DISPLAY}">
+                        <textarea name="newsTeaserText[{NEWS_LANG_ID}]" id="newsTeaserText[{NEWS_LANG_ID}]" onkeyup="document.getElementById('newsTeaserTextCharCount_{NEWS_LANG_ID}').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
                         <div style="padding-right:50px; float:left;">&nbsp;{TXT_NUMBER_OF_CHARS}:&nbsp;<div id="newsTeaserTextCharCount_{NEWS_LANG_ID}" style="display:inline;">{NEWS_TEASER_TEXT_LENGTH}</div></div>
                         <div>&nbsp;<a href="javascript:{}" onclick="newsGetFileBrowser('newsTeaserText[{NEWS_LANG_ID}]', 'link')">{TXT_NEWS_INSERT_LINK}</a></div>
                     </div>
@@ -516,7 +471,7 @@
                     <tr class="row1">
                         <td valign="top">
                             <!-- BEGIN news_text_list -->
-                            <textarea name="news_text[{NEWS_LANG_ID}]" id="news_text[{NEWS_LANG_ID}]" style="display:none;">{NEWS_TEXT}</textarea>
+                            <input type="hidden" name="news_text[{NEWS_LANG_ID}]" id="news_text[{NEWS_LANG_ID}]" value="{NEWS_TEXT}" />
                             <!-- END news_text_list -->
                             {NEWS_TEXT_PREVIEW}
                         </td>
@@ -729,7 +684,7 @@
         <br />
     </div>
     <!-- end news4 div -->
-    <input type="submit" name="{NEWS_SUBMIT_NAME}" value="{NEWS_SUBMIT_NAME_TEXT}" />
+    <input type="submit" onclick="onSubmit()" name="{NEWS_SUBMIT_NAME}" value="{NEWS_SUBMIT_NAME_TEXT}" />
     <br />
     <br />
 </form>
