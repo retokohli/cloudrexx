@@ -95,10 +95,14 @@
             }
 
             // do the id too
-            $J(elem).attr('id', id.replace(/^(.*?)_(\d+)_(\d+)$/, "$1_" + number+ "_$3"));
+            if (typeof(id) != 'undefined') {
+                $J(elem).attr('id', id.replace(/^(.*?)_(\d+)_(\d+)$/, "$1_" + number+ "_$3"));
+            }
 
             // do the class too
-            $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + number));
+            if (typeof(className) != 'undefined') {
+                $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + number));
+            }
         });
 
         $J(copy).find('input').val('');
