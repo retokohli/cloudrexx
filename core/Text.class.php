@@ -890,9 +890,10 @@ die("Obsolete method Text::getIdArrayBySearch() called");
      * @global  mixed     $objDatabase    Database object
      * @return  boolean                   False.  Always.
      * @throws  Update_DatabaseException
+     * @static
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function errorHandler()
+    static function errorHandler()
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 

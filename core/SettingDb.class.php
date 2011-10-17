@@ -1028,8 +1028,9 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      *
      * Tries to fix or recreate the settings table.
      * @return  boolean             False, always.
+     * @static
      */
-    function errorHandler()
+    static function errorHandler()
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
 
@@ -1051,9 +1052,6 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
                 'type' => 'primary',
                 'fields' => array('section' => 32, 'name' => 32, 'group' => 32),
             ),
-//            'test' => array(
-//                'fields' => array('type'),
-//            ),
         );
         UpdateUtil::table($table_name, $table_structure, $table_index);
 //echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
@@ -1081,8 +1079,9 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      * @param   integer   $module_id      The module ID
      * @return  array                     The settings array on success,
      *                                    null otherwise
+     * @static
      */
-    function __getOldSettings($module_id)
+    static function __getOldSettings($module_id)
     {
         global $objDatabase;
 
