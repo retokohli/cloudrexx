@@ -420,6 +420,9 @@ class Zones
         $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipment';
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_rel_shipper';
         if (UpdateUtil::table_exist($table_name_old)) {
+            if (UpdateUtil::table_exist($table_name)) {
+                throw new UpdateException("Destination table $table_name exists, cannot rename old table $table_name_old");
+            }
             UpdateUtil::table_rename($table_name_old, $table_name);
         }
         $table_structure = array(
