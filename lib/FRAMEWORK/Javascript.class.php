@@ -142,10 +142,12 @@ jQuery(document).ready(function(){
 // TODO: remove & replace by cx call
         'jqueryui'     => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js'
+                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js',
+                'lib/javascript/jquery/ui/jquery.multiselect2side.js',
             ),
             'cssfiles'      => array(
                 'lib/javascript/jquery/ui/css/jquery-ui.css',
+                'lib/javascript/jquery/ui/css/jquery.multiselect2side.css',
             ),
             'dependencies'  => array(
                 'jquery',

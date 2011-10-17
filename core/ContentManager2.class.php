@@ -27,6 +27,12 @@ class ContentManager extends Module {
 
     protected $pageRepository = null;
 
+    //renderCM access state
+    protected $backendGroups = array();
+    protected $frontendGroups = array();
+    protected $assignedBackendGroups = array();
+    protected $assignedFrontendGroups = array();
+
     /**
      * @param string $act
      * @param $template
@@ -79,6 +85,33 @@ class ContentManager extends Module {
 
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
 	}
+
+    /**
+     * Sub of actRenderCM.
+     * Renders the access tab.
+     */
+    protected function renderCMAccess() {
+        $backendGroups = array();
+        $frontendGroups = array();
+
+        $objResult = $objDatabase->Execute("SELECT group_id, group_name FROM ".DBPREFIX."access_user_groups");
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $groupId = $objResult->fields['group_id'];
+                $groupName = $objResult->fields['group_name'];
+                $type = $objResult->fields['type'];
+                if($type == 'frontend')
+                    $frontendGroups[$groupId]=$groupName;
+                else
+                    $backendGroups[$groupId]=$groupName;
+
+                $objResult->MoveNext();
+            }
+        }
+        return $arrGroups;
+
+        
+    }
 
     protected function getSkinOptions() {
         $query = "SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id";
