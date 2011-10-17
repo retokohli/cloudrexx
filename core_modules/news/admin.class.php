@@ -925,8 +925,7 @@ class newsManager extends newsLibrary {
                     $intLanguageId = $arrLanguage['id'];
                     $boolLanguageIsActive = ($intLanguageId == $objInit->userFrontendLangId) ? true : false;
 
-                    $arrActiveLang[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" class="langCheckboxes" '.(($arrLanguage['is_default'] == 'true') ? 'checked="checked"' : '').' type="checkbox" name="newsManagerLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'news_lang_tab_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['name'].' ['.$arrLanguage['lang'].']</label><br />';
-                    $strJsTabToDiv .= 'arrTabToDiv["news_lang_tab_'.$intLanguageId.'"] = "langTab_'.$intLanguageId.'";'."\n";
+                    $arrActiveLang[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" class="langCheckboxes" '.(($arrLanguage['is_default'] == 'true') ? 'checked="checked"' : '').' type="checkbox" name="newsManagerLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'news_lang_tab_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['name'].' ['.$arrLanguage['lang'].']</label><br />';                    
                     ++$intLanguageCounter;
                 }
             }
@@ -935,8 +934,7 @@ class newsManager extends newsLibrary {
                 'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_LANGUAGE'],
                 'EDIT_LANGUAGES_1'          => $arrActiveLang[0],
                 'EDIT_LANGUAGES_2'          => $arrActiveLang[1],
-                'EDIT_LANGUAGES_3'          => $arrActiveLang[2],
-                'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
+                'EDIT_LANGUAGES_3'          => $arrActiveLang[2]                
             ));
         }
         
@@ -1347,8 +1345,7 @@ class newsManager extends newsLibrary {
                     if ($arrLanguage['frontend'] == 1) {
                         $intLanguageId = $arrLanguage['id'];
 
-                        $arrActiveLang[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" class="langCheckboxes" '.((in_array($intLanguageId, $active_lang)) ? 'checked="checked"' : '').' type="checkbox" name="newsManagerLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'news_lang_tab_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['name'].' ['.$arrLanguage['lang'].']</label><br />';
-                        $strJsTabToDiv .= 'arrTabToDiv["news_lang_tab_'.$intLanguageId.'"] = "langTab_'.$intLanguageId.'";'."\n";
+                        $arrActiveLang[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" class="langCheckboxes" '.((in_array($intLanguageId, $active_lang)) ? 'checked="checked"' : '').' type="checkbox" name="newsManagerLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'news_lang_tab_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['name'].' ['.$arrLanguage['lang'].']</label><br />';                        
                         ++$intLanguageCounter;
                     }
                 }
@@ -1357,8 +1354,7 @@ class newsManager extends newsLibrary {
                     'TXT_LANGUAGE'              => $_ARRAYLANG['TXT_LANGUAGE'],
                     'EDIT_LANGUAGES_1'          => $arrActiveLang[0],
                     'EDIT_LANGUAGES_2'          => $arrActiveLang[1],
-                    'EDIT_LANGUAGES_3'          => $arrActiveLang[2],
-                    'EDIT_JS_TAB_TO_DIV'        => $strJsTabToDiv
+                    'EDIT_LANGUAGES_3'          => $arrActiveLang[2]                    
                 ));
             }
 
@@ -2533,16 +2529,16 @@ class newsManager extends newsLibrary {
         global $_CONFIG, $objDatabase, $_FRONTEND_LANGID;
 
         require_once ASCMS_FRAMEWORK_PATH.'/RSSWriter.class.php';
-
+                
         // languages
         $arrLanguages = FWLanguage::getLanguageArray(); 
         
-        if (intval($this->arrSettings['news_feed_status']) == 1) {            
-            $objRSSWriter = new RSSWriter();
+        if (intval($this->arrSettings['news_feed_status']) == 1) {                        
             
             if (count($arrLanguages>0)) {
                 foreach ($arrLanguages as $LangId => $arrLanguage) {
-                    if ($arrLanguage['frontend'] == 1) {          
+                    if ($arrLanguage['frontend'] == 1) {
+                        $objRSSWriter = new RSSWriter();
                         
                         $query = "
                             SELECT      tblNews.id,
@@ -2589,7 +2585,7 @@ class newsManager extends newsLibrary {
                         } else {
                             continue;
                         }
-
+                        
                         $objRSSWriter->characterEncoding = CONTREXX_CHARSET;
                         $objRSSWriter->channelTitle = contrexx_raw2xml($this->arrSettings['news_feed_title'][$LangId]);
                         $objRSSWriter->channelDescription = contrexx_raw2xml($this->arrSettings['news_feed_description'][$LangId]);
@@ -2623,7 +2619,7 @@ class newsManager extends newsLibrary {
                             );
                         }
                         $status = $objRSSWriter->write();
-
+                        
                         // create headlines rss feed
                         $objRSSWriter->removeItems();
                         $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
@@ -2653,15 +2649,17 @@ class newsManager extends newsLibrary {
                             $this->strErrMessage .= implode('<br />', $objRSSWriter->arrWarningMsg);
                         }
                     }
-                }                
+                }             
             }
         } else {
             if (count($arrLanguages>0)) {
                 foreach ($arrLanguages as $LangId => $arrLanguage) {
-                    @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                    @unlink(ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
-                    @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.js');                    
-                } 
+                    if ($arrLanguage['frontend'] == 1) {
+                        @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                        @unlink(ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml');
+                        @unlink(ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.js');                    
+                    }
+                }
             }
         }
     }
