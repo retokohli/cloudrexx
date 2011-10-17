@@ -159,7 +159,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
     static function getPage($template)
     {
 
-DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
+//DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
 //DBG::activate(DBG_ERROR_FIREPHP);
 
 // TODO: Temporary, for developing only. Remove for production.
@@ -880,7 +880,10 @@ die("Failed to update the Cart!");
                 $category_id = $_SESSION['shop']['previous_category_id'];
             }
             if (!$category_id) {
-                $category_id = $objProduct->category_id();
+                $objProduct = Product::getById($product_id);
+                if ($objProduct) {
+                    $category_id = $objProduct->category_id();
+                }
             }
         }
 //DBG::log("Got Category ID $category_id");
@@ -979,7 +982,7 @@ die("Failed to update the Cart!");
             return true;
         }
         if ($objCategory) {
-DBG::log(sprintf($_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'], contrexx_raw2xhtml($objCategory->name())));
+//DBG::log(sprintf($_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'], contrexx_raw2xhtml($objCategory->name())));
             self::$objTemplate->setVariable(array(
                 // Old, kept for convenience
                 'SHOP_CATEGORY_CURRENT_NAME' =>
@@ -990,7 +993,7 @@ DBG::log(sprintf($_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'], contrexx_raw2xhtm
                     contrexx_raw2xhtml($objCategory->name())),
             ));
         } else {
-DBG::log("No Category");
+//DBG::log("No Category");
             if (self::$objTemplate->blockExists('products_in_category'))
                 self::$objTemplate->hideBlock('products_in_category');
         }
@@ -1678,7 +1681,7 @@ DBG::log("No Category");
      */
     static function registerJavascriptCode($flagUpload=false)
     {
-        global $_ARRAYLANG, $_CONFIGURATION;
+        global $_ARRAYLANG;//, $_CONFIGURATION;
 
         JS::activate('shadowbox');
         JS::activate('jquery');
@@ -1872,15 +1875,16 @@ function addProductToCart(objForm)
 //  hideCart();
   jQuery.ajax(
     'index.php?".
-// It seems that IE9 requires this
-(   isset($_SERVER['HTTP_USER_AGENT'])
- && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
-    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
-      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
-    : '').
+// It seems that IE9 requires this -- sometimes?!
+//(   isset($_SERVER['HTTP_USER_AGENT'])
+// && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
+//    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
+//      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
+//    : '').
       "section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct'
       +updateProduct, {
     data: objProduct,
+    dataType: 'json',
     success: shopUpdateCart
   });
   return false;
@@ -1889,7 +1893,7 @@ function addProductToCart(objForm)
 function shopUpdateCart(data, textStatus, jqXHR)
 {
   try {
-    eval('objCart = '+data);
+    objCart = data;
     if (document.getElementById('shopJsCart')) {
       shopGenerateCart();
     }
@@ -1900,8 +1904,8 @@ function shopUpdateCart(data, textStatus, jqXHR)
 function shopGenerateCart()
 {
   cart = '';
-  if (objCart.items.size()) {
-    objCart.items.each(function(i) {
+  if (objCart.items.length) {
+    jQuery.each(objCart.items, function(n, i) {
       cartProduct = cartProductsTpl.replace('[[SHOP_JS_PRODUCT_QUANTITY]]', i.quantity);
       cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', i.title+i.options);
       cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_PRICE]]', i.price);
@@ -1939,13 +1943,14 @@ function showCart(html)
 //hideCart();
 jQuery.ajax(
   'index.php?".
-// It seems that IE9 requires this
-(   isset($_SERVER['HTTP_USER_AGENT'])
- && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
-    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
-      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
-    : '').
+// It seems that IE9 requires this -- sometimes?!
+//(   isset($_SERVER['HTTP_USER_AGENT'])
+// && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
+//    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
+//      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
+//    : '').
     "&section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct', {
+  dataType: 'json',
   success: shopUpdateCart,
   error: function() {
     showCart('".contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'])."');
@@ -2123,6 +2128,11 @@ function centerY(height)
             HTTP::redirect(
                 CONTREXX_SCRIPT_PATH.
                 '?section=shop&cmd=account');
+        }
+        $redirect = base64_encode(
+              CONTREXX_SCRIPT_PATH.'?section=shop&cmd=account');
+        if (isset($_REQUEST['redirect'])) {
+            $redirect = contrexx_input2raw($_REQUEST['redirect']);
         }
         self::$objTemplate->setGlobalVariable($_ARRAYLANG
           + array(
@@ -2447,33 +2457,36 @@ die("Shop::processRedirect(): This method is obsolete!");
     {
         global $_ARRAYLANG;
 
+//DBG::log("Verify account");
         $status = true;
         if (!self::verifySessionAddress()) {
             $status = false;
             Message::error($_ARRAYLANG['TXT_FILL_OUT_ALL_REQUIRED_FIELDS']);
         }
-        if (!empty($_POST['password']) && !self::$objCustomer) {
-            if (strlen(trim($_POST['password'])) < 6) {
-                $status = false;
-                Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
-            }
+        // Registered Customers are okay now
+        if (self::$objCustomer) return $status;
+        if (strlen(trim($_SESSION['shop']['password'])) < 6) {
+            $status = false;
+            Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
         }
-        if (!empty($_POST['email']) && !self::$objCustomer) {
-            if (!FWValidator::isEmail($_POST['email'])) {
-                return Message::error($_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']);
-            }
-            $objUser = new User();
-            $objUser->setUsername($_POST['email']);
-            Message::save();
-            // This method will set an error message we don't want here
-            // (as soon as it uses the Message class, that is)
-            if (!$objUser->validateUsername()) {
-                $_POST['email'] = '';
-                Message::restore();
-                return Message::error($_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER']);
-            }
+        if (!FWValidator::isEmail($_SESSION['shop']['email'])) {
+            return Message::error($_ARRAYLANG['TXT_INVALID_EMAIL_ADDRESS']);
+        }
+        // Ignore "unregistered" Customers.  These will silently be updated
+        if (Customer::getUnregisteredByEmail($_SESSION['shop']['email'])) {
+            return $status;
+        }
+        $objUser = new User();
+        $objUser->setUsername($_SESSION['shop']['email']);
+        Message::save();
+        // This method will set an error message we don't want here
+        // (as soon as it uses the Message class, that is)
+        if (!$objUser->validateUsername()) {
+            $_POST['email'] = $_SESSION['shop']['email'] = '';
             Message::restore();
+            return Message::error($_ARRAYLANG['TXT_EMAIL_USED_BY_OTHER_CUSTOMER']);
         }
+        Message::restore();
         return $status;
     }
 
@@ -3199,11 +3212,23 @@ die("Trouble! No Shipper ID defined");
         $customer_ip = $_SERVER['REMOTE_ADDR'];
         $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
-//DBG::log("Shop::confirm(): E-Mail: ".$_SESSION['shop']['email']);
+DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
         if (self::$objCustomer) {
-//DBG::log("Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
+DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
         } else {
-            // New or [TODO:] unregistered customer
+            // Registered Customers are required to be logged in!
+            self::$objCustomer = Customer::getRegisteredByEmail(
+                $_SESSION['shop']['email']);
+            if (self::$objCustomer) {
+                Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
+                require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
+                HTTP::redirect(
+                    CONTREXX_DIRECTORY_INDEX.
+                    '?section=shop&cmd=login&redirect='.
+                    base64_encode(
+                        CONTREXX_DIRECTORY_INDEX.
+                        '?section=shop&cmd=confirm'));
+            }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
 // When updating, only inactive Users must be touched!
@@ -3236,7 +3261,7 @@ die("Trouble! No Shipper ID defined");
         $arrGroups = self::$objCustomer->getAssociatedGroupIds();
         $usergroup_id = SettingDb::getValue('usergroup_id_reseller');
         if (empty($usergroup_id)) {
-DBG::log("Shop::process(): ERROR: Missing reseller group");
+//DBG::log("Shop::process(): ERROR: Missing reseller group");
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
             require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
             HTTP::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
@@ -3246,7 +3271,7 @@ DBG::log("Shop::process(): ERROR: Missing reseller group");
             // Not a reseller.  See if she's a final customer
             $usergroup_id = SettingDb::getValue('usergroup_id_customer');
             if (empty($usergroup_id)) {
-DBG::log("Shop::process(): ERROR: Missing final customer group");
+//DBG::log("Shop::process(): ERROR: Missing final customer group");
                 Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
                 require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTTP/HTTP.php');
                 HTTP::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
@@ -3368,7 +3393,8 @@ DBG::log("Shop::process(): ERROR: Missing final customer group");
 //DBG::log("Shop::process(): Got Coupon for Product ID $product_id: ".var_export($objCoupon, true));
                     if (!$objCoupon->redeem($order_id, self::$objCustomer->id(),
                         $price*$quantity, 0)) {
-DBG::log("Shop::process(): ERROR: Failed to store Coupon for Product ID $product_id");
+// TODO: Do something if the Coupon does not work
+//DBG::log("Shop::process(): ERROR: Failed to store Coupon for Product ID $product_id");
                     }
                     $coupon_code = null;
                 }
@@ -3432,6 +3458,9 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         // considered an instant or deferred one.
         // This is used to set the order status at the end
         // of the shopping process.
+// TODO: Invert this flag, as it may no longer be present after paying
+// online using one of the external payment methods!  Ensure that it is set
+// instead when paying "deferred".
         $_SESSION['shop']['isInstantPayment'] = false;
         if ($strProcessorType == 'external') {
             // For the sake of simplicity, all external payment
@@ -3441,6 +3470,12 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
             // considered to be 'deferred'.
             $_SESSION['shop']['isInstantPayment'] = true;
         }
+        // Send the Customer login separately, as the password possibly
+        // won't be available later
+        if (!empty($_SESSION['shop']['password'])) {
+            self::sendLogin(
+                self::$objCustomer->email(), $_SESSION['shop']['password']);
+        }
         // Show payment processing page.
         // Note that some internal payments are redirected away
         // from this page in checkOut():
@@ -3448,13 +3483,6 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         self::$objTemplate->setVariable(
             'SHOP_PAYMENT_PROCESSING', PaymentProcessing::checkOut()
         );
-        // For all payment methods showing a form here:
-        // Send the Customer login separately, as the password possibly
-        // won't be available later
-        if (!empty($_SESSION['shop']['password'])) {
-            self::sendLogin(
-                self::$objCustomer->email(), $_SESSION['shop']['password']);
-        }
         // Clear the order ID.
         // The order may be resubmitted and the payment retried.
         unset($_SESSION['shop']['order_id']);

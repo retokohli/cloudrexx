@@ -2996,14 +2996,21 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
         }
         Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
         if (isset($_POST['sendlogindata'])) {
+// TODO: Use a common sendLogin() method
             $lang_id = $objCustomer->getFrontendLanguage();
+            $arrSubs = $objCustomer->getSubstitutionArray();
+            $arrSubs['CUSTOMER_LOGIN'] = array(0 => array(
+                'CUSTOMER_USERNAME' => $username,
+                'CUSTOMER_PASSWORD' => $password,
+            ));
+//DBG::log("Subs: ".var_export($arrSubs, true));
             // Select template for sending login data
             $arrMailTemplate = array(
                 'key' => 'customer_login',
                 'section' => 'shop',
                 'lang_id' => $lang_id,
                 'to' => $email,
-                'substitution' => $objCustomer->getSubstitutionArray(),
+                'substitution' => $arrSubs,
             );
             if (!MailTemplate::send($arrMailTemplate)) {
                 Message::warning($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);

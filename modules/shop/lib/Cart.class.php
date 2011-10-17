@@ -761,13 +761,15 @@ UNUSED
                     'SHOP_PRODUCT_ID' => $arrProduct['id'],
                     'SHOP_PRODUCT_CODE' => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
-                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', $arrProduct['title']).'<br />',
+                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', $arrProduct['title']),
                     'SHOP_PRODUCT_OPTIONS' => $arrProduct['options'],
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
                     'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_QUANTITY' => $arrProduct['quantity'],
                     'SHOP_PRODUCT_ITEMPRICE' => $arrProduct['itemprice'],
                     'SHOP_PRODUCT_ITEMPRICE_UNIT' => Currency::getActiveCurrencySymbol(),
+// TODO: Move this to (global) language variables
+                    'SHOP_REMOVE_PRODUCT' => $_ARRAYLANG['TXT_SHOP_REMOVE_ITEM'],
                 ));
                 if (SettingDb::getValue('weight_enable')) {
                     $objTemplate->setVariable(array(
