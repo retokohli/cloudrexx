@@ -63,6 +63,12 @@ class JSONData {
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 		    $page = $pageRepo->find($_GET['id']);
 
+            $pg = Env::get('pg');
+            $accessData = array();
+
+            $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => $pg->getAssignedGroupIds($page, true));
+            $accessData['backend'] = array('groups' => $pg->getGroups(false), 'assignedGroups' => $pg->getAssignedGroupIds($page, false));
+
             $page_array = Array(
                 'id'            =>  $page->getId(),
                 'lang'          =>  $page->getLang(),
@@ -90,7 +96,8 @@ class JSONData {
                 'updatedAt'     =>  $page->getUpdatedAt(),
                 'protection'    =>  $page->getProtection(),
                 'slug'          =>  $page->getSlug(),
-                'contentTitle'  =>  $page->getContentTitle()
+                'contentTitle'  =>  $page->getContentTitle(),
+                'accessData'    =>  $accessData
             );
 
             $n = new DateTime(null, $this->tz);
