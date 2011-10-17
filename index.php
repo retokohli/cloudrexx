@@ -255,27 +255,8 @@ if (   isset($_GET['handler'])
     }
 }
 
-
 $section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
-// To clone any module, use an optional integer cmd suffix.
-// E.g.: "shop2", "gallery5", etc.
-// Mind that you *MUST* copy all necessary database tables, and fix any
-// references to your module (section and cmd parameters, database tables)
-// using the MODULE_INDEX constant in the right place both in your code
-// *AND* templates!
-// See the Shop module for an example.
-$arrMatch = array();
 $plainSection = contrexx_addslashes($section);
-if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
-    // The plain section/module name, used below
-    $plainSection = $arrMatch[1];
-}
-// The module index.
-// An empty or 1 (one) index represents the same (default) module,
-// values 2 (two) and larger represent distinct instances.
-$moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
-define('MODULE_INDEX', $moduleIndex);
-
 // Load interface language data
 
 /**
@@ -414,6 +395,24 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
             exit;
         }
     }
+
+    // To clone any module, use an optional integer cmd suffix.
+    // E.g.: "shop2", "gallery5", etc.
+    // Mind that you *MUST* copy all necessary database tables, and fix any
+    // references to your module (section and cmd parameters, database tables)
+    // using the MODULE_INDEX constant in the right place both in your code
+    // *AND* templates!
+    // See the Shop module for an example.
+    $arrMatch = array();
+    if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
+        // The plain section/module name, used below
+        $plainSection = $arrMatch[1];
+    }
+    // The module index.
+    // An empty or 1 (one) index represents the same (default) module,
+    // values 2 (two) and larger represent distinct instances.
+    $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
+    define('MODULE_INDEX', $moduleIndex);
     
     $plainSection = contrexx_addslashes($section);
     if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
