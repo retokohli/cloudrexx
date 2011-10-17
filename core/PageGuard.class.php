@@ -13,6 +13,11 @@ class PageGuard {
     }
     
     public function getAssignedGroupIds($page, $frontend) {
+        if ($frontend && !$page->isFrontendProtected())
+            return array();
+        if (!$frontend && !$page->isBackendProtected())
+            return array();
+
         $accessId = $this->getAccessId($page, $frontend);
 
         $query = 'SELECT group_id
@@ -25,6 +30,7 @@ class PageGuard {
         $ids = array();
         while(!$rs->EOF) {
             $ids[] = $rs->fields['group_id'];
+            $rs->MoveNext();
         }
 
         return $ids;
@@ -69,6 +75,7 @@ class PageGuard {
         $groups = array();
         while(!$rs->EOF) {
             $groups[$rs->fields['group_id']] = $rs->fields['group_name'];
+            $rs->MoveNext();
         }
         return $groups;
     }

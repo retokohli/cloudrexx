@@ -73,11 +73,14 @@ if (!$incSettingsStatus || !$incVersionStatus) {
 
 require_once '../core/API.php' ;
 require_once '../lib/CSRF.php' ;
+require_once '../core/PageGuard.class.php';
 
 // Initialize database object
 $strErrMessage = '';
 $objDatabase = getDatabaseObject($strErrMessage);
 Env::set('db', $objDatabase);
+Env::set('pg', new PageGuard($objDatabase));
+
 if ($objDatabase === false) {
     die('Database error: '.$strErrMessage);
 }
