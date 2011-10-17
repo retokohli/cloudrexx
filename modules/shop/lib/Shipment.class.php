@@ -824,8 +824,9 @@ class Shipment
      *
      * Also migrates old names to the new structure
      * @return  boolean         False.  Always.
+     * @static
      */
-    function errorHandler()
+    static function errorHandler()
     {
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
         static $break = false;
