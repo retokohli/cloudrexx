@@ -175,11 +175,10 @@ class Orders
         // Note: This might be optimized, so the join only occurs when
         // searching or sorting by Customer name.
         $query_join = "
-            INNER JOIN `".DBPREFIX."access_users` AS `user`
-               ON `order`.`customer_id`=`user`.`id`
-            INNER JOIN `".DBPREFIX."access_user_profile` AS `profile`
-               ON `user`.`id`=`profile`.`user_id`";
-
+            LEFT JOIN `".DBPREFIX."access_users` AS `user`
+              ON `order`.`customer_id`=`user`.`id`
+            LEFT JOIN `".DBPREFIX."access_user_profile` AS `profile`
+              ON `user`.`id`=`profile`.`user_id`";
         // The order *SHOULD* contain the direction.  Defaults to DESC here!
         $direction = (preg_match('/\sASC$/i', $order) ? 'ASC' : 'DESC');
         if (preg_match('/customer_name/', $order)) {
@@ -188,7 +187,6 @@ class Orders
                 "`profile`.`firstname` $direction";
         }
         $query_order = ($order ? " ORDER BY $order" : '');
-
         $count = 0;
         // Some sensible hardcoded limit to prevent memory problems
         $limit = intval($limit);
@@ -207,14 +205,12 @@ class Orders
         }
 //DBG::log("Order::getIdArray(): limit $limit, count $count, got ".count($arrId)." IDs: ".var_export($arrId, true));
 //DBG::deactivate(DBG_ADODB);
-
         // Get the total count of matching Orders, set $count
         $objResult = $objDatabase->Execute(
             $query_count.$query_from.$query_join.$query_where);
         if (!$objResult) return Order::errorHandler();
         $count = $objResult->fields['numof_orders'];
 //DBG::log("Count: $count");
-
         // Return the array of IDs
         return $arrId;
     }

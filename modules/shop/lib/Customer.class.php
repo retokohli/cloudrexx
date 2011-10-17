@@ -442,9 +442,9 @@ class Customer extends User
      * Note the implicit contradiction.  Even unregistered Customers
      * are stored in the database and retrieved when they visit the Shop
      * again.  However, such Users are always inactive, and thus cannot
-     * log in.  They are only identified at the very end of the ordering
-     * process and updated with the current data.  That information is needed
-     * for processing the order and sending confirmation e-mails.
+     * log in.  They are identified by their e-mail address and updated with
+     * the current data.  That information is needed for processing the order
+     * and sending confirmation e-mails.
      * Note that this kind of Customer is limited to the group of final
      * customers.  This implies that no reseller prices are available to
      * unregistered Customers.
@@ -456,7 +456,7 @@ class Customer extends User
     {
         global $_ARRAYLANG;
 
-// TODO: Add Usergroup ID to the filter below
+        // Only final customers may be unregistered
         $usergroup_id = SettingDb::getValue('usergroup_id_customer');
         if (!$usergroup_id) {
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
@@ -467,8 +467,32 @@ class Customer extends User
         $objUser = $objUser->getUsers(array(
             'email' => $email,
             'active' => false,
-// TODO: TEST: Usergroup ID in an array or not?
             'group_id' => $usergroup_id,
+        ));
+        if (!$objUser) {
+//DBG::log("Customer::getUnregisteredByEmail($email): Found no such unregistered User");
+            return null;
+        }
+//DBG::log("Customer::getUnregisteredByEmail($email): Found unregistered User ID ".$objUser->getId()." (".$objUser->getEmail().")");
+        return self::getById($objUser->getId());
+    }
+
+
+    /**
+     * Returns the registered Customer with the given e-mail address
+     * @param   string  $email    The e-mail address
+     * @return  User              The Customer on success, null otherwise
+     * @todo    Add the Customer Usergroup to the filter and test that
+     */
+    static function getRegisteredByEmail($email)
+    {
+        global $_ARRAYLANG;
+
+        // Any Customers
+        $objUser = FWUser::getFWUserObject()->objUser;
+        $objUser = $objUser->getUsers(array(
+            'email' => $email,
+            'active' => true,
         ));
         if (!$objUser) {
 //DBG::log("Customer::getUnregisteredByEmail($email): Found no such unregistered User");
@@ -516,6 +540,7 @@ class Customer extends User
             'CUSTOMER_COUNTRY'    => Country::getNameById($this->country_id()),
             'CUSTOMER_PHONE'      => $this->phone(),
             'CUSTOMER_FAX'        => $this->fax(),
+            'CUSTOMER_USERNAME'   => $this->username(),
 // There are not used in any MailTemplate so far:
 //            'CUSTOMER_COUNTRY_ID' => $this->country_id(),
 //            'CUSTOMER_NOTE'       => $this->getProfileAttribute($index_notes),
@@ -523,6 +548,7 @@ class Customer extends User
 //            'CUSTOMER_RESELLER'   => $this->getProfileAttribute($index_reseller),
 //            'CUSTOMER_GROUP_ID'   => current($this->getAssociatedGroupIds()),
         );
+//DBG::log("Login: ".$this->username()."/".$_SESSION['shop']['password']);
         if (isset($_SESSION['shop']['password'])) {
             $arrSubstitution['CUSTOMER_LOGIN'] = array(0 => array(
                 'CUSTOMER_USERNAME' => $this->username(),

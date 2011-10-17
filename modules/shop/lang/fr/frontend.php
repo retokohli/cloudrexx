@@ -383,3 +383,9 @@ $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_PRODUCT_ID'] = "Ungültige Produk
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_QUANTITY'] = "Ungültige Menge";
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_INVALID_WEIGHT'] = "Ungültiges Gewicht";
 $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_UPDATING'] = "Fehler beim Aktualisieren des Produkts in der Bestellung";
+
+// 20111003
+$_ARRAYLANG['TXT_SHOP_REMOVE_ITEM'] = "Produkt entfernen";
+
+// 20111004
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL'] = "Ein Kunde mit dieser E-Mail Adresse ist bereits registriert.  Sie müssen sich daher anmelden, um Ihre Bestellung abzuschliessen";

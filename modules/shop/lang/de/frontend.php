@@ -384,3 +384,9 @@ $_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_UPDATING'] = "Fehler beim Aktualisieren d
 
 // 20110927
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOST_PASSWORD'] = "Passwort vergessen?";
+
+// 20111003
+$_ARRAYLANG['TXT_SHOP_REMOVE_ITEM'] = "Produkt entfernen";
+
+// 20111004
+$_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL'] = "Ein Kunde mit dieser E-Mail Adresse ist bereits registriert.  Sie müssen sich daher anmelden, um Ihre Bestellung abzuschliessen";

@@ -1398,14 +1398,17 @@ class Order
         $customer_id = $objOrder->customer_id();
         if (!$customer_id) {
 //DBG::log("Shop::shopShowOrderdetails(): Invalid Customer ID $customer_id");
-            return Message::error(sprintf(
+            Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_INVALID_CUSTOMER_ID'], $customer_id));
         }
         $objCustomer = Customer::getById($customer_id);
         if (!$objCustomer) {
 //DBG::log("Shop::shopShowOrderdetails(): Failed to find Customer ID $customer_id");
-            return Message::error(sprintf(
+            Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_CUSTOMER_NOT_FOUND'], $customer_id));
+            $objCustomer = new Customer();
+            // No editing allowed!
+            $have_option = true;
         }
         Vat::is_reseller($objCustomer->is_reseller());
         Vat::is_home_country(
@@ -1415,6 +1418,9 @@ class Order
             'SHOP_CURRENCY' =>
                 Currency::getCurrencySymbolById($objOrder->currency_id())));
 //DBG::log("Order sum: ".Currency::formatPrice($objOrder->sum()));
+        $customer_gender = ($objCustomer->gender()
+            ? $_ARRAYLANG['TXT_SHOP_'.strtoupper($objCustomer->gender())]
+            : '');
         $objTemplate->setVariable(array(
             'SHOP_CUSTOMER_ID' => $customer_id,
             'SHOP_ORDERID' => $order_id,
@@ -1434,8 +1440,7 @@ class Order
                 : ''),
             'SHOP_ORDER_SUM' => Currency::formatPrice($objOrder->sum()),
             'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
-            'SHOP_GENDER' =>
-                $_ARRAYLANG['TXT_SHOP_'.strtoupper($objCustomer->gender())],
+            'SHOP_GENDER' => $customer_gender,
             'SHOP_COMPANY' => $objCustomer->company(),
             'SHOP_FIRSTNAME' => $objCustomer->firstname(),
             'SHOP_LASTNAME' => $objCustomer->lastname(),
