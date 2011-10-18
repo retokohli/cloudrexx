@@ -54,7 +54,7 @@ class ContentManager extends Module {
 	protected function actRenderCM() {
         JS::activate('cx');
         JS::activate('ckeditor');
-        JS::activate('jqueryui');
+        JS::activate('cx-form');
         JS::activate('jstree');
         JS::activate('chosen');
         JS::registerJS('lib/javascript/lock.js');

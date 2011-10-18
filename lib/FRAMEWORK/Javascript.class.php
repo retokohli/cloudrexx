@@ -142,17 +142,28 @@ jQuery(document).ready(function(){
 // TODO: remove & replace by cx call
         'jqueryui'     => array(
             'jsfiles'       => array(
-                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js',
-                'lib/javascript/jquery/ui/jquery.multiselect2side.js',
+                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js'
             ),
             'cssfiles'      => array(
-                'lib/javascript/jquery/ui/css/jquery-ui.css',
-                'lib/javascript/jquery/ui/css/jquery.multiselect2side.css',
+                'lib/javascript/jquery/ui/css/jquery-ui.css'
             ),
             'dependencies'  => array(
-                'jquery',
+                'jquery'
             ),
         ),
+        //stuff to beautify forms.
+        'cx-form'     => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery/ui/jquery.multiselect2side.js'
+            ),
+            'cssfiles'      => array(
+                'lib/javascript/jquery/ui/css/jquery.multiselect2side.css'
+            ),
+            'dependencies'  => array(
+                'jqueryui'
+            ),
+        ),
+
 /*
 Coming soon
 Caution: JS/ALL files are missing. Also, this should probably be loaded through js:cx now.
