@@ -153,12 +153,14 @@
 
     function disableDate() {
         with (document.news) {
-            if (status.checked == false) {
+            if (newsScheduled.checked == false) {
                 startDate.disabled = true;
                 endDate.disabled = true;
+                $J("#newsDate").css('display','none');                
             } else {
                 startDate.disabled = false;
                 endDate.disabled = false;
+                $J("#newsDate").css('display','block');
             }
         }
     }
@@ -352,8 +354,8 @@
     </table>
     <br />
     <ul id="tabmenu">
-        <li><a id="messageTab_news1" class="active" href="javascript:{}" onclick="selectTab('news1')" title="{TXT_NEWS_SITE}">{TXT_NEWS_BASIC_DATA}</a></li>
-        <li><a id="messageTab_news2" href="javascript:{}" onclick="selectTab('news2')" title="{TXT_NEWS_MESSAGE}">{TXT_NEWS_MORE_OPTIONS}</a></li>
+        <li><a id="messageTab_news1" class="active" href="javascript:{}" onclick="selectTab('news1')" title="{TXT_NEWS_BASIC_DATA}">{TXT_NEWS_BASIC_DATA}</a></li>
+        <li><a id="messageTab_news2" href="javascript:{}" onclick="selectTab('news2')" title="{TXT_NEWS_MORE_OPTIONS}">{TXT_NEWS_MORE_OPTIONS}</a></li>
         <li><a id="messageTab_news3" href="javascript:{}" onclick="selectTab('news3')" title="{NEWS_HEADLINES_TEASERS_TXT}">{NEWS_HEADLINES_TEASERS_TXT}</a></li>
         <!-- BEGIN news_permission_tab --><li><a id="messageTab_news4" href="javascript:{}" onclick="selectTab('news4')" title="{TXT_NEWS_PERMISSIONS}">{TXT_NEWS_PERMISSIONS}</a></li><!-- END news_permission_tab -->
     </ul>    
@@ -369,6 +371,12 @@
                     </div>
                 </th>
             </tr>
+            <tr class="row1">
+                <td>{TXT_ACTIVE}</td>
+                <td>
+                    <input type="checkbox" name="status" value="1" {NEWS_STATUS} />
+                </td>
+            </tr>
             <tr class="{NEWS_FORM_CAT_ROW}">
                 <td nowrap="nowrap">{TXT_CATEGORY}</td>
                 <td>
@@ -381,20 +389,32 @@
             <tr class="row1">
                 <td nowrap="nowrap">{TXT_NEWS_PUBLISHER}</td>
                 <td nowrap="nowrap">
-                    <input id="newsPublisherName" class="newsAutoComplete" type="text" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" />
+                    <input id="newsPublisherName" class="newsAutoComplete" type="text" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" style="width:300px;" />
                     <input id="newsPublisherId" type="hidden" name="newsPublisherId" value="{NEWS_PUBLISHER_ID}" />
                 </td>
             </tr>
             <tr class="row2">
                 <td nowrap="nowrap">{TXT_NEWS_AUTHOR}</td>
                 <td nowrap="nowrap">
-                    <input id="newsAuthorName" class="newsAutoComplete" type="text" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" />
+                    <input id="newsAuthorName" class="newsAutoComplete" type="text" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" style="width:300px;" />
                     <input id="newsAuthorId" type="hidden" name="newsAuthorId" value="{NEWS_AUTHOR_ID}" />
                 </td>
             </tr>            
             <tr class="row1">
                 <td nowrap="nowrap">{TXT_DATE}</td>
-                <td><input type="text" name="newsDate" value="{NEWS_CREATE_DATE}" style="width:400px;" /></td>
+                <td><input type="text" name="newsDate" value="{NEWS_CREATE_DATE}" style="width:300px;" /></td>
+            </tr>
+            <tr class="row2">
+                <td nowrap="nowrap" width="12%">{TXT_SCHEDULED_PUBLICATION}</td>
+                <td nowrap="nowrap" width="88%">                    
+                    <input type="checkbox" name="newsScheduled" value="1" {NEWS_SCHEDULED} onClick="disableDate()" />
+                    <div id="newsDate" style="{NEWS_SCHEDULED_DISPLAY}">
+                        {TXT_STARTDATE}:
+                        <input type="text" name="startDate" size="16" maxlength="19" value="{NEWS_STARTDATE}" />
+                        &nbsp;&nbsp; {TXT_ENDDATE}:
+                        <input type="text" name="endDate" size="16" maxlength="19" value="{NEWS_ENDDATE}" />                        
+                    </div>
+                </td>
             </tr>
             <tr class="row2">
                 <td nowrap="nowrap">{TXT_NEWS_MESSAGE_TYPE}</td>
@@ -415,10 +435,10 @@
                 <th class="sectionTitle" colspan="2">{TXT_TITLE} (<span>{NEWS_DEFAULT_LANG}</span>)</th>
             </tr>
             <tr class="row1">
-                <td width="6%" nowrap="nowrap">{TXT_TITLE}</td>
-                <td width="94%">
+                <td width="12%" nowrap="nowrap">{TXT_TITLE}</td>
+                <td width="88%">
                     <!-- BEGIN news_title_list -->
-                    <input type="text" name="newsTitle[{NEWS_LANG_ID}]" id="newsTitle[{NEWS_LANG_ID}]" style="width: 400px;display:{NEWS_TITLE_DISPLAY}" value="{NEWS_TITLE}" maxlength="250" />
+                    <input type="text" name="newsTitle[{NEWS_LANG_ID}]" id="newsTitle[{NEWS_LANG_ID}]" style="width: 300px;display:{NEWS_TITLE_DISPLAY}" value="{NEWS_TITLE}" maxlength="250" />
                     <!-- END news_title_list -->
                 </td>
             </tr>
@@ -477,7 +497,7 @@
     <div id="news2" class="messageTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th colspan="2">{TXT_HYPERLINKS}</th>
+                <th colspan="2">{TXT_NEWS_MORE_OPTIONS}</th>
             </tr>
             <tr class="row1">
                 <td width="12%" height="20" nowrap="nowrap">{TXT_EXTERNAL_SOURCE}</td>
@@ -491,23 +511,6 @@
                 <td width="12%" height="20" nowrap="nowrap">{TXT_LINK} #2</td>
                 <td><input type="text" name="newsUrl2" style="width: 400px;" value="{NEWS_URL2}" maxlength="250" /></td>
             </tr>            
-        </table>
-        <br />
-        <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
-            <tr>
-                <th colspan="2">{TXT_PUBLISHING}</th>
-            </tr>
-            <tr valign="top" class="row1">
-                <td nowrap="nowrap" width="12%">{TXT_ACTIVE}</td>
-                <td height="20"><b>
-                        <input type="checkbox" name="status" value="1" {NEWS_STATUS} onClick="disableDate()" />
-                               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>&nbsp;&nbsp;&nbsp;&nbsp;{TXT_STARTDATE}:
-                    <input type="text" name="startDate" size="16" maxlength="19" value="{NEWS_STARTDATE}" />
-                    &nbsp;&nbsp; {TXT_ENDDATE}:
-                    <input type="text" name="endDate" size="16" maxlength="19" value="{NEWS_ENDDATE}" />
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( {TXT_OPTIONAL} )
-                </td>
-            </tr>
             <!-- BEGIN news_allow_comments_option -->
             <tr class="row2">
                 <td nowrap="nowrap">{TXT_NEWS_ALLOW_COMMENTS}</td>
@@ -515,7 +518,7 @@
                     <input type='checkbox' name='allowComment' value='1' {NEWS_COMMENT_CHECKED} />
                 </td>
             </tr>
-            <!-- END news_allow_comments_option -->
+            <!-- END news_allow_comments_option -->            
         </table>
         <br />
     </div>
