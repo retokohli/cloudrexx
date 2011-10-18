@@ -799,6 +799,7 @@ class newsManager extends newsLibrary {
         $newsBackendAccess      = !empty($_POST['news_modify_access']);
         $newsBackendGroups      = $newsBackendAccess && isset($_POST['news_modify_access_associated_groups']) && is_array($_POST['news_modify_access_associated_groups']) ? array_map('intval', $_POST['news_modify_access_associated_groups']) : array();
         $newsCommentActive      = !empty($_POST['allowComment']) ? intval($_POST['allowComment']) : 0;
+        $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
 
         if (isset($_POST['newsTeaserFramesAsso']) && count($_POST['newsTeaserFramesAsso'])>0) {
             foreach ($_POST['newsTeaserFramesAsso'] as $frameId) {
@@ -848,8 +849,15 @@ class newsManager extends newsLibrary {
         }
 
         $objFWUser->objUser->getDynamicPermissionIds(true);
-
+               
         if (!empty($locales['title'][FWLanguage::getDefaultLangId()])) {
+            
+            // Set start and date as NULL if newsScheduled checkbox is not checked
+            if ($newsScheduledActive == 0) {
+                $startDate = NULL;
+                $endDate   = NULL;
+            }
+            
             $objResult = $objDatabase->Execute('INSERT
                                         INTO '.DBPREFIX.'module_news
                                         SET date='.$date.',
@@ -1004,15 +1012,14 @@ class newsManager extends newsLibrary {
             'TXT_LANGUAGE'                  => $_ARRAYLANG['TXT_LANGUAGE'],
             'NEWS_FORM_CAT_ROW'             => $catrow,
             'NEWS_TYPE_MENU'                => $news_type_menu,            
-            'TXT_HYPERLINKS'                => $_ARRAYLANG['TXT_HYPERLINKS'],
             'TXT_EXTERNAL_SOURCE'           => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
             'TXT_LINK'                      => $_ARRAYLANG['TXT_LINK'],
             'TXT_NEWS_NEWS_CONTENT'         => $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
             'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
             'TXT_PUBLISHING'                => $_ARRAYLANG['TXT_PUBLISHING'],
+            'TXT_SCHEDULED_PUBLICATION'     => $_ARRAYLANG['TXT_SCHEDULED_PUBLICATION'],
             'TXT_STARTDATE'                 => $_ARRAYLANG['TXT_STARTDATE'],
-            'TXT_ENDDATE'                   => $_ARRAYLANG['TXT_ENDDATE'],
-            'TXT_OPTIONAL'                  => $_ARRAYLANG['TXT_OPTIONAL'],
+            'TXT_ENDDATE'                   => $_ARRAYLANG['TXT_ENDDATE'],            
             'TXT_ACTIVE'                    => $_ARRAYLANG['TXT_ACTIVE'],
             'TXT_HEADLINES'                 => $_ARRAYLANG['TXT_HEADLINES'],
             'TXT_TOPNEWS'                   => $_ARRAYLANG['TXT_TOPNEWS'],
@@ -1042,13 +1049,14 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_READ_SELECTED_ACCESS_DESC'    => $_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'],
             'TXT_NEWS_MODIFY_ALL_ACCESS_DESC'       => $_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'],
             'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC']
-         ));
+         ));        
          $this->_objTpl->setVariable(array(
             'NEWS_TEXT_PREVIEW'             => get_wysiwyg_editor('newsText', !empty($locales['text'][FWLanguage::getDefaultLangId()]) ? $locales['text'][FWLanguage::getDefaultLangId()] : ''),
             'NEWS_REDIRECT'                 => contrexx_raw2xhtml($newsredirect),
             'NEWS_FORM_ACTION'              => 'add',
             'NEWS_STORED_FORM_ACTION'       => 'add',
             'NEWS_STATUS'                   => $status ? 'checked="checked"' : '',
+            'NEWS_SCHEDULED_DISPLAY'        => $newsScheduledActive == 0 ? 'display:none;' : 'display:block',
             'NEWS_ID'                       => '0',
             'NEWS_PUBLISHER_ID'             => '0',
             'NEWS_AUTHOR_ID'                => '0',
@@ -1229,8 +1237,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_AUTHOR'               => $_ARRAYLANG['TXT_NEWS_AUTHOR'],
             'TXT_NEWS_PUBLISHER'            => $_ARRAYLANG['TXT_NEWS_PUBLISHER'],
             'NEWS_FORM_CAT_ROW'             => $catrow,
-            'TXT_NEWS_TYPE'                 => $_ARRAYLANG['TXT_NEWS_TYPE'],
-            'TXT_HYPERLINKS'                => $_ARRAYLANG['TXT_HYPERLINKS'],
+            'TXT_NEWS_TYPE'                 => $_ARRAYLANG['TXT_NEWS_TYPE'],            
             'TXT_EXTERNAL_SOURCE'           => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
             'TXT_LINK'                      => $_ARRAYLANG['TXT_LINK'],
             'TXT_NEWS_NEWS_CONTENT'         => $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
@@ -1239,6 +1246,7 @@ class newsManager extends newsLibrary {
             'TXT_ENDDATE'                   => $_ARRAYLANG['TXT_ENDDATE'],
             'TXT_OPTIONAL'                  => $_ARRAYLANG['TXT_OPTIONAL'],
             'TXT_ACTIVE'                    => $_ARRAYLANG['TXT_ACTIVE'],
+            'TXT_SCHEDULED_PUBLICATION'     => $_ARRAYLANG['TXT_SCHEDULED_PUBLICATION'],
             'TXT_DATE'                      => $_ARRAYLANG['TXT_DATE'],
             'TXT_HEADLINES'                 => $_ARRAYLANG['TXT_HEADLINES'],
             'TXT_TOPNEWS'                   => $_ARRAYLANG['TXT_TOPNEWS'],
@@ -1402,6 +1410,15 @@ class newsManager extends newsLibrary {
 
             $startDate = $objResult->fields['startdate'];
             $endDate = $objResult->fields['enddate'];
+            
+            if (!empty($startDate) || !empty($endDate)) {
+                $this->_objTpl->setVariable(array(
+                    'NEWS_SCHEDULED'         => 'checked="checked"',
+                    'NEWS_SCHEDULED_DISPLAY' => 'display:block;'
+                ));
+            } else {
+                $this->_objTpl->setVariable('NEWS_SCHEDULED_DISPLAY','display:none;');
+            }
 
             if (empty($objResult->fields['redirect'])) {
                 $this->_objTpl->setVariable(array(
@@ -1900,15 +1917,16 @@ class newsManager extends newsLibrary {
 
             $redirect   = contrexx_strip_tags($_POST['newsRedirect']);
 
-            $source             = FWValidator::getUrl(contrexx_strip_tags($_POST['newsSource']));
-            $url1               = FWValidator::getUrl(contrexx_strip_tags($_POST['newsUrl1']));
-            $url2               = FWValidator::getUrl(contrexx_strip_tags($_POST['newsUrl2']));
-            $newsPublisherName  = !empty($_POST['newsPublisherName']) ? contrexx_input2raw($_POST['newsPublisherName']) : '';
-            $newsAuthorName     = !empty($_POST['newsAuthorName']) ? contrexx_input2raw($_POST['newsAuthorName']) : '';
-            $newsPublisherId    = !empty($_POST['newsPublisherId']) ? contrexx_input2raw($_POST['newsPublisherId']) : '0';
-            $newsAuthorId       = !empty($_POST['newsAuthorId']) ? contrexx_input2raw($_POST['newsAuthorId']) : '0';
-            $catId              = intval($_POST['newsCat']);
-            $typeId             = intval($_POST['newsType']);
+            $source                 = FWValidator::getUrl(contrexx_strip_tags($_POST['newsSource']));
+            $url1                   = FWValidator::getUrl(contrexx_strip_tags($_POST['newsUrl1']));
+            $url2                   = FWValidator::getUrl(contrexx_strip_tags($_POST['newsUrl2']));
+            $newsPublisherName      = !empty($_POST['newsPublisherName']) ? contrexx_input2raw($_POST['newsPublisherName']) : '';
+            $newsAuthorName         = !empty($_POST['newsAuthorName']) ? contrexx_input2raw($_POST['newsAuthorName']) : '';
+            $newsPublisherId        = !empty($_POST['newsPublisherId']) ? contrexx_input2raw($_POST['newsPublisherId']) : '0';
+            $newsAuthorId           = !empty($_POST['newsAuthorId']) ? contrexx_input2raw($_POST['newsAuthorId']) : '0';
+            $catId                  = intval($_POST['newsCat']);
+            $typeId                 = intval($_POST['newsType']);
+            $newsScheduledActive    = !empty($_POST['newsScheduled']) ? intval($_POST['newsScheduled']) : 0;
 
             $status     = empty($_POST['status']) ? $status = 0 : intval($_POST['status']);
 
@@ -2080,7 +2098,13 @@ class newsManager extends newsLibrary {
             );
             // store locales
             $localesSaving = $this->storeLocales($id, $locales);
-
+            
+            // Set start and end dates as NULL if newsScheduled checkbox is not checked
+            if ($newsScheduledActive == 0) {
+                $startDate = NULL;
+                $endDate   = NULL;
+            }
+            
             $objResult = $objDatabase->Execute("UPDATE  ".DBPREFIX."module_news
                                                 SET     date='".$date."',
                                                         redirect='".$redirect."',
