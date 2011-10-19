@@ -773,7 +773,7 @@ class newsManager extends newsLibrary {
         );
 
         $date = $this->dateFromInput($_POST['newsDate']);
-
+        
         $newsredirect           = !empty($_POST['newsRedirect']) ? contrexx_input2raw($_POST['newsRedirect']) : '';
         $newssource             = !empty($_POST['newsSource']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsSource'])) : '';
         $newsurl1               = !empty($_POST['newsUrl1']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsUrl1'])) : '';
@@ -812,10 +812,6 @@ class newsManager extends newsLibrary {
                 $arrNewsTeaserFrames[] = intval($frameId);
                 intval($frameId) > 0 ? $newsTeaserFrames .= ';'.intval($frameId) : false;
             }
-        }
-        
-        if (empty($status)) {
-            $status = 0;
         }
 
         if ($this->arrSettings['news_message_protection'] == '1' && $newsFrontendAccess) {
@@ -1055,7 +1051,7 @@ class newsManager extends newsLibrary {
             'NEWS_REDIRECT'                 => contrexx_raw2xhtml($newsredirect),
             'NEWS_FORM_ACTION'              => 'add',
             'NEWS_STORED_FORM_ACTION'       => 'add', 
-            'NEWS_STATUS'                   => (empty($_POST) || $status == 1) ? 'checked="checked"' : '',
+            'NEWS_STATUS'                   => (empty($_POST['status']) || $status == 1) ? 'checked="checked"' : '',
             'NEWS_SCHEDULED_DISPLAY'        => $newsScheduledActive == 0 ? 'display:none;' : 'display:block',
             'NEWS_ID'                       => '0',
             'NEWS_PUBLISHER_ID'             => '0',
