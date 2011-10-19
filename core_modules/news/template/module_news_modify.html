@@ -405,7 +405,7 @@
                 <td><input type="text" name="newsDate" value="{NEWS_CREATE_DATE}" style="width:300px;" /></td>
             </tr>
             <tr class="row2">
-                <td nowrap="nowrap" width="12%">{TXT_SCHEDULED_PUBLICATION}</td>
+                <td nowrap="nowrap" valign="top" style="padding-top: 6px;" width="12%">{TXT_SCHEDULED_PUBLICATION}</td>
                 <td nowrap="nowrap" width="88%">                    
                     <input type="checkbox" name="newsScheduled" value="1" {NEWS_SCHEDULED} onClick="disableDate()" />
                     <div id="newsDate" style="{NEWS_SCHEDULED_DISPLAY}">
@@ -416,7 +416,7 @@
                     </div>
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row1">
                 <td nowrap="nowrap">{TXT_NEWS_MESSAGE_TYPE}</td>
                 <td>
                     <input type="radio" name="newsTypeRadio" value="content" onclick="modusSelection('news_type_content');" {NEWS_TYPE_CHECKED_CONTENT} /><label for="newsTypeRadio">{TXT_NEWS_TYPE_DEFAULT}</label>

@@ -813,7 +813,7 @@ class newsManager extends newsLibrary {
                 intval($frameId) > 0 ? $newsTeaserFrames .= ';'.intval($frameId) : false;
             }
         }
-
+        
         if (empty($status)) {
             $status = 0;
         }
@@ -1002,7 +1002,7 @@ class newsManager extends newsLibrary {
         } else {
             $this->_objTpl->hideBlock('news_allow_comments_option');
         }
-
+        
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWS_MESSAGE'              => $_ARRAYLANG['TXT_NEWS_MESSAGE'],
             'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
@@ -1054,8 +1054,8 @@ class newsManager extends newsLibrary {
             'NEWS_TEXT_PREVIEW'             => get_wysiwyg_editor('newsText', !empty($locales['text'][FWLanguage::getDefaultLangId()]) ? $locales['text'][FWLanguage::getDefaultLangId()] : ''),
             'NEWS_REDIRECT'                 => contrexx_raw2xhtml($newsredirect),
             'NEWS_FORM_ACTION'              => 'add',
-            'NEWS_STORED_FORM_ACTION'       => 'add',
-            'NEWS_STATUS'                   => $status ? 'checked="checked"' : '',
+            'NEWS_STORED_FORM_ACTION'       => 'add', 
+            'NEWS_STATUS'                   => (empty($_POST) || $status == 1) ? 'checked="checked"' : '',
             'NEWS_SCHEDULED_DISPLAY'        => $newsScheduledActive == 0 ? 'display:none;' : 'display:block',
             'NEWS_ID'                       => '0',
             'NEWS_PUBLISHER_ID'             => '0',
@@ -1077,7 +1077,7 @@ class newsManager extends newsLibrary {
             'NEWS_TYPE_CHECKED_REDIRECT'    => empty($newsredirect) ? '' : 'checked="checked"',
             'NEWS_TEASER_IMAGE_PATH'        => contrexx_raw2xhtml($newsTeaserImagePath),
             'NEWS_TEASER_IMAGE_THUMBNAIL_PATH' => contrexx_raw2xhtml($newsTeaserImageThumbnailPath)
-        ));
+        ));         
 
         if ($_CONFIG['newsTeasersStatus'] == '1') {
             $this->_objTpl->parse('newsTeaserOptions');
