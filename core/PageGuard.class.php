@@ -13,10 +13,12 @@ class PageGuard {
     }
     
     public function getAssignedGroupIds($page, $frontend) {
-        if ($frontend && !$page->isFrontendProtected())
+        if ($frontend && !$page->isFrontendProtected()) {
             return array();
-        if (!$frontend && !$page->isBackendProtected())
+        }
+        if (!$frontend && !$page->isBackendProtected()) {
             return array();
+        }
 
         $accessId = $this->getAccessId($page, $frontend);
 

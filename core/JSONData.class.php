@@ -51,7 +51,6 @@ class JSONData {
             if ($_POST['position'])
                 $nodeRepo->moveDown($moved_node, $_POST['position']);
 
-    // TODO: Changes in ordering seemingly aren't persisted
             $this->em->persist($moved_node);
             $this->em->persist($parent_node);
 
