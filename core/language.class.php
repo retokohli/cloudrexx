@@ -125,7 +125,7 @@ class LanguageManager
                 $this->createFiles();
                 $this->listVariables();
                 break;
-            default:
+            default:                
                 Permission::checkAccess(50, 'static');
                 $this->modifyLanguage();
                 $this->languageOverview();
@@ -896,23 +896,28 @@ class LanguageManager
             'TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'=> $_CORELANG['TXT_LANGUAGE_DEPENDANT_SYSTEM_VARIABLES'],
             'TXT_ADMINISTRATION_PAGES'       => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
             'TXT_WEB_PAGES'                  => $_CORELANG['TXT_WEB_PAGES'],
-            'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],
-            'TXT_DEFAULT_LANGUAGE'           => $_CORELANG['TXT_STANDARD_LANGUAGE']
+            'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],            
+            'TXT_FALLBACK'                   => $_CORELANG['TXT_FALLBACK'],        
         ));
+        $objTemplate->setGlobalVariable(array(
+            'TXT_DEFAULT_LANGUAGE' => $_CORELANG['TXT_STANDARD_LANGUAGE'],
+            'TXT_NONE'                       => $_CORELANG['TXT_NONE']            
+        ));        
         //end language variables
-
         if ($this->hideVariables == true) {
             $objTemplate->setGlobalVariable(array('LANGUAGE_ADMIN_STYLE' => 'display: none'));
         } else {
             $objTemplate->setGlobalVariable(array('LANGUAGE_ADMIN_STYLE' => 'display: block'));
         }
-
+                
+        $arrLanguages = FWLanguage::getActiveFrontendLanguages();
         $objResult = $objDatabase->Execute("SELECT * FROM ".DBPREFIX."languages ORDER BY id");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $checked = "";
                 if ($objResult->fields['is_default']=="true") {
                   $checked = "checked";
+                  $objTemplate->hideBlock('fallback');
                 }
                 $status ="<input type='radio' name='langDefaultStatus' value='".$objResult->fields['id']."' $checked />";
 
@@ -925,6 +930,29 @@ class LanguageManager
                 if ($objResult->fields['backend']==1) {
                   $checked = "checked";
                 }
+                
+                $selectedLang = '';                
+                switch ($objResult->fields['fallback']) {
+                    case '':
+                        $objTemplate->setVariable('NONE_SELECTED', 'selected="selected"');
+                        break;
+                    case '0':
+                        $objTemplate->setVariable('LANGUAGE_DEFAULT_SELECTED', 'selected="selected"');
+                        break;        
+                    default:
+                        $selectedLang = $objResult->fields['fallback'];                        
+                }
+                // set fallback language drop down                
+                foreach ($arrLanguages as $langId => $arrLanguage) {      
+                    $selected = ($langId == $selectedLang) ? 'selected="selected"' : '';
+                    $objTemplate->setVariable(array(
+                        'LANGUAGE_LANG_ID'         => $langId,
+                        'LANGUAGE_LANG_OPTION'     => $arrLanguage['name'],
+                        'LANGUAGE_OPTION_SELECTED' => $selected
+                    ));
+                    $objTemplate->parse('fallbackLanguages');
+                }                    
+                
                 $adminStatus ="<input type='checkbox' name='langAdminStatus[".$objResult->fields['id']."]' value='1' $checked />";
                 $objTemplate->setVariable(array(
                     'LANGUAGE_ROWCLASS'            => 'row'.(($i++ % 2)+1),
@@ -936,10 +964,11 @@ class LanguageManager
                     'LANGUAGE_ACTIVE_STATUS'    => $activeStatus,
                     'LANGUAGE_ADMIN_STATUS'        => $adminStatus
                 ));
+                                
                 $objTemplate->parse('languageRow');
                 $objResult->MoveNext();
             }
-        }
+        }    
     }
 
 
@@ -1017,7 +1046,14 @@ class LanguageManager
                 if (isset($_POST['langAdminStatus'][$id]) && $_POST['langAdminStatus'][$id]==1) {
                     $adminstatus = 1;
                 }
-                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET name='".$name."', frontend=".$active." , is_default='".$status."',backend='".$adminstatus."' WHERE id=".$id);
+                $fallBack = (isset($_POST['fallBack'][$id]) && $_POST['fallBack'][$id] != "" ) ? intval($_POST['fallBack'][$id]) : 'NULL';                
+                $objDatabase->Execute("UPDATE ".DBPREFIX."languages SET 
+                                        name='".$name."',
+                                        frontend=".$active.",
+                                        is_default='".$status."',
+                                        backend='".$adminstatus."',
+                                        fallback=".$fallBack."
+                                        WHERE id=".$id);
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             FWLanguage::init();
