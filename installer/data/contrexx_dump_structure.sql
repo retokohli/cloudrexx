@@ -307,6 +307,7 @@ CREATE TABLE `contrexx_languages` (
   `backend` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `is_default` set('true','false') NOT NULL DEFAULT 'false',
   `mobile_themes_id` int(2) unsigned NOT NULL DEFAULT '0',
+  `fallback` int(2) unsigned DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `lang` (`lang`),
   KEY `defaultstatus` (`is_default`)
