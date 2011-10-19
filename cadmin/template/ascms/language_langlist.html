@@ -15,7 +15,7 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
 <input type="hidden" name="modLanguage" value="true" />
   <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" style="vertical-align: top;" class="adminlist">
     <tr>
-      <th colspan="5">
+      <th colspan="6">
         <div align="left">{TXT_LANGUAGE_LIST}</div>
       </th>
       <th colspan="3" nowrap="nowrap">
@@ -27,7 +27,8 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
       <td width="27%"><b>{TXT_NAME}</b></td>
       <td width="10%"><b>{TXT_SHORT_FORM}</b></td>
       <td width="10%"><b>{TXT_CHARSET}</b></td>
-      <td width="20%"><b>{TXT_DEFAULT_LANGUAGE}</b></td>
+      <td width="10%"><b>{TXT_DEFAULT_LANGUAGE}</b></td>
+      <td width="10%"><b>{TXT_FALLBACK}</b></td>
       <td width="10%"><b>{TXT_WEB_PAGES}</b> </td>
       <td width="10%"><b>{TXT_ADMINISTRATION_PAGES}</b></td>
       <td width="10%"><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><b>{TXT_ACTION}</b></div></td>
@@ -39,9 +40,20 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
       <td>{LANGUAGE_LANG_SHORTNAME}</td>
       <td>{LANGUAGE_LANG_CHARSET}</td>
       <td>{LANGUAGE_LANG_STATUS}</td>
+      <td>
+          <!-- BEGIN fallback -->
+          <select name="fallBack[{LANGUAGE_LANG_ID}]">
+              <option value="" {NONE_SELECTED}>{TXT_NONE}</option>
+              <option value="0" {LANGUAGE_DEFAULT_SELECTED}>{TXT_DEFAULT_LANGUAGE}</option>
+              <!-- BEGIN fallbackLanguages -->
+              <option value="{LANGUAGE_LANG_ID}" {LANGUAGE_OPTION_SELECTED}>{LANGUAGE_LANG_OPTION}</option>
+              <!-- END fallbackLanguages -->
+          </select>          
+          <!-- END fallback -->
+      </td>
       <td>{LANGUAGE_ACTIVE_STATUS}</td>
       <td>{LANGUAGE_ADMIN_STATUS}</td>
-      <td><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><a href="javascript:deleteLanguage('{LANGUAGE_LANG_ID}')"><img src="images/icons/delete.gif" alt="Sprache löschen" border="0" /></a></div></td>
+      <td><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><a href="javascript:deleteLanguage('{LANGUAGE_LANG_ID}')"><img src="images/icons/delete.gif" alt="Sprache lï¿½schen" border="0" /></a></div></td>
     </tr>
     <!-- END languageRow -->
   </table>
