@@ -2,6 +2,9 @@
 
 namespace Cx\Model\ContentManager;
 
+define('FRONTEND_PROTECTION', 1 << 0);
+define('BACKEND_PROTECTION',  1 << 1);
+
 class PageException extends \Exception {}
 
 /**
@@ -811,7 +814,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isFrontendProtected() {
-        return $this->getFrontendAccessId() != 0;
+        return ($this->protection & FRONTEND_PROTECTION) >= 1;
     }
 
     /**
@@ -819,7 +822,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @return boolean
      */
     public function isBackendProtected() {
-        return $this->getBackendAccessId() != 0;
+       return ($this->protection & BACKEND_PROTECTION) >= 1;
     }
 
     protected function createAccessId() {
