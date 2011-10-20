@@ -140,7 +140,7 @@ class ContentTree
     function convert($page, $alias) {
 //TODO: this conversion is a hack. in the final dump, we'll have module names instead of ids in the module attribute.
 //TODO: this means we will need to do exactly the opposite conversion (module2id)
-        $i2m = Env::get('id2module');
+        $m2i = Env::get('module2id');
         return array(
             'catname' => $page->getTitle(),
 //TODO:
@@ -150,8 +150,8 @@ class ContentTree
             'node_id' => $page->getNode()->getId(),
             'displaystatus' => $page->getDisplay(),
             'cmd' => $page->getCmd(),
-            'modulename' => $i2m[$page->getModule()],
-            'moduleid' => $page->getModule(),
+            'modulename' => $page->getModule(),
+            'moduleid' => $m2i[$page->getModule()],
             'lang' => $page->getLang(),
             'startdate' => $page->getStart(),
             'enddate' => $page->getEnd(),

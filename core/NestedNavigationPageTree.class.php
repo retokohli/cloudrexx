@@ -84,9 +84,9 @@ class NestedNavigationPageTree extends SigmaPageTree {
         $this->lastLevel = $level;
 
         $style = $current ? self::StyleNameActive : self::StyleNameNormal;
-        $output = str_replace('{NAME}', $title, $output);
+        $output = str_replace('{NAME}', contrexx_raw2xhtml($title), $output);
         $output = str_replace('<li>', '<li class="'.$style.'">', $output);
-        $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path, $output);
+        $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.contrexx_raw2encodedUrl($path), $output);
         $output = str_replace('{TARGET}', $page->getLinkTarget(), $output);
         $output = str_replace('{CSS_NAME}',  $page->getCssName(), $output);
         $output = str_replace('{NAVIGATION_ID}', $this->navigationIds[$level], $output);
@@ -142,7 +142,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
     }
     protected function renderFooter($lang) {
         //wrap everything in an <ul>
-        $output .= "</ul>\n";
+        $output = "</ul>\n";
 
         return $output;
     }
