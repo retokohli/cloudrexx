@@ -1608,7 +1608,7 @@ if ($_CONFIG['frontendEditingStatus'] == 'on'
     $strFeInclude   = frontendEditingLib::getIncludeCode();
     $strFeLink      = frontendEditingLib::getLinkCode();
 
-    $pagePath = Env::em()->getRepository('Cx\Model\ContentManager\Page')->getPath($page, true);
+    $pagePath = Env::em()->getRepository('Cx\Model\ContentManager\Page')->getPath($page);
     $strFeContent   = frontendEditingLib::getContentCode($pagePath, contrexx_addslashes($section), $command);
 }
 

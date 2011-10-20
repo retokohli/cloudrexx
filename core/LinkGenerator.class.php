@@ -103,12 +103,12 @@ class LinkGenerator {
 
                 $placeholder = 'NODE_'.$page->getNode()->getId().'_'.$page->getLang();
                 //build placeholder's value
-                $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page, true);
+                $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page);
 
                 if ($page->getLang() == FRONTEND_LANG_ID) {
                     $placeholder = 'NODE_'.$page->getNode()->getId();
                     //build placeholder's value
-                    $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page, true);
+                    $this->placeholders[$placeholder] = $prefix . $pageRepo->getPath($page);
                 }
             }
         }
