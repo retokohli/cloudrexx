@@ -68,13 +68,6 @@ class blockManager extends blockLibrary
      */
     var $_index = 0;
 
-    /**
-    * Constructor
-    */
-    function blockManager()
-    {
-        $this->__construct();
-    }
 
     /**
     * PHP5 constructor
@@ -712,7 +705,7 @@ class blockManager extends blockLibrary
         ));
 
         // create new ContentTree instance
-        $objContentTree = new ContentTree($langId);
+        $objContentTree = new ContentTree(FRONTEND_LANG_ID);
         $strSelectedPages   = '';
         $strUnselectedPages = '';
 
