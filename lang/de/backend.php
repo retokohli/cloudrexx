@@ -1409,3 +1409,5 @@ $_ARRAYLANG['TXT_THEMES'] = "Design Vorlage";
 
 $_ARRAYLANG['TXT_CORE_NAVTITLE'] = "Titel (Navigation)";
 $_ARRAYLANG['TXT_CORE_CONTENTTITLE'] = "Titel (Seite)";
+$_ARRAYLANG['TXT_CORE_FALLBACK'] = "Fallback";
+$_ARRAYLANG['TXT_CORE_NONE'] = "Keine";

@@ -1375,3 +1375,5 @@ $_ARRAYLANG['TXT_SITEMAP_ROOTSITE'] = "Seitenstamm";
 $_ARRAYLANG['TXT_UPDATE_ALL_SITES'] = "Für alle Seiten (%s) übernehmen";
 $_ARRAYLANG['TXT_USE_CONTENT_FROM_LANGUAGE'] = "Inhalt in Editor kopieren";
 $_ARRAYLANG['TXT_USE_CONTENT_FROM_LANGUAGE_HELPTEXT'] = "Verwenden Sie diese Option, wenn der Inhalt sprachunabhängig ist. Somit können Sie den Inhalt nur in einer Sprache erfassen und bei den anderen Sprachen diese Option auswählen, um redundante Einträge in der Datenbank zu vermeiden.";
+$_ARRAYLANG['TXT_CORE_FALLBACK'] = "Fallback";
+$_ARRAYLANG['TXT_CORE_NONE'] = "None";
