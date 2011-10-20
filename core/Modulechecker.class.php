@@ -40,15 +40,6 @@ class ModuleChecker
     var $existsModuleFolders = false;
 
 
-	/**
-    * Constructor
-    * @access public
-    */
-    function ModuleChecker(){
-    	$this->__construct();
-    }
-
-
     /**
      * PHP5 constructor
      * @access public
