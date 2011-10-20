@@ -25,20 +25,10 @@ class redirect
 	var $host;
 	var $locations = array();
 
-	/**
-    * Constructor
-    * @param  string
-    * @access public
-    */
-    function redirect()
-    {
-    	$this->__construct();
-    }
-
-
-
     function __construct()
     {
+        return;
+
     	if (substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.') {
     		$this->host = strtolower(substr($_SERVER['HTTP_HOST'], 4));
 
