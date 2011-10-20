@@ -1,7 +1,7 @@
 <?php
 class ContrexxJavascriptException extends Exception {}
 
-require_once 'ContrexxJavascriptI18n.class.php';
+require_once ASCMS_FRAMEWORK_PATH.'/cxjs/ContrexxJavascriptI18n.class.php';
 /**
  * This class configures the ContrexxJavascript-object
  * (referred to as 'cx-object' in the comments)
