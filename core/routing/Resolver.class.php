@@ -113,7 +113,7 @@ class Resolver {
 
                 $targetPage = $targetPage[0];
 
-                $targetPath = $this->pageRepo->getPath($targetPage, true);
+                $targetPath = $this->pageRepo->getPath($targetPage);
 
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;

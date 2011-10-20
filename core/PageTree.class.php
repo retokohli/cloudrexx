@@ -49,12 +49,12 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
             $this->startLevel = $this->rootNode->getLvl() + 1;
 
             $page = $this->rootNode->getPage($lang);
-            $this->startPath = '/'.$this->pageRepo->getPath($page, true);
+            $this->startPath = '/'.$this->pageRepo->getPath($page);
         }
 
         $this->fetchTree();
         if($this->currentPage)
-            $this->currentPagePath = '/'.$this->pageRepo->getPath($this->currentPage, true);
+            $this->currentPagePath = '/'.$this->pageRepo->getPath($this->currentPage);
 
         //determine whether the current page is attached to the user-provided
         //root node. in this case, internalRender needs to be called with

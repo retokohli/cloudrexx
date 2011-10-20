@@ -159,7 +159,7 @@ class ContentManager extends Module {
         $table->setHeaderContents(0,4,'');
 
         //(III) collect page informations - path, virtual language directory
-        $path = $this->pageRepository->getPath($page, true);
+        $path = $this->pageRepository->getPath($page);
 
         $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
         $langDir = $le->getShortNameOfLanguage($page->getLang());

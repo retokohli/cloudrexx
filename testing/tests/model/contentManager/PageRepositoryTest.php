@@ -315,7 +315,7 @@ class PageRepositoryTest extends DoctrineTestCase
 
         $p2 = new \Cx\Model\ContentManager\Page();     
         $p2->setLang(1);
-        $p2->setTitle('child');
+        $p2->setTitle('child page');
         $p2->setNode($n2);
         $p2->setUsername('user');
 
@@ -338,7 +338,7 @@ class PageRepositoryTest extends DoctrineTestCase
 
         $page = $pageRepo->findOneById($p2->getId());
       
-        $this->assertEquals('root/child', $pageRepo->getPath($page));
+        $this->assertEquals('root/child-page', $pageRepo->getPath($page));
     }
     
     public function testTranslate() {
@@ -357,7 +357,7 @@ class PageRepositoryTest extends DoctrineTestCase
 
         $p2 = new \Cx\Model\ContentManager\Page();     
         $p2->setLang(1);
-        $p2->setTitle('child');
+        $p2->setTitle('child page');
         $p2->setNode($n2);
         $p2->setUsername('user');
 
@@ -385,7 +385,7 @@ class PageRepositoryTest extends DoctrineTestCase
         self::$em->flush();
         self::$em->getRepository('Cx\Model\ContentManager\Node')->verify();
 
-        $this->assertEquals('root/child', $pageRepo->getPath($t));
+        $this->assertEquals('root/child-page', $pageRepo->getPath($t));
         $this->assertEquals(2, $t->getLang());
 
         //see if the parent node is really, really there.

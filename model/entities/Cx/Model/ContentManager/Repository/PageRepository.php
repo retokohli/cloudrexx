@@ -251,10 +251,9 @@ class PageRepository extends EntityRepository {
      * @todo should be rewritten to use a custom query on heavy usage
      *
      * @param \Cx\Model\ContentManager\Page $page
-     * @param boolean $useSlugsAsTitle use this to get a navigation page
      * @return string path, e.g. 'This/Is/It'
      */
-    public function getPath($page, $useSlugsAsTitle=false) {
+    public function getPath($page) {
         $lang = $page->getLang();
         $node = $page->getNode();
         $nodeRepo = $this->em->getRepository('Cx\Model\ContentManager\Node');
@@ -272,10 +271,7 @@ class PageRepository extends EntityRepository {
                 if(!$thePageInOurLang)
                     throw new PageRepositoryException('getPath(): Missing Page while moving up the tree to collect Path for Page with title "' . $page->getTitle() . '". Node ' . $node->getId() . ' at level ' . $node->getLvl() . ' has no Page in language ' . $page->getLang());
 
-                if(!$useSlugsAsTitle)
-                    $path .= '/'.$thePageInOurLang->getTitle();
-                else
-                    $path .= '/'.$thePageInOurLang->getSlug();
+                $path .= '/'.$thePageInOurLang->getSlug();
             }
         }
 
@@ -342,7 +338,7 @@ class PageRepository extends EntityRepository {
                 'Title' => $page->getTitle(),
                 'Content' => substr($page->getTitle(),0, $config['searchDescriptionLength']),
 //TODO: awww this is sooo costly. @see getPath()
-                'Link' => ASCMS_PATH_OFFSET.$this->getPath($page, true)
+                'Link' => ASCMS_PATH_OFFSET.$this->getPath($page)
             );
         }
 

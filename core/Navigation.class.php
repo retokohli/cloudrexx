@@ -491,7 +491,7 @@ class Navigation
             // Build menu structure
             if ($level < $nextLevel) {
                 $cssStyle = $this->_cssPrefix.($nextLevel);
-// TODO: Must not use the "id" attribute here!
+// TODO: Must not use the "id" attribute here, as this is repeated!
                 $nestedRow = "<li>".$this->_rowBlock."\n<ul id='$cssStyle'>";
             } elseif ($level > $match[1] && $level > $nextLevel) {
                 $nestedRow = "<li>".$this->_rowBlock."</li>".$closingTags;
@@ -687,5 +687,3 @@ class Navigation
     }
 
 }
-
-?>
