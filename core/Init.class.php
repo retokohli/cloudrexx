@@ -431,27 +431,27 @@ class InitCMS
                 $objResult->MoveNext();
             }
         }
-// TODO: Test all files for existence first!
+
         $this->themesPath = $themesPath;
 
         $this->templates['index'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html');
-        $this->templates['home'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html');
-        $this->templates['navbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html');
-        $this->templates['subnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html');
+        $this->templates['home'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') : '';
+        $this->templates['navbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') : '';
+        $this->templates['subnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') : '';
         $this->templates['subnavbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') : '';
         $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') : '';
-        $this->templates['sidebar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html');
-        $this->templates['shopnavbar'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html');
-        $this->templates['headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html');
-        $this->templates['javascript'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js');
-        //$this->templates['style'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css');
-        $this->templates['buildin_style'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css');
-        @$this->templates['calendar_headlines'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html');
-        @$this->templates['directory_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html');
-        @$this->templates['forum_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html');
-        @$this->templates['podcast_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html');
-        @$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
-        @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
+        $this->templates['sidebar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') : '';
+        $this->templates['shopnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') : '';
+        $this->templates['headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') : '';
+        $this->templates['javascript'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') : '';
+        //$this->templates['style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') : '';
+        $this->templates['buildin_style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') : '';
+        $this->templates['calendar_headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html') : '';
+        $this->templates['directory_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html') : '';
+        $this->templates['forum_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html') : '';
+        $this->templates['podcast_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html') : '';
+        $this->templates['blog_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') : '';
+        $this->templates['immo'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') : '';
 
         if (!$this->hasCustomContent()) {
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
