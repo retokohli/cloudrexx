@@ -73,7 +73,6 @@
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
 //DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
-DBG::deactivate(DBG_PHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -280,7 +279,7 @@ $_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
 $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
 
 // Check Referer -> Redirect
-require_once ASCMS_CORE_PATH.'/redirect.class.php';
+//require_once ASCMS_CORE_PATH.'/redirect.class.php';
 //$objRedirect = new redirect();
 
 // initialize objects
