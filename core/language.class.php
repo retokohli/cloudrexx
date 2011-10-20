@@ -897,11 +897,11 @@ class LanguageManager
             'TXT_ADMINISTRATION_PAGES'       => $_CORELANG['TXT_ADMINISTRATION_PAGES'],
             'TXT_WEB_PAGES'                  => $_CORELANG['TXT_WEB_PAGES'],
             'TXT_SECTION'                    => $_CORELANG['TXT_SECTION'],            
-            'TXT_FALLBACK'                   => $_CORELANG['TXT_FALLBACK'],        
+            'TXT_CORE_FALLBACK'              => $_CORELANG['TXT_CORE_FALLBACK'],        
         ));
         $objTemplate->setGlobalVariable(array(
             'TXT_DEFAULT_LANGUAGE' => $_CORELANG['TXT_STANDARD_LANGUAGE'],
-            'TXT_NONE'                       => $_CORELANG['TXT_NONE']            
+            'TXT_CORE_NONE'        => $_CORELANG['TXT_CORE_NONE']            
         ));        
         //end language variables
         if ($this->hideVariables == true) {
@@ -947,7 +947,7 @@ class LanguageManager
                     $selected = ($langId == $selectedLang) ? 'selected="selected"' : '';
                     $objTemplate->setVariable(array(
                         'LANGUAGE_LANG_ID'         => $langId,
-                        'LANGUAGE_LANG_OPTION'     => $arrLanguage['name'],
+                        'LANGUAGE_LANG_OPTION'     => contrexx_raw2xhtml($arrLanguage['name']),
                         'LANGUAGE_OPTION_SELECTED' => $selected
                     ));
                     $objTemplate->parse('fallbackLanguages');

@@ -28,7 +28,7 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
       <td width="10%"><b>{TXT_SHORT_FORM}</b></td>
       <td width="10%"><b>{TXT_CHARSET}</b></td>
       <td width="10%"><b>{TXT_DEFAULT_LANGUAGE}</b></td>
-      <td width="10%"><b>{TXT_FALLBACK}</b></td>
+      <td width="10%"><b>{TXT_CORE_FALLBACK}</b></td>
       <td width="10%"><b>{TXT_WEB_PAGES}</b> </td>
       <td width="10%"><b>{TXT_ADMINISTRATION_PAGES}</b></td>
       <td width="10%"><div align="right" style="{LANGUAGE_ADMIN_STYLE}"><b>{TXT_ACTION}</b></div></td>
@@ -43,7 +43,7 @@ window.location.replace("index.php?cmd=language&{CSRF_PARAM}&act=dellang&id="+id
       <td>
           <!-- BEGIN fallback -->
           <select name="fallBack[{LANGUAGE_LANG_ID}]">
-              <option value="" {NONE_SELECTED}>{TXT_NONE}</option>
+              <option value="" {NONE_SELECTED}>{TXT_CORE_NONE}</option>
               <option value="0" {LANGUAGE_DEFAULT_SELECTED}>{TXT_DEFAULT_LANGUAGE}</option>
               <!-- BEGIN fallbackLanguages -->
               <option value="{LANGUAGE_LANG_ID}" {LANGUAGE_OPTION_SELECTED}>{LANGUAGE_LANG_OPTION}</option>
