@@ -389,5 +389,3 @@ class CSRF {
 }
 
 CSRF::cleanRequestURI();
-
-?>
