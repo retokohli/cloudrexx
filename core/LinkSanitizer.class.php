@@ -31,8 +31,8 @@ class LinkSanitizer {
                 # but only those who's values don't start with a slash..
                 (?=[^\/])
 
-                # ..and neither start with a protocol or javascript
-                (?!(([a-z]+):\/\/|javascript:))
+                # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
+                (?!([a-z]+):)
             /x", '\1'.$this->offset, $this->content);
     }
 }
