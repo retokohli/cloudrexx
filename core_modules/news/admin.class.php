@@ -366,7 +366,7 @@ class newsManager extends newsLibrary {
         $monthlyStats = array();
         $dateFilterName = 'date';
         $colspanArchive = 10;
-        $colspanInvalidated = 8;
+        $colspanInvalidated = 9;
 
         if ($this->arrSettings['news_use_types'] == 1) {
             $colspanArchive++;
@@ -472,6 +472,7 @@ class newsManager extends newsLibrary {
             }
         }
 
+        // set archive list
         $query = "SELECT n.id AS id,
                          n.date AS date,
                          n.changelog AS changelog,
@@ -481,12 +482,26 @@ class newsManager extends newsLibrary {
                          n.typeid AS typeid,
                          n.frontend_access_id,
                          n.userid
-                         FROM ".DBPREFIX."module_news AS n"
+                         FROM ".DBPREFIX."module_news AS n
+                         WHERE n.validated='1'"
                          .$monthLimitQuery
                          .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '');
         $objResult = $objDatabase->Execute($query);        
         
         if ($objResult != false) {
+            $count = $objResult->RecordCount();
+
+            if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
+                $pos = intval($_GET['pos']);
+            } else {
+                $pos = 0;
+            }
+            
+            if ($count>intval($_CONFIG['corePagingLimit'])) {
+                $paging = getPaging($count, $pos, '&amp;cmd=news&amp;show=archive', $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
+            }
+            $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+            
             $arrNews = array();
             
             while (!$objResult->EOF) {
@@ -522,29 +537,19 @@ class newsManager extends newsLibrary {
         }
 
         $count = count($arrNews);
-        foreach ($arrNews as $newsId => $news) {
+        if ($count<1) {
+            $this->_objTpl->hideBlock('newstable');
+        } else {        
+            foreach ($arrNews as $newsId => $news) {
 
-            if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
-                $pos = intval($_GET['pos']);
-            } else {
-                $pos = 0;
-            }
-
-//            if ($count>intval($_CONFIG['corePagingLimit'])) {
-//                $paging = getPaging($count, $pos, '&amp;cmd=news&amp;show=archive', $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
-//            }
-//            $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
-
-            if ($count<1) {
-                $this->_objTpl->hideBlock('newstable');
-            } else {
                 if (isset($news['lang'][FRONTEND_LANG_ID])) {
                     $selectedInterfaceLanguage = FRONTEND_LANG_ID;
                 } elseif (isset($news['lang'][FWLanguage::getDefaultLangId()])) {
                     $selectedInterfaceLanguage = FWLanguage::getDefaultLangId();
                 } else {
                     $selectedInterfaceLanguage = key($news['lang']);
-                }                
+                }     
+                
                 $statusPicture = 'status_red.gif';
                 if ($news['status']==1) {
                     $statusPicture = 'status_green.gif';
@@ -566,9 +571,11 @@ class newsManager extends newsLibrary {
 
                 // get comments count
                 if ($this->arrSettings['news_comments_activated'] == 1) {
+
                     $ccResult = $objDatabase->Execute('SELECT COUNT(1) AS com_num
                                                     FROM '.DBPREFIX.'module_news_comments
-                                                    WHERE newsid = ' . $news['id']);
+                                                    WHERE newsid = ' . $newsId);    
+
                     $this->_objTpl->setVariable('NEWS_COMMENTS_COUNT', $ccResult->fields['com_num']);
                     $this->_objTpl->parse('news_comments_data');
                     $this->_objTpl->touchBlock('news_comments_label');
@@ -584,6 +591,12 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->hideBlock('news_type_data');
                 }
 
+                $lang = array();
+                foreach ($news['lang'] as $langId => $langValues) {
+                    $lang[] = FWLanguage::getLanguageCodeById($langId);
+                }
+                $langString = implode(', ',$lang);
+
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'               => $newsId,
                     'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $news['date']),
@@ -595,6 +608,7 @@ class newsManager extends newsLibrary {
                     'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
                     'NEWS_STATUS'           => $news['status'],
                     'NEWS_STATUS_PICTURE'   => $statusPicture,
+                    'NEWS_LANGUAGES'        => $langString,
 // TODO: Not in use yet. From r8465@branches/contrexx_2_1
 //                        'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton()
                 ));
@@ -618,25 +632,19 @@ class newsManager extends newsLibrary {
 
         // set unvalidated list
         $query = "SELECT n.id AS id,
-                         n.date AS date,
-                         n.changelog AS changelog,
-                         n.status AS status,
-                         n.validated AS validated,
-                         n.userid,
-                         nl.title AS title,
-                         ncl.name AS catname,
-                         ntl.name AS typename
-                    FROM ".DBPREFIX."module_news AS n
-              INNER JOIN ".DBPREFIX."module_news_locale AS nl ON nl.news_id=n.id
-              LEFT JOIN ".DBPREFIX."module_news_categories_locale AS ncl ON ncl.category_id=n.catid AND ncl.lang_id = ".FRONTEND_LANG_ID."
-              LEFT JOIN ".DBPREFIX."module_news_types_locale AS ntl ON ntl.type_id=n.typeid AND ntl.lang_id = ".FRONTEND_LANG_ID."
-                   WHERE n.validated='0'
-                     AND nl.is_active='1'
-                     AND nl.lang_id = ".FRONTEND_LANG_ID."
-                ORDER BY date DESC";
-        $objResult = $objDatabase->Execute($query);
-
-        if ($objResult !== false) {
+                 n.date AS date,
+                 n.changelog AS changelog,
+                 n.status AS status,
+                 n.validated AS validated,
+                 n.catid AS catid,
+                 n.typeid AS typeid,
+                 n.frontend_access_id,
+                 n.userid
+                 FROM ".DBPREFIX."module_news AS n
+                 WHERE n.validated='0'";
+        $objResult = $objDatabase->Execute($query);        
+        
+        if ($objResult != false) {
             $count = $objResult->RecordCount();
             if (isset($_GET['show']) && $_GET['show'] == 'archive' && isset($_GET['pos'])) {
                 $pos = 0;
@@ -650,67 +658,114 @@ class newsManager extends newsLibrary {
                 $paging = '';
             }
             $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
+            
+            $arrNews = array();
+            
+            while (!$objResult->EOF) {
+                $arrNews[$objResult->fields['id']] = array(
+                  'date'               => $objResult->fields['date'],
+                  'changelog'          => $objResult->fields['changelog'],
+                  'status'             => $objResult->fields['status'],
+                  'validated'          => $objResult->fields['validated'],
+                  'frontend_access_id' => $objResult->fields['frontend_access_id'],
+                  'userid'             => $objResult->fields['userid']
+                );
 
-            if ($count < 1) {
-                $this->_objTpl->hideBlock('news_tabmenu');
-                $this->_objTpl->hideBlock('news_validator');
-                $this->_objTpl->setVariable('NEWS_ARCHIVE_DISPLAY_STATUS', 'block');
+                $objLangResult = $objDatabase->Execute('SELECT nl.title as title,
+                         nl.lang_id as langid,
+                         ncl.name AS catname,
+                         ntl.name AS typename
+                         FROM '.DBPREFIX.'module_news_locale AS nl
+                         LEFT JOIN '.DBPREFIX.'module_news_categories_locale AS ncl ON ncl.category_id='.$objResult->fields['catid'].'
+                         LEFT JOIN '.DBPREFIX.'module_news_types_locale AS ntl ON ntl.type_id='.$objResult->fields['catid'].'
+                         WHERE nl.news_id='.$objResult->fields['id'].' AND nl.is_active=1 ORDER BY nl.lang_id ASC');
+                
+                while (!$objLangResult->EOF) {
+                    $arrNews[$objResult->fields['id']]['lang'][$objLangResult->fields['langid']] = array(
+                        'title' => $objLangResult->fields['title'],
+                        'catname' => $objLangResult->fields['catname'],
+                        'typename' => $objLangResult->fields['typename']                        
+                    );
+                    $objLangResult->MoveNext();
+                }
+                
+                $objResult->MoveNext();
+            }            
+        }        
 
+        $count = count($arrNews);
+        if ($count<1) {
+            $this->_objTpl->hideBlock('news_tabmenu');
+            $this->_objTpl->hideBlock('news_validator');
+            $this->_objTpl->setVariable('NEWS_ARCHIVE_DISPLAY_STATUS', 'block');
+        } else {            
+            if (isset($_GET['show']) && $_GET['show'] == 'archive') {
+                $this->_objTpl->setVariable(array(
+                    'NEWS_ARCHIVE_DISPLAY_STATUS'       => 'block',
+                    'NEWS_UNVALIDATED_DISPLAY_STATUS'   => 'none',
+                    'NEWS_ARCHIVE_TAB_CALSS'            => 'class="active"',
+                    'NEWS_UNVALIDATED_TAB_CALSS'        => ''
+                ));
             } else {
-                if (isset($_GET['show']) && $_GET['show'] == 'archive') {
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_ARCHIVE_DISPLAY_STATUS'       => 'block',
-                        'NEWS_UNVALIDATED_DISPLAY_STATUS'   => 'none',
-                        'NEWS_ARCHIVE_TAB_CALSS'            => 'class="active"',
-                        'NEWS_UNVALIDATED_TAB_CALSS'        => ''
-                    ));
-                } else {
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_ARCHIVE_DISPLAY_STATUS'       => 'none',
-                        'NEWS_UNVALIDATED_DISPLAY_STATUS'   => 'block',
-                        'NEWS_ARCHIVE_TAB_CALSS'            => '',
-                        'NEWS_UNVALIDATED_TAB_CALSS'        => 'class="active"'
-                    ));
+                $this->_objTpl->setVariable(array(
+                    'NEWS_ARCHIVE_DISPLAY_STATUS'       => 'none',
+                    'NEWS_UNVALIDATED_DISPLAY_STATUS'   => 'block',
+                    'NEWS_ARCHIVE_TAB_CALSS'            => '',
+                    'NEWS_UNVALIDATED_TAB_CALSS'        => 'class="active"'
+                ));
+            }
+
+            $this->_objTpl->setVariable(array(
+                'NEWS_LIST_UNVALIDATED_PARSING'     => $paging,
+            ));
+
+            $this->_objTpl->touchBlock('news_tabmenu'); 
+
+            foreach ($arrNews as $newsId => $news) {
+                ($validatorNr % 2) ? $class = 'row2' : $class = 'row1';
+                $validatorNr++;
+
+                $statusPicture = 'status_red.gif';
+                if ($news['status']==1) {
+                    $statusPicture = 'status_green.gif';
                 }
 
+                if ($news['userid'] && ($objUser = $objFWUser->objUser->getUser($news['userid']))) {
+                    $author = contrexx_raw2xhtml($objUser->getUsername());
+                } else {
+                    $author = $_ARRAYLANG['TXT_ANONYMOUS'];
+                }
+
+                if (isset($news['lang'][FRONTEND_LANG_ID])) {
+                    $selectedInterfaceLanguage = FRONTEND_LANG_ID;
+                } elseif (isset($news['lang'][FWLanguage::getDefaultLangId()])) {
+                    $selectedInterfaceLanguage = FWLanguage::getDefaultLangId();
+                } else {
+                    $selectedInterfaceLanguage = key($news['lang']);
+                } 
+
+                $lang = array();
+                foreach ($news['lang'] as $langId => $langValues) {
+                    $lang[] = FWLanguage::getLanguageCodeById($langId);
+                }
+                $langString = implode(', ',$lang);
+                
                 $this->_objTpl->setVariable(array(
-                    'NEWS_LIST_UNVALIDATED_PARSING'     => $paging,
+                    'NEWS_ID'               => $news['id'],
+                    'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $news['date']),
+                    'NEWS_TITLE'            => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['title']),
+                    'NEWS_USER'             => $author,
+                    'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $news['changelog']),
+                    'NEWS_CLASS'            => $class,
+                    'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
+                    'NEWS_STATUS'           => $news['status'],
+                    'NEWS_STATUS_PICTURE'   => $statusPicture,
+                    'NEWS_LANGUAGES'        => $langString
                 ));
 
-                $this->_objTpl->touchBlock('news_tabmenu');
-
-                while (!$objResult->EOF) {
-                    ($validatorNr % 2) ? $class = 'row2' : $class = 'row1';
-                    $validatorNr++;
-
-                    $statusPicture = 'status_red.gif';
-                    if ($objResult->fields['status']==1) {
-                        $statusPicture = 'status_green.gif';
-                    }
-
-                    if ($objResult->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objResult->fields['userid']))) {
-                        $author = contrexx_raw2xhtml($objUser->getUsername());
-                    } else {
-                        $author = $_ARRAYLANG['TXT_ANONYMOUS'];
-                    }
-
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_ID'               => $objResult->fields['id'],
-                        'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
-                        'NEWS_TITLE'            => contrexx_raw2xhtml($objResult->fields['title']),
-                        'NEWS_USER'             => $author,
-                        'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
-                        'NEWS_CLASS'            => $class,
-                        'NEWS_CATEGORY'         => contrexx_raw2xhtml($objResult->fields['catname']),
-                        'NEWS_STATUS'           => $objResult->fields['status'],
-                        'NEWS_STATUS_PICTURE'   => $statusPicture
-                    ));
-
-                    $this->_objTpl->parse('news_validator_row');
-                    $objResult->MoveNext();
-                }
-            }
-        }
+                $this->_objTpl->parse('news_validator_row');
+            }                
+        }        
 
         // month/year filter
         if (!empty($monthlyStats)) {
