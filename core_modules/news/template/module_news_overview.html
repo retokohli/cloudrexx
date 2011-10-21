@@ -57,7 +57,7 @@ $J(function(){
       <th valign="top" colspan="{COLSPAN_ARCHIVE}" nowrap="nowrap">{TXT_ARCHIVE}</th>
     </tr>
     <tr class="row2">
-      <td valign="top" nowrap="nowrap" width="1%"><b>#</b></td>
+      <td valign="top" style="text-align: center;" nowrap="nowrap" width="1%"><b>#</b></td>
       <td valign="top" nowrap="nowrap" width="1%"><b>{TXT_ID}</b></td>
       <td valign="top" nowrap="nowrap" width="1%"><b>{TXT_STATUS}</b></td>
       <td valign="top" nowrap="nowrap" width="5%">
@@ -94,7 +94,7 @@ $J(function(){
         </td>
         <td nowrap="nowrap">{NEWS_DATE}&nbsp;</td>
         <td><a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}">{NEWS_TITLE}</a>&nbsp;</td>
-        <td valign="top" nowrap="nowrap"><b>{NEWS_LANGUAGES}</b></td>
+        <td nowrap="nowrap">{NEWS_LANGUAGES}</td>
         <td nowrap="nowrap">{NEWS_CATEGORY}&nbsp;</td>
         <!-- BEGIN news_type_data -->
         <td nowrap="nowrap">{NEWS_TYPE}&nbsp;</td>
@@ -141,6 +141,7 @@ $J(function(){
       <td valign="top" nowrap="nowrap" width="1%"><b>{TXT_STATUS}</b></td>
       <td valign="top" nowrap="nowrap" width="5%"><b>{TXT_DATE}</b></td>
       <td valign="top" nowrap="nowrap"><b>{TXT_TITLE}</b></td>
+      <td valign="top" nowrap="nowrap"><b>{TXT_LANGUAGE}</b></td>
       <td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_CATEGORY}</b></td>
       <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_USER}</b></td>
       <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_LAST_EDIT}</b></td>
@@ -152,6 +153,7 @@ $J(function(){
         <td nowrap="nowrap"><img src="images/icons/{NEWS_STATUS_PICTURE}" border="0" alt="{NEWS_STATUS}"/></td>
         <td nowrap="nowrap">{NEWS_DATE}&nbsp;</td>
         <td><a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}&amp;validate=true">{NEWS_TITLE}</a>&nbsp;</td>
+        <td nowrap="nowrap">{NEWS_LANGUAGES}&nbsp;</td>
         <td nowrap="nowrap">{NEWS_CATEGORY}&nbsp;</td>
         <td nowrap="nowrap">{NEWS_USER}&nbsp;</td>
         <td nowrap="nowrap">{NEWS_CHANGELOG}&nbsp;</td>
