@@ -520,7 +520,7 @@ class newsManager extends newsLibrary {
                          ntl.name AS typename
                          FROM '.DBPREFIX.'module_news_locale AS nl
                          LEFT JOIN '.DBPREFIX.'module_news_categories_locale AS ncl ON ncl.category_id='.$objResult->fields['catid'].'
-                         LEFT JOIN '.DBPREFIX.'module_news_types_locale AS ntl ON ntl.type_id='.$objResult->fields['catid'].'
+                         LEFT JOIN '.DBPREFIX.'module_news_types_locale AS ntl ON ntl.type_id='.$objResult->fields['typeid'].'
                          WHERE nl.news_id='.$objResult->fields['id'].' AND nl.is_active=1 ORDER BY nl.lang_id ASC');
                 
                 while (!$objLangResult->EOF) {
@@ -677,7 +677,7 @@ class newsManager extends newsLibrary {
                          ntl.name AS typename
                          FROM '.DBPREFIX.'module_news_locale AS nl
                          LEFT JOIN '.DBPREFIX.'module_news_categories_locale AS ncl ON ncl.category_id='.$objResult->fields['catid'].'
-                         LEFT JOIN '.DBPREFIX.'module_news_types_locale AS ntl ON ntl.type_id='.$objResult->fields['catid'].'
+                         LEFT JOIN '.DBPREFIX.'module_news_types_locale AS ntl ON ntl.type_id='.$objResult->fields['typeid'].'
                          WHERE nl.news_id='.$objResult->fields['id'].' AND nl.is_active=1 ORDER BY nl.lang_id ASC');
                 
                 while (!$objLangResult->EOF) {
@@ -932,7 +932,7 @@ class newsManager extends newsLibrary {
 
         $objFWUser->objUser->getDynamicPermissionIds(true);
                
-        if (!empty($locales['title'][FWLanguage::getDefaultLangId()])) {
+        if (!empty($locales['active'])) {
             
             // Set start and date as NULL if newsScheduled checkbox is not checked
             if ($newsScheduledActive == 0) {
@@ -1394,12 +1394,9 @@ class newsManager extends newsLibrary {
             $newsType=$objResult->fields['typeid'];
             $id = $objResult->fields['id'];
             $arrLanguages = FWLanguage::getLanguageArray();
-            $langData = $this->getLangData($id);
-            $newsText = $langData[FWLanguage::getDefaultLangId()]['text'];
+            $langData = $this->getLangData($id);            
             $newsComment = $objResult->fields['allow_comments'];
-
-            $this->_objTpl->setVariable('NEWS_DEFAULT_LANG', contrexx_raw2xhtml(FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'name')));
-
+          
             $newsAuthorName = $objResult->fields['author'];
             $newsAuthorId = $objResult->fields['author_id'];
             $newsPublisherName = $objResult->fields['publisher'];
@@ -1448,12 +1445,18 @@ class newsManager extends newsLibrary {
                 ));
             }
 
+            $first = true;
+            
             foreach ($arrLanguages as $langId => $arrLanguage) {
                 if ($arrLanguage['frontend'] == 1) {
+   
+                    $isActive = isset($langData[$langId]) && ($langData[$langId]['active'] == 1);                    
+                    $display = ($first && $isActive);
+
                     // parse tabs
                     $this->_objTpl->setVariable(array(
                         'NEWS_LANG_ID'              => $langId,
-                        'NEWS_LANG_DISPLAY_STATUS'  => $arrLanguage['is_default'] == 'true' ? 'active' : 'inactive',
+                        'NEWS_LANG_DISPLAY_STATUS'  => $display ? 'active' : 'inactive',
                         'NEWS_LANG_DISPLAY_STYLE'   => in_array($arrLanguage['id'], $active_lang) ? 'inline' : 'none',
                         'NEWS_LANG_NAME'            => contrexx_raw2xhtml($arrLanguage['name'])
                     ));
@@ -1463,7 +1466,7 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->setVariable(array(
                         'NEWS_LANG_ID'              => $langId,
                         'NEWS_TITLE'                => !empty($langData[$langId]['title']) ? contrexx_raw2xhtml($langData[$langId]['title']) : '',
-                        'NEWS_TITLE_DISPLAY'        => $arrLanguage['is_default'] == 'true' ? 'block' : 'none'
+                        'NEWS_TITLE_DISPLAY'        => $display ? 'block' : 'none'
                     ));
                     $this->_objTpl->parse('news_title_list');
 
@@ -1472,7 +1475,7 @@ class newsManager extends newsLibrary {
                         'NEWS_LANG_ID'              => $langId,
                         'NEWS_TEASER_TEXT'          => !empty($langData[$langId]['teaser_text']) ? contrexx_raw2xhtml($langData[$langId]['teaser_text']) : '',
                         'NEWS_TEASER_TEXT_LENGTH'   => !empty($langData[$langId]['teaser_text']) ? strlen($langData[$langId]['teaser_text']) : 0,
-                        'NEWS_TITLE_DISPLAY'        => $arrLanguage['is_default'] == 'true' ? 'block' : 'none'
+                        'NEWS_TITLE_DISPLAY'        => $display ? 'block' : 'none'
                     ));
                     $this->_objTpl->parse('news_teaser_text_list');
 
@@ -1482,8 +1485,17 @@ class newsManager extends newsLibrary {
                         'NEWS_TEXT'                 => !empty($langData[$langId]['text']) ? contrexx_raw2xhtml($langData[$langId]['text']) : ''
                     ));
                     $this->_objTpl->parse('news_text_list');
+                    
+                    if ($display) {
+                        $selectedLangId = $langId;                        
+                        $newsText       = contrexx_raw2xhtml($langData[$langId]['text']);
+                        $first          = false;
+                    }                    
                 }
             }
+            
+            $this->_objTpl->setVariable('NEWS_DEFAULT_LANG', contrexx_raw2xhtml(FWLanguage::getLanguageParameter($selectedLangId, 'name')));            
+            
             $teaserShowLink = $objResult->fields['teaser_show_link'];
 
             if ($objResult->fields['status']==1) {
