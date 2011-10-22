@@ -1,8 +1,10 @@
+/* Update: 27.09.2010 */
 /* reset */
 img,a { behavior: url(themes/contrexx_theme_3_0/iepngfix.htc) }
 html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
     margin: 0;
     padding: 0;
+    border: 0;
     font-weight: inherit;
     font-style: inherit;
     font-size: 100%;
@@ -149,7 +151,7 @@ body {
     border: 0 none;
     float: left;
     height: 20px;
-    margin: 0;
+    margin: 0 0 0 -1px;
     outline: 0 none;
     padding: 3px 0 4px 3px;
     width: 184px;
@@ -168,8 +170,6 @@ body {
 }
 /* =nav-main
 *******************************************************************************/
-#nav-main ul {
-}
 #nav-main li {
     border-left: 1px solid #E6E6E6;
     float: left;
@@ -284,17 +284,9 @@ table td.none {border: none;}
     margin-top: 0.0em;
     text-align: right;
 }
-/* Content form style */
-#main  form input,
-#frame_home input,
-#boxes_home input {
-    width: 176px;
-}
 #frame_content #main  form input.inputText {
     width: 178px;
 }	
-.contactFormClass_uploadWidget {
-}
 * html #main input,
 #frame_home input,
 #boxes_home input {
@@ -307,32 +299,6 @@ table td.none {border: none;}
     -moz-box-shadow: 1px 1px 2px #ddd inset;
     -webkit-box-shadow: 1px 1px 2px #ddd inset;
     box-shadow: 1px 1px 2px #ddd inset;
-}
-#main input[type=submit],
-#main input[type=button],
-#frame_home input[type=submit],
-#frame_home input[type=button],
-#boxes_home input[type=submit],
-#boxes_home input[type=button],
-input.submit,
-input.button {
-    color: buttontext;
-    cursor: default;
-    font-weight: normal;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    margin-top: 5px;
-    padding: 0 6px;
-    width: auto;
-    *margin-bottom: 0px;
-}
-#main input[type=reset],
-#frame_home input[type=reset],
-#boxes_home input[type=reset],
-input.reset {
-    margin-right: 5px;
-    padding: 0 6px;
-    width: auto;
 }
 #main input[type=checkbox],
 #main input[type=radio],
@@ -352,32 +318,96 @@ input.radio{
 #main select,
 #frame_home select,
 #boxes_home select {
-    border: 1px solid #BDBDBD;
-    margin: 0.25em 0.25em 0.25em 1px;
-    width: 181px;
-    -moz-box-shadow: 1px 1px 2px #DDDDDD inset;
-    -webkit-box-shadow: 1px 1px 2px #ddd inset;
-    box-shadow: 1px 1px 2px #ddd inset;
-    *margin: 0.25em 0.25em 0em 1px;
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #D3D3D3;
+    padding: 5px;
+    width: 264px !important;
+    height: 29px;
 }
+select {
+    background-color: #FFFFFF;
+    border: 1px solid #D3D3D3;
+    border-radius: 3px 3px 3px 3px;
+    color: #000000;
+    font-family: Arial,sans-serif;
+    font-size: 1.2em;
+    margin: 1px 2px 3px 0;
+    padding: 5px;
+}
+#fe_PreviewContent select {
+    clear: both;
+    font-size: 1.1em;
+    padding-left: 7px;
+}
+#main input[type=text],
 #main textarea,
+#frame_home input[type=text],
 #frame_home textarea,
-#boxes_home textarea {
-    font-size: 16px;
-    height: 150px;
-    margin: 12px 0;
-    width: 100%;
+#boxes_home input[type=text],
+#boxes_home textarea,
+#main input[type=password],
+#main .search_form input[name=keyword],
+#fe_PreviewContent input[name=term],
+#main input[name=username]
+{
+    width: 250px !important ;
 }
+#main input[type=text],
+#frame_home input[type=text],
+#boxes_home input[type=text],
+#main .search_form input[name=keyword],
+#main #marketSearch input[name=term],
+#main #directorySearch input[name=term],
+#fe_PreviewContent input[name=term],
+#main input[type=password],
+#main input[name=username]
+{
+    height: 17px;
+}
+
 #main input[type=text]:focus,
-#main select:focus,
 #main textarea:focus,
 #frame_home input[type=text]:focus,
-#frame_home select:focus,
 #frame_home textarea:focus,
 #boxes_home input[type=text]:focus,
-#boxes_home select:focus,
-#boxes_home textarea:focus {
+#boxes_home textarea:focus,
+#frame_content #main input#captcha:focus,
+#main .search_form input[name=keyword]:focus,
+#main #marketSearch input[name=term]:focus,
+#main #directorySearch input[name=term]:focus,
+#fe_PreviewContent input[name=term]:focus,
+#main input[name=username]:focus
+{
+    border-left: 5px solid #2687CC;
+    width: 245px !important;
 }
+#fe_PreviewContent input {
+    clear: both;
+    font-size: 1.1em;
+    padding-left: 7px;
+}
+
+input {
+    background-color: #FFFFFF;
+    border: 1px solid #D3D3D3;
+    border-radius: 3px 3px 3px 3px;
+    color: #000000;
+    font-family: Arial,sans-serif;
+    margin: 1px 1px 3px 0;
+    padding: 5px;
+}
+input[type="submit"], input[type="button"], input[type="reset"] {
+    background: url("images/submit_middle.png") repeat-x scroll left center transparent;
+    border: 0 solid #009AB7;
+    color: #FFFFFF;
+    cursor: pointer;
+    min-width: 130px;
+    text-align: center;
+    width: auto !important;
+    height: 30px\9;
+    padding-bottom: 4px\9;
+}
+
 #main input.submit:focus,
 #boxes_home input:focus {background: #7AA62B url(images/submit-button.jpg) 0 0 repeat-x;}
 /* =aside
@@ -426,8 +456,6 @@ input.radio{
 #nav-sub a.active {
 }
 /* third level */
-#nav-sub li.level_3 {
-}
 #nav-sub li.level_3 a {
     background: none repeat scroll 0 0 #FFFFFF;
     color: #444444;
@@ -453,19 +481,23 @@ input.radio{
     font-size: 0.9em;
 }
 #nav-sub li.level_4 a {
-    padding: 2px 0 2px 30px;
-    background: #fff;
-    font-weight: normal;
-    color: #444;
+    background: none repeat scroll 0 0 #FFFFFF;
+    color: #444444;
+    font-size: 0.9em;
+    font-weight: bold;
 }
 #nav-sub li.level_4 a:hover {
-    text-decoration: underline;
-    font-weight: normal;
+    background: none repeat scroll 0 0 #F6F6F6;
+    color: #000000;
 }
 #nav-sub li.level_4 a.active {
+    background: url("images/subNavigation_bg.png") no-repeat scroll left top transparent;
+    border: 0 none;
+    color: #FFFFFF;
     font-weight: bold;
-    text-decoration: none;
-    color: #333;
+    margin-left: -5px;
+    padding-left: 20px;
+    width: 223px;
 }
 #left_sidebar {
 }
@@ -545,7 +577,7 @@ input.radio{
     margin: 0;
 }
 #shop_navigation li a.title {
-    background: none repeat scroll 0 0 #AAAAAA;
+    background: none repeat scroll 0 0 #3873C1;
     color: #FFFFFF;
     display: block;
     float: right;
@@ -732,7 +764,7 @@ p {
 }
 .box_center {
 }
-body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, input, textarea {
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl,  textarea {
     font-family: "Lucida Grande",Arial,sans-serif;
 }
 #footer span{
@@ -745,7 +777,7 @@ a:hover{
 #main h2 {
     border-bottom: 1px solid #E0E0E0;
     font-size: 2em;
-    font-weight: bold;
+    font-weight: normal;
     margin-bottom: 0.5em;
     padding: 0.5em 0.5em 0.5em 0;
 }
@@ -755,7 +787,7 @@ a:hover{
     margin-bottom: 10px;
     padding-bottom: 10px;
 }
-body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, input, textarea {
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, textarea {
     font-family: "Lucida Grande",Arial,sans-serif;
 }
 #nav-main a.active span.left_curve {
@@ -803,7 +835,7 @@ body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, input, textarea {
 }
 #guestbook textarea{
     font-size: 16px;
-    height: 150px;
+    /*height: 150px;*/
     margin: 12px 0;
     width: 100%;
 }
@@ -888,10 +920,11 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
 #contactFormCaptcha{
     clear:both;
     float:left;
+    margin-bottom: 4px;
 }
 #contactFrame img.captcha{
     float: left;
-    padding-bottom: 5px;
+    /*padding-bottom: 5px;*/
 }
 #logo_part{
     width: 260px;
@@ -979,9 +1012,6 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
     background: url("images/opener_button.png") no-repeat scroll left top transparent;
     color: #005EA8;
 }
-textarea#newsTeaserText {
-    padding: 0;
-}
 #footer #facebook {
     clear: left;
     float: left;
@@ -1036,4 +1066,87 @@ textarea#newsTeaserText {
     border-bottom: none;
     margin-bottom: 0px;
     padding-bottom: 0px;
+}
+#main #livecam form input:focus#DPC_datum{
+    width: 245px !important;
+    border-left-color: #2687CC;
+    border-left-width: 5px !important;
+    border-left-style: solid;
+}
+.bordered {
+    border-left: 5px solid #2687CC;
+    width: 5px !important;
+}
+#main .notification_center input[type=button],#main .selectorCenter input[type=button]{
+    min-width:39px !important;
+}
+#main #shop .cart input[type=text]{
+    width:30px !important;
+}
+#main #shop .cart input[type=text]:focus{
+    width:25px !important;
+    border-left:5px solid #2687CC;
+}
+#main #livecam form input[value="Today"],#main #livecam form input[value="Go to the archive..."]{
+    border-width:0px !important;
+}
+.textarea_news{
+    width: 250px !important;
+}
+#main #downloads form p{
+    float: none;
+    margin: 0;
+    width: 100%;
+}
+#contactForm textarea{
+    height: 80px !important;
+}
+.submit_type_left{
+    background: url("images/submit_left.png") no-repeat scroll left top transparent;
+    margin-right: 2px;
+    height:26px;
+    margin-top: 8px;
+    padding: 6px 0 6px 3px;
+    width: auto;
+    float: none;
+    padding: 7px 0 7px 3px\9;
+}
+.submit_type_right
+{
+    background: url("images/submit_right.png") no-repeat scroll right top transparent;
+    width: auto;
+    height:26px;
+    padding: 6px 3px 6px 0;
+    float: none;
+    padding: 7px 3px 7px 0\9;
+}
+#frame_content .notification_left select,#frame_content .notification_right select, #frame_content .selector select,#frame_content .mediadirSelector select{
+    height:auto;
+}
+
+noindex:-o-prefocus, input[type="submit"], input[type="button"], input[type="reset"] {
+	height:28px;
+	margin: 0px;
+}
+#frame_content #memberdir select[name=id],#frame_content .menu select[name=catId]{
+    width: 250px !important;
+}
+#access .search .submit_type_right input{
+    height:30px\9;
+}
+#guestbook .submit_type_left {
+    margin-right: -7px;
+}
+#egov .submit_type_left{
+	 margin-right: -1px;
+}
+
+#forum .posts .submit_type_left, #forum .addpost .submit_type_left,#forum .addthread .submit_type_left{
+	margin-right: -4px;
+}
+#forum .addthread .submit_type_left{
+	margin-right: -1px;
+}
+#mediadir .mediadirSearchForm .mediadirButtonSearch{
+	margin-left: 3px;
 }
