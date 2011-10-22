@@ -9,6 +9,7 @@ form p {
     float: left;
     margin: 0;
     width: 100%;
+    padding: 2px 0 3px 0;	
 }
 form p label.description {
     font-weight: normal;
@@ -1319,7 +1320,7 @@ table.news_meta td {
     color: #8b9581;
 }
 #knowledge #overview div div.content a.more:hover {
-    color: #C5252F;
+    color: #3166B0;
 }
 #knowledge h2.category_list_title {
     padding: 3px;
@@ -1355,7 +1356,7 @@ table.news_meta td {
     visibility: hidden;
 }
 #knowledge .search_button {
-    padding: 4px;
+    /*padding: 4px;*/
 }
 /* IE */
 * html .clearfix { height: 1%; }
@@ -1858,11 +1859,22 @@ label {
     font-weight: bold;
 }
 textarea {
-    margin: 0.5em 0.5em 0 0;
+    /*    margin: 0.5em 0.5em 0 0;*/
+    background-color: #FFFFFF;
+    border: 1px solid #D3D3D3;
+    color: #000000;
+    font-family: Verdana,sans-serif;
+    font-size: 1.2em;
+    height: 80px;
+    margin: 1px 2px 3px 0;
+    overflow: auto;
+    padding: 5px;
+    border-radius: 3px 3px 3px 3px;
+
 }
-textarea {
+/*textarea {
     padding: 0.4em;
-}
+}*/
 #frame_content #main  input#captcha{
     background-image: url("css/images/field-bg.gif");
     background-repeat: repeat-x;
@@ -1870,7 +1882,7 @@ textarea {
     color: #CC0000;
     font-size: 12px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
     padding: 5px;
     text-transform: uppercase;
     width: 100px;
