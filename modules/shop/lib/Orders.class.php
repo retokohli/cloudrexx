@@ -49,6 +49,7 @@ class Orders
         $arrId = self::getIdArray($count, $order, $filter, $offset, $limit);
 //DBG::log("Orders::getArray(): Got IDs: ".var_export($arrId, true));
         $arrOrders = array();
+        if (empty ($arrId)) return $arrOrders;
         foreach ($arrId as $id) {
             $objOrder = Order::getById($id);
             if (!$objOrder) {
@@ -396,22 +397,24 @@ if (!$limit) {
 //                $order_id, $objOrder->date_time()
 //            );
             $customer_id = $objOrder->customer_id();
-            $objCustomer = Customer::getById($customer_id);
+// 20111017 Added billing address to the Order
+// No need to load the Customer now
+//            $objCustomer = Customer::getById($customer_id);
             $customer_name = '';
-            if ($objCustomer) {
-                $company = $objCustomer->company();
+//            if ($objCustomer) {
+                $company = $objOrder->billing_company();
                 $customer_name = ($company
                     ? $company
-                    : $objCustomer->lastname().' '.
-                      $objCustomer->firstname());
+                    : $objOrder->billing_lastname().' '.
+                      $objOrder->billing_firstname());
                 // Determine end date
-// TODO (still unused in the view)
+// Unused in the list view
 //                $validity = $objCustomer->getValidityTimePeriod();
 //                $endDate = ($validity > 0 ? date('d.m.Y', $validity) : '-');
-            } else {
-                $customer_name = $_ARRAYLANG['TXT_SHOP_ERROR_NO_CUSTOMER'];
-                $customer_id = null;
-            }
+//            } else {
+//                $customer_name = $_ARRAYLANG['TXT_SHOP_ERROR_NO_CUSTOMER'];
+//                $customer_id = null;
+//            }
             // PHP5! $tipNote = (strlen($objResult['note'])>0) ? php_strip_whitespace($objResult['note']) : '';
             $tipNote = $objOrder->note();
             $tipLink = (!empty($tipNote)

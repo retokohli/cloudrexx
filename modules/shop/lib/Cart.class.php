@@ -503,7 +503,7 @@ class Cart
 //DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
         // Loop 2: Calculate Coupon discounts and VAT
-        $objCoupon = null;
+        $objCoupon = $discount_amount = null;
         foreach (self::$products as $cart_id => &$product) {
             // Coupon:  Either the payment ID or the code are needed
             if ($payment_id || $coupon_code) {
@@ -511,6 +511,7 @@ class Cart
                     $coupon_code, $total_price, $customer_id,
                     $product['id'], $payment_id);
                 if ($objCoupon) {
+//DBG::log("Cart::update(): PRODUCT; Coupon available: $coupon_code, Product ID {$product['id']}");
 //DBG::log("Cart::update(): Loop 2: Product: ".var_export($product, true));
                     $discount_amount = $objCoupon->getDiscountAmount(
                         $product['price']);
@@ -550,6 +551,7 @@ class Cart
             if ($objCoupon) {
                 $discount_amount = $objCoupon->getDiscountAmount($total_price);
                 $total_discount_amount = $discount_amount;
+//DBG::log("Cart::update(): GLOBAL; Coupon available: $coupon_code");
 //DBG::log("Cart::update(): GLOBAL; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
             }
         }
@@ -574,6 +576,7 @@ class Cart
         }
         $_SESSION['shop']['cart']['total_items'] = $items;
         $_SESSION['shop']['cart']['total_weight'] = $total_weight; // In grams!
+//DBG::log("Cart::update(): Updated Cart (session): ".var_export($_SESSION['shop']['cart'], true));
         return true;
     }
 
@@ -722,7 +725,7 @@ class Cart
      * @global  array $_ARRAYLANG   Language array
      * @param   HTML_Template_Sigma $objTemplate  The optional Template
      */
-    function view($objTemplate=null)
+    static function view($objTemplate=null)
     {
         global $_ARRAYLANG;
 
@@ -809,16 +812,27 @@ UNUSED
             'SHOP_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
         ));
 
-        if (self::get_discount_amount()) {
-            $total_discount_amount = self::get_discount_amount();
-//DBG::log("Shop::view_cart(): Total: Amount $total_discount_amount");
+        // Show the Coupon code field only if there is at least one defined
+        if (Coupon::count_available()) {
+DBG::log("Coupons available");
             $objTemplate->setVariable(array(
-//                'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => $coupon_string,
-                'SHOP_DISCOUNT_COUPON_TOTAL' =>
-                    $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_AMOUNT_TOTAL'],
-                'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => Currency::formatPrice(
-                    -$total_discount_amount),
+                'SHOP_DISCOUNT_COUPON_CODE' =>
+                    (isset ($_SESSION['shop']['coupon_code'])
+                        ? $_SESSION['shop']['coupon_code'] : ''),
             ));
+            $objTemplate->touchBlock('shopCoupon');
+            $objTemplate->parse('shopCoupon');
+            if (self::get_discount_amount()) {
+                $total_discount_amount = self::get_discount_amount();
+    //DBG::log("Shop::view_cart(): Total: Amount $total_discount_amount");
+                $objTemplate->setVariable(array(
+    //                'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => $coupon_string,
+                    'SHOP_DISCOUNT_COUPON_TOTAL' =>
+                        $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_AMOUNT_TOTAL'],
+                    'SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT' => Currency::formatPrice(
+                        -$total_discount_amount),
+                ));
+            }
         }
 
         if (Vat::isEnabled()) {

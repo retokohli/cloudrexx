@@ -3046,8 +3046,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
                 $this->view_article_groups();
                 break;
             default:
-                // Alternative: self::$pageTitle = $_ARRAYLANG['TXT_PRODUCT_CATALOG'];
-                self::$pageTitle = $_ARRAYLANG['TXT_PRODUCT_CHARACTERISTICS'];
+                self::$pageTitle = $_ARRAYLANG['TXT_PRODUCT_CATALOG'];
                 $this->view_product_overview();
         }
 //        self::$objTemplate->parse('shop_products_block');
