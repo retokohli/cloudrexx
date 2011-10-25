@@ -52,8 +52,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
  */
 class Shop extends ShopLibrary
 {
-    private static $inactiveStyleName = 'inactive';
-    private static $activeStyleName = 'active';
     private static $defaultImage = '';
 
     /**
@@ -85,22 +83,6 @@ class Shop extends ShopLibrary
      * @see     lib/Customer.class.php
      */
     private static $objCustomer = null;
-
-    /**
-     * The Payment Processing object
-     * @var     PaymentProcessing
-     * @access  private
-     * @see     lib/PaymentProcessing.class.php
-     */
-    private static $objProcessing = null;
-
-    /**
-     * The Shipment object
-     * @var     Shipment
-     * @access  private
-     * @see     lib/Shipment.class.php
-     */
-    private static $objShipment = null;
 
 
     /**
@@ -370,8 +352,14 @@ if (isset ($_REQUEST['content'])) {
                 'SHOP_LOGIN_ACTION',
                 'index.php?section=shop&amp;cmd=login&amp;redirect='.$redirect);
         }
+        // Only show the cart info when the JS cart is not active!
+        global $_CONFIGURATION;
+        if (empty ($_CONFIGURATION['custom']['shopJsCart'])) {
+            $objTpl->setVariable(array(
+                'SHOP_CART_INFO' => self::cart_info(),
+            ));
+        }
         $objTpl->setVariable(array(
-            'SHOP_CART_INFO' => self::cart_info(),
             'SHOP_LOGIN_STATUS' => $loginStatus,
             'SHOP_LOGIN_INFO' => $loginInfo,
         ));
@@ -912,13 +900,19 @@ die("Failed to update the Cart!");
           + array(
             'SHOP_MENU' => $shopMenu,
             'SHOP_SEARCH_TERM' => htmlentities($term, ENT_QUOTES, CONTREXX_CHARSET),
-            'SHOP_CART_INFO' => self::cart_info(),
             // New from 3.0.0 - More flexible Shop menu
             'SHOP_CATEGORIES_MENUOPTIONS' =>
                 ShopCategories::getMenuoptions($category_id, true, 0, true),
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
                 Manufacturer::getMenuoptions($manufacturer_id, true),
         ));
+        // Only show the cart info when the JS cart is not active!
+        global $_CONFIGURATION;
+        if (empty ($_CONFIGURATION['custom']['shopJsCart'])) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_CART_INFO' => self::cart_info(),
+            ));
+        }
         // Exclude Category list from search results
         if ($term == '') {
             self::showCategories($category_id);
@@ -1622,7 +1616,7 @@ die("Failed to update the Cart!");
      * request parameter, and sets up Product query parameters accordingly.
      * @return  boolean             True on success, false otherwise
      */
-    function discounts()
+    static function discounts()
     {
         return self::view_product_overview();
     }
@@ -1636,7 +1630,7 @@ die("Failed to update the Cart!");
      * @param   integer $weight      The total order weight in grams
      * @return  double               The shipping cost in the customers' currency
      */
-    function _calculateShipmentPrice($shipperId, $price, $weight)
+    static function _calculateShipmentPrice($shipperId, $price, $weight)
     {
         $shipmentPrice = Shipment::calculateShipmentPrice(
             $shipperId, $price, $weight
@@ -1655,7 +1649,7 @@ die("Failed to update the Cart!");
      * @return      string                  The payment fee, formatted by
      *                                      {@link Currency::getCurrencyPrice()}
      */
-    function _calculatePaymentPrice($payment_id, $totalPrice)
+    static function _calculatePaymentPrice($payment_id, $totalPrice)
     {
         $paymentPrice = 0;
         if (!$payment_id) return $paymentPrice;
@@ -2034,7 +2028,7 @@ function centerY(height)
      * This should be used as a last resort only.
      * Blames the database in a Message, and returns nothing.
      */
-    function errorHandling()
+    static function errorHandling()
     {
         global $_ARRAYLANG;
 
@@ -2055,12 +2049,14 @@ function centerY(height)
     {
         if (self::$objCustomer) return true;
         $objUser = FWUser::getFWUserObject()->objUser;
+        global $sessionObj;
         if ($objUser->login()) {
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {
                 // This is still required in confirm() (TODO: remove)
                 $_SESSION['shop']['email'] = self::$objCustomer->email();
 //DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().")");
+                $sessionObj->cmsSessionUserUpdate(self::$objCustomer->id());
                 return true;
             }
         }
@@ -2209,7 +2205,7 @@ DBG::log("Shop::login(): Success!");
      * Other targets may be specified using the redirect parameter.
      * @return  string          The redirection target, if any
      */
-    function processRedirect()
+    static function processRedirect()
     {
 die("Shop::processRedirect(): This method is obsolete!");
 /*
@@ -2232,7 +2228,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     }
 
 
-    function view_account()
+    static function view_account()
     {
         global $_ARRAYLANG;
         require_once(ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php');
@@ -2399,7 +2395,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      * Copies the shipment country to the billing address unless the latter
      * is set.
      */
-    function account_to_session()
+    static function account_to_session()
     {
 //DBG::log("account_to_session(): POST: ".var_export($_POST, true));
         if (empty($_POST) || !is_array($_POST)) return;
@@ -2453,7 +2449,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      * @return    boolean         True if the account data is complete and
      *                            valid, false otherwise
      */
-    function verify_account()
+    static function verify_account()
     {
         global $_ARRAYLANG;
 
@@ -2500,7 +2496,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      * @todo    Make sure there are proper payment and shipment IDs set in
      *          the session!
      */
-    function _gotoPaymentPage()
+    static function _gotoPaymentPage()
     {
         if (!isset($_SESSION['shop']['note'])) {
             $_SESSION['shop']['note'] = '';
@@ -2533,7 +2529,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      * @link    verify_payment_details
      * @link    view_payment
      */
-    function payment()
+    static function payment()
     {
         if (!self::verifySessionAddress()) {
             header('Location: index.php?section=shop'.MODULE_INDEX);
@@ -2552,7 +2548,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     }
 
 
-    function _initPaymentDetails()
+    static function _initPaymentDetails()
     {
         // Uses the active currency
         $cart_amount = Cart::get_price();
@@ -2623,7 +2619,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      *   returns an empty string.
      * @return  string  Shipment dropdown menu, or an empty string
      */
-    function _getShipperMenu()
+    static function _getShipperMenu()
     {
         // Only show the menu if shipment is needed and the ship-to
         // country is known
@@ -2682,7 +2678,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      *   does nothing, but simply returns the empty string.
      * @return  string  Payment dropdown menu, or an empty string
      */
-    function get_payment_menu()
+    static function get_payment_menu()
     {
         if (   !Cart::needs_shipment()
             || Cart::get_price() <= 0) {
@@ -2707,7 +2703,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     }
 
 
-    function verify_payment_details()
+    static function verify_payment_details()
     {
         global $_ARRAYLANG;
 
@@ -2831,7 +2827,7 @@ die("Shop::processRedirect(): This method is obsolete!");
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @global  array   $_ARRAYLANG     Language array
      */
-    function view_lsv_form()
+    static function view_lsv_form()
     {
         global $_ARRAYLANG;
 
@@ -2881,7 +2877,7 @@ right after the customer logs in!
      * The payment and shipment selection view
      * @return  void
      */
-    function view_payment()
+    static function view_payment()
     {
         global $_ARRAYLANG;
 
@@ -2972,7 +2968,7 @@ right after the customer logs in!
      * clicked.
      * @return  boolean             True on success, false otherwise
      */
-    function confirm()
+    static function confirm()
     {
         global $_ARRAYLANG;
 
@@ -3197,7 +3193,7 @@ die("Trouble! No Shipper ID defined");
      * initializes payment
      * @return  boolean         True on successs, false otherwise
      */
-    function process()
+    static function process()
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -3212,6 +3208,7 @@ die("Trouble! No Shipper ID defined");
         $customer_ip = $_SERVER['REMOTE_ADDR'];
         $customer_host = substr(@gethostbyaddr($_SERVER['REMOTE_ADDR']), 0, 100);
         $customer_browser = substr(getenv('HTTP_USER_AGENT'), 0, 100);
+        $new_customer = false;
 DBG::log("Shop::process(): E-Mail: ".$_SESSION['shop']['email']);
         if (self::$objCustomer) {
 DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
@@ -3231,7 +3228,6 @@ DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'
             }
 // Unregistered Customers are stored as well, as their information is needed
 // nevertheless.  Their active status, however, is set to false.
-// When updating, only inactive Users must be touched!
             self::$objCustomer = Customer::getUnregisteredByEmail(
                 $_SESSION['shop']['email']);
             if (!self::$objCustomer) {
@@ -3241,8 +3237,10 @@ DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'
 //DBG::log("New User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
                 self::$objCustomer->username($_SESSION['shop']['username']);
                 self::$objCustomer->email($_SESSION['shop']['email']);
+// TODO: May be this is unset?
                 self::$objCustomer->password($_SESSION['shop']['password']);
                 self::$objCustomer->active(empty($_SESSION['shop']['dont_register']));
+                $new_customer = true;
             }
         }
         // Update the Customer object from the session array
@@ -3292,10 +3290,15 @@ DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'
         if (!self::$objCustomer->store()) {
             return Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING']);
         }
+        // Authenticate new Customer
+        if ($new_customer) {
+            // Fails for "unregistered" Customers!
+            if (self::$objCustomer->auth(
+                $_SESSION['shop']['username'], $_SESSION['shop']['password'])) {
+                self::_authenticate();
+            }
+        }
 //die();
-        // Used nowhere
-        //$_SESSION['shop']['customer_id'] = self::$objCustomer->id();
-
         // Clear the ship-to country if there is no shipping
         if (!Cart::needs_shipment()) {
             $_SESSION['shop']['countryId2'] = 0;
@@ -3306,6 +3309,18 @@ DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'
             ? null : $_SESSION['shop']['paymentId']);
         $objOrder = new Order();
         $objOrder->customer_id(self::$objCustomer->id());
+
+        $objOrder->billing_gender($_SESSION['shop']['gender']);
+        $objOrder->billing_firstname($_SESSION['shop']['firstname']);
+        $objOrder->billing_lastname($_SESSION['shop']['lastname']);
+        $objOrder->billing_company($_SESSION['shop']['company']);
+        $objOrder->billing_address($_SESSION['shop']['address']);
+        $objOrder->billing_city($_SESSION['shop']['city']);
+        $objOrder->billing_zip($_SESSION['shop']['zip']);
+        $objOrder->billing_country_id($_SESSION['shop']['countryId']);
+        $objOrder->billing_phone($_SESSION['shop']['phone']);
+        $objOrder->billing_fax($_SESSION['shop']['fax']);
+
         $objOrder->currency_id($_SESSION['shop']['currencyId']);
         $objOrder->sum($_SESSION['shop']['grand_total_price']);
         $objOrder->date_time(date(ASCMS_DATE_FORMAT_DATETIME));
@@ -3394,7 +3409,7 @@ DBG::log("Shop::process(): Existing User username ".$_SESSION['shop']['username'
                     if (!$objCoupon->redeem($order_id, self::$objCustomer->id(),
                         $price*$quantity, 0)) {
 // TODO: Do something if the Coupon does not work
-//DBG::log("Shop::process(): ERROR: Failed to store Coupon for Product ID $product_id");
+DBG::log("Shop::process(): ERROR: Failed to store Coupon for Product ID $product_id");
                     }
                     $coupon_code = null;
                 }
@@ -3499,7 +3514,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      * Check the data from the payment provider.
      * @access public
      */
-    function success()
+    static function success()
     {
         global $_ARRAYLANG;
 
@@ -3614,7 +3629,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      * Returns true only after the password has been updated successfully.
      * @return  boolean             True on success, false otherwise
      */
-    function _changepass()
+    static function _changepass()
     {
         global $_ARRAYLANG;
 
@@ -3710,7 +3725,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      * Returns true only after the new password has been sent successfully.
      * @return    boolean                   True on success, false otherwise
      */
-    function view_sendpass()
+    static function view_sendpass()
     {
         global $_ARRAYLANG;
 
@@ -3746,7 +3761,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      * @return  boolean                     True on success, false otherwise.
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function showCustomerDiscount($orderAmount)
+    static function showCustomerDiscount($orderAmount)
     {
         global $_ARRAYLANG;
 
@@ -3790,7 +3805,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      * @global    array   $_ARRAYLANG     Language array
      * @author    Reto Kohli <reto.kohli@comvation.com>
      */
-    function showShipmentTerms()
+    static function showShipmentTerms()
     {
         global $_ARRAYLANG;
 
@@ -3963,7 +3978,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
      * information has been stored in the session
      * @return    boolean               True on success, false otherwise
      */
-    function verifySessionAddress()
+    static function verifySessionAddress()
     {
         global $_ARRAYLANG;
 
@@ -3992,7 +4007,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
     }
 
 
-    function getOrderStatus($order_id)
+    static function getOrderStatus($order_id)
     {
         global $objDatabase;
 
@@ -4006,7 +4021,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
     }
 
 
-    function getOrderPaymentId($order_id)
+    static function getOrderPaymentId($order_id)
     {
         global $objDatabase;
 
@@ -4129,7 +4144,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         closedir($dh);
         $match = null;
         foreach ($arrFiles as $file) {
-            if (!preg_match('/^(shop)_?(\w*)\.html/', $file, $match)) {
+            if (!preg_match('/^(shop)_?(\w*)\.html$/', $file, $match)) {
 //DBG::log("File name $file does not match; skipped");
                 continue;
             }
@@ -4147,7 +4162,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 die('Query error: '.$query);
             }
 //DBG::log("Query: $query");
-DBG::log("File $file updated content $section/$cmd");
+DBG::log("File $file updated content $section/$cmd, affected ".$objDatabase->Affected_Rows()." rows");
         }
     }
 
