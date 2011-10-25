@@ -9,7 +9,7 @@ form p {
     float: left;
     margin: 0;
     width: 100%;
-    padding: 2px 0 3px 0;	
+    padding: 2px 0 3px 0;
 }
 form p label.description {
     font-weight: normal;
@@ -966,6 +966,21 @@ div#livecam #CALBUTTONDPC_datum {
     float:left;
     height:auto !important;
 }
+
+/* Inner block for the toggable shipment address */
+#shop .shipping_address {
+  clear: both;
+}
+
+/* Right align prices etc. */
+#shop .right {
+  text-align: right;
+}
+/* Center quantities etc. */
+#shop .center {
+  text-align: center;
+}
+
 #shop div.message_error {
     color:#FF0000;
 }
@@ -1055,9 +1070,10 @@ div#livecam #CALBUTTONDPC_datum {
     text-align:right;
 }
 #shop input[type=radio],
-#shop input[type=checkbox]{
+#shop input[type=checkbox] {
     float: none;
 }
+
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
@@ -1761,8 +1777,8 @@ dl.data_module img {
 #mediadir .map{
     margin-top: 10px;
     border: 1px solid #CFCFCF;
-    width: 489px; 
-    height: 250px; 
+    width: 489px;
+    height: 250px;
 }
 #mediadir table.list{
     padding: 0px 20px 10px 20px;
@@ -1783,8 +1799,8 @@ dl.data_module img {
 #mediadir .mapLarge{
     margin-top: 10px;
     border: 0px solid #CFCFCF;
-    width: 620px; 
-    height: 600px; 
+    width: 620px;
+    height: 600px;
 }
 #mediadir input[type="button"].active {
     font-weight:bold;
