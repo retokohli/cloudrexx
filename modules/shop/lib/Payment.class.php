@@ -145,7 +145,7 @@ class Payment
      * @return   array                      Array of payment IDs, like:
      *                                      array( index => paymentId )
      */
-    static function getCountriesRelatedPaymentIdArray($countryId, &$arrCurrencies)
+    static function getCountriesRelatedPaymentIdArray($countryId, $arrCurrencies)
     {
         global $objDatabase;
 
