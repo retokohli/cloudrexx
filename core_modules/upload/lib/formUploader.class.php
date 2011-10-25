@@ -30,6 +30,11 @@ class FormUploader extends Uploader
             if($error == UPLOAD_ERR_OK) {
                 $tmpName = $_FILES["uploaderFiles"]["tmp_name"][$key];
                 $name = $_FILES["uploaderFiles"]["name"][$key];
+
+                if (!FWValidator::is_file_ending_harmless($name)) {
+                    die('Error:'.sprintf('The file %s was refused due to its file extension which is not allowed!', htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)));
+                }
+
                 //TODO: Uploader::addChunk does this also -> centralize in function
                 // remember the "raw" file name, we want to store all original
                 // file names in the session.
