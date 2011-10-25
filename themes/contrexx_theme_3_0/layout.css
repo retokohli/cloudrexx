@@ -56,7 +56,7 @@ h3 {
     margin-bottom: 0.5em;
 }
 h4 {font-size: 1.2em;}
-/* structure 
+/* structure
 *******************************************************************************/
 body {
     line-height: 1.5;
@@ -183,7 +183,7 @@ body {
     height: 41px;
     margin-left: 16px;
     margin-right: 16px;
-    margin-top: 11px; 
+    margin-top: 11px;
 }
 #nav-main li a:hover{
     background: none repeat scroll 0 0 transparent;
@@ -286,7 +286,7 @@ table td.none {border: none;}
 }
 #frame_content #main  form input.inputText {
     width: 178px;
-}	
+}
 * html #main input,
 #frame_home input,
 #boxes_home input {
@@ -350,7 +350,7 @@ select {
 #fe_PreviewContent input[name=term],
 #main input[name=username]
 {
-    width: 250px !important ;
+    width: 250px;
 }
 #main input[type=text],
 #frame_home input[type=text],
@@ -379,7 +379,7 @@ select {
 #main input[name=username]:focus
 {
     border-left: 5px solid #2687CC;
-    width: 245px !important;
+    width: 245px;
 }
 #fe_PreviewContent input {
     clear: both;
@@ -860,12 +860,12 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
     padding: 4px;
     width: 270px;
 }
-#left_box,#center_box{    
+#left_box,#center_box{
     margin-right: 15px;
     float: left;
     width: 310px;
 }
-#right_box{    
+#right_box{
     float: left;
     width: 310px;
     display: inline;
@@ -1080,12 +1080,19 @@ html body div#page div#container.group div#content-wrap.group div#wrapper_conten
 #main .notification_center input[type=button],#main .selectorCenter input[type=button]{
     min-width:39px !important;
 }
-#main #shop .cart input[type=text]{
-    width:30px !important;
+#shop input.shop_quantity {
+    width: 30px;
 }
-#main #shop .cart input[type=text]:focus{
-    width:25px !important;
-    border-left:5px solid #2687CC;
+#shop input.shop_quantity:focus {
+    width: 26px;
+    border-left: 5px solid #2687CC;
+}
+#shop input.coupon_code {
+    width: 121px;
+}
+#shop input.coupon_code:focus {
+    width: 117px;
+    border-left: 5px solid #2687CC;
 }
 #main #livecam form input[value="Today"],#main #livecam form input[value="Go to the archive..."]{
     border-width:0px !important;
@@ -1149,4 +1156,47 @@ noindex:-o-prefocus, input[type="submit"], input[type="button"], input[type="res
 }
 #mediadir .mediadirSearchForm .mediadirButtonSearch{
 	margin-left: 3px;
+}
+
+/*  Global Messages
+    See core/Message.class.php */
+span.error  {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #b40018;
+  background-color: #f6cbca;
+  color: #b40018;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
+}
+span.information {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #1d2a8f;
+  background-color: #cbd5f4;
+  color: #1d2a8f;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
+}
+span.ok  {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #29560b;
+  background-color: #b4e19e;
+  color: #29560b;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
+}
+span.warning  {
+  padding: 9px 5px 9px 9px;
+  margin: 0px 0px 25px 0px;
+  border: 1px solid #db6503;
+  background-color: #f4df88;
+  color: #db6503;
+  font-weight: bold;
+  width: 95% !important;
+  display: block;
 }
