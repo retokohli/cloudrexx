@@ -119,7 +119,7 @@ class Message
             self::clear();
             return;
         }
-        $_SESSION['messages_stack'] = array_pop($_SESSION['messages_stack']);
+        $_SESSION['messages'] = array_pop($_SESSION['messages_stack']);
     }
 
 
@@ -334,5 +334,3 @@ class Message
     }
 
 }
-
-?>
