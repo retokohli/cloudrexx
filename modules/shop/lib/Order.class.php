@@ -55,6 +55,20 @@ class Order
     protected $vat_amount = 0.00;
     protected $shipment_amount = 0.00;
     protected $payment_amount = 0.00;
+
+// 20111017 Added billing address
+    protected $billing_gender = '';
+    protected $billing_company = '';
+    protected $billing_firstname = '';
+    protected $billing_lastname = '';
+    protected $billing_address = '';
+    protected $billing_city = '';
+    protected $billing_zip = '';
+    protected $billing_country_id = 0;
+    protected $billing_phone = '';
+    protected $billing_fax = '';
+    protected $billing_email = '';
+
     protected $gender = '';
     protected $company = '';
     protected $firstname = '';
@@ -305,6 +319,235 @@ class Order
             }
         }
         return $this->payment_amount;
+    }
+
+    /**
+     * Returns the gender (billing addres)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * Valid values are defined by the User_Profile_Attribute class.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $gender     The optional gender
+     * @return  string              The gender
+     */
+    function billing_gender($billing_gender=null)
+    {
+        if (isset($billing_gender)) {
+            $billing_gender = trim(strip_tags($billing_gender));
+            if ($billing_gender != '') {
+                $this->billing_gender = $billing_gender;
+            }
+        }
+        return $this->billing_gender;
+    }
+
+    /**
+     * Returns the company (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_company    The optional company
+     * @return  string                      The company
+     */
+    function billing_company($billing_company=null)
+    {
+        if (isset($billing_company)) {
+            $this->billing_company = trim(strip_tags($billing_company));
+        }
+        return $this->billing_company;
+    }
+
+    /**
+     * Returns the first name (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_firstname  The optional first name
+     * @return  string                      The first name
+     */
+    function billing_firstname($billing_firstname=null)
+    {
+        if (isset($billing_firstname)) {
+            $billing_firstname = trim(strip_tags($billing_firstname));
+            if ($billing_firstname != '') {
+                $this->billing_firstname = $billing_firstname;
+            }
+        }
+        return $this->billing_firstname;
+    }
+
+    /**
+     * Returns the last name (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_lastname   The optional last name
+     * @return  string                      The last name
+     */
+    function billing_lastname($billing_lastname=null)
+    {
+        if (isset($billing_lastname)) {
+            $billing_lastname = trim(strip_tags($billing_lastname));
+            if ($billing_lastname != '') {
+                $this->billing_lastname = $billing_lastname;
+            }
+        }
+        return $this->billing_lastname;
+    }
+
+    /**
+     * Returns the address (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_address    The optional address
+     * @return  string                      The address
+     */
+    function billing_address($billing_address=null)
+    {
+        if (isset($billing_address)) {
+            $billing_address = trim(strip_tags($billing_address));
+            if ($billing_address != '') {
+                $this->billing_address = $billing_address;
+            }
+        }
+        return $this->billing_address;
+    }
+
+    /**
+     * Returns the city (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_city   The optional city
+     * @return  string                  The city
+     */
+    function billing_city($billing_city=null)
+    {
+        if (isset($billing_city)) {
+            $billing_city = trim(strip_tags($billing_city));
+            if ($billing_city != '') {
+                $this->billing_city = $billing_city;
+            }
+        }
+        return $this->billing_city;
+    }
+
+    /**
+     * Returns the zip (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_zip    The optional zip
+     * @return  string                  The zip
+     */
+    function billing_zip($billing_zip=null)
+    {
+        if (isset($billing_zip)) {
+            $billing_zip = trim(strip_tags($billing_zip));
+            if ($billing_zip != '') {
+                $this->billing_zip = $billing_zip;
+            }
+        }
+        return $this->billing_zip;
+    }
+
+    /**
+     * Returns the Country ID (billing address)
+     *
+     * Optionally sets the value first if the parameter value is an integer
+     * greater than zero.
+     * Note that the value is not verified other than that.
+     * This value is zero unless it has been set before.
+     * @param   integer $billing_country_id     The optional Country ID
+     * @return  integer                         The Country ID
+     */
+    function billing_country_id($billing_country_id=null)
+    {
+        if (isset($billing_country_id)) {
+            $billing_country_id = intval($billing_country_id);
+            if ($billing_country_id > 0) {
+                $this->billing_country_id = $billing_country_id;
+            }
+        }
+        return $this->billing_country_id;
+    }
+
+    /**
+     * Returns the phone number (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_phone  The optional phone number
+     * @return  string                  The phone number
+     */
+    function billing_phone($billing_phone=null)
+    {
+        if (isset($billing_phone)) {
+            $billing_phone = trim(strip_tags($billing_phone));
+            if ($billing_phone != '') {
+                $this->billing_phone = $billing_phone;
+            }
+        }
+        return $this->billing_phone;
+    }
+
+    /**
+     * Returns the fax number (billing address)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_fax    The optional fax number
+     * @return  string                  The fax number
+     */
+    function billing_fax($billing_fax=null)
+    {
+        if (isset($billing_fax)) {
+            $billing_fax = trim(strip_tags($billing_fax));
+            if ($billing_fax != '') {
+                $this->billing_fax = $billing_fax;
+            }
+        }
+        return $this->billing_fax;
+    }
+
+    /**
+     * Returns the e-mail address (customer)
+     *
+     * Optionally sets the value first if the parameter value is a non-empty
+     * string.
+     * Note that the value is not verified other than that.
+     * This value is the empty string unless it has been set before.
+     * @param   string  $billing_email  The optional e-mail address
+     * @return  string                  The e-mail address
+     */
+    function billing_email($billing_email=null)
+    {
+        if (isset($billing_email)) {
+            $billing_email = trim(strip_tags($billing_email));
+            if ($billing_email != '') {
+                $this->billing_email = $billing_email;
+            }
+        }
+        return $this->billing_email;
     }
 
     /**
@@ -667,7 +910,15 @@ class Order
                    `shipment_id`, `payment_id`,
                    `status`,
                    `sum`,
-                   `vat_amount`, `shipment_amount`, `payment_amount`,
+                   `vat_amount`, `shipment_amount`, `payment_amount`,".
+// 20111017 Added billing address
+            "
+                   `billing_gender`, `billing_company`,
+                   `billing_firstname`, `billing_lastname`,
+                   `billing_address`, `billing_city`, `billing_zip`,
+                   `billing_country_id`,
+                   `billing_phone`, `billing_fax`,
+                   `billing_email`,
                    `gender`, `company`, `firstname`, `lastname`,
                    `address`, `city`, `zip`, `country_id`, `phone`,
                    `ip`, `host`, `browser`,
@@ -704,6 +955,18 @@ class Order
         $objOrder->zip($objResult->fields['zip']);
         $objOrder->country_id($objResult->fields['country_id']);
         $objOrder->phone($objResult->fields['phone']);
+// 20111017 Added billing address
+        $objOrder->billing_gender($objResult->fields['billing_gender']);
+        $objOrder->billing_company($objResult->fields['billing_company']);
+        $objOrder->billing_firstname($objResult->fields['billing_firstname']);
+        $objOrder->billing_lastname($objResult->fields['billing_lastname']);
+        $objOrder->billing_address($objResult->fields['billing_address']);
+        $objOrder->billing_city($objResult->fields['billing_city']);
+        $objOrder->billing_zip($objResult->fields['billing_zip']);
+        $objOrder->billing_country_id($objResult->fields['billing_country_id']);
+        $objOrder->billing_phone($objResult->fields['billing_phone']);
+        $objOrder->billing_fax($objResult->fields['billing_fax']);
+        $objOrder->billing_email($objResult->fields['billing_email']);
         $objOrder->ip($objResult->fields['ip']);
         $objOrder->host($objResult->fields['host']);
         $objOrder->browser($objResult->fields['browser']);
@@ -742,7 +1005,20 @@ class Order
                 `payment_id`, `payment_amount`,
                 `vat_amount`,
                 `ip`, `host`, `lang_id`,
-                `browser`, `note`".
+                `browser`, `note`,".
+// 20111017 Added billing address
+                "
+                `billing_gender`,
+                `billing_company`,
+                `billing_firstname`,
+                `billing_lastname`,
+                `billing_address`,
+                `billing_city`,
+                `billing_zip`,
+                `billing_country_id`,
+                `billing_phone`,
+                `billing_fax`,
+                `billing_email`".
             ($this->shipment_id ? ',
                 `company`, `gender`,
                 `firstname`, `lastname`,
@@ -759,7 +1035,20 @@ class Order
                 '".addslashes($this->host)."',
                 $this->lang_id,
                 '".addslashes($this->browser)."',
-                '".addslashes($this->note)."'".
+                '".addslashes($this->note)."',".
+// 20111017 Added billing address
+                "
+                '".addslashes($this->billing_gender)."',
+                '".addslashes($this->billing_company)."',
+                '".addslashes($this->billing_firstname)."',
+                '".addslashes($this->billing_lastname)."',
+                '".addslashes($this->billing_address)."',
+                '".addslashes($this->billing_city)."',
+                '".addslashes($this->billing_zip)."',
+                '".$this->billing_country_id."',
+                '".addslashes($this->billing_phone)."',
+                '".addslashes($this->billing_fax)."',
+                '".addslashes($this->billing_email)."'".
             ($this->shipment_id ? ",
                 '".addslashes($this->company)."',
                 '".addslashes($this->gender)."',
@@ -921,27 +1210,40 @@ class Order
             }
         }
         $objUser = FWUser::getFWUserObject()->objUser;
-        // store the order details
+        // Store the order details
         $query = "
             UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-               SET sum=".floatval($totalOrderSum).",
-                   shipment_amount=".floatval($_POST['shippingPrice']).",
-                   payment_amount=".floatval($_POST['paymentPrice']).",
-                   status ='".intval($_POST['order_status'])."',
-                   gender='".contrexx_input2db($_POST['shipPrefix'])."',
-                   company='".contrexx_input2db($_POST['shipCompany'])."',
-                   firstname='".contrexx_input2db($_POST['shipFirstname'])."',
-                   lastname='".contrexx_input2db($_POST['shipLastname'])."',
-                   address='".contrexx_input2db($_POST['shipAddress'])."',
-                   city='".contrexx_input2db($_POST['shipCity'])."',
-                   zip='".contrexx_input2db($_POST['shipZip'])."',
-                   country_id=".intval($_POST['shipCountry']).",
-                   phone='".contrexx_input2db($_POST['shipPhone'])."',
-                   vat_amount=".floatval($_POST['taxPrice']).",
-                   shipment_id=".intval($_POST['shipperId']).",
-                   modified_by='".$objUser->getUsername()."',
-                   modified_on=now()
-             WHERE id=$order_id";
+               SET `sum`=".floatval($totalOrderSum).",
+                   `shipment_amount`=".floatval($_POST['shippingPrice']).",
+                   `payment_amount`=".floatval($_POST['paymentPrice']).",
+                   `status`='".intval($_POST['order_status'])."',".
+// 20111017 Added billing address
+            "
+                   `billing_gender`='".contrexx_input2db($_POST['billing_gender'])."',
+                   `billing_company`='".contrexx_input2db($_POST['billing_company'])."',
+                   `billing_firstname`='".contrexx_input2db($_POST['billing_firstname'])."',
+                   `billing_lastname`='".contrexx_input2db($_POST['billing_lastname'])."',
+                   `billing_address`='".contrexx_input2db($_POST['billing_address'])."',
+                   `billing_city`='".contrexx_input2db($_POST['billing_city'])."',
+                   `billing_zip`='".contrexx_input2db($_POST['billing_zip'])."',
+                   `billing_country_id`='".intval($_POST['billing_country_id'])."',
+                   `billing_phone`='".contrexx_input2db($_POST['billing_phone'])."',
+                   `billing_fax`='".contrexx_input2db($_POST['billing_fax'])."',
+                   `billing_email`='".contrexx_input2db($_POST['billing_email'])."',
+                   `gender`='".contrexx_input2db($_POST['shipPrefix'])."',
+                   `company`='".contrexx_input2db($_POST['shipCompany'])."',
+                   `firstname`='".contrexx_input2db($_POST['shipFirstname'])."',
+                   `lastname`='".contrexx_input2db($_POST['shipLastname'])."',
+                   `address`='".contrexx_input2db($_POST['shipAddress'])."',
+                   `city`='".contrexx_input2db($_POST['shipCity'])."',
+                   `zip`='".contrexx_input2db($_POST['shipZip'])."',
+                   `country_id`=".intval($_POST['shipCountry']).",
+                   `phone`='".contrexx_input2db($_POST['shipPhone'])."',
+                   `vat_amount`=".floatval($_POST['taxPrice']).",
+                   `shipment_id`=".intval($_POST['shipperId']).",
+                   `modified_by`='".$objUser->getUsername()."',
+                   `modified_on`=now()
+             WHERE `id`=$order_id";
         // should not be changed, see above
         // ", payment_id = ".intval($_POST['paymentId']).
         if (!$objDatabase->Execute($query)) {
@@ -1418,8 +1720,8 @@ class Order
             'SHOP_CURRENCY' =>
                 Currency::getCurrencySymbolById($objOrder->currency_id())));
 //DBG::log("Order sum: ".Currency::formatPrice($objOrder->sum()));
-        $customer_gender = ($objCustomer->gender()
-            ? $_ARRAYLANG['TXT_SHOP_'.strtoupper($objCustomer->gender())]
+        $customer_gender = ($objOrder->billing_gender()
+            ? $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->billing_gender())]
             : '');
         $objTemplate->setVariable(array(
             'SHOP_CUSTOMER_ID' => $customer_id,
@@ -1441,13 +1743,17 @@ class Order
             'SHOP_ORDER_SUM' => Currency::formatPrice($objOrder->sum()),
             'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
             'SHOP_GENDER' => $customer_gender,
-            'SHOP_COMPANY' => $objCustomer->company(),
-            'SHOP_FIRSTNAME' => $objCustomer->firstname(),
-            'SHOP_LASTNAME' => $objCustomer->lastname(),
-            'SHOP_ADDRESS' => $objCustomer->address(),
-            'SHOP_ZIP' => $objCustomer->zip(),
-            'SHOP_CITY' => $objCustomer->city(),
-            'SHOP_COUNTRY' => Country::getNameById($objCustomer->country_id()),
+// 20111017 Added billing address
+            'SHOP_COMPANY' => $objOrder->billing_company(),
+            'SHOP_FIRSTNAME' => $objOrder->billing_firstname(),
+            'SHOP_LASTNAME' => $objOrder->billing_lastname(),
+            'SHOP_ADDRESS' => $objOrder->billing_address(),
+            'SHOP_ZIP' => $objOrder->billing_zip(),
+            'SHOP_CITY' => $objOrder->billing_city(),
+            'SHOP_COUNTRY' => Country::getNameById($objOrder->billing_country_id()),
+            'SHOP_PHONE' => $objOrder->billing_phone(),
+            'SHOP_FAX' => $objOrder->billing_fax(),
+            'SHOP_EMAIL' => $objOrder->billing_email(),
             'SHOP_SHIP_GENDER' => ($edit
                 ? Customer::getGenderMenu($objOrder->gender(), 'shipPrefix')
                 : $_ARRAYLANG['TXT_SHOP_'.strtoupper($objOrder->gender())]),
@@ -1462,15 +1768,7 @@ class Order
                 ? Country::getMenu('shipCountry', $objOrder->country_id())
                 : Country::getNameById($objOrder->country_id())),
             'SHOP_SHIP_PHONE' => $objOrder->phone(),
-            'SHOP_PHONE' => $objCustomer->phone(),
-            'SHOP_FAX' => $objCustomer->fax(),
-            'SHOP_EMAIL' => $objCustomer->email(),
             'SHOP_PAYMENTTYPE' => Payment::getProperty($objOrder->payment_id(), 'name'),
-// OBSOLETE
-//            'SHOP_CCNUMBER' => $objResult->fields['ccnumber'],
-//            'SHOP_CCDATE' => $objResult->fields['ccdate'],
-//            'SHOP_CCNAME' => $objResult->fields['ccname'],
-//            'SHOP_CVC_CODE' => $objResult->fields['cvc_code'],
             'SHOP_CUSTOMER_NOTE' => $objOrder->note(),
             'SHOP_CUSTOMER_IP' => ($objOrder->ip()
                 ? '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
@@ -1752,40 +2050,6 @@ class Order
         ShopSettings::errorHandler();
         Country::errorHandler();
 
-        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_orders';
-        $table_structure = array(
-            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'orderid'),
-            'customer_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'customerid'),
-            'currency_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'selected_currency_id'),
-            'shipment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'shipping_id'),
-            'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
-            'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'customer_lang'),
-            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'order_status'),
-            'sum' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_order_sum'),
-            'vat_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'tax_price'),
-            'shipment_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_ship_price'),
-            'payment_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_payment_price'),
-            'gender' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_prefix'),
-            'company' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_company'),
-            'firstname' => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_firstname'),
-            'lastname' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_lastname'),
-            'address' => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_address'),
-            'city' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_city'),
-            'zip' => array('type' => 'VARCHAR(10)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_zip'),
-            'country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_country_id'),
-            'phone' => array('type' => 'VARCHAR(20)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_phone'),
-            'ip' => array('type' => 'VARCHAR(50)', 'default' => '', 'renamefrom' => 'customer_ip'),
-            'host' => array('type' => 'VARCHAR(100)', 'default' => '', 'renamefrom' => 'customer_host'),
-            'browser' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'customer_browser'),
-            'note' => array('type' => 'TEXT', 'default' => '', 'renamefrom' => 'customer_note'),
-            'date_time' => array('type' => 'DATETIME', 'default' => '0000-00-00 00:00:00', 'renamefrom' => 'order_date'),
-            'modified_on' => array('type' => 'DATETIME', 'default' => null, 'notnull' => false, 'renamefrom' => 'last_modified'),
-            'modified_by' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null),
-        );
-        $table_index = array(
-            'status' => array('fields' => array('status')));
-        UpdateUtil::table($table_name, $table_structure, $table_index);
-
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_order_items';
         $table_structure = array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'order_items_id'),
@@ -1823,6 +2087,152 @@ class Order
         );
         $table_index = array();
         UpdateUtil::table($table_name, $table_structure, $table_index);
+
+        $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_orders';
+        $table_structure = array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'orderid'),
+            'customer_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'customerid'),
+            'currency_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'selected_currency_id'),
+            'shipment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'shipping_id'),
+            'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
+            'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'customer_lang'),
+            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'order_status'),
+            'sum' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_order_sum'),
+            'vat_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'tax_price'),
+            'shipment_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_ship_price'),
+            'payment_amount' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'currency_payment_price'),
+// 20111017 Added billing address
+            'billing_gender' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null),
+            'billing_company' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null),
+            'billing_firstname' => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default' => null),
+            'billing_lastname' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null),
+            'billing_address' => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default' => null),
+            'billing_city' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null),
+            'billing_zip' => array('type' => 'VARCHAR(10)', 'notnull' => false, 'default' => null),
+            'billing_country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null),
+            'billing_phone' => array('type' => 'VARCHAR(20)', 'notnull' => false, 'default' => null),
+            'billing_fax' => array('type' => 'VARCHAR(20)', 'notnull' => false, 'default' => null),
+            'billing_email' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'default' => null),
+            'gender' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_prefix'),
+            'company' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_company'),
+            'firstname' => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_firstname'),
+            'lastname' => array('type' => 'VARCHAR(100)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_lastname'),
+            'address' => array('type' => 'VARCHAR(40)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_address'),
+            'city' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_city'),
+            'zip' => array('type' => 'VARCHAR(10)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_zip'),
+            'country_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_country_id'),
+            'phone' => array('type' => 'VARCHAR(20)', 'notnull' => false, 'default' => null, 'renamefrom' => 'ship_phone'),
+            'ip' => array('type' => 'VARCHAR(50)', 'default' => '', 'renamefrom' => 'customer_ip'),
+            'host' => array('type' => 'VARCHAR(100)', 'default' => '', 'renamefrom' => 'customer_host'),
+            'browser' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'customer_browser'),
+            'note' => array('type' => 'TEXT', 'default' => '', 'renamefrom' => 'customer_note'),
+            'date_time' => array('type' => 'DATETIME', 'default' => '0000-00-00 00:00:00', 'renamefrom' => 'order_date'),
+            'modified_on' => array('type' => 'DATETIME', 'default' => null, 'notnull' => false, 'renamefrom' => 'last_modified'),
+            'modified_by' => array('type' => 'VARCHAR(50)', 'notnull' => false, 'default' => null),
+        );
+        $table_index = array(
+            'status' => array('fields' => array('status')));
+        UpdateUtil::table($table_name, $table_structure, $table_index);
+
+// TODO: TEST
+// Migrate present Customer addresses to the new billing address fields.
+// Note that this method is also called in Customer::errorHandler() *before*
+// any Customer is modified.  Thus, we can safely depend on the old
+// Customer table in one way -- if it doesn't exist, all Orders and Customers
+// have been successfully migrated already.
+        $table_name_customer = DBPREFIX."module_shop".MODULE_INDEX."_customers";
+        if (UpdateUtil::table_exist($table_name_customer)) {
+// On the other hand, there may have been an error somewhere in between
+// altering the Orders table and moving Customers to the Users table.
+// So, to be on the safe side, we will only update Orders where the billing
+// address fields are all NULL, as is the case just after the alteration
+// of the Orders table above.
+// Also note that any inconsistencies involving missing Customer records will
+// be left over as-is and may later be handled in the backend.
+            $objResult = UpdateUtil::sql("
+                SELECT DISTINCT `customer_id`,
+                       `customer`.`prefix`,
+                       `customer`.`firstname`, `customer`.`lastname`,
+                       `customer`.`company`, `customer`.`address`,
+                       `customer`.`city`, `customer`.`zip`,
+                       `customer`.`country_id`,
+                       `customer`.`phone`, `customer`.`fax`,
+                       `customer`.`email`
+                  FROM `$table_name`
+                  JOIN `$table_name_customer` AS `customer`
+                    ON `customerid`=`customer_id`
+                 WHERE `billing_gender` IS NULL
+                   AND `billing_company` IS NULL
+                   AND `billing_firstname` IS NULL
+                   AND `billing_lastname` IS NULL
+                   AND `billing_address` IS NULL
+                   AND `billing_city` IS NULL
+                   AND `billing_zip` IS NULL
+                   AND `billing_country_id` IS NULL
+                   AND `billing_phone` IS NULL
+                   AND `billing_fax` IS NULL
+                   AND `billing_email` IS NULL");
+            while ($objResult && !$objResult->EOF) {
+                $customer_id = $objResult->fields['customer_id'];
+                $gender = 'gender_unknown';
+                if (preg_match('/^(?:frau|mad|mme|signora|miss)/i',
+                    $objResult->fields['prefix'])) {
+                    $gender = 'gender_female';
+                } elseif (preg_match('/^(?:herr|mon|signore|mister|mr)/i',
+                    $objResult->fields['prefix'])) {
+                    $gender = 'gender_male';
+                }
+                UpdateUtil::sql("
+                    UPDATE `$table_name`
+                       SET `billing_gender`='".addslashes($gender)."',
+                           `billing_company`='".addslashes($objResult->fields['company'])."',
+                           `billing_firstname`='".addslashes($objResult->fields['firstname'])."',
+                           `billing_lastname`='".addslashes($objResult->fields['lastname'])."',
+                           `billing_address`='".addslashes($objResult->fields['address'])."',
+                           `billing_city`='".addslashes($objResult->fields['city'])."',
+                           `billing_zip`='".addslashes($objResult->fields['zip'])."',
+                           `billing_country_id`=".intval($objResult->fields['country_id']).",
+                           `billing_phone`='".addslashes($objResult->fields['phone'])."',
+                           `billing_fax`='".addslashes($objResult->fields['fax'])."',
+                           `billing_email`='".addslashes($objResult->fields['email'])."'
+                     WHERE `customer_id`=$customer_id
+                       AND `billing_gender` IS NULL
+                       AND `billing_company` IS NULL
+                       AND `billing_firstname` IS NULL
+                       AND `billing_lastname` IS NULL
+                       AND `billing_address` IS NULL
+                       AND `billing_city` IS NULL
+                       AND `billing_zip` IS NULL
+                       AND `billing_country_id` IS NULL
+                       AND `billing_phone` IS NULL
+                       AND `billing_fax` IS NULL
+                       AND `billing_email` IS NULL");
+                $objResult->MoveNext();
+            }
+        }
+
+        // Finally, update the migrated Order records with the proper gender
+        // strings as used in the User class hierarchy as well
+        $objResult = UpdateUtil::sql("
+            SELECT `id`, `gender`
+              FROM `$table_name`
+             WHERE `gender` NOT IN
+                   ('gender_male', 'gender_female', 'gender_undefined')");
+        while ($objResult && !$objResult->EOF) {
+            $gender = 'gender_unknown';
+            if (preg_match('/^(?:frau|mad|mme|signora|miss)/i',
+                $objResult->fields['gender'])) {
+                $gender = 'gender_female';
+            } elseif (preg_match('/^(?:herr|mon|signore|mister|mr)/i',
+                $objResult->fields['gender'])) {
+                $gender = 'gender_male';
+            }
+            UpdateUtil::sql("
+                UPDATE `$table_name`
+                   SET `gender`='".addslashes($gender)."'
+                 WHERE `id`=".$objResult->fields['id']);
+            $objResult->MoveNext();
+        }
 
         // Always
         return false;
