@@ -808,7 +808,7 @@ class Country
             'HEAD_SETTINGS_COUNTRY_ISO3' => $objSorting->getHeaderForField('alpha3'),
             'CORE_SETTINGDB_TAB_INDEX' => SettingDb::tab_index(),
             'SETTINGS_COUNTRY_PAGING' =>
-                Paging::get($count, null, $uri_paging, '', true, $limit),
+                Paging::get($uri_paging, '', $count, $limit, true),
         ));
         // Note:  Optionally disable the block 'settings_country_submit'
         // to disable storing changes
@@ -913,7 +913,7 @@ class Country
      * Should be called whenever there's a problem with the database table.
      * @return  boolean             False.  Always.
      */
-    function errorHandler()
+    static function errorHandler()
     {
 
         require_once(ASCMS_DOCUMENT_ROOT.'/update/UpdateUtil.php');
