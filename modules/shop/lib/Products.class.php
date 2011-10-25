@@ -968,10 +968,11 @@ class Products
             // Order the counts in reverse, from highest to lowest
             $strJsArrPrice = '';
             if (is_array($arrDiscountCountRate)) {
-                foreach (array_reverse($arrDiscountCountRate, true) as $count => $rate) {
+                foreach ($arrDiscountCountRate as $count => $rate) {
                     // Deduct the customer type discount right away
+//DBG::log("Products::getJavascriptArray(): price $price, rate $rate");
                     $discountPrice = $price - ($price * $rate * 0.01);
-                    $strJsArrProduct .=
+                    $strJsArrPrice .=
                         ($strJsArrPrice ? ',' : '').
                         // Count followed by price
                         $count.','.Currency::getCurrencyPrice($discountPrice);

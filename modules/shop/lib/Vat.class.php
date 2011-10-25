@@ -521,7 +521,7 @@ class Vat
                 }
                 $query = "
                     UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_vat
-                       SET `rate`=$rate,
+                       SET `rate`=$rate
                      WHERE `id`=$id";
                 $objResult = $objDatabase->Execute($query);
                 if (!$objResult) return false;

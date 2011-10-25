@@ -422,7 +422,7 @@ DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
      * Returns the HTML code for the Yellowpay payment method.
      * @return  string  HTML code
      */
-    function _YellowpayProcessor()
+    static function _YellowpayProcessor()
     {
         global $_ARRAYLANG;
 
@@ -493,7 +493,7 @@ DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
      *                  If the order ID is unknown or upon failure:
      *                  Boolean false
      */
-    function checkIn()
+    static function checkIn()
     {
         if (   isset($_GET['result'])
             && $_GET['result'] == 0 || $_GET['result'] == 2
