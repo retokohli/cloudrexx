@@ -259,7 +259,10 @@ class Discount
 
         if (empty($group_id)) return null;
         if (is_null(self::$arrDiscountCountRate)) self::init();
-        return self::$arrDiscountCountRate;
+        if (isset (self::$arrDiscountCountRate[$group_id])) {
+            return self::$arrDiscountCountRate[$group_id];
+        }
+        return null;
     }
 
 

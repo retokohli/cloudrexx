@@ -144,7 +144,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    function getCustomOrderId($order_id)
+    static function getCustomOrderId($order_id)
     {
         global $objDatabase;
 
@@ -209,7 +209,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
      * @param   string    $strFilename    The file name with the uniqid
      * @return  string                    The original file name
      */
-    function stripUniqidFromFilename($strFilename)
+    static function stripUniqidFromFilename($strFilename)
     {
         return preg_replace('/\[[0-9a-f]{13}\]/', '', $strFilename);
     }

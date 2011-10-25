@@ -675,13 +675,13 @@ Datatrans::initialize('1000011011', '995', 'CHF', '234');
 <? echo(nl2br(htmlentities(print_r($_POST, true), ENT_QUOTES, 'UTF-8'))); ?>
     <h1>Current Form:</h1>
 <? echo(nl2br(htmlentities(
-'    <form action="'.Datatrans::getGatewayUri().'" method="POST">
+'    <form action="'.Datatrans::getGatewayUri().'" method="post">
 '.Datatrans::getHtml().'
       <input type="submit" value="go">
     </form>
 ', ENT_QUOTES, 'UTF-8')));
 ?>
-    <form action="<? echo(Datatrans::getGatewayUri()); ?>" method="POST">
+    <form action="<? echo(Datatrans::getGatewayUri()); ?>" method="post">
 <? echo(Datatrans::getHtml()); ?>
       <input type="submit" value="go">
     </form>
