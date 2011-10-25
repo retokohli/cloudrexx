@@ -337,8 +337,7 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Customer ID");
             return null;
         }
-        if ($objCoupon->product_id()
-         && $objCoupon->product_id() != $product_id) {
+        if ($objCoupon->product_id() != $product_id) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID");
             return null;
         }
@@ -499,10 +498,10 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             )
             ON DUPLICATE KEY UPDATE `count`=$uses";
         if (!$objDatabase->Execute($query)) {
-//echo("incrementUse($code, $customer_id, $amount): Added count 1, amount<br />");
+//DBG::log("redeem($order_id, $customer_id, $amount, $uses): ERROR: Failed to add use $uses, amount $amount!");
             return false;
         }
-//echo("incrementUse($code, $customer_id, $amount): ERROR: Failed to add count, amount!<br />");
+//DBG::log("redeem($order_id, $customer_id, $amount, $uses): Used $uses, amount $amount<br />");
         return $this;
     }
 
@@ -548,6 +547,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
      * @param   integer   $customer_id    The optional Customer ID
      * @return  mixed                     The amount used with this Coupon
      *                                    on success, false otherwise
+     * @internal    Currently unused
      */
     private function getUsedAmount($customer_id=0)
     {
@@ -865,12 +865,20 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             ? (empty($_POST['end_date'])
                 ? 0 : strtotime(contrexx_input2raw($_POST['end_date'])))
             : 0;
+        $coupon_type = (empty ($_POST['coupon_type'])
+            ? null : contrexx_input2raw($_POST['coupon_type']));
         $discount_rate = intval(
             empty($_POST['discount_rate'])
                 ? 0 : floatval($_POST['discount_rate']));
         $discount_amount = Currency::formatPrice(
             empty($_POST['discount_amount'])
                 ? 0 : floatval($_POST['discount_amount']));
+        if ($coupon_type == 'rate') {
+            $discount_amount = 0;
+        }
+        if ($coupon_type == 'amount') {
+            $discount_rate = 0;
+        }
         $minimum_amount = Currency::formatPrice(
             empty($_POST['minimum_amount'])
                 ? 0 : floatval($_POST['minimum_amount']));
@@ -1089,6 +1097,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $attribute_customer = 'style="width: 230px;"';
         $attribute_product = 'style="width: 230px;"';
         $attribute_payment = 'style="width: 230px;"';
+        $type = ($objCouponEdit->discount_rate() > 0 ? 'rate' : 'amount');
         $objTemplate->setVariable(array(
             // Add new coupon code
             'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
@@ -1122,6 +1131,9 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 Html::getInputText('minimum_amount',
                     $objCouponEdit->minimum_amount(), false,
                     $attribute_minimum_amount),
+            'SHOP_DISCOUNT_COUPON_TYPE' => $type,
+            'SHOP_DISCOUNT_COUPON_TYPE_'.strtoupper($type).'_CHECKED' =>
+                HTML_ATTRIBUTE_CHECKED,
             'SHOP_DISCOUNT_COUPON_RATE' =>
                 Html::getInputText('discount_rate',
                     $objCouponEdit->discount_rate(), false,

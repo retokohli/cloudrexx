@@ -1,33 +1,31 @@
 <!-- START module_shop_settings_vat.html -->
 <script type="text/javascript">
-<!-- //
+// <![CDATA[
 function deleteVat(vatId)
 {
-    if (confirm("{TXT_SHOP_VAT_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&vatid=" + vatId);
+  if (confirm("{TXT_SHOP_VAT_CONFIRM_DELETE}\n{TXT_ACTION_IS_IRREVERSIBLE}"))
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&vatid=" + vatId);
 }
 function setVatAll()
 {
-    if (confirm("{TXT_SHOP_VAT_CONFIRM_SET_ALL}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-        var vatId = document.forms.form_vat.vat_default_id.value;
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&setVatAll=" + vatId);
-    }
+  if (confirm("{TXT_SHOP_VAT_CONFIRM_SET_ALL}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+    var vatId = document.forms.form_vat.vat_default_id.value;
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&setVatAll=" + vatId);
+  }
 }
 function setVatUnset()
 {
-    if (confirm("{TXT_SHOP_VAT_CONFIRM_SET_UNSET}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
-        var vatId = document.forms.form_vat.vat_default_id.value;
-        window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&setVatUnset=" + vatId);
-    }
+  if (confirm("{TXT_SHOP_VAT_CONFIRM_SET_UNSET}\n{TXT_ACTION_IS_IRREVERSIBLE}")) {
+    var vatId = document.forms.form_vat.vat_default_id.value;
+    window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=vat&setVatUnset=" + vatId);
+  }
 }
-//Text[0]=["","{}"];
-//Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,24,0.3,,2,"gray",1,,15,-50];
-// -->
+// ]]>
 </script>
 
 <form name="form_vat" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=vat">
   <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
-    <colgroup><col width="20%" /><col width="20%" /><col width="60%" /></colgroup>
+    <colgroup><col width="20%" /><col width="20%" /><col width="40%" /><col width="20%" /></colgroup>
     <tr>
       <th colspan="4">{TXT_SHOP_VAT_DETAILS}</th>
     </tr>
@@ -36,7 +34,7 @@ function setVatUnset()
         {TXT_SHOP_VAT_NUMBER}
       </td>
       <td colspan="3">
-        <input type="text" name="vat_number" value="{SHOP_VAT_NUMBER}" style="width: 180px;" />
+        <input type="text" name="vat_number" value="{SHOP_VAT_NUMBER}" style="text-align: right; width: 180px;" />
       </td>
     </tr>
 
@@ -65,19 +63,26 @@ function setVatUnset()
         </select>
       </td>
     </tr>
+  </table>
 
-    <tr><td colspan="4">&nbsp;</td></tr>
+  <br />
 
-    <tr >
-      <th nowrap="nowrap">
+  <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <colgroup><col width="20%" /><col width="20%" /><col width="40%" /><col width="20%" /></colgroup>
+
+    <tr>
+      <th nowrap="nowrap" colspan="4">
         {TXT_SHOP_VAT_ACTIVE}
       </th>
-      <th nowrap="nowrap">
+    </tr>
+    <tr class="row3">
+      <td nowrap="nowrap">&nbsp;</td>
+      <td nowrap="nowrap">
         <b>{TXT_SHOP_VAT_CUSTOMER}</b>
-      </th>
-      <th nowrap="nowrap" colspan="2">
+      </td>
+      <td nowrap="nowrap" colspan="2">
         <b>{TXT_SHOP_VAT_RESELLER}</b>
-      </th>
+      </td>
     </tr>
 
     <tr class="row1">
@@ -139,68 +144,79 @@ function setVatUnset()
         </div>
       </td>
     </tr>
-
-    <tr><td colspan="4">&nbsp;</td></tr>
-
-    <tr>
-      <th colspan="4">{TXT_SHOP_VAT_RATES}</th>
-    </tr>
-    <tr class="row3">
-      <td>&nbsp;</td>
-      <td nowrap="nowrap">
-        <b>{TXT_SHOP_VAT_CLASS}</b>
-      </td>
-      <td nowrap="nowrap">
-        <b>{TXT_SHOP_VAT_RATE}</b>
-      </td>
-      <td nowrap="nowrap" style="text-align: right;">
-        <b>{TXT_FUNCTIONS}</b>
-      </td>
-    </tr>
-<!-- BEGIN vatRow -->
-    <tr class="{SHOP_ROWCLASS}">
-      <td>&nbsp;</td>
-      <td nowrap="nowrap">
-        <input type="text" name="vatclass[{SHOP_VAT_ID}]" value="{SHOP_VAT_CLASS}"
-            style="width: 180px;" maxlength="255" />
-      </td>
-      <td nowrap="nowrap">
-        <input type="text" name="vatrate[{SHOP_VAT_ID}]" value="{SHOP_VAT_RATE}"
-            maxlength="6" style="text-align: right; width: 180px;" />%
-      </td>
-      <td nowrap="nowrap" style="text-align: right;">
-        <a href="javascript:deleteVat({SHOP_VAT_ID})" title="{TXT_DELETE}">
-          <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
-        </a>
-      </td>
-    </tr>
-<!-- END vatRow -->
-
-    <tr><td colspan="4">&nbsp;</td></tr>
-
-    <tr>
-      <th colspan="4">{TXT_SHOP_VAT_NEW}</th>
-    </tr>
-    <tr class="row3">
-      <td>&nbsp;</td>
-      <td nowrap="nowrap">
-        <b>{TXT_SHOP_VAT_CLASS_NEW}</b>
-      </td>
-      <td nowrap="nowrap" colspan="3">
-        <b>{TXT_SHOP_VAT_RATE_NEW}</b>
-      </td>
-    </tr>
-    <tr class="row1">
-      <td>&nbsp;</td>
-      <td nowrap="nowrap">
-        <input type="text" name="vatclassnew" value="" style="width: 180px;" maxlength="255" />
-      </td>
-      <td nowrap="nowrap" colspan="2">
-        <input type="text" name="vatratenew" value="" style="width: 180px;" maxlength="6" />%
-      </td>
-    </tr>
   </table>
 
+  <br />
+
+  <ul id="tabmenu">
+    <li><a id="vat_tab_content1" class="active" href="javascript:{}" onclick="selectTab('content1')" title="{TXT_SHOP_VAT_RATES}">{TXT_SHOP_VAT_RATES}</a></li>
+    <li><a id="vat_tab_content2" href="javascript:{}" onclick="selectTab('content2')" title="{TXT_SHOP_VAT_NEW}">{TXT_SHOP_VAT_NEW}</a></li>
+  </ul>
+  <div id="content1" class="vat_tab" style="display: block;">
+    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+      <colgroup><col width="20%" /><col width="20%" /><col width="40%" /><col width="20%" /></colgroup>
+      <tr>
+        <th colspan="4">{TXT_SHOP_VAT_RATES}</th>
+      </tr>
+      <tr class="row3">
+        <td>&nbsp;</td>
+        <td nowrap="nowrap">
+          <b>{TXT_SHOP_VAT_CLASS}</b>
+        </td>
+        <td nowrap="nowrap">
+          <b>{TXT_SHOP_VAT_RATE}</b>
+        </td>
+        <td nowrap="nowrap" style="text-align: right;">
+          <b>{TXT_FUNCTIONS}</b>
+        </td>
+      </tr>
+  <!-- BEGIN vatRow -->
+      <tr class="{SHOP_ROWCLASS}">
+        <td>&nbsp;</td>
+        <td nowrap="nowrap">
+          <input type="text" name="vatclass[{SHOP_VAT_ID}]" value="{SHOP_VAT_CLASS}"
+              style="width: 180px;" maxlength="255" />
+        </td>
+        <td nowrap="nowrap">
+          <input type="text" name="vatrate[{SHOP_VAT_ID}]" value="{SHOP_VAT_RATE}"
+              maxlength="6" style="text-align: right; width: 180px;" />%
+        </td>
+        <td nowrap="nowrap" style="text-align: right;">
+          <a href="javascript:deleteVat({SHOP_VAT_ID})" title="{TXT_DELETE}">
+            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+          </a>
+        </td>
+      </tr>
+  <!-- END vatRow -->
+    </table>
+
+  </div>
+  <div id="content2" class="vat_tab" style="display: none;">
+    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+      <colgroup><col width="20%" /><col width="20%" /><col width="40%" /><col width="20%" /></colgroup>
+      <tr>
+        <th colspan="4">{TXT_SHOP_VAT_NEW}</th>
+      </tr>
+      <tr class="row3">
+        <td>&nbsp;</td>
+        <td nowrap="nowrap">
+          <b>{TXT_SHOP_VAT_CLASS_NEW}</b>
+        </td>
+        <td nowrap="nowrap" colspan="3">
+          <b>{TXT_SHOP_VAT_RATE_NEW}</b>
+        </td>
+      </tr>
+      <tr class="row1">
+        <td>&nbsp;</td>
+        <td nowrap="nowrap">
+          <input type="text" name="vatclassnew" value="" style="width: 180px;" maxlength="255" />
+        </td>
+        <td nowrap="nowrap" colspan="2">
+          <input type="text" name="vatratenew" value="" style="width: 180px;" maxlength="6" />%
+        </td>
+      </tr>
+    </table>
+  </div>
   <br />
   <input type="submit" name="bvat" value="{TXT_STORE}" />
 </form>

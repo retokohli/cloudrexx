@@ -90,10 +90,28 @@
         <td>{SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT}</td>
       </tr>
       <tr class="row2">
+        <td>{TXT_SHOP_DISCOUNT_COUPON_TYPE}</td>
+        <td>
+          <input type="radio" name="coupon_type" value="rate"
+              id="coupon_type_rate" onclick="set_coupon_type('rate');"
+              {SHOP_DISCOUNT_COUPON_TYPE_RATE_CHECKED} />
+          <label for="coupon_type_rate">
+            {TXT_SHOP_DISCOUNT_COUPON_TYPE_RATE}
+          </label>
+          &nbsp;
+          <input type="radio" name="coupon_type" value="amount"
+              id="coupon_type_amount" onclick="set_coupon_type('amount');"
+              {SHOP_DISCOUNT_COUPON_TYPE_AMOUNT_CHECKED} />
+          <label for="coupon_type_amount">
+            {TXT_SHOP_DISCOUNT_COUPON_TYPE_AMOUNT}
+          </label>
+        </td>
+      </tr>
+      <tr class="row1" id="coupon_type_rate_row" style="display: none;">
         <td>{TXT_SHOP_DISCOUNT_COUPON_RATE}</td>
         <td>{SHOP_DISCOUNT_COUPON_RATE}</td>
       </tr>
-      <tr class="row1">
+      <tr class="row1" id="coupon_type_amount_row" style="display: none;">
         <td>{TXT_SHOP_DISCOUNT_COUPON_AMOUNT_CURRENCY}</td>
         <td>{SHOP_DISCOUNT_COUPON_AMOUNT}</td>
       </tr>
@@ -130,4 +148,22 @@
         tabindex="1002" />
   </form>
 </div>
+
+<script type="text/javascript">
+// <![CDATA[
+function set_coupon_type(type) {
+  var display_rate = "table-row";
+  var display_amount = "none";
+  switch (type) {
+    case 'amount':
+      display_rate = "none";
+      display_amount = "table-row";
+  }
+  document.getElementById("coupon_type_rate_row").style.display = display_rate;
+  document.getElementById("coupon_type_amount_row").style.display = display_amount;
+}
+set_coupon_type("{SHOP_DISCOUNT_COUPON_TYPE}");
+// ]]>
+</script>
+
 <!-- END module_shop_discount_coupon.html -->

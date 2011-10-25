@@ -411,6 +411,7 @@ function getArrProduct()
 // doesn't exist already
 function changeProduct(orderItemId, newProductId)
 {
+//console.log("changeProduct("+orderItemId+", "+newProductId+")");
   // list of product items in the order
   var arrProductId = getArrProduct();
   // try to find the new product id in the order array.
@@ -456,16 +457,17 @@ function changeProduct(orderItemId, newProductId)
     );
 // TODO: Deduct count type discount
     var prices = arrProducts[newProductId]['price'];
+//console.log("Prices: "+prices);
     var price = null;
     for (var count = 0; count < prices.length; count += 2) {
       var quantity_min = prices[count];
       if (quantity >= quantity_min) {
         price = prices[count+1];
-//alert("TOOK\nCount: "+count+", min. Quantity: "+quantity_min+" (price: "+(prices[count+1])+")");
+console.log("TOOK\nCount: "+count+", quantity: "+quantity+", min.: "+quantity_min+" (price: "+(prices[count+1])+")");
         break;
       }
     }
-//alert("Price: "+price);
+//console.log("Price: "+price);
     document.getElementById("productPrice-"+orderItemId).value =
       price.toFixed(2);
   }
@@ -488,23 +490,23 @@ function getWeightGrams(strWeight)
   // match positive float value
   var match = /(\d*\.?\d*)/.exec(strWeight);
   if (!match) {
-//alert("getWeightGrams("+strWeight+"): No match");
+//console.log("getWeightGrams("+strWeight+"): No match");
     return 0;
   }
   var number = Number(match[1]);
-//alert("getWeightGrams("+strWeight+"): number "+number);
+//console.log("getWeightGrams("+strWeight+"): number "+number);
   var factor = 1; // default is grams
   for (var unit_index = 0; unit_index < facts.length; ++unit_index) {
     // Match one of the units after a decimal point, digit, or whitespace
     var regex = new RegExp("[\\.\\d\\s]"+units[unit_index]);
     if (regex.test(strWeight)) {
       factor = facts[unit_index];
-//alert("getWeightGrams("+strWeight+"): factor "+factor);
+//console.log("getWeightGrams("+strWeight+"): factor "+factor);
       break;
     }
   }
   var weight = number * factor;
-//alert("getWeightGrams("+strWeight+"): Out "+weight);
+//console.log("getWeightGrams("+strWeight+"): Out "+weight);
   return weight;
 }
 
@@ -520,7 +522,7 @@ function weightToString(intWeight)
   if (unit_index == 0) return parseInt(intWeight)+" "+units[0];
   // round weight to three significant digits, add unit
   var weight = intWeight.toPrecision(3)+' '+units[unit_index];
-//alert("weightToString("+intWeight+"): "+weight);
+//console.log("weightToString("+intWeight+"): "+weight);
   return weight;
 }
 
@@ -538,12 +540,12 @@ function updateWeight()
     if (!elementId) continue;
     var match = /productWeight-(\d+)/.exec(elementId);
     if (!match) {
-//alert("updateWeight(): No match: "+elementId);
+//console.log("updateWeight(): No match: "+elementId);
       continue;
     }
-//alert("updateWeight(): Match: "+elementId);
+//console.log("updateWeight(): Match: "+elementId);
     var orderItemId = match[1];
-//alert("updateWeight(): Item "+orderItemId);
+//console.log("updateWeight(): Item "+orderItemId);
     // pick number of items
     var quantity = document.getElementById("productQuantity-"+orderItemId).value
     // pick weight string from order item
@@ -554,7 +556,7 @@ function updateWeight()
     element.value = weightToString(grams);
     // sum of all items' weights
     totalWeight += grams * quantity;
-//alert("updateWeight(): Item "+orderItemId+", quantity: "+quantity+", weight: "+weight+", grams: "+grams+", totalWeight: "+totalWeight);
+//console.log("updateWeight(): Item "+orderItemId+", quantity: "+quantity+", weight: "+weight+", grams: "+grams+", totalWeight: "+totalWeight);
   }
   // convert total weight to appropriate unit
   totalWeight = weightToString(totalWeight);
@@ -640,6 +642,7 @@ function updatePayment(paymentId)
 // if a order item  ID is given, update the corresponding row first.
 function calcPrice(orderItemId)
 {
+//console.log("calcPrice("+orderItemId+")");
   var arrProductId = getArrProduct();
   // Recalculate the row of the selected product:
   // Determine the row price according to the quantity
@@ -652,7 +655,7 @@ function calcPrice(orderItemId)
       document.getElementById("productPrice-"+orderItemId).value;
     var quantity =
       document.getElementById("productQuantity-"+orderItemId).value;
-//alert("Quantity: "+quantity+", Price: "+price);
+//console.log("Quantity: "+quantity+", Price: "+price);
   }
   document.getElementById("productPrice-"+orderItemId).value =
     Number(price).toFixed(2);
