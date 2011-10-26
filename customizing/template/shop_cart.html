@@ -7,7 +7,7 @@
     <form action="index.php?section=shop&amp;cmd=cart" name="shopForm" method ="post">
       <table summary="" cellspacing="0">
         <tr valign="top">
-          <th width="69%">
+          <th width="60%">
             <div align="left">
               <b>&nbsp;{TXT_PRODUCT}</b>
             </div>
@@ -17,12 +17,12 @@
               <b>&nbsp;{TXT_UNIT_PRICE}</b>
             </div>
           </th>
-          <th width="1%">
+          <th width="10%">
             <div align="right">
               <b>&nbsp;{TXT_QUANTITY}</b>
             </div>
           </th>
-          <th width="10%">
+          <th width="20%">
             <div align="right">
               <b>{TXT_TOTAL}&nbsp;</b>
             </div>
@@ -41,10 +41,15 @@
           <td>
             <div align="right">{SHOP_PRODUCT_ITEMPRICE}&nbsp;{SHOP_PRODUCT_ITEMPRICE_UNIT}</div>
           </td>
-          <td>
+          <td nowrap="nowrap">
             <div align="right">
-              <input class="form" type="text" name="quantity[{SHOP_PRODUCT_CART_ID}]"
-                  value="{SHOP_PRODUCT_QUANTITY}" style="width: 30px;"/>
+              <a href="#" title="{TXT_SHOP_REMOVE_ITEM}"
+                  onclick="deleteProduct({SHOP_PRODUCT_CART_ID});">
+                <img style="height: 18px;" alt="{TXT_SHOP_REMOVE_ITEM}"
+                    src="images/modules/shop/trash.png" />
+              </a>
+              <input type="text" name="quantity[{SHOP_PRODUCT_CART_ID}]"
+                  value="{SHOP_PRODUCT_QUANTITY}" class="shop_quantity" />
             </div>
           </td>
           <td>
@@ -106,14 +111,33 @@
             </div>
           </td>
         </tr>
+
+<!-- BEGIN shopCoupon -->
+        <tr>
+          <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr class="row2">
+          <td>
+            <strong>{TXT_SHOP_DISCOUNT_COUPON_CODE}</strong>
+          </td>
+          <td colspan="3">
+            <input type="text" maxlength="20" name="coupon_code"
+                value="{SHOP_DISCOUNT_COUPON_CODE}" class="coupon_code"
+                onchange="document.forms['shopForm'].submit();" />
+          </td>
+        </tr>
+<!-- END shopCoupon -->
+
+
 <!-- BEGIN shopShippingCountry -->
         <tr>
-          <td colspan="4" valign="top">&nbsp;</td>
+          <td colspan="4">&nbsp;</td>
         </tr>
         <tr class="row3">
           <td colspan="1" valign="top">
             <div align="left">
-              <strong>{TXT_SHIP_COUNTRY}</strong> {SHOP_COUNTRIES_MENU}
+              <label>{TXT_SHIP_COUNTRY}</label>
+              {SHOP_COUNTRIES_MENU}
             </div>
           </td>
           <td colspan="3" valign="top">
