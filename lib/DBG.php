@@ -184,7 +184,7 @@ class DBG
     }
 
 
-    static function time()
+    static function time($comment = '')
     {
         if (self::$enable_time) {
             $t = self::$last_time;
@@ -195,7 +195,7 @@ class DBG
             $f = self::_cleanfile($callers[0]['file']);
             $l = $callers[0]['line'];
             $d = date('H:i:s');
-            self::_log("TIME AT: $f:$l $d (diff: $diff_last, startdiff: $diff_start)");
+            self::_log("TIME AT: $f:$l $d (diff: $diff_last, startdiff: $diff_start)".(!empty($comment) ? ' -- '.$comment : ''), 'info');
         }
     }
 
