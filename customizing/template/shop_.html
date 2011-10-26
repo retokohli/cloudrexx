@@ -3,9 +3,9 @@
   <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
 <!-- END core_message -->
   <div class="menu">
-    <form name="shopSearch" action="index.php?section=shop" method="POST">
+    <form name="shopSearch" action="index.php?section=shop" method="post">
       <input type="text" name="term" value="{SHOP_SEARCH_TERM}"
-          tabindex="1" style="width: 150px;">&nbsp;
+          tabindex="1" style="width: 150px;" />&nbsp;
       <select name="catId" tabindex="2" style="width: 150px;">
         {SHOP_CATEGORIES_MENUOPTIONS}
       </select>&nbsp;
@@ -13,7 +13,7 @@
         {SHOP_MANUFACTURER_MENUOPTIONS}
       </select>
       <input type="submit" name="bsubmit"
-          value="{TXT_SHOP_SEARCH}" style="width: 66px;">
+          value="{TXT_SHOP_SEARCH}" style="width: 66px;" />
     </form>
   </div>
   <!-- <div class="cart_info">{SHOP_CART_INFO}</div> -->
