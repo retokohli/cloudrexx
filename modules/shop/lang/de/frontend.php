@@ -1,5 +1,5 @@
 <?php
-
+global $_ARRAYLANG;
 $_ARRAYLANG['SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
 $_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden >>";
 $_ARRAYLANG['SHOP_ACCOUNT_NEW_CUSTOMER'] = "Ich bin ein neuer Kunde.";

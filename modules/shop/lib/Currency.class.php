@@ -85,7 +85,8 @@ class Currency
             array('name' => self::TEXT_NAME));
         $query = "
             SELECT `currency`.`id`, `currency`.`code`, `currency`.`symbol`,
-                   `currency`.`rate`, `currency`.`ord`,
+                   `currency`.`rate`, `currency`.`increment`,
+                   `currency`.`ord`,
                    `currency`.`active`, `currency`.`default`, ".
                    $arrSqlName['field']."
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_currencies` AS `currency`".
@@ -105,6 +106,7 @@ class Currency
                 'symbol' => $objResult->fields['symbol'],
                 'name' => $strName,
                 'rate' => $objResult->fields['rate'],
+                'increment' => $objResult->fields['increment'],
                 'ord' => $objResult->fields['ord'],
                 'active' => $objResult->fields['active'],
                 'default' => $objResult->fields['default'],
@@ -307,8 +309,9 @@ class Currency
     {
         if (!is_array(self::$arrCurrency)) self::init();
         $rate = self::$arrCurrency[self::$activeCurrencyId]['rate'];
-        // getting 0.05 increments
-        return Currency::formatPrice(round(20*$price*$rate)/20);
+        $increment = self::$arrCurrency[self::$activeCurrencyId]['increment'];
+        return self::formatPrice(round($price*$rate/$increment)*$increment);
+        ;
     }
 
 
@@ -328,13 +331,13 @@ class Currency
     {
         if (!is_array(self::$arrCurrency)) self::init();
         if (self::$activeCurrencyId == self::$defaultCurrencyId) {
-            return Currency::formatPrice($price);
-        } else {
-            $rate = self::$arrCurrency[self::$activeCurrencyId]['rate'];
-            $defaultRate = self::$arrCurrency[self::$defaultCurrencyId]['rate'];
-            // getting 0.05 increments
-            return Currency::formatPrice(round(20*$price*$defaultRate/$rate)/20);
+            return self::formatPrice($price);
         }
+        $rate = self::$arrCurrency[self::$activeCurrencyId]['rate'];
+        $defaultRate = self::$arrCurrency[self::$defaultCurrencyId]['rate'];
+        $defaultIncrement = self::$arrCurrency[self::$defaultCurrencyId]['increment'];
+        return self::formatPrice(round(
+            $price*$defaultRate/$rate/$defaultIncrement)*$defaultIncrement);
     }
 
 
@@ -356,12 +359,9 @@ class Currency
      * @param   string  $padding  The optional padding
      * @return  double            The formatted amount
      */
-    static function formatPrice($price, $length='', $padding=null)
+    static function formatPrice($price, $length='', $padding='')
     {
-        return sprintf(
-            '%'.(isset($padding) ? $padding : '').
-            $length.'.2f', $price);
-//        return number_format($price, 2, '.', '');
+        return sprintf('%'.$padding.$length.'.2f', $price);
     }
 
 
@@ -520,36 +520,46 @@ class Currency
      */
     static function add()
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        if (empty($_POST['currencyNameNew'])) return null;
-        $_POST['currencyActiveNew']  =
-            (empty($_POST['currencyActiveNew'])  ? 0 : 1);
-        $_POST['currencyDefaultNew'] =
-            (empty($_POST['currencyDefaultNew']) ? 0 : 1);
+        if (empty($_POST['currencyNameNew'])
+         || empty($_POST['currencyCodeNew'])
+         || empty($_POST['currencySymbolNew'])
+         || empty($_POST['currencyRateNew'])
+         || empty($_POST['currencyIncrementNew'])) {
+            Message::error($_ARRAYLANG['TXT_SHOP_CURRENCY_INCOMPLETE']);
+            return null;
+        }
+        $code = contrexx_input2raw($_POST['currencyCodeNew']);
+        foreach (self::$arrCurrency as $id => $currency) {
+            if ($code == $currency['code']) {
+                Message::error(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_CURRENCY_EXISTS'],
+                    $code));
+                return null;
+            }
+        }
+        $active = (empty($_POST['currencyActiveNew']) ? 0 : 1);
+        $default = (empty($_POST['currencyDefaultNew']) ? 0 : 1);
         $query = "
             INSERT INTO `".DBPREFIX."module_shop".MODULE_INDEX."_currencies` (
-                `code`, `symbol`, `rate`, `active`, `default`
+                `code`, `symbol`, `rate`, `increment`, `active`
             ) VALUES (
-                '".contrexx_input2db($_POST['currencyCodeNew'])."',
+                '".contrexx_raw2db($code)."',
                 '".contrexx_input2db($_POST['currencySymbolNew'])."',
-                '".floatval($_POST['currencyRateNew'])."',
-                ".(isset($_POST['currencyActiveNew']) ? 1 : 0).",
-                ".(isset($_POST['currencyDefaultNew']) ? 1 : 0)."
+                ".floatval($_POST['currencyRateNew']).",
+                ".floatval($_POST['currencyIncrementNew']).",
+                $active
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) return false;
         $currency_id = $objDatabase->Insert_Id();
         if (!Text::replace($currency_id, FRONTEND_LANG_ID, 'shop',
-            self::TEXT_NAME, $_POST['currencyNameNew'])) {
+            self::TEXT_NAME, contrexx_input2raw($_POST['currencyNameNew']))) {
             return false;
         }
-        if (isset($_POST['currencyDefaultNew'])) {
-            $objResult = $objDatabase->Execute("
-                UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_currencies`
-                   SET `default`=0
-                 WHERE `id`!=$currency_id");
-            if (!$objResult) return false;
+        if ($default) {
+            return self::setDefault($currency_id);
         }
         return true;
     }
@@ -568,26 +578,25 @@ class Currency
 
         if (empty($_POST['currency'])) return null;
         self::init();
-        $default_id =
-            (isset($_POST['currencyDefault'])
-                ? intval($_POST['currencyDefault'])
-                : self::$defaultCurrencyId
-            );
+        $default_id = (isset($_POST['currencyDefault'])
+            ? intval($_POST['currencyDefault']) : self::$defaultCurrencyId);
         $changed = false;
         foreach ($_POST['currencyCode'] as $currency_id => $code) {
             $code = contrexx_input2raw($code);
             $name = contrexx_input2raw($_POST['currencyName'][$currency_id]);
             $symbol = contrexx_input2raw($_POST['currencySymbol'][$currency_id]);
             $rate = floatval($_POST['currencyRate'][$currency_id]);
+            $increment = floatval($_POST['currencyIncrement'][$currency_id]);
             $default = ($default_id == $currency_id ? 1 : 0);
-            $active = (isset($_POST['currencyActive'][$currency_id]) ? 1 : 0);
+            $active = (empty ($_POST['currencyActive'][$currency_id]) ? 0 : 1);
             // The default currency must be activated
             $active = ($default ? 1 : $active);
             if (   $code == self::$arrCurrency[$currency_id]['code']
                 && $name == self::$arrCurrency[$currency_id]['name']
                 && $symbol == self::$arrCurrency[$currency_id]['symbol']
                 && $rate == self::$arrCurrency[$currency_id]['rate']
-// NTH: The ordinal is implemented, but not used yet
+                && $increment == self::$arrCurrency[$currency_id]['increment']
+// NOTE: The ordinal is implemented, but not used yet
 //                && $ord == self::$arrCurrency[$currency_id]['ord']
                 && $active == self::$arrCurrency[$currency_id]['active']
                 && $default == self::$arrCurrency[$currency_id]['default']) {
@@ -598,8 +607,8 @@ class Currency
                    SET `code`='".contrexx_raw2db($code)."',
                        `symbol`='".contrexx_raw2db($symbol)."',
                        `rate`=$rate,
-                       `active`=$active,
-                       `default`=$default
+                       `increment`=$increment,
+                       `active`=$active
                  WHERE `id`=$currency_id";
             if (!$objDatabase->Execute($query)) return false;
             $changed = true;
@@ -609,8 +618,28 @@ class Currency
                 return false;
             }
         } // end foreach
-        if ($changed) return true;
+        if ($changed) {
+            return self::setDefault($default_id);
+        }
         return null;
+    }
+
+
+    static function setDefault($currency_id)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("
+            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_currencies`
+               SET `default`=0
+             WHERE `id`!=$currency_id");
+        if (!$objResult) return false;
+        $objResult = $objDatabase->Execute("
+            UPDATE `".DBPREFIX."module_shop".MODULE_INDEX."_currencies`
+               SET `default`=1
+             WHERE `id`=$currency_id");
+        if (!$objResult) return false;
+        return true;
     }
 
 
@@ -638,6 +667,7 @@ class Currency
             'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
             'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
             'rate' => array('type' => 'DECIMAL(10,6)', 'unsigned' => true, 'notnull' => true, 'default' => '1.000000'),
+            'increment' => array('type' => 'DECIMAL(3,2)', 'unsigned' => true, 'notnull' => true, 'default' => '0.01'),
             'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'status'),
             'default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'is_default'),
@@ -691,7 +721,8 @@ class Currency
         foreach ($arrCurrencies as $name => $arrCurrency) {
             $query = "
                 INSERT INTO `contrexx_module_shop_currencies` (
-                    `code`, `symbol`, `rate`, `ord`, `active`, `default`
+                    `code`, `symbol`, `rate`, `increment`,
+                    `ord`, `active`, `default`
                 ) VALUES (
                     '".join("','", $arrCurrency)."'
                 )";

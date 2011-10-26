@@ -503,7 +503,8 @@ class Cart
 //DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
         // Loop 2: Calculate Coupon discounts and VAT
-        $objCoupon = $discount_amount = null;
+        $objCoupon = null;
+        $discount_amount = 0;
         foreach (self::$products as $cart_id => &$product) {
             // Coupon:  Either the payment ID or the code are needed
             if ($payment_id || $coupon_code) {
@@ -537,7 +538,8 @@ class Cart
             // Calculate the amount if it's excluded; we might add it later:
             // - If it's included, we don't care.
             // - If it's disabled, it's set to zero.
-            $vat_amount = Vat::amount($product['vat_rate'], $product['price']);
+            $vat_amount = Vat::amount($product['vat_rate'],
+                $product['price'] - $discount_amount);
             $total_vat_amount += $vat_amount;
             self::$products[$cart_id]['vat_amount'] =
                 Currency::formatPrice($vat_amount);
