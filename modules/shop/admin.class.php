@@ -1252,8 +1252,6 @@ class Shopmanager extends ShopLibrary
             'settings_block', 'module_shop_settings_currency.html');
         $i = 0;
         foreach (Currency::getCurrencyArray() as $currency) {
-            $activeCheck = ($currency['active'] ? HTML_ATTRIBUTE_CHECKED : '');
-            $standardCheck = ($currency['default'] ? HTML_ATTRIBUTE_CHECKED : '');
             self::$objTemplate->setVariable(array(
                 'SHOP_CURRENCY_STYLE' => 'row'.(++$i % 2 + 1),
                 'SHOP_CURRENCY_ID' => $currency['id'],
@@ -1261,8 +1259,11 @@ class Shopmanager extends ShopLibrary
                 'SHOP_CURRENCY_SYMBOL' => $currency['symbol'],
                 'SHOP_CURRENCY_NAME' => $currency['name'],
                 'SHOP_CURRENCY_RATE' => $currency['rate'],
-                'SHOP_CURRENCY_ACTIVE' => $activeCheck,
-                'SHOP_CURRENCY_STANDARD' => $standardCheck
+                'SHOP_CURRENCY_INCREMENT' => $currency['increment'],
+                'SHOP_CURRENCY_ACTIVE' => ($currency['active']
+                    ? HTML_ATTRIBUTE_CHECKED : ''),
+                'SHOP_CURRENCY_STANDARD' => ($currency['default']
+                    ? HTML_ATTRIBUTE_CHECKED : ''),
             ));
             self::$objTemplate->parse('shopCurrency');
         }

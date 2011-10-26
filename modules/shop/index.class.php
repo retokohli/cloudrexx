@@ -140,9 +140,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     static function getPage($template)
     {
-
-//DBG::activate(DBG_ADODB_ERROR|DBG_PHP|DBG_LOG_FIREPHP);
-//DBG::activate(DBG_ERROR_FIREPHP);
+DBG::activate(DBG_ERROR_FIREPHP);
 
 // TODO: Temporary, for developing only. Remove for production.
 if (isset ($_REQUEST['content'])) {
@@ -283,15 +281,10 @@ if (isset ($_REQUEST['content'])) {
             default:
                 self::view_product_overview();
         }
-
         // Note that the Shop Navbar *MUST* be set up *after* the request
         // has been processed, otherwise the cart info won't be up to date!
         self::setNavbar();
-
-        // This is kept for backward compatibility.
-        // Does not clear() the messages!
-        // The new way
-// TODO: To set the Messages in the global template, just use Message::show(); instead.
+// TODO: Set the Messages in the global template instead when that's ready
         Message::show(self::$objTemplate);
 //DBG::deactivate();
         return self::$objTemplate->get();
@@ -510,9 +503,11 @@ if (isset ($_REQUEST['content'])) {
 */
 //DBG::log("Shop::setJsCart(): Out themespage $index: {$themesPages[$index]}");
             }
+            // One instance only (mind that there's a unique id attribute)
             self::$use_js_cart = true;
             break;
         }
+        self::registerJavascriptCode();
         if (!self::$use_js_cart) return;
         JS::registerCode(
             "cartTpl = '".preg_replace(
@@ -523,10 +518,8 @@ if (isset ($_REQUEST['content'])) {
               array('/\'/', '/[\n\r]/', '/\//'),
               array('\\\'', '\n', '\\/'),
               $div_product)."';\n"
-//            "if (typeof(objCart) != 'undefined') { shopGenerateCart(); };\n"
         );
         JS::registerJS('modules/shop/lib/html2dom.js');
-        self::registerJavascriptCode();
     }
 
 
