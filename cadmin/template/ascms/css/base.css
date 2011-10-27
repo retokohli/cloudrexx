@@ -205,7 +205,6 @@ table.adminlist th {
   color: white;
   height: 22px;
   background-color: #0a50a1;
-  text-align: left;
   padding: 0px 0px 0px 5px;
   margin: 0px 0px 0px 0px;
   vertical-align: middle;
@@ -460,4 +459,19 @@ div.tabContainer {
 
 .cx-lock-closed {
     background-position: 21px 0px;
+}
+
+/* Text alignment -- Shop */
+.a_left {
+  text-align: left;
+}
+.a_center {
+  text-align: center;
+}
+.a_right {
+  text-align: right;
+}
+/* Text style -- Shop */
+.f_bold {
+  font-weight: bold;
 }
