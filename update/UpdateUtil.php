@@ -211,7 +211,7 @@ class UpdateUtil
     }
 
 
-    private function check_columns($name, $struc)
+    private static function check_columns($name, $struc)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -234,7 +234,7 @@ class UpdateUtil
     }
 
 
-    private function _drop_unspecified_columns($name, $struc, $col_info)
+    private static function _drop_unspecified_columns($name, $struc, $col_info)
     {
         global $objDatabase;
 
@@ -261,7 +261,7 @@ class UpdateUtil
      * Checks the given column and ALTERS what's needed. Returns true
      * if a change has been done.
      */
-    private function _check_column($name, $col_info, $col, $spec)
+    private static function _check_column($name, $col_info, $col, $spec)
     {
         global $objDatabase;
 
@@ -306,7 +306,7 @@ class UpdateUtil
     }
 
 
-    private function check_indexes($name, $idx, $struc=null)
+    private static function check_indexes($name, $idx, $struc=null)
     {
         global $objDatabase;
 
@@ -385,13 +385,13 @@ class UpdateUtil
     }
 
 
-    private function _dropkey($table, $name)
+    private static function _dropkey($table, $name)
     {
         return "ALTER TABLE `$table` DROP INDEX `$name`";
     }
 
 
-    private function _keyspec($table, $name, $spec)
+    private static function _keyspec($table, $name, $spec)
     {
         $arrFields = array();
         foreach ($spec['fields'] as $fieldInfo1 => $fieldInfo2) {
@@ -416,7 +416,7 @@ class UpdateUtil
     }
 
 
-    private function _colspec($spec, $create_tbl_operation=false)
+    private static function _colspec($spec, $create_tbl_operation=false)
     {
         $unsigned     = (array_key_exists('unsigned',       $spec)) ? $spec['unsigned']       : false;
         $notnull      = (array_key_exists('notnull',        $spec)) ? $spec['notnull']        : true;
@@ -468,7 +468,7 @@ class UpdateUtil
      * @param   array   $struc      The field specification array
      * @return  array               The array of primary key names
      */
-    private function _getprimaries($struc)
+    private static function _getprimaries($struc)
     {
         $primaries = array();
         foreach ($struc as $name => $spec) {
