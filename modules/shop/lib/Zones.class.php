@@ -22,8 +22,9 @@ class Zones
     /**
      * Initialises all Zones (but no relation)
      * @return  boolean           True on success, false otherwise
+     * @static
      */
-    function init()
+    static function init()
     {
         global $objDatabase;
 
@@ -59,14 +60,27 @@ class Zones
     /**
      * Returns an array of the available zones
      * @return  array                           The zones array
+     * @static
      */
-    function getZoneArray()
+    static function getZoneArray()
     {
         if (is_null(self::$arrZone)) self::init();
         return self::$arrZone;
     }
 
 
+    /**
+     * Returns the Zone-Country relation array
+     *
+     * This array is of the form
+     *  array(
+     *    Zone ID => array(Country ID, ... more ...),
+     *    ... more ...
+     *  )
+     * @global  ADOConnection   $objDatabase
+     * @return  array                           The relation array
+     * @static
+     */
     static function getCountryRelationArray()
     {
         global $objDatabase;
@@ -89,7 +103,6 @@ class Zones
     }
 
 
-
     /**
      * Returns the Zone ID associated with the given Payment ID, if any
      *
@@ -98,6 +111,7 @@ class Zones
      * @param   integer     $payment_id     The Payment ID
      * @return  integer                     The Zone ID, if any,
      *                                      false on failure, or null if none
+     * @static
      */
     static function getZoneIdByPaymentId($payment_id)
     {
@@ -120,6 +134,7 @@ class Zones
      * Stores all changes made to any Zone
      * @return  boolean           True on success, false on failure,
      *                            or null on noop.
+     * @static
      */
     static function store_from_post()
     {
@@ -296,6 +311,7 @@ class Zones
      * @param   integer   $zone_id      The Zone ID
      * @param   integer   $shipper_id   The Shipper ID
      * @return  boolean                 True on success, false otherwise
+     * @static
      */
     static function update_shipper_relation($zone_id, $shipper_id)
     {
@@ -311,26 +327,44 @@ class Zones
     }
 
 
-    function getMenu($selectedId='', $menuName='zone_id', $onchange='')
+    /**
+     * Returns HTML code for the Zones dropdown menu
+     *
+     * Includes all Zones.  Backend use only.
+     * @param   integer     $selected       The optional preselected Zone ID.
+     *                                      Defaults to 0 (zero)
+     * @param   string      $name           The optional name attribute value.
+     *                                      Defaults to "zone_id".
+     * @param   string      $onchange       The optional onchange attribute
+     *                                      value.  Defaults to the empty string
+     * @return  string                      The HTML dropdown menu code
+     */
+    static function getMenu($selected=0, $name='zone_id', $onchange='')
+    {
+        $arrName = self::getNameArray();
+        return Html::getSelect(
+            $name, $arrName, $selected, false, $onchange);
+    }
+
+
+    /**
+     * Returns an array of Zone names indexed by their respective IDs
+     * @param   boolean     $active     Optionally limits results to Zones
+     *                                  of the given active status if set.
+     *                                  Defaults to null
+     * @return  array                   The array of Zone names on success,
+     *                                  false otherwise
+     */
+    static function getNameArray($active=null)
     {
         if (is_null(self::$arrZone)) self::init();
-        $menu = '';
+        if (is_null(self::$arrZone)) return false;
+        $arrName = array();
         foreach (self::$arrZone as $zone_id => $arrZone) {
-            $menu .=
-                '<option value="'.$zone_id.'"'.
-                ($selectedId == $zone_id ? ' selected="selected"' : '').
-                '>'.$arrZone['name'].'</option>'."\n";
+            if (isset ($active) && $active != $arrZone['active']) continue;
+            $arrName[$zone_id] = $arrZone['name'];
         }
-        // Add select tag and hidden input if the menu name is non-empty
-        if ($menuName)
-            $menu =
-                '<input type="hidden" name="old_'.$menuName.'" '.
-                'value="'.$selectedId.'" />'."\n".
-                '<select name="'.$menuName.'"'.
-                (empty($onchange) ? '' : ' onchange="'.$onchange.'"').">\n".
-                $menu.
-                "</select>\n";
-        return $menu;
+        return $arrName;
     }
 
 

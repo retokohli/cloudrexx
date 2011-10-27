@@ -357,16 +357,11 @@ if (isset ($_REQUEST['content'])) {
             'SHOP_LOGIN_INFO' => $loginInfo,
         ));
         // Currencies
-        if (self::$show_currency_navbar) {
-            if ($objTpl->blockExists('shopCurrencies')) {
-                $objTpl->setCurrentBlock('shopCurrencies');
-                $curNavbar = Currency::getCurrencyNavbar();
-                if (!empty($curNavbar)) {
-                    $objTpl->setVariable('SHOP_CURRENCIES', $curNavbar);
-// TODO: Should be set by the calling view
-//                    $objTpl->setVariable('TXT_CURRENCIES', $_ARRAYLANG['TXT_CURRENCIES']);
-                }
-                $objTpl->parseCurrentBlock('shopCurrencies');
+        if (self::$show_currency_navbar
+         && $objTpl->blockExists('shopCurrencies')) {
+            $curNavbar = Currency::getCurrencyNavbar();
+            if (!empty($curNavbar)) {
+                $objTpl->setVariable('SHOP_CURRENCIES', $curNavbar);
             }
         }
         if ($objTpl->blockExists('shopNavbar')) {
@@ -1159,7 +1154,7 @@ die("Failed to update the Cart!");
                     $id, $formId, $flagMultipart
                 );
             }
-            // Should be used by getJavaScript()
+            // Should be used by registerJavascriptCode()
 //            if ($flagMultipart) $flagUpload = true;
             $shopProductFormName = "shopProductForm$formId";
 
@@ -1909,7 +1904,9 @@ function shopGenerateCart()
     cart = cart.replace('[[SHOP_JS_TOTAL_PRICE_UNIT]]', objCart.unit);
     showCart(cart);
   } else {
-    showCart('".contrexx_raw2xhtml($_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'])."');
+    showCart('<ul><li>".
+      contrexx_raw2xhtml($_ARRAYLANG['TXT_EMPTY_SHOPPING_CART']).
+      "</li></ul>');
   }
 }
 
@@ -1927,23 +1924,29 @@ function showCart(html)
   cart.html(html).show();
 }
 
-//hideCart();
-jQuery.ajax(
-  'index.php?".
-// It seems that IE9 requires this -- sometimes?!
-//(   isset($_SERVER['HTTP_USER_AGENT'])
-// && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
-//    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
-//      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
-//    : '').
-    "&section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct', {
-  dataType: 'json',
-  success: shopUpdateCart,
-  error: function() {
-    showCart('".contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'])."');
-  }
+\$J(document).ready(function(\$J) {
+  //hideCart();
+  showCart('<ul><li>".
+    contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_CART_IS_LOADING']).
+    "</li></ul>');
+  \$J.ajax(
+    'index.php?".
+  // It seems that IE9 requires this -- sometimes?!
+  //(   isset($_SERVER['HTTP_USER_AGENT'])
+  // && preg_match('/MSIE\s9\.0/', $_SERVER['HTTP_USER_AGENT'])
+  //    ? htmlentities(session_name(), ENT_QUOTES, CONTREXX_CHARSET)."=".
+  //      htmlentities(session_id(), ENT_QUOTES, CONTREXX_CHARSET)
+  //    : '').
+      "&section=shop".MODULE_INDEX."&cmd=cart&remoteJs=addProduct', {
+    dataType: 'json',
+    success: shopUpdateCart,
+    error: function() {
+      showCart('<ul><li>".
+        contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART']).
+        "</li></ul>');
+    }
+  });
 });
-
 
 // Timeout in ms
 var popUpTimeout = 2000;

@@ -526,7 +526,7 @@ input[type="submit"], input[type="button"], input[type="reset"] {
   line-height: 1;
   width: 223px;
 }
-#shopJsCart li.product {
+#shopJsCart ul li {
   color: #000000;
   font-size: 0.9em;
   line-height: 1;
@@ -538,23 +538,20 @@ input[type="submit"], input[type="button"], input[type="reset"] {
   line-height: 1;
   padding: 9px 15px;
 }
-#shopJsCart li.link a{
-  display:block;
-  padding:5px 15px;
-  text-decoration:none;
-  background-image:none;
-  color:#808080;
-  line-height:1;
-  font-size: 0.9em;
+#shopJsCart li.link a {
+  display: block;
+  text-decoration: none;
+  background-image: none;
+  color: #808080;
+  line-height: 1;
   border-top: 0px solid #c6c6c6;
   font-weight: normal;
 }
 #shopJsCart li.link a:hover{
-  display:block;
-  text-decoration:none;
-  color:#FF8000;
+  display: block;
+  text-decoration: none;
+  color: #FF8000;
   font-weight: normal;
-  font-size: 0.9em;
 }
 #shop_navigation {
   padding: 0 0 15px 0;

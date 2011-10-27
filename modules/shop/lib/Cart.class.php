@@ -506,6 +506,7 @@ class Cart
         $objCoupon = null;
         $discount_amount = 0;
         foreach (self::$products as $cart_id => &$product) {
+            $discount_amount = 0;
             // Coupon:  Either the payment ID or the code are needed
             if ($payment_id || $coupon_code) {
                 $objCoupon = Coupon::available(
@@ -855,9 +856,13 @@ DBG::log("Coupons available");
         if (self::needs_shipment()) {
             $objTemplate->setVariable(array(
                 'TXT_SHIP_COUNTRY' => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
+                // Old, obsolete
                 'SHOP_COUNTRIES_MENU' => Country::getMenu(
                     'countryId2', $_SESSION['shop']['countryId2'],
                         true, "document.forms['shopForm'].submit()"),
+                // New; use this so you can apply CSS more easily
+                'SHOP_COUNTRIES_MENUOPTIONS' => Country::getMenuoptions(
+                    $_SESSION['shop']['countryId2']),
             ));
         }
         if (   SettingDb::getValue('orderitems_amount_max') > 0
