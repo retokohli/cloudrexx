@@ -1,4 +1,6 @@
 <?php
+include_once 'uploadResponse.class.php';
+
 /**
  * Exceptions thrown by uploader
  */
@@ -208,6 +210,33 @@ abstract class Uploader
     }
 
     /**
+     * Checks $fileCount against $_SESSION[upload_uploadedCount_id].
+     * Takes appropriate action (calls callback if they equal).
+     * @param integer $fileCount files in current uploado
+     */
+    public function handleCallback($fileCount) {
+        if($fileCount == 1) { //one file, all done.
+            $this->notifyCallback();
+        }
+        else {
+            $key = 'upload_uploadedCount_'.$this->uploadId;
+            if(!isset($_SESSION[$key])) { //multiple files, first file
+                $_SESSION[$key] = 1;
+            }
+            else {
+                $count = $_SESSION[$key] + 1;
+                if($count == $fileCount) { //all files uploaded
+                    unset($_SESSION[$key]);
+                    $this->notifyCallback();
+                }
+                else {
+                    $_SESSION[$key] = $count;
+                }
+            }
+        }
+    }
+
+    /**
      * Notifies the callback. Invoked on upload completion.
      */
     public function notifyCallback()
@@ -238,11 +267,18 @@ abstract class Uploader
         $fileInfos = array(
             'originalFileNames' => $originalFileNames
         );
-
-        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos);
-
+        
+        //the response data.
+        $response = new UploadResponse();
+        
+        $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, &$response);
+      
         //clean up session: we do no longer need the array with the original file names
         unset($_SESSION[$sessionKey]);
+        //same goes for the data
+        $dataKey = 'upload_data_'.$this->uploadId;
+        if(isset($_SESSION[$dataKey]))
+            unset($_SESSION[$dataKey]);
         
         //the callback could have returned a path where he wants the files moved to
         if(!is_null($ret)) { //we need to move the files
@@ -270,6 +306,7 @@ abstract class Uploader
 
                 //TODO: if return value = 'error' => react
                 $fm->moveFile($tempPath, $tempWebPath, $f, $path, $pathWeb);
+                $response->increaseUploadedFilesCount();
             }
             closedir($h);
         }
@@ -283,6 +320,9 @@ abstract class Uploader
         @rmdir($tempPath);
 
         closedir($h);
+
+        $sessionResponseKey = 'upload_response_json_'.$this->uploadId;
+        $_SESSION[$sessionResponseKey] = $response->getJSON();
     }
 
     /**

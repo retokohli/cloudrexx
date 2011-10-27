@@ -12,9 +12,8 @@ var init = function() {
         'Drag files here.' : '{DRAG_FILES_HERE}'
 });
 
-
     // Setup flash version
-    $J("#flash_uploader").pluploadQueue({
+    var uploader = $J("#flash_uploader").pluploadQueue({
         // General settings
         runtimes : 'flash',
         url : '{UPLOAD_URL}',
@@ -34,6 +33,16 @@ var init = function() {
  
         // Flash settings
         flash_swf_url : '{FLASH_URL}'
+    });
+    var settings = uploader.pluploadQueue().settings;
+    var baseUrl = settings.url;
+
+    var setUrl = function(files) {
+        settings.url = baseUrl + '&files='+files;
+    }
+
+    uploader.pluploadQueue().bind('QueueChanged', function(up){
+        setUrl(up.files.length);
     });
 }; 
 

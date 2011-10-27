@@ -14,6 +14,7 @@ class JumpUploader extends Uploader
         $chunk = $_POST['partitionIndex'];
         $chunks = $_POST['partitionCount'];
         $fileName = contrexx_stripslashes($_FILES['file']['name']);
+        $fileCount = $_GET['files'];
 
         // check if the file has a valid file extension
         if (!FWValidator::is_file_ending_harmless($fileName)) {
@@ -26,8 +27,9 @@ class JumpUploader extends Uploader
         catch (UploaderException $e) {
             die('Error:'.$e->getMessage());
         }
-        if($chunk == $chunks-1) //upload finished
-            $this->notifyCallback();
+
+        if($chunk == $chunks-1) //upload of current file finished
+            $this->handleCallback($fileCount);
 
         die(0); 
     }

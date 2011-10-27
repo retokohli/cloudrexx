@@ -22,6 +22,7 @@ class PlUploader extends Uploader
         $chunk = isset($_REQUEST["chunk"]) ? $_REQUEST["chunk"] : 0;
         $chunks = isset($_REQUEST["chunks"]) ? $_REQUEST["chunks"] : 0;
         $fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
+        $fileCount = $_GET['files'];
         
         if (!FWValidator::is_file_ending_harmless($fileName)) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "'.sprintf('The file %s was refused due to its file extension which is not allowed!', htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET)).'"}, "id" : "id"}');
@@ -35,7 +36,7 @@ class PlUploader extends Uploader
         }
 
         if($chunk == $chunks-1) //upload finished
-            $this->notifyCallback();
+            $this->handleCallback($fileCount);
 
         die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
     }

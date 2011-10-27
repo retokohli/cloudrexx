@@ -66,9 +66,7 @@ try{
     var data = state[uploader.toString()];
     var url = data.baseUrl + '&files=' + uploader.getFilesByStatus(uploader.STATUS_READY).length;
     data.config.setUploadUrl(url);
-
-    console.log('new url: ' + url);
-}catch(e){}
+}catch(e){} //strange synchronization issue in chrome, code sometimes fails if not wrapped in try / catch. the funny part: the code does not fail if in try/catch (and no, I did not mistake catched exceptions for not failing).
 }
 
 function appletInitialized(applet)
