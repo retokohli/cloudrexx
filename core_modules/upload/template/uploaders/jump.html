@@ -32,45 +32,43 @@ function resizeApplet()
 }
 
 /**
- * Used to store the names of the uploaded files
+ * remembers things about uploaders.
+ * @var object { uploaderId: {
+ *     pending: integer, #pending uploads
+ *     config: UploaderConfig, #jumploader uploaderconfig
+ *     baseUrl: string #url to append total file count to.
+ * }, ... }
  */
-aUploadedFiles = new Array();
+state = {};
 
 function uploaderStatusChanged(uploader)
 {
-    var status = parseInt(uploader.getStatus(), 10);
-    switch (status) {
-        case 0:
-            /**
-             * Reload opener window with passing the list of uploaded files in JSON
-             * packed into the url modifier "highlightFiles".
-             */
-            sFiles = '&{CSRF_PARAM}&highlightFiles=';
-            sFiles += encodeURIComponent('["' + aUploadedFiles.join('", "') + '"]');
-            window.opener.location.replace(window.opener.location.href+sFiles);
-
-            // enable close button
-            document.getElementById('fileUploaderClose').disabled = false;
-            document.getElementById('fileUploaderClose').style.backgroundColor = '';
-            break;
-
-        case 1:
-            // disable close button
-            document.getElementById('fileUploaderClose').disabled = true;
-            document.getElementById('fileUploaderClose').style.backgroundColor = '#CCCCCC';
-            break;
+    if(uploader.getStatus() == uploader.STATUS_READY) {
+        //uploading finished.   
+        updateUrl(uploader);
     }
 }
 
-function uploaderFileStatusChanged(uploader, file)
-{
-    /**
-     * Add successfully uploaded files to the list (aUploadedFiles) of
-     * uploaded files.
-     */
-    /*if (uploader.getStatus() == 1 && file.getStatus() == 2) {
-        aUploadedFiles[aUploadedFiles.length] = file.getResponseContent().toString()
-    }*/
+function uploaderFilesReset(uploader) {
+    updateUrl(uploader);
+}
+
+function uploaderFileAdded(uploader) {
+    updateUrl(uploader);
+}
+
+function uploaderFileRemoved(uploader) {
+    updateUrl(uploader);
+}
+
+function updateUrl(uploader) {
+try{
+    var data = state[uploader.toString()];
+    var url = data.baseUrl + '&files=' + uploader.getFilesByStatus(uploader.STATUS_READY).length;
+    data.config.setUploadUrl(url);
+
+    console.log('new url: ' + url);
+}catch(e){}
 }
 
 function appletInitialized(applet)
@@ -79,6 +77,13 @@ function appletInitialized(applet)
      * Set UserAgent of applet to the browser's one
      */
     applet.getUploaderConfig().setUserAgent(navigator.userAgent);
+    var uploader = applet.getUploader();
+    var config = applet.getUploaderConfig();
+    state[uploader.toString()] = {
+        pending: 0,
+        config: config,
+        baseUrl: config.getUploadUrl()
+    };
 }
 // ]]>
 </script>
@@ -90,12 +95,14 @@ function appletInitialized(applet)
             height="100%"
             mayscript>
 
+		<param name="ac_fireAppletInitialized" value="true"/>
         <param name="uc_uploadUrl" value="{UPLOAD_URL}" />
         <param name="uc_partitionLength" value="{CHUNK_LENGTH}" />
 		<param name="gc_loggingLevel" value="FATAL" />
-        <param name="ac_fireAppletInitialized" value="true"/>
-        <param name="ac_fireUploaderFileStatusChanged" value="true"/>
         <param name="ac_fireUploaderStatusChanged" value="true"/>
+        <param name="ac_fireUploaderFilesReset" value="true"/>
+        <param name="ac_fireUploaderFileAdded" value="true"/>
+        <param name="ac_fireUploaderFileRemoved" value="true"/>
 		<param name="vc_uploadListViewName" value="_compact"/>
 		<param name="vc_useThumbs" value="false"/>
 		<param name="vc_lookAndFeel" value="system"/>
