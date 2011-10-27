@@ -3,8 +3,22 @@
 <!-- BEGIN core_message -->
   <span class="{MESSAGE_CLASS}">{MESSAGE_TEXT}</span>
 <!-- END core_message -->
-  <div class="menu">{SHOP_MENU}</div>
-  <!--div class="cart_info">{SHOP_CART_INFO}</div-->
+  <div class="menu">
+    <form name="shopSearch" action="index.php?section=shop" method="post">
+      <select name="catId" tabindex="2" style="width: 160px;">
+        {SHOP_CATEGORIES_MENUOPTIONS}
+      </select>&nbsp;
+      <select name="manufacturerId" tabindex="3" style="width: 160px;">
+        {SHOP_MANUFACTURER_MENUOPTIONS}
+      </select>
+      <br />
+      <input type="text" name="term" value="{SHOP_SEARCH_TERM}"
+          tabindex="1" style="width: 170px;" />&nbsp;
+      <input type="submit" name="bsubmit"
+          value="{TXT_SHOP_SEARCH}" style="width: 66px;" />
+    </form>
+  </div>
+  <!-- <div class="cart_info">{SHOP_CART_INFO}</div> -->
   <div class="product">
     <form id="{SHOP_PRODUCT_FORM_NAME}" name="{SHOP_PRODUCT_FORM_NAME}"
         action="index.php?section=shop&amp;cmd=cart" method="post"
