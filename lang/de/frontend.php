@@ -217,4 +217,8 @@ $_ARRAYLANG['TXT_MEDIADIR_MANAGE_LEVELS'] = 'Ebenen verwalten';
 $_ARRAYLANG['TXT_MEDIADIR_MANAGE_CATEGORIES'] = 'Kategorien verwalten';
 $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Einstellungen';
+$_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";
+$_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
+$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Dateien heraufgeladen";
+
 ?>

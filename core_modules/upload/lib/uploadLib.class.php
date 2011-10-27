@@ -73,4 +73,16 @@ class UploadLib
         $fw->delete($_REQUEST['file']);        
         die();
     }
+
+    public function response($uploadId) {
+        $sessionResponseKey = 'upload_response_json_'.$uploadId;
+        if(isset($_SESSION[$sessionResponseKey])) {
+            echo $_SESSION[$sessionResponseKey];
+            unset($_SESSION[$sessionResponseKey]);
+        }
+        else {
+            echo '{}';
+        }
+        die();
+    }
 }

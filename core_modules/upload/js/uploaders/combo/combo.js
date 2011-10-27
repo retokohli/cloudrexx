@@ -135,8 +135,8 @@ var ComboUploader = function(theConfig) {
                 upload: config.uploadId
             },
             function(data) {
-                var html = '<ul>';
                 if(data.messages && data.messages.length > 0) {
+                    var html = '<ul>';
                     for(var i = 0; i < data.messages.length; i++) {
                         var d = data.messages[i];
                         var message = d.message;
@@ -147,14 +147,12 @@ var ComboUploader = function(theConfig) {
                     }
                     html += '</ul>';
                     div.find('.uploadView').hide();
-                    div.find('.responseView .message errors').html(html).show();
+                    div.find('.responseView .message .errors').html(html).show();
+
+                    var fileCount = data.fileCount;
+                    div.find('.responseView .message .files .count').html(fileCount);
+                    div.find('.responseView').show();                
                 }
-                else {
-                    div.find('.responseView .message errors').hide();
-                }
-                var fileCount = data.fileCount;
-                div.find('.responseView .message .files .count').html(fileCount);
-                div.find('.responseView').show();                
             },
             'json'
         );

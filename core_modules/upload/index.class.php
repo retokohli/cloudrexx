@@ -38,7 +38,9 @@ class Upload extends UploadLib
             case 'jumpUploaderL10n': //send the jumpUploader messages
                 $this->jumpUploaderL10n(basename($_GET['lang']));
                 break;
-
+            case 'response':
+                $this->response($_GET['upload']);
+                break;
 
             //folderWidget
             case 'refreshFolder':

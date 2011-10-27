@@ -64,15 +64,19 @@ class ComboUploader extends Uploader
 
         $uploaders = '['.join(',',$uploaders).']';
 
-        //from where the combouploader gets the code on an uploader switch
         $cmdOrSection = $this->isBackendRequest ? 'cmd' : 'section';
         $actOrCmd = $this->isBackendRequest ? 'act' : 'cmd';
+        //from where the combouploader gets the code on an uploader switch
         $switchUrl;
+        //from where the combouploader gets the response for finished uploads
+        $responseUrl;
         if($this->isBackendRequest) {
             $switchUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode';
+            $responseUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=response';
         }
         else {
-            $switchUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode';  
+            $switchUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode';
+            $responseUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=upload&'.$actOrCmd.'=response';
         }
                 
         $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
@@ -81,11 +85,15 @@ class ComboUploader extends Uploader
         $tpl->loadTemplateFile('combo.html');
 
         $tpl->setVariable(array(
-                                'CONFIG_UPLOADERS_JS' => $uploaders,
-                                'UPLOAD_ID' => $this->uploadId,
-                                'SWITCH_URL' => $switchUrl,
-                                'OTHER_UPLOADERS_CAPTION' => $_CORELANG['OTHER_UPLOADERS']
-                                ));
+             'CONFIG_UPLOADERS_JS' => $uploaders,
+             'RESPONSE_URL' => $responseUrl,
+             'UPLOAD_ID' => $this->uploadId,
+             'SWITCH_URL' => $switchUrl,
+             'OTHER_UPLOADERS_CAPTION' => $_CORELANG['OTHER_UPLOADERS'],
+             'TXT_CORE_UPLOAD_MORE' => $_CORELANG['TXT_CORE_UPLOAD_MORE'],
+             'TXT_CORE_FINISH_UPLOADING' => $_CORELANG['TXT_CORE_FINISH_UPLOADING'],
+             'TXT_CORE_FILES_UPLOADED' => $_CORELANG['TXT_CORE_FILES_UPLOADED']
+        ));
 
         $tpl->setVariable('UPLOADER_CODE', $formUploader->getXHtml());
 
