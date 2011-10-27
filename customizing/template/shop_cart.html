@@ -8,110 +8,69 @@
       <table summary="" cellspacing="0">
         <tr valign="top">
           <th width="60%">
-            <div align="left">
-              <b>&nbsp;{TXT_PRODUCT}</b>
-            </div>
+            <b>{TXT_PRODUCT}</b>
           </th>
-          <th width="10%">
-            <div align="right">
-              <b>&nbsp;{TXT_UNIT_PRICE}</b>
-            </div>
+          <th width="10%" class="a_right">
+            <b>{TXT_UNIT_PRICE}</b>
           </th>
-          <th width="10%">
-            <div align="right">
-              <b>&nbsp;{TXT_QUANTITY}</b>
-            </div>
+          <th width="10%" class="a_right">
+            <b>{TXT_QUANTITY}</b>
           </th>
-          <th width="20%">
-            <div align="right">
-              <b>{TXT_TOTAL}&nbsp;</b>
-            </div>
+          <th width="20%" class="a_right">
+            <b>{TXT_TOTAL}</b>
           </th>
         </tr>
 <!-- BEGIN shopCartRow -->
         <tr valign="top" class="{SHOP_PRODUCT_ROW}">
           <td>
-            <div align="left">
-              <a href="index.php?section=shop&amp;cmd=details&amp;referer=cart&amp;productId={SHOP_PRODUCT_CART_ID}">
-                {SHOP_PRODUCT_TITLE}
-              </a>
-              {SHOP_PRODUCT_OPTIONS}
-            </div>
+            <a href="index.php?section=shop&amp;cmd=details&amp;referer=cart&amp;productId={SHOP_PRODUCT_CART_ID}">
+              {SHOP_PRODUCT_TITLE}
+            </a>
+            {SHOP_PRODUCT_OPTIONS}
           </td>
-          <td>
-            <div align="right">{SHOP_PRODUCT_ITEMPRICE}&nbsp;{SHOP_PRODUCT_ITEMPRICE_UNIT}</div>
+          <td class="a_right">
+            {SHOP_PRODUCT_ITEMPRICE}&nbsp;{SHOP_PRODUCT_ITEMPRICE_UNIT}
           </td>
-          <td nowrap="nowrap">
-            <div align="right">
-              <a href="#" title="{TXT_SHOP_REMOVE_ITEM}"
-                  onclick="deleteProduct({SHOP_PRODUCT_CART_ID});">
-                <img style="height: 18px;" alt="{TXT_SHOP_REMOVE_ITEM}"
-                    src="images/modules/shop/trash.png" />
-              </a>
-              <input type="text" name="quantity[{SHOP_PRODUCT_CART_ID}]"
-                  value="{SHOP_PRODUCT_QUANTITY}" class="shop_quantity" />
-            </div>
+          <td nowrap="nowrap" class="a_right">
+            <a href="#" title="{TXT_SHOP_REMOVE_ITEM}"
+                onclick="deleteProduct({SHOP_PRODUCT_CART_ID});">
+              <img style="height: 18px;" alt="{TXT_SHOP_REMOVE_ITEM}"
+                  src="images/modules/shop/trash.png" />
+            </a>
+            <input type="text" name="quantity[{SHOP_PRODUCT_CART_ID}]"
+                value="{SHOP_PRODUCT_QUANTITY}" class="shop_quantity" />
           </td>
-          <td>
-            <div align="right">
-              <b>{SHOP_PRODUCT_PRICE}&nbsp;{SHOP_PRODUCT_PRICE_UNIT}</b>
-            </div>
+          <td class="a_right">
+            <b>{SHOP_PRODUCT_PRICE}&nbsp;{SHOP_PRODUCT_PRICE_UNIT}</b>
           </td>
         </tr>
 <!-- END shopCartRow -->
-
-<!-- BEGIN shopCouponOrder -->
-        <tr valign="top" class="row3">
-          <td>{SHOP_DISCOUNT_COUPON_ORDER}</td>
-          <td>
-            <div align="right">
-              {SHOP_DISCOUNT_COUPON_ORDER_AMOUNT}&nbsp;{SHOP_PRICE_UNIT}
-            </div>
-          </td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-        </tr>
-<!-- END shopCouponOrder -->
-<!-- BEGIN shopCouponTotal -->
-        <tr valign="top" class="row3">
-          <td>{SHOP_DISCOUNT_COUPON_TOTAL}</td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td>
-            <div align="right">
-              <strong>{SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT}&nbsp;{SHOP_PRICE_UNIT}</strong>
-            </div>
-          </td>
-        </tr>
-<!-- END shopCouponTotal -->
-
 <!-- BEGIN shopVat -->
         <tr class="row3">
           <td colspan="3" valign="top">
-            <div align="left">
-              <b>{TXT_TAX_PREFIX}</b>
-            </div>
+            <b>{TXT_TAX_PREFIX}</b>
           </td>
-          <td width="25%" valign="top" nowrap="nowrap">
-            <div align="right">
-              <strong>{SHOP_TOTAL_TAX_AMOUNT}</strong>
-            </div>
+          <td valign="top" nowrap="nowrap" class="a_right">
+            <strong>{SHOP_TOTAL_TAX_AMOUNT}</strong>
           </td>
         </tr>
 <!-- END shopVat -->
-        <tr class="row3">
-          <td colspan="3" valign="top">
-            <div align="left">
-              <b>{TXT_INTER_TOTAL}</b>
-            </div>
-          </td>
-          <td width="25%" valign="top" nowrap="nowrap">
-            <div align="right">
-              <strong>{SHOP_PRODUCT_TOTALPRICE} {SHOP_PRODUCT_TOTALPRICE_UNIT}</strong>
-            </div>
+<!-- BEGIN shopCouponTotal -->
+        <tr valign="top" class="row3">
+          <td colspan="3"><b>{SHOP_DISCOUNT_COUPON_TOTAL}</b></td>
+          <td class="a_right">
+            <strong>{SHOP_DISCOUNT_COUPON_TOTAL_AMOUNT}&nbsp;{SHOP_PRICE_UNIT}</strong>
           </td>
         </tr>
-
+<!-- END shopCouponTotal -->
+        <tr class="row3">
+          <td colspan="3" valign="top">
+            <b>{TXT_INTER_TOTAL}</b>
+          </td>
+          <td valign="top" nowrap="nowrap" class="a_right">
+            <strong>{SHOP_PRODUCT_TOTALPRICE} {SHOP_PRODUCT_TOTALPRICE_UNIT}</strong>
+          </td>
+        </tr>
 <!-- BEGIN shopCoupon -->
         <tr>
           <td colspan="4">&nbsp;</td>
@@ -122,32 +81,33 @@
           </td>
           <td colspan="3">
             <input type="text" maxlength="20" name="coupon_code"
-                value="{SHOP_DISCOUNT_COUPON_CODE}" class="coupon_code"
+                value="{SHOP_DISCOUNT_COUPON_CODE}" class="shop_cart_input"
                 onchange="document.forms['shopForm'].submit();" />
           </td>
         </tr>
 <!-- END shopCoupon -->
-
-
 <!-- BEGIN shopShippingCountry -->
-        <tr>
-          <td colspan="4">&nbsp;</td>
-        </tr>
         <tr class="row3">
-          <td colspan="1" valign="top">
-            <div align="left">
-              <label>{TXT_SHIP_COUNTRY}</label>
-              {SHOP_COUNTRIES_MENU}
-            </div>
+          <td valign="top">
+            <label>{TXT_SHIP_COUNTRY}</label>
           </td>
           <td colspan="3" valign="top">
-            <div align="right">
-              <input type="submit" name="update" class="shopbutton" value="{TXT_UPDATE}" />&nbsp;
-              <input type="submit" name="continue" class="shopbutton" value="{TXT_NEXT} >>" />
-            </div>
+            <select name="countryId2" class="shop_cart_input"
+                onchange="document.forms['shopForm'].submit()">
+              {SHOP_COUNTRIES_MENUOPTIONS}
+            </select>
           </td>
         </tr>
 <!-- END shopShippingCountry -->
+        <tr>
+          <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+          <td colspan="4" valign="top" class="a_right">
+            <input type="submit" name="update" class="shopbutton" value="{TXT_UPDATE}" />&nbsp;
+            <input type="submit" name="continue" class="shopbutton" value="{TXT_NEXT} >>" />
+          </td>
+        </tr>
       </table>
     </form>
   </div>

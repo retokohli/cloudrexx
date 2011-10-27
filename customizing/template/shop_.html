@@ -4,14 +4,15 @@
 <!-- END core_message -->
   <div class="menu">
     <form name="shopSearch" action="index.php?section=shop" method="post">
-      <input type="text" name="term" value="{SHOP_SEARCH_TERM}"
-          tabindex="1" style="width: 150px;" />&nbsp;
-      <select name="catId" tabindex="2" style="width: 150px;">
+      <select name="catId" tabindex="2" style="width: 160px;">
         {SHOP_CATEGORIES_MENUOPTIONS}
       </select>&nbsp;
-      <select name="manufacturerId" tabindex="3" style="width: 180px;">
+      <select name="manufacturerId" tabindex="3" style="width: 160px;">
         {SHOP_MANUFACTURER_MENUOPTIONS}
       </select>
+      <br />
+      <input type="text" name="term" value="{SHOP_SEARCH_TERM}"
+          tabindex="1" style="width: 170px;" />&nbsp;
       <input type="submit" name="bsubmit"
           value="{TXT_SHOP_SEARCH}" style="width: 66px;" />
     </form>

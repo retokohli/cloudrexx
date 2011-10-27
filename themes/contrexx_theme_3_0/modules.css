@@ -973,12 +973,27 @@ div#livecam #CALBUTTONDPC_datum {
 }
 
 /* Right align prices etc. */
-#shop .right {
+#shop .a_right {
   text-align: right;
 }
 /* Center quantities etc. */
-#shop .center {
+#shop .a_center {
   text-align: center;
+}
+/* Input for Coupon code and Dropdown menu width in the cart */
+#shop .shop_cart_input {
+  width: 150px !important;
+}
+#shop .shop_cart_input:focus {
+  width: 144px !important;
+  border-left: 5px solid #2687CC;
+}
+#shop input.shop_quantity {
+  width: 30px;
+}
+#shop input.shop_quantity:focus {
+  width: 26px;
+  border-left: 5px solid #2687CC;
 }
 
 #shop div.message_error {
