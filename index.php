@@ -395,6 +395,10 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         }
     }
 
+    //legagy: re-populate cmd and section into $_GET
+    $_GET['cmd' ] = $command;
+    $_GET['section' ] = $section;
+
     // To clone any module, use an optional integer cmd suffix.
     // E.g.: "shop2", "gallery5", etc.
     // Mind that you *MUST* copy all necessary database tables, and fix any
