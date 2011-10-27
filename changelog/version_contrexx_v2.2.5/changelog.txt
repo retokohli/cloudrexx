@@ -9,9 +9,12 @@
 ****************************************
 * Behobene Fehler **********************
 ****************************************
+Allgemein
+- Die Shadowbox-Integration wurde verbessert.
 
 Modul: Online Desk
 - Die Datumsauswahl bei der Reservierung funktioniert unabhängig von der Webserver-Konfiguration.
+
 Modul: Online Shop
 - Session Parameter, die auf einigen Installationen zu Problemen mit dem JS Cart führen, entfernt.
 Modul: Wissensdatenbank
