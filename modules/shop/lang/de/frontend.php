@@ -310,7 +310,7 @@ $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'] = "Produkte in der Kategorie %1\$s"
 $_ARRAYLANG['TXT_SHOP_PRODUCT_ANY'] = "beliebig";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_CODE'] = "Art. Nr.";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_COUNT'] = "Stück";
-$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Produkt Code";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_CUSTOM_ID'] = "Artikelnummer";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_METER'] = "Meter";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_NAME'] = "Produkt Name";
 $_ARRAYLANG['TXT_SHOP_PRODUCT_NONE'] = "-";
@@ -390,3 +390,6 @@ $_ARRAYLANG['TXT_SHOP_REMOVE_ITEM'] = "Produkt entfernen";
 
 // 20111004
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL'] = "Ein Kunde mit dieser E-Mail Adresse ist bereits registriert.  Sie müssen sich daher anmelden, um Ihre Bestellung abzuschliessen";
+
+// 20111027
+$_ARRAYLANG['TXT_SHOP_CURRENCIES'] = "Währungen";

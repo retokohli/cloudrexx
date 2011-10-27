@@ -356,7 +356,7 @@ class Currency
      * @static
      * @param   double  $price    The amount
      * @param   string  $length   The optional number length
-     * @param   string  $padding  The optional padding
+     * @param   string  $padding  The optional padding character
      * @return  double            The formatted amount
      */
     static function formatPrice($price, $length='', $padding='')
@@ -513,6 +513,9 @@ class Currency
 
     /**
      * Add a new currency
+     *
+     * If the posted data is incomplete sets a message, and returns null.
+     * Returns false on database errors only.
      * @return  boolean             Null if nothing was added,
      *                              boolean true upon adding the currency
      *                              successfully, or false otherwise
@@ -522,6 +525,7 @@ class Currency
     {
         global $objDatabase, $_ARRAYLANG;
 
+        if (empty($_POST['currency_add'])) return null;
         if (empty($_POST['currencyNameNew'])
          || empty($_POST['currencyCodeNew'])
          || empty($_POST['currencySymbolNew'])
@@ -744,5 +748,3 @@ class Currency
     }
 
 }
-
-?>
