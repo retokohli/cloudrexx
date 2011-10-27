@@ -9,6 +9,7 @@
  *   ],
  *   uploadId: upload_id,
  *   switchUrl: 'switch_url',
+ *   responseUrl: 'response_url',
  *   otherUploadersCaption: 'captionstring'
  * }
  */
@@ -16,8 +17,7 @@ var ComboUploader = function(theConfig) {
     var $ = $J; //we want jquery at $ internally
 
     var config = theConfig;
-    var uploaders = theConfig.uploaders;
-    var div = $(config.div);
+    var uploaders = theConfig.uploaders;    var div = $(config.div);
 
     var curType = 'form';
 
@@ -36,7 +36,7 @@ var ComboUploader = function(theConfig) {
             },
             'html' //we specify html here to make sure embedded js is executed
         );
-    };
+    };    
 
     if(uploaders.length > 1) { //multiple uploaders to choose from, load functionality to switch
         //check what is supported by the browser
@@ -103,7 +103,7 @@ var ComboUploader = function(theConfig) {
                 if(uploader.type == type)
                     found = true;
                 });
-            return found;
+            return found;successfu
         };
 
         //initialize correct player
@@ -115,6 +115,50 @@ var ComboUploader = function(theConfig) {
     else { //only a single player, most likely advanced uploading was disabled
         div.find('.advancedLink:first').remove(); //remove advanced link
     }
+
+    //'upload more' clicked after uploading
+    div.find('.moreButton').bind('click', function() {
+        div.find('.uploadView').show();
+        div.find('.responseView').hide();
+
+        switchUploader(curType);
+    });
+
+    //hello mr. ugly hack!
+    //periodically check whether the upload finished and display response if yes.
+    //we do this polling because of the api mess (jumploader: global callbacks, pl: nice, 
+    //simple: todo)
+    setInterval(function() {
+        $.get(
+            config.responseUrl,
+            {
+                upload: config.uploadId
+            },
+            function(data) {
+                var html = '<ul>';
+                if(data.messages && data.messages.length > 0) {
+                    for(var i = 0; i < data.messages.length; i++) {
+                        var d = data.messages[i];
+                        var message = d.message;
+                        var status = d.status;
+                        var file = d.file;
+
+                        html += '<li class="'+status+'"><strong>'+file+'</strong>: '+message+'</li>';
+                    }
+                    html += '</ul>';
+                    div.find('.uploadView').hide();
+                    div.find('.responseView .message errors').html(html).show();
+                }
+                else {
+                    div.find('.responseView .message errors').hide();
+                }
+                var fileCount = data.fileCount;
+                div.find('.responseView .message .files .count').html(fileCount);
+                div.find('.responseView').show();                
+            },
+            'json'
+        );
+    }, 1000);
 
     return {
         refresh: function() {
