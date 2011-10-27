@@ -58,7 +58,7 @@
  */
 
 /**
- * Debug level, see lib/DBG.pph
+ * Debug level, see lib/DBG.php
  *   DBG_PHP             - show PHP errors/warnings/notices
  *   DBG_ADODB           - show ADODB queries
  *   DBG_ADODB_TRACE     - show ADODB queries with backtrace
@@ -332,6 +332,11 @@ $frontEditingContent = isset($_REQUEST['previewContent'])
     : '';
 $page = null;
 $pageAccessId = 0;
+
+$page_protected = $page_redirect = $pageId = $themesPages =
+$page_content = $page_template = $page_title = $page_metatitle =
+$page_catname = $page_keywords = $page_desc = $page_robots =
+$pageCssName = $page_modified = null;
 if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 // TODO: history (empty($history) ? )
 
@@ -416,7 +421,7 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
     // values 2 (two) and larger represent distinct instances.
     $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
     define('MODULE_INDEX', $moduleIndex);
-    
+
     $plainSection = contrexx_addslashes($section);
     if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
         // The plain section/module name, used below
@@ -438,6 +443,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $pageAccessId = $page->getBackendAccessId();
         $logRepo = Env::em()->getRepository('Gedmo\Loggable\Entity\LogEntry');
         try {
+// TODO: $version is not defined!
+$version = null;
             $logRepo->revert($page, $version);
         }
         catch(\Gedmo\Exception\UnexpectedValueException $e) {
@@ -700,7 +707,7 @@ if (   file_exists($modulespath)
 // Get Calendar Events
 $modulespath = ASCMS_MODULE_PATH.'/calendar/headlines.class.php';
 $eventsPlaceholder = '{EVENTS_FILE}';
-if (   MODULE_INDEX < 2 
+if (   MODULE_INDEX < 2
     && $_CONFIG['calendarheadlines']
     && (   strpos($page_content, $eventsPlaceholder) !== false
         || strpos($themesPages['index'], $eventsPlaceholder) !== false
@@ -887,6 +894,7 @@ if (@include_once ASCMS_MODULE_PATH.'/gallery/homeContent.class.php') {
 
 // get latest podcast entries
 $podcastFirstBlock = false;
+$podcastContent = null;
 if (!empty($_CONFIG['podcastHomeContent'])) {
     /** @ignore */
     if (@include_once ASCMS_MODULE_PATH.'/podcast/homeContent.class.php') {
@@ -908,22 +916,22 @@ if (!empty($_CONFIG['podcastHomeContent'])) {
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
             $objPodcast = new podcastHomeContent($themesPages['podcast_content']);
             $podcastContent = $objPodcast->getContent();
-        }
-        if ($podcastHomeContentInPageContent) {
-            $page_content = str_replace('{PODCAST_FILE}', $podcastContent, $page_content);
-        }
-        if ($podcastHomeContentInPageTemplate) {
-            $page_template = str_replace('{PODCAST_FILE}', $podcastContent, $page_template);
-        }
-        if ($podcastHomeContentInThemesPage) {
-            $podcastFirstBlock = false;
-            if (strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
-                $podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
-                $contentPos = strpos($themesPages['index'], '{CONTENT_FILE}');
-                $podcastFirstBlock = $podcastBlockPos < $contentPos ? true : false;
+            if ($podcastHomeContentInPageContent) {
+                $page_content = str_replace('{PODCAST_FILE}', $podcastContent, $page_content);
             }
-            $themesPages['index'] = str_replace('{PODCAST_FILE}',
-                $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
+            if ($podcastHomeContentInPageTemplate) {
+                $page_template = str_replace('{PODCAST_FILE}', $podcastContent, $page_template);
+            }
+            if ($podcastHomeContentInThemesPage) {
+                $podcastFirstBlock = false;
+                if (strpos($_SERVER['REQUEST_URI'], 'section=podcast')){
+                    $podcastBlockPos = strpos($themesPages['index'], '{PODCAST_FILE}');
+                    $contentPos = strpos($themesPages['index'], '{CONTENT_FILE}');
+                    $podcastFirstBlock = $podcastBlockPos < $contentPos ? true : false;
+                }
+                $themesPages['index'] = str_replace('{PODCAST_FILE}',
+                    $objPodcast->getContent($podcastFirstBlock), $themesPages['index']);
+            }
         }
     }
 }
@@ -1081,6 +1089,7 @@ FWUser::parseLoggedInOutBlocks($page_content);
 LinkGenerator::parseTemplate($page_content);
 
 $boolShop = false;
+$moduleStyleFile = null;
 // start module switches
 switch ($plainSection) {
     case 'access':
@@ -1567,6 +1576,7 @@ if (   $marketCheck
 
 
 // Set banner variables
+$objBanner = null;
 if (   $_CONFIG['bannerStatus']
        /** @ignore */
     && @include_once ASCMS_CORE_MODULE_PATH.'/banner/index.class.php') {
