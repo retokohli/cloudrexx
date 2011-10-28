@@ -319,11 +319,15 @@ class PageRepository extends EntityRepository {
         $qb->add('select', 'p')
             ->add('from', 'Cx\Model\ContentManager\Page p')
             ->add('where',
-                  $qb->expr()->orx(
-                      $qb->expr()->like('p.content', ':searchString'),
-                      $qb->expr()->like('p.title', ':searchString')
-                  )
+                $qb->expr()->andx(
+                    $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
+                    $qb->expr()->orx(
+                        $qb->expr()->like('p.content', ':searchString'),
+                        $qb->expr()->like('p.title', ':searchString')
+                    )
+                )
             );
+
         $qb->setParameter('searchString', '%'.$string.'%');
 
         $pages = $qb->getQuery()->getResult();
@@ -333,12 +337,22 @@ class PageRepository extends EntityRepository {
         $results = array();
 
         foreach($pages as $page) {
+            if (!$page->isActive()) {
+                continue;
+            }
+
+            if (   $config['searchVisibleContentOnly'] == 'on'
+                && !$page->isVisible()
+            ) {
+                continue;
+            }
+
             $results[] = array(
                 'Score' => 100,
                 'Title' => $page->getTitle(),
                 'Content' => substr($page->getTitle(),0, $config['searchDescriptionLength']),
 //TODO: awww this is sooo costly. @see getPath()
-                'Link' => ASCMS_PATH_OFFSET.$this->getPath($page)
+                'Link' => $this->getPath($page)
             );
         }
 

@@ -5,7 +5,7 @@
  * Gets the Search results from the DB
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author Comvation Development Team <info@comvation.com>
- * @version 1.0.4
+ * @version 2.0.0
  * @package     contrexx
  * @subpackage  core_module_search
  * @todo        Edit PHP DocBlocks!
@@ -16,11 +16,6 @@ if (eregi("index.class.php",$_SERVER['PHP_SELF'])) {
     Header("Location: ../../index.php");
     die();
 }
-
-/**
- * Includes
- */
-require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
 
 /**
 * Gets the searchpage
@@ -44,39 +39,37 @@ function search_getSearchPage($pos, $page_content)
 
     $term = ""; //$_SERVER['HTTP_HOST'];
     if (isset($_REQUEST['term'])&& strlen($_REQUEST['term'])>=3) {
-    	$objModulChecker = new ModuleChecker();
-    	$arrActiveModules = array_keys($objModulChecker->arrActiveModulesByName);
-
 		$term = contrexx_addslashes(trim($_REQUEST['term']));
-		$querynews=search_searchQuery("news",$term);
-		//$query=search_searchQuery("content",$term);
 
-		if (in_array('docsys', $arrActiveModules)) {
+		if (contrexx_isModuleActive('news')) {
+			$querynews = search_searchQuery("news", $term);
+		}
+        if (contrexx_isModuleActive('docsys')) {
 			$querydocsys = search_searchQuery("docsys",$term);
 		}
-		if (in_array('podcast', $arrActiveModules)) {
+        if (contrexx_isModuleActive('podcast')) {
 			$queryPodcast = search_searchQuery("podcast",$term);
 			$queryPodcastCategory = search_searchQuery("podcastCategory", $term);
 		}
-		if (in_array('shop', $arrActiveModules)) {
+		if (contrexx_isModuleActive('shop')) {
 			$queryshop = search_searchQuery("shop",$term);
 		}
-		if (in_array('gallery', $arrActiveModules)) {
+		if (contrexx_isModuleActive('gallery')) {
 			$queryGalleryCats = search_searchQuery("gallery_cats",$term);
 			$queryGalleryPics = search_searchQuery("gallery_pics",$term);
 		}
-		if (in_array('memberdir', $arrActiveModules)) {
+		if (contrexx_isModuleActive('memberdir')) {
 			$queryMemberdir = search_searchQuery("memberdir", $term);
 			$queryMemberdirCats = search_searchQuery("memberdir_cats", $term);
 		}
-		if (in_array('directory', $arrActiveModules)) {
+		if (contrexx_isModuleActive('directory')) {
 			$queryDirectory = search_searchQuery("directory", $term);
 			$queryDirectoryCats = search_searchQuery("directory_cats", $term);
 		}
-		if (in_array('calendar', $arrActiveModules)) {
+		if (contrexx_isModuleActive('calendar')) {
 			$queryCalendar = search_searchQuery("calendar", $term);
 		}
-		if (in_array('forum', $arrActiveModules)) {
+		if (contrexx_isModuleActive('forum')) {
 			$queryForum = search_searchQuery("forum", $term);
 		}
     }
@@ -124,7 +117,7 @@ function search_getSearchPage($pos, $page_content)
     	$arrayDirectoryCats = search_getResultArray($queryDirectoryCats, "directory", "", "lid=", $term);
     }
 	if (!empty($queryCalendar)) {
-    	$arrayCalendar = search_getResultArray($queryCalendar, "calendar", "event", "id=", $term);
+    	$arrayCalendar = search_getResultArray($queryCalendar, "calendar", "event", "id=0", $term);
     }
     if (!empty($queryForum)) {
     	$arrayForum = search_getResultArray($queryForum, "forum", "thread", "id=", $term);
@@ -169,7 +162,7 @@ function search_getSearchPage($pos, $page_content)
 
         foreach($arraySearchOut as $kk=>$details){
             $objTpl->setVariable("COUNT_MATCH",$_ARRAYLANG['TXT_RELEVANCE']." $details[Score]%");
-            $objTpl->setVariable("LINK", "<b><a href=\"".$details['Link']."\" title=\"".$details['Title']."\">".$details['Title']."</a></b>");
+            $objTpl->setVariable("LINK", "<b><a href=\"".contrexx_raw2xhtml($details['Link'])."\" title=\"".contrexx_raw2xhtml($details['Title'])."\">".contrexx_raw2xhtml($details['Title'])."</a></b>");
             $objTpl->setVariable("SHORT_CONTENT", $details['Content']." ..<br />");
             $objTpl->parse("searchrow");
         }
@@ -211,10 +204,12 @@ function search_searchQuery($section, $searchTerm)
 			date,
                             redirect,
                             MATCH (text,title,teaser_text) AGAINST ('%$searchTerm%') AS score
-                      FROM ".DBPREFIX."module_news
+                      FROM ".DBPREFIX."module_news AS tblN
+                      INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id = tblN.id
                       WHERE (text LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') OR title LIKE ('%$searchTerm%') OR teaser_text LIKE ('%$searchTerm%'))
-		                AND lang=".$_LANGID."
+		                AND lang_id=".FRONTEND_LANG_ID."
                         AND status=1
+                        AND is_active=1
                         AND (startdate<=CURDATE() OR startdate='0000-00-00')
                         AND (enddate>=CURDATE() OR enddate='0000-00-00')";
 			break;
@@ -383,16 +378,20 @@ function search_searchQuery($section, $searchTerm)
 			AND (name LIKE ('%$searchTerm%') OR description LIKE ('%$searchTerm%'))";
 			break;
 		case "calendar":
-			$query = "	SELECT `id` AS id,
-							 `name` AS title,
-							 `comment` AS content,
-							 `startdate` AS startdate
-						FROM `".DBPREFIX."module_calendar`
-						WHERE `active` = '1'
+			$query = "	SELECT tblE.`id` AS id,
+							 tblE.`name` AS title,
+							 tblE.`comment` AS content,
+							 tblE.`startdate` AS startdate
+						FROM `".DBPREFIX."module_calendar` AS tblE
+                    INNER JOIN `".DBPREFIX."module_calendar_categories` AS tblC
+                        ON tblC.`id` = tblE.`catid`
+						WHERE tblE.`active` = '1'
+                        AND tblC.`lang` = ".FRONTEND_LANG_ID."
+                        AND tblC.`status` = 1
 						AND (
-								`name` LIKE ('%$searchTerm%')
-							OR 	`comment` LIKE ('%$searchTerm%')
-							OR 	`placeName` LIKE ('%$searchTerm%')
+								tblE.`name` LIKE ('%$searchTerm%')
+							OR 	tblE.`comment` LIKE ('%$searchTerm%')
+							OR 	tblE.`placeName` LIKE ('%$searchTerm%')
 						)";
 			break;
 
@@ -418,94 +417,98 @@ function search_searchQuery($section, $searchTerm)
  * @param  string    $term            search term
  * @return array                    search results
  */
-function search_getResultArray($query,$section_var,$cmd_var,$pagevar,$term)
+function search_getResultArray($query,$section,$command,$pagevar,$term)
 {
-    global $_CONFIG, $objDatabase, $_ARRAYLANG;
+    global $_ARRAYLANG;
+
+    $objDatabase = Env::get('db');
+    $config = Env::get('config');
 
     $arraySearchResults = array();
-    $objResult = $objDatabase->Execute($query);
-    $i=0;
 
-    if ($objResult !== false) {
-	    while (!$objResult->EOF) {
-	        $i++;
-	        $cmd=$objResult->fields['cmd'];
-	        $section=$objResult->fields['section'];
+    $pageRepo = Env::em()->getRepository('Cx\Model\ContentManager\Page');
+    $crit = array(
+         'module' => $section,
+         'lang'   => FRONTEND_LANG_ID,
+         'cmd'    => NULL
+    );
+    if(!empty($command))
+        $crit['cmd'] = $command;
 
-	        if ($section=="" && $section_var<>""){
-	            $section=$section_var;
-	        }
-	        if ($cmd=="" && $cmd_var<>""){
-	            $cmd=$cmd_var;
-	        }
-
-	        $temp_section	= ( ($section=="") ? "" : "&amp;section=$section" );
-	        $temp_cmd		= ( ($cmd=="") ? "" : "&amp;cmd=$cmd" );
-
-	        switch ($section) {
-	        	case '':
-	        	case 'docsys':
-	        	case 'podcast':
-	        	case 'shop':
-	        	case 'gallery':
-	        	case 'memberdir':
-	        	case 'directory':
-	        	case 'forum':
-	        		$temp_pagelink  = '?'.$pagevar.$objResult->fields['id'].$temp_section.$temp_cmd;
-	        		break;
-
-	            case 'calendar':
-
-        			$day 	=  '&amp;dayID='.date("d", intval($objResult->fields['startdate']));
-    	    		$month 	=  '&amp;monthID='.date("m", intval($objResult->fields['startdate']));
-    	    		$year 	=  '&amp;yearID='.date("Y", intval($objResult->fields['startdate']));
-
-	        		$temp_pagelink  = '?'.$pagevar."0".$temp_section.$day.$month.$year.$temp_cmd;
-	        		break;
-
-	        	case 'news':
-	        		if (empty($objResult->fields['redirect'])) {
-	        			$temp_pagelink = '?'.$pagevar.$objResult->fields['id'].$temp_section.$temp_cmd;
-	        		} else {
-	        			$temp_pagelink = $objResult->fields['redirect'];
-	        		}
-	        		break;
-
-	        	default:
-	        		$temp_pagelink  = '?'.$temp_section.$temp_cmd;
-	        }
-
-//	        if (!in_array($section, array("", "news", "docsys", "podcast", "shop", "gallery", "memberdir", "directory"))) {
-//	             $temp_pagelink  = "?$temp_section$temp_cmd";
-////	        } elseif ($section_var == "gallery" && $cmd_var == "showCat" && $pagevar == "pId=") {
-////	        	$imageReso = getimagesize(ASCMS_GALLERY_PATH .'/'.$objResult->fields['content']);
-////	        	$temp_pagelink = "javascript:openWindow('?section=gallery&amp;cmd=showCat&amp;cid=".$objResult->fields['catid']."&amp;pId=".$objResult->fields['id']."','','width=".($imageReso[0]+25).",height=".($imageReso[1]+25).",resizable=yes,status=no,scrollbars=yes')";
-//	        } else {
-//	        	$temp_pagelink  = "?$pagevar".$objResult->fields['id']."$temp_section$temp_cmd";
-//	        }
-
-	        $searchcontent = eregi_replace("\{[a-z0-9_]+\}","",strip_tags($objResult->fields['content']));
-	        $searchcontent = stripslashes($searchcontent);
-	        $searchcontent = preg_replace("#\[[^\]]+\]#", "", $searchcontent);
-	        $shortcontent = substr(ltrim($searchcontent), 0,intval($_CONFIG['searchDescriptionLength']));
-	        $arrayShortContent = explode(" ",$shortcontent);
-	        $arrelem= array_pop($arrayShortContent);
-	        $shortcontent=str_replace("&nbsp;","",join(" ",$arrayShortContent));
-	        //$shortcontent = preg_replace("'$term'i","<b><i>\\0</i></b>",$shortcontent);
-	        $score=$objResult->fields['score'];
-	        $score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
-//TODO: Muss noch geändert werden, sobald das Ranking bei News funktioniert!!!
-	        $score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
-		$date = isset($objResult->fields['date']) ? $objResult->fields['date'] : null;
-	        $searchtitle=!empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];
-	        $arraySearchResults[$i]=array("Score"=>$scorePercent,
-	                                      "Title"=>$searchtitle,
-	                                      "Content"=>$shortcontent,
-	                                      "Link"=>$temp_pagelink,
-						"Date"=>$date);
-			$objResult->MoveNext();
-	    }
+    $page = $pageRepo->findOneBy($crit);
+    if(!$page || !$page->isActive()) {
+        return array();
     }
+
+    $pagePath = $pageRepo->getPath($page);
+
+    $objResult = $objDatabase->Execute($query);
+    if (!$objResult || !$objResult->RecordCount()) {
+        return array();
+    }
+
+    while (!$objResult->EOF) {
+        switch ($section) {
+            case '':
+            case 'docsys':
+            case 'podcast':
+            case 'shop':
+            case 'gallery':
+            case 'memberdir':
+            case 'directory':
+            case 'forum':
+                $temp_pagelink  = $pagePath.'?'.$pagevar.$objResult->fields['id'];
+                break;
+
+            case 'calendar':
+                $day 	=  '&dayID='.date("d", intval($objResult->fields['startdate']));
+                $month 	=  '&monthID='.date("m", intval($objResult->fields['startdate']));
+                $year 	=  '&yearID='.date("Y", intval($objResult->fields['startdate']));
+
+                $temp_pagelink  = $pagePath.'?'.$pagevar.$day.$month.$year;
+                break;
+
+            case 'news':
+                if (empty($objResult->fields['redirect'])) {
+                    $temp_pagelink = $pagePath.'?'.$pagevar.$objResult->fields['id'];
+                } else {
+                    $temp_pagelink = $objResult->fields['redirect'];
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        $searchcontent = trim(stripslashes(strip_tags($objResult->fields['content'])));
+        $searchcontent = preg_replace(
+            array(
+                '/\{[a-z0-9_]+\}/',
+                '/\[\[[a-z0-9_]+\]\]/',
+                '/<!--\s+(BEGIN|END)\s+[a-z0-9_]+\s+-->/'
+            ),
+            '',
+            $searchcontent);
+        $shortcontent = substr($searchcontent, 0, intval($config['searchDescriptionLength']));
+        $arrayShortContent = explode(' ', $shortcontent);
+        array_pop($arrayShortContent);
+        $shortcontent = str_replace('&nbsp;','',join(' ',$arrayShortContent));
+        $score=$objResult->fields['score'];
+        $score>=1 ? $scorePercent=100 : $scorePercent=intval($score*100);
+//TODO: Muss noch geändert werden, sobald das Ranking bei News funktioniert!!!
+        $score==0 ? $scorePercent=25 : $scorePercent=$scorePercent;
+        $date = isset($objResult->fields['date']) ? $objResult->fields['date'] : null;
+        $searchtitle=!empty($objResult->fields['title']) ? $objResult->fields['title'] : $_ARRAYLANG['TXT_UNTITLED'];
+        $arraySearchResults[] = array(
+            "Score"=>$scorePercent,
+            "Title"=>$searchtitle,
+            "Content"=>$shortcontent,
+            "Link"=>$temp_pagelink,
+            "Date"=>$date
+        );
+        $objResult->MoveNext();
+    }
+
     return $arraySearchResults;
 }
 
@@ -538,4 +541,3 @@ function search_comparison($a,$b)
         return 1;
     }
 }
-?>
