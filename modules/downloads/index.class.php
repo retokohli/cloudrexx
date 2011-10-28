@@ -587,8 +587,6 @@ class downloads extends DownloadsLibrary
             return;
         }
 
-        require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
-
         if ($this->objTemplate->blockExists('downloads_simple_file_upload')) {
             $objFWSystem = new FWSystem();
             

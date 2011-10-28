@@ -1,10 +1,9 @@
 <?php
-
 /**
  * Admin CP navigation
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @version     2.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -15,7 +14,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public
- * @version     1.0.0
+ * @version     2.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
@@ -29,16 +28,13 @@ class adminMenu
     public $arrUserGroups = array();
 
 
-    /**
-     * Constructor
-     */
-    function __construct()
+    public function __construct()
     {
         $this->init();
     }
 
 
-    function getAdminNavbar()
+    public function getAdminNavbar()
     {
         global $objTemplate;
 
@@ -47,7 +43,7 @@ class adminMenu
     }
 
 
-    function init()
+    private function init()
     {
         global $_CORELANG, $objDatabase;
 
@@ -102,19 +98,15 @@ class adminMenu
      * allowed to see
      * @global array  $_CORELANG
      * @global object $objTemplate
-     * @global object $objModules
      */
-    function getMenu()
+    private function getMenu()
     {
-        global $objModules, $_CORELANG, $objTemplate;
+        global $_CORELANG, $objTemplate;
 
         $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'index_navigation.html');
         reset($this->arrMenuItems);
         foreach ( $this->arrMenuGroups as $group_id => $group_data ) {
             // Module group menu and module check!
-            if ($group_id==2 && !$objModules->existsModuleFolders) {
-                continue;
-            }
             $navigation = '';
 
             //used to remember items in current menu group
@@ -157,16 +149,12 @@ class adminMenu
     }
 
 
-    function moduleExists($moduleFolderName)
+    private function moduleExists($moduleFolderName)
     {
-        global $objModules;
-
         if (empty($moduleFolderName)) {
             return true;
         }
-        return $objModules->getModuleStatusByName($moduleFolderName);
+
+        return contrexx_isModuleActive($moduleFolderName);
     }
-
 }
-
-?>
