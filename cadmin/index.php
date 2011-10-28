@@ -44,7 +44,6 @@ require_once dirname(__FILE__).'/../core/Env.class.php';
  * Initialises global settings array and constants.
  */
 include_once('../config/configuration.php');
-Env::set('config', $_CONFIG);
 /**
  * User configuration settings
  *
@@ -58,6 +57,9 @@ $incSettingsStatus = include_once '../config/settings.php';
  * Adds version information to the {@link $_CONFIG[]} global array.
  */
 $incVersionStatus = include_once '../config/version.php';
+
+Env::set('config', $_CONFIG);
+
 /**
  * Doctrine configuration
  */
