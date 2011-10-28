@@ -165,7 +165,8 @@ if (preg_match('/^(\D+)(\d+)$/', $cmd, $arrMatch)) {
 // This guarantees full backward compatibility with old code, templates
 // and database tables for the default instance.
 $moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
-$moduleId = ModuleChecker::getModuleIdByName($plainCmd);
+$m2id = Env::get('module2id');
+$moduleId = $m2id[$plainCmd];
 /**
  * @ignore
  */
@@ -189,8 +190,6 @@ $objTemplate = new HTML_Template_Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 CSRF::add_placeholder($objTemplate);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
-// Module object
-$objModules = new ModuleChecker();
 
 $objFWUser = FWUser::getFWUserObject();
 
@@ -321,6 +320,7 @@ if (!$objFWUser->objUser->login(true)) {
                 'LOGIN_ERROR_MESSAGE' => $objFWUser->getErrorMsg(),
                 'CAPTCHA_ERROR' => $captchaError,
             ));
+
             $objTemplate->show();
             exit;
     }

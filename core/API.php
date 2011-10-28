@@ -94,13 +94,13 @@ require_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php');
  * @ignore
  */
 require_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
+/**
+ * @ignore
+ */
+require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
 
 global $adminPage;
 if (isset($adminPage) && $adminPage ) {
-    /**
-     * @ignore
-     */
-    require_once ASCMS_CORE_PATH.'/Modulechecker.class.php';
     /**
      * @ignore
      */

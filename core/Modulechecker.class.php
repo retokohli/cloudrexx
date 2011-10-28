@@ -3,153 +3,126 @@
  * Module Checker
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
- * @version		1.0.0
+ * @version		2.0.0
  * @package     contrexx
  * @subpackage  core
  * @todo        Edit PHP DocBlocks!
  */
-
-/**
- * Module Checker Class
- *
- * Checks for activated modules and plugins
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author		Comvation Development Team <info@comvation.com>
- * @access		public
- * @version		1.0.0
- * @package     contrexx
- * @subpackage  core
- */
-class ModuleChecker
-{
-	/**
-	* Contains the array of the core modules name
-	* @access public
-	* @var array
-	* @see __construct()
-	*/
-	var $coreModules = array('contact','core', 'error', 'ids', 'login', 'home', 'news','media','nettools','search','sitemap','stats');
-    var $arrModules = array();
-    var $arrActiveModulesById = array();
-    var $arrActiveModulesByName = array();
-    var $arrInstalledModules = array();
-    var $arrUsedModules = array();
-    var $objDb;
-    var $langId;
-    var $existsModuleFolders = false;
-
-
+namespace Cx\Core {
     /**
-     * PHP5 constructor
-     * @access public
+     * Module Checker Class
+     *
+     * Checks for activated modules and plugins
+     *
+     * @copyright   CONTREXX CMS - COMVATION AG
+     * @author		Comvation Development Team <info@comvation.com>
+     * @access		public
+     * @version		2.0.0
+     * @package     contrexx
+     * @subpackage  core
      */
-    function __construct(){
-    	global $objInit;
-
-    	$errorMsg = "";
-
-    	$this->langId=$objInit->userFrontendLangId;
-    	$this->objDb = getDatabaseObject($errorMsg, true);
-    	$this->init();
-    	$this->moduleFoldersCheck();
-    }
-
-
-    function init()
+    class ModuleChecker
     {
-    	// check the content for installed and used modules
-    	$objResult = $this->objDb->Execute("SELECT module
-    	                                      FROM ".DBPREFIX."content_navigation
-    	                                     WHERE module<>0
-    	                                       AND lang=".$this->langId."
-    	                                  GROUP BY module");
-    	if ($objResult !== false) {
-    	    while (!$objResult->EOF) {
-    	    	$this->arrUsedModules[] = $objResult->fields['module'];
-    	    	$objResult->MoveNext();
-    	    }
-    	}
-    	array_push($this->arrUsedModules, 7);
-    	array_push($this->arrUsedModules, 52);
+        /**
+         * A list of all module names
+         *
+         * @access private
+         * @var array
+         * @see ModuleChecker::init()
+         */
+        private $arrModules = array();
+        private $arrActiveModulesByName = array();
+        private $arrUsedModules = array();
+        private $em = null;
+        private $db = null;
 
-    	// check the module database tables for required modules
-    	$objResult = $this->objDb->Execute("SELECT id,name,is_core,is_required FROM ".DBPREFIX."modules");
-    	if ($objResult !== false) {
-    		while(!$objResult->EOF) {
-    			$moduleName = $objResult->fields["name"];
-    			if(!empty($moduleName)) {
-    				$this->arrModules[$objResult->fields["id"]]=$objResult->fields["name"];
-    			}
-    			if($objResult->fields["is_core"]=="1" OR $objResult->fields["is_required"]=="1") {
 
-					$this->arrActiveModulesById[$objResult->fields["id"]]=$objResult->fields["name"];
-					$this->arrActiveModulesByName[$objResult->fields["name"]]=$objResult->fields["id"];
-				} else {
-					if(in_array($objResult->fields["id"], $this->arrUsedModules)) {
-					    if(is_dir(ASCMS_MODULE_PATH.'/'.$objResult->fields["name"])) {
-                            $this->arrActiveModulesById[$objResult->fields["id"]]=$objResult->fields["name"];
-                            $this->arrActiveModulesByName[$objResult->fields["name"]]=$objResult->fields["id"];
-					    }
-				    }
-    			} // end if
-    			$objResult->MoveNext();
-    		} // end while
-    	}
+        public function __construct($em, $db){
+            $this->em = $em;
+            $this->db = $db;
+
+            $this->init();
+        }
+
+
+        private function init()
+        {
+            // check the content for installed and used modules
+            $qb = $this->em->createQueryBuilder();
+            $qb->add('select', 'p')
+                ->add('from', 'Cx\Model\ContentManager\Page p')
+                ->add('where',
+                    $qb->expr()->andx(
+                        $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
+// TODO: what is the proper syntax for non-empty values?
+                        $qb->expr()->neq('p.module', $qb->expr()->literal(''))
+                    ));
+            $pages = $qb->getQuery()->getResult();
+            foreach ($pages as $page) {
+                if (!$page->isActive()) {
+                    continue;
+                }
+
+                $arrUsedModules[] = $page->getModule();
+            }
+
+            // add static modules
+            array_push($this->arrUsedModules, 'block');
+            array_push($this->arrUsedModules, 'upload');
+
+            $this->arrUsedModules = array_unique($arrUsedModules);
+
+            // check the module database tables for required modules
+            $objResult = $this->db->Execute('SELECT name,is_core,is_required FROM `'.DBPREFIX.'modules`');
+            if ($objResult !== false) {
+                while(!$objResult->EOF) {
+                    $moduleName = $objResult->fields['name'];
+
+                    if (empty($moduleName)) {
+                        $objResult->MoveNext();
+                        continue;
+                    }
+
+                    $this->arrModules[] = $moduleName;
+
+                    if (   $objResult->fields['is_core']=='1'
+                        || $objResult->fields['is_required']=='1'
+                        || (   in_array($moduleName, $this->arrUsedModules)
+                            && is_dir(ASCMS_MODULE_PATH.'/'.$moduleName))
+                    ) {
+                        $this->arrActiveModulesByName[] = $moduleName;
+                    }
+
+                    $objResult->MoveNext();
+                }
+            }
+        }
+
+
+        public function isModuleActive($moduleName)
+        {
+            return in_array($moduleName, $this->arrActiveModulesByName);
+        }
     }
-
-
-
-    function moduleFoldersCheck()
-    {
-    	foreach($this->arrModules AS $id => $moduleName ) {
-		    if(is_dir(ASCMS_MODULE_PATH.'/'.$moduleName)) {
-	            $this->existsModuleFolders = true;
-		    }
-    	}
-    }
-
-
-
-
-	function getModuleStatusById($moduleId)
-	{
-		if (in_array($moduleId,$this->arrActiveModulesByName))
-			return (boolean) true;
-		else
-			return (boolean) false;
-	}
-
-
-	function getModuleStatusByName($moduleName)
-	{
-		if (in_array($moduleName, $this->arrActiveModulesById)) {
-			return (boolean) true;
-		} else
-			return (boolean) false;
-	}
-
-
-    /**
-     * Returns the ID for the module name given, if known.
-     * @return  integer       The module ID on success, 0 (zero) otherwise
-     * @author  Reto Kohli <reto.kohli@comvation.com>
-     * @static
-     * @global  ADOConnection   $objDatabase
-     * @since   2.1.0
-     */
-    static function getModuleIdByName($moduleName)
-    {
-        global $objDatabase;
-
-        $objResult = $objDatabase->Execute("
-            SELECT `id`
-              FROM `".DBPREFIX."modules`
-             WHERE `name`='".addslashes($moduleName)."'
-        ");
-        if (!$objResult || $objResult->EOF) return 0;
-        return $objResult->fields['id'];
-    }
-
 }
-?>
+
+namespace {
+    /**
+     * Checks if a certain module, specified by param $moduleName, is active/installed.
+     * 
+     * @param   string Module name
+     * @return boolean  Either TRUE or FALSE, depending if the module in question is
+     *                  active/installed or not.
+     */
+    function contrexx_isModuleActive($moduleName)
+    {
+        static $objModuleChecker;
+
+        if (!isset($objModuleChecker)) {
+            $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
+        }
+
+        return $objModuleChecker->isModuleActive($moduleName);
+    }
+}
+
