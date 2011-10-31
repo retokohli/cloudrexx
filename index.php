@@ -136,6 +136,7 @@ Env::set('config', $_CONFIG);
  */
 require_once dirname(__FILE__).'/core/API.php';
 require_once dirname(__FILE__).'/lib/CSRF.php';
+require_once dirname(__FILE__).'/core/PageGuard.class.php';
 // Temporary fix until all GET operation requests will be replaced by POSTs
 CSRF::setFrontendMode();
 
@@ -147,6 +148,7 @@ $errorMsg = '';
  */
 $objDatabase = getDatabaseObject($errorMsg);
 Env::set('db', $objDatabase);
+Env::set('pageguard', new PageGuard($objDatabase));
 
 if (!$objDatabase) {
     die(
