@@ -37,7 +37,6 @@ class InitCMS
 
     public $currentThemesId;
     public $customContentTemplate = null;
-    public $is_home;
     public $arrLang = array();
     public $arrLangNames = array();
     public $templates = array();
@@ -47,7 +46,7 @@ class InitCMS
     * int $isMobileDevice
     * whether we're dealing with a mobile device.
     * values 1 or 0.
-    * @see InitCMS::_initFrontendLanguage()
+    * @see InitCMS::checkForMobileDevice()
     * @see InitCMS::_setCustomizedThemesId()
     * @access private
     */
@@ -75,7 +74,6 @@ class InitCMS
         global $objDatabase;
 
         $this->em = $entityManager;
-        $this->is_home=false;
         $this->mode=$mode;
 
         $objResult = $objDatabase->Execute("
@@ -109,7 +107,7 @@ class InitCMS
             //$this->_initBackendLanguage();
             $this->getUserFrontendLangId();
         }
-        $this->_initFrontendLanguage();
+
         $this->loadModulePaths();
     }
 
@@ -137,51 +135,75 @@ class InitCMS
     }
 
 
-    function _initFrontendLanguage()
+    function getFallbackFrontendLangId()
     {
-        global $_CONFIG;
-
         // Frontend language initialization
         $setCookie = false;
 
         if (!empty($_REQUEST['setLang'])) {
-            $frontendLangId = intval($_REQUEST['setLang']);
+            $langId = intval($_REQUEST['setLang']);
             $setCookie = true;
         } elseif (!empty($_GET['langId'])) {
-            $frontendLangId = intval($_GET['langId']);
+            $langId = intval($_GET['langId']);
         } elseif (!empty($_POST['langId'])) {
-            $frontendLangId = intval($_POST['langId']);
+            $langId = intval($_POST['langId']);
         } elseif (!empty($_COOKIE['langId'])) {
-            $frontendLangId = intval($_COOKIE['langId']);
+            $langId = intval($_COOKIE['langId']);
             $setCookie = true;
         } else {
-            $frontendLangId = $this->_selectBestLanguage();
+            $langId = $this->_selectBestLanguage();
         }
-        if ($this->arrLang[$frontendLangId]['frontend'] != 1) {
-            $frontendLangId = $this->defaultFrontendLangId;
+
+        if ($this->arrLang[$langId]['frontend'] != 1) {
+            $langId = $this->defaultFrontendLangId;
         }
 
         if ($setCookie) {
-            setcookie("langId", $frontendLangId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
+            setcookie("langId", $langId, time()+3600*24*30, ASCMS_PATH_OFFSET.'/');
         }
 
-        if (isset($_CONFIG['useVirtualLanguagePath'])
-            && $_CONFIG['useVirtualLanguagePath'] == 'on'
-            && $this->mode == 'frontend'
-            && empty($_SERVER['REDIRECT_CONTREXX_LANG_PREFIX'])
-            && basename($_SERVER['SCRIPT_FILENAME']) != 'frontendEditing.class.php'
-        ) {
-            CSRF::header('Location: '.ASCMS_PATH_OFFSET.'/'.$this->arrLang[$frontendLangId]['lang'].'/'.(empty($_GET) ? '' : CONTREXX_DIRECTORY_INDEX.'?'.implode('&', array_map(create_function('$a,$b', 'return contrexx_stripslashes($a.\'=\'.$b);'), array_keys($_GET), $_GET))), true, 301);
-            exit;
+        return $langId;
+    }
+
+
+    public function setFrontendLangId($langId)
+    {
+        $this->frontendLangId = $langId;
+
+        // This must not be called before setting $this->frontendLangId
+        $this->checkForMobileDevice();
+
+        // Load print template
+        if (isset($_GET['printview']) && $_GET['printview'] == 1) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['print_themes_id'];
+        }
+        // Load PDF template
+        elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['pdf_themes_id'];
+        }
+        // Load mobile template
+        elseif ($this->isMobileDevice and $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['mobile_themes_id'];
+        }
+        // Load regular content template
+        else {
+            $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
         }
 
+        // Set charset of frontend language
+        $this->frontendLangCharset = $this->arrLang[$this->frontendLangId]['charset'];
+    }
+
+
+    function checkForMobileDevice()
+    {
         // small screen view (mobile etc). use index.php?smallscreen=1 to
         // enable, ?smallscreen=0 to disable.
         $this->isMobileDevice = 0;
         // only set the smallscreen environment if there's actually a mobile theme defined.
         if (isset($_GET['smallscreen']) ) {
             // user wants to enable/disable smallscreen mode.
-            if ($_GET['smallscreen'] && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+            if ($_GET['smallscreen'] && $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
                 // enable
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $this->isMobileDevice = 1;
@@ -202,7 +224,7 @@ class InitCMS
         }
         else {
             // auto detection
-            if ($this->_is_mobile_phone() && $this->arrLang[$frontendLangId]['mobile_themes_id']) {
+            if ($this->_is_mobile_phone() && $this->arrLang[$this->frontendLangId]['mobile_themes_id']) {
                 // same here: only set smallscreen mode if there IS a smallscreen theme
                 setcookie('smallscreen', 1, 0, ASCMS_PATH_OFFSET.'/');
                 $this->isMobileDevice = 1;
@@ -215,19 +237,6 @@ class InitCMS
                 // didn't decide by himself.
             }
         }
-
-        $this->frontendLangId = $frontendLangId;
-        if (isset($_GET['printview']) && $_GET['printview'] == 1) {
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['print_themes_id'];
-
-        } elseif (isset($_GET['pdfview']) && $_GET['pdfview'] == 1){
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['pdf_themes_id'];
-        } elseif ($this->isMobileDevice and $this->arrLang[$frontendLangId]['mobile_themes_id']) {
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['mobile_themes_id'];
-        } else {
-            $this->currentThemesId = $this->arrLang[$frontendLangId]['themesid'];
-        }
-        $this->frontendLangCharset = $this->arrLang[$frontendLangId]['charset'];
     }
 
 
