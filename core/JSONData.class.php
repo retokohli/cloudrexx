@@ -27,6 +27,24 @@ class JSONData {
     // get_children will probably have to stick with the json format from renderTree, for reasonable
     // jsTree compat.
 	function jsondata() {
+        if (isset($_GET['operation']) && $_GET['operation'] == 'actions') {
+            return '
+<div style="border: 1px solid #ccc; position: absolute; z-index: 4; background-color: #fff; width: 120px; padding: 4px; margin: -4px -4px 4px 4px;">
+<strong>Actions</strong>
+<ul>
+  <li>Publish</li>
+  <li>Hide</li>
+  <li>Unpublish</li>
+</ul>
+<hr />
+<ul>
+  <li>...</li>
+</ul>
+<hr />
+<ul>
+  <li>Delete</li>
+</ul></div>';
+        }
 		if (isset($_GET['operation']) && $_GET['operation'] == 'get_children') {
 			return $this->renderTree();
 		}
@@ -62,7 +80,7 @@ class JSONData {
     		$pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
 		    $page = $pageRepo->find($_GET['id']);
 
-            $pg = Env::get('pg');
+            $pg = Env::get('pageguard');
             $accessData = array();
 
             $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => $pg->getAssignedGroupIds($page, true));
@@ -286,13 +304,20 @@ class JSONData {
 			$output .= $indent."  \"data\" : [\n";
 
 			$languages = array();
+            $metadata = array();
 			foreach ($node->getPages() as $page) {
 				if (in_array($page->getLang(), $languages)) continue;
 
 				if (!empty($languages))	$output .= ",\n";
                 // str_replace('"', '\"' instead of addslashes because we don't want to catch single quotes
-				$output .= $indent."    { \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\", \"icon\" : \"".$page->getStatus()."\", \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\", \"attr\": {\"id\" : \"".$page->getId()."\"} }";
+				$output .= $indent."    { \n";
+                $output .= $indent."      \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\",";
+                $output .= $indent."      \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\",\n";
+                $output .= $indent."      \"attr\": {\"id\" : \"".$page->getId()."\"}";
+                $output .= $indent."    }";
 				$languages[] = $page->getLang();
+                $metadata[$page->getId()]['visibility'] = $page->getStatus();
+                $metadata[$page->getId()]['publishing'] = "published";
 			}
 			$output .= $indent."\n".$indent."  ],\n";
 
@@ -301,10 +326,9 @@ class JSONData {
 				$output .= $this->tree_to_json($node, $level+1);				
 			}
 
-//			$output .= $indent."  \"icon\" : \"page\",\n";
-			$output .= $indent."  \"metadata\" : {\n";
-			$output .= $indent."    \"emblem\" : []\n";
-			$output .= $indent."  }\n";
+			$output .= $indent."  \"metadata\" : \n";
+            $output .= json_encode($metadata);
+			$output .= $indent."  \n";
 			$output .= $indent." }";
 		}
 

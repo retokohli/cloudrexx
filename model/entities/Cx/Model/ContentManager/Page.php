@@ -480,9 +480,17 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getStatus()
     {
-        if ($this->display) return "active";
-        if ($this->active) return "hidden";
-        return "disabled";
+        $status = "";
+        if ($this->active) $status .= "active ";
+        else $status .= "hidden ";
+
+        if ($this->protection) $status .= "protected ";
+        if ($this->module) {
+            if ($this->module == "home") $status .= "home ";
+            else $status .= "app ";
+        }
+        if ($this->target) $status .= "redir ";
+        return $status;
     }
 
     /**
@@ -492,6 +500,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function setStatus($status)
     {
+// TODO: this needs to be read-only; values are set through active/display setters
         if ($status == "active") {
             $this->active = true;
             $this->display = true;
