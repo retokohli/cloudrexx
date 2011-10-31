@@ -83,16 +83,16 @@ class frontendEditingLib {
 	 *
 	 * @return html-code with all include-statements
 	 */
-	public static function getIncludeCode() { 	
+	public static function getIncludeCode() {
         JS::activate('ckeditor');
         
 		$strFeInclude =		'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css) all;</style>'."\n";
 		$strFeInclude .=	'<!--[if lte IE 7]>'."\n";
    		$strFeInclude .=	'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie.css);</style>'."\n";
   		$strFeInclude .=	'<![endif]-->'."\n";
-		$strFeInclude .= 	'<script src="'.frontendEditingLib::PROTOTYPE_PATH.'" type="text/javascript"></script>'."\n";
-		$strFeInclude .= 	'<script src="'.frontendEditingLib::SCRIPTACULOUS_PATH.'" type="text/javascript"></script>'."\n";
-		$strFeInclude .= 	'<script src="'.frontendEditingLib::FRONTENDEDITING_PATH.'js/frontEditing.js" type="text/javascript"></script>'."\n";
+
+		JS::registerJS(frontendEditingLib::FRONTENDEDITING_PATH.'js/frontEditing.js');
+        JS::activate('jqueryui');
 		
 		return $strFeInclude;
 	}
@@ -116,7 +116,7 @@ class frontendEditingLib {
 	 *
 	 * @return html-code with needed content-elements.
 	 */
-	public static function getContentCode($pageId, $section, $command) {
+	public static function getContentCode($pageId) {
 		//Is user logged in?
 		$userIsLoggedIn = (frontendEditingLib::isUserLoggedIn()) ? 'true' : 'false';
 		
@@ -126,16 +126,16 @@ class frontendEditingLib {
                 $_SESSION[frontendEditingLib::SESSION_TOOLBAR_FIELD] == false) {
 			$showToolbar = 'false';
 		}
-				
-		$strFeContent =		'<script type="text/javascript">'."\n";
-		$strFeContent .=	'	var fe_userIsLoggedIn = '.$userIsLoggedIn.';'."\n";
-		$strFeContent .=	'	var fe_userWantsToolbar = '.$showToolbar.';'."\n";
-		$strFeContent .=	'	var fe_pageId = \''.$pageId.'\';'."\n";
-		$strFeContent .=	'	var fe_pageSection = \''.$section.'\';'."\n";
-		$strFeContent .=	'	var fe_pageCommand = \''.$command.'\';'."\n";
-		$strFeContent .=	'</script>'."\n";
-		$strFeContent .=	'<div id="fe_Container" style="display: none;"></div>'."\n";
-		$strFeContent .=	'<div id="fe_Loader" style="display: none;"></div>'."\n";
+
+        $frontendEditingJS = <<<FE_JS
+var fe_userIsLoggedIn = $userIsLoggedIn;
+var fe_userWantsToolbar = $showToolbar;
+var fe_pageId = $pageId;
+FE_JS;
+        JS::registerCode($frontendEditingJS);
+
+		$strFeContent  = '<div id="fe_Container" style="display: none;"></div>'."\n";
+		$strFeContent .= '<div id="fe_Loader" style="display: none;"></div>'."\n";
 		
 		return $strFeContent;
 	}
@@ -154,5 +154,3 @@ class frontendEditingLib {
                 ? ($_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] == true) : false);
 	}
 }
-
-?>

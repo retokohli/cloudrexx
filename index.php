@@ -288,8 +288,8 @@ $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
 $section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
 $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
-$page = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
-$history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
+$page    = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 0;
+$history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
 $sessionObj = null;
 if ($section == 'upload') { //handle uploads separately, since they have no content
     if (!include_once ASCMS_CORE_MODULE_PATH.'/upload/index.class.php')
@@ -305,16 +305,14 @@ if ($section == 'captcha') {
     $ca = new CaptchaActions();
     $ca->getPage();
 }
+if ($section == 'frontendEditing') {
+    if (!include_once(ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditing.class.php'))
+        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+    $sessionObj = new cmsSession();
+    $objFrontendEditing = new frontendEditing(Env::em());
+    $objFrontendEditing->performAction();
+}
 
-
-// Frontend Editing: Collect parameters
-$frontEditing = isset($_REQUEST['frontEditing'])
-    ? intval($_GET['frontEditing']) : 0;
-$frontEditingContent = isset($_REQUEST['previewContent'])
-    ? preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}',
-      html_entity_decode(stripslashes($_GET['previewContent']),
-          ENT_QUOTES, CONTREXX_CHARSET))
-    : '';
 
 // Initialize page meta
 $page = null;
@@ -435,22 +433,22 @@ $version = null;
     //replace the {{NODE_<ID>_<LANG>}}- placeholders
     LinkGenerator::parseTemplate($themesPages);
 
-    if ($frontEditing) {
-        $themesPages['index']   = '{CONTENT_FILE}';
-        $themesPages['content'] = '{CONTENT_TEXT}';
-        $themesPages['home']    = '{CONTENT_TEXT}';
-    }
-
     // Frontend Editing: content has to be replaced with preview code if needed.
-    $page_content   = null;
-    if($frontEditing) {
-        if($frontEditingContent != '')
-            $page_content = $frontEditingContent;
-        else
-            $page_content = $page->getContent();
-    }
-    else {
-        $page_content = '<div id="fe_PreviewContent">'. $page->getContent().'</div>';
+    $page_content = $page->getContent();
+    if ($_CONFIG['frontendEditingStatus'] == 'on') {
+        if (!empty($_REQUEST['frontEditing'])) {
+            $themesPages['index']   = '{CONTENT_FILE}';
+            $themesPages['content'] = '{CONTENT_TEXT}';
+            $themesPages['home']    = '{CONTENT_TEXT}';
+
+            if (isset($_POST['previewContent'])) {
+                $page_content = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}',
+                                    html_entity_decode(stripslashes($_POST['previewContent']),
+                                        ENT_QUOTES, CONTREXX_CHARSET));
+            }
+        } else {
+            $page_content = '<div id="fe_PreviewContent">'. $page_content.'</div>';
+        }
     }
 
     $page_catname = contrexx_raw2xhtml($page->getTitle());
@@ -1666,9 +1664,7 @@ if ($_CONFIG['frontendEditingStatus'] == 'on'
     && @include_once ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php') {
     $strFeInclude   = frontendEditingLib::getIncludeCode();
     $strFeLink      = frontendEditingLib::getLinkCode();
-
-    $pagePath = Env::em()->getRepository('Cx\Model\ContentManager\Page')->getPath($page);
-    $strFeContent   = frontendEditingLib::getContentCode($pagePath, contrexx_addslashes($section), $command);
+    $strFeContent   = frontendEditingLib::getContentCode($pageId);
 }
 
 
