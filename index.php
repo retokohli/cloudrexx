@@ -182,7 +182,7 @@ require_once(ASCMS_CORE_PATH.'/routing/URLTranslator.class.php');
  * @global integer $_LANGID
  * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
  */
-$_LANGID = $objInit->getFrontendLangId();
+$_LANGID = $objInit->getFallbackFrontendLangId();
 
 //try to find the language in the url
 $url = \Cx\Core\Routing\URL::fromCapturedRequest($_GET['__cap'], ASCMS_PATH_OFFSET, $_GET);
@@ -214,12 +214,13 @@ else if($_LANGID != $extractedLanguage) { //the user wants to change the languag
 }
 
 // Post-2.1
+$objInit->setFrontendLangId($_LANGID);
 define('FRONTEND_LANG_ID', $_LANGID);
 define('LANG_ID', $_LANGID);
 
 //expose the virtual language directory to the rest of the cms
 //please do not access this variable directly, use Env::get().
-$virtualLanguageDirectory = '/'.$languageExtractor->getShortNameOfLanguage($_LANGID);
+$virtualLanguageDirectory = '/'.$languageExtractor->getShortNameOfLanguage(FRONTEND_LANG_ID);
 Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
 
 // Caching-System
@@ -254,22 +255,14 @@ if (   isset($_GET['handler'])
     }
 }
 
-$section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
-$plainSection = contrexx_addslashes($section);
-// Load interface language data
 
+// Load interface language data
 /**
  * Core language data
  * @global array $_CORELANG
  */
 $_CORELANG = $objInit->loadLanguageData('core');
-Env::set('coreLang', $_CORELANG);
-/**
- * Module specific data
- * @global array $_ARRAYLANG
- */
-$_ARRAYLANG = $objInit->loadLanguageData($plainSection);
-Env::set('lang', $_ARRAYLANG);
+
 
 // Webapp Intrusion Detection System
 $objSecurity = new Security;
@@ -278,9 +271,11 @@ $_POST = $objSecurity->detectIntrusion($_POST);
 $_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
 $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
 
+
 // Check Referer -> Redirect
 //require_once ASCMS_CORE_PATH.'/redirect.class.php';
 //$objRedirect = new redirect();
+
 
 // initialize objects
 /**
@@ -290,6 +285,8 @@ $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
 $objTemplate = new HTML_Template_Sigma(ASCMS_THEMES_PATH);
 $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
+
+$section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
 $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
 $page = isset($_REQUEST['page']) ? intval($_GET['page']) : 0;
 $history = isset($_REQUEST['history']) ? intval($_GET['history']) : 0;
@@ -310,18 +307,6 @@ if ($section == 'captcha') {
 }
 
 
-/*
-  commented out during doctrine rewrite by srz
-if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
-    $pageId  = $objInit->getPageID($page, $section, $command, $history);
-    }*/
-//$is_home = $objInit->is_home;
-
-
-$objCounter = new statsLibrary();
-$objCounter->checkForSpider();
-
-require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
 // Frontend Editing: Collect parameters
 $frontEditing = isset($_REQUEST['frontEditing'])
     ? intval($_GET['frontEditing']) : 0;
@@ -330,14 +315,23 @@ $frontEditingContent = isset($_REQUEST['previewContent'])
       html_entity_decode(stripslashes($_GET['previewContent']),
           ENT_QUOTES, CONTREXX_CHARSET))
     : '';
+
+// Initialize page meta
 $page = null;
 $pageAccessId = 0;
-
+$page_protected = 0;
 $page_protected = $page_redirect = $pageId = $themesPages =
 $page_content = $page_template = $page_title = $page_metatitle =
 $page_catname = $page_keywords = $page_desc = $page_robots =
 $pageCssName = $page_modified = null;
-if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
+
+
+// If standalone is set, then we will not have to initialize/load any content page related stuff
+$isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
+
+
+// Regular page request
+if ($isRegularPageRequest) {
 // TODO: history (empty($history) ? )
 
     /** @ignore */
@@ -348,10 +342,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $section = $page->getModule();
-//TODO: check if addslashes is needed (caution: $plainSection used several times below.
-//      furthermore, addslashes is also intialized above using addslashes.
-        $plainSection = contrexx_addslashes($section);
-        $_ARRAYLANG = $objInit->loadLanguageData($section);
     }
     catch (\Cx\Core\Routing\ResolverException $e) {
         /*
@@ -365,7 +355,9 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
         */
 
         // a: 'home' page
-        $urlPointsToHome = $url->getSuggestedTargetPath() == 'index.php' || $url->getSuggestedTargetPath() == '';
+        $urlPointsToHome =    $url->getSuggestedTargetPath() == 'index.php'
+                           || $url->getSuggestedTargetPath() == '';
+        //    user probably tried requesting the home-page
         if(!$section && $urlPointsToHome) {
             $section = 'home';
         }
@@ -378,8 +370,8 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
                  'lang' => FRONTEND_LANG_ID,
                  'cmd' => NULL
             );
-            if(isset($_REQUEST['cmd']))
-                $crit['cmd'] = $_REQUEST['cmd'];
+            if(!empty($command))
+                $crit['cmd'] = $command;
 
             $page = $pageRepo->findOneBy($crit);
         }
@@ -389,43 +381,15 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 
     if(!$page || !$page->isActive()) {
         //fallback for inexistant error page
-        if($plainSection == 'error') {
+        if($section == 'error') {
             // If the error module is not installed, show this
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
         else {
             //page not found, redirect to error page.
-            CSRF::header('Location: index.php?section=error&id=404');
+            CSRF::header('Location: http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/index.php?section=error&id=404');
             exit;
         }
-    }
-
-    //legagy: re-populate cmd and section into $_GET
-    $_GET['cmd' ] = $command;
-    $_GET['section' ] = $section;
-
-    // To clone any module, use an optional integer cmd suffix.
-    // E.g.: "shop2", "gallery5", etc.
-    // Mind that you *MUST* copy all necessary database tables, and fix any
-    // references to your module (section and cmd parameters, database tables)
-    // using the MODULE_INDEX constant in the right place both in your code
-    // *AND* templates!
-    // See the Shop module for an example.
-    $arrMatch = array();
-    if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
-        // The plain section/module name, used below
-        $plainSection = $arrMatch[1];
-    }
-    // The module index.
-    // An empty or 1 (one) index represents the same (default) module,
-    // values 2 (two) and larger represent distinct instances.
-    $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
-    define('MODULE_INDEX', $moduleIndex);
-
-    $plainSection = contrexx_addslashes($section);
-    if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
-        // The plain section/module name, used below
-        $plainSection = $arrMatch[1];
     }
 
     //check whether the page is active
@@ -455,7 +419,7 @@ $version = null;
     /*
     //404 for inactive pages
     if(($start > $now && $start != null) || ($now > $end && $end != null)) {
-        if ($plainSection == 'error') {
+        if ($section == 'error') {
             // If the error module is not installed, show this
             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
@@ -507,7 +471,8 @@ $version = null;
     $page_modified  = $page->getUpdatedAt()->getTimestamp();
 
 //TODO: history
-/*    if ($history) {
+    /*
+    if ($history) {
         $objPageProtection = $objDatabase->SelectLimit('SELECT backend_access_id FROM '.DBPREFIX.'content_navigation WHERE catid='.$objResult->fields['catid'].' AND backend_access_id!=0', 1);
         if ($objPageProtection !== false) {
             if ($objPageProtection->RecordCount() == 1) {
@@ -521,8 +486,41 @@ $version = null;
     */
 }
 
+
+// TODO: refactor system to be able to remove this backward compatibility
+// Backwards compatibility for code pre Contrexx 3.0 (update)
+$_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
+$_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
+
+
+// To clone any module, use an optional integer cmd suffix.
+// E.g.: "shop2", "gallery5", etc.
+// Mind that you *MUST* copy all necessary database tables, and fix any
+// references to your module (section and cmd parameters, database tables)
+// using the MODULE_INDEX constant in the right place both in your code
+// *AND* templates!
+// See the Shop module for an example.
+$arrMatch = array();
+if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
+    // The plain section/module name, used below
+    $plainSection = $arrMatch[1];
+} else {
+    $plainSection = $section;
+}
+// The module index.
+// An empty or 1 (one) index represents the same (default) module,
+// values 2 (two) and larger represent distinct instances.
+$moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
+define('MODULE_INDEX', $moduleIndex);
+
+
 // Authentification for protected pages
-if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_REQUEST['section']) || $_REQUEST['section'] != 'login')) {
+if (   (   $page_protected
+        || $history
+        || !empty($_COOKIE['PHPSESSID']))
+    && (   !isset($_REQUEST['section'])
+        || $_REQUEST['section'] != 'login')
+) {
     $sessionObj = new cmsSession();
     $sessionObj->cmsSessionStatusUpdate('frontend');
     $objFWUser = FWUser::getFWUserObject();
@@ -548,13 +546,47 @@ if (($page_protected || $history || !empty($_COOKIE['PHPSESSID'])) && (!isset($_
     }
 }
 
-if (!empty($page_redirect)){
-    CSRF::header('Location: ' . $page_redirect);
+
+// Load interface language data
+/**
+ * Module specific data
+ * @global array $_ARRAYLANG
+ */
+$_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+
+
+// Include Javascript Framework (including the Contrexx Javascript Collector)
+require_once ASCMS_DOCUMENT_ROOT.'/lib/FRAMEWORK/Javascript.class.php';
+
+
+if (!$isRegularPageRequest) {
+    // ATTENTION: These requests are not protected by the content manager
+    //            and must therefore be authorized by the calling component itself!
+    switch ($plainSection) {
+        case 'newsletter':
+            /** @ignore */
+            if (!@include_once ASCMS_MODULE_PATH.'/newsletter/index.class.php')
+                die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+            $newsletter = new newsletter();
+            $newsletter->getPage();
+            break;
+        case 'immo':
+            /** @ignore */
+            if (!@include_once ASCMS_MODULE_PATH.'/immo/index.class.php')
+                die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+            $objImmo = new Immo('');
+            $objImmo->getPage();
+            break;
+    }
+
+    // Force execution stop of standalone scripts (if not already happend as intended by the requested component)
     exit;
 }
 
+
 // Initialize the navigation
 $objNavbar = new Navigation($pageId, $page);
+
 
 // Start page or default page for no section
 if ($section == 'home') {
@@ -564,6 +596,16 @@ if ($section == 'home') {
         $page_template = $themesPages['content'];
 }
 
+
+// Initialize counter and track search engine robot
+$objCounter = new statsLibrary();
+$objCounter->checkForSpider();
+
+
+// TODO: Move this code to each module and call them through a well defined API
+////////////////////////////////////////////////////////////////////////////////
+//// START: GLOBAL CONTENT MODULE FUNCTIONS ////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // Set Blocks
 if ($_CONFIG['blockStatus'] == '1') {
     /** @ignore */
@@ -576,7 +618,7 @@ if ($_CONFIG['blockStatus'] == '1') {
 }
 
 // make the replacements for the data module
-if (@include_once ASCMS_MODULE_PATH.'/data/dataBlocks.class.php') {
+if ($_CONFIG['dataUseModule'] && @include_once ASCMS_MODULE_PATH.'/data/dataBlocks.class.php') {
     $lang = $objInit->loadLanguageData('data');
     $dataBlocks = new dataBlocks($lang);
     $page_content = $dataBlocks->replace($page_content);
@@ -1071,6 +1113,9 @@ if (@include_once ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php') {
         $themesPages['sidebar'] = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $themesPages['sidebar']);
     }
 }
+////////////////////////////////////////////////////////////////////////////////
+//// END: GLOBAL CONTENT MODULE FUNCTIONS //////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 $objTemplate->setTemplate($themesPages['index']);
 $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
