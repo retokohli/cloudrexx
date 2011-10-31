@@ -81,7 +81,7 @@ require_once '../core/PageGuard.class.php';
 $strErrMessage = '';
 $objDatabase = getDatabaseObject($strErrMessage);
 Env::set('db', $objDatabase);
-Env::set('pg', new PageGuard($objDatabase));
+Env::set('pageguard', new PageGuard($objDatabase));
 
 if ($objDatabase === false) {
     die('Database error: '.$strErrMessage);
