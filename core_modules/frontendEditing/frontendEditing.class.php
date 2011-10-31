@@ -1,49 +1,29 @@
 <?php
-require_once('/home/srz/web/root/phptools/profiler.class.php');
 /**
  * Frontend Edition
  *
  * @author Kaelin Thomas <thomas.kaelin@comvation.com>
- * @version 1.0
+ * @author Daeppen Thomas <thomas.daeppen@comvation.com>
+ * @version 2.0
  * @package contrexx
  * @subpackage core_module_frontendEditing
- * @todo: set $_REQUEST['page'] accordingly in cluent (page's path rather than id) as soon as dispatching works
- */
-/*
- * ATTENTION: SEE CODE AT END OF THIS FILE FOR COMPLETE UNDERSTANDMENT OF CODE!!
  */
 
 /**
  * @ignore
  */
-define('BASE_FOLDER', '../../');
-
-//Includes
-include_once(BASE_FOLDER.'lib/DBG.php');
-require_once(BASE_FOLDER.'config/configuration.php');
-require_once(BASE_FOLDER.'config/settings.php');
-require_once(BASE_FOLDER.'config/set_constants.php');
-require_once(BASE_FOLDER.'config/version.php');
-require_once(BASE_FOLDER.'core/API.php');
-require_once(ASCMS_LIBRARY_PATH.'/CSRF.php');
-require_once(ASCMS_CORE_PATH.'/Init.class.php');
-require_once(ASCMS_CORE_PATH.'/wysiwyg.class.php');
-require_once(ASCMS_CORE_PATH.'/permission.class.php');
-require_once(ASCMS_CORE_PATH.'/Env.class.php');
-require_once('frontendEditingLib.class.php');
-
+require_once ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditingLib.class.php';
 /**
- * Doctrine configuration
- */ 
-require_once(BASE_FOLDER.'config/doctrine.php');
-
-DBG::activate(DBG_PHP);
+ * @ignore
+ */
+require_once ASCMS_CORE_PATH.'/wysiwyg.class.php';
 
 /**
  * This class handles the frontend editing.
  *
  * @author Kaelin Thomas <thomas.kaelin@comvation.com>
- * @version 1.0
+ * @author Daeppen Thomas <thomas.daeppen@comvation.com>
+ * @version 2.0
  * @package contrexx
  * @subpackage core_module_frontendEditing
  */
@@ -56,7 +36,7 @@ class frontendEditing extends frontendEditingLib {
 	/**
 	 * Path to template folder.
 	 */
-	private $strTemplatePath = 'template';
+	private $strTemplatePath = '';
 
 	/**
 	 * This char will be used to separate the status code from the content.
@@ -166,6 +146,7 @@ class frontendEditing extends frontendEditingLib {
 		$strErrorCode = '';
 
 		//Template
+		$this->strTemplatePath = ASCMS_CORE_MODULE_PATH.'/frontendEditing/template';
 		$this->objTemplate = new HTML_Template_Sigma($this->strTemplatePath);
         CSRF::add_placeholder($this->objTemplate);
 		$this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -184,8 +165,6 @@ class frontendEditing extends frontendEditingLib {
 	private function getParameters() {
 		$this->strAction 			= isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
         $this->strPagePath          = isset($_REQUEST['page']) ? $_REQUEST['page'] : '';
-		$this->strPageSection 		= isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
-		$this->strPageCommand		= isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
 	}
 
 	/**
@@ -197,24 +176,23 @@ class frontendEditing extends frontendEditingLib {
         /*
           Find out whether there's a page in our language at the path specified
          */
-        $pap = $this->pageRepo->getPagesAtPath($this->strPagePath, null, FRONTEND_LANG_ID, true);
-
-        if(!$pap) //path is invalid
-            return;
+        $page = $this->pageRepo->find($this->strPagePath);
 
         /*
           We've got a set of pages and we know our desired page exists - get it.
          */
         //get the right page object.
-        $page = $pap['page'];
         if(!$page)
             return;
         
         $this->page = $page;
 
         //remember interesting properties.
-        $this->strTitle = $this->page->getTitle();
+        $this->strTitle = $this->page->getContentTitle();
         $this->strContent = $this->page->getContent();
+
+		$this->strPageSection = $this->page->getModule();
+		$this->strPageCommand = $this->page->getCmd();
 	}
 
 	/**
@@ -231,7 +209,10 @@ class frontendEditing extends frontendEditingLib {
 					$this->setToolbarVisibility($_REQUEST['status']);
 					break;
 				case 'getEditor':
-					if (empty($this->strPageSection) || $_REQUEST['selection'] == 'false' || in_array($this->strPageSection, frontendEditingLib::$arrSectionsWithoutBackend)) {
+					if (   empty($this->strPageSection)
+                        || $_REQUEST['selection'] == 'false'
+                        || in_array($this->strPageSection, frontendEditingLib::$arrSectionsWithoutBackend)
+                    ) {
 						echo $this->getEditorPage();
 					} else {
 						echo $this->getSelectionPage();
@@ -256,6 +237,8 @@ class frontendEditing extends frontendEditingLib {
 
 			}
 		}
+
+        exit;
 	}
 
 	/**
@@ -273,7 +256,6 @@ class frontendEditing extends frontendEditingLib {
 				$_POST['USERNAME'] 	= $_POST['username'];
 				$_POST['PASSWORD'] 	= $_POST['password'];
                 $captchaKey = strtoupper($_POST['seckey']);
-                $captchaOffset = $_POST['seckeyOffset'];
                 include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
 
                 $captcha = new Captcha();
@@ -358,6 +340,7 @@ class frontendEditing extends frontendEditingLib {
 	 * @return html source of the login page.
 	 */
 	private function getLoginPage() {
+// TODO: proposal: why not using the regular login module?
 		global $_CORELANG;
 
 		$this->objTemplate->loadTemplateFile('login.html',true,true);
@@ -510,7 +493,7 @@ class frontendEditing extends frontendEditingLib {
 	 * @global 	ADONewConnection
 	 */
 	private function updatePage() {
-        $this->page->setTitle(strip_tags($_POST['title']));
+        $this->page->setContentTitle(strip_tags($_POST['title']));
         $this->page->setContent(preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $_POST['content']));
         $this->page->setUser(strip_tags($this->objUser->objUser->getUsername()));
         $this->page->setUpdatedAtToNow();
@@ -519,22 +502,3 @@ class frontendEditing extends frontendEditingLib {
         $this->em->flush();
 	}
 }
-
-//Instantiate database-object. Has to be global because of included classes!
-$objDatabase = getDatabaseObject($strErrorCode);
-
-//Instantiate language-array. Has to be global because of included classes!
-$objInit = new InitCMS('frontend', Env::em());
-Env::set('init', $objInit);
-define('FRONTEND_LANG_ID', $objInit->getFrontendLangId());
-$_CORELANG = $objInit->loadLanguageData('core');
-
-if(!isset($sessionObj)) {
-    //Instantiate session-object. Has to be global because of included classes!
-    $sessionObj = new cmsSession();
-}
-
-//Instantiate Front editing
-$objFrontendEditing = new frontendEditing(Env::em());
-$objFrontendEditing->performAction();
-?>
