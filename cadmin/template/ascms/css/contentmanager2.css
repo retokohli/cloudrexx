@@ -84,43 +84,112 @@ h1{ font-size: 20px }
 #site-tree{
     width: 332px;
     overflow: hidden;
+    margin-top: -9px;
+    padding: 4px 0px 0px 30px;
+}
+#site-tree li {
+    padding: 4px 0px 4px 0px;
+}
+#site-tree ul {
+    margin: 4px 0px -4px 0px;
 }
 #site-tree li a {
-    padding-left: 30px;
 }
 #site-tree li a ins {
-    position: absolute;
-    margin-left: -30px;
     width: 18px;
     height: 18px;
     overflow: hidden;
 }
-#site-tree li a ins.active {
-    background-image: url(../../../../lib/javascript/jquery/ui/images/page-active.png);
-}
-#site-tree li a ins.hidden {
-    background-image: url(../../../../lib/javascript/jquery/ui/images/page-hidden.png);
-}
-#site-tree li a ins.disabled {
-    background-image: url(../../../../lib/javascript/jquery/ui/images/page-disabled.png);
+
+/*#site-tree li > div a.actions {*/
+#site-tree div.actions, div.actions-expanded {
+    position: absolute;
+    left: 270px;
+    margin-top: -22px;
+    background-color: #fff;
 }
 
-#site-tree li a ins:hover {
-    background-color: #999;
-    width: 100px;
-    height: 70px;
-    z-index: 5;
-    background-position: 3px 3px;
-    padding: 3px;
-    margin: -3px 0 0 -34px;
+div.actions-expanded {
+    left: 262px;
 }
-#site-tree li a ins a {
-    padding-left: 3px;
-    margin-left: 25px;
+
+/*#site-tree li:hover > div a.actions {*/
+#site-tree:hover div.actions {
+    display: inline;
 }
-#site-tree li a ins a:hover {
-    background-color: #999;
-    width: 100%;
+
+#site-tree li ins.jstree-icon {
+
+}
+
+#site-tree ins.publishing {
+    background-image: url(../../../template/ascms/images/publishing.png);
+    background-position: -3px -4px;
+}
+#site-tree ins.publishing.locked {
+    background-image: url(../../../template/ascms/images/publishing-locked.png);
+}
+#site-tree ins.publishing.unpublished {
+    background-position: -3px -4px;
+}
+#site-tree ins.publishing.draft {
+    background-position: -3px -33px;
+}
+#site-tree ins.publishing.draftwait {
+    background-position: -32px -33px;
+}
+#site-tree ins.publishing.published {
+    background-position: -3px -62px; 
+}
+#site-tree ins.publishing.publishedwait {
+    background-position: -32px -62px;
+}
+
+#site-tree ins.page {
+    position: relative;
+    top: -2px;
+    height: 24px;
+    width: 22px;
+    background-position: -3px -4px;
+}
+#site-tree ins.page.active {
+    background-image: url(../../../template/ascms/images/page-active.png);
+}
+#site-tree ins.page.hidden {
+    background-image: url(../../../template/ascms/images/page-hidden.png);
+}
+#site-tree ins.page.protected {
+    background-position: -32px -4px;
+}
+#site-tree ins.page.home {
+    background-position: -3px -33px;
+}
+#site-tree ins.page.home.protected {
+    background-position: -32px -33px;
+}
+#site-tree ins.page.app {
+    background-position: -3px -62px;
+}
+#site-tree ins.page.app.protected {
+    background-position: -32px -62px;
+}
+#site-tree ins.page.redir {
+    background-position: -3px -91px;
+}
+#site-tree ins.page.redir.protected {
+    background-position: -32px -91px;
+}
+
+#site-tree li a ins.jstree-checkbox {
+    position: absolute;
+    left: 15px;
+}
+#site-tree div.jstree-wrapper {
+    position: absolute;
+    left: 0px;
+    width: 325px;
+    margin-top: 22px;
+    border-bottom: 1px solid #ccc;
 }
 
 #cm-tabs{
@@ -608,6 +677,7 @@ select.chzn-select{
     background-image: -webkit-linear-gradient(center bottom, white 0%, #eeeeee 50%);
     background-image: -moz-linear-gradient(center bottom, white 0%, #eeeeee 50%);
     background-image: -o-linear-gradient(bottom, white 0%, #eeeeee 50%);
+
     background-image: -ms-linear-gradient(top, #ffffff 0%, #eeeeee 50%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
     background-image: linear-gradient(top, #ffffff 0%, #eeeeee 50%);
