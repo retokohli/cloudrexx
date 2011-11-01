@@ -132,6 +132,13 @@ function SetUrl(url, width, height, alt)
     if (downloadsElRemoveButton != null) {
         downloadsElRemoveButton.style.display = '';
     }
+
+    var id = downloadsElInsertBox.id;
+    var result = id.match(/(\d+)$/);
+    if (result[1] == 0) {
+        downloadsSyncNameFields(downloadsElInsertBox.value,'input','downloads_download_file_source')
+    }
+
 }
 
 function downloadsAdjustSourceConfig()
@@ -390,12 +397,25 @@ function downloadsAdjustSourceConfig()
                         <input type="radio" name="downloads_download_type" id="downloads_download_type_url" value="url" {DOWNLOADS_DOWNLOAD_TYPE_URL_CHECKED} onchange="downloadsAdjustSourceConfig()" /><label for="downloads_download_type_url">{TXT_DOWNLOADS_URL}</label>
                         <br />
                         <div id="downloads_download_type_file_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_FILE_CONFIG_DISPLAY}">
-                            <input type="text" name="downloads_download_file_source" id="downloads_download_file_source" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source'),null,null,document.getElementById('downloads_download_mime_type'))" />
+                            <input type="text" id="downloads_download_file_source_0" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" onchange="downloadsSyncNameFields(this.value,'input','downloads_download_file_source')"/> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_0'),null,null,document.getElementById('downloads_download_mime_type'))" />
+                                <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_file_source_lang_div').style.display = (document.getElementById('downloads_download_file_source_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
+                            <div id="downloads_download_file_source_lang_div" style="display:none;">
+                                <!-- BEGIN downloads_download_file_source_list -->
+                                <input type="text" name="downloads_download_file_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_FILE_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_file_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" />{DOWNLOADS_DOWNLOAD_LANG_NAME}<br />
+                                <!-- END downloads_download_file_source_list -->
+                            </div>
                         </div>
                         <div id="downloads_download_type_url_config" style="display:{DOWNLOADS_DOWNLOAD_TYPE_URL_CONFIG_DISPLAY}">
-                            <input type="text" name="downloads_download_url_source" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" />
+                            <input type="text" id="downloads_download_url_source_0" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" onchange="downloadsSyncNameFields(this.value,'input','downloads_download_url_source')"/>
+                                <a href="javascript:void(0);" onclick="document.getElementById('downloads_download_url_source_lang_div').style.display = (document.getElementById('downloads_download_url_source_lang_div').style.display == 'block' ? 'none' : 'block')" title="{TXT_DOWNLOADS_EXTENDED}">{TXT_DOWNLOADS_EXTENDED} &raquo;</a>
+                            <div id="downloads_download_url_source_lang_div" style="display:none;">
+                                <!-- BEGIN downloads_download_url_source_list -->
+                                <input type="text" name="downloads_download_url_source[{DOWNLOADS_DOWNLOAD_LANG_ID}]" id="downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}" value="{DOWNLOADS_DOWNLOAD_URL_SOURCE}" style="width:300px;" /> <input type="button" value="{TXT_DOWNLOADS_BROWSE}" onclick="downloadsGetFileBrowser(document.getElementById('downloads_download_url_source_{DOWNLOADS_DOWNLOAD_LANG_ID}'),null,null,document.getElementById('downloads_download_mime_type'))" />{DOWNLOADS_DOWNLOAD_LANG_NAME}<br />
+                                <!-- END downloads_download_url_source_list -->
+                            </div>
                         </div>
                     </td>
+
                 </tr>
                 <tr class="row2">
                     <td>{TXT_DOWNLOADS_TYPE}</td>
