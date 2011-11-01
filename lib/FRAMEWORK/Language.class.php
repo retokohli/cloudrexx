@@ -351,4 +351,32 @@ class FWLanguage
         return false;
     }
 
+    /**
+     * Builds an array mapping language ids to fallback language ids.
+     *
+     * @return array ( language id => fallback language id )
+     */
+    static function getFallbackLanguageArray() {
+        global $objDatabase;
+        $ret = array();
+
+        $defaultLangId = intval(self::getDefaultLangId());
+
+        $query = "SELECT id, fallback FROM ".DBPREFIX."languages where fallback IS NOT NULL";
+        $rs = $objDatabase->Execute($query);
+
+        while(!$rs->EOF) {
+            $langId = intval($rs->fields['id']);
+            $fallbackLangId = intval($rs->fields['fallback']);
+            
+            //explicitly overwrite null (default) with the default language id
+            if($fallbackLangId === 0)
+                $fallbackLangId = $defaultLangId;
+
+            $ret[$langId] = $fallbackLangId;
+            $rs->MoveNext();
+        }
+        
+        return $ret;
+    }
 }
