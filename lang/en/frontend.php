@@ -219,5 +219,6 @@ $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";
 $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Finish uploading";
-$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "files uploaded";
+$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "file(s) uploaded";
+$_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:";
 ?>

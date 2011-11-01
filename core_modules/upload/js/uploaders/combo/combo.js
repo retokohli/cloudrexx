@@ -135,6 +135,10 @@ var ComboUploader = function(theConfig) {
                 upload: config.uploadId
             },
             function(data) {
+                //sort out empty responses
+                if(!data.fileCount && !data.messages)
+                    return;
+
                 if(data.messages && data.messages.length > 0) {
                     var html = '<ul>';
                     for(var i = 0; i < data.messages.length; i++) {
@@ -146,13 +150,24 @@ var ComboUploader = function(theConfig) {
                         html += '<li class="'+status+'"><strong>'+file+'</strong>: '+message+'</li>';
                     }
                     html += '</ul>';
-                    div.find('.uploadView').hide();
-                    div.find('.responseView .message .errors').html(html).show();
-
-                    var fileCount = data.fileCount;
-                    div.find('.responseView .message .files .count').html(fileCount);
-                    div.find('.responseView').show();                
+                    div.find('.responseView .message .errors .fileList').html(html);
+                    div.find('.responseView .message .errors').show();
                 }
+                else {
+                    div.find('.responseView .message .errors').hide();
+                }
+
+                var fileCount = data.fileCount;
+                if(fileCount > 0) {
+                    div.find('.responseView .message .files').show();
+                    div.find('.responseView .message .files .count').html(fileCount);
+                }
+                else {
+                    div.find('.responseView .message .files').hide();
+                }
+
+                div.find('.responseView').show();
+                div.find('.uploadView').hide();
             },
             'json'
         );
@@ -161,6 +176,9 @@ var ComboUploader = function(theConfig) {
     return {
         refresh: function() {
             switchUploader(curType);
+        },
+        displayFinishButton: function(callback) {
+            div.find('.finishButton').bind('click', callback).show();
         }
     };
 };

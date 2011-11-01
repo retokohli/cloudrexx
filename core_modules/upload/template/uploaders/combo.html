@@ -12,13 +12,17 @@
   </div>
   <div class="responseView" style="display:none">
     <div class="message">
-      <div class="files">
+      <div class="files okbox">
         <span class="count"></span>&nbsp;{TXT_CORE_FILES_UPLOADED}
       </div>
-      <div class="errors warningbox" style="display:none">
+      <div class="errors alertbox" style="display:none">
+        <p>{TXT_CORE_FILES_NOT_UPLOADED}</p>
+        <div class="fileList">
+        </div>
       </div>
     </div>
-    <button class="moreButton">{TXT_CORE_UPLOAD_MORE}</button>
+    <button class="finishButton right" style="display:none">{TXT_CORE_FINISH_UPLOADING}</button>
+    <button class="moreButton right">{TXT_CORE_UPLOAD_MORE}</button>
   </div>
 
   <script type="text/javascript">

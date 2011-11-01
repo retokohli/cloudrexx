@@ -1095,5 +1095,6 @@ $_ARRAYLANG['TXT_CORE_HTML_SELECT_ALL'] = "Alle auswählen";
 $_ARRAYLANG['TXT_CORE_HTML_DESELECT_ALL'] = "Auswahl aufheben";
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";
 $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
-$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Dateien heraufgeladen";
+$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) wurde(n) erfolgreich heraufgeladen";
+$_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 ?>
