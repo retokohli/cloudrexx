@@ -92,7 +92,8 @@ class ComboUploader extends Uploader
              'OTHER_UPLOADERS_CAPTION' => $_CORELANG['OTHER_UPLOADERS'],
              'TXT_CORE_UPLOAD_MORE' => $_CORELANG['TXT_CORE_UPLOAD_MORE'],
              'TXT_CORE_FINISH_UPLOADING' => $_CORELANG['TXT_CORE_FINISH_UPLOADING'],
-             'TXT_CORE_FILES_UPLOADED' => $_CORELANG['TXT_CORE_FILES_UPLOADED']
+             'TXT_CORE_FILES_UPLOADED' => $_CORELANG['TXT_CORE_FILES_UPLOADED'],
+             'TXT_CORE_FILES_NOT_UPLOADED' => $_CORELANG['TXT_CORE_FILES_NOT_UPLOADED']
         ));
 
         $tpl->setVariable('UPLOADER_CODE', $formUploader->getXHtml());

@@ -2190,8 +2190,9 @@ class galleryManager extends GalleryLibrary
      * @param   array		$paths
      * @param   integer    	$uploadId
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $paths, $uploadId, $fileInfos) {
-		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    public static function uploadFinished($tempPath, $tempWebPath, $paths, $uploadId, $fileInfos, $response) {
+		global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
+        $lang = $objInit->loadLanguageData('gallery');
 		$objGallery = new galleryManager();
 
 		$path = $paths['path'];
@@ -2219,14 +2220,16 @@ class galleryManager extends GalleryLibrary
 
 			//delete unwanted files
             if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-               @unlink($tempPath.'/'.$file);
+                $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_UNALLOWED_EXTENSION'], $file);
+                @unlink($tempPath.'/'.$file);
                 continue;
             }
 
 			//width of the image is wider than the allowed value. Show Error.
 			$arrImageSize = getimagesize($tempPath.'/'.$file);
 			if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
-				$objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
+				$objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
+                $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_RESOLUTION_TOO_HIGH'], $file);
                 @unlink($tempPath.'/'.$file);
                 continue;
 			}

@@ -3,6 +3,7 @@
  *   starterElement: <exposedComboUploaderStarter-div>,
  *   uploaderDiv: <exposedComboUploader-div>,
  *   title: 'dialogtitle'
+ *   comboUploader: <ComboUploader-instance>
  * }
  */
 var ExposedCombo = function(theConfig) {
@@ -39,12 +40,17 @@ var ExposedCombo = function(theConfig) {
         return false;
     });
 
+    //initialize the finishButton
+    comboUploader.displayFinishButton(function() {
+        dialog.close();
+    });
+
     //public properties of ExposedCombo
     return {
         dialog: function() {
             return dialog;
         },
-        uploadId : function() {
+        uploadId: function() {
             return uploadId;
         }
     };

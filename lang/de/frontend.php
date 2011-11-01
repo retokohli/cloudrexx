@@ -219,6 +219,6 @@ $_ARRAYLANG['TXT_MEDIADIR_INTERFACES'] = 'Interfaces';
 $_ARRAYLANG['TXT_MEDIADIR_SETTINGS'] = 'Einstellungen';
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";
 $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
-$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Dateien heraufgeladen";
-
+$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) heraufgeladen";
+$_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 ?>
