@@ -597,14 +597,25 @@ class ContactManager extends ContactLib
             $selectedInterfaceLanguage = key($this->arrForms[$formId]['lang']);
         }
 
+        //Get the fallback languages array
+        $fallBackArr = FWLanguage::getFallbackLanguageArray();
+        
         foreach ($arrRecipients as $arrRecipient) {
             foreach ($arrActiveSystemFrontendLanguages as $langId => $lang) {
                 $isSelectedInterfaceLanguage = $langId == $selectedInterfaceLanguage;
 
+                if (isset($arrRecipient['lang'][$fallBackArr[$lang['id']]])) {
+                    $optionalLanguageId = $fallBackArr[$lang['id']];
+                } elseif (isset($arrRecipient['lang'][FWLanguage::getDefaultLangId()])) {
+                    $optionalLanguageId = FWLanguage::getDefaultLangId();
+                } else {
+                    $optionalLanguageId = key($arrRecipient['lang']);
+                }
+       
                 $this->_objTpl->setVariable(array(
                     'CONTACT_FORM_RECIPIENT_LANG_ID'    => $langId,
                     'RECIPIENT_NAME_DISPLAY'            => $isSelectedInterfaceLanguage ? 'block' : 'none',
-                    'CONTACT_FORM_RECIPIENT_NAME'       => contrexx_raw2xhtml($arrRecipient['lang'][$langId])
+                    'CONTACT_FORM_RECIPIENT_NAME'       => (!empty($arrRecipient['lang'][$langId])) ? contrexx_raw2xhtml($arrRecipient['lang'][$langId]) : contrexx_raw2xhtml($arrRecipient['lang'][$optionalLanguageId])
                 ));
                 $this->_objTpl->parse('recipient_name');
             }
@@ -777,7 +788,15 @@ class ContactManager extends ContactLib
                 $langVars = $this->arrForms[$formId]['lang'][$langId];
                 $langVars['mailTemplate'] = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $langVars['mailTemplate']);
             }
-            
+
+            if (isset($this->arrForms[$formId]['lang'][$fallBackArr[$lang['id']]])) {
+                $optionalLanguageId = $fallBackArr[$lang['id']];
+            } elseif (isset($this->arrForms[$formId]['lang'][FWLanguage::getDefaultLangId()])) {
+                $optionalLanguageId = FWLanguage::getDefaultLangId();
+            } else {
+                $optionalLanguageId = key($this->arrForms[$formId]['lang']);
+            }
+
             $this->_objTpl->setVariable(array(
                 'LANG_ID'                   => $langId,
                 'LANG_NAME'                 => contrexx_raw2xhtml($lang['name']),
@@ -790,23 +809,20 @@ class ContactManager extends ContactLib
                 'LANG_ID'                                       => $lang['id'],
                 'LANG_NAME'                                     => contrexx_raw2xhtml($lang['name']),
                 'LANG_FORM_DISPLAY'                             => $isSelectedInterfaceLanguage ? 'block' : 'none',
-                'CONTACT_FORM_MAIL_TEMPLATE_HIDDEN'             => contrexx_raw2xhtml($langVars['mailTemplate']),
-                'CONTACT_FORM_SUBJECT'                          => contrexx_raw2xhtml($langVars['subject']),
+                'CONTACT_FORM_MAIL_TEMPLATE_HIDDEN'             => !empty ($langVars['mailTemplate']) ? contrexx_raw2xhtml($langVars['mailTemplate']) : contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$optionalLanguageId]['mailTemplate']),
+                'CONTACT_FORM_SUBJECT'                          => !empty ($langVars['subject']) ? contrexx_raw2xhtml($langVars['subject']) : contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$optionalLanguageId]['subject']),
             ));
             $this->_objTpl->parse('notificationLanguageForm');
-                        
+            
             $this->_objTpl->setVariable(array(
                 'CONTACT_FORM_ID'                               => $formId,
                 'LANG_ID'                                       => $lang['id'],
                 'LANG_FORM_DISPLAY'                             => $isSelectedInterfaceLanguage ? 'block' : 'none',
 
-                'CONTACT_FORM_MAIL_TEMPLATE_HIDDEN'             => contrexx_raw2xhtml($langVars['mailTemplate']),
-                'CONTACT_FORM_SUBJECT'                          => contrexx_raw2xhtml($langVars['subject']),
-
-                'CONTACT_FORM_NAME'                             => contrexx_raw2xhtml($langVars['name']),//$this->arrForms[$formId]['lang'][$lang['id']]['name'],
+                'CONTACT_FORM_NAME'                             => !empty ($langVars['name']) ? contrexx_raw2xhtml($langVars['name']) : contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$optionalLanguageId]['name']),//$this->arrForms[$formId]['lang'][$lang['id']]['name'],
                 'CONTACT_FORM_FIELD_NEXT_ID'                    => $lastFieldId+1,
-                'CONTACT_FORM_TEXT_HIDDEN'                      => contrexx_raw2xhtml($langVars['text']),
-                'CONTACT_FORM_FEEDBACK_HIDDEN'                  => contrexx_raw2xhtml($langVars['feedback']),
+                'CONTACT_FORM_TEXT_HIDDEN'                      => !empty ($langVars['text']) ? contrexx_raw2xhtml($langVars['text']) : contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$optionalLanguageId]['text']),
+                'CONTACT_FORM_FEEDBACK_HIDDEN'                  => !empty ($langVars['feedback']) ? contrexx_raw2xhtml($langVars['feedback']) : contrexx_raw2xhtml($this->arrForms[$formId]['lang'][$optionalLanguageId]['feedback']),
                 'CONTACT_FORM_RECIPIENT_NEXT_SORT'              => $this->getHighestSortValue($formId)+2,
                 'CONTACT_FORM_RECIPIENT_NEXT_ID'                => $this->getLastRecipientId(true)+2,
                 'CONTACT_FORM_FIELD_NEXT_TEXT_TPL'              => $this->_getFormFieldAttribute($lastFieldId+1, 'text', '', $isSelectedInterfaceLanguage, $lang['id']),
@@ -845,9 +861,9 @@ class ContactManager extends ContactLib
                 $field['editType'] = 'new';
             }
             
-            foreach ($arrActiveSystemFrontendLanguages as $lang) {
-                if ($formId) {
-                    $isActive = isset($this->arrForms[$formId]['lang'][$lang['id']]) && $this->arrForms[$formId]['lang'][$lang['id']]['is_active'];
+            foreach ($arrActiveSystemFrontendLanguages as $langId => $lang) {
+                if ($formId) {                    
+                    $isActive = $langId == $selectedInterfaceLanguage;
                 } else {
                     // when creating a new form, the form shall be created for the currently selected frontend language
                     $isActive = $lang['id'] == FRONTEND_LANG_ID;
