@@ -50,24 +50,27 @@ class downloads extends DownloadsLibrary
     * Constructor
     *
     * Calls the parent constructor and creates a local template object
+    * @param $strPageContent string The content of the page as string.
+    * @param $queryParams array The constructor accepts an array parameter $queryParams, which will
+    *                           override the request parameters cmd and/or category, if given
+    * override the request parameters cmd and/or category
     */
-    function __construct($strPageContent)
+    function __construct($strPageContent, array $queryParams = array())
     {
         parent::__construct();
 
         $objFWUser = FWUser::getFWUserObject();
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
-        $this->parseURLModifiers();
+        $this->parseURLModifiers($queryParams);
         $this->objTemplate = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);
     }
 
-
-    private function parseURLModifiers()
+    private function parseURLModifiers($queryParams)
     {
-        $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+        $cmd = isset($queryParams['cmd']) ? $queryParams['cmd'] : (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '');
 
         if (isset($_GET['download'])) {
             $this->cmd = 'download_file';
@@ -85,12 +88,11 @@ class downloads extends DownloadsLibrary
         }
 
         if (intval($cmd)) {
-            $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd);
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : intval($cmd));
         } else {
-            $this->categoryId = !empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0;
+            $this->categoryId = isset($queryParams['category']) ? $queryParams['category'] : (!empty($_REQUEST['category']) ? intval($_REQUEST['category']) : 0);
         }
     }
-
 
     /**
     * Reads $this->cmd and selects (depending on the value) an action
