@@ -111,9 +111,9 @@ class JS
                 'cx',
             ),
             'specialcode'  => "
-Shadowbox.loadSkin('classic', cx.variables.get('cmsPath', 'contrexx')+'/lib/javascript/shadowbox/src/skin/');
-Shadowbox.loadLanguage('en', cx.variables.get('cmsPath', 'contrexx')+'/lib/javascript/shadowbox/src/lang');
-Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], cx.variables.get('cmsPath', 'contrexx')+'/lib/javascript/shadowbox/src/player');
+Shadowbox.loadSkin('classic', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/skin/');
+Shadowbox.loadLanguage('en', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/lang');
+Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/player');
 jQuery(document).ready(function(){
   Shadowbox.init();
 })"

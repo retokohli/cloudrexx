@@ -31,11 +31,13 @@ class ContrexxJavascript {
             $langId = $objInit->getBackendLangId();
         $langCode = FWLanguage::getLanguageCodeById($langId);
 
-        $this->setVariable(array(
-            'cmsPath' => ASCMS_PATH_OFFSET,
-            'cadminPath' => ASCMS_BACKEND_PATH,
-            'mode' => $objInit->mode,
-            'language' => $langCode
+        $this->setVariable(
+            array(
+                'path'      => ASCMS_PATH_OFFSET.'/'.$langCode.'/',
+                'basePath'  => ASCMS_PATH_OFFSET.'/',
+                'cadminPath'=> ASCMS_BACKEND_PATH.'/',
+                'mode'      => $objInit->mode,
+                'language'  => $langCode
             ),
             'contrexx'
         );
