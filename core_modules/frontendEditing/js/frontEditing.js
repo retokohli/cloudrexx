@@ -1,5 +1,3 @@
-var fe_fileForIndex				= 'index.php';
-var fe_pathToBackend			= 'cadmin/index.php';
 var fe_feSection                = 'frontendEditing';
 
 var fe_appearanceDuration		= 0.5;
@@ -9,14 +7,7 @@ var fe_containerDivName 		= '#fe_Container';
 var fe_backgroundDivName		= '#fe_Background';
 
 var fe_loginDivName				= '#fe_Login';
-var fe_loginUsername			= '#fe_LoginUsername';
-var fe_loginPassword			= '#fe_LoginPassword';
-var fe_loginSecurityKey			= '#fe_LoginSecurityKey';
 var fe_loginTypeFrontend		= '#fe_LoginTypeFrontend';
-var fe_loginTypeBackend			= '#fe_LoginTypeBackend';
-var fe_loginPageId				= '#fe_LoginPageId';
-var fe_loginPageSection			= '#fe_LoginPageSection';
-var fe_loginPageCmd				= '#fe_LoginPageCmd';
 
 var fe_disallowedDivName		= '#fe_Disallowed';
 var fe_disallowedOpacity		= 0.9;
@@ -43,13 +34,16 @@ var fe_previewContentName 		= '#fe_PreviewContent';
 var fe_previewSaveIcon			= '#fe_saveIcon';
 var fe_previewSaveIconIsVisible	= false;
 
+jQuery(document).ready(function(){
+    fe_fileForIndex = cx.variables.get('path','contrexx');
+    fe_checkForLogin();
+});
+
 function fe_checkForLogin() {
 	if(fe_userIsLoggedIn) {
 		fe_loadToolbar(false);
 	}
 }
-
-jQuery(document).ready(function(){fe_checkForLogin();});
 
 function fe_loadToolbar(showEditorAfterLoading) {
 	if (!fe_toolbarIsLoaded) {
@@ -67,6 +61,10 @@ function fe_loadToolbar(showEditorAfterLoading) {
         });
 	} else {
 		fe_showToolbar();
+
+        if (showEditorAfterLoading) {
+            fe_loadEditor(true)
+        }
 	}
 }
 
@@ -82,7 +80,7 @@ function fe_loadToolbarResponse(responseText, showEditorAfterLoading) {
 			break;
 		case 'admin':
 			jQuery(fe_containerDivName).hide();
-			window.location = fe_pathToBackend;
+			window.location = arrResponse[1];
 		break;
 		default:
 			fe_showToolbar();
@@ -107,50 +105,35 @@ function fe_closeLogin() {
 
 function fe_doLogin() {
 	fe_closeLogin();
-		
-	pageId 	= jQuery(fe_loginPageId).val();
-	section = jQuery(fe_loginPageSection).val();
-	cmd 	= jQuery(fe_loginPageCmd).val();
+    fe_startLoading();
 	
-	var loginType = jQuery(fe_loginTypeFrontend).is(':checked') ? 'frontend' : 'backend';
+    postdata = {
+        section: fe_feSection,
+        doLogin: 'true',
+    };
 
+	var loginType = jQuery(fe_loginTypeFrontend).is(':checked') ? 'frontend' : 'backend';
 	if (loginType == 'frontend') {
-	    fe_startLoading();
-		jQuery.ajax({
-            type: 'POST',
-            url: fe_fileForIndex,
-            data: {	act: 'getToolbar', 
-                    section: fe_feSection,
-                    page: pageId,
-                    doLogin: 'true',
-                    username: jQuery(fe_loginUsername).val(),
-                    password: jQuery(fe_loginPassword).val(),
-                    seckey: jQuery(fe_loginSecurityKey).val(),
-                    type: loginType
-            },
-            success: function(transport){
-                fe_loadToolbarResponse(transport, true);
-            },
-            complete : fe_stopLoading
-        });
-	} else {
-	    fe_startLoading();
-		jQuery.ajax({
-            type: 'POST',
-            url: fe_fileForIndex,
-            data: {	act: 'getAdmin',
-                    doLogin: 'true',
-                    username: jQuery(fe_loginUsername).val(),
-                    password: jQuery(fe_loginPassword).val(),
-                    seckey: jQuery(fe_loginSecurityKey).val(),
-                    type: loginType
-            },
-            success: function(transport){
-                fe_loadToolbarResponse(transport, false);
-            },
-            complete : fe_stopLoading
-        });
-	}
+        postdata['act'] = 'getToolbar';
+        showEditorAfterLoading = true;
+    } else {
+        showEditorAfterLoading = false;
+        postdata['act'] = 'getAdmin';
+    }
+
+    jQuery.map(jQuery('#fe_LoginForm').serializeArray(), function(n, i){
+        postdata[n['name']] = n['value'];
+    });
+
+    jQuery.ajax({
+        type: 'POST',
+        url: fe_fileForIndex,
+        data: postdata,
+        success: function(transport){
+            fe_loadToolbarResponse(transport, showEditorAfterLoading);
+        },
+        complete : fe_stopLoading
+    });
 }
 
 function fe_showDisallowed() {
@@ -205,7 +188,7 @@ function fe_doLogout() {
 	fe_startLoading();
     jQuery.ajax({
         url: fe_fileForIndex,
-        data: {	section: 'logout' },
+        data: {	section: 'logout', standalone: 'true' },
         success: function(transport){
             fe_toolbarIsLoaded 	= false;
             fe_toolbarIsVisible = false;
@@ -213,7 +196,7 @@ function fe_doLogout() {
 
             fe_editorIsLoaded	= false;
             fe_editorIsVisible	= false;
-            jQuery(fe_containerDivName).empty();
+            fe_loadDefault();
         },
         complete : fe_stopLoading
     });
@@ -242,18 +225,7 @@ function fe_loadEditor(showSelectionIfNeeded) {
             success: function(transport){
                 fe_loadEditorResponse(transport);
             },
-            complete : function() {
-                CKEDITOR.replace(fe_editorFormContentName, {
-                    width: '100%',
-                    height: 400,
-                    toolbar: 'Default',
-                    customConfig: CKEDITOR.getUrl('config.contrexx.js.php')
-                });
-                CKEDITOR.on("instanceReady", function(event){
-                    jQuery("#cke_message").css({marginLeft:"0px"});
-                });
-                fe_stopLoading();
-            }
+            complete : fe_stopLoading()
         });
 	} else {
 		fe_showEditor();
@@ -285,6 +257,17 @@ function fe_loadEditorResponse(responseText) {
 
 function fe_showEditor() {
 	if (!fe_editorIsLoaded) {
+        CKEDITOR.replace(fe_editorFormContentName, {
+            width: '100%',
+            height: 300,
+            toolbar: 'Default',
+            customConfig: CKEDITOR.getUrl('config.contrexx.js.php')
+        });
+
+        CKEDITOR.on("instanceReady", function(event){
+            jQuery("#cke_message").css({marginLeft:"0px"});
+        });
+
 		editorDiv = jQuery(fe_editorDivName).detach();
 		editorBackgroundDiv = jQuery(fe_backgroundDivName).detach();
 		
@@ -321,11 +304,7 @@ function fe_makeEditorInvisible() {
 function fe_loadDefault() {
     fe_startLoading();
     jQuery.ajax({
-        url: fe_fileForIndex,
-        data: {	frontEditing: '1', 
-                section: fe_feSection,
-                page: fe_pageId
-        },
+        data: {	frontEditing: '1' },
         success: function(transport){
             fe_restoreDefault(transport);
         },
@@ -348,10 +327,8 @@ function fe_loadPreview(previewMode) {
 	var editorContent = CKEDITOR.instances[fe_editorFormContentName].getData()
 	fe_startLoading();
     jQuery.ajax({
-        url: fe_fileForIndex,
         type: 'POST',
         data: {	frontEditing: '1',
-                page: fe_pageId,
                 previewContent: editorContent
         },
         success: function(transport){

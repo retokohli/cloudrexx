@@ -20,22 +20,7 @@ class frontendEditingLib {
 	/**
 	 * Path to the parent-directory of this file, relative to contrexx-root.
 	 */
-	const FRONTENDEDITING_PATH = 'core_modules/frontendEditing/';
-	
-	/**
-	 * Path to the prototype-library, relative to contrexx-root.
-	 */
-	const PROTOTYPE_PATH = 'lib/javascript/prototype.js';
-	
-	/**
-	 * Path to the scriptaculous-library, relative to contrexx-root.
-	 */
-	const SCRIPTACULOUS_PATH = 'lib/javascript/scriptaculous/scriptaculous.js';
-	
-	/**
-	 * Path to the admin-file, relative to contrexx-root.
-	 */
-	const ADMIN_PATH = 'cadmin/index.php';
+	const FRONTENDEDITING_PATH = '/core_modules/frontendEditing/';
 	
 	/**
 	 * ID of the access key which should be used for frontend editing.
@@ -84,14 +69,15 @@ class frontendEditingLib {
 	 * @return html-code with all include-statements
 	 */
 	public static function getIncludeCode() {
+        JS::activate('cx');
         JS::activate('ckeditor');
         
-		$strFeInclude =		'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css) all;</style>'."\n";
+		$strFeInclude =		'<style type="text/css">@import url('.ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH.'css/style.css) all;</style>'."\n";
 		$strFeInclude .=	'<!--[if lte IE 7]>'."\n";
-   		$strFeInclude .=	'<style type="text/css">@import url('.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie.css);</style>'."\n";
+   		$strFeInclude .=	'<style type="text/css">@import url('.ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH.'css/style_ie.css);</style>'."\n";
   		$strFeInclude .=	'<![endif]-->'."\n";
 
-		JS::registerJS(frontendEditingLib::FRONTENDEDITING_PATH.'js/frontEditing.js');
+		JS::registerJS(ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH.'js/frontEditing.js');
         JS::activate('jqueryui');
 		
 		return $strFeInclude;
@@ -108,7 +94,7 @@ class frontendEditingLib {
 		
 		$strLinkDescription = (frontendEditingLib::isUserLoggedIn()) ? $_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_EDIT'] : $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'];
 				
-		return '<a href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar();" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$strLinkDescription.'">'.$strLinkDescription.'</a>';
+		return '<a href="javascript:void(0)" onclick="fe_setToolbarVisibility(true); fe_loadToolbar(true);" accesskey="'.frontendEditingLib::ACCESS_KEY.'" title="[ALT + '.frontendEditingLib::ACCESS_KEY.'] '.$strLinkDescription.'">'.$strLinkDescription.'</a>';
 	}
 	
 	/**

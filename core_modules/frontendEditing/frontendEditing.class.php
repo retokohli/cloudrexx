@@ -250,19 +250,15 @@ class frontendEditing extends frontendEditingLib {
 	private function checkAccessRights() {
 		//check for login
 		if (isset($_POST['doLogin']) && $_POST['doLogin'] == 'true') {
-			if (!empty($_POST['username']) && !empty($_POST['password']) && !empty($_POST['seckey']) && !empty($_POST['type'])) {
+			if (!empty($_POST['fe_LoginUsername']) && !empty($_POST['fe_LoginPassword'])) {
 
 				//Assign variables for login
-				$_POST['USERNAME'] 	= $_POST['username'];
-				$_POST['PASSWORD'] 	= $_POST['password'];
-                $captchaKey = strtoupper($_POST['seckey']);
-                include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-
-                $captcha = new Captcha();
-                $captchaPassed = $captcha->check($captchaKey);
+				$_POST['USERNAME'] 	= $_POST['fe_LoginUsername'];
+				$_POST['PASSWORD'] 	= $_POST['fe_LoginPassword'];
 
 
-                if ($captchaPassed) {
+
+                if (FWCaptcha::getInstance()->check()) {
                     if ($this->objUser->checkAuth() && (Permission::hasAllAccess() || $this->isUserInBackendGroup())) {
                         //Login successfull
                         $_SESSION[frontendEditingLib::SESSION_LOGIN_FIELD] = true;
@@ -350,13 +346,10 @@ class frontendEditing extends frontendEditingLib {
 			$statusMessage = '<div class="fe_LoginError">'.$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FAILED'].'</div>';
 		}
 
-        include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-        $captcha = new Captcha();
-
 		$this->objTemplate->setVariable(array(	'TXT_LOGIN_TITLE'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_TITLE'],
 												'TXT_LOGIN_USERNAME'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_USERNAME'],
 												'TXT_LOGIN_PASSWORD'			=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_PASSWORD'],
-												'TXT_LOGIN_SECKEY'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_SECKEY'],
+												'TXT_LOGIN_CAPTCHA'				=>	$_CORELANG['TXT_CORE_CAPTCHA'],
 												'TXT_LOGIN_AREA'				=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_AREA'],
 												'TXT_LOGIN_AREA_FRONTEND'		=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_FRONTEND'],
 												'TXT_LOGIN_AREA_BACKEND'		=>	$_CORELANG['TXT_FRONTEND_EDITING_LOGIN_BACKEND'],
@@ -366,12 +359,24 @@ class frontendEditing extends frontendEditingLib {
 									));
         $loginUsername = isset($_POST['USERNAME']) ? $_POST['USERNAME'] : '';
 
-		$this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=>	$this->intPageId,
-												'LOGIN_PAGE_SECTION'	=>	$this->strPageSection,
-												'LOGIN_PAGE_CMD'		=>	$this->strPageCommand,
-												'LOGIN_SECURITY_IMAGE'	=>	$captcha->getURL(),
-												'LOGIN_USERNAME'		=>	(get_magic_quotes_gpc() == 1 ? stripslashes($loginUsername) : $loginUsername),
-												'LOGIN_STATUS_MESSAGE'	=>	$statusMessage,
+        $lostPWPath = '';
+        $crit = array(
+             'module'   => 'login',
+             'lang'     => FRONTEND_LANG_ID,
+             'cmd'      => 'lostpw',
+        );
+        $page = $this->pageRepo->findOneBy($crit);
+        if ($page && $page->isActive()) {
+            $lostPWPath = ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory').'/'.$this->pageRepo->getPath($page);
+        }
+
+		$this->objTemplate->setVariable(array(	'LOGIN_PAGE_ID'			=> $this->intPageId,
+												'LOGIN_PAGE_SECTION'	=> $this->strPageSection,
+												'LOGIN_PAGE_CMD'		=> $this->strPageCommand,
+												'LOGIN_CAPTCHA_CODE'	=> FWCaptcha::getInstance()->getCode(),
+												'LOGIN_USERNAME'		=> (get_magic_quotes_gpc() == 1 ? stripslashes($loginUsername) : $loginUsername),
+												'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
+                                                'LOGIN_LOSTPW_URL'      => $lostPWPath,
 										));
 
 		return 'login'.$this->strSplitChar.$this->objTemplate->get();
@@ -394,7 +399,7 @@ class frontendEditing extends frontendEditingLib {
 	 * @return url for accessing the admin-interface.
 	 */
 	private function getAdminPage() {
-		return 'admin'.$this->strSplitChar.frontendEditingLib::ADMIN_PATH ;
+		return 'admin'.$this->strSplitChar.ASCMS_ADMIN_WEB_PATH.'/?cmd='.$this->strPageSection.'&'.CSRF::param();
 	}
 
 	/**
@@ -415,7 +420,7 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_TOOLBAR_LOGOUT'		=>	$_CORELANG['TXT_FRONTEND_EDITING_TOOLBAR_LOGOUT']
 										));
 
-		$this->objTemplate->setVariable(array(	'TOOLBAR_PATH'				=>	frontendEditingLib::FRONTENDEDITING_PATH,
+		$this->objTemplate->setVariable(array(	'TOOLBAR_PATH'				=>	ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
 												'TOOLBAR_USERNAME'			=>	$this->objUser->objUser->getUsername()
 										));
 
@@ -447,8 +452,8 @@ class frontendEditing extends frontendEditingLib {
 												'TXT_SELECTION_MODE_CONTENT'	=>	$_CORELANG['TXT_FRONTEND_EDITING_SELECTION_MODE_CONTENT']
 								));
 
-		$this->objTemplate->setVariable(array(	'SELECTION_IMAGE_PATH'	=>	frontendEditingLib::FRONTENDEDITING_PATH,
-												'SELECTION_ADMIN_PATH'	=>	frontendEditingLib::ADMIN_PATH .'?cmd='.$this->strPageSection));
+		$this->objTemplate->setVariable(array(	'SELECTION_IMAGE_PATH'	=>	ASCMS_PATH_OFFSET.frontendEditingLib::FRONTENDEDITING_PATH,
+												'SELECTION_ADMIN_PATH'	=>	ASCMS_ADMIN_WEB_PATH.'/?cmd='.$this->strPageSection.'&amp;'.CSRF::param()));
 
 		return 'selection'.$this->strSplitChar.$this->objTemplate->get();
 	}
@@ -494,7 +499,7 @@ class frontendEditing extends frontendEditingLib {
 	 */
 	private function updatePage() {
         $this->page->setContentTitle(strip_tags($_POST['title']));
-        $this->page->setContent(preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', $_POST['content']));
+        $this->page->setContent(preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}', html_entity_decode($_POST['content'], ENT_QUOTES, CONTREXX_CHARSET)));
         $this->page->setUser(strip_tags($this->objUser->objUser->getUsername()));
         $this->page->setUpdatedAtToNow();
 
