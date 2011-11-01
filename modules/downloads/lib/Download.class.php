@@ -488,7 +488,7 @@ class Download {
                 $this->names = isset($this->arrLoadedDownloads[$id]['names']) ? $this->arrLoadedDownloads[$id]['names'] : null;
                 $this->descriptions = isset($this->arrLoadedDownloads[$id]['descriptions']) ? $this->arrLoadedDownloads[$id]['descriptions'] : null;
                 $this->EOF = false;
-                //$this->loadLocales();
+                $this->loadLocales();
                 return true;
             }
         } else {
@@ -1321,7 +1321,7 @@ class Download {
         if ($langId == null) {
             $langId = $_LANGID;
         }
-        return $this->source_names;
+        return $this->source_names[$langId];
     }
 
     public function getIcon($small = false)
