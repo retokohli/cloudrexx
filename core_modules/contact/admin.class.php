@@ -758,7 +758,10 @@ class ContactManager extends ContactLib
         } elseif (count($this->arrForms[$formId]['lang'])) {
             $selectedInterfaceLanguage = key($this->arrForms[$formId]['lang']);
         }
-
+        
+        //Get the fallback languages array
+        $fallBackArr = FWLanguage::getFallbackLanguageArray();
+        
         foreach ($arrActiveSystemFrontendLanguages as $langId => $lang) {
             $isSelectedInterfaceLanguage = $langId == $selectedInterfaceLanguage;
             $langVars = array(
@@ -791,7 +794,7 @@ class ContactManager extends ContactLib
                 'CONTACT_FORM_SUBJECT'                          => contrexx_raw2xhtml($langVars['subject']),
             ));
             $this->_objTpl->parse('notificationLanguageForm');
-
+                        
             $this->_objTpl->setVariable(array(
                 'CONTACT_FORM_ID'                               => $formId,
                 'LANG_ID'                                       => $lang['id'],
@@ -841,7 +844,7 @@ class ContactManager extends ContactLib
             if ($copy) {
                 $field['editType'] = 'new';
             }
-
+            
             foreach ($arrActiveSystemFrontendLanguages as $lang) {
                 if ($formId) {
                     $isActive = isset($this->arrForms[$formId]['lang'][$lang['id']]) && $this->arrForms[$formId]['lang'][$lang['id']]['is_active'];
@@ -851,14 +854,22 @@ class ContactManager extends ContactLib
                 }
                 $show     = ($first && $isActive);
                 
+                if (isset($field['lang'][$fallBackArr[$lang['id']]])) {
+                    $optionalLanguageId = $fallBackArr[$lang['id']];
+                } elseif (isset($field['lang'][FWLanguage::getDefaultLangId()])) {
+                    $optionalLanguageId = FWLanguage::getDefaultLangId();
+                } else {
+                    $optionalLanguageId = key($field['lang']);
+                }
+                
                 $this->_objTpl->setVariable(array(
                     'LANG_ID'                   => $lang['id'],
                     'LANG_NAME_DISPLAY'         => $show ? 'block' : 'none',
                     'LANG_VALUE_DISPLAY'        => $show ? 'block' : 'none',
-                    'FORM_FIELD_NAME'           => isset($field['lang'][$lang['id']]) ? contrexx_raw2xhtml($field['lang'][$lang['id']]['name']) : '',
+                    'FORM_FIELD_NAME'           => isset($field['lang'][$lang['id']]) ? contrexx_raw2xhtml($field['lang'][$lang['id']]['name']) : contrexx_raw2xhtml($field['lang'][$optionalLanguageId]['name']),
                     'CONTACT_FORM_FIELD_VALUE'  => $this->_getFormFieldAttribute($realFieldID,
                                                                                  $fieldType,
-                                                                                 isset($field['lang'][$lang['id']]) ? contrexx_raw2xhtml($field['lang'][$lang['id']]['value']) : '',
+                                                                                 isset($field['lang'][$lang['id']]) ? contrexx_raw2xhtml($field['lang'][$lang['id']]['value']) : contrexx_raw2xhtml($field['lang'][$optionalLanguageId]['value']),
                                                                                  $show,
                                                                                  $lang['id'])
                 ));
