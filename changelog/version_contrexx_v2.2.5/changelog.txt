@@ -8,7 +8,6 @@
 Allgemein
 - Verbesserungen am Uploader: Fehlermeldungen bei fehlgeschlagenen Uploads.
 
-
 ****************************************
 * Behobene Fehler **********************
 ****************************************
@@ -27,3 +26,6 @@ Modul: Wissensdatenbank
 
 Modul: Bildergallerie
 - Meldung erscheint wieder, wenn heraufgeladenes Bild eine zu hohe Auflösung hat.
+
+Modul: Addressverwaltung
+- Exportierte Dateien werden richtig benannt, wenn eine Gruppe einen Leerschlag enthält.
