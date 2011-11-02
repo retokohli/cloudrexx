@@ -12,8 +12,11 @@
     var formFieldLastId = {CONTACT_FORM_FIELD_NEXT_ID};
     var formRecipientLastId = {CONTACT_FORM_RECIPIENT_NEXT_ID};
     var sort = {CONTACT_FORM_RECIPIENT_NEXT_SORT};
+    var defaultLanguage = {DEFAULT_LANGUAGE};
+    var arrFallBackLang = new Array();
     arrTabToDiv = new Object();
     {EDIT_JS_TAB_TO_DIV}
+    {FALL_BACK_LANGUAGES}
 
     function switchBoxAndTab(objElement, strTabId) {
         if (countActiveLanguages() == 0) {
@@ -26,8 +29,97 @@
 
         //Now make sure that a possible div is shown
         activateAnyActiveDiv();
+        
+        //Populate values for selected language
+        loadFormData(strTabId.split('_')[1]);        
     }
 
+    function loadFormData(langId) {        
+        //load form name  
+        arrFields = ["contactFormName","contactFormText","contactFormFeedback"]
+        
+        for (i=0;i<=2;i++) {
+            fieldValue = $J('input[name="'+arrFields[i]+'['+langId+']"]').val();
+            if (fieldValue==null || fieldValue=='') {
+                if($J('input[name="'+arrFields[i]+'['+arrFallBackLang[langId]+']"]').val() != null) {
+                    newFieldValue = $J('input[name="'+arrFields[i]+'['+arrFallBackLang[langId]+']"]').val();
+                } else if($J('input[name="'+arrFields[i]+'['+defaultLanguage+']"]').val() != null) {
+                    newFieldValue = $J('input[name="'+arrFields[i]+'['+defaultLanguage+']"]').val();
+                } else {
+
+                }
+                alert(newFieldValue);
+                $J('input[name="'+arrFields[i]+'['+langId+']"]').val(''+newFieldValue+'');
+            }            
+        }
+        
+//        formName = $J('input[name="contactFormName['+langId+']"]').val();
+//        if (formName==null || formName=='') {
+//            if($J('input[name="contactFormName['+arrFallBackLang[langId]+']"]').val() != null) {
+//                newFormname = $J('input[name="contactFormName['+arrFallBackLang[langId]+']"]').val();
+//            } else if($J('input[name="contactFormName['+defaultLanguage+']"]').val() != null) {
+//                newFormname = $J('input[name="contactFormName['+defaultLanguage+']"]').val();
+//            } else {
+//                
+//            }
+//            $J('input[name="contactFormName['+langId+']"]').val(''+newFormname+'');
+//        }
+
+        formFieldCount = $J('.formField').size();
+        for(i=1;i<=formFieldCount;i++) {
+            fieldName  = $J('input[name="contactFormFieldName['+i+']['+langId+']"]').val();
+            fieldValue = $J('input[name="contactFormFieldValue['+i+']['+langId+']"]').val();
+            
+            if (fieldName==null || fieldName=='') {
+                if($J('input[name="contactFormFieldName['+i+']['+arrFallBackLang[langId]+']"]').val() != null) {
+                    newFieldname = $J('input[name="contactFormFieldName['+i+']['+arrFallBackLang[langId]+']"]').val();
+                } else if($J('input[name="contactFormFieldName['+i+']['+defaultLanguage+']"]').val() != null) {
+                    newFieldname = $J('input[name="contactFormFieldName['+i+']['+defaultLanguage+']"]').val();
+                } else {
+
+                }
+                $J('input[name="contactFormFieldName['+i+']['+langId+']"]').val(''+newFieldname+'');
+            }    
+
+            if (fieldValue==null || fieldValue=='') {
+                if($J('input[name="contactFormFieldValue['+i+']['+arrFallBackLang[langId]+']"]').val() != null) {
+                    newFieldValue = $J('input[name="contactFormFieldValue['+i+']['+arrFallBackLang[langId]+']"]').val();
+                } else if($J('input[name="contactFormFieldValue['+i+']['+defaultLanguage+']"]').val() != null) {
+                    newFieldValue = $J('input[name="contactFormFieldValue['+i+']['+defaultLanguage+']"]').val();
+                } else {
+
+                }
+                $J('input[name="contactFormFieldValue['+i+']['+langId+']"]').val(''+newFieldValue+'');
+            }
+
+        }
+        
+//        formText = $J('input[name="contactFormText['+langId+']"]').val();
+//        if (formText==null || formText=='') {
+//            if($J('input[name="contactFormText['+arrFallBackLang[langId]+']"]').val() != null) {
+//                newFormText = $J('input[name="contactFormText['+arrFallBackLang[langId]+']"]').val();
+//            } else if($J('input[name="contactFormText['+defaultLanguage+']"]').val() != null) {
+//                newFormText = $J('input[name="contactFormText['+defaultLanguage+']"]').val();
+//            } else {
+//                
+//            }
+//            $J('input[name="contactFormText['+langId+']"]').val(''+newFormText+'');
+//        }        
+//        
+//        formFeedback = $J('input[name="contactFormFeedback['+langId+']"]').val();
+//        if (formFeedback==null || formFeedback=='') {
+//            if($J('input[name="contactFormFeedback['+arrFallBackLang[langId]+']"]').val() != null) {
+//                formFeedback = $J('input[name="contactFormFeedback['+arrFallBackLang[langId]+']"]').val();
+//            } else if($J('input[name="contactFormFeedback['+defaultLanguage+']"]').val() != null) {
+//                formFeedback = $J('input[name="contactFormFeedback['+defaultLanguage+']"]').val();
+//            } else {
+//                
+//            }
+//            
+//            $J('input[name="contactFormFeedback['+langId+']"]').val(''+formFeedback+'');
+//        }        
+    }
+    
     function switchTabVisibility(strTabId) {
         if (document.getElementById(strTabId).style.display == 'none') {
             document.getElementById(strTabId).style.display = 'inline';
@@ -408,6 +500,7 @@
 
     function langTab(ele, id) {
         updateCKeditorContent(id);
+        loadFormData(id);
         $J('.langTabs').hide();
         $J('#langTab_' + id).show();
         $J('.notifylangTabs').hide();

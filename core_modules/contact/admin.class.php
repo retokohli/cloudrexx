@@ -773,6 +773,15 @@ class ContactManager extends ContactLib
         //Get the fallback languages array
         $fallBackArr = FWLanguage::getFallbackLanguageArray();
         
+        foreach ($fallBackArr as $languageId => $fallBackLanguageId) {
+            $strJsFallBackArr .= 'arrFallBackLang['.$languageId.'] = "'.$fallBackLanguageId.'";'."\n";
+        }
+        $this->_objTpl->setVariable(array(
+            'FALL_BACK_LANGUAGES' => $strJsFallBackArr,
+            'DEFAULT_LANGUAGE'    => FWLanguage::getDefaultLangId()
+        ));
+        
+        
         foreach ($arrActiveSystemFrontendLanguages as $langId => $lang) {
             $isSelectedInterfaceLanguage = $langId == $selectedInterfaceLanguage;
             $langVars = array(
