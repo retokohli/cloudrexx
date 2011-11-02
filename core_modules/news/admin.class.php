@@ -256,8 +256,7 @@ class newsManager extends newsLibrary {
                 break;
 
             case 'update':
-                $this->update();
-                $this->overview();
+                $this->update();                
                 break;
 
             case 'newscat':
@@ -931,8 +930,8 @@ class newsManager extends newsLibrary {
         }
 
         $objFWUser->objUser->getDynamicPermissionIds(true);
-               
-        if (!empty($locales['active'])) {
+
+        if (!empty($locales['active']) && $this->validateNews($locales)) {
             
             // Set start and date as NULL if newsScheduled checkbox is not checked
             if ($newsScheduledActive == 0) {
@@ -1999,7 +1998,7 @@ class newsManager extends newsLibrary {
         if (!$this->hasCategories()) {
             return $this->manageCategories();
         }
-
+        
         if (isset($_POST['newsId'])) {
             $objFWUser = FWUser::getFWUserObject();
 
@@ -2190,6 +2189,11 @@ class newsManager extends newsLibrary {
                 'text'          => $_POST['news_text'],
                 'teaser_text'   => $_POST['newsTeaserText']
             );
+            
+            if (!$this->validateNews($locales)) {            
+                return $this->edit();            
+            }
+            
             // store locales
             $localesSaving = $this->storeLocales($id, $locales);
             
@@ -2233,6 +2237,7 @@ class newsManager extends newsLibrary {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
            }
         }
+        return $this->overview();
     }
 
 
@@ -3949,6 +3954,20 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_AUTHOR_DESCRIPTION'               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
             'TXT_TOP_NEWS_PLACEHOLDERS_USAGE'           => $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'],
         ));
+    }
+    
+    function validateNews($locales)
+    {
+        if (!empty($locales['active'])) {
+            foreach ($locales['active'] as $activeLanguage => $value ) {
+                $title = trim($locales['title'][$activeLanguage]);
+                if (empty($title)) {                    
+                    return false;         
+                }
+            }
+            return true;
+        }   
+        return false;
     }
 }
 ?>
