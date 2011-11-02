@@ -1576,7 +1576,7 @@ class MemberDirManager extends MemberDirLibrary
         $headerline .= $_ARRAYLANG['TXT_PICTURE']." 1;".$_ARRAYLANG['TXT_PICTURE']." 2;";
 
         header("Content-Type: text/comma-separated-values", true);
-        header("Content-Disposition: inline; filename=$filename.csv", true);
+        header('Content-Disposition: inline; filename="' . $filename . '.csv"', true);
 
         echo $headerline."\n".$data;
         exit();
