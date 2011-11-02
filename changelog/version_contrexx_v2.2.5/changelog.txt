@@ -5,12 +5,17 @@
 ****************************************
 * Neue Funktionen / Änderungen *********
 ****************************************
+Allgemein
+- Verbesserungen am Uploader: Fehlermeldungen bei fehlgeschlagenen Uploads.
+
 
 ****************************************
 * Behobene Fehler **********************
 ****************************************
 Allgemein
 - Die Shadowbox-Integration wurde verbessert.
+- Der Upload-Tab im WYSIWYG-Editor wurde entfernt. Uploads können via "Server durchsuchen..." getätigt werden.
+- Die DB-Backup und CSV Import-/Exportfunktionen existieren nicht mehr. Wir empfehlen, zu diesem Zweck ein spezialisiertes Tool wie das freie PHPMyAdmin zu verwenden.
 
 Modul: Online Desk
 - Die Datumsauswahl bei der Reservierung funktioniert unabhängig von der Webserver-Konfiguration.
@@ -19,3 +24,6 @@ Modul: Online Shop
 - Session Parameter, die auf einigen Installationen zu Problemen mit dem JS Cart führen, entfernt.
 Modul: Wissensdatenbank
 - Live-Suche kompatibel mit Sicherheitssystem.
+
+Modul: Bildergallerie
+- Meldung erscheint wieder, wenn heraufgeladenes Bild eine zu hohe Auflösung hat.
