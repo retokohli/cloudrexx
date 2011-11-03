@@ -460,36 +460,34 @@ class InitCMS
         @$this->templates['blog_content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html');
         @$this->templates['immo'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html');
 
-        if (!$this->hasCustomContent()) {
+        if (!$this->hasCustomContent() || !$this->loadCustomContent()) {
+            // load default content layout if page doesn't have a custom content
+            // layout or if it failed to be loaded
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
-        }
-        else {
-            $customTemplatePath = ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$this->customContentTemplate;
-            //only include the custom template if it really exists.
-            //if the user selected custom_x.html as a page's custom template, a print-view request will
-            //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
-            //exists. trying to read a non-existant file would lead to an empty content-template.
-            //to omit this, we read the standard print content template instead.
-            //another possible behaviour would be to read the standard theme's custom content template instead.
-            //this is not done, because customcontent files are mostly used for sidebars etc. - 
-            //stuff that should not change the print representation of the content.
-            if(file_exists($customTemplatePath)) {
-                $this->templates['content'] = file_get_contents($customTemplatePath);
-            }
-            else {
-                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
-            }
-        }
-
-        $template_files = scandir(ASCMS_THEMES_PATH.'/'.$themesPath);
-        foreach ($template_files as $f) {
-            $match = '';
-            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-                $this->templates['custom_content'][$match[0]] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/'.$f);
-            }
         }
 
         return $this->templates;
+    }
+
+    private function loadCustomContent()
+    {
+        global $objDatabase;
+
+        //only include the custom template if it really exists.
+        //if the user selected custom_x.html as a page's custom template, a print-view request will
+        //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
+        //exists. trying to read a non-existant file would lead to an empty content-template.
+        //to omit this, we read the standard print content template instead.
+        //another possible behaviour would be to read the standard theme's custom content template instead.
+        //this is not done, because customcontent files are mostly used for sidebars etc. - 
+        //stuff that should not change the print representation of the content.
+        if (!file_exists(ASCMS_THEMES_PATH.'/'.$this->themesPath.'/'.$this->customContentTemplate)) {
+            return false;
+        }
+
+        $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$this->themesPath.'/'.$this->customContentTemplate);
+
+        return true;
     }
 
     /**
