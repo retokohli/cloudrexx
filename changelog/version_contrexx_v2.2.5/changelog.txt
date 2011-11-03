@@ -8,6 +8,10 @@
 Allgemein
 - Verbesserungen am Uploader: Fehlermeldungen bei fehlgeschlagenen Uploads.
 
+PDF-Ansicht
+- Unterstützung von PNG-Bilder mit einem Alpha-Kanal.
+- Bessere Integration von relativ eingebundenen Bilder.
+
 ****************************************
 * Behobene Fehler **********************
 ****************************************
