@@ -88,10 +88,10 @@ class mediaDirectoryInputfieldAccounts extends mediaDirectoryLibrary implements 
 
                         if(in_array($objUser->getId(), $arrValue)) {
                            $strSelectorSelected .= '<option  value="'.$objUser->getId().'">
-                           '.$userName.'</option>';
+                           '.contrexx_raw2xhtml($userName).'</option>';
                         } else {
                            $strSelectorNotSelected .= '<option  value="'.$objUser->getid().'">
-                           '.$userName.'</option>';
+                           '.contrexx_raw2xhtml($userName).'</option>';
                         }
 
                         $objUser->next();
@@ -334,10 +334,10 @@ EOF;
                         );*/
                         if(!in_array($objUser->getId(), $arrValue)) {
                            $strSelectorNotSelected .= '<option  value="'.$objUser->getId().'">
-                           '.$userName.'</option>';
+                           '.contrexx_raw2xhtml($userName).'</option>';
                         } else {
                             $strSelectorSelected .= '<option  value="'.$objUser->getId().'">
-                           '.$userName.'</option>';
+                           '.contrexx_raw2xhtml($userName).'</option>';
                         }
 
                         $objUser->next();
@@ -425,8 +425,8 @@ EOF;
                if ($objUser = FWUser::getFWUserObject()->objUser->getUser($intUserId)) {
 
                	  if($objUser->getProfileAttribute('firstname') != "" && $objUser->getProfileAttribute('lastname') != "") {
-               	  	 $strValueOutput .= '<li><a href="index.php?section=access&amp;cmd=user&amp;id='.$intUserId.'">'.$objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname').'</a></li>';
-		             $strValueOutputCustom .= $objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname').'<br />';
+               	  	 $strValueOutput .= '<li><a href="index.php?section=access&amp;cmd=user&amp;id='.$intUserId.'">'.contrexx_raw2xhtml($objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname')).'</a></li>';
+		             $strValueOutputCustom .= contrexx_raw2xhtml($objUser->getProfileAttribute('firstname').' '.$objUser->getProfileAttribute('lastname')).'<br />';
 //		             $strValueOutputCustom .= ($objUser->getProfileAttribute('address') != "") ? $objUser->getProfileAttribute('address').'<br />' : '';
 //		             $strValueOutputCustom .= ($objUser->getProfileAttribute('zip') != "" && $objUser->getProfileAttribute('city') != "") ? $objUser->getProfileAttribute('zip').' '.$objUser->getProfileAttribute('city').'<br />' : '';
 //		             $strValueOutputCustom .= ($objUser->getProfileAttribute('phone_office') != "") ? $objUser->getProfileAttribute('phone_office').'<br />' : '';

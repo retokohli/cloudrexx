@@ -1266,10 +1266,11 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
     {
         global $objDatabase;
 
+// TODO: replace by FWUser::getParsedUserTitle()
         $strDropdownUsers = '<select name="userId"style="width: 302px">';
         $objFWUser = FWUser::getFWUserObject();
 
-		if ($objUser = $objFWUser->objUser->getUsers()) {
+		if ($objUser = $objFWUser->objUser->getUsers(null,null,null,array('username'))) {
 	        while (!$objUser->EOF) {
 	        	if(intval($objUser->getID()) == intval($this->arrEntries[$intEntryId]['entryAddedBy'])) {
                     $strSelected = 'selected="selected"';
@@ -1277,7 +1278,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     $strSelected = '';
                 }
 
-	        	$strDropdownUsers .= '<option value="'.intval($objUser->getID()).'" '.$strSelected.' >'.$objUser->getUsername().'</option>';
+	        	$strDropdownUsers .= '<option value="'.intval($objUser->getID()).'" '.$strSelected.' >'.contrexx_raw2xhtml($objUser->getUsername()).'</option>';
                 $objUser->next();
 	        }
 		}
