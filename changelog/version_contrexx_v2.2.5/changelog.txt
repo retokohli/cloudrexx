@@ -7,6 +7,7 @@
 ****************************************
 Allgemein
 - Verbesserungen am Uploader: Fehlermeldungen bei fehlgeschlagenen Uploads.
+- Standardmässige gzip-Komprimierung der Ausgabe: Bis zu 75% kleinere Antworten für tiefere Seitenladezeit.
 
 ****************************************
 * Behobene Fehler **********************

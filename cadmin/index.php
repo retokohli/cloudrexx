@@ -27,10 +27,6 @@ include_once('../lib/DBG.php');
 DBG::deactivate();
 $startTime = explode(' ', microtime());
 
-//enable gzip compressing of the output - up to 75% smaller responses!
-//commented out with java uploader l10n using pear http_download
-//ob_start("ob_gzhandler");
-
 $adminPage = true;
 
 /**
@@ -369,7 +365,6 @@ if (!isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false') {
 if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload'))) {
     CSRF::check_code();
 }
-
 
 switch ($plainCmd) {
     //-------------------------------------------------------
@@ -1219,6 +1214,9 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
 }
 
 CSRF::add_placeholder($objTemplate);
+
+//enable gzip compressing of the output - up to 75% smaller responses!
+ob_start("ob_gzhandler");
 
 $objTemplate->show();
 

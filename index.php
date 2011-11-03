@@ -80,9 +80,6 @@ DBG::deactivate();
 
 $starttime = explode(' ', microtime());
 
-//enable gzip compressing of the output - up to 75% smaller responses!
-//ob_start("ob_gzhandler");
-
 // Makes code analyzer warnings go away
 $_CONFIG = $_CONFIGURATION = null;
 /**
@@ -1947,6 +1944,9 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     $objPDF->content = $objTemplate->get();
     $objPDF->Create();
 } else {
+    //enable gzip compressing of the output - up to 75% smaller responses!
+    ob_start("ob_gzhandler");
+
     /**
      * Get all javascripts in the code, replace them with nothing, and register the js file
      * to the javascript lib. This is because we don't want something twice, and there could be
