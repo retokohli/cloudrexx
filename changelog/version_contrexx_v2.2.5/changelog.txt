@@ -22,6 +22,7 @@ Modul: Online Desk
 
 Modul: Online Shop
 - Session Parameter, die auf einigen Installationen zu Problemen mit dem JS Cart führen, entfernt.
+
 Modul: Wissensdatenbank
 - Live-Suche kompatibel mit Sicherheitssystem.
 
@@ -30,3 +31,6 @@ Modul: Bildergallerie
 
 Modul: Addressverwaltung
 - Exportierte Dateien werden richtig benannt, wenn eine Gruppe einen Leerschlag enthält.
+
+Modul: Newsletter
+- Beim Import von Newsletterempfänger aus einer CSV-Datei wird nun auch der Geburtstag und die Telefonnummer gespeichert.
