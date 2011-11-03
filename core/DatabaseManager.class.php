@@ -96,7 +96,8 @@ class DatabaseManager
             '<a href="index.php?cmd=dbm">'.$_CORELANG['TXT_DBM_MAINTENANCE_TITLE'].'</a>'.
             (Permission::hasAllAccess()
               ? '<a href="index.php?cmd=dbm&amp;act=sql">'.$_CORELANG['TXT_DBM_SQL_TITLE'].'</a>'.
-                '<a href="index.php?cmd=dbm&amp;act=status">'.$_CORELANG['TXT_DBM_STATUS_TITLE'].'</a>'
+                '<a href="index.php?cmd=dbm&amp;act=csv">'.$_CORELANG['TXT_DBM_CSV'].'</a>'.
+                 '<a href="index.php?cmd=dbm&amp;act=status">'.$_CORELANG['TXT_DBM_STATUS_TITLE'].'</a>'
               : ''
             )
         );
@@ -809,38 +810,7 @@ class DatabaseManager
 
         $arrSuccess = array();
         $arrFail = array();
-        if (   isset($_POST['multiaction'])
-            && $_POST['multiaction'] == 'import') {
-            if (   empty($_POST['source'])
-                || !is_array($_POST['source'])) {
-                self::addError($_CORELANG['TXT_DBM_ERROR_NO_SOURCE_FILES']);
-            } else {
-                $flagTruncate = !empty($_POST['truncate']);
-                foreach ($_POST['source'] as $strTablename) {
-                    $result = CSVBackup::import_csv($strTablename, $flagTruncate);
-                    if ($result) {
-                        $arrSuccess[] = $strTablename;
-                    } else {
-                        $arrFail[] = $strTablename;
-                    }
-                }
-                if ($arrSuccess)
-                    self::addMessage(sprintf(
-                        $_CORELANG['TXT_DBM_SUCCEEDED_IMPORTING_CSV_FILES'],
-                        join(', ', $arrSuccess)
-                    ));
-                    self::addMessage(sprintf(
-                        $_CORELANG['TXT_DBM_CSV_FOLDER'], CSVBackup::getPath()
-                    ));
-                if ($arrFail)
-                    self::addError(sprintf(
-                        $_CORELANG['TXT_DBM_FAILED_IMPORTING_CSV_FILES'],
-                        join(', ', $arrFail)
-                    ));
-            }
-        }
-        if (   isset($_POST['multiaction'])
-            && $_POST['multiaction'] == 'export') {
+        if ( isset($_POST['export']) ) {
 /*
             // Accept a custom destination folder
             if (empty($_POST['target'])) {

@@ -11,20 +11,9 @@ function repairDB()
   window.location = 'index.php?cmd=dbm&{CSRF_PARAM}&act=repair';
 }
 
-function selectMultiAction()
-{
-  with (document.formcsv) {
-    switch (multiaction.value) {
-      case 'export':
-      case 'import':
-        action = 'index.php?cmd=dbm&act=csv';
-        submit();
-    }
-  }
-}
 // ]]>
 </script>
-<form name="formcsv" method="post" action="index.php?cmd=dbm&amp;act=table_actions">
+<form name="formcsv" method="post" action="index.php?cmd=dbm&act=csv">
   <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
     <tr>
       <th colspan="6">{TXT_DBM_CSV}</th>
@@ -59,15 +48,7 @@ function selectMultiAction()
         <a href="#" onclick="changeCheckboxes('formcsv','source[]',true); return false;">{TXT_DBM_CSV_TABLES_SELECT_ALL}</a> /
         <a href="#" onclick="changeCheckboxes('formcsv','source[]',false); return false;">{TXT_DBM_CSV_TABLES_DESELECT_ALL}</a>
         <img src="images/icons/strike.gif" alt="" />
-        <select name="multiaction" onchange="selectMultiAction();">
-          <option value="">{TXT_DBM_CSV_TABLES_SUBMIT_SELECT}</option>
-          <option value="export">{TXT_DBM_CSV_EXPORT}</option>
-          <option value="import">{TXT_DBM_CSV_IMPORT}</option>
-        </select>
-      </td>
-      <td>
-        <input type="checkbox" name="truncate" id="truncate" value="1" />
-        <label for="truncate">{TXT_DBM_CSV_IMPORT_TRUNCATE_TABLE}</label>
+        <input type="submit" value="{TXT_DBM_CSV_EXPORT}" name="export"></input>
       </td>
     </tr>
   </table>
