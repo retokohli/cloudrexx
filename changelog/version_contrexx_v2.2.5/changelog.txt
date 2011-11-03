@@ -18,7 +18,7 @@ PDF-Ansicht
 Allgemein
 - Die Shadowbox-Integration wurde verbessert.
 - Der Upload-Tab im WYSIWYG-Editor wurde entfernt. Uploads können via "Server durchsuchen..." getätigt werden.
-- Die DB-Backup und CSV Import-/Exportfunktionen existieren nicht mehr. Wir empfehlen, zu diesem Zweck ein spezialisiertes Tool wie das freie PHPMyAdmin zu verwenden.
+- Die DB-Backup- und die CSV Importfunktionen existieren nicht mehr. Wir empfehlen, zu diesem Zweck ein spezialisiertes Tool wie das freie PHPMyAdmin zu verwenden.
 
 Modul: Online Desk
 - Die Datumsauswahl bei der Reservierung funktioniert unabhängig von der Webserver-Konfiguration.
