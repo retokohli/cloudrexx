@@ -377,6 +377,7 @@ class frontendEditing extends frontendEditingLib {
 												'LOGIN_USERNAME'		=> (get_magic_quotes_gpc() == 1 ? stripslashes($loginUsername) : $loginUsername),
 												'LOGIN_STATUS_MESSAGE'	=> $statusMessage,
                                                 'LOGIN_LOSTPW_URL'      => $lostPWPath,
+                                                'JAVASCRIPT' => JS::getCode(),
 										));
 
 		return 'login'.$this->strSplitChar.$this->objTemplate->get();

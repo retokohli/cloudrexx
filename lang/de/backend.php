@@ -1411,3 +1411,7 @@ $_ARRAYLANG['TXT_CORE_NAVTITLE'] = "Titel (Navigation)";
 $_ARRAYLANG['TXT_CORE_CONTENTTITLE'] = "Titel (Seite)";
 $_ARRAYLANG['TXT_CORE_FALLBACK'] = "Fallback";
 $_ARRAYLANG['TXT_CORE_NONE'] = "Keine";
+
+// core captcha
+$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
+$_ARRAYLANG['TXT_CORE_INVALID_CAPTCHA'] = "Der eingegebene Sicherheitscode war falsch!";

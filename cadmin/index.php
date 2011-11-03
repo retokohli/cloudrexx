@@ -197,20 +197,11 @@ $objFWUser = FWUser::getFWUserObject();
 
 /* authentification */
 $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
-$captchaError = ''; //captcha error message is placed in here if needed
-if (!$loggedIn) { //not logged in already - do captcha and password checks
+if (!empty($_POST) && !$loggedIn) { //not logged in already - do captcha and password checks
     // Captcha check
-    $validationCode = isset($_POST['captchaCode']) ? contrexx_input2raw($_POST['captchaCode']) : false;
-    if ($validationCode !== false) { //a captcha has been given
-        include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-        $captcha = new Captcha();
-        $captchaPassed = $captcha->check($validationCode);
-        if (!$captchaPassed) { //captcha check failed -> do not check authentication
-            $captchaError = $_CORELANG['TXT_SECURITY_CODE_IS_INCORRECT'];
-        } else {
-            // Captcha passed, let's autenticate
-            $objFWUser->checkAuth();
-        }
+    if (FWCaptcha::getInstance()->check()) {
+        // Captcha passed, let's autenticate
+        $objFWUser->checkAuth();
     }
 }
 
@@ -298,20 +289,15 @@ if (!$objFWUser->objUser->login(true)) {
             $objTemplate->show();
             exit;
         case "captcha":
-            require_once ASCMS_CORE_MODULE_PATH.'/captcha/admin.class.php' ;
-            $c = new CaptchaActions(); //instantiate captcha module
-            $c->getPage();
+            FWCaptcha::getInstance()->getPage();
             exit;
         default:
-            require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php' ;
-            $captcha = new Captcha();
-            $loginSecurityCode = '<img src="'.$captcha->getUrl().'" alt="'.$captcha->getAlt().'" title="Security Code"/>';
+            $loginSecurityCode = FWCaptcha::getInstance()->getCode(1);
             $objTemplate->loadTemplateFile('login_index.html',true,true);
             $objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', 'login.html');
             $objTemplate->setVariable(array(
                 'REDIRECT_URL' => (!empty($_POST['redirect'])) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
                 'TXT_SECURITY_CODE' => $_CORELANG['TXT_SECURITY_CODE'],
-                'TXT_ENTER_SECURITY_CODE' => $_CORELANG['TXT_ENTER_SECURITY_CODE'],
                 'TXT_USER_NAME' => $_CORELANG['TXT_USER_NAME'],
                 'TXT_PASSWORD' => $_CORELANG['TXT_PASSWORD'],
                 'TXT_LOGIN' => $_CORELANG['TXT_LOGIN'],
@@ -320,7 +306,8 @@ if (!$objFWUser->objUser->login(true)) {
                 'TITLE' => $_CORELANG['TXT_LOGIN'],
                 'LOGIN_IMAGE' => $loginSecurityCode,
                 'LOGIN_ERROR_MESSAGE' => $objFWUser->getErrorMsg(),
-                'CAPTCHA_ERROR' => $captchaError,
+                'CAPTCHA_ERROR' => contrexx_raw2xhtml(FWCaptcha::getInstance()->getError()),
+                'JAVASCRIPT' => JS::getCode(),
             ));
 
             $objTemplate->show();

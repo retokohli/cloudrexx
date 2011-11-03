@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 /**
  * Reservations Manager Class

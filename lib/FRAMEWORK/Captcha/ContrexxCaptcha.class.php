@@ -1,4 +1,10 @@
-<?PHP
+<?php
+namespace Cx\Lib\Captcha;
+/**
+ * @ignore
+ */
+include_once ASCMS_FRAMEWORK_PATH.'/Captcha/Captcha.interface.php';
+
 /**
  * Captcha
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -8,65 +14,41 @@
  * @package     contrexx
  * @subpackage  lib_spamprotection
  */
-class Captcha {
-    var $boolFreetypeInstalled = false;
-    var $boolGDInstalled = false;
+class ContrexxCaptcha implements CaptchaInterface {
+    private $boolFreetypeInstalled = false;
     
-    var $strRandomString;
-    var $strSalt;
+    private $strRandomString;
     
-    var $strFontDir;
-    var $strBackgroundDir;
-    var $strAbsolutePath;
-    var $strWebPath;
+    private $strFontDir;
+    private $strBackgroundDir;
     
-    var $intRandomLength = 5;
-    var $intSaltLength = 20;
-    var $intMaximumCharacters = 20;
+    private $intRandomLength = 5;
+    private $intMaximumCharacters = 20;
     
-    var $intImageWidth = 120;
-    var $intNumberOfBackgrounds = 7;
+    private $intImageWidth = 120;
+    private $intNumberOfBackgrounds = 7;
 
-    var $image = null; //the GD image
+    private $image = null; //the GD image
+
+    private $error = 0;
+    const SECURITY_CODE_IS_INCORRECT = 1;
     
-    /**
-    * Constructor: Initializes base-state of object
-    *
-    */
-    function __construct() {
-        global $sessionObj;
-
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
-
+    public function __construct($config)
+    {
         srand ((double)microtime()*1000000);
                 
-        $this->strRandomString     = $this->createRandomString();
-        $this->strSalt             = $this->createRandomString($this->intSaltLength);
+        $this->strRandomString  = $this->createRandomString();
         
-        $this->strFontDir         = ASCMS_DOCUMENT_ROOT.'/lib/spamprotection/fonts/';
-        $this->strBackgroundDir = ASCMS_DOCUMENT_ROOT.'/lib/spamprotection/backgrounds/';
-        $this->strAbsolutePath     = ASCMS_DOCUMENT_ROOT.'/images/spamprotection/';
-        $this->strWebPath         = ASCMS_PATH_OFFSET.'/images/spamprotection/';
+        $this->strFontDir       = ASCMS_FRAMEWORK_PATH.'/Captcha/ContrexxCaptcha/fonts/';
+        $this->strBackgroundDir = ASCMS_FRAMEWORK_PATH.'/Captcha/ContrexxCaptcha/backgrounds/';
   
-        $this->isGDInstalled();
         $this->isFreetypeInstalled();
-    }
-
-    /**
-     * Determines whether the GD is installed
-     */
-    function isGdInstalled() {
-        $arrExtensions = get_loaded_extensions();
-        
-        if (in_array('gd', $arrExtensions)) {
-            $this->boolGDInstalled = true;
-        }
     }
     
     /**
      * Figures out if the Freetype-Extension (part of GD) is installed.
      */
-    function isFreetypeInstalled() {
+    private function isFreetypeInstalled() {
         $arrExtensions = get_loaded_extensions();
         
         if (in_array('gd', $arrExtensions)) {
@@ -84,7 +66,7 @@ class Captcha {
      * @param    integer        $intDigits: How many digits should the created string have?
      * @return    string        A new random string
      */
-    function createRandomString($intDigits=0) {
+    private function createRandomString($intDigits=0) {
         if ($intDigits > $this->intMaximumCharacters || $intDigits == 0) {
             $intDigits = $this->intRandomLength;
         }
@@ -112,7 +94,7 @@ class Captcha {
      * Creates a captcha image.
      *
      */
-    function createImage() {
+    private function createImage() {
         $intWidth             = $this->intImageWidth;
         $intHeight             = $intWidth / 3;
         $intFontSize         = floor($intWidth / strlen($this->strRandomString)) - 2;
@@ -172,7 +154,7 @@ class Captcha {
     /**
      * Creates a new image and sends it to the Browser
      */
-    function printNewImage() {
+    public function getPage() {
         //create a new image...
         $this->createImage();
 
@@ -183,57 +165,105 @@ class Captcha {
         header('Content-type: image/jpeg');
         imagejpeg($this->image, NULL, 90);
         imagedestroy($this->image);
+
+        // stop script execution
+        exit;
     }
 
     /**
      * writes the secret to the session
      */
-    function updateSession() {
+    private function updateSession() {
         $_SESSION['captchaSecret'] = $this->strRandomString;
     }
     
-    /**
-     * Because of security-problems: returns just an "spamprotection" string.
-     *
-     * @return    string        Alt tag for the image
-     */
-    function getAlt() {        
-       return 'Spamprotection';
+    public function getCode($tabIndex = null)
+    {
+        global $_CORELANG;
+
+        $tabIndexAttr = '';
+        if (isset($tabIndex)) {
+            $tabIndexAttr = "tabindex=\"$tabIndex\"";
+        }
+        $alt= contrexx_raw2xhtml($_CORELANG['TXT_CORE_CAPTCHA']);
+        $code = '<img src="'.$this->getUrl().'" alt="'.$alt.'" />';
+        $code .= '<input name="coreCaptchaCode" value="" maxlength="5" '.$tabIndexAttr.' />';
+
+        return $code;
     }
-   
+
     /**
      * checks whether the entered string matches the captcha
      *
      * @return boolean
      */
-    function check($strEnteredString) {
-        // in case there was a session initialization problem, $_SESSION['captchaSecret'] might be NULL
-        if (empty($strEnteredString)) return false;
+    public function check()
+    {
+        if ($this->isValidCode()) {
+            return true;
+        }
 
-        $valid = strtoupper($strEnteredString) == strtoupper($_SESSION['captchaSecret']);
-        unset($_SESSION['captchaSecret']); //remove secret to improve security
-        return $valid;
+        $this->error = self::SECURITY_CODE_IS_INCORRECT;
+
+        return false;
     }       
+
+    private function isValidCode()
+    {
+        if (empty($_POST['coreCaptchaCode'])) {
+            return false;
+        }
+
+        $strEnteredString = trim(contrexx_input2raw($_POST['coreCaptchaCode']));
+
+        // in case there was a session initialization problem, $_SESSION['captchaSecret'] might be NULL, therefore we must ensure not to test against an empty captcha code
+        if (empty($strEnteredString)) {
+            return false;
+        }
+
+        if (empty($_SESSION['captchaSecret'])) {
+            return false;
+        }
+
+        $captcha = $_SESSION['captchaSecret'];
+        unset($_SESSION['captchaSecret']); //remove secret to improve security
+
+        return strtoupper($strEnteredString) == strtoupper($captcha);
+    }
 
     /**
      * gets the url for a new captcha
      *
      * @return string
      */
-    function getUrl() {
+    private function getUrl() {
         global $objInit;
         $isBackend = $objInit->mode == "backend";
         $url = ASCMS_PATH_OFFSET;
         if($isBackend) {
-            $url .= ASCMS_BACKEND_PATH.'/index.php?cmd=captcha&act=new';
+            $url .= ASCMS_BACKEND_PATH.'/index.php?cmd=captcha';
         }
         else {
-            $url .= '/index.php?section=captcha&cmd=new';
+            $url .= '/index.php?section=captcha';
         }
         
         //add no cache param
         $url .= '&nc='.md5(''.time());
         return $url;
     }
+
+    public function getError()
+    {
+        global $_CORELANG;
+
+        $error = '';
+
+        switch ($this->error) {
+            case self::SECURITY_CODE_IS_INCORRECT:
+                $error = $_CORELANG['TXT_CORE_INVALID_CAPTCHA'];
+            break;
+        }
+
+        return $error;
+    }
 }
-?>
