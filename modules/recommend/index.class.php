@@ -85,7 +85,7 @@ class Recommend extends RecommendLibrary
      */
     function _showForm()
     {
-        global $_LANGID, $_ARRAYLANG;
+        global $_LANGID, $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->setVariable(array(
             'RECOM_TEXT'                    => $_ARRAYLANG['TXT_INTRODUCTION'],
@@ -98,7 +98,6 @@ class Recommend extends RecommendLibrary
             'RECOM_TXT_PREVIEW'                => $_ARRAYLANG['TXT_PREVIEW_FRONTEND'],
             'RECOM_TXT_FEMALE'                => $_ARRAYLANG['TXT_FEMALE_FRONTEND'],
             'RECOM_TXT_MALE'                => $_ARRAYLANG['TXT_MALE_FRONTEND'],
-            'RECOM_TXT_CAPTCHA'                => $_ARRAYLANG['TXT_RECOMMEND_CAPTCHA']
         ));
 
         $this->_objTpl->setVariable(array(
@@ -111,16 +110,15 @@ class Recommend extends RecommendLibrary
         ));
 
         //Spam-Protection
-        require_once ASCMS_LIBRARY_PATH . '/spamprotection/captcha.class.php';
-        $objCaptcha = new Captcha();
-
-        $alt = $objCaptcha->getAlt();
-        $url = $objCaptcha->getUrl();
-
         $this->_objTpl->setVariable(array(
-            'RECOM_CAPTCHA_URL'        => $url,
-            'RECOM_CAPTCHA_ALT'        => $alt,
+            'RECOM_TXT_CAPTCHA'     => $_CORELANG['TXT_CORE_CAPTCHA'],
+            'RECOM_CAPTCHA_CODE'    => FWCaptcha::getInstance()->getCode(),
         ));
+        if ($this->_objTpl->blockExists('recommend_captcha')) {
+            $this->_objTpl->parse('recommend_captcha');
+        } else {
+            $this->_objTpl->hideBlock('recommend_captcha');
+        }
 
         $this->_objTpl->parse('recommend_form');
     }
@@ -134,7 +132,7 @@ class Recommend extends RecommendLibrary
      */
     function _sendRecomm()
     {
-        global $_ARRAYLANG, $_CONFIG, $_LANGID;
+        global $_ARRAYLANG, $_CONFIG, $_LANGID, $_CORELANG;
 
         if (empty($_POST['receivername'])) {
             $this->_pageMessage .= $_ARRAYLANG['TXT_STATUS_RECEIVER_NAME'].' '.$_ARRAYLANG['TXT_IS_EMPTY'].'<br />';
@@ -160,10 +158,8 @@ class Recommend extends RecommendLibrary
             $this->_pageMessage .= $_ARRAYLANG['TXT_STATUS_COMMENT'].' '.$_ARRAYLANG['TXT_IS_EMPTY'].'<br />';
         }
 
-        require_once ASCMS_LIBRARY_PATH . '/spamprotection/captcha.class.php';
-        $objCaptcha = new Captcha();
-        if (!$objCaptcha->check($_POST['captchaCode'])) {
-            $this->_pageMessage .= $_ARRAYLANG['TXT_RECOMMEND_CAPTCHA'].' '.$_ARRAYLANG['TXT_IS_INVALID'];
+        if (!FWCaptcha::getInstance()->check()) {
+            $this->_pageMessage .= FWCaptcha::getInstance()->getError();
         }
 
         $receivername     = $_POST['receivername'];
@@ -199,16 +195,17 @@ class Recommend extends RecommendLibrary
                 'RECOM_TXT_FEMALE'                => $_ARRAYLANG['TXT_FEMALE_FRONTEND'],
                 'RECOM_TXT_MALE'                => $_ARRAYLANG['TXT_MALE_FRONTEND'],
                 'RECOM_TEXT'                    => $_ARRAYLANG['TXT_INTRODUCTION'],
-                'RECOM_TXT_CAPTCHA'                => $_ARRAYLANG['TXT_RECOMMEND_CAPTCHA']
             ));
-
-            $alt = $objCaptcha->getAlt();
-            $url = $objCaptcha->getUrl();
 
             $this->_objTpl->setVariable(array(
-                'RECOM_CAPTCHA_URL'        => $url,
-                'RECOM_CAPTCHA_ALT'        => $alt,
+                'RECOM_TXT_CAPTCHA'     => $_CORELANG['TXT_CORE_CAPTCHA'],
+                'RECOM_CAPTCHA_CODE'    => FWCaptcha::getInstance()->getCode(),
             ));
+            if ($this->_objTpl->blockExists('recommend_captcha')) {
+                $this->_objTpl->parse('recommend_captcha');
+            } else {
+                $this->_objTpl->hideBlock('recommend_captcha');
+            }
 
             $this->_objTpl->parseCurrentBlock('recommend_form');
             $this->_objTpl->parse();

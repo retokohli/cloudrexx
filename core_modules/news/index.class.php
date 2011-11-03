@@ -447,14 +447,10 @@ class news extends newsLibrary {
             $this->_objTpl->parse('news_add_comment_name');
 
             // parse CAPTCHA
-            include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-            $captcha = new Captcha();
-
             $this->_objTpl->setVariable(array(
-                'TXT_CORE_CAPTCHA_DESCRIPTION'  => $_CORELANG['TXT_CORE_CAPTCHA_DESCRIPTION'],
-                'NEWS_COMMENT_CAPTCHA_URL'      => $captcha->getUrl(),
-                'NEWS_COMMENT_CAPTCHA_ALT'      => $captcha->getAlt(),
-                //'NEWS_COMMENT_CAPTCHA_ERROR'    => $this->captchaError,
+                'TXT_CORE_CAPTCHA'          => $_CORELANG['TXT_CORE_CAPTCHA'],
+                'NEWS_COMMENT_CAPTCHA_CODE' => FWCaptcha::getInstance()->getCode(),
+                //'NEWS_COMMENT_CAPTCHA_ERROR'=> FWCaptcha::getInstance()->getErrro(),
             ));
             $this->_objTpl->parse('news_add_comment_captcha');
         }
@@ -1313,7 +1309,7 @@ class news extends newsLibrary {
 // TODO: refactor this method before activating it again. Framework usage is outdated!
         return false;
 
-        global $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
 
         require_once ASCMS_CORE_PATH.'/modulemanager.class.php';
         $objModulManager = new modulemanager();
@@ -1352,13 +1348,6 @@ class news extends newsLibrary {
         $newsUrl2 = 'http://';
         $insertStatus = false;
 
-        require_once ASCMS_LIBRARY_PATH . '/spamprotection/captcha.class.php';
-        $captcha = new Captcha();
-
-        $offset = $captcha->getOffset();
-        $alt = $captcha->getAlt();
-        $url = $captcha->getUrl();
-
         if (isset($_POST['submitNews'])) {
             $objValidator = new FWValidator();
 
@@ -1373,11 +1362,11 @@ class news extends newsLibrary {
             $_POST['newsCat'] = intval($_POST['newsCat']);
             $_POST['newsType'] = isset($_POST['newsType']) ? intval($_POST['newsType']) : 0;
 
-            if (!$captcha->compare($_POST['captcha'], $_POST['offset'])) {
-                $this->_submitMessage = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . '<br />';
+            if (!FWCaptcha::getInstance()->check()) {
+                $this->_submitMessage = FWCaptcha::getInstance()->getError() . '<br />';
             }
 
-            if (!empty($_POST['newsTitle']) && $captcha->compare($_POST['captcha'], $_POST['offset']) &&
+            if (!empty($_POST['newsTitle']) && FWCaptcha::getInstance()->check() &&
                (!empty($_POST['newsText']) || (!empty($_POST['newsRedirect']) && $_POST['newsRedirect'] != 'http://'))) {
                     $insertStatus = $this->_insert();
                     if (!$insertStatus) {
@@ -1438,7 +1427,7 @@ class news extends newsLibrary {
                 'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
                 'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
                 'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
-                'TXT_CAPTCHA'               => $_ARRAYLANG['TXT_CAPTCHA'],
+                'TXT_CORE_CAPTCHA'          => $_CORELANG['TXT_CORE_CAPTCHA'],
                 'NEWS_TEXT'                 => get_wysiwyg_editor('newsText', $newsText, 'news'),
                 'NEWS_CAT_MENU'             => $this->getCategoryMenu($newsCat),
                 'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($newsType) : ''),
@@ -1448,9 +1437,7 @@ class news extends newsLibrary {
                 'NEWS_URL2'                 => contrexx_raw2xhtml($newsUrl2),
                 'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($newsTeaserText),
                 'NEWS_REDIRECT'             => contrexx_raw2xhtml($newsRedirect),
-                'CAPTCHA_OFFSET'            => $offset,
-                'IMAGE_URL'                 => $url,
-                'IMAGE_ALT'                 => $alt
+                'NEWS_CAPTCHA_CODE'         => FWCaptcha::getInstance()->getCode(),
             ));
 
             if ($this->_objTpl->blockExists('news_category_menu')) {
@@ -1708,12 +1695,9 @@ RSS2JSCODE;
             }
 
             // check CAPTCHA for anonymous posters
-            include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-            $captcha = new Captcha();
-
-            if (!$captcha->check($_POST['news_comment_captcha'])) {
+            if (!FWCaptcha::getInstance()->check()) {
                 $error = true;
-                return array(false, $_CORELANG['TXT_CORE_INVALID_CAPTCHA']);
+                return array(false, FWCaptcha::getInstance()->getError());
             }
         } else {
             // Anonymous comments are not allowed

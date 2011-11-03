@@ -527,20 +527,17 @@ class Contact extends ContactLib
 
     function setCaptcha($useCaptcha)
     {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
         if (!$this->objTemplate->blockExists('contact_form_captcha')) {
             return;
         }
 
         if ($useCaptcha) {
-            include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-            $captcha = new Captcha();
-
             $this->objTemplate->setVariable(array(
-                'CONTACT_CAPTCHA_URL'                => $captcha->getUrl(),
-                'TXT_CONTACT_CAPTCHA_DESCRIPTION'    => $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'],
-                'CONTACT_CAPTCHA_ERROR'              => $this->captchaError
+                'TXT_CONTACT_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
+                'CONTACT_CAPTCHA_CODE'  => FWCaptcha::getInstance()->getCode(),
+                'CONTACT_CAPTCHA_ERROR' => $this->captchaError
             ));
 
             $this->objTemplate->parse('contact_form_captcha');
@@ -942,12 +939,9 @@ class Contact extends ContactLib
         }
 
         if ($useCaptcha) {
-            include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-            $captcha = new Captcha();
-
-            if (!$captcha->check($_POST['contactFormCaptcha'])) {
+            if (!FWCaptcha::getInstance()->check()) {
                 $error = true;
-                $this->captchaError = $_ARRAYLANG['TXT_CONTACT_INVALID_CAPTCHA_CODE'];
+                $this->captchaError = FWCaptcha::getInstance()->getError();
             }
         }
 

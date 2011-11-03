@@ -46,7 +46,6 @@ $_ARRAYLANG['TXT_OVERVIEW'] = "Übersicht";
 $_ARRAYLANG['TXT_FORUM'] = "Forum";
 $_ARRAYLANG['TXT_VERIFY_PASSWORD'] = "Passwort bestätigen";
 $_ARRAYLANG['TXT_TYPE'] = "Typ";
-$_ARRAYLANG['TXT_SECURITY_CODE_IS_INCORRECT'] = "Der Sicherheitscode ist unkorrekt.";
 $_ARRAYLANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'] = "Das Passwort oder der Benutzername ist falsch.";
 $_ARRAYLANG['TXT_SEARCH'] = "Suchen";
 $_ARRAYLANG['TXT_ADMIN_STATUS'] = "Administrator";
@@ -274,3 +273,7 @@ $_ARRAYLANG['TXT_CORE_HTML_IMAGE_PREVIEW'] = "Vorschau";
 $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_CLOSE'] = "schliessen";
 $_ARRAYLANG['TXT_CORE_HTML_TOGGLE_OPEN'] = "öffnen";
 $_ARRAYLANG['TXT_CORE_HTML_VIEW'] = "Details";
+
+// core captcha
+$_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
+$_ARRAYLANG['TXT_CORE_INVALID_CAPTCHA'] = "Der eingegebene Sicherheitscode war falsch!";

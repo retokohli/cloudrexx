@@ -193,12 +193,9 @@ EOF;
 
 
     function getCaptcha() {
-        global $_ARRAYLANG;
+        global $_CORELANG;
 
-        include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-        $captcha = new Captcha();
-
-        $strCode = '<p><label>CAPTCHA</label><img alt="'.$captcha->getAlt().'" src="'.$captcha->getUrl().'" class="captcha" /> <input type="text" name="commentCaptcha" id="commentCaptcha" /><br /></p>';
+        $strCode = '<p><label>'.$_CORELANG['TXT_CORE_CAPTCHA'].'</label>'.FWCaptcha::getInstance()->getCode().'</p>';
 
         return $strCode;
     }
@@ -294,9 +291,7 @@ EOF;
             $intAddedBy = 0;
 
             //captcha check
-            include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-            $captcha = new Captcha();
-            if(!$captcha->check($arrCommentData['commentCaptcha']))
+            if(!FWCaptcha::getInstance()->check())
                 die('captcha');
         }
 

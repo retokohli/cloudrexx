@@ -301,11 +301,13 @@ if ($section == 'upload') { //handle uploads separately, since they have no cont
     //execution never reaches this point
 }
 if ($section == 'captcha') {
-    if (!include_once ASCMS_CORE_MODULE_PATH.'/captcha/index.class.php')
-        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-    $sessionObj = new cmsSession();
-    $ca = new CaptchaActions();
-    $ca->getPage();
+    /*
+     * Captcha Module
+     *
+     * Generates no output, requests are answered by a die()
+     * @since   2.1.5
+     */
+    FWCaptcha::getInstance()->getPage();
 }
 if ($section == 'frontendEditing') {
     if (!include_once(ASCMS_CORE_MODULE_PATH.'/frontendEditing/frontendEditing.class.php'))
@@ -314,7 +316,6 @@ if ($section == 'frontendEditing') {
     $objFrontendEditing = new frontendEditing(Env::em());
     $objFrontendEditing->performAction();
 }
-
 
 // Initialize page meta
 $page = null;

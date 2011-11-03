@@ -16,11 +16,6 @@ require_once ASCMS_CORE_MODULE_PATH.'/access/lib/AccessLib.class.php';
 /**
  * @ignore
  */
-require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-
-/**
- * @ignore
- */
 require_once ASCMS_MODULE_PATH.'/u2u/lib/u2uLib.class.php';
 
 /**
@@ -393,7 +388,7 @@ class Access extends AccessLib
 
     private function signUp()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $arrProfile = array();
 
@@ -521,11 +516,9 @@ class Access extends AccessLib
         // set captcha
         if ($this->_objTpl->blockExists('access_captcha')) {
             if ($arrSettings['user_captcha']['status']) {
-                $objCaptcha = new Captcha();
                 $this->_objTpl->setVariable(array(
-                    'ACCESS_CAPTCHA_URL'            => $objCaptcha->getUrl(),
-                    'TXT_ACCESS_CAPTCHA'            => $_ARRAYLANG['TXT_ACCESS_CAPTCHA'],
-                    'TXT_ACCESS_CAPTCHA_DESCRIPTION'=> $_ARRAYLANG['TXT_ACCESS_CAPTCHA_DESCRIPTION']
+                    'ACCESS_CAPTCHA_CODE'            => FWCaptcha::getInstance()->getCode(),
+                    'TXT_ACCESS_CAPTCHA'            => $_CORELANG['TXT_CORE_CAPTCHA'],
                 ));
                 $this->_objTpl->parse('access_captcha');
             } else {
@@ -556,13 +549,12 @@ class Access extends AccessLib
         global $_ARRAYLANG;
 
         $arrSettings = User_Setting::getSettings();
-        $objCaptcha = new Captcha();
 
-        if(!$arrSettings['user_captcha']['status'] || $objCaptcha->check($_POST['accessSignUpCaptcha'], $_POST['accessSignUpCaptchaOffset'])) {
+        if(!$arrSettings['user_captcha']['status'] || FWCaptcha::getInstance()->check()) {
             return true;
         }
 
-        $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ACCESS_INVALID_CAPTCHA_CODE'];
+        $this->arrStatusMsg['error'][] = FWCaptcha::getInstance()->getError();
         return false;
     }
 

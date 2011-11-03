@@ -330,9 +330,6 @@ class Blog extends BlogLibrary  {
                 $wysiwygEditor = "FCKeditor";
                 $FCKeditorBasePath = "/editor/fckeditor/";
 
-                require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-                $objCaptcha = new Captcha();
-
                 //Determine the desired editor
                 if ($this->_arrSettings['blog_comments_editor'] == 'wysiwyg') {
                     $strEditor = get_wysiwyg_editor('frmAddComment_Comment', $strComment, 'news');
@@ -347,8 +344,7 @@ class Blog extends BlogLibrary  {
                     'BLOG_DETAILS_COMMENT_ADD_WWW'              =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_WWW" value="'.$strWWW.'" class="blogCommentInput" />' : htmlentities($objFWUser->objUser->getProfileAttribute('website'), ENT_QUOTES, CONTREXX_CHARSET),
                     'BLOG_DETAILS_COMMENT_ADD_SUBJECT'          =>  $strSubject,
                     'BLOG_DETAILS_COMMENT_ADD_COMMENT'          =>  $strEditor,
-                    'BLOG_DETAILS_COMMENT_ADD_SPAM_URL'         =>  $objCaptcha->getUrl(),
-                    'BLOG_DETAILS_COMMENT_ADD_SPAM_ALT'         =>  $objCaptcha->getAlt()
+                    'BLOG_DETAILS_COMMENT_ADD_SPAM_CODE'        =>  FWCaptcha::getInstance()->getCode(),
                 ));
             } else {
                 //Anonymous comments arent allowed and the user isn't logged in -> Hide block!
@@ -472,16 +468,11 @@ class Blog extends BlogLibrary  {
         require_once ASCMS_LIBRARY_PATH.'/FRAMEWORK/Validator.class.php';
         $objValidator = new FWValidator();
 
-        //Create spam-object
-        require_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-        $objCaptcha = new Captcha();
-
         //Get general-input
         $intMessageId   = intval($_POST['frmAddComment_MessageId']);
         $strSubject     = contrexx_addslashes(strip_tags($_POST['frmAddComment_Subject']));
         $strComment     = $_POST['frmAddComment_Comment'];
         $strOffset      = $_POST['frmAddComment_Offset'];
-        $strCaptcha     = strtoupper($_POST['frmAddComment_Captcha']);
 
         //Check for editor
         if ($this->_arrSettings['blog_comments_editor'] == 'textarea') {
@@ -513,7 +504,7 @@ class Blog extends BlogLibrary  {
         if ($intMessageId <= 0) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MID']); }
         if (empty($strSubject)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SUBJECT']); }
         if (empty($strComment)) {                               $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_COMMENT']); }
-        if (!$objCaptcha->check($strCaptcha)) {   $this->_strErrorMessage .= $this->getFormError($_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_ADD_SPAM']); }
+        if (!FWCaptcha::getInstance()->check()) {   $this->_strErrorMessage .= FWCaptcha::getInstance()->getError(); }
 
         //Validate specified-input
         if ($this->_intCurrentUserId == 0) {

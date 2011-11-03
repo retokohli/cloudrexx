@@ -1819,32 +1819,19 @@ class ContactManager extends ContactLib
             $sourcecode[] = '<link href="../core_modules/contact/css/form.css" rel="stylesheet" type="text/css" />';
 
             if ($this->arrForms[$id]['useCaptcha']) {
-                include_once ASCMS_LIBRARY_PATH.'/spamprotection/captcha.class.php';
-                $captcha = new Captcha();
-                $alt     = $captcha->getAlt();
-                $url     = $captcha->getUrl();
-
                 $sourcecode[] = '<div style="color: red;"></div>';
-                $sourcecode[] = '<label>&nbsp;</label>';
-                $sourcecode[] = '<label class="noCaption">';
-                $sourcecode[] = $_ARRAYLANG['TXT_CONTACT_CAPTCHA_DESCRIPTION'];
-                $sourcecode[] = '</label>';
-                $sourcecode[] = '<span>'.$_ARRAYLANG["TXT_CONTACT_CAPTCHA"].'</span><img class="captcha" src="'.$url.'" alt="'.$alt.'" />';
-                $sourcecode[] = '<label>&nbsp;</label>';
-                $sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
-                $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="'.$offset.'" />';
+                $sourcecode[] = '<label>'.$_ARRAYLANG["TXT_CONTACT_CAPTCHA"].'</label>';
+                $sourcecode[] = '<div id="contactFormCaptcha">';
+                $sourcecode[] = FWCaptcha::getInstance()->getCode();
+                $sourcecode[] = '</div>';
             }
         } else {
             $sourcecode[] = "<!-- BEGIN contact_form_captcha -->";
             $sourcecode[] = '<div style="color: red;">{CONTACT_CAPTCHA_ERROR}</div>';
-            $sourcecode[] = '<label>&nbsp;</label>';
-            $sourcecode[] = '<label class="noCaption">';
-            $sourcecode[] = "{TXT_CONTACT_CAPTCHA_DESCRIPTION}<br />";
-            $sourcecode[] = '</label>';
-            $sourcecode[] = '<span>{TXT_CONTACT_CAPTCHA}</span><img class="captcha" src="{CONTACT_CAPTCHA_URL}" alt="{CONTACT_CAPTCHA_ALT}" />';
-            $sourcecode[] = '<label>&nbsp;</label>';
-            $sourcecode[] = '<input id="contactFormCaptcha" type="text" name="contactFormCaptcha" /><br />';
-            $sourcecode[] = '<input type="hidden" name="contactFormCaptchaOffset" value="{CONTACT_CAPTCHA_OFFSET}" />';
+            $sourcecode[] = '<label>{TXT_CONTACT_CAPTCHA}</label>';
+            $sourcecode[] = '<div id="contactFormCaptcha">';
+            $sourcecode[] = '{CONTACT_CAPTCHA_CODE}';
+            $sourcecode[] = '</div>';
             $sourcecode[] = "<!-- END contact_form_captcha -->";
         }
 
