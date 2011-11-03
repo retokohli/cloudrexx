@@ -824,14 +824,17 @@ class MediaManager extends MediaLibrary
                 $accessGroups = $_POST['media' . $i . '_access_associated_groups'];
                 // add AccessID
                 $newMediaSetting = Permission::createNewDynamicAccessId();
+
                 // save AccessID
                 if (count($accessGroups)) {
                     Permission::setAccess($newMediaSetting, 'dynamic', $accessGroups);
                 }
-                $objDatabase->Execute(' UPDATE '.DBPREFIX.'module_media_settings
-                                                SET `value` = "' . intval($newMediaSetting) . '"
-                                                WHERE `name` = "media' . $i . '_frontend_changable"
-                                            ');
+                $query = 'UPDATE '.DBPREFIX.'module_media_settings
+                              SET `value` = "' . intval($newMediaSetting) . '"
+                              WHERE `name` = "media' . $i . '_frontend_changable"';
+
+
+                $objDatabase->Execute($query);
             }
 
             $oldManageSetting = $this->_arrSettings['media' . $i . '_frontend_managable'];
