@@ -1216,7 +1216,9 @@ if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
 CSRF::add_placeholder($objTemplate);
 
 //enable gzip compressing of the output - up to 75% smaller responses!
-ob_start("ob_gzhandler");
+//commented out because of certain php.inis generating a 
+//WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
+//ob_start("ob_gzhandler");
 
 $objTemplate->show();
 
