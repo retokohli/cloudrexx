@@ -599,7 +599,7 @@ class ContactManager extends ContactLib
 
         //Get the fallback languages array
         $fallBackArr = FWLanguage::getFallbackLanguageArray();
-        
+
         foreach ($arrRecipients as $arrRecipient) {
             foreach ($arrActiveSystemFrontendLanguages as $langId => $lang) {
                 $isSelectedInterfaceLanguage = $langId == $selectedInterfaceLanguage;
