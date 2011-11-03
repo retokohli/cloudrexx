@@ -2223,10 +2223,45 @@ function _parsejpg($file)
     );
 }
 
-function _parsepng($file)
+private function parsePNGwithAlphaChannel($file, $wpx, $hpx)
+{
+    $img = imagecreatefrompng($file);
+    if (!$img) return false;
+
+    // extract image without alpha channel
+    $imgplain = imagecreatetruecolor($wpx, $hpx);
+    imagecopy($imgplain, $img, 0, 0, 0, 0, $wpx, $hpx);
+
+    $fpm = fopen("php://memory", 'r+');
+    if ($fpm) {
+        // clean output buffer
+        $obBuffer = ob_get_clean();
+        ob_start();
+        // output image to output buffer
+        imagepng($imgplain);
+        // collect image and clean output buffer 
+        $image = ob_get_clean();
+        imagedestroy($imgplain);
+
+        // put image to memory pointer
+        fwrite($fpm, $image);
+        rewind($fpm);
+        return $this->_parsepng($file, $fpm);
+    } else {
+        $tempImage = ASCMS_TEMP_PATH.'/'.$file.'_without_alpha.png';
+        imagepng($imgplain, $tempImage);
+        $pngData = $this->_parsepng($tempImage); 
+        unlink($tempImage);
+        return $pngData;
+    }
+}
+
+function _parsepng($file, $f=null)
 {
 	//Extract info from a PNG file
-	$f=fopen($file,'rb');
+    if (!isset($f)) {
+	    $f=fopen($file,'rb');
+    }
 	//Extract info from a PNG file
 	if(!$f) {
         DBG::msg('Can\'t open image file: '.$file);
@@ -2254,6 +2289,10 @@ function _parsepng($file)
 	if($ct==0) $colspace='DeviceGray';
 	elseif($ct==2) $colspace='DeviceRGB';
 	elseif($ct==3) $colspace='Indexed';
+	elseif($ct==6) {
+        fclose($f);
+        return $this->parsePNGwithAlphaChannel($file, $w, $h);
+    }
 	//else $this->Error('Alpha channel not supported: '.$file);
 	else $colspace='DeviceGray';
 	if(ord(fread($f,1))!=0) {
