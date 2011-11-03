@@ -1945,7 +1945,9 @@ if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
     $objPDF->Create();
 } else {
     //enable gzip compressing of the output - up to 75% smaller responses!
-    ob_start("ob_gzhandler");
+    //commented out because of certain php.inis generating a 
+    //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
+    //ob_start("ob_gzhandler");
 
     /**
      * Get all javascripts in the code, replace them with nothing, and register the js file
