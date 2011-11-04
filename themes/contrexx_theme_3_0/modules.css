@@ -1088,7 +1088,27 @@ div#livecam #CALBUTTONDPC_datum {
 #shop input[type=checkbox] {
     float: none;
 }
-
+#shopping_cart {
+  background: url("images/shopping_cart.gif") no-repeat scroll 0 0 transparent;
+  float: left;
+  height: 60px;
+  margin-left: 9px;
+  width: 80px;
+}
+#shop .discount h2 {
+  font-size: 1.6em;
+  margin-bottom: 0.5em;
+  border-bottom: 0 none;
+  font-weight: normal;
+  padding: 0;
+}
+#shop .error {
+  border: 1px solid red;
+}
+#shop input.error[type=radio] {
+  background-color: red;
+  background-image: url("images/logo.png");
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/

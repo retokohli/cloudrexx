@@ -1,28 +1,9 @@
 <!-- start shopnavbar.html -->
-
-<!-- Login info -->
-{SHOP_LOGIN_STATUS}<br />
-{SHOP_LOGIN_INFO}<br />
-
-<!-- Logged in -->
-<!-- BEGIN shop_changepass -->
-<a href="index.php?section=shop&amp;cmd=changepass">{TXT_SHOP_CHANGE_PASSWORD}</a><br />
-<!-- END shop_changepass -->
-
-<!-- Not logged in -->
-<!-- BEGIN shop_login -->
-<form name="shop_side_login" method="post" action="{SHOP_LOGIN_ACTION}">
-  <label for="username">{TXT_SHOP_EMAIL_ADDRESS}</label><br />
-  <input type="text" id="username" name="username" value="" /><br />
-  <label for="password">{TXT_SHOP_PASSWORD}</label><br />
-  <input type="password" id="password" name="password" value="" /><br />
-  <input type="submit" name="blogin" value="{TXT_SHOP_ACCOUNT_LOGIN}" /><br />
-</form>
-<!-- END shop_login -->
-
-<!-- Optional static cart info -->
+<!-- BEGIN shopCartInfo -->
+<!-- Optional static cart info, only useful when the dynamic cart is off -->
 {SHOP_CART_INFO}
-<br />
+<br /> 
+<!-- END shopCartInfo -->
 
 <div id="shop_navigation">
   <ul>

@@ -1146,12 +1146,12 @@ die("Failed to update the Cart!");
              && isset($_GET['referer']) && $_GET['referer'] == 'cart') {
                 $productSubmitName = "updateProduct[$cart_id]";
                 $productSubmitFunction = self::productOptions(
-                    $id, $formId, $flagMultipart
+                    $id, $formId, $cart_id, $flagMultipart
                 );
             } else {
                 $productSubmitName = 'addProduct';
                 $productSubmitFunction = self::productOptions(
-                    $id, $formId, $flagMultipart
+                    $id, $formId, $cart_id, $flagMultipart
                 );
             }
             // Should be used by registerJavascriptCode()
@@ -1342,10 +1342,12 @@ die("Failed to update the Cart!");
      *                                      this parameter will be set to true
      * @return  string                      The string with the HTML code
      */
-    static function productOptions($product_id, $formName, $cart_id=null, &$flagUpload=false)
-    {
+    static function productOptions($product_id, $formName, $cart_id=null,
+        &$flagUpload=false
+    ) {
         global $_ARRAYLANG;
 
+//DBG::log("productOptions($product_id, $formName, $cart_id, $flagUpload): Entered");
         // Semicolon separated list of Attribute name IDs to verify
         // before the Product is added to the cart
         $checkOptionIds = '';
@@ -1372,9 +1374,21 @@ die("Failed to update the Cart!");
                     $selectValues = '';
                     // create head of option menu/checkbox/radiobutton
                     switch ($objAttribute->getType()) {
-                      case '0': // Dropdown menu (optional attribute)
-                      // There is no hidden input field here, as there is no
-                      // mandatory choice, the status need not be verified.
+                      case Attribute::TYPE_CHECKBOX:
+                      case Attribute::TYPE_TEXT_OPTIONAL:
+                      case Attribute::TYPE_UPLOAD_OPTIONAL:
+                      case Attribute::TYPE_TEXTAREA_OPTIONAL:
+                      case Attribute::TYPE_EMAIL_OPTIONAL:
+                      case Attribute::TYPE_EMAIL_OPTIONAL:
+                      case Attribute::TYPE_URL_OPTIONAL:
+                      case Attribute::TYPE_DATE_OPTIONAL:
+                      case Attribute::TYPE_NUMBER_INT_OPTIONAL:
+                      case Attribute::TYPE_NUMBER_FLOAT_OPTIONAL:
+                        // No container nor hidden field for optional types
+                        break;
+                      case Attribute::TYPE_MENU_OPTIONAL:
+                        // There is no hidden input field here either,
+                        // but the dropdown menu container
                         $selectValues =
                             '<select name="productOption['.$attribute_id.
                             ']" id="productOption-'.
@@ -1384,18 +1398,32 @@ die("Failed to update the Cart!");
                             $objAttribute->getName().'&nbsp;'.
                             $_ARRAYLANG['TXT_CHOOSE']."</option>\n";
                         break;
-                      case '1': // Radio buttons
-                        // The hidden input field carries the name of the
-                        // Attribute, indicating a mandatory option.
+                      case Attribute::TYPE_RADIOBUTTON:
+                      case Attribute::TYPE_TEXT_MANDATORY:
+                      case Attribute::TYPE_UPLOAD_MANDATORY:
+                      case Attribute::TYPE_TEXTAREA_MANDATORY:
+                      case Attribute::TYPE_EMAIL_MANDATORY:
+                      case Attribute::TYPE_URL_MANDATORY:
+                      case Attribute::TYPE_DATE_MANDATORY:
+                      case Attribute::TYPE_NUMBER_INT_MANDATORY:
+                      case Attribute::TYPE_NUMBER_FLOAT_MANDATORY:
+                        // The Attribute name, indicating a mandatory option.
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
                             '" value="'.$objAttribute->getName().'" />'."\n";
+                        // The Attribute verification regex, if applicable
+                        $regex = Attribute::getVerificationRegex(
+                            $objAttribute->getType());
+                        if ($regex != '') {
+                            $selectValues .=
+                                '<input type="hidden" id="attributeVerification-'.
+                                $product_id.'-'.$attribute_id.
+                                '" value="'.$regex.'" />'."\n";
+                        }
                         $checkOptionIds .= "$attribute_id;";
                         break;
-                      // No container for checkboxes (2), as there is no
-                      // mandatory choice, their status need not be verified.
-                      case '3': // Dropdown menu (mandatory attribute)
+                      case Attribute::TYPE_MENU_MANDATORY:
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
                             $product_id.'-'.$attribute_id.
@@ -1412,36 +1440,6 @@ die("Failed to update the Cart!");
                                   $_ARRAYLANG['TXT_CHOOSE']."</option>\n"
                                 : ''
                             );
-                        $checkOptionIds .= "$attribute_id;";
-                        break;
-
-                      case '4': // Text field, optional
-                        break;
-                      case '5': // Text field, mandatory
-                        $selectValues =
-                            '<input type="hidden" id="productOption-'.
-                            $product_id.'-'.$attribute_id.
-                            '" value="'.$objAttribute->getName().'" />'."\n";
-                        $checkOptionIds .= "$attribute_id;";
-                        break;
-
-                      case '6': // Upload field, optional
-                        break;
-                      case '7': // Upload field, mandatory
-                        $selectValues =
-                            '<input type="hidden" id="productOption-'.
-                            $product_id.'-'.$attribute_id.
-                            '" value="'.$objAttribute->getName().'" />'."\n";
-                        $checkOptionIds .= "$attribute_id;";
-                        break;
-
-                      case '8': // Multiline text field, optional
-                        break;
-                      case '9': // Multiline text field, mandatory
-                        $selectValues =
-                            '<input type="hidden" id="productOption-'.
-                            $product_id.'-'.$attribute_id.
-                            '" value="'.$objAttribute->getName().'" />'."\n";
                         $checkOptionIds .= "$attribute_id;";
                         break;
                     }
@@ -1468,14 +1466,14 @@ die("Failed to update the Cart!");
                         }
                         // create option menu/checkbox/radiobutton
                         switch ($objAttribute->getType()) {
-                          case '0': // Dropdown menu (optional attribute)
+                          case Attribute::TYPE_MENU_OPTIONAL:
                             $selectValues .=
                                 '<option value="'.$option_id.'" '.
                                 ($selected ? 'selected="selected"' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
                             break;
-                          case '1': // Radio buttons
+                          case Attribute::TYPE_RADIOBUTTON:
                             $selectValues .=
                                 '<input type="radio" name="productOption['.
                                 $attribute_id.']" id="productOption-'.
@@ -1487,7 +1485,7 @@ die("Failed to update the Cart!");
                                 '">&nbsp;'.$arrOption['value'].$option_price.
                                 "</label><br />\n";
                             break;
-                          case '2': // Checkboxes
+                          case Attribute::TYPE_CHECKBOX:
                             $selectValues .=
                                 '<input type="checkbox" name="productOption['.
                                 $attribute_id.']['.$i.']" id="productOption-'.
@@ -1499,15 +1497,15 @@ die("Failed to update the Cart!");
                                 '">&nbsp;'.$arrOption['value'].$option_price.
                                 "</label><br />\n";
                             break;
-                          case '3': // Dropdown menu (mandatory attribute)
+                          case Attribute::TYPE_MENU_MANDATORY:
                             $selectValues .=
                                 '<option value="'.$option_id.'"'.
                                 ($selected ? ' selected="selected"' : '').
                                 ' >'.$arrOption['value'].$option_price.
                                 "</option>\n";
                             break;
-                          case '4': // Text field, optional
-                          case '5': // Text field, mandatory
+                          case Attribute::TYPE_TEXT_OPTIONAL:
+                          case Attribute::TYPE_TEXT_MANDATORY:
 //                            $option_price = '&nbsp;';
                             $selectValues .=
                                 '<input type="text" name="productOption['.$attribute_id.
@@ -1516,8 +1514,67 @@ die("Failed to update the Cart!");
                                 '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
                                 $option_price."</label><br />\n";
                             break;
-                          case '6': // UploadText field, optional
-                          case '7': // Text field, mandatory
+
+                          case Attribute::TYPE_EMAIL_OPTIONAL:
+                          case Attribute::TYPE_EMAIL_MANDATORY:
+//                            $option_price = '&nbsp;';
+                            $selectValues .=
+                                '<input type="text" name="productOption['.$attribute_id.
+                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
+                                '" value="'.$arrOption['value'].'" style="width:180px;" />'.
+                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
+                                $option_price."</label><br />\n";
+                            break;
+                          case Attribute::TYPE_URL_OPTIONAL:
+                          case Attribute::TYPE_URL_MANDATORY:
+//                            $option_price = '&nbsp;';
+                            $selectValues .=
+                                '<input type="text" name="productOption['.$attribute_id.
+                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
+                                '" value="'.$arrOption['value'].'" style="width:180px;" />'.
+                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
+                                $option_price."</label><br />\n";
+                            break;
+                          case Attribute::TYPE_DATE_OPTIONAL:
+                          case Attribute::TYPE_DATE_MANDATORY:
+//                            $option_price = '&nbsp;';
+                            // Passed by reference
+                            $element_id =
+                                'productOption-'.$product_id.'-'.
+                                $attribute_id.'-'.$domId;
+                            $selectValues .=
+                                Html::getDatepicker(
+                                    'productOption['.$attribute_id.']',
+                                    array(
+                                        'defaultDate' => $arrOption['value'],
+                                    ),
+                                    'style="width:180px;"', $element_id).
+                                '<label for="productOption-'.$product_id.'-'.
+                                    $attribute_id.'-'.$domId.'">'.
+                                $option_price."</label><br />\n";
+                            break;
+                          case Attribute::TYPE_NUMBER_INT_OPTIONAL:
+                          case Attribute::TYPE_NUMBER_INT_MANDATORY:
+//                            $option_price = '&nbsp;';
+                            $selectValues .=
+                                '<input type="text" name="productOption['.$attribute_id.
+                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
+                                '" value="'.$arrOption['value'].'" style="width:180px;" />'.
+                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
+                                $option_price."</label><br />\n";
+                            break;
+                          case Attribute::TYPE_NUMBER_FLOAT_OPTIONAL:
+                          case Attribute::TYPE_NUMBER_FLOAT_MANDATORY:
+//                            $option_price = '&nbsp;';
+                            $selectValues .=
+                                '<input type="text" name="productOption['.$attribute_id.
+                                ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
+                                '" value="'.$arrOption['value'].'" style="width:180px;" />'.
+                                '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
+                                $option_price."</label><br />\n";
+                            break;
+                          case Attribute::TYPE_UPLOAD_OPTIONAL:
+                          case Attribute::TYPE_UPLOAD_MANDATORY:
 //                            $option_price = '&nbsp;';
                             $selectValues .=
                                 '<input type="file" name="productOption['.$attribute_id.
@@ -1526,8 +1583,8 @@ die("Failed to update the Cart!");
                                 '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
                                 $option_price."</label><br />\n";
                             break;
-                          case '8': // Multiline text field, optional
-                          case '9': // Multiline text field, mandatory
+                          case Attribute::TYPE_TEXTAREA_OPTIONAL:
+                          case Attribute::TYPE_TEXTAREA_MANDATORY:
 //                            $valuePrice = '&nbsp;';
                             $selectValues .=
                                 '<textarea name="productOption['.$attribute_id.
@@ -1544,34 +1601,42 @@ die("Failed to update the Cart!");
                     }
                     // create foot of option menu/checkbox/radiobutton
                     switch ($objAttribute->getType()) {
-                        case '0':
-                            $selectValues .= "</select><br />\n";
+                        case Attribute::TYPE_MENU_OPTIONAL:
+                            $selectValues .= "</select><br />";
                             break;
-                        case '1':
-                            $selectValues .= "<br />\n";
+                        case Attribute::TYPE_RADIOBUTTON:
+                            $selectValues .= "<br />";
                             break;
-                        case '2':
-                            $selectValues .= "\n";
+                        case Attribute::TYPE_CHECKBOX:
+                            $selectValues .= "";
                             break;
-                        case '3':
-                            $selectValues .= "</select><br />\n";
+                        case Attribute::TYPE_MENU_MANDATORY:
+                            $selectValues .= "</select><br />";
                             break;
-/* Nothing to to
-                        case '4': // Text field, optional
-                        case '5': // Text field, mandatory
-*/
                         // Set enctype in form if one of these is present
-                        case '6': // UploadText field, optional
-                        case '7': // Text field, mandatory
+                        case Attribute::TYPE_UPLOAD_OPTIONAL:
+                        case Attribute::TYPE_UPLOAD_MANDATORY:
                             // Avoid code analyzer warning
                             $flagUpload = true || $flagUpload;
                             break;
 /* Nothing to to
-                        case '8': // Multiline text field, optional
-                        case '9': // Multiline text field, mandatory
+                        case Attribute::TYPE_TEXT_OPTIONAL:
+                        case Attribute::TYPE_TEXT_MANDATORY:
+                        case Attribute::TYPE_TEXTAREA_OPTIONAL:
+                        case Attribute::TYPE_TEXTAREA_MANDATORY:
+                        case Attribute::TYPE_EMAIL_OPTIONAL:
+                        case Attribute::TYPE_EMAIL_MANDATORY:
+                        case Attribute::TYPE_URL_OPTIONAL:
+                        case Attribute::TYPE_URL_MANDATORY:
+                        case Attribute::TYPE_DATE_OPTIONAL:
+                        case Attribute::TYPE_DATE_MANDATORY:
+                        case Attribute::TYPE_NUMBER_INT_OPTIONAL:
+                        case Attribute::TYPE_NUMBER_INT_MANDATORY:
+                        case Attribute::TYPE_NUMBER_FLOAT_OPTIONAL:
+                        case Attribute::TYPE_NUMBER_FLOAT_MANDATORY:
 */
                     }
-
+                    $selectValues .= "\n";
                     self::$objTemplate->setVariable(array(
                         // pre-version 1.1 spelling error fixed
                         // left old spelling for comatibility (obsolete)
@@ -1584,7 +1649,6 @@ die("Failed to update the Cart!");
                             $_ARRAYLANG['TXT_OPTIONS'].'">'.
                             $_ARRAYLANG['TXT_OPTIONS']."</a>\n",
                     ));
-
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
@@ -1685,83 +1749,81 @@ function toggleOptions(productId)
   }
 }
 
-function checkProductOption(objForm, productId, strProductOptionIds)
+function checkProductOption(objForm, productId, strAttributeIds)
 {
   // The list of Product Attribute IDs, joined by semicolons.
-  var arrOptionIds = strProductOptionIds.split(\";\");
+  var arrAttributeIds = strAttributeIds.split(/;/);
   // Assume that the selection is okay
-  var status = true;
+  var is_valid_all = true;
   // Remember invalid or missing choices in order to prompt the user
-  var arrFailOptions = new Array();
+  var arrAttributeIdFailed = new Array();
   var elType = '';
-
   // check each option
-  for (i = 0; i < arrOptionIds.length; i++) {
+  for (i = 0; i < arrAttributeIds.length; i++) {
+    var attribute_id = arrAttributeIds[i];
+
+    // See if there is a hidden field marking the Attribute as mandatory
+    element_mandatory = \$J('#productOption-'+productId+'-'+attribute_id);
+    if (!element_mandatory.length) {
+      continue;
+    }
     // The name of the Product Attribute currently being processed.
     // Only set for attributes with mandatory choice:
     // Types 1 (Radiobutton), 3 (Dropdown menu),
     // 5 (mandatory text), 7 (mandatory file).
-    option_name = '';
-    checkStatus = false;
+    option_name = element_mandatory.val();
     // get options from form
-    for (el = 0; el < document.forms[objForm].elements.length; el++) {
-      // check if the element has a id attribute
-      var formElement = document.forms[objForm].elements[el];
-      if (formElement.getAttribute('id')) {
-        // check whether the element belongs to the option
-        var searchName = 'productOption-'+productId+'-'+arrOptionIds[i];
-        var elementId = formElement.getAttribute('id');
-        if (elementId.substr(0, searchName.length) == searchName) {
-          // check if the element has a type attribute
-          if (formElement.type) {
-            elType = formElement.type;
-            switch (elType) {
-              case 'radio':
-                if (formElement.checked == true) {
-                  checkStatus = true;
-                }
-                break;
-              case 'select-one':
-                if (formElement.value > 0) {
-                  checkStatus = true;
-                }
-                break;
-              case 'text':
-                if (formElement.value != '') {
-                  checkStatus = true;
-                }
-                break;
-              case 'textarea':
-                if (formElement.value != '') {
-                  checkStatus = true;
-                }
-                break;
-              case 'file':
-                if (formElement.value != '') {
-                  checkStatus = true;
-                }
-                break;
-              case 'hidden':
-                option_name = formElement.value;
-                break;
-            }
+    elements_option = \$J('[id^=\"productOption-'+productId+'-'+attribute_id+'-\"]');
+    if (!elements_option.length) {
+      continue;
+    }
+    var is_valid_element = false;
+    // Verify value according to the 'attributeVerification' regex
+    var re_verify = \$J('#attributeVerification-'+productId+'-'+attribute_id);
+    var elType = null;
+    elements_option.each(function(index, element) {
+      elType = element.type;
+      switch (elType) {
+        case 'radio':
+          if (element.checked) {
+            is_valid_element = true;
+            return false;
           }
-        }
+          break;
+        case 'select-one':
+          if (element.value > 0) {
+            is_valid_element = true;
+            return false;
+          }
+          break;
+        case 'text':
+        case 'textarea':
+        case 'file':
+          if (re_verify && re_verify.val()) {
+            if (RegExp(re_verify.val()).test(element.value)) {
+              is_valid_element = true;
+              return false;
+            }
+          } else {
+            is_valid_element = true;
+            return false;
+          }
+          break;
       }
-    } // end for
-    // If the option name is empty, the Product Attribute is not
-    // a mandatory choice.
-    if (   option_name != \"\"
-        && checkStatus == false
-        && elType != 'hidden') {
-      status = false;
-      arrFailOptions.push(option_name);
+    }); // each
+    // If the option selection is invalid, so is the item
+    if (is_valid_element == false) {
+      is_valid_all = false;
+      mark_invalid(elements_option);
+      arrAttributeIdFailed.push(option_name);
+    } else {
+      mark_valid(elements_option);
     }
   } // end for
-  if (status == false) {
+  if (is_valid_all == false) {
     msg = \"{$_ARRAYLANG['TXT_MAKE_DECISION_FOR_OPTIONS']}:\\n\";
-    for (i = 0;i < arrFailOptions.length;++i) {
-      msg += \"- \"+arrFailOptions[i]+\"\\n\";
+    for (i = 0;i < arrAttributeIdFailed.length;++i) {
+      msg += \"- \"+arrAttributeIdFailed[i]+\"\\n\";
     }
     if (document.getElementById('product_options_layer'+productId)) {
       document.getElementById('product_options_layer'+productId).style.display = 'block';
@@ -1777,6 +1839,19 @@ function checkProductOption(objForm, productId, strProductOptionIds)
     addProductToCart(objForm);
     return false;
   }
+}
+
+function mark_valid(elements) {
+  if (elements.first().attr('type') == 'radio') {
+    return elements.next('label').removeClass('error');
+  }
+  return elements.removeClass('error');
+}
+function mark_invalid(elements) {
+  if (elements.first().attr('type') == 'radio') {
+    return elements.next('label').addClass('error');
+  }
+  return elements.addClass('error');
 }
 
 // Remove a single product from the cart
@@ -1821,12 +1896,12 @@ function addProductToCart(objForm)
       optionId = arrName[1];
       switch (formElement.type) {
         case 'radio':
-          if (formElement.checked == true) {
+          if (formElement.checked) {
             objProduct.options[optionId] = formElement.value;
           }
           break;
         case 'checkbox':
-          if (formElement.checked == true) {
+          if (formElement.checked) {
             if (typeof(objProduct.options[optionId]) == 'undefined') {
               objProduct.options[optionId] = new Array();
             }
@@ -1836,7 +1911,6 @@ function addProductToCart(objForm)
         case 'select-one':
           objProduct.options[optionId] = formElement.value;
           break;
-        // 20081216 Added Text Attributes -- Reto Kohli
         case 'text':
           if (formElement.value != '') {
             objProduct.options[optionId] = formElement.value;
