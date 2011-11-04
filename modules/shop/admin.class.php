@@ -938,15 +938,15 @@ class Shopmanager extends ShopLibrary
                 'SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU' =>
                     Attributes::getOptionMenu(
                         $attribute_id, 'option_id', '',
-                        'setSelectedValue('.$attribute_id.')', 'width: 200px;'),
+                        'setSelectedValue('.$attribute_id.')', 'width: 300px;'),
                 'SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES' =>
                     Attributes::getInputs(
                         $attribute_id, 'option_name', 'value',
-                        255, 'width: 170px;'),
+                        255, 'width: 300px;'),
                 'SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES' =>
                     Attributes::getInputs(
                         $attribute_id, 'option_price', 'price',
-                        9, 'width: 170px; text-align: right;'),
+                        9, 'width: 300px; text-align: right;'),
                 'SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE' =>
                     Attributes::getDisplayTypeMenu(
                         $attribute_id, $objAttribute->getType(),
@@ -1037,7 +1037,7 @@ class Shopmanager extends ShopLibrary
          || !is_array($_POST['option_id'][0])) {
             return $_ARRAYLANG['TXT_DEFINE_VALUE_FOR_OPTION'];
         }
-        $arrAttributeId = contrexx_input2int($_POST['option_id'][0]);
+        $arrOptionId = contrexx_input2int($_POST['option_id'][0]);
         $arrOptionValue =
             (   empty($_POST['option_name'])
              || !is_array($_POST['option_name'])
@@ -1056,10 +1056,12 @@ class Shopmanager extends ShopLibrary
             $attribute_type);
 //DBG::log("New Attribute: ".var_export($objAttribute, true));
         $i = 0;
-        foreach ($arrAttributeId as $attribute_id) {
+        foreach ($arrOptionId as $option_id) {
             $objAttribute->addOption(
-                $arrOptionValue[$attribute_id],
-                $arrOptionPrice[$attribute_id],
+                // Option names may be empty or missing altogether!
+                (isset ($arrOptionValue[$option_id])
+                    ? $arrOptionValue[$option_id] : ''),
+                $arrOptionPrice[$option_id],
                 ++$i);
         }
 //DBG::log("New Options: ".var_export($objAttribute, true));
@@ -1072,11 +1074,10 @@ class Shopmanager extends ShopLibrary
 
 
     /**
-     * Update attribute options
-     *
-     * Update the attribute option/value list
+     * Updates Attribute options in the database
      * @access    private
-     * @return    string    $statusMessage    Status message
+     * @return    boolean           True on success, null on noop, or
+     *                              false otherwise
      */
     function _updateAttributeOptions()
     {
@@ -1087,12 +1088,12 @@ class Shopmanager extends ShopLibrary
         $arrAttributeList = contrexx_input2int($_POST['option_id']);
         $arrOptionValue = contrexx_input2raw($_POST['option_name']);
         $arrOptionPrice = contrexx_input2float($_POST['option_price']);
+        $flagChangedAny = false;
         foreach ($arrAttributeList as $attribute_id => $arrOptionIds) {
             $flagChanged = false;
             $objAttribute = Attribute::getById($attribute_id);
             if (!$objAttribute) {
-                Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
-                return false;
+                return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
             }
             $name = $arrAttributeName[$attribute_id];
             $type = $arrAttributeType[$attribute_id];
@@ -1128,11 +1129,10 @@ class Shopmanager extends ShopLibrary
                 }
             }
             if ($flagChanged) {
+                $flagChangedAny = true;
                 if (!$objAttribute->store()) {
-                    Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
-                    return false;
+                    return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
                 }
-                Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
             }
         }
 /*
@@ -1141,12 +1141,15 @@ class Shopmanager extends ShopLibrary
             if (!array_key_exists($attribute_id, $arrAttributeList)) {
                 $objAttribute = Attribute::getById($attribute_id);
                 if (!$objAttribute)
-                    return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
+                    return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
                 if (!$objAttribute->delete())
-                    return $_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD'];
+                    return Message::error($_ARRAYLANG['TXT_SHOP_ERROR_UPDATING_RECORD']);
             }
         }
 */
+        if ($flagChangedAny) {
+            Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+        }
         return true;
     }
 
@@ -1267,6 +1270,21 @@ class Shopmanager extends ShopLibrary
             ));
             self::$objTemplate->parse('shopCurrency');
         }
+        $str_js = '';
+        foreach (Currency::get_known_currencies_increment_array()
+                as $code => $increment) {
+            // This seems like a sensible default for the few unknown ones
+            if (!is_numeric($increment)) $increment = 0.01;
+            $str_js .=
+                ($str_js ? ',' : '').
+                '"'.$code.'":"'.$increment.'"';
+        };
+        self::$objTemplate->setVariable(array(
+            'SHOP_CURRENCY_NAME_MENUOPTIONS' => Html::getOptions(
+                Currency::get_known_currencies_name_array()),
+            'SHOP_CURRENCY_INCREMENT_JS_ARRAY' =>
+                'var currency_increment = {'.$str_js.'};',
+        ));
     }
 
 

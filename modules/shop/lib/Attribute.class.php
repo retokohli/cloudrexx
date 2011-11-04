@@ -44,18 +44,63 @@ class Attribute
      * Attributes::getDisplayTypeMenu() when you add another
      * type here.
      */
-    const TYPE_MENU_OPTIONAL      = 0;
-    const TYPE_RADIOBUTTON        = 1;
-    const TYPE_CHECKBOX           = 2;
-    const TYPE_MENU_MANDATORY     = 3;
-    const TYPE_TEXT_OPTIONAL      = 4;
-    const TYPE_TEXT_MANDATORY     = 5;
-    const TYPE_UPLOAD_OPTIONAL    = 6;
-    const TYPE_UPLOAD_MANDATORY   = 7;
-    const TYPE_TEXTAREA_OPTIONAL  = 8;
-    const TYPE_TEXTAREA_MANDATORY = 9;
+    const TYPE_MENU_OPTIONAL          =  0;
+    const TYPE_RADIOBUTTON            =  1;
+    const TYPE_CHECKBOX               =  2;
+    const TYPE_MENU_MANDATORY         =  3;
+    const TYPE_TEXT_OPTIONAL          =  4;
+    const TYPE_TEXT_MANDATORY         =  5;
+    const TYPE_UPLOAD_OPTIONAL        =  6;
+    const TYPE_UPLOAD_MANDATORY       =  7;
+    const TYPE_TEXTAREA_OPTIONAL      =  8;
+    const TYPE_TEXTAREA_MANDATORY     =  9;
+// Extended types (fehraltorf)
+    const TYPE_EMAIL_OPTIONAL         = 10;
+    const TYPE_EMAIL_MANDATORY        = 11;
+    const TYPE_URL_OPTIONAL           = 12;
+    const TYPE_URL_MANDATORY          = 13;
+    const TYPE_DATE_OPTIONAL          = 14;
+    const TYPE_DATE_MANDATORY         = 15;
+    const TYPE_NUMBER_INT_OPTIONAL    = 16;
+    const TYPE_NUMBER_INT_MANDATORY   = 17;
+    const TYPE_NUMBER_FLOAT_OPTIONAL  = 18;
+    const TYPE_NUMBER_FLOAT_MANDATORY = 19;
     // Keep this up to date!
-    const TYPE_COUNT              = 10;
+    const TYPE_COUNT                  = 20;
+
+    /**
+     * The available Attribute types
+     *
+     * Listed in the dropdown menu in this order.
+     * Format is
+     *  array(
+     *    Type => Language entry postfix,
+     *    ... more ...
+     *  )
+     * @var     array
+     */
+    static $arrType = array(
+        self::TYPE_MENU_OPTIONAL => 'TYPE_MENU_OPTIONAL',
+        self::TYPE_RADIOBUTTON => 'TYPE_RADIOBUTTON',
+        self::TYPE_CHECKBOX => 'TYPE_CHECKBOX',
+        self::TYPE_MENU_MANDATORY => 'TYPE_MENU_MANDATORY',
+        self::TYPE_TEXT_OPTIONAL => 'TYPE_TEXT_OPTIONAL',
+        self::TYPE_TEXT_MANDATORY => 'TYPE_TEXT_MANDATORY',
+        self::TYPE_UPLOAD_OPTIONAL => 'TYPE_UPLOAD_OPTIONAL',
+        self::TYPE_UPLOAD_MANDATORY => 'TYPE_UPLOAD_MANDATORY',
+        self::TYPE_TEXTAREA_OPTIONAL => 'TYPE_TEXTAREA_OPTIONAL',
+        self::TYPE_TEXTAREA_MANDATORY => 'TYPE_TEXTAREA_MANDATORY',
+        self::TYPE_EMAIL_OPTIONAL => 'TYPE_EMAIL_OPTIONAL',
+        self::TYPE_EMAIL_MANDATORY => 'TYPE_EMAIL_MANDATORY',
+        self::TYPE_URL_OPTIONAL => 'TYPE_URL_OPTIONAL',
+        self::TYPE_URL_MANDATORY => 'TYPE_URL_MANDATORY',
+        self::TYPE_DATE_OPTIONAL => 'TYPE_DATE_OPTIONAL',
+        self::TYPE_DATE_MANDATORY => 'TYPE_DATE_MANDATORY',
+        self::TYPE_NUMBER_INT_OPTIONAL => 'TYPE_NUMBER_INT_OPTIONAL',
+        self::TYPE_NUMBER_INT_MANDATORY => 'TYPE_NUMBER_INT_MANDATORY',
+        self::TYPE_NUMBER_FLOAT_OPTIONAL => 'TYPE_NUMBER_FLOAT_OPTIONAL',
+        self::TYPE_NUMBER_FLOAT_MANDATORY => 'TYPE_NUMBER_FLOAT_MANDATORY',
+    );
 
     /**
      * The Attribute ID
@@ -98,9 +143,9 @@ class Attribute
 
     /**
      * Constructor
-     * @param   integer   $type           The type of the Attribute
-     * @param   integer   $id   The optional Attribute ID
-     * @param   integer   $product_id     The optional Product ID
+     * @param   integer   $type         The type of the Attribute
+     * @param   integer   $id           The optional Attribute ID
+     * @param   integer   $product_id   The optional Product ID
      */
     function __construct($name, $type, $id=0, $product_id=false)
     {
@@ -250,7 +295,19 @@ class Attribute
             || $this->type == self::TYPE_TEXT_OPTIONAL
             || $this->type == self::TYPE_TEXT_MANDATORY
             || $this->type == self::TYPE_TEXTAREA_OPTIONAL
-            || $this->type == self::TYPE_TEXTAREA_MANDATORY) {
+            || $this->type == self::TYPE_TEXTAREA_MANDATORY
+// Extended types (fehraltorf)
+            || $this->type == self::TYPE_EMAIL_OPTIONAL
+            || $this->type == self::TYPE_EMAIL_MANDATORY
+            || $this->type == self::TYPE_URL_OPTIONAL
+            || $this->type == self::TYPE_URL_MANDATORY
+            || $this->type == self::TYPE_DATE_OPTIONAL
+            || $this->type == self::TYPE_DATE_MANDATORY
+            || $this->type == self::TYPE_NUMBER_INT_OPTIONAL
+            || $this->type == self::TYPE_NUMBER_INT_MANDATORY
+            || $this->type == self::TYPE_NUMBER_FLOAT_OPTIONAL
+            || $this->type == self::TYPE_NUMBER_FLOAT_MANDATORY
+        ) {
             // These types can have exactly one value
             $this->arrValues = array(
                 array(
@@ -591,7 +648,7 @@ class Attribute
     {
         $arrName = Attributes::getArrayById($id);
         if ($arrName === false) return false;
-        $objAttribute = new Attribute(
+        $objAttribute = new self(
             $arrName['name'], $arrName['type'], $id
         );
         return $objAttribute;
@@ -701,6 +758,70 @@ class Attribute
                 "<br />";
         }
         return $string;
+    }
+
+
+    /**
+     * Returns a regular expression for the verification of options
+     *
+     * The regex returned depends on the value of the $type parameter.
+     * Mind that the regex is also applicable to some optional types!
+     * For types that need not be verified, the empty string is returned.
+     * @param   integer     $type       The Attribute type
+     * @return  string                  The regex
+     */
+    static function getVerificationRegex($type)
+    {
+        switch ($type) {
+            case self::TYPE_TEXT_MANDATORY:
+            case self::TYPE_TEXTAREA_MANDATORY:
+                return '.+';
+// TODO: Improve the regex for file names
+            case self::TYPE_UPLOAD_OPTIONAL:
+                return '.*';
+            case self::TYPE_UPLOAD_MANDATORY:
+                return '.+';
+            case self::TYPE_EMAIL_OPTIONAL:
+                return '(^$|^'.VALIDATOR_REGEX_EMAIL.'$)';
+            case self::TYPE_EMAIL_MANDATORY:
+                return '^'.VALIDATOR_REGEX_EMAIL.'$';
+            case self::TYPE_URL_OPTIONAL:
+                return '(^$|^'.VALIDATOR_REGEX_URI.'$)';
+            case self::TYPE_URL_MANDATORY:
+                return '^'.VALIDATOR_REGEX_URI.'$';
+            // Note: The date regex is defined based on the value of the
+            // ASCMS_DATE_SHORT_FORMAT constant and may thus be localized.
+            case self::TYPE_DATE_OPTIONAL:
+                require_once ASCMS_FRAMEWORK_PATH.'/DateTimeTools.class.php';
+                return
+                    '(^$|^'.
+                    DateTimeTools::getRegexForDateFormat(ASCMS_DATE_SHORT_FORMAT).
+                    '$)';
+            case self::TYPE_DATE_MANDATORY:
+                require_once ASCMS_FRAMEWORK_PATH.'/DateTimeTools.class.php';
+                return
+                    '^'.
+                    DateTimeTools::getRegexForDateFormat(ASCMS_DATE_SHORT_FORMAT).
+                    '$';
+            // Note: Number formats are somewhat arbitrary and should be defined
+            // more closely resembling IEEE standards (or whatever).
+            case self::TYPE_NUMBER_INT_OPTIONAL:
+                return '^\d{0,10}$';
+            case self::TYPE_NUMBER_INT_MANDATORY:
+                return '^\d{1,10}$';
+            case self::TYPE_NUMBER_FLOAT_OPTIONAL:
+                return '^\d{0,10}[\d\.]?\d*$';
+            case self::TYPE_NUMBER_FLOAT_MANDATORY:
+                return '^\d{0,10}[\d\.]\d*$';
+            // Not applicable:
+            //self::TYPE_MENU_OPTIONAL
+            //self::TYPE_RADIOBUTTON
+            //self::TYPE_CHECKBOX
+            //self::TYPE_MENU_MANDATORY
+            //self::TYPE_TEXT_OPTIONAL
+            //self::TYPE_TEXTAREA_OPTIONAL
+        }
+        return '';
     }
 
 

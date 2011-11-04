@@ -225,43 +225,82 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
   <li><a id="attributeTab_content2" href="javascript:{}"
       onclick="selectTab('content2')" title="{TXT_ADD}">{TXT_ADD}</a></li>
 </ul>
-<input name="option_name_tpl" id="option_name_tpl" value="" maxlength="32" style="display: none; width: 170px;" type="text" />
-<input name="option_price_tpl" id="option_price_tpl" value="0.00" maxlength="9" style="display: none; width: 170px; text-align: right;" type="text" />
+<input type="text" name="option_name_tpl" id="option_name_tpl" value=""
+    maxlength="255" style="display: none; width: 300px;" />
+<input type="text" name="option_price_tpl" id="option_price_tpl" value="0.00"
+    maxlength="9" style="display: none; width: 300px; text-align: right;" />
 <!-- start content1 div -->
 <div id="content1" class="attributeTab" style="display:block">
   <form name="shopSelectOptions" id="shopSelectOptions" method="post" action="">
     <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th nowrap="nowrap" width="2%" style="text-align:center;">#</th>
-        <th nowrap="nowrap" width="13%">{TXT_NAME}</th>
-        <th nowrap="nowrap" width="200">{TXT_VALUES}</th>
-        <th nowrap="nowrap" width="60%">{TXT_OPTIONS}</th>
-        <th nowrap="nowrap" width="5%" style="text-align:right;">{TXT_FUNCTIONS}</th>
+        <th nowrap="nowrap" width="2%" class="a_center">#</th>
+        <th nowrap="nowrap" width="30%">{TXT_NAME}</th>
+        <th nowrap="nowrap" width="30%">{TXT_VALUES}</th>
+        <th nowrap="nowrap" width="30%">{TXT_OPTIONS}</th>
+        <th nowrap="nowrap" width="8%" class="a_right">{TXT_FUNCTIONS}</th>
       </tr>
 <!-- BEGIN attributeList -->
       <tr class="{SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS}" style="vertical-align:top;">
-        <td nowrap="nowrap" width="2%"><input name="selected_attribute_id[]" value="{SHOP_PRODUCT_ATTRIBUTE_ID}" type="checkbox" /></td>
-        <td nowrap="nowrap" width="13%"><input type="text" name="attribute_name[{SHOP_PRODUCT_ATTRIBUTE_ID}]" size="20" maxlength="32" value="{SHOP_PRODUCT_ATTRIBUTE_NAME}" /></td>
-        <td nowrap="nowrap" width="20%"><div style="text-align:center;vertical-align:top;">{SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU}</div></td>
-        <td nowrap="nowrap" width="60%">
-          {TXT_DISPLAY_AS}&nbsp;{SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE}
-          <div id="optionEdit-{SHOP_PRODUCT_ATTRIBUTE_ID}" style="display:none;vertical-align:bottom;"><br />
-            <table summary="" border="0" cellpadding="0" cellspacing="4" style="vertical-align:top;">
-              <tr>
-                <td><div style="border-bottom:0px;">{TXT_VALUE}</div></td>
-                <td id="option_name_div-{SHOP_PRODUCT_ATTRIBUTE_ID}"><div style="border-bottom:0px;text-align:right;">{SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES}</div></td>
-              </tr>
-              <tr>
-                <td><div style="border-bottom:0px;">{TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})</div></td>
-                <td nowrap="nowrap"><div style="border-bottom:0px;text-align:right;display:inline;" id="option_price_div-{SHOP_PRODUCT_ATTRIBUTE_ID}">{SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}</div></td>
-              </tr>
-              <tr>
-                <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" id="newAttributeValue-{SHOP_PRODUCT_ATTRIBUTE_ID}" value="{TXT_ADD_NEW_VALUE}" onclick="addOption({SHOP_PRODUCT_ATTRIBUTE_ID})" /></div></td>
-              </tr>
-            </table>
-          </div>&nbsp;
+        <td nowrap="nowrap">
+          <input name="selected_attribute_id[]" value="{SHOP_PRODUCT_ATTRIBUTE_ID}" type="checkbox" />
         </td>
-        <td nowrap="nowrap" width="5%"><div style="text-align:right;"><a href="javascript:{}" onclick="swapEdit({SHOP_PRODUCT_ATTRIBUTE_ID})" title="{TXT_EDIT_OPTION}"><img src="images/icons/edit.gif" alt="{TXT_EDIT_OPTION}" border="0" /></a><a href="javascript:deleteOption({SHOP_PRODUCT_ATTRIBUTE_ID})" title="{TXT_DELETE_OPTION}"><img src="images/icons/delete.gif" alt="{TXT_DELETE_OPTION}" border="0" /></a></div></td>
+        <td nowrap="nowrap">
+          <input type="text" name="attribute_name[{SHOP_PRODUCT_ATTRIBUTE_ID}]"
+              style="width: 300px;" maxlength="255"
+              value="{SHOP_PRODUCT_ATTRIBUTE_NAME}" />
+        </td>
+        <td nowrap="nowrap">
+          {SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU}
+        </td>
+        <td nowrap="nowrap">
+          <div>
+            <div style="float: left;">
+              {TXT_DISPLAY_AS}
+            </div>
+            <div style="float: right;">
+              {SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE}
+            </div>
+          </div>
+          <div id="optionEdit-{SHOP_PRODUCT_ATTRIBUTE_ID}"
+              style="display: none;">
+            <br /><br /><br />
+            <div style="display: block; height: 20px;">
+              <div style="float: left;">
+                {TXT_VALUE}
+              </div>
+              <div style="float: right;"
+                  id="option_name_div-{SHOP_PRODUCT_ATTRIBUTE_ID}">
+                {SHOP_PRODUCT_ATTRIBUTE_VALUE_INPUTBOXES}
+              </div>
+            </div>
+            <div style="display: block; height: 20px;">
+              <div style="float: left;">
+                {TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})
+              </div>
+              <div style="float: right;"
+                  id="option_price_div-{SHOP_PRODUCT_ATTRIBUTE_ID}">
+                {SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}
+              </div>
+            </div>
+            <div style="display: block; height: 20px; float: right;">
+                <input type="button" value="{TXT_ADD_NEW_VALUE}"
+                    onclick="addOption({SHOP_PRODUCT_ATTRIBUTE_ID})"
+                    id="newAttributeValue-{SHOP_PRODUCT_ATTRIBUTE_ID}" />
+            </div>
+          </div>
+        </td>
+        <td nowrap="nowrap" class="a_right">
+          <a href="javascript:{}" onclick="swapEdit({SHOP_PRODUCT_ATTRIBUTE_ID})"
+              title="{TXT_EDIT_OPTION}">
+            <img src="images/icons/edit.gif"
+                alt="{TXT_EDIT_OPTION}" border="0" />
+          </a>
+          <a href="javascript:deleteOption({SHOP_PRODUCT_ATTRIBUTE_ID})"
+              title="{TXT_DELETE_OPTION}">
+            <img src="images/icons/delete.gif" alt="{TXT_DELETE_OPTION}" border="0" />
+          </a>
+        </td>
       </tr>
 <!-- END attributeList -->
     </table>
@@ -285,17 +324,21 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
   <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
     <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th nowrap="nowrap" width="15%">&nbsp;{TXT_NAME}</th>
-        <th nowrap="nowrap" width="200">{TXT_VALUES}</th>
-        <th nowrap="nowrap" width="65%">{TXT_OPTIONS}</th>
+        <th nowrap="nowrap" width="2%">&nbsp;</th>
+        <th nowrap="nowrap" width="30%">{TXT_NAME}</th>
+        <th nowrap="nowrap" width="30%">{TXT_VALUES}</th>
+        <th nowrap="nowrap" width="30%">{TXT_OPTIONS}</th>
+        <th nowrap="nowrap" width="8%">&nbsp;</th>
       </tr>
-      <tr class="row1" style="vertical-align:top;">
-        <td nowrap="nowrap" width="15%">
+      <tr class="row1" style="vertical-align: top;">
+        <td>&nbsp;</td>
+        <td nowrap="nowrap">
           <input type="text" id="attribute_name-0" name="attribute_name[0]"
-              size="20" maxlength="32" value="" /></td>
-        <td nowrap="nowrap" width="200">
+              style="width: 300px;" maxlength="255" />
+        </td>
+        <td nowrap="nowrap">
           <select name="option_id[0][]" id="option_id-0" size="10"
-              onchange="setSelectedValue(0)" style="width:200px;">
+              onchange="setSelectedValue(0)" style="width: 300px;">
           </select>
           <br />
           <a href="javascript:{}" id="optionMenuLink-0" style="display: block;"
@@ -304,22 +347,41 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
             {TXT_REMOVE_SELECTED_VALUE}
           </a>
         </td>
-        <td nowrap="nowrap" width="65%">
-          {TXT_DISPLAY_AS}&nbsp;{SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU}<br /><br />
-          <table summary="" border="0" cellpadding="0" cellspacing="4" style="vertical-align:top;text-align:right;width:250px;">
-            <tr>
-              <td><div style="border-bottom:0px;">{TXT_VALUE}</div></td>
-              <td id="option_name_div-0"><div style="border-bottom:0px;text-align:right;"></div></td>
-            </tr>
-            <tr>
-              <td><div style="border-bottom:0px;">{TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})</div></td>
-              <td nowrap="nowrap"><div style="border-bottom:0px;" id="option_price_div-0"></div></td>
-            </tr>
-            <tr>
-              <td colspan="2"><div style="border-bottom:0px;text-align:right;"><input type="button" value="{TXT_ADD_NEW_VALUE}" onclick="addOption(0)" /></div></td>
-            </tr>
-          </table>
+        <td nowrap="nowrap">
+          <div>
+            <div style="float: left;">
+              {TXT_DISPLAY_AS}
+            </div>
+            <div style="float: right;">
+              {SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU}
+            </div>
+          </div>
+          <div id="optionEdit-0"
+              style="display: block;">
+            <br /><br /><br />
+            <div style="display: block; height: 20px;">
+              <div style="float: left;">
+                {TXT_VALUE}
+              </div>
+              <div style="float: right;" id="option_name_div-0">
+              </div>
+            </div>
+            <div style="display: block; height: 20px;">
+              <div style="float: left;">
+                {TXT_PRICE}&nbsp;({SHOP_PRODUCT_ATTRIBUTE_CURRENCY})
+              </div>
+              <div style="float: right;"
+                  id="option_price_div-0">
+                {SHOP_PRODUCT_ATTRIBUTE_PRICE_INPUTBOXES}
+              </div>
+            </div>
+            <div style="display: block; height: 20px; float: right;">
+                <input type="button" value="{TXT_ADD_NEW_VALUE}"
+                    onclick="addOption(0)" />
+            </div>
+          </div>
         </td>
+        <td>&nbsp;</td>
       </tr>
     </table>
     <br />

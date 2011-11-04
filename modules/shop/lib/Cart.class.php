@@ -65,7 +65,6 @@ class Cart
     {
         if (   empty($_REQUEST['id'])
             || empty($_REQUEST['quantity'])) {
-//DBG::log("Cart::receive_json($old_cart_id): Invalid ID {$_REQUEST['id']} or quantity {$_REQUEST['quantity']}");
             return;
         }
         if (!include_once(ASCMS_LIBRARY_PATH.'/PEAR/Services/JSON.php')) {
@@ -75,10 +74,11 @@ class Cart
         if (isset($_REQUEST['updateProduct'])) {
             $cart_id = intval($_REQUEST['updateProduct']);
         }
+        // Note that Cart::add_product() insists on "options" being an array!
         $arrProduct = array(
             'id' => intval($_REQUEST['id']),
             'options' => (isset($_REQUEST['options'])
-                ? contrexx_input2raw($_REQUEST['options']) : null),
+                ? contrexx_input2raw($_REQUEST['options']) : array()),
             'quantity' => floatval($_REQUEST['quantity']),
         );
         Cart::add_product($arrProduct, $cart_id);
@@ -226,7 +226,8 @@ class Cart
 //DBG::log("Cart::add_product(): New: Empty option value for Attribute ID $attribute_id");
                         continue;
                     }
-                    if (is_array($arrProduct['options'][$attribute_id])) {
+                    if (isset ($arrProduct['options'][$attribute_id])
+                     && is_array($arrProduct['options'][$attribute_id])) {
                         $arrPostValues = array();
                         if (is_array($value)) {
                             $arrPostValues = array_values($value);
@@ -817,7 +818,7 @@ UNUSED
 
         // Show the Coupon code field only if there is at least one defined
         if (Coupon::count_available()) {
-DBG::log("Coupons available");
+//DBG::log("Coupons available");
             $objTemplate->setVariable(array(
                 'SHOP_DISCOUNT_COUPON_CODE' =>
                     (isset ($_SESSION['shop']['coupon_code'])

@@ -509,15 +509,31 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: unknown Attribute ID $attribut
         }
         $optionPriceSum = 0;
         $arrOption = self::$arrOptions[$attribute_id];
+        // Single value types
         if (   self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_TEXT_OPTIONAL
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_TEXT_MANDATORY
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_UPLOAD_OPTIONAL
-            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_UPLOAD_MANDATORY) {
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_UPLOAD_MANDATORY
+// Extended types (fehraltorf)
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_TEXTAREA_OPTIONAL
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_TEXTAREA_MANDATORY
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_EMAIL_OPTIONAL
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_EMAIL_MANDATORY
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_URL_OPTIONAL
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_URL_MANDATORY
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_DATE_OPTIONAL
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_DATE_MANDATORY
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_NUMBER_INT_OPTIONAL
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_NUMBER_INT_MANDATORY
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_NUMBER_FLOAT_OPTIONAL
+            || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_NUMBER_FLOAT_MANDATORY
+        ) {
             $arrOption = current($arrOption);
             $productOptionPrice = $arrOption['price'];
             $optionPriceSum += $productOptionPrice;
 //DBG::log("Attributes::getOptionPriceSum(): Attribute ID $attribute_id: price for text/file option: $productOptionPrice");
         } else {
+            // Others may have multiple values
             foreach ($arrOptionId as $option_id) {
                 if (!is_numeric($option_id)) {
 DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not numeric!");
@@ -670,66 +686,32 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
     }
 
 
-    static function getDisplayTypeMenu($attribute_id, $displayTypeId='0', $onchange='')
+    /**
+     * Returns HTML code for the Attribute type selection dropdown menu
+     * @global  array   $_ARRAYLANG
+     * @param   integer $attribute_id   The Attribute ID
+     * @param   integer $type           The optional preselected type
+     * @param   string  $onchange       The optional onchange attribute value
+     * @return  string                  The dropdown menu HTML code
+     */
+    static function getDisplayTypeMenu($attribute_id, $type='', $onchange='')
     {
         global $_ARRAYLANG;
 
-        return
+        $strMenu =
             "<select name='attribute_type[$attribute_id]' ".
-                "size='1' style='width:170px;'".
-                (empty($onchange) ? '' : ' onchange="'.$onchange.'"').
-                ">\n".
-            "<option value='".Attribute::TYPE_MENU_OPTIONAL."'".
-                ($displayTypeId == Attribute::TYPE_MENU_OPTIONAL
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_MENU_OPTION']."</option>\n".
-            "<option value='".Attribute::TYPE_MENU_MANDATORY."'".
-                ($displayTypeId == Attribute::TYPE_MENU_MANDATORY
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY']."</option>\n".
-            "<option value='".Attribute::TYPE_RADIOBUTTON."'".
-                ($displayTypeId == Attribute::TYPE_RADIOBUTTON
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_RADIOBUTTON_OPTION']."</option>\n".
-            "<option value='".Attribute::TYPE_CHECKBOX."'".
-                ($displayTypeId == Attribute::TYPE_CHECKBOX
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_CHECKBOXES_OPTION']."</option>\n".
-            "<option value='".Attribute::TYPE_TEXT_OPTIONAL."'".
-                ($displayTypeId == Attribute::TYPE_TEXT_OPTIONAL
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_OPTIONAL']."</option>\n".
-            "<option value='".Attribute::TYPE_TEXT_MANDATORY."'".
-                ($displayTypeId == Attribute::TYPE_TEXT_MANDATORY
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXT_MANDATORY']."</option>\n".
-            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_OPTIONAL."'".
-                ($displayTypeId == Attribute::TYPE_TEXTAREA_OPTIONAL
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_OPTIONAL']."</option>\n".
-            "<option value='".SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_MANDATORY."'".
-                ($displayTypeId == Attribute::TYPE_TEXTAREA_MANDATORY
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_TEXTAREA_MANDATORY']."</option>\n".
-            "<option value='".Attribute::TYPE_UPLOAD_OPTIONAL."'".
-                ($displayTypeId == Attribute::TYPE_UPLOAD_OPTIONAL
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_OPTIONAL']."</option>\n".
-            "<option value='".Attribute::TYPE_UPLOAD_MANDATORY."'".
-                ($displayTypeId == Attribute::TYPE_UPLOAD_MANDATORY
-                    ? ' selected="selected"' : ''
-                ).">".
-                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_UPLOAD_MANDATORY']."</option>\n".
-            "</select>\n";
+            "style='width: 300px;'".
+            (empty($onchange) ? '' : ' onchange="'.$onchange.'"').
+            ">\n";
+        foreach (Attribute::$arrType as $_type => $language_postfix) {
+            $strMenu .=
+                '<option value="'.$_type.'"'.
+                ($_type == $type ? HTML_ATTRIBUTE_SELECTED : '').">".
+                $_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_'.$language_postfix].
+                "</option>\n";
+        }
+        $strMenu .= "</select>\n";
+        return $strMenu;
     }
 
 

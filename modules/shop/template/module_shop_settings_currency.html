@@ -7,16 +7,19 @@ function deleteCurrency(cId)
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=settings&tpl=currency&currencyId="+cId);
 }
 
+{SHOP_CURRENCY_INCREMENT_JS_ARRAY}
+
 function updateCurrencyCode(selectElement)
 {
-  var value = selectElement.value;
-  var symbolElement = document.getElementById("currencySymbolNew");
-  symbolElement.value = value;
-  var text = selectElement.options[selectElement.selectedIndex].text;
-//alert("value "+value+"\ntext: "+text);
-  text = text.replace(/^\w+\s+(.+)$/, "$1");
-  var nameElement = document.getElementById("currencyNameNew");
-  nameElement.value = text;
+  var code = selectElement.value;
+  var name = selectElement.options[selectElement.selectedIndex].text;
+  // By default, the name is followed by the code in parentheses
+  name = name.replace(/\s*\([A-Z]+\)$/, "");
+  var increment = currency_increment[code];
+console.log("code "+code+", name: "+name+", increment: "+increment);
+  document.getElementById("currencySymbolNew").value = code;
+  document.getElementById("currencyNameNew").value = name;
+  document.getElementById("currencyIncrementNew").value = increment;
 }
 
 function updateExchangeRates(selectedElement)
@@ -119,7 +122,7 @@ function updateExchangeRates(selectedElement)
       </td>
       <td nowrap="nowrap">
         <input type="text" name="currencyName[{SHOP_CURRENCY_ID}]"
-            value="{SHOP_CURRENCY_NAME}" size="30" maxlength="50" />
+            value="{SHOP_CURRENCY_NAME}" size="60" maxlength="50" />
       </td>
       <td nowrap="nowrap">
         <input type="text" name="currencyRate[{SHOP_CURRENCY_ID}]"
@@ -172,124 +175,22 @@ function updateExchangeRates(selectedElement)
     <tr class="row2">
       <td nowrap="nowrap">N/A</td>
       <td nowrap="nowrap">
-<select name="currencyCodeNew" onchange="updateCurrencyCode(this)">
-<option value="ATS">ATS Austria Schillings</option>
-<option value="CHF">CHF Switzerland Francs</option>
-<option value="USD">USD United States Dollars</option>
-<option value="EUR" selected="selected">EUR Euro</option>
-<option value="GBP">GBP United Kingdom Pounds</option>
-<option value="CAD">CAD Canada Dollars</option>
-<option value="FRF">FRF France Francs</option>
-<option value="JPY">JPY Japan Yen</option>
-<option value="NLG">NLG Netherlands Guilders</option>
-<option value="ITL">ITL Italy Lire</option>
-<option value="DZD">DZD Algeria Dinars</option>
-<option value="ARS">ARS Argentina Pesos</option>
-<option value="AUD">AUD Australia Dollars</option>
-
-<option value="BSD">BSD Bahamas Dollars</option>
-<option value="BBD">BBD Barbados Dollars</option>
-
-<option value="BEF">BEF Belgium Francs</option>
-<option value="BMD">BMD Bermuda Dollars</option>
-<option value="BRL">BRL Brazil Real</option>
-<option value="BGN">BGN Bulgaria Leva</option>
-<option value="CAD">CAD Canada Dollars</option>
-<option value="CLP">CLP Chile Pesos</option>
-
-<option value="CNY">CNY China Yuan Renminbi</option>
-<option value="CYP">CYP Cyprus Pounds</option>
-<option value="CZK">CZK Czech Republic Koruny</option>
-<option value="DKK">DKK Denmark Kroner</option>
-<option value="NLG">NLG Dutch (Netherlands) Guilders</option>
-<option value="XCD">XCD Eastern Caribbean Dollars</option>
-
-<option value="EGP">EGP Egypt Pounds</option>
-<option value="EUR">EUR Euro</option>
-<option value="FJD">FJD Fiji Dollars</option>
-<option value="FIM">FIM Finland Markkaa</option>
-<option value="FRF">FRF France Francs</option>
-<option value="DEM">DEM Germany Deutsche Marks</option>
-
-<option value="XAU">XAU Gold Ounces</option>
-<option value="GRD">GRD Greece Drachmae</option>
-<option value="HKD">HKD Hong Kong Dollars</option>
-<option value="NLG">NLG Holland (Netherlands) Guilders</option>
-<option value="HUF">HUF Hungary Forint</option>
-<option value="ISK">ISK Iceland Kronur</option>
-
-<option value="INR">INR India Rupees</option>
-<option value="IDR">IDR Indonesia Rupiahs</option>
-<option value="IEP">IEP Ireland Pounds</option>
-<option value="ILS">ILS Israel New Shekels</option>
-<option value="ITL">ITL Italy Lire</option>
-<option value="JMD">JMD Jamaica Dollars</option>
-
-<option value="JPY">JPY Japan Yen</option>
-<option value="JOD">JOD Jordan Dinars</option>
-<option value="KRW">KRW Korea (South) Won</option>
-<option value="LBP">LBP Lebanon Pounds</option>
-<option value="LUF">LUF Luxembourg Francs</option>
-<option value="MYR">MYR Malaysia Ringgits</option>
-
-<option value="MXN">MXN Mexico Pesos</option>
-<option value="NLG">NLG Netherlands Guilders</option>
-<option value="NZD">NZD New Zealand Dollars</option>
-<option value="NOK">NOK Norway Kroner</option>
-<option value="PKR">PKR Pakistan Rupees</option>
-<option value="XPD">XPD Palladium Ounces</option>
-
-<option value="PHP">PHP Philippines Pesos</option>
-<option value="XPT">XPT Platinum Ounces</option>
-<option value="PLN">PLN Poland Zlotych</option>
-<option value="PTE">PTE Portugal Escudos</option>
-<option value="ROL">ROL Romania Lei</option>
-<option value="RUR">RUR Russia Rubles</option>
-
-<option value="SAR">SAR Saudi Arabia Riyals</option>
-<option value="XAG">XAG Silver Ounces</option>
-<option value="SGD">SGD Singapore Dollars</option>
-<option value="SKK">SKK Slovakia Koruny</option>
-<option value="ZAR">ZAR South Africa Rand</option>
-<option value="KRW">KRW South Korea Won</option>
-
-<option value="ESP">ESP Spain Pesetas</option>
-<option value="XDR">XDR Special Drawing Rights (IMF)</option>
-<option value="SDD">SDD Sudan Dinars</option>
-<option value="SEK">SEK Sweden Kronor</option>
-<option value="CHF">CHF Switzerland Francs</option>
-<option value="TWD">TWD Taiwan New Dollars</option>
-
-<option value="THB">THB Thailand Baht</option>
-<option value="TTD">TTD Trinidad and Tobago Dollars</option>
-<option value="TRL">TRL Turkey Liras</option>
-<option value="GBP">GBP United Kingdom Pounds</option>
-<option value="USD">USD United States Dollars</option>
-<option value="VEB">VEB Venezuela Bolivares</option>
-
-<option value="ZMK">ZMK Zambia Kwacha</option>
-<option value="EUR">EUR Euro</option>
-<option value="XCD">XCD Eastern Caribbean Dollars</option>
-<option value="XDR">XDR Special Drawing Right (IMF)</option>
-<option value="XAG">XAG Silver Ounces</option>
-<option value="XAU">XAU Gold Ounces</option>
-
-<option value="XPD">XPD Palladium Ounces</option>
-<option value="XPT">XPT Platinum Ounces</option>
-</select>
-    </td>
+        <select name="currencyCodeNew" onchange="updateCurrencyCode(this)">
+          {SHOP_CURRENCY_NAME_MENUOPTIONS}
+        </select>
+      </td>
       <td nowrap="nowrap">
         <input name="currencySymbolNew" id="currencySymbolNew" type="text" value="" size="10" maxlength="20" />
       </td>
       <td nowrap="nowrap">
-        <input type="text" name="currencyNameNew" id="currencyNameNew" value="" size="30" maxlength="50" />
+        <input type="text" name="currencyNameNew" id="currencyNameNew" value="" size="60" maxlength="50" />
       </td>
       <td nowrap="nowrap">
         <input type="text" name="currencyRateNew" value="1.0000" size="15" maxlength="11" />
       </td>
       <td nowrap="nowrap">
-        <input type="text" name="currencyIncrementNew"
-            value="0.01" size="10" maxlength="4" />
+        <input type="text" name="currencyIncrementNew" id="currencyIncrementNew"
+            value="0.01" size="10" maxlength="7" />
       </td>
       <td nowrap="nowrap" class="a_center">
         <input type="checkbox" name="currencyDefaultNew" value="1" />
