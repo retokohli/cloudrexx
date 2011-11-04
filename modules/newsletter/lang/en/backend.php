@@ -440,4 +440,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_NEWS_TEXT'] = "Text of the news message";
 $_ARRAYLANG['TXT_NEWSLETTER_NEWS_AUTHOR'] = "Name of author";
 $_ARRAYLANG['TXT_NEWSLETTER_NEWS_TYPE_NAME'] = "Name of the associated type";
 $_ARRAYLANG['TXT_NEWSLETTER_NEWS_CATEGORY_NAME'] = "Name of the associated category";
+$_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'] = "Send e-mail";
 ?>
