@@ -72,7 +72,7 @@
  * will either activate or deactivate all levels.
  */
 require_once dirname(__FILE__).'/lib/DBG.php';
-DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
+//DBG::activate(DBG_PHP | DBG_ADODB_ERROR | DBG_LOG_FIREPHP);
 
 //iconv_set_encoding('output_encoding', 'utf-8');
 //iconv_set_encoding('input_encoding', 'utf-8');
@@ -668,7 +668,7 @@ if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) 
 // Parse the download block 'downloads_category_#ID_list'
 //--------------------------------------------------------
 $downloadBlock = preg_replace_callback(
-    "/<!--\s+BEGIN downloads_category_(\d+)_list\s+-->(.*)<!--\s+END downloads_category_(\d+)_list\s+-->/s",
+    "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
     function($matches) {
         if (isset($matches[0]) && @include_once(ASCMS_MODULE_PATH.'/downloads/index.class.php')) {
             $objDownloadsModule = new downloads($matches[0], array('category' => $matches[1]));
