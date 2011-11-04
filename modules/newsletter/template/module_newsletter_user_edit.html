@@ -18,7 +18,19 @@
       <td>{TXT_NEWSLETTER_LANGUAGE}</td>
       <td colspan="3">{NEWSLETTER_RECIPIENT_LANGUAGE}</td>
     </tr>
-    <tr class="row2" style="vertical-align:top;">
+    <!-- BEGIN sendEmail -->
+    <tr class="row2">
+      <td>{TXT_NEWSLETTER_SEND_EMAIL}</td>
+      <td colspan="3">
+          <select name="sendEmail" style="width:296px">              
+              <!-- BEGIN allMails -->
+              <option value="{NEWSLETTER_EMAIL_ID}" {NEWSLETTER_EMAIL_SELECTED}>{NEWSLETTER_EMAIL_NAME}</option>
+              <!-- END allMails -->
+          </select>
+      </td>
+    </tr>    
+    <!-- END sendEmail -->
+    <tr class="row1" style="vertical-align:top;">
       <td width="15%">{TXT_NEWSLETTER_ASSOCIATED_LISTS}</td>
       <td width="20%">
         <!-- BEGIN newsletter_mail_associated_list_0 -->
@@ -36,7 +48,7 @@
         <!-- END newsletter_mail_associated_list_2 -->
       </td>
     </tr>
-    <tr class="row1" style="vertical-align:top;">
+    <tr class="row2" style="vertical-align:top;">
         <td>{TXT_NEWSLETTER_NOTES}</td>
         <td colspan="3"><textarea name="newsletter_recipient_notes" rows="4" cols="39">{NEWSLETTER_RECIPIENT_NOTES}</textarea></td>
     </tr>
