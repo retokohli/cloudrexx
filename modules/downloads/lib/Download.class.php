@@ -335,13 +335,8 @@ class Download {
         }
     }
 
-    public function send($langId = null)
+    public function send($langId = LANG_ID)
     {
-        global $_LANGID;
-
-        if ($langId == null) {
-            $langId = $_LANGID;
-        }
         $objHTTPDownload = new HTTP_Download();
         $objHTTPDownload->setFile(ASCMS_PATH.$this->getSource($langId));
         $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $this->getSourceName($langId)));
@@ -350,14 +345,8 @@ class Download {
         exit;
     }
 
-    public function getName($langId = null)
+    public function getName($langId = LANG_ID)
     {
-        global $_LANGID;
-
-        if ($langId == null) {
-            $langId = $_LANGID;
-        }
-
         if (!isset($this->names)) {
             $this->loadLocales();
         }
@@ -369,7 +358,7 @@ class Download {
         return $this->filtered_search_count;
     }
 
-    public function getDescription($langId)
+    public function getDescription($langId = LANG_ID)
     {
         if (!isset($this->descriptions)) {
             $this->loadLocales();
@@ -1304,23 +1293,13 @@ class Download {
         return $this->mime_type;
     }
 
-    public function getSource($langId = null)
+    public function getSource($langId = LANG_ID)
     {
-        global $_LANGID;
-        
-        if ($langId == null) {
-            $langId = $_LANGID;
-        }
         return $this->sources[$langId];
     }
 
-    public function getSourceName($langId = null)
+    public function getSourceName($langId = LANG_ID)
     {
-        global $_LANGID;
-
-        if ($langId == null) {
-            $langId = $_LANGID;
-        }
         return $this->source_names[$langId];
     }
 
