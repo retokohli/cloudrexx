@@ -17,19 +17,20 @@ class JumpUploader extends Uploader
         $fileCount = $_GET['files'];
 
         // check if the file has a valid file extension
-        if (!FWValidator::is_file_ending_harmless($fileName)) {
-            die('Error:'.sprintf('The file %s was refused due to its file extension which is not allowed!', htmlentities($fileName, ENT_QUOTES, CONTREXX_CHARSET)));
-        }
+        if (FWValidator::is_file_ending_harmless($fileName)) {
+            try {
+                $this->addChunk($fileName, $chunk, $chunks);
+            }
+            catch (UploaderException $e) {
+                die('Error:'.$e->getMessage());
+            }
 
-        try {
-            $this->addChunk($fileName, $chunk, $chunks);
+            if($chunk == $chunks-1) //upload of current file finished
+                $this->handleCallback($fileCount);
         }
-        catch (UploaderException $e) {
-            die('Error:'.$e->getMessage());
+        else {
+            $this->addHarmfulFileToResponse($fileName);
         }
-
-        if($chunk == $chunks-1) //upload of current file finished
-            $this->handleCallback($fileCount);
 
         die(0); 
     }

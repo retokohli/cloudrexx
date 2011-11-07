@@ -1,4 +1,6 @@
 <?php
+include_once 'uploadResponse.class.php';
+
 /**
  * Once an Upload is approved, we get here.
  * This mainly delegates work to the uploader-classes.
@@ -75,10 +77,16 @@ class UploadLib
     }
 
     public function response($uploadId) {
-        $sessionResponseKey = 'upload_response_json_'.$uploadId;
+        $sessionResponseKey = 'upload_response_data_'.$uploadId;
         if(isset($_SESSION[$sessionResponseKey])) {
-            echo $_SESSION[$sessionResponseKey];
-            unset($_SESSION[$sessionResponseKey]);
+            $r = UploadResponse::fromSession($_SESSION[$sessionResponseKey]);
+            if($r->isUploadFinished()) {
+                echo $r->getJSON();
+                unset($_SESSION[$sessionResponseKey]);
+            }
+            else {
+                echo '{}';
+            }
         }
         else {
             echo '{}';

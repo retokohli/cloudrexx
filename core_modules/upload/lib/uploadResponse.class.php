@@ -23,11 +23,20 @@ class UploadResponse {
     protected $worstStatus = 0;
 
     protected $statusTexts = array(
-        STATUS_OK => 'ok',
-        STATUS_OK => 'warning',
-        STATUS_OK => 'error',
-        STATUS_OK => 'info'
+        self::STATUS_OK => 'ok',
+        self::STATUS_WARNING => 'warning',
+        self::STATUS_ERROR => 'error',
+        self::STATUS_INFO => 'info'
     );
+
+    protected $uploadFinished = false;
+
+    public function uploadFinished() {
+        $this->uploadFinished = true;
+    }
+    public function isUploadFinished() {
+        return $this->uploadFinished;
+    }
 
     /**
      * Adds a log message concerning a file to the response.
@@ -63,4 +72,37 @@ class UploadResponse {
     public function increaseUploadedFilesCount($by = 1) {
         $this->uploadedFilesCount += $by;
     }
+
+    /**
+     * @param integer $by
+     */
+    public function decreaseUploadedFilesCount($by = 1) {
+        $this->uploadedFilesCount -= $by;
+    }
+
+    public static function fromSession($data) {
+        $r = new UploadResponse();
+        $data = json_decode($data, true);
+        $r->initFromSession($data['logs'], $data['uploadedFilesCount'], $data['worstStatus'], $data['uploadFinished']);
+        return $r;
+    }
+
+    public function __construct() {
+    }
+
+    protected function initFromSession($logs, $uploadedFilesCount, $worstStatus, $uploadFinished) {
+        $this->logs = $logs;
+        $this->uploadedFilesCount = $uploadedFilesCount;
+        $this->worstStatus = $worstStatus;
+        $this->uploadFinished = $uploadFinished;
+    }
+
+    public function toSessionValue() {
+        return json_encode(array(
+            'logs' => $this->logs,
+            'uploadedFilesCount' => $this->uploadedFilesCount,
+            'worstStatus' => $this->worstStatus,
+            'uploadFinished' => $this->uploadFinished
+        ));
+    }    
 }
