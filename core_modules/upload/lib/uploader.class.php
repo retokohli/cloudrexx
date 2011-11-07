@@ -1,4 +1,7 @@
 <?php
+/**
+ * @ignore
+ */
 include_once 'uploadResponse.class.php';
 
 /**
@@ -268,9 +271,14 @@ abstract class Uploader
             'originalFileNames' => $originalFileNames
         );
         
+        $response = null;
         //the response data.
-        $response = new UploadResponse();
-        
+        $responseKey = 'upload_response_data_'.$this->uploadId;
+        if(isset($_SESSION[$responseKey]))
+            $response = UploadResponse::fromSession($_SESSION[$responseKey]);
+        else
+            $response = new UploadResponse();
+       
         $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, &$response);
       
         //clean up session: we do no longer need the array with the original file names
@@ -299,7 +307,7 @@ abstract class Uploader
             
             //move everything uploaded to target dir
             $h = opendir($tempPath);
-            while(false !== ($f = readdir($h))) {
+            while(false != ($f = readdir($h))) {
                 //skip . and ..
                 if($f == '.' || $f == '..')
                     continue;
@@ -310,9 +318,10 @@ abstract class Uploader
             }
             closedir($h);
         }
+
         //delete the files left
         $h = opendir($tempPath);
-        while(false !== ($f = readdir($h))) {
+        while(false != ($f = readdir($h))) {
             if($f != '..' && $f != '.')
                 @unlink($tempPath.'/'.$f);
         }
@@ -321,8 +330,9 @@ abstract class Uploader
 
         closedir($h);
 
-        $sessionResponseKey = 'upload_response_json_'.$this->uploadId;
-        $_SESSION[$sessionResponseKey] = $response->getJSON();
+        $response->uploadFinished();
+        $sessionResponseKey = 'upload_response_data_'.$this->uploadId;
+        $_SESSION[$sessionResponseKey] = $response->toSessionValue();
     }
 
     /**
@@ -498,5 +508,20 @@ abstract class Uploader
             } else
                 throw new UploaderException('Failed to open output stream.');
            }
+    }
+
+    protected function addHarmfulFileToResponse($fileName) {
+        global $_ARRAYLANG;
+
+        $response = null;
+        //the response data.
+        $key = 'upload_response_data_'.$this->uploadId;
+        if(isset($_SESSION[$key]))
+            $response = UploadResponse::fromSession($_SESSION[$key]);
+        else
+            $response = new UploadResponse();
+
+        $response->addMessage(UploadResponse::STATUS_ERROR, $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'], $fileName);
+        $_SESSION[$key] = $response->toSessionValue();
     }
 }

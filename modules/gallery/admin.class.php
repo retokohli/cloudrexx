@@ -2212,7 +2212,7 @@ class galleryManager extends GalleryLibrary
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
 		$uploadedImagesCount = 0;
-        while(false !== ($file = readdir($h))) {
+        while(false != ($file = readdir($h))) {
 			$info = pathinfo($file);
 
             //skip . and ..
