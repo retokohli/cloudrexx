@@ -1,6 +1,10 @@
 <!-- START module_newsletter_mail_edit.html -->
 <script type="text/javascript" language="javascript">
 // <![CDATA[
+
+Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,"gray",1,,15,-5];
+Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS}"];
+
 newsletterAttachmentNr = {NEWSLETTER_MAIL_ATTACHMENT_NR};
 
 
@@ -118,7 +122,12 @@ function SetUrl(url, width, height, alt) {
   </tr>
 
   <tr class="row1" style="vertical-align:top;">
-    <td width="15%">{TXT_NEWSLETTER_ASSOCIATED_LISTS}</td>
+    <td width="15%">
+        {TXT_NEWSLETTER_ASSOCIATED_LISTS}
+        <!-- BEGIN associatedListToolTip -->
+        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+        <!-- END associatedListToolTip -->        
+    </td>
     <td width="20%">
 <!-- BEGIN newsletter_mail_associated_list_0 -->
       <input type="checkbox"
@@ -155,7 +164,12 @@ function SetUrl(url, width, height, alt) {
   </tr>
 
   <tr class="row2" style="vertical-align:top;">
-    <td width="15%">{TXT_NEWSLETTER_ASSOCIATED_GROUPS}</td>
+    <td width="15%">        
+        {TXT_NEWSLETTER_ASSOCIATED_GROUPS}
+        <!-- BEGIN associatedGroupToolTip -->
+        <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
+        <!-- END associatedGroupToolTip -->
+    </td>
     <td width="20%">
 <!-- BEGIN newsletter_mail_associated_group_0 -->
       <input type="checkbox"

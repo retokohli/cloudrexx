@@ -139,9 +139,6 @@ class newsletter extends NewsletterLib
             case "editMail":
                 $this->_editMail();
                 break;
-            case "showMail":
-                $this->_showMail();
-                break;
             case "sendMail":
                 $this->_sendMailPage();
                 break;
@@ -995,6 +992,15 @@ class newsletter extends NewsletterLib
 
         $this->_objTpl->setVariable('NEWSLETTER_LIST_DISABLED', ($mailSendDate > 0) ? 'disabled="disabled"' : '');
 
+        if ($mailId > 0 && $mailSendDate > 0) {
+            $this->_objTpl->touchBlock('associatedListToolTip');
+            $this->_objTpl->touchBlock('associatedGroupToolTip');
+            $this->_objTpl->setVariable('TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS', $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS']);            
+        } else {
+            $this->_objTpl->hideBlock('associatedListToolTip');
+            $this->_objTpl->hideBlock('associatedGroupToolTip');
+        }
+        
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_EMAIL_ACCOUNT' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'],
             'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
@@ -1140,245 +1146,6 @@ class newsletter extends NewsletterLib
         return $list;
     }
 
-
-    function _showMail()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $mailId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-        $mailSubject = '';
-        $mailTemplate = '';
-        $mailHtmlContent = '';
-        $mailTextContent = '';
-        $arrAttachment = array();
-        $mailFormat = $this->_stdMailFormat;
-        $mailPriority = $this->_stdMailPriority;
-        $mailSenderMail = '';
-        $mailSenderName = '';
-        $mailReply = '';
-        $mailSmtpServer = 0;
-        $arrAssociatedLists = array();
-
-        $this->_objTpl->loadTemplateFile('module_newsletter_mail_show.html');
-        $this->_pageTitle = 'E-Mail anzeigen';
-
-        $objResult = $objDatabase->SelectLimit("SELECT
-            subject,
-            template,
-            content,
-            content_text,
-            attachment,
-            format,
-            priority,
-            sender_email,
-            sender_name,
-            return_path,
-            smtp_server
-            FROM ".DBPREFIX."module_newsletter
-            WHERE id=".$mailId, 1);
-        if ($objResult !== false) {
-            if ($objResult->RecordCount() == 1) {
-                $mailSubject = $objResult->fields['subject'];
-                $mailTemplate = $objResult->fields['template'];
-                $mailHtmlContent = $objResult->fields['content'];
-                $mailTextContent = $objResult->fields['content_text'];
-                $mailFormat = $objResult->fields['format'];
-                $mailPriority = $objResult->fields['priority'];
-                $mailSenderMail = $objResult->fields['sender_email'];
-                $mailSenderName = $objResult->fields['sender_name'];
-                $mailReply = $objResult->fields['return_path'];
-                $mailSmtpServer = $objResult->fields['smtp_server'];
-
-                $objList = $objDatabase->Execute("SELECT category FROM ".DBPREFIX."module_newsletter_rel_cat_news WHERE newsletter=".$mailId);
-                if ($objList !== false) {
-                    while (!$objList->EOF) {
-                        array_push($arrAssociatedLists, $objList->fields['category']);
-                        $objList->MoveNext();
-                    }
-
-                }
-
-                if ($objResult->fields['attachment'] == '1') {
-                    $objAttachment = $objDatabase->Execute("SELECT file_name FROM ".DBPREFIX."module_newsletter_attachment WHERE newsletter=".$mailId);
-                    if ($objAttachment !== false) {
-                        while (!$objAttachment->EOF) {
-                            array_push($arrAttachment, ASCMS_NEWSLETTER_ATTACH_WEB_PATH.'/'.$objAttachment->fields['file_name']);
-                            $objAttachment->MoveNext();
-                        }
-                    }
-                }
-            } else {
-                return $this->_mails();
-            }
-        }
-
-        require_once(ASCMS_CORE_PATH.'/SmtpSettings.class.php');
-        $arrSmtp = SmtpSettings::getSmtpAccount($mailSmtpServer);
-        if ($arrSmtp === false) {
-            $arrSmtp = SmtpSettings::getSystemSmtpAccount();
-        }
-
-        $arrTemplates = &$this->_getTemplates();
-        $this->_objTpl->setVariable(array(
-            'NEWSLETTER_MAIL_SUBJECT' => htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_HTML_CONTENT' => nl2br(htmlentities($mailHtmlContent, ENT_QUOTES, CONTREXX_CHARSET)),
-            'NEWSLETTER_MAIL_TEXT_CONTENT' => nl2br(htmlentities($mailTextContent, ENT_QUOTES, CONTREXX_CHARSET)),
-            'NEWSLETTER_MAIL_FORMAT' => $_ARRAYLANG[$this->_arrMailFormat[$mailFormat]],
-            'NEWSLETTER_MAIL_PRIORITY' => $_ARRAYLANG[$this->_arrMailPriority[$mailPriority]],
-            'NEWSLETTER_MAIL_TEMPLATE' => htmlentities($arrTemplates[$mailTemplate]['name'], ENT_QUOTES, CONTREXX_CHARSET).' ('.htmlentities($arrTemplates[$mailTemplate]['description'], ENT_QUOTES, CONTREXX_CHARSET).')',
-            'NEWSLETTER_MAIL_SENDER_MAIL' => htmlentities($mailSenderMail, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_SENDER_NAME' => htmlentities($mailSenderName, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_REPLY' => htmlentities($mailReply, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_SMTP_SERVER' => htmlentities($arrSmtp['name'], ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_HTML_CONTENT_STAUTS' => $mailFormat != 'text' ? 'block' : 'none',
-            'NEWSLETTER_MAIL_TEXT_CONTENT_STAUTS' => $mailFormat == 'text' ? 'block' : 'none',
-            'NEWSLETTER_MAIL_HTML_CONTENT_CLASS' => $mailFormat != 'text' ? 'active' : '',
-            'NEWSLETTER_MAIL_TEXT_CONTENT_CLASS' => $mailFormat == 'text' ? 'active' : ''
-        ));
-
-        if ($mailFormat == 'text') {
-            $this->_objTpl->setVariable('TXT_NEWSLETTER_TEXT', $_ARRAYLANG['TXT_NEWSLETTER_TEXT']);
-            $this->_objTpl->touchBlock('newsletter_mail_text_content');
-            $this->_objTpl->hideBlock('newsletter_mail_html_content');
-        } elseif ($mailFormat == 'html') {
-            $this->_objTpl->setVariable('TXT_NEWSLETTER_HTML_UC', $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC']);
-            $this->_objTpl->touchBlock('newsletter_mail_html_content');
-            $this->_objTpl->hideBlock('newsletter_mail_text_content');
-        } else {
-            $this->_objTpl->setVariable(array(
-                'TXT_NEWSLETTER_HTML_UC' => $_ARRAYLANG['TXT_NEWSLETTER_HTML_UC'],
-                'TXT_NEWSLETTER_TEXT' => $_ARRAYLANG['TXT_NEWSLETTER_TEXT']
-            ));
-            $this->_objTpl->touchBlock('newsletter_mail_html_content');
-            $this->_objTpl->touchBlock('newsletter_mail_text_content');
-        }
-
-        $this->emailShowParseLists($arrAssociatedLists);
-        $this->emailShowParseGroups($mailId);
-
-
-        if (count($arrAttachment) > 0) {
-            foreach ($arrAttachment as $attachment) {
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_MAIL_ATTACHMENT_NAME' => substr($attachment, strrpos($attachment, '/')+1),
-                    'NEWSLETTER_MAIL_ATTACHMENT_URL' => $attachment
-                ));
-                $this->_objTpl->parse('newsletter_mail_attachment_list');
-            }
-        } else {
-            $this->_objTpl->hideBlock('newsletter_mail_attachment_list');
-        }
-
-        $this->_objTpl->setVariable(array(
-            'TXT_NEWSLETTER_EMAIL_ACCOUNT' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'],
-            'TXT_NEWSLETTER_DISPLAY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_EMAIL'],
-            'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
-            'TXT_NEWSLETTER_SEND_AS' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_AS'],
-            'TXT_NEWSLETTER_TEMPLATE' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE'],
-            'TXT_NEWSLETTER_SENDER' => $_ARRAYLANG['TXT_NEWSLETTER_SENDER'],
-            'TXT_NEWSLETTER_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL'],
-            'TXT_NEWSLETTER_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_NAME'],
-            'TXT_NEWSLETTER_REPLY_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_REPLY_ADDRESS'],
-            'TXT_NEWSLETTER_PRIORITY' => $_ARRAYLANG['TXT_NEWSLETTER_PRIORITY'],
-            'TXT_NEWSLETTER_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_LISTS'],
-            'TXT_NEWSLETTER_ASSOCIATED_GROUPS' => $_ARRAYLANG['TXT_NEWSLETTER_ASSOCIATED_GROUPS'],
-            'TXT_NEWSLETTER_HTML_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_HTML_CONTENT'],
-            'TXT_NEWSLETTER_Text_CONTENT' => $_ARRAYLANG['TXT_NEWSLETTER_TEXT_CONTENT'],
-            'TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY' => $_ARRAYLANG['TXT_NEWSLETTER_PLACEHOLDER_DIRECTORY'],
-            'TXT_NEWSLETTER_USER_DATA' => $_ARRAYLANG['TXT_NEWSLETTER_USER_DATA'],
-            'TXT_NEWSLETTER_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-            'TXT_NEWSLETTER_TITLE' => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'TXT_NEWSLETTER_SEX' => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'TXT_NEWSLETTER_LASTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-            'TXT_NEWSLETTER_FIRSTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'TXT_NEWSLETTER_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_ADDRESS'],
-            'TXT_NEWSLETTER_ZIP' => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
-            'TXT_NEWSLETTER_CITY' => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-            'TXT_NEWSLETTER_COUNTRY' => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
-            'TXT_NEWSLETTER_PHONE' => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
-            'TXT_NEWSLETTER_BIRTHDAY' => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
-            'TXT_NEWSLETTER_GENERAL' => $_ARRAYLANG['TXT_NEWSLETTER_GENERAL'],
-            'TXT_NEWSLETTER_MODIFY_PROFILE' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_PROFILE'],
-            'TXT_NEWSLETTER_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_UNSUBSCRIBE'],
-            'TXT_NEWSLETTER_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_DATE'],
-            'TXT_NEWSLETTER_BACK' => $_ARRAYLANG['TXT_NEWSLETTER_BACK']
-        ));
-        return true;
-    }
-
-
-    /**
-     * Parse the lists that are associated to this email
-     *
-     * Refactored code from above into this method
-     * @author      Stefan Heinemann <sh@adfinis.com>
-     * @param       array $arrAssociatedLists
-     */
-    private function emailShowParseLists($arrAssociatedLists)
-    {
-        global $_ARRAYLANG;
-
-        $arrLists = self::getLists();
-        $listNr = 0;
-        foreach ($arrLists as $listId => $arrList) {
-            if (in_array($listId, $arrAssociatedLists)) {
-                $column = $listNr % 3;
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_LIST_ID' => $listId,
-                    'NEWSLETTER_LIST_NAME' => contrexx_raw2xhtml($arrList['name']),
-                    'NEWSLETTER_SHOW_RECIPIENTS_OF_LIST_TXT' =>
-                        sprintf(
-                            $_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'],
-                            contrexx_raw2xhtml($arrList['name']))
-                ));
-                $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
-                $listNr++;
-            }
-        }
-    }
-
-
-    /**
-     * Parse the groups that are associated to this email
-     * @uthor      Stefan Heinemann <sh@adfinis.com>
-     * @param      int $mailID
-     */
-    private function emailShowParseGroups($mailID)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $query = sprintf('
-            SELECT `userGroup`
-              FROM `%1$smodule_newsletter_rel_usergroup_newsletter`
-             WHERE `newsletter`=%2$s',
-            DBPREFIX, $mailID
-        );
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return;
-        $groupNr = 0;
-        while (!$objResult->EOF) {
-            $groupId = $objResult->fields['userGroup'];
-            $objGroup = FWUser::getFWUserObject()->objGroup->getGroup($groupId);
-            if (!$objGroup->EOF) {
-                $group_name = $objGroup->getName();
-                $column = $groupNr % 3;
-                $this->_objTpl->setVariable(array(
-                    'NEWSLETTER_GROUP_ID' => $groupId,
-                    'NEWSLETTER_GROUP_NAME' => htmlentities(
-                        $group_name, ENT_QUOTES, CONTREXX_CHARSET),
-                    'NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP_TXT'=>
-                        sprintf(
-                            $_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_GROUP'],
-                            $group_name)
-                ));
-                $this->_objTpl->parse('newsletter_mail_associated_group_'.$column);
-                $groupNr++;
-            }
-            $objResult->MoveNext();
-        }
-    }
-
-
     function _update()
     {
         global $objDatabase;
@@ -1469,8 +1236,7 @@ class newsletter extends NewsletterLib
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWSLETTER_SEND_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
-            'TXT_NEWSLETTER_MODIFY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL'],
-            'TXT_NEWSLETTER_DISPLAY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_DISPLAY_EMAIL'],
+            'TXT_NEWSLETTER_MODIFY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL'],            
             'TXT_NEWSLETTER_COPY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_COPY_EMAIL'],
             'TXT_NEWSLETTER_DELETE_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL'],
             'TXT_NEWSLETTER_FEEDBACK_OVERVIEW' => $_ARRAYLANG['TXT_NEWSLETTER_FEEDBACK_OVERVIEW']
@@ -1548,13 +1314,6 @@ class newsletter extends NewsletterLib
 
                 $this->_objTpl->setGlobalVariable('NEWSLETTER_MAIL_ID', $objResult->fields['id']);
 
-                /*if ($objResult->fields['date_sent'] > 0) {
-                    $this->_objTpl->touchBlock('newsletter_mail_show');
-                    $this->_objTpl->hideBlock('newsletter_mail_edit');
-                } else {
-                    $this->_objTpl->touchBlock('newsletter_mail_edit');
-                    $this->_objTpl->hideBlock('newsletter_mail_show');
-                }*/
                 if ($objResult->fields['count'] > 0 && $linkCount > 0) {
                     $this->_objTpl->touchBlock('newsletter_mail_feedback_link');
                     $this->_objTpl->hideBlock('newsletter_mail_feedback_empty');
@@ -4845,46 +4604,47 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_PHONE_PRIVATE'      => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_PRIVATE'],
             'TXT_NEWSLETTER_FAX'                => $_ARRAYLANG['TXT_NEWSLETTER_FAX'],
 
-            'NEWSLETTER_RECIPIENT_LANGUAGE'        => $strLanguage,
-            'NEWSLETTER_RECIPIENT_STATUS' => $recipientStatus == '1' ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_LANGUAGE'     => $strLanguage,
+            'NEWSLETTER_RECIPIENT_STATUS'       => $recipientStatus == '1' ? 'checked="checked"' : '',
             'NEWSLETTER_RECIPIENT_NOTES'        => htmlentities($recipientNotes, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_URI' => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_FEMALE' => $recipientSex == 'f' ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_MALE' => $recipientSex == 'm' ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_SALUTATION' => $this->_getRecipientTitleMenu($recipientSalutation, 'name="newsletter_recipient_salutation" style="width:296px" size="1"'),
-            'NEWSLETTER_RECIPIENT_TITLE' => htmlentities($recipientTitle, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_FIRSTNAME' => htmlentities($recipientFirstname, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_LASTNAME' => htmlentities($recipientLastname, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_POSITION' => htmlentities($recipientPosition, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_COMPANY' => htmlentities($recipientCompany, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_URI'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_FEMALE'       => $recipientSex == 'f' ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_MALE'         => $recipientSex == 'm' ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_SALUTATION'   => $this->_getRecipientTitleMenu($recipientSalutation, 'name="newsletter_recipient_salutation" style="width:296px" size="1"'),
+            'NEWSLETTER_RECIPIENT_TITLE'        => htmlentities($recipientTitle, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_FIRSTNAME'    => htmlentities($recipientFirstname, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_LASTNAME'     => htmlentities($recipientLastname, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_POSITION'     => htmlentities($recipientPosition, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_COMPANY'      => htmlentities($recipientCompany, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_INDUSTRY_SECTOR' => htmlentities($recipientIndustrySector, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_ADDRESS' => htmlentities($recipientAddress, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_ZIP' => htmlentities($recipientZip, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_CITY' => htmlentities($recipientCity, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_COUNTRY' => $this->getCountryMenu($recipientCountry),
-            'NEWSLETTER_RECIPIENT_PHONE' => htmlentities($recipientPhoneOffice, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_ADDRESS'      => htmlentities($recipientAddress, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_ZIP'          => htmlentities($recipientZip, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_CITY'         => htmlentities($recipientCity, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_COUNTRY'      => $this->getCountryMenu($recipientCountry),
+            'NEWSLETTER_RECIPIENT_PHONE'        => htmlentities($recipientPhoneOffice, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_PHONE_MOBILE' => htmlentities($recipientPhoneMobile, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_PHONE_PRIVATE' => htmlentities($recipientPhonePrivate, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_FAX' => htmlentities($recipientFax, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_RECIPIENT_BIRTHDAY' => htmlentities($recipientBirthday, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_FAX'          => htmlentities($recipientFax, ENT_QUOTES, CONTREXX_CHARSET),
+            'NEWSLETTER_RECIPIENT_BIRTHDAY'     => htmlentities($recipientBirthday, ENT_QUOTES, CONTREXX_CHARSET),
 
-            'TXT_NEWSLETTER_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
-            'TXT_NEWSLETTER_WEBSITE' => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
-            'TXT_NEWSLETTER_SALUTATION' => $_ARRAYLANG['TXT_NEWSLETTER_SALUTATION'],
-            'TXT_NEWSLETTER_TITLE' => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
-            'TXT_NEWSLETTER_SEX' => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
-            'TXT_NEWSLETTER_FEMALE' => $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'],
-            'TXT_NEWSLETTER_MALE' => $_ARRAYLANG['TXT_NEWSLETTER_MALE'],
-            'TXT_NEWSLETTER_LASTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
-            'TXT_NEWSLETTER_FIRSTNAME' => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
-            'TXT_NEWSLETTER_COMPANY' => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
-            'TXT_NEWSLETTER_ADDRESS' => $_ARRAYLANG['TXT_NEWSLETTER_ADDRESS'],
-            'TXT_NEWSLETTER_ZIP' => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
-            'TXT_NEWSLETTER_CITY' => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
-            'TXT_NEWSLETTER_COUNTRY' => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
-            'TXT_NEWSLETTER_PHONE' => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
-            'TXT_NEWSLETTER_BIRTHDAY' => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
-            'TXT_NEWSLETTER_SAVE' => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
+            'TXT_NEWSLETTER_EMAIL_ADDRESS'  => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
+            'TXT_NEWSLETTER_WEBSITE'        => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
+            'TXT_NEWSLETTER_SALUTATION'     => $_ARRAYLANG['TXT_NEWSLETTER_SALUTATION'],
+            'TXT_NEWSLETTER_TITLE'          => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
+            'TXT_NEWSLETTER_SEX'            => $_ARRAYLANG['TXT_NEWSLETTER_SEX'],
+            'TXT_NEWSLETTER_FEMALE'         => $_ARRAYLANG['TXT_NEWSLETTER_FEMALE'],
+            'TXT_NEWSLETTER_MALE'           => $_ARRAYLANG['TXT_NEWSLETTER_MALE'],
+            'TXT_NEWSLETTER_LASTNAME'       => $_ARRAYLANG['TXT_NEWSLETTER_LASTNAME'],
+            'TXT_NEWSLETTER_FIRSTNAME'      => $_ARRAYLANG['TXT_NEWSLETTER_FIRSTNAME'],
+            'TXT_NEWSLETTER_COMPANY'        => $_ARRAYLANG['TXT_NEWSLETTER_COMPANY'],
+            'TXT_NEWSLETTER_ADDRESS'        => $_ARRAYLANG['TXT_NEWSLETTER_ADDRESS'],
+            'TXT_NEWSLETTER_ZIP'            => $_ARRAYLANG['TXT_NEWSLETTER_ZIP'],
+            'TXT_NEWSLETTER_CITY'           => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
+            'TXT_NEWSLETTER_COUNTRY'        => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
+            'TXT_NEWSLETTER_PHONE'          => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
+            'TXT_NEWSLETTER_BIRTHDAY'       => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
+            'TXT_NEWSLETTER_SAVE'           => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
+            'TXT_NEWSLETTER_NONE'           => $_ARRAYLANG['TXT_NEWSLETTER_NONE']
 //            'JAVASCRIPTCODE' => $this->JSadduser(),
         ));
         $this->_objTpl->parse('module_newsletter_user_edit');
