@@ -1080,16 +1080,10 @@ class CommonFunctions
 	* @return boolean
 	* @access public
 	*/
-	function isEmail($email) {
-		if( eregi( "^" . "[a-z0-9]+([_\\.-][a-z0-9]+)*" .	//user
-			"@" . "([a-z0-9]+([\.-][a-z0-9]+)*)+" .			//domain
-			"\\.[a-z]{2,4}" . 								//sld, tld
-			"$", $email)
-		) {
-	        return true;
-		} else {
-		    return false;
-		}
+	function isEmail($email)
+    {
+        require_once ASCMS_FRAMEWORK_PATH.'/Validator.class.php';
+		return FWValidator::isEmail($email);
 	}
 
 	function isValidDbPrefix($prefix)

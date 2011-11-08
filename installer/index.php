@@ -49,9 +49,11 @@ if (!@include_once($basePath.'/config/config.php')) {
 
 if (!@include_once(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php')) {
 	die('Unable to load file '.ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
-} elseif (!@include_once($basePath.'/common.class.php')) {
+}
+if (!@include_once($basePath.'/common.class.php')) {
 	die('Unable to load file '.$basePath.'/common.class.php');
-} elseif (!@include_once($basePath.'/installer.class.php')) {
+}
+if (!@include_once($basePath.'/installer.class.php')) {
 	die('Unable to load file '.$basePath.'/installer.class.php');
 }
 
@@ -59,7 +61,6 @@ $objCommon = new CommonFunctions;
 $objInstaller = new Installer;
 
 $objCommon->initLanguage();
-
 $objTpl = new HTML_Template_Sigma($templatePath);
 $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 $objTpl->loadTemplateFile('index.html');
