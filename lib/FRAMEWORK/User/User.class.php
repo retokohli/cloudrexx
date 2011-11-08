@@ -13,6 +13,7 @@ class UserException extends Exception {}
 
 require_once(ASCMS_FRAMEWORK_PATH.'/User/User_Profile.class.php');
 require_once(ASCMS_FRAMEWORK_PATH.'/User/User_Setting.class.php');
+require_once(ASCMS_FRAMEWORK_PATH.'/Validator.class.php');
 
 /**
  * User Object
