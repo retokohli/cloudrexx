@@ -1100,8 +1100,8 @@ $_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION'] = "Redirection";
 $_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION_DESCRIPTION'] = "If the visitor requests this page, he will be redirected to another page.";
 $_ARRAYLANG['TXT_CORE_TYPE_APP'] = "Application";
 $_ARRAYLANG['TXT_CORE_TYPE_APP_DESCRIPTION'] = "Content page enhanced by an application.";
-$_ARRAYLANG['TXT_CORE_TYPE_OTHERLANG'] = "Use different language's content: ";
-$_ARRAYLANG['TXT_CORE_TYPE_OTHERLANG_DESCRIPTION'] = "This page will show the content from another language.";
+$_ARRAYLANG['TXT_CORE_TYPE_USE_FALLBACK'] = "Use different language's content: ";
+$_ARRAYLANG['TXT_CORE_TYPE_USE_FALLBACK_DESCRIPTION'] = "This page will show the content from another language.";
 
 $_ARRAYLANG['TXT_CORE_ACTIVE_FROM'] = "from";
 $_ARRAYLANG['TXT_CORE_ACTIVE_TO'] = "to";
