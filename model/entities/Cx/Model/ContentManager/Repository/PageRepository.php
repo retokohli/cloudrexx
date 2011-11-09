@@ -284,7 +284,7 @@ class PageRepository extends EntityRepository {
      * Notice that there is no trailing slash inserted after the link.
      * If you need one, prepend it to $params.
      * @param Cx\Model\ContentManager\Page $page
-     * @param string $protocolAndDomain $params 'http://example.com/cms' - will generate absolute link if left empty
+     * @param string $protocolAndDomain 'http://example.com/cms' - will generate absolute link if left empty
      * @param string $params '?a=b'
      *
      */
@@ -450,5 +450,16 @@ class PageRepository extends EntityRepository {
         $query->setMaxResults($count);
 
         return $query->getResult();
+    }
+    public function getHistory($from=0, $count=30) {
+        $logRepo = $this->em->getRepository('Cx\Model\ContentManager\HistoryLogEntry');
+        $logs = $logRepo->getLogHistory('Cx\Model\ContentManager\Page', $from, $count);
+        $ids = array();
+        foreach($logs as $log) {
+            $ids[] = $logs->getId();
+        }
+
+        $pages = $this->find($ids);
+        return $pages;       
     }
 }

@@ -1371,8 +1371,8 @@ $_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION'] = "Weiterleitung";
 $_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION_DESCRIPTION'] = "Eine Weiterleitung auf eine andere Inhaltsseite oder eine externe Website";
 $_ARRAYLANG['TXT_CORE_TYPE_APP'] = "Anwendung";
 $_ARRAYLANG['TXT_CORE_TYPE_APP_DESCRIPTION'] = "Ein Bereich einer Anwendung";
-$_ARRAYLANG['TXT_CORE_TYPE_OTHERLANG'] = "Andere Sprachversion verwenden: ";
-$_ARRAYLANG['TXT_CORE_TYPE_OTHERLANG_DESCRIPTION'] = "Diese Seite zeigt den Inhalt einer anderen Sprache an.";
+$_ARRAYLANG['TXT_CORE_TYPE_USE_FALLBACK'] = "Andere Sprachversion verwenden: ";
+$_ARRAYLANG['TXT_CORE_TYPE_USE_FALLBACK_DESCRIPTION'] = "Diese Seite zeigt den Inhalt einer anderen Sprache an.";
 
 $_ARRAYLANG['TXT_CORE_ACTIVE_FROM'] = "von";
 $_ARRAYLANG['TXT_CORE_ACTIVE_TO'] = "bis";

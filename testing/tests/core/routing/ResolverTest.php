@@ -8,6 +8,10 @@ use Cx\Core\Routing\URL as URL;
 
 class ResolverTest extends DoctrineTestCase
 {
+    protected $mockFallbackLanguages = array(
+        1 => 2,
+        2 => 3
+    );
     protected function insertFixtures() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
 
@@ -75,7 +79,7 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/testpage1/testpage1_child/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em, '');
+        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
 
         $this->assertEquals('testpage1/testpage1_child/', $url->getTargetPath());
         $this->assertEquals('?foo=test', $url->getParams());
@@ -89,7 +93,7 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/testpage1/testpage1_child/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em, '');
+        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
 
         $page = $resolver->getPage();
         $this->assertEquals('testpage1_child', $page->getTitle());
@@ -104,7 +108,7 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/inexistantPage/?foo=test');
-        $resolver = new Resolver($url, $lang, self::$em, '');
+        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages);
 
         $page = $resolver->getPage();
     }
@@ -115,9 +119,70 @@ class ResolverTest extends DoctrineTestCase
         $lang = 1;
 
         $url = new URL('http://example.com/redirection/');
-        $resolver = new Resolver($url, $lang, self::$em, '', true);
+        $resolver = new Resolver($url, $lang, self::$em, '', $this->mockFallbackLanguages, true);
 
         $page = $resolver->getPage();
         $this->assertEquals('testpage1_child', $page->getTitle());
+    }
+
+    protected function getResolvedFallbackPage() {
+        $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+
+        $root = new \Cx\Model\ContentManager\Node();
+        
+        $n1 = new \Cx\Model\ContentManager\Node();
+        $n2 = new \Cx\Model\ContentManager\Node();
+
+        $n1->setParent($root);
+
+        //test if requesting this page...
+        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2->setLang(1);
+        $p2->setTitle('pageThatsFallingBack');
+        $p2->setNode($n1);
+        $p2->setUsername('user');
+        $p2->setType('useFallback');
+
+        //... will yield contents of this page as result.
+        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1->setLang(2);
+        $p1->setTitle('pageThatHoldsTheContent');
+        $p1->setNode($n1);
+        $p1->setUsername('user');
+        $p1->setType('content');
+        $p1->setContent('fallbackContent');
+
+        self::$em->persist($root);
+        self::$em->persist($n1);
+        self::$em->persist($n2);
+        self::$em->persist($p1);
+        self::$em->persist($p2);
+        self::$em->flush();
+        self::$em->clear();
+
+        $url = new URL('http://example.com/pageThatsFallingBack/');
+        $resolver = new Resolver($url, 1, self::$em, '', $this->mockFallbackLanguages, true);
+        $p = $resolver->getPage();
+
+        return $p;
+    }
+
+    public function testFallbackRedirection() {
+        $p = $this->getResolvedFallbackPage();
+
+        $this->assertEquals('fallbackContent', $p->getContent());
+        $this->assertEquals(true, $p->hasFallbackContent());
+    }
+
+    /**
+     * @expectedException Cx\Model\Events\PageEventListenerException
+     */
+    public function testPageListenerForResolvedPages() {
+        $p = $this->getResolvedFallbackPage();
+
+        //try to change something
+        $p->setContent('asdf');
+        self::$em->persist($p);
+        self::$em->flush();
     }
 }

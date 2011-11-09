@@ -122,6 +122,12 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     private $skin;
 
+    /**
+     * Remembers whether the routing assigned fallback content to this page via
+     * @link getFallbackContent(). In this case, we should not persist the entity.
+     */
+    protected $containsFallbackContent = false;
+
     public function __construct() {
         //default values
         $this->type = 'content';
@@ -840,7 +846,7 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     protected function createAccessId() {
-        $accessId = Permission::createNewDynamicAccessId();
+        $accessId = \Permission::createNewDynamicAccessId();
         if($accessId === false)
             throw new PageException('protecting Page failed: Permission system could not create a new dynamic access id');
 
@@ -1106,5 +1112,23 @@ class Page extends \Cx\Model\Base\EntityBase
     public function getProtection()
     {
         return $this->protection;
+    }
+
+    /**
+     * Whether the Page contains fallback content.
+     * If so, it should not be persisted.
+     * @return boolean
+     */
+    public function hasFallbackContent() {
+        return $this->containsFallbackContent;
+    }
+
+    /**
+     * Copies the content from the other page given.
+     * @param \Cx\Model\ContentManager\Page $page
+     */
+    public function getFallbackContentFrom($page) {
+        $this->containsFallbackContent = true;
+        $this->content = $page->getContent();
     }
 }
