@@ -47,9 +47,9 @@ h1{ font-size: 20px }
 }
 #page input, #page textarea, #page select {
     padding: 3px;
-    border: 1px solid #666;
-    border-right: 1px solid #999;
-    border-bottom: 1px solid #999;
+    border: 1px solid #abadb3;
+    border-right: 1px solid #e3d9ef;
+    border-bottom: 1px solid #e3e9ef;
     width: 700px;
     display: block;
 }
@@ -68,7 +68,7 @@ h1{ font-size: 20px }
 
 #page input.title {
     padding: 6px;
-    font-size: 14pt;
+    font-size: 12pt;
 }
 
 #page #page_application {
@@ -368,7 +368,7 @@ div.date img{
 /* 2.2.1 Type Tabs */
 .info {
     width: 100%;
-    color: #666;
+    color: #a2a2a2;
     font-size: 8pt;
     display: block;
     margin-bottom: 5px;
@@ -391,7 +391,9 @@ div.date img{
 }
 input.toggle_indicator {
     left: -25px;
+    top: 5px;
     margin-right: -20px;
+    background: none;
 }
 .toggle_indicator {
     width: 16px !important;
@@ -418,11 +420,11 @@ input.toggle_indicator {
     top: 6px;
     background-color: #fff;
     clear: both;
-    font-size: 13pt;
+    font-size: 11pt;
     padding-right: 7px;
 }
 .heading_separator {
-    margin-top: -4px;
+    margin-top: -2px;
     height: 1px;
     margin-bottom: 20px;
     border: none;
