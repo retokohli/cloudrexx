@@ -54,7 +54,6 @@ class Attribute
     const TYPE_UPLOAD_MANDATORY       =  7;
     const TYPE_TEXTAREA_OPTIONAL      =  8;
     const TYPE_TEXTAREA_MANDATORY     =  9;
-// Extended types (fehraltorf)
     const TYPE_EMAIL_OPTIONAL         = 10;
     const TYPE_EMAIL_MANDATORY        = 11;
     const TYPE_URL_OPTIONAL           = 12;
@@ -296,7 +295,6 @@ class Attribute
             || $this->type == self::TYPE_TEXT_MANDATORY
             || $this->type == self::TYPE_TEXTAREA_OPTIONAL
             || $this->type == self::TYPE_TEXTAREA_MANDATORY
-// Extended types (fehraltorf)
             || $this->type == self::TYPE_EMAIL_OPTIONAL
             || $this->type == self::TYPE_EMAIL_MANDATORY
             || $this->type == self::TYPE_URL_OPTIONAL

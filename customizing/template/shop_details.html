@@ -39,13 +39,13 @@
         <h2>{SHOP_PRODUCT_TITLE}</h2>
         <i>{SHOP_PRODUCT_DESCRIPTION}</i><br /><br />{SHOP_PRODUCT_DETAILDESCRIPTION}<br /><br />
         <div class="stock">{SHOP_PRODUCT_STOCK}</div>
-        <div class="product_id">{TXT_PRODUCT_ID}:{SHOP_PRODUCT_ID} ({TXT_SHOP_PRODUCT_CUSTOM_ID}: {SHOP_PRODUCT_CUSTOM_ID})</div>
-        <!-- BEGIN shopProductOptionsRow -->
+        <div class="product_id">{TXT_PRODUCT_ID}:{SHOP_PRODUCT_ID} ({TXT_SHOP_PRODUCT_CUSTOM_ID}: {SHOP_PRODUCT_CUSTOM_ID})</div><!-- BEGIN shopProductOptionsRow -->
         <div class="shop_options">{SHOP_PRODUCT_OPTIONS_TITLE}<br />
           <div id="product_options_layer{SHOP_PRODUCT_ID}" style="display: none;">
             <div class="shop_options_click">
               <br /><!-- BEGIN shopProductOptionsValuesRow -->
-              <strong>{SHOP_PRODUCT_OPTIONS_NAME}:</strong><br />{SHOP_PRODCUT_OPTION}<br /><!-- END shopProductOptionsValuesRow -->
+              <strong>{SHOP_PRODUCT_OPTIONS_NAME}<!-- BEGIN product_attribute_mandatory --><span class="mandatory">&nbsp;*</span><!-- END product_attribute_mandatory --></strong><br />
+              {SHOP_PRODCUT_OPTION}<br /><!-- END shopProductOptionsValuesRow -->
             </div>
           </div>
         </div><!-- END shopProductOptionsRow --><!-- BEGIN shopProductManufacturer -->

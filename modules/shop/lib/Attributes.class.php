@@ -514,7 +514,6 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: unknown Attribute ID $attribut
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_TEXT_MANDATORY
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_UPLOAD_OPTIONAL
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_UPLOAD_MANDATORY
-// Extended types (fehraltorf)
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_TEXTAREA_OPTIONAL
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_TEXTAREA_MANDATORY
             || self::$arrAttributes[$attribute_id]['type'] == Attribute::TYPE_EMAIL_OPTIONAL

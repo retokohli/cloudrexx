@@ -2066,19 +2066,21 @@ class Order
         UpdateUtil::table($table_name, $table_structure, $table_index);
 
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_order_attributes';
-        $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_order_items_attributes';
-        $table_structure = array(
-            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'orders_items_attributes_id'),
-            'item_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'order_items_id'),
-            'attribute_name' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'product_option_name'),
-            'option_name' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'product_option_value'),
-            'price' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'product_option_values_price'),
-        );
-        $table_index = array(
-            'item_id' => array('fields' => array('item_id')));
-        UpdateUtil::table($table_name_old, $table_structure, $table_index);
-        UpdateUtil::table_rename($table_name_old, $table_name);
-
+        if (!UpdateUtil::table_exist($table_name)) {
+            $table_name_old = DBPREFIX.'module_shop'.MODULE_INDEX.'_order_items_attributes';
+            $table_structure = array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'auto_increment' => true, 'primary' => true, 'renamefrom' => 'orders_items_attributes_id'),
+                'item_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'order_items_id'),
+                'attribute_name' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'product_option_name'),
+                'option_name' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'product_option_value'),
+                'price' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'product_option_values_price'),
+            );
+            $table_index = array(
+                'item_id' => array('fields' => array('item_id')));
+            UpdateUtil::table($table_name_old, $table_structure, $table_index);
+            UpdateUtil::table_rename($table_name_old, $table_name);
+        }
+        
         // LSV
         $table_name = DBPREFIX.'module_shop'.MODULE_INDEX.'_lsv';
         $table_structure = array(

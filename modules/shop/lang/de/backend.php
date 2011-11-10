@@ -44,7 +44,6 @@ $_ARRAYLANG['TXT_CATEGORIE'] = "Kategorie";
 $_ARRAYLANG['TXT_CATEGORIES'] = "Kategorien";
 $_ARRAYLANG['TXT_CATEGORY'] = "Kategorie";
 $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Die Kategorie konnte nicht gelöscht werden! Bitte löschen Sie zuerst alle Untergruppen.";
-$_ARRAYLANG['TXT_CHECKBOXES_OPTION'] = "Kontrollkästchen (keine oder mehrere Auswahlmöglichkeiten)";
 $_ARRAYLANG['TXT_CITY'] = "Ort";
 $_ARRAYLANG['TXT_CLEAR_DATABASE_BEFORE_IMPORTING'] = "Bestehende Produkte und Kategorien vor dem Importieren löschen";
 $_ARRAYLANG['TXT_CLIENT_HOST'] = "Client Host:";
@@ -100,8 +99,6 @@ $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'] = "Der Datensatz wurde erfolgrei
 $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'] = "Die Daten wurden erfolgreich aktualisiert";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_DEFERRED'] = "verzögert";
-$_ARRAYLANG['TXT_DEFINE_NAME_FOR_OPTION'] = "Sie müssen einen Namen für die Option definieren!";
-$_ARRAYLANG['TXT_DEFINE_VALUE_FOR_OPTION'] = "Sie müssen mindestens einen Wert für die Option angeben!";
 $_ARRAYLANG['TXT_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS'] = "Die Kategorie(n) und alle enthaltenen Produkte wurden gelöscht.";
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Markierte löschen";
@@ -194,7 +191,6 @@ $_ARRAYLANG['TXT_MAKE_SELECTION'] = "Bitte wählen Sie";
 $_ARRAYLANG['TXT_MANUFACTURER_URL'] = "Link zum Hersteller";
 $_ARRAYLANG['TXT_MARKED'] = "markierte";
 $_ARRAYLANG['TXT_MAX_WEIGHT_TIP'] = "Geben Sie an, bis zu welchem Gewicht der Versand zu diesen Konditionen möglich ist, oder 0 g für beliebiges Gewicht.";
-$_ARRAYLANG['TXT_MENU_OPTION'] = "Menü (keine oder eine Auswahl möglich)";
 $_ARRAYLANG['TXT_MESSAGE'] = "Nachricht";
 $_ARRAYLANG['TXT_MESSAGE_SEND_ERROR'] = "Es trat ein unerwarteter Fehler auf und Ihre Nachricht konnte nicht übermittelt werden.";
 $_ARRAYLANG['TXT_METHODS_OF_PAYMENT'] = "Zahlungsmöglichkeiten";
@@ -274,7 +270,6 @@ $_ARRAYLANG['TXT_PRODUCT_PRICE'] = "Stückpreis";
 $_ARRAYLANG['TXT_PRODUCT_STATUS'] = "Produktestatus";
 $_ARRAYLANG['TXT_QUALITY'] = "Qualität";
 $_ARRAYLANG['TXT_QUANTITY'] = "Menge";
-$_ARRAYLANG['TXT_RADIOBUTTON_OPTION'] = "Optionsschalter (eine Auswahl zwingend)";
 $_ARRAYLANG['TXT_RATE'] = "Kurs";
 $_ARRAYLANG['TXT_RECEIPTOR_ADDRESS'] = "Empfängeradresse";
 $_ARRAYLANG['TXT_REFUNDED'] = "Annuliert";
@@ -606,7 +601,6 @@ $_ARRAYLANG['TXT_SHOP_MANUFACTURER_NAME'] = "Name";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_FAILED'] = "Fehler beim aktualisieren";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_UPDATE_SUCCESS'] = "Hersteller wurde erfolgreich aktualisiert";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER_URL'] = "URL";
-$_ARRAYLANG['TXT_SHOP_MENU_OPTION_DUTY'] = "Menu (Auswahl zwingend)";
 $_ARRAYLANG['TXT_SHOP_MESSAGE_HTML'] = "Nachricht (HTML)";
 $_ARRAYLANG['TXT_SHOP_MESSAGE_USE_HTML'] = "HTML verwenden";
 $_ARRAYLANG['TXT_SHOP_MISSING_CATEGORY_IMAGES'] = "Kategorie Bilddatei nicht gefunden: '%2\$s' (Kategorie ID %1\$s)";
@@ -930,3 +924,26 @@ $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_TYPE_AMOUNT'] = "Guthaben";
 $_ARRAYLANG['TXT_SHOP_CURRENCY_INCREMENT'] = "Rundung";
 $_ARRAYLANG['TXT_SHOP_CURRENCY_INCOMPLETE'] = "Unvollständige Angaben für die neue Währung";
 $_ARRAYLANG['TXT_SHOP_CURRENCY_EXISTS'] = "Die Währung %1\$s existiert bereits";
+
+// 20111028
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_EMAIL_OPTIONAL'] = "E-Mail Adresse (Eingabe optional)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_EMAIL_MANDATORY'] = "E-Mail Adresse (Eingabe zwingend)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_URL_OPTIONAL'] = "URL (Eingabe optional)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_URL_MANDATORY'] = "URL (Eingabe zwingend)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_DATE_OPTIONAL'] = "Datum (Eingabe optional)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_DATE_MANDATORY'] = "Datum (Eingabe zwingend)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_NUMBER_INT_OPTIONAL'] = "Ganzzahl (Eingabe optional)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_NUMBER_INT_MANDATORY'] = "Ganzzahl (Eingabe zwingend)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_NUMBER_FLOAT_OPTIONAL'] = "Fliesskommazahl (Eingabe optional)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_NUMBER_FLOAT_MANDATORY'] = "Fliesskommazahl (Eingabe zwingend)";
+
+// 20111031
+// Renamed
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_OPTIONAL'] = "Menü (keine oder eine Auswahl möglich)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU_MANDATORY'] = "Menu (Auswahl zwingend)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_RADIOBUTTON'] = "Optionsschalter (eine Auswahl zwingend)";
+$_ARRAYLANG['TXT_SHOP_PRODUCT_ATTRIBUTE_TYPE_CHECKBOX'] = "Kontrollkästchen (keine oder mehrere Auswahlmöglichkeiten)";
+
+// 20111103 changed
+$_ARRAYLANG['TXT_DEFINE_NAME_FOR_OPTION'] = "Sie müssen einen Namen für das Merkmal angeben";
+$_ARRAYLANG['TXT_DEFINE_VALUE_FOR_OPTION'] = "Sie müssen mindestens eine Option für dieses Merkmal definieren";
