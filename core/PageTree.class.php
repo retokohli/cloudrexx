@@ -124,6 +124,10 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
             $parseChildren = $hasChilds && !$dontDescend && $weWantTheChildren;
             if($this->currentPagePath) { //current flag requested
                 //are we rendering a parent page of currentPage or the currenPage itself?
+//TODO: example: if we're treating
+//      http://www.example.com/the/current/page and pathOfThis is
+//      http://www.example.com/the/cur
+//      we have a false match.
                 $current = substr($this->currentPagePath, 0, strlen($pathOfThis)) == $pathOfThis;               
                 //do not display children outside of current branch 
                 if($this->rootNode && !$current) {
