@@ -172,7 +172,7 @@ class JSONData {
             $page->setEnd(new DateTime($updated_page['end'], $this->tz));
             $page->setContentTitle($updated_page['title']);
             $page->setTitle($updated_page['name']);
-            $page->setContentTitle($updated_page['contentTitle']);
+            $page->setContentTitle($updated_page['title']);
             $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
