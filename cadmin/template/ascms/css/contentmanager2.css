@@ -42,6 +42,38 @@ h1{ font-size: 20px }
 
 .ie7 #input1{ float:left; }
 .ie7 .space{ margin-bottom: 10px; }
+#cm_page {
+    padding-left: 15px;
+}
+#page input, #page textarea, #page select {
+    padding: 3px;
+    border: 1px solid #666;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    width: 700px;
+    display: block;
+}
+#page textarea {
+    height: 100px;
+}
+#type input.radio {
+    float: left;
+    width: 20px;
+    border: none;
+}
+#type label {
+    float: left;
+    width: 150px;
+}
+
+#page input.title {
+    padding: 6px;
+    font-size: 14pt;
+}
+
+#page #page_application {
+    width: 143px;
+}
 
 #site-structure {
     border-right: 1px solid #d3d3d3; /* grey */
@@ -71,7 +103,7 @@ h1{ font-size: 20px }
     background: url(../images/contrexx_icon.png) no-repeat scroll 25px 3px transparent
 }
 
-#site{
+#page{
     border-left: 1px solid #cccccc;
     border-top: 1px solid #cccccc;
     float: left;
@@ -101,7 +133,6 @@ h1{ font-size: 20px }
     overflow: hidden;
 }
 
-/*#site-tree li > div a.actions {*/
 #site-tree div.actions, div.actions-expanded {
     position: absolute;
     left: 270px;
@@ -113,7 +144,6 @@ div.actions-expanded {
     left: 262px;
 }
 
-/*#site-tree li:hover > div a.actions {*/
 #site-tree:hover div.actions {
     display: inline;
 }
@@ -155,7 +185,7 @@ div.actions-expanded {
 #site-tree ins.page.active {
     background-image: url(../../../template/ascms/images/page-active.png);
 }
-#site-tree ins.page.hidden {
+#site-tree ins.page.hidden, #site-tree ins.page {
     background-image: url(../../../template/ascms/images/page-hidden.png);
 }
 #site-tree ins.page.protected {
@@ -204,11 +234,11 @@ div.actions-expanded {
 #cm-tabs li{ padding: 0 0 0 10px; float: left; height: 34px }
 #cm-tabs li a{ display: block; padding: 0 25px }
 #cm-tabs li .tab{ background: url("../images/tabs.png") no-repeat scroll -1px -2px transparent; }
-#cm-tabs li .site-type{ background-position: -3px -2px; }
-#cm-tabs li .site-content{ background-position: -5px -42px; }
-#cm-tabs li .site-access{ background-position: -5px -82px; }
-#cm-tabs li .site-settings{ background-position: -5px -122px; }
-#cm-tabs li .site-history{ background-position: -5px -162px; }
+#cm-tabs li .page_content{ background-position: -3px -2px; }
+#cm-tabs li .page_meta{ background-position: -5px -42px; }
+#cm-tabs li .page_access{ background-position: -5px -82px; }
+#cm-tabs li .page_settings{ background-position: -5px -122px; }
+#cm-tabs li .page_history{ background-position: -5px -162px; }
 
 
 #buttons{
@@ -336,50 +366,71 @@ div.date img{
 }
 
 /* 2.2.1 Type Tabs */
-.types {
-}
-
-.types .info {
+.info {
     width: 100%;
-    background-color: #aaf;
-    padding: 50px;
-}
-
-.types div.type {
-    width: 100%;  
-    border: 1px solid gray;
-    margin-top: 10px;
-}
-
-.types div.type .wrapper{
-    padding: 20px;
-    height: 100%;
-}
-
-.types div.type .left {
-    height: 100%;
-    width: 150px;
+    color: #666;
+    font-size: 8pt;
+    display: block;
+    margin-bottom: 5px;
     float: left;
+    clear: both;
 }
 
-.types div.type .left input{
-    margin-top: 25px;
-}
-
-.types h1 {
-    font-size: 2em;
-}
-
-.type p {
-    margin-left: 150px;
-}
-
-.type p.additionalSettings {
+#type .type_hidable {
     display: none;
 }
 
-.activeType p.additionalSettings {
+#page #toggle_scheduled_publishing {
+    width: 16px;
+    float: left;
+}
+
+#scheduled_publishing input {
+    width: 150px;
+    display: inline;
+}
+input.toggle_indicator {
+    left: -25px;
+    margin-right: -20px;
+}
+.toggle_indicator {
+    width: 16px !important;
+    margin-right: -16px;
+    height: 16px;
+    background-image: url(../../../../lib/javascript/jquery/jstree/themes/default/d.png);
+    position: relative;
+    left: -22px;
+    top: 8px;
+    float: left;
+    clear: both;
+}
+
+.toggle_open {
+    background-position: -72px 0px;
+}
+
+.toggle_closed {
+    background-position: -54px 0px;
+}
+
+.heading {
+    position: relative;
+    top: 6px;
+    background-color: #fff;
+    clear: both;
+    font-size: 13pt;
+    padding-right: 7px;
+}
+.heading_separator {
+    margin-top: -4px;
+    height: 1px;
+    margin-bottom: 20px;
+    border: none;
     display: block;
+    background-color: #666;
+}
+.heading:hover {
+    background-color: #fff;
 }
 
 /* 3) Helpers */
