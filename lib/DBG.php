@@ -395,7 +395,7 @@ class DBG
 //          & ~E_DEPRECATED
 // Enable strict warnings
 // (enable this line and fix all warnings before release!)
-          | E_STRICT
+//          | E_STRICT
         ;
         error_reporting(self::$log_php);
         ini_set('display_errors', 1);
