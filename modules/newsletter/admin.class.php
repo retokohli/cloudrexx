@@ -1712,17 +1712,17 @@ class newsletter extends NewsletterLib
     function interfaceSettings()
     {
         global $objDatabase, $_ARRAYLANG;
-        $this->_pageTitle = $_ARRAYLANG['TXT_INTERFACE'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'];
         $this->_objTpl->loadTemplateFile('newsletter_config_interface.html');        
 
         $this->_objTpl->setVariable(array(                             
             'TXT_DISPATCH_SETINGS'          => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
-            'TXT_INTERFACE'                 => $_ARRAYLANG['TXT_INTERFACE'],            
+            'TXT_NEWSLETTER_INTERFACE'                 => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],            
             'TXT_GENERATE_HTML'             => $_ARRAYLANG['TXT_GENERATE_HTML'],
             'TXT_ACTIVATE_MAIL'             => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],            
             'TXT_CONFIRM_MAIL'              => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],            
             'TXT_NOTIFICATION_MAIL'         => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],      
-            'TXT_PROFILE_DETAILS'           => $_ARRAYLANG['TXT_PROFILE_DETAILS'], 
+            'TXT_NEWSLETTER_PROFILE_DETAILS' => $_ARRAYLANG['TXT_NEWSLETTER_PROFILE_DETAILS'], 
             'TXT_NEWSLETTER_SALUTATION'     => $_ARRAYLANG['TXT_NEWSLETTER_SALUTATION'],
             'TXT_NEWSLETTER_TITLE'          => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
             'TXT_NEWSLETTER_POSITION'       => $_ARRAYLANG['TXT_NEWSLETTER_POSITION'],
@@ -1820,7 +1820,7 @@ class newsletter extends NewsletterLib
             'TXT_ACTIVATE_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
             'TXT_DISPATCH_SETINGS' => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_GENERATE_HTML' => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_INTERFACE' => $_ARRAYLANG['TXT_INTERFACE'],
+            'TXT_NEWSLETTER_INTERFACE' => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_BREAK_AFTER' => $_ARRAYLANG['TXT_NEWSLETTER_BREAK_AFTER'],
             'TXT_TEST_MAIL' => $_ARRAYLANG['TXT_NEWSLETTER_TEST_RECIPIENT'],
             'TXT_FAILED' => $_ARRAYLANG['TXT_NEWSLETTER_FAILED'],
@@ -4531,7 +4531,7 @@ $WhereStatement = '';
                             self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
                         }
                     } else {
-                        if ($this->_addRecipient($reciTXT_NEWSLETTER_SALUTATIONpientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                        if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
                             if (!empty($recipientSendEmailId)) {                                
                                 $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
                                 $recipientId  = $objRecipient->fields[id];
@@ -4540,13 +4540,12 @@ $WhereStatement = '';
                                 if ($this->SendEmail($recipientId, $recipientSendEmailId, $recipientEmail, 1) == false) {
                                     self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
                                 } else {
-                                    $objRecipientCount = $objDatabase->execute('SELECT recipient_count, subject FROM '.DBPREFIX.'module_newsletter WHERE id='.intval($recipientSendEmailId));
-                                    $count             = $objRecipientCount->fields['recipient_count'];
+                                    $objRecipientCount = $objDatabase->execute('SELECT subject FROM '.DBPREFIX.'module_newsletter WHERE id='.intval($recipientSendEmailId));                                    
                                     $newsTitle         = $objRecipientCount->fields['subject'];
                                     $objUpdateCount    = $objDatabase->execute('UPDATE '.DBPREFIX.'module_newsletter 
-                                                                                      SET recipient_count = '.($count+1).'
+                                                                                      SET recipient_count = recipient_count+1
                                                                                 WHERE id='.intval($recipientSendEmailId));
-                                    self::$strOkMessage .= sprintf('<strong>'.$_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'].'<strong><br />', $newsTitle);
+                                    self::$strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'].'<br />', '<strong>'.$newsTitle.'</strong>');
                                 }
                             }
                             self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_SAVED_SUCCESSFULLY'];
