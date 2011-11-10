@@ -14,10 +14,18 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
 class JSONData {
 	
 	var $em = null;
+    var $fallbacks;
 
 	function __construct() {
 		$this->em = Env::em();
         $this->tz = new DateTimeZone('Europe/Berlin');
+
+        $fallback_lang_codes = FWLanguage::getFallbackLanguageArray();
+        $active_langs = FWLanguage::getActiveFrontendLanguages();
+
+        foreach ($active_langs as $lang) {
+            $this->fallbacks[FWLanguage::getLanguageCodeById($lang['id'])] = ((array_key_exists($lang['id'], $fallback_lang_codes)) ? FWLanguage::getLanguageCodeById($fallback_lang_codes[$lang['id']]) : null);
+        }
 	}
 
     // A couple of Stub methods to feed data to/from Doctrine.
@@ -271,76 +279,82 @@ class JSONData {
 
 		$root = $nodeRepo->getRoot();
 
-		$jsondata = $this->tree_to_json($root);
+		$jsondata = $this->tree_to_jstree_array($root);
 
-		return $jsondata;
+		return json_encode($jsondata);
 	}
 
-	private function tree_to_json($tree, $level=0) {
-    // This thing can get quite complicated, json's quaint syntax does that to you. Should
-    // produce syntactically correct and correctly indented json, though.
-    // If unsure about the json ouput, feed it to jQ's parseJSON or jsonlint.com
-		$indent = str_repeat("  ", $level);
-		$output = "";
-		$output .= "[\n";
+    private function tree_to_jstree_array($root) {
+        $fallback_langs = $this->fallbacks;
 
-        // Sort the tree to its nestedset order.
-        // TODO: avoid recursion, load the whole tree in one query, skip re-sorting.
-        $processed_tree = array();
-        foreach($tree->getChildren() as $node) {
-            $processed_tree[$node->getLft()] = $node;
+        $sorted_tree = array();
+        foreach($root->getChildren() as $node) {
+            $sorted_tree[$node->getLft()] = $node;
         }
-        ksort($processed_tree);
+        ksort($sorted_tree);
 
-		$firstrun = true;
-		foreach($processed_tree as $moo => $node) {
-			if ($firstrun) {
-				$firstrun = false;
-			}
-			else {
-				$output .= ",\n";
-			}
-
-			$output .= $indent." {\"attr\" : { \"id\" : \"node_".$node->getId()."\"},\n";
-
-			$output .= $indent."  \"data\" : [\n";
-
-			$languages = array();
+        $output = array();
+        foreach ($sorted_tree as $node) {
+            $data = array();
             $metadata = array();
-			foreach ($node->getPages() as $page) {
-				if (in_array($page->getLang(), $languages)) continue;
+            $children = $this->tree_to_jstree_array($node);
+            $last_resort = 0;
 
-				if (!empty($languages))	$output .= ",\n";
-                // str_replace('"', '\"' instead of addslashes because we don't want to catch single quotes
-				$output .= $indent."    { \n";
-                $output .= $indent."      \"language\" : \"".FWLanguage::getLanguageCodeById($page->getLang())."\",";
-                $output .= $indent."      \"title\" : \"".str_replace(array('"', '\\'), array('\"', '\\\\'), $page->getTitle())."\",\n";
-                $output .= $indent."      \"attr\": {\"id\" : \"".$page->getId()."\"}";
-                $output .= $indent."    }";
-				$languages[] = $page->getLang();
-                $metadata[$page->getId()]['visibility'] = $page->getStatus();
-                $metadata[$page->getId()]['publishing'] = "published";
-			}
-			$output .= $indent."\n".$indent."  ],\n";
+            foreach ($node->getPages() as $page) {
+                $data[FWLanguage::getLanguageCodeById($page->getLang())] = array(
+                    "language"  => FWLanguage::getLanguageCodeById($page->getLang()),
+                    "title"     => $page->getTitle(),
+                    "attr"      => array(
+                        "id"    => $page->getId()
+                    )  
+                );
+                $metadata[$page->getId()] = array(
+                    "visibility"=> $page->getStatus(),
+                    "publishing"=> "published"
+                );
+                $last_resort = FWLanguage::getLanguageCodeById($page->getLang());
+            }
+            foreach ($fallback_langs as $lang => $fallback) {
+                if (!array_key_exists($lang, $data) && array_key_exists($fallback, $data)) {
+                    $data[$lang] = array(
+                        "language"  => $lang,
+                        "title"     => $data[$fallback]["title"],
+                        "attr"      => array(
+                            "id"    => "0"
+                        )
+                    );
+                    $metadata[0] = array(
+                        "visibility"=> "active",
+                        "publishing"=> "unpublished"
+                    );
+                }
+                elseif (!array_key_exists($lang, $data)) {
+                    $data[$lang] = array(
+                        "language"  => $lang,
+                        "title"     => $data[$last_resort]["title"],
+                        "attr"      => array(
+                            "id"    => "0"
+                        )
+                    );
+                    $metadata[0] = array(
+                        "visibility"=> "active",
+                        "publishing"=> "unpublished"
+                    );
+                }
+            }
 
-			if (sizeof($node->getChildren())) {
-				$output .= $indent."  \"children\" : ";
-				$output .= $this->tree_to_json($node, $level+1);				
-			}
+            $output[] = array(
+                "attr"      => array(
+                    "id"    =>  "node_".$node->getId()
+                ),
+                "data"      => array_values($data),
+                "children"  => $children,
+                "metadata"  => $metadata
+            );
+        }
 
-			$output .= $indent."  \"metadata\" : \n";
-            $output .= json_encode($metadata);
-			$output .= $indent."  \n";
-			$output .= $indent." }";
-		}
-
-		$output .= "\n".$indent."]";
-
-		if ($level > 0) $output .= ",";
-		$output .= "\n";
-
-		return $output;
-	}
+        return($output);
+    }
 }
 
 ?>
