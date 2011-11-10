@@ -168,7 +168,12 @@ if (preg_match('/^(\D+)(\d+)$/', $cmd, $arrMatch)) {
 // and database tables for the default instance.
 $moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
 $m2id = Env::get('module2id');
-$moduleId = $m2id[$plainCmd];
+// TODO: what to do with content and jsondata?
+$moduleId = 1;
+if (!in_array($plainCmd, array('content', 'jsondata', 'server'))) {
+    $moduleId = $m2id[$plainCmd];
+}
+
 /**
  * @ignore
  */
