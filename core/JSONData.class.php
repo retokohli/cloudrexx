@@ -90,7 +90,8 @@ class JSONData {
                 'id'            =>  $page->getId(),
                 'lang'          =>  $page->getLang(),
                 'node'          =>  $page->getNode()->getId(),
-                'title'         =>  $page->getTitle(),
+                'name'          =>  $page->getTitle(),
+                'title'         =>  $page->getContentTitle(),
                 'content'       =>  preg_replace('/{([A-Z0-9_-]+)}/', '[[\\1]]', $page->getContent()),
                 'customContent' =>  $page->getCustomContent(),
                 'cssName'       =>  $page->getCssName(),
@@ -169,7 +170,8 @@ class JSONData {
             $page->setUsername('system');
             $page->setStart(new DateTime($updated_page['start'], $this->tz));
             $page->setEnd(new DateTime($updated_page['end'], $this->tz));
-            $page->setTitle($updated_page['title']);
+            $page->setContentTitle($updated_page['title']);
+            $page->setTitle($updated_page['name']);
             $page->setContentTitle($updated_page['contentTitle']);
             $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
@@ -177,8 +179,8 @@ class JSONData {
             $page->setMetarobots($updated_page['metarobots']);
 
             $page->setContent(preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $updated_page['content']));
-            $page->setModule($updated_page['module']);
-            $page->setCmd($updated_page['cm_cmd']);
+            $page->setModule($updated_page['application']);
+            $page->setCmd($updated_page['area']);
             $page->setTarget($updated_page['target']);
 
             $page->setCaching((bool) $updated_page['caching']);
@@ -197,7 +199,7 @@ class JSONData {
             $this->em->persist($page);
             $this->em->flush();
 
-            die('new');
+            die('');
         }
         elseif (intval($_POST['page']['id'])) {
             $updated_page = array_map('contrexx_input2raw', $_POST['page']);
@@ -209,8 +211,8 @@ class JSONData {
             if ($updated_page['type']) {
                 $page->setType($updated_page['type']);
                 $page->setUpdatedAtToNow();
-                $page->setTitle($updated_page['title']);
-                $page->setContentTitle($updated_page['contentTitle']);
+                $page->setTitle($updated_page['name']);
+                $page->setContentTitle($updated_page['title']);
                 try {
                     $start = new DateTime($updated_page['start'], $this->tz);
                     $end = new DateTime($updated_page['end'], $this->tz);
@@ -225,11 +227,11 @@ class JSONData {
                 $page->setMetadesc($updated_page['metadesc']);
                 $page->setMetarobots($updated_page['metarobots']);
                 $page->setContent(preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $updated_page['content']));
-                $page->setModule($updated_page['module']);
-                if ($updated_page['cm_cmd'] == '') { 
-                    $updated_page['cm_cmd'] = null;
+                $page->setModule($updated_page['appliaction']);
+                if ($updated_page['area'] == '') { 
+                    $updated_page['area'] = null;
                 }
-                $page->setCmd($updated_page['cm_cmd']);
+                $page->setCmd($updated_page['area']);
                 $page->setTarget($updated_page['target']);
                 $page->setSlug($updated_page['slug']);
                 $page->setCaching((bool) $updated_page['caching']);

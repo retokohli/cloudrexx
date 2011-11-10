@@ -1,119 +1,80 @@
          <ul id="cm-tabs" class="clearfix">
-            <li><a href="#tabs-1" class="tab site-type">{TXT_CORE_SITE_TYPE}</a></li>
-            <li><a href="#tabs-2" class="tab site-content">{TXT_CORE_SITE_CONTENT}</a></li>
-            <li><a href="#tabs-3" class="tab site-access">{TXT_CORE_SITE_ACCESS}</a></li>
-            <li><a href="#tabs-4" class="tab site-settings">{TXT_CORE_SITE_SETTINGS}</a></li>
-            <li><a href="#tabs-5" class="tab site-history">{TXT_CORE_SITE_HISTORY}</a></li>
+            <li><a href="#page_content" class="tab page_content">{TXT_CORE_CM_PAGE}</a></li>
+            <li><a href="#page_meta" class="tab page_meta type_hidable type_content type_application">{TXT_CORE_CM_META}</a></li>
+            <li><a href="#page_access" class="tab page_access">{TXT_CORE_CM_ACCESS}</a></li>
+            <li><a href="#page_settings" class="tab page_settings">{TXT_CORE_CM_SETTINGS}</a></li>
+            <li><a href="#page_history" class="tab page_history">{TXT_CORE_CM_HISTORY}</a></li>
         </ul>
-      <form class="clearfix" action="." enctype="multipart/form-data" id="cm_form">
-        <div id="tabs-1" class="types">
-            <!-- type: content -->
-              <p class="info">
-                {TXT_CORE_TYPE_EXPLANATION}
-              </p>
-              <div class="type content">
-                <div class="wrapper">
-                  <div class="left">
-                    <input type="radio" name="page[type]" id="typeContent" value="content" checked="checked"></input>
-                  </div>
-                  <label for="typeContent">
-                    <h1> {TXT_CORE_TYPE_CONTENT} </h1>
-                  </label>
-                  <p>
-                    {TXT_CORE_TYPE_CONTENT_DESCRIPTION}
-                  </p>
-                </div>
-              </div>
-              <!-- type: redirection -->
-              <div class="type redirection">
-                <div class="wrapper">
-                  <div class="left">
-                    <input type="radio" name="page[type]" id="typeRedirection" value="redirect"></input>
-                  </div>
-                  <label for="typeRedirection">
-                    <h1> {TXT_CORE_TYPE_REDIRECTION} </h1>
-                  </label>
-                  <p>
-                    {TXT_CORE_TYPE_REDIRECTION_DESCRIPTION}
-                  </p>
-                  <p class="additionalSettings">
-                      <label style="width: 100px; display: block; float: left;" for="target" class="twoCols">{TXT_CORE_TARGET}</label>
-                      <input id="target" type="text" value="{TARGET}" name="page[target]" maxlength="255" size="40" class="twoCols" />
-                      <button id="targetBrowseButton">{TXT_BROWSE}</button>
-                  </p>
-                </div>
-              </div>
-              <!-- type: app -->
-              <div class="type app">
-                <div class="wrapper">
-                  <div class="left">
-                    <input type="radio" name="page[type]" id="typeApp" value="application"></input>
-                  </div>
-                  <label for="typeApp">
-                    <h1> {TXT_CORE_TYPE_APP} </h1>
-                  </label>
-                  <p>
-                    {TXT_CORE_TYPE_APP_DESCRIPTION}
-                  </p>
-                  <p class="additionalSettings">
-                      <label style="width: 100px; display: block; float: left;" for="module" class="twoCols">{TXT_CORE_APPLICATION}</label>
-                      <input id="module" class="twoCols" type="text" value="{MODULE}" name="page[module]" />
-                      <br />
-                      <label style="width: 100px; display: block; float: left;" for="cm_cmd" class="twoCols">{TXT_CORE_AREA}</label>
-                      <input id="cm_cmd" class="twoCols" type="text" value="{CMD}" name="page[cm_cmd]" />
-                  </p>
-                </div>
-              </div>
-        </div>
-        <div id="tabs-2">
+      <form class="clearfix" action="." enctype="multipart/form-data" id="cm_page">
+        <div id="page_content" class="types">
             <input type="hidden" name="page[id]" id="pageId" value="new" />
             <input type="hidden" name="page[lang]" id="pageLang" value="" />
             <input type="hidden" name="page[node]" id="pageNode" value="" />
             <input type="hidden" name="source_page" id="sourcePage" value="" />
-            <div class="clearfix">
-              <div class="additionalInfo">
-                <div class="headerInfo">
-                  <label for="title">{TXT_CORE_NAVTITLE}</label>
-                  <input id="title" type="text" value="{PAGETITLE}" name="page[title]"/>
-                  <input id="headerTitlesLock" type="checkbox" />
-                  <label for="contentTitle">{TXT_CORE_CONTENTTITLE}</label>
-                  <input id="contentTitle" type="text" value="{CONTENTTITLE}" name="page[contentTitle]" />
-                  <a href="#" id="showHideInfo">Show</a>
-                </div>
-              </div>
-              <div id="additionalInfo" class="additionalInfo">
-                <h2>{TXT_CORE_META_INFORMATION}</h2>
-                <div class="clearfix space">
-                  <label for="metatitle" class="oneCol">{TXT_CORE_META_TITLE}</label>
-                  <input id="metatitle" class="oneCol" type="text" value="{META_TITLE}" name="page[metatitle]" />
-                </div>
-                <div class="clearfix space">
-                  <label for="metakeys" class="oneCol">{TXT_CORE_META_KWORDS}</label>
-                  <input id="metakeys" class="oneCol" type="text" value="{META_KWORDS}" name="page[metakeys]" />
-                </div>
-                <div class="clearfix space">
-                  <label for="metadesc" class="oneCol">{TXT_CORE_META_DESC}</label>
-                  <input id="metadesc" class="oneCol" type="text" value="{META_DESC}" name="page[metadesc]" />
-                </div>
-                <div class="clearfix space">
-                  <label for="metarobots" class="oneCol">{TXT_CORE_META_ROBOTS}</label>
-                  <input id="metarobots" class="oneCol" type="checkbox" value="index" name="page[metarobots]" />
-                </div>
-                <h2>{TXT_CORE_ACTIVE_FROM_TO}</h2>
-                <div class="clearfix">
-                  <label for="start" class="twoCols">{TXT_CORE_ACTIVE_FROM}</label>
-                  <input id="start" class="twoCols date" type="text" value="{ACTIVE_FROM}" name="page[start]" />
 
-                  <label for="end" class="twoCols">{TXT_CORE_ACTIVE_TO}</label>
-                  <input id="end" class="twoCols date" type="text" value="{ACTIVE_TO}" name="page[end]" />
-                </div>
-
-              </div>
-
+            <a href="#" id="toggle_titles" class="heading toggle"><label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label></a>
+            <div id="titles">
+                <input type="text" class="title" name="page[name]" id="page_name" />
+                <span class="info">{TXT_CORE_CM_PAGE_NAME_INFO}</span>
+                <label for="page_title">{TXT_CORE_CM_PAGE_TITLE}</label>
+                <input type="text" class="title" name="page[title]" id="page_title" />
+                <span class="info">{TXT_CORE_CM_PAGE_TITLE_INFO}</span>
             </div>
-            <textarea id="cm_ckeditor" rows="15" cols="45" name="page[content]"></textarea>
+            <a href="#" id="toggle_type" class="heading toggle">{TXT_CORE_CM_TYPE}</a>
+            <div id="type" class="clearfix">
+                <input type="radio" name="page[type]" value="content" id="type_content" class="radio" />
+                <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
+                <input type="radio" name="page[type]" value="redirect" id="type_redirect" class="radio" />
+                <label for="type_redirect">{TXT_CORE_CM_TYPE_REDIRECT}</label>
+                <input type="radio" name="page[type]" value="application" id="type_application" class="radio" />
+                <label for="type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
+                <input type="radio" name="page[type]" value="fallback" id="type_fallback" class="radio" />
+                <label for="type_fallback">{TXT_CORE_CM_TYPE_FALLBACK}</label>
+                <br style="clear: both;" />
+                <span class="info type_hidable type_content">{TXT_CORE_CM_TYPE_CONTENT_INFO}</span>
+                <label for="page_redirect" class="type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label><br class="type_hidable type_redirect" />
+                <input type="text" class="type_hidable type_redirect" name="page[redirect]" id="page_target" />
+                <button id="targetBrowseButton" class="type_hidable type_redirect">{TXT_CORE_CM_BROWSE}</button>
+                <span class="info type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_INFO}</span>
+                <label for="page_application" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
+                <label for="page_application_area" class="type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION_AREA}</label><br /><!-- TODO: fix br -->
+                <select name="page[application]" class="type_hidable type_application" id="page_application">
+<!-- BEGIN module_option -->
+                    <option value="{MODULE_KEY}">{MODULE_TITLE}</option>
+<!-- END module_option -->
+                </select>
+                <input type="text" name="page[area]" class="type_hidable type_application" id="page_application_area" />
+                <span class="info type_hidable type_application">{TXT_CORE_CM_TYPE_APPLICATION_INFO}</span>
+
+                <span class="info type_hidable type_fallback">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
+            </div>
+            <a href="#" class="heading toggle_checkbox">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
+            <div id="scheduled_publishing">
+                <input type="text" name="page[start]" value="von" />
+                <input type="text" name="page[end]" value="bis" />
+            </div>
+
+            <div class="type_hidable type_application type_content" style="margin-top: 20px;">
+                <textarea id="cm_ckeditor" rows="15" cols="45" name="page[content]"></textarea>
+            </div>
         </div>
-        <div id="tabs-3">
+        <div id="page_meta">
+            <a href="#" class="heading toggle_checkbox">{TXT_CORE_CM_SE_INDEX}</a>
+            <div id="metadata">
+                <label for="page_metatitle">{TXT_CORE_CM_METATITLE}</label>
+                <input type="text" name="page[metatitle]" />
+                <span class="info">{TXT_CORE_CM_METATITLE_INFO}</span>
+
+                <label for="page_metadesc">{TXT_CORE_CM_METADESC}</label>
+                <textarea name="page[metadesc]"></textarea>
+                <span class="info">{TXT_CORE_CM_METADESC_INFO}</span>
+
+                <label for="page_metadesc">{TXT_CORE_CM_METAKEYS}</label>
+                <textarea name="page[metakeys]"></textarea>
+                <span class="info">{TXT_CORE_CM_METAKEYS_INFO}</span>
+            </div>
+        </div>
+        <div id="page_access">
             <select style="width: 400px; height: 300px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
               <option value="test">unselected</option>
               <option value="test2" selected="selected">selected</option>
@@ -124,46 +85,47 @@
             </select>
 
         </div>
-        <div id="tabs-4">
-            <div class="additionalInfo">
-              <div class="clearfix">
-                <h2>{TXT_CORE_APPLICATION_AREA}</h2>
-              </div>
-              <div class="clearfix space">
-                <h2>{TXT_CORE_OPTICS_STYLE}</h2>
-                <label for="skin" class="oneCol">{TXT_CORE_SKIN}</label>
-                <select id="skin" class="oneCol" value="{SKIN}" name="page[skin]">
-                    <option value="">(Standard)</option>
-                {SKIN_OPTIONS}
+        <div id="page_settings">
+            <a href="#" class="heading toggle">{TXT_CORE_CM_THEMES}</a>
+            <div id="themes">
+                <select id="page_skin" name="page[skin]">
+                    <option value="">(Default)</option>
+                    {SKIN_OPTIONS}
                 </select>
-              </div>
-              <div class="clearfix space">
-                <label for="cssName" class="oneCol">{TXT_CORE_CSSNAME}</label>
-                <input id="cssName" class="oneCol" value="{CSSNAME}" name="page[cssName]" />
-              </div>
-              <div class="clearfix space">
-                <h2>{TXT_CORE_SPECIAL_CONTENT_PAGE}</h2>
-                <label for="customContent" class="oneCol">{TXT_CORE_CUSTOMCONTENT}</label>
-                <select id="customContent" class="oneCol" value="{CUSTOMCONTENT}" name="page[customContent]">
-                    <option value="">(Standard)</option>
-                {CUSTOMCONTENT_OPTIONS}
+                <span class="info">{TXT_CORE_CM_THEMES_INFO}</span>
+                <label for="page_custom_content">{TXT_CORE_CM_CUSTOM_CONTENT}</label>
+                <select id="page_custom_content" name="page[customContent]">
+                    <option>foo</option>
                 </select>
-              </div>
-              <div class="clearfix space">
-                <h2>{TXT_CORE_PERFORMANCE_OPTIMIZATION}</h2>
-                <label for="caching" class="oneCol">{TXT_CORE_CACHING}</label>
-                <input id="caching" class="oneCol" type="checkbox" value="true" name="page[caching]" />
-              </div>
-              <div class="clearfix">
-                <h2>{TXT_CORE_LINK}</h2>
-                <label for="slug" class="oneCol">{TXT_CORE_SLUG}</label>
-                <input id="slug" class="oneCol" type="text" value="{SLUG}" name="page[slug]" />
-              </div>
+                <span class="info">{TXT_CORE_CM_CUSTOM_CONTENT_INFO}</span>
+                <label for="page_css_class">{TXT_CORE_CM_CSS_CLASS}</label>
+                <input type="text" name="page[cssName]" id="page_css_class" />
+                <span class="info">{TXT_CORE_CM_CSS_CLASS_INFO}</span>
             </div>
-          <div class="clearfix"></div>
+            <a href="#" class="heading toggle_checkbox">{TXT_CORE_CM_CACHE}</a>
+            <a href="#" class="heading toggle">{TXT_CORE_CM_NAVIGATION}</a>
+            <div id="navigation">
+                <label for="page_link_target">{TXT_CORE_CM_LINK_TARGET}</label>
+                <select id="page_link_target" name="page[link_target]">
+                    <option value="">(None)</option>
+                    <option value="_blank">New Window (_blank)</option>
+                    <option value="_parent">Parent Window (_parent)</option>
+                    <option value="_top">Top Window (_top)</option>
+                </select>
+                <span class="info">{TXT_CORE_CM_LINK_TARGET_INO}</span>
+
+                <label for="page_slug">{TXT_CORE_CM_SLUG}</label>
+                <input type="text" name="page[slug]" id="page_slug" />
+                <span class="info">{TXT_CORE_CM_SLUG_INFO}</span>
+
+                <label for="page_css_nav_class">{TXT_CORE_CM_CSS_NAV_CLASS}</label>
+                <input type="text" name="page[cssNavName]" id="page_css_nav_class" />
+                <span class="info">{TXT_CORE_CM_CSS_NAV_CLASS_INFO}</span>
+            </div>
         </div>
       </form>
-      <div id="tabs-5">
+
+      <div id="page_history">
         <div id="historyContainer">
         </div>
       </div>
