@@ -78,7 +78,7 @@ h1{ font-size: 20px }
 #site-structure {
     border-right: 1px solid #d3d3d3; /* grey */
     float: left;
-    width: 23%;
+    width: 330px;
     overflow: hidden;
 }
 
@@ -108,7 +108,7 @@ h1{ font-size: 20px }
     border-top: 1px solid #cccccc;
     float: left;
     overflow: hidden;
-    width: 850px;
+    width: 70%;
     margin: 0 -1px
 }
 #site-language{
