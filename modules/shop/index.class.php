@@ -35,7 +35,6 @@ require_once ASCMS_MODULE_PATH.'/shop/lib/ShopCategories.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Vat.class.php';
 require_once ASCMS_MODULE_PATH.'/shop/lib/Weight.class.php';
 
-
 /**
  * Shop
  * @internal    Extract code from this class and move it to other classes:
@@ -1357,7 +1356,7 @@ die("Failed to update the Cart!");
             $domId = 0;
             $count = 0;
             $arrAttributes = Attributes::getArray(
-                $count, null, null, null, array('product_id' => $product_id));
+                $count, null, null, '`ord` ASC', array('product_id' => $product_id));
 //DBG::log("Attributes: ".var_export($arrAttributes, true));
             // When there are no Attributes for this Product, hide the
             // options blocks
@@ -1367,6 +1366,7 @@ die("Failed to update the Cart!");
             } else {
                 // Loop through the Attribute Names for the Product
                 foreach ($arrAttributes as $attribute_id => $objAttribute) {
+                    $mandatory = false;
                     $arrOptions = Attributes::getOptionArrayByAttributeId($attribute_id);
                     $arrRelation = Attributes::getRelationArray($product_id);
                     // This attribute does not apply for this product
@@ -1407,6 +1407,7 @@ die("Failed to update the Cart!");
                       case Attribute::TYPE_DATE_MANDATORY:
                       case Attribute::TYPE_NUMBER_INT_MANDATORY:
                       case Attribute::TYPE_NUMBER_FLOAT_MANDATORY:
+                        $mandatory = true;
                         // The Attribute name, indicating a mandatory option.
                         $selectValues =
                             '<input type="hidden" id="productOption-'.
@@ -1649,6 +1650,12 @@ die("Failed to update the Cart!");
                             $_ARRAYLANG['TXT_OPTIONS'].'">'.
                             $_ARRAYLANG['TXT_OPTIONS']."</a>\n",
                     ));
+                    if ($mandatory
+                     && self::$objTemplate->blockExists(
+                            'product_attribute_mandatory')) {
+                        self::$objTemplate->touchBlock(
+                            'product_attribute_mandatory');
+                    }
                     self::$objTemplate->parse('shopProductOptionsValuesRow');
                 }
                 self::$objTemplate->parse('shopProductOptionsRow');
