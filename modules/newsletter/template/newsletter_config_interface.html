@@ -2,7 +2,7 @@
 <div id="subnavbar_level2">
 <ul>
     <li><a href="index.php?cmd=newsletter&amp;act=dispatch" title="{TXT_DISPATCH_SETINGS}">{TXT_DISPATCH_SETINGS}</a></li>
-    <li><a href="index.php?cmd=newsletter&amp;act=interface" title="{TXT_INTERFACE}">{TXT_NEWSLETTER_INTERFACE}</a></li>
+    <li><a href="index.php?cmd=newsletter&amp;act=interface" title="{TXT_NEWSLETTER_INTERFACE}">{TXT_NEWSLETTER_INTERFACE}</a></li>
     <li><a href="index.php?cmd=newsletter&amp;act=confightml" title="{TXT_GENERATE_HTML}">{TXT_GENERATE_HTML}</a></li>
     <li><a href="index.php?cmd=newsletter&amp;act=activatemail" title="{TXT_CONFIRM_MAIL}">{TXT_ACTIVATE_MAIL}</a></li>
     <li><a href="index.php?cmd=newsletter&amp;act=confirmmail" title="{TXT_CONFIRM_MAIL}">{TXT_CONFIRM_MAIL}</a></li>
@@ -18,81 +18,81 @@
   </tr>
   <tr class="row3">
       <td colspan="2"><strong>{TXT_NEWSLETTER_PROFILE_DETAILS}</strong></td>      
-  </tr>
+  </tr>    
     <tr class="row1">
       <td>{TXT_NEWSLETTER_SEX}</td>
-      <td><input type="checkbox" id="recipientSex" name="recipientSex" value="1" /><label for="recipientSex">{TXT_ACTIVE}</label></td>
-    </tr>
+      <td><input type="checkbox" id="recipientSex" name="recipientSex" value="1" {NEWSLETTER_RECIPIENT_SEX} /><label for="recipientSex">{TXT_ACTIVE}</label></td>
+    </tr>    
     <tr class="row2">
       <td>{TXT_NEWSLETTER_SALUTATION}</td>
-      <td><input type="checkbox" name="recipientSalutation" id="recipientSalutation" value="1" /><label for="recipientSalutation">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientSalutation" id="recipientSalutation" value="1" {NEWSLETTER_RECIPIENT_SALUTION} /><label for="recipientSalutation">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td>{TXT_NEWSLETTER_TITLE}</td>
-      <td><input type="checkbox" name="recipientSex" id="recipientSex" value="1" /><label for="recipientSex">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientTitle" id="recipientTitle" value="1" {NEWSLETTER_RECIPIENT_TITLE} /><label for="recipientTitle">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td width="12%">{TXT_NEWSLETTER_FIRSTNAME}</td>
-      <td><input type="checkbox" name="recipientFirstName" id="recipientFirstName" value="1" /><label for="recipientFirstName">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientFirstName" id="recipientFirstName" value="1" {NEWSLETTER_RECIPIENT_FIRST_NAME} /><label for="recipientFirstName">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td>{TXT_NEWSLETTER_LASTNAME}</td>
-      <td><input type="checkbox" name="recipientLastName" id="recipientLastName" value="1" /><label for="recipientLastName">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientLastName" id="recipientLastName" value="1" {NEWSLETTER_RECIPIENT_LAST_NAME} /><label for="recipientLastName">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td>{TXT_NEWSLETTER_POSITION}</td>
-      <td><input type="checkbox" name="recipientPosition" id="recipientPosition" value="1" /><label for="recipientPosition">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientPosition" id="recipientPosition" value="1" {NEWSLETTER_RECIPIENT_POSITION} /><label for="recipientPosition">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td>{TXT_NEWSLETTER_COMPANY}</td>
-      <td><input type="checkbox" name="recipientCompany" id="recipientCompany" value="1" /><label for="recipientCompany">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientCompany" id="recipientCompany" value="1" {NEWSLETTER_RECIPIENT_COMPANY} /><label for="recipientCompany">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td>{TXT_NEWSLETTER_INDUSTRY_SECTOR}</td>
-      <td><input type="checkbox" name="recipientIndustry" id="recipientIndustry" value="1" /><label for="recipientIndustry">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientIndustry" id="recipientIndustry" value="1" {NEWSLETTER_RECIPIENT_INDUSTRY} /><label for="recipientIndustry">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td>{TXT_NEWSLETTER_ADDRESS}</td>
-      <td><input type="checkbox" name="recipientAddress" id="recipientAddress" value="1" /><label for="recipientAddress">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientAddress" id="recipientAddress" value="1" {NEWSLETTER_RECIPIENT_ADDRESS} /><label for="recipientAddress">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td>{TXT_NEWSLETTER_CITY}</td>
-      <td><input type="checkbox" name="recipientCity" id="recipientCity" value="1" /><label for="">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientCity" id="recipientCity" value="1" {NEWSLETTER_RECIPIENT_CITY} /><label for="recipientCity">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td>{TXT_NEWSLETTER_ZIP}</td>
-      <td><input type="checkbox" name="recipientZip" id="recipientZip" value="1" /><label for="recipientZip">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientZip" id="recipientZip" value="1" {NEWSLETTER_RECIPIENT_ZIP} /><label for="recipientZip">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td>{TXT_NEWSLETTER_COUNTRY}</td>
-      <td><input type="checkbox" name="recipientCountry" id="recipientCountry" value="1" /><label for="recipientCountry">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientCountry" id="recipientCountry" value="1" {NEWSLETTER_RECIPIENT_COUNTRY} /><label for="recipientCountry">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td>{TXT_NEWSLETTER_PHONE}</td>
-      <td><input type="checkbox" name="recipientPhone" id="recipientPhone" value="1" /><label for="recipientPhone">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientPhone" id="recipientPhone" value="1" {NEWSLETTER_RECIPIENT_PHONE} /><label for="recipientPhone">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td>{TXT_NEWSLETTER_PHONE_PRIVATE}</td>
-      <td><input type="checkbox" name="recipientPrivate" id="recipientPrivate" value="1" /><label for="recipientPrivate">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientPrivate" id="recipientPrivate" value="1" {NEWSLETTER_RECIPIENT_PRIVATE} /><label for="recipientPrivate">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td>{TXT_NEWSLETTER_PHONE_MOBILE}</td>
-      <td><input type="checkbox" name="recipientMobile" id="recipientMobile" value="1" /><label for="recipientMobile">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientMobile" id="recipientMobile" value="1" {NEWSLETTER_RECIPIENT_MOBILE} /><label for="recipientMobile">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td>{TXT_NEWSLETTER_FAX}</td>
-      <td><input type="checkbox" name="recipientFax" id="recipientFax" value="1" /><label for="recipientFax">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientFax" id="recipientFax" value="1" {NEWSLETTER_RECIPIENT_FAX} /><label for="recipientFax">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row1">
       <td width="17%">{TXT_NEWSLETTER_BIRTHDAY}</td>
-      <td><input type="checkbox" name="recipientBirthDay" id="recipientBirthDay" value="1" /><label for="recipientBirthDay">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientBirthDay" id="recipientBirthDay" value="1" {NEWSLETTER_RECIPIENT_BIRTHDAY} /><label for="recipientBirthDay">{TXT_ACTIVE}</label></td>
     </tr>
     <tr class="row2">
       <td width="15%">{TXT_NEWSLETTER_WEBSITE}</td>
-      <td><input type="checkbox" name="recipientWebsite" id="recipientWebsite" value="1" /><label for="recipientWebsite">{TXT_ACTIVE}</label></td>
+      <td><input type="checkbox" name="recipientWebsite" id="recipientWebsite" value="1" {NEWSLETTER_RECIPIENT_WEBSITE} /><label for="recipientWebsite">{TXT_ACTIVE}</label></td>
     </tr>
 </table>
     <br />
-<input type="submit" value="{TXT_SAVE}" />
+<input type="submit" name="interfaceSettings" value="{TXT_SAVE}" />
 </form>    
 <!-- START module_newsletter_config_interface.html -->
