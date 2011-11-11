@@ -2367,10 +2367,6 @@ CREATE TABLE `contrexx_module_newsletter_email_link_feedback` (
   UNIQUE KEY `link_id` (`link_id`,`email_id`,`recipient_id`,`recipient_type`),
   KEY `email_id` (`email_id`)
 ) ENGINE=MyISAM;
-CREATE TABLE `contrexx_module_newsletter_interface_settings` (
-  `name` varchar(32) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=MyISAM;
 CREATE TABLE `contrexx_module_newsletter_rel_cat_news` (
   `newsletter` int(11) NOT NULL DEFAULT '0',
   `category` int(11) NOT NULL DEFAULT '0',
