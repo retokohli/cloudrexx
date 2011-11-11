@@ -12,7 +12,7 @@
             <input type="hidden" name="page[node]" id="pageNode" value="" />
             <input type="hidden" name="source_page" id="sourcePage" value="" />
 
-            <a href="#" id="toggle_titles" class="heading toggle"><label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label></a>
+            <a id="toggle_titles" class="heading toggle"><label for="page_name">{TXT_CORE_CM_PAGE_NAME}</label></a>
             <div id="titles">
                 <input type="text" class="title" name="page[name]" id="page_name" />
                 <span class="info">{TXT_CORE_CM_PAGE_NAME_INFO}</span>
@@ -20,7 +20,7 @@
                 <input type="text" class="title" name="page[title]" id="page_title" />
                 <span class="info">{TXT_CORE_CM_PAGE_TITLE_INFO}</span>
             </div>
-            <a href="#" id="toggle_type" class="heading toggle">{TXT_CORE_CM_TYPE}</a>
+            <a id="toggle_type" class="heading toggle">{TXT_CORE_CM_TYPE}</a>
             <div id="type" class="clearfix">
                 <input type="radio" name="page[type]" value="content" id="type_content" class="radio" />
                 <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
@@ -48,10 +48,10 @@
 
                 <span class="info type_hidable type_fallback">{TXT_CORE_CM_TYPE_FALLBACK_INFO}</span>
             </div>
-            <a href="#" class="heading toggle_checkbox">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
-            <div id="scheduled_publishing">
-                <input type="text" name="page[start]" value="von" />
-                <input type="text" name="page[end]" value="bis" />
+            <a class="heading toggle_checkbox" id="page[scheduled_publishing]">{TXT_CORE_CM_SCHEDULED_PUBLISHING}</a>
+            <div id="scheduled_publishing" style="display: none;">
+                Von: <input type="text" name="page[start]" value="von" class="date" />
+                Bis: <input type="text" name="page[end]" value="bis" class="date" />
             </div>
 
             <div class="type_hidable type_application type_content" style="margin-top: 20px;">
@@ -59,8 +59,8 @@
             </div>
         </div>
         <div id="page_meta">
-            <a href="#" class="heading toggle_checkbox">{TXT_CORE_CM_SE_INDEX}</a>
-            <div id="metadata">
+            <a class="heading toggle_checkbox" id="page[metarobots]">{TXT_CORE_CM_SE_INDEX}</a>
+            <div id="metadata" style="display: none;">
                 <label for="page_metatitle">{TXT_CORE_CM_METATITLE}</label>
                 <input type="text" name="page[metatitle]" />
                 <span class="info">{TXT_CORE_CM_METATITLE_INFO}</span>
@@ -102,7 +102,7 @@
                 <input type="text" name="page[cssName]" id="page_css_class" />
                 <span class="info">{TXT_CORE_CM_CSS_CLASS_INFO}</span>
             </div>
-            <a href="#" class="heading toggle_checkbox">{TXT_CORE_CM_CACHE}</a>
+            <a class="heading toggle_checkbox" id="page[caching]">{TXT_CORE_CM_CACHE}</a>
             <a href="#" class="heading toggle">{TXT_CORE_CM_NAVIGATION}</a>
             <div id="navigation">
                 <label for="page_link_target">{TXT_CORE_CM_LINK_TARGET}</label>
