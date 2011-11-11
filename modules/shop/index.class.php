@@ -1588,7 +1588,7 @@ die("Failed to update the Cart!");
                             $selectValues .=
                                 '<textarea name="productOption['.$attribute_id.
                                 ']" id="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.
-                                '" style="width:300px;" />'.
+                                '" style="width:300px;">'.
                                 contrexx_input2xhtml($arrOption['value']).
                                 '</textarea>'.
                                 '<label for="productOption-'.$product_id.'-'.$attribute_id.'-'.$domId.'">'.
@@ -1763,6 +1763,19 @@ function toggleOptions(productId)
   }
 }
 
+function mark_valid(elements) {
+  if (elements.first().attr('type') == 'radio') {
+    return elements.next('label').removeClass('error');
+  }
+  return elements.removeClass('error');
+}
+function mark_invalid(elements) {
+  if (elements.first().attr('type') == 'radio') {
+    return elements.next('label').addClass('error');
+  }
+  return elements.addClass('error');
+}
+
 function checkProductOption(objForm, productId, strAttributeIds)
 {
   // The list of Product Attribute IDs, joined by semicolons.
@@ -1853,19 +1866,6 @@ function checkProductOption(objForm, productId, strAttributeIds)
     addProductToCart(objForm);
     return false;
   }
-}
-
-function mark_valid(elements) {
-  if (elements.first().attr('type') == 'radio') {
-    return elements.next('label').removeClass('error');
-  }
-  return elements.removeClass('error');
-}
-function mark_invalid(elements) {
-  if (elements.first().attr('type') == 'radio') {
-    return elements.next('label').addClass('error');
-  }
-  return elements.addClass('error');
 }
 
 function addProductToCart(objForm)
