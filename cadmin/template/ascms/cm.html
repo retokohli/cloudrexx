@@ -75,15 +75,17 @@
             </div>
         </div>
         <div id="page_access">
-            <select style="width: 400px; height: 300px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
-              <option value="test">unselected</option>
-              <option value="test2" selected="selected">selected</option>
-            </select>
-            <select style="width: 400px; height: 300px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
-              <option value="test">unselected</option>
-              <option value="test2" selected="selected">selected</option>
-            </select>
-
+            <a class="heading toggle_checkbox" id="page[protection]">{TXT_CORE_CM_ACCESS_PROTECTION}</a>
+            <div id="access_protection" style="display: none;">
+                <select style="width: 300px; height: 250px" id="frontendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
+                  <option value="test">unselected</option>
+                  <option value="test2" selected="selected">selected</option>
+                </select>
+                <select style="width: 300px; height: 250px" id="backendAccessGroups" class="multiselect" multiple="multiple" name="groups[]">
+                  <option value="test">unselected</option>
+                  <option value="test2" selected="selected">selected</option>
+                </select>
+            </div>
         </div>
         <div id="page_settings">
             <a href="#" class="heading toggle">{TXT_CORE_CM_THEMES}</a>
