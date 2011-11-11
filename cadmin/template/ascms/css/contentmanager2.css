@@ -131,6 +131,7 @@ h1{ font-size: 20px }
     width: 18px;
     height: 18px;
     overflow: hidden;
+    float: left;
 }
 
 #site-tree div.actions, div.actions-expanded {
