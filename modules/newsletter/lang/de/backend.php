@@ -444,4 +444,5 @@ $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'] = "E-Mail zustellen";
 $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'] = "Da der Versand bereits gestartet wurde, kann die Empfängerauswahl nicht mehr geändert werden.";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'] = "Das E-Mail %s wurde erfolgreich an den neu hinzugefügten Empfänger gesandt.";
 $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'] = "Oberfläche";
+$_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'] = "Wählen Sie ein E-Mail aus, welches nach dem Speichern an den Empfänger gesendet werden soll. ";
 ?>

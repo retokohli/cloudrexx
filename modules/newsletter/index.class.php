@@ -530,6 +530,68 @@ class newsletter extends NewsletterLib
         $languages .= '</select>';
 
         if ($showForm) {
+            
+            //display settings recipient profile detials
+            $objInterface = $objDatabase->Execute('SELECT `setvalue` 
+                                                    FROM `'.DBPREFIX.'module_newsletter_settings`
+                                                    WHERE `setname` = "recipient_attribute_status"');
+            $recipientStatus = json_decode($objInterface->fields['setvalue'], true);
+            
+            if ($this->_objTpl->blockExists('recipient_sex')) {
+                ($recipientStatus['recipient_sex']) ? $this->_objTpl->touchBlock('recipient_sex') : $this->_objTpl->hideBlock('recipient_sex');
+            }
+            if ($this->_objTpl->blockExists('recipient_salutation')) {
+                ($recipientStatus['recipient_salutation']) ? $this->_objTpl->touchBlock('recipient_salutation') : $this->_objTpl->hideBlock('recipient_salutation');
+            }
+            if ($this->_objTpl->blockExists('recipient_title')) {
+                ($recipientStatus['recipient_title']) ? $this->_objTpl->touchBlock('recipient_title') : $this->_objTpl->hideBlock('recipient_title');
+            }
+            if ($this->_objTpl->blockExists('recipient_lastname')) {
+                ($recipientStatus['recipient_lastname']) ? $this->_objTpl->touchBlock('recipient_lastname') : $this->_objTpl->hideBlock('recipient_lastname');
+            }
+            if ($this->_objTpl->blockExists('recipient_firstname')) {
+                ($recipientStatus['recipient_firstname']) ? $this->_objTpl->touchBlock('recipient_firstname') : $this->_objTpl->hideBlock('recipient_firstname');
+            }
+            if ($this->_objTpl->blockExists('recipient_position')) {
+                ($recipientStatus['recipient_position']) ? $this->_objTpl->touchBlock('recipient_position') : $this->_objTpl->hideBlock('recipient_position');
+            }
+            if ($this->_objTpl->blockExists('recipient_company')) {
+                ($recipientStatus['recipient_company']) ? $this->_objTpl->touchBlock('recipient_company') : $this->_objTpl->hideBlock('recipient_company');
+            }
+            if ($this->_objTpl->blockExists('recipient_industry')) {
+                ($recipientStatus['recipient_industry']) ? $this->_objTpl->touchBlock('recipient_industry') : $this->_objTpl->hideBlock('recipient_industry');
+            }            
+            if ($this->_objTpl->blockExists('recipient_zip')) {
+                ($recipientStatus['recipient_zip']) ? $this->_objTpl->touchBlock('recipient_zip') : $this->_objTpl->hideBlock('recipient_zip');
+            }
+            if ($this->_objTpl->blockExists('recipient_city')) {
+                ($recipientStatus['recipient_city']) ? $this->_objTpl->touchBlock('recipient_city') : $this->_objTpl->hideBlock('recipient_city');
+            }
+            if ($this->_objTpl->blockExists('recipient_address')) {
+                ($recipientStatus['recipient_address']) ? $this->_objTpl->touchBlock('recipient_address') : $this->_objTpl->hideBlock('recipient_address');
+            }                        
+            if ($this->_objTpl->blockExists('recipient_country')) {
+                ($recipientStatus['recipient_country']) ? $this->_objTpl->touchBlock('recipient_country') : $this->_objTpl->hideBlock('recipient_country');
+            }
+            if ($this->_objTpl->blockExists('recipient_phone')) {
+                ($recipientStatus['recipient_phone']) ? $this->_objTpl->touchBlock('recipient_phone') : $this->_objTpl->hideBlock('recipient_phone') ;
+            }
+            if ($this->_objTpl->blockExists('recipient_private')) {
+                ($recipientStatus['recipient_private']) ? $this->_objTpl->touchBlock('recipient_private') : $this->_objTpl->hideBlock('recipient_private');
+            }
+            if ($this->_objTpl->blockExists('recipient_mobile')) {
+                ($recipientStatus['recipient_mobile']) ? $this->_objTpl->touchBlock('recipient_mobile') : $this->_objTpl->hideBlock('recipient_mobile');
+            }
+            if ($this->_objTpl->blockExists('recipient_fax')) {
+                ($recipientStatus['recipient_fax']) ? $this->_objTpl->touchBlock('recipient_fax') : $this->_objTpl->hideBlock('recipient_fax');
+            }
+            if ($this->_objTpl->blockExists('recipient_birthday')) {
+                ($recipientStatus['recipient_birthday']) ? $this->_objTpl->touchBlock('recipient_birthday') : $this->_objTpl->hideBlock('recipient_birthday');
+            }            
+            if ($this->_objTpl->blockExists('recipient_website')) {
+                ($recipientStatus['recipient_website']) ? $this->_objTpl->touchBlock('recipient_website') : $this->_objTpl->hideBlock('recipient_website');
+            }
+
             $this->_objTpl->setVariable(array(
                 'NEWSLETTER_PROFILE_MAIL'    => urlencode($requestedMail),
                 'NEWSLETTER_EMAIL'        => htmlentities($recipientEmail, ENT_QUOTES, CONTREXX_CHARSET),

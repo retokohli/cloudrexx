@@ -444,5 +444,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'] = "Send e-mail";
 $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'] = "The delivery of this e-mail has been started already. Therefore the recipient selection can't be changed anymore.";
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'] = "E-mail %s was sent successfully to the newly added recipient.";
 $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'] = "Interface";
-$_ARRAYLANG['TXT_NEWSLETTER_PROFILE_DETAILS'] = "Profile details"
+$_ARRAYLANG['TXT_NEWSLETTER_PROFILE_DETAILS'] = "Profile details";
+$_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'] = "Choose an e-mail to be send to the recipient after creating.";
 ?>
