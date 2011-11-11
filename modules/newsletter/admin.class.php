@@ -1716,67 +1716,65 @@ class newsletter extends NewsletterLib
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('newsletter_config_interface.html');        
 
-
+        $recipientAttributeStatus = array();
         if (isset($_POST['interfaceSettings'])) {
-            $newInterfaceSettings['recipient_sex']           = (isset($_POST['recipientSex'])) ? intval($_POST['recipientSex']) : 0;
-            $newInterfaceSettings['recipient_salutation']    = (isset($_POST['recipientSalutation'])) ? intval($_POST['recipientSalutation']) : 0;
-            $newInterfaceSettings['recipient_title']         = (isset($_POST['recipientTitle'])) ? intval($_POST['recipientTitle']) : 0;
-            $newInterfaceSettings['recipient_firstname']     = (isset($_POST['recipientFirstName'])) ? intval($_POST['recipientFirstName']) : 0;
-            $newInterfaceSettings['recipient_lastname']      = (isset($_POST['recipientLastName'])) ? intval($_POST['recipientLastName']) : 0;
-            $newInterfaceSettings['recipient_position']      = (isset($_POST['recipientPosition'])) ? intval($_POST['recipientPosition']) : 0;
-            $newInterfaceSettings['recipient_company']       = (isset($_POST['recipientCompany'])) ? intval($_POST['recipientCompany']) : 0;
-            $newInterfaceSettings['recipient_industry']      = (isset($_POST['recipientIndustry'])) ? intval($_POST['recipientIndustry']) : 0;
-            $newInterfaceSettings['recipient_address']       = (isset($_POST['recipientAddress'])) ? intval($_POST['recipientAddress']) : 0;
-            $newInterfaceSettings['recipient_city']          = (isset($_POST['recipientCity'])) ? intval($_POST['recipientCity']) : 0;
-            $newInterfaceSettings['recipient_zip']           = (isset($_POST['recipientZip'])) ? intval($_POST['recipientZip']) : 0;
-            $newInterfaceSettings['recipient_country']       = (isset($_POST['recipientCountry'])) ? intval($_POST['recipientCountry']) : 0;
-            $newInterfaceSettings['recipient_phone']         = (isset($_POST['recipientPhone'])) ? intval($_POST['recipientPhone']) : 0;
-            $newInterfaceSettings['recipient_private']       = (isset($_POST['recipientPrivate'])) ? intval($_POST['recipientPrivate']) : 0;
-            $newInterfaceSettings['recipient_mobile']        = (isset($_POST['recipientMobile'])) ? intval($_POST['recipientMobile']) : 0;
-            $newInterfaceSettings['recipient_fax']           = (isset($_POST['recipientFax'])) ? intval($_POST['recipientFax']) : 0;
-            $newInterfaceSettings['recipient_birthday']      = (isset($_POST['recipientBirthDay'])) ? intval($_POST['recipientBirthDay']) : 0;
-            $newInterfaceSettings['recipient_website']       = (isset($_POST['recipientWebsite'])) ? intval($_POST['recipientWebsite']) : 0;
-   
-            $status = true;
-
-            foreach ($newInterfaceSettings as $key => $value) {
-                if ($objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_interface_settings SET `status`='".$value."' WHERE `name`='".$key."'") === false) {
-                    $status = false;
-                }
-            }                       
-            if ($status) {
+            
+            $recipientAttributeStatus = array(
+                'recipient_sex'           => (isset($_POST['recipientSex'])) ? true : false,
+                'recipient_salutation'    => (isset($_POST['recipientSalutation'])) ? true : false,
+                'recipient_title'         => (isset($_POST['recipientTitle'])) ? true : false,
+                'recipient_firstname'     => (isset($_POST['recipientFirstName'])) ? true : false,
+                'recipient_lastname'      => (isset($_POST['recipientLastName'])) ? true : false,
+                'recipient_position'      => (isset($_POST['recipientPosition'])) ? true : false,
+                'recipient_company'       => (isset($_POST['recipientCompany'])) ? true : false,
+                'recipient_industry'      => (isset($_POST['recipientIndustry'])) ? true : false,
+                'recipient_address'       => (isset($_POST['recipientAddress'])) ? true : false,
+                'recipient_city'          => (isset($_POST['recipientCity'])) ? true : false,
+                'recipient_zip'           => (isset($_POST['recipientZip'])) ? true : false,
+                'recipient_country'       => (isset($_POST['recipientCountry'])) ? true : false,
+                'recipient_phone'         => (isset($_POST['recipientPhone'])) ? true : false,
+                'recipient_private'       => (isset($_POST['recipientPrivate'])) ? true : false,
+                'recipient_mobile'        => (isset($_POST['recipientMobile'])) ? true : false,
+                'recipient_fax'           => (isset($_POST['recipientFax'])) ? true : false,
+                'recipient_birthday'      => (isset($_POST['recipientBirthDay'])) ? true : false,
+                'recipient_website'       => (isset($_POST['recipientWebsite'])) ? true : false,
+            );
+                           
+            $objUpdateStatus = $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings
+                                                        SET `setvalue`='".json_encode($recipientAttributeStatus)."'
+                                                      WHERE `setname` = 'recipient_attribute_status'");
+                    
+            if ($objUpdateStatus) {
                 self::$strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
                 self::$strErrMessage = $_ARRAYLANG['TXT_DATABASE_ERROR'];
             }
         }
 
-        $objInterface = $objDatabase->Execute('SELECT name, status FROM `'.DBPREFIX.'module_newsletter_interface_settings`');
-        while (!$objInterface->EOF) {
-            $interfaceSettings[$objInterface->fields['name']] = $objInterface->fields['status'];
-            $objInterface->MoveNext();
-        }        
-        
+        $objInterface = $objDatabase->Execute('SELECT `setvalue` 
+                                                FROM `'.DBPREFIX.'module_newsletter_settings`
+                                                WHERE `setname` = "recipient_attribute_status"');
+        $recipientStatus = json_decode($objInterface->fields['setvalue'], true);
         
         $this->_objTpl->setVariable(array(
-            'NEWSLETTER_RECIPIENT_SEX'          => ($interfaceSettings['recipient_sex'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_SALUTION'     => ($interfaceSettings['recipient_salutation'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_TITLE'        => ($interfaceSettings['recipient_title'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_FIRST_NAME'   => ($interfaceSettings['recipient_firstname'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_LAST_NAME'    => ($interfaceSettings['recipient_lastname'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_POSITION'     => ($interfaceSettings['recipient_position'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_COMPANY'      => ($interfaceSettings['recipient_company'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_INDUSTRY'     => ($interfaceSettings['recipient_industry'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_ADDRESS'      => ($interfaceSettings['recipient_address'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_CITY'         => ($interfaceSettings['recipient_city'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_ZIP'          => ($interfaceSettings['recipient_zip'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_COUNTRY'      => ($interfaceSettings['recipient_country'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_PHONE'        => ($interfaceSettings['recipient_phone'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_PRIVATE'      => ($interfaceSettings['recipient_private'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_MOBILE'       => ($interfaceSettings['recipient_mobile'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_FAX'          => ($interfaceSettings['recipient_fax'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_BIRTHDAY'     => ($interfaceSettings['recipient_birthday'] == 1) ? 'checked="checked"' : '',
-            'NEWSLETTER_RECIPIENT_WEBSITE'      => ($interfaceSettings['recipient_website'] == 1) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_SEX'          => ($recipientStatus['recipient_sex']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_SALUTION'     => ($recipientStatus['recipient_salutation']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_TITLE'        => ($recipientStatus['recipient_title']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_FIRST_NAME'   => ($recipientStatus['recipient_firstname']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_LAST_NAME'    => ($recipientStatus['recipient_lastname']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_POSITION'     => ($recipientStatus['recipient_position']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_COMPANY'      => ($recipientStatus['recipient_company']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_INDUSTRY'     => ($recipientStatus['recipient_industry']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_ADDRESS'      => ($recipientStatus['recipient_address']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_CITY'         => ($recipientStatus['recipient_city']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_ZIP'          => ($recipientStatus['recipient_zip']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_COUNTRY'      => ($recipientStatus['recipient_country']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_PHONE'        => ($recipientStatus['recipient_phone']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_PRIVATE'      => ($recipientStatus['recipient_private']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_MOBILE'       => ($recipientStatus['recipient_mobile']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_FAX'          => ($recipientStatus['recipient_fax']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_BIRTHDAY'     => ($recipientStatus['recipient_birthday']) ? 'checked="checked"' : '',
+            'NEWSLETTER_RECIPIENT_WEBSITE'      => ($recipientStatus['recipient_website']) ? 'checked="checked"' : '',
         ));        
         
         $this->_objTpl->setVariable(array(                             
@@ -4718,29 +4716,29 @@ $WhereStatement = '';
         }
 
         //display settings recipient profile detials
-        $objInterfaceSettings = $objDatabase->Execute('SELECT * FROM '.DBPREFIX.'module_newsletter_interface_settings');
-        while (!$objInterfaceSettings->EOF) {
-            $interfaceSettings[$objInterfaceSettings->fields['name']] = $objInterfaceSettings->fields['status'];
-            $objInterfaceSettings->MoveNext();
-        } 
-
-        ($interfaceSettings['recipient_sex'] == 0) ? $this->_objTpl->hideBlock('recipient_sex') : $this->_objTpl->touchBlock('recipient_sex') ;
-        ($interfaceSettings['recipient_salutation'] == 0) ? $this->_objTpl->hideBlock('recipient_salutation') : $this->_objTpl->touchBlock('recipient_salutation') ;
-        ($interfaceSettings['recipient_title'] == 0) ? $this->_objTpl->hideBlock('recipient_title') : $this->_objTpl->touchBlock('recipient_title') ;
-        ($interfaceSettings['recipient_firstname'] == 0) ? $this->_objTpl->hideBlock('recipient_firstname') : $this->_objTpl->touchBlock('recipient_firstname') ;
-        ($interfaceSettings['recipient_lastname'] == 0) ? $this->_objTpl->hideBlock('recipient_lastname') : $this->_objTpl->touchBlock('recipient_lastname') ;
-        ($interfaceSettings['recipient_position'] == 0) ? $this->_objTpl->hideBlock('recipient_position') : $this->_objTpl->touchBlock('recipient_position') ;
-        ($interfaceSettings['recipient_company'] == 0) ? $this->_objTpl->hideBlock('recipient_company') : $this->_objTpl->touchBlock('recipient_company') ;
-        ($interfaceSettings['recipient_industry'] == 0) ? $this->_objTpl->hideBlock('recipient_industry') : $this->_objTpl->touchBlock('recipient_industry') ;
-        ($interfaceSettings['recipient_address'] == 0) ? $this->_objTpl->hideBlock('recipient_address') : $this->_objTpl->touchBlock('recipient_address') ;
-        ($interfaceSettings['recipient_city'] == 0) ? $this->_objTpl->hideBlock('recipient_city') : $this->_objTpl->touchBlock('recipient_city') ;
-        ($interfaceSettings['recipient_zip'] == 0) ? $this->_objTpl->hideBlock('recipient_zip') : $this->_objTpl->touchBlock('recipient_zip') ;
-        ($interfaceSettings['recipient_country'] == 0) ? $this->_objTpl->hideBlock('recipient_country') : $this->_objTpl->touchBlock('recipient_country') ;
-        ($interfaceSettings['recipient_phone'] == 0) ? $this->_objTpl->hideBlock('recipient_phone') : $this->_objTpl->touchBlock('recipient_phone') ;
-        ($interfaceSettings['recipient_private'] == 0) ? $this->_objTpl->hideBlock('recipient_private') : $this->_objTpl->touchBlock('recipient_private') ;
-        ($interfaceSettings['recipient_mobile'] == 0) ? $this->_objTpl->hideBlock('recipient_mobile') : $this->_objTpl->touchBlock('recipient_mobile') ;
-        ($interfaceSettings['recipient_birthday'] == 0) ? $this->_objTpl->hideBlock('recipient_birthday') : $this->_objTpl->touchBlock('recipient_birthday') ;
-        ($interfaceSettings['recipient_website'] == 0) ? $this->_objTpl->hideBlock('recipient_website') : $this->_objTpl->touchBlock('recipient_website') ;
+        $objInterface = $objDatabase->Execute('SELECT `setvalue` 
+                                                FROM `'.DBPREFIX.'module_newsletter_settings`
+                                                WHERE `setname` = "recipient_attribute_status"');
+        $recipientStatus = json_decode($objInterface->fields['setvalue'], true);
+        
+        ($recipientStatus['recipient_sex']) ? $this->_objTpl->touchBlock('recipient_sex') : $this->_objTpl->hideBlock('recipient_sex');
+        ($recipientStatus['recipient_salutation']) ? $this->_objTpl->touchBlock('recipient_salutation') : $this->_objTpl->hideBlock('recipient_salutation');
+        ($recipientStatus['recipient_title']) ? $this->_objTpl->touchBlock('recipient_title') : $this->_objTpl->hideBlock('recipient_title');
+        ($recipientStatus['recipient_firstname']) ? $this->_objTpl->touchBlock('recipient_firstname') : $this->_objTpl->hideBlock('recipient_firstname');
+        ($recipientStatus['recipient_lastname']) ? $this->_objTpl->touchBlock('recipient_lastname') : $this->_objTpl->hideBlock('recipient_lastname');
+        ($recipientStatus['recipient_position']) ? $this->_objTpl->touchBlock('recipient_position') : $this->_objTpl->hideBlock('recipient_position');
+        ($recipientStatus['recipient_company']) ? $this->_objTpl->touchBlock('recipient_company') : $this->_objTpl->hideBlock('recipient_company');
+        ($recipientStatus['recipient_industry']) ? $this->_objTpl->touchBlock('recipient_industry') : $this->_objTpl->hideBlock('recipient_industry');
+        ($recipientStatus['recipient_address']) ? $this->_objTpl->touchBlock('recipient_address') : $this->_objTpl->hideBlock('recipient_address');
+        ($recipientStatus['recipient_city']) ? $this->_objTpl->touchBlock('recipient_city') : $this->_objTpl->hideBlock('recipient_city');
+        ($recipientStatus['recipient_zip']) ? $this->_objTpl->touchBlock('recipient_zip') : $this->_objTpl->hideBlock('recipient_zip');
+        ($recipientStatus['recipient_country']) ? $this->_objTpl->touchBlock('recipient_country') : $this->_objTpl->hideBlock('recipient_country');
+        ($recipientStatus['recipient_phone']) ? $this->_objTpl->touchBlock('recipient_phone') : $this->_objTpl->hideBlock('recipient_phone') ;
+        ($recipientStatus['recipient_private']) ? $this->_objTpl->touchBlock('recipient_private') : $this->_objTpl->hideBlock('recipient_private');
+        ($recipientStatus['recipient_mobile']) ? $this->_objTpl->touchBlock('recipient_mobile') : $this->_objTpl->hideBlock('recipient_mobile');
+        ($recipientStatus['recipient_fax']) ? $this->_objTpl->touchBlock('recipient_fax') : $this->_objTpl->hideBlock('recipient_fax');
+        ($recipientStatus['recipient_birthday']) ? $this->_objTpl->touchBlock('recipient_birthday') : $this->_objTpl->hideBlock('recipient_birthday');
+        ($recipientStatus['recipient_website']) ? $this->_objTpl->touchBlock('recipient_website') : $this->_objTpl->hideBlock('recipient_website');
        
         
         $this->_objTpl->setVariable(array(
