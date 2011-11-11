@@ -436,6 +436,10 @@ input.toggle_indicator {
     background-color: #fff;
 }
 
+
+#page .ms2side__select select {
+    width: 400px;
+}
 /* 3) Helpers */
 .left{
     float: left
