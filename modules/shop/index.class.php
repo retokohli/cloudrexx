@@ -128,6 +128,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
             self::setJsCart();
         }
 //DBG::log("Shop::init(): After setJsCart: shopnavbar: {$themesPages['shopnavbar']}");
+        self::registerJavascriptCode();
         $inited = true;
     }
 
@@ -501,7 +502,6 @@ if (isset ($_REQUEST['content'])) {
             self::$use_js_cart = true;
             break;
         }
-        self::registerJavascriptCode();
         if (!self::$use_js_cart) return;
         JS::registerCode(
             "cartTpl = '".preg_replace(
@@ -828,8 +828,6 @@ die("Failed to update the Cart!");
     static function view_product_overview()
     {
         global $_ARRAYLANG;
-
-        self::registerJavascriptCode();
 
         $flagSpecialoffer = intval(SettingDb::getValue('show_products_default'));
         if (isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'discounts') {
@@ -1745,6 +1743,15 @@ function viewPicture(picture,features)
   window.open(picture,'',features);
 }
 
+// Remove a single product from the cart
+function deleteProduct(product_index)
+{
+  quantityElement = document.getElementById('quantity-'+product_index);
+  if (!quantityElement) return;
+  quantityElement.value = 0;
+  document.shopForm.submit();
+}
+
 function toggleOptions(productId)
 {
   if (document.getElementById('product_options_layer'+productId)) {
@@ -1859,15 +1866,6 @@ function mark_invalid(elements) {
     return elements.next('label').addClass('error');
   }
   return elements.addClass('error');
-}
-
-// Remove a single product from the cart
-function deleteProduct(product_index)
-{
-  quantityElement = document.getElementById('quantity-'+product_index);
-  if (!quantityElement) return;
-  quantityElement.value = 0;
-  document.shopForm.submit();
 }
 
 function addProductToCart(objForm)
