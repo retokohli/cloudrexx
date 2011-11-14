@@ -535,61 +535,61 @@ class newsletter extends NewsletterLib
             $objInterface = $objDatabase->Execute('SELECT `setvalue` 
                                                     FROM `'.DBPREFIX.'module_newsletter_settings`
                                                     WHERE `setname` = "recipient_attribute_status"');
-            $recipientStatus = json_decode($objInterface->fields['setvalue'], true);
+            $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
             
             if ($this->_objTpl->blockExists('recipient_sex')) {
-                ($recipientStatus['recipient_sex']) ? $this->_objTpl->touchBlock('recipient_sex') : $this->_objTpl->hideBlock('recipient_sex');
+                ($recipientAttributeStatus['recipient_sex']) ? $this->_objTpl->touchBlock('recipient_sex') : $this->_objTpl->hideBlock('recipient_sex');
             }
             if ($this->_objTpl->blockExists('recipient_salutation')) {
-                ($recipientStatus['recipient_salutation']) ? $this->_objTpl->touchBlock('recipient_salutation') : $this->_objTpl->hideBlock('recipient_salutation');
+                ($recipientAttributeStatus['recipient_salutation']) ? $this->_objTpl->touchBlock('recipient_salutation') : $this->_objTpl->hideBlock('recipient_salutation');
             }
             if ($this->_objTpl->blockExists('recipient_title')) {
-                ($recipientStatus['recipient_title']) ? $this->_objTpl->touchBlock('recipient_title') : $this->_objTpl->hideBlock('recipient_title');
+                ($recipientAttributeStatus['recipient_title']) ? $this->_objTpl->touchBlock('recipient_title') : $this->_objTpl->hideBlock('recipient_title');
             }
             if ($this->_objTpl->blockExists('recipient_lastname')) {
-                ($recipientStatus['recipient_lastname']) ? $this->_objTpl->touchBlock('recipient_lastname') : $this->_objTpl->hideBlock('recipient_lastname');
+                ($recipientAttributeStatus['recipient_lastname']) ? $this->_objTpl->touchBlock('recipient_lastname') : $this->_objTpl->hideBlock('recipient_lastname');
             }
             if ($this->_objTpl->blockExists('recipient_firstname')) {
-                ($recipientStatus['recipient_firstname']) ? $this->_objTpl->touchBlock('recipient_firstname') : $this->_objTpl->hideBlock('recipient_firstname');
+                ($recipientAttributeStatus['recipient_firstname']) ? $this->_objTpl->touchBlock('recipient_firstname') : $this->_objTpl->hideBlock('recipient_firstname');
             }
             if ($this->_objTpl->blockExists('recipient_position')) {
-                ($recipientStatus['recipient_position']) ? $this->_objTpl->touchBlock('recipient_position') : $this->_objTpl->hideBlock('recipient_position');
+                ($recipientAttributeStatus['recipient_position']) ? $this->_objTpl->touchBlock('recipient_position') : $this->_objTpl->hideBlock('recipient_position');
             }
             if ($this->_objTpl->blockExists('recipient_company')) {
-                ($recipientStatus['recipient_company']) ? $this->_objTpl->touchBlock('recipient_company') : $this->_objTpl->hideBlock('recipient_company');
+                ($recipientAttributeStatus['recipient_company']) ? $this->_objTpl->touchBlock('recipient_company') : $this->_objTpl->hideBlock('recipient_company');
             }
             if ($this->_objTpl->blockExists('recipient_industry')) {
-                ($recipientStatus['recipient_industry']) ? $this->_objTpl->touchBlock('recipient_industry') : $this->_objTpl->hideBlock('recipient_industry');
+                ($recipientAttributeStatus['recipient_industry']) ? $this->_objTpl->touchBlock('recipient_industry') : $this->_objTpl->hideBlock('recipient_industry');
             }            
             if ($this->_objTpl->blockExists('recipient_zip')) {
-                ($recipientStatus['recipient_zip']) ? $this->_objTpl->touchBlock('recipient_zip') : $this->_objTpl->hideBlock('recipient_zip');
+                ($recipientAttributeStatus['recipient_zip']) ? $this->_objTpl->touchBlock('recipient_zip') : $this->_objTpl->hideBlock('recipient_zip');
             }
             if ($this->_objTpl->blockExists('recipient_city')) {
-                ($recipientStatus['recipient_city']) ? $this->_objTpl->touchBlock('recipient_city') : $this->_objTpl->hideBlock('recipient_city');
+                ($recipientAttributeStatus['recipient_city']) ? $this->_objTpl->touchBlock('recipient_city') : $this->_objTpl->hideBlock('recipient_city');
             }
             if ($this->_objTpl->blockExists('recipient_address')) {
-                ($recipientStatus['recipient_address']) ? $this->_objTpl->touchBlock('recipient_address') : $this->_objTpl->hideBlock('recipient_address');
+                ($recipientAttributeStatus['recipient_address']) ? $this->_objTpl->touchBlock('recipient_address') : $this->_objTpl->hideBlock('recipient_address');
             }                        
             if ($this->_objTpl->blockExists('recipient_country')) {
-                ($recipientStatus['recipient_country']) ? $this->_objTpl->touchBlock('recipient_country') : $this->_objTpl->hideBlock('recipient_country');
+                ($recipientAttributeStatus['recipient_country']) ? $this->_objTpl->touchBlock('recipient_country') : $this->_objTpl->hideBlock('recipient_country');
             }
             if ($this->_objTpl->blockExists('recipient_phone')) {
-                ($recipientStatus['recipient_phone']) ? $this->_objTpl->touchBlock('recipient_phone') : $this->_objTpl->hideBlock('recipient_phone') ;
+                ($recipientAttributeStatus['recipient_phone']) ? $this->_objTpl->touchBlock('recipient_phone') : $this->_objTpl->hideBlock('recipient_phone') ;
             }
             if ($this->_objTpl->blockExists('recipient_private')) {
-                ($recipientStatus['recipient_private']) ? $this->_objTpl->touchBlock('recipient_private') : $this->_objTpl->hideBlock('recipient_private');
+                ($recipientAttributeStatus['recipient_private']) ? $this->_objTpl->touchBlock('recipient_private') : $this->_objTpl->hideBlock('recipient_private');
             }
             if ($this->_objTpl->blockExists('recipient_mobile')) {
-                ($recipientStatus['recipient_mobile']) ? $this->_objTpl->touchBlock('recipient_mobile') : $this->_objTpl->hideBlock('recipient_mobile');
+                ($recipientAttributeStatus['recipient_mobile']) ? $this->_objTpl->touchBlock('recipient_mobile') : $this->_objTpl->hideBlock('recipient_mobile');
             }
             if ($this->_objTpl->blockExists('recipient_fax')) {
-                ($recipientStatus['recipient_fax']) ? $this->_objTpl->touchBlock('recipient_fax') : $this->_objTpl->hideBlock('recipient_fax');
+                ($recipientAttributeStatus['recipient_fax']) ? $this->_objTpl->touchBlock('recipient_fax') : $this->_objTpl->hideBlock('recipient_fax');
             }
             if ($this->_objTpl->blockExists('recipient_birthday')) {
-                ($recipientStatus['recipient_birthday']) ? $this->_objTpl->touchBlock('recipient_birthday') : $this->_objTpl->hideBlock('recipient_birthday');
+                ($recipientAttributeStatus['recipient_birthday']) ? $this->_objTpl->touchBlock('recipient_birthday') : $this->_objTpl->hideBlock('recipient_birthday');
             }            
             if ($this->_objTpl->blockExists('recipient_website')) {
-                ($recipientStatus['recipient_website']) ? $this->_objTpl->touchBlock('recipient_website') : $this->_objTpl->hideBlock('recipient_website');
+                ($recipientAttributeStatus['recipient_website']) ? $this->_objTpl->touchBlock('recipient_website') : $this->_objTpl->hideBlock('recipient_website');
             }
 
             $this->_objTpl->setVariable(array(
@@ -598,8 +598,8 @@ class newsletter extends NewsletterLib
                 'NEWSLETTER_USER_CODE'    => $code,
                 'NEWSLETTER_URI'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_SEX_F'        => $recipientSex == 'f' ? 'checked="checked"' : '',
-                 'NEWSLETTER_SEX_M'        => $recipientSex == 'm' ? 'checked="checked"' : '',
-                'NEWSLETTER_SALUTATION'        => $this->_getRecipientTitleMenu($recipientTitle, 'name="salutation" size="1"'),
+                'NEWSLETTER_SEX_M'        => $recipientSex == 'm' ? 'checked="checked"' : '',                
+                'NEWSLETTER_SALUTATION'        => $this->_getRecipientTitleMenu($recipientSalutation, 'name="salutation" style="width:296px" size="1"'),
                 'NEWSLETTER_TITLE'    => htmlentities($recipientTitle, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_LASTNAME'    => htmlentities($recipientLastname, ENT_QUOTES, CONTREXX_CHARSET),
                 'NEWSLETTER_FIRSTNAME'    => htmlentities($recipientFirstname, ENT_QUOTES, CONTREXX_CHARSET),
@@ -643,7 +643,8 @@ class newsletter extends NewsletterLib
                 'TXT_NEWSLETTER_BIRTHDAY'        => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
                 'TXT_NEWSLETTER_LISTS'             => $_ARRAYLANG['TXT_NEWSLETTER_LISTS'],
                 'TXT_NEWSLETTER_SAVE'          => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
-                'TXT_NEWSLETTER_LANGUAGE'      => $_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE']
+                'TXT_NEWSLETTER_LANGUAGE'      => $_ARRAYLANG['TXT_NEWSLETTER_LANGUAGE'],
+                'TXT_NEWSLETTER_WEBSITE'        => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
             ));
 
             $this->_objTpl->parse('newsletterForm');
