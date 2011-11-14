@@ -26,6 +26,7 @@ class ContentManager extends Module {
     protected $init = null;
 
     protected $pageRepository = null;
+    protected $nodeRepository = null;
 
     //renderCM access state
     protected $backendGroups = array();
@@ -48,6 +49,7 @@ class ContentManager extends Module {
         $this->db = $db;
         $this->init = $init;
         $this->pageRepository = $this->em->getRepository('Cx\Model\ContentManager\Page');
+        $this->nodeRepository = $this->em->getRepository('Cx\Model\ContentManager\Node');
         $this->defaultAct = 'actRenderCM';
 	}
 
@@ -174,7 +176,7 @@ class ContentManager extends Module {
         $table->setHeaderContents(0,4,'');
 
         //(III) collect page informations - path, virtual language directory
-        $path = $this->pageRepository->getPath($page);
+        $path = $this->getPageRepository()->getPath($page);
 
         $le = new \Cx\Core\Routing\LanguageExtractor($this->db, DBPREFIX);
         $langDir = $le->getShortNameOfLanguage($page->getLang());
@@ -253,7 +255,7 @@ class ContentManager extends Module {
 
         $id = $_POST['pageId'];
         $version = $_POST['version'];
-        $page = $this->pageRepository->findOneById($id);
+        $page = $this->getPageRepository()->findOneById($id);
 
         if(!$page)
             new ContentManagerException("could not find page with id $id");
@@ -264,6 +266,96 @@ class ContentManager extends Module {
 
         $this->em->persist($page);
         $this->em->flush();
+    }
+
+    protected function actions()
+    {
+        require_once ASCMS_CORE_PATH."/ActionsRenderer.class.php";
+
+        $nodeId = intval($_GET['node']);
+        $langId = FWLanguage::getLanguageIdByCode($_GET['lang']);
+        $node = $this->getNodeRepository()->find($nodeId);
+        $page = $node->getPage($langId);
+        if ($page != null) {
+            echo ActionsRenderer::render($page);
+        } else {
+            echo ActionsRenderer::renderNew($nodeId, $langId);
+        }
+
+        exit(0);
+    }
+
+    protected function pageStatus()
+    {
+        $pageId = isset($_GET['page']) ? intval($_GET['page']) : null;
+
+        if ($pageId != null) {
+            $page = $this->pageRepository->find($pageId);
+        }
+
+        $action = $_GET['action'];
+        switch ($action) {
+            case 'publish':
+                if (isset($page)) {
+                    $page->setActive(true);
+                } else {
+                    $nodeId = intval($_GET['node']);
+                    $langId = intval($_GET['lang']);
+                    $arrFbLang = FWLanguage::getFallbackLanguageArray();
+                    $fbLang = isset($arrFbLang[$langId]) ? $arrFbLang[$langId] : null;
+                    if ($fbLang != null && $fbLang != $langId) {
+                        $node = $this->getNodeRepository()->find($nodeId);
+                        $page = new \Cx\Model\ContentManager\Page();
+                        $page->setLang($langId);
+                        $page->setNode($node);
+                        $fbPage = $node->getPage($fbLang);
+                        if ($fbPage) {
+                            $page->setType('fallback');
+                            $page->setTitle($fbPage->getTitle());
+                            $page->setContentTitle($fbPage->getContentTitle());
+                            $page->setSlug($fbPage->getSlug());
+                            $page->setMetatitle($page->getMetatitle());
+                            $page->setMetadesc($fbPage->getMetadesc());
+                            $page->setMetakeys($fbPage->getMetakeys());
+                            $page->setMetarobots($page->getMetarobots());
+                            $this->em->persist($page);
+                        }
+                    } else {
+                        echo json_encode(array('action' => 'new'));
+                    }
+                }
+                break;
+            case 'unpublish':
+                $page->setActive(false);
+                break;
+            case 'visible':
+                $page->setDisplay(true);
+                break;
+            case 'hidden':
+                $page->setDisplay(false);
+                break;
+            default:
+                $action = 'error';
+        }
+        $this->em->flush();
+        $result = array(
+          'nodeId' => $page->getNode()->getId(),
+          'pageId' => $page->getId(),
+          'lang'   => FWLanguage::getLanguageCodeById($page->getLang()),
+          'action' => $action,
+        );
+        echo json_encode($result);
+        exit(0);
+    }
+
+    function getPageRepository()
+    {
+        return $this->pageRepository;
+    }
+
+    function getNodeRepository()
+    {
+        return $this->nodeRepository;
     }
 }
 ?>

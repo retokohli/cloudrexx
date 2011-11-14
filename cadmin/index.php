@@ -25,7 +25,7 @@
  * will either activate or deactivate all levels.
  */
 include_once '../lib/DBG.php';
-DBG::deactivate(DBG_PHP | DBG_ADODB_ERROR);
+//DBG::deactivate(DBG_PHP | DBG_ADODB_ERROR);
 $startTime = explode(' ', microtime());
 
 //enable gzip compressing of the output - up to 75% smaller responses!
