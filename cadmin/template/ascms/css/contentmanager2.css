@@ -141,12 +141,22 @@ h1{ font-size: 20px }
     background-color: #fff;
 }
 
-div.actions-expanded {
+#site-tree div.actions-expanded {
     left: 262px;
+    z-index: 100;
+    border:  1px solid black;
+    padding:  5px;
+}
+
+#site-tree div.actions-expanded ul,
+#site-tree div.actions-expanded ul li {
+    margin: 0;
+    cursor: pointer;
 }
 
 #site-tree:hover div.actions {
     display: inline;
+    cursor: pointer;
 }
 
 #site-tree li ins.jstree-icon {

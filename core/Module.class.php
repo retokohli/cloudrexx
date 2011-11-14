@@ -18,10 +18,14 @@ class Module {
             $this->act = $this->defaultAct;
         }
 
+        /*
+         * TODO: Carify with Severin why an act method must start with 'act'.
+         * (Manuel, Florian, Thomas) decided to remove this, as no benefit can be seen from this constraint.
+         */
         //prevent execution of non-act methods.
-        if(substr($this->act, 0, 3) != 'act') {
+        /*if(substr($this->act, 0, 3) != 'act') {
             throw new ModuleException('acts start with "act", "' . $this->act . '" given');
-        }
+        }*/
 
         //call the right act.
         $act = $this->act;
