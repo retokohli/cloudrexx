@@ -35,7 +35,7 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
     </tr>
     <!-- END languageOption -->
     <!-- BEGIN sendEmail -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_SEND_EMAIL_ROWCLASS}">
       <td>
           {TXT_NEWSLETTER_SEND_EMAIL} &nbsp;
           <img src="images/icons/note.gif" width="12" height="12" alt="info" title="" onmouseout="htm()" onmouseover="stm(Text[0],Style[0])" />
@@ -50,7 +50,7 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
       </td>
     </tr>    
     <!-- END sendEmail -->
-    <tr class="row1" style="vertical-align:top;">
+    <tr class="{NEWSLETTER_ASSOCIATED_LISTS_ROWCLASS}" style="vertical-align:top;">
       <td width="15%">{TXT_NEWSLETTER_ASSOCIATED_LISTS}</td>
       <td width="20%">
         <!-- BEGIN newsletter_mail_associated_list_0 -->
@@ -68,7 +68,7 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
         <!-- END newsletter_mail_associated_list_2 -->
       </td>
     </tr>
-    <tr class="row2" style="vertical-align:top;">
+    <tr class="{NEWSLETTER_NOTES_ROWCLASS}" style="vertical-align:top;">
         <td>{TXT_NEWSLETTER_NOTES}</td>
         <td colspan="3"><textarea name="newsletter_recipient_notes" rows="4" cols="39">{NEWSLETTER_RECIPIENT_NOTES}</textarea></td>
     </tr>
@@ -80,7 +80,7 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
         <td colspan="4"><b>{TXT_NEWSLETTER_PROFILE}</b></td>
     </tr>
     <!-- BEGIN recipient_sex -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_SEX_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_SEX}</td>
       <td colspan="3">
         <input type="radio" name="newsletter_recipient_sex" id="newsletter_recipient_sex_f" value="f" {NEWSLETTER_RECIPIENT_FEMALE} /> <label for="newsletter_recipient_sex_f">{TXT_NEWSLETTER_FEMALE}</label>
@@ -89,97 +89,97 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
     </tr>
     <!-- END recipient_sex -->
     <!-- BEGIN recipient_salutation -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_SALUTATION_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_SALUTATION}</td>
       <td colspan="3">{NEWSLETTER_RECIPIENT_SALUTATION}</td>
     </tr>
     <!-- END recipient_salutation -->
     <!-- BEGIN recipient_title -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_TITLE_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_TITLE}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_title" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_TITLE}" /></td>
     </tr>
     <!-- END recipient_title -->
     <!-- BEGIN recipient_firstname -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_FIRSTNAME_ROW_CLASS}">
       <td width="12%">{TXT_NEWSLETTER_FIRSTNAME}</td>
       <td width="88%" colspan="3"><input type="text" name="newsletter_recipient_firstname" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_FIRSTNAME}" /></td>
     </tr>
     <!-- END recipient_firstname -->
     <!-- BEGIN recipient_lastname -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_LASTNAME_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_LASTNAME}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_lastname" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_LASTNAME}" /></td>
     </tr>
     <!-- END recipient_lastname -->
     <!-- BEGIN recipient_position -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_POSITION_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_POSITION}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_position" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_POSITION}" /></td>
     </tr>
     <!-- END recipient_position -->
     <!-- BEGIN recipient_company -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_COMPANY_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_COMPANY}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_company" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_COMPANY}" /></td>
     </tr>
     <!-- END recipient_company -->
     <!-- BEGIN recipient_industry -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_INDUSTRY_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_INDUSTRY_SECTOR}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_industry_sector" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_INDUSTRY_SECTOR}" /></td>
     </tr>
     <!-- END recipient_industry -->
     <!-- BEGIN recipient_address -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_ADDRESS_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_ADDRESS}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_address" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_ADDRESS}" /></td>
     </tr>
     <!-- END recipient_address -->
     <!-- BEGIN recipient_city -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_CITY_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_CITY}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_city" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_CITY}" /></td>
     </tr>
     <!-- END recipient_city -->
     <!-- BEGIN recipient_zip -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_ZIP_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_ZIP}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_zip" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_ZIP}" /></td>
     </tr>
     <!-- END recipient_zip -->
     <!-- BEGIN recipient_country -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_COUNTRY_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_COUNTRY}</td>
       <td colspan="3">{NEWSLETTER_RECIPIENT_COUNTRY}<style type="text/css">select[name=newsletter_country_id] {width:296px;}</style></td>
     </tr>
     <!-- END recipient_country -->
     <!-- BEGIN recipient_phone -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_PHONE_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_PHONE}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_phone_office" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_PHONE}" /></td>
     </tr>
     <!-- END recipient_phone -->
     <!-- BEGIN recipient_private -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_PRIVATE_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_PHONE_PRIVATE}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_phone_private" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_PHONE_PRIVATE}" /></td>
     </tr>
     <!-- END recipient_private -->
     <!-- BEGIN recipient_mobile -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_PHONE_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_PHONE_MOBILE}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_phone_mobile" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_PHONE_MOBILE}" /></td>
     </tr>
     <!-- END recipient_mobile -->
     <!-- BEGIN recipient_fax -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_FAX_ROW_CLASS}">
       <td>{TXT_NEWSLETTER_FAX}</td>
       <td colspan="3"><input type="text" name="newsletter_recipient_fax" size="40" maxlength="200" value="{NEWSLETTER_RECIPIENT_FAX}" /></td>
     </tr>
     <!-- END recipient_fax -->
     <!-- BEGIN recipient_birthday -->
-    <tr class="row2">
+    <tr class="{NEWSLETTER_RECIPIENT_BIRTHDAY_ROW_CLASS}">
       <td width="17%">{TXT_NEWSLETTER_BIRTHDAY}</td>
       <td width="83%" colspan="3">
         <select  name="day" style="width:60px">
@@ -202,7 +202,7 @@ Text[0]=["","{TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL}"];
     </tr>
     <!-- END recipient_birthday -->
     <!-- BEGIN recipient_website -->
-    <tr class="row1">
+    <tr class="{NEWSLETTER_RECIPIENT_WEBSITE_ROW_CLASS}">
       <td width="15%">{TXT_NEWSLETTER_WEBSITE}</td>
       <td width="85%" colspan="3"><input type="text" name="newsletter_recipient_uri" size="40" maxlength="250" value="{NEWSLETTER_RECIPIENT_URI}" /></td>
     </tr>

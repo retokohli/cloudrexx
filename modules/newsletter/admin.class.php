@@ -4695,7 +4695,8 @@ $WhereStatement = '';
                     'NEWSLETTER_LANGUAGES_SELECTED' => $selected
                 ));
                 $this->_objTpl->parse('languages');            
-            }            
+            }
+            $languageOptionDisplay = true;
         } else {
             $this->_objTpl->hideBlock('languageOption');
         }
@@ -4719,43 +4720,77 @@ $WhereStatement = '';
                 $this->_objTpl->parse('allMails');
                 $objNewsletterMails->MoveNext();
             }            
+            $recipientSendMailDisplay = true;
         } else {
             $this->_objTpl->hideBlock('sendEmail');
         }
+        
+        // Display seetings recipient general attributes
+        
+        $sendMailRowClass = ($languageOptionDisplay) ? 'row2' : 'row1';
+        
+        if ($languageOptionDisplay && $recipientSendMailDisplay) {
+            $associatedListRowClass = 'row1';
+        } elseif ($languageOptionDisplay || $recipientSendMailDisplay) {
+            $associatedListRowClass = 'row2';
+        } else {
+            $associatedListRowClass = 'row1';
+        }
+        
+        $recipientNotesRowClass = ($associatedListRowClass == 'row1') ? 'row2' : 'row1';
+        
+        $this->_objTpl->setVariable(array(
+            'NEWSLETTER_SEND_EMAIL_ROWCLASS'       => $sendMailRowClass,
+            'NEWSLETTER_ASSOCIATED_LISTS_ROWCLASS' => $associatedListRowClass,
+            'NEWSLETTER_NOTES_ROWCLASS'            => $recipientNotesRowClass
+        ));
+        
 
         //display settings recipient profile detials
         $objInterface = $objDatabase->Execute('SELECT `setvalue` 
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
                                                 WHERE `setname` = "recipient_attribute_status"');
-        $recipientStatus = json_decode($objInterface->fields['setvalue'], true);
+        $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
         
         $recipientAttributeDisplay = false;
-        foreach ($recipientStatus as $statusKey => $value) {
+        foreach ($recipientAttributeStatus as $statusKey => $value) {
             if ($value) {
                 $recipientAttributeDisplay = true;
                 break;
             }
         }
         
+        $profileRowCount = 0;
+        $recipientAttributesArray = array(
+            'recipient_sex',
+            'recipient_salutation',
+            'recipient_title',
+            'recipient_firstname',
+            'recipient_lastname',            
+            'recipient_position',            
+            'recipient_company',
+            'recipient_industry',
+            'recipient_address',
+            'recipient_city',
+            'recipient_zip',
+            'recipient_country',
+            'recipient_phone',
+            'recipient_private',
+            'recipient_mobile',
+            'recipient_fax',
+            'recipient_birthday',
+            'recipient_website'
+            );
         if ($recipientAttributeDisplay) {
-            ($recipientStatus['recipient_sex']) ? $this->_objTpl->touchBlock('recipient_sex') : $this->_objTpl->hideBlock('recipient_sex');
-            ($recipientStatus['recipient_salutation']) ? $this->_objTpl->touchBlock('recipient_salutation') : $this->_objTpl->hideBlock('recipient_salutation');
-            ($recipientStatus['recipient_title']) ? $this->_objTpl->touchBlock('recipient_title') : $this->_objTpl->hideBlock('recipient_title');
-            ($recipientStatus['recipient_firstname']) ? $this->_objTpl->touchBlock('recipient_firstname') : $this->_objTpl->hideBlock('recipient_firstname');
-            ($recipientStatus['recipient_lastname']) ? $this->_objTpl->touchBlock('recipient_lastname') : $this->_objTpl->hideBlock('recipient_lastname');
-            ($recipientStatus['recipient_position']) ? $this->_objTpl->touchBlock('recipient_position') : $this->_objTpl->hideBlock('recipient_position');
-            ($recipientStatus['recipient_company']) ? $this->_objTpl->touchBlock('recipient_company') : $this->_objTpl->hideBlock('recipient_company');
-            ($recipientStatus['recipient_industry']) ? $this->_objTpl->touchBlock('recipient_industry') : $this->_objTpl->hideBlock('recipient_industry');
-            ($recipientStatus['recipient_address']) ? $this->_objTpl->touchBlock('recipient_address') : $this->_objTpl->hideBlock('recipient_address');
-            ($recipientStatus['recipient_city']) ? $this->_objTpl->touchBlock('recipient_city') : $this->_objTpl->hideBlock('recipient_city');
-            ($recipientStatus['recipient_zip']) ? $this->_objTpl->touchBlock('recipient_zip') : $this->_objTpl->hideBlock('recipient_zip');
-            ($recipientStatus['recipient_country']) ? $this->_objTpl->touchBlock('recipient_country') : $this->_objTpl->hideBlock('recipient_country');
-            ($recipientStatus['recipient_phone']) ? $this->_objTpl->touchBlock('recipient_phone') : $this->_objTpl->hideBlock('recipient_phone') ;
-            ($recipientStatus['recipient_private']) ? $this->_objTpl->touchBlock('recipient_private') : $this->_objTpl->hideBlock('recipient_private');
-            ($recipientStatus['recipient_mobile']) ? $this->_objTpl->touchBlock('recipient_mobile') : $this->_objTpl->hideBlock('recipient_mobile');
-            ($recipientStatus['recipient_fax']) ? $this->_objTpl->touchBlock('recipient_fax') : $this->_objTpl->hideBlock('recipient_fax');
-            ($recipientStatus['recipient_birthday']) ? $this->_objTpl->touchBlock('recipient_birthday') : $this->_objTpl->hideBlock('recipient_birthday');
-            ($recipientStatus['recipient_website']) ? $this->_objTpl->touchBlock('recipient_website') : $this->_objTpl->hideBlock('recipient_website');
+            foreach ($recipientAttributesArray as $attribute) {
+                if ($recipientAttributeStatus[$attribute] && $this->_objTpl->blockExists($attribute)) {
+                    $this->_objTpl->touchBlock($attribute);
+                    $this->_objTpl->setVariable('NEWSLETTER_'.strtoupper($attribute).'_ROW_CLASS', ($profileRowCount%2 == 0) ? 'row2' : 'row1');                    
+                    $profileRowCount++;
+                } else {
+                    $this->_objTpl->hideBlock($attribute);
+                }                
+            }
         } else {
             $this->_objTpl->hideBlock('recipientProfileAttributes');
         }
