@@ -1425,3 +1425,10 @@ $_ARRAYLANG['TXT_CORE_CM_SLUG_INFO'] = 'Used as the page\'s name in its URI. Exa
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Additional CSS Navigation Class';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'The specified value can be accessed as [[CSS_NAV_NAME]] in navigation contexts.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION'] = 'Restrict Access to This Page';
+
+// upload
+$_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";
+$_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Finish uploading";
+$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "file(s) uploaded";
+$_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:";
+$_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allowed.";
