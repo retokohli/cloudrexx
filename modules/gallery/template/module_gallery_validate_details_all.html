@@ -8,21 +8,12 @@ function deleteImage(imageId)
 
 function imageNameFields()
 {
-	with (document.gallery_validate)
-	{
-		if (settingsFilename.checked == false)
-		{ // the fields should be named one by one
-			<!-- BEGIN javascriptBlock1 -->
-				imageName{JS_IMAGE_ID1}.disabled = false;
-			<!-- END javascriptBlock1 -->
-		}
-		else
-		{
-			<!-- BEGIN javascriptBlock2 -->
-				imageName{JS_IMAGE_ID2}.disabled = true;
-			<!-- END javascriptBlock2 -->
-		}
-	}
+    var inputs = $J('.imageNameContainer input');
+    var disabled = document.gallery_validate.settingsFilename.checked;
+
+    $J.each(inputs, function(index, input){
+        input.disabled = disabled;
+    });
 }
 
 function imageActiveBoxes()
@@ -278,11 +269,11 @@ function copyText(strType,strValue) {
     <!-- BEGIN showImages -->
     <tr class="row{IMAGES_ROWCLASS}"> 
       <td valign="top"><img border="0" src="{IMAGES_THUMB_SOURCE}" alt="" /></td>
-      <td valign="top"> 
+      <td valign="top" class="imageNameContainer"> 
         <input type="text" name="imageName{IMAGES_ID}" onChange="copyText('imageName_{IMAGES_ID}_',this.value);" value="{IMAGES_NAME}" disabled="disabled" />&nbsp;<a href="javascript:showOrHide('divLangName_{IMAGES_ID}');">{TXT_EXTENDED}</a>
 		<div id="divLangName_{IMAGES_ID}" style="display: none;">
 			<!-- BEGIN showNameFields -->
-			<input name="imageName_{NAMEFIELDS_IMID}_{NAMEFIELDS_LID}" value="{NAMEFIELDS_IMVALUE}" style="margin-top:1px;">&nbsp;<label for="imageName_{NAMEFIELDS_IMID}_{NAMEFIELDS_LID}">{NAMEFIELDS_LANGUAGE}</label> <br />
+			<input name="imageName_{NAMEFIELDS_IMID}_{NAMEFIELDS_LID}" value="{NAMEFIELDS_IMVALUE}" style="margin-top:1px;" disabled="disabled">&nbsp;<label for="imageName_{NAMEFIELDS_IMID}_{NAMEFIELDS_LID}">{NAMEFIELDS_LANGUAGE}</label> <br />
 			<!-- END showNameFields -->
 		</div>
       </td>
