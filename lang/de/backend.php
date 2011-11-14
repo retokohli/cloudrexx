@@ -1415,3 +1415,10 @@ $_ARRAYLANG['TXT_CORE_NONE'] = "Keine";
 // core captcha
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_CORE_INVALID_CAPTCHA'] = "Der eingegebene Sicherheitscode war falsch!";
+
+// upload
+$_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";
+$_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
+$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) wurde(n) erfolgreich heraufgeladen";
+$_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
+$_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";

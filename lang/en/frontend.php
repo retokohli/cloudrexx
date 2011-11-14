@@ -264,3 +264,10 @@ $_ARRAYLANG['TXT_CORE_YEAR'] = "Jahr";
 $_ARRAYLANG['TXT_CORE_YEARS'] = "Jahre";
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";
 $_ARRAYLANG['TXT_PARTNERS_MODULE_DESCRIPTION'] = "Verwaltung und Präsentation von Geschäftspartnern";
+
+// upload
+$_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";
+$_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Finish uploading";
+$_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "file(s) uploaded";
+$_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Some file(s) couldn't be uploaded:";
+$_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "The file extension is not allowed.";
