@@ -1,0 +1,22 @@
+<?php
+/**
+ * Backend Upload Tasks 
+ */
+require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploadLib.class.php';
+
+class Upload extends UploadLib
+{
+    public function getPage()
+    {
+        $act = '';
+        if(isset($_REQUEST['act'])) {
+            $act = $_REQUEST['act'];
+        }
+
+        switch($act) {
+            case 'upload': //an uploader is sending data
+                $this->upload();
+                break;
+        }        
+    }
+}

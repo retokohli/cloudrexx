@@ -1,0 +1,13 @@
+<?php
+/**
+ * Once an Upload is approved, we get here.
+ * This mainly delegates work to the uploader-classes.
+ */
+require_once '/upload/share/uploadFactory.class.php';
+
+class UploadLib {
+  //processes uploads sent by an uploader
+  public function upload() {
+      
+  }
+}

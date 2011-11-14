@@ -1,0 +1,53 @@
+<?php
+require_once ASCMS_CORE_MODULE_PATH.'/upload/lib/uploader.class.php';
+/**
+ * ComboUploader - Displays a FormUploader and possibilities to invoke other types of Uploaders.
+ */
+class ComboUploader extends Uploader
+{
+    private $installedUploaders = array();
+
+    public function __construct() {
+        parent::__construct();
+
+        //check which modules are installed
+        $uploaderFolder = ASCMS_CORE_MODULE_PATH.'/upload/lib/';
+        $h = opendir($uploaderFolder);
+        while(false !== ($f = readdir($h))) {
+            $len = strlen($f);
+            //'Uploader.class.php' has length 18
+            if($len > 18 && substr($f,$len-19) == 'Uploader.class.php') { //it's an uploader class
+                $this->installedUploaders.push(substr($f,0,$len-18));
+            }
+        }
+    }
+
+    /**
+     * @override
+     */     
+    public function handleRequest()
+    {
+        //we do not care. requests are handled by the respective uploader instances
+    }
+
+    /**
+     * @override
+     */     
+    public function getXHtml($backend = false)
+    {
+      //JS / CSS dependencies
+      JS::activate('jquery');
+      JS::registerJS('ASCMS_CORE_MODULE_WEB_PATH.'/upload/js/uploaders/combo.js);
+
+      require_once ASCMS_CORE_MODULE_PATH.'/upload/share/uploaderFactory.class.php';
+      $formUploader = UploaderFactory::getInstance()->newUploader('form');
+      
+      $tpl = new HTML_Template_Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+      $tpl->setErrorHandling(PEAR_ERROR_DIE);
+      
+      $tpl->loadTemplateFile('combo.html');
+      $tpl->setVariable('UPLOADER_CODE', $formUploader->getXHtml($backend));
+      
+      return $tpl->get();
+    }
+}
