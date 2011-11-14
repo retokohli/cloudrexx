@@ -2191,8 +2191,9 @@ class galleryManager extends GalleryLibrary
      * @param   array		$paths
      * @param   integer    	$uploadId
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $paths, $uploadId, $fileInfos) {
-		global $objDatabase, $_ARRAYLANG, $_CONFIG;
+    public static function uploadFinished($tempPath, $tempWebPath, $paths, $uploadId, $fileInfos, $response) {
+		global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
+        $lang = $objInit->loadLanguageData('gallery');
 		$objGallery = new galleryManager();
 
 		$path = $paths['path'];
@@ -2212,7 +2213,7 @@ class galleryManager extends GalleryLibrary
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
 		$uploadedImagesCount = 0;
-        while(false !== ($file = readdir($h))) {
+        while(false != ($file = readdir($h))) {
 			$info = pathinfo($file);
 
             //skip . and ..
@@ -2220,6 +2221,7 @@ class galleryManager extends GalleryLibrary
 
 			//delete unwanted files
             if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
+                $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_UNALLOWED_EXTENSION'], $file);
                @unlink($tempPath.'/'.$file);
                 continue;
             }
@@ -2227,7 +2229,8 @@ class galleryManager extends GalleryLibrary
 			//width of the image is wider than the allowed value. Show Error.
 			$arrImageSize = getimagesize($tempPath.'/'.$file);
 			if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
-				$objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $_ARRAYLANG['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
+				$objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
+                $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_RESOLUTION_TOO_HIGH'], $file);
                 @unlink($tempPath.'/'.$file);
                 continue;
 			}
@@ -2345,7 +2348,7 @@ class galleryManager extends GalleryLibrary
                                                (picture_id, lang_id, name)
                                             SELECT
                                                '.$intPictureId.', id, "'.$imageName.'"
-                                            FROM contrexx_languages');
+                                            FROM '.DBPREFIX.'languages');
     }
 
 
@@ -2359,6 +2362,8 @@ class galleryManager extends GalleryLibrary
     function showValidateForm()
     {
         global $_ARRAYLANG, $objDatabase, $_CONFIG;
+
+        JS::activate('jquery');
 
         $this->_objTpl->loadTemplateFile('module_gallery_validate_main.html',true,true);
          $this->_objTpl->setVariable(array(
@@ -2745,7 +2750,8 @@ class galleryManager extends GalleryLibrary
                         $this->_objTpl->hideBlock('showNameFields');
                     }
 
-                    for ($i=1;$i<=7;$i++) {
+                    //blocks 1 and 2 were removed
+                    for ($i=3;$i<=7;$i++) {
                         $this->_objTpl->setVariable('JS_IMAGE_ID'.$i,$intIdKey);
                         $this->_objTpl->parse('javascriptBlock'.$i);
                     }
