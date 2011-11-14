@@ -214,6 +214,8 @@ class PageEventListener {
      * @throws PageEventListenerException
      */
     protected function checkValidPersistingOperation($page) {
+        // TODO: uh..?
+        if($page->getType() != "\Cx\Model\ContentManager\Page") return;
         if($page->hasFallbackContent()) {
             throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". This Page was retrieved by the routing and is filled with (bogus) fallback content. Please re-fetch the Page via it\'s id, then edit and persist it.');
         }
