@@ -61,7 +61,7 @@ class JSONPage {
     private function getFallbackPageArray($node, $lang) {
         foreach ($node->getPages() as $pageCandidate) {
             $page = $pageCandidate;
-            if ($page->getLang() == FWLanguage::getLanguageIdByCode($lang)) break;
+            if ($page->getLang() == FWLanguage::getLanguageIdByCode($this->fallbacks[$lang])) break;
         }
 
         // Access Permissions
@@ -75,6 +75,7 @@ class JSONPage {
             'id'            => 0,
             'lang'          => $lang,
             'node'          => $node->getId(),
+            'type'          => ($this->fallbacks[$lang] ? 'fallback' : 'content'),
             // Page Tab
             'name'          => $page->getTitle(),
             'title'         => $page->getContentTitle(),
