@@ -155,7 +155,7 @@ h1{ font-size: 20px }
 
 #site-tree div.actions-expanded ul li {
     margin: 0;
-    padding: 2px 3px;
+    padding: 4px 3px;
     cursor: pointer;
     border-top: 1px solid #CCC;
 }
