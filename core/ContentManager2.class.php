@@ -101,6 +101,9 @@ class ContentManager extends Module {
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
         $this->template->setVariable('LANGSWITCH_OPTIONS', $this->getLangOptions());
         $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));
+        $this->template->setVariable('FALLBACK_ARRAY', json_encode($this->getFallbackArray()));
+        $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
+
 	}
 
     /**
@@ -154,6 +157,14 @@ class ContentManager extends Module {
         return $output;
     }
 
+    protected function getLangLabels() {
+        $output = array();
+        foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $output[FWLanguage::getLanguageCodeById($lang['id'])] = $lang['name'];
+        }
+        return $output;
+    }
+
     protected function getLangArray() {
         $output = array();
         // set selected frontend language as first language
@@ -164,6 +175,15 @@ class ContentManager extends Module {
                 continue;
             }
             $output[] = FWLanguage::getLanguageCodeById($lang['id']);
+        }
+        return $output;
+    }
+
+    protected function getFallbackArray() {
+        $fallbacks = FWLanguage::getFallbackLanguageArray();
+        $output = array();
+        foreach ($fallbacks as $key => $value) {
+            $output[FWLanguage::getLanguageCodeById($key)] = FWLanguage::getLanguageCodeById($value);
         }
         return $output;
     }
