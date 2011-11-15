@@ -99,7 +99,7 @@ class ContentManager extends Module {
 
 
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
-        $this->template->setVariable('LANGSWITCH_OPTIONS', json_encode($this->getLangOptions()));
+        $this->template->setVariable('LANGSWITCH_OPTIONS', $this->getLangOptions());
         $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));
 	}
 

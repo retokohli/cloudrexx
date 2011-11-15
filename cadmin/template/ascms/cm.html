@@ -8,7 +8,7 @@
       <form class="clearfix" action="." enctype="multipart/form-data" id="cm_page">
         <div id="page_content" class="types">
             <input type="hidden" name="page[id]" id="pageId" value="new" />
-            <input type="hidden" name="page[lang]" id="pageLang" value="1" />
+            <input type="hidden" name="page[lang]" id="pageLang" value="en" />
             <input type="hidden" name="page[node]" id="pageNode" value="" />
             <input type="hidden" name="source_page" id="sourcePage" value="" />
 
@@ -22,14 +22,14 @@
             </div>
             <a id="toggle_type" class="heading toggle">{TXT_CORE_CM_TYPE}</a>
             <div id="type" class="clearfix">
-                <input type="radio" name="page[type]" value="content" id="type_content" class="radio" />
+                <input type="radio" name="page[type]" value="content" id="type_content" class="radio" checked="checked" />
                 <label for="type_content">{TXT_CORE_CM_TYPE_CONTENT}</label>
                 <input type="radio" name="page[type]" value="redirect" id="type_redirect" class="radio" />
                 <label for="type_redirect">{TXT_CORE_CM_TYPE_REDIRECT}</label>
                 <input type="radio" name="page[type]" value="application" id="type_application" class="radio" />
                 <label for="type_application">{TXT_CORE_CM_TYPE_APPLICATION}</label>
                 <input type="radio" name="page[type]" value="fallback" id="type_fallback" class="radio" />
-                <label for="type_fallback">{TXT_CORE_CM_TYPE_FALLBACK}</label>
+                <label for="type_fallback">{TXT_CORE_CM_TYPE_FALLBACK} <strong id="fallback"></strong></label>
                 <br style="clear: both;" />
                 <span class="info type_hidable type_content">{TXT_CORE_CM_TYPE_CONTENT_INFO}</span>
                 <label for="page_redirect" class="type_hidable type_redirect">{TXT_CORE_CM_TYPE_REDIRECT_TARGET}</label><br class="type_hidable type_redirect" />
