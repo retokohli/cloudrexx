@@ -48,6 +48,7 @@ namespace Cx\Core {
         private function init()
         {
             // check the content for installed and used modules
+            $arrUsedModules = array();
             $qb = $this->em->createQueryBuilder();
             $qb->add('select', 'p')
                 ->add('from', 'Cx\Model\ContentManager\Page p')
@@ -55,6 +56,7 @@ namespace Cx\Core {
                     $qb->expr()->andx(
                         $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
 // TODO: what is the proper syntax for non-empty values?
+// TODO: add additional check for module != NULL
                         $qb->expr()->neq('p.module', $qb->expr()->literal(''))
                     ));
             $pages = $qb->getQuery()->getResult();

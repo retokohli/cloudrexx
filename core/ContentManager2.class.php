@@ -148,14 +148,21 @@ class ContentManager extends Module {
     protected function getLangOptions() {
         $output = '';
         foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
-            $output .= '<option value="'.FWLanguage::getLanguageCodeById($lang['id']).'">'.$lang['name'].'</option>';
+            $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
+            $output .= '<option value="'.FWLanguage::getLanguageCodeById($lang['id']).'"'.$selected.'>'.$lang['name'].'</option>';
         }
         return $output;
     }
 
     protected function getLangArray() {
         $output = array();
+        // set selected frontend language as first language
+        // jstree does display the tree of the first language
+        $output[] = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
         foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+            if ($lang['id'] == FRONTEND_LANG_ID) {
+                continue;
+            }
             $output[] = FWLanguage::getLanguageCodeById($lang['id']);
         }
         return $output;
