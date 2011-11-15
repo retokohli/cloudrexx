@@ -154,7 +154,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
         setcookie(session_name(), '', time() - 3600, ASCMS_PATH_OFFSET.'/');
 
         if ($this->backendMode) {
-            CSRF::header('Location: ../'.CONTREXX_DIRECTORY_INDEX);
+            CSRF::header('Location: '.ASCMS_PATH_OFFSET);
         } else {
             CSRF::header('Location: '.(!empty($_REQUEST['redirect'])
                 ? urldecode($_REQUEST['redirect'])
@@ -223,7 +223,7 @@ if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
 
         if (!is_object($template)) {
             // content provided instead of HTML_Template_Sigma object
-            $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_in[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', 'self::loadTemplate', $template);
+            $template = preg_replace_callback('/<!--\s+BEGIN\s+(access_logged_in[0-9]*)\s+-->.*<!--\s+END\s+\1\s+-->/sm', array('self', 'loadTemplate'), $template);
             return;
         } else {
             $objTemplate = $template;

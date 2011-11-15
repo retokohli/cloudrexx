@@ -195,7 +195,7 @@ class FWValidator
     static function fix_flash_transparency($html_code) {
         $result = preg_replace_callback(
             '!<object.*?.*?<param.*?</object>!ims',
-            'FWValidator::__fix_flash',
+            array('FWValidator', '__fix_flash'),
             $html_code
         );
         return $result;

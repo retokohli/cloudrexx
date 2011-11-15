@@ -339,7 +339,7 @@ if ($isRegularPageRequest) {
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
     try {
-        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET);
+        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), FWLanguage::getFallbackLanguageArray(), ASCMS_PATH_OFFSET);
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $section = $page->getModule();
@@ -1892,7 +1892,7 @@ $endcode = $objTemplate->get();
 JS::findJavascripts($endcode);
 /*
  * Proposal:  Use this
- *     $endcode = preg_replace_callback('/<script\s.*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', 'JS::registerFromRegex', $endcode);
+ *     $endcode = preg_replace_callback('/<script\s.*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $endcode);
  * and change JS::registerFromRegex to use index 2
  */
 // i know this is ugly, but is there another way
