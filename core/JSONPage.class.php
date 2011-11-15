@@ -131,6 +131,7 @@ class JSONPage {
             'start'         =>  $start,
             'end'           =>  $end,
             'content'       =>  preg_replace('/{([A-Z0-9_-]+)}/', '[[\\1]]', $page->getContent()),
+            'sourceMode'    =>  $page->getSourceMode(),
             // Metadata
             'metatitle'     =>  $page->getMetatitle(),
             'metadesc'      =>  $page->getMetadesc(),

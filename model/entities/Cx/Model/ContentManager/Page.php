@@ -33,6 +33,11 @@ class Page extends \Cx\Model\Base\EntityBase
     private $content;
 
     /**
+     * @var boolean $sourceMode
+     */
+    private $sourceMode;
+
+    /**
      * @var string $customContent
      */
     private $customContent;
@@ -260,6 +265,16 @@ class Page extends \Cx\Model\Base\EntityBase
     }
 
     /**
+     * Set sourceMode
+     *
+     * @param boolean $sourceMode
+     */
+    public function setSourceMode($sourceMode)
+    {
+        $this->sourceMode = $sourceMode;
+    }
+
+    /**
      * Get content
      *
      * @return text $content
@@ -268,6 +283,17 @@ class Page extends \Cx\Model\Base\EntityBase
     {
         return $this->content;
     }
+
+    /**
+     * Get sourceMode
+     *
+     * @return boolean $sourceMode
+     */
+    public function getSourceMode()
+    {
+        return $this->sourceMode;
+    }
+
 
     /**
      * Set customContent

@@ -30,7 +30,6 @@ Cx\Model\ContentManager\Node:
       joinColumn:
         name: parent_id
         referencedColumnName: id
-        onDelete: SET NULL
       gedmo:
         - treeParent
   oneToMany:
@@ -38,10 +37,11 @@ Cx\Model\ContentManager\Node:
       fetch: EAGER #progressive fetching
       targetEntity: Cx\Model\ContentManager\Node
       mappedBy: parent
+      cascade: [remove]
     pages:
       targetEntity: Cx\Model\ContentManager\Page
       mappedBy: node
-      cascade: ["remove"]
+      cascade: [remove]
 
   lifecycleCallbacks:
       prePersist: [ validate ]
