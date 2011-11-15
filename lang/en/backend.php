@@ -1086,6 +1086,9 @@ $_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate t
 $_ARRAYLANG['TXT_CORE_GERMAN'] = "German";
 $_ARRAYLANG['TXT_CORE_FRENCH'] = "French";
 $_ARRAYLANG['TXT_CORE_ENGLISH'] = "English";
+$_ARRAYLANG['TXT_CORE_CHINESE'] = "Chinese";
+$_ARRAYLANG['TXT_CORE_JAPANESE'] = "Japanese";
+
 
 $_ARRAYLANG['TXT_CORE_SITE_TYPE'] = "Page type";
 $_ARRAYLANG['TXT_CORE_SITE_CONTENT'] = "Content";
