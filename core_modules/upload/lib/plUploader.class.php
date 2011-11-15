@@ -34,7 +34,11 @@ class PlUploader extends Uploader
             }
         }
         else {
-            $this->addHarmfulFileToResponse($fileName);
+            if ($chunk == 0) {
+                // only count first chunk
+// TODO: there must be a way to cancel the upload process on the client side
+                $this->addHarmfulFileToResponse($fileName);
+            }
         }
 
         if($chunk == $chunks-1) //upload finished

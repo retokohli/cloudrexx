@@ -2212,51 +2212,53 @@ class galleryManager extends GalleryLibrary
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
-		$uploadedImagesCount = 0;
-        while(false != ($file = readdir($h))) {
-			$info = pathinfo($file);
+        if ($h) {
+            $uploadedImagesCount = 0;
+            while(false != ($file = readdir($h))) {
+                $info = pathinfo($file);
 
-            //skip . and ..
-            if($file == '.' || $file == '..') { continue; }
+                //skip . and ..
+                if($file == '.' || $file == '..') { continue; }
 
-			//delete unwanted files
-            if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-                $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_UNALLOWED_EXTENSION'], $file);
-               @unlink($tempPath.'/'.$file);
-                continue;
-            }
-
-			//width of the image is wider than the allowed value. Show Error.
-			$arrImageSize = getimagesize($tempPath.'/'.$file);
-			if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
-				$objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
-                $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_RESOLUTION_TOO_HIGH'], $file);
-                @unlink($tempPath.'/'.$file);
-                continue;
-			}
-
-            //check if file needs to be renamed
-			$newName = self::cleanFileName($file);
-            if (file_exists($path.'/'.$newName)) {
-                $info     = pathinfo($newName);
-                $exte     = $info['extension'];
-                $exte     = (!empty($exte)) ? '.'.$exte : '';
-                $part1    = $info['filename'];
-                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                    $newName = $part1.'_'.time().$exte;
+                //delete unwanted files
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
+                    $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_UNALLOWED_EXTENSION'], $file);
+                   @unlink($tempPath.'/'.$file);
+                    continue;
                 }
+
+                //width of the image is wider than the allowed value. Show Error.
+                $arrImageSize = getimagesize($tempPath.'/'.$file);
+                if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
+                    $objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
+                    $response->addMessage(UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_RESOLUTION_TOO_HIGH'], $file);
+                    @unlink($tempPath.'/'.$file);
+                    continue;
+                }
+
+                //check if file needs to be renamed
+                $newName = self::cleanFileName($file);
+                if (file_exists($path.'/'.$newName)) {
+                    $info     = pathinfo($newName);
+                    $exte     = $info['extension'];
+                    $exte     = (!empty($exte)) ? '.'.$exte : '';
+                    $part1    = $info['filename'];
+                    if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+                        $newName = $part1.'_'.time().$exte;
+                    }
+                }
+
+                //if the name has changed, the file needs to be renamed afterwards
+                if ($newName != $file) {
+                    $arrFilesToRename[$file] = $newName;
+                    array_push($arrFiles, $newName);
+                }
+
+                //create entry in the database for the uploaded image
+                self::insertImage($objGallery, $newName, $newName);
+
+                $uploadedImagesCount++;
             }
-
-            //if the name has changed, the file needs to be renamed afterwards
-            if ($newName != $file) {
-                $arrFilesToRename[$file] = $newName;
-				array_push($arrFiles, $newName);
-			}
-
-			//create entry in the database for the uploaded image
-			self::insertImage($objGallery, $newName, $newName);
-
-			$uploadedImagesCount++;
         }
 
         //rename files where needed

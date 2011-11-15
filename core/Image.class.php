@@ -225,7 +225,7 @@ class Image
     {
 // Necessary, as the path may be posted from the backend, with the
 // ASCMS_PATH_OFFSET prepended!
-        File::pathRelativeToRoot($path);
+        File::path_relative_to_root($path);
 // TODO: Use the inverse of self::getThumbnailPath()
         $path = preg_replace('/\.thumb$/', '', $path);
         if ($path == self::PATH_NO_IMAGE) {
@@ -843,7 +843,7 @@ class Image
     ) {
         if (empty($source_path) || empty($target_path)) return false;
 //DBG::log("Image::scale(): Source path $source_path");
-        File::pathRelativeToRoot($source_path);
+        File::path_relative_to_root($source_path);
 //DBG::log("Image::scale(): Fixed Source path $source_path");
         if (!File::exists($source_path)) return false;
         $original_size = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
@@ -890,7 +890,7 @@ class Image
         $force=false, $quality=90
     ) {
 //DBG::log("crop($source_path, $target_path, $x1, $y1, $x2, $y2, $force, $quality): Entered");
-        File::pathRelativeToRoot($source_path);
+        File::path_relative_to_root($source_path);
         $xs = $ys = null;
         list($xs, $ys) = getimagesize(ASCMS_DOCUMENT_ROOT.'/'.$source_path);
         // Fix coordinates that are out of range:
@@ -1353,7 +1353,7 @@ class Image
         // $target_path *SHOULD* be like ASCMS_HOTELCARD_IMAGES_FOLDER.'/folder/name.ext'
         // Strip path offset, if any, from the target path
         $target_path = preg_replace('/^'.preg_quote(ASCMS_PATH_OFFSET, '/').'/', '', $target_path);
-        if (!File::uploadFileHttp(
+        if (!File::upload_file_http(
             $upload_field_name, $target_path,
             self::MAXIMUM_UPLOAD_FILE_SIZE, Filetype::MIMETYPE_IMAGES_WEB)
         ) {

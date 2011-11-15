@@ -881,14 +881,14 @@ die("SettingDb::show(): ERROR: Type CHECKBOX is not implemented yet!");
 // TODO: Test if this works in all browsers:
                     // The path input field name is the same as the
                     // file upload input field name!
-                    $result_upload = File::uploadFileHttp(
+                    $result_upload = File::upload_file_http(
                         $name, $target_path,
                         Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
                         // The allowed file types
                         self::$arrSettings[$name]['values']
                     );
                     // If no file has been uploaded at all, ignore the no-change
-// TODO: Noop is not implemented in File::uploadFileHttp()
+// TODO: Noop is not implemented in File::upload_file_http()
 //                    if ($result_upload === '') continue;
                     if ($result_upload === true) {
                         $value = $target_path;

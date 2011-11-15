@@ -441,19 +441,18 @@ class Contact extends ContactLib
             $tup = self::getTemporaryUploadPath($this->submissionId);
 
             //create the folder
-            $fm = new File();
-            if (!is_dir($tup[0].'/'.$tup[2]) && !$fm->mkdir($tup[0], $tup[1], '/'.$tup[2])) {
+            if (!File::make_folder($tup[1].'/'.$tup[2])) {
                 throw new ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
             }
 
-            if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
+            if (!is_writable($tup[0].'/'.$tup[2]) && !File::chmod($tup[1].'/'.$tup[2], File::CHMOD_FOLDER)) {
                 //some hosters have problems with ftp and file system sync.
                 //this is a workaround that seems to somehow show php that
                 //the directory was created. clearstatcache() sadly doesn't
                 //work in those cases.
                 @closedir(@opendir($tup[0]));
 
-                if (!is_writable($tup[0].'/'.$tup[2]) && !$fm->setChmod($tup[0], $tup[1], '/'.$tup[2])) {
+                if (!is_writable($tup[0].'/'.$tup[2]) && !File::chmod($tup[1].'/'.$tup[2], File::CHMOD_FOLDER)) {
                     throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
                 }
             }
@@ -644,7 +643,7 @@ class Contact extends ContactLib
                 
             $id = intval($_REQUEST['unique_id']);
             $tup = self::getTemporaryUploadPath($id);
-            $tmpUploadDir = $tup[0].'/'.$tup[2].'/'; //all the files uploaded are in here
+            $tmpUploadDir = $tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here
             $arrFiles = array(); //we'll collect name => path of all files here and return this
 
             $depositionTarget = ""; //target folder            
@@ -678,10 +677,9 @@ class Contact extends ContactLib
                 }
                 $folderName .= $suffix;
                 
-                $fm = new File();            
                 //try to make the folder and change target accordingly on success
-                if($fm->mkdir(ASCMS_DOCUMENT_ROOT.'/'.$depositionTarget, ASCMS_PATH_OFFSET.'/'.$depositionTarget , '/'.$folderName)) {
-                    $fm->setChmod(ASCMS_DOCUMENT_ROOT.'/'.$depositionTarget, ASCMS_PATH_OFFSET.'/'.$depositionTarget , '/'.$folderName);
+                if(File::make_folder(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
+                    File::chmod(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName, File::CHMOD_FOLDER);
                     $depositionTarget .= $folderName.'/';
                 }
                 $this->depositionTarget = $depositionTarget;
@@ -692,10 +690,10 @@ class Contact extends ContactLib
             }
 
             //move all files
-            if(!file_exists($tmpUploadDir))
+            if(!File::exists($tmpUploadDir))
                 throw new ContactException("could not find temporary upload directory '$tmpUploadDir'");
 
-            $h = opendir($tmpUploadDir);
+            $h = opendir(ASCMS_PATH.$tmpUploadDir);
             while(false !== ($f = readdir($h))) {
                 if($f != '..' && $f != '.') {
                     //do not overwrite existing files.
@@ -708,7 +706,7 @@ class Contact extends ContactLib
                     }
                     
                     if($move)
-                        rename($tmpUploadDir.$f,ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f);
+                        File::move($tmpUploadDir.$f,ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
                     $arrFiles[] = array(
                         'name'  => $f,
                         'path'  => $depositionTarget.$prefix.$f,
@@ -1527,8 +1525,8 @@ class Contact extends ContactLib
 
         $dirname = 'contact_files_'.$submissionId;
         $result = array(
-            $sessionObj->getTempPath(),
-            $sessionObj->getWebTempPath(),
+            $tempPath,
+            $tempWebPath,
             $dirname
         );
         return $result;
