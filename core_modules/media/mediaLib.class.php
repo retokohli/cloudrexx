@@ -996,7 +996,7 @@ END;
      * 
      * @return string the directory to move to
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos){
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response){
         $path = $data['path'];
         $webPath = $data['webPath'];
 
@@ -1007,36 +1007,40 @@ END;
         //rename files, delete unwanted
         $arrFilesToRename = array(); //used to remember the files we need to rename
         $h = opendir($tempPath);
-        while(false !== ($file = readdir($h))) {
-            //delete potentially malicious files
-            if(!FWValidator::is_file_ending_harmless($file)) {
-                @unlink($file);
-                continue;
-            }
-            //skip . and ..           
-            if($file == '.' || $file == '..')
-                continue;
-
-			//clean file name
-            $newName = self::cleanFileName($file);
-
-            //check if file needs to be renamed
-            if (file_exists($path.$newName)) {
-                $info     = pathinfo($newName);
-                $exte     = $info['extension'];
-                $exte     = (!empty($exte)) ? '.'.$exte : '';
-                $part1    = $info['filename'];
-                if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
-                    $newName = $part1.'_'.time().$exte;
+        if ($h) {
+            while(false !== ($file = readdir($h))) {
+                //delete potentially malicious files
+// TODO: this is probably an overhead, because the uploader might already to this. doesn't it?
+                if(!FWValidator::is_file_ending_harmless($file)) {
+                    @unlink($file);
+                    continue;
                 }
-            }
- 
-            //if the name has changed, the file needs to be renamed afterwards
-            if($newName != $file)
-                $arrFilesToRename[$file] = $newName;
+                //skip . and ..           
+                if($file == '.' || $file == '..')
+                    continue;
 
-            array_push($arrFiles, $newName);
+                //clean file name
+                $newName = self::cleanFileName($file);
+
+                //check if file needs to be renamed
+                if (file_exists($path.$newName)) {
+                    $info     = pathinfo($newName);
+                    $exte     = $info['extension'];
+                    $exte     = (!empty($exte)) ? '.'.$exte : '';
+                    $part1    = $info['filename'];
+                    if (empty($_REQUEST['uploadForceOverwrite']) || !intval($_REQUEST['uploadForceOverwrite'] > 0)) {
+                        $newName = $part1.'_'.time().$exte;
+                    }
+                }
+     
+                //if the name has changed, the file needs to be renamed afterwards
+                if($newName != $file)
+                    $arrFilesToRename[$file] = $newName;
+
+                array_push($arrFiles, $newName);
+            }
         }
+
         //rename files where needed
         foreach($arrFilesToRename as $oldName => $newName){
             rename($tempPath.'/'.$oldName, $tempPath.'/'.$newName);

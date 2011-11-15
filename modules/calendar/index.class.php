@@ -1483,7 +1483,7 @@ JSCODE;
                 }
             }
             $fileNew = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
-            $rc = File::uploadFileHttp($formfield, $fileNew, $this->uploadImgMaxSize);
+            $rc = File::upload_file_http($formfield, $fileNew, $this->uploadImgMaxSize);
             if($rc) {
                 $_SESSION['calendar']['uploadedimage'][$formfield] = $this->uploadImgWebPath.$pathAdd.$sessid.$extension;
                 $_SESSION['calendar']['uploadedimagepath'][$formfield] = $this->uploadImgPath.$pathAdd.$sessid.$extension;

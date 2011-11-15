@@ -29,8 +29,8 @@ class cmsSession
 {
 	var $sessionid;
 	var $status;
-    var $sessionPath;
-    var $sessionPathPrefix = 'session_';
+    private $sessionPath;
+    private $sessionPathPrefix = 'session_';
 	var $userId;
 	var $lifetime;
 	var $_objDb;
@@ -108,7 +108,7 @@ class cmsSession
 	function cmsSessionRead( $aKey )
 	{
 		   $this->sessionid=$aKey;
-           $this->sessionPath = ASCMS_TEMP_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
+           $this->sessionPath = ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
 	       $query = "SELECT datavalue, user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
 	       if ($this->compatibelitiyMode) {
 			$query = "SELECT datavalue, username as user_id, status FROM ".DBPREFIX."sessions WHERE sessionid='".$aKey."'";
@@ -146,9 +146,8 @@ class cmsSession
 	       $query = "DELETE FROM ".DBPREFIX."sessions WHERE sessionid = '".$aKey."'";
 	       $this->_objDb->Execute($query);
 
-           if (file_exists($this->sessionPath)) {
-                $objFile = new File();
-                $objFile->delDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionPathPrefix.$this->sessionid);
+           if (File::exists($this->sessionPath)) {
+                File::delete_folder($this->sessionPath, true);
            }
 
 	       return true;
@@ -185,21 +184,19 @@ class cmsSession
         die ("Session Handler Error");
     }
 
-    function getTempPath()
+    public function getTempPath()
     {
         $this->cleanTempPaths();
 
-        $objFile = new File();
-
-        if (!is_dir($this->sessionPath) && !$objFile->mkdir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionPathPrefix.$this->sessionid)) {
+        if (!File::make_folder($this->sessionPath)) {
             return false;
         }
 
-        if (!is_writable($this->sessionPath) && !$objFile->setChmod(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$this->sessionPathPrefix.$this->sessionid)) {
+        if (!is_writable(ASCMS_PATH.$this->sessionPath) && !File::chmod($this->sessionPath, FILE::CHMOD_FOLDER)) {
             return false;
         }
 
-        return $this->sessionPath;
+        return ASCMS_PATH.$this->sessionPath;
     }
 
     /**
@@ -208,11 +205,11 @@ class cmsSession
      *
      * @return string 
      */
-    function getWebTempPath() {
+    public function getWebTempPath() {
         $tp = $this->getTempPath();
         if(!$tp)
             return false;
-        return ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
+        return $this->sessionPath;
     }
 
     public function cleanTempPaths()
@@ -238,13 +235,8 @@ class cmsSession
 
         foreach ($sessionPaths as $sessionPath) {
             if (!in_array(substr($sessionPath, strlen($this->sessionPathPrefix)), $sessions)) {
-                if (!isset($objFile)) {
-                    $objFile = new File();
-                }
-
-                $objFile->delDir(ASCMS_TEMP_PATH, ASCMS_TEMP_WEB_PATH, '/'.$sessionPath);
+                File::delete_folder(ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$sessionPath, true);
             }
         }
     }
 }
-?>
