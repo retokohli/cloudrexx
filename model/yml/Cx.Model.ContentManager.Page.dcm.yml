@@ -54,6 +54,8 @@ Cx\Model\ContentManager\Page:
       type: text
       gedmo:
         - versioned
+    sourceMode:
+      type: boolean
 
     customContent:
       nullable: true
