@@ -124,7 +124,7 @@ class JSONData {
             $this->em->persist($page);
             $this->em->flush();
 
-            die('');
+            die('new');
         }
         elseif (intval($_POST['page']['id'])) {
             $updated_page = array_map('contrexx_input2raw', $_POST['page']);

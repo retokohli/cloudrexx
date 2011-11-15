@@ -364,7 +364,11 @@ class ContentManager extends Module {
                             $this->em->persist($page);
                         }
                     } else {
-                        echo json_encode(array('action' => 'new'));
+                        echo json_encode(array(
+                            'action' => 'new',
+                            'node' =>  $nodeId,
+                        ));
+                        exit(0);
                     }
                 }
                 break;
