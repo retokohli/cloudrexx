@@ -1083,46 +1083,6 @@ $_ARRAYLANG['TXT_LICENSE_KEY'] = 'License key';
 $_ARRAYLANG['TXT_LICENSE_KEY_HELP'] = 'Enter here your license key to activate this Contrexx© installation.';
 
 //content manager
-$_ARRAYLANG['TXT_CORE_GERMAN'] = "German";
-$_ARRAYLANG['TXT_CORE_FRENCH'] = "French";
-$_ARRAYLANG['TXT_CORE_ENGLISH'] = "English";
-$_ARRAYLANG['TXT_CORE_CHINESE'] = "Chinese";
-$_ARRAYLANG['TXT_CORE_JAPANESE'] = "Japanese";
-
-
-$_ARRAYLANG['TXT_CORE_SITE_TYPE'] = "Page type";
-$_ARRAYLANG['TXT_CORE_SITE_CONTENT'] = "Content";
-$_ARRAYLANG['TXT_CORE_SITE_ACCESS'] = "Access";
-$_ARRAYLANG['TXT_CORE_SITE_SETTINGS'] = "Page settings";
-$_ARRAYLANG['TXT_CORE_SITE_HISTORY'] = "History";
-
-$_ARRAYLANG['TXT_CORE_TYPE_EXPLANATION'] = "Please choose one of the page types available below to specify this page's functionality.";
-$_ARRAYLANG['TXT_CORE_TYPE_CONTENT'] = "Content";
-$_ARRAYLANG['TXT_CORE_TYPE_CONTENT_DESCRIPTION'] = "A content page.";
-$_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION'] = "Redirection";
-$_ARRAYLANG['TXT_CORE_TYPE_REDIRECTION_DESCRIPTION'] = "If the visitor requests this page, he will be redirected to another page.";
-$_ARRAYLANG['TXT_CORE_TYPE_APP'] = "Application";
-$_ARRAYLANG['TXT_CORE_TYPE_APP_DESCRIPTION'] = "Content page enhanced by an application.";
-$_ARRAYLANG['TXT_CORE_TYPE_USE_FALLBACK'] = "Use different language's content: ";
-$_ARRAYLANG['TXT_CORE_TYPE_USE_FALLBACK_DESCRIPTION'] = "This page will show the content from another language.";
-
-$_ARRAYLANG['TXT_CORE_ACTIVE_FROM'] = "from";
-$_ARRAYLANG['TXT_CORE_ACTIVE_TO'] = "to";
-$_ARRAYLANG['TXT_CORE_META_INFORMATION'] = "Meta informations";
-$_ARRAYLANG['TXT_CORE_META_TITLE'] = "Title";
-$_ARRAYLANG['TXT_CORE_META_KWORDS'] = "Keywords";
-$_ARRAYLANG['TXT_CORE_META_DESC'] = "Description";
-$_ARRAYLANG['TXT_CORE_META_ROBOTS'] = "Allow indexing by search engines";
-
-$_ARRAYLANG['TXT_CORE_MODULE_CMD'] = "Application specific";
-$_ARRAYLANG['TXT_CORE_MODULE'] = "Application";
-$_ARRAYLANG['TXT_CORE_CMD'] = "Section";
-$_ARRAYLANG['TXT_CORE_OPTICS_STYLE'] = "Design & style";
-$_ARRAYLANG['TXT_CORE_SPECIAL_CONTENT_PAGE'] = "Special content template";
-$_ARRAYLANG['TXT_CORE_TARGET'] = "Target";
-$_ARRAYLANG['TXT_CORE_PERFORMANCE_OPTIMIZATION'] = "Performance Optimization";
-$_ARRAYLANG['TXT_CORE_LINK'] = "Link specific";
-
 $_ARRAYLANG['TXT_CORE_PREVIEW'] = "Preview";
 $_ARRAYLANG['TXT_CORE_SAVE_PUBLISH'] = "Save & publish";
 $_ARRAYLANG['TXT_CORE_SAVE'] = "Save";
@@ -1395,7 +1355,7 @@ $_ARRAYLANG['TXT_CORE_CM_TYPE'] = 'Type';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_CONTENT'] = 'Text &amp; Media';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT'] = 'Redirection';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_APPLICATION'] = 'Application';
-$_ARRAYLANG['TXT_CORE_CM_TYPE_FALLBACK'] = 'Use OTHER Version';
+$_ARRAYLANG['TXT_CORE_CM_TYPE_FALLBACK'] = 'Use fallback Version:';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_CONTENT_INFO'] = 'Use the content editor below to manage this page\'s contents.';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_TARGET'] = 'Target';
 $_ARRAYLANG['TXT_CORE_CM_BROWSE'] = 'Find...';
