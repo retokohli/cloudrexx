@@ -330,6 +330,8 @@ class ContentManager extends Module {
 
     protected function pageStatus()
     {
+        header('Content-Type: application/json');
+
         $pageId = isset($_GET['page']) ? intval($_GET['page']) : null;
 
         if ($pageId != null) {
