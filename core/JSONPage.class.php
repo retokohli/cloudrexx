@@ -107,7 +107,7 @@ class JSONPage {
         $pageArray = array(
             // Editor Meta
             'id'            =>  $page->getId(),
-            'lang'          =>  $page->getLang(),
+            'lang'          =>  FWLanguage::getLanguageCodeById($page->getLang()),
             'node'          =>  $page->getNode()->getId(),
             // Page Tab
             'name'          =>  $page->getTitle(),

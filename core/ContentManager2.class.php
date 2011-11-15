@@ -69,8 +69,6 @@ class ContentManager extends Module {
 		$this->template->touchBlock('content_manager_meat');
 
         $this->setLanguageVars(array(
-            //TODO: Langs
-            'TXT_CORE_GERMAN', 'TXT_CORE_FRENCH', 'TXT_CORE_ENGLISH', 'TXT_CORE_ITALIAN', 'TXT_CORE_DANISH', 'TXT_CORE_RUSSIAN', 'TXT_CORE_JAPANESE', 'TXT_CORE_CHINESE', 
             //categories
             'TXT_CORE_SITE_TYPE', 'TXT_CORE_SITE_CONTENT', 'TXT_CORE_SITE_ACCESS', 'TXT_CORE_SITE_SETTINGS', 'TXT_CORE_SITE_HISTORY',
             //type tab
@@ -101,6 +99,8 @@ class ContentManager extends Module {
 
 
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
+        $this->template->setVariable('LANGSWITCH_OPTIONS', json_encode($this->getLangOptions()));
+        $this->template->setVariable('LANGUAGE_ARRAY', json_encode($this->getLangArray()));
 	}
 
     /**
@@ -134,7 +134,7 @@ class ContentManager extends Module {
         $query = "SELECT id,themesname FROM ".DBPREFIX."skins ORDER BY id";
         $rs = $this->db->Execute($query);
 
-        $options = '';        
+        $options = '';
         while(!$rs->EOF) {
             $id = $rs->fields['id'];
             $name = $rs->fields['themesname'];
@@ -143,6 +143,22 @@ class ContentManager extends Module {
             $rs->MoveNext();
         }
         return $options;
+    }
+
+    protected function getLangOptions() {
+        $output = '';
+        foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $output .= '<option value="'.FWLanguage::getLanguageCodeById($lang['id']).'">'.$lang['name'].'</option>';
+        }
+        return $output;
+    }
+
+    protected function getLangArray() {
+        $output = array();
+        foreach (FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $output[] = FWLanguage::getLanguageCodeById($lang['id']);
+        }
+        return $output;
     }
 
     protected function setLanguageVars($ids) {
