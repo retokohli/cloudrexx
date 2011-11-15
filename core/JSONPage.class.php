@@ -64,6 +64,12 @@ class JSONPage {
             if ($page->getLang() == FWLanguage::getLanguageIdByCode($lang)) break;
         }
 
+        // Access Permissions
+        $pg = Env::get('pageguard');
+        $accessData = array();
+        $accessData['frontend'] = array('groups' => $pg->getGroups(true), 'assignedGroups' => $pg->getAssignedGroupIds($page, true));
+        $accessData['backend'] = array('groups' => $pg->getGroups(false), 'assignedGroups' => $pg->getAssignedGroupIds($page, false));
+
         $pageArray = array(
             // Editor Meta
             'id'            => 0,
@@ -77,6 +83,10 @@ class JSONPage {
             'metadesc'      =>  $page->getMetadesc(),
             'metakeys'      =>  $page->getMetakeys(),
             'metarobots'    =>  $page->getMetarobots(),
+            // Access Permissions
+            'frontend_protection'    => $page->isFrontendProtected(),
+            'backend_protection'     => $page->isBackendProtected(),
+            'accessData'    =>  $accessData,
             // Advanced Settings
             'slug'          =>  $page->getSlug(),
         );
