@@ -63,7 +63,7 @@ h1{ font-size: 20px }
 }
 #type label {
     float: left;
-    width: 150px;
+    min-width: 150px;
 }
 
 #page input.title {
