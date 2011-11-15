@@ -152,7 +152,7 @@ class JSONData {
                 $page->setMetadesc($updated_page['metadesc']);
                 $page->setMetarobots($updated_page['metarobots']);
                 $page->setContent(preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $updated_page['content']));
-                $page->setModule($updated_page['appliaction']);
+                $page->setModule($updated_page['application']);
                 if ($updated_page['area'] == '') { 
                     $updated_page['area'] = null;
                 }
