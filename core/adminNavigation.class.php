@@ -129,7 +129,7 @@ class adminMenu
             }
             //(3/3) display a nice ordered menu.
             foreach ($arrMatchingItems as $link_data) {
-                if ($this->moduleExists($link_data[4])) {
+                if ($group_id != 2 ||  $this->moduleExists($link_data[4])) {
                     $navigation.= "<li><a href='".strip_tags($link_data[2])."' title='".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."' target='".$link_data[3]."'>&raquo;&nbsp;".htmlentities($link_data[1], ENT_QUOTES, CONTREXX_CHARSET)."</a></li>\n";
                 }
             }
