@@ -296,7 +296,11 @@ class InitCMS
 // Mind: Changed from $_POST to $_REQUEST, so it can be changed by
 // clicking a link (used in the Shop, and for MailTemplates)
         if (!empty($_REQUEST['userFrontendLangId'])) {
-            $id = intval($_REQUEST['userFrontendLangId']);
+            if (preg_match('/\w/', $_REQUEST['userFrontendLangId'])) {
+                $id = FWLanguage::getLanguageIdByCode($_REQUEST['userFrontendLangId']);
+            } else {
+                $id = intval($_REQUEST['userFrontendLangId']);
+            }
         } elseif (!empty($_SESSION['userFrontendLangId'])) {
             $id = intval($_SESSION['userFrontendLangId']);
         } else {
