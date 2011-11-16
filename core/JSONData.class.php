@@ -97,13 +97,12 @@ class JSONData {
             $page->setEnd(null);
             $page->setContentTitle($updated_page['title']);
             $page->setTitle($updated_page['name']);
-            $page->setContentTitle($updated_page['title']);
             $page->setMetatitle($updated_page['metatitle']);
             $page->setMetakeys($updated_page['metakeys']);
             $page->setMetadesc($updated_page['metadesc']);
             $page->setMetarobots($updated_page['metarobots']);
-
             $page->setContent(preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $updated_page['content']));
+            $page->setSourceMode($updated_page['sourceMode'] == 'on' ? true : false);
             $page->setModule($updated_page['application']);
             $page->setCmd($updated_page['area']);
             $page->setTarget($updated_page['target']);
@@ -152,6 +151,7 @@ class JSONData {
                 $page->setMetadesc($updated_page['metadesc']);
                 $page->setMetarobots($updated_page['metarobots']);
                 $page->setContent(preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $updated_page['content']));
+                $page->setSourceMode($updated_page['sourceMode'] == 'on' ? true : false);
                 $page->setModule($updated_page['application']);
                 if ($updated_page['area'] == '') { 
                     $updated_page['area'] = null;
