@@ -1360,7 +1360,6 @@ $_ARRAYLANG['TXT_CORE_CM_TYPE_CONTENT_INFO'] = 'Use the content editor below to 
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_TARGET'] = 'Target';
 $_ARRAYLANG['TXT_CORE_CM_BROWSE'] = 'Find...';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_REDIRECT_INFO'] = 'Redirect to another page or any other target.';
-$_ARRAYLANG['TXT_CORE_CM_TYPE_APPLICATION'] = 'Application';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_APPLICATION_AREA'] = 'Area';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_APPLICATION_INFO'] = 'Select the desired application and area. For more information, refer to the application documentation.';
 $_ARRAYLANG['TXT_CORE_CM_TYPE_FALLBACK_INFO'] = 'Use the contents and settings of another language version of this page.';
@@ -1389,6 +1388,7 @@ $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS'] = 'Additional CSS Navigation Class';
 $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'The specified value can be accessed as [[CSS_NAV_NAME]] in navigation contexts.';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Restrict Read (Frontend) Access to This Page';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_BACKEND'] = 'Restrict Write (Backend) Access to This Page';
+$_ARRAYLANG['TXT_CORE_CM_SOURCE_MODE'] = 'Disable WYSIWYG Editor for this Page';
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";
