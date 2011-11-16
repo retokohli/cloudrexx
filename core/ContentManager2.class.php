@@ -54,7 +54,7 @@ class ContentManager extends Module {
 	}
 
 	protected function actRenderCM() {
-        global $_CORELANG;
+        global $_ARRAYLANG;
 
         JS::activate('cx');
         JS::activate('ckeditor');
@@ -94,6 +94,8 @@ class ContentManager extends Module {
             $modules->MoveNext();
         }
 
+        ContrexxJavascript::getInstance()->setVariable('confirmDeleteQuestion', $_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] );
+        
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $this->template->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
 

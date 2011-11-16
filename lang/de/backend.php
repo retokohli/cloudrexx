@@ -1460,6 +1460,12 @@ $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'Der angegebene Wert wird in der
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Lesezugriff (Frontend) einschr&auml;nken';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_BACKEND'] = 'Schreibzugriff (Backend) einschr&auml;nken';
 $_ARRAYLANG['TXT_CORE_CM_SOURCE_MODE'] = 'F&uuml;r diese Seite keinen WYSIWYG-Editor verwenden';
+$_ARRAYLANG['TXT_CORE_CM_PUBLISH'] = "Publizieren";
+$_ARRAYLANG['TXT_CORE_CM_UNPUBLISH'] = "Widerrufen";
+$_ARRAYLANG['TXT_CORE_CM_HIDE'] = "Verstecken";
+$_ARRAYLANG['TXT_CORE_CM_SHOW'] = "Zeigen";
+$_ARRAYLANG['TXT_CORE_CM_DELETE'] = "Node löschen";
+$_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Bitte bestätigen Sie, dass Sie diesen Node und alle seine Kindernodes löschen wollen?";
 
 // core captcha
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
@@ -1471,3 +1477,4 @@ $_ARRAYLANG['TXT_CORE_FINISH_UPLOADING'] = "Hochladen beenden";
 $_ARRAYLANG['TXT_CORE_FILES_UPLOADED'] = "Datei(en) wurde(n) erfolgreich heraufgeladen";
 $_ARRAYLANG['TXT_CORE_FILES_NOT_UPLOADED'] = "Einige Datei(en) konnte(n) nicht heraufgeladen werden:";
 $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'] = "Die Dateiendung ist nicht erlaubt.";
+

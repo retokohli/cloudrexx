@@ -11,30 +11,34 @@ class ActionsRenderer
 
     static function render($page)
     {
+        global $_ARRAYLANG;
+
         $actions = array();
 
         if ($page->isActive()) {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=unpublish&page={$page->getId()}", "Unpublish");
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=unpublish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH']);
         } else {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=publish&page={$page->getId()}", "Publish");
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=publish&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
         }
 
         if ($page->isVisible()) {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=hidden&page={$page->getId()}", "Hide");
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=hidden&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_HIDE']);
         } else {
-            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=visible&page={$page->getId()}", "Show");
+            $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=visible&page={$page->getId()}", $_ARRAYLANG['TXT_CORE_CM_SHOW']);
         }
 
-        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete", "Delete Node");
+        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
 
         return self::$header.implode("\n",$actions).self::$footer;
     }
 
     static function renderNew($nodeId, $langId)
     {
+        global $_ARRAYLANG;
+        
         $actions = array();
-        $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=publish&node=$nodeId&lang=$langId", "Publish");
-        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete", "Delete Node");
+        $actions[] = sprintf(self::$actionItem, "index.php?cmd=content&act=pageStatus&action=publish&node=$nodeId&lang=$langId", $_ARRAYLANG['TXT_CORE_CM_PUBLISH']);
+        $actions[] = sprintf(self::$actionItem, "index.php?cmd=jsondata&object=node&act=delete", $_ARRAYLANG['TXT_CORE_CM_DELETE']);
 
         return self::$header.implode("\n",$actions).self::$footer;
     }
