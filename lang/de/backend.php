@@ -1465,7 +1465,7 @@ $_ARRAYLANG['TXT_CORE_CM_UNPUBLISH'] = "Widerrufen";
 $_ARRAYLANG['TXT_CORE_CM_HIDE'] = "Verstecken";
 $_ARRAYLANG['TXT_CORE_CM_SHOW'] = "Zeigen";
 $_ARRAYLANG['TXT_CORE_CM_DELETE'] = "Node löschen";
-$_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Bitte bestätigen Sie, dass Sie diesen Node und alle seine Kindernodes löschen wollen?";
+$_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Bitte bestätigen Sie, dass Sie diesen Node und alle seine Kindernodes löschen wollen.";
 
 // core captcha
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
