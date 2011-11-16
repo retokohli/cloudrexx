@@ -1389,6 +1389,12 @@ $_ARRAYLANG['TXT_CORE_CM_CSS_NAV_CLASS_INFO'] = 'The specified value can be acce
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND'] = 'Restrict Read (Frontend) Access to This Page';
 $_ARRAYLANG['TXT_CORE_CM_ACCESS_PROTECTION_BACKEND'] = 'Restrict Write (Backend) Access to This Page';
 $_ARRAYLANG['TXT_CORE_CM_SOURCE_MODE'] = 'Disable WYSIWYG Editor for this Page';
+$_ARRAYLANG['TXT_CORE_CM_PUBLISH'] = "Publish";
+$_ARRAYLANG['TXT_CORE_CM_UNPUBLISH'] = "Unpublish";
+$_ARRAYLANG['TXT_CORE_CM_HIDE'] = "Hide";
+$_ARRAYLANG['TXT_CORE_CM_SHOW'] = "Show";
+$_ARRAYLANG['TXT_CORE_CM_DELETE'] = "Delete Node";
+$_ARRAYLANG['TXT_CORE_CM_CONFIRM_DELETE'] = "Please confirm that you want to delete this node and all its child nodes?";
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";
