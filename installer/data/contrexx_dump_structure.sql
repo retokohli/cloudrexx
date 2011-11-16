@@ -3106,6 +3106,7 @@ CREATE TABLE `contrexx_pages` (
   `contentTitle` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `content` longtext NOT NULL,
+  `sourceMode` tinyint(1) NOT NULL DEFAULT '0',
   `customContent` varchar(64) DEFAULT NULL,
   `cssName` varchar(255) DEFAULT NULL,
   `skin` int(11) DEFAULT NULL,
