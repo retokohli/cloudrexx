@@ -446,4 +446,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'] = "E-mail %s was 
 $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'] = "Interface";
 $_ARRAYLANG['TXT_NEWSLETTER_PROFILE_DETAILS'] = "Profile details";
 $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'] = "Choose an e-mail to be send to the recipient after creating.";
+$_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD'] = "Mandatory field";
+$_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'] = "Please Enter all required fields.";
 ?>

@@ -445,4 +445,6 @@ $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'] = "Da der Versand bere
 $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'] = "Das E-Mail %s wurde erfolgreich an den neu hinzugefügten Empfänger gesandt.";
 $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'] = "Oberfläche";
 $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'] = "Wählen Sie ein E-Mail aus, welches nach dem Speichern an den Empfänger gesendet werden soll. ";
+$_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD'] = "Pflichtfeld";
+$_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'] = "Please Enter all required fields.";
 ?>
