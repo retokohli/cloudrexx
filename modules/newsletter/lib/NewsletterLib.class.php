@@ -240,36 +240,35 @@ class NewsletterLib
 
 
     function _updateRecipient(
-        $id, $email, $uri, $sex, $salutation, $title, $lastname, $firstname, $position, $company, $industry_sector,
+        $recipientAttributeStatus, $id, $email, $uri, $sex, $salutation, $title, $lastname, $firstname, $position, $company, $industry_sector,
         $address, $zip, $city, $country, $phone_office, $phone_private, $phone_mobile, $fax, $notes, $birthday, $status,
         $arrLists, $language
     ) {
         global $objDatabase;
 
-        $query = SQL::update('module_newsletter_user', array(
-            'email' => contrexx_addslashes($email),
-            'uri' => contrexx_addslashes($uri),
-            'sex' => array('val' => contrexx_addslashes($sex), 'omitEmpty' => true),
-            'salutation' => intval($salutation),
-            'title' => contrexx_addslashes($title),
-            'lastname' => contrexx_addslashes($lastname),
-            'firstname' => contrexx_addslashes($firstname),
-            'position' => contrexx_addslashes($position),
-            'company' => contrexx_addslashes($company),
-            'industry_sector' => contrexx_addslashes($industry_sector),
-            'address' => contrexx_addslashes($address),
-            'zip' => contrexx_addslashes($zip),
-            'city' => contrexx_addslashes($city),
-            'country_id' => intval($country),
-            'phone_office' => contrexx_addslashes($phone_office),
-            'phone_private' => contrexx_addslashes($phone_private),
-            'phone_mobile' => contrexx_addslashes($phone_mobile),
-            'fax' => contrexx_addslashes($fax),
-            'notes' => contrexx_addslashes($notes),
-            'birthday' => contrexx_addslashes($birthday),
-            'status' => intval($status),
-            'language' => intval($language)
-        ))."WHERE id=".$id;
+        $query = "UPDATE `".DBPREFIX."module_newsletter_user`
+                      SET `email`    = '".contrexx_addslashes($email)."', 
+                          `notes`    = '".contrexx_addslashes($notes)."', 
+                          `status`   = '".intval($status)."', 
+                          `language` = '".intval($language)."'".
+        ($recipientAttributeStatus['recipient_sex']['active'] ? ',sex="'.contrexx_addslashes($sex).'"' : '').
+        ($recipientAttributeStatus['recipient_salutation']['active'] ? ',salutation="'.intval($salutation).'"' : '').
+        ($recipientAttributeStatus['recipient_title']['active'] ? ' ,title="'.contrexx_addslashes($title).'"' : '').
+        ($recipientAttributeStatus['recipient_firstname']['active'] ? ' ,firstname="'.contrexx_addslashes($firstname).'"' : '').
+        ($recipientAttributeStatus['recipient_lastname']['active'] ? ' ,lastname="'.contrexx_addslashes($lastname).'"' : '').
+        ($recipientAttributeStatus['recipient_position']['active'] ? ' ,position="'.contrexx_addslashes($position).'"' : '').
+        ($recipientAttributeStatus['recipient_company']['active'] ? ' ,company="'.contrexx_addslashes($company).'"' : '').
+        ($recipientAttributeStatus['recipient_industry']['active'] ? ' ,industry_sector="'.contrexx_addslashes($industry_sector).'"' : '').
+        ($recipientAttributeStatus['recipient_address']['active'] ? ' ,address="'.contrexx_addslashes($address).'"' : '').
+        ($recipientAttributeStatus['recipient_city']['active'] ? ' ,city="'.contrexx_addslashes($city).'"' : '').
+        ($recipientAttributeStatus['recipient_zip']['active'] ? ' ,zip="'.contrexx_addslashes($zip).'"' : '').
+        ($recipientAttributeStatus['recipient_country']['active'] ? ' ,country_id="'.intval($country).'"' : '').
+        ($recipientAttributeStatus['recipient_phone']['active'] ? ' ,phone_office="'.contrexx_addslashes($phone_office).'"' : '').
+        ($recipientAttributeStatus['recipient_private']['active'] ? ' ,phone_private="'.contrexx_addslashes($phone_private).'"' : '').
+        ($recipientAttributeStatus['recipient_mobile']['active'] ? ' ,phone_mobile="'.contrexx_addslashes($phone_mobile).'"' : '').
+        ($recipientAttributeStatus['recipient_fax']['active'] ? ' ,fax="'.$fax.'"' : '').
+        ($recipientAttributeStatus['recipient_birthday']['active'] ? ' ,birthday="'.$birthday.'"' : '').
+        ($recipientAttributeStatus['recipient_website']['active'] ? ' ,uri="'.$uri.'"' : '')." WHERE id = ".intval($id);
 
         if (!$objDatabase->Execute($query)) {
             return false;
