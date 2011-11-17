@@ -40,7 +40,7 @@ class NavigationPageTree extends SigmaPageTree {
                     'TARGET' => $page->getLinkTarget(),
                     'LEVEL_INFO' => $hasChilds ? '' : 'down',
                     'STYLE' => $style,
-                    'CSS_NAME' => $page->getCssName()
+                    'CSS_NAME' => $page->getCssNavName()
                 ));
                 $this->template->parse($blockName);
                 $this->output .= $this->template->get($blockName, true);

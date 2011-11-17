@@ -70,7 +70,14 @@ Cx\Model\ContentManager\Page:
       length: 255
       gedmo:
         - versioned
-    
+
+    cssNavName:
+      nullable: true
+      type: string
+      length: 255
+      gedmo:
+        - versioned
+
     skin:
       type: integer
       nullable: true

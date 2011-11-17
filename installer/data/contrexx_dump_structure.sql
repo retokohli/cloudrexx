@@ -3109,6 +3109,7 @@ CREATE TABLE `contrexx_pages` (
   `sourceMode` tinyint(1) NOT NULL DEFAULT '0',
   `customContent` varchar(64) DEFAULT NULL,
   `cssName` varchar(255) DEFAULT NULL,
+  `cssNavName` varchar(255) DEFAULT NULL,
   `skin` int(11) DEFAULT NULL,
   `metatitle` varchar(255) DEFAULT NULL,
   `metadesc` varchar(255) DEFAULT NULL,

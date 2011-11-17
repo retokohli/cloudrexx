@@ -145,6 +145,7 @@ class JSONPage {
             'skin'          =>  $page->getSkin(),
             'customContent' =>  $page->getCustomContent(),
             'cssName'       =>  $page->getCssName(),
+            'cssNavName'    =>  $page->getCssNavName(),
             'caching'       =>  $page->getCaching(),
             'linkTarget'    => $page->getLinkTarget(),
             'slug'          =>  $page->getSlug(),

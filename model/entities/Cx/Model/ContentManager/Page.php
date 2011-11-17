@@ -1157,4 +1157,29 @@ class Page extends \Cx\Model\Base\EntityBase
         $this->containsFallbackContent = true;
         $this->content = $page->getContent();
     }
+    /**
+     * @var string $cssNavName
+     */
+    private $cssNavName;
+
+
+    /**
+     * Set cssNavName
+     *
+     * @param string $cssNavName
+     */
+    public function setCssNavName($cssNavName)
+    {
+        $this->cssNavName = $cssNavName;
+    }
+
+    /**
+     * Get cssNavName
+     *
+     * @return string $cssNavName
+     */
+    public function getCssNavName()
+    {
+        return $this->cssNavName;
+    }
 }
