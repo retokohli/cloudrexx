@@ -1713,6 +1713,9 @@ class newsletter extends NewsletterLib
     function interfaceSettings()
     {
         global $objDatabase, $_ARRAYLANG;
+        
+        JS::activate('jquery');
+        
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('newsletter_config_interface.html');        
 
@@ -1810,10 +1813,11 @@ class newsletter extends NewsletterLib
                                                 WHERE `setname` = "recipient_attribute_status"');
         $recipientStatus = json_decode($objInterface->fields['setvalue'], true);
         
-        foreach ($recipientStatus as $attributeName => $recipientStatusArray) {         
+        foreach ($recipientStatus as $attributeName => $recipientStatusArray) {            
             $this->_objTpl->setVariable(array(
-                 'NEWSLETTER_'.strtoupper($attributeName)             =>  ($recipientStatusArray['active']) ? 'checked="checked"' : '',
-                 'NEWSLETTER_'.strtoupper($attributeName).'_REQUIRED' =>  ($recipientStatusArray['active'] && $recipientStatusArray['required']) ? 'checked="checked"' : '',
+                 'NEWSLETTER_'.strtoupper($attributeName)                       =>  ($recipientStatusArray['active']) ? 'checked="checked"' : '',
+                 'NEWSLETTER_'.strtoupper($attributeName).'_REQUIRED'           =>  ($recipientStatusArray['active'] && $recipientStatusArray['required']) ? 'checked="checked"' : '',
+                 'NEWSLETTER_'.strtoupper($attributeName).'_MANTOTRY_DISPLAY'   =>  ($recipientStatusArray['active']) ? 'block' : 'none',
             ));
         }
         
@@ -4545,7 +4549,7 @@ $WhereStatement = '';
         $recipientPhoneOffice = '';
         $recipientBirthday = '';
         $recipientLanguage = (count($activeFrontendlang) == 1) ? key($activeFrontendlang) : '';
-        $recipientStatus = 1;
+        $recipientStatus = (isset($_POST['newsletter_recipient_status'])) ? 1 : (empty($_POST) ? 1 : 0);
         $arrAssociatedLists = array();
         $recipientSendEmailId = isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0;
 
@@ -4592,11 +4596,6 @@ $WhereStatement = '';
         if (isset($_POST['day']) && isset($_POST['month']) && isset($_POST['year'])) {
             $recipientBirthday = str_pad(intval($_POST['day']),2,'0',STR_PAD_LEFT).'-'.str_pad(intval($_POST['month']),2,'0',STR_PAD_LEFT).'-'.intval($_POST['year']);
         }
-        if (isset($_POST['newsletter_recipient_status'])) {
-            $recipientStatus = $_POST['newsletter_recipient_status'];
-        } else {
-            $recipientStatus = 0;
-        }
         if (isset($_POST['newsletter_recipient_title'])) {
             $recipientTitle = $_POST['newsletter_recipient_title'];
         }
@@ -4632,14 +4631,14 @@ $WhereStatement = '';
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
                                                 WHERE `setname` = "recipient_attribute_status"');
         $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
-
+                              
         if (isset($_POST['newsletter_recipient_save'])) {
             $objValidator = new FWValidator();
             if ($objValidator->isEmail($recipientEmail)) {
                 if ($this->_isUniqueRecipientEmail($recipientEmail, $recipientId)) {
                     if ($this->_validateRecipientAttributes($recipientAttributeStatus, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientBirthday)) {
                         if ($recipientId > 0) {
-                            if ($this->_updateRecipient($recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
+                            if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
                                 self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
                                 return $this->_userList();
                             } else {
@@ -4836,7 +4835,7 @@ $WhereStatement = '';
                         'NEWSLETTER_'.strtoupper($attribute).'_MANDATORY' => ($recipientAttributeStatus[$attribute]['active'] && $recipientAttributeStatus[$attribute]['required']) ? '*' : '',
                     ));                    
                     $profileRowCount++;
-                } else {
+                } else {                    
                     $this->_objTpl->hideBlock($attribute);
                 }                
             }
