@@ -39,7 +39,7 @@ class DropdownNavigationPageTree extends SigmaPageTree {
             }
 
 //TODO: Display
-            $output = str_replace('{CSS_NAME}', $page->getCssName(), $output);
+            $output = str_replace('{CSS_NAME}', $page->getCssNavName(), $output);
             $output = str_replace('{TARGET}', $page->getTarget(), $output);
             $output = str_replace('{STYLE}', $style, $output);
             $output = str_replace('{URL}', ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path, $output);

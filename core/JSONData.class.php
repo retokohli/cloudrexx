@@ -115,6 +115,7 @@ class JSONData {
             $page->setSkin($skin);
             $page->setCustomContent($updated_page['customContent']);
             $page->setCssName($updated_page['cssName']);
+            $page->setCssNavName($updated_page['cssNavName']);
 
             if (strlen($updated_page['slug']) > 0) {
                 $page->setSlug($updated_page['slug']);
@@ -167,6 +168,7 @@ class JSONData {
                 $page->setSkin($skin);
                 $page->setCustomContent($updated_page['customContent']);
                 $page->setCssName($updated_page['cssName']);
+                $page->setCssNavName($updated_page['cssNavName']);
             }
             elseif ($updated_page['status']) {
                 $page->setStatus($updated_page['status']);
