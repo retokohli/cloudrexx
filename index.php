@@ -339,7 +339,7 @@ if ($isRegularPageRequest) {
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
     try {
-        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), FWLanguage::getFallbackLanguageArray(), ASCMS_PATH_OFFSET);
+        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET, FWLanguage::getFallbackLanguageArray());
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $section = $page->getModule();
@@ -1563,7 +1563,7 @@ switch ($plainSection) {
         $objMediaDirectory->metaTitle = $page_metatitle;
         $objTemplate->setVariable('CONTENT_TEXT', $objMediaDirectory->getPage());
         if ($objMediaDirectory->getPageTitle() != '') {
-            $page_title->pageTitle = $objMediaDirectory->getPageTitle();
+            $page_title = $objMediaDirectory->getPageTitle();
         }
         if ($objMediaDirectory->getMetaTitle() != '') {
             $page_metatitle = $objMediaDirectory->getMetaTitle();
