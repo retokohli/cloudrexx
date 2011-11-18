@@ -450,6 +450,8 @@ class InitCMS
         $this->templates['index'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html');
         $this->templates['home'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') : '';
         $this->templates['navbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') : '';
+        $this->templates['navbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar2.html') : '';
+        $this->templates['navbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar3.html') : '';
         $this->templates['subnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') : '';
         $this->templates['subnavbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') : '';
         $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') : '';

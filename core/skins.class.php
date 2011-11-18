@@ -132,7 +132,7 @@ class skins
      * Required files
      * @var array
      */
-    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","subnavbar.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html","blog.html","immo.html");
+    public $filenames = array("index.html","style.css","content.html","home.html","navbar.html","navbar2.html","navbar3.html","subnavbar.html","subnavbar2.html","subnavbar3.html","sidebar.html","shopnavbar.html","headlines.html","events.html","javascript.js","buildin_style.css","directory.html","info.xml","forum.html","podcast.html","blog.html","immo.html");
 
     /**
      * Required directories
