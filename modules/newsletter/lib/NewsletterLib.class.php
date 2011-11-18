@@ -245,30 +245,31 @@ class NewsletterLib
         $arrLists, $language
     ) {
         global $objDatabase;
-
-        $query = "UPDATE `".DBPREFIX."module_newsletter_user`
-                      SET `email`    = '".contrexx_addslashes($email)."', 
-                          `notes`    = '".contrexx_addslashes($notes)."', 
-                          `status`   = '".intval($status)."', 
-                          `language` = '".intval($language)."'".
-        ($recipientAttributeStatus['recipient_sex']['active'] ? ',sex="'.contrexx_addslashes($sex).'"' : '').
-        ($recipientAttributeStatus['recipient_salutation']['active'] ? ',salutation="'.intval($salutation).'"' : '').
-        ($recipientAttributeStatus['recipient_title']['active'] ? ' ,title="'.contrexx_addslashes($title).'"' : '').
-        ($recipientAttributeStatus['recipient_firstname']['active'] ? ' ,firstname="'.contrexx_addslashes($firstname).'"' : '').
-        ($recipientAttributeStatus['recipient_lastname']['active'] ? ' ,lastname="'.contrexx_addslashes($lastname).'"' : '').
-        ($recipientAttributeStatus['recipient_position']['active'] ? ' ,position="'.contrexx_addslashes($position).'"' : '').
-        ($recipientAttributeStatus['recipient_company']['active'] ? ' ,company="'.contrexx_addslashes($company).'"' : '').
-        ($recipientAttributeStatus['recipient_industry']['active'] ? ' ,industry_sector="'.contrexx_addslashes($industry_sector).'"' : '').
-        ($recipientAttributeStatus['recipient_address']['active'] ? ' ,address="'.contrexx_addslashes($address).'"' : '').
-        ($recipientAttributeStatus['recipient_city']['active'] ? ' ,city="'.contrexx_addslashes($city).'"' : '').
-        ($recipientAttributeStatus['recipient_zip']['active'] ? ' ,zip="'.contrexx_addslashes($zip).'"' : '').
-        ($recipientAttributeStatus['recipient_country']['active'] ? ' ,country_id="'.intval($country).'"' : '').
-        ($recipientAttributeStatus['recipient_phone']['active'] ? ' ,phone_office="'.contrexx_addslashes($phone_office).'"' : '').
-        ($recipientAttributeStatus['recipient_private']['active'] ? ' ,phone_private="'.contrexx_addslashes($phone_private).'"' : '').
-        ($recipientAttributeStatus['recipient_mobile']['active'] ? ' ,phone_mobile="'.contrexx_addslashes($phone_mobile).'"' : '').
-        ($recipientAttributeStatus['recipient_fax']['active'] ? ' ,fax="'.$fax.'"' : '').
-        ($recipientAttributeStatus['recipient_birthday']['active'] ? ' ,birthday="'.$birthday.'"' : '').
-        ($recipientAttributeStatus['recipient_website']['active'] ? ' ,uri="'.$uri.'"' : '')." WHERE id = ".intval($id);
+        
+        $query = SQL::update('module_newsletter_user', array(
+            'email' => contrexx_addslashes($email),
+            'uri' => array('val' => contrexx_addslashes($uri), 'omitEmpty' => !$recipientAttributeStatus['recipient_website']['active']),
+            'sex' => array('val' => contrexx_addslashes($sex), 'omitEmpty' => !$recipientAttributeStatus['recipient_sex']['active']),
+            'salutation' => array('val' => contrexx_addslashes($salutation), 'omitEmpty' => !$recipientAttributeStatus['recipient_salutation']['active']),
+            'title' => array('val' => contrexx_addslashes($title), 'omitEmpty' => !$recipientAttributeStatus['recipient_title']['active']),
+            'lastname' => array('val' => contrexx_addslashes($lastname), 'omitEmpty' => !$recipientAttributeStatus['recipient_lastname']['active']),
+            'firstname' => array('val' => contrexx_addslashes($firstname), 'omitEmpty' => !$recipientAttributeStatus['recipient_firstname']['active']),
+            'position' => array('val' => contrexx_addslashes($position), 'omitEmpty' => !$recipientAttributeStatus['recipient_position']['active']),
+            'company' => array('val' => contrexx_addslashes($company), 'omitEmpty' => !$recipientAttributeStatus['recipient_company']['active']),
+            'industry_sector' => array('val' => contrexx_addslashes($industry_sector), 'omitEmpty' => !$recipientAttributeStatus['recipient_industry']['active']),
+            'address' => array('val' => contrexx_addslashes($address), 'omitEmpty' => !$recipientAttributeStatus['recipient_address']['active']),
+            'zip' => array('val' => contrexx_addslashes($zip), 'omitEmpty' => !$recipientAttributeStatus['recipient_zip']['active']),
+            'city' => array('val' => contrexx_addslashes($city), 'omitEmpty' => !$recipientAttributeStatus['recipient_city']['active']),
+            'country_id' => array('val' => contrexx_addslashes($country), 'omitEmpty' => !$recipientAttributeStatus['recipient_country']['active']),
+            'phone_office' => array('val' => contrexx_addslashes($phone_office), 'omitEmpty' => !$recipientAttributeStatus['recipient_phone']['active']),
+            'phone_private' => array('val' => contrexx_addslashes($phone_private), 'omitEmpty' => !$recipientAttributeStatus['recipient_private']['active']),
+            'phone_mobile' => array('val' => contrexx_addslashes($phone_mobile), 'omitEmpty' => !$recipientAttributeStatus['recipient_mobile']['active']),
+            'fax' => array('val' => contrexx_addslashes($fax), 'omitEmpty' => !$recipientAttributeStatus['recipient_fax']['active']),
+            'notes' => contrexx_addslashes($notes),
+            'birthday' => array('val' => contrexx_addslashes($birthday), 'omitEmpty' => !$recipientAttributeStatus['recipient_birthday']['active']),
+            'status' => intval($status),
+            'language' => intval($language)
+        ))."WHERE id=".$id;
 
         if (!$objDatabase->Execute($query)) {
             return false;
@@ -614,6 +615,22 @@ class NewsletterLib
         }
         return false;
     }
+    
+    function _validateRecipientAttributes($recipientAttributeStatus, $recipient_website, $recipient_sex, $recipient_salutation,
+            $recipient_title, $recipient_lastname, $recipient_firstname, $recipient_position, $recipient_company, $recipient_industry,
+            $recipient_address, $recipient_zip, $recipient_city, $recipient_country, $recipient_phone, $recipient_private, $recipient_mobile,
+            $recipient_fax, $recipient_birthday)
+    {        
+        foreach ($recipientAttributeStatus as $attributeName => $recipientStatusArray) {
+            if ($recipientStatusArray['active'] && $recipientStatusArray['required']) {
+                $value = trim(${$attributeName});
+                if (empty($value)) {
+                    return false;
+                }
+            }        
+        }
+        return true;
+    }    
 
 }
 
