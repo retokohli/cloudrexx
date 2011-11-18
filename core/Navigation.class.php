@@ -281,17 +281,32 @@ class Navigation
         }
     }
 
+    public function getSubnavigation($templateContent, $boolShop=false)
+    {
+        return $this->parseNavigation($templateContent, $boolShop, true);
+    }
+    
+
+    public function getNavigation($templateContent, $boolShop=false)
+    {
+        return $this->parseNavigation($templateContent, $boolShop, false);
+    }
 
     /**
-     * Gets the parsed navigation
-     * @access private
-     * @param string  $templateContent
+     * @param   string  $templateContent
      * @param   boolean $boolShop         If true, parse the shop navigation
      *                                    into {SHOPNAVBAR_FILE}
+     * @param   \Cx\Model\ContentManager\Page requestedPage
+     * @access  private
     * @return mixed parsed navigation
     */
-    function getNavigation($templateContent, $boolShop=false, $rootNode=null)
+    private function parseNavigation($templateContent, $boolShop=false, $parseSubnavigation=false)
     {
+        // only proceed if a navigation template had been set
+        if (empty($templateContent)) {
+            return;
+        }
+
         $this->_objTpl = new HTML_Template_Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -301,34 +316,43 @@ class Navigation
             $this->_objTpl->setVariable('SHOPNAVBAR_FILE', Shop::getNavbar());
         }
 
+        $rootNode = null;
+        if ($parseSubnavigation) {
+// TODO: add comment to why the subnavigation will need the rootNode
+            $rootNode = $this->page->getNode();
+            while($rootNode->getLvl() > 1) {
+                $rootNode = $rootNode->getParent();
+            }
+        }
+
         if (isset($this->_objTpl->_blocks['navigation_dropdown'])) {
             // set submenu tag
             if ($this->_objTpl->blockExists('sub_menu')) {
                 $this->subNavTag = trim($this->_objTpl->_blocks['sub_menu']);
                 $templateContent = ereg_replace('<!-- BEGIN sub_menu -->.*<!-- END sub_menu -->', NULL, $templateContent);
             }
-            //$this->_buildDropDownNavigation($this->arrPages[0],1, true);
             $navi = new DropdownNavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
-            return  ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
-        } elseif (isset($this->_objTpl->_blocks['navigation'])) {
-            //$this->_buildNavigation();
+            return ereg_replace('<!-- BEGIN level_. -->.*<!-- END level_. -->', $renderedNavi, $templateContent);
+        }
+
+        if (isset($this->_objTpl->_blocks['navigation'])) {
             $navi = new NavigationPageTree(Env::em(), 0, $rootNode, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
-            $navi->render();
-        } elseif (isset($this->_objTpl->_blocks['nested_navigation'])) {
-            // Create a nested list, formatted with ul and li-Tags
-            //$nestedNavigation = $this->_buildNestedNavigation();
+            return $navi->render();
+        }
+
+        // Create a nested list, formatted with ul and li-Tags
+        if (isset($this->_objTpl->_blocks['nested_navigation'])) {
             $navi = new NestedNavigationPageTree(Env::em(), 0, null, $this->langId, $this->page);
             $navi->setVirtualLanguageDirectory(Env::get('virtualLanguageDirectory'));
             $navi->setTemplate($this->_objTpl);
             $renderedNavi = $navi->render();
             return preg_replace('/<!--\s+BEGIN\s+nested_navigation\s+-->.*<!--\s+END\s+nested_navigation\s+-->/ms', $renderedNavi, $templateContent);
         }
-        return $this->_objTpl->get();
     }
 
 

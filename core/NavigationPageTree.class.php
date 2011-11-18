@@ -58,6 +58,8 @@ class NavigationPageTree extends SigmaPageTree {
             if ($this->template->blockExists('navigation')){
                 $this->template->parse('navigation');
             }
+
+            return $this->template->get();
         }
     }
 }
