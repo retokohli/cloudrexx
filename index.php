@@ -339,7 +339,7 @@ if ($isRegularPageRequest) {
     require_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
 
     try {
-        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET, FWLanguage::getFallbackLanguageArray());
+        $resolver = new \Cx\Core\Routing\Resolver($url, FRONTEND_LANG_ID, Env::em(), ASCMS_PATH_OFFSET.Env::get('virtualLanguageDirectory'), FWLanguage::getFallbackLanguageArray());
         $page = $resolver->getPage();
         $command = $page->getCmd();
         $section = $page->getModule();
