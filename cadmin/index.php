@@ -167,18 +167,11 @@ if (preg_match('/^(\D+)(\d+)$/', $cmd, $arrMatch)) {
 // This guarantees full backward compatibility with old code, templates
 // and database tables for the default instance.
 $moduleIndex = (empty($arrMatch[2]) ? '' : $arrMatch[2]);
-$m2id = Env::get('module2id');
-// TODO: what to do with content and jsondata?
-$moduleId = 1;
-if (!in_array($plainCmd, array('content', 'jsondata', 'server'))) {
-    $moduleId = $m2id[$plainCmd];
-}
 
 /**
  * @ignore
  */
 define('MODULE_INDEX', (intval($moduleIndex) == 0) ? '' : intval($moduleIndex));
-define('MODULE_ID', $moduleId);
 // Simple way to distinguish any number of cloned modules
 // and apply individual access rights.  This offset is added
 // to any static access ID before checking it.

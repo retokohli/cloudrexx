@@ -47,7 +47,7 @@ class InitCMS
     * whether we're dealing with a mobile device.
     * values 1 or 0.
     * @see InitCMS::checkForMobileDevice()
-    * @see InitCMS::_setCustomizedThemesId()
+    * @see InitCMS::setCustomizedTheme()
     * @access private
     */
     private $isMobileDevice = 0;
@@ -684,100 +684,22 @@ class InitCMS
 
 
     /**
-     * Returns the current page ID
-     *
-     * Also define()s the global MODULE_ID constant according to the value of
-     * the module ID determined here on the first call only.
-     * The old implementation of this function, previously kept as getPageID_old(),
-     * has been deleted on 3.2.2011. Last version containing it is 2.1.4.
-     * @global  ADONewConnection  $objDatabase
-     * @param   integer           $page_id      The optional page ID
-     * @param   string            $section      The optional section/cmd parameter value
-     * @param   string            $command      The optional cmd/act parameter value
-     * @param   integer           $history_id   The optional history ID
-     * @return  integer           $page_id      The page ID
-     * @author  Reto Kohli <reto.kohli@comvation.com> (Version 2.1)
-     * @version 2.1
-     *//*
-    function getPageID($page_id=0, $section='', $command='', $history_id=0)
-    {
-        switch ($section) {
-            case 'home':
-                $this->is_home = true;
-                $section = 'home';
-                $command = '';
-                break;
-            case 'logout':
-                $section = 'login';
-                break;
-            case 'media':
-                $section .= (MODULE_INDEX == '' ? 1 : MODULE_INDEX);
-                break;
-        }
-        $module_id = null;
-        if (empty($page_id)) {
-            if (empty($section)) {
-                $this->is_home = true;
-                $section = 'home';
-                $command = '';
-            }
-
-            //doctrine rewrite
-            $pageRepo = $this->em->getRepository('Cx\Model\ContentManager\Page');
-            if($command === '')
-                $command = null;
-            $crit = array(
-                'module' => $section,
-                'cmd' => $command,
-                'lang' => FRONTEND_LANG_ID,
-            );
-            $page = $pageRepo->findOneBy($crit);
-            if (!$page) {
-                //check if we're already trying to display the error page -
-                //redirecting leads to an infinite loop in this case
-                if ($section == 'error' && $command == '') {
-                    die('Page not found. Also, no pretty version of this error has been found.');
-                }
-                else { //page not found, redirect to the error page.
-                    CSRF::header('Location: index.php?section=error');
-                    exit;
-                }
-// TODO: This is never reached.
-                CSRF::header('Location: index.php?section=error');
-                exit;
-            }
-            $page_id = $page->getId();
-            $m2id = Env::get('module2id');
-            $this->_setCustomizedThemesId($page->getSkin());
-            $this->customContentTemplate = $page->getCustomContent();
-            $module_id = $m2id[$page->getModule()];
-        }
-//TODO: history id
-        // Note that this method is (or at least was) sometimes called twice.
-        // Now the constant is set on the first call only.
-        if (!defined('MODULE_ID')) {
-            define('MODULE_ID', $module_id);
-        }
-        return $page_id;
-    }
-*/
-
-
-    /**
-     * Sets the customized ThemesId
+     * Sets the customized ThemesId and customContent template
      *
      * This method sets the currentThemesId if a customized themesId is set
      * in the navigation table.
-     * @access  private
-     * @param   string    $themesId     The optional theme ID
+     * @param   int $themesId     The optional theme ID
+     * @param   string $customContent   The optional custom content template (like 'content_without_h1.html')
      */
-    function setCustomizedThemesId($themesId='')
+    public function setCustomizedTheme($themesId=0, $customContent='')
     {
         global $objDatabase;
 
-        $mobileThemeDefinedAndRequested = $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
+        // set custom content template
+        $this->customContentTemplate = $customContent;
+
         //only set customized theme if not in printview AND no mobile devic
-        if (!isset($_GET['printview']) && !$mobileThemeDefinedAndRequested) {
+        if (!isset($_GET['printview']) && !$this->isInMobileView()) {
             $themesId=intval($themesId);
             if ($themesId>0){
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE id = $themesId");
@@ -786,6 +708,16 @@ class InitCMS
                 }
             }
         }
+    }
+
+
+    /**
+     * @access private
+     * @return boolean Return TRUE if the user is in "Mobile View"-mode, otherwise FALSE
+     */
+    private function isInMobileView()
+    {
+        return $this->arrLang[$this->frontendLangId]['mobile_themes_id'] && $this->isMobileDevice;
     }
 
 

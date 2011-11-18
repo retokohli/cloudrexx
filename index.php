@@ -429,7 +429,7 @@ $version = null;
         }*/
 
 
-    $objInit->setCustomizedThemesId($page->getSkin());
+    $objInit->setCustomizedTheme($page->getSkin(), $page->getCustomContent());
 
     $themesPages = $objInit->getTemplates();
 
